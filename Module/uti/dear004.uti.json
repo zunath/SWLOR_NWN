@@ -111,13 +111,13 @@
   "DescIdentified": {
     "type": "cexolocstring",
     "value": {
-      "0": "Body armor worn over the torso."
+      "0": "The access covers of this engineering droid shell are arranged for a technician who expects to open them often rather than admire them shut. The inner fittings are as carefully dressed as the visible panels, evidence of workmanship no customer should have to discover through a fault."
     }
   },
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "Body armor worn over the torso."
+      "0": "The access covers of this engineering droid shell are arranged for a technician who expects to open them often rather than admire them shut. The inner fittings are as carefully dressed as the visible panels, evidence of workmanship no customer should have to discover through a fault."
     }
   },
   "Identified": {

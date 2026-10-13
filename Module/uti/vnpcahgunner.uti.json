@@ -111,13 +111,13 @@
   "DescIdentified": {
     "type": "cexolocstring",
     "value": {
-      "0": "Body armor worn over the torso."
+      "0": "Stout plates and broad mounts give this Sith gunner's armor an industrial presence. The areas around its equipment fittings show where personal comfort has been negotiated against the demands of heavier machinery."
     }
   },
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "Body armor worn over the torso."
+      "0": "Stout plates and broad mounts give this Sith gunner's armor an industrial presence. The areas around its equipment fittings show where personal comfort has been negotiated against the demands of heavier machinery."
     }
   },
   "Identified": {

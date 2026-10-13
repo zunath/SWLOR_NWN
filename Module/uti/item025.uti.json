@@ -111,13 +111,13 @@
   "DescIdentified": {
     "type": "cexolocstring",
     "value": {
-      "0": "Robes worn over the body."
+      "0": "These robes follow the spare, practical traditions associated with a Jedi master's travelling dress. Their careful repairs fit the name Zez-Kai Ell better than bright ornament or an insistence on appearing untouched by use."
     }
   },
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "Robes worn over the body."
+      "0": "These robes follow the spare, practical traditions associated with a Jedi master's travelling dress. Their careful repairs fit the name Zez-Kai Ell better than bright ornament or an insistence on appearing untouched by use."
     }
   },
   "Identified": {

@@ -27,13 +27,13 @@
   "DescIdentified": {
     "type": "cexolocstring",
     "value": {
-      "0": "A bracer worn around the forearm."
+      "0": "This mechanic's bracer keeps loose sleeves clear of moving parts. Its outer surface has room to accumulate the small scuffs that any honest piece of workshop equipment eventually earns."
     }
   },
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "A bracer worn around the forearm."
+      "0": "This mechanic's bracer keeps loose sleeves clear of moving parts. Its outer surface has room to accumulate the small scuffs that any honest piece of workshop equipment eventually earns."
     }
   },
   "Identified": {

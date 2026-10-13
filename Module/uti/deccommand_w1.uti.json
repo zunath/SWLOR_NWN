@@ -111,13 +111,13 @@
   "DescIdentified": {
     "type": "cexolocstring",
     "value": {
-      "0": "Body armor worn over the torso."
+      "0": "Flat straps keep this harness close enough to wear among crowded consoles. Its buckles are dull with handling, the kind of unobtrusive equipment that stays on through a shift which was supposed to end hours ago."
     }
   },
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "Body armor worn over the torso."
+      "0": "Flat straps keep this harness close enough to wear among crowded consoles. Its buckles are dull with handling, the kind of unobtrusive equipment that stays on through a shift which was supposed to end hours ago."
     }
   },
   "Identified": {

@@ -111,13 +111,13 @@
   "DescIdentified": {
     "type": "cexolocstring",
     "value": {
-      "0": "Clothing worn as a complete outfit."
+      "0": "This lieutenant's outfit carries its authority in a deliberately neat collar and carefully maintained fastenings. The cloth has seen enough handling to suggest that the rank comes with errands as well as privileges."
     }
   },
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "Clothing worn as a complete outfit."
+      "0": "This lieutenant's outfit carries its authority in a deliberately neat collar and carefully maintained fastenings. The cloth has seen enough handling to suggest that the rank comes with errands as well as privileges."
     }
   },
   "Identified": {

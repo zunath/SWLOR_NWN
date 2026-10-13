@@ -111,13 +111,13 @@
   "DescIdentified": {
     "type": "cexolocstring",
     "value": {
-      "0": "Body armor worn over the torso."
+      "0": "Taris' armor has been worked around a particular set of strap adjustments. Its outer finish remains tidy, while the inside gives a more practical account of the person expected to carry it."
     }
   },
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "Body armor worn over the torso."
+      "0": "Taris' armor has been worked around a particular set of strap adjustments. Its outer finish remains tidy, while the inside gives a more practical account of the person expected to carry it."
     }
   },
   "Identified": {

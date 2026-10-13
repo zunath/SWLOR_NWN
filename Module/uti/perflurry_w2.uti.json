@@ -111,13 +111,13 @@
   "DescIdentified": {
     "type": "cexolocstring",
     "value": {
-      "0": "Body armor worn over the torso."
+      "0": "This harness has been repaired beneath its outer panels, keeping the worst of its wear out of the wind. The careful layering suggests a wearer who learned Hutlar's weather through experience."
     }
   },
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "Body armor worn over the torso."
+      "0": "This harness has been repaired beneath its outer panels, keeping the worst of its wear out of the wind. The careful layering suggests a wearer who learned Hutlar's weather through experience."
     }
   },
   "Identified": {

@@ -111,13 +111,13 @@
   "DescIdentified": {
     "type": "cexolocstring",
     "value": {
-      "0": "Body armor worn over the torso."
+      "0": "This Sith warrior's armor emphasizes an uncompromising outline and closely set plates. Its fittings have been adjusted around a fighter's stance rather than a comfortable place in a reviewing line."
     }
   },
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "Body armor worn over the torso."
+      "0": "This Sith warrior's armor emphasizes an uncompromising outline and closely set plates. Its fittings have been adjusted around a fighter's stance rather than a comfortable place in a reviewing line."
     }
   },
   "Identified": {

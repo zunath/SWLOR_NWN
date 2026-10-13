@@ -27,13 +27,13 @@
   "DescIdentified": {
     "type": "cexolocstring",
     "value": {
-      "0": "A pair of gloves worn over the hands."
+      "0": "These gloves have been mended more than once along the outer wrists. Their blunt, practical construction belongs to work where pockets are emptied and questions are expected to receive immediate answers."
     }
   },
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "A pair of gloves worn over the hands."
+      "0": "These gloves have been mended more than once along the outer wrists. Their blunt, practical construction belongs to work where pockets are emptied and questions are expected to receive immediate answers."
     }
   },
   "Identified": {

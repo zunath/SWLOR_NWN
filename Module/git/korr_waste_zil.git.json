@@ -479,13 +479,13 @@
               "DescIdentified": {
                 "type": "cexolocstring",
                 "value": {
-                  "0": "Body armor worn over the torso."
+                  "0": "The clean lines of this Sith officer's armor are interrupted only by disciplined service fittings. Its severe finish makes the wearer look like someone who expects a report, even before anyone has been asked to provide one."
                 }
               },
               "Description": {
                 "type": "cexolocstring",
                 "value": {
-                  "0": "Body armor worn over the torso."
+                  "0": "The clean lines of this Sith officer's armor are interrupted only by disciplined service fittings. Its severe finish makes the wearer look like someone who expects a report, even before anyone has been asked to provide one."
                 }
               },
               "Identified": {
@@ -2504,13 +2504,13 @@
               "DescIdentified": {
                 "type": "cexolocstring",
                 "value": {
-                  "0": "Body armor worn over the torso."
+                  "0": "These rags have been repaired with scraps that no longer resemble their original fabric. They are the kind of possession that survives a hurried departure because it was already being worn when everything else had to be left behind."
                 }
               },
               "Description": {
                 "type": "cexolocstring",
                 "value": {
-                  "0": "Body armor worn over the torso."
+                  "0": "These rags have been repaired with scraps that no longer resemble their original fabric. They are the kind of possession that survives a hurried departure because it was already being worn when everything else had to be left behind."
                 }
               },
               "Identified": {

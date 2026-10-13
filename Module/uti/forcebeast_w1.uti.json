@@ -111,13 +111,13 @@
   "DescIdentified": {
     "type": "cexolocstring",
     "value": {
-      "0": "Body armor worn over the torso."
+      "0": "Different hides have been bound together with thick, patiently worked cord. Each panel carries its own grain and scars, preserving a little of the creatures that once moved through Dathomir beneath them."
     }
   },
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "Body armor worn over the torso."
+      "0": "Different hides have been bound together with thick, patiently worked cord. Each panel carries its own grain and scars, preserving a little of the creatures that once moved through Dathomir beneath them."
     }
   },
   "Identified": {

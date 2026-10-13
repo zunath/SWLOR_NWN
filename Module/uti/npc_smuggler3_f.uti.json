@@ -111,13 +111,13 @@
   "DescIdentified": {
     "type": "cexolocstring",
     "value": {
-      "0": "Clothing worn as a complete outfit."
+      "0": "This portside outfit has discreet fastenings and a collar that can be worn several ways. Its flexibility suits a smuggler who would rather change their appearance than explain why the last dockmaster remembers them."
     }
   },
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "Clothing worn as a complete outfit."
+      "0": "This portside outfit has discreet fastenings and a collar that can be worn several ways. Its flexibility suits a smuggler who would rather change their appearance than explain why the last dockmaster remembers them."
     }
   },
   "Identified": {

@@ -111,13 +111,13 @@
   "DescIdentified": {
     "type": "cexolocstring",
     "value": {
-      "0": "Body armor worn over the torso."
+      "0": "Crypt dust clings to the recessed channels of this plate. Its dark finish has been rubbed thin over the heart, where a previous wearer repeatedly rested a hand before stepping into the next chamber."
     }
   },
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "Body armor worn over the torso."
+      "0": "Crypt dust clings to the recessed channels of this plate. Its dark finish has been rubbed thin over the heart, where a previous wearer repeatedly rested a hand before stepping into the next chamber."
     }
   },
   "Identified": {

@@ -111,13 +111,13 @@
   "DescIdentified": {
     "type": "cexolocstring",
     "value": {
-      "0": "Body armor worn over the torso."
+      "0": "The recessed joints of this plate retain a reddish cast beneath their dark finish. Soot follows every hammer mark, preserving the labor of the forge like ink caught in a seal."
     }
   },
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "Body armor worn over the torso."
+      "0": "The recessed joints of this plate retain a reddish cast beneath their dark finish. Soot follows every hammer mark, preserving the labor of the forge like ink caught in a seal."
     }
   },
   "Identified": {

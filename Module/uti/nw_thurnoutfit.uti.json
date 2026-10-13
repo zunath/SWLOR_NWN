@@ -111,13 +111,13 @@
   "DescIdentified": {
     "type": "cexolocstring",
     "value": {
-      "0": "Clothing worn as a complete outfit."
+      "0": "Thurn Durvi's outfit has been fitted and refitted around a familiar set of fastenings. Its most substantial repairs lie where straps and equipment press against the cloth, keeping the daily inconveniences on the inside."
     }
   },
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "Clothing worn as a complete outfit."
+      "0": "Thurn Durvi's outfit has been fitted and refitted around a familiar set of fastenings. Its most substantial repairs lie where straps and equipment press against the cloth, keeping the daily inconveniences on the inside."
     }
   },
   "Identified": {

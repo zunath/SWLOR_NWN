@@ -111,13 +111,13 @@
   "DescIdentified": {
     "type": "cexolocstring",
     "value": {
-      "0": "Body armor worn over the torso."
+      "0": "Layered cloth and close bindings give these robes a severe, weathered outline. They carry the feeling of a practice learned away from comfortable lecture rooms, where the wild has little patience for ceremonial dress."
     }
   },
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "Body armor worn over the torso."
+      "0": "Layered cloth and close bindings give these robes a severe, weathered outline. They carry the feeling of a practice learned away from comfortable lecture rooms, where the wild has little patience for ceremonial dress."
     }
   },
   "Identified": {

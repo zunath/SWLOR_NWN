@@ -111,13 +111,13 @@
   "DescIdentified": {
     "type": "cexolocstring",
     "value": {
-      "0": "A tunic worn over the torso."
+      "0": "A straightforward workshop tunic with seams that show the maker's careful first decisions. A few extra stitches reinforce the pockets, where tools have a habit of teaching an apprentice what a pattern book omitted."
     }
   },
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "A tunic worn over the torso."
+      "0": "A straightforward workshop tunic with seams that show the maker's careful first decisions. A few extra stitches reinforce the pockets, where tools have a habit of teaching an apprentice what a pattern book omitted."
     }
   },
   "Identified": {

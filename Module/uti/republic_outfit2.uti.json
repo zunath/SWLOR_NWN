@@ -111,13 +111,13 @@
   "DescIdentified": {
     "type": "cexolocstring",
     "value": {
-      "0": "Clothing worn as a complete outfit."
+      "0": "White fabric gives this Republic uniform a crisp, unmistakable appearance. A close inspection reveals the stubborn little marks of service that survive even the most determined efforts at regulation presentation."
     }
   },
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "Clothing worn as a complete outfit."
+      "0": "White fabric gives this Republic uniform a crisp, unmistakable appearance. A close inspection reveals the stubborn little marks of service that survive even the most determined efforts at regulation presentation."
     }
   },
   "Identified": {

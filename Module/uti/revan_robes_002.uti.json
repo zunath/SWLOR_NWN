@@ -111,13 +111,13 @@
   "DescIdentified": {
     "type": "cexolocstring",
     "value": {
-      "0": "Robes worn over the body."
+      "0": "These robes borrow the commanding outline associated with Darth Revan. Their carefully constructed folds reproduce the image rather than prove a history, leaving the considerable weight of the name to the imagination of the wearer."
     }
   },
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "Robes worn over the body."
+      "0": "These robes borrow the commanding outline associated with Darth Revan. Their carefully constructed folds reproduce the image rather than prove a history, leaving the considerable weight of the name to the imagination of the wearer."
     }
   },
   "Identified": {

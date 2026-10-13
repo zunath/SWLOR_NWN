@@ -27,13 +27,13 @@
   "DescIdentified": {
     "type": "cexolocstring",
     "value": {
-      "0": "A pair of gloves worn over the hands."
+      "0": "These gloves have mismatched repairs and cuffs that can be tightened with a single pull. The previous wearer apparently preferred workable equipment to anything that might invite questions about its origin."
     }
   },
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "A pair of gloves worn over the hands."
+      "0": "These gloves have mismatched repairs and cuffs that can be tightened with a single pull. The previous wearer apparently preferred workable equipment to anything that might invite questions about its origin."
     }
   },
   "Identified": {

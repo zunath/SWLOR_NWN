@@ -111,13 +111,13 @@
   "DescIdentified": {
     "type": "cexolocstring",
     "value": {
-      "0": "Clothing worn as a complete outfit."
+      "0": "A weaponsmith's outfit with stout pockets and sleeves that fasten securely above the wrists. Tiny marks around its front record the unglamorous work behind a finished weapon's immaculate sales display."
     }
   },
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "Clothing worn as a complete outfit."
+      "0": "A weaponsmith's outfit with stout pockets and sleeves that fasten securely above the wrists. Tiny marks around its front record the unglamorous work behind a finished weapon's immaculate sales display."
     }
   },
   "Identified": {

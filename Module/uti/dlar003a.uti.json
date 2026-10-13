@@ -111,13 +111,13 @@
   "DescIdentified": {
     "type": "cexolocstring",
     "value": {
-      "0": "Body armor worn over the torso."
+      "0": "Closely fitted panels leave this light droid shell a spare, compact outline around its chassis mounts. The service covers fit with the assurance of a design that has already taught its maker which details matter. Revised fitting marks distinguish this assembly from the standard production pattern."
     }
   },
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "Body armor worn over the torso."
+      "0": "Closely fitted panels leave this light droid shell a spare, compact outline around its chassis mounts. The service covers fit with the assurance of a design that has already taught its maker which details matter. Revised fitting marks distinguish this assembly from the standard production pattern."
     }
   },
   "Identified": {

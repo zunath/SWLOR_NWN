@@ -111,13 +111,13 @@
   "DescIdentified": {
     "type": "cexolocstring",
     "value": {
-      "0": "Body armor worn over the torso."
+      "0": "Broad plates and stout mounts give this Sith siege armor an industrial weight. Scratches gather around the outer fittings, where the demands of heavy equipment meet the inconvenient shape of its operator."
     }
   },
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "Body armor worn over the torso."
+      "0": "Broad plates and stout mounts give this Sith siege armor an industrial weight. Scratches gather around the outer fittings, where the demands of heavy equipment meet the inconvenient shape of its operator."
     }
   },
   "Identified": {

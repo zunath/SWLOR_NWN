@@ -111,13 +111,13 @@
   "DescIdentified": {
     "type": "cexolocstring",
     "value": {
-      "0": "Body armor worn over the torso."
+      "0": "This armor's broad outer panels are scarred most heavily along the sides and shoulders. It has the look of equipment that spent long hours standing where somebody else needed a barrier."
     }
   },
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "Body armor worn over the torso."
+      "0": "This armor's broad outer panels are scarred most heavily along the sides and shoulders. It has the look of equipment that spent long hours standing where somebody else needed a barrier."
     }
   },
   "Identified": {

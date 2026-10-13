@@ -111,13 +111,13 @@
   "DescIdentified": {
     "type": "cexolocstring",
     "value": {
-      "0": "Body armor worn over the torso."
+      "0": "Equipment loops are distributed across this harness with a planner's precision. Empty loops look almost untidy, as though their owner would immediately notice a missing part of the loadout."
     }
   },
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "Body armor worn over the torso."
+      "0": "Equipment loops are distributed across this harness with a planner's precision. Empty loops look almost untidy, as though their owner would immediately notice a missing part of the loadout."
     }
   },
   "Identified": {

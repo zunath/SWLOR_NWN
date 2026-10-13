@@ -111,13 +111,13 @@
   "DescIdentified": {
     "type": "cexolocstring",
     "value": {
-      "0": "Body armor worn over the torso."
+      "0": "This droid shell is built around the demands of a smithing bench, with readily reached service fittings beneath its hard outer panels. The inner fittings are as carefully dressed as the visible panels, evidence of workmanship no customer should have to discover through a fault."
     }
   },
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "Body armor worn over the torso."
+      "0": "This droid shell is built around the demands of a smithing bench, with readily reached service fittings beneath its hard outer panels. The inner fittings are as carefully dressed as the visible panels, evidence of workmanship no customer should have to discover through a fault."
     }
   },
   "Identified": {

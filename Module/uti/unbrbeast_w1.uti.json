@@ -111,13 +111,13 @@
   "DescIdentified": {
     "type": "cexolocstring",
     "value": {
-      "0": "Body armor worn over the torso."
+      "0": "Old scars remain visible beneath the harness's reinforced hide panels. Repair cords crisscross its straps, keeping the whole together through a succession of journeys that were hard on everything else."
     }
   },
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "Body armor worn over the torso."
+      "0": "Old scars remain visible beneath the harness's reinforced hide panels. Repair cords crisscross its straps, keeping the whole together through a succession of journeys that were hard on everything else."
     }
   },
   "Identified": {

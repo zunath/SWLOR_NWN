@@ -111,13 +111,13 @@
   "DescIdentified": {
     "type": "cexolocstring",
     "value": {
-      "0": "A tunic worn over the torso."
+      "0": "A workshop tunic whose restrained finish conceals unusually patient sewing. It reflects the kind of devotion found in doing a difficult job properly even when no customer will see the inside."
     }
   },
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "A tunic worn over the torso."
+      "0": "A workshop tunic whose restrained finish conceals unusually patient sewing. It reflects the kind of devotion found in doing a difficult job properly even when no customer will see the inside."
     }
   },
   "Identified": {

@@ -111,13 +111,13 @@
   "DescIdentified": {
     "type": "cexolocstring",
     "value": {
-      "0": "Robes worn over the body."
+      "0": "Dark apprentice robes with a collar still stiff enough to betray their relative newness. Their severity is deliberate, an early lesson in looking certain before the wearer has earned much reason to be."
     }
   },
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "Robes worn over the body."
+      "0": "Dark apprentice robes with a collar still stiff enough to betray their relative newness. Their severity is deliberate, an early lesson in looking certain before the wearer has earned much reason to be."
     }
   },
   "Identified": {

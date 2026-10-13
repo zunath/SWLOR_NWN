@@ -1486,13 +1486,13 @@
               "DescIdentified": {
                 "type": "cexolocstring",
                 "value": {
-                  "0": "Robes worn over the body."
+                  "0": "These robes borrow the commanding outline associated with Darth Revan. Their carefully constructed folds reproduce the image rather than prove a history, leaving the considerable weight of the name to the imagination of the wearer."
                 }
               },
               "Description": {
                 "type": "cexolocstring",
                 "value": {
-                  "0": "Robes worn over the body."
+                  "0": "These robes borrow the commanding outline associated with Darth Revan. Their carefully constructed folds reproduce the image rather than prove a history, leaving the considerable weight of the name to the imagination of the wearer."
                 }
               },
               "Identified": {
@@ -2673,13 +2673,13 @@
               "DescIdentified": {
                 "type": "cexolocstring",
                 "value": {
-                  "0": "Robes worn over the body."
+                  "0": "These robes borrow the commanding outline associated with Darth Revan. Their carefully constructed folds reproduce the image rather than prove a history, leaving the considerable weight of the name to the imagination of the wearer."
                 }
               },
               "Description": {
                 "type": "cexolocstring",
                 "value": {
-                  "0": "Robes worn over the body."
+                  "0": "These robes borrow the commanding outline associated with Darth Revan. Their carefully constructed folds reproduce the image rather than prove a history, leaving the considerable weight of the name to the imagination of the wearer."
                 }
               },
               "Identified": {
@@ -3860,13 +3860,13 @@
               "DescIdentified": {
                 "type": "cexolocstring",
                 "value": {
-                  "0": "Clothing worn as a complete outfit."
+                  "0": "This vendor's outfit has practical pockets and sleeves worn most heavily at the wrists. It looks as familiar behind a market counter as the practiced motion of counting out a customer's change."
                 }
               },
               "Description": {
                 "type": "cexolocstring",
                 "value": {
-                  "0": "Clothing worn as a complete outfit."
+                  "0": "This vendor's outfit has practical pockets and sleeves worn most heavily at the wrists. It looks as familiar behind a market counter as the practiced motion of counting out a customer's change."
                 }
               },
               "Identified": {
@@ -4884,13 +4884,13 @@
               "DescIdentified": {
                 "type": "cexolocstring",
                 "value": {
-                  "0": "Clothing worn as a complete outfit."
+                  "0": "A shopkeeper's outfit with a neat front and a lining strengthened around its working pockets. The garment is meant to look welcoming, though its owner has plainly kept their credit chips well within reach."
                 }
               },
               "Description": {
                 "type": "cexolocstring",
                 "value": {
-                  "0": "Clothing worn as a complete outfit."
+                  "0": "A shopkeeper's outfit with a neat front and a lining strengthened around its working pockets. The garment is meant to look welcoming, though its owner has plainly kept their credit chips well within reach."
                 }
               },
               "Identified": {
@@ -5908,13 +5908,13 @@
               "DescIdentified": {
                 "type": "cexolocstring",
                 "value": {
-                  "0": "Clothing worn as a complete outfit."
+                  "0": "This vendor's outfit has practical pockets and sleeves worn most heavily at the wrists. It looks as familiar behind a market counter as the practiced motion of counting out a customer's change."
                 }
               },
               "Description": {
                 "type": "cexolocstring",
                 "value": {
-                  "0": "Clothing worn as a complete outfit."
+                  "0": "This vendor's outfit has practical pockets and sleeves worn most heavily at the wrists. It looks as familiar behind a market counter as the practiced motion of counting out a customer's change."
                 }
               },
               "Identified": {
@@ -7132,13 +7132,13 @@
               "DescIdentified": {
                 "type": "cexolocstring",
                 "value": {
-                  "0": "Clothing worn as a complete outfit."
+                  "0": "Brightly arranged panels give this Twi'lek stage outfit a lively silhouette. Its seams are secured more carefully than the light appearance suggests, ready for repeated performances rather than one flattering entrance."
                 }
               },
               "Description": {
                 "type": "cexolocstring",
                 "value": {
-                  "0": "Clothing worn as a complete outfit."
+                  "0": "Brightly arranged panels give this Twi'lek stage outfit a lively silhouette. Its seams are secured more carefully than the light appearance suggests, ready for repeated performances rather than one flattering entrance."
                 }
               },
               "Identified": {
@@ -8153,13 +8153,13 @@
               "DescIdentified": {
                 "type": "cexolocstring",
                 "value": {
-                  "0": "Body armor worn over the torso."
+                  "0": "Protective sections have been worked into a colonist's everyday clothing. Veles offers opportunity, but the additional weight suggests that its wearer does not expect opportunity to provide all of their security."
                 }
               },
               "Description": {
                 "type": "cexolocstring",
                 "value": {
-                  "0": "Body armor worn over the torso."
+                  "0": "Protective sections have been worked into a colonist's everyday clothing. Veles offers opportunity, but the additional weight suggests that its wearer does not expect opportunity to provide all of their security."
                 }
               },
               "Identified": {
@@ -9170,13 +9170,13 @@
               "DescIdentified": {
                 "type": "cexolocstring",
                 "value": {
-                  "0": "Clothing worn as a complete outfit."
+                  "0": "A worker's outfit with broad pockets and stout seams around the shoulders. It has been cut for the part of a shift spent carrying, lifting, and reaching rather than the moment somebody takes attendance."
                 }
               },
               "Description": {
                 "type": "cexolocstring",
                 "value": {
-                  "0": "Clothing worn as a complete outfit."
+                  "0": "A worker's outfit with broad pockets and stout seams around the shoulders. It has been cut for the part of a shift spent carrying, lifting, and reaching rather than the moment somebody takes attendance."
                 }
               },
               "Identified": {
@@ -72322,13 +72322,13 @@
                     "DescIdentified": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": "Flowers carried as a decoration."
+                        "0": "A blue rose whose unusual color catches the eye before its carefully trimmed stem does. In a market full of useful purchases, it offers the small extravagance of something meant simply to be given."
                       }
                     },
                     "Description": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": "Flowers carried as a decoration."
+                        "0": "A blue rose whose unusual color catches the eye before its carefully trimmed stem does. In a market full of useful purchases, it offers the small extravagance of something meant simply to be given."
                       }
                     },
                     "Identified": {
@@ -72447,13 +72447,13 @@
                     "DescIdentified": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": "Flowers carried as a decoration."
+                        "0": "A tall spray of delphinium blossoms, gathered with its more fragile flowers carefully protected. It brings a little of a garden's unruly vertical shape to an otherwise practical room."
                       }
                     },
                     "Description": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": "Flowers carried as a decoration."
+                        "0": "A tall spray of delphinium blossoms, gathered with its more fragile flowers carefully protected. It brings a little of a garden's unruly vertical shape to an otherwise practical room."
                       }
                     },
                     "Identified": {
@@ -72572,13 +72572,13 @@
                     "DescIdentified": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": "Flowers carried as a decoration."
+                        "0": "The broad face of this gerbera seems determined to look cheerful under any lighting. Its neatly prepared stem turns an ordinary flower into a modest, portable occasion."
                       }
                     },
                     "Description": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": "Flowers carried as a decoration."
+                        "0": "The broad face of this gerbera seems determined to look cheerful under any lighting. Its neatly prepared stem turns an ordinary flower into a modest, portable occasion."
                       }
                     },
                     "Identified": {
@@ -72697,13 +72697,13 @@
                     "DescIdentified": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": "Flowers carried as a decoration."
+                        "0": "A lily with broad petals arranged around its open center. It needs little additional decoration, offering the sort of quiet elegance that a busy starport seldom supplies on its own."
                       }
                     },
                     "Description": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": "Flowers carried as a decoration."
+                        "0": "A lily with broad petals arranged around its open center. It needs little additional decoration, offering the sort of quiet elegance that a busy starport seldom supplies on its own."
                       }
                     },
                     "Identified": {
@@ -72822,13 +72822,13 @@
                     "DescIdentified": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": "Flowers carried as a decoration."
+                        "0": "Close layers of petals give this peony its lavish, almost crowded shape. It looks like far more ceremony than its slender stem should reasonably be able to carry."
                       }
                     },
                     "Description": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": "Flowers carried as a decoration."
+                        "0": "Close layers of petals give this peony its lavish, almost crowded shape. It looks like far more ceremony than its slender stem should reasonably be able to carry."
                       }
                     },
                     "Identified": {
@@ -72947,13 +72947,13 @@
                     "DescIdentified": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": "Flowers carried as a decoration."
+                        "0": "Purple petals lend this rose a richer, less conventional appearance. The stem has been prepared with the same care as a more ordinary bloom, leaving the giver's intentions to be worked out separately."
                       }
                     },
                     "Description": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": "Flowers carried as a decoration."
+                        "0": "Purple petals lend this rose a richer, less conventional appearance. The stem has been prepared with the same care as a more ordinary bloom, leaving the giver's intentions to be worked out separately."
                       }
                     },
                     "Identified": {
@@ -73072,13 +73072,13 @@
                     "DescIdentified": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": "Flowers carried as a decoration."
+                        "0": "A rose, carefully trimmed and kept for presentation rather than left to open unnoticed in a garden. Its familiar shape has survived a galaxy's worth of complicated reasons for giving one."
                       }
                     },
                     "Description": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": "Flowers carried as a decoration."
+                        "0": "A rose, carefully trimmed and kept for presentation rather than left to open unnoticed in a garden. Its familiar shape has survived a galaxy's worth of complicated reasons for giving one."
                       }
                     },
                     "Identified": {
@@ -73197,13 +73197,13 @@
                     "DescIdentified": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": "Flowers carried as a decoration."
+                        "0": "This tulip holds its color in a simple, upright cup. Its restrained shape suits a gift that would rather be appreciated than spend the whole visit announcing itself."
                       }
                     },
                     "Description": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": "Flowers carried as a decoration."
+                        "0": "This tulip holds its color in a simple, upright cup. Its restrained shape suits a gift that would rather be appreciated than spend the whole visit announcing itself."
                       }
                     },
                     "Identified": {
@@ -73322,13 +73322,13 @@
                     "DescIdentified": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": "Flowers carried as a decoration."
+                        "0": "Blue roses have been arranged so that each unusual bloom remains visible. They make a conspicuous gift, the sort of purchase that is difficult to pretend was merely practical."
                       }
                     },
                     "Description": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": "Flowers carried as a decoration."
+                        "0": "Blue roses have been arranged so that each unusual bloom remains visible. They make a conspicuous gift, the sort of purchase that is difficult to pretend was merely practical."
                       }
                     },
                     "Identified": {
@@ -73447,13 +73447,13 @@
                     "DescIdentified": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": "Flowers carried as a decoration."
+                        "0": "An assortment of flowers has been gathered into a deliberately varied bundle. Their different shapes and colors offer the small pleasure of a garden that can be carried away from its soil."
                       }
                     },
                     "Description": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": "Flowers carried as a decoration."
+                        "0": "An assortment of flowers has been gathered into a deliberately varied bundle. Their different shapes and colors offer the small pleasure of a garden that can be carried away from its soil."
                       }
                     },
                     "Identified": {
@@ -73572,13 +73572,13 @@
                     "DescIdentified": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": "Flowers carried as a decoration."
+                        "0": "Tall delphinium sprays lend this bundle a slightly unruly silhouette. The binding keeps their delicate stems together without pretending that flowers should form up like a military escort."
                       }
                     },
                     "Description": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": "Flowers carried as a decoration."
+                        "0": "Tall delphinium sprays lend this bundle a slightly unruly silhouette. The binding keeps their delicate stems together without pretending that flowers should form up like a military escort."
                       }
                     },
                     "Identified": {
@@ -73697,13 +73697,13 @@
                     "DescIdentified": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": "Flowers carried as a decoration."
+                        "0": "Broad gerbera blossoms turn outward from this neatly tied bundle. Their unabashedly cheerful arrangement would be difficult to mistake for an attempt at solemn official business."
                       }
                     },
                     "Description": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": "Flowers carried as a decoration."
+                        "0": "Broad gerbera blossoms turn outward from this neatly tied bundle. Their unabashedly cheerful arrangement would be difficult to mistake for an attempt at solemn official business."
                       }
                     },
                     "Identified": {
@@ -73822,13 +73822,13 @@
                     "DescIdentified": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": "Flowers carried as a decoration."
+                        "0": "Lilies have been arranged to give their broad petals a little room. The result has a quiet formality, suitable for a room where another loud decoration would be one too many."
                       }
                     },
                     "Description": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": "Flowers carried as a decoration."
+                        "0": "Lilies have been arranged to give their broad petals a little room. The result has a quiet formality, suitable for a room where another loud decoration would be one too many."
                       }
                     },
                     "Identified": {
@@ -73947,13 +73947,13 @@
                     "DescIdentified": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": "Flowers carried as a decoration."
+                        "0": "A bundle of peonies has been tied beneath its generous layers of petals. The flowers seem determined to supply enough occasion for whichever doorstep they eventually reach."
                       }
                     },
                     "Description": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": "Flowers carried as a decoration."
+                        "0": "A bundle of peonies has been tied beneath its generous layers of petals. The flowers seem determined to supply enough occasion for whichever doorstep they eventually reach."
                       }
                     },
                     "Identified": {
@@ -74072,13 +74072,13 @@
                     "DescIdentified": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": "Flowers carried as a decoration."
+                        "0": "Purple roses crowd together above a neatly bound cluster of stems. Their rich color makes a deliberate impression, quite apart from whatever the person carrying them hopes to say."
                       }
                     },
                     "Description": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": "Flowers carried as a decoration."
+                        "0": "Purple roses crowd together above a neatly bound cluster of stems. Their rich color makes a deliberate impression, quite apart from whatever the person carrying them hopes to say."
                       }
                     },
                     "Identified": {
@@ -74197,13 +74197,13 @@
                     "DescIdentified": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": "Flowers carried as a decoration."
+                        "0": "Red roses stand closely together above their carefully trimmed stems. Their familiar color makes certain interpretations easy, though a thoughtful recipient may still ask about the occasion."
                       }
                     },
                     "Description": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": "Flowers carried as a decoration."
+                        "0": "Red roses stand closely together above their carefully trimmed stems. Their familiar color makes certain interpretations easy, though a thoughtful recipient may still ask about the occasion."
                       }
                     },
                     "Identified": {
@@ -74322,13 +74322,13 @@
                     "DescIdentified": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": "Flowers carried as a decoration."
+                        "0": "A bundle of roses has been gathered and tied with care around the stems. Their crowded blooms turn an ordinary gift into something that may require a more considered explanation."
                       }
                     },
                     "Description": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": "Flowers carried as a decoration."
+                        "0": "A bundle of roses has been gathered and tied with care around the stems. Their crowded blooms turn an ordinary gift into something that may require a more considered explanation."
                       }
                     },
                     "Identified": {
@@ -74447,13 +74447,13 @@
                     "DescIdentified": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": "Flowers carried as a decoration."
+                        "0": "These tulips have been gathered into a tidy, upright bundle. Their uncomplicated arrangement lets the colors do the talking, sparing the giver at least one part of the conversation."
                       }
                     },
                     "Description": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": "Flowers carried as a decoration."
+                        "0": "These tulips have been gathered into a tidy, upright bundle. Their uncomplicated arrangement lets the colors do the talking, sparing the giver at least one part of the conversation."
                       }
                     },
                     "Identified": {
@@ -77744,13 +77744,13 @@
                     "DescIdentified": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": "A folding fan carried as a personal accessory."
+                        "0": "Flowers spread across the leaves of this folding fan, disappearing into a neat stack when it closes. It is as useful for punctuating a conversation as it is for finding a little relief from a crowded room."
                       }
                     },
                     "Description": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": "A folding fan carried as a personal accessory."
+                        "0": "Flowers spread across the leaves of this folding fan, disappearing into a neat stack when it closes. It is as useful for punctuating a conversation as it is for finding a little relief from a crowded room."
                       }
                     },
                     "Identified": {
@@ -78119,13 +78119,13 @@
                     "DescIdentified": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": "A folding fan carried as a personal accessory."
+                        "0": "The white leaves of this fan conceal their supporting ribs until held against the light. Its quiet finish lets the gesture of opening it make more of an impression than any painted decoration."
                       }
                     },
                     "Description": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": "A folding fan carried as a personal accessory."
+                        "0": "The white leaves of this fan conceal their supporting ribs until held against the light. Its quiet finish lets the gesture of opening it make more of an impression than any painted decoration."
                       }
                     },
                     "Identified": {
@@ -79244,13 +79244,13 @@
                     "DescIdentified": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": "A handheld umbrella for shelter from the weather."
+                        "0": "A black umbrella whose plain canopy hides the practical arrangement of its ribs. In a crowded street, it offers a small patch of privacy along with shelter from the weather."
                       }
                     },
                     "Description": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": "A handheld umbrella for shelter from the weather."
+                        "0": "A black umbrella whose plain canopy hides the practical arrangement of its ribs. In a crowded street, it offers a small patch of privacy along with shelter from the weather."
                       }
                     },
                     "Identified": {
@@ -79369,13 +79369,13 @@
                     "DescIdentified": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": "A handheld umbrella for shelter from the weather."
+                        "0": "A dragon winds across this umbrella's canopy, its shape broken into neat sections when the ribs fold shut. Opened in a rainy street, it lends an ordinary journey a little unnecessary grandeur."
                       }
                     },
                     "Description": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": "A handheld umbrella for shelter from the weather."
+                        "0": "A dragon winds across this umbrella's canopy, its shape broken into neat sections when the ribs fold shut. Opened in a rainy street, it lends an ordinary journey a little unnecessary grandeur."
                       }
                     },
                     "Identified": {
@@ -79494,13 +79494,13 @@
                     "DescIdentified": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": "A handheld umbrella for shelter from the weather."
+                        "0": "The exposed frame of this umbrella has an almost architectural neatness. Without a complete canopy to soften its outline, every slender rib displays the patient work usually hidden above the owner's head."
                       }
                     },
                     "Description": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": "A handheld umbrella for shelter from the weather."
+                        "0": "The exposed frame of this umbrella has an almost architectural neatness. Without a complete canopy to soften its outline, every slender rib displays the patient work usually hidden above the owner's head."
                       }
                     },
                     "Identified": {
@@ -79619,13 +79619,13 @@
                     "DescIdentified": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": "A handheld umbrella for shelter from the weather."
+                        "0": "A yellow canopy gives this umbrella a cheerful visibility in poor weather. It is the sort of accessory that can make a sodden street feel briefly like somebody planned the colors."
                       }
                     },
                     "Description": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": "A handheld umbrella for shelter from the weather."
+                        "0": "A yellow canopy gives this umbrella a cheerful visibility in poor weather. It is the sort of accessory that can make a sodden street feel briefly like somebody planned the colors."
                       }
                     },
                     "Identified": {

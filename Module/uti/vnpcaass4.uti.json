@@ -111,13 +111,13 @@
   "DescIdentified": {
     "type": "cexolocstring",
     "value": {
-      "0": "Body armor worn over the torso."
+      "0": "Dark panels and carefully dressed edges keep this Sith assassin's armor unobtrusive in poor light. Its closures lie close beneath the outer layers, leaving little to catch on a narrow passage at an inconvenient moment."
     }
   },
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "Body armor worn over the torso."
+      "0": "Dark panels and carefully dressed edges keep this Sith assassin's armor unobtrusive in poor light. Its closures lie close beneath the outer layers, leaving little to catch on a narrow passage at an inconvenient moment."
     }
   },
   "Identified": {

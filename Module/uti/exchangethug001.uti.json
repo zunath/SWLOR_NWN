@@ -111,13 +111,13 @@
   "DescIdentified": {
     "type": "cexolocstring",
     "value": {
-      "0": "Clothing worn as a complete outfit."
+      "0": "A hired tough's outfit with a serviceable collar and pockets that have seen better treatment than the sleeves. On an Exchange errand, looking expensive can be less useful than looking willing."
     }
   },
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "Clothing worn as a complete outfit."
+      "0": "A hired tough's outfit with a serviceable collar and pockets that have seen better treatment than the sleeves. On an Exchange errand, looking expensive can be less useful than looking willing."
     }
   },
   "Identified": {

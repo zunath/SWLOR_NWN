@@ -111,13 +111,13 @@
   "DescIdentified": {
     "type": "cexolocstring",
     "value": {
-      "0": "Body armor worn over the torso."
+      "0": "The clean lines of this Sith officer's armor are interrupted only by disciplined service fittings. Its severe finish makes the wearer look like someone who expects a report, even before anyone has been asked to provide one."
     }
   },
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "Body armor worn over the torso."
+      "0": "The clean lines of this Sith officer's armor are interrupted only by disciplined service fittings. Its severe finish makes the wearer look like someone who expects a report, even before anyone has been asked to provide one."
     }
   },
   "Identified": {

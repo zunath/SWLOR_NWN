@@ -111,13 +111,13 @@
   "DescIdentified": {
     "type": "cexolocstring",
     "value": {
-      "0": "Clothing worn as a complete outfit."
+      "0": "The shoulders of this tough's outfit have been let out and sewn back several times. It looks assembled for someone expected to loom nearby while somebody else explains the terms."
     }
   },
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "Clothing worn as a complete outfit."
+      "0": "The shoulders of this tough's outfit have been let out and sewn back several times. It looks assembled for someone expected to loom nearby while somebody else explains the terms."
     }
   },
   "Identified": {

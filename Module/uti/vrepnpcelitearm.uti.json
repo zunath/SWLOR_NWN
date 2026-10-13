@@ -111,13 +111,13 @@
   "DescIdentified": {
     "type": "cexolocstring",
     "value": {
-      "0": "Body armor worn over the torso."
+      "0": "A crisp service finish conceals the repeated adjustments of this Republic elite armor. Its reputation is carried partly by its workmanship and partly by the standards its wearer will be expected to maintain."
     }
   },
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "Body armor worn over the torso."
+      "0": "A crisp service finish conceals the repeated adjustments of this Republic elite armor. Its reputation is carried partly by its workmanship and partly by the standards its wearer will be expected to maintain."
     }
   },
   "Identified": {

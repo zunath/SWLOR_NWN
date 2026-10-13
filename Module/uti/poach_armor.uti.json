@@ -111,13 +111,13 @@
   "DescIdentified": {
     "type": "cexolocstring",
     "value": {
-      "0": "Body armor worn over the torso."
+      "0": "Dull panels and close-set straps give this armor little to catch on a branch. Its owner appears to have chosen every repair with the intention of getting back into the wild before anyone noticed the absence."
     }
   },
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "Body armor worn over the torso."
+      "0": "Dull panels and close-set straps give this armor little to catch on a branch. Its owner appears to have chosen every repair with the intention of getting back into the wild before anyone noticed the absence."
     }
   },
   "Identified": {

@@ -27,13 +27,13 @@
   "DescIdentified": {
     "type": "cexolocstring",
     "value": {
-      "0": "A fishing rod for use at a fishing spot."
+      "0": "The bindings of this rod have been worked into a calm, uninterrupted pattern. Its quiet finish seems intended for the angler who counts a peaceful hour beside the water as part of the catch."
     }
   },
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "A fishing rod for use at a fishing spot."
+      "0": "The bindings of this rod have been worked into a calm, uninterrupted pattern. Its quiet finish seems intended for the angler who counts a peaceful hour beside the water as part of the catch."
     }
   },
   "Identified": {

@@ -6200,13 +6200,13 @@
                     "DescIdentified": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": "Body armor worn over the torso."
+                        "0": "Small fittings and compact plates divide this armor into a surprisingly intricate whole. Its smith seems to have enjoyed making substantial protection out of components that first appear almost insignificant."
                       }
                     },
                     "Description": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": "Body armor worn over the torso."
+                        "0": "Small fittings and compact plates divide this armor into a surprisingly intricate whole. Its smith seems to have enjoyed making substantial protection out of components that first appear almost insignificant."
                       }
                     },
                     "Identified": {
@@ -6603,13 +6603,13 @@
                     "DescIdentified": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": "Body armor worn over the torso."
+                        "0": "Broad, quiet surfaces give this armor the air of a sentry already at its post. A closer look reveals the small service marks and careful adjustments that keep such a watch from being merely ornamental."
                       }
                     },
                     "Description": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": "Body armor worn over the torso."
+                        "0": "Broad, quiet surfaces give this armor the air of a sentry already at its post. A closer look reveals the small service marks and careful adjustments that keep such a watch from being merely ornamental."
                       }
                     },
                     "Identified": {
@@ -7006,13 +7006,13 @@
                     "DescIdentified": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": "A tunic worn over the torso."
+                        "0": "Careful tailoring gives this tunic a composed, almost courtly silhouette. Its practical lining suggests an owner unwilling to leave every difficult task to an attendant."
                       }
                     },
                     "Description": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": "A tunic worn over the torso."
+                        "0": "Careful tailoring gives this tunic a composed, almost courtly silhouette. Its practical lining suggests an owner unwilling to leave every difficult task to an attendant."
                       }
                     },
                     "Identified": {
@@ -7471,13 +7471,13 @@
                     "DescIdentified": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": "A tunic worn over the torso."
+                        "0": "A reserved tunic whose interest lies in the details: concealed ties, deliberate folds, and small patterns that only become visible close up. Its maker seems to have understood the value of looking unremarkable from a distance."
                       }
                     },
                     "Description": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": "A tunic worn over the torso."
+                        "0": "A reserved tunic whose interest lies in the details: concealed ties, deliberate folds, and small patterns that only become visible close up. Its maker seems to have understood the value of looking unremarkable from a distance."
                       }
                     },
                     "Identified": {
@@ -7936,13 +7936,13 @@
                     "DescIdentified": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": "A tunic worn over the torso."
+                        "0": "This tunic's strong lines are softened by a carefully fitted lining. It holds an imposing shape without making every movement look like a negotiation with the fabric."
                       }
                     },
                     "Description": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": "A tunic worn over the torso."
+                        "0": "This tunic's strong lines are softened by a carefully fitted lining. It holds an imposing shape without making every movement look like a negotiation with the fabric."
                       }
                     },
                     "Identified": {
@@ -8401,13 +8401,13 @@
                     "DescIdentified": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": "A tunic worn over the torso."
+                        "0": "This tunic's unconventional fastenings work better than their untidy arrangement suggests. It belongs to the sort of wardrobe assembled according to experience rather than an approved list."
                       }
                     },
                     "Description": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": "A tunic worn over the torso."
+                        "0": "This tunic's unconventional fastenings work better than their untidy arrangement suggests. It belongs to the sort of wardrobe assembled according to experience rather than an approved list."
                       }
                     },
                     "Identified": {
@@ -16448,13 +16448,13 @@
                     "DescIdentified": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": "A pair of gloves worn over the hands."
+                        "0": "Broad cuffs and a clean line of stitching give these gloves a decisive appearance. Their palms are plainer, made for the business the hands must actually perform."
                       }
                     },
                     "Description": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": "A pair of gloves worn over the hands."
+                        "0": "Broad cuffs and a clean line of stitching give these gloves a decisive appearance. Their palms are plainer, made for the business the hands must actually perform."
                       }
                     },
                     "Identified": {
@@ -16745,13 +16745,13 @@
                     "DescIdentified": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": "A pair of gloves worn over the hands."
+                        "0": "These gloves have been adjusted around the fingers in ways that depart from a standard pattern. Their owner knew what felt right and apparently felt little obligation to explain the changes to a quartermaster."
                       }
                     },
                     "Description": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": "A pair of gloves worn over the hands."
+                        "0": "These gloves have been adjusted around the fingers in ways that depart from a standard pattern. Their owner knew what felt right and apparently felt little obligation to explain the changes to a quartermaster."
                       }
                     },
                     "Identified": {
@@ -17042,13 +17042,13 @@
                     "DescIdentified": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": "A pair of gloves worn over the hands."
+                        "0": "The neat cuffs of these gloves retain their shape despite the wear in their palms. They are well suited to a wearer who wishes to keep an air of formality while getting their hands dirty."
                       }
                     },
                     "Description": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": "A pair of gloves worn over the hands."
+                        "0": "The neat cuffs of these gloves retain their shape despite the wear in their palms. They are well suited to a wearer who wishes to keep an air of formality while getting their hands dirty."
                       }
                     },
                     "Identified": {
@@ -17339,13 +17339,13 @@
                     "DescIdentified": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": "A pair of gloves worn over the hands."
+                        "0": "Fine marks are hidden beneath the turned-back cuffs of these gloves. They were made for a wearer's own contemplation, not for the audience that impressive clothing sometimes gathers."
                       }
                     },
                     "Description": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": "A pair of gloves worn over the hands."
+                        "0": "Fine marks are hidden beneath the turned-back cuffs of these gloves. They were made for a wearer's own contemplation, not for the audience that impressive clothing sometimes gathers."
                       }
                     },
                     "Identified": {
@@ -17720,13 +17720,13 @@
                     "DescIdentified": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": "Body armor worn over the torso."
+                        "0": "Broad armored panels and substantial mounting lugs give this droid torso shell its heavy, industrial outline. The straightforward assembly retains the small tool marks of a build made to earn its keep."
                       }
                     },
                     "Description": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": "Body armor worn over the torso."
+                        "0": "Broad armored panels and substantial mounting lugs give this droid torso shell its heavy, industrial outline. The straightforward assembly retains the small tool marks of a build made to earn its keep."
                       }
                     },
                     "Identified": {
@@ -18154,13 +18154,13 @@
                     "DescIdentified": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": "Body armor worn over the torso."
+                        "0": "Broad armored panels and substantial mounting lugs give this droid torso shell its heavy, industrial outline. Neatly finished seats and consistent fastenings show a pattern refined beyond its earliest workshop version."
                       }
                     },
                     "Description": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": "Body armor worn over the torso."
+                        "0": "Broad armored panels and substantial mounting lugs give this droid torso shell its heavy, industrial outline. Neatly finished seats and consistent fastenings show a pattern refined beyond its earliest workshop version."
                       }
                     },
                     "Identified": {
@@ -18588,13 +18588,13 @@
                     "DescIdentified": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": "Body armor worn over the torso."
+                        "0": "Closely fitted panels leave this light droid shell a spare, compact outline around its chassis mounts. The straightforward assembly retains the small tool marks of a build made to earn its keep."
                       }
                     },
                     "Description": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": "Body armor worn over the torso."
+                        "0": "Closely fitted panels leave this light droid shell a spare, compact outline around its chassis mounts. The straightforward assembly retains the small tool marks of a build made to earn its keep."
                       }
                     },
                     "Identified": {
@@ -19053,13 +19053,13 @@
                     "DescIdentified": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": "Body armor worn over the torso."
+                        "0": "Closely fitted panels leave this light droid shell a spare, compact outline around its chassis mounts. Neatly finished seats and consistent fastenings show a pattern refined beyond its earliest workshop version."
                       }
                     },
                     "Description": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": "Body armor worn over the torso."
+                        "0": "Closely fitted panels leave this light droid shell a spare, compact outline around its chassis mounts. Neatly finished seats and consistent fastenings show a pattern refined beyond its earliest workshop version."
                       }
                     },
                     "Identified": {
@@ -23781,13 +23781,13 @@
                     "DescIdentified": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": "A pair of gloves worn over the hands."
+                        "0": "This slim droid forearm assembly encloses its fittings beneath carefully seated panels, leaving the working joints clear. The straightforward assembly retains the small tool marks of a build made to earn its keep."
                       }
                     },
                     "Description": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": "A pair of gloves worn over the hands."
+                        "0": "This slim droid forearm assembly encloses its fittings beneath carefully seated panels, leaving the working joints clear. The straightforward assembly retains the small tool marks of a build made to earn its keep."
                       }
                     },
                     "Identified": {
@@ -23985,13 +23985,13 @@
                     "DescIdentified": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": "A pair of gloves worn over the hands."
+                        "0": "This slim droid forearm assembly encloses its fittings beneath carefully seated panels, leaving the working joints clear. Neatly finished seats and consistent fastenings show a pattern refined beyond its earliest workshop version."
                       }
                     },
                     "Description": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": "A pair of gloves worn over the hands."
+                        "0": "This slim droid forearm assembly encloses its fittings beneath carefully seated panels, leaving the working joints clear. Neatly finished seats and consistent fastenings show a pattern refined beyond its earliest workshop version."
                       }
                     },
                     "Identified": {
@@ -24942,13 +24942,13 @@
                     "DescIdentified": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": "Body armor worn over the torso."
+                        "0": "Broad armored panels and substantial mounting lugs give this droid torso shell its heavy, industrial outline. The service covers fit with the assurance of a design that has already taught its maker which details matter."
                       }
                     },
                     "Description": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": "Body armor worn over the torso."
+                        "0": "Broad armored panels and substantial mounting lugs give this droid torso shell its heavy, industrial outline. The service covers fit with the assurance of a design that has already taught its maker which details matter."
                       }
                     },
                     "Identified": {
@@ -25376,13 +25376,13 @@
                     "DescIdentified": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": "Body armor worn over the torso."
+                        "0": "Closely fitted panels leave this light droid shell a spare, compact outline around its chassis mounts. The service covers fit with the assurance of a design that has already taught its maker which details matter."
                       }
                     },
                     "Description": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": "Body armor worn over the torso."
+                        "0": "Closely fitted panels leave this light droid shell a spare, compact outline around its chassis mounts. The service covers fit with the assurance of a design that has already taught its maker which details matter."
                       }
                     },
                     "Identified": {
@@ -28481,13 +28481,13 @@
                     "DescIdentified": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": "A pair of gloves worn over the hands."
+                        "0": "This slim droid forearm assembly encloses its fittings beneath carefully seated panels, leaving the working joints clear. The service covers fit with the assurance of a design that has already taught its maker which details matter."
                       }
                     },
                     "Description": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": "A pair of gloves worn over the hands."
+                        "0": "This slim droid forearm assembly encloses its fittings beneath carefully seated panels, leaving the working joints clear. The service covers fit with the assurance of a design that has already taught its maker which details matter."
                       }
                     },
                     "Identified": {
@@ -28893,13 +28893,13 @@
                     "DescIdentified": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": "Body armor worn over the torso."
+                        "0": "Broad armored panels and substantial mounting lugs give this droid torso shell its heavy, industrial outline. The service covers fit with the assurance of a design that has already taught its maker which details matter. Revised fitting marks distinguish this assembly from the standard production pattern."
                       }
                     },
                     "Description": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": "Body armor worn over the torso."
+                        "0": "Broad armored panels and substantial mounting lugs give this droid torso shell its heavy, industrial outline. The service covers fit with the assurance of a design that has already taught its maker which details matter. Revised fitting marks distinguish this assembly from the standard production pattern."
                       }
                     },
                     "Identified": {
@@ -29327,13 +29327,13 @@
                     "DescIdentified": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": "Body armor worn over the torso."
+                        "0": "Closely fitted panels leave this light droid shell a spare, compact outline around its chassis mounts. The service covers fit with the assurance of a design that has already taught its maker which details matter. Revised fitting marks distinguish this assembly from the standard production pattern."
                       }
                     },
                     "Description": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": "Body armor worn over the torso."
+                        "0": "Closely fitted panels leave this light droid shell a spare, compact outline around its chassis mounts. The service covers fit with the assurance of a design that has already taught its maker which details matter. Revised fitting marks distinguish this assembly from the standard production pattern."
                       }
                     },
                     "Identified": {
@@ -32113,13 +32113,13 @@
                     "DescIdentified": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": "A pair of gloves worn over the hands."
+                        "0": "This slim droid forearm assembly encloses its fittings beneath carefully seated panels, leaving the working joints clear. The service covers fit with the assurance of a design that has already taught its maker which details matter. Revised fitting marks distinguish this assembly from the standard production pattern."
                       }
                     },
                     "Description": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": "A pair of gloves worn over the hands."
+                        "0": "This slim droid forearm assembly encloses its fittings beneath carefully seated panels, leaving the working joints clear. The service covers fit with the assurance of a design that has already taught its maker which details matter. Revised fitting marks distinguish this assembly from the standard production pattern."
                       }
                     },
                     "Identified": {

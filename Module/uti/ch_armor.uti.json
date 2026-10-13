@@ -111,13 +111,13 @@
   "DescIdentified": {
     "type": "cexolocstring",
     "value": {
-      "0": "Body armor worn over the torso."
+      "0": "The plates of this breastpiece overlap in an unsettling, asymmetrical pattern. Its smith made every joint fit, but appears to have taken particular pleasure in making none of them look orderly."
     }
   },
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "Body armor worn over the torso."
+      "0": "The plates of this breastpiece overlap in an unsettling, asymmetrical pattern. Its smith made every joint fit, but appears to have taken particular pleasure in making none of them look orderly."
     }
   },
   "Identified": {

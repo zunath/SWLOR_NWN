@@ -111,13 +111,13 @@
   "DescIdentified": {
     "type": "cexolocstring",
     "value": {
-      "0": "Body armor worn over the torso."
+      "0": "The outer plates of this harness bear shallow, oblique scars. Its wearer seems to have spent a great deal of time among hard stone and flying fragments, with little interest in polishing away the evidence."
     }
   },
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "Body armor worn over the torso."
+      "0": "The outer plates of this harness bear shallow, oblique scars. Its wearer seems to have spent a great deal of time among hard stone and flying fragments, with little interest in polishing away the evidence."
     }
   },
   "Identified": {

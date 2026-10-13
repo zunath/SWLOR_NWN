@@ -111,13 +111,13 @@
   "DescIdentified": {
     "type": "cexolocstring",
     "value": {
-      "0": "Body armor worn over the torso."
+      "0": "Broad straps spread the weight of a crowded loadout across this harness. Its buckles have been turned inward to avoid catching on the equipment that always seems to be piled around a bombardment position."
     }
   },
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "Body armor worn over the torso."
+      "0": "Broad straps spread the weight of a crowded loadout across this harness. Its buckles have been turned inward to avoid catching on the equipment that always seems to be piled around a bombardment position."
     }
   },
   "Identified": {

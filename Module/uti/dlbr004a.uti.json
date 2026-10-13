@@ -27,13 +27,13 @@
   "DescIdentified": {
     "type": "cexolocstring",
     "value": {
-      "0": "A pair of gloves worn over the hands."
+      "0": "This slim droid forearm assembly encloses its fittings beneath carefully seated panels, leaving the working joints clear. The inner fittings are as carefully dressed as the visible panels, evidence of workmanship no customer should have to discover through a fault. Revised fitting marks distinguish this assembly from the standard production pattern."
     }
   },
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "A pair of gloves worn over the hands."
+      "0": "This slim droid forearm assembly encloses its fittings beneath carefully seated panels, leaving the working joints clear. The inner fittings are as carefully dressed as the visible panels, evidence of workmanship no customer should have to discover through a fault. Revised fitting marks distinguish this assembly from the standard production pattern."
     }
   },
   "Identified": {

@@ -27,13 +27,13 @@
   "DescIdentified": {
     "type": "cexolocstring",
     "value": {
-      "0": "A pair of gloves worn over the hands."
+      "0": "These gloves have been adjusted around the fingers in ways that depart from a standard pattern. Their owner knew what felt right and apparently felt little obligation to explain the changes to a quartermaster."
     }
   },
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "A pair of gloves worn over the hands."
+      "0": "These gloves have been adjusted around the fingers in ways that depart from a standard pattern. Their owner knew what felt right and apparently felt little obligation to explain the changes to a quartermaster."
     }
   },
   "Identified": {

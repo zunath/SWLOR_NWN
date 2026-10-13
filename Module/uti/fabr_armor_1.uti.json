@@ -111,13 +111,13 @@
   "DescIdentified": {
     "type": "cexolocstring",
     "value": {
-      "0": "A tunic worn over the torso."
+      "0": "A plain cloth tunic made with the steady economy of a working tailor. The weave is easy to follow, leaving little doubt about where a future repair will need to begin."
     }
   },
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "A tunic worn over the torso."
+      "0": "A plain cloth tunic made with the steady economy of a working tailor. The weave is easy to follow, leaving little doubt about where a future repair will need to begin."
     }
   },
   "Identified": {

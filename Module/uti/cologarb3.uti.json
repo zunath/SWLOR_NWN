@@ -111,13 +111,13 @@
   "DescIdentified": {
     "type": "cexolocstring",
     "value": {
-      "0": "Body armor worn over the torso."
+      "0": "Protective sections have been worked into a colonist's everyday clothing. Veles offers opportunity, but the additional weight suggests that its wearer does not expect opportunity to provide all of their security."
     }
   },
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "Body armor worn over the torso."
+      "0": "Protective sections have been worked into a colonist's everyday clothing. Veles offers opportunity, but the additional weight suggests that its wearer does not expect opportunity to provide all of their security."
     }
   },
   "Identified": {

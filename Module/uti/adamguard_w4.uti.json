@@ -27,13 +27,13 @@
   "DescIdentified": {
     "type": "cexolocstring",
     "value": {
-      "0": "A pair of gloves worn over the hands."
+      "0": "These gloves have been patched where metal edges repeatedly cut the palms. The repairs are ugly, but a scavenger hauling another load out of CZ-220 has little reason to admire the stitching."
     }
   },
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "A pair of gloves worn over the hands."
+      "0": "These gloves have been patched where metal edges repeatedly cut the palms. The repairs are ugly, but a scavenger hauling another load out of CZ-220 has little reason to admire the stitching."
     }
   },
   "Identified": {

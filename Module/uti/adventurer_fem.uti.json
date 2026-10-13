@@ -111,13 +111,13 @@
   "DescIdentified": {
     "type": "cexolocstring",
     "value": {
-      "0": "Clothing worn as a complete outfit."
+      "0": "A traveller's outfit with space for a few necessities and no particular allegiance sewn into it. The cut is common in starports, where a practical wardrobe has to survive both a long passage and whatever waits at the other end."
     }
   },
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "Clothing worn as a complete outfit."
+      "0": "A traveller's outfit with space for a few necessities and no particular allegiance sewn into it. The cut is common in starports, where a practical wardrobe has to survive both a long passage and whatever waits at the other end."
     }
   },
   "Identified": {

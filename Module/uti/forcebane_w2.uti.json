@@ -111,13 +111,13 @@
   "DescIdentified": {
     "type": "cexolocstring",
     "value": {
-      "0": "Body armor worn over the torso."
+      "0": "Heavy plates meet over the breast of this armor like the faces of an anvil. The smith has left a small, deliberate hammer impression at the center, a signature that needs no name."
     }
   },
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "Body armor worn over the torso."
+      "0": "Heavy plates meet over the breast of this armor like the faces of an anvil. The smith has left a small, deliberate hammer impression at the center, a signature that needs no name."
     }
   },
   "Identified": {

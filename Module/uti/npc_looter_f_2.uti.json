@@ -111,13 +111,13 @@
   "DescIdentified": {
     "type": "cexolocstring",
     "value": {
-      "0": "Clothing worn as a complete outfit."
+      "0": "A rough outfit whose alterations owe more to necessity than fashion. Its owner seems to have taken care of the useful pockets while allowing the rest to acquire whatever reputation the road supplied."
     }
   },
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "Clothing worn as a complete outfit."
+      "0": "A rough outfit whose alterations owe more to necessity than fashion. Its owner seems to have taken care of the useful pockets while allowing the rest to acquire whatever reputation the road supplied."
     }
   },
   "Identified": {

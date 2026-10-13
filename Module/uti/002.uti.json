@@ -111,13 +111,13 @@
   "DescIdentified": {
     "type": "cexolocstring",
     "value": {
-      "0": "Body armor worn over the torso."
+      "0": "Dust collects around the simple plates of this militia armor. Its inexpensive fittings tell the familiar Tatooine story of people expected to stand a watch without the supply train of a proper army."
     }
   },
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "Body armor worn over the torso."
+      "0": "Dust collects around the simple plates of this militia armor. Its inexpensive fittings tell the familiar Tatooine story of people expected to stand a watch without the supply train of a proper army."
     }
   },
   "Identified": {

@@ -111,13 +111,13 @@
   "DescIdentified": {
     "type": "cexolocstring",
     "value": {
-      "0": "Body armor worn over the torso."
+      "0": "The panels of this Sith saboteur's armor lie close over an assortment of practical mountings. Its less visible fittings have the purposeful arrangement of equipment expected to accompany delicate work in inconvenient places."
     }
   },
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "Body armor worn over the torso."
+      "0": "The panels of this Sith saboteur's armor lie close over an assortment of practical mountings. Its less visible fittings have the purposeful arrangement of equipment expected to accompany delicate work in inconvenient places."
     }
   },
   "Identified": {

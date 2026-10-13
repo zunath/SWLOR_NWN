@@ -111,13 +111,13 @@
   "DescIdentified": {
     "type": "cexolocstring",
     "value": {
-      "0": "Body armor worn over the torso."
+      "0": "Broad, quiet surfaces give this armor the air of a sentry already at its post. A closer look reveals the small service marks and careful adjustments that keep such a watch from being merely ornamental."
     }
   },
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "Body armor worn over the torso."
+      "0": "Broad, quiet surfaces give this armor the air of a sentry already at its post. A closer look reveals the small service marks and careful adjustments that keep such a watch from being merely ornamental."
     }
   },
   "Identified": {

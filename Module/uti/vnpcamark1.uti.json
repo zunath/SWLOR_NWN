@@ -111,13 +111,13 @@
   "DescIdentified": {
     "type": "cexolocstring",
     "value": {
-      "0": "Body armor worn over the torso."
+      "0": "The shoulder fitting of this Sith marksman's armor has been adjusted with particular care. It records the practical asymmetry of a fighter who spends a great deal of time waiting behind the same weapon."
     }
   },
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "Body armor worn over the torso."
+      "0": "The shoulder fitting of this Sith marksman's armor has been adjusted with particular care. It records the practical asymmetry of a fighter who spends a great deal of time waiting behind the same weapon."
     }
   },
   "Identified": {

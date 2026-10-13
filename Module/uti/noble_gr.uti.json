@@ -111,13 +111,13 @@
   "DescIdentified": {
     "type": "cexolocstring",
     "value": {
-      "0": "Body armor worn over the torso."
+      "0": "Grey fabric and quiet tailoring give this formal outfit an expensive restraint. The seams are almost invisible, the sort of work a patron notices only after discovering how comfortably it sits through a long reception."
     }
   },
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "Body armor worn over the torso."
+      "0": "Grey fabric and quiet tailoring give this formal outfit an expensive restraint. The seams are almost invisible, the sort of work a patron notices only after discovering how comfortably it sits through a long reception."
     }
   },
   "Identified": {

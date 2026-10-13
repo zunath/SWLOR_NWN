@@ -111,13 +111,13 @@
   "DescIdentified": {
     "type": "cexolocstring",
     "value": {
-      "0": "A tunic worn over the torso."
+      "0": "This tunic combines a formal outline with unusually careful interior work. Every visible fold seems deliberate, as though the tailor expected it to represent its wearer before a word was spoken."
     }
   },
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "A tunic worn over the torso."
+      "0": "This tunic combines a formal outline with unusually careful interior work. Every visible fold seems deliberate, as though the tailor expected it to represent its wearer before a word was spoken."
     }
   },
   "Identified": {

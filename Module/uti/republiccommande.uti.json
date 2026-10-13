@@ -111,13 +111,13 @@
   "DescIdentified": {
     "type": "cexolocstring",
     "value": {
-      "0": "A uniform worn as bodywear."
+      "0": "A Republic commander's uniform, its formal cut sharpened by the placement of insignia and equipment fittings. It presents the person expected to decide where everyone else will stand when the orders become difficult."
     }
   },
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "A uniform worn as bodywear."
+      "0": "A Republic commander's uniform, its formal cut sharpened by the placement of insignia and equipment fittings. It presents the person expected to decide where everyone else will stand when the orders become difficult."
     }
   },
   "Identified": {

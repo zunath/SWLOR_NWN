@@ -111,13 +111,13 @@
   "DescIdentified": {
     "type": "cexolocstring",
     "value": {
-      "0": "Body armor worn over the torso."
+      "0": "A carefully maintained finish distinguishes this Tunnel Drake armor from the rougher equipment of the rank and file. The fittings remain practical, suggesting an owner who wants authority noticed without becoming helpless beneath its decoration."
     }
   },
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "Body armor worn over the torso."
+      "0": "A carefully maintained finish distinguishes this Tunnel Drake armor from the rougher equipment of the rank and file. The fittings remain practical, suggesting an owner who wants authority noticed without becoming helpless beneath its decoration."
     }
   },
   "Identified": {

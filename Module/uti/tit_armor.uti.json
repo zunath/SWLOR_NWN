@@ -111,13 +111,13 @@
   "DescIdentified": {
     "type": "cexolocstring",
     "value": {
-      "0": "Body armor worn over the torso."
+      "0": "The broad plates of this armor have an imposing, almost architectural outline. Beneath them, patient fitting work makes room for a living wearer rather than simply building a monument around one."
     }
   },
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "Body armor worn over the torso."
+      "0": "The broad plates of this armor have an imposing, almost architectural outline. Beneath them, patient fitting work makes room for a living wearer rather than simply building a monument around one."
     }
   },
   "Identified": {

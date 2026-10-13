@@ -111,13 +111,13 @@
   "DescIdentified": {
     "type": "cexolocstring",
     "value": {
-      "0": "Clothing worn as a complete outfit."
+      "0": "Reinforcement has been worked into the seams of this Republic service outfit. It retains the recognizable cut of the uniform while acknowledging that a parade ground is not where every day of duty ends."
     }
   },
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "Clothing worn as a complete outfit."
+      "0": "Reinforcement has been worked into the seams of this Republic service outfit. It retains the recognizable cut of the uniform while acknowledging that a parade ground is not where every day of duty ends."
     }
   },
   "Identified": {

@@ -111,13 +111,13 @@
   "DescIdentified": {
     "type": "cexolocstring",
     "value": {
-      "0": "Body armor worn over the torso."
+      "0": "This Tunnel Drake captain's armor has an orderly fit and enough distinctive finish to be recognized in a crowded passage. Its useful mounts remain close at hand, because giving orders is not always enough to settle a disagreement."
     }
   },
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "Body armor worn over the torso."
+      "0": "This Tunnel Drake captain's armor has an orderly fit and enough distinctive finish to be recognized in a crowded passage. Its useful mounts remain close at hand, because giving orders is not always enough to settle a disagreement."
     }
   },
   "Identified": {

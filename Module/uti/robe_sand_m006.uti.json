@@ -111,13 +111,13 @@
   "DescIdentified": {
     "type": "cexolocstring",
     "value": {
-      "0": "Robes worn over the body."
+      "0": "These robes recall Bastila's disciplined, fitted style without relying on lavish decoration. The sleeves and inner bindings are arranged to remain orderly in motion, keeping a composed appearance from becoming a fragile one."
     }
   },
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "Robes worn over the body."
+      "0": "These robes recall Bastila's disciplined, fitted style without relying on lavish decoration. The sleeves and inner bindings are arranged to remain orderly in motion, keeping a composed appearance from becoming a fragile one."
     }
   },
   "Identified": {

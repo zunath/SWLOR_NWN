@@ -111,13 +111,13 @@
   "DescIdentified": {
     "type": "cexolocstring",
     "value": {
-      "0": "Clothing worn as a complete outfit."
+      "0": "This light travelling outfit folds into a modest space in a kit bag. Its easily reached fastenings suggest a garment designed for borrowed rooms, short stopovers, and departures that do not always happen on schedule."
     }
   },
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "Clothing worn as a complete outfit."
+      "0": "This light travelling outfit folds into a modest space in a kit bag. Its easily reached fastenings suggest a garment designed for borrowed rooms, short stopovers, and departures that do not always happen on schedule."
     }
   },
   "Identified": {

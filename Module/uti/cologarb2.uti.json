@@ -111,13 +111,13 @@
   "DescIdentified": {
     "type": "cexolocstring",
     "value": {
-      "0": "Body armor worn over the torso."
+      "0": "A colonist's practical outfit, made for the days between arrival and the comfortable life promised in a recruitment notice. In Veles, clothes like these belong as readily to an established worker as to someone still looking for their first room."
     }
   },
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "Body armor worn over the torso."
+      "0": "A colonist's practical outfit, made for the days between arrival and the comfortable life promised in a recruitment notice. In Veles, clothes like these belong as readily to an established worker as to someone still looking for their first room."
     }
   },
   "Identified": {

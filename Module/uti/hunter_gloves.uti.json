@@ -27,13 +27,13 @@
   "DescIdentified": {
     "type": "cexolocstring",
     "value": {
-      "0": "A pair of gloves worn over the hands."
+      "0": "The seams of these gloves have been flattened wherever they might scrape against brush or a weapon grip. Their exterior has the dull, patient wear of equipment carried through more than one quiet hunt."
     }
   },
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "A pair of gloves worn over the hands."
+      "0": "The seams of these gloves have been flattened wherever they might scrape against brush or a weapon grip. Their exterior has the dull, patient wear of equipment carried through more than one quiet hunt."
     }
   },
   "Identified": {

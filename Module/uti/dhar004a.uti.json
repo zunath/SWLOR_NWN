@@ -111,13 +111,13 @@
   "DescIdentified": {
     "type": "cexolocstring",
     "value": {
-      "0": "Body armor worn over the torso."
+      "0": "Broad armored panels and substantial mounting lugs give this droid torso shell its heavy, industrial outline. The inner fittings are as carefully dressed as the visible panels, evidence of workmanship no customer should have to discover through a fault. Revised fitting marks distinguish this assembly from the standard production pattern."
     }
   },
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "Body armor worn over the torso."
+      "0": "Broad armored panels and substantial mounting lugs give this droid torso shell its heavy, industrial outline. The inner fittings are as carefully dressed as the visible panels, evidence of workmanship no customer should have to discover through a fault. Revised fitting marks distinguish this assembly from the standard production pattern."
     }
   },
   "Identified": {

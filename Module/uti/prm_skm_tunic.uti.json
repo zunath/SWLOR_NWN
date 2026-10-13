@@ -111,13 +111,13 @@
   "DescIdentified": {
     "type": "cexolocstring",
     "value": {
-      "0": "A tunic worn over the torso."
+      "0": "This tunic's unconventional fastenings work better than their untidy arrangement suggests. It belongs to the sort of wardrobe assembled according to experience rather than an approved list."
     }
   },
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "A tunic worn over the torso."
+      "0": "This tunic's unconventional fastenings work better than their untidy arrangement suggests. It belongs to the sort of wardrobe assembled according to experience rather than an approved list."
     }
   },
   "Identified": {

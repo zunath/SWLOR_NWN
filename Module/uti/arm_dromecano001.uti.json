@@ -111,13 +111,13 @@
   "DescIdentified": {
     "type": "cexolocstring",
     "value": {
-      "0": "Body armor worn over the torso."
+      "0": "Scuffed panels and readily reached service hatches give this scavenger droid's plating its workmanlike shape. Dust catches around the fastenings, where the next inspection will probably find another fragment of somebody else's discarded machinery."
     }
   },
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "Body armor worn over the torso."
+      "0": "Scuffed panels and readily reached service hatches give this scavenger droid's plating its workmanlike shape. Dust catches around the fastenings, where the next inspection will probably find another fragment of somebody else's discarded machinery."
     }
   },
   "Identified": {

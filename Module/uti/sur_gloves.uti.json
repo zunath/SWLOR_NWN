@@ -27,13 +27,13 @@
   "DescIdentified": {
     "type": "cexolocstring",
     "value": {
-      "0": "A pair of gloves worn over the hands."
+      "0": "These gloves have spare ties tucked inside their cuffs and repairs laid over the most exposed seams. They were made with the sensible assumption that help might be several days away."
     }
   },
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "A pair of gloves worn over the hands."
+      "0": "These gloves have spare ties tucked inside their cuffs and repairs laid over the most exposed seams. They were made with the sensible assumption that help might be several days away."
     }
   },
   "Identified": {

@@ -111,13 +111,13 @@
   "DescIdentified": {
     "type": "cexolocstring",
     "value": {
-      "0": "A tunic worn over the torso."
+      "0": "Several generations of stitching lie beneath this tunic's outer seams. A tailor might call it overdue for replacement; its wearer appears to consider continued service the more convincing argument."
     }
   },
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "A tunic worn over the torso."
+      "0": "Several generations of stitching lie beneath this tunic's outer seams. A tailor might call it overdue for replacement; its wearer appears to consider continued service the more convincing argument."
     }
   },
   "Identified": {

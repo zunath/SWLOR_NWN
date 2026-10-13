@@ -333,13 +333,13 @@
               "DescIdentified": {
                 "type": "cexolocstring",
                 "value": {
-                  "0": "Robes worn over the body."
+                  "0": "Brown outer robes lie over simple, carefully maintained layers. The restrained appearance recalls the Jedi preference for a garment that can travel, teach, and endure a day of work without becoming the center of attention."
                 }
               },
               "Description": {
                 "type": "cexolocstring",
                 "value": {
-                  "0": "Robes worn over the body."
+                  "0": "Brown outer robes lie over simple, carefully maintained layers. The restrained appearance recalls the Jedi preference for a garment that can travel, teach, and endure a day of work without becoming the center of attention."
                 }
               },
               "Identified": {
@@ -1362,13 +1362,13 @@
               "DescIdentified": {
                 "type": "cexolocstring",
                 "value": {
-                  "0": "Clothing worn as a complete outfit."
+                  "0": "Light grey cloth and uncomplicated layers keep this outfit easy to wear through a long passage. The strongest stitching is inside the pockets, where a traveller tends to keep the things that cannot be replaced at the next port."
                 }
               },
               "Description": {
                 "type": "cexolocstring",
                 "value": {
-                  "0": "Clothing worn as a complete outfit."
+                  "0": "Light grey cloth and uncomplicated layers keep this outfit easy to wear through a long passage. The strongest stitching is inside the pockets, where a traveller tends to keep the things that cannot be replaced at the next port."
                 }
               },
               "Identified": {

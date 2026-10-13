@@ -111,13 +111,13 @@
   "DescIdentified": {
     "type": "cexolocstring",
     "value": {
-      "0": "Clothing worn as a complete outfit."
+      "0": "The shoulder of this Republic marksman's outfit has been fitted more closely than its opposite. A small asymmetry records the practical demands of long watches spent behind a familiar weapon."
     }
   },
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "Clothing worn as a complete outfit."
+      "0": "The shoulder of this Republic marksman's outfit has been fitted more closely than its opposite. A small asymmetry records the practical demands of long watches spent behind a familiar weapon."
     }
   },
   "Identified": {

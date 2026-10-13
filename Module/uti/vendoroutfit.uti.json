@@ -111,13 +111,13 @@
   "DescIdentified": {
     "type": "cexolocstring",
     "value": {
-      "0": "Clothing worn as a complete outfit."
+      "0": "This vendor's outfit has practical pockets and sleeves worn most heavily at the wrists. It looks as familiar behind a market counter as the practiced motion of counting out a customer's change."
     }
   },
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "Clothing worn as a complete outfit."
+      "0": "This vendor's outfit has practical pockets and sleeves worn most heavily at the wrists. It looks as familiar behind a market counter as the practiced motion of counting out a customer's change."
     }
   },
   "Identified": {

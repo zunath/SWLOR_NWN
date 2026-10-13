@@ -111,13 +111,13 @@
   "DescIdentified": {
     "type": "cexolocstring",
     "value": {
-      "0": "Body armor worn over the torso."
+      "0": "Darkened marks have gathered around the exposed fittings of this Sith Pyroform armor. Its carefully maintained straps suggest an operator who treats the condition of their equipment as rather more than a matter of appearance."
     }
   },
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "Body armor worn over the torso."
+      "0": "Darkened marks have gathered around the exposed fittings of this Sith Pyroform armor. Its carefully maintained straps suggest an operator who treats the condition of their equipment as rather more than a matter of appearance."
     }
   },
   "Identified": {

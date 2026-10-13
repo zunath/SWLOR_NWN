@@ -111,13 +111,13 @@
   "DescIdentified": {
     "type": "cexolocstring",
     "value": {
-      "0": "Clothing worn as a complete outfit."
+      "0": "This outlaw's outfit has been assembled from pieces that agree on little beyond being useful. Old repairs and replacement closures lend it the portable, provisional character of a life spent avoiding settled arrangements."
     }
   },
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "Clothing worn as a complete outfit."
+      "0": "This outlaw's outfit has been assembled from pieces that agree on little beyond being useful. Old repairs and replacement closures lend it the portable, provisional character of a life spent avoiding settled arrangements."
     }
   },
   "Identified": {

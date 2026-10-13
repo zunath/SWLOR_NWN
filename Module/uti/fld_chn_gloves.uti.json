@@ -27,13 +27,13 @@
   "DescIdentified": {
     "type": "cexolocstring",
     "value": {
-      "0": "A pair of gloves worn over the hands."
+      "0": "These gloves carry restrained markings worked almost invisibly into their cuffs. Their meaning matters more to the wearer than to anyone trying to decipher them across a room."
     }
   },
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "A pair of gloves worn over the hands."
+      "0": "These gloves carry restrained markings worked almost invisibly into their cuffs. Their meaning matters more to the wearer than to anyone trying to decipher them across a room."
     }
   },
   "Identified": {

@@ -111,13 +111,13 @@
   "DescIdentified": {
     "type": "cexolocstring",
     "value": {
-      "0": "Robes worn over the body."
+      "0": "Red panels interrupt the dark folds of this robe, becoming more visible as its wearer moves. The contrast lends a severe, deliberate impression without requiring an inscription to explain it."
     }
   },
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "Robes worn over the body."
+      "0": "Red panels interrupt the dark folds of this robe, becoming more visible as its wearer moves. The contrast lends a severe, deliberate impression without requiring an inscription to explain it."
     }
   },
   "Identified": {

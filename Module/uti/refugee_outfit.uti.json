@@ -111,13 +111,13 @@
   "DescIdentified": {
     "type": "cexolocstring",
     "value": {
-      "0": "Clothing worn as a complete outfit."
+      "0": "A refugee's travel outfit with repairs made from what was available at the time. Its inner ties remain carefully kept, preserving a little personal order through circumstances that offered very little elsewhere."
     }
   },
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "Clothing worn as a complete outfit."
+      "0": "A refugee's travel outfit with repairs made from what was available at the time. Its inner ties remain carefully kept, preserving a little personal order through circumstances that offered very little elsewhere."
     }
   },
   "Identified": {

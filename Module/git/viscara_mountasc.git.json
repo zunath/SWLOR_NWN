@@ -923,13 +923,13 @@
               "DescIdentified": {
                 "type": "cexolocstring",
                 "value": {
-                  "0": "Body armor worn over the torso."
+                  "0": "A mine foreman's clothes with pockets deep enough for small tools and a much-handled report slate. Dust has settled into the lower seams, where authority proves less persuasive than repeated visits to the workface."
                 }
               },
               "Description": {
                 "type": "cexolocstring",
                 "value": {
-                  "0": "Body armor worn over the torso."
+                  "0": "A mine foreman's clothes with pockets deep enough for small tools and a much-handled report slate. Dust has settled into the lower seams, where authority proves less persuasive than repeated visits to the workface."
                 }
               },
               "Identified": {

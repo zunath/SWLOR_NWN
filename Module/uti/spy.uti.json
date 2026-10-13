@@ -111,13 +111,13 @@
   "DescIdentified": {
     "type": "cexolocstring",
     "value": {
-      "0": "Clothing worn as a complete outfit."
+      "0": "An understated outfit whose strongest details are hidden beneath the surface. Its unremarkable cut would travel through offices and port concourses without giving a witness much to describe afterward."
     }
   },
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "Clothing worn as a complete outfit."
+      "0": "An understated outfit whose strongest details are hidden beneath the surface. Its unremarkable cut would travel through offices and port concourses without giving a witness much to describe afterward."
     }
   },
   "Identified": {

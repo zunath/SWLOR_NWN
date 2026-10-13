@@ -111,13 +111,13 @@
   "DescIdentified": {
     "type": "cexolocstring",
     "value": {
-      "0": "Body armor worn over the torso."
+      "0": "Salted wear around the cuffs and a carefully maintained collar give this captain's outfit its character. The person wearing it is meant to look like the one with an answer when a ship's passengers all ask at once."
     }
   },
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "Body armor worn over the torso."
+      "0": "Salted wear around the cuffs and a carefully maintained collar give this captain's outfit its character. The person wearing it is meant to look like the one with an answer when a ship's passengers all ask at once."
     }
   },
   "Identified": {

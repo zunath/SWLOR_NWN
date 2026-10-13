@@ -111,13 +111,13 @@
   "DescIdentified": {
     "type": "cexolocstring",
     "value": {
-      "0": "Body armor worn over the torso."
+      "0": "The joints of this armor are nested carefully beneath overlapping plates. Its maker spent as much effort on the quiet spaces between the metal as on the surfaces a buyer would first admire."
     }
   },
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "Body armor worn over the torso."
+      "0": "The joints of this armor are nested carefully beneath overlapping plates. Its maker spent as much effort on the quiet spaces between the metal as on the surfaces a buyer would first admire."
     }
   },
   "Identified": {

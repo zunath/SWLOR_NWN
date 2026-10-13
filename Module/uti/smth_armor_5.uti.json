@@ -111,13 +111,13 @@
   "DescIdentified": {
     "type": "cexolocstring",
     "value": {
-      "0": "A tunic worn over the torso."
+      "0": "Patient, closely worked seams give this tunic an enduring shape. It looks intended to remain in a craftsperson's wardrobe long after newer fashions have passed through the workshop door."
     }
   },
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "A tunic worn over the torso."
+      "0": "Patient, closely worked seams give this tunic an enduring shape. It looks intended to remain in a craftsperson's wardrobe long after newer fashions have passed through the workshop door."
     }
   },
   "Identified": {

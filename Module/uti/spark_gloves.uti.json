@@ -27,13 +27,13 @@
   "DescIdentified": {
     "type": "cexolocstring",
     "value": {
-      "0": "A pair of gloves worn over the hands."
+      "0": "Tiny scorch marks pepper the cuffs of these gloves. They have been repaired carefully enough to remain useful, though their owner never seems to have found a reason to stop working near the next spark."
     }
   },
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "A pair of gloves worn over the hands."
+      "0": "Tiny scorch marks pepper the cuffs of these gloves. They have been repaired carefully enough to remain useful, though their owner never seems to have found a reason to stop working near the next spark."
     }
   },
   "Identified": {

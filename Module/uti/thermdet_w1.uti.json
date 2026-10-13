@@ -111,13 +111,13 @@
   "DescIdentified": {
     "type": "cexolocstring",
     "value": {
-      "0": "Body armor worn over the torso."
+      "0": "Heavy stitching secures the pockets of this field harness, leaving little room for their contents to shift. On Hutlar, even familiar explosive work has to accommodate stiff fingers and an uncooperative cold."
     }
   },
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "Body armor worn over the torso."
+      "0": "Heavy stitching secures the pockets of this field harness, leaving little room for their contents to shift. On Hutlar, even familiar explosive work has to accommodate stiff fingers and an uncooperative cold."
     }
   },
   "Identified": {

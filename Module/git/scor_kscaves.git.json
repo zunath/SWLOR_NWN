@@ -320,13 +320,13 @@
               "DescIdentified": {
                 "type": "cexolocstring",
                 "value": {
-                  "0": "Clothing worn as a complete outfit."
+                  "0": "A refugee's travel outfit with repairs made from what was available at the time. Its inner ties remain carefully kept, preserving a little personal order through circumstances that offered very little elsewhere."
                 }
               },
               "Description": {
                 "type": "cexolocstring",
                 "value": {
-                  "0": "Clothing worn as a complete outfit."
+                  "0": "A refugee's travel outfit with repairs made from what was available at the time. Its inner ties remain carefully kept, preserving a little personal order through circumstances that offered very little elsewhere."
                 }
               },
               "Identified": {
@@ -1328,13 +1328,13 @@
               "DescIdentified": {
                 "type": "cexolocstring",
                 "value": {
-                  "0": "Clothing worn as a complete outfit."
+                  "0": "Grey cloth keeps this travelling outfit inconspicuous beneath a starport's harsh lights. Reinforced pockets leave room for the things a prudent passenger would rather keep close than trust to checked cargo."
                 }
               },
               "Description": {
                 "type": "cexolocstring",
                 "value": {
-                  "0": "Clothing worn as a complete outfit."
+                  "0": "Grey cloth keeps this travelling outfit inconspicuous beneath a starport's harsh lights. Reinforced pockets leave room for the things a prudent passenger would rather keep close than trust to checked cargo."
                 }
               },
               "Identified": {

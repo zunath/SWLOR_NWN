@@ -27,13 +27,13 @@
   "DescIdentified": {
     "type": "cexolocstring",
     "value": {
-      "0": "A cowl worn over the head and neck."
+      "0": "This cowl's pale lining has been carefully scrubbed, though the outer cloth retains the marks of hard service. Its ties are long enough to knot with tired hands in a cramped triage ward."
     }
   },
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "A cowl worn over the head and neck."
+      "0": "This cowl's pale lining has been carefully scrubbed, though the outer cloth retains the marks of hard service. Its ties are long enough to knot with tired hands in a cramped triage ward."
     }
   },
   "Identified": {

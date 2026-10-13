@@ -27,13 +27,13 @@
   "DescIdentified": {
     "type": "cexolocstring",
     "value": {
-      "0": "A pair of gloves worn over the hands."
+      "0": "The palms of these gloves are layered with salvage leather and careful repairs. A trace of metal dust emerges whenever they are flexed, refusing to surrender the workshop entirely."
     }
   },
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "A pair of gloves worn over the hands."
+      "0": "The palms of these gloves are layered with salvage leather and careful repairs. A trace of metal dust emerges whenever they are flexed, refusing to surrender the workshop entirely."
     }
   },
   "Identified": {

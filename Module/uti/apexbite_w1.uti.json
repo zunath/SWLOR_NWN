@@ -111,13 +111,13 @@
   "DescIdentified": {
     "type": "cexolocstring",
     "value": {
-      "0": "Body armor worn over the torso."
+      "0": "Tough hide panels overlap across this hunting harness, leaving the shoulders free. Teeth and old scratches have been left visible rather than dressed away, an account of Dathomir written in scars."
     }
   },
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "Body armor worn over the torso."
+      "0": "Tough hide panels overlap across this hunting harness, leaving the shoulders free. Teeth and old scratches have been left visible rather than dressed away, an account of Dathomir written in scars."
     }
   },
   "Identified": {

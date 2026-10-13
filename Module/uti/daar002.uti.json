@@ -111,13 +111,13 @@
   "DescIdentified": {
     "type": "cexolocstring",
     "value": {
-      "0": "Body armor worn over the torso."
+      "0": "An agricultural droid shell with practical panel seams and accessible mounts, prepared for work among soil, tools, and machinery. Neatly finished seats and consistent fastenings show a pattern refined beyond its earliest workshop version."
     }
   },
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "Body armor worn over the torso."
+      "0": "An agricultural droid shell with practical panel seams and accessible mounts, prepared for work among soil, tools, and machinery. Neatly finished seats and consistent fastenings show a pattern refined beyond its earliest workshop version."
     }
   },
   "Identified": {

@@ -111,13 +111,13 @@
   "DescIdentified": {
     "type": "cexolocstring",
     "value": {
-      "0": "Body armor worn over the torso."
+      "0": "The broad central plate of this armor leaves an uncompromising silhouette. Its straps have been adjusted for long wear, as though its owner expects to spend more time holding a threshold than crossing it."
     }
   },
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "Body armor worn over the torso."
+      "0": "The broad central plate of this armor leaves an uncompromising silhouette. Its straps have been adjusted for long wear, as though its owner expects to spend more time holding a threshold than crossing it."
     }
   },
   "Identified": {

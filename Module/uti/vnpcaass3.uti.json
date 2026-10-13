@@ -111,13 +111,13 @@
   "DescIdentified": {
     "type": "cexolocstring",
     "value": {
-      "0": "Body armor worn over the torso."
+      "0": "This Sith inquisitor's armor has a composed, deliberate outline and impeccably placed fittings. Its finish invites inspection with the confidence of equipment more accustomed to making others uncomfortable."
     }
   },
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "Body armor worn over the torso."
+      "0": "This Sith inquisitor's armor has a composed, deliberate outline and impeccably placed fittings. Its finish invites inspection with the confidence of equipment more accustomed to making others uncomfortable."
     }
   },
   "Identified": {

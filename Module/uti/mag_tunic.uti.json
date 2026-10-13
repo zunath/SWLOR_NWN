@@ -111,13 +111,13 @@
   "DescIdentified": {
     "type": "cexolocstring",
     "value": {
-      "0": "A tunic worn over the torso."
+      "0": "The folds of this tunic conceal small, meticulously stitched symbols. Whatever tradition they belong to, its maker chose to keep them near the wearer instead of displaying them to every passerby."
     }
   },
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "A tunic worn over the torso."
+      "0": "The folds of this tunic conceal small, meticulously stitched symbols. Whatever tradition they belong to, its maker chose to keep them near the wearer instead of displaying them to every passerby."
     }
   },
   "Identified": {

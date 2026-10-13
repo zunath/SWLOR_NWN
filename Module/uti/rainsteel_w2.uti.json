@@ -111,13 +111,13 @@
   "DescIdentified": {
     "type": "cexolocstring",
     "value": {
-      "0": "Body armor worn over the torso."
+      "0": "Fragments have gouged the fittings of this otherwise carefully balanced harness. Its straps remain straight and serviceable, repaired by someone who expected the next trial to be much like the last."
     }
   },
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "Body armor worn over the torso."
+      "0": "Fragments have gouged the fittings of this otherwise carefully balanced harness. Its straps remain straight and serviceable, repaired by someone who expected the next trial to be much like the last."
     }
   },
   "Identified": {

@@ -111,13 +111,13 @@
   "DescIdentified": {
     "type": "cexolocstring",
     "value": {
-      "0": "Body armor worn over the torso."
+      "0": "The leading surfaces of this Sith vanguard armor show the most wear. Its practical fastenings have been repaired without much ceremony, ready for the part of an advance that rarely stays orderly for long."
     }
   },
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "Body armor worn over the torso."
+      "0": "The leading surfaces of this Sith vanguard armor show the most wear. Its practical fastenings have been repaired without much ceremony, ready for the part of an advance that rarely stays orderly for long."
     }
   },
   "Identified": {

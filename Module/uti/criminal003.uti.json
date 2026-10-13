@@ -111,13 +111,13 @@
   "DescIdentified": {
     "type": "cexolocstring",
     "value": {
-      "0": "Body armor worn over the torso."
+      "0": "These rough street clothes have been altered and repaired without much concern for a tailor's approval. Their pockets sit close to the hands, where a few credits and other small persuasions are readily found."
     }
   },
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "Body armor worn over the torso."
+      "0": "These rough street clothes have been altered and repaired without much concern for a tailor's approval. Their pockets sit close to the hands, where a few credits and other small persuasions are readily found."
     }
   },
   "Identified": {

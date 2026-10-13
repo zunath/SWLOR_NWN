@@ -111,13 +111,13 @@
   "DescIdentified": {
     "type": "cexolocstring",
     "value": {
-      "0": "Body armor worn over the torso."
+      "0": "Layered, weathered cloth gives these Jawa rags their familiar huddled outline. Dust settles into the outer folds while the deeper bindings preserve a small, stubborn shelter from the desert."
     }
   },
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "Body armor worn over the torso."
+      "0": "Layered, weathered cloth gives these Jawa rags their familiar huddled outline. Dust settles into the outer folds while the deeper bindings preserve a small, stubborn shelter from the desert."
     }
   },
   "Identified": {

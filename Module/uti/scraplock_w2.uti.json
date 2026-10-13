@@ -111,13 +111,13 @@
   "DescIdentified": {
     "type": "cexolocstring",
     "value": {
-      "0": "Body armor worn over the torso."
+      "0": "Bent salvage plates overlap across this CZ-220 harness, beaten back into shape with little regard for their old purpose. Underneath, robust straps provide the order that the outer metal lacks."
     }
   },
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "Body armor worn over the torso."
+      "0": "Bent salvage plates overlap across this CZ-220 harness, beaten back into shape with little regard for their old purpose. Underneath, robust straps provide the order that the outer metal lacks."
     }
   },
   "Identified": {

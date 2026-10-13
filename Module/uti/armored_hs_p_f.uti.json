@@ -111,13 +111,13 @@
   "DescIdentified": {
     "type": "cexolocstring",
     "value": {
-      "0": "Body armor worn over the torso."
+      "0": "Purple panels distinguish this soldier's armor from a conventional service issue. Beneath the color, its substantial fittings remain the practical work of somebody expected to report for duty rather than pose for a portrait."
     }
   },
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "Body armor worn over the torso."
+      "0": "Purple panels distinguish this soldier's armor from a conventional service issue. Beneath the color, its substantial fittings remain the practical work of somebody expected to report for duty rather than pose for a portrait."
     }
   },
   "Identified": {

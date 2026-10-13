@@ -111,13 +111,13 @@
   "DescIdentified": {
     "type": "cexolocstring",
     "value": {
-      "0": "Clothing worn as a complete outfit."
+      "0": "A padded guard's outfit with a practical collar and sturdy, easily replaced ties. It has the modest finish of a merchant's security budget: respectable enough at the shop door, useful enough outside it."
     }
   },
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "Clothing worn as a complete outfit."
+      "0": "A padded guard's outfit with a practical collar and sturdy, easily replaced ties. It has the modest finish of a merchant's security budget: respectable enough at the shop door, useful enough outside it."
     }
   },
   "Identified": {

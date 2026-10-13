@@ -111,13 +111,13 @@
   "DescIdentified": {
     "type": "cexolocstring",
     "value": {
-      "0": "Body armor worn over the torso."
+      "0": "Small fittings and compact plates divide this armor into a surprisingly intricate whole. Its smith seems to have enjoyed making substantial protection out of components that first appear almost insignificant."
     }
   },
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "Body armor worn over the torso."
+      "0": "Small fittings and compact plates divide this armor into a surprisingly intricate whole. Its smith seems to have enjoyed making substantial protection out of components that first appear almost insignificant."
     }
   },
   "Identified": {

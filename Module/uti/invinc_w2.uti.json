@@ -111,13 +111,13 @@
   "DescIdentified": {
     "type": "cexolocstring",
     "value": {
-      "0": "Body armor worn over the torso."
+      "0": "This marshal's harness balances its weight between broad shoulder straps. Wear gathers around the fastenings, where duty belts and other reminders of authority have been buckled on before another patrol."
     }
   },
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "Body armor worn over the torso."
+      "0": "This marshal's harness balances its weight between broad shoulder straps. Wear gathers around the fastenings, where duty belts and other reminders of authority have been buckled on before another patrol."
     }
   },
   "Identified": {

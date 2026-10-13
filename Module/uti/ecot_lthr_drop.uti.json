@@ -111,13 +111,13 @@
   "DescIdentified": {
     "type": "cexolocstring",
     "value": {
-      "0": "A tunic worn over the torso."
+      "0": "Rough leather and patched cloth give this outfit a deliberately unpolished appearance. Its wearer would find little sympathy for an immaculate corporate uniform, and apparently dressed to make the feeling mutual."
     }
   },
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "A tunic worn over the torso."
+      "0": "Rough leather and patched cloth give this outfit a deliberately unpolished appearance. Its wearer would find little sympathy for an immaculate corporate uniform, and apparently dressed to make the feeling mutual."
     }
   },
   "Identified": {

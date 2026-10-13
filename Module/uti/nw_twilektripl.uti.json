@@ -111,13 +111,13 @@
   "DescIdentified": {
     "type": "cexolocstring",
     "value": {
-      "0": "Clothing worn as a complete outfit."
+      "0": "Brightly arranged panels give this Twi'lek stage outfit a lively silhouette. Its seams are secured more carefully than the light appearance suggests, ready for repeated performances rather than one flattering entrance."
     }
   },
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "Clothing worn as a complete outfit."
+      "0": "Brightly arranged panels give this Twi'lek stage outfit a lively silhouette. Its seams are secured more carefully than the light appearance suggests, ready for repeated performances rather than one flattering entrance."
     }
   },
   "Identified": {

@@ -111,13 +111,13 @@
   "DescIdentified": {
     "type": "cexolocstring",
     "value": {
-      "0": "Body armor worn over the torso."
+      "0": "A fabricator droid shell whose tidy joints and accessible fittings reflect the patient assembly work it will accompany. Neatly finished seats and consistent fastenings show a pattern refined beyond its earliest workshop version."
     }
   },
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "Body armor worn over the torso."
+      "0": "A fabricator droid shell whose tidy joints and accessible fittings reflect the patient assembly work it will accompany. Neatly finished seats and consistent fastenings show a pattern refined beyond its earliest workshop version."
     }
   },
   "Identified": {

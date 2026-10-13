@@ -6801,13 +6801,13 @@
               "DescIdentified": {
                 "type": "cexolocstring",
                 "value": {
-                  "0": "Clothing worn as a complete outfit."
+                  "0": "A carefully understated smuggler's outfit with very little to catch the eye at a checkpoint. The strongest seams are tucked inside, preserving the exterior's convincing air of being nothing worth examining."
                 }
               },
               "Description": {
                 "type": "cexolocstring",
                 "value": {
-                  "0": "Clothing worn as a complete outfit."
+                  "0": "A carefully understated smuggler's outfit with very little to catch the eye at a checkpoint. The strongest seams are tucked inside, preserving the exterior's convincing air of being nothing worth examining."
                 }
               },
               "Identified": {

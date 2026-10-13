@@ -111,13 +111,13 @@
   "DescIdentified": {
     "type": "cexolocstring",
     "value": {
-      "0": "A tunic worn over the torso."
+      "0": "A serviceable tunic built around robust shoulder seams and uncomplicated fastenings. Its cut favors the first person through a doorway over the last person to finish dressing for it."
     }
   },
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "A tunic worn over the torso."
+      "0": "A serviceable tunic built around robust shoulder seams and uncomplicated fastenings. Its cut favors the first person through a doorway over the last person to finish dressing for it."
     }
   },
   "Identified": {

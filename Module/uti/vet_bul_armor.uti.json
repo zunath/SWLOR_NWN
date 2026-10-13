@@ -111,13 +111,13 @@
   "DescIdentified": {
     "type": "cexolocstring",
     "value": {
-      "0": "Body armor worn over the torso."
+      "0": "Heavy sections overlap across this armor's torso in closely fitted layers. Scratches gather along its exposed edges, leaving the recessed surfaces with the quiet look of shelter behind a wall."
     }
   },
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "Body armor worn over the torso."
+      "0": "Heavy sections overlap across this armor's torso in closely fitted layers. Scratches gather along its exposed edges, leaving the recessed surfaces with the quiet look of shelter behind a wall."
     }
   },
   "Identified": {

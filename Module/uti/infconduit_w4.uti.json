@@ -27,13 +27,13 @@
   "DescIdentified": {
     "type": "cexolocstring",
     "value": {
-      "0": "A pair of gloves worn over the hands."
+      "0": "The cuffs of these gloves have been wrapped and rewrapped over old scorch marks. Their current owner would be wise to read the marks as a history of the work, rather than a promise about the next live wire."
     }
   },
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "A pair of gloves worn over the hands."
+      "0": "The cuffs of these gloves have been wrapped and rewrapped over old scorch marks. Their current owner would be wise to read the marks as a history of the work, rather than a promise about the next live wire."
     }
   },
   "Identified": {

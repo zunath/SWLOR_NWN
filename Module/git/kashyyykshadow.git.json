@@ -320,13 +320,13 @@
               "DescIdentified": {
                 "type": "cexolocstring",
                 "value": {
-                  "0": "Robes worn over the body."
+                  "0": "These robes carry Jolee's name without much ceremony in their construction. They look better suited to an unhurried journey and an inconvenient conversation than to standing respectfully still while someone finishes an introduction."
                 }
               },
               "Description": {
                 "type": "cexolocstring",
                 "value": {
-                  "0": "Robes worn over the body."
+                  "0": "These robes carry Jolee's name without much ceremony in their construction. They look better suited to an unhurried journey and an inconvenient conversation than to standing respectfully still while someone finishes an introduction."
                 }
               },
               "Identified": {

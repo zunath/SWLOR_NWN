@@ -111,13 +111,13 @@
   "DescIdentified": {
     "type": "cexolocstring",
     "value": {
-      "0": "Body armor worn over the torso."
+      "0": "Dark plates catch the light along the edges of this Eclipse armor and leave its recessed surfaces in shadow. Its carefully arranged layers turn that simple contrast into a severe, deliberate silhouette."
     }
   },
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "Body armor worn over the torso."
+      "0": "Dark plates catch the light along the edges of this Eclipse armor and leave its recessed surfaces in shadow. Its carefully arranged layers turn that simple contrast into a severe, deliberate silhouette."
     }
   },
   "Identified": {

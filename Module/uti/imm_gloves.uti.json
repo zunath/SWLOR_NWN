@@ -27,13 +27,13 @@
   "DescIdentified": {
     "type": "cexolocstring",
     "value": {
-      "0": "A pair of gloves worn over the hands."
+      "0": "Repairs have become so thoroughly worked into these gloves that it is difficult to identify the oldest leather. Their name has outlasted several pairs of palms and probably a number of owners."
     }
   },
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "A pair of gloves worn over the hands."
+      "0": "Repairs have become so thoroughly worked into these gloves that it is difficult to identify the oldest leather. Their name has outlasted several pairs of palms and probably a number of owners."
     }
   },
   "Identified": {

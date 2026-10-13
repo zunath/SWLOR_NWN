@@ -111,13 +111,13 @@
   "DescIdentified": {
     "type": "cexolocstring",
     "value": {
-      "0": "Body armor worn over the torso."
+      "0": "The straps of this ridge-worn harness have been shortened and punched with fresh holes. It was fitted by someone who expected long climbs, hard landings, and very little help from anyone below."
     }
   },
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "Body armor worn over the torso."
+      "0": "The straps of this ridge-worn harness have been shortened and punched with fresh holes. It was fitted by someone who expected long climbs, hard landings, and very little help from anyone below."
     }
   },
   "Identified": {

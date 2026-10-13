@@ -111,13 +111,13 @@
   "DescIdentified": {
     "type": "cexolocstring",
     "value": {
-      "0": "Body armor worn over the torso."
+      "0": "Justina's armor has been maintained with care around its service fittings. Its outward scars remain, giving the wearer a recognizable set of marks that no newly issued replacement could reproduce."
     }
   },
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "Body armor worn over the torso."
+      "0": "Justina's armor has been maintained with care around its service fittings. Its outward scars remain, giving the wearer a recognizable set of marks that no newly issued replacement could reproduce."
     }
   },
   "Identified": {

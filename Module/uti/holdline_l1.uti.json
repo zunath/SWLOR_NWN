@@ -27,13 +27,13 @@
   "DescIdentified": {
     "type": "cexolocstring",
     "value": {
-      "0": "A cowl worn over the head and neck."
+      "0": "The front edge of this field cowl has been patched with whatever cloth was nearest at hand. No two repairs match, but each kept it in service through one more turn on the line."
     }
   },
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "A cowl worn over the head and neck."
+      "0": "The front edge of this field cowl has been patched with whatever cloth was nearest at hand. No two repairs match, but each kept it in service through one more turn on the line."
     }
   },
   "Identified": {

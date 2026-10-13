@@ -111,13 +111,13 @@
   "DescIdentified": {
     "type": "cexolocstring",
     "value": {
-      "0": "A tunic worn over the torso."
+      "0": "A subdued tunic with concealed fastenings and pockets that lie flat when empty. It could pass through a crowded starport without attracting a second glance, which is much of its appeal."
     }
   },
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "A tunic worn over the torso."
+      "0": "A subdued tunic with concealed fastenings and pockets that lie flat when empty. It could pass through a crowded starport without attracting a second glance, which is much of its appeal."
     }
   },
   "Identified": {

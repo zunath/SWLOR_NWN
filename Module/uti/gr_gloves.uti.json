@@ -27,13 +27,13 @@
   "DescIdentified": {
     "type": "cexolocstring",
     "value": {
-      "0": "A pair of gloves worn over the hands."
+      "0": "These gloves have sturdy cuffs with conspicuously easy-to-find fastenings. Their practical construction suggests a wearer who expects to put them on in a hurry and keep them on through rough work."
     }
   },
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "A pair of gloves worn over the hands."
+      "0": "These gloves have sturdy cuffs with conspicuously easy-to-find fastenings. Their practical construction suggests a wearer who expects to put them on in a hurry and keep them on through rough work."
     }
   },
   "Identified": {

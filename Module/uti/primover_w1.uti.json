@@ -111,13 +111,13 @@
   "DescIdentified": {
     "type": "cexolocstring",
     "value": {
-      "0": "Body armor worn over the torso."
+      "0": "The straps of this war harness look almost like the bindings of a restraint until it is lifted and fitted. The workmanship reflects an overseer's preoccupation with what must stay firmly in place."
     }
   },
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "Body armor worn over the torso."
+      "0": "The straps of this war harness look almost like the bindings of a restraint until it is lifted and fitted. The workmanship reflects an overseer's preoccupation with what must stay firmly in place."
     }
   },
   "Identified": {

@@ -111,13 +111,13 @@
   "DescIdentified": {
     "type": "cexolocstring",
     "value": {
-      "0": "A tunic worn over the torso."
+      "0": "A plain brown Jedi tunic with closely worked inner ties and little overt decoration. Its modest appearance leaves the impression of a wearer expected to demonstrate their convictions more often than announce them."
     }
   },
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "A tunic worn over the torso."
+      "0": "A plain brown Jedi tunic with closely worked inner ties and little overt decoration. Its modest appearance leaves the impression of a wearer expected to demonstrate their convictions more often than announce them."
     }
   },
   "Identified": {

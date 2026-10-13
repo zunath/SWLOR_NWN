@@ -320,13 +320,13 @@
               "DescIdentified": {
                 "type": "cexolocstring",
                 "value": {
-                  "0": "Clothing worn as a complete outfit."
+                  "0": "A corporate militia outfit with utilitarian seams and the disciplined outline Czerka likes to put between its property and everyone else. The fabric makes no distinction between guarding a warehouse and enforcing the company's idea of order."
                 }
               },
               "Description": {
                 "type": "cexolocstring",
                 "value": {
-                  "0": "Clothing worn as a complete outfit."
+                  "0": "A corporate militia outfit with utilitarian seams and the disciplined outline Czerka likes to put between its property and everyone else. The fabric makes no distinction between guarding a warehouse and enforcing the company's idea of order."
                 }
               },
               "Identified": {
@@ -1328,13 +1328,13 @@
               "DescIdentified": {
                 "type": "cexolocstring",
                 "value": {
-                  "0": "Clothing worn as a complete outfit."
+                  "0": "A corporate militia outfit with utilitarian seams and the disciplined outline Czerka likes to put between its property and everyone else. The fabric makes no distinction between guarding a warehouse and enforcing the company's idea of order."
                 }
               },
               "Description": {
                 "type": "cexolocstring",
                 "value": {
-                  "0": "Clothing worn as a complete outfit."
+                  "0": "A corporate militia outfit with utilitarian seams and the disciplined outline Czerka likes to put between its property and everyone else. The fabric makes no distinction between guarding a warehouse and enforcing the company's idea of order."
                 }
               },
               "Identified": {
@@ -3357,13 +3357,13 @@
               "DescIdentified": {
                 "type": "cexolocstring",
                 "value": {
-                  "0": "A tunic worn over the torso."
+                  "0": "This tunic has a disciplined, upright cut without the insignia of any particular command. Its carefully maintained finish gives the impression of someone determined to look ready when called upon."
                 }
               },
               "Description": {
                 "type": "cexolocstring",
                 "value": {
-                  "0": "A tunic worn over the torso."
+                  "0": "This tunic has a disciplined, upright cut without the insignia of any particular command. Its carefully maintained finish gives the impression of someone determined to look ready when called upon."
                 }
               },
               "Identified": {
@@ -4573,13 +4573,13 @@
               "DescIdentified": {
                 "type": "cexolocstring",
                 "value": {
-                  "0": "Body armor worn over the torso."
+                  "0": "Grey fabric and quiet tailoring give this formal outfit an expensive restraint. The seams are almost invisible, the sort of work a patron notices only after discovering how comfortably it sits through a long reception."
                 }
               },
               "Description": {
                 "type": "cexolocstring",
                 "value": {
-                  "0": "Body armor worn over the torso."
+                  "0": "Grey fabric and quiet tailoring give this formal outfit an expensive restraint. The seams are almost invisible, the sort of work a patron notices only after discovering how comfortably it sits through a long reception."
                 }
               },
               "Identified": {

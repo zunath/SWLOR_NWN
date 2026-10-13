@@ -111,13 +111,13 @@
   "DescIdentified": {
     "type": "cexolocstring",
     "value": {
-      "0": "Body armor worn over the torso."
+      "0": "A Sith commando's armor with close-fitting plates and a deliberately subdued finish. Its service seams are kept reachable without exposing much loose material to a cramped passage or a hurried advance."
     }
   },
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "Body armor worn over the torso."
+      "0": "A Sith commando's armor with close-fitting plates and a deliberately subdued finish. Its service seams are kept reachable without exposing much loose material to a cramped passage or a hurried advance."
     }
   },
   "Identified": {

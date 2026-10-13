@@ -27,13 +27,13 @@
   "DescIdentified": {
     "type": "cexolocstring",
     "value": {
-      "0": "A pair of gloves worn over the hands."
+      "0": "These gauntlets are worn smooth inside and scoured rough outside. Their old leather stiffens in the cool desert night, carrying a silence quite different from the heat of the day's hunt."
     }
   },
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "A pair of gloves worn over the hands."
+      "0": "These gauntlets are worn smooth inside and scoured rough outside. Their old leather stiffens in the cool desert night, carrying a silence quite different from the heat of the day's hunt."
     }
   },
   "Identified": {

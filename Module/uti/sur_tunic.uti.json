@@ -111,13 +111,13 @@
   "DescIdentified": {
     "type": "cexolocstring",
     "value": {
-      "0": "A tunic worn over the torso."
+      "0": "This field tunic has been planned around weather, wear, and the need to carry small necessities. Its extra stitching is concentrated where a distant tailor would be least convenient to replace it."
     }
   },
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "A tunic worn over the torso."
+      "0": "This field tunic has been planned around weather, wear, and the need to carry small necessities. Its extra stitching is concentrated where a distant tailor would be least convenient to replace it."
     }
   },
   "Identified": {

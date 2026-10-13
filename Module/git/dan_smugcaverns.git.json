@@ -923,13 +923,13 @@
               "DescIdentified": {
                 "type": "cexolocstring",
                 "value": {
-                  "0": "Clothing worn as a complete outfit."
+                  "0": "Muted green panels break up the outline of this working outfit. A hunter could wear it among brush or in a crowded port without looking as though they had dressed exclusively for either place."
                 }
               },
               "Description": {
                 "type": "cexolocstring",
                 "value": {
-                  "0": "Clothing worn as a complete outfit."
+                  "0": "Muted green panels break up the outline of this working outfit. A hunter could wear it among brush or in a crowded port without looking as though they had dressed exclusively for either place."
                 }
               },
               "Identified": {
@@ -1939,13 +1939,13 @@
               "DescIdentified": {
                 "type": "cexolocstring",
                 "value": {
-                  "0": "Clothing worn as a complete outfit."
+                  "0": "A refugee's travel outfit with repairs made from what was available at the time. Its inner ties remain carefully kept, preserving a little personal order through circumstances that offered very little elsewhere."
                 }
               },
               "Description": {
                 "type": "cexolocstring",
                 "value": {
-                  "0": "Clothing worn as a complete outfit."
+                  "0": "A refugee's travel outfit with repairs made from what was available at the time. Its inner ties remain carefully kept, preserving a little personal order through circumstances that offered very little elsewhere."
                 }
               },
               "Identified": {
@@ -4319,13 +4319,13 @@
               "DescIdentified": {
                 "type": "cexolocstring",
                 "value": {
-                  "0": "Clothing worn as a complete outfit."
+                  "0": "Weathered outer layers hide a surprisingly orderly lining in this smuggler's outfit. It looks ready to spend a passage folded beneath a bunk and still emerge respectable enough to bargain over the cargo."
                 }
               },
               "Description": {
                 "type": "cexolocstring",
                 "value": {
-                  "0": "Clothing worn as a complete outfit."
+                  "0": "Weathered outer layers hide a surprisingly orderly lining in this smuggler's outfit. It looks ready to spend a passage folded beneath a bunk and still emerge respectable enough to bargain over the cargo."
                 }
               },
               "Identified": {

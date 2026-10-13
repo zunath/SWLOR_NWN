@@ -111,13 +111,13 @@
   "DescIdentified": {
     "type": "cexolocstring",
     "value": {
-      "0": "Body armor worn over the torso."
+      "0": "Grey cloth and a sober cut make this outfit seem almost too respectable for a gaming room. At a sabacc table, looking like the least interesting person present can be its own small advantage."
     }
   },
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "Body armor worn over the torso."
+      "0": "Grey cloth and a sober cut make this outfit seem almost too respectable for a gaming room. At a sabacc table, looking like the least interesting person present can be its own small advantage."
     }
   },
   "Identified": {

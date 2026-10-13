@@ -111,13 +111,13 @@
   "DescIdentified": {
     "type": "cexolocstring",
     "value": {
-      "0": "Body armor worn over the torso."
+      "0": "This institutional harness has lost its original markings beneath scratches and repeated cleaning. The old holes in its straps give a better account of its owners than any surviving inventory stamp."
     }
   },
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "Body armor worn over the torso."
+      "0": "This institutional harness has lost its original markings beneath scratches and repeated cleaning. The old holes in its straps give a better account of its owners than any surviving inventory stamp."
     }
   },
   "Identified": {

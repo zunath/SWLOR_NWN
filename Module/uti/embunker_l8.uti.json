@@ -27,13 +27,13 @@
   "DescIdentified": {
     "type": "cexolocstring",
     "value": {
-      "0": "A pair of gloves worn over the hands."
+      "0": "The backs of these work gloves are laced with flattened strips of conductive mesh. Their cuffs bear the cramped handwritten marks of someone who labelled equipment before trusting it near a conduit."
     }
   },
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "A pair of gloves worn over the hands."
+      "0": "The backs of these work gloves are laced with flattened strips of conductive mesh. Their cuffs bear the cramped handwritten marks of someone who labelled equipment before trusting it near a conduit."
     }
   },
   "Identified": {

@@ -9,6 +9,13 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
 
         public Dictionary<string, LootTable> BuildLootTables()
         {
+            _builder.Create("ESHAN_VEYLAN_GREENS")
+                .AddItem("esh_greens", 60, 3)
+                .AddItem("esh_scallion", 40, 3);
+
+            _builder.Create("ESHAN_VEYLAN_SEEDS")
+                .AddItem("esh_seeds", 50, 3);
+
             _builder.Create("ESHAN_NEOCRUSADER")
                 .AddItem("esh_rice", 5, 3)
                 .AddItem("esh_greens", 5, 3)

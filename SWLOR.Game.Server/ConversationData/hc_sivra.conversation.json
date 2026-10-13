@@ -37,6 +37,10 @@
           "Conditions": []
         },
         {
+          "ChoiceId": "supply-topic",
+          "Conditions": []
+        },
+        {
           "ChoiceId": "farewell",
           "Conditions": []
         }
@@ -87,6 +91,221 @@
         {
           "Text": "I started by learning her name. That is a small thing, I know. Next I want our accounts to show the hours we actually ask people to work. I expect considerably more resistance to that.",
           "Style": 0,
+          "Color": null
+        }
+      ],
+      "OnEnterActions": [],
+      "Choices": [
+        {
+          "ChoiceId": "return",
+          "Conditions": []
+        },
+        {
+          "ChoiceId": "farewell",
+          "Conditions": []
+        }
+      ]
+    },
+    "supply-offer": {
+      "Id": "supply-offer",
+      "SpeakerName": "",
+      "SpeakerTag": "",
+      "PortraitResref": "",
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Text": [
+        {
+          "Text": "A gardener told me the edges of the Veylan Groves are wearing bare. I would rather pay to mend them than commission a painting of how they used to look. Bring six Eshan Silverwood Seeds from the Silverwood Seed Bushes there, and four Good Quality Fiberplast for seedling wraps. The seeds need Scavenging rank 1; the fiberplast shrubs need rank 3. Trade is fine. Leave the standing trees alone. I have 350 credits for one delivery a day.",
+          "Style": 0,
+          "Color": null
+        },
+        {
+          "Text": "Repeat order: available 24 real-world hours after completion. Abandoning a repeat order restarts the 24-hour wait.",
+          "Style": 3,
+          "Color": null
+        }
+      ],
+      "OnEnterActions": [],
+      "Choices": [
+        {
+          "ChoiceId": "supply-accept",
+          "Conditions": [
+            {
+              "Key": "condition-can-accept-quest",
+              "Arguments": [
+                "eshan_grove_seedlings"
+              ],
+              "IsNegated": false
+            },
+            {
+              "Key": "condition-has-quest",
+              "Arguments": [
+                "eshan_grove_seedlings"
+              ],
+              "IsNegated": true
+            }
+          ]
+        },
+        {
+          "ChoiceId": "return",
+          "Conditions": []
+        },
+        {
+          "ChoiceId": "farewell",
+          "Conditions": []
+        }
+      ]
+    },
+    "supply-accepted": {
+      "Id": "supply-accepted",
+      "SpeakerName": "",
+      "SpeakerTag": "",
+      "PortraitResref": "",
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Text": [
+        {
+          "Text": "Bring them to me here in Highcrest. The gardener gets the seeds, and the account records her hours as well as your delivery.",
+          "Style": 0,
+          "Color": null
+        }
+      ],
+      "OnEnterActions": [],
+      "Choices": [
+        {
+          "ChoiceId": "return",
+          "Conditions": []
+        },
+        {
+          "ChoiceId": "farewell",
+          "Conditions": []
+        }
+      ]
+    },
+    "supply-active": {
+      "Id": "supply-active",
+      "SpeakerName": "",
+      "SpeakerTag": "",
+      "PortraitResref": "",
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Text": [
+        {
+          "Text": "Six Eshan Silverwood Seeds and four Good Quality Fiberplast. Search Silverwood Seed Bushes and fiberplast shrubs in the Veylan Groves, or trade for the supplies. I can take a partial delivery while you gather the rest.",
+          "Style": 0,
+          "Color": null
+        },
+        {
+          "Text": "Repeat order: available 24 real-world hours after completion. Abandoning a repeat order restarts the 24-hour wait.",
+          "Style": 3,
+          "Color": null
+        }
+      ],
+      "OnEnterActions": [],
+      "Choices": [
+        {
+          "ChoiceId": "supply-hand-in",
+          "Conditions": [
+            {
+              "Key": "condition-on-quest-state",
+              "Arguments": [
+                "eshan_grove_seedlings",
+                "1"
+              ],
+              "IsNegated": false
+            }
+          ]
+        },
+        {
+          "ChoiceId": "return",
+          "Conditions": []
+        },
+        {
+          "ChoiceId": "farewell",
+          "Conditions": []
+        }
+      ]
+    },
+    "supply-reward": {
+      "Id": "supply-reward",
+      "SpeakerName": "",
+      "SpeakerTag": "",
+      "PortraitResref": "",
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Text": [
+        {
+          "Text": "That will wrap the next set of seedlings. It is a small repair, but at least the grove will benefit from it. Your payment is ready.",
+          "Style": 0,
+          "Color": null
+        },
+        {
+          "Text": "Repeat order: available 24 real-world hours after completion. Abandoning a repeat order restarts the 24-hour wait.",
+          "Style": 3,
+          "Color": null
+        }
+      ],
+      "OnEnterActions": [],
+      "Choices": [
+        {
+          "ChoiceId": "supply-finish",
+          "Conditions": [
+            {
+              "Key": "condition-on-quest-state",
+              "Arguments": [
+                "eshan_grove_seedlings",
+                "2"
+              ],
+              "IsNegated": false
+            }
+          ]
+        },
+        {
+          "ChoiceId": "return",
+          "Conditions": []
+        },
+        {
+          "ChoiceId": "farewell",
+          "Conditions": []
+        }
+      ]
+    },
+    "supply-waiting": {
+      "Id": "supply-waiting",
+      "SpeakerName": "",
+      "SpeakerTag": "",
+      "PortraitResref": "",
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Text": [
+        {
+          "Text": "The gardener is using the last delivery. I will ask you for another once she is ready to plant the next set.",
+          "Style": 0,
+          "Color": null
+        },
+        {
+          "Text": "Repeat order: available 24 real-world hours after completion. Abandoning a repeat order restarts the 24-hour wait.",
+          "Style": 3,
           "Color": null
         }
       ],
@@ -189,6 +408,154 @@
         }
       ],
       "EndsConversation": false,
+      "IsAutomatic": false
+    },
+    "supply-topic": {
+      "Id": "supply-topic",
+      "Text": {
+        "Text": "Is there something practical I could help with?",
+        "Style": 4,
+        "Color": null
+      },
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Actions": [],
+      "Next": [
+        {
+          "TargetNodeId": "supply-reward",
+          "Conditions": [
+            {
+              "Key": "condition-on-quest-state",
+              "Arguments": [
+                "eshan_grove_seedlings",
+                "2"
+              ],
+              "IsNegated": false
+            }
+          ]
+        },
+        {
+          "TargetNodeId": "supply-active",
+          "Conditions": [
+            {
+              "Key": "condition-on-quest-state",
+              "Arguments": [
+                "eshan_grove_seedlings",
+                "1"
+              ],
+              "IsNegated": false
+            }
+          ]
+        },
+        {
+          "TargetNodeId": "supply-offer",
+          "Conditions": [
+            {
+              "Key": "condition-can-accept-quest",
+              "Arguments": [
+                "eshan_grove_seedlings"
+              ],
+              "IsNegated": false
+            },
+            {
+              "Key": "condition-has-quest",
+              "Arguments": [
+                "eshan_grove_seedlings"
+              ],
+              "IsNegated": true
+            }
+          ]
+        },
+        {
+          "TargetNodeId": "supply-waiting",
+          "Conditions": []
+        }
+      ],
+      "EndsConversation": false,
+      "IsAutomatic": false
+    },
+    "supply-accept": {
+      "Id": "supply-accept",
+      "Text": {
+        "Text": "I'll bring six Eshan Silverwood Seeds and four Good Quality Fiberplast.",
+        "Style": 4,
+        "Color": null
+      },
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Actions": [
+        {
+          "Key": "action-accept-quest",
+          "Arguments": [
+            "eshan_grove_seedlings"
+          ]
+        }
+      ],
+      "Next": [
+        {
+          "TargetNodeId": "supply-accepted",
+          "Conditions": []
+        }
+      ],
+      "EndsConversation": false,
+      "IsAutomatic": false
+    },
+    "supply-hand-in": {
+      "Id": "supply-hand-in",
+      "Text": {
+        "Text": "I have supplies to deliver.",
+        "Style": 4,
+        "Color": null
+      },
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Actions": [
+        {
+          "Key": "action-request-quest-items",
+          "Arguments": [
+            "eshan_grove_seedlings"
+          ]
+        }
+      ],
+      "Next": [],
+      "EndsConversation": true,
+      "IsAutomatic": false
+    },
+    "supply-finish": {
+      "Id": "supply-finish",
+      "Text": {
+        "Text": "Take the seedling-supply payment.",
+        "Style": 4,
+        "Color": null
+      },
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Actions": [
+        {
+          "Key": "action-advance-quest",
+          "Arguments": [
+            "eshan_grove_seedlings"
+          ]
+        }
+      ],
+      "Next": [],
+      "EndsConversation": true,
       "IsAutomatic": false
     }
   },

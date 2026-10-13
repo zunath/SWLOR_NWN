@@ -21,6 +21,19 @@ STOCK_PANELS = {
     "hc_vesa_shop": {"tran_tunic": 0, "tran_cap": 0, "tran_boots": 0, "tran_gloves": 0, "bag_b": 4},
     "hc_orel_shop": {"b_knife": 1, "b_longsword": 1, "b_spear": 1},
 }
+SUPPLY_QUESTS = {
+    "hc_kael": "eshan_starwort_hands",
+    "hc_tellis": "eshan_fountain_parts",
+    "hc_aelis": "eshan_service_meds",
+    "hc_vesa": "eshan_practice_sleeves",
+    "hc_nema": "eshan_shift_greens",
+    "hc_sivra": "eshan_grove_seedlings",
+}
+SUPPLY_ACTIONS = {
+    "action-accept-quest",
+    "action-request-quest-items",
+    "action-advance-quest",
+}
 
 
 def read(path):
@@ -79,6 +92,7 @@ def validate():
         assert len(value(area, collection)) == len(value(comments, collection))
     shop_tags = {value(s, "Tag") for s in shops}
     wanderers, greetings, shop_users, guard_genders = set(), set(), set(), set()
+    supply_users = {}
     positions = []
     for npc in npcs:
         ref = value(npc, "TemplateResRef")
@@ -98,9 +112,14 @@ def validate():
         greetings.add(greeting)
         for choice in graph["Choices"].values():
             for action in choice["Actions"]:
-                assert action["Key"] == "action-open-store"
-                assert len(action["Arguments"]) == 1 and action["Arguments"][0] in shop_tags
-                shop_users.add(action["Arguments"][0])
+                if action["Key"] == "action-open-store":
+                    assert len(action["Arguments"]) == 1 and action["Arguments"][0] in shop_tags
+                    shop_users.add(action["Arguments"][0])
+                else:
+                    assert ref in SUPPLY_QUESTS and action["Key"] in SUPPLY_ACTIONS, (ref, "unexpected quest action", action)
+                    assert action["Arguments"] == [SUPPLY_QUESTS[ref]], (ref, "quest action targets another giver's order", action)
+                    assert not choice["IsAutomatic"], (ref, "quest handoffs require explicit player choices")
+                    supply_users.setdefault(ref, set()).add(action["Key"])
         flags = {value(v, "Name"): value(v, "Value") for v in value(npc, "VarTable")}
         if flags["AI_FLAGS"]:
             assert flags["AI_FLAGS"] == 3  # RandomWalk | ReturnHome.
@@ -125,6 +144,7 @@ def validate():
             guard_genders.add(value(npc, "Gender"))
     assert wanderers == {"hc_pell", "hc_mira", "hc_tellis"}
     assert guard_genders == {0, 1} and shop_users == shop_tags
+    assert supply_users == {ref: SUPPLY_ACTIONS for ref in SUPPLY_QUESTS}, "every supply giver needs offer, collector and reward actions"
     for shop in shops:
         ref = value(shop, "ResRef")
         blueprint = read(f"Module/utm/{ref}.utm.json")
@@ -152,7 +172,7 @@ def validate():
                 assert value(entry, "Repos_PosX") == index % 5 * 2
                 assert value(entry, "Repos_Posy") == index // 5 * 2
         assert stock == STOCK_PANELS[ref], (ref, "stock/category mismatch")
-    print("PASS: 15 distinct conversations, NPC/equipment parity, 3 bounded wanderers, both guard genders and 3 linked shops.")
+    print("PASS: 15 distinct conversations, NPC/equipment parity, 3 wandering residents, both guard genders, 3 linked shops and 6 supply quest handoffs.")
 
 
 if __name__ == "__main__":

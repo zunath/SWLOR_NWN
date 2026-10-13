@@ -41,6 +41,10 @@
           "Conditions": []
         },
         {
+          "ChoiceId": "supply-topic",
+          "Conditions": []
+        },
+        {
           "ChoiceId": "farewell",
           "Conditions": []
         }
@@ -91,6 +95,221 @@
         {
           "Text": "The wealthy send lists down from the terraces. Warriors stop on their way home. Workers buy what a shift leaves them enough to afford. Same counter, very different baskets.",
           "Style": 0,
+          "Color": null
+        }
+      ],
+      "OnEnterActions": [],
+      "Choices": [
+        {
+          "ChoiceId": "return",
+          "Conditions": []
+        },
+        {
+          "ChoiceId": "farewell",
+          "Conditions": []
+        }
+      ]
+    },
+    "supply-offer": {
+      "Id": "supply-offer",
+      "SpeakerName": "",
+      "SpeakerTag": "",
+      "PortraitResref": "",
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Text": [
+        {
+          "Text": "The late shift misses the household supper and gets hungry all the same. Six Eshan Silverwood Greens and four Eshan Scallions will make a decent pot. Search the Veylan Greens Patches in the Veylan Groves with Scavenging rank 1, or trade for the ingredients. Leave the wolves out of it. I have 400 credits for one delivery a day.",
+          "Style": 0,
+          "Color": null
+        },
+        {
+          "Text": "Repeat order: available 24 real-world hours after completion. Abandoning a repeat order restarts the 24-hour wait.",
+          "Style": 3,
+          "Color": null
+        }
+      ],
+      "OnEnterActions": [],
+      "Choices": [
+        {
+          "ChoiceId": "supply-accept",
+          "Conditions": [
+            {
+              "Key": "condition-can-accept-quest",
+              "Arguments": [
+                "eshan_shift_greens"
+              ],
+              "IsNegated": false
+            },
+            {
+              "Key": "condition-has-quest",
+              "Arguments": [
+                "eshan_shift_greens"
+              ],
+              "IsNegated": true
+            }
+          ]
+        },
+        {
+          "ChoiceId": "return",
+          "Conditions": []
+        },
+        {
+          "ChoiceId": "farewell",
+          "Conditions": []
+        }
+      ]
+    },
+    "supply-accepted": {
+      "Id": "supply-accepted",
+      "SpeakerName": "",
+      "SpeakerTag": "",
+      "PortraitResref": "",
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Text": [
+        {
+          "Text": "Bring them to my counter here in Highcrest. The workers can eat before they are called back upstairs.",
+          "Style": 0,
+          "Color": null
+        }
+      ],
+      "OnEnterActions": [],
+      "Choices": [
+        {
+          "ChoiceId": "return",
+          "Conditions": []
+        },
+        {
+          "ChoiceId": "farewell",
+          "Conditions": []
+        }
+      ]
+    },
+    "supply-active": {
+      "Id": "supply-active",
+      "SpeakerName": "",
+      "SpeakerTag": "",
+      "PortraitResref": "",
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Text": [
+        {
+          "Text": "Six Eshan Silverwood Greens and four Eshan Scallions for the pot. Veylan Greens Patches in the Veylan Groves supply both with Scavenging rank 1. I will count whatever you deliver toward the order.",
+          "Style": 0,
+          "Color": null
+        },
+        {
+          "Text": "Repeat order: available 24 real-world hours after completion. Abandoning a repeat order restarts the 24-hour wait.",
+          "Style": 3,
+          "Color": null
+        }
+      ],
+      "OnEnterActions": [],
+      "Choices": [
+        {
+          "ChoiceId": "supply-hand-in",
+          "Conditions": [
+            {
+              "Key": "condition-on-quest-state",
+              "Arguments": [
+                "eshan_shift_greens",
+                "1"
+              ],
+              "IsNegated": false
+            }
+          ]
+        },
+        {
+          "ChoiceId": "return",
+          "Conditions": []
+        },
+        {
+          "ChoiceId": "farewell",
+          "Conditions": []
+        }
+      ]
+    },
+    "supply-reward": {
+      "Id": "supply-reward",
+      "SpeakerName": "",
+      "SpeakerTag": "",
+      "PortraitResref": "",
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Text": [
+        {
+          "Text": "Good greens, and enough scallions to give them some bite. Nobody will ask for a household seal before I fill their bowl. Here is your payment.",
+          "Style": 0,
+          "Color": null
+        },
+        {
+          "Text": "Repeat order: available 24 real-world hours after completion. Abandoning a repeat order restarts the 24-hour wait.",
+          "Style": 3,
+          "Color": null
+        }
+      ],
+      "OnEnterActions": [],
+      "Choices": [
+        {
+          "ChoiceId": "supply-finish",
+          "Conditions": [
+            {
+              "Key": "condition-on-quest-state",
+              "Arguments": [
+                "eshan_shift_greens",
+                "2"
+              ],
+              "IsNegated": false
+            }
+          ]
+        },
+        {
+          "ChoiceId": "return",
+          "Conditions": []
+        },
+        {
+          "ChoiceId": "farewell",
+          "Conditions": []
+        }
+      ]
+    },
+    "supply-waiting": {
+      "Id": "supply-waiting",
+      "SpeakerName": "",
+      "SpeakerTag": "",
+      "PortraitResref": "",
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Text": [
+        {
+          "Text": "I have enough for this meal. Come back when the next order is ready; the same workers will still need supper.",
+          "Style": 0,
+          "Color": null
+        },
+        {
+          "Text": "Repeat order: available 24 real-world hours after completion. Abandoning a repeat order restarts the 24-hour wait.",
+          "Style": 3,
           "Color": null
         }
       ],
@@ -213,6 +432,154 @@
           "Key": "action-open-store",
           "Arguments": [
             "hc_nema_shop"
+          ]
+        }
+      ],
+      "Next": [],
+      "EndsConversation": true,
+      "IsAutomatic": false
+    },
+    "supply-topic": {
+      "Id": "supply-topic",
+      "Text": {
+        "Text": "Do you need anything for the kitchen?",
+        "Style": 4,
+        "Color": null
+      },
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Actions": [],
+      "Next": [
+        {
+          "TargetNodeId": "supply-reward",
+          "Conditions": [
+            {
+              "Key": "condition-on-quest-state",
+              "Arguments": [
+                "eshan_shift_greens",
+                "2"
+              ],
+              "IsNegated": false
+            }
+          ]
+        },
+        {
+          "TargetNodeId": "supply-active",
+          "Conditions": [
+            {
+              "Key": "condition-on-quest-state",
+              "Arguments": [
+                "eshan_shift_greens",
+                "1"
+              ],
+              "IsNegated": false
+            }
+          ]
+        },
+        {
+          "TargetNodeId": "supply-offer",
+          "Conditions": [
+            {
+              "Key": "condition-can-accept-quest",
+              "Arguments": [
+                "eshan_shift_greens"
+              ],
+              "IsNegated": false
+            },
+            {
+              "Key": "condition-has-quest",
+              "Arguments": [
+                "eshan_shift_greens"
+              ],
+              "IsNegated": true
+            }
+          ]
+        },
+        {
+          "TargetNodeId": "supply-waiting",
+          "Conditions": []
+        }
+      ],
+      "EndsConversation": false,
+      "IsAutomatic": false
+    },
+    "supply-accept": {
+      "Id": "supply-accept",
+      "Text": {
+        "Text": "I'll bring six Eshan Silverwood Greens and four Eshan Scallions.",
+        "Style": 4,
+        "Color": null
+      },
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Actions": [
+        {
+          "Key": "action-accept-quest",
+          "Arguments": [
+            "eshan_shift_greens"
+          ]
+        }
+      ],
+      "Next": [
+        {
+          "TargetNodeId": "supply-accepted",
+          "Conditions": []
+        }
+      ],
+      "EndsConversation": false,
+      "IsAutomatic": false
+    },
+    "supply-hand-in": {
+      "Id": "supply-hand-in",
+      "Text": {
+        "Text": "I have supplies to deliver.",
+        "Style": 4,
+        "Color": null
+      },
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Actions": [
+        {
+          "Key": "action-request-quest-items",
+          "Arguments": [
+            "eshan_shift_greens"
+          ]
+        }
+      ],
+      "Next": [],
+      "EndsConversation": true,
+      "IsAutomatic": false
+    },
+    "supply-finish": {
+      "Id": "supply-finish",
+      "Text": {
+        "Text": "Take the kitchen payment.",
+        "Style": 4,
+        "Color": null
+      },
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Actions": [
+        {
+          "Key": "action-advance-quest",
+          "Arguments": [
+            "eshan_shift_greens"
           ]
         }
       ],

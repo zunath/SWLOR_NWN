@@ -14,6 +14,7 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
             Battlegrounds();
             Shattervein();
             Shimmerdeep();
+            VeylanGroves();
 
             return _builder.Build();
         }
@@ -36,6 +37,21 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
         private void Shimmerdeep()
         {
             AddHighLevelOres("ESHAN_SHIMMERDEEP_RESOURCES", "Eshan - The Shimmerdeep");
+        }
+
+        private void VeylanGroves()
+        {
+            AddVeylanPlant("ESHAN_VEYLAN_GREENS", "Veylan Greens Patches", "esh_grove_green");
+            AddVeylanPlant("ESHAN_VEYLAN_SEEDS", "Silverwood Seed Bushes", "esh_grove_seed");
+            AddVeylanPlant("ESHAN_VEYLAN_FIBER", "Veylan Fiberplast Shrubs", "fiberp_bush_3");
+        }
+
+        private void AddVeylanPlant(string tableId, string name, string resref)
+        {
+            _builder.Create(tableId, name)
+                .RespawnDelay(15)
+                .ResourceDespawnDelay(120)
+                .AddSpawn(ObjectType.Placeable, resref);
         }
 
         private void AddHighLevelTrees(string tableId, string name)

@@ -41,6 +41,10 @@
           "Conditions": []
         },
         {
+          "ChoiceId": "supply-topic",
+          "Conditions": []
+        },
+        {
           "ChoiceId": "farewell",
           "Conditions": []
         }
@@ -91,6 +95,221 @@
         {
           "Text": "I could afford a room. No household will sponsor the lease. So I rent above a shop and mend sleeves for people who tell me trade is vulgar.",
           "Style": 0,
+          "Color": null
+        }
+      ],
+      "OnEnterActions": [],
+      "Choices": [
+        {
+          "ChoiceId": "return",
+          "Conditions": []
+        },
+        {
+          "ChoiceId": "farewell",
+          "Conditions": []
+        }
+      ]
+    },
+    "supply-offer": {
+      "Id": "supply-offer",
+      "SpeakerName": "",
+      "SpeakerTag": "",
+      "PortraitResref": "",
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Text": [
+        {
+          "Text": "The practice halls send me sleeves with the seams torn open. They ought to give before a wrist does, but someone still has to sew the next set. Bring eight Good Quality Fiberplast. The fiberplast shrubs in the Veylan Groves yield it with Scavenging rank 3; bought material is just as useful. I can set aside 400 credits for one batch each day.",
+          "Style": 0,
+          "Color": null
+        },
+        {
+          "Text": "Repeat order: available 24 real-world hours after completion. Abandoning a repeat order restarts the 24-hour wait.",
+          "Style": 3,
+          "Color": null
+        }
+      ],
+      "OnEnterActions": [],
+      "Choices": [
+        {
+          "ChoiceId": "supply-accept",
+          "Conditions": [
+            {
+              "Key": "condition-can-accept-quest",
+              "Arguments": [
+                "eshan_practice_sleeves"
+              ],
+              "IsNegated": false
+            },
+            {
+              "Key": "condition-has-quest",
+              "Arguments": [
+                "eshan_practice_sleeves"
+              ],
+              "IsNegated": true
+            }
+          ]
+        },
+        {
+          "ChoiceId": "return",
+          "Conditions": []
+        },
+        {
+          "ChoiceId": "farewell",
+          "Conditions": []
+        }
+      ]
+    },
+    "supply-accepted": {
+      "Id": "supply-accepted",
+      "SpeakerName": "",
+      "SpeakerTag": "",
+      "PortraitResref": "",
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Text": [
+        {
+          "Text": "Bring the material back to my stall here in Highcrest. I will keep the ordinary sleeves on the same workbench as the house orders.",
+          "Style": 0,
+          "Color": null
+        }
+      ],
+      "OnEnterActions": [],
+      "Choices": [
+        {
+          "ChoiceId": "return",
+          "Conditions": []
+        },
+        {
+          "ChoiceId": "farewell",
+          "Conditions": []
+        }
+      ]
+    },
+    "supply-active": {
+      "Id": "supply-active",
+      "SpeakerName": "",
+      "SpeakerTag": "",
+      "PortraitResref": "",
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Text": [
+        {
+          "Text": "I need eight Good Quality Fiberplast in total. The Veylan Groves have fiberplast shrubs; Scavenging rank 3 is required. Bring a partial bundle if you like, and I will count it toward the batch.",
+          "Style": 0,
+          "Color": null
+        },
+        {
+          "Text": "Repeat order: available 24 real-world hours after completion. Abandoning a repeat order restarts the 24-hour wait.",
+          "Style": 3,
+          "Color": null
+        }
+      ],
+      "OnEnterActions": [],
+      "Choices": [
+        {
+          "ChoiceId": "supply-hand-in",
+          "Conditions": [
+            {
+              "Key": "condition-on-quest-state",
+              "Arguments": [
+                "eshan_practice_sleeves",
+                "1"
+              ],
+              "IsNegated": false
+            }
+          ]
+        },
+        {
+          "ChoiceId": "return",
+          "Conditions": []
+        },
+        {
+          "ChoiceId": "farewell",
+          "Conditions": []
+        }
+      ]
+    },
+    "supply-reward": {
+      "Id": "supply-reward",
+      "SpeakerName": "",
+      "SpeakerTag": "",
+      "PortraitResref": "",
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Text": [
+        {
+          "Text": "Enough for the next set. A good sleeve makes room for movement and breaks before the arm inside it. Here is your payment.",
+          "Style": 0,
+          "Color": null
+        },
+        {
+          "Text": "Repeat order: available 24 real-world hours after completion. Abandoning a repeat order restarts the 24-hour wait.",
+          "Style": 3,
+          "Color": null
+        }
+      ],
+      "OnEnterActions": [],
+      "Choices": [
+        {
+          "ChoiceId": "supply-finish",
+          "Conditions": [
+            {
+              "Key": "condition-on-quest-state",
+              "Arguments": [
+                "eshan_practice_sleeves",
+                "2"
+              ],
+              "IsNegated": false
+            }
+          ]
+        },
+        {
+          "ChoiceId": "return",
+          "Conditions": []
+        },
+        {
+          "ChoiceId": "farewell",
+          "Conditions": []
+        }
+      ]
+    },
+    "supply-waiting": {
+      "Id": "supply-waiting",
+      "SpeakerName": "",
+      "SpeakerTag": "",
+      "PortraitResref": "",
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Text": [
+        {
+          "Text": "The next batch is not ready yet. I need to finish this one before I take another bundle from you.",
+          "Style": 0,
+          "Color": null
+        },
+        {
+          "Text": "Repeat order: available 24 real-world hours after completion. Abandoning a repeat order restarts the 24-hour wait.",
+          "Style": 3,
           "Color": null
         }
       ],
@@ -213,6 +432,154 @@
           "Key": "action-open-store",
           "Arguments": [
             "hc_vesa_shop"
+          ]
+        }
+      ],
+      "Next": [],
+      "EndsConversation": true,
+      "IsAutomatic": false
+    },
+    "supply-topic": {
+      "Id": "supply-topic",
+      "Text": {
+        "Text": "Do you need material for any orders?",
+        "Style": 4,
+        "Color": null
+      },
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Actions": [],
+      "Next": [
+        {
+          "TargetNodeId": "supply-reward",
+          "Conditions": [
+            {
+              "Key": "condition-on-quest-state",
+              "Arguments": [
+                "eshan_practice_sleeves",
+                "2"
+              ],
+              "IsNegated": false
+            }
+          ]
+        },
+        {
+          "TargetNodeId": "supply-active",
+          "Conditions": [
+            {
+              "Key": "condition-on-quest-state",
+              "Arguments": [
+                "eshan_practice_sleeves",
+                "1"
+              ],
+              "IsNegated": false
+            }
+          ]
+        },
+        {
+          "TargetNodeId": "supply-offer",
+          "Conditions": [
+            {
+              "Key": "condition-can-accept-quest",
+              "Arguments": [
+                "eshan_practice_sleeves"
+              ],
+              "IsNegated": false
+            },
+            {
+              "Key": "condition-has-quest",
+              "Arguments": [
+                "eshan_practice_sleeves"
+              ],
+              "IsNegated": true
+            }
+          ]
+        },
+        {
+          "TargetNodeId": "supply-waiting",
+          "Conditions": []
+        }
+      ],
+      "EndsConversation": false,
+      "IsAutomatic": false
+    },
+    "supply-accept": {
+      "Id": "supply-accept",
+      "Text": {
+        "Text": "I'll bring eight Good Quality Fiberplast.",
+        "Style": 4,
+        "Color": null
+      },
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Actions": [
+        {
+          "Key": "action-accept-quest",
+          "Arguments": [
+            "eshan_practice_sleeves"
+          ]
+        }
+      ],
+      "Next": [
+        {
+          "TargetNodeId": "supply-accepted",
+          "Conditions": []
+        }
+      ],
+      "EndsConversation": false,
+      "IsAutomatic": false
+    },
+    "supply-hand-in": {
+      "Id": "supply-hand-in",
+      "Text": {
+        "Text": "I have supplies to deliver.",
+        "Style": 4,
+        "Color": null
+      },
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Actions": [
+        {
+          "Key": "action-request-quest-items",
+          "Arguments": [
+            "eshan_practice_sleeves"
+          ]
+        }
+      ],
+      "Next": [],
+      "EndsConversation": true,
+      "IsAutomatic": false
+    },
+    "supply-finish": {
+      "Id": "supply-finish",
+      "Text": {
+        "Text": "Take the payment for the sleeve material.",
+        "Style": 4,
+        "Color": null
+      },
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Actions": [
+        {
+          "Key": "action-advance-quest",
+          "Arguments": [
+            "eshan_practice_sleeves"
           ]
         }
       ],

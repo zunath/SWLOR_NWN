@@ -7,6 +7,9 @@ namespace SWLOR.Game.Server.Feature.PropertyLayoutDefinition
     {
         private readonly PropertyLayoutBuilder _builder = new();
 
+        /// <summary>
+        /// Registers the apartment layouts available for lease.
+        /// </summary>
         public Dictionary<PropertyLayoutType, PropertyLayout> Build()
         {
             SmallApartments();
@@ -16,6 +19,9 @@ namespace SWLOR.Game.Server.Feature.PropertyLayoutDefinition
             return _builder.Build();
         }
 
+        /// <summary>
+        /// Registers furnished and unfurnished small apartment templates and lease limits.
+        /// </summary>
         private void SmallApartments()
         {
             _builder.Create(PropertyLayoutType.ApartmentSmallStyle1)
@@ -71,11 +77,14 @@ namespace SWLOR.Game.Server.Feature.PropertyLayoutDefinition
                 .ResearchDeviceLimit(0)
                 .InitialPrice(7000)
                 .PricePerDay(300)
-				.AreaInstance("v_apartment_s01");
+                .AreaInstance("playerap_s_fur");
 
 		}
 
-		private void MediumApartments()
+        /// <summary>
+        /// Registers furnished and unfurnished medium apartment templates and lease limits.
+        /// </summary>
+        private void MediumApartments()
         {
             _builder.Create(PropertyLayoutType.ApartmentMediumStyle1)
                 .PropertyType(PropertyType.Apartment)
@@ -134,7 +143,10 @@ namespace SWLOR.Game.Server.Feature.PropertyLayoutDefinition
 
 		}
 
-		private void LargeApartments()
+        /// <summary>
+        /// Registers furnished and unfurnished large apartment templates and lease limits.
+        /// </summary>
+        private void LargeApartments()
         {
             _builder.Create(PropertyLayoutType.ApartmentLargeStyle1)
                 .PropertyType(PropertyType.Apartment)

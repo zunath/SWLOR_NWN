@@ -110,7 +110,9 @@
   },
   "DescIdentified": {
     "type": "cexolocstring",
-    "value": {}
+    "value": {
+      "0": "Ceremonial armor worn by the Firedancers who guard the temples of Eshan."
+    }
   },
   "Description": {
     "type": "cexolocstring",

@@ -1216,12 +1216,14 @@
               },
               "DescIdentified": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "Soil has a way of finding the seams of this practical farmer's outfit. The pockets are broad, the fastenings uncomplicated, and the sleeves prepared for a day that will outlast any sensible estimate of the work."
+                }
               },
               "Description": {
                 "type": "cexolocstring",
                 "value": {
-                  "0": ""
+                  "0": "Soil has a way of finding the seams of this practical farmer's outfit. The pockets are broad, the fastenings uncomplicated, and the sleeves prepared for a day that will outlast any sensible estimate of the work."
                 }
               },
               "Identified": {
@@ -2231,12 +2233,14 @@
               },
               "DescIdentified": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "Practical work clothes worn by Ilya Venn in Eshan City's Old Quarter."
+                }
               },
               "Description": {
                 "type": "cexolocstring",
                 "value": {
-                  "0": ""
+                  "0": "Practical work clothes worn by Ilya Venn in Eshan City's Old Quarter."
                 }
               },
               "Identified": {
@@ -3305,12 +3309,14 @@
               },
               "DescIdentified": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "Practical work clothes worn by Cerin Tal in Eshan City's Old Quarter."
+                }
               },
               "Description": {
                 "type": "cexolocstring",
                 "value": {
-                  "0": ""
+                  "0": "Practical work clothes worn by Cerin Tal in Eshan City's Old Quarter."
                 }
               },
               "Identified": {
@@ -4379,12 +4385,14 @@
               },
               "DescIdentified": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "A fitted practice coat worn by Toren Senn in Eshan City's Old Quarter."
+                }
               },
               "Description": {
                 "type": "cexolocstring",
                 "value": {
-                  "0": ""
+                  "0": "A fitted practice coat worn by Toren Senn in Eshan City's Old Quarter."
                 }
               },
               "Identified": {
@@ -5453,12 +5461,14 @@
               },
               "DescIdentified": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "Practical work clothes worn by Sera Vey in Eshan City's Old Quarter."
+                }
               },
               "Description": {
                 "type": "cexolocstring",
                 "value": {
-                  "0": ""
+                  "0": "Practical work clothes worn by Sera Vey in Eshan City's Old Quarter."
                 }
               },
               "Identified": {
@@ -279835,11 +279845,15 @@
                     },
                     "DescIdentified": {
                       "type": "cexolocstring",
-                      "value": {}
+                      "value": {
+                        "0": "Soft velveteen gives this kitchen bracer a more polished appearance than a plain work cuff. Its fastening remains practical, a reminder that a well-presented chef is still expected to finish dinner."
+                      }
                     },
                     "Description": {
                       "type": "cexolocstring",
-                      "value": {}
+                      "value": {
+                        "0": "Soft velveteen gives this kitchen bracer a more polished appearance than a plain work cuff. Its fastening remains practical, a reminder that a well-presented chef is still expected to finish dinner."
+                      }
                     },
                     "Identified": {
                       "type": "byte",
@@ -280686,11 +280700,15 @@
                     },
                     "DescIdentified": {
                       "type": "cexolocstring",
-                      "value": {}
+                      "value": {
+                        "0": "Velveteen adds a quiet richness to this culinary tunic. Beneath the soft finish, its ties and seams remain firmly concerned with the work of feeding guests rather than merely greeting them."
+                      }
                     },
                     "Description": {
                       "type": "cexolocstring",
-                      "value": {}
+                      "value": {
+                        "0": "Velveteen adds a quiet richness to this culinary tunic. Beneath the soft finish, its ties and seams remain firmly concerned with the work of feeding guests rather than merely greeting them."
+                      }
                     },
                     "Identified": {
                       "type": "byte",
@@ -281349,16 +281367,15 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 14175,
                       "type": "cexolocstring",
                       "value": {
-                        "0": ""
+                        "0": "Several carefully joined materials give this rod its layered construction. Its maker concealed the complicated work beneath an ordinary finish, letting an angler judge it by use rather than advertising."
                       }
                     },
                     "Description": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": ""
+                        "0": "Several carefully joined materials give this rod its layered construction. Its maker concealed the complicated work beneath an ordinary finish, letting an angler judge it by use rather than advertising."
                       }
                     },
                     "Identified": {
@@ -281539,16 +281556,15 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 14175,
                       "type": "cexolocstring",
                       "value": {
-                        "0": ""
+                        "0": "The handle of this finely worked rod has been fitted and polished with exceptional care. Even laid on a counter, it has the settled look of equipment whose owner would rather be waiting beside the water."
                       }
                     },
                     "Description": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": ""
+                        "0": "The handle of this finely worked rod has been fitted and polished with exceptional care. Even laid on a counter, it has the settled look of equipment whose owner would rather be waiting beside the water."
                       }
                     },
                     "Identified": {
@@ -283747,7 +283763,6 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 64105,
                       "type": "cexolocstring",
                       "value": {
                         "0": ""
@@ -284215,11 +284230,15 @@
                     },
                     "DescIdentified": {
                       "type": "cexolocstring",
-                      "value": {}
+                      "value": {
+                        "0": "The fabric of this kitchen bracer has softened without losing the shape of its careful stitching. It has the reassuring look of something that has survived several fashionable menus and their less fashionable cleanup."
+                      }
                     },
                     "Description": {
                       "type": "cexolocstring",
-                      "value": {}
+                      "value": {
+                        "0": "The fabric of this kitchen bracer has softened without losing the shape of its careful stitching. It has the reassuring look of something that has survived several fashionable menus and their less fashionable cleanup."
+                      }
                     },
                     "Identified": {
                       "type": "byte",
@@ -285097,11 +285116,15 @@
                     },
                     "DescIdentified": {
                       "type": "cexolocstring",
-                      "value": {}
+                      "value": {
+                        "0": "Repeated laundering has softened this kitchen tunic's older fabric into a comfortable drape. Its careful repairs suggest a uniform kept through years of changing tastes and unchanging demands for another course."
+                      }
                     },
                     "Description": {
                       "type": "cexolocstring",
-                      "value": {}
+                      "value": {
+                        "0": "Repeated laundering has softened this kitchen tunic's older fabric into a comfortable drape. Its careful repairs suggest a uniform kept through years of changing tastes and unchanging demands for another course."
+                      }
                     },
                     "Identified": {
                       "type": "byte",
@@ -285793,16 +285816,15 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 14175,
                       "type": "cexolocstring",
                       "value": {
-                        "0": ""
+                        "0": "A compact collection of fittings gives this fishing rod the ingenious look of a puzzle solved on a workbench. At the water's edge, the only puzzle that matters is still the one below the float."
                       }
                     },
                     "Description": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": ""
+                        "0": "A compact collection of fittings gives this fishing rod the ingenious look of a puzzle solved on a workbench. At the water's edge, the only puzzle that matters is still the one below the float."
                       }
                     },
                     "Identified": {
@@ -285983,16 +286005,15 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 14175,
                       "type": "cexolocstring",
                       "value": {
-                        "0": ""
+                        "0": "The natural grain of willow remains visible beneath the finish of this rod. Its modest fittings suit the old-fashioned satisfaction of working with something that once grew along a bank much like this one."
                       }
                     },
                     "Description": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": ""
+                        "0": "The natural grain of willow remains visible beneath the finish of this rod. Its modest fittings suit the old-fashioned satisfaction of working with something that once grew along a bank much like this one."
                       }
                     },
                     "Identified": {
@@ -288191,7 +288212,6 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 64105,
                       "type": "cexolocstring",
                       "value": {
                         "0": ""
@@ -288628,11 +288648,15 @@
                     },
                     "DescIdentified": {
                       "type": "cexolocstring",
-                      "value": {}
+                      "value": {
+                        "0": "This practical forearm covering keeps a chef's sleeve out of the work without adding much ceremony to the uniform. Fine marks near the cuff recall countless hurried reaches across a crowded preparation bench."
+                      }
                     },
                     "Description": {
                       "type": "cexolocstring",
-                      "value": {}
+                      "value": {
+                        "0": "This practical forearm covering keeps a chef's sleeve out of the work without adding much ceremony to the uniform. Fine marks near the cuff recall countless hurried reaches across a crowded preparation bench."
+                      }
                     },
                     "Identified": {
                       "type": "byte",
@@ -289479,11 +289503,15 @@
                     },
                     "DescIdentified": {
                       "type": "cexolocstring",
-                      "value": {}
+                      "value": {
+                        "0": "A chef's working tunic with a clean front and sleeves that gather neatly above the hands. Its real distinction is less visible: reinforced seams in the places a long service is most likely to test."
+                      }
                     },
                     "Description": {
                       "type": "cexolocstring",
-                      "value": {}
+                      "value": {
+                        "0": "A chef's working tunic with a clean front and sleeves that gather neatly above the hands. Its real distinction is less visible: reinforced seams in the places a long service is most likely to test."
+                      }
                     },
                     "Identified": {
                       "type": "byte",
@@ -290142,16 +290170,15 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 14175,
                       "type": "cexolocstring",
                       "value": {
-                        "0": ""
+                        "0": "The joints of this bamboo rod are bound with close, even turns of cord. It carries none of a starport outfitter's elaborate fittings, only the patient workmanship needed for another morning by the water."
                       }
                     },
                     "Description": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": ""
+                        "0": "The joints of this bamboo rod are bound with close, even turns of cord. It carries none of a starport outfitter's elaborate fittings, only the patient workmanship needed for another morning by the water."
                       }
                     },
                     "Identified": {
@@ -290332,16 +290359,15 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 14175,
                       "type": "cexolocstring",
                       "value": {
-                        "0": ""
+                        "0": "Dark carbon sections give this rod a spare, purposeful finish. The fittings have been kept small and tidy, leaving little to distract an angler from the line cutting into the water."
                       }
                     },
                     "Description": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": ""
+                        "0": "Dark carbon sections give this rod a spare, purposeful finish. The fittings have been kept small and tidy, leaving little to distract an angler from the line cutting into the water."
                       }
                     },
                     "Identified": {
@@ -290530,7 +290556,6 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 64105,
                       "type": "cexolocstring",
                       "value": {
                         "0": ""
@@ -292776,11 +292801,15 @@
                     },
                     "DescIdentified": {
                       "type": "cexolocstring",
-                      "value": {}
+                      "value": {
+                        "0": "Smooth silk has been worked around the edge of this carefully fitted bracer. The neat finish suits a formal kitchen, where the presentation of the meal begins well before a guest sees a plate."
+                      }
                     },
                     "Description": {
                       "type": "cexolocstring",
-                      "value": {}
+                      "value": {
+                        "0": "Smooth silk has been worked around the edge of this carefully fitted bracer. The neat finish suits a formal kitchen, where the presentation of the meal begins well before a guest sees a plate."
+                      }
                     },
                     "Identified": {
                       "type": "byte",
@@ -293627,11 +293656,15 @@
                     },
                     "DescIdentified": {
                       "type": "cexolocstring",
-                      "value": {}
+                      "value": {
+                        "0": "The smooth outer panels of this silk tunic have been fitted for a chef who works in view of their guests. Careful tailoring keeps an elegant appearance from becoming an obstacle at a busy counter."
+                      }
                     },
                     "Description": {
                       "type": "cexolocstring",
-                      "value": {}
+                      "value": {
+                        "0": "The smooth outer panels of this silk tunic have been fitted for a chef who works in view of their guests. Careful tailoring keeps an elegant appearance from becoming an obstacle at a busy counter."
+                      }
                     },
                     "Identified": {
                       "type": "byte",
@@ -294321,16 +294354,15 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 14175,
                       "type": "cexolocstring",
                       "value": {
-                        "0": ""
+                        "0": "The pale blank of this rod catches the light along its smooth surface. Its fittings are practical rather than showy, built around the small, repetitive work that makes a fishing day pass unnoticed."
                       }
                     },
                     "Description": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": ""
+                        "0": "The pale blank of this rod catches the light along its smooth surface. Its fittings are practical rather than showy, built around the small, repetitive work that makes a fishing day pass unnoticed."
                       }
                     },
                     "Identified": {
@@ -294511,16 +294543,15 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 14175,
                       "type": "cexolocstring",
                       "value": {
-                        "0": ""
+                        "0": "The bindings of this rod have been worked into a calm, uninterrupted pattern. Its quiet finish seems intended for the angler who counts a peaceful hour beside the water as part of the catch."
                       }
                     },
                     "Description": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": ""
+                        "0": "The bindings of this rod have been worked into a calm, uninterrupted pattern. Its quiet finish seems intended for the angler who counts a peaceful hour beside the water as part of the catch."
                       }
                     },
                     "Identified": {
@@ -296719,7 +296750,6 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 64105,
                       "type": "cexolocstring",
                       "value": {
                         "0": ""
@@ -297187,11 +297217,15 @@
                     },
                     "DescIdentified": {
                       "type": "cexolocstring",
-                      "value": {}
+                      "value": {
+                        "0": "Deeply colored cloth and a restrained decorative seam distinguish this chef's bracer. The ornament stays above the wrist, leaving the busy end of the garment admirably free of distractions."
+                      }
                     },
                     "Description": {
                       "type": "cexolocstring",
-                      "value": {}
+                      "value": {
+                        "0": "Deeply colored cloth and a restrained decorative seam distinguish this chef's bracer. The ornament stays above the wrist, leaving the busy end of the garment admirably free of distractions."
+                      }
                     },
                     "Identified": {
                       "type": "byte",
@@ -298193,11 +298227,15 @@
                     },
                     "DescIdentified": {
                       "type": "cexolocstring",
-                      "value": {}
+                      "value": {
+                        "0": "Subtle color and close-set seams give this chef's tunic a reserved elegance. The workmanship would be at home in an expensive dining room, though its practical pockets remember the kitchen."
+                      }
                     },
                     "Description": {
                       "type": "cexolocstring",
-                      "value": {}
+                      "value": {
+                        "0": "Subtle color and close-set seams give this chef's tunic a reserved elegance. The workmanship would be at home in an expensive dining room, though its practical pockets remember the kitchen."
+                      }
                     },
                     "Identified": {
                       "type": "byte",
@@ -298982,16 +299020,15 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 14175,
                       "type": "cexolocstring",
                       "value": {
-                        "0": ""
+                        "0": "A light, responsive blank gives this rod an almost delicate appearance. Its handle is worn where a patient angler's fingers rest, suggesting that its airy name has survived considerably less airy catches."
                       }
                     },
                     "Description": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": ""
+                        "0": "A light, responsive blank gives this rod an almost delicate appearance. Its handle is worn where a patient angler's fingers rest, suggesting that its airy name has survived considerably less airy catches."
                       }
                     },
                     "Identified": {
@@ -299172,16 +299209,15 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 14175,
                       "type": "cexolocstring",
                       "value": {
-                        "0": ""
+                        "0": "Soft wrapping and neatly seated fittings make this rod pleasant to hold through a long, quiet wait. It seems meant for fishing days measured by the light on the water rather than an appointment chronometer."
                       }
                     },
                     "Description": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": ""
+                        "0": "Soft wrapping and neatly seated fittings make this rod pleasant to hold through a long, quiet wait. It seems meant for fishing days measured by the light on the water rather than an appointment chronometer."
                       }
                     },
                     "Identified": {
@@ -301380,7 +301416,6 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 64105,
                       "type": "cexolocstring",
                       "value": {
                         "0": ""

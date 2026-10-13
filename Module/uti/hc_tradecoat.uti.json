@@ -110,12 +110,14 @@
   },
   "DescIdentified": {
     "type": "cexolocstring",
-    "value": {}
+    "value": {
+      "0": "A tailored coat worn by merchants and household specialists in Eshan City's Highcrest Quarter."
+    }
   },
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": ""
+      "0": "A tailored coat worn by merchants and household specialists in Eshan City's Highcrest Quarter."
     }
   },
   "Identified": {

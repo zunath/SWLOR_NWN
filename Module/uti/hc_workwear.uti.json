@@ -110,12 +110,14 @@
   },
   "DescIdentified": {
     "type": "cexolocstring",
-    "value": {}
+    "value": {
+      "0": "Durable work clothes worn by laborers and maintenance hands in Eshan City's Highcrest Quarter."
+    }
   },
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": ""
+      "0": "Durable work clothes worn by laborers and maintenance hands in Eshan City's Highcrest Quarter."
     }
   },
   "Identified": {

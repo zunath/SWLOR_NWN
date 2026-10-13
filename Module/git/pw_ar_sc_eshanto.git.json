@@ -356,11 +356,15 @@
               },
               "DescIdentified": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "An understated outfit whose strongest details are hidden beneath the surface. Its unremarkable cut would travel through offices and port concourses without giving a witness much to describe afterward."
+                }
               },
               "Description": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "An understated outfit whose strongest details are hidden beneath the surface. Its unremarkable cut would travel through offices and port concourses without giving a witness much to describe afterward."
+                }
               },
               "Identified": {
                 "type": "byte",
@@ -1366,12 +1370,14 @@
               },
               "DescIdentified": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "Soil has a way of finding the seams of this practical farmer's outfit. The pockets are broad, the fastenings uncomplicated, and the sleeves prepared for a day that will outlast any sensible estimate of the work."
+                }
               },
               "Description": {
                 "type": "cexolocstring",
                 "value": {
-                  "0": ""
+                  "0": "Soil has a way of finding the seams of this practical farmer's outfit. The pockets are broad, the fastenings uncomplicated, and the sleeves prepared for a day that will outlast any sensible estimate of the work."
                 }
               },
               "Identified": {

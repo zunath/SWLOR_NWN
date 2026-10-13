@@ -110,12 +110,14 @@
   },
   "DescIdentified": {
     "type": "cexolocstring",
-    "value": {}
+    "value": {
+      "0": "Practical work clothes worn by Cerin Tal in Eshan City's Old Quarter."
+    }
   },
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": ""
+      "0": "Practical work clothes worn by Cerin Tal in Eshan City's Old Quarter."
     }
   },
   "Identified": {

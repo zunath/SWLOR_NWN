@@ -110,12 +110,14 @@
   },
   "DescIdentified": {
     "type": "cexolocstring",
-    "value": {}
+    "value": {
+      "0": "Gilded armor worn by Thyrsian exiles who once served the Revanite Order."
+    }
   },
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": ""
+      "0": "Gilded armor worn by Thyrsian exiles who once served the Revanite Order."
     }
   },
   "Identified": {

@@ -321,11 +321,15 @@
               },
               "DescIdentified": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "A basic leather tunic worn by Raalo Kes in Eshan's Scraplands."
+                }
               },
               "Description": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "A basic leather tunic worn by Raalo Kes in Eshan's Scraplands."
+                }
               },
               "Identified": {
                 "type": "byte",

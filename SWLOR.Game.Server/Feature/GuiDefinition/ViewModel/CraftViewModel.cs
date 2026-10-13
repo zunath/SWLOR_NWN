@@ -1356,8 +1356,31 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var playerId = GetObjectUUID(Player);
             var dbPlayer = DB.Get<Player>(playerId);
             var recipe = Craft.GetRecipe(_recipe);
-            var item = CreateItemOnObject(recipe.Resref, Player, recipe.Quantity);
-            SetLocalBool(item, Item.PlayerProducedItemVariable, true);
+            IReadOnlyList<uint> outputItems;
+            if (recipe.Category == RecipeCategoryType.Food && recipe.Quantity > 1)
+            {
+                if (!RecipeOutputFactory.TryCreate(recipe,
+                        stackSize => CreateItemOnObject(recipe.Resref, Player, stackSize),
+                        GetIsObjectValid,
+                        outputItem => DestroyObject(outputItem),
+                        out outputItems))
+                {
+                    StatusText = "Make room in your inventory, then use a crafting action to collect your finished food.";
+                    StatusColor = GuiColor.Red;
+                    return;
+                }
+            }
+            else
+            {
+                outputItems = RecipeOutputFactory.Create(recipe,
+                    stackSize => CreateItemOnObject(recipe.Resref, Player, stackSize));
+            }
+
+            var item = outputItems[0];
+            foreach (var outputItem in outputItems)
+            {
+                SetLocalBool(outputItem, Item.PlayerProducedItemVariable, true);
+            }
             var firstTime = !dbPlayer.CraftedRecipes.ContainsKey(_recipe);
             var propertyTransferChance = (int)(((float)_quality / (float)_maxQuality) * 100);
             var qualityPercent = (float)_quality / (float)_maxQuality;
@@ -1371,7 +1394,10 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var minimumVendorBonus = Math.Max(25, (int)Math.Round(recipe.Level * 1.6f));
             const float CraftedVendorBonusMultiplier = 1.225f;
             var addGoldPiece = (int)Math.Round(Math.Max(scaledByQuality, minimumVendorBonus) * CraftedVendorBonusMultiplier);
-            ItemPlugin.SetAddGoldPieceValue(item, addGoldPiece);
+            foreach (var outputItem in outputItems)
+            {
+                ItemPlugin.SetAddGoldPieceValue(outputItem, addGoldPiece);
+            }
 
             // Apply item properties provided by enhancements, provided the transfer check passes.
             var allProperties = _itemPropertiesEnhancement1
@@ -1398,7 +1424,10 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 {
                     foreach (var property in propertiesToApply)
                     {
-                        ApplyProperty(item, property);
+                        foreach (var outputItem in outputItems)
+                        {
+                            ApplyProperty(outputItem, property);
+                        }
                     }
 
                     SendMessageToPC(Player, ColorToken.Green("Enhancement applied successfully."));
@@ -1414,17 +1443,23 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             {
                 var durationBonus = (int)qualityPercent;
                 var ip = ItemPropertyCustom(ItemPropertyType.FoodBonus, (int)FoodItemPropertySubType.Duration, durationBonus);
-                BiowareXP2.IPSafeAddItemProperty(item, ip, 0.0f, AddItemPropertyPolicy.IgnoreExisting, false, false);
+                foreach (var outputItem in outputItems)
+                {
+                    BiowareXP2.IPSafeAddItemProperty(outputItem, ip, 0.0f, AddItemPropertyPolicy.IgnoreExisting, false, false);
+                }
 
                 // Also increase charges based on the blueprint upgrade level
                 if (_hasBlueprint)
                 {
-                    var charges = GetItemCharges(item) + _activeBlueprint.Level;
-                    SetItemCharges(item, charges);
+                    foreach (var outputItem in outputItems)
+                    {
+                        var charges = GetItemCharges(outputItem) + _activeBlueprint.Level;
+                        SetItemCharges(outputItem, charges);
+                    }
                 }
             }
 
-            ProcessBlueprintBonuses(item);
+            ProcessBlueprintBonuses(outputItems);
 
             // Add the recipe to the completed list (unlocks auto-crafting)
             if (firstTime)
@@ -1469,7 +1504,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             Log.Write(LogGroup.Crafting, $"{GetName(Player)} ({GetObjectUUID(Player)}) successfully crafted '{GetName(item)}'.");
         }
 
-        private void ProcessBlueprintBonuses(uint item)
+        private void ProcessBlueprintBonuses(IReadOnlyList<uint> outputItems)
         {
             if (!_hasBlueprint)
                 return;
@@ -1493,7 +1528,10 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
                 foreach (var ip in Craft.BuildItemPropertiesForEnhancement(bonus.Type, bonus.Amount, bonus.DamageType))
                 {
-                    ApplyProperty(item, ip);
+                    foreach (var outputItem in outputItems)
+                    {
+                        ApplyProperty(outputItem, ip);
+                    }
                 }
 
                 var subTypeDetail = Craft.GetEnhancementSubType(bonus.Type);
@@ -1507,12 +1545,18 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             // Guaranteed bonuses
             foreach (var ip in _activeBlueprint.GuaranteedBonuses)
             {
-                ApplyProperty(item, ip);
+                foreach (var outputItem in outputItems)
+                {
+                    ApplyProperty(outputItem, ip);
+                }
             }
 
             // Identify the blueprint level on the finished item
             var blueprintLevelIP = ItemPropertyCustom(ItemPropertyType.Blueprint, (int)BlueprintSubType.Level, _activeBlueprint.Level);
-            BiowareXP2.IPSafeAddItemProperty(item, blueprintLevelIP, 0f, AddItemPropertyPolicy.ReplaceExisting, true, false);
+            foreach (var outputItem in outputItems)
+            {
+                BiowareXP2.IPSafeAddItemProperty(outputItem, blueprintLevelIP, 0f, AddItemPropertyPolicy.ReplaceExisting, true, false);
+            }
         }
 
         private void ProcessFailure()
@@ -1629,6 +1673,15 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             int durabilityLoss,
             Action successAction)
         {
+            // A finished food batch may be waiting for inventory space. Retry delivery
+            // before spending resources or allowing another quality/progress action.
+            if (IsInCraftMode && _progress >= _maxProgress)
+            {
+                ProcessSuccess();
+                RefreshRecipeStats();
+                return;
+            }
+
             if (_cp < cpCost)
             {
                 StatusText = "Not enough CP!";

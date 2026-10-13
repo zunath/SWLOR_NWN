@@ -12,14 +12,18 @@ Two perk lines:
 - **Barrage:** sustained pressure against one enemy; steady fire and stamina management.
 - **Crossfire:** spreading damage across two or three enemies; weaker against a lone target.
 
-**Cost:** 10 SP shared training + 50 SP per line. One complete line costs 60 SP; both cost 110 SP. Armor's existing Dual Wield costs another 9 SP if fully purchased. No Single Weapon/Doublehand damage bonuses while paired.
+**Cost:** Each line has 10 perks with 18 purchasable ranks, costing 60 SP. Both complete lines cost 120 SP. Armor's existing Dual Wield costs another 9 SP if fully purchased. No Single Weapon/Doublehand damage bonuses while paired.
 
 ```text
-Shared perk       | Skill ranks | SP/rank | Effect
-------------------+-------------+---------+----------------------
-Paired Handling   | 8 / 22 / 45 | 2/4/4   | +10/20/25% ordinary
-                  |             |         | Twin shot damage.
+Line              | Ranked ordinary-damage perk
+------------------+---------------------------------------------
+Barrage           | Matched Rhythm I-III
+Crossfire         | Paired Handling I-III
+Both progressions | Skill ranks 8/22/45; SP prices 2/4/4;
+                  | +10/20/25% ordinary Twin shot damage.
 ```
+
+These are separate purchases. If you own both, use the higher damage bonus; they do not stack. There is no shared perk line.
 
 **Reading the tables:** effects below are at maximum perk rank. Rank lists show purchase unlocks; SP is the total for that perk. `D` is the firing gun's weapon damage rating, before normal combat calculations. `STM/CD` means stamina cost / cooldown. Each shot rolls separately.
 
@@ -35,6 +39,9 @@ Paired Volley          | One shot per gun at one enemy: D+19 each.
 
 Alternating Fire       | Every 3 landed ordinary Twin shots restores
 5; 2 SP                | 1 STM, at most once per 6s. Misses don't reset.
+
+Matched Rhythm I-III   | +25% ordinary Twin shot damage. Does not
+8/22/45; 10 SP         | stack with Paired Handling.
 
 Focused Burst          | One shot per gun at one enemy: D+34 each.
 10/30/38; 10 SP         | STM/CD: 10 / 24s.
@@ -74,6 +81,9 @@ Split Shot             | One shot per gun at 2 enemies: D+26 each.
 
 Efficient Fire         | A Crossfire-line ability landing any hit
 5; 2 SP                | restores 1 STM, at most once per 8s.
+
+Paired Handling I-III  | +25% ordinary Twin shot damage. Does not
+8/22/45; 10 SP         | stack with Matched Rhythm.
 
 Crossfire              | Up to 3 enemies, one shot each: D+20.
 10/30/38; 10 SP         | Solo: add off-hand follow-up at 75% damage.
@@ -118,7 +128,7 @@ Twin Suns / Two Fronts              | Global Capstone: 90s
 
 - Quick Draw keeps its own cooldown if you also train Pistol. Existing Pistol abilities keep their skill scaling and normal shot count.
 - Both Twin stances are exclusive with other stances, including Gambler. Haste respects the existing cap.
-- Shared training is purchased once. Its damage bonus adds to Converging Fire/Twin Suns. Wide Coverage and Two Fronts add to +30%, rather than multiplying.
+- The higher handling bonus adds to Converging Fire/Twin Suns. Wide Coverage and Two Fronts add to +30%, rather than multiplying.
 - Ordinary shots use their own gun's on-hit effects. New multi-shot abilities permit one weapon on-hit proc per enemy per cast and one notification to critical-trigger effects per cast. Refunds cannot multiply per impact.
 - No Evasion reduction, crowd control, free extra attacks, or cooldown resets. Capstones take 2s to activate; misses still consume their follow-up charges.
 

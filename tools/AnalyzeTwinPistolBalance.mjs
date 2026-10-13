@@ -14,12 +14,14 @@
 // Rapid Shot assumed active, Reload Tempo duty approximated from two rolls,
 // High Noon active for 30% of the fight, ability crit swept 22/30/37% to
 // represent Deadeye Reload (before Quick Draw/Fan bonuses).
-// Twin: Dual Wield III, shared +25% ordinary damage, +5% Barrage focus,
+// Twin: Dual Wield III, each line's +25% ordinary damage, +5% Barrage focus,
 // each stance +10% haste; Crossfire reduces primary-target damage by 10%.
 // Barrage sustain realizes 75% of its 1 STM/6s ceiling. Crossfire's pending
 // discount uses a conservative hitChance^2 realization. No damage-triggered
 // Cool Under Fire refunds are assumed. New capstones are intentionally excluded.
-// Full Twin hybrid costs 119 SP including Armor, versus 69 for one line;
+// Handling bonuses use the higher value, never add together.
+// Both complete Twin lines cost 129 SP including Armor, versus 69 for one line;
+// a hybrid can omit the redundant handling ranks for the same output at 119 SP.
 // its row is a marginal-investment illustration, not an equal-SP comparison.
 
 import assert from 'node:assert/strict';

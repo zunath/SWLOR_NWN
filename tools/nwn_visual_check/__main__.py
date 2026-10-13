@@ -31,7 +31,7 @@ def digest(path):
 
 
 def main(argv=None):
-    parser = argparse.ArgumentParser(description='Capture a silent NWN client on an isolated private desktop. Windows and Python 3.12+ required.')
+    parser = argparse.ArgumentParser(description='Capture a silent NWN client on an isolated private desktop. Windows 10+ and Python 3.12+ required.')
     inputs = parser.add_mutually_exclusive_group(required=True)
     inputs.add_argument('--module', type=Path, help='Already packed faithful review module')
     inputs.add_argument('--sources', type=Path, help='Flat directory of review GFF JSON, NSS and binary resources')
@@ -45,8 +45,8 @@ def main(argv=None):
     parser.add_argument('--timeout', type=float, default=120, help='Client wall-clock limit, at most 600 seconds')
     args = parser.parse_args(argv)
     captures = parse_captures(args.capture)
-    if sys.platform != 'win32' or sys.version_info < (3,12):
-        raise RuntimeError('Native verification requires Windows and Python 3.12+')
+    if sys.platform != 'win32' or sys.version_info < (3,12) or sys.getwindowsversion().major < 10:
+        raise RuntimeError('Native verification requires Windows 10+ and Python 3.12+')
     if not 0 < args.timeout <= 600:
         raise ValueError('Timeout must be between 0 and 600 seconds')
     from . import offline_client
@@ -61,6 +61,7 @@ def main(argv=None):
     owned = profile.create_profile()
     state = {'pid':None,'frames':None}
     manifest = {'success':False,'client':str(client),'profile':str(owned),'captures':{},'inputs':{},'profile_removed':False}
+    run_error = None
     try:
         if args.hak_dir:
             for hak in sorted(args.hak_dir.glob('*.hak')):
@@ -102,29 +103,38 @@ def main(argv=None):
             raise RuntimeError('Client exited before required evidence was captured')
         manifest['success'] = True
     except BaseException as error:
+        run_error = error
         manifest['failure'] = str(error)
         raise
     finally:
-        try:
-            if state['frames']:
-                state['frames'].close()
-            (output / 'client.log').write_text(profile.log_text(owned),encoding='utf8')
-            if (owned / 'isolation.json').exists():
-                profile.copy_input(owned / 'isolation.json',output / 'isolation.json')
-        except BaseException as error:
-            manifest['success'] = False
-            manifest['evidence_failure'] = str(error)
-            raise
-        finally:
+        final_errors=[]
+
+        def finish(step, action):
+            """Preserve the primary failure while attempting every evidence/cleanup step."""
             try:
-                profile.cleanup(owned)
-                manifest['profile_removed'] = True
+                action()
             except BaseException as error:
-                manifest['success'] = False
-                manifest['cleanup_failure'] = str(error)
-                raise
-            finally:
-                (output / 'manifest.json').write_text(json.dumps(manifest,indent=2)+'\n',encoding='utf8')
+                final_errors.append(error)
+                manifest['success']=False
+                manifest.setdefault(step,str(error))
+
+        def remove_profile():
+            """Do not delete a profile still used by an unconfirmed owned process."""
+            if offline_client.has_retained_profile(owned):
+                raise RuntimeError('Owned process control retained; preserve profile for shutdown retry')
+            profile.cleanup(owned)
+            manifest['profile_removed']=True
+
+        if state['frames']:
+            finish('capture_cleanup_failure',state['frames'].close)
+        finish('evidence_failure',lambda: (output/'client.log').write_text(profile.log_text(owned),encoding='utf8'))
+        if (owned/'isolation.json').exists():
+            finish('isolation_copy_failure',lambda: profile.copy_input(owned/'isolation.json',output/'isolation.json'))
+        finish('cleanup_failure',remove_profile)
+        finish('manifest_failure',lambda: (output/'manifest.json').write_text(json.dumps(manifest,indent=2)+'\n',encoding='utf8'))
+        if final_errors:
+            errors=([run_error] if run_error is not None else [])+final_errors
+            raise BaseExceptionGroup('Client run/evidence/cleanup failed',errors)
     print('Native evidence saved to '+str(output),flush=True)
 
 

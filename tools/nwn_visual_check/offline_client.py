@@ -15,6 +15,9 @@ import sys
 from .profile import validate_profile
 from .result import ClientRun
 from .private_desktop import PrivateDesktop
+from .process_job import ProcessJob
+
+_retained_processes = {}
 
 class STARTUPINFO(ctypes.Structure):
     _fields_ = [("cb",w.DWORD),("lpReserved",w.LPWSTR),("lpDesktop",w.LPWSTR),("lpTitle",w.LPWSTR),
@@ -33,8 +36,8 @@ class SECURITY_ATTRIBUTES(ctypes.Structure):
     _fields_ = [("nLength",w.DWORD),("lpSecurityDescriptor",w.LPVOID),("bInheritHandle",w.BOOL)]
 
 def require_supported():
-    if sys.platform != "win32":
-        raise RuntimeError("Native client qualification requires Windows AppContainer isolation")
+    if sys.platform != "win32" or sys.getwindowsversion().major < 10:
+        raise RuntimeError("Native client qualification requires Windows 10+ AppContainer isolation")
 
 def _delete_appcontainer_profile(userenv, name):
     """Unregister the temporary container, reporting native deletion failures."""
@@ -43,8 +46,41 @@ def _delete_appcontainer_profile(userenv, name):
         raise OSError(f'DeleteAppContainerProfile: {result:#x}')
 
 
+def _terminate_process(kernel, handle):
+    """Return whether the direct termination request was accepted."""
+    return bool(kernel.TerminateProcess(handle,1))
+
+
+def has_retained_profile(profile):
+    """Consult live ownership state even when isolation evidence could not be written."""
+    return any(record[4] == Path(profile).resolve() for record in _retained_processes.values())
+
+
+def retry_retained_processes():
+    """Retry shutdown with retained handles if Windows previously refused exit."""
+    errors=[]
+    for pid,(kernel,process,job,desktop,profile) in list(_retained_processes.items()):
+        try:
+            if kernel.WaitForSingleObject(process.hProcess,0)!=0:
+                _terminate_process(kernel,process.hProcess)
+                job.close()
+                if kernel.WaitForSingleObject(process.hProcess,5000)!=0:
+                    raise RuntimeError(f'Owned process {pid} has not exited')
+            job.close()
+            if desktop:
+                desktop.close()
+            kernel.CloseHandle(process.hThread)
+            kernel.CloseHandle(process.hProcess)
+            del _retained_processes[pid]
+        except BaseException as error:
+            errors.append(error)
+    if errors:
+        raise BaseExceptionGroup('Retained owned processes still need cleanup',errors)
+
+
 def run(command, *, profile, cwd, timeout, on_start=None, until=None):
     require_supported()
+    retry_retained_processes()
     profile = Path(profile)
     validate_profile(profile, command, timeout)
     profile = profile.resolve()
@@ -80,7 +116,7 @@ def run(command, *, profile, cwd, timeout, on_start=None, until=None):
     sid=w.LPVOID();name='swlor-review-'+uuid.uuid4().hex
     hr=userenv.CreateAppContainerProfile(name,name,'Owned temporary offline qualification probe',None,0,ctypes.byref(sid))
     if hr:raise OSError(f'CreateAppContainerProfile: {hr:#x}')
-    sid_text=w.LPWSTR();attributes=None;process=PROCESS_INFORMATION();grant=False;capture_handle=None;input_handle=None;initialized=False;desktop=None
+    sid_text=w.LPWSTR();attributes=None;process=PROCESS_INFORMATION();grant=False;capture_handle=None;input_handle=None;initialized=False;desktop=None;job=None
     evidence={'profile_name':name,'capabilities':[],'loopback_exemption':False,'timed_out':False}
     run_error = None
     try:
@@ -92,10 +128,12 @@ def run(command, *, profile, cwd, timeout, on_start=None, until=None):
         grant=True  # Recursive grants can partially succeed before icacls reports an error.
         subprocess.run(['icacls',str(profile),'/grant',f'*{sid_text.value}:(OI)(CI)F','/T','/Q'],check=True,capture_output=True)
         subprocess.run(['icacls',str(profile),'/setintegritylevel','(OI)(CI)L','/T','/Q'],check=True,capture_output=True)
+        job=ProcessJob()
+        evidence['job_kill_on_close']=True
         size=ctypes.c_size_t()
-        kernel.InitializeProcThreadAttributeList(None,1,0,ctypes.byref(size))
+        kernel.InitializeProcThreadAttributeList(None,3,0,ctypes.byref(size))
         attributes=ctypes.create_string_buffer(size.value)
-        if not kernel.InitializeProcThreadAttributeList(attributes,1,0,ctypes.byref(size)):raise ctypes.WinError(ctypes.get_last_error())
+        if not kernel.InitializeProcThreadAttributeList(attributes,3,0,ctypes.byref(size)):raise ctypes.WinError(ctypes.get_last_error())
         initialized=True
         caps=SECURITY_CAPABILITIES(sid,None,0,0)
         if not kernel.UpdateProcThreadAttribute(attributes,0,0x20009,ctypes.byref(caps),ctypes.sizeof(caps),None,None):raise ctypes.WinError(ctypes.get_last_error())
@@ -111,10 +149,21 @@ def run(command, *, profile, cwd, timeout, on_start=None, until=None):
         if input_handle==w.HANDLE(-1).value:
             input_handle=None;raise ctypes.WinError(ctypes.get_last_error())
         startup.StartupInfo.hStdInput=input_handle
+        # stdout/stderr share one handle. Inherit only it and stdin, never the job
+        # or any unrelated inheritable handle held by the calling interpreter.
+        allowed_handles=(w.HANDLE*2)(input_handle,capture_handle)
+        if not kernel.UpdateProcThreadAttribute(attributes,0,0x20002,allowed_handles,ctypes.sizeof(allowed_handles),None,None):
+            raise ctypes.WinError(ctypes.get_last_error())
+        jobs=(w.HANDLE*1)(job.handle)
+        # JOB_LIST assigns the kill-on-close job atomically as the process is created.
+        if not kernel.UpdateProcThreadAttribute(attributes,0,0x2000d,jobs,ctypes.sizeof(jobs),None,None):
+            raise ctypes.WinError(ctypes.get_last_error())
+        evidence['inherited_handles']='stdin and combined stdout/stderr only'
         startup.lpAttributeList=ctypes.cast(attributes,w.LPVOID)
         line=ctypes.create_unicode_buffer(subprocess.list2cmdline(command))
         if not kernel.CreateProcessW(str(command[0]),line,None,None,True,0x80000|4,None,str(cwd),ctypes.byref(startup),ctypes.byref(process)):
             raise ctypes.WinError(ctypes.get_last_error())
+        evidence['job_assigned_at_creation']=True
         token=w.HANDLE()
         if not advapi.OpenProcessToken(process.hProcess,8,ctypes.byref(token)):raise ctypes.WinError(ctypes.get_last_error())
         try:
@@ -139,15 +188,10 @@ def run(command, *, profile, cwd, timeout, on_start=None, until=None):
                 if actual_desktop:evidence['verified_thread_desktop']=actual_desktop
             if until is not None and until():
                 evidence['stopped_on_result']=True
-                kernel.TerminateProcess(process.hProcess,1)
-                kernel.WaitForSingleObject(process.hProcess,5000)
                 break
             if time.monotonic()>=deadline:
                 evidence['timed_out']=True
-                kernel.TerminateProcess(process.hProcess,1)
-                kernel.WaitForSingleObject(process.hProcess,5000)
                 break
-        code=w.DWORD();kernel.GetExitCodeProcess(process.hProcess,ctypes.byref(code));evidence['exit_code']=code.value
     except BaseException as error:
         run_error = error
         evidence['failure']=str(error)
@@ -164,25 +208,47 @@ def run(command, *, profile, cwd, timeout, on_start=None, until=None):
                 evidence.setdefault('cleanup_errors', []).append({'step':step,'error':str(error)})
 
         def stop_owned_process():
-            """Stop the owned process before releasing its handles and desktop."""
-            if kernel.WaitForSingleObject(process.hProcess,0)==258:
-                kernel.TerminateProcess(process.hProcess,1)
-                kernel.WaitForSingleObject(process.hProcess,5000)
+            """Keep the process handle until direct/job/kill-on-close shutdown settles."""
+            if kernel.WaitForSingleObject(process.hProcess,0)!=0:
+                if _terminate_process(kernel,process.hProcess):
+                    kernel.WaitForSingleObject(process.hProcess,5000)
+                if kernel.WaitForSingleObject(process.hProcess,0)!=0:
+                    evidence['termination_fallback']='job'
+                    try:
+                        job.terminate()
+                    except OSError as error:
+                        evidence['job_termination_error']=str(error)
+                    kernel.WaitForSingleObject(process.hProcess,5000)
+                if kernel.WaitForSingleObject(process.hProcess,0)!=0:
+                    evidence['termination_fallback']='kill-on-close'
+                    job.close()
+                    kernel.WaitForSingleObject(process.hProcess,5000)
             evidence['process_exited'] = kernel.WaitForSingleObject(process.hProcess,0) == 0
             if not evidence['process_exited']:
-                raise RuntimeError('Owned client failed to exit')
+                raise RuntimeError('Owned client failed to exit; control handles retained')
+            code=w.DWORD()
+            if not kernel.GetExitCodeProcess(process.hProcess,ctypes.byref(code)):
+                raise ctypes.WinError(ctypes.get_last_error())
+            evidence['exit_code']=code.value
 
         if process.hProcess:
             clean('stop process', stop_owned_process)
-            clean('close thread handle', lambda: kernel.CloseHandle(process.hThread))
-            clean('close process handle', lambda: kernel.CloseHandle(process.hProcess))
+            if evidence.get('process_exited'):
+                clean('close process job', job.close)
+                clean('close thread handle', lambda: kernel.CloseHandle(process.hThread))
+                clean('close process handle', lambda: kernel.CloseHandle(process.hProcess))
+            else:
+                _retained_processes[process.dwProcessId]=(kernel,process,job,desktop,profile)
+                evidence['process_control_retained']=True
+        elif job:
+            clean('close process job', job.close)
         if capture_handle:
             clean('close capture handle', lambda: kernel.CloseHandle(capture_handle))
         if input_handle:
             clean('close input handle', lambda: kernel.CloseHandle(input_handle))
         if initialized:
             clean('delete process attributes', lambda: kernel.DeleteProcThreadAttributeList(attributes))
-        if desktop:
+        if desktop and not evidence.get('process_control_retained'):
             clean('close desktop', desktop.close)
         if grant:
             clean('revoke profile ACL', lambda: subprocess.run(

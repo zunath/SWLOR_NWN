@@ -13,6 +13,7 @@ sys.path.insert(0,str(Path(__file__).resolve().parents[1]))
 from nwn_visual_check import offline_client, private_desktop, profile
 from nwn_visual_check.__main__ import parse_captures, main
 from nwn_visual_check.result import ClientRun
+from nwn_visual_check.process_job import ProcessJob
 
 
 class ProfileBoundaryTests(unittest.TestCase):
@@ -172,8 +173,10 @@ class EvidenceCleanupTests(unittest.TestCase):
                         patch('nwn_visual_check.profile.create_profile',return_value=owned), \
                         patch('nwn_visual_check.offline_client.run',return_value=ClientRun(0,'',True,False)), \
                         patch.object(Path,'write_text',fail_log):
-                    with self.assertRaisesRegex(OSError,'Evidence storage failed'):
+                    with self.assertRaises(ExceptionGroup) as raised:
                         main(['--module',str(fixture),'--output',str(root/'evidence'),'--capture','READY=close'])
+                self.assertTrue(any(isinstance(error,RuntimeError) and 'before required evidence' in str(error) for error in raised.exception.exceptions))
+                self.assertTrue(any(isinstance(error,OSError) and str(error)=='Evidence storage failed' for error in raised.exception.exceptions))
                 self.assertFalse(owned.exists())
                 manifest=json.loads((root/'evidence/manifest.json').read_text())
                 self.assertFalse(manifest['success'])
@@ -181,6 +184,29 @@ class EvidenceCleanupTests(unittest.TestCase):
                 self.assertEqual(manifest['evidence_failure'],'Evidence storage failed')
             finally:
                 if owned.exists():profile.cleanup(owned)
+
+    @unittest.skipUnless(sys.platform == 'win32', 'CLI requires Windows')
+    def test_retained_process_profile_is_preserved_without_isolation_file(self):
+        owned=profile.create_profile()
+        sentinel=0x7ffffffe
+        offline_client._retained_processes[sentinel]=(None,None,None,None,owned)
+        with tempfile.TemporaryDirectory() as temporary:
+            root=Path(temporary);fixture=root/'fixture.mod';fixture.write_bytes(b'fixture')
+            try:
+                with patch('nwn_visual_check.module.discover_client',return_value=Path('C:/nwmain.exe')), \
+                        patch('nwn_visual_check.profile.create_profile',return_value=owned), \
+                        patch('nwn_visual_check.offline_client.run',side_effect=RuntimeError('Shutdown unconfirmed')):
+                    with self.assertRaises(ExceptionGroup):
+                        main(['--module',str(fixture),'--output',str(root/'evidence'),'--capture','READY=close'])
+                self.assertTrue(owned.exists())
+                self.assertFalse((owned/'isolation.json').exists())
+                manifest=json.loads((root/'evidence/manifest.json').read_text())
+                self.assertFalse(manifest['success'])
+                self.assertFalse(manifest['profile_removed'])
+                self.assertIn('preserve profile',manifest['cleanup_failure'])
+            finally:
+                del offline_client._retained_processes[sentinel]
+                profile.cleanup(owned)
 
 
 @unittest.skipUnless(sys.platform=='win32' and os.environ.get('SWLOR_NATIVE_ISOLATION_TESTS')=='1','Set SWLOR_NATIVE_ISOLATION_TESTS=1 for actual Windows probes')
@@ -260,6 +286,44 @@ class WindowsIsolationTests(unittest.TestCase):
         self.assertNotIn('pid',evidence)
         permissions=subprocess.run(['icacls',str(self.owned)],check=True,capture_output=True,text=True).stdout
         self.assertNotIn(evidence['appcontainer_sid'],permissions)
+
+    def test_failed_process_termination_uses_job_and_confirms_exit(self):
+        with patch.object(offline_client,'_terminate_process',return_value=False):
+            result=offline_client.run(self.command('Start-Sleep -Seconds 20'),profile=self.owned,cwd=self.owned,timeout=5,until=lambda:True)
+        self.assertTrue(result.stopped)
+        evidence=self.evidence()
+        self.assertTrue(evidence['job_assigned_at_creation'])
+        self.assertTrue(evidence['job_kill_on_close'])
+        self.assertTrue(evidence['process_exited'])
+        self.assertEqual(evidence['termination_fallback'],'job')
+
+    def test_failed_process_and_job_termination_use_kill_on_close(self):
+        with patch.object(offline_client,'_terminate_process',return_value=False), \
+                patch.object(ProcessJob,'terminate',side_effect=OSError('Simulated job termination refusal')):
+            result=offline_client.run(self.command('Start-Sleep -Seconds 20'),profile=self.owned,cwd=self.owned,timeout=5,until=lambda:True)
+        self.assertTrue(result.stopped)
+        evidence=self.evidence()
+        self.assertTrue(evidence['process_exited'])
+        self.assertEqual(evidence['termination_fallback'],'kill-on-close')
+        self.assertFalse(offline_client._retained_processes)
+
+    def test_unrelated_inheritable_file_handle_does_not_reach_isolated_child(self):
+        import msvcrt
+        marker='unrelated-parent-handle-content'
+        with tempfile.TemporaryDirectory() as temporary:
+            source=Path(temporary)/'parent-only.txt';source.write_text(marker)
+            with source.open('rb',buffering=0) as stream:
+                os.set_inheritable(stream.fileno(),True)
+                handle=msvcrt.get_osfhandle(stream.fileno())
+                code=f"$h=[Microsoft.Win32.SafeHandles.SafeFileHandle]::new([IntPtr]::new({handle}),$false);try{{$s=[IO.FileStream]::new($h,[IO.FileAccess]::Read);$b=New-Object byte[] 128;$n=$s.Read($b,0,$b.Length);Write-Output ([Text.Encoding]::UTF8.GetString($b,0,$n));$s.Dispose()}}catch{{Write-Output 'handle denied'}};$h.Dispose();Write-Output 'finished'"
+                command=self.command(code)
+                control=subprocess.run(command,check=True,capture_output=True,text=True,timeout=20,close_fds=False,creationflags=subprocess.CREATE_NO_WINDOW)
+                self.assertIn(marker,control.stdout)
+                stream.seek(0)
+                result=offline_client.run(command,profile=self.owned,cwd=self.owned,timeout=20)
+                self.assertNotIn(marker,result.output)
+                self.assertIn('finished',result.output)
+        self.assertEqual(self.evidence()['inherited_handles'],'stdin and combined stdout/stderr only')
 
     def test_zero_capability_process_cannot_reach_verified_loopback_receiver(self):
         with socket.socket(socket.AF_INET,socket.SOCK_DGRAM) as receiver:

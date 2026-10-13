@@ -2,13 +2,13 @@
 
 ## Design
 
-Twin Pistol is a separate combat skill for fighting with a normal main-hand pistol and a simulated companion pistol in the left hand. Its first perk line rewards sustained fire, coordinated hits, and stamina management. Single Pistol keeps its harder individual hits, existing critical-hit specialization, and shield option.
+Twin Pistol is a separate combat skill for fighting with a normal main-hand pistol and a simulated companion pistol in the left hand. **Barrage** rewards sustained pressure on one enemy. **Crossfire** rewards spreading shots across two or three enemies, accepting lower single-target damage. Single Pistol keeps its harder individual hits, critical-hit specialization, mobility/control choices, and shield option.
 
-Twin Pistol has ranks 0 through 50, contributes to the existing 400-rank skill cap, and uses the Weapon combat-point category. It does not require Pistol ranks. The first line contains ten perks with eighteen purchasable ranks costing 60 SP in total. Armor's existing Dual Wield ranks remain optional and cost another 9 SP.
+Twin Pistol has ranks 0 through 50, contributes to the existing 400-rank skill cap, and uses the Weapon combat-point category. It does not require Pistol ranks. Shared Paired Handling training costs 10 SP; each line costs another 50 SP. A complete standalone line therefore costs 60 SP, and both lines cost 110 SP because shared training is purchased once. Armor's existing Dual Wield ranks remain optional and cost another 9 SP. There are 19 distinct perks and 33 purchasable ranks across the full skill.
 
-The skill name is **Twin Pistol** throughout player-facing text. Akimbo is the name of its stance, not a replacement skill name. Add new identifiers and resource rows; do not reuse retired skill, perk, base-item, or TLK definitions.
+The skill name is **Twin Pistol** throughout player-facing text. Akimbo Stance belongs to Barrage; Crossfire Stance belongs to Crossfire. Add new identifiers and resource rows; do not reuse retired skill, perk, base-item, or TLK definitions.
 
-This is the implementation design, not a record of shipped functionality. Numerical values are initial tuning values. Release depends on the balance and engine acceptance criteria below.
+This is a revised proposal for feedback, not shipped functionality. Values have undergone a reproducible formula/resource-budget pass; capstones, leveling, PvP, and engine timing still need validation. See the completed analysis and release criteria below. The companion [Discord feedback draft](TwinPistolDiscordFeedback.md) presents the same values for discussion.
 
 ## Skill and equipment progression
 
@@ -78,16 +78,16 @@ Each ability pays STM and starts its cooldown once. Its impacts may critically h
 
 Purchased Pistol abilities remain usable with an eligible main-hand pistol in a pair and retain their original Pistol skill, impact count, and main-hand damage source. They receive no Single Weapon bonus while paired. Double Shot stays at two impacts and never receives an automatic companion copy. Pistol-specific passive selectors continue matching Pistol; generic ranged and unrestricted effects may still apply to Twin Pistol according to their existing declarations. Do not broaden all Pistol selectors to include Twin Pistol.
 
-Shared cooldowns limit additional burst from cross-training:
+Selective shared cooldowns limit additional burst while leaving a useful basic-attack option for Pistol cross-training:
 
-| Twin Pistol ability | Existing shared recast group | Base cooldown |
+| Twin Pistol abilities | Shared recast group | Base cooldown |
 |---|---|---:|
-| Paired Volley | Quick Draw | 18 seconds |
-| Crossfire | Double Shot | 24 seconds |
-| Sweeping Salvo | Fan the Hammer | 30 seconds |
-| Twin Suns | Dead Man's Hand | 90 seconds |
+| Paired Volley / Split Shot | New: Twin Volley | 18 seconds |
+| Focused Burst / Crossfire | Existing: Double Shot | 24 seconds |
+| Controlled Burst / Sweeping Salvo | Existing: Fan the Hammer | 30 seconds |
+| Twin Suns / Two Fronts | Existing: Capstone | 90 seconds |
 
-Use the existing group identities and explain sharing in descriptions. Do not rename existing Pistol cooldowns. Akimbo Stance has its own 30-second recast and participates in existing stance exclusivity.
+Quick Draw retains its independent cooldown. Buying it adds a basic attack at the cost of Pistol ranks, SP, and STM; it never gains an extra companion impact. Dead Man's Hand already uses the global Capstone group, so both new finishers share that group with all existing capstones. Use these existing identities and explain sharing in descriptions; do not rename existing Pistol cooldowns. Each new stance has a 30-second recast and participates in existing stance exclusivity, including Gambler Stance. Standard attacks use existing weapon ability timing; both capstones have a two-second activation.
 
 Queued abilities reserve and replace exactly one eligible landed ordinary roll. Other budgeted rolls remain ordinary attacks. Count limited haste/no-delay charges per actual attempted roll, including misses. Grant effects earned during a budgeted cycle only when they can no longer be spent retroactively by that cycle.
 
@@ -95,45 +95,61 @@ Queued abilities reserve and replace exactly one eligible landed ordinary roll. 
 
 Each rank requires the listed Twin Pistol rank and the preceding rank of that perk. SP prices are per purchase. Ranked values replace earlier ranks. All new passive bonuses require an active pair; all direct damage retains each firing gun's damage type.
 
-`D` means the firing gun's item weapon DMG with normal eligible adjustments, without Single Weapon or Doublehand. Add listed flat power before the normal damage formula. For Sweeping Salvo, calculate `floor(0.75 * D)` separately per gun before adding its flat power. Percentage damage traits apply at the shared outgoing-damage adjustment stage and never rescale the item rating or recursively multiply secondary damage.
+`D` means the firing gun's item weapon DMG with normal eligible adjustments, without Single Weapon or Doublehand. Add listed flat power before the normal damage formula. For Controlled Burst and Sweeping Salvo, calculate `floor(0.75 * D)` separately per gun before adding its flat power. Percentage damage traits apply at the shared outgoing-damage adjustment stage and never rescale the item rating or recursively multiply secondary damage. Slash-separated values below follow perk-rank order.
 
-| Twin Pistol rank | Perk | SP | Effect | STM | Cooldown |
-|---:|---|---:|---|---:|---:|
-| 2 | Paired Volley I | 2 | One shot per gun at one target; each uses D + 4. | 4 | 18s |
-| 5 | Alternating Fire | 2 | Both ordinary shots landing on the same target restore 1 STM, at most once every 6s. | - | - |
-| 8 | Matched Rhythm I | 2 | Ordinary Twin Pistol shots deal +10% damage. | - | - |
-| 10 | Crossfire I | 2 | One shot per gun, each D + 3. Both landing reduces target Evasion by 5% for 8s. | 4 | 24s |
-| 12 | Paired Volley II | 2 | One shot per gun, each D + 9. | 6 | 18s |
-| 15 | Balanced Grip | 4 | +5 ACC to the companion only. | - | - |
-| 18 | Sweeping Salvo I | 3 | Up to 3 enemies in an aimed 10m x 10m cone; one shot per gun per enemy, each floor(0.75 x D) + 7. | 6 | 30s |
-| 20 | Akimbo Stance | 4 | +10% Haste while paired. Hostile Pistol and Twin Pistol abilities cost 2 additional STM. | 0 | 30s |
-| 22 | Matched Rhythm II | 4 | Ordinary Twin Pistol shots deal +20% damage total. | - | - |
-| 25 | Converging Fire | 4 | Both ordinary shots landing on one target grants +5% ordinary Twin Pistol damage against that target for 6s, starting after that pair. | - | - |
-| 28 | Paired Volley III | 3 | One shot per gun, each D + 14. | 9 | 18s |
-| 30 | Crossfire II | 4 | One shot per gun, each D + 7. Both landing reduces Evasion by 8% for 8s. | 8 | 24s |
-| 32 | Sweeping Salvo II | 3 | Same cone and target cap; each shot uses floor(0.75 x D) + 13. | 9 | 30s |
-| 35 | Cool Under Fire | 2 | Direct hostile damage reduces the next Twin Pistol ability's STM cost by 2. One charge, lasts 10s, trigger cooldown 10s. | - | - |
-| 38 | Crossfire III | 4 | One shot per gun, each D + 10. Both landing reduces Evasion by 10% for 8s. | 10 | 24s |
-| 40 | Paired Volley IV | 5 | One shot per gun, each D + 19. | 12 | 18s |
-| 45 | Matched Rhythm III | 4 | Ordinary Twin Pistol shots deal +30% damage total. | - | - |
-| 50 | Twin Suns | 6 | One shot per gun, each D + 15. Afterward, the next 6 ordinary Twin Pistol shots gain +10 percentage points Critical Rate and +20% Haste. Expires after 12s. Requires mastery quest. | 15 | 90s |
-| | **Total** | **60** | | | |
+### Shared training: 10 SP
+
+| Perk | Twin Pistol rank | SP per purchase | Effect |
+|---|---|---|---|
+| Paired Handling I-III | 8 / 22 / 45 | 2 / 4 / 4 | Ordinary Twin Pistol damage +10 / 20 / 25% total. Purchased once for both lines. |
+
+### Barrage: 50 SP plus shared training
+
+| Perk | Twin Pistol rank | SP per purchase | Effect | STM | Cooldown |
+|---|---|---|---|---|---|
+| Paired Volley I-IV | 2 / 12 / 28 / 40 | 2 / 2 / 3 / 5 | One shot per gun at one enemy; each D + 4 / 9 / 14 / 19. | 4 / 6 / 9 / 12 | 18s |
+| Alternating Fire | 5 | 2 | Every three landed ordinary Twin shots restore 1 STM; at most once per 6s. | - | - |
+| Focused Burst I-III | 10 / 30 / 38 | 2 / 4 / 4 | One shot per gun at one enemy; each D + 10 / 22 / 34. | 4 / 8 / 10 | 24s |
+| Balanced Grip | 15 | 4 | +5 ACC to the companion only. | - | - |
+| Controlled Burst I-II | 18 / 32 | 3 / 3 | One shot per gun at one enemy; each floor(0.75 x D) + 7 / 13. Restore 2 / 3 STM once if either shot lands. | 6 / 9 | 30s |
+| Akimbo Stance | 20 | 4 | +10% Haste; take 10% more damage while active. | 0 | 30s |
+| Converging Fire | 25 | 4 | After three landed ordinary shots at the same enemy, +5% ordinary Twin damage against it for 6s; further landed ordinary shots refresh. | - | - |
+| Cool Under Fire | 35 | 2 | Taking direct hostile damage makes the next Twin ability cost 2 less STM; one charge, 10s duration, 10s trigger cooldown. | - | - |
+| Twin Suns | 50 + mastery | 6 | One shot per gun at one enemy, each D + 20; next six ordinary Twin shots gain +25% damage, expiring after 12s. | 15 | 90s |
+
+### Crossfire: 50 SP plus shared training
+
+| Perk | Twin Pistol rank | SP per purchase | Effect | STM | Cooldown |
+|---|---|---|---|---|---|
+| Split Shot I-IV | 2 / 12 / 28 / 40 | 2 / 2 / 3 / 5 | One shot per gun at two different enemies, each D + 4 / 10 / 18 / 26. With one enemy, the companion follows up at 75% damage. | 3 / 5 / 8 / 10 | 18s |
+| Efficient Fire | 5 | 2 | A Crossfire-line ability landing at least one hit restores 1 STM, at most once per 8s. | - | - |
+| Crossfire I-III | 10 / 30 / 38 | 2 / 4 / 4 | Up to three different enemies, one shot each, D + 6 / 13 / 20. With one enemy, add one companion follow-up at 75% damage. | 4 / 6 / 8 | 24s |
+| Changing Angles | 15 | 4 | Landing an ordinary Twin shot on a different enemy gives the next Crossfire-line ability +5 ACC; one charge, 8s duration, 10s trigger cooldown. | - | - |
+| Sweeping Salvo I-II | 18 / 32 | 3 / 3 | Up to three enemies in an aimed 10m x 10m cone; one shot per gun per enemy, each floor(0.75 x D) + 7 / 13. | 6 / 8 | 30s |
+| Crossfire Stance | 20 | 4 | +10% Haste; deal 10% less damage to the primary target while active. Secondary targets are unaffected. | 0 | 30s |
+| Wide Coverage | 25 | 4 | +20% direct Crossfire-line ability damage when the activation targets at least two distinct enemies. | - | - |
+| Clear Lanes | 35 | 2 | A Crossfire-line ability hitting two different enemies makes the next Crossfire-line ability cost 2 less STM; one charge, 10s duration, 12s trigger cooldown. | - | - |
+| Two Fronts | 50 + mastery | 6 | One shot per gun at two different enemies, each D + 25; solo companion follow-up deals 75% damage. Next three Crossfire-line abilities targeting at least two enemies gain +10% damage, expiring after 18s. | 15 | 90s |
 
 ### Effect details
 
-- **Alternating Fire:** only a completed ordinary two-hand pair qualifies. A cast, proc, reflected hit, or a second observer cannot trigger it. Haste batches retain individual pair identities. Apply the six-second cooldown per attacker across all targets; maximum recovery is 10 STM per minute.
-- **Matched Rhythm:** affects ordinary shot damage only, including limited-haste ordinary rolls. Excludes queued replacements, activated abilities, reflected damage, DoTs, and damage generated by procs.
-- **Crossfire:** apply the Evasion reduction once after both impacts qualify as landed on the same surviving target. Use normal hostile debuff resistance/immunity rules. Multiple Crossfire sources keep the strongest live magnitude and do not add penalties together; a weaker application must not extend a stronger instance. Other debuff interactions follow the shared stat system and are included in testing.
+- **Alternating Fire:** either hand can advance the three-hit counter; misses do not reset it. On the third hit, reset the counter and restore 1 STM if the cooldown is ready. Hits during the cooldown cannot bank another refund. Casts, queued replacements, procs, reflected hits, and duplicate observers do not count. Maximum recovery is 10 STM per minute. Pair removal clears the counter but never resets the cooldown.
+- **Paired Handling:** affects ordinary shot damage only, including limited-haste ordinary rolls. Excludes queued replacements, activated abilities, reflected damage, DoTs, and proc damage. Converging Fire adds five percentage points for +30% total; Twin Suns adds another 25 points during its six-attempt window. These modifiers add rather than multiplying one another.
+- **Split Shot / Crossfire / Two Fronts:** select the primary hostile target and nearest other eligible enemies within 5m of it, within the caster's 25m range and line of fire; break distance ties by stable object identity. Capture the set at activation. Split Shot and Two Fronts use main hand on primary and companion on secondary. Crossfire alternates main/companion/main across up to three distinct targets. At two targets it fires twice, not three times. Only the explicit one-enemy fallback permits a second shot at the primary, with companion damage multiplied by 0.75 after normal outgoing modifiers and before defenses. No missing third slot becomes another shot. Target loss after selection cannot create a new fallback or redirect damage.
 - **Balanced Grip:** a flat five ACC, not five percentage points of hit chance. It enters only the companion's weapon profile once.
-- **Sweeping Salvo:** at most three distinct targets and six impacts. Determine the eligible target set once with the existing aimed-area selector, capture both weapon profiles, and revalidate before impact. Area targeting requires a separate valid spell row for each rank. It cannot repeatedly select one target to spend unused target slots.
-- **Akimbo Stance:** use the existing stance activation timing and exclusivity. Its Haste stacks through the existing cap, not a private multiplier. Its +2 STM applies once per eligible hostile activation, including cross-trained Pistol casts; normal cost reductions and the normal minimum cost apply afterward. Its benefits end as soon as the pair becomes invalid.
-- **Converging Fire:** one tracked target per attacker. Switching targets or invalidating the pair clears it. Repeated qualifying pairs refresh, never stack. It adds to Matched Rhythm for a maximum +35% from these two traits, not 30% followed by a separate 5% multiplier.
+- **Controlled Burst / Sweeping Salvo:** Controlled Burst has two impacts at one target and one successful-hit refund per cast. Sweeping Salvo has at most three distinct targets and six impacts, with no missing-target redistribution. Use the aimed-area selector, capture the target set and both weapon profiles, and revalidate before impact. Every rank of an area ability needs its own spell row. Refunds cannot exceed the STM actually paid.
+- **Stances:** use existing timing, exclusivity, and the global Haste cap. Akimbo's incoming-damage penalty and Crossfire's primary-target outgoing penalty remain active for ordinary attacks as well as abilities. Neither grants a damage-free auto-attack mode. Invalidating the pair ends benefits and drawbacks together. Crossfire snapshots the primary per action; for its aimed cone, use the eligible enemy closest to the cone center line, then nearest distance and stable object identity to break ties. Target switching after launch cannot move the penalty. Penalties are direct-damage adjustments and do not recursively amplify procs.
+- **Converging Fire:** one tracked target per attacker. Three landed ordinary shots establish the bonus, starting after the triggering shot. Misses do not reset progress, but changing targets, six seconds without a landed ordinary shot, or invalidating the pair clears it. Subsequent landed ordinary shots refresh, never stack. It does not reward switching between area impacts.
 - **Cool Under Fire:** requires positive direct damage from a hostile source; excludes self-damage, friendly damage, periodic damage, and reflected damage. It does not stack charges. Consume only when an eligible activation successfully pays its cost; failed validation does not spend it. Pair removal clears its pending discount but does not reset its trigger cooldown.
-- **Twin Suns:** resolve its initial two impacts before granting the six-shot benefit, so they do not consume it. Grant after a valid completed cast, even if the target avoided its damage. Each ordinary attempted roll consumes one charge, including misses and deflections. Do not count pairs as one attack, refresh charges from criticals, or grant no-delay attacks. Pair removal clears the benefit. Other limited timing effects share the actual-roll accounting.
+- **Efficient Fire:** use the activation summary, with one refund at most even if six impacts land. It applies only to the Crossfire line, not all ranged abilities. No hit is required on a second target. Pair removal cannot reset its cooldown.
+- **Changing Angles:** an ordinary shot must land on a different enemy from the previous landed ordinary Twin shot; the first attack in combat alone does not qualify. One charge affects one Crossfire-line activation, including its captured impacts, then is consumed. Failed validation does not consume it. Companion/area ability impacts cannot chain-refresh it. Pair removal clears target memory and the charge, not its trigger cooldown.
+- **Wide Coverage / Clear Lanes:** count distinct valid hostile targets, not shot count. Wide Coverage checks the captured target set, so two misses do not remove its damage modifier retroactively. Clear Lanes checks landed hits; the triggering cast cannot consume its own reward. Clear pending discounts on invalid pair state without resetting their cooldowns. Shared cost rules cap combined discounts at the paid cost and prevent negative costs.
+- **Twin Suns:** resolve the initial two impacts before granting the six-shot benefit. Grant after a valid completed cast even if avoided. Each ordinary attempted roll consumes one charge, including misses and deflections. Do not count pairs as one attack, refresh charges from criticals, or grant extra Haste, critical rate, or no-delay attacks. Pair removal clears it.
+- **Two Fronts:** grant its follow-up benefit after the initial impacts, excluding its own activation. Only subsequent Crossfire-line activations with at least two captured valid targets consume a charge; misses still spend it. The +10% adds to Wide Coverage for +30% total ability damage. Maximum three activations within 18 seconds; no cooldown reset, free cast, duration extension, or charge refresh. Pair removal clears it.
 
 ### Mastery quest
 
-Use the existing weapon mastery quest conventions and conversation system. The quest tests coordinated fire, not a random drop: demonstrate successful two-hand attacks and complete a combat encounter with the pair. Confirm that progression credit follows actual Twin Pistol actions rather than simply checking equipment at enemy death. Its reward is eligibility to purchase Twin Suns at rank 50 for 6 SP, with no free perk rank or extra damage item.
+Use existing weapon mastery quest conventions and the conversation system. Barrage's mastery tests sustained two-hand attacks against one enemy; Crossfire's tests hitting distinct enemies with controlled volleys. Confirm that progression credit follows actual Twin Pistol actions rather than merely checking equipment at enemy death. Each objective path unlocks eligibility to purchase its own rank-50 capstone for 6 SP, with no free perk rank or extra damage item. Completing one does not unlock the other automatically.
 
 Select the trainer, encounter, objective count, and any new placement after inspecting existing Pistol mastery content. Those content details do not block the combat prototype. Authored dialogue belongs in conversation JSON; any added NPC follows the NPC HP normalization and visual-verification rules.
 
@@ -142,7 +158,7 @@ Select the trainer, encounter, objective count, and any new placement after insp
 Represent ordinary attacks, activated impacts, queued replacements, and secondary procs explicitly in the action context. This gives shared rules a reliable way to decide whether an event counts toward a trait.
 
 - Ordinary shots independently use their own weapon's on-hit properties. Shared internal cooldowns, healing caps, and resource limits remain per attacker where they are today.
-- An activation has one identity across all targets and hands. Once-per-ability triggers and refunds consume that identity once. Per-impact effects retain their declared behavior.
+- An activation has one identity across all targets and hands. New Twin multi-shot abilities dispatch at most one generic weapon on-hit proc per target per activation, using the first eligible landed hand's properties. If the main hand misses, a landed companion may qualify. Do not reroll a failed proc on the next hand. New Twin abilities notify generic critical-trigger effects once per activation if any impact critically hits; individual impacts still calculate their own critical damage. Once-per-ability refunds consume the activation identity once. These caps apply to new Twin abilities and do not rewrite existing Pistol abilities.
 - Secondary damage and triggered attacks never recursively schedule a companion shot.
 - Native and simulated damage paths must not notify the same hit twice. Ammo on-hit forwarding retains the launcher's captured identity.
 - Skill-scoped effects match the captured skill. Generic ranged effects may apply to both Pistol and Twin Pistol; unrelated skill selectors do not change.
@@ -161,24 +177,69 @@ The baseline below uses current `Combat` and `WeaponDamage` formulas at equal At
 | Pair without Dual Wield | 22 each | 4.833s for two shots | 7.90 |
 | Pair with Dual Wield III | 22 each | 3.583s for two shots | 10.66 |
 
-These are arithmetic baselines, not full-build measurements. They show why granting a free full-power companion hit at single-pistol cadence is inappropriate and why the slower paired cycle needs specialist damage bonuses. They do not establish that the new 60-SP line is balanced.
+These are arithmetic baselines, not full-build measurements. They show why granting a free full-power companion hit at single-pistol cadence is inappropriate and why the slower paired cycle needs specialist damage bonuses. They do not establish full-build balance.
 
 ### Comparable builds
 
-Compare Twin Pistol 50 with the full 60-SP line plus Dual Wield III against Pistol 50 with its full 60-SP critical line plus Doublehand III: 69 SP each, equal Armor investment, attributes, equipment tier, and external buffs. Include the pistol/shield defensive alternative and the existing Skirmisher, Rifle, and melee paired-weapon builds. Test equal-tier gear first, then repeat at equal acquisition/upgrade cost because the pair provides another item and enhancement capacity.
+Compare Twin Pistol 50 with shared training and either full line plus Dual Wield III against Pistol 50 with its full 60-SP critical line plus Doublehand III: 69 SP each, equal Armor investment, attributes, equipment tier, and external buffs. Include the pistol/shield defensive alternative and existing Skirmisher, Rifle, and melee paired-weapon builds. Test equal-tier gear first, then repeat at equal acquisition/upgrade cost because the pair provides another item and enhancement capacity.
 
 Run hybrids at equal total SP and skill-rank investment. A character buying both Pistol and Twin Pistol lines is not comparable to a 69-SP single-line build. Include generic ranged/critical effects, Armor traits, buffs from allies, weapon enhancements, suppression, healing-on-hit, and limited haste/no-delay effects. Do not assume Pistol-specific traits apply merely because the models are pistols.
 
+### Completed budget analysis
+
+Run `node tools/AnalyzeTwinPistolBalance.mjs` from the repository root. The script checks the delay/damage baseline above, then estimates expected damage and finite STM budgets. It is a design calculation, not an execution of the C# combat engine.
+
+The representative 120-second case uses DMG 22 / Delay 250 guns, equal damage attributes and Attack/Defense, 85% hit chance, MGT 26, +12 maximum STM, +5 STM regeneration per 30 seconds, and no external Haste. Maximum STM is 61; natural recovery is 42 STM/minute. Abilities spend from that pool with a four-STM reserve; unfunded scheduled opportunities are skipped. Each line uses its three regular attacks at 18/24/30-second cooldowns. All builds include the appropriate stance. The Pistol comparator includes Gambler, average Lucky Chamber contribution, Rapid Shot, approximate Reload Tempo uptime, High Noon for 30% of the encounter, and a 30% effective ability critical chance before Quick Draw/Fan bonuses. Pistol-specific ability critical assumptions are varied separately below. Barrage's ordinary-hit recovery realizes 75% of its ceiling; Cool Under Fire contributes no refunds in this comparison.
+
+| Build | SP including Armor | Single-target DPS | Three-enemy total DPS | Funded casts, solo / group |
+|---|---:|---:|---:|---|
+| Existing Pistol critical line | 69 | 22.05 | 25.18 | 11 / 11 |
+| Barrage + shared training | 69 | 21.66 | 21.66 | 14 / 14 |
+| Crossfire + shared training | 69 | 18.51 | 26.55 | 15 / 16 |
+| Both Twin lines + shared training | 119 | 21.66 | 29.05 | 14 / 16 |
+
+These values suggest the intended niches: Barrage reaches 98% of the Pistol reference's single-target output; Crossfire gives up 15% against Barrage solo and gains 23% total damage against three enemies. Crossfire is 5% above the Pistol reference's three-target output in this case. The 119-SP row shows the benefit of buying the second line and using Barrage's stance/sustain with Crossfire attacks; it is not evidence of equal-SP balance.
+
+Sensitivity results matter more than a single favorable row:
+
+| Sweep | Cases | Barrage / Pistol single-target | Crossfire / Pistol three-target |
+|---|---:|---|---|
+| Hit 65/85/95%, external Haste 0/15/30/50%, reference ability critical 22/30/37% | 36 | 89-108% | 94-115% |
+| Hit 65/85/95%, Attack/Defense 0.5/1/2/3.625, damage-formula stat delta -7/0/+7, low/geared/supported STM | 108 | 79-112% | 74-124% |
+
+Crossfire solo remains 85-86% of Barrage throughout the first sweep. The wider stress sweep varies offensive and defensive conditions independently; low resources and unfavorable damage-stat matchups remain weak points. Supported STM adds 2 STM every four seconds. These ranges do not meet a universal +/-5% equivalence claim, and the proposal makes no such claim.
+
+The model assumes uninterrupted ordinary fire and approximate steady-state buff uptime, uses expected rather than sampled hit/refund outcomes, and does not optimize rotations or stance switching at the Haste cap. It excludes capstones, animation/action lockout, movement, Guard/deflection, resistances, enhancement procs, Balanced Grip, Changing Angles, and cross-trained Pistol purchases. These exclusions can change actual rankings. The budget pass checks that the base proposal has credible costs and distinct roles; it does not close the release gates below.
+
+The new capstones have explicit output bounds pending engine tests: Twin Suns adds two D+20 impacts and at most six +25% ordinary-damage attempts; Two Fronts adds two D+25 impacts (reduced companion fallback solo) and +10 percentage points on at most three paid multi-target activations. Neither grants extra attacks, Haste, critical chance, or cooldown resets. Both compete with existing finishers through the global Capstone recast.
+
+### Existing-ability interactions
+
+| Existing mechanic | Proposed interaction and tradeoff |
+|---|---|
+| Armor Dual Wield | Existing companion delay reduction; no second stacking delay-reduction perk. |
+| Single Weapon / Doublehand | Disabled by the occupied off hand; neither gun receives their damage bonus. |
+| Quick Draw | Optional extra basic attack after buying Pistol ranks/perks; main hand only, own STM cost. |
+| Double Shot / Fan the Hammer | Share cooldowns with the corresponding Twin attacks, preventing duplicate burst rotations. |
+| Dead Man's Hand and other capstones | Global Capstone cooldown; no back-to-back finisher stacking. |
+| Gambler and other stances | Mutually exclusive with the two Twin stances. |
+| Lucky Chamber / Rapid Shot / Reload Tempo / High Noon | Existing unrestricted triggers can work if purchased. Ordinary shots are actual rolls; new ability critical events are capped per activation. Extra Haste still respects the global cap. |
+| Deadeye Reload and other Pistol selectors | Retain Pistol scope; Twin abilities do not gain those benefits by weapon appearance. |
+| Suppression, debuffs and healing support | Normal shared rules; Crossfire adds no Evasion shred or crowd control and leaves control-focused weapon roles intact. |
+
+Cross-training can therefore add options, but its extra SP, skill ranks, and trigger interactions must be priced in matched hybrid tests. No claim is made that every possible 410-SP build has been validated by this proposal.
+
 ### Release criteria
 
-- At rank 50, target 95-105% of the equally invested single-pistol critical build's sustained single-target damage in representative 120-second encounters. Include STM depletion and the existing critical/haste traits on the comparator.
-- Compare 6-second and 12-second openings. Twin Pistol's maximum burst should not exceed the matched single-pistol build by more than 10%; its sustained role does not justify a larger opening kill window.
-- Test ranks 0, 10, 25, and 50 using weapons actually available at each rank. No inaccessible rank-zero training path or mandatory Pistol investment is acceptable. Investigate damage gaps outside 90-110% against a comparably invested offensive pistol build, accounting for when ranks become available.
+- At rank 50, target Barrage at 95-105% of the equally invested single-pistol critical build's sustained single-target damage in representative 120-second encounters. Include STM depletion, critical/haste traits, stance risk, and meaningful target movement. Investigate outliers separately rather than claiming parity in every matchup.
+- Target Crossfire solo at 80-90% of Barrage, with three-target total output around 20-30% above Barrage and 5-15% above the Pistol comparator under representative conditions. Require actual extra enemies; no target duplication to retain multi-target bonuses solo. Measure damage to the priority enemy as well as aggregate damage.
+- Compare 6-second and 12-second openings with capstones and cross-training. Twin Pistol's single-target maximum burst should not exceed the matched single-pistol build by more than 10%; its sustained role does not justify a larger opening kill window. Check Crossfire's multi-target burst separately.
+- Test ranks 0, 10, 25, and 50 using weapons actually available at each rank. No inaccessible rank-zero training path or mandatory Pistol investment is acceptable. Investigate Barrage damage gaps outside 90-110% against a comparably invested offensive pistol build; apply Crossfire's explicit solo tradeoff rather than that same target to its solo output.
 - Check one, three, and excess area targets; high defense; high evasion; ranged/shield deflection; immunity; Guard; moving targets; PvP; and unequal weapon tiers/delays. No extra target, proc, or refund may be created by animation batching.
 - Sweep ordinary Haste/Slow from -50% to +50%, then limited effects at and near the animation floor. Observe actual roll counts and damage, not just displayed delay.
-- Sustain should have a resource cost. Alternating Fire and Cool Under Fire must stay within their explicit caps and cannot create an indefinite refund loop with abilities or cross-trained traits.
+- Sustain should have a resource cost. All four recovery/discount perks must stay within their explicit caps and cannot create an indefinite refund loop with abilities or cross-trained traits. Test both Twin lines together, then equal-SP Pistol/Twin hybrids with all unrestricted critical triggers.
 
-Use fixed-seed simulations and enough samples to report uncertainty, then verify representative rotations in engine. Report the actual rotation, gear, hit rates, resource use, DPS, burst, and target assumptions. Tune Matched Rhythm and the stance first if sustained output misses the target; tune flat ability power or shared cooldown behavior for burst. Do not compensate by changing existing Pistol perks or other weapon systems.
+Use fixed-seed simulations and enough samples to report uncertainty, then verify representative rotations in engine. Report the actual rotation, gear, hit rates, resource use, DPS, burst, and target assumptions. Tune Paired Handling and stance values first for ordinary output, then flat ability power, costs, and Wide Coverage for the appropriate target count. Do not compensate by changing existing Pistol perks or other weapon systems.
 
 ## Implementation sequence
 
@@ -198,7 +259,7 @@ Integrate the simulated hand with the scheduler, damage rules, XP accounting, am
 
 ### 3 Author progression and presentation
 
-Add a Twin Pistol sheet to the public Design Bible and register it with the existing workbook layout, audit, and weapon generators. Include all eighteen perk rows, costs, timings, attributes, target shapes, descriptions, and mastery requirements. Preserve cached formulas and unrelated ZIP entries through targeted XML edits, then run the required refresh.
+Add a Twin Pistol sheet to the public Design Bible and register it with the existing workbook layout, audit, and weapon generators. Include all 33 purchasable ranks: three shared training ranks and fifteen in each line. Record shared ownership explicitly so the UI does not charge twice. Include costs, timings, attributes, target shapes, descriptions, and mastery requirements. Preserve cached formulas and unrelated ZIP entries through targeted XML edits, then run the required refresh.
 
 Generate the perk definitions and one class/file per distinct active ability. Add all needed feat, spell, effect-icon, skill/item-property labels, status effects, and stat definitions. Choose available IDs from the current source data. New custom TLK entries use the first gaps; custom references use the required offset. Recast labels must fit the existing 14-character limit.
 
@@ -208,7 +269,7 @@ Choose VFX from the repository's effect-selection reference. Author paired attac
 
 ### 4 Validate and prepare delivery
 
-Run the checks below, tune the line within its own budget, and update the Bible and generated outputs together. Present actual NWN evidence of both weapons and shots. The complete feature requires a parent server/module PR and, when the submodule pointer changes, a pushed HAK companion PR linked in both directions. Resolve review threads on both before final handoff.
+Run the checks below, tune both lines within their budgets, and update the Bible and generated outputs together. Present actual NWN evidence of both weapons and shots. The complete feature requires a parent server/module PR and, when the submodule pointer changes, a pushed HAK companion PR linked in both directions. Resolve review threads on both before final handoff.
 
 Deploy the matching C# server build, rebuilt HAK/TLK resources, and repacked module together. Repack/rebuild/deploy requirements are deployment steps, not reasons to alter gameplay code.
 
@@ -265,6 +326,7 @@ The starting mechanics and baseline calculations are based on commit `62364f27c`
 
 - [Dual wield combat](DualWieldCombat.md) and [weapon loadout balance tests](../../SWLOR.Game.Server.Tests/Service/WeaponLoadoutBalanceTests.cs).
 - [Pistol perks](../Feature/PerkDefinition/PistolPerkDefinition.cs) and [Armor traits](../Feature/PerkDefinition/ArmorPerkDefinition.cs).
+- [Budget analysis script](../../tools/AnalyzeTwinPistolBalance.mjs), [Pistol ability definitions](../Feature/AbilityDefinition/Pistol), [combat formulas](../Service/Combat.cs), and [weapon damage](../Service/CombatService/WeaponDamage.cs).
 - [Equipment restrictions](../Feature/EquipmentRestrictions.cs), [pistol compatibility](../Feature/PistolBaseItemCompatibility.cs), and [pistol animation remap](../Feature/PistolAnimationRemap.cs).
 - [Ability targeting](AbilityTargeting.md), [Design Bible workbook rules](DesignBibleWorkbookRules.md), [economy restrictions](EconomyRestrictedItems.md), [icon standards](IconStandards.md), [VFX selection](VisualEffectSelection.md), and [player identity](PlayerIdentity.md).
 - [Engine testing](EngineTesting.md) and [in-engine visual verification](InEngineVisualVerification.md).

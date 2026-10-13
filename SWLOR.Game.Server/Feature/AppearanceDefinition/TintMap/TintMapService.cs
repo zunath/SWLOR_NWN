@@ -57,6 +57,7 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
             if (!GetIsPC(player))
                 return;
 
+            PlayerAppearanceRepair.Restore(player);
             RestorePlayerOverrides(player);
             // Restore tint locals from the player record before any queued model refresh.
             // Keep unrelated material overrides during relog restore.

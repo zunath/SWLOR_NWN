@@ -68,6 +68,8 @@ namespace SWLOR.Game.Server.Native
             var damage = new CombatRecordDamageBreakdown();
             var hitPointsBefore = 0;
             var applicationIndex = -1;
+            // No managed entry point on the stack means the engine itself is applying the hit.
+            var isEngineApplied = ManagedEntryDepth.Current == 0;
             CombatRecordTemporaryHitPointPool[] poolsBefore = null;
             try
             {
@@ -107,7 +109,7 @@ namespace SWLOR.Game.Server.Native
                 var poolsAfter = CaptureTemporaryHitPointPools(target);
                 ServerManager.Executor.ExecuteInScriptContext(() =>
                     CombatRecorder.RecordDamageApplied(
-                        applicationIndex, creator, targetId, damage, hitPointsBefore, hitPointsAfter,
+                        applicationIndex, isEngineApplied, creator, targetId, damage, hitPointsBefore, hitPointsAfter,
                         GetMaxHitPoints(targetId), poolsBefore, poolsAfter));
             }
             catch (Exception ex)
@@ -171,6 +173,15 @@ namespace SWLOR.Game.Server.Native
             }
 
             return result;
+        }
+
+        /// <summary>
+        /// A creature's current HP without temporary HP, read the same way as the damage hook.
+        /// </summary>
+        internal static int GetHitPointsExcludingTemporary(uint creature)
+        {
+            var gameObject = NWNXUtils.GetGameObject(creature);
+            return gameObject == IntPtr.Zero ? 0 : CNWSObject.FromPointer(gameObject).GetCurrentHitPoints(1);
         }
 
         /// <summary>

@@ -631,7 +631,7 @@ namespace SWLOR.Game.Server.Service
         /// then a pending deferred or weapon registration (exact amount first), then the
         /// creator's active ability impact.
         /// </summary>
-        private static CombatRecordAttribution ResolveDamageAttribution(uint source, uint target, int amount)
+        private static CombatRecordAttribution ResolveDamageAttribution(uint source, uint target, int amount, bool isEngineApplied)
         {
             if (_attributionDepth > 0)
             {
@@ -657,39 +657,16 @@ namespace SWLOR.Game.Server.Service
                 }
             }
 
-            var frame = ServerFrame.Current;
-            var nowMs = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
-            var exactMatch = -1;
-            var deferredMatch = -1;
-            var weaponMatch = -1;
-            for (var index = _pendingDamage.Count - 1; index >= 0; index--)
-            {
-                var pending = _pendingDamage[index];
-                var expired = pending.IsWeaponHit
-                    ? nowMs - pending.TimestampMs > WeaponDamageWindowMs
-                    : frame - pending.Frame > DeferredDamageFrameWindow;
-                if (expired)
-                {
-                    _pendingDamage.RemoveAt(index);
-                    exactMatch = exactMatch > index ? exactMatch - 1 : exactMatch;
-                    deferredMatch = deferredMatch > index ? deferredMatch - 1 : deferredMatch;
-                    weaponMatch = weaponMatch > index ? weaponMatch - 1 : weaponMatch;
-                    continue;
-                }
-
-                if (pending.Source != source || pending.Target != target)
-                    continue;
-
-                // Iterating backwards, so the last assignment is the oldest match.
-                if (pending.Amount == amount)
-                    exactMatch = index;
-                if (pending.IsWeaponHit)
-                    weaponMatch = index;
-                else
-                    deferredMatch = index;
-            }
-
-            var match = exactMatch >= 0 ? exactMatch : deferredMatch >= 0 ? deferredMatch : weaponMatch;
+            var match = CombatRecordPendingDamageMatcher.FindMatch(
+                _pendingDamage,
+                source,
+                target,
+                amount,
+                isEngineApplied,
+                ServerFrame.Current,
+                DateTimeOffset.UtcNow.ToUnixTimeMilliseconds(),
+                DeferredDamageFrameWindow,
+                WeaponDamageWindowMs);
             if (match >= 0)
             {
                 var attribution = _pendingDamage[match].Attribution;
@@ -736,8 +713,10 @@ namespace SWLOR.Game.Server.Service
         /// Called by the native damage hook after the engine applied a damage effect.
         /// Hit points exclude temporary HP, which is reported separately.
         /// </summary>
+        /// <param name="isEngineApplied">True when no script or closure applied the effect, as for weapon hits.</param>
         internal static void RecordDamageApplied(
             int applicationIndex,
+            bool isEngineApplied,
             uint source,
             uint target,
             in CombatRecordDamageBreakdown damage,
@@ -749,8 +728,16 @@ namespace SWLOR.Game.Server.Service
         {
             try
             {
+                // A subdued player is resurrected inside the lethal damage call; report the HP the
+                // hit left, captured when the death scripts ran.
+                if (applicationIndex >= 0 && applicationIndex < _damageApplications.Count &&
+                    _damageApplications[applicationIndex].HasHitPointsAtDeath)
+                {
+                    hitPointsAfter = _damageApplications[applicationIndex].HitPointsAtDeath;
+                }
+
                 if (IsRecorded(target, source))
-                    RecordDamageEvents(source, target, damage, hitPointsBefore, hitPointsAfter, maxHitPoints, poolsBefore, poolsAfter);
+                    RecordDamageEvents(isEngineApplied, source, target, damage, hitPointsBefore, hitPointsAfter, maxHitPoints, poolsBefore, poolsAfter);
             }
             finally
             {
@@ -765,11 +752,17 @@ namespace SWLOR.Game.Server.Service
 
             var application = _damageApplications[applicationIndex];
             EndDamageApplication(applicationIndex);
-            if (application.TargetDied && IsRecording)
+            if (!IsRecording)
+                return;
+
+            if (application.TargetDied)
                 EnqueueDeath(application.Target, application.Killer);
+            if (application.TargetSubdued)
+                EnqueueSubdual(application.Target, application.SubduedBy);
         }
 
         private static void RecordDamageEvents(
+            bool isEngineApplied,
             uint source,
             uint target,
             in CombatRecordDamageBreakdown damage,
@@ -779,7 +772,7 @@ namespace SWLOR.Game.Server.Service
             CombatRecordTemporaryHitPointPool[] poolsBefore,
             CombatRecordTemporaryHitPointPool[] poolsAfter)
         {
-            var attribution = ResolveDamageAttribution(source, target, damage.Total);
+            var attribution = ResolveDamageAttribution(source, target, damage.Total, isEngineApplied);
             var sourceId = GetParticipantId(source);
             var targetId = GetParticipantId(target);
             var temporaryBefore = Sum(poolsBefore);
@@ -796,7 +789,8 @@ namespace SWLOR.Game.Server.Service
                 hitPointsAfter,
                 temporaryBefore,
                 temporaryAfter,
-                maxHitPoints));
+                maxHitPoints,
+                isEngineApplied));
 
             if (poolsBefore != null)
             {
@@ -1012,19 +1006,34 @@ namespace SWLOR.Game.Server.Service
                 return;
 
             // Dying inside an engine damage call: record the death after that damage event.
-            for (var index = _damageApplications.Count - 1; index >= 0; index--)
+            var index = FindDamageApplication(creature);
+            if (index >= 0)
             {
                 var application = _damageApplications[index];
-                if (application.Target != creature)
-                    continue;
-
                 application.TargetDied = true;
                 application.Killer = killer;
+                if (!application.HasHitPointsAtDeath)
+                {
+                    application.HasHitPointsAtDeath = true;
+                    application.HitPointsAtDeath = CombatRecorderEffectHooks.GetHitPointsExcludingTemporary(creature);
+                }
+
                 _damageApplications[index] = application;
                 return;
             }
 
             EnqueueDeath(creature, killer);
+        }
+
+        private static int FindDamageApplication(uint target)
+        {
+            for (var index = _damageApplications.Count - 1; index >= 0; index--)
+            {
+                if (_damageApplications[index].Target == target)
+                    return index;
+            }
+
+            return -1;
         }
 
         private static void EnqueueDeath(uint creature, uint killer)
@@ -1057,11 +1066,33 @@ namespace SWLOR.Game.Server.Service
                 attribution.Code));
         }
 
+        /// <summary>
+        /// Records a subdual and its resurrection. Call before the subdued player is resurrected:
+        /// inside the lethal damage call both events wait for that damage and death, and the HP
+        /// the hit left is kept for the damage event.
+        /// </summary>
         public static void RecordSubdual(uint subdued, uint subduedBy)
         {
             if (!IsInRecordedArea(subdued))
                 return;
 
+            var index = FindDamageApplication(subdued);
+            if (index >= 0)
+            {
+                var application = _damageApplications[index];
+                application.TargetSubdued = true;
+                application.SubduedBy = subduedBy;
+                application.HasHitPointsAtDeath = true;
+                application.HitPointsAtDeath = CombatRecorderEffectHooks.GetHitPointsExcludingTemporary(subdued);
+                _damageApplications[index] = application;
+                return;
+            }
+
+            EnqueueSubdual(subdued, subduedBy);
+        }
+
+        private static void EnqueueSubdual(uint subdued, uint subduedBy)
+        {
             var subduedId = GetParticipantId(subdued);
             Enqueue(CombatRecordEvent.Subdual(subduedId, GetParticipantId(subduedBy)));
             Enqueue(CombatRecordEvent.Resurrection(subduedId, 0, CombatRecordSourceKind.Subdual, null, 0));

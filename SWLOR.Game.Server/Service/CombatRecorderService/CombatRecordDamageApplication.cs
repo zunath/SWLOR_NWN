@@ -10,5 +10,11 @@ namespace SWLOR.Game.Server.Service.CombatRecorderService
         public uint Target;
         public bool TargetDied;
         public uint Killer;
+        public bool TargetSubdued;
+        public uint SubduedBy;
+
+        /// <summary>HP left by the hit, captured before a subdual resurrection can restore it.</summary>
+        public bool HasHitPointsAtDeath;
+        public int HitPointsAtDeath;
     }
 }

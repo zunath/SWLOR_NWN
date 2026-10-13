@@ -99,6 +99,7 @@ namespace SWLOR.Game.Server.Service.CombatRecorderService
                     writer.WriteNumber("temp_hp_before", e.Value3);
                     writer.WriteNumber("temp_hp_after", e.Value4);
                     writer.WriteNumber("max_hp", e.Value5);
+                    writer.WriteBoolean("engine_applied", e.Flag);
                     break;
                 case CombatRecordEventType.TemporaryHitPointsAbsorbed:
                     WriteParticipant(writer, "attacker", e.ActorId);

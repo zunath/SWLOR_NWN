@@ -79,6 +79,17 @@ public class CombatRecordSerializerTests
         json.GetProperty("temp_hp_absorbed").GetInt32().Should().Be(22, "the absorbed amount is what left the pools, not the full hit");
         json.GetProperty("hp_lost").GetInt32().Should().Be(13);
         json.GetProperty("max_hp").GetInt32().Should().Be(150);
+        json.GetProperty("engine_applied").GetBoolean().Should().BeFalse();
+    }
+
+    [Test]
+    public void EngineAppliedDamage_IsFlagged()
+    {
+        var json = Parse(CombatRecordEvent.DamageApplied(
+            1, 2, CombatRecordSourceKind.Autoattack, null, 0, Damage(physical: 12),
+            50, 38, 0, 0, 50, isEngineApplied: true));
+
+        json.GetProperty("engine_applied").GetBoolean().Should().BeTrue();
     }
 
     [Test]

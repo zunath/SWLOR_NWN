@@ -4,7 +4,7 @@ namespace SWLOR.Game.Server.Service.CombatRecorderService
     /// Attribution for damage that is decided now but applied later, by a deferred
     /// AssignCommand or by the engine's attack animation.
     /// </summary>
-    internal struct CombatRecordPendingDamage
+    public struct CombatRecordPendingDamage
     {
         public uint Source;
         public uint Target;

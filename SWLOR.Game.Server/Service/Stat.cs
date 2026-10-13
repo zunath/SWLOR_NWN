@@ -1874,18 +1874,21 @@ namespace SWLOR.Game.Server.Service
             if (staminaRestore > 0 &&
                 Combat.TryUseStatTrigger(creatureId, staminaRestoreStat, staminaRestoreCooldown))
             {
+                using var recorderAttribution = CombatRecorder.BeginStatTriggerAttribution(creatureId, staminaRestoreStat);
                 RestoreStamina(creatureId, staminaRestore);
             }
 
             if (fpRestore > 0 &&
                 Combat.TryUseStatTrigger(creatureId, fpRestoreStat, fpRestoreCooldown))
             {
+                using var recorderAttribution = CombatRecorder.BeginStatTriggerAttribution(creatureId, fpRestoreStat);
                 RestoreFP(creatureId, fpRestore);
             }
 
             if (staminaRestorePercent > 0)
             {
                 var amount = GameMath.PercentOf(GetMaxStamina(creatureId), staminaRestorePercent);
+                using var recorderAttribution = CombatRecorder.BeginStatTriggerAttribution(creatureId, StatType.DeflectionStaminaRestorePercent);
                 RestoreStamina(creatureId, amount);
             }
 

@@ -2843,7 +2843,10 @@ namespace SWLOR.Game.Server.Service
             trackedImpact.DarkForceConversionApplied = true;
 
             if (fpRestore > 0)
+            {
+                using var recorderAttribution = CombatRecorder.BeginStatTriggerAttribution(activator, StatType.DarkForceDamageFPRestore);
                 Stat.RestoreFP(activator, fpRestore);
+            }
 
             var lowTargetThresholdPercent = Stat.GetStatAdjustment(activator, StatType.DarkForceDamageLowTargetHPThresholdPercent);
             var lowTargetHPCostPercent = Stat.GetStatAdjustment(activator, StatType.DarkForceDamageLowTargetHPCostPercent);

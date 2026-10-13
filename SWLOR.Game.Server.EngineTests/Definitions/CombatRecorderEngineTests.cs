@@ -6,6 +6,8 @@ using System.Threading.Tasks;
 using SWLOR.Game.Server.EngineTests.Framework;
 using SWLOR.Game.Server.Feature.AbilityDefinition;
 using SWLOR.Game.Server.Service.CombatRecorderService;
+using SWLOR.Game.Server.Service.CombatService;
+using SWLOR.Game.Server.Service.StatService;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 
@@ -229,6 +231,91 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             ctx.AssertEqual(lethalHit.GetProperty("hp_before").GetInt32(), lethalHit.GetProperty("hp_lost").GetInt32(),
                 "a lethal hit removes only the HP the victim had left");
             ctx.Assert(lethalHit.GetProperty("overkill").GetInt32() > 0, "the rest of the lethal hit is overkill");
+
+            File.Delete(writer.EventsPath);
+            File.Delete(writer.SummaryPath);
+        }
+
+        /// <summary>
+        /// Weapon hits are applied by the engine itself while damage-over-time ticks run from a
+        /// closure; the recording must tell them apart, and a stat-driven autoattack refund must
+        /// carry its StatType instead of being unattributed.
+        /// </summary>
+        [EngineTest("Combat recorder separates weapon hits from script damage and names stat refunds", Category = "CombatRecorder", TimeoutSeconds = 90f)]
+        public static async Task RecordsWeaponHitsAndStatRefunds(EngineTestContext ctx)
+        {
+            ctx.Assert(!CombatRecorder.IsRecording, "no combat recording may be running before the test");
+
+            var arena = await QuietArena.CreateAsync(ctx);
+            var dummy = arena.Spawn(CreatureResref, 0f, 0f);
+            var brawler = arena.Spawn(CreatureResref, 1.5f, 180f);
+            await ctx.DelaySecondsAsync(1f);
+
+            Prepare(ctx, dummy, "Recorder Dummy", 1000);
+            Prepare(ctx, brawler, "Recorder Brawler", 1000);
+            ApplyEffectToObject(DurationType.Temporary, EffectCutsceneParalyze(), dummy, 120f);
+            TemporaryStatModifier.Add(brawler, StatType.AutoAttackFPRestore, 1, 120f);
+            Stat.ReduceFP(brawler, 50);
+            ctx.MakeHostile(brawler);
+            ctx.SeedRandom(4444);
+
+            Combat.SetAutoAttackHitResolutionOverride(true);
+            CombatRecordWriter writer;
+            try
+            {
+                ctx.Assert(CombatRecorder.Start(arena.Area, "engine test weapon", out var startMessage), startMessage);
+                writer = CombatRecorder.LastWriter;
+
+                ctx.Assert(StatusEffect.ApplyStatusEffect(brawler, dummy, typeof(BleedStatusEffect), 30f),
+                    "Bleed applies to the dummy");
+                var startingHitPoints = GetCurrentHitPoints(dummy);
+                AssignCommand(brawler, () => ActionAttack(dummy));
+                await ctx.WaitUntilAsync(
+                    () => GetCurrentHitPoints(dummy) < startingHitPoints && GetLastDamager(dummy) == brawler,
+                    45f,
+                    "the brawler's first damage on the dummy");
+
+                // Bleed ticks every 6 seconds on the shared status interval.
+                await ctx.DelaySecondsAsync(13f);
+            }
+            finally
+            {
+                Combat.SetAutoAttackHitResolutionOverride(null);
+                AssignCommand(brawler, () => ClearAllActions());
+                if (CombatRecorder.IsRecording)
+                    CombatRecorder.Stop("engine test", out _);
+            }
+
+            await ctx.WaitUntilAsync(() => writer.Completion.IsCompleted, 10f, "the recording writer to finish its files");
+            ctx.Assert(writer.Error == null, $"the recording writer failed: {writer.Error}");
+            var events = File.ReadAllLines(writer.EventsPath).Select(ParseLine).ToList();
+
+            var dummyId = ParticipantId(ctx, events, "Recorder Dummy");
+            var brawlerId = ParticipantId(ctx, events, "Recorder Brawler");
+            var hits = events.Where(e => Type(e) == "damage" &&
+                                         e.GetProperty("source").GetInt32() == brawlerId &&
+                                         e.GetProperty("target").GetInt32() == dummyId).ToList();
+
+            var weaponHits = hits.Where(e => e.GetProperty("source_kind").GetString() == "autoattack").ToList();
+            ctx.Assert(weaponHits.Count > 0, "forced autoattack hits must be recorded as autoattack damage");
+            ctx.Assert(weaponHits.All(e => e.GetProperty("engine_applied").GetBoolean()),
+                "weapon hits are applied by the engine, outside any script");
+
+            var bleedTicks = hits.Where(e => e.GetProperty("source_kind").GetString() == "status_effect" &&
+                                             e.GetProperty("source_name").GetString() == "Bleed").ToList();
+            ctx.Assert(bleedTicks.Count > 0, "a Bleed tick must be recorded as Bleed damage");
+            ctx.Assert(bleedTicks.All(e => !e.GetProperty("engine_applied").GetBoolean()),
+                "status ticks are applied from a closure");
+            ctx.Assert(hits.All(e => e.GetProperty("source_kind").GetString() != "unattributed"),
+                "every brawler hit on the dummy has a known source");
+
+            ctx.Assert(events.Any(e => Type(e) == "resource" &&
+                                       e.GetProperty("creature").GetInt32() == brawlerId &&
+                                       e.GetProperty("resource").GetString() == "fp" &&
+                                       e.GetProperty("delta").GetInt32() > 0 &&
+                                       e.GetProperty("reason").GetString() == "stat_trigger" &&
+                                       e.GetProperty("reason_name").GetString() == nameof(StatType.AutoAttackFPRestore)),
+                "the autoattack FP refund must be attributed to AutoAttackFPRestore");
 
             File.Delete(writer.EventsPath);
             File.Delete(writer.SummaryPath);

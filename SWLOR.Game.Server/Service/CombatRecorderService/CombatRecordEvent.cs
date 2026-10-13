@@ -158,11 +158,13 @@ namespace SWLOR.Game.Server.Service.CombatRecorderService
             int sourceId, int targetId, CombatRecordSourceKind kind, string sourceName, int sourceCode,
             CombatRecordDamageBreakdown damage,
             int hitPointsBefore, int hitPointsAfter,
-            int temporaryHitPointsBefore, int temporaryHitPointsAfter, int maxHitPoints)
+            int temporaryHitPointsBefore, int temporaryHitPointsAfter, int maxHitPoints,
+            bool isEngineApplied = false)
         {
             return new CombatRecordEvent
             {
                 Type = CombatRecordEventType.Damage,
+                Flag = isEngineApplied,
                 ActorId = sourceId,
                 TargetId = targetId,
                 SourceKind = kind,

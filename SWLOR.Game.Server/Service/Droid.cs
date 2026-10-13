@@ -1187,7 +1187,8 @@ namespace SWLOR.Game.Server.Service
         {
             var droid = OBJECT_SELF;
             var item = GetInventoryDisturbItem(droid);
-            if (GetInventoryDisturbType(droid) == DisturbType.Added)
+            var disturbType = GetInventoryDisturbType(droid);
+            if (disturbType == DisturbType.Added)
             {
                 AcquireDroidItem(droid, item);
             }
@@ -1197,8 +1198,10 @@ namespace SWLOR.Game.Server.Service
                     SetDroppableFlag(item, true);
                 SaveItemSnapshot(droid);
             }
-            // Stock henchman AI can switch ranged weapons to melee here. Combat decisions
-            // belong to CompanionControl's heartbeat and combat-round handlers.
+            // The stock henchman reaction can switch ranged weapons to melee.
+            // Preserve theft retaliation through the companion's combat handlers.
+            if (disturbType == DisturbType.Stolen)
+                CompanionControl.RegisterDefensiveThreat(droid, GetLastDisturbed());
         }
 
         [NWNEventHandler(ScriptName.OnDroidHeartbeat)]

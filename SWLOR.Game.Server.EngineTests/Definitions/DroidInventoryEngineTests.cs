@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using NWNXLib = NWN.Native.API.NWNXLib;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.EngineTests.Framework;
+using SWLOR.Game.Server.Service.CompanionControlService;
 using SWLOR.Game.Server.Service.DroidService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.NWN.API.NWNX;
@@ -557,6 +558,60 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 ctx.AssertEqual(1, Items(droid).Count(item => GetResRef(item) == "oph_rifle"), "Exactly one rifle survives resummoning");
             }
             await Dismiss(ctx, owner, droid);
+        }
+
+        [EngineTest("Droid theft retaliation preserves the rifle without treating transfers as threats", Category = "DroidInventory", TimeoutSeconds = 90f)]
+        public static async Task TheftRetaliationPreservesRifle(EngineTestContext ctx)
+        {
+            using var player = await PlayerAbilityFixture.CreateAsync(ctx, 4f);
+            var owner = player.Creature;
+            var controller = await CreateController(ctx, owner);
+            var droid = await Spawn(ctx, owner, controller);
+            try
+            {
+                ctx.Assert(CompanionControl.IsControlledCompanion(droid), "The droid belongs to a real player fixture");
+                var rifle = await CreateEquipment(ctx, owner, "oph_rifle");
+                await ctx.ExecuteInCreatureContextAsync(owner, () =>
+                    AddItemProperty(DurationType.Permanent, ItemPropertyUnlimitedAmmo(), rifle));
+                await Transfer(ctx, owner, rifle, droid);
+                await Equip(ctx, droid, rifle, InventorySlot.RightHand);
+                var ammunition = await CreateEquipment(ctx, owner, "blaster_bullets");
+                await ctx.ExecuteInCreatureContextAsync(owner, () => SetItemStackSize(ammunition, 3));
+                await Transfer(ctx, owner, ammunition, droid);
+
+                var thief = ctx.SpawnCreature("civilian", 32f);
+                await ctx.WaitFrameAsync();
+                SetAILevel(thief, AILevel.VeryLow);
+                SetPlotFlag(thief, true);
+                ctx.MakeHostile(thief);
+                ObjectPlugin.SetPosition(thief, GetPosition(droid) + new System.Numerics.Vector3(1f, 0f, 0f));
+                CreaturePlugin.DoPerceptionUpdateOnCreature(droid, thief);
+                ctx.Assert(GetObjectSeen(thief, droid), "The droid sees the hostile thief");
+
+                await DispatchHostileInventoryDisturbance(ctx, droid, thief, ammunition, DisturbType.Added);
+                ctx.AssertEqual(OBJECT_INVALID, CompanionControl.PeekAuthorizedTarget(droid), "Adding an item does not register a defensive threat");
+                await Transfer(ctx, droid, ammunition, owner);
+                await DispatchHostileInventoryDisturbance(ctx, droid, thief, ammunition, DisturbType.Removed);
+                ctx.AssertEqual(OBJECT_INVALID, CompanionControl.PeekAuthorizedTarget(droid), "A normal removal does not register a defensive threat");
+
+                await Transfer(ctx, owner, ammunition, droid);
+                await Transfer(ctx, droid, ammunition, thief);
+                await DispatchHostileInventoryDisturbance(ctx, droid, thief, ammunition, DisturbType.Stolen);
+                ctx.AssertEqual(thief, CompanionControl.PeekAuthorizedTarget(droid), "The hostile thief becomes an authorized defensive target");
+                await ctx.WaitUntilAsync(() => GetAttackTarget(droid) == thief, 5f, "the droid to retaliate against the thief");
+                for (var tick = 0; tick < 12; tick++)
+                {
+                    await ctx.DelaySecondsAsync(0.25f);
+                    ctx.AssertEqual(rifle, GetItemInSlot(InventorySlot.RightHand, droid), "The droid keeps its rifle while retaliating");
+                }
+                ctx.AssertEqual(thief, GetItemPossessor(ammunition), "Retaliation does not duplicate or return the stolen item");
+                ctx.AssertEqual(3, GetItemStackSize(ammunition), "The stolen stack retains its quantity");
+            }
+            finally
+            {
+                if (GetIsObjectValid(droid))
+                    await Dismiss(ctx, owner, droid);
+            }
         }
 
         private static Task DispatchHostileInventoryDisturbance(

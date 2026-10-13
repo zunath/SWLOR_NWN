@@ -116,6 +116,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             ctx.AssertEqual("recording_stopped", Type(events.Last()), "the last event");
             ctx.AssertEqual(events.Count, summary.EventCount, "summary event count");
 
+            AssertParticipantsDeclaredFirst(ctx, events);
             File.Delete(writer.EventsPath);
             File.Delete(writer.SummaryPath);
         }
@@ -137,6 +138,9 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             var burned = arena.Spawn(CreatureResref, -7f, 0f);
             var victim = arena.Spawn(CreatureResref, 12f, 0f);
             var healer = arena.Spawn(CreatureResref, -14f, 0f);
+            var smoldering = arena.Spawn(CreatureResref, -7f, 90f);
+            var arsonist = arena.Spawn(CreatureResref, -10f, 90f);
+            var bystander = arena.Spawn(CreatureResref, 12f, 90f);
             await ctx.DelaySecondsAsync(1f);
 
             Prepare(ctx, guarded, "Recorder Guarded", 500);
@@ -144,7 +148,9 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             Prepare(ctx, burned, "Recorder Burned", 1000);
             Prepare(ctx, victim, "Recorder Victim", 50);
             Prepare(ctx, healer, "Recorder Healer", 500);
-            foreach (var held in new[] { guarded, burned, victim })
+            Prepare(ctx, smoldering, "Recorder Smoldering", 1000);
+            Prepare(ctx, bystander, "Recorder Bystander", 50);
+            foreach (var held in new[] { guarded, burned, victim, smoldering, bystander })
                 ApplyEffectToObject(DurationType.Temporary, EffectCutsceneParalyze(), held, 120f);
             CreaturePlugin.AddFeat(attacker, FeatType.ForceLightning1);
             CreaturePlugin.AddFeat(healer, FeatType.KoltoMist1);
@@ -163,6 +169,12 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                     "Guardian's Resolve applies to the guarded creature");
                 ctx.Assert(StatusEffect.ApplyStatusEffect(attacker, burned, new BurnStatusEffect(1), 30f),
                     "Burn applies to the burned creature");
+                ctx.Assert(StatusEffect.ApplyStatusEffect(arsonist, smoldering, new BurnStatusEffect(1), 30f),
+                    "Burn applies to the smoldering creature");
+                DestroyObject(arsonist);
+
+                // The bystander's first recorded event is the hit that kills it.
+                AssignCommand(healer, () => ApplyEffectToObject(DurationType.Instant, EffectDamage(9999), bystander));
 
                 await UseAbilityAsync(ctx, attacker, guarded, FeatType.ForceLightning1);
                 await UseAbilityAsync(ctx, healer, healer, FeatType.KoltoMist1);
@@ -193,6 +205,16 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             var burnedId = ParticipantId(ctx, events, "Recorder Burned");
             var victimId = ParticipantId(ctx, events, "Recorder Victim");
             var healerId = ParticipantId(ctx, events, "Recorder Healer");
+            var smolderingId = ParticipantId(ctx, events, "Recorder Smoldering");
+            var bystanderId = ParticipantId(ctx, events, "Recorder Bystander");
+
+            var orphanedTicks = events.Where(e => Type(e) == "damage" && e.GetProperty("target").GetInt32() == smolderingId).ToList();
+            ctx.Assert(orphanedTicks.Count > 0, "Burn must keep ticking after its source is gone");
+            ctx.Assert(orphanedTicks.All(e => e.GetProperty("source_kind").GetString() == "status_effect" &&
+                                              e.GetProperty("source_name").GetString() == "Burn"),
+                "a Burn tick whose source is gone must still be recorded as Burn");
+            ctx.Assert(events.Any(e => Type(e) == "death" && e.GetProperty("target").GetInt32() == bystanderId),
+                "the bystander's death must be recorded");
 
             var guardedHeals = events.Where(e => Type(e) == "heal" && e.GetProperty("target").GetInt32() == guardedId).ToList();
             ctx.Assert(guardedHeals.Any(e => e.GetProperty("source").GetInt32() == guardedId &&
@@ -233,6 +255,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 "a lethal hit removes only the HP the victim had left");
             ctx.Assert(lethalHit.GetProperty("overkill").GetInt32() > 0, "the rest of the lethal hit is overkill");
 
+            AssertParticipantsDeclaredFirst(ctx, events);
             File.Delete(writer.EventsPath);
             File.Delete(writer.SummaryPath);
         }
@@ -379,6 +402,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                                        e.GetProperty("reason_name").GetString() == nameof(StatType.AutoAttackFPRestore)),
                 "the autoattack FP refund must be attributed to AutoAttackFPRestore");
 
+            AssertParticipantsDeclaredFirst(ctx, events);
             File.Delete(writer.EventsPath);
             File.Delete(writer.SummaryPath);
         }
@@ -540,8 +564,42 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                                           e.GetProperty("source_name").GetString() == "Kolto Mist I"),
                 "pulses of a mist cast before the recording must still be credited to Kolto Mist I");
 
+            AssertParticipantsDeclaredFirst(ctx, events);
             File.Delete(writer.EventsPath);
             File.Delete(writer.SummaryPath);
+        }
+
+        /// <summary>
+        /// Every participant id an event refers to must be declared by an earlier participant event.
+        /// </summary>
+        private static void AssertParticipantsDeclaredFirst(EngineTestContext ctx, List<JsonElement> events)
+        {
+            var declared = new HashSet<int>();
+            var references = new[]
+            {
+                "source", "target", "caster", "attacker", "defender", "creature", "killer", "last_damage_source",
+                "granted_by", "reviver", "subdued_by"
+            };
+            for (var index = 0; index < events.Count; index++)
+            {
+                var recordEvent = events[index];
+                if (Type(recordEvent) == "participant")
+                {
+                    declared.Add(recordEvent.GetProperty("id").GetInt32());
+                    continue;
+                }
+
+                foreach (var reference in references)
+                {
+                    if (recordEvent.TryGetProperty(reference, out var value) &&
+                        value.ValueKind == JsonValueKind.Number &&
+                        value.GetInt32() > 0)
+                    {
+                        ctx.Assert(declared.Contains(value.GetInt32()),
+                            $"event {index} ({Type(recordEvent)}) refers to participant {value.GetInt32()} before it is declared");
+                    }
+                }
+            }
         }
 
         private static void Prepare(EngineTestContext ctx, uint creature, string name, int hitPoints)

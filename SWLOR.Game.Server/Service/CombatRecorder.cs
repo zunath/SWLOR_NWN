@@ -503,13 +503,17 @@ namespace SWLOR.Game.Server.Service
             _participantIds[creature] = participantId;
             _participants.Add(creature);
 
-            // Character names only; never account names, CD keys or IP addresses.
+            // Character names only; never account names, CD keys or IP addresses. A declaration is
+            // written at once, never held, so it precedes every event that refers to it.
             var isPlayer = GetIsPC(creature) && !GetIsDM(creature) && !GetIsDMPossessed(creature);
-            Enqueue(CombatRecordEvent.Participant(
+            var declaration = CombatRecordEvent.Participant(
                 participantId,
                 GetName(creature),
                 isPlayer,
-                isPlayer ? null : GetResRef(creature)));
+                isPlayer ? null : GetResRef(creature));
+            declaration.TimestampMs = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
+            declaration.Frame = ServerFrame.Current;
+            Write(declaration);
             return participantId;
         }
 
@@ -736,6 +740,10 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         public static void ExpectDeferredDamage(uint source, uint target, int amount, CombatDamageDeliveryType deliveryType)
         {
+            // A status that outlived its source dispatches its damage from the creature it lands on.
+            if (!GetIsObjectValid(source))
+                source = target;
+
             if (amount <= 0 || !IsRecorded(target, source))
                 return;
 
@@ -1193,13 +1201,12 @@ namespace SWLOR.Game.Server.Service
             RecordDeath(player, GetLastHostileActor(player));
         }
 
-        [NWNEventHandler(ScriptName.OnModuleRespawn)]
-        public static void RecordPlayerRespawn()
+        /// <summary>
+        /// Records a respawn. Called by the respawn handler after the resurrection and before it
+        /// sends the player home, which may be outside the recorded area.
+        /// </summary>
+        public static void RecordRespawn(uint player)
         {
-            if (!IsRecording)
-                return;
-
-            var player = GetLastRespawnButtonPresser();
             if (!IsInRecordedArea(player))
                 return;
 

@@ -85,6 +85,8 @@ namespace SWLOR.Game.Server.Service
 
             var amount = maxHP / 2;
             ApplyEffectToObject(DurationType.Instant, EffectResurrection(), player);
+            if (CombatRecorder.IsRecording)
+                CombatRecorder.RecordRespawn(player);
             using (CombatRecorder.BeginRespawnAttribution())
                 ApplyEffectToObject(DurationType.Instant, EffectHeal(amount), player);
 

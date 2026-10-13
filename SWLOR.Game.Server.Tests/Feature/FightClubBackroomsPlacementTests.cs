@@ -61,8 +61,8 @@ public class FightClubBackroomsPlacementTests
     [Test]
     public void FightClubFloor_HoldsNoQuestGivers()
     {
-        // Quest giver placement is owned by CapstoneQuestGiverPlacementTests; the Fight Club floor
-        // has arena-fighter spawn waypoints, so no trainer may stand on it.
+        // Quest giver placement is owned by CapstoneQuestGiverPlacementTests; arena fighters
+        // now spawn in the Shipping District, while the Fight Club retains its backrooms access.
         using var club = LoadModuleJson("git", FightClubAreaFile);
         club.RootElement
             .GetProperty("Creature List")

@@ -434584,6 +434584,189 @@
           "type": "float",
           "value": 15.0
         }
+      },
+      {
+        "__struct_id": 5,
+        "Appearance": {
+          "type": "byte",
+          "value": 2
+        },
+        "Description": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "HasMapNote": {
+          "type": "byte",
+          "value": 0
+        },
+        "LinkedTo": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "LocalizedName": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "Nar Shaddaa Arena Fighters"
+          }
+        },
+        "MapNote": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "MapNoteEnabled": {
+          "type": "byte",
+          "value": 0
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "NAR_ARENA_FIGHTERS"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": "nar_arenafight"
+        },
+        "XOrientation": {
+          "type": "float",
+          "value": -0.99969881772995
+        },
+        "XPosition": {
+          "type": "float",
+          "value": 118.0
+        },
+        "YOrientation": {
+          "type": "float",
+          "value": 0.02454137429594994
+        },
+        "YPosition": {
+          "type": "float",
+          "value": 79.0
+        },
+        "ZPosition": {
+          "type": "float",
+          "value": 0.0
+        }
+      },
+      {
+        "__struct_id": 5,
+        "Appearance": {
+          "type": "byte",
+          "value": 2
+        },
+        "Description": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "HasMapNote": {
+          "type": "byte",
+          "value": 0
+        },
+        "LinkedTo": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "LocalizedName": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "Nar Shaddaa Arena Fighters"
+          }
+        },
+        "MapNote": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "MapNoteEnabled": {
+          "type": "byte",
+          "value": 0
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "NAR_ARENA_FIGHTERS"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": "nar_arenafight"
+        },
+        "XOrientation": {
+          "type": "float",
+          "value": 1.541428310757299e-43
+        },
+        "XPosition": {
+          "type": "float",
+          "value": 117.10569667816162
+        },
+        "YOrientation": {
+          "type": "float",
+          "value": 1.0
+        },
+        "YPosition": {
+          "type": "float",
+          "value": 76.7000503540039
+        },
+        "ZPosition": {
+          "type": "float",
+          "value": 0.0
+        }
+      },
+      {
+        "__struct_id": 5,
+        "Appearance": {
+          "type": "byte",
+          "value": 2
+        },
+        "Description": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "HasMapNote": {
+          "type": "byte",
+          "value": 0
+        },
+        "LinkedTo": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "LocalizedName": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "Nar Shaddaa Arena Fighters"
+          }
+        },
+        "MapNote": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "MapNoteEnabled": {
+          "type": "byte",
+          "value": 0
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "NAR_ARENA_FIGHTERS"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": "nar_arenafight"
+        },
+        "XOrientation": {
+          "type": "float",
+          "value": -0.09801732748746872
+        },
+        "XPosition": {
+          "type": "float",
+          "value": 117.16863059997559
+        },
+        "YOrientation": {
+          "type": "float",
+          "value": -0.9951847195625305
+        },
+        "YPosition": {
+          "type": "float",
+          "value": 82.14494895935059
+        },
+        "ZPosition": {
+          "type": "float",
+          "value": 0.0
+        }
       }
     ]
   }

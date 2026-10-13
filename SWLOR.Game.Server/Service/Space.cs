@@ -463,6 +463,7 @@ namespace SWLOR.Game.Server.Service
             UpdateSpacePosition(player);
         }
 
+        /// <summary>Persists the actual ship position after launch completion or a later area change.</summary>
         private static void UpdateSpacePosition(uint player)
         {
             if (!GetIsPC(player) || GetIsDM(player)) return;
@@ -608,6 +609,7 @@ namespace SWLOR.Game.Server.Service
             });
         }
 
+        /// <summary>Commits ship state only after the player reaches the requested destination area.</summary>
         private static bool TryCompleteShipLaunch(uint player)
         {
             if (!_pendingShipLaunches.TryGetValue(player, out var launch) || GetArea(player) != launch.SpaceArea)
@@ -623,6 +625,7 @@ namespace SWLOR.Game.Server.Service
             return true;
         }
 
+        /// <summary>Polls independently of creature actions, preserving loading requests and expiring unstarted jumps.</summary>
         private static void CheckShipLaunch(uint player, PendingShipLaunch launch)
         {
             // A canceled request may have been replaced by a later click on the controls.

@@ -20,6 +20,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
 {
     public static class ShipLaunchEngineTests
     {
+        /// <summary>Rejects malformed destinations without changing appearance, quickbars, or return state.</summary>
         [EngineTest("Invalid ship destinations leave the pilot unchanged", Category = "ShipLaunch", TimeoutSeconds = 30f)]
         public static Task InvalidDestinations(EngineTestContext ctx)
         {
@@ -73,6 +74,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             });
         }
 
+        /// <summary>Cancels movement before departure, then completes a fresh request through cross-area entry.</summary>
         [EngineTest("Canceled ship launch preserves the character and controls remain reusable", Category = "ShipLaunch", TimeoutSeconds = 15f)]
         public static Task CanceledLaunch(EngineTestContext ctx)
         {
@@ -105,6 +107,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             });
         }
 
+        /// <summary>Exercises docked and resumed launches between distinct areas, including Pilot placement and exit restoration.</summary>
         [EngineTest("Successful ship launch preserves the Pilot and restores the character on exit", Category = "ShipLaunch", TimeoutSeconds = 30f)]
         public static Task SuccessfulLaunch(EngineTestContext ctx)
         {
@@ -160,7 +163,11 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                     // Keep cleanup docked so ExitSpaceMode cannot leave an NPC ship in the arena.
                     property.Positions.Remove(PropertyLocationType.CurrentPosition);
                     DB.Set(property);
-                    await ctx.ExecuteInCreatureContextAsync(actor.Creature, () => Space.WarpPlayerInsideShip(actor.Creature));
+                    await ctx.ExecuteInCreatureContextAsync(actor.Creature, () =>
+                    {
+                        Space.WarpPlayerInsideShip(actor.Creature);
+                        AssignCommand(actor.Creature, () => ClearAllActions());
+                    });
                     await CompleteAreaLoad(ctx, actor, ctx.Arena, origin, false);
                     await ctx.WaitUntilAsync(() => Vector3.Distance(GetPosition(actor.Creature), origin) < 1f, 5f, "pilot returns to the controls");
                     await ctx.WaitUntilAsync(() => !GetIsObjectValid(clone), 3f, "Pilot clone is removed on exit");
@@ -170,6 +177,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             });
         }
 
+        /// <summary>Completes a delayed arrival through the scheduler after losing both queued actions and the arrival event.</summary>
         [EngineTest("Late area loading completes a launch after actions are cleared", Category = "ShipLaunch", TimeoutSeconds = 15f)]
         public static Task LateArrival(EngineTestContext ctx)
         {
@@ -199,6 +207,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             });
         }
 
+        /// <summary>Verifies that timeout and death release reservations without transforming the character.</summary>
         [EngineTest("Unstarted ship launches expire and death releases their reservation", Category = "ShipLaunch", TimeoutSeconds = 15f)]
         public static Task PendingLaunchCleanup(EngineTestContext ctx)
         {
@@ -222,6 +231,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             });
         }
 
+        /// <summary>Starts the real computer flow while preventing a headless client from initiating an unsupported load handshake.</summary>
         private static Task UseWithoutClientTransfer(EngineTestContext ctx, PlayerAbilityFixture actor, uint computer)
         {
             return ctx.ExecuteInCreatureContextAsync(computer, () =>
@@ -231,15 +241,18 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             });
         }
 
+        /// <summary>Dispatches the ship's area-exit handler using the native area's last exiting creature.</summary>
         private static void MarkDeparture(PlayerAbilityFixture actor, uint origin)
         {
             NWNXLib.g_pAppManager.m_pServerExoApp.GetGameObject(origin).AsNWSArea().m_oidLastLeft = actor.Creature;
             ScriptExecutionProvider.Current.ExecuteInScriptContext(Space.ClearTargetOnAreaExit, origin);
         }
 
-        // Simulate the point where a real client acknowledges the new area's load. The
-        // fake client is temporarily unregistered for native movement, then restored
-        // before the real Space area-entry handler executes. No jump callback is used.
+        /// <summary>
+        /// Simulates a client's area-load acknowledgment by temporarily unregistering the
+        /// fake client for native movement, then restoring it before Space handles arrival.
+        /// No jump callback is used, and all queued actions are cleared after movement.
+        /// </summary>
         private static Task CompleteAreaLoad(EngineTestContext ctx, PlayerAbilityFixture actor,
             uint area, Vector3 position, bool notifyArrival)
         {
@@ -274,15 +287,18 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             });
         }
 
+        /// <summary>Reads live reservations so tests can assert cleanup without exposing production test seams.</summary>
         private static IDictionary PendingLaunches() => (IDictionary)typeof(Space)
             .GetField("_pendingShipLaunches", BindingFlags.Static | BindingFlags.NonPublic).GetValue(null);
 
+        /// <summary>Advances only the request's timeout to test expiry without a thirty-second wall-clock delay.</summary>
         private static void ExpirePendingLaunch(PlayerAbilityFixture actor)
         {
             var launch = PendingLaunches()[actor.Creature];
             launch.GetType().GetProperty("ExpiresAt").SetValue(launch, DateTime.UtcNow.AddSeconds(-1));
         }
 
+        /// <summary>Creates an isolated native pilot, GUI state, ship computer, and persisted ship records with deterministic cleanup.</summary>
         private static async Task WithShipComputer(EngineTestContext ctx,
             Func<PlayerAbilityFixture, uint, WorldProperty, Task> test)
         {

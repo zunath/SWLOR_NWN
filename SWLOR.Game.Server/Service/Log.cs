@@ -5,6 +5,7 @@ using Serilog.Core;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Extension;
+using SWLOR.Game.Server.Service.FrameProfilerService;
 using SWLOR.Game.Server.Service.LogService;
 
 namespace SWLOR.Game.Server.Service
@@ -94,7 +95,9 @@ namespace SWLOR.Game.Server.Service
                 Console.WriteLine(details);
             }
 
+            var profile = FrameProfiler.Start();
             logger.Information(details);
+            FrameProfiler.Stop(FrameMetric.LogWrite, profile);
         }
 
         public static void WriteStructured(LogGroup group, string messageTemplate, params object[] propertyValues)

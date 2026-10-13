@@ -6,6 +6,7 @@ using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Extension;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.CombatService;
+using SWLOR.Game.Server.Service.FrameProfilerService;
 using SWLOR.Game.Server.Service.LogService;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.Game.Server.Service.StatService;
@@ -2216,8 +2217,10 @@ namespace SWLOR.Game.Server.Service
 
         public static int GetStatAdjustment(uint creature, StatType stat)
         {
+            var profile = FrameProfiler.Start();
             var persistentAdjustment = GetStatAdjustmentExcludingTemporaryModifiers(creature, stat);
             var temporaryAdjustment = TemporaryStatModifier.GetStatAdjustment(creature, stat);
+            FrameProfiler.Stop(FrameMetric.StatAdjustment, profile);
 
             return AggregateStatAdjustment(stat, persistentAdjustment, temporaryAdjustment);
         }

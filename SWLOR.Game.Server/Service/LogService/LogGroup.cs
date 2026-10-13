@@ -47,7 +47,9 @@ namespace SWLOR.Game.Server.Service.LogService
         [LogGroup("QuestContract", ServerEnvironmentType.All)]
         QuestContract,
         [LogGroup("EngineTest", ServerEnvironmentType.Development | ServerEnvironmentType.Test)]
-        EngineTest
+        EngineTest,
+        [LogGroup("Performance", ServerEnvironmentType.All)]
+        Performance
     }
 
     public class LogGroupAttribute : Attribute

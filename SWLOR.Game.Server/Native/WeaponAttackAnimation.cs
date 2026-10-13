@@ -6,6 +6,7 @@ using NWNX.NET;
 using NWNX.NET.Native;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.Service.FrameProfilerService;
 
 namespace SWLOR.Game.Server.Native;
 
@@ -217,6 +218,7 @@ public static unsafe class WeaponAttackAnimation
     {
         var original = (delegate* unmanaged<void*, void*, void*, void*, int, uint>)_computeHook->m_trampoline;
         var updates = original(message, player, obj, last, playerObject);
+        var profile = FrameProfiler.EnterManaged();
         try
         {
             var nativeObject = CNWSObject.FromPointer(obj);
@@ -228,6 +230,7 @@ public static unsafe class WeaponAttackAnimation
                 updates |= AnimationReplacementUpdate;
         }
         catch (Exception ex) { Log.WriteError(ex, "Could not refresh a weapon attack animation"); }
+        finally { FrameProfiler.ExitManaged(FrameMetric.ObjectUpdateHook, profile); }
         return updates;
     }
 

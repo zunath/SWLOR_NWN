@@ -5,6 +5,7 @@ using SWLOR.Game.Server.Feature.GuiDefinition.RefreshEvent;
 using SWLOR.Game.Server.Feature.StatusEffectDefinition;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.CombatService;
+using SWLOR.Game.Server.Service.FrameProfilerService;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.Game.Server.Service.StatService;
 using SWLOR.Game.Server.Service.StatusEffectService;
@@ -487,7 +488,7 @@ namespace SWLOR.Game.Server.Service
         public static void ApplyPermanentStatusEffect<T>(uint source, uint creature)
             where T: IStatusEffect
         {
-            ApplyStatusEffectInternal((IStatusEffect)Activator.CreateInstance(typeof(T)), source, creature, -1, true);
+            ApplyAndProfileStatusEffect((IStatusEffect)Activator.CreateInstance(typeof(T)), source, creature, -1, true);
         }
 
         public static void ApplyPermanentStatusEffect(Type type, uint source, uint creature)
@@ -495,7 +496,29 @@ namespace SWLOR.Game.Server.Service
             if (type == null)
                 throw new ArgumentNullException(nameof(type));
 
-            ApplyStatusEffectInternal((IStatusEffect)Activator.CreateInstance(type), source, creature, -1, true);
+            ApplyAndProfileStatusEffect((IStatusEffect)Activator.CreateInstance(type), source, creature, -1, true);
+        }
+
+        private static bool ApplyAndProfileStatusEffect(
+            IStatusEffect statusEffect,
+            uint source,
+            uint creature,
+            float durationSeconds,
+            bool isPermanent,
+            ResistanceType resistanceOverride = ResistanceType.Invalid,
+            CombatDamageType sourceDamageType = CombatDamageType.Invalid,
+            Type replacedStatusEffectType = null)
+        {
+            var profile = FrameProfiler.Start();
+            try
+            {
+                return ApplyStatusEffectInternal(statusEffect, source, creature, durationSeconds, isPermanent,
+                    resistanceOverride, sourceDamageType, replacedStatusEffectType);
+            }
+            finally
+            {
+                FrameProfiler.Stop(FrameMetric.StatusEffectApply, profile, statusEffect.Name);
+            }
         }
 
         private static bool ApplyStatusEffectInternal(
@@ -980,7 +1003,7 @@ namespace SWLOR.Game.Server.Service
             float durationSeconds,
             ResistanceType resistanceOverride = ResistanceType.Invalid)
         {
-            return ApplyStatusEffectInternal(
+            return ApplyAndProfileStatusEffect(
                 statusEffect,
                 source,
                 creature,
@@ -996,7 +1019,7 @@ namespace SWLOR.Game.Server.Service
             float durationSeconds,
             CombatDamageType sourceDamageType)
         {
-            return ApplyStatusEffectInternal(
+            return ApplyAndProfileStatusEffect(
                 statusEffect,
                 source,
                 creature,
@@ -1016,7 +1039,7 @@ namespace SWLOR.Game.Server.Service
             if (!TryCreateStatusEffect(statusEffectClass, out var statusEffect))
                 throw new KeyNotFoundException($"Status effect '{statusEffectClass?.Name ?? "null"}' is not registered.");
 
-            return ApplyStatusEffectInternal(
+            return ApplyAndProfileStatusEffect(
                 statusEffect,
                 source,
                 creature,
@@ -1036,7 +1059,7 @@ namespace SWLOR.Game.Server.Service
             if (!TryCreateStatusEffect(statusEffectClass, out var statusEffect))
                 throw new KeyNotFoundException($"Status effect '{statusEffectClass?.Name ?? "null"}' is not registered.");
 
-            return ApplyStatusEffectInternal(
+            return ApplyAndProfileStatusEffect(
                 statusEffect,
                 source,
                 creature,
@@ -1736,7 +1759,7 @@ namespace SWLOR.Game.Server.Service
                 if (source != OBJECT_INVALID && statusEffect.Source != source)
                     continue;
 
-                RemoveStatusEffectInstance(
+                RemoveAndProfileStatusEffectInstance(
                     creature,
                     creatureEffects,
                     statusEffect,
@@ -1771,8 +1794,27 @@ namespace SWLOR.Game.Server.Service
                 return;
             }
 
-            RemoveStatusEffectInstance(creature, creatureEffects, statusEffect, sendsWornOffMessage, removeNativeEffect);
+            RemoveAndProfileStatusEffectInstance(creature, creatureEffects, statusEffect, sendsWornOffMessage, removeNativeEffect);
             RemoveCreatureIfEmpty(creature, creatureEffects, removeNativeEffect);
+        }
+
+        private static void RemoveAndProfileStatusEffectInstance(
+            uint creature,
+            CreatureStatusEffect creatureEffects,
+            IStatusEffect statusEffect,
+            bool sendsWornOffMessage,
+            bool removeNativeEffect,
+            bool isReplacement = false)
+        {
+            var profile = FrameProfiler.Start();
+            try
+            {
+                RemoveStatusEffectInstance(creature, creatureEffects, statusEffect, sendsWornOffMessage, removeNativeEffect, isReplacement);
+            }
+            finally
+            {
+                FrameProfiler.Stop(FrameMetric.StatusEffectRemove, profile, statusEffect.Name);
+            }
         }
 
         private static void RemoveStatusEffectInstance(

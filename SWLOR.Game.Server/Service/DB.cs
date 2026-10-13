@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Reflection;
+using System.Threading;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using NRediSearch;
@@ -11,6 +12,7 @@ using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Extension;
 using SWLOR.Game.Server.Service.DBService;
+using SWLOR.Game.Server.Service.FrameProfilerService;
 
 namespace SWLOR.Game.Server.Service
 {
@@ -39,8 +41,10 @@ namespace SWLOR.Game.Server.Service
             if (property == null || property.GetCustomAttribute<IndexedAttribute>() != null)
                 throw new ArgumentException("A declared, unindexed entity property is required.", nameof(propertyName));
 
+            var profile = FrameProfiler.Start();
             var result = _multiplexer.GetDatabase().JsonSet($"{_keyPrefixByType[typeof(T)]}:{id}",
                 json, path: $".{propertyName}", setOption: SetOption.SetOnlyIfExists);
+            FrameProfiler.Stop(FrameMetric.DBOther, profile, json.Length);
             if (!result.IsSuccess)
                 throw new InvalidOperationException($"Could not update {typeof(T).Name} {id}.{propertyName}.");
             _cachedEntities.Remove(id);
@@ -408,6 +412,7 @@ namespace SWLOR.Game.Server.Service
         public static void Set<T>(T entity)
             where T : EntityBase
         {
+            var profile = FrameProfiler.Start();
             var type = typeof(T);
             var data = JsonConvert.SerializeObject(entity);
 
@@ -417,6 +422,7 @@ namespace SWLOR.Game.Server.Service
             _searchClientsByType[type].ReplaceDocument(indexKey, indexData);
             _multiplexer.GetDatabase().JsonSet($"{keyPrefix}:{entity.Id}", data);
             _cachedEntities[entity.Id] = entity;
+            FrameProfiler.Stop(FrameMetric.DBSet, profile, data.Length);
         }
 
         /// <summary>
@@ -466,17 +472,25 @@ namespace SWLOR.Game.Server.Service
             var keyPrefix = _keyPrefixByType[typeof(T)];
             if (_cachedEntities.ContainsKey(id))
             {
+                FrameProfiler.Count(FrameMetric.DBGetCached);
                 return (T)_cachedEntities[id];
             }
             else
             {
+                var profile = FrameProfiler.Start();
                 RedisValue data = _multiplexer.GetDatabase().JsonGet($"{keyPrefix}:{id}").ToString();
 
                 if (string.IsNullOrWhiteSpace(data))
+                {
+                    FrameProfiler.Stop(FrameMetric.DBGet, profile);
                     return default;
+                }
 
+                var deserializeProfile = FrameProfiler.Start();
                 var entity = JsonConvert.DeserializeObject<T>(data);
+                FrameProfiler.Stop(FrameMetric.DBDeserialize, deserializeProfile);
                 _cachedEntities[id] = entity;
+                FrameProfiler.Stop(FrameMetric.DBGet, profile, ((string)data).Length);
 
                 return entity;
             }
@@ -492,7 +506,9 @@ namespace SWLOR.Game.Server.Service
         public static string GetRawJson<T>(string id)
         {
             var keyPrefix = _keyPrefixByType[typeof(T)];
+            var profile = FrameProfiler.Start();
             RedisValue data = _multiplexer.GetDatabase().JsonGet($"{keyPrefix}:{id}").ToString();
+            FrameProfiler.Stop(FrameMetric.DBOther, profile, data.IsNull ? 0 : ((string)data).Length);
 
             if (string.IsNullOrWhiteSpace(data))
                 return string.Empty;
@@ -512,8 +528,11 @@ namespace SWLOR.Game.Server.Service
             var keyPrefix = _keyPrefixByType[typeof(T)];
             if (_cachedEntities.ContainsKey(id))
                 return true;
-            else
-                return _multiplexer.GetDatabase().KeyExists($"{keyPrefix}:{id}");
+
+            var profile = FrameProfiler.Start();
+            var exists = _multiplexer.GetDatabase().KeyExists($"{keyPrefix}:{id}");
+            FrameProfiler.Stop(FrameMetric.DBOther, profile);
+            return exists;
         }
 
         /// <summary>
@@ -526,8 +545,10 @@ namespace SWLOR.Game.Server.Service
         {
             var keyPrefix = _keyPrefixByType[typeof(T)];
             var indexKey = SearchIndexDefinition.KeyPrefix(keyPrefix) + id;
+            var profile = FrameProfiler.Start();
             _searchClientsByType[typeof(T)].DeleteDocument(indexKey);
             _multiplexer.GetDatabase().JsonDelete($"{keyPrefix}:{id}");
+            FrameProfiler.Stop(FrameMetric.DBOther, profile);
             _cachedEntities.Remove(id);
         }
 
@@ -568,7 +589,10 @@ namespace SWLOR.Game.Server.Service
             {
                 // Remove the 'Index:' prefix.
                 var recordId = doc.Id.Remove(0, 6);
-                yield return _multiplexer.GetDatabase().JsonGet<T>(recordId);
+                var profile = FrameProfiler.Start();
+                var entity = _multiplexer.GetDatabase().JsonGet<T>(recordId);
+                FrameProfiler.Stop(FrameMetric.DBSearchDocument, profile);
+                yield return entity;
             }
         }
 
@@ -587,7 +611,10 @@ namespace SWLOR.Game.Server.Service
             {
                 // Remove the 'Index:' prefix.
                 var recordId = doc.Id.Remove(0, 6);
-                yield return _multiplexer.GetDatabase().JsonGet(recordId).ToString();
+                var profile = FrameProfiler.Start();
+                var json = _multiplexer.GetDatabase().JsonGet(recordId).ToString();
+                FrameProfiler.Stop(FrameMetric.DBSearchDocument, profile, json.Length);
+                yield return json;
             }
         }
 
@@ -611,8 +638,20 @@ namespace SWLOR.Game.Server.Service
         {
             var client = _searchClientsByType[typeof(T)];
             var searchQuery = query.BuildQuery(countsOnly);
-            // Retry the read itself, never the caller's settlement/refund workflow or its writes.
-            return DBSearchRetry.Execute(() => client.Search(searchQuery), typeof(T).Name);
+            var profile = FrameProfiler.Start();
+            try
+            {
+                // Retry the read itself, never the caller's settlement/refund workflow or its writes.
+                return DBSearchRetry.Execute(() => client.Search(searchQuery), typeof(T).Name, delayMilliseconds =>
+                {
+                    FrameProfiler.Count(FrameMetric.DBSearchRetry);
+                    Thread.Sleep(delayMilliseconds);
+                });
+            }
+            finally
+            {
+                FrameProfiler.Stop(FrameMetric.DBSearch, profile);
+            }
         }
     }
 }

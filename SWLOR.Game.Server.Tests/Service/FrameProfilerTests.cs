@@ -1,0 +1,75 @@
+using FluentAssertions;
+using NUnit.Framework;
+using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.Service.FrameProfilerService;
+
+namespace SWLOR.Game.Server.Tests.Service;
+
+[NonParallelizable]
+public class FrameProfilerTests
+{
+    [TearDown]
+    public void StopCapture()
+    {
+        if (FrameProfiler.IsCapturing)
+            FrameProfiler.EndCapture();
+    }
+
+    [Test]
+    public void DisabledProfiler_RecordsNothing()
+    {
+        FrameProfiler.IsEnabled.Should().BeFalse();
+        FrameProfiler.Start().Should().Be(0);
+        FrameProfiler.EnterManaged().Should().Be(0);
+    }
+
+    [Test]
+    public void Capture_CountsCompletedFramesOnly()
+    {
+        FrameProfiler.BeginCapture();
+        FrameProfiler.OnFrameStart(10);
+        FrameProfiler.Count(FrameMetric.BroadcastReceiver, 4);
+        FrameProfiler.Stop(FrameMetric.DBGet, FrameProfiler.Start(), 2048);
+        FrameProfiler.OnFrameStart(11);
+        FrameProfiler.Count(FrameMetric.BroadcastReceiver, 100);
+
+        var summary = FrameProfiler.EndCapture();
+
+        summary.Frames.Should().Be(1);
+        summary.Totals.Count(FrameMetric.BroadcastReceiver).Should().Be(4);
+        summary.Totals.Count(FrameMetric.DBGet).Should().Be(1);
+        summary.Totals.ByteCount(FrameMetric.DBGet).Should().Be(2048);
+        FrameProfiler.IsEnabled.Should().BeFalse();
+    }
+
+    [Test]
+    public void NestedManagedWork_IsCountedButTimedOnce()
+    {
+        FrameProfiler.BeginCapture();
+        FrameProfiler.OnFrameStart(1);
+        var outer = FrameProfiler.EnterManaged();
+        var inner = FrameProfiler.EnterManaged();
+        System.Threading.Thread.Sleep(2);
+        FrameProfiler.ExitManaged(FrameMetric.Script, inner, "inner");
+        FrameProfiler.ExitManaged(FrameMetric.NativeHook, outer);
+        FrameProfiler.OnFrameStart(2);
+
+        var totals = FrameProfiler.EndCapture().Totals;
+
+        totals.Count(FrameMetric.Script).Should().Be(1);
+        totals.Elapsed(FrameMetric.Script).Should().Be(0);
+        totals.Count(FrameMetric.NativeHook).Should().Be(1);
+        totals.Elapsed(FrameMetric.NativeHook).Should().BeGreaterThan(0);
+    }
+
+    [Test]
+    public void Percentile_UsesNearestRank()
+    {
+        var frames = new float[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 100 };
+
+        FrameCaptureSummary.Percentile(frames, 0.50).Should().Be(5);
+        FrameCaptureSummary.Percentile(frames, 0.95).Should().Be(100);
+        FrameCaptureSummary.Percentile(frames, 0.10).Should().Be(1);
+        FrameCaptureSummary.Percentile(System.Array.Empty<float>(), 0.5).Should().Be(0);
+    }
+}

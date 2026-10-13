@@ -5,6 +5,7 @@ using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Feature.GuiDefinition.Payload;
 using SWLOR.Game.Server.Feature.GuiDefinition.RefreshEvent;
 using SWLOR.Game.Server.Feature.GuiDefinition.ViewModel;
+using SWLOR.Game.Server.Service.FrameProfilerService;
 using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.GuiService.Component;
 using SWLOR.NWN.API.NWScript.Enum;
@@ -472,6 +473,7 @@ namespace SWLOR.Game.Server.Service
             if (!_playerWindows.Values.Any(windows => windows.ContainsKey(GuiWindowType.CharacterSheet)))
                 return;
 
+            FrameProfiler.Count(FrameMetric.CharacterSheetRefresh);
             var windowId = BuildWindowId(GuiWindowType.CharacterSheet);
 
             for (var observer = GetFirstPC(); GetIsObjectValid(observer); observer = GetNextPC())

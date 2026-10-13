@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
 using SWLOR.Game.Server.Core;
+using SWLOR.Game.Server.Service.FrameProfilerService;
 using SWLOR.Game.Server.Service.TelegraphService;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWScript.Enum;
@@ -487,6 +488,19 @@ namespace SWLOR.Game.Server.Service
         /// <param name="player">Player to update shaders for</param>
         private static void UpdateShaderForPlayer(uint player)
         {
+            var profile = FrameProfiler.Start();
+            try
+            {
+                UpdateShaderSlotsForPlayer(player);
+            }
+            finally
+            {
+                FrameProfiler.Stop(FrameMetric.TelegraphPlayerUpdate, profile);
+            }
+        }
+
+        private static void UpdateShaderSlotsForPlayer(uint player)
+        {
             var area = GetArea(player);
             if (!_telegraphsByArea.ContainsKey(area))
             {
@@ -495,6 +509,7 @@ namespace SWLOR.Game.Server.Service
             }
 
             var telegraphs = SelectTelegraphsForRendering(_telegraphsByArea[area].Values);
+            FrameProfiler.Count(FrameMetric.TelegraphUniform, telegraphs.Length * 2);
 
             var i = 0;
             foreach (var telegraph in telegraphs)
@@ -535,6 +550,7 @@ namespace SWLOR.Game.Server.Service
 
         private static void ResetTelegraphShaderSlots(uint player, int startIndex)
         {
+            FrameProfiler.Count(FrameMetric.TelegraphUniform, Math.Max(0, MaxRenderCount - startIndex));
             for (var x = startIndex; x < MaxRenderCount; ++x)
             {
                 var uniformIndex = ShaderUniformType.Type1 + x;

@@ -132,5 +132,28 @@ def log_text(profile):
 
 
 def cleanup(profile):
+    """Keep ownership evidence until all copied contents have been removed."""
+    profile=Path(profile)
     validate_owned(profile)
-    shutil.rmtree(profile)
+    marker=profile/MARKER
+    ownership=marker.read_bytes()
+    for entry in profile.iterdir():
+        if entry==marker:
+            continue
+        if entry.is_dir():
+            shutil.rmtree(entry)
+        else:
+            entry.unlink()
+    marker.unlink()
+    try:
+        profile.rmdir()
+    except BaseException as error:
+        # An interrupted final directory removal must remain safely retryable.
+        try:
+            reject_links(profile)
+            if profile.exists() and not marker.exists():
+                with marker.open('xb') as stream:
+                    stream.write(ownership)
+        except BaseException as restore_error:
+            raise BaseExceptionGroup('Profile removal and ownership restoration failed',[error,restore_error])
+        raise

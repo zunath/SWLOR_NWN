@@ -7,7 +7,7 @@ import json
 import re
 import sys
 
-from . import module, profile
+from . import module, profile, cleanup_state
 
 
 def parse_captures(values):
@@ -134,10 +134,22 @@ def main(argv=None):
         def remove_profile():
             """Do not delete a profile still used by an unconfirmed owned process."""
             if offline_client.has_retained_profile(owned):
+                if owned.exists():
+                    cleanup_state.retain_profile(owned,offline_client.retained_profile_pid(owned))
                 raise RuntimeError('Owned process control retained; preserve profile for shutdown retry')
             if owned.exists():
-                profile.cleanup(owned)
+                cleanup_state.remove_owned_profile(owned)
             manifest['profile_removed']=True
+
+        def refresh_isolation():
+            outcome=offline_client.take_shutdown_outcome(owned)
+            if outcome is None:
+                return
+            manifest['shutdown_retry']=outcome
+            target=output/'isolation.json'
+            evidence=json.loads(target.read_text(encoding='utf8')) if target.exists() else {}
+            evidence.update(outcome)
+            target.write_text(json.dumps(evidence,indent=2)+'\n',encoding='utf8')
 
         if state['frames']:
             finish('capture_cleanup_failure',state['frames'].close)
@@ -146,6 +158,7 @@ def main(argv=None):
             finish('isolation_copy_failure',lambda: profile.copy_input(owned/'isolation.json',output/'isolation.json'))
         finish('shutdown_retry_failure',offline_client.retry_cleanup_before_exit)
         finish('cleanup_failure',remove_profile)
+        finish('isolation_refresh_failure',refresh_isolation)
         finish('manifest_failure',lambda: (output/'manifest.json').write_text(json.dumps(manifest,indent=2)+'\n',encoding='utf8'))
         if final_errors:
             errors=([run_error] if run_error is not None else [])+final_errors

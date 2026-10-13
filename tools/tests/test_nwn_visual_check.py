@@ -30,6 +30,7 @@ def tearDownModule():
     try:
         offline_client.retry_retained_processes()
     finally:
+        offline_client._shutdown_outcomes.clear()
         cleanup_patch.stop()
         cleanup_temporary.cleanup()
 
@@ -61,6 +62,38 @@ class LogMarkerTests(unittest.TestCase):
 
 
 class CleanupJournalTests(unittest.TestCase):
+    def test_invalid_native_process_ids_cannot_be_persisted(self):
+        owned=profile.create_profile()
+        try:
+            for pid in (0,-1,0x100000000,True):
+                with self.subTest(pid=pid),self.assertRaises(ValueError):
+                    cleanup_state.retain_profile(owned,pid=pid)
+            self.assertEqual(cleanup_state.pending_profiles(),[])
+        finally:
+            profile.cleanup(owned)
+
+    def test_profile_recovery_checks_active_pid_and_original_ownership_token(self):
+        owned=profile.create_profile()
+        token=cleanup_state.retain_profile(owned,pid=123)
+        marker=owned/profile.MARKER
+        original=marker.read_text()
+        try:
+            with patch.object(cleanup_state,'process_is_running',return_value=True):
+                with self.assertRaises(ExceptionGroup):
+                    offline_client.retry_retained_processes()
+            self.assertTrue(owned.exists())
+            changed=json.loads(original);changed['token']='c'*32
+            marker.write_text(json.dumps(changed))
+            with patch.object(cleanup_state,'process_is_running',return_value=False):
+                with self.assertRaises(ExceptionGroup):
+                    offline_client.retry_retained_processes()
+            self.assertTrue(owned.exists())
+            self.assertEqual(cleanup_state.pending_profiles()[0]['token'],token)
+        finally:
+            marker.write_text(original)
+            cleanup_state.retain_profile(owned)
+            offline_client.retry_retained_processes()
+
     def test_exhausted_bounded_retry_recovers_after_memory_is_discarded(self):
         name='swlor-review-'+'b'*32
         userenv=Mock()
@@ -211,6 +244,25 @@ class ProfileBoundaryTests(unittest.TestCase):
 
 
 class ProfileCreationTests(unittest.TestCase):
+    def test_final_directory_removal_failure_restores_the_ownership_marker(self):
+        owned=profile.create_profile()
+        rmdir=Path.rmdir
+        failed=[]
+        def fail_once(path,*args,**kwargs):
+            if path==owned and not failed:
+                failed.append(True)
+                raise OSError('Transient directory lock')
+            return rmdir(path,*args,**kwargs)
+        try:
+            with patch.object(Path,'rmdir',fail_once):
+                with self.assertRaisesRegex(OSError,'Transient directory lock'):
+                    profile.cleanup(owned)
+            profile.validate_owned(owned)
+            profile.cleanup(owned)
+            self.assertFalse(owned.exists())
+        finally:
+            if owned.exists():profile.cleanup(owned)
+
     def test_missing_or_partial_marker_write_cleans_fresh_directory(self):
         mkdtemp = tempfile.mkdtemp
         write_text = Path.write_text
@@ -262,7 +314,12 @@ class RetainedCleanupTests(unittest.TestCase):
         job=Mock();desktop=Mock();pid=0x7ffffffd
         offline_client._retained_processes[pid]=(kernel,process,job,desktop,owned)
         try:
-            with patch.object(offline_client,'cleanup_profile',side_effect=OSError('Temporary cleanup refusal')):
+            rmtree=profile.shutil.rmtree
+            def refuse_hak_removal(path,*args,**kwargs):
+                if Path(path)==owned/'hak':
+                    raise OSError('Temporary cleanup refusal')
+                return rmtree(path,*args,**kwargs)
+            with patch.object(profile.shutil,'rmtree',refuse_hak_removal):
                 with self.assertRaises(ExceptionGroup):
                     offline_client.retry_retained_processes()
             self.assertTrue(owned.exists())
@@ -427,6 +484,38 @@ class CliInputTests(unittest.TestCase):
 
 
 class EvidenceCleanupTests(unittest.TestCase):
+    @unittest.skipUnless(sys.platform=='win32','Fresh-process cleanup requires Windows')
+    def test_failed_profile_removal_recovers_in_a_fresh_python_process(self):
+        owned=profile.create_profile()
+        (owned/'hak/copied.hak').write_bytes(b'copied input')
+        rmtree=profile.shutil.rmtree
+        def scanner_lock(path,*args,**kwargs):
+            if Path(path)==owned/'hak':
+                raise OSError('Transient HAK scanner lock')
+            return rmtree(path,*args,**kwargs)
+        with tempfile.TemporaryDirectory() as temporary:
+            root=Path(temporary);fixture=root/'fixture.mod';fixture.write_bytes(b'fixture')
+            try:
+                with patch('nwn_visual_check.module.discover_client',return_value=Path('C:/nwmain.exe')), \
+                        patch('nwn_visual_check.profile.create_profile',return_value=owned), \
+                        patch('nwn_visual_check.offline_client.run',side_effect=RuntimeError('Client probe failed')), \
+                        patch.object(profile.shutil,'rmtree',scanner_lock):
+                    with self.assertRaises(ExceptionGroup):
+                        main(['--module',str(fixture),'--output',str(root/'evidence'),'--capture','READY=close'])
+                profile.validate_owned(owned)
+                self.assertEqual(len(cleanup_state.pending_profiles()),1)
+                manifest=json.loads((root/'evidence/manifest.json').read_text())
+                self.assertFalse(manifest['profile_removed'])
+                tools=Path(__file__).resolve().parents[1]
+                records=cleanup_state.state_root()
+                code="import sys;from pathlib import Path;sys.path.insert(0,"+repr(str(tools))+");from nwn_visual_check import cleanup_state,offline_client;cleanup_state.state_root=lambda:Path("+repr(str(records))+");offline_client.retry_retained_processes()"
+                subprocess.run([sys.executable,'-B','-c',code],check=True,capture_output=True,text=True,timeout=20,creationflags=subprocess.CREATE_NO_WINDOW)
+                self.assertFalse(owned.exists())
+                self.assertEqual(cleanup_state.pending_profiles(),[])
+            finally:
+                if owned.exists():profile.cleanup(owned)
+                offline_client.retry_retained_processes()
+
     @unittest.skipUnless(sys.platform=='win32','CLI requires Windows')
     def test_cli_final_retry_cleans_retained_profile_before_returning_failure(self):
         owned=profile.create_profile()
@@ -435,6 +524,7 @@ class EvidenceCleanupTests(unittest.TestCase):
         job=Mock();desktop=Mock();pid=0x7ffffffc
         def failed_shutdown(*args,**kwargs):
             offline_client._retained_processes[pid]=(kernel,process,job,desktop,owned)
+            (owned/'isolation.json').write_text(json.dumps({'pid':pid,'process_exited':False,'process_control_retained':True}))
             raise RuntimeError('Initial shutdown unconfirmed')
         with tempfile.TemporaryDirectory() as temporary:
             root=Path(temporary);fixture=root/'fixture.mod';fixture.write_bytes(b'fixture')
@@ -450,6 +540,11 @@ class EvidenceCleanupTests(unittest.TestCase):
                 manifest=json.loads((root/'evidence/manifest.json').read_text())
                 self.assertFalse(manifest['success'])
                 self.assertTrue(manifest['profile_removed'])
+                isolation=json.loads((root/'evidence/isolation.json').read_text())
+                self.assertTrue(isolation['process_exited'])
+                self.assertFalse(isolation['process_control_retained'])
+                self.assertTrue(isolation['shutdown_retried'])
+                self.assertTrue(manifest['shutdown_retry']['process_exited'])
             finally:
                 offline_client._retained_processes.pop(pid,None)
                 if owned.exists():profile.cleanup(owned)
@@ -534,6 +629,10 @@ class WindowsIsolationTests(unittest.TestCase):
         self.assertTrue(evidence['process_exited'])
         self.assertNotIn('pid',evidence)
         self.assertFalse(evidence['timed_out'])
+
+    def test_readonly_process_probe_detects_current_and_missing_pid(self):
+        self.assertTrue(cleanup_state.process_is_running(os.getpid()))
+        self.assertFalse(cleanup_state.process_is_running(0x7fffffff))
 
     def test_timeout_stops_owned_process(self):
         with self.assertRaises(subprocess.TimeoutExpired):

@@ -84,7 +84,11 @@ the retained profile once exit is confirmed. The CLI makes a final retry during
 teardown. Failed AppContainer deletions receive three bounded retry attempts and
 are saved under `%LOCALAPPDATA%/SWLOR/NwnVisualChecks/cleanup` for recovery on the
 next invocation, including from another repo copy. Only matching tool-owned
-container names are recovered. The failure is recorded, and cleanup
+container names are recovered. Failed temporary-profile removals also retain the
+original ownership token and path there. Recovery requires the same ownership marker
+and refuses deletion while a recorded PID remains active. Ownership markers survive
+partial removal, and isolation evidence is refreshed after a shutdown retry.
+The failure is recorded, and cleanup
 never discards control of a live client. Evidence stays outside the repository for inspection.
 The manifest proves capture and isolation, not visual correctness: inspect every image,
 record observed transforms/approach results, and deliver the labelled report below.

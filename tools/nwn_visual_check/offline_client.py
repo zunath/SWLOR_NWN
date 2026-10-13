@@ -20,6 +20,7 @@ from . import cleanup_state
 
 _retained_processes = {}
 _retained_containers = {}
+_shutdown_outcomes = {}
 
 class STARTUPINFO(ctypes.Structure):
     _fields_ = [("cb",w.DWORD),("lpReserved",w.LPWSTR),("lpDesktop",w.LPWSTR),("lpTitle",w.LPWSTR),
@@ -89,6 +90,18 @@ def has_retained_profile(profile):
     return any(record[4] == Path(profile).resolve() for record in _retained_processes.values())
 
 
+def retained_profile_pid(profile):
+    """Return a PID only while exit remains unconfirmed for this owned profile."""
+    key=str(Path(profile).resolve())
+    if _shutdown_outcomes.get(key,{}).get('process_exited'):
+        return None
+    return next((pid for pid,record in _retained_processes.items() if str(record[4])==key),None)
+
+
+def take_shutdown_outcome(profile):
+    return _shutdown_outcomes.pop(str(Path(profile).resolve()),None)
+
+
 def retry_retained_processes():
     """Retry retained process/profile cleanup and failed container deletions."""
     errors=[]
@@ -99,8 +112,10 @@ def retry_retained_processes():
                 job.close()
                 if kernel.WaitForSingleObject(process.hProcess,5000)!=0:
                     raise RuntimeError(f'Owned process {pid} has not exited')
+            outcome={'pid':pid,'process_exited':True,'process_control_retained':True,'shutdown_retried':True}
+            _shutdown_outcomes[str(profile)]=outcome
             if profile.exists():
-                cleanup_profile(profile)
+                cleanup_state.remove_owned_profile(profile,cleanup=cleanup_profile)
             job.close()
             if desktop:
                 desktop.close()
@@ -112,6 +127,7 @@ def retry_retained_processes():
                 raise ctypes.WinError(ctypes.get_last_error())
             process.hProcess=None
             del _retained_processes[pid]
+            outcome['process_control_retained']=False
         except BaseException as error:
             errors.append(error)
     try:
@@ -123,6 +139,16 @@ def retry_retained_processes():
     for name,userenv in list(_retained_containers.items()):
         try:
             _release_appcontainer_profile(userenv,name)
+        except BaseException as error:
+            errors.append(error)
+    try:
+        records=cleanup_state.pending_profiles()
+    except BaseException as error:
+        errors.append(error)
+        records=[]
+    for record in records:
+        try:
+            cleanup_state.recover_profile(record)
         except BaseException as error:
             errors.append(error)
     if errors:

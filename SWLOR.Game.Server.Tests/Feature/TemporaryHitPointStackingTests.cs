@@ -48,6 +48,20 @@ public class TemporaryHitPointStackingTests
         TemporaryHitPointEffects.CalculateGrantedAmount(requested, cap, otherPools).Should().Be(expected);
     }
 
+    [Test]
+    public void Trim_TakesTheExcessFromThePoolsInOrder()
+    {
+        TemporaryHitPointEffects.CalculateTrimmedAmounts(new[] { 100, 250, 150 }, 300)
+            .Should().Equal(0, 50, 150);
+    }
+
+    [Test]
+    public void Trim_WithoutExcess_KeepsEveryPool()
+    {
+        TemporaryHitPointEffects.CalculateTrimmedAmounts(new[] { 100, 250 }, 0)
+            .Should().Equal(100, 250);
+    }
+
     private static DirectoryInfo FindRepositoryRoot()
     {
         var directory = new DirectoryInfo(TestContext.CurrentContext.TestDirectory);

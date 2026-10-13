@@ -9,11 +9,12 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
 {
     public sealed class ForceConvergenceStatusEffect : StatusEffectBase
     {
-        // FP returns over the first 20 seconds (10 ticks of 4%); the accuracy bonus lasts the whole effect.
-        public const int FPRestorePercentPerTick = 4;
+        // 40% of max FP returns over the first 20 seconds (10 ticks); the accuracy bonus lasts the whole effect.
+        public const int FPRestorePercent = 40;
         public const int FPRestoreTicks = 10;
 
         private int _fpRestoreTicksApplied;
+        private int _fpRestoreTotal;
 
         public override string Name => "Force Convergence";
         public override EffectIconType Icon => EffectIconType.ForceConvergenceStatusEffect;
@@ -32,9 +33,20 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
             if (_fpRestoreTicksApplied >= FPRestoreTicks)
                 return;
 
+            if (_fpRestoreTicksApplied == 0)
+                _fpRestoreTotal = GameMath.PercentOf(Stat.GetMaxFP(creature), FPRestorePercent);
+
+            var restoredBefore = GetFPRestoredThroughTick(_fpRestoreTotal, _fpRestoreTicksApplied);
             _fpRestoreTicksApplied++;
-            var amount = GameMath.PercentOf(Stat.GetMaxFP(creature), FPRestorePercentPerTick);
-            Stat.RestoreFP(creature, amount);
+            var amount = GetFPRestoredThroughTick(_fpRestoreTotal, _fpRestoreTicksApplied) - restoredBefore;
+            if (amount > 0)
+                Stat.RestoreFP(creature, amount);
+        }
+
+        /// <summary>FP restored after <paramref name="ticks"/> ticks, so the ten ticks add up to exactly the total.</summary>
+        public static int GetFPRestoredThroughTick(int totalRestore, int ticks)
+        {
+            return totalRestore * Math.Clamp(ticks, 0, FPRestoreTicks) / FPRestoreTicks;
         }
     }
 }

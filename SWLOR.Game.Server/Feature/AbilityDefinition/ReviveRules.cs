@@ -25,7 +25,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
 
         private const string KilledByPlayerVariable = "REVIVE_KILLED_BY_PLAYER";
         private const string BeastKilledByPlayerVariable = "REVIVE_BEAST_KILLED_BY_PLAYER";
-        private const int MaximumNearbyCreatureChecks = 50;
 
         private static readonly Dictionary<string, DateTime> _lastMidFightReviveAt = new();
 
@@ -94,7 +93,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
 
         private static bool IsHostilePlayerNear(uint caster, uint center)
         {
-            for (var nth = 1; nth <= MaximumNearbyCreatureChecks; nth++)
+            // Players come back nearest first, so the walk ends at the first one outside the range.
+            for (var nth = 1; ; nth++)
             {
                 var player = GetNearestCreature(CreatureType.PlayerCharacter, 1, center, nth);
                 if (!GetIsObjectValid(player) || GetDistanceBetween(center, player) > HostilePlayerRangeMeters)
@@ -106,8 +106,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                 if (GetIsReactionTypeHostile(player, caster) || GetIsReactionTypeHostile(caster, player))
                     return true;
             }
-
-            return false;
         }
 
         private static bool HasPartyTakenRecentDamageNear(uint caster, uint body)

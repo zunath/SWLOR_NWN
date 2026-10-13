@@ -18,10 +18,10 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             ctx.AssertEqual(0, Stat.GetCurrentFP(caster), "FP starts empty");
 
             StatusEffect.ApplyStatusEffect(caster, caster, typeof(ForceConvergenceStatusEffect), 30f);
-            var perTick = GameMath.PercentOf(maxFP, ForceConvergenceStatusEffect.FPRestorePercentPerTick);
-            var total = perTick * ForceConvergenceStatusEffect.FPRestoreTicks;
+            var total = GameMath.PercentOf(maxFP, ForceConvergenceStatusEffect.FPRestorePercent);
 
             await ctx.WaitUntilAsync(() => Stat.GetCurrentFP(caster) >= total, 28f, $"Convergence to restore {total} FP");
+            ctx.AssertEqual(total, Stat.GetCurrentFP(caster), "Convergence restores 40% of max FP, not more");
             ctx.AssertEqual(5, Stat.GetStatAdjustment(caster, StatType.AbilityHitChancePercentAdjustment),
                 "accuracy bonus outlasts the FP restore");
 

@@ -30,5 +30,25 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 3f, "absorbed damage to open room under the cap");
             ctx.AssertEqual(100, TemporaryHitPointEffects.ApplyFlat(target, "CAP_THIRD", 250, 60f), "spent shields make room again");
         }
+
+        [EngineTest("Temporary HP is trimmed back under the cap when maximum HP drops", Category = "StatusEffect", TimeoutSeconds = 20f)]
+        public static async Task PoolsTrimWhenMaximumHitPointsDrop(EngineTestContext ctx)
+        {
+            var target = ctx.SpawnCreature("nw_rat001");
+            await ctx.WaitFrameAsync();
+            Stat.SetNPCMaxHitPoints(target, 1000, true);
+            TemporaryHitPointEffects.ApplyFlatFromSource(target, target, "TRIM_SHORT", 200, 20f);
+            TemporaryHitPointEffects.ApplyFlatFromSource(target, target, "TRIM_LONG", 300, 60f);
+            ctx.AssertEqual(500, TemporaryHitPointEffects.GetRemaining(target), "pools fill the cap");
+
+            Stat.SetNPCMaxHitPoints(target, 600);
+            ctx.AssertEqual(300, TemporaryHitPointEffects.GetRemaining(target), "pools shrink to the new cap");
+            ctx.Assert(!TemporaryHitPointEffects.IsActivePoolFromSource(target, "TRIM_SHORT", target), "the pool ending soonest is trimmed first");
+            ctx.Assert(TemporaryHitPointEffects.IsActivePoolFromSource(target, "TRIM_LONG", target), "the longer pool keeps its source");
+
+            AssignCommand(target, () => ApplyEffectToObject(DurationType.Instant, EffectDamage(100), target));
+            await ctx.WaitUntilAsync(() => TemporaryHitPointEffects.GetRemaining(target) == 200,
+                3f, "the trimmed pool to keep absorbing damage");
+        }
     }
 }

@@ -31,8 +31,11 @@ namespace SWLOR.Game.Server.Feature
         public static void ProcessRegeneration()
         {
             var player = OBJECT_SELF;
-            if (!GetIsPC(player) || GetIsDM(player) ||
-                GetLocalInt(player, Stat.SuppressNaturalRegenVariable) != 0) return;
+            if (!GetIsPC(player) || GetIsDM(player)) return;
+
+            // Max HP can also drop natively (a Vitality penalty), leaving shields above the cap.
+            AbilityDefinition.TemporaryHitPointEffects.EnforceMaximumTotal(player);
+            if (GetLocalInt(player, Stat.SuppressNaturalRegenVariable) != 0) return;
 
             var tick = GetLocalInt(player, "NATURAL_REGENERATION_TICK") + 1;
             ApplyLowResourceIntervalRestore(player);

@@ -373,10 +373,26 @@ public class ForceUniversalTests
     [Test]
     public void ForceConvergence_RestoresFortyPercentFPOverTwentySeconds()
     {
-        (ForceConvergenceStatusEffect.FPRestorePercentPerTick * ForceConvergenceStatusEffect.FPRestoreTicks)
-            .Should().Be(40);
+        ForceConvergenceStatusEffect.FPRestorePercent.Should().Be(40);
         (new ForceConvergenceStatusEffect().Frequency * ForceConvergenceStatusEffect.FPRestoreTicks)
             .Should().Be(20f);
+    }
+
+    [TestCase(100)]
+    [TestCase(103)]
+    [TestCase(7)]
+    public void ForceConvergence_TicksAddUpToExactlyTheFortyPercentBudget(int maxFP)
+    {
+        var total = SWLOR.Game.Server.Service.GameMath.PercentOf(maxFP, ForceConvergenceStatusEffect.FPRestorePercent);
+        var ticks = Enumerable.Range(1, ForceConvergenceStatusEffect.FPRestoreTicks)
+            .Select(tick => ForceConvergenceStatusEffect.GetFPRestoredThroughTick(total, tick)
+                            - ForceConvergenceStatusEffect.GetFPRestoredThroughTick(total, tick - 1))
+            .ToList();
+
+        ticks.Sum().Should().Be(total, "rounding each tick up would restore more than 40%");
+        ticks.Should().OnlyContain(amount => amount >= 0);
+        ForceConvergenceStatusEffect.GetFPRestoredThroughTick(total, ForceConvergenceStatusEffect.FPRestoreTicks + 5)
+            .Should().Be(total, "ticks past the tenth restore nothing");
     }
 
     private static Dictionary<PerkType, PerkDetail> BuildForceUniversalPerksWithout2daLookup()

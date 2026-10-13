@@ -1,5 +1,8 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using SWLOR.Game.Server.Service;
+using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
 
@@ -159,6 +162,61 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
             var visualEffect = TagEffect(EffectVisualEffect(barrierVisualEffect), visualEffectTag);
             ApplyEffectToObject(DurationType.Temporary, visualEffect, target, durationSeconds);
             return granted;
+        }
+
+        /// <summary>
+        /// Trims pools back under the cap after maximum HP drops, such as when food wears off or a Vitality
+        /// penalty lands, taking first from the pools that end soonest.
+        /// </summary>
+        public static void EnforceMaximumTotal(uint target)
+        {
+            var excess = GetRemaining(target) - GetMaximumTotal(target);
+            if (excess <= 0)
+                return;
+
+            var pools = new List<(Effect Effect, string Tag, int Amount, int SecondsLeft)>();
+            for (var effect = GetFirstEffect(target); GetIsEffectValid(effect); effect = GetNextEffect(target))
+            {
+                var tag = GetEffectTag(effect);
+                if (GetEffectType(effect) == EffectTypeScript.TemporaryHitpoints && tag.StartsWith(EffectTagPrefix))
+                    pools.Add((effect, tag, Math.Max(0, GetEffectInteger(effect, 0)), GetEffectDurationRemaining(effect)));
+            }
+
+            pools = pools.OrderBy(pool => pool.SecondsLeft).ToList();
+            var kept = CalculateTrimmedAmounts(pools.Select(pool => pool.Amount).ToList(), excess);
+            for (var index = 0; index < pools.Count; index++)
+            {
+                var pool = pools[index];
+                if (kept[index] == pool.Amount)
+                    continue;
+
+                if (kept[index] <= 0)
+                {
+                    Remove(target, pool.Tag.Substring(EffectTagPrefix.Length));
+                    continue;
+                }
+
+                RemoveEffect(target, pool.Effect);
+                ApplyEffectToObject(
+                    DurationType.Temporary,
+                    TagEffect(EffectTemporaryHitpoints(kept[index]), pool.Tag),
+                    target,
+                    Math.Max(1, pool.SecondsLeft));
+            }
+        }
+
+        /// <summary>What each pool keeps after <paramref name="excess"/> is taken from the pools in order.</summary>
+        public static List<int> CalculateTrimmedAmounts(IReadOnlyList<int> amounts, int excess)
+        {
+            var kept = new List<int>(amounts.Count);
+            foreach (var amount in amounts)
+            {
+                var cut = Math.Clamp(excess, 0, Math.Max(0, amount));
+                kept.Add(amount - cut);
+                excess -= cut;
+            }
+
+            return kept;
         }
 
         public static void Remove(uint target, string effectKey)

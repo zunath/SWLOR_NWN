@@ -604,6 +604,8 @@ namespace SWLOR.Game.Server.Service
             {
                 SetCurrentHitPoints(player, maxHP);
             }
+
+            Feature.AbilityDefinition.TemporaryHitPointEffects.EnforceMaximumTotal(player);
         }
 
         /// <summary>
@@ -2687,6 +2689,8 @@ namespace SWLOR.Game.Server.Service
                     creature,
                     System.Math.Min(originalCurrentHitPoints, alignedMaxHitPoints));
             }
+
+            Feature.AbilityDefinition.TemporaryHitPointEffects.EnforceMaximumTotal(creature);
         }
 
         /// <summary>

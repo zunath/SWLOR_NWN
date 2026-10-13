@@ -2,7 +2,6 @@ using FluentAssertions;
 using Newtonsoft.Json;
 using NUnit.Framework;
 using SWLOR.Game.Server.Entity;
-using SWLOR.Game.Server.Feature.MigrationDefinition.PlayerMigration;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
@@ -17,15 +16,14 @@ public class MimicryLoadoutTests
     {
         var player = JsonConvert.DeserializeObject<Player>("{\"EquippedTechniques\":[2797,2799]}")!;
         var before = player.EquippedTechniques.ToArray();
-        var migration = new _20_MimicryLoadouts();
-        migration.MigratePlayerData(player);
+        MimicryLoadouts.EnsureDefault(player).Should().BeTrue();
         var saved = player.MimicryLoadouts.Should().ContainSingle().Subject;
         saved.Name.Should().Be("Default");
         saved.Techniques.Should().Equal(before);
         player.ActiveMimicryLoadoutId.Should().Be(saved.Id);
         player.EquippedTechniques.Clear();
         saved.Techniques.Should().Equal(before, "enforcement must not rewrite the migrated build");
-        migration.MigratePlayerData(player);
+        MimicryLoadouts.EnsureDefault(player).Should().BeFalse();
         player.MimicryLoadouts.Should().ContainSingle().Which.Id.Should().Be(saved.Id);
     }
 
@@ -36,7 +34,7 @@ public class MimicryLoadoutTests
         MimicryLoadouts.EnsureDefault(player);
         var id = player.ActiveMimicryLoadoutId;
         MimicryLoadouts.Rename(player, id, "Renamed", out _).Should().BeTrue();
-        new _20_MimicryLoadouts().MigratePlayerData(player);
+        MimicryLoadouts.EnsureDefault(player).Should().BeFalse();
         player.MimicryLoadouts.Should().ContainSingle().Which.Name.Should().Be("Renamed");
         player.ActiveMimicryLoadoutId.Should().Be(id);
     }

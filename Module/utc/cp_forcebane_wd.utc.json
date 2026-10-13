@@ -126,7 +126,7 @@
   },
   "Comment": {
     "type": "cexostring",
-    "value": "Capstone quest creature for Forcebane in Korriban Forge Caverns."
+    "value": "Forcebane warden in Tatooine - Forge Caverns."
   },
   "Con": {
     "type": "byte",
@@ -155,7 +155,7 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "A level 50 capstone quest enemy for Forcebane in Korriban Forge Caverns."
+      "0": "A Twi'lek warden with a cracked anvil sigil hung from his neck, the first and best student of the forge's turncoat teacher. He handles his spear like a man who has seen every counter coming for years, and he prefers to fight where crowds do not follow."
     }
   },
   "Dex": {

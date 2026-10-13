@@ -126,7 +126,7 @@
   },
   "Comment": {
     "type": "cexostring",
-    "value": "Capstone quest creature for Systemic Shutdown in Veles Militia Annex."
+    "value": "Systemic Shutdown master in Viscara - Militia Command Room."
   },
   "Con": {
     "type": "byte",
@@ -155,7 +155,7 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "A level 50 capstone quest enemy for Systemic Shutdown in Veles Militia Annex."
+      "0": "An armored Cathar, the source of the disabling technique taught in secret through the Veles Militia Annex. He was teaching shutdown work long before anyone else there learned it, and he waits in the annex command room with a vibroknife and unhurried patience."
     }
   },
   "Dex": {

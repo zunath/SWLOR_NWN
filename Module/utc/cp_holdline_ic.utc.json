@@ -126,7 +126,7 @@
   },
   "Comment": {
     "type": "cexostring",
-    "value": "Capstone quest creature for Hold the Line in Dantooine Medical Sublevel."
+    "value": "Hold the Line inner circle member in Mon Cala - Medical Sublevel."
   },
   "Con": {
     "type": "byte",
@@ -155,7 +155,7 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "A level 50 capstone quest enemy for Hold the Line in Dantooine Medical Sublevel."
+      "0": "One of the ward's senior staff, rebuilt with implants so he never has to sleep a shift away from his post. Metal plating covers most of what was once skin, and he guards his corner of the ward with a vibroblade and a nurse's grim patience."
     }
   },
   "Dex": {

@@ -126,7 +126,7 @@
   },
   "Comment": {
     "type": "cexostring",
-    "value": "Capstone quest creature for Forcebane in Korriban Forge Caverns."
+    "value": "Named rare elite (controller) for Forcebane in Tatooine - Forge Caverns."
   },
   "Con": {
     "type": "byte",
@@ -155,7 +155,7 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "A named rare elite of the Korriban Forge Caverns. Controller."
+      "0": "An Echani hunter who sold his loyalty to the renegade school in the Forge Caverns. Vex stalks the galleries calling out his quarry's moves before they make them, and those who face him lose their footing one step at a time."
     }
   },
   "Dex": {
@@ -649,6 +649,21 @@
         "Value": {
           "type": "cexostring",
           "value": "KORFORGE_BANE_COMP,100,1"
+        }
+      },
+      {
+        "__struct_id": 0,
+        "Name": {
+          "type": "cexostring",
+          "value": "LOOT_TABLE_4"
+        },
+        "Type": {
+          "type": "dword",
+          "value": 3
+        },
+        "Value": {
+          "type": "cexostring",
+          "value": "MUSIC_DISCS,1,1"
         }
       }
     ]

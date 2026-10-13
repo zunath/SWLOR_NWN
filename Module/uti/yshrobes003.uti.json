@@ -110,11 +110,15 @@
   },
   "DescIdentified": {
     "type": "cexolocstring",
-    "value": {}
+    "value": {
+      "0": "A cloak completes the familiar fall of Yshren's robes, adding a broader outline around the shoulders. Its fastening has been worked to sit neatly against the inner layers rather than pull them out of shape."
+    }
   },
   "Description": {
     "type": "cexolocstring",
-    "value": {}
+    "value": {
+      "0": "A cloak completes the familiar fall of Yshren's robes, adding a broader outline around the shoulders. Its fastening has been worked to sit neatly against the inner layers rather than pull them out of shape."
+    }
   },
   "Identified": {
     "type": "byte",

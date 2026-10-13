@@ -9,7 +9,7 @@ public class CapstoneQuestGiverPlacementTests
 {
     // Every capstone quest giver -> a non-dungeon hub area (git file stem). One giver per area, except
     // SharedHubs: Dathomir has only three safe areas for six beast-mastery givers, and every other safe
-    // Tatooine/Smuggler's Moon hub already holds a giver, so these carry two each.
+    // Tatooine/Smuggler's Moon hub already holds a giver, and Fort Ka'ra is a faction area, so these carry two each.
     private static readonly (string Giver, string Area)[] Placements =
     {
         ("cq_invinc", "veles_sheriff"), ("cq_vitrupt", "veles_cantina"), ("cq_sysshut", "veles_cz_tower"),
@@ -21,7 +21,7 @@ public class CapstoneQuestGiverPlacementTests
         ("cq_adamguard", "nanostation015"), ("cq_scraplock", "czs220_hangar"), ("cq_worldbrk", "tat_anc_droidshp"),
         ("cq_unmovctr", "tat_elevagiifarm"), ("cq_lastword", "tat_anc_southent"), ("cq_deadhand", "tat_anc_junix"),
         ("cq_killbox", "pw_ar_nsczgnstr"), ("cq_oneshot", "pw_ar_nsshipyard"), ("cq_rainsteel", "pw_ar_nscrafting"),
-        ("cq_thermdet", "hutlar_outpost"), ("cq_overbarr", "sol_mandaloriani"), ("cq_perflurry", "sol_hutlarqcanyo"),
+        ("cq_thermdet", "hutlar_outpost"), ("cq_overbarr", "hutlar_outpost"), ("cq_perflurry", "sol_hutlarqcanyo"),
         ("cq_primover", "dath_landingpad"), ("cq_apexbite", "dath_landingpad"),
         ("cq_untinst", "dath_cz_baseok"), ("cq_unbrbeast", "dath_cz_baseok"),
         ("cq_forcebeast", "dath_waterfallru"), ("cq_alpharhy", "dath_waterfallru"),
@@ -31,7 +31,7 @@ public class CapstoneQuestGiverPlacementTests
     private static readonly string[] SharedHubs =
     {
         "dath_landingpad", "dath_cz_baseok", "dath_waterfallru",
-        "tat_anc_southent", "tat_anc_junix", "pw_ar_nsshipyard", "pw_ar_nardocks",
+        "tat_anc_southent", "tat_anc_junix", "pw_ar_nsshipyard", "pw_ar_nardocks", "hutlar_outpost",
     };
 
     [Test]

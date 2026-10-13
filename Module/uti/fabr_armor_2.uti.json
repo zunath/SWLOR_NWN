@@ -110,11 +110,15 @@
   },
   "DescIdentified": {
     "type": "cexolocstring",
-    "value": {}
+    "value": {
+      "0": "The linen of this tunic has a pleasing, irregular grain. Its practical cut gives the fabric room to settle with use, trading a stiff new appearance for the comfort of something worn often."
+    }
   },
   "Description": {
     "type": "cexolocstring",
-    "value": {}
+    "value": {
+      "0": "The linen of this tunic has a pleasing, irregular grain. Its practical cut gives the fabric room to settle with use, trading a stiff new appearance for the comfort of something worn often."
+    }
   },
   "Identified": {
     "type": "byte",

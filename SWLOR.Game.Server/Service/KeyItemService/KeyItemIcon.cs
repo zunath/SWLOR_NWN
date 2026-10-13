@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Extension;
 using SWLOR.Game.Server.Service.BeastMasteryService;
+using SWLOR.Game.Server.Service.MusicService;
 
 namespace SWLOR.Game.Server.Service.KeyItemService
 {
@@ -24,6 +25,12 @@ namespace SWLOR.Game.Server.Service.KeyItemService
         public const string CavernMap = "iki_map_cavern";
         public const string RuinsMap = "iki_map_ruins";
 
+        public const string CantinaMusic = "iki_mus_cant";
+        public const string BattleMusic = "iki_mus_batl";
+        public const string ThemeMusic = "iki_mus_theme";
+        public const string LocationMusic = "iki_mus_place";
+        public const string AmbientMusic = "iki_mus_ambi";
+
         public static IReadOnlyCollection<string> FieldNoteIconResrefs { get; } = new[]
         {
             PublishedFieldGuide,
@@ -44,6 +51,15 @@ namespace SWLOR.Game.Server.Service.KeyItemService
             RuinsMap,
         };
 
+        public static IReadOnlyCollection<string> MusicIconResrefs { get; } = new[]
+        {
+            CantinaMusic,
+            BattleMusic,
+            ThemeMusic,
+            LocationMusic,
+            AmbientMusic,
+        };
+
         public static string GetIconResref(KeyItemType keyItem)
         {
             var detail = keyItem.GetAttribute<KeyItemType, KeyItemAttribute>();
@@ -52,6 +68,9 @@ namespace SWLOR.Game.Server.Service.KeyItemService
 
             if (detail.Category == KeyItemCategoryType.Maps)
                 return GetMapIconResref(keyItem);
+
+            if (detail.Category == KeyItemCategoryType.Music)
+                return GetMusicIconResref(keyItem);
 
             if (detail.Category != KeyItemCategoryType.FieldNotes)
                 return $"iki_{(int)keyItem:D4}";
@@ -76,6 +95,23 @@ namespace SWLOR.Game.Server.Service.KeyItemService
             };
         }
 
+        private static string GetMusicIconResref(KeyItemType keyItem)
+        {
+            var song = MusicSongCatalog.Songs.FirstOrDefault(x => x.KeyItem == keyItem)
+                       ?? throw new InvalidOperationException($"Music key item '{keyItem}' is not in the song catalog.");
+
+            return song.Category switch
+            {
+                MusicCategoryType.Cantina => CantinaMusic,
+                MusicCategoryType.Battle => BattleMusic,
+                MusicCategoryType.Theme => ThemeMusic,
+                MusicCategoryType.Location => LocationMusic,
+                MusicCategoryType.Ambient => AmbientMusic,
+                _ => throw new InvalidOperationException(
+                    $"Music key item '{keyItem}' has invalid category '{song.Category}'."),
+            };
+        }
+
         private static string GetMapIconResref(KeyItemType keyItem)
         {
             var name = keyItem.ToString();
@@ -90,7 +126,7 @@ namespace SWLOR.Game.Server.Service.KeyItemService
                 return CavernMap;
 
             if (ContainsAny(name,
-                    "Facility", "Base", "Maintenance", "Office", "Lab", "Warehouse",
+                    "Facility", "Base", "Maintenance", "Office", "Lab", "Warehouse", "Foundry",
                     "Hotel", "Casino", "Catwalk", "FightClub", "Cantina", "Medshed",
                     "Station", "Hub", "TiltedVisor", "CzerkaArms"))
                 return FacilityMap;

@@ -1,8 +1,10 @@
+using System.Collections.Generic;
 using SWLOR.Game.Server.Feature.GuiDefinition.Payload;
 using SWLOR.Game.Server.Feature.GuiDefinition.RefreshEvent;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.GuiService;
+using SWLOR.Game.Server.Service.GuiService.Component;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.StatService;
 using SWLOR.NWN.API.NWScript.Enum;
@@ -17,7 +19,14 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
     {
         public const string ContentElement = "examine_item_content";
         public const string ContentPartial = "EXAMINE_ITEM_BODY";
+        public const string DescriptionElement = "examine_item_description";
+        public const string PropertiesElement = "examine_item_properties";
         private ExamineItemPayload _payload;
+        private readonly Dictionary<string, string> _textLayouts = new();
+        private string _renderedDescription;
+        private string _renderedProperties;
+        private string _contentLayout;
+        private bool _isContentApplied;
 
         public string WindowTitle
         {
@@ -25,17 +34,15 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             set => Set(value);
         }
 
-        public string Description
+        public string Description { get; private set; }
+
+        public GuiColor TitleColor
         {
-            get => Get<string>();
+            get => Get<GuiColor>();
             set => Set(value);
         }
 
-        public string ItemProperties
-        {
-            get => Get<string>();
-            set => Set(value);
-        }
+        public string ItemProperties { get; private set; }
 
         public string Weight
         {
@@ -63,11 +70,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         protected override void Initialize(ExamineItemPayload initialPayload)
         {
             _payload = initialPayload;
-            WindowTitle = initialPayload.ItemName;
+            _isContentApplied = false;
+            WindowTitle = ExamineItemText.PlainText(initialPayload.ItemName);
+            TitleColor = ExamineItemText.TitleColor(initialPayload.ItemName);
             ItemProperties = initialPayload.ItemProperties;
             Weight = $"Weight: {initialPayload.Weight / 10.0m:0.0} lbs";
             RefreshDescription();
-            ChangePartialView(ContentElement, ContentPartial);
         }
 
         private void RefreshDescription()
@@ -85,7 +93,10 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             }
             Description = _payload.Description;
             if (!_payload.IsIdentified || !WeaponDamage.IsSingleWeaponType(_payload.ItemType))
+            {
+                RefreshTextLayouts();
                 return;
+            }
 
             var preview = WeaponDamage.BuildSingleWeaponDescription(itemDMG,
                 WeaponDamage.GetNaturalSingleWeaponPercent(Player),
@@ -95,6 +106,37 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 Description += EquipmentPredicates.HasSingleWeapon(Player)
                     ? "\nSingle Weapon is active."
                     : "\nSingle Weapon is inactive: your off hand must be empty.";
+            RefreshTextLayouts();
+        }
+
+        private void RefreshTextLayouts()
+        {
+            var changed = false;
+            if (!_textLayouts.ContainsKey(DescriptionElement) ||
+                !string.Equals(_renderedDescription, Description, StringComparison.Ordinal))
+            {
+                _textLayouts[DescriptionElement] = JsonDump(ExamineItemText.BuildLayout(Description, 230f));
+                _renderedDescription = Description;
+                changed = true;
+            }
+            if (!_textLayouts.ContainsKey(PropertiesElement) ||
+                !string.Equals(_renderedProperties, ItemProperties, StringComparison.Ordinal))
+            {
+                _textLayouts[PropertiesElement] = JsonDump(ExamineItemText.BuildLayout(ItemProperties, 160f));
+                _renderedProperties = ItemProperties;
+                changed = true;
+            }
+
+            if (changed)
+                _contentLayout = GuiLayoutComposer.Compose(
+                    Gui.GetWindowTemplate(GuiWindowType.ExamineItem).PartialViewLayouts[ContentPartial], _textLayouts);
+
+            // Bind clears the applied groups when reopening, but the two cached text layouts can be reused.
+            if (!_isContentApplied || changed)
+            {
+                SetGroupLayout(ContentElement, JsonParse(_contentLayout));
+                _isContentApplied = true;
+            }
         }
 
         public void Refresh(EquipItemRefreshEvent payload) => RefreshDescription();

@@ -126,7 +126,7 @@
   },
   "Comment": {
     "type": "cexostring",
-    "value": "Capstone quest creature for Hold the Line in Dantooine Medical Sublevel."
+    "value": "Hold the Line specialist in Mon Cala - Medical Sublevel."
   },
   "Con": {
     "type": "byte",
@@ -155,7 +155,7 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "A level 50 capstone quest enemy for Hold the Line in Dantooine Medical Sublevel."
+      "0": "A Rodian ward guard standing utterly still where the kolto conduits meet. He does not shout and does not chase; he waits with his vibroblade ready until you come to him."
     }
   },
   "Dex": {

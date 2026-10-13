@@ -110,11 +110,15 @@
   },
   "DescIdentified": {
     "type": "cexolocstring",
-    "value": {}
+    "value": {
+      "0": "Carefully placed seams give this tunic its distinctive outline without depending on lavish decoration. Its designer seems to have understood that an interesting silhouette still needs to remain wearable."
+    }
   },
   "Description": {
     "type": "cexolocstring",
-    "value": {}
+    "value": {
+      "0": "Carefully placed seams give this tunic its distinctive outline without depending on lavish decoration. Its designer seems to have understood that an interesting silhouette still needs to remain wearable."
+    }
   },
   "Identified": {
     "type": "byte",

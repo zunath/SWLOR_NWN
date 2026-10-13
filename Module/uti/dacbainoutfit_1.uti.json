@@ -110,11 +110,15 @@
   },
   "DescIdentified": {
     "type": "cexolocstring",
-    "value": {}
+    "value": {
+      "0": "Dac Baine's outfit has a rakish cut tempered by practical, well-used fastenings. It makes an easy first impression while keeping the evidence of its owner's less comfortable hours tucked into the lining."
+    }
   },
   "Description": {
     "type": "cexolocstring",
-    "value": {}
+    "value": {
+      "0": "Dac Baine's outfit has a rakish cut tempered by practical, well-used fastenings. It makes an easy first impression while keeping the evidence of its owner's less comfortable hours tucked into the lining."
+    }
   },
   "Identified": {
     "type": "byte",

@@ -126,7 +126,7 @@
   },
   "Comment": {
     "type": "cexostring",
-    "value": "Capstone quest creature for Red Bloom in Smuggler's Moon Fight Club Backrooms."
+    "value": "Red Bloom specialist in Smuggler's Moon - Fight Club Backrooms."
   },
   "Con": {
     "type": "byte",
@@ -155,7 +155,7 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "A level 50 capstone quest enemy for Red Bloom in Smuggler's Moon Fight Club Backrooms."
+      "0": "A Rodian who has bled in the backroom pits long enough to teach the form he learned there. He fights with a twin blade and pairs with another fighter, one high and one low, both patient."
     }
   },
   "Dex": {

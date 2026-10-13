@@ -126,7 +126,7 @@
   },
   "Comment": {
     "type": "cexostring",
-    "value": "Capstone quest creature for Emergency Bunker in Viscara Republic Engineering Bunker."
+    "value": "Emergency Bunker specialist in Viscara - Republic Engineering Bunker."
   },
   "Con": {
     "type": "byte",
@@ -155,7 +155,7 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "A level 50 capstone quest enemy for Emergency Bunker in Viscara Republic Engineering Bunker."
+      "0": "A human specialist in Republic soldier armor, his gloves blackened from splicing power lines into the bunker's load-bearing supports. He carries a blaster pistol and knows exactly which cable would bring the ceiling down."
     }
   },
   "Dex": {

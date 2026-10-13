@@ -126,7 +126,7 @@
   },
   "Comment": {
     "type": "cexostring",
-    "value": "Capstone quest creature for Emergency Cocktail in Dantooine Medical Sublevel."
+    "value": "Emergency Cocktail adept in Mon Cala - Medical Sublevel."
   },
   "Con": {
     "type": "byte",
@@ -155,7 +155,7 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "A level 50 capstone quest enemy for Emergency Cocktail in Dantooine Medical Sublevel."
+      "0": "A Rodian in stained work clothes, sleeves pushed up past injector bruises on both arms. He moves too fast and too steadily for someone who should be in pain, a blaster pistol in one hand and a loaded syringe in the other."
     }
   },
   "Dex": {

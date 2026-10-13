@@ -126,7 +126,7 @@
   },
   "Comment": {
     "type": "cexostring",
-    "value": "A living tomb raider in the Korriban Sith Crypt Depths. This independent looting expedition attacks anyone who obstructs its theft of sealed relics. Its members have no authority from the Sith Academy."
+    "value": "Hunger of the Dark warden in Mon Cala - Sith Crypt Depths."
   },
   "Con": {
     "type": "byte",
@@ -155,7 +155,7 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "A living tomb raider in the Korriban Sith Crypt Depths. This independent looting expedition attacks anyone who obstructs its theft of sealed relics. Its members have no authority from the Sith Academy."
+      "0": "A Zabrak in heavy sorcerer's robes who guards the Vitae Reavers' dig in the Sith Crypt Depths, staff in hand. He has drained enough from the captured survey crews to stand through wounds that would drop most fighters."
     }
   },
   "Dex": {

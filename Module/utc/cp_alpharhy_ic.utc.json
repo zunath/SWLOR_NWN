@@ -34,7 +34,7 @@
   },
   "Comment": {
     "type": "cexostring",
-    "value": "Capstone quest creature for Alpha Rhythm in Dathomir Tarn Jungle Preserve."
+    "value": "Alpha Rhythm inner circle member in Dathomir - Tarn Jungle Preserve."
   },
   "Con": {
     "type": "byte",
@@ -63,7 +63,7 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "A level 50 capstone quest enemy for Alpha Rhythm in Dathomir Tarn Jungle Preserve."
+      "0": "One of the four eldest kinrath in the preserve, the first the pit-breeders ever forced to their wrong tempo. Every pack hatched since learned that beat from it, and it moves deliberately out of time with its nestmates."
     }
   },
   "Dex": {

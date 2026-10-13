@@ -126,7 +126,7 @@
   },
   "Comment": {
     "type": "cexostring",
-    "value": "Capstone quest creature for Last Word in Anchorhead Canyon Range."
+    "value": "Last Word master in Tatooine - Canyon Dueling Pit."
   },
   "Con": {
     "type": "byte",
@@ -155,7 +155,7 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "A level 50 capstone quest enemy for Last Word in Anchorhead Canyon Range."
+      "0": "A Rodian in a bounty hunter's armor who meets his challengers in the open in the Canyon Dueling Pit. He was the old marshal's last student, given the discipline whole, and he sold it. He has never lost a duel; his one shot is the one that ends the argument."
     }
   },
   "Dex": {

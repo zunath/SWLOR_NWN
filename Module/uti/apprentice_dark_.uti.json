@@ -110,11 +110,15 @@
   },
   "DescIdentified": {
     "type": "cexolocstring",
-    "value": {}
+    "value": {
+      "0": "Dark apprentice robes with a collar still stiff enough to betray their relative newness. Their severity is deliberate, an early lesson in looking certain before the wearer has earned much reason to be."
+    }
   },
   "Description": {
     "type": "cexolocstring",
-    "value": {}
+    "value": {
+      "0": "Dark apprentice robes with a collar still stiff enough to betray their relative newness. Their severity is deliberate, an early lesson in looking certain before the wearer has earned much reason to be."
+    }
   },
   "Identified": {
     "type": "byte",

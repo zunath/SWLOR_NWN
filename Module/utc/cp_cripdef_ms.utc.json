@@ -126,7 +126,7 @@
   },
   "Comment": {
     "type": "cexostring",
-    "value": "Capstone quest creature for Crippling Defense in Smuggler's Moon Fight Club Backrooms."
+    "value": "Crippling Defense master in Smuggler's Moon - Private Pit."
   },
   "Con": {
     "type": "byte",
@@ -155,7 +155,7 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "A level 50 capstone quest enemy for Crippling Defense in Smuggler's Moon Fight Club Backrooms."
+      "0": "The stable's champion, a Trandoshan spearman who keeps a clean floor in the Private Pit past the last gate and stands on it as if the fight has already happened. Every fighter who has swung on him retired the same night, and the ones carried out all mention how polite he was."
     }
   },
   "Dex": {

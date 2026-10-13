@@ -126,7 +126,7 @@
   },
   "Comment": {
     "type": "cexostring",
-    "value": "Capstone quest creature for Emergency Bunker in Viscara Republic Engineering Bunker."
+    "value": "Emergency Bunker master in Viscara - Engineering Command Room."
   },
   "Con": {
     "type": "byte",
@@ -155,7 +155,7 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "A level 50 capstone quest enemy for Emergency Bunker in Viscara Republic Engineering Bunker."
+      "0": "An Ugnaught in Republic elite armor who has sealed himself into the deepest room of the bunker, a blaster pistol resting easy in his hand. He treats the walls around him as patience made solid and has no intention of ever coming out."
     }
   },
   "Dex": {

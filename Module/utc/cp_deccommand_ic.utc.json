@@ -126,7 +126,7 @@
   },
   "Comment": {
     "type": "cexostring",
-    "value": "Capstone quest creature for Decisive Command in Viscara Republic Engineering Bunker."
+    "value": "Decisive Command inner circle member in Viscara - Republic Engineering Bunker."
   },
   "Con": {
     "type": "byte",
@@ -155,7 +155,7 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "A level 50 capstone quest enemy for Decisive Command in Viscara Republic Engineering Bunker."
+      "0": "A Cathar quartermaster in black work coveralls with a blaster pistol and a ledger of every magazine and ration in the bunker. He is one of the four who keep Halden Rhee's sealed garrison fed, armed, and paid."
     }
   },
   "Dex": {

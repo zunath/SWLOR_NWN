@@ -126,7 +126,7 @@
   },
   "Comment": {
     "type": "cexostring",
-    "value": "Capstone quest creature for Last Word in Anchorhead Canyon Range."
+    "value": "Last Word inner circle member in Tatooine - Anchorhead Canyon Range."
   },
   "Con": {
     "type": "byte",
@@ -155,7 +155,7 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "A level 50 capstone quest enemy for Last Word in Anchorhead Canyon Range."
+      "0": "An Echani gunman with a blaster pistol, one of the four who took over the canyon school after burying the old marshal's name in it. Some of them washed out of the marshal's classes and some never sat them, but together they have turned out ten years of duelists who think a fast draw is a verdict."
     }
   },
   "Dex": {

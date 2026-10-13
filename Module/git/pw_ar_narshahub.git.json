@@ -210,7 +210,7 @@
         "Description": {
           "type": "cexolocstring",
           "value": {
-            "0": "Senn Dralok is a scarred, ascetic man who keeps to a quiet table at the edge of The Hub, murmuring half-finished verses under his breath. His hands carry the old burns and calluses of a heavy blade worked for decades. He speaks like a priest and watches passing fighters like a confessor, an exile from a congregation he once led in the forge caverns of Korriban."
+            "0": "Senn Dralok is a scarred, ascetic man who keeps to a quiet table at the edge of The Hub, murmuring half-finished verses under his breath. His hands carry the old burns and calluses of a heavy blade worked for decades. He speaks like a priest and watches passing fighters like a confessor, an exile from a congregation he once led in the forge caverns beneath Tatooine's North Mine Cliffs."
           }
         },
         "Dex": {
@@ -332,12 +332,14 @@
               },
               "DescIdentified": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "Closely fitted plates and a meticulous finish set this Sith elite armor apart from more ordinary issue. Even the hidden mounts have been dressed cleanly, an exactness its wearer will presumably be expected to match."
+                }
               },
               "Description": {
                 "type": "cexolocstring",
                 "value": {
-                  "0": ""
+                  "0": "Closely fitted plates and a meticulous finish set this Sith elite armor apart from more ordinary issue. Even the hidden mounts have been dressed cleanly, an exactness its wearer will presumably be expected to match."
                 }
               },
               "Identified": {

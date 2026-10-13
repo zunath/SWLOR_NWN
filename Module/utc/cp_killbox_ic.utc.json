@@ -126,7 +126,7 @@
   },
   "Comment": {
     "type": "cexostring",
-    "value": "Capstone quest creature for Kill Box in Czerka Arms Test Range."
+    "value": "Kill Box inner circle in Smuggler's Moon - Czerka Weapons Testing Facility."
   },
   "Con": {
     "type": "byte",
@@ -155,7 +155,7 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "A level 50 capstone quest enemy for Kill Box in Czerka Arms Test Range."
+      "0": "A Zabrak in a hired guard's outfit, blaster rifle held close. He is one of the four founders who drew Czerka's original kill box lanes and then claimed the doctrine as their own, and he holds the sealed executive lanes alongside the others without a word passing between them."
     }
   },
   "Dex": {

@@ -34,7 +34,7 @@
   },
   "Comment": {
     "type": "cexostring",
-    "value": "Capstone quest creature for Force-Bonded Beast in Dathomir Grotto Apex Den."
+    "value": "Force-Bonded Beast adept in Dathomir - Grotto Apex Den."
   },
   "Con": {
     "type": "byte",
@@ -63,7 +63,7 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "A level 50 capstone quest enemy for Force-Bonded Beast in Dathomir Grotto Apex Den."
+      "0": "A young wyvern, wings half-spread, hissing at anything that comes near. Handlers in the Grotto Apex Den forced bonds on its kind and cut them when the beasts turned, and it lashes out at any bond it senses."
     }
   },
   "Dex": {

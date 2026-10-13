@@ -1,0 +1,85 @@
+{
+  "__data_type": "UTI ",
+  "AddCost": {
+    "type": "dword",
+    "value": 175
+  },
+  "BaseItem": {
+    "type": "int",
+    "value": 536
+  },
+  "Charges": {
+    "type": "byte",
+    "value": 0
+  },
+  "Comment": {
+    "type": "cexostring",
+    "value": ""
+  },
+  "Cost": {
+    "type": "dword",
+    "value": 175
+  },
+  "Cursed": {
+    "type": "byte",
+    "value": 0
+  },
+  "DescIdentified": {
+    "type": "cexolocstring",
+    "value": {
+      "0": "A torque regulator from an assembly-line foreman unit. Smiths fit it into gauntlets to steady a wearer's grip."
+    }
+  },
+  "Description": {
+    "type": "cexolocstring",
+    "value": {
+      "0": "A torque regulator from an assembly-line foreman unit. Smiths fit it into gauntlets to steady a wearer's grip."
+    }
+  },
+  "Identified": {
+    "type": "byte",
+    "value": 1
+  },
+  "LocalizedName": {
+    "type": "cexolocstring",
+    "value": {
+      "0": "Torque Regulator"
+    }
+  },
+  "ModelPart1": {
+    "type": "byte",
+    "value": 2
+  },
+  "PaletteID": {
+    "type": "byte",
+    "value": 64
+  },
+  "Plot": {
+    "type": "byte",
+    "value": 0
+  },
+  "PropertiesList": {
+    "type": "list",
+    "value": []
+  },
+  "StackSize": {
+    "type": "word",
+    "value": 1
+  },
+  "Stolen": {
+    "type": "byte",
+    "value": 0
+  },
+  "Tag": {
+    "type": "cexostring",
+    "value": "torque_regulator"
+  },
+  "TemplateResRef": {
+    "type": "resref",
+    "value": "torque_regulator"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 2
+  }
+}

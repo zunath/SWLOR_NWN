@@ -110,12 +110,14 @@
   },
   "DescIdentified": {
     "type": "cexolocstring",
-    "value": {}
+    "value": {
+      "0": "Protective sections have been worked into a colonist's everyday clothing. Veles offers opportunity, but the additional weight suggests that its wearer does not expect opportunity to provide all of their security."
+    }
   },
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": ""
+      "0": "Protective sections have been worked into a colonist's everyday clothing. Veles offers opportunity, but the additional weight suggests that its wearer does not expect opportunity to provide all of their security."
     }
   },
   "Identified": {

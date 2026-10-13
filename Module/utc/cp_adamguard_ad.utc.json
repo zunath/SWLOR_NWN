@@ -126,7 +126,7 @@
   },
   "Comment": {
     "type": "cexostring",
-    "value": "Capstone quest creature for Adamantine Guard in CZ-220 Breaker Yard."
+    "value": "Adamantine Guard adept in CZ-220 - Breaker Bay."
   },
   "Con": {
     "type": "byte",
@@ -155,7 +155,7 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "A level 50 capstone quest enemy for Adamantine Guard in CZ-220 Breaker Yard."
+      "0": "A human wrecker in black yard coveralls, katar blades strapped over both fists. He keeps his guard high and his feet planted, drilling the unyielding stance his crew has practiced on the Breaker Yard's outer floor for two quarters under a forged work order."
     }
   },
   "Dex": {

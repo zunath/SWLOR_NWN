@@ -833,7 +833,7 @@
         "Description": {
           "type": "cexolocstring",
           "value": {
-            "0": "A command table holds a map of Outpost Hope, marked with orders no one has countermanded. Halden Rhee stands behind it."
+            "0": "A command table holds a water-stained map of the Viscara swamps, marked with orders no one has countermanded. Halden Rhee stands behind it."
           }
         },
         "DisarmDC": {

@@ -34,7 +34,7 @@
   },
   "Comment": {
     "type": "cexostring",
-    "value": "Capstone quest creature for Alpha Rhythm in Dathomir Tarn Jungle Preserve."
+    "value": "Alpha Rhythm adept in Dathomir - Tarn Jungle Preserve."
   },
   "Con": {
     "type": "byte",
@@ -63,7 +63,7 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "A level 50 capstone quest enemy for Alpha Rhythm in Dathomir Tarn Jungle Preserve."
+      "0": "A young kinrath, clicking and skittering in a jerky, off-kilter rhythm that the rest of its nest echoes. The pit-breeders who held the Tarn Jungle Preserve drove its pack to a beat that was never its own, and it still keeps that beat."
     }
   },
   "Dex": {

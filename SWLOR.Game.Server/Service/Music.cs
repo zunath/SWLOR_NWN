@@ -1,14 +1,24 @@
 using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Core;
+using SWLOR.Game.Server.Entity;
+using SWLOR.Game.Server.Extension;
+using SWLOR.Game.Server.Service.KeyItemService;
+using SWLOR.Game.Server.Service.MusicService;
 using SWLOR.NWN.API.NWNX;
 
 namespace SWLOR.Game.Server.Service
 {
     public class Music
     {
+        public const string MusicPlayerTag = "MUSIC_PLAYER";
+        private const string AreaMusicStoppedVariable = "MUSIC_BACKGROUND_STOPPED";
+
         private static readonly Dictionary<int, Song> _songs = new Dictionary<int,Song>();
-        private static readonly Dictionary<int, Song> _playerBattleSongs = new Dictionary<int, Song>();
+        private static readonly Dictionary<KeyItemType, MusicSong> _collectibleSongsByKeyItem = MusicSongCatalog.Songs
+            .ToDictionary(song => song.KeyItem);
+        private static readonly Dictionary<int, MusicSong> _collectibleSongsByTrackId = MusicSongCatalog.Songs
+            .ToDictionary(song => song.TrackId);
 
         public class Song
         {
@@ -36,7 +46,6 @@ namespace SWLOR.Game.Server.Service
             {
                 var description = Get2DAString(File, "Description", row);
                 var displayName = Get2DAString(File, "DisplayName", row);
-                var isAvailableAsBattleSong = Get2DAString(File, "PlayerBattleSong", row) == "1";
 
                 // Skip record if a name cannot be determined.
                 if (string.IsNullOrWhiteSpace(description) &&
@@ -46,39 +55,84 @@ namespace SWLOR.Game.Server.Service
                     displayName :
                     GetStringByStrRef(Convert.ToInt32(description));
 
-                var song = new Song(row, name);
-                _songs[row] = song;
-
-                if (isAvailableAsBattleSong)
-                {
-                    _playerBattleSongs[row] = song;
-                }
+                _songs[row] = new Song(row, name);
             }
         }
 
         /// <summary>
-        /// When a player enters the server, if a battle theme has been selected by the player,
-        /// apply the battle theme to the player.
+        /// When a player enters an area, grant any missing starter songs and reapply the player's
+        /// personal music track and battle theme, which the area's own music otherwise replaces.
+        /// Saved tracks the player has not collected are cleared.
         /// </summary>
         [NWNEventHandler(ScriptName.OnAreaEnter)]
-        public static void ApplyBattleThemeToPlayer()
+        public static void ApplyPlayerMusic()
         {
             var player = GetEnteringObject();
             if (!GetIsPC(player) || GetIsDM(player) || GetIsDMPossessed(player))
                 return;
 
             var playerId = GetObjectUUID(player);
-            var dbPlayer = DB.Get<Entity.Player>(playerId);
-            if (dbPlayer == null)
+            if (DB.Get<Player>(playerId) == null)
                 return;
 
-            if (dbPlayer.Settings.BattleThemeId == null) return;
-            var area = OBJECT_SELF;
-            var battleThemeId = dbPlayer.Settings.BattleThemeId ?? MusicBackgroundGetBattleTrack(area);
+            GrantStarterSongs(player);
+            var dbPlayer = ClearUncollectedMusicSettings(playerId);
 
-            PlayerPlugin.MusicBackgroundChangeTimeToggle(player, MusicBackgroundGetDayTrack(area), false);
-            PlayerPlugin.MusicBackgroundChangeTimeToggle(player, MusicBackgroundGetNightTrack(area), true);
-            PlayerPlugin.MusicBattleChange(player, battleThemeId);
+            var area = OBJECT_SELF;
+            var personalTrackId = dbPlayer.Settings.PersonalMusicTrackId;
+            if (personalTrackId != null)
+            {
+                ApplyBackgroundTrackToPlayer(player, personalTrackId.Value, personalTrackId.Value);
+            }
+
+            if (dbPlayer.Settings.BattleThemeId != null)
+            {
+                PlayerPlugin.MusicBattleChange(player, dbPlayer.Settings.BattleThemeId.Value);
+            }
+            else if (personalTrackId != null)
+            {
+                PlayerPlugin.MusicBattleChange(player, MusicBackgroundGetBattleTrack(area));
+            }
+        }
+
+        /// <summary>
+        /// Gives a player every starter song they do not already have.
+        /// </summary>
+        public static void GrantStarterSongs(uint player)
+        {
+            foreach (var song in MusicSongCatalog.Songs.Where(x => x.Acquisition == MusicAcquisitionType.Starter))
+            {
+                if (!KeyItem.HasKeyItem(player, song.KeyItem))
+                    KeyItem.GiveKeyItem(player, song.KeyItem);
+            }
+        }
+
+        /// <summary>
+        /// Clears a player's personal track and battle theme when they are not in the player's
+        /// collection, such as battle themes saved before songs had to be collected.
+        /// </summary>
+        /// <param name="playerId">The player's ID</param>
+        /// <returns>The updated player, or null if the player is not found.</returns>
+        public static Player ClearUncollectedMusicSettings(string playerId)
+        {
+            var dbPlayer = DB.Get<Player>(playerId);
+            if (dbPlayer == null)
+                return null;
+
+            var collected = GetCollectedTrackIds(playerId);
+            var isPersonalTrackCollected = dbPlayer.Settings.PersonalMusicTrackId == null ||
+                                           collected.Contains(dbPlayer.Settings.PersonalMusicTrackId.Value);
+            var isBattleThemeCollected = dbPlayer.Settings.BattleThemeId == null ||
+                                         collected.Contains(dbPlayer.Settings.BattleThemeId.Value);
+            if (isPersonalTrackCollected && isBattleThemeCollected)
+                return dbPlayer;
+
+            if (!isPersonalTrackCollected)
+                dbPlayer.Settings.PersonalMusicTrackId = null;
+            if (!isBattleThemeCollected)
+                dbPlayer.Settings.BattleThemeId = null;
+            DB.Set(dbPlayer);
+            return dbPlayer;
         }
 
         /// <summary>
@@ -91,13 +145,217 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>
-        /// Retrieves all battle songs loaded from the 2DA file.
-        /// These battle songs are able to be selected by players.
+        /// Retrieves every collectible song.
         /// </summary>
-        /// <returns>A list of available battle songs players can pick from.</returns>
-        public static Dictionary<int, Song> GetBattleSongs()
+        public static IReadOnlyList<MusicSong> GetCollectibleSongs()
         {
-            return _playerBattleSongs.ToDictionary(x => x.Key, y => y.Value);
+            return MusicSongCatalog.Songs;
+        }
+
+        /// <summary>
+        /// Retrieves the collectible song tracked by a Music key item.
+        /// </summary>
+        public static bool TryGetCollectibleSong(KeyItemType keyItem, out MusicSong song)
+        {
+            return _collectibleSongsByKeyItem.TryGetValue(keyItem, out song);
+        }
+
+        /// <summary>
+        /// Retrieves the collectible song that plays a given ambientmusic.2da track.
+        /// </summary>
+        public static bool TryGetCollectibleSongByTrackId(int trackId, out MusicSong song)
+        {
+            return _collectibleSongsByTrackId.TryGetValue(trackId, out song);
+        }
+
+        /// <summary>
+        /// Whether an item is a song disc or a Portable Music Player.
+        /// </summary>
+        public static bool IsMusicItem(uint item)
+        {
+            var tag = GetTag(item);
+            if (tag == MusicPlayerTag)
+                return true;
+
+            return tag == "KEY_ITEM" &&
+                   _collectibleSongsByKeyItem.ContainsKey((KeyItemType)GetLocalInt(item, "KEY_ITEM_ID"));
+        }
+
+        /// <summary>
+        /// Retrieves the display name of a collectible song.
+        /// </summary>
+        public static string GetSongName(MusicSong song)
+        {
+            return KeyItem.GetKeyItem(song.KeyItem).Name;
+        }
+
+        /// <summary>
+        /// Retrieves the display name of a song category.
+        /// </summary>
+        public static string GetCategoryName(MusicCategoryType category)
+        {
+            return category.GetAttribute<MusicCategoryType, MusicCategoryAttribute>().Name;
+        }
+
+        /// <summary>
+        /// Retrieves the track IDs of every song in a player's music collection.
+        /// </summary>
+        /// <param name="playerId">The player's ID</param>
+        /// <returns>The collected track IDs, or an empty set if the player is not found.</returns>
+        public static HashSet<int> GetCollectedTrackIds(string playerId)
+        {
+            var dbPlayer = string.IsNullOrWhiteSpace(playerId) ? null : DB.Get<Player>(playerId);
+            if (dbPlayer == null)
+                return new HashSet<int>();
+
+            return dbPlayer.KeyItems.Keys
+                .Where(_collectibleSongsByKeyItem.ContainsKey)
+                .Select(keyItem => _collectibleSongsByKeyItem[keyItem].TrackId)
+                .ToHashSet();
+        }
+
+        /// <summary>
+        /// Retrieves the player ID of the owner of a jukebox structure: the owner of the top-level
+        /// property it sits in, such as the city, apartment or ship. Structures keep the owner they
+        /// were placed under, so a city's current mayor is only recorded on the city itself.
+        /// Jukeboxes placed in the world rather than in a property have no owner.
+        /// </summary>
+        /// <param name="jukebox">The jukebox placeable</param>
+        /// <returns>The owner's player ID, or an empty string if the jukebox has no owner.</returns>
+        public static string GetJukeboxOwnerId(uint jukebox)
+        {
+            var propertyId = Property.GetPropertyId(jukebox);
+            if (string.IsNullOrWhiteSpace(propertyId))
+                return string.Empty;
+
+            var property = DB.Get<WorldProperty>(propertyId);
+            var visited = new HashSet<string>();
+            while (property != null &&
+                   visited.Add(property.Id) &&
+                   !string.IsNullOrWhiteSpace(property.ParentPropertyId))
+            {
+                var parent = DB.Get<WorldProperty>(property.ParentPropertyId);
+                if (parent == null)
+                    break;
+
+                property = parent;
+            }
+
+            return property?.OwnerPlayerId ?? string.Empty;
+        }
+
+        /// <summary>
+        /// Plays a track for a single player only. The selection persists across areas.
+        /// </summary>
+        public static void PlayForPlayer(uint player, int trackId)
+        {
+            var dbPlayer = DB.Get<Player>(GetObjectUUID(player));
+            if (dbPlayer == null)
+                return;
+
+            dbPlayer.Settings.PersonalMusicTrackId = trackId;
+            DB.Set(dbPlayer);
+
+            ApplyBackgroundTrackToPlayer(player, trackId, trackId);
+        }
+
+        /// <summary>
+        /// Clears a player's personal track and restores the current area's music for them.
+        /// If the area's music was stopped, the player's music stays off.
+        /// </summary>
+        public static void StopForPlayer(uint player)
+        {
+            var dbPlayer = DB.Get<Player>(GetObjectUUID(player));
+            if (dbPlayer == null)
+                return;
+
+            dbPlayer.Settings.PersonalMusicTrackId = null;
+            DB.Set(dbPlayer);
+
+            var area = GetArea(player);
+            ApplyBackgroundTrackToPlayer(player, MusicBackgroundGetDayTrack(area), MusicBackgroundGetNightTrack(area));
+            if (IsAreaMusicStopped(area))
+                PlayerPlugin.MusicBackgroundToggle(player, false);
+        }
+
+        /// <summary>
+        /// Sets or clears the battle theme a player hears in combat.
+        /// </summary>
+        /// <param name="player">The player</param>
+        /// <param name="trackId">The track to use, or null to use each area's own battle music.</param>
+        public static void SetBattleTheme(uint player, int? trackId)
+        {
+            var dbPlayer = DB.Get<Player>(GetObjectUUID(player));
+            if (dbPlayer == null)
+                return;
+
+            dbPlayer.Settings.BattleThemeId = trackId;
+            DB.Set(dbPlayer);
+
+            PlayerPlugin.MusicBattleChange(player, trackId ?? MusicBackgroundGetBattleTrack(GetArea(player)));
+        }
+
+        /// <summary>
+        /// Retrieves a player's current personal track, if any.
+        /// </summary>
+        public static int? GetPersonalTrackId(uint player)
+        {
+            return DB.Get<Player>(GetObjectUUID(player))?.Settings.PersonalMusicTrackId;
+        }
+
+        /// <summary>
+        /// Retrieves a player's battle theme, if any.
+        /// </summary>
+        public static int? GetBattleThemeId(uint player)
+        {
+            return DB.Get<Player>(GetObjectUUID(player))?.Settings.BattleThemeId;
+        }
+
+        /// <summary>
+        /// Plays a track for everyone in an area.
+        /// </summary>
+        public static void PlayInArea(uint area, int trackId)
+        {
+            MusicBackgroundChangeDay(area, trackId);
+            MusicBackgroundChangeNight(area, trackId);
+            MusicBackgroundPlay(area);
+            DeleteLocalBool(area, AreaMusicStoppedVariable);
+        }
+
+        /// <summary>
+        /// Stops the background music for everyone in an area.
+        /// </summary>
+        public static void StopInArea(uint area)
+        {
+            MusicBackgroundStop(area);
+            SetLocalBool(area, AreaMusicStoppedVariable, true);
+        }
+
+        /// <summary>
+        /// Whether an area's background music was stopped with <see cref="StopInArea"/>.
+        /// The area keeps its configured tracks while stopped.
+        /// </summary>
+        public static bool IsAreaMusicStopped(uint area)
+        {
+            return GetLocalBool(area, AreaMusicStoppedVariable);
+        }
+
+        /// <summary>
+        /// Retrieves the display name of any ambientmusic.2da track.
+        /// </summary>
+        public static string GetTrackName(int trackId)
+        {
+            if (TryGetCollectibleSongByTrackId(trackId, out var song))
+                return GetSongName(song);
+
+            return _songs.TryGetValue(trackId, out var track) ? track.DisplayName : $"Track {trackId}";
+        }
+
+        private static void ApplyBackgroundTrackToPlayer(uint player, int dayTrackId, int nightTrackId)
+        {
+            PlayerPlugin.MusicBackgroundChangeTimeToggle(player, dayTrackId, false);
+            PlayerPlugin.MusicBackgroundChangeTimeToggle(player, nightTrackId, true);
+            PlayerPlugin.MusicBackgroundToggle(player, true);
         }
     }
 }

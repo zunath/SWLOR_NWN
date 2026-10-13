@@ -126,7 +126,7 @@
   },
   "Comment": {
     "type": "cexostring",
-    "value": "Capstone quest creature for Dead Man's Hand in Anchorhead Canyon Range."
+    "value": "Dead Man's Hand master in Tatooine - Canyon Dueling Pit."
   },
   "Con": {
     "type": "byte",
@@ -155,7 +155,7 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "A level 50 capstone quest enemy for Dead Man's Hand in Anchorhead Canyon Range."
+      "0": "A human with a gambler's style who meets challengers in the open in the Canyon Dueling Pit. He once split every pot at this range with a partner, until he dealt seconds to a boy who died of it; he kept the table, the title, and the Dead Man's Hand. He has never lost with it."
     }
   },
   "Dex": {

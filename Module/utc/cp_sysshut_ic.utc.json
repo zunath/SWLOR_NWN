@@ -126,7 +126,7 @@
   },
   "Comment": {
     "type": "cexostring",
-    "value": "Capstone quest creature for Systemic Shutdown in Veles Militia Annex."
+    "value": "Systemic Shutdown inner circle member in Viscara - Veles Militia Annex."
   },
   "Con": {
     "type": "byte",
@@ -155,7 +155,7 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "A level 50 capstone quest enemy for Systemic Shutdown in Veles Militia Annex."
+      "0": "A Kel Dor in black work clothes, one of four instructors in the annex who knew exactly what they were teaching. He keeps to quarters apart from the students, and his vibroknife goes for the nerves."
     }
   },
   "Dex": {

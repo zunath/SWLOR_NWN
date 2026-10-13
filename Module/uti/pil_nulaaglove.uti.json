@@ -26,11 +26,15 @@
   },
   "DescIdentified": {
     "type": "cexolocstring",
-    "value": {}
+    "value": {
+      "0": "Nulaa's hand coverings have fine inner seams and cuffs shaped by repeated adjustment. They are an intimate sort of equipment, familiar to the wearer through a hundred small movements rather than one imposing appearance."
+    }
   },
   "Description": {
     "type": "cexolocstring",
-    "value": {}
+    "value": {
+      "0": "Nulaa's hand coverings have fine inner seams and cuffs shaped by repeated adjustment. They are an intimate sort of equipment, familiar to the wearer through a hundred small movements rather than one imposing appearance."
+    }
   },
   "Identified": {
     "type": "byte",

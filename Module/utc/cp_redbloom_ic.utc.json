@@ -126,7 +126,7 @@
   },
   "Comment": {
     "type": "cexostring",
-    "value": "Capstone quest creature for Red Bloom in Smuggler's Moon Fight Club Backrooms."
+    "value": "Red Bloom inner circle member in Smuggler's Moon - Fight Club Backrooms."
   },
   "Con": {
     "type": "byte",
@@ -155,7 +155,7 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "A level 50 capstone quest enemy for Red Bloom in Smuggler's Moon Fight Club Backrooms."
+      "0": "A Rodian in the promoter's inner circle, paid to keep a stolen paired-blade form profitable and lawless in the Fight Club Backrooms. He helped teach the backroom students and fights with his twin blade for pay, not pride."
     }
   },
   "Dex": {

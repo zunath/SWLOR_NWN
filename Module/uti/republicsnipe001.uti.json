@@ -110,11 +110,15 @@
   },
   "DescIdentified": {
     "type": "cexolocstring",
-    "value": {}
+    "value": {
+      "0": "A Republic scouting outfit whose fittings lie close beneath its outer layers. The cloth has little loose edge to catch the brush, preserving the quiet outline of someone whose first task is to see without being seen."
+    }
   },
   "Description": {
     "type": "cexolocstring",
-    "value": {}
+    "value": {
+      "0": "A Republic scouting outfit whose fittings lie close beneath its outer layers. The cloth has little loose edge to catch the brush, preserving the quiet outline of someone whose first task is to see without being seen."
+    }
   },
   "Identified": {
     "type": "byte",

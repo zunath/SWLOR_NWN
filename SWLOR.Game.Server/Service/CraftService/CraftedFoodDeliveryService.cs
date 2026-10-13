@@ -59,23 +59,31 @@ namespace SWLOR.Game.Server.Service.CraftService
             SetLocalString(player, CraftedFoodDelivery.RecoveryVariable, JsonConvert.SerializeObject(delivery));
             try
             {
+                // The consumed inputs and this entire batch must reach the same character
+                // file before Redis can preserve the output independently of those inputs.
+                saveCharacter();
+            }
+            catch (Exception exception)
+            {
+                Log.WriteError(exception, "Crafted food batch {DeliveryId} character recovery save could not be confirmed for {PlayerId}",
+                    delivery.Id, delivery.PlayerId);
+                SendMessageToPC(player, "Your finished food is held for recovery, but its save could not be confirmed. Please try again before disconnecting.");
+                foreach (var item in configuredOutputItems)
+                    DestroyObject(item);
+                return delivery.Id;
+            }
+
+            try
+            {
                 saveDelivery(delivery);
                 DeleteLocalString(player, CraftedFoodDelivery.RecoveryVariable);
             }
             catch (Exception exception)
             {
+                // The saved character already holds the depleted inputs and full recovery
+                // batch. Retain its stable ID if the database write or acknowledgement fails.
                 Log.WriteError(exception, "Crafted food batch {DeliveryId} database save could not be confirmed for {PlayerId}",
                     delivery.Id, delivery.PlayerId);
-                try
-                {
-                    saveCharacter();
-                }
-                catch (Exception saveException)
-                {
-                    Log.WriteError(saveException, "Crafted food batch {DeliveryId} character recovery save failed for {PlayerId}",
-                        delivery.Id, delivery.PlayerId);
-                    SendMessageToPC(player, "Your finished food is held for recovery, but its save could not be confirmed. Please try again before disconnecting.");
-                }
             }
 
             foreach (var item in configuredOutputItems)
@@ -127,7 +135,12 @@ namespace SWLOR.Game.Server.Service.CraftService
                     if (existing != null && existing.PlayerId != playerId)
                         throw new InvalidOperationException("The crafted food recovery belongs to another player.");
                     if (existing == null)
+                    {
+                        // This may be a live batch whose initial character save failed.
+                        // Never publish or acquire it until the inputs and recovery are saved.
+                        saveCharacter();
                         saveDelivery(recovery);
+                    }
                     recoveredDelivery = existing ?? recovery;
                     DeleteLocalString(player, CraftedFoodDelivery.RecoveryVariable);
                 }

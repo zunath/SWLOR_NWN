@@ -1,3 +1,4 @@
+using System.Text.Json;
 using FluentAssertions;
 using Newtonsoft.Json;
 using NUnit.Framework;
@@ -21,6 +22,30 @@ public class EshanSupplyQuestTests
         ["eshan_shift_greens"] = "hc_nema",
         ["eshan_grove_seedlings"] = "hc_sivra"
     };
+
+    [Test]
+    public void Tellis_BlueprintAndPlacedQuestGiverRemainStationary()
+    {
+        var root = FindRepositoryRoot();
+        using var blueprint = JsonDocument.Parse(File.ReadAllText(Path.Combine(root.FullName,
+            "Module", "utc", "hc_tellis.utc.json")));
+        using var highcrest = JsonDocument.Parse(File.ReadAllText(Path.Combine(root.FullName,
+            "Module", "git", "pw_ar_sc_eshancm.git.json")));
+        var placed = highcrest.RootElement.GetProperty("Creature List").GetProperty("value").EnumerateArray()
+            .Single(creature => creature.GetProperty("TemplateResRef").GetProperty("value").GetString() == "hc_tellis");
+
+        foreach (var creature in new[] { blueprint.RootElement, placed })
+        {
+            var variables = creature.GetProperty("VarTable").GetProperty("value").EnumerateArray().ToArray();
+            var flags = variables.Single(variable => variable.GetProperty("Name").GetProperty("value").GetString() == "AI_FLAGS");
+            flags.GetProperty("Value").GetProperty("value").GetInt32().Should().Be(0,
+                "random-walk and return-home actions can take Tellis beyond the quest window's interaction range");
+            variables.Should().NotContain(variable =>
+                variable.GetProperty("Name").GetProperty("value").GetString() == "ESHAN_PATROL_ROUTE");
+            creature.GetProperty("Conversation").GetProperty("value").GetString().Should().Be("hc_tellis");
+            creature.GetProperty("ScriptDialogue").GetProperty("value").GetString().Should().Be("dialog_start");
+        }
+    }
 
     [Test]
     public void SupplyQuests_UseFetchObjectivesAndModestRewards()
@@ -167,11 +192,16 @@ public class EshanSupplyQuestTests
 
     private static ConversationGraph ReadGraph(string id)
     {
+        var directory = FindRepositoryRoot();
+        return JsonConvert.DeserializeObject<ConversationGraph>(File.ReadAllText(Path.Combine(directory.FullName,
+            "SWLOR.Game.Server", "ConversationData", id + ".conversation.json")));
+    }
+
+    private static DirectoryInfo FindRepositoryRoot()
+    {
         var directory = new DirectoryInfo(TestContext.CurrentContext.TestDirectory);
         while (directory != null && !Directory.Exists(Path.Combine(directory.FullName, "Module")))
             directory = directory.Parent;
-        directory.Should().NotBeNull();
-        return JsonConvert.DeserializeObject<ConversationGraph>(File.ReadAllText(Path.Combine(directory!.FullName,
-            "SWLOR.Game.Server", "ConversationData", id + ".conversation.json")));
+        return directory ?? throw new DirectoryNotFoundException("Could not locate repository root.");
     }
 }

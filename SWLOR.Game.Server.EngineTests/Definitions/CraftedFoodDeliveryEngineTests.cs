@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.ExceptionServices;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using NRediSearch;
@@ -59,6 +60,104 @@ public static class CraftedFoodDeliveryEngineTests
     [EngineTest("An interrupted food search-index write recovers without treating its missing JSON as a delivery", Category = "CraftedFoodDelivery")]
     public static Task InitialDatabaseFailureAfterIndexWrite(EngineTestContext ctx) => VerifyInitialCommitFailure(ctx, false, true);
 
+    [EngineTest("Completed food checkpoints consumed ingredients before Redis publication at a full-inventory crash boundary", Category = "CraftedFoodDelivery")]
+    public static async Task CompletedFoodCheckpointsInputsBeforePublication(EngineTestContext ctx)
+    {
+        using var player = await PlayerAbilityFixture.CreateAsync(ctx);
+        await ClearCarriedInventory(ctx, player.Creature);
+        await CreateIngredientStacks(ctx, player.Creature);
+        await InventoryCapacityFixture.CreateAsync(ctx, player.Creature, 0);
+        NativeCharacterSnapshot durable = null;
+        string deliveryId = null;
+        var characterSaves = 0;
+        var originalCharacter = NWNXLib.g_pAppManager.m_pServerExoApp.GetGameObject(player.Creature).AsNWSCreature();
+        var originalPlayerFlag = originalCharacter.m_bPlayerCharacter;
+        var recoveryIdentityTransferred = false;
+        try
+        {
+            await ctx.ExecuteInCreatureContextAsync(player.Creature, () =>
+            {
+                durable = NativeCharacterSnapshot.Capture(ctx, player.Creature);
+                using var previousCharacter = durable.Load(ctx);
+                AssertIngredientStacks(ctx, previousCharacter.m_idSelf, false);
+                ctx.AssertEqual(string.Empty, GetLocalString(previousCharacter.m_idSelf, CraftedFoodDelivery.RecoveryVariable),
+                    "The actual pre-craft BIC has all inputs and no finished food");
+
+                ConsumeRecipeIngredients(ctx, player.Creature);
+                var storage = CreateAssemblyStorage(ctx, player.Creature);
+                deliveryId = Commit(ctx, player.Creature, CreateConfiguredFoods(ctx, storage), () =>
+                {
+                    characterSaves++;
+                    durable.Dispose();
+                    durable = NativeCharacterSnapshot.Capture(ctx, player.Creature);
+                    using var checkpoint = durable.Load(ctx);
+                    AssertIngredientStacks(ctx, checkpoint.m_idSelf, true);
+                    var recovery = JsonConvert.DeserializeObject<CraftedFoodDelivery>(
+                        GetLocalString(checkpoint.m_idSelf, CraftedFoodDelivery.RecoveryVariable));
+                    ctx.AssertEqual(player.Id, recovery.PlayerId, "The BIC saves the completed batch for its original owner");
+                    ctx.AssertEqual(4, recovery.Items.Count, "The BIC checkpoints all four foods with consumed inputs");
+                    VerifyStoredFoods(ctx, recovery.Items);
+                }, delivery =>
+                {
+                    ctx.AssertEqual(1, characterSaves, "Native character persistence precedes the durable Redis award");
+                    DB.Set(delivery);
+                });
+                ctx.AssertEqual(1, characterSaves, "A healthy commit checkpoints inputs without relying on an inventory claim");
+                Claim(ctx, player.Creature, () => characterSaves++);
+                ctx.AssertEqual(1, characterSaves, "A zero-slot claim does not supply the missing commit checkpoint");
+                ctx.AssertEqual(4, ReadStoredDelivery(deliveryId).Items.Count, "No portion has been claimed at the crash boundary");
+                AssertOwnedFoods(ctx, player.Creature, 0);
+            });
+            await ctx.WaitFrameAsync();
+
+            // Reload the last BIC actually written by the production commit callback, rather
+            // than exporting the live character after completion to manufacture durability.
+            using var restored = durable.Load(ctx);
+            // ForceAssignUUID transfers ownership. Keep the old headless client out of
+            // player heartbeat paths while the restored character owns its identity.
+            originalCharacter.m_bPlayerCharacter = 0;
+            recoveryIdentityTransferred = true;
+            ObjectPlugin.ForceAssignUUID(restored.m_idSelf, player.Id);
+            AssertIngredientStacks(ctx, restored.m_idSelf, true);
+            AssertOwnedFoods(ctx, restored.m_idSelf, 0);
+            ctx.AssertEqual(4, CraftedFoodDeliveryService.GetPendingCount(restored.m_idSelf),
+                "Reloading the crash boundary retains four pending foods without restoring their ingredients");
+            Claim(ctx, restored.m_idSelf);
+            ctx.AssertEqual(4, CraftedFoodDeliveryService.GetPendingCount(restored.m_idSelf),
+                "All five depleted ingredient stacks still occupy their slots in the reloaded full inventory");
+
+            using var secondSnapshot = NativeCharacterSnapshot.Capture(ctx, restored.m_idSelf);
+            using var secondReload = secondSnapshot.Load(ctx);
+            ObjectPlugin.ForceAssignUUID(secondReload.m_idSelf, player.Id);
+            AssertIngredientStacks(ctx, secondReload.m_idSelf, true);
+            Claim(ctx, secondReload.m_idSelf);
+            AssertOwnedFoods(ctx, secondReload.m_idSelf, 0);
+            await ReleaseReloadedFoodSlots(ctx, player.Creature, secondReload.m_idSelf, 4);
+            Claim(ctx, secondReload.m_idSelf);
+            Claim(ctx, secondReload.m_idSelf);
+            ctx.AssertEqual(0, CraftedFoodDeliveryService.GetPendingCount(secondReload.m_idSelf),
+                "The recovered owner can collect the four portions exactly once");
+            AssertIngredientStacks(ctx, secondReload.m_idSelf, true);
+            AssertOwnedFoods(ctx, secondReload.m_idSelf, 4);
+            VerifyCharacterExports(ctx, secondReload.m_idSelf);
+        }
+        finally
+        {
+            if (recoveryIdentityTransferred)
+                ObjectPlugin.ForceAssignUUID(player.Creature, player.Id);
+            originalCharacter.m_bPlayerCharacter = originalPlayerFlag;
+            durable?.Dispose();
+            if (deliveryId != null)
+                DB.Delete<CraftedFoodDelivery>(deliveryId);
+        }
+    }
+
+    [EngineTest("An unconfirmed initial native food save publishes no Redis award and retries its checkpoint before promotion", Category = "CraftedFoodDelivery")]
+    public static Task InitialCharacterFailureBeforeSave(EngineTestContext ctx) => VerifyInitialCharacterFailure(ctx, false);
+
+    [EngineTest("A lost initial native food save acknowledgement retains consumed inputs and promotes its stable recovery once", Category = "CraftedFoodDelivery")]
+    public static Task InitialCharacterFailureAfterSave(EngineTestContext ctx) => VerifyInitialCharacterFailure(ctx, true);
+
     [EngineTest("Completed food exits crafting and survives closing and reopening a full inventory window", Category = "CraftedFoodDelivery")]
     public static async Task CompletedCraftSurvivesWindowLifecycle(EngineTestContext ctx)
     {
@@ -100,6 +199,10 @@ public static class CraftedFoodDeliveryEngineTests
                 ctx.Assert(!model.IsInCraftMode && model.IsInSetupMode && model.IsClosable,
                     "A completed craft leaves craft mode immediately even when none of its food fits");
                 ctx.AssertEqual(4, CraftedFoodDeliveryService.GetPendingCount(player.Creature), "The real completion path persists all four servings");
+                // The headless client has no authenticated servervault destination. If the
+                // real completion held its batch after that save failed, retry through the
+                // same production claim path with a real native BIC checkpoint dependency.
+                Claim(ctx, player.Creature);
                 var deliveries = DB.Search(new DBQuery<CraftedFoodDelivery>()
                     .AddFieldSearch(nameof(CraftedFoodDelivery.PlayerId), player.Id, false).AddPaging(10, 0)).ToArray();
                 ctx.AssertEqual(1, deliveries.Length, "One completion creates one bounded persisted batch");
@@ -180,13 +283,13 @@ public static class CraftedFoodDeliveryEngineTests
 
                 // No frame wait here: persistence must not resurrect properties removed while
                 // the production merge operation was configuring this same completed batch.
-                deliveryId = CraftedFoodDeliveryService.CommitCompletedBatch(player.Creature, originalFoods);
+                deliveryId = Commit(ctx, player.Creature, originalFoods);
                 var committed = ReadStoredDelivery(deliveryId);
                 ctx.AssertEqual(4, committed.Items.Count, "All four configured portions reach Redis before acquisition");
                 VerifyStoredFoods(ctx, committed.Items);
                 ctx.AssertEqual(4, CraftedFoodDeliveryService.GetPendingCount(player.Creature), "The entire batch is pending");
                 var blocked = false;
-                try { CraftedFoodDeliveryService.CommitCompletedBatch(player.Creature, originalFoods); }
+                try { Commit(ctx, player.Creature, originalFoods); }
                 catch (InvalidOperationException) { blocked = true; }
                 ctx.Assert(blocked, "Another multi-food batch cannot accumulate while completed food remains pending");
 
@@ -255,7 +358,7 @@ public static class CraftedFoodDeliveryEngineTests
             await ctx.ExecuteInCreatureContextAsync(player.Creature, () =>
             {
                 var storage = CreateAssemblyStorage(ctx, player.Creature);
-                deliveryId = CraftedFoodDeliveryService.CommitCompletedBatch(player.Creature, CreateConfiguredFoods(ctx, storage));
+                deliveryId = Commit(ctx, player.Creature, CreateConfiguredFoods(ctx, storage));
                 playerBefore = DB.GetRawJson<Player>(player.Id);
                 creditsBefore = GetGold(player.Creature);
                 Action saveCharacter = () =>
@@ -355,7 +458,7 @@ public static class CraftedFoodDeliveryEngineTests
                     throw new InvalidOperationException("Injected initial food database write interruption");
                 };
                 deliveryId = (string)CommitMethod.Invoke(null, new object[] { player.Creature, foods, saveCharacter, saveDelivery });
-                ctx.AssertEqual(1, nativeRecoverySaves, "The failed initial database save invokes the native recovery save");
+                ctx.AssertEqual(1, nativeRecoverySaves, "The native recovery save precedes the failed initial database write");
                 var recovery = JsonConvert.DeserializeObject<CraftedFoodDelivery>(recoveryData);
                 ctx.AssertEqual(deliveryId, recovery.Id, "Recovery retains the original batch identity");
                 ctx.AssertEqual(player.Id, recovery.PlayerId, "Recovery retains the original character owner");
@@ -434,6 +537,175 @@ public static class CraftedFoodDeliveryEngineTests
             if (deliveryId != null)
                 DB.Delete<CraftedFoodDelivery>(deliveryId);
         }
+    }
+
+    private static async Task VerifyInitialCharacterFailure(EngineTestContext ctx, bool afterSave)
+    {
+        using var player = await PlayerAbilityFixture.CreateAsync(ctx);
+        await ClearCarriedInventory(ctx, player.Creature);
+        await CreateIngredientStacks(ctx, player.Creature);
+        var capacity = await InventoryCapacityFixture.CreateAsync(ctx, player.Creature, 0);
+        NativeCharacterSnapshot durable = null;
+        string deliveryId = null;
+        var databaseWrites = 0;
+        var characterAttempts = 0;
+        try
+        {
+            await ctx.ExecuteInCreatureContextAsync(player.Creature, () =>
+            {
+                durable = NativeCharacterSnapshot.Capture(ctx, player.Creature);
+                ConsumeRecipeIngredients(ctx, player.Creature);
+                var storage = CreateAssemblyStorage(ctx, player.Creature);
+                deliveryId = Commit(ctx, player.Creature, CreateConfiguredFoods(ctx, storage), () =>
+                {
+                    characterAttempts++;
+                    if (afterSave)
+                    {
+                        durable.Dispose();
+                        durable = NativeCharacterSnapshot.Capture(ctx, player.Creature);
+                    }
+                    throw new InvalidOperationException("Injected initial native character save interruption");
+                }, delivery =>
+                {
+                    databaseWrites++;
+                    DB.Set(delivery);
+                });
+                ctx.AssertEqual(1, characterAttempts, "The initial commit attempts the native checkpoint first");
+                ctx.AssertEqual(0, databaseWrites, "An unconfirmed native save cannot publish an independent Redis award");
+                ctx.AssertEqual(string.Empty, DB.GetRawJson<CraftedFoodDelivery>(deliveryId),
+                    "No durable database food exists before consumed inputs are safely checkpointed");
+                ctx.AssertEqual(4, CraftedFoodDeliveryService.GetPendingCount(player.Creature), "The live completed batch remains available for a checkpoint retry");
+                using var lastSavedCharacter = durable.Load(ctx);
+                AssertIngredientStacks(ctx, lastSavedCharacter.m_idSelf, afterSave);
+                AssertOwnedFoods(ctx, lastSavedCharacter.m_idSelf, 0);
+                var savedRecovery = GetLocalString(lastSavedCharacter.m_idSelf, CraftedFoodDelivery.RecoveryVariable);
+                ctx.AssertEqual(afterSave, !string.IsNullOrEmpty(savedRecovery),
+                    "A crash restores either the pre-craft inputs or the checkpointed food batch, never both");
+                if (afterSave)
+                {
+                    var recovery = JsonConvert.DeserializeObject<CraftedFoodDelivery>(savedRecovery);
+                    ctx.AssertEqual(deliveryId, recovery.Id, "The acknowledgement failure retains its stable completed batch ID");
+                    ctx.AssertEqual(player.Id, recovery.PlayerId, "The saved recovery batch retains its character owner");
+                    ctx.AssertEqual(4, recovery.Items.Count, "The checkpointed recovery retains every configured portion");
+                }
+            });
+            await ctx.WaitFrameAsync();
+            await capacity.ExpandToAsync(ctx, 4);
+            await ctx.ExecuteInCreatureContextAsync(player.Creature, () =>
+            {
+                Claim(ctx, player.Creature, () =>
+                {
+                    characterAttempts++;
+                    throw new InvalidOperationException("Injected recovery promotion checkpoint interruption");
+                }, delivery =>
+                {
+                    databaseWrites++;
+                    DB.Set(delivery);
+                });
+                ctx.AssertEqual(2, characterAttempts, "Recovery promotion retries the native checkpoint before publication");
+                ctx.AssertEqual(0, databaseWrites, "A failed promotion checkpoint cannot persist an award");
+                AssertOwnedFoods(ctx, player.Creature, 0);
+                ctx.AssertEqual(4, CraftedFoodDeliveryService.GetPendingCount(player.Creature),
+                    "A failed promotion with free inventory slots does not acquire or lose finished portions");
+                Claim(ctx, player.Creature, () =>
+                {
+                    characterAttempts++;
+                    durable.Dispose();
+                    durable = NativeCharacterSnapshot.Capture(ctx, player.Creature);
+                    VerifyCharacterExports(ctx, player.Creature);
+                }, delivery =>
+                {
+                    databaseWrites++;
+                    ctx.Assert(characterAttempts >= 3, "The promotion write follows its successful native checkpoint");
+                    DB.Set(delivery);
+                });
+                Claim(ctx, player.Creature);
+                ctx.AssertEqual(2, databaseWrites, "One stable promotion and one four-portion reduction complete the live retry");
+                ctx.AssertEqual(0, CraftedFoodDeliveryService.GetPendingCount(player.Creature), "A successful retry finishes the held batch once");
+                AssertIngredientStacks(ctx, player.Creature, true);
+                AssertOwnedFoods(ctx, player.Creature, 4);
+                using var restored = durable.Load(ctx);
+                AssertIngredientStacks(ctx, restored.m_idSelf, true);
+                AssertOwnedFoods(ctx, restored.m_idSelf, 4);
+                VerifyCharacterExports(ctx, restored.m_idSelf);
+            });
+        }
+        finally
+        {
+            durable?.Dispose();
+            if (deliveryId != null)
+                DB.Delete<CraftedFoodDelivery>(deliveryId);
+        }
+    }
+
+    private static async Task CreateIngredientStacks(EngineTestContext ctx, uint owner)
+    {
+        await ctx.ExecuteInCreatureContextAsync(owner, () =>
+        {
+            foreach (var resref in Craft.GetRecipe(RecipeType.EchaniSharedHotpot).Components.Keys)
+            {
+                var ingredient = CreateItemOnObject(resref, owner);
+                ctx.Track(ingredient);
+                ctx.Assert(GetIsObjectValid(ingredient) && GetItemPossessor(ingredient) == owner,
+                    "Each hotpot ingredient starts in the native player inventory");
+                SetItemStackSize(ingredient, 99);
+                ctx.AssertEqual(99, GetItemStackSize(ingredient), "Every ingredient stack exceeds the recipe's consumption");
+            }
+        });
+        await ctx.WaitFrameAsync();
+    }
+
+    private static void ConsumeRecipeIngredients(EngineTestContext ctx, uint owner)
+    {
+        var model = BindCraftModel(owner, OBJECT_INVALID);
+        var components = (List<uint>)typeof(CraftViewModel).GetMethod("GetComponents", BindingFlags.Instance | BindingFlags.NonPublic)
+            .Invoke(model, null);
+        var depleted = (List<uint>)typeof(CraftViewModel).GetMethod("AggregateComponents", BindingFlags.Instance | BindingFlags.NonPublic)
+            .Invoke(model, new object[] { components });
+        ctx.AssertEqual(5, depleted.Count, "The actual crafting path consumes all five hotpot components");
+        AssertIngredientStacks(ctx, owner, true);
+    }
+
+    private static void AssertIngredientStacks(EngineTestContext ctx, uint owner, bool consumed)
+    {
+        var quantities = new Dictionary<string, List<uint>>();
+        var components = Craft.GetRecipe(RecipeType.EchaniSharedHotpot).Components;
+        for (var item = GetFirstItemInInventory(owner); GetIsObjectValid(item); item = GetNextItemInInventory(owner))
+        {
+            var resref = GetResRef(item);
+            if (!components.ContainsKey(resref))
+                continue;
+            if (!quantities.TryGetValue(resref, out var stacks))
+                quantities[resref] = stacks = new List<uint>();
+            stacks.Add(item);
+        }
+        ctx.AssertEqual(components.Count, quantities.Count, "Every original ingredient stack is still carried");
+        foreach (var component in components)
+        {
+            ctx.AssertEqual(1, quantities[component.Key].Count, "Crafting and reload preserve one original ingredient stack per component");
+            var item = quantities[component.Key].Single();
+            ctx.AssertEqual(owner, GetItemPossessor(item), "The retained ingredient stack belongs to the reloaded character");
+            ctx.AssertEqual(consumed ? 99 - component.Value : 99, GetItemStackSize(item),
+                $"The native save retains the exact {(consumed ? "consumed" : "pre-craft")} quantity of {component.Key}");
+        }
+    }
+
+    private static async Task ReleaseReloadedFoodSlots(EngineTestContext ctx, uint contextOwner, uint restoredOwner, int slots)
+    {
+        await ctx.ExecuteInCreatureContextAsync(contextOwner, () =>
+        {
+            var fillers = new List<uint>();
+            for (var item = GetFirstItemInInventory(restoredOwner); GetIsObjectValid(item); item = GetNextItemInInventory(restoredOwner))
+                if (GetResRef(item) == "acorn_cookies")
+                    fillers.Add(item);
+            ctx.Assert(fillers.Count >= slots, "The reloaded full inventory contains the fillers whose slots can be released");
+            foreach (var item in fillers.Take(slots))
+            {
+                ctx.AssertEqual(restoredOwner, GetItemPossessor(item), "Only the reloaded character's filler items are removed");
+                DestroyObject(item);
+            }
+        });
+        await ctx.WaitFrameAsync();
     }
 
     private static async Task ClearCarriedInventory(EngineTestContext ctx, uint owner)
@@ -550,8 +822,77 @@ public static class CraftedFoodDeliveryEngineTests
         });
     }
 
+    private static string Commit(EngineTestContext ctx, uint player, IReadOnlyList<uint> foods,
+        Action saveCharacter = null, Action<CraftedFoodDelivery> saveDelivery = null)
+    {
+        ctx.Assert(CommitMethod != null, "Production commits expose character and database persistence dependencies");
+        try
+        {
+            return (string)CommitMethod.Invoke(null, new object[]
+            {
+                player, foods, saveCharacter ?? (() => VerifyCharacterExports(ctx, player)),
+                saveDelivery ?? new Action<CraftedFoodDelivery>(DB.Set)
+            });
+        }
+        catch (TargetInvocationException exception) when (exception.InnerException != null)
+        {
+            ExceptionDispatchInfo.Capture(exception.InnerException).Throw();
+            throw;
+        }
+    }
+
     private static CraftedFoodDelivery ReadStoredDelivery(string id) =>
         JsonConvert.DeserializeObject<CraftedFoodDelivery>(DB.GetRawJson<CraftedFoodDelivery>(id));
+
+    private sealed class NativeCharacterSnapshot : IDisposable
+    {
+        private readonly CResGFF _file = new();
+        private readonly CResStruct _root = new();
+
+        public static NativeCharacterSnapshot Capture(EngineTestContext ctx, uint owner)
+        {
+            var snapshot = new NativeCharacterSnapshot();
+            try
+            {
+                using var type = new CExoString("BIC ");
+                using var format = new CExoString("V2.0");
+                ctx.Assert(snapshot._file.CreateGFFFile(snapshot._root, type, format) != 0, "Create the durable native BIC snapshot");
+                var source = NWNXLib.g_pAppManager.m_pServerExoApp.GetGameObject(owner).AsNWSCreature();
+                ctx.Assert(source.SaveCreature(snapshot._file, snapshot._root, 0, 0, 0, 1) != 0,
+                    "Capture the character through the exact native servervault save pipeline");
+                return snapshot;
+            }
+            catch
+            {
+                snapshot.Dispose();
+                throw;
+            }
+        }
+
+        public CNWSCreature Load(EngineTestContext ctx)
+        {
+            var creature = new CNWSCreature(OBJECT_INVALID, 0, 1);
+            try
+            {
+                ctx.Assert(creature.LoadCreature(_file, _root, 0, 0, 0, 0) != 0, "Reload the last durable native BIC snapshot");
+                // A detached reload is never added to the saved area's native object list.
+                // Keep it detached across frame waits, as PlayerAbilityFixture does.
+                creature.SetArea(null);
+                return creature;
+            }
+            catch
+            {
+                creature.Dispose();
+                throw;
+            }
+        }
+
+        public void Dispose()
+        {
+            _root.Dispose();
+            _file.Dispose();
+        }
+    }
 
     private sealed class InventoryCapacityFixture
     {

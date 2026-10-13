@@ -142,7 +142,7 @@ def validate():
                 assert any(value(v, "Name") == "NO_ECONOMY" and value(v, "Value") == 1 for v in value(item, "VarTable"))
         if "hc_guard_helm" in expected.values():
             guard_genders.add(value(npc, "Gender"))
-    assert wanderers == {"hc_pell", "hc_mira", "hc_tellis"}
+    assert wanderers == {"hc_pell", "hc_mira"}
     assert guard_genders == {0, 1} and shop_users == shop_tags
     assert supply_users == {ref: SUPPLY_ACTIONS for ref in SUPPLY_QUESTS}, "every supply giver needs offer, collector and reward actions"
     for shop in shops:
@@ -172,7 +172,7 @@ def validate():
                 assert value(entry, "Repos_PosX") == index % 5 * 2
                 assert value(entry, "Repos_Posy") == index // 5 * 2
         assert stock == STOCK_PANELS[ref], (ref, "stock/category mismatch")
-    print("PASS: 15 distinct conversations, NPC/equipment parity, 3 wandering residents, both guard genders, 3 linked shops and 6 supply quest handoffs.")
+    print("PASS: 15 distinct conversations, NPC/equipment parity, 2 wandering residents, both guard genders, 3 linked shops and 6 supply quest handoffs.")
 
 
 if __name__ == "__main__":

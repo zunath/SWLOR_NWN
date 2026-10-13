@@ -223,7 +223,7 @@ public static class MimicryLoadoutEngineTests
         var record = DB.Get<Player>(fixture.Id);
         record.Perks[PerkType.AnalyzerMemory] = 2;
         foreach (var feat in new[] { Rush, Wave, Trait }) record.LearnedTechniques[feat] = DateTime.UtcNow;
-        MimicryLoadouts.EnsureDefault(record);
+        MimicryLoadouts.EnsureStartingBuild(record);
         MimicryLoadouts.Save(record, null, "First", new[] { Rush, Trait }, out var first, out _);
         MimicryLoadouts.Save(record, null, "Second", new[] { Wave, Trait }, out var second, out _);
         DB.Set(record);

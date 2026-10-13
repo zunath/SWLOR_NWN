@@ -376,6 +376,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         protected override void Initialize(CraftPayload initialPayload)
         {
+            CraftedFoodDeliveryService.ClaimPending(Player);
             _components.Clear();
 
             _recipe = initialPayload.Recipe;
@@ -427,6 +428,17 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             LoadCraftingState();
             RefreshRecipeStats();
+            ShowPendingFoodDelivery();
+        }
+
+        private void ShowPendingFoodDelivery()
+        {
+            var pending = CraftedFoodDeliveryService.GetPendingCount(Player);
+            if (pending <= 0)
+                return;
+
+            StatusText = $"{pending} food portion(s) are waiting for you. Make room and reopen crafting to collect them.";
+            StatusColor = GuiColor.Red;
         }
 
         private void LoadCraftingState()
@@ -1280,10 +1292,21 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         public Action OnClickManualCraft() => () =>
         {
+            if (IsInCraftMode)
+                return;
+
             if (!Craft.CanPlayerCraftRecipe(Player, _recipe))
             {
                 StatusText = "Recipe requirements not met!";
                 StatusColor = GuiColor.Red;
+                return;
+            }
+
+            var recipe = Craft.GetRecipe(_recipe);
+            if (recipe.Category == RecipeCategoryType.Food && recipe.Quantity > 1 &&
+                CraftedFoodDeliveryService.HasPending(Player))
+            {
+                ShowPendingFoodDelivery();
                 return;
             }
 
@@ -1356,18 +1379,18 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var playerId = GetObjectUUID(Player);
             var dbPlayer = DB.Get<Player>(playerId);
             var recipe = Craft.GetRecipe(_recipe);
+            var isFoodBatch = recipe.Category == RecipeCategoryType.Food && recipe.Quantity > 1;
+            using var foodStorage = isFoodBatch ? new CraftedFoodOutputStorage() : null;
             IReadOnlyList<uint> outputItems;
-            if (recipe.Category == RecipeCategoryType.Food && recipe.Quantity > 1)
+            if (isFoodBatch)
             {
                 if (!RecipeOutputFactory.TryCreate(recipe,
-                        stackSize => CreateItemOnObject(recipe.Resref, Player, stackSize),
+                        stackSize => CreateItemOnObject(recipe.Resref, foodStorage.Container, stackSize),
                         GetIsObjectValid,
                         outputItem => DestroyObject(outputItem),
                         out outputItems))
                 {
-                    StatusText = "Make room in your inventory, then use a crafting action to collect your finished food.";
-                    StatusColor = GuiColor.Red;
-                    return;
+                    throw new InvalidOperationException("The completed food batch could not be assembled.");
                 }
             }
             else
@@ -1377,6 +1400,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             }
 
             var item = outputItems[0];
+            var outputName = GetName(item);
             foreach (var outputItem in outputItems)
             {
                 SetLocalBool(outputItem, Item.PlayerProducedItemVariable, true);
@@ -1461,22 +1485,54 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             ProcessBlueprintBonuses(outputItems);
 
-            // Add the recipe to the completed list (unlocks auto-crafting)
-            if (firstTime)
+            // Save every configured portion before attempting player inventory delivery.
+            // A full inventory must not leave a finished craft dependent on this window.
+            if (isFoodBatch)
+                CraftedFoodDeliveryService.CommitCompletedBatch(Player, outputItems);
+
+            try
             {
-                dbPlayer.CraftedRecipes[_recipe] = DateTime.UtcNow;
-                DB.Set(dbPlayer);
+                // Add the recipe to the completed list (unlocks auto-crafting)
+                if (firstTime)
+                {
+                    dbPlayer.CraftedRecipes[_recipe] = DateTime.UtcNow;
+                    DB.Set(dbPlayer);
+                }
+
+                // Give XP plus a percent bonus based on the quality achieved.
+                var xp = CalculateXP(
+                    recipe,
+                    dbPlayer.Skills[recipe.Skill].Rank,
+                    _hasBlueprint ? _activeBlueprint.Level : 0,
+                    firstTime,
+                    qualityPercent);
+                Skill.GiveSkillXP(Player, recipe.Skill, xp, false, false);
+            }
+            finally
+            {
+                // Once food is escrowed, a later reward/save error must not let closing
+                // this window fail the completed batch or run its completion again.
+                if (isFoodBatch)
+                    ClearCompletedCraft(true);
             }
 
-            // Give XP plus a percent bonus based on the quality achieved.
-            var xp = CalculateXP(
-                recipe,
-                dbPlayer.Skills[recipe.Skill].Rank,
-                _hasBlueprint ? _activeBlueprint.Level : 0,
-                firstTime,
-                qualityPercent);
-            Skill.GiveSkillXP(Player, recipe.Skill, xp, false, false);
+            if (!isFoodBatch)
+                ClearCompletedCraft(false);
 
+            StatusText = "Successfully created the item!";
+            StatusColor = GuiColor.Green;
+
+            if (isFoodBatch)
+            {
+                CraftedFoodDeliveryService.ClaimPending(Player);
+                ShowPendingFoodDelivery();
+            }
+
+            Log.Write(LogGroup.Crafting, $"{GetName(Player)} ({GetObjectUUID(Player)}) successfully crafted '{outputName}'.");
+        }
+
+        private void ClearCompletedCraft(bool persistedFoodBatch)
+        {
             // Clean up and return to the Set Up mode.
             _itemPropertiesEnhancement1.Clear();
             _itemPropertiesEnhancement2.Clear();
@@ -1495,13 +1551,20 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             _enhancement7 = string.Empty;
             _enhancement8 = string.Empty;
             _components.Clear();
+            if (persistedFoodBatch)
+            {
+                // These changes do not require the database. Release the craft even if
+                // refreshing skill/recipe data below fails during a database outage.
+                IsInCraftMode = false;
+                IsInSetupMode = true;
+                IsClosable = true;
+                _progress = 0;
+                _quality = 0;
+                RemoveImmobility();
+            }
             SwitchToSetUpMode();
             LoadCraftingState();
             RefreshRecipeStats();
-            StatusText = "Successfully created the item!";
-            StatusColor = GuiColor.Green;
-
-            Log.Write(LogGroup.Crafting, $"{GetName(Player)} ({GetObjectUUID(Player)}) successfully crafted '{GetName(item)}'.");
         }
 
         private void ProcessBlueprintBonuses(IReadOnlyList<uint> outputItems)
@@ -1673,15 +1736,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             int durabilityLoss,
             Action successAction)
         {
-            // A finished food batch may be waiting for inventory space. Retry delivery
-            // before spending resources or allowing another quality/progress action.
-            if (IsInCraftMode && _progress >= _maxProgress)
-            {
-                ProcessSuccess();
-                RefreshRecipeStats();
-                return;
-            }
-
             if (_cp < cpCost)
             {
                 StatusText = "Not enough CP!";

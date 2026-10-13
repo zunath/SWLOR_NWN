@@ -83,6 +83,7 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
                 .AddSpawn(ObjectType.Creature, "pthune")
                 .RandomlyWalks()
                 .WithFrequency(100)
+                .ReturnsHome()
 
                 .AddSpawn(ObjectType.Creature, "gizka")
                 .RandomlyWalks()

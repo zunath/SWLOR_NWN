@@ -8,8 +8,8 @@ using SWLOR.CombatSim.Scenario;
 const string Usage = """
 SWLOR combat simulator
 
-  run <scenario.json> [--rules current,wave1,wave2] [--rules-file custom.json]... [--runs 200] [--seed 1] [--out report.md] [--detail]
-      Runs the scenario under each rule set and prints a comparison.
+  run <scenario.json> [--rules current,wave1,wave2] [--rules-file custom.json]... [--runs 200] [--seed 1] [--out report.md] [--json results.json] [--detail]
+      Runs the scenario under each rule set and prints a comparison; --json also writes the raw per-rule-set results.
   rules [--name wave2]
       Prints a rule preset as JSON, to copy into a --rules-file and edit.
   abilities [--out abilities.csv]
@@ -58,6 +58,9 @@ static int Run(string[] args)
     var catalog = AbilityCatalog.Load();
     var summaries = ruleSets.Select(rules => BatchRunner.Run(scenario, rules, catalog, runs, seed)).ToList();
     var report = MarkdownReport.Build(scenario, summaries, options.ContainsKey("--detail"));
+
+    if (options.TryGetValue("--json", out var json))
+        File.WriteAllText(json[0], JsonConvert.SerializeObject(summaries, Formatting.Indented));
 
     if (options.TryGetValue("--out", out var output))
     {

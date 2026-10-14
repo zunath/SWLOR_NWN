@@ -1,14 +1,17 @@
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Threading.Tasks;
 using SWLOR.Game.Server.EngineTests.Framework;
 using SWLOR.Game.Server.Entity;
+using SWLOR.Game.Server.Native;
 using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Item;
+using NWNXLib = NWN.Native.API.NWNXLib;
 
 namespace SWLOR.Game.Server.EngineTests.Definitions;
 
@@ -175,6 +178,87 @@ public static class TwinPistolEquipmentEngineTests
         AssertOwnedItems(ctx, actor, main, 0);
     }
 
+    [EngineTest("Twin Pistol generated Basic and Veteran guns retain native attribute damage caps", Category = "TwinPistolEquipment", TimeoutSeconds = 65f)]
+    public static async Task GeneratedWeaponDamageCaps(EngineTestContext ctx)
+    {
+        Combat.SetAutoAttackHitResolutionOverride(true);
+        try
+        {
+            foreach (var (resref, requiredRank, cap) in new[] { ("b_twinpistol", 0, 1), ("vet_twinpistol", 15, 2) })
+            {
+                using var player = await PlayerAbilityFixture.CreateAsync(ctx);
+                player.Update(record =>
+                {
+                    record.Perks.Clear();
+                    record.Skills[SkillType.TwinPistol].Rank = 50;
+                });
+                var actor = player.Creature;
+                var main = await ctx.EquipItemAsync(actor, resref, InventorySlot.RightHand);
+                var spare = await WaitForPair(ctx, actor, main);
+                var target = ctx.SpawnCreature("nw_rat001", 1f);
+                await ctx.DelaySecondsAsync(1f);
+                try
+                {
+                    foreach (var (attackStat, defenseStat) in new[] { (50, 6), (6, 50) })
+                    {
+                        AssertMatchingRequirementsAndCaps(ctx, main, spare, requiredRank, cap);
+                        int[] mainDamage = null;
+                        int[] spareDamage = null;
+                        await ctx.ExecuteInCreatureContextAsync(actor, () =>
+                        {
+                            ClearAllActions();
+                            var profile = WeaponShotProfile.Capture(actor, main, SkillType.TwinPistol);
+                            ctx.AssertEqual(CombatDamageType.Physical, profile.DamageType, "The authored tier uses physical ordinary damage");
+                            ctx.AssertEqual(profile.DamageAbility, WeaponShotProfile.Capture(actor, spare, SkillType.TwinPistol).DamageAbility,
+                                "Both hands use the same damage attribute");
+                            CreaturePlugin.SetRawAbilityScore(actor, profile.DamageAbility, attackStat);
+                            CreaturePlugin.SetRawAbilityScore(target, AbilityType.Vitality, defenseStat);
+                            SetPlotFlag(target, false);
+                            ctx.SuppressNPCNaturalRegen(target);
+                            Stat.SetNPCMaxHitPoints(target, 20000, true);
+
+                            mainDamage = SampleOrdinaryDamage(ctx, actor, target, main, false);
+                            spareDamage = SampleOrdinaryDamage(ctx, actor, target, spare, true);
+                            ctx.Assert(mainDamage.SequenceEqual(spareDamage),
+                                $"{resref} native main and simulated spare have identical seeded noncritical ordinary rolls at {attackStat} versus {defenseStat}");
+                            ctx.Assert(mainDamage.Average() > 1, "Capped ordinary damage remains above the minimum damage floor");
+
+                            // Reproduce the missing-property defect on this disposable spare only.
+                            var requirements = new List<SWLOR.NWN.API.Engine.ItemProperty>();
+                            for (var ip = GetFirstItemProperty(spare); GetIsItemPropertyValid(ip); ip = GetNextItemProperty(spare))
+                                if (GetItemPropertyType(ip) == ItemPropertyType.RequiresSkill) requirements.Add(ip);
+                            foreach (var ip in requirements) RemoveItemProperty(spare, ip);
+                        });
+                        // Native passive properties are removed after the current script callback.
+                        await ctx.WaitUntilAsync(() => NativeWeaponDeltaCap(ctx, spare) == 0, 3f,
+                            "the disposable spare's skill requirement to leave the native passive-property list");
+                        await ctx.ExecuteInCreatureContextAsync(actor, () =>
+                        {
+                            ctx.AssertEqual(0, NativeWeaponDeltaCap(ctx, spare), "A spare missing RequiresSkill reproduces the original uncapped native path");
+                            var uncappedDamage = SampleOrdinaryDamage(ctx, actor, target, spare, true);
+                            ctx.Assert(attackStat > defenseStat
+                                    ? uncappedDamage.Average() > spareDamage.Average()
+                                    : uncappedDamage.Average() < spareDamage.Average(),
+                                "Removing only the spare requirement changes actual native damage in the expected direction");
+                            ctx.Log($"{resref} requirement={requiredRank}, cap={cap}, attributes={attackStat}/{defenseStat}: " +
+                                    $"128 matched-seed native ordinary rolls per hand, main={mainDamage.Average():0.00}, " +
+                                    $"generated={spareDamage.Average():0.00}, missing-property control={uncappedDamage.Average():0.00}");
+                        });
+
+                        // The next scenario starts with a fresh production-generated companion.
+                        await ctx.ExecuteInCreatureContextAsync(actor, () => ActionUnequipItem(main));
+                        await WaitForRemovedPair(ctx, actor, main, spare);
+                        await EquipExisting(ctx, actor, main, InventorySlot.RightHand);
+                        spare = await WaitForPair(ctx, actor, main);
+                        AssertMatchingRequirementsAndCaps(ctx, main, spare, requiredRank, cap);
+                    }
+                }
+                finally { RangedWeaponAttackContext.Clear(actor); }
+            }
+        }
+        finally { Combat.SetAutoAttackHitResolutionOverride(null); }
+    }
+
     [EngineTest("Twin Pistol native character saves restore one upgraded owned pair over repeated reloads", Category = "TwinPistolEquipment", TimeoutSeconds = 95f)]
     public static async Task CharacterArchives(EngineTestContext ctx)
     {
@@ -196,11 +280,13 @@ public static class TwinPistolEquipmentEngineTests
                 });
                 var properties = Properties(main);
                 var oldSpare = await WaitForPair(ctx, actor, main);
+                AssertMatchingRequirementsAndCaps(ctx, main, oldSpare, 0, 1);
                 player = await player.SaveAndReloadAsync(ctx, TwinPistolEquipment.ReleaseCompanions);
                 actor = player.Creature;
                 await ctx.ExecuteInCreatureContextAsync(actor, () => TwinPistolEquipment.RestorePair(actor));
                 main = FindArchivedPair(ctx, actor, identity);
                 var spare = await WaitForPair(ctx, actor, main);
+                AssertMatchingRequirementsAndCaps(ctx, main, spare, 0, 1);
                 ctx.AssertEqual(identity, GetLocalString(main, "TWIN_ARCHIVE_ID"), "Native character export retains the real item's identity");
                 ctx.AssertEqual(properties, Properties(main), "Native character export retains every real item upgrade");
                 ctx.AssertEqual(Item.GetDMG(main), Item.GetDMG(spare), "The restored spare mirrors the real weapon damage profile");
@@ -218,7 +304,8 @@ public static class TwinPistolEquipmentEngineTests
                 ctx.Assert(!GetIsObjectValid(GetItemInSlot(InventorySlot.RightHand, actor)), "A carried pair is not automatically equipped on reload");
                 AssertOwnedItems(ctx, actor, main, 0);
                 await EquipExisting(ctx, actor, main, InventorySlot.RightHand);
-                await WaitForPair(ctx, actor, main);
+                spare = await WaitForPair(ctx, actor, main);
+                AssertMatchingRequirementsAndCaps(ctx, main, spare, 0, 1);
             }
             ctx.SetResultDetail("Two upgraded equipped/carried cycles; four native SaveCreature/LoadCreature PC reloads. Connected client/server-vault login and barter UI are not simulated.");
         }
@@ -232,6 +319,51 @@ public static class TwinPistolEquipmentEngineTests
         ctx.AssertEqual(main, GetItemInSlot(InventorySlot.RightHand, actor), "The original real item remains equipped");
         ctx.Assert(TwinPistolEquipment.IsLinkedPair(actor, main, spare), "The temporary gun is linked to the real item");
         return spare;
+    }
+
+    private static int[] SampleOrdinaryDamage(EngineTestContext ctx, uint actor, uint target, uint weapon, bool simulated)
+    {
+        var profile = WeaponShotProfile.Capture(actor, weapon, SkillType.TwinPistol);
+        using var selected = simulated ? RangedWeaponAttackContext.SelectProfile(actor, profile) : null;
+        var native = NWNXLib.g_pAppManager.m_pServerExoApp.GetGameObject(actor).AsNWSCreature();
+        var defender = NWNXLib.g_pAppManager.m_pServerExoApp.GetGameObject(target).AsNWSObject();
+        native.m_pcCombatRound.StartCombatRound(target);
+        ctx.SeedRandom(917253);
+        var damage = new int[128];
+        for (var sample = 0; sample < damage.Length; sample++)
+        {
+            native.m_pcCombatRound.m_nCurrentAttack = 0;
+            native.m_pcCombatRound.GetAttack(0).m_bRangedAttack = 1;
+            native.ResolveAttackRoll(defender);
+            damage[sample] = native.m_pStats.GetDamageRoll(defender, 0, 0, 0, 0, 0);
+            var roll = RangedWeaponAttackContext.GetRoll(actor, target, 0);
+            ctx.Assert(roll is { Ordinary: true, Completed: true }, "The production native resolver completes an ordinary weapon roll");
+            ctx.AssertEqual(weapon, roll.Weapon, "Native damage belongs to the requested hand");
+            ctx.AssertEqual(damage[sample], roll.Damage, "The ordinary shot records the actual native physical damage");
+        }
+        return damage;
+    }
+
+    private static void AssertMatchingRequirementsAndCaps(EngineTestContext ctx, uint main, uint spare, int rank, int cap)
+    {
+        foreach (var item in new[] { main, spare })
+        {
+            var requirements = new List<(int Skill, int Rank)>();
+            for (var ip = GetFirstItemProperty(item); GetIsItemPropertyValid(ip); ip = GetNextItemProperty(item))
+                if (GetItemPropertyType(ip) == ItemPropertyType.RequiresSkill)
+                    requirements.Add((GetItemPropertySubType(ip), GetItemPropertyCostTableValue(ip)));
+            ctx.AssertEqual(1, requirements.Count, "Each hand retains exactly one authored skill requirement");
+            ctx.AssertEqual(((int)SkillType.TwinPistol, rank), requirements[0], "Both hands retain the authored Twin Pistol tier requirement");
+            ctx.AssertEqual(cap, NativeWeaponDeltaCap(ctx, item), "Both hands resolve the same production native attribute-delta cap");
+        }
+    }
+
+    private static int NativeWeaponDeltaCap(EngineTestContext ctx, uint item)
+    {
+        var getCap = typeof(GetDamageRoll).GetMethod("GetWeaponDeltaCap", BindingFlags.NonPublic | BindingFlags.Static);
+        ctx.Assert(getCap != null, "The production native weapon-cap resolver exists");
+        var weapon = NWNXLib.g_pAppManager.m_pServerExoApp.GetGameObject(item).AsNWSItem();
+        return (int)getCap.Invoke(null, new object[] { weapon });
     }
 
     private static uint FindArchivedPair(EngineTestContext ctx, uint actor, string identity)

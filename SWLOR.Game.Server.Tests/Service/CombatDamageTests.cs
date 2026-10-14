@@ -3,6 +3,7 @@ using System.Text.Json;
 using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Game.Server.Feature.StatusEffectDefinition;
+using SWLOR.Game.Server.Native;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.CraftService;
@@ -61,6 +62,26 @@ public class CombatDamageTests
         int damageAfterOutgoingBonuses, int percentAdjustment, int expected)
     {
         Combat.ApplyOrdinaryAttackDamageMultiplier(damageAfterOutgoingBonuses, percentAdjustment)
+            .Should().Be(expected);
+    }
+
+    [TestCase(100, 25, 0, 125)]
+    [TestCase(100, 30, -30, 91)]
+    [TestCase(100, 25, -20, 100)]
+    [TestCase(27, 30, -30, 25)]
+    [TestCase(7, 25, -20, 7)]
+    [TestCase(100, 300, -30, 140)]
+    [TestCase(100, -50, 0, 50)]
+    [TestCase(100, -100, -20, 4)]
+    [TestCase(100, 0, -30, 70)]
+    [TestCase(100, 25, -100, 0)]
+    [TestCase(1, 25, -30, 1)]
+    [TestCase(0, 30, -30, 0)]
+    [TestCase(-10, 25, -20, 0)]
+    public void NonCreatureOrdinaryDamage_AppliesCapturedBonusBeforeStanceMultiplier(
+        int damage, int capturedBonus, int stanceAdjustment, int expected)
+    {
+        GetDamageRoll.ApplyNonCreatureOrdinaryAttackDamage(damage, capturedBonus, stanceAdjustment)
             .Should().Be(expected);
     }
 

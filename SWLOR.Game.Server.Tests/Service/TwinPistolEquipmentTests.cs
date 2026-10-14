@@ -30,16 +30,19 @@ public class TwinPistolEquipmentTests
     [TestCase(ItemPropertyType.DamageStat, true)]
     [TestCase(ItemPropertyType.AccuracyStat, true)]
     [TestCase(ItemPropertyType.WeaponDamageType, true)]
+    [TestCase(ItemPropertyType.RequiresSkill, true)]
     [TestCase(ItemPropertyType.HPBonus, false)]
     [TestCase(ItemPropertyType.Stamina, false)]
     [TestCase(ItemPropertyType.Attack, false)]
+    [TestCase(ItemPropertyType.Defense, false)]
     [TestCase(ItemPropertyType.WeaponEnhancement, false)]
     [TestCase(ItemPropertyType.EnhancementLevel, false)]
     [TestCase(ItemPropertyType.Blueprint, false)]
-    [TestCase(ItemPropertyType.RequiresSkill, false)]
+    [TestCase(ItemPropertyType.RequiresStat, false)]
+    [TestCase(ItemPropertyType.UseLimitationPerk, false)]
     [TestCase(ItemPropertyType.OnHitCastSpell, false)]
     [TestCase(ItemPropertyType.UnlimitedAmmunition, false)]
-    public void GeneratedHand_OnlyMirrorsWeaponProfileAndNeverSlotsOrEquipmentBonuses(ItemPropertyType type, bool expected) =>
+    public void GeneratedHand_OnlyMirrorsWeaponProfileAndTierWithoutSlotsOrEquipmentBonuses(ItemPropertyType type, bool expected) =>
         TwinPistolEquipment.IsMirroredProperty(type).Should().Be(expected);
 
     [TestCase(BaseItem.Pistol, BaseItem.CompanionPistol, true)]

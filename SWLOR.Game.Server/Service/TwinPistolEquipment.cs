@@ -39,9 +39,11 @@ public static class TwinPistolEquipment
         GetLocalObject(off, MainWeaponVariable) == main && GetLocalObject(off, OwnerVariable) == creature &&
         GetItemPossessor(main) == creature && GetItemPossessor(off) == creature;
 
+    /// <summary>Includes the required rank used by native weapon attribute-delta caps.</summary>
     public static bool IsMirroredProperty(ItemPropertyType type) => type is
         ItemPropertyType.DMG or ItemPropertyType.Delay or ItemPropertyType.Accuracy or
-        ItemPropertyType.AccuracyStat or ItemPropertyType.DamageStat or ItemPropertyType.WeaponDamageType;
+        ItemPropertyType.AccuracyStat or ItemPropertyType.DamageStat or ItemPropertyType.WeaponDamageType or
+        ItemPropertyType.RequiresSkill;
 
     /// <summary>Creates the disposable visual/weapon profile for one owned pair item.</summary>
     public static void EnsurePair(uint creature)

@@ -274,7 +274,13 @@ namespace SWLOR.Game.Server.Native
                 isLandedAttack, out effectiveCritical);
 
             if (targetObject.m_nObjectType != (int)ObjectType.Creature)
-                damage = Combat.ApplyOrdinaryAttackDamageMultiplier(attacker.m_idSelf, damage);
+            {
+                var pairedShot = RangedWeaponAttackContext.GetRoll(attacker.m_idSelf, targetObject.m_idSelf,
+                    attacker.m_pcCombatRound.m_nCurrentAttack);
+                damage = ApplyNonCreatureOrdinaryAttackDamage(damage,
+                    pairedShot is { Ordinary: true } ? pairedShot.Bonuses.DamagePercentAdjustment : 0,
+                    Stat.GetStatAdjustment(attacker.m_idSelf, StatType.OrdinaryAttackDamagePercentAdjustment));
+            }
 
             // Plot target takes no damage
             if (targetObject.m_bPlotObject == 1)
@@ -310,6 +316,20 @@ namespace SWLOR.Game.Server.Native
             totalDamage = damage;
 
             return physicalDamage;
+        }
+
+        /// <summary>Matches creature-hit bonus rounding and caps before the global ordinary-attack multiplier.</summary>
+        public static int ApplyNonCreatureOrdinaryAttackDamage(int damage, int capturedDamagePercentAdjustment,
+            int ordinaryDamagePercentAdjustment)
+        {
+            var adjustedDamage = damage;
+            if (damage > 0 && capturedDamagePercentAdjustment != 0)
+            {
+                var adjustment = Math.Max(capturedDamagePercentAdjustment, -Combat.MaximumNormalDamageReductionPercent);
+                adjustedDamage = Math.Max(1, damage + (int)Math.Ceiling(damage * (adjustment / 100f)));
+            }
+            adjustedDamage = Combat.CapOutgoingDamageBonus(damage, adjustedDamage, 0);
+            return Combat.ApplyOrdinaryAttackDamageMultiplier(adjustedDamage, ordinaryDamagePercentAdjustment);
         }
 
         private static void AddDamageToAttackData(void* pAttackData, CombatDamageType damageType, int damage)

@@ -69,6 +69,8 @@ public static class TwinPistolCrossSkillEngineTests
                     ctx.SetNPCPerkLevel(actor, PerkType.Headshot, 1);
                     CreaturePlugin.AddFeat(actor, FeatType.Headshot1);
                     if (stance) StatusEffect.ApplyPermanentStatusEffect<AkimboStanceStatusEffect>(actor, actor);
+                    var bonus = PairedRangedTraits.BeginAbility(actor, false, false);
+                    PairedRangedTraits.CompleteAbility(actor, bonus, false, 0f, false, 0, 0, 6, 25, 12);
                     ctx.SeedRandom(94561);
                     _queuedActor = actor;
                     _queuedTarget = target;
@@ -87,12 +89,15 @@ public static class TwinPistolCrossSkillEngineTests
                 var summary = Ability.GetLastCompletedAbilityImpactSummary(actor);
                 ctx.AssertEqual(1, _itemHitCallbacks, "One launched native projectile dispatches its queued item-hit callback once");
                 ctx.AssertEqual(0, _ordinaryDamageEvents, "The replaced native roll deals no additional ordinary damage to the placeable");
+                ctx.AssertEqual(6, StatusEffect.GetStatusEffect<TwinSunsStatusEffect>(actor)?.Attempts ?? 0,
+                    "The landed queued replacement consumes none of the six ordinary Twin Suns attempts");
                 ctx.AssertEqual(SkillType.Rifle, summary.SkillType, "Cross-trained Headshot retains its original skill");
                 ctx.Assert(summary.AttributedDamage > 0 && GetCurrentHitPoints(target) < 20000,
                     "The replacement actually damages the placeable");
                 amounts.Add(summary.AttributedDamage);
                 _queuedActor = OBJECT_INVALID;
                 _queuedTarget = OBJECT_INVALID;
+                PairedRangedTraits.ClearActor(actor);
                 DestroyObject(actor);
                 DestroyObject(target);
                 await ctx.WaitFrameAsync();
@@ -101,10 +106,167 @@ public static class TwinPistolCrossSkillEngineTests
         }
         finally
         {
+            if (GetIsObjectValid(_queuedActor)) PairedRangedTraits.ClearActor(_queuedActor);
             _queuedActor = OBJECT_INVALID;
             _queuedTarget = OBJECT_INVALID;
             Combat.SetAutoAttackHitResolutionOverride(null);
             Combat.SetAbilityHitResolutionOverride(null);
+        }
+    }
+
+    [EngineTest("Twin Pistol native placeable attacks apply captured ordinary bonuses before global stance costs", Category = "TwinPistolCrossSkill", TimeoutSeconds = 45f)]
+    public static async Task NativePlaceableOrdinaryModifiers(EngineTestContext ctx)
+    {
+        using var player = await PlayerAbilityFixture.CreateAsync(ctx);
+        var actor = player.Creature;
+        player.Update(record =>
+        {
+            record.Perks.Clear();
+            record.Skills[SkillType.Pistol].Rank = 50;
+            record.Skills[SkillType.TwinPistol].Rank = 50;
+        });
+        var weapon = await ctx.EquipItemAsync(actor, "b_pistol", InventorySlot.RightHand);
+        var target = OBJECT_INVALID;
+        var baseline = Array.Empty<int>();
+        Combat.SetAutoAttackHitResolutionOverride(true);
+        try
+        {
+            await ctx.ExecuteInCreatureContextAsync(actor, () =>
+            {
+                ClearAllActions();
+                target = CreateObject(ObjectType.Placeable, "mando_crate", ctx.GetArenaLocation(2f));
+                ctx.Track(target);
+                ctx.Assert(GetIsObjectValid(target) && GetObjectType(target) == ObjectType.Placeable,
+                    "The ordinary damage target is a real placeable");
+                SetPlotFlag(target, false);
+                SetHardness(0, target);
+                ObjectPlugin.SetMaxHitPoints(target, 20000);
+                ApplyEffectToObject(DurationType.Instant, EffectHeal(20000), target);
+                var damageProperties = new List<SWLOR.NWN.API.Engine.ItemProperty>();
+                for (var ip = GetFirstItemProperty(weapon); GetIsItemPropertyValid(ip); ip = GetNextItemProperty(weapon))
+                    if (GetItemPropertyType(ip) == ItemPropertyType.DMG) damageProperties.Add(ip);
+                foreach (var ip in damageProperties) RemoveItemProperty(weapon, ip);
+                AddItemProperty(DurationType.Permanent, ItemPropertyCustom(ItemPropertyType.DMG, -1, 80), weapon);
+            });
+            // Native passive-property removal completes after the setup script returns.
+            await ctx.WaitUntilAsync(() =>
+            {
+                var nativeWeapon = NWNXLib.g_pAppManager.m_pServerExoApp.GetGameObject(weapon).AsNWSItem();
+                var damageProperties = new List<int>();
+                for (var index = 0; index < nativeWeapon.m_lstPassiveProperties.Count; index++)
+                {
+                    var ip = nativeWeapon.GetPassiveProperty(index);
+                    if (ip?.m_nPropertyName == (ushort)ItemPropertyType.DMG) damageProperties.Add(ip.m_nCostTableValue);
+                }
+                return damageProperties.Count == 1 && damageProperties[0] == 80 && Item.GetDMG(weapon) == 80;
+            }, 3f, "the replacement DMG property to be the only native weapon damage property");
+            await ctx.ExecuteInCreatureContextAsync(actor, () =>
+            {
+                ctx.AssertEqual(CombatDamageType.Physical, WeaponDamage.GetDamageType(weapon),
+                    "The native return value contains all of this fixture's weapon damage");
+
+                baseline = Sample(64, 0, false);
+                ctx.Assert(baseline.All(damage => damage > 20), "The seeded baseline stays clear of minimum-damage rounding");
+                player.Update(record => record.Perks[PerkType.PairedHandling] = 3);
+                ctx.AssertEqual(10, Stat.GetStatAdjustment(actor, StatType.PairedRangedOrdinaryDamagePercentAdjustment),
+                    "The purchased handling trait contributes ten percent");
+                AssertDamage(Sample(64, 10, false), 10, 0, false, "Paired Handling");
+
+                player.Update(record => record.Perks[PerkType.PairedHandling] = 0);
+                GrantTwinSuns(12);
+                AssertDamage(Sample(8, 0, true), 0, 0, true, "Twin Suns");
+                ctx.Assert(StatusEffect.GetStatusEffect<TwinSunsStatusEffect>(actor) == null,
+                    "The sixth ordinary attempt exhausts the Twin Suns status");
+
+                player.Update(record => record.Perks[PerkType.PairedHandling] = 3);
+                StatusEffect.ApplyPermanentStatusEffect<AkimboStanceStatusEffect>(actor, actor);
+                GrantTwinSuns(12);
+                AssertDamage(Sample(8, 10, true), 10, -30, true, "Akimbo with handling and Twin Suns");
+                StatusEffect.RemoveStatusEffect<AkimboStanceStatusEffect>(actor);
+                StatusEffect.ApplyPermanentStatusEffect<CrossfireStanceStatusEffect>(actor, actor);
+                GrantTwinSuns(12);
+                AssertDamage(Sample(8, 10, true), 10, -20, true, "Crossfire with handling and Twin Suns");
+                StatusEffect.RemoveStatusEffect<CrossfireStanceStatusEffect>(actor);
+                player.Update(record => record.Perks[PerkType.PairedHandling] = 0);
+
+                // Use the same production grant/expiry path with a short fixture lifetime.
+                GrantTwinSuns(1);
+                AssertDamage(Sample(1, 0, true), 0, 0, true, "Twin Suns before expiry");
+                ctx.AssertEqual(5, StatusEffect.GetStatusEffect<TwinSunsStatusEffect>(actor)?.Attempts ?? 0,
+                    "One roll and its repeated damage query leave five attempts before expiry");
+            });
+            await ctx.DelaySecondsAsync(1.25f);
+            await ctx.ExecuteInCreatureContextAsync(actor, () =>
+            {
+                PairedRangedTraits.Reconcile(actor);
+                ctx.Assert(StatusEffect.GetStatusEffect<TwinSunsStatusEffect>(actor) == null,
+                    "Time expiry discards the five unspent attempts");
+                AssertDamage(Sample(8, 0, false), 0, 0, false, "Twin Suns after expiry");
+                ClearAllActions();
+            });
+            ctx.SetResultDetail("Real damageable placeable; 64 matched-seed native attempts for baseline/handling, six-charge exhaustion, repeated damage queries, both stance costs, and shortened-lifetime expiry. Queued replacement is covered separately.");
+        }
+        finally
+        {
+            StatusEffect.RemoveStatusEffect<AkimboStanceStatusEffect>(actor);
+            StatusEffect.RemoveStatusEffect<CrossfireStanceStatusEffect>(actor);
+            OrdinaryAttackTraits.ClearActor(actor);
+            PairedRangedTraits.ClearActor(actor);
+            RangedWeaponAttackContext.Clear(actor);
+            Combat.SetAutoAttackHitResolutionOverride(null);
+            if (GetIsObjectValid(actor)) AssignCommand(actor, () => ClearAllActions());
+        }
+
+        void GrantTwinSuns(int seconds)
+        {
+            var bonus = PairedRangedTraits.BeginAbility(actor, false, false);
+            PairedRangedTraits.CompleteAbility(actor, bonus, false, 0f, false, 0, 0, 6, 25, seconds);
+            ctx.AssertEqual(6, StatusEffect.GetStatusEffect<TwinSunsStatusEffect>(actor)?.Attempts ?? 0,
+                "The production activation completion grants six ordinary attempts");
+        }
+
+        int[] Sample(int attempts, int handlingPercent, bool twinSuns)
+        {
+            var native = NWNXLib.g_pAppManager.m_pServerExoApp.GetGameObject(actor).AsNWSCreature();
+            var defender = NWNXLib.g_pAppManager.m_pServerExoApp.GetGameObject(target).AsNWSObject();
+            native.m_pcCombatRound.StartCombatRound(target);
+            ctx.SeedRandom(561089);
+            var damage = new int[attempts * 2];
+            for (var attempt = 0; attempt < attempts; attempt++)
+            {
+                native.m_pcCombatRound.m_nCurrentAttack = 0;
+                native.m_pcCombatRound.GetAttack(0).m_bRangedAttack = 1;
+                native.ResolveAttackRoll(defender);
+                var roll = RangedWeaponAttackContext.GetRoll(actor, target, 0);
+                ctx.Assert(roll is { Ordinary: true, Completed: false } && roll.Weapon == weapon,
+                    "The real native resolver captures this ordinary weapon attempt");
+                ctx.AssertEqual(handlingPercent + (twinSuns && attempt < 6 ? 25 : 0), roll.Bonuses.DamagePercentAdjustment,
+                    "The attempt captures handling and only its own remaining Twin Suns charge");
+                var remaining = twinSuns ? Math.Max(0, 5 - attempt) : 0;
+                for (var query = 0; query < 2; query++)
+                {
+                    damage[attempt * 2 + query] = native.m_pStats.GetDamageRoll(defender, 0, 0, 0, 0, 0);
+                    ctx.Assert(roll.Completed, "The production native damage resolver completes the ordinary roll");
+                    ctx.AssertEqual(damage[attempt * 2 + query], roll.Damage,
+                        "The recorded ordinary physical damage equals the native result");
+                    ctx.AssertEqual(remaining, StatusEffect.GetStatusEffect<TwinSunsStatusEffect>(actor)?.Attempts ?? 0,
+                        "Repeated damage queries cannot consume another attempted-shot charge");
+                }
+            }
+            return damage;
+        }
+
+        void AssertDamage(int[] actual, int handlingPercent, int stancePercent, bool twinSuns, string scenario)
+        {
+            for (var index = 0; index < actual.Length; index++)
+            {
+                var bonus = handlingPercent + (twinSuns && index / 2 < 6 ? 25 : 0);
+                var outgoing = Math.Min(baseline[index] * 2,
+                    baseline[index] + (int)Math.Ceiling(baseline[index] * (bonus / 100f)));
+                var expected = (int)Math.Floor(outgoing * ((100d + stancePercent) / 100d));
+                ctx.AssertEqual(expected, actual[index],
+                    $"{scenario} native query {index} applies the captured additive bonus before the global stance cost");
+            }
         }
     }
 

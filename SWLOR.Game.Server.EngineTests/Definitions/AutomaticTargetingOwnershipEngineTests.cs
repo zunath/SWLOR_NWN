@@ -30,7 +30,7 @@ public static class AutomaticTargetingOwnershipEngineTests
         PlayerPlugin.SetQuickBarSlot(player, 17, PlayerQuickBarSlot.UseFeat(Support));
         PlayerPlugin.SetQuickBarSlot(player, 18, PlayerQuickBarSlot.UseFeat(Enemy));
         PlayerPlugin.SetQuickBarSlot(player, 19, PlayerQuickBarSlot.UseSkill(0));
-        var unrelated = JsonConvert.SerializeObject(PlayerPlugin.GetQuickBarSlot(player, 19));
+        var unrelated = PlayerPlugin.GetQuickBarSlot(player, 19);
         var originalLevelCount = CreaturePlugin.GetFeatCountByLevel(player, 1);
 
         for (var cycle = 1; cycle <= 3; cycle++)
@@ -48,7 +48,7 @@ public static class AutomaticTargetingOwnershipEngineTests
                 AssertCanonicalLevelRow(ctx, player, Support, 1);
                 AssertCanonicalLevelRow(ctx, player, Enemy, 1);
                 ctx.Assert(CreaturePlugin.GetKnowsFeat(player, FeatType.Alertness), "unrelated feat remains owned");
-                ctx.AssertEqual(unrelated, JsonConvert.SerializeObject(PlayerPlugin.GetQuickBarSlot(player, 19)), "unrelated shortcut remains unchanged");
+                AssertSkillSlotUnchanged(ctx, unrelated, PlayerPlugin.GetQuickBarSlot(player, 19), "unrelated shortcut remains unchanged");
             }
             await ctx.WaitFrameAsync();
         }
@@ -87,7 +87,7 @@ public static class AutomaticTargetingOwnershipEngineTests
         PlayerPlugin.SetQuickBarSlot(player, 17, PlayerQuickBarSlot.UseFeat(Support));
         PlayerPlugin.SetQuickBarSlot(player, 18, PlayerQuickBarSlot.UseFeat(Enemy));
         PlayerPlugin.SetQuickBarSlot(player, 19, PlayerQuickBarSlot.UseSkill(0));
-        var unrelated = JsonConvert.SerializeObject(PlayerPlugin.GetQuickBarSlot(player, 19));
+        var unrelated = PlayerPlugin.GetQuickBarSlot(player, 19);
 
         for (var cycle = 1; cycle <= 2; cycle++)
         {
@@ -102,13 +102,13 @@ public static class AutomaticTargetingOwnershipEngineTests
                 saved.LoadQuickbar(player);
                 AssertSlot(ctx, player, 17, savedEnabled ? Support : Alias(Support));
                 AssertSlot(ctx, player, 18, savedEnabled ? Enemy : Alias(Enemy));
-                ctx.AssertEqual(unrelated, JsonConvert.SerializeObject(PlayerPlugin.GetQuickBarSlot(player, 19)), "native load preserves unrelated slot data");
+                AssertSkillSlotUnchanged(ctx, unrelated, PlayerPlugin.GetQuickBarSlot(player, 19), "native load preserves unrelated slot data");
 
                 PlayerPlugin.SetQuickBarSlot(player, 17, PlayerQuickBarSlot.Empty(QuickBarSlotType.Empty));
                 ctx.Assert(CreaturePlugin.DeserializeQuickbar(player, spaceSnapshot), "space quickbar snapshot reloads through NWNX");
                 AssertSlot(ctx, player, 17, savedEnabled ? Support : Alias(Support));
                 AssertSlot(ctx, player, 18, savedEnabled ? Enemy : Alias(Enemy));
-                ctx.AssertEqual(unrelated, JsonConvert.SerializeObject(PlayerPlugin.GetQuickBarSlot(player, 19)), "space load preserves unrelated slot data");
+                AssertSkillSlotUnchanged(ctx, unrelated, PlayerPlugin.GetQuickBarSlot(player, 19), "space load preserves unrelated slot data");
                 AssertOwnership(ctx, player, Support, !savedEnabled, "loaded support ownership");
                 AssertOwnership(ctx, player, Enemy, !savedEnabled, "loaded enemy ownership");
             }
@@ -128,7 +128,7 @@ public static class AutomaticTargetingOwnershipEngineTests
         PlayerPlugin.SetQuickBarSlot(fixture.Creature, 17, PlayerQuickBarSlot.UseFeat(Alias(Support)));
         PlayerPlugin.SetQuickBarSlot(fixture.Creature, 18, PlayerQuickBarSlot.UseFeat(Alias(Enemy)));
         PlayerPlugin.SetQuickBarSlot(fixture.Creature, 19, PlayerQuickBarSlot.UseSkill(0));
-        var unrelated = JsonConvert.SerializeObject(PlayerPlugin.GetQuickBarSlot(fixture.Creature, 19));
+        var unrelated = PlayerPlugin.GetQuickBarSlot(fixture.Creature, 19);
         var levelCount = CreaturePlugin.GetFeatCountByLevel(fixture.Creature, 1);
         var player = fixture.Creature;
         var id = fixture.Id;
@@ -156,7 +156,7 @@ public static class AutomaticTargetingOwnershipEngineTests
                 AssertCanonicalLevelRow(ctx, player, Support, 1);
                 AssertCanonicalLevelRow(ctx, player, Enemy, 1);
                 ctx.Assert(CreaturePlugin.GetKnowsFeat(player, FeatType.Alertness), "native BIC reload preserves unrelated feats");
-                ctx.AssertEqual(unrelated, JsonConvert.SerializeObject(PlayerPlugin.GetQuickBarSlot(player, 19)), "native BIC reload preserves unrelated shortcuts");
+                AssertSkillSlotUnchanged(ctx, unrelated, PlayerPlugin.GetQuickBarSlot(player, 19), "native BIC reload preserves unrelated shortcuts");
                 SetPreferences(player, false, false);
                 AssertOwnership(ctx, player, Support, false, "reloaded character can disable support targeting");
                 AssertSlot(ctx, player, 17, Support);
@@ -250,6 +250,22 @@ public static class AutomaticTargetingOwnershipEngineTests
         var slot = PlayerPlugin.GetQuickBarSlot(player, index);
         ctx.AssertEqual(QuickBarSlotType.Feat, slot.ObjectType, $"slot {index} remains a feat shortcut");
         ctx.AssertEqual((int)feat, slot.INTParam1, $"slot {index} feat ID");
+    }
+
+    private static void AssertSkillSlotUnchanged(EngineTestContext ctx, QuickBarSlot expected, QuickBarSlot actual, string label)
+    {
+        foreach (var slot in new[] { expected, actual })
+        {
+            ctx.AssertEqual(QuickBarSlotType.Skill, slot.ObjectType, $"{label}: skill shortcut type");
+            // Native GFF reloads normalize unused object fields from OBJECT_INVALID to zero.
+            // Restrict that equivalence to skill shortcuts, and reject any real object ID.
+            foreach (var id in new[] { slot.Item, slot.SecondaryItem, slot.Associate })
+                ctx.Assert(id == 0 || id == OBJECT_INVALID, $"{label}: skill shortcut has no associated object");
+            slot.Item = 0;
+            slot.SecondaryItem = 0;
+            slot.Associate = 0;
+        }
+        ctx.AssertEqual(JsonConvert.SerializeObject(expected), JsonConvert.SerializeObject(actual), label);
     }
 
     private static void AssertCanonicalLevelRow(EngineTestContext ctx, uint player, FeatType feat, int expected)

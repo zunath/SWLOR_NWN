@@ -59,9 +59,10 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                         editor.OnSelectEquipment()();
                         editor.SelectedItemTypeIndex = itemType;
                         ctx.Assert(editor.HasItemEquipped, "the catalog accepts the equipped Power Glove");
-                        editor.SelectedPartCategoryIndex = 1;
-                        typeof(AppearanceEditorViewModel).GetMethod("LoadItemParts", BindingFlags.Instance | BindingFlags.NonPublic)!
-                            .Invoke(editor, null);
+                        SelectMiddleCategory();
+                        var nativeCategories = JArray.Parse(JsonDump(NuiGetBind(player.Creature, playerWindow.WindowToken, nameof(editor.PartCategorySelected))));
+                        ctx.Assert(new[] { false, true, false }.SequenceEqual(nativeCategories.Values<bool>()),
+                            "the actual native category selection highlights Middle and clears Top and Bottom");
                         ctx.Assert(labels.SequenceEqual(editor.PartOptions), "the real picker offers all six named cosmetic choices");
                         var nativeLabels = JArray.Parse(JsonDump(NuiGetBind(player.Creature, playerWindow.WindowToken, nameof(editor.PartOptions))));
                         ctx.Assert(labels.SequenceEqual(nativeLabels.Values<string>()), "the named options reach actual native NUI bindings");
@@ -119,7 +120,38 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 var window = JObject.Parse(JsonDump(template.Window));
                 window["root"] = JToken.Parse(GuiLayoutComposer.Compose(template.PartialViewLayouts[root], layouts));
                 ctx.Assert(window.SelectTokens("$..id").Any(id => id.Value<string>() == "ae_part_select"), "the exported production root contains the actual picker list");
-                snapshots.Add(new JObject { ["name"] = name, ["window"] = window, ["binds"] = binds });
+                snapshots.Add(new JObject
+                {
+                    ["name"] = name,
+                    ["category_selection"] = "Production OnSelectPartCategory action with synthesized native click context; no client mouse transport simulated.",
+                    ["window"] = window,
+                    ["binds"] = binds
+                });
+            }
+
+            void SelectMiddleCategory()
+            {
+                var nativeEvent = global::NWN.Native.API.NWNXLib.g_pAppManager.m_pServerExoApp.GetModule().m_cCurrentNuiEvent;
+                var previous = (nativeEvent.m_player, nativeEvent.m_token, nativeEvent.m_event,
+                    nativeEvent.m_element, nativeEvent.m_array_index);
+                try
+                {
+                    // Supply only this synchronous public handler's native event context.
+                    // This exercises its selection and hydration behavior, not client mouse transport.
+                    nativeEvent.m_player = player.Creature;
+                    nativeEvent.m_token = playerWindow.WindowToken;
+                    nativeEvent.m_event = "click";
+                    nativeEvent.m_element = "ae_part_category";
+                    nativeEvent.m_array_index = 1;
+                    ctx.AssertEqual(1, NuiGetEventArrayIndex(), "the production handler receives Middle's real array index");
+                    editor.OnSelectPartCategory()();
+                    ctx.AssertEqual(1, editor.SelectedPartCategoryIndex, "the public category action selects Middle");
+                }
+                finally
+                {
+                    (nativeEvent.m_player, nativeEvent.m_token, nativeEvent.m_event,
+                        nativeEvent.m_element, nativeEvent.m_array_index) = previous;
+                }
             }
         }
     }

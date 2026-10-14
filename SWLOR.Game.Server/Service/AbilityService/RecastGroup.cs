@@ -910,19 +910,19 @@ namespace SWLOR.Game.Server.Service.AbilityService
         ShipModule20 = 573,
 
         [RecastGroup("Unarmed Opener", "Fist Opener", true)]
-        UnarmedOpener = 574,
+        UnarmedOpener = 579,
 
         [RecastGroup("Unarmed Response", "Fist Response", true)]
-        UnarmedResponse = 575,
+        UnarmedResponse = 580,
 
         [RecastGroup("Unarmed Technique", "Fist Technique", true)]
-        UnarmedTechnique = 576,
+        UnarmedTechnique = 581,
 
         [RecastGroup("Flow Stance", "Flow Stance", true)]
-        FlowStance = 577,
+        FlowStance = 582,
 
         [RecastGroup("Bruiser Stance", "Bruiser Stance", true)]
-        BruiserStance = 578,
+        BruiserStance = 583,
 
     }
 

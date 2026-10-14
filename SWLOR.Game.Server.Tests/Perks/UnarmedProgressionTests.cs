@@ -6,6 +6,7 @@ using SWLOR.Game.Server.Feature.AbilityDefinition.Unarmed;
 using SWLOR.Game.Server.Feature.PerkDefinition;
 using SWLOR.Game.Server.Feature.QuestDefinition;
 using SWLOR.Game.Server.Feature.StatusEffectDefinition;
+using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.QuestService;
@@ -105,6 +106,55 @@ public class UnarmedProgressionTests
             Assert.That(finisher.OpeningPower, Is.EqualTo(8));
             Assert.That(finisher.FinishPower, Is.EqualTo(16));
             Assert.That(finisher.RefundEligible, Is.True);
+        });
+    }
+
+    [TestCase(nameof(RecastGroup.UnarmedOpener), "Unarmed Opener", "Fist Opener")]
+    [TestCase(nameof(RecastGroup.UnarmedResponse), "Unarmed Response", "Fist Response")]
+    [TestCase(nameof(RecastGroup.UnarmedTechnique), "Unarmed Technique", "Fist Technique")]
+    [TestCase(nameof(RecastGroup.FlowStance), "Flow Stance", "Flow Stance")]
+    [TestCase(nameof(RecastGroup.BruiserStance), "Bruiser Stance", "Bruiser Stance")]
+    public void UnarmedCooldownGroupsHaveIndependentIdsAndCorrectVisibleLabels(string groupName, string displayName, string shortName)
+    {
+        var field = typeof(RecastGroup).GetField(groupName)!;
+        var group = (RecastGroup)field.GetValue(null)!;
+        var aliases = typeof(RecastGroup).GetFields(BindingFlags.Public | BindingFlags.Static)
+            .Where(candidate => (RecastGroup)candidate.GetValue(null)! == group)
+            .Select(candidate => candidate.Name).ToArray();
+        Recast.CacheRecastGroups();
+        Assert.Multiple(() =>
+        {
+            Assert.That(aliases, Is.EqualTo(new[] { groupName }), "Unarmed cooldowns must not share numeric IDs with any other enum label.");
+            Assert.That(Recast.GetRecastGroupDisplayName(group), Is.EqualTo(displayName));
+            Assert.That(Recast.GetRecastGroupName(group), Is.EqualTo(shortName));
+            Assert.That(Recast.IsRecastGroupVisible(group), Is.True);
+            Assert.That(shortName.Length, Is.LessThanOrEqualTo(14));
+        });
+    }
+
+    [Test]
+    public void EveryUnarmedRankRetainsItsIntendedSharedCooldown()
+    {
+        var definitions = new (IAbilityListDefinition Definition, RecastGroup Group)[]
+        {
+            (new JabAbilityDefinition(), RecastGroup.UnarmedOpener),
+            (new DirtyJabAbilityDefinition(), RecastGroup.UnarmedOpener),
+            (new PalmStrikeAbilityDefinition(), RecastGroup.UnarmedResponse),
+            (new UppercutAbilityDefinition(), RecastGroup.UnarmedResponse),
+            (new FinishingCombinationAbilityDefinition(), RecastGroup.UnarmedTechnique),
+            (new LowKickAbilityDefinition(), RecastGroup.UnarmedTechnique),
+            (new FlowStanceAbilityDefinition(), RecastGroup.FlowStance),
+            (new BruiserStanceAbilityDefinition(), RecastGroup.BruiserStance),
+            (new PerfectFormAbilityDefinition(), RecastGroup.Capstone),
+            (new HaymakerAbilityDefinition(), RecastGroup.Capstone),
+        };
+        Assert.Multiple(() =>
+        {
+            Assert.That((int)RecastGroup.ChainLightning, Is.EqualTo(574));
+            Assert.That((int)RecastGroup.BloodSiphon, Is.EqualTo(575));
+            foreach (var (definition, group) in definitions)
+            foreach (var ability in definition.BuildAbilities().Values)
+                Assert.That(ability.RecastGroup, Is.EqualTo(group), ability.Name);
         });
     }
 

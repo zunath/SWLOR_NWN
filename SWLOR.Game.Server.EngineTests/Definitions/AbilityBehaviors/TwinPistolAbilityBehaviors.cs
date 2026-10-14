@@ -71,7 +71,7 @@ public sealed class TwinPistolAbilityBehaviors : IAbilityBehaviorSource
             ExpectedActivatorStatAdjustments = new()
             {
                 [StatType.AttackDelayReductionPercent] = 10,
-                [StatType.OrdinaryAttackDamagePercentAdjustment] = -15,
+                [StatType.OrdinaryAttackDamagePercentAdjustment] = -30,
             },
             ExpectsRecast = true,
             VerifiesImmediateRecastRejection = true,
@@ -84,7 +84,7 @@ public sealed class TwinPistolAbilityBehaviors : IAbilityBehaviorSource
             ExpectedActivatorStatAdjustments = new()
             {
                 [StatType.AttackDelayReductionPercent] = 10,
-                [StatType.OrdinaryAttackDamagePercentAdjustment] = -10,
+                [StatType.OrdinaryAttackDamagePercentAdjustment] = -20,
                 [StatType.MovementSpeedPercentAdjustment] = 10,
             },
             ExpectsRecast = true,

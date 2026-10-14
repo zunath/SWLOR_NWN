@@ -30,9 +30,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwinPistol
                 "Grapple Shot II", 2, RecastGroup.DoubleShot, 24f,
                 new TwinPistolAbilitySpec
                 {
-                    FlatPower = 13,
-                    StaminaCost = 6,
-                    MomentumPowerPerCharge = 5,
+                    FlatPower = 10,
+                    StaminaCost = 7,
+                    MomentumPowerPerCharge = 4,
                     IsCrossfire = true,
                     SpendsMomentum = true,
                     Movement = TwinPistolMovementType.Approach,
@@ -45,9 +45,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwinPistol
                 "Grapple Shot III", 3, RecastGroup.DoubleShot, 24f,
                 new TwinPistolAbilitySpec
                 {
-                    FlatPower = 20,
-                    StaminaCost = 8,
-                    MomentumPowerPerCharge = 6,
+                    FlatPower = 14,
+                    StaminaCost = 10,
+                    MomentumPowerPerCharge = 4,
                     IsCrossfire = true,
                     SpendsMomentum = true,
                     Movement = TwinPistolMovementType.Approach,

@@ -19,7 +19,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
         public AkimboStanceStatusEffect()
         {
             StatGroup.Stats[StatType.AttackDelayReductionPercent] = 10;
-            StatGroup.Stats[StatType.OrdinaryAttackDamagePercentAdjustment] = -15;
+            StatGroup.Stats[StatType.OrdinaryAttackDamagePercentAdjustment] = -30;
             StatGroup.Stats[StatType.OrdinaryAttackHasteRampPerStack] = 2;
             StatGroup.Stats[StatType.OrdinaryAttackHasteRampMaximumStacks] = 5;
             StatGroup.Stats[StatType.OrdinaryAttackHasteRampGrantCooldownSeconds] = 2;

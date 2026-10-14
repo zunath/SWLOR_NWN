@@ -7,6 +7,7 @@
 // focus expiry and sustain cooldowns. Fluid cadence omits native swing batching.
 // Activated damage, Momentum and STM refunds use fractional expectations;
 // averaging before resource thresholds cannot reproduce individual encounters.
+// Each activated impact includes the rank-50 flat power bonus of seven.
 // Rotations skip unfunded slots, retain 4 STM and are not optimized. Crossfire
 // opens Slide -> Rush -> Grapple. Barrage selects stance by sampled auto output.
 // No cast/travel interruption, target switching, avoidance/mitigation, per-hit
@@ -15,6 +16,9 @@
 // Pistol assumes sustained Rapid Shot/Reload Tempo and 30% High Noon uptime.
 // Deadeye Reload is represented by a crit sweep; Quick Draw's new-target bonus
 // is absent against the continuously damaged target. These are approximations.
+// Current activated critical base is 5%; Gambler's generic critical stat is
+// read by ordinary rolls only. Pistol activated critical chance is an input,
+// defaulting to 15% to approximate its 0-15% Deadeye accumulation.
 // Defaults: D22/Delay250, rank50/equal attributes/ATK/DEF, hit85%, 120s,
 // MGT26, +12 max STM, +5 STM regen/30s. Standalone lines cost 69 SP including
 // Armor; legal combined lines cost 119 SP and are not equal-investment controls.
@@ -88,12 +92,12 @@ function ordinaryWindow({seconds,h,intervalAt,haste,weapons,damageAtBonus,barrag
  return {dps:total/samples/seconds,stamina};
 }
 
-function budget({build="pistol",targets=1,h=.85,ext=0,might=26,gear=12,food=5,d=22,critAbility=.30,seconds=120,support=0,crossCrit=false,ratio=1,delta=0,crossStance=true,handling="default",weaponCount=2}) {
+function budget({build="pistol",targets=1,h=.85,ext=0,might=26,gear=12,food=5,d=22,critAbility=.15,seconds=120,support=0,crossCrit=false,ratio=1,delta=0,crossStance=true,handling="default",weaponCount=2}) {
  const pistol=build==="pistol", barrage=build==="barrage", hybrid=build==="hybrid", cross=build==="crossfire";
  const b=barrage||hybrid;
  const generic=pistol||crossCrit;
  const autoCrit=.10+(pistol?.12:0)+(generic?.025:0);
- const abilityCrit=generic?critAbility:.10;
+ const abilityCrit=generic?critAbility:.05;
  const reloadUptime=generic?1-(1-h*autoCrit)**2:0;
  const weapons=pistol?1:weaponCount;
  const selectedHandling=pistol?"none":handling==="default"?(b?"haste":"damage"):handling;
@@ -103,9 +107,9 @@ function budget({build="pistol",targets=1,h=.85,ext=0,might=26,gear=12,food=5,d=
  const handlingHaste=selectedHandling==="haste"?8:0;
  const dmgRating=pistol?Math.ceil(d*1.6):d;
  const simulateOrdinary=(stance)=>{
-  const penalty=stance?85:(cross&&crossStance?90:100);
+  const penalty=stance?70:(cross&&crossStance?80:100);
   const damageAtBonus=focus=>{
-   const bonus=(selectedHandling==="damage"?25:0)+focus;
+   const bonus=(selectedHandling==="damage"?10:0)+focus;
    return .7*mean(dmgRating,autoCrit,ratio,delta,false,bonus,penalty)+.3*mean(dmgRating,autoCrit,ratio,delta,generic,bonus,penalty);
   };
   // There are only two possible same-target damage states; avoid repeating the range sums per hit.
@@ -118,19 +122,20 @@ function budget({build="pistol",targets=1,h=.85,ext=0,might=26,gear=12,food=5,d=
  const ordinary=barrageStance?ordinaryWithStance:ordinaryWithoutStance;
  const autoDps=ordinary.dps;
  const multi=targets>1;
- const a=(power,c=abilityCrit)=>h*(.7*mean(power,c,ratio,delta)+.3*mean(power,c,ratio,delta,generic));
+ const rankPower=Math.trunc(50*.15);
+ const a=(power,c=abilityCrit)=>h*(.7*mean(power+rankPower,c,ratio,delta)+.3*mean(power+rankPower,c,ratio,delta,generic));
  const specs=pistol?[
   {id:"burst",cd:24,cost:10,hits:2,critical:abilityCrit,damage:2*a(dmgRating+20),refund:4*(1-(1-h*abilityCrit)**2)},
   {id:"volley",cd:18,cost:12,hits:1,critical:abilityCrit,damage:a(dmgRating+38),refund:0},
-  {id:"sweep",cd:30,cost:9,hits:Math.min(3,targets),critical:Math.min(.95,abilityCrit+.12),damage:Math.min(3,targets)*a(dmgRating+26,Math.min(.95,abilityCrit+.12)),refund:0}
+  {id:"sweep",cd:30,cost:9,hits:Math.min(3,targets),critical:abilityCrit,damage:Math.min(3,targets)*a(dmgRating+26),refund:0}
  ]:b&&!multi?[
-  {id:"burst",cd:24,cost:10,damage:weapons*a(d+34),refund:0},
-  {id:"volley",cd:18,cost:10,damage:weapons*a(d+26),refund:0},
+  {id:"burst",cd:24,cost:10,damage:weapons*a(d+24),refund:0},
+  {id:"volley",cd:18,cost:10,damage:weapons*a(d+16),refund:0},
   {id:"sweep",cd:30,cost:9,damage:weapons*a(Math.floor(.75*d)+13),refund:3*(1-(1-h)**weapons)}
  ]:[
-  {id:"volley",cd:18,cost:10,damage:weapons*a(d+26),refund:0,movement:true,buildsMomentum:true,hits:weapons},
+  {id:"volley",cd:18,cost:10,damage:weapons*a(d+16),refund:0,movement:true,buildsMomentum:true,hits:weapons},
   {id:"sweep",cd:30,cost:10,damage:weapons*Math.min(3,targets)*a(Math.floor(.60*d)+12),refund:0,movement:true,buildsMomentum:true,hits:weapons*Math.min(3,targets)},
-  {id:"burst",cd:24,cost:8,damage:weapons*a(d+20),refund:0,movement:true,spendsMomentum:true}
+  {id:"burst",cd:24,cost:10,damage:weapons*a(d+14),refund:0,movement:true,spendsMomentum:true}
  ];
  // Barrage retains single-target actions against groups.
  if(barrage&&multi)return budget({build,targets:1,h,ext,might,gear,food,d,critAbility,seconds,support,crossCrit,ratio,delta,crossStance,handling,weaponCount});
@@ -149,7 +154,7 @@ function budget({build="pistol",targets=1,h=.85,ext=0,might=26,gear=12,food=5,d=
    let cost=Math.max(0,s.cost+gamblerSurcharge);
    if(stm<cost+4){missed++;continue;}
    const charges=s.spendsMomentum?momentum:0;
-   stm-=cost;total+=s.spendsMomentum?weapons*a(d+20+6*charges):s.damage;casts++;counts[s.id]=(counts[s.id]||0)+1;
+   stm-=cost;total+=s.spendsMomentum?weapons*a(d+14+4*charges):s.damage;casts++;counts[s.id]=(counts[s.id]||0)+1;
    stm=Math.min(max,stm+s.refund);
    if(s.movement)nextMove=t+2;
    if(s.spendsMomentum){
@@ -197,13 +202,13 @@ for(const weapon of ["single weapon / rifle","paired melee / pistols"])for(const
  const baseline=delay(paired,externalHaste);
  ordinaryCrossSkillTradeoffs.push({weapon,externalHaste,
   hasteHandlingRatio:baseline/delay(paired,externalHaste+8),
-  damageHandlingRatio:1.25,
-  akimboStartRatio:.85*baseline/delay(paired,externalHaste+10),
-  akimboFullRatio:.85*baseline/delay(paired,externalHaste+20),
-  crossfireRatio:.90*baseline/delay(paired,externalHaste+10)});
+  damageHandlingRatio:1.10,
+  akimboStartRatio:.70*baseline/delay(paired,externalHaste+10),
+  akimboFullRatio:.70*baseline/delay(paired,externalHaste+20),
+  crossfireRatio:.80*baseline/delay(paired,externalHaste+10)});
 }
 const sensitivity=[];
-for(const h of [.65,.85,.95])for(const ext of [0,15,30,50])for(const critAbility of [.22,.30,.37]){
+for(const h of [.65,.85,.95])for(const ext of [0,15,30,50])for(const critAbility of [.05,.15,.20]){
  const p=budget({h,ext,critAbility}),b=budget({build:"barrage",h,ext,critAbility}),c=budget({build:"crossfire",h,ext,critAbility}),p3=budget({h,ext,critAbility,targets:3}),c3=budget({build:"crossfire",h,ext,critAbility,targets:3});
  sensitivity.push({h,ext,critAbility,barrageToPistol:b.dps/p.dps,crossSoloToBarrage:c.dps/b.dps,crossMultiToPistol:c3.dps/p3.dps});
 }
@@ -216,7 +221,7 @@ for(const h of [.65,.85,.95])for(const ratio of [.5,1,2,3.625])for(const delta o
 const range=(rows,key)=>[Math.min(...rows.map(x=>x[key])),Math.max(...rows.map(x=>x[key]))];
 const ratios=(rows,keys)=>Object.fromEntries(keys.map(k=>[k,range(rows,k)]));
 console.log(JSON.stringify({
- method:"Expected activated damage/finite fractional STM and Momentum plus 64 mixed-seed ordinary-hit samples. Integer damage rounding; fluid cadence without native batching. Fixed rotations reserve 4 STM; Crossfire opens Slide/Rush/Grapple. No cast/travel interruption, target switches, mitigation, engine execution, per-hit enhancements or capstones. Pistol assumes sustained Rapid Shot/Reload Tempo, 30% High Noon uptime and no Quick Draw novelty bonus. Marginal weapon tradeoffs are not complete saber/rifle builds.",
+ method:"Expected activated damage/finite fractional STM and Momentum plus 64 mixed-seed ordinary-hit samples. Rank-50 activated power bonus 7 and 5% base ability critical included; Pistol ability critical is an approximate input, not Gambler's ordinary-only generic critical bonus. Fan the Hammer currently declares no extra critical adjustment in its runtime profile. Integer damage rounding; fluid cadence without native batching. Fixed rotations reserve 4 STM; Crossfire opens Slide/Rush/Grapple. No cast/travel interruption, target switches, mitigation, engine execution, per-hit enhancements or capstones. Pistol assumes sustained Rapid Shot/Reload Tempo, 30% High Noon uptime and no Quick Draw novelty bonus. Hit chance is shared by ordinary and activated attacks; this does not model the native close-range penalty. Marginal weapon tradeoffs are not complete saber/rifle builds.",
  sampling:{samples:64,firstDrawMean:firstDraws.reduce((sum,value)=>sum+value,0)/64,
   firstDrawMinimum:Math.min(...firstDraws),firstDrawMaximum:Math.max(...firstDraws)},
  coreCases:sensitivity.length,

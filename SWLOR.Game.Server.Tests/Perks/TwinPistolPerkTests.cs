@@ -43,7 +43,7 @@ public class TwinPistolPerkTests
         speed.SelectMany(x => x.StatBonuses).Should().OnlyContain(x => x.Stat == StatType.AttackDelayReductionPercent);
         damage.SelectMany(x => x.StatBonuses).Should().OnlyContain(x => x.Stat == StatType.PairedRangedOrdinaryDamagePercentAdjustment);
         speed.Select(x => x.StatBonuses.Single().Calculate(0)).Should().Equal(3, 6, 8);
-        damage.Select(x => x.StatBonuses.Single().Calculate(0)).Should().Equal(10, 20, 25);
+        damage.Select(x => x.StatBonuses.Single().Calculate(0)).Should().Equal(5, 8, 10);
         foreach (var (levels, forbidden) in new[] { (speed, PerkType.PairedHandling), (damage, PerkType.MatchedRhythm) })
         foreach (var level in levels)
         {
@@ -106,6 +106,8 @@ public class TwinPistolPerkTests
         all.SelectMany(x => x.Requirements).OfType<AbilityRequirementStamina>().Should().HaveCount(all.Length);
         volley.Values.OrderBy(x => x.AbilityLevel).Select(x => x.Requirements.OfType<AbilityRequirementStamina>().Single().RequiredSTM)
             .Should().Equal(3, 5, 8, 10);
+        grapple.Values.OrderBy(x => x.AbilityLevel).Select(x => x.Requirements.OfType<AbilityRequirementStamina>().Single().RequiredSTM)
+            .Should().Equal(4, 7, 10);
     }
 
     [Test]
@@ -136,8 +138,8 @@ public class TwinPistolPerkTests
         crossfire.SourceType.Should().Be(StatusEffectSourceType.Stance);
         akimbo.StatGroup.Stats[StatType.AttackDelayReductionPercent].Should().Be(10);
         akimbo.StatGroup.Stats[StatType.OrdinaryAttackHasteRampMaximumStacks].Should().Be(5);
-        akimbo.StatGroup.Stats[StatType.OrdinaryAttackDamagePercentAdjustment].Should().Be(-15);
-        crossfire.StatGroup.Stats[StatType.OrdinaryAttackDamagePercentAdjustment].Should().Be(-10);
+        akimbo.StatGroup.Stats[StatType.OrdinaryAttackDamagePercentAdjustment].Should().Be(-30);
+        crossfire.StatGroup.Stats[StatType.OrdinaryAttackDamagePercentAdjustment].Should().Be(-20);
         akimbo.StatGroup.Stats[StatType.PairedRangedOrdinaryDamageMultiplierPercent].Should().Be(0);
         crossfire.StatGroup.Stats[StatType.PairedRangedOrdinaryDamageMultiplierPercent].Should().Be(0);
         crossfire.StatGroup.Stats[StatType.PairedRangedMomentumExtendedDurationSeconds].Should().Be(18);

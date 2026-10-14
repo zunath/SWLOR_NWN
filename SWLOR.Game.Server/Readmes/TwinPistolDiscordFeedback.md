@@ -1,6 +1,6 @@
 # Twin Pistol: Discord feedback draft
 
-Each section below is one Discord message under 2,000 characters. Effects are proposed maximum-rank values; [the implementation plan](TwinPistolImplementationPlan.md) and Design Bible contain full progression.
+Each section below is one Discord message under 2,000 characters. Effects show current maximum-rank values; [the implementation plan](TwinPistolImplementationPlan.md) and Design Bible contain full progression and validation.
 
 ## Message 1 of 5
 
@@ -16,12 +16,12 @@ All perk ranks support cross-skilling. Active attacks produce one impact per eli
 Each standalone line: 10 perks, 18 ranks, 60 SP. Handling perks are mutually exclusive purchases at every rank:
 ```text
 Matched Rhythm I/II/III | +3/6/8% Haste with any weapon
-Paired Handling I/II/III| +10/20/25% ordinary weapon damage
+Paired Handling I/II/III| +5/8/10% ordinary weapon damage
 Both: rank 8/22/45; SP 2/4/4 per purchase
 ```
 Maximum legal combined investment: 110 SP; optional Armor Dual Wield adds 9. Neither handling choice blocks later unrelated perks.
 
-Tables use maximum rank. D = each impact source weapon's DMG before normal calculations. STM/CD = stamina/cooldown. Values remain proposed; implementation and validation are in progress.
+Tables use maximum rank. D = each impact source weapon's DMG before normal calculations. STM/CD = stamina/cooldown. Implemented on the feature branch; not deployed. Controlled comparisons support these values; broader playtesting remains.
 
 ## Message 2 of 5
 
@@ -29,7 +29,7 @@ Tables use maximum rank. D = each impact source weapon's DMG before normal calcu
 ```text
 Perk / unlocks / total SP | Maximum-rank effect
 -------------------------+----------------------------------------
-Paired Volley            | One enemy, each weapon D+26.
+Paired Volley            | One enemy, each weapon D+16.
 2/12/28/40; 12 SP         | STM/CD: 10 / 18s.
 
 Alternating Fire         | Every 3 ordinary landed weapon hits:
@@ -38,7 +38,7 @@ Alternating Fire         | Every 3 ordinary landed weapon hits:
 Matched Rhythm           | +8% Haste with any weapon.
 8/22/45; 10 SP            | Cannot purchase Paired Handling.
 
-Focused Burst            | One enemy, each weapon D+34.
+Focused Burst            | One enemy, each weapon D+24.
 10/30/38; 10 SP           | STM/CD: 10 / 24s.
 
 Balanced Grip            | +5 ACC to any eligible off-hand
@@ -48,7 +48,7 @@ Controlled Burst         | One enemy, each weapon floor(.75D)+13.
 18/32; 6 SP              | Restore 3 STM once if any impact hits.
                          | STM/CD: 9 / 30s.
 ```
-Volley ranks: D+4/10/18/26, costing 3/5/8/10 STM. Focused ranks: D+10/22/34, costing 4/8/10 STM. Volley attacks more frequently; Focused gives more damage per cast and per STM. Separate cooldown groups.
+Volley ranks: D+4/8/12/16, costing 3/5/8/10 STM. Focused ranks: D+8/16/24, costing 4/8/10 STM. Volley attacks more frequently; Focused gives more damage per cast and per STM. Separate cooldown groups.
 
 Matched Rhythm changes ordinary attack speed, not ability cooldowns, and respects the global Haste cap.
 
@@ -62,7 +62,7 @@ Akimbo Stance      | Any weapon: +10% Haste. Ordinary hostile
 20; 4 SP           | hits on one foe add +2% per stack, max 5
                    | (+20% from stance); one stack per 2s.
                    | Clear on target change or 6s without a hit.
-                   | ALL ordinary weapon damage x0.85.
+                   | ALL ordinary weapon damage x0.70.
                    | STM/CD: 0 / 30s.
 
 Converging Fire    | After 3 ordinary weapon hits on one foe:
@@ -86,7 +86,7 @@ Stance damage penalties apply after additive ordinary-damage bonuses and before 
 ```text
 Perk / unlocks / SP     | Maximum-rank effect
 -----------------------+------------------------------------------
-Blaster Slide          | Retreat 4m, then each weapon D+26 at
+Blaster Slide          | Retreat 4m, then each weapon D+16 at
 2/12/28/40; 12 SP       | selected foe. Needs 2m safe movement.
                        | STM/CD: 10 / 18s.
 
@@ -94,13 +94,13 @@ Momentum               | Slide/Rush moving 2m+ and landing a
 5; 2 SP                | hostile hit: +1 charge, max 3, 12s.
                        | Each: +2 ordinary ACC with any weapon.
 
-Paired Handling        | +25% ordinary weapon damage.
+Paired Handling        | +10% ordinary weapon damage.
 8/22/45; 10 SP         | Cannot purchase Matched Rhythm.
 
 Grapple Shot           | Close up to 6m, stop 1.5m from foe.
-10/30/38; 10 SP         | Each weapon D+20, +6 per Momentum.
+10/30/38; 10 SP         | Each weapon D+14, +4 per Momentum.
                        | Works already close or at zero charges.
-                       | STM/CD: 8 / 24s.
+                       | STM/CD: 10 / 24s.
 
 Changing Angles        | Crossfire move 2m+ and hostile hit:
 15; 4 SP               | next Crossfire ability +5 ACC.
@@ -119,7 +119,7 @@ Slide/Rush earn at most one Momentum per cast. Empty-space Rush is allowed but e
 Perk / unlock / SP | Maximum-rank effect
 -------------------+---------------------------------------------
 Crossfire Stance   | Any weapon: +10% Haste, +10% movement,
-20; 4 SP           | 18s Momentum. ALL ordinary damage x0.90.
+20; 4 SP           | 18s Momentum. ALL ordinary damage x0.80.
                    | Activated damage unchanged. STM/CD: 0 / 30s.
 
 Follow Through    | Grapple/Final landing any hit restores
@@ -138,4 +138,4 @@ Grapple/Final capture charges at cast start and spend those on valid paid comple
 
 Shared cooldowns: Volley/Slide 18s; Focused/Grapple/Double Shot 24s; Controlled/Rush/Fan the Hammer 30s; both finishers share global Capstone 90s. Quick Draw stays independent. New multi-impact abilities cap generic weapon procs at one per target/cast and critical-trigger notifications at one per cast.
 
-**Balance:** previous DPS tables are superseded. New handling values and cross-skill combinations need matched 6s/12s/120s checks, including saber/rifle builds, external Haste and per-hit effects. Feedback wanted on the speed/damage choice, stance tradeoffs and rotations.
+**Balance:** three-seed, equal-69-SP native checks put Barrage at 99-101% of Pistol sustained DPS and Crossfire at 84-86% of Barrage. Representative capstone-first 6s/12s means stayed below Pistol; this is not a maximum-burst guarantee. Saber/rifle stance costs passed. PvP, external buffs and wider builds still need playtesting. Feedback wanted on the handling choice, stance costs and rotations.

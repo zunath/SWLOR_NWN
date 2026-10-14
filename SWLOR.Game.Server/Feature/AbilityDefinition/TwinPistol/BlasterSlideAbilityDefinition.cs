@@ -29,7 +29,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwinPistol
                 "Blaster Slide II", 2, RecastGroup.TwinVolley, 18f,
                 new TwinPistolAbilitySpec
                 {
-                    FlatPower = 10,
+                    FlatPower = 8,
                     StaminaCost = 5,
                     IsCrossfire = true,
                     GeneratesMomentum = true,
@@ -43,7 +43,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwinPistol
                 "Blaster Slide III", 3, RecastGroup.TwinVolley, 18f,
                 new TwinPistolAbilitySpec
                 {
-                    FlatPower = 18,
+                    FlatPower = 12,
                     StaminaCost = 8,
                     IsCrossfire = true,
                     GeneratesMomentum = true,
@@ -57,7 +57,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwinPistol
                 "Blaster Slide IV", 4, RecastGroup.TwinVolley, 18f,
                 new TwinPistolAbilitySpec
                 {
-                    FlatPower = 26,
+                    FlatPower = 16,
                     StaminaCost = 10,
                     IsCrossfire = true,
                     GeneratesMomentum = true,

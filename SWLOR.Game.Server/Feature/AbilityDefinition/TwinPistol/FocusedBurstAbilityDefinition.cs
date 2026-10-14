@@ -15,7 +15,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwinPistol
                 "Focused Burst I", 1, RecastGroup.DoubleShot, 24f,
                 new TwinPistolAbilitySpec
                 {
-                    FlatPower = 10,
+                    FlatPower = 8,
                     StaminaCost = 4,
                 });
 
@@ -23,7 +23,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwinPistol
                 "Focused Burst II", 2, RecastGroup.DoubleShot, 24f,
                 new TwinPistolAbilitySpec
                 {
-                    FlatPower = 22,
+                    FlatPower = 16,
                     StaminaCost = 8,
                 });
 
@@ -31,7 +31,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwinPistol
                 "Focused Burst III", 3, RecastGroup.DoubleShot, 24f,
                 new TwinPistolAbilitySpec
                 {
-                    FlatPower = 34,
+                    FlatPower = 24,
                     StaminaCost = 10,
                 });
             return builder.Build();

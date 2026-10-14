@@ -152,19 +152,19 @@ public static class TwinPistolCrossSkillEngineTests
                     }
                     var baseline = Sample();
                     player.Update(record => record.Perks[PerkType.PairedHandling] = 3);
-                    ctx.AssertEqual(25, Stat.GetStatAdjustment(actor, StatType.PairedRangedOrdinaryDamagePercentAdjustment), "The purchased handling trait is present outside pistol equipment");
+                    ctx.AssertEqual(10, Stat.GetStatAdjustment(actor, StatType.PairedRangedOrdinaryDamagePercentAdjustment), "The purchased handling trait is present outside pistol equipment");
                     var handling = Sample();
-                    ctx.Assert(handling / baseline is > 1.20 and < 1.30,
-                        $"{resref} native ordinary attempts capture the universal +25% bonus ({baseline:0.00}->{handling:0.00})");
+                    ctx.Assert(handling / baseline is > 1.07 and < 1.13,
+                        $"{resref} native ordinary attempts capture the universal +10% bonus ({baseline:0.00}->{handling:0.00})");
                     player.Update(record => record.Perks[PerkType.PairedHandling] = 0);
                     StatusEffect.ApplyPermanentStatusEffect<AkimboStanceStatusEffect>(actor, actor);
                     var akimbo = Sample();
-                    ctx.Assert(akimbo / baseline is > .82 and < .86,
+                    ctx.Assert(akimbo / baseline is > .67 and < .71,
                         $"The same {resref} pays Akimbo's native ordinary damage cost ({baseline:0.00}->{akimbo:0.00})");
                     StatusEffect.RemoveStatusEffect<AkimboStanceStatusEffect>(actor);
                     StatusEffect.ApplyPermanentStatusEffect<CrossfireStanceStatusEffect>(actor, actor);
                     var crossfire = Sample();
-                    ctx.Assert(crossfire / baseline is > .87 and < .91,
+                    ctx.Assert(crossfire / baseline is > .77 and < .81,
                         $"The same {resref} pays Crossfire's native ordinary damage cost ({baseline:0.00}->{crossfire:0.00})");
                     StatusEffect.RemoveStatusEffect<CrossfireStanceStatusEffect>(actor);
                     ClearAllActions();
@@ -345,13 +345,13 @@ public static class TwinPistolCrossSkillEngineTests
                 ctx.Assert(StatusEffect.GetStatusEffect<AkimboStanceStatusEffect>(actor) != null, "A legal weapon swap retains Akimbo");
                 ctx.AssertEqual(stacks, StatusEffect.GetStatusEffect<OrdinaryAttackHasteStatusEffect>(actor)?.Stacks ?? 0, "Swapping preserves earned rhythm stacks");
                 ctx.AssertEqual(totalHaste, Stat.GetStatAdjustment(actor, StatType.AttackDelayReductionPercent), "Haste remains global with the saber");
-                ctx.AssertEqual(85, Combat.ApplyOrdinaryAttackDamageMultiplier(actor, 100), "The saber inherits Akimbo's full ordinary damage cost");
+                ctx.AssertEqual(70, Combat.ApplyOrdinaryAttackDamageMultiplier(actor, 100), "The saber inherits Akimbo's full ordinary damage cost");
                 OrdinaryAttackTraits.RecordHit(actor, target, long.MaxValue - 1);
                 ctx.AssertEqual(stacks, StatusEffect.GetStatusEffect<OrdinaryAttackHasteStatusEffect>(actor)?.Stacks ?? 0,
                     "A weapon swap does not reset the two-second rhythm grant cooldown");
                 CreaturePlugin.RunUnequip(actor, saber);
                 CreaturePlugin.RunEquip(actor, rifle, InventorySlot.RightHand);
-                ctx.AssertEqual(85, Combat.ApplyOrdinaryAttackDamageMultiplier(actor, 100), "The rifle inherits the same ordinary damage cost");
+                ctx.AssertEqual(70, Combat.ApplyOrdinaryAttackDamageMultiplier(actor, 100), "The rifle inherits the same ordinary damage cost");
                 ctx.Assert(UsePerkFeat.TryUseAbility(actor, actor, FeatType.CrossfireStance, GetLocation(actor)),
                     $"Crossfire can activate with a rifle: {Ability.GetLastActivationDenialReason()}");
             });
@@ -363,13 +363,13 @@ public static class TwinPistolCrossSkillEngineTests
                     StatusEffect.GetStatusEffect<OrdinaryAttackHasteStatusEffect>(actor) == null, "Stance exclusivity removes Akimbo and its ramp");
                 ctx.AssertEqual(hasteBaseline + 10, Stat.GetStatAdjustment(actor, StatType.AttackDelayReductionPercent), "Crossfire has only its own global Haste");
                 ctx.AssertEqual(movementBaseline + 10, Stat.GetStatAdjustment(actor, StatType.MovementSpeedPercentAdjustment), "Crossfire grants global movement speed");
-                ctx.AssertEqual(90, Combat.ApplyOrdinaryAttackDamageMultiplier(actor, 100), "Crossfire pays its global ordinary damage cost");
+                ctx.AssertEqual(80, Combat.ApplyOrdinaryAttackDamageMultiplier(actor, 100), "Crossfire pays its global ordinary damage cost");
                 CreaturePlugin.RunUnequip(actor, rifle);
                 CreaturePlugin.RunEquip(actor, companion, InventorySlot.LeftHand);
                 CreaturePlugin.RunEquip(actor, main, InventorySlot.RightHand);
                 ctx.Assert(TwinPistolEquipment.IsActivePair(actor), "The original owned pair can be restored");
                 ctx.Assert(StatusEffect.GetStatusEffect<CrossfireStanceStatusEffect>(actor) != null, "Restoring the pair preserves the active cross-trained stance");
-                ctx.AssertEqual(90, Combat.ApplyOrdinaryAttackDamageMultiplier(actor, 100), "Restoring the pair cannot shed the stance penalty");
+                ctx.AssertEqual(80, Combat.ApplyOrdinaryAttackDamageMultiplier(actor, 100), "Restoring the pair cannot shed the stance penalty");
                 ctx.Assert(!UsePerkFeat.TryUseAbility(actor, actor, FeatType.AkimboStance, GetLocation(actor)), "Equipment changes cannot reset Akimbo's original recast");
                 ClearAllActions();
             });

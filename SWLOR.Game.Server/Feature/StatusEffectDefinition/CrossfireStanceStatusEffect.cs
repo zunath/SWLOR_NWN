@@ -20,7 +20,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
         {
             StatGroup.Stats[StatType.AttackDelayReductionPercent] = 10;
             StatGroup.Stats[StatType.MovementSpeedPercentAdjustment] = 10;
-            StatGroup.Stats[StatType.OrdinaryAttackDamagePercentAdjustment] = -10;
+            StatGroup.Stats[StatType.OrdinaryAttackDamagePercentAdjustment] = -20;
             StatGroup.Stats[StatType.PairedRangedMomentumExtendedDurationSeconds] = 18;
         }
         protected override void Tick(uint creature) => PairedRangedTraits.Reconcile(creature);

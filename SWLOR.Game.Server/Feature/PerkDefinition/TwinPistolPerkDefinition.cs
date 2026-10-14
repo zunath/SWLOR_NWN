@@ -49,21 +49,21 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.PairedVolley2)
-                .Description("Attack one enemy with each equipped attack weapon. Each impact deals weapon DMG + 10. Works with any weapon.")
+                .Description("Attack one enemy with each equipped attack weapon. Each impact deals weapon DMG + 8. Works with any weapon.")
                 .Price(2)
                 .RequirementSkill(SkillType.TwinPistol, 12)
                 .RequirementMustHavePerk(PerkType.PairedVolley, 1)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.PairedVolley3)
-                .Description("Attack one enemy with each equipped attack weapon. Each impact deals weapon DMG + 18. Works with any weapon.")
+                .Description("Attack one enemy with each equipped attack weapon. Each impact deals weapon DMG + 12. Works with any weapon.")
                 .Price(3)
                 .RequirementSkill(SkillType.TwinPistol, 28)
                 .RequirementMustHavePerk(PerkType.PairedVolley, 2)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.PairedVolley4)
-                .Description("Attack one enemy with each equipped attack weapon. Each impact deals weapon DMG + 26. Works with any weapon.")
+                .Description("Attack one enemy with each equipped attack weapon. Each impact deals weapon DMG + 16. Works with any weapon.")
                 .Price(5)
                 .RequirementSkill(SkillType.TwinPistol, 40)
                 .RequirementMustHavePerk(PerkType.PairedVolley, 3);
@@ -121,20 +121,20 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.FocusedBurst1)
-                .Description("Attack one enemy with each equipped attack weapon. Each impact deals weapon DMG + 10. Works with any weapon.")
+                .Description("Attack one enemy with each equipped attack weapon. Each impact deals weapon DMG + 8. Works with any weapon.")
                 .Price(2)
                 .RequirementSkill(SkillType.TwinPistol, 10)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.FocusedBurst2)
-                .Description("Attack one enemy with each equipped attack weapon. Each impact deals weapon DMG + 22. Works with any weapon.")
+                .Description("Attack one enemy with each equipped attack weapon. Each impact deals weapon DMG + 16. Works with any weapon.")
                 .Price(4)
                 .RequirementSkill(SkillType.TwinPistol, 30)
                 .RequirementMustHavePerk(PerkType.FocusedBurst, 1)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.FocusedBurst3)
-                .Description("Attack one enemy with each equipped attack weapon. Each impact deals weapon DMG + 34. Works with any weapon.")
+                .Description("Attack one enemy with each equipped attack weapon. Each impact deals weapon DMG + 24. Works with any weapon.")
                 .Price(4)
                 .RequirementSkill(SkillType.TwinPistol, 38)
                 .RequirementMustHavePerk(PerkType.FocusedBurst, 2);
@@ -179,7 +179,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.AkimboStance)
-                .Description("With any weapon: +10% Haste. Landed ordinary attacks on the same enemy add +2% per stack, max five (+20% stance total), one stack per 2s. Target change or 6s without a landed ordinary hit clears stacks. ALL ordinary weapon attacks deal 15% less damage.")
+                .Description("With any weapon: +10% Haste. Landed ordinary attacks on the same enemy add +2% per stack, max five (+20% stance total), one stack per 2s. Target change or 6s without a landed ordinary hit clears stacks. ALL ordinary weapon attacks deal 30% less damage.")
                 .Price(4)
                 .RequirementSkill(SkillType.TwinPistol, 20);
         }
@@ -240,21 +240,21 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.BlasterSlide2)
-                .Description("Retreat 4m directly away from the selected enemy, then attack with each equipped attack weapon for weapon DMG + 10 per impact. Works with any weapon.")
+                .Description("Retreat 4m directly away from the selected enemy, then attack with each equipped attack weapon for weapon DMG + 8 per impact. Works with any weapon.")
                 .Price(2)
                 .RequirementSkill(SkillType.TwinPistol, 12)
                 .RequirementMustHavePerk(PerkType.BlasterSlide, 1)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.BlasterSlide3)
-                .Description("Retreat 4m directly away from the selected enemy, then attack with each equipped attack weapon for weapon DMG + 18 per impact. Works with any weapon.")
+                .Description("Retreat 4m directly away from the selected enemy, then attack with each equipped attack weapon for weapon DMG + 12 per impact. Works with any weapon.")
                 .Price(3)
                 .RequirementSkill(SkillType.TwinPistol, 28)
                 .RequirementMustHavePerk(PerkType.BlasterSlide, 2)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.BlasterSlide4)
-                .Description("Retreat 4m directly away from the selected enemy, then attack with each equipped attack weapon for weapon DMG + 26 per impact. Works with any weapon.")
+                .Description("Retreat 4m directly away from the selected enemy, then attack with each equipped attack weapon for weapon DMG + 16 per impact. Works with any weapon.")
                 .Price(5)
                 .RequirementSkill(SkillType.TwinPistol, 40)
                 .RequirementMustHavePerk(PerkType.BlasterSlide, 3);
@@ -283,23 +283,23 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .AddPerkLevel()
                 .RequirementCannotHavePerk(PerkType.MatchedRhythm)
                 .GrantsFeat(FeatType.PairedHandlingTrait)
-                .Description("Ordinary weapon attacks deal +10% damage with any weapon. Cannot be purchased with Matched Rhythm.")
-                .IncreasesStat(StatType.PairedRangedOrdinaryDamagePercentAdjustment, 10)
+                .Description("Ordinary weapon attacks deal +5% damage with any weapon. Cannot be purchased with Matched Rhythm.")
+                .IncreasesStat(StatType.PairedRangedOrdinaryDamagePercentAdjustment, 5)
                 .Price(2)
                 .RequirementSkill(SkillType.TwinPistol, 8)
 
                 .AddPerkLevel()
                 .RequirementCannotHavePerk(PerkType.MatchedRhythm)
-                .Description("Ordinary weapon attacks deal +20% damage with any weapon. Cannot be purchased with Matched Rhythm.")
-                .IncreasesStat(StatType.PairedRangedOrdinaryDamagePercentAdjustment, 20)
+                .Description("Ordinary weapon attacks deal +8% damage with any weapon. Cannot be purchased with Matched Rhythm.")
+                .IncreasesStat(StatType.PairedRangedOrdinaryDamagePercentAdjustment, 8)
                 .Price(4)
                 .RequirementSkill(SkillType.TwinPistol, 22)
                 .RequirementMustHavePerk(PerkType.PairedHandling, 1)
 
                 .AddPerkLevel()
                 .RequirementCannotHavePerk(PerkType.MatchedRhythm)
-                .Description("Ordinary weapon attacks deal +25% damage with any weapon. Cannot be purchased with Matched Rhythm.")
-                .IncreasesStat(StatType.PairedRangedOrdinaryDamagePercentAdjustment, 25)
+                .Description("Ordinary weapon attacks deal +10% damage with any weapon. Cannot be purchased with Matched Rhythm.")
+                .IncreasesStat(StatType.PairedRangedOrdinaryDamagePercentAdjustment, 10)
                 .Price(4)
                 .RequirementSkill(SkillType.TwinPistol, 45)
                 .RequirementMustHavePerk(PerkType.PairedHandling, 2);
@@ -318,14 +318,14 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.GrappleShot2)
-                .Description("Close up to 6m toward an enemy, then attack with each equipped attack weapon for weapon DMG + 13 per impact. Spend all Momentum for +5 power per charge on each impact. Works with any weapon.")
+                .Description("Close up to 6m toward an enemy, then attack with each equipped attack weapon for weapon DMG + 10 per impact. Spend all Momentum for +4 power per charge on each impact. Works with any weapon.")
                 .Price(4)
                 .RequirementSkill(SkillType.TwinPistol, 30)
                 .RequirementMustHavePerk(PerkType.GrappleShot, 1)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.GrappleShot3)
-                .Description("Close up to 6m toward an enemy, then attack with each equipped attack weapon for weapon DMG + 20 per impact. Spend all Momentum for +6 power per charge on each impact. Works with any weapon.")
+                .Description("Close up to 6m toward an enemy, then attack with each equipped attack weapon for weapon DMG + 14 per impact. Spend all Momentum for +4 power per charge on each impact. Works with any weapon.")
                 .Price(4)
                 .RequirementSkill(SkillType.TwinPistol, 38)
                 .RequirementMustHavePerk(PerkType.GrappleShot, 2);
@@ -372,7 +372,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.CrossfireStance)
-                .Description("With any weapon: +10% Haste, +10% Movement Speed and 18-second Momentum. ALL ordinary weapon attacks deal 10% less damage. Activated ability damage is unchanged.")
+                .Description("With any weapon: +10% Haste, +10% Movement Speed and 18-second Momentum. ALL ordinary weapon attacks deal 20% less damage. Activated ability damage is unchanged.")
                 .Price(4)
                 .RequirementSkill(SkillType.TwinPistol, 20);
         }

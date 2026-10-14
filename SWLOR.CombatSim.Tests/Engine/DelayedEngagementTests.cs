@@ -142,11 +142,13 @@ namespace SWLOR.CombatSim.Tests.Engine
             result.EndedAt.Should().BeApproximately(30.0, 1e-6);
         }
 
-        [Test]
-        public void Spawn_RejectsANegativeJoinTime()
+        [TestCase(-1f)]
+        [TestCase(float.NaN)]
+        [TestCase(float.PositiveInfinity)]
+        public void Spawn_RejectsAJoinTimeThatIsNegativeOrNotFinite(float joinAt)
         {
             var early = TestCombatants.Striker("Early");
-            early.JoinAtSeconds = -1f;
+            early.JoinAtSeconds = joinAt;
             var simulation = new Simulation(
                 TestScenarios.TwoTeams(false, new[] { early }, new[] { TestCombatants.Dummy("Enemy", true) }), RuleSets.Current(), _catalog, 1);
 

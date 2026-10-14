@@ -68,11 +68,12 @@ namespace SWLOR.CombatSim.Tests.Engine
             other.Stats.DamageTakenToHp.Should().Be(WaveDamage, "the damage goes to an enemy still in the fight");
         }
 
-        [Test]
-        public void AreaDamageCast_StillLands_WhenItsTargetDiesMidCast()
+        [TestCase(true, 1)]
+        [TestCase(false, 2)]
+        public void AreaDamageCast_StillLands_WhenItsTargetDiesMidCast(bool area, int targets)
         {
             var burst = TestCombatants.Use("ForceBurst1", AbilityTarget.Enemy);
-            burst.Damage = new DamageSpec { Min = WaveDamage, Max = WaveDamage, HitChance = 1f, Area = true };
+            burst.Damage = new DamageSpec { Min = WaveDamage, Max = WaveDamage, HitChance = 1f, Area = area, Targets = targets };
             var simulation = TestScenarios.Spawn(
                 TestScenarios.TwoTeams(
                     false,

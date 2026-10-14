@@ -108,8 +108,8 @@ namespace SWLOR.CombatSim.Engine
 
                 foreach (var spec in _scenario.Teams[teamIndex].Members)
                 {
-                    if (spec.JoinAtSeconds < 0)
-                        throw new InvalidDataException($"'{spec.Name}' has a negative JoinAtSeconds.");
+                    if (!(spec.JoinAtSeconds >= 0) || !float.IsFinite(spec.JoinAtSeconds))
+                        throw new InvalidDataException($"'{spec.Name}' needs a finite JoinAtSeconds of at least 0.");
 
                     var attack = spec.AutoAttack;
                     if (attack != null)
@@ -149,6 +149,22 @@ namespace SWLOR.CombatSim.Engine
                         ResolveUse(use);
                 }
             }
+
+            for (var teamIndex = 0; teamIndex < _scenario.Teams.Count; teamIndex++)
+                RequireFocusTarget(teamIndex);
+        }
+
+        // A focus target may join the fight late, but it has to exist on an opposing team.
+        private void RequireFocusTarget(int teamIndex)
+        {
+            var team = _scenario.Teams[teamIndex];
+            if (team.TargetPolicy != TargetPolicy.Focus)
+                return;
+
+            if (string.IsNullOrWhiteSpace(team.FocusTarget))
+                throw new InvalidDataException($"Team '{team.Name}' uses the Focus TargetPolicy but names no FocusTarget.");
+            if (!_combatants.Any(c => c.TeamIndex != teamIndex && IsFocusTarget(c, team)))
+                throw new InvalidDataException($"Team '{team.Name}' has a FocusTarget of '{team.FocusTarget}', which names no opposing combatant.");
         }
 
         public void Step(double step)
@@ -163,7 +179,7 @@ namespace SWLOR.CombatSim.Engine
             {
                 if (combatant.IsDead)
                 {
-                    // Only zones that outlive their caster are still pulsing here.
+                    // A dead caster's zones keep their schedule; only those that outlive the caster land.
                     ProcessPartyPulses(combatant);
                     continue;
                 }
@@ -320,10 +336,15 @@ namespace SWLOR.CombatSim.Engine
             {
                 while (pulse.TicksLeft > 0 && _now >= pulse.NextTickAt)
                 {
-                    if (pulse.RefreshesDamageReduction)
-                        RefreshPartyDamageReduction(caster, pulse.Effect, pulse.MaxTargets);
-                    else
-                        PulseParty(caster, pulse.Effect, pulse.MaxTargets, HealKind.OverTime);
+                    // Kolto Mist's pulses each check that the caster is alive: pulses while it is dead are spent,
+                    // and a revived caster's zone resumes.
+                    if (!caster.IsDead || pulse.Effect.ContinuesAfterCasterDeath)
+                    {
+                        if (pulse.RefreshesDamageReduction)
+                            RefreshPartyDamageReduction(caster, pulse.Effect, pulse.MaxTargets);
+                        else
+                            PulseParty(caster, pulse.Effect, pulse.MaxTargets, HealKind.OverTime);
+                    }
                     pulse.TicksLeft--;
                     pulse.NextTickAt += pulse.Effect.TickSeconds;
                 }
@@ -448,9 +469,10 @@ namespace SWLOR.CombatSim.Engine
             var isRevive = effect?.Kind == EffectKind.Revive;
             if (isRevive ? !target.IsDead : target.IsDead)
             {
-                // Area damage and party heals or shields centered on the caster (Purifying Wave) need no
-                // living target: they still land, and single-target damage goes to an enemy still in the fight.
-                var needsNoTarget = effect == null ? cast.Use.Damage?.Area == true : IsPartyEffect(effect);
+                // Area damage (also when spread over several targets) and party heals or shields centered on the
+                // caster (Purifying Wave) need no living target: they still land, and their damage goes to enemies
+                // still in the fight.
+                var needsNoTarget = effect == null ? HitsSeveralEnemies(cast.Use.Damage) : IsPartyEffect(effect);
                 if (isRevive || !needsNoTarget)
                     return;
 
@@ -688,6 +710,8 @@ namespace SWLOR.CombatSim.Engine
             }
         }
 
+        private static bool HitsSeveralEnemies(DamageSpec damage) => damage != null && (damage.Area || damage.Targets > 1);
+
         private void ApplyDamageProfile(Combatant attacker, Combatant target, DamageSpec damage, float hitBonus)
         {
             var targets = damage.Area ? Enemies(attacker).ToList() : new List<Combatant> { target };
@@ -919,8 +943,6 @@ namespace SWLOR.CombatSim.Engine
             target.TemporaryHp.Clear();
             target.DamageReductions.Clear();
             target.HealsOverTime.Clear();
-            foreach (var key in target.PartyPulses.Where(p => !p.Value.Effect.ContinuesAfterCasterDeath).Select(p => p.Key).ToList())
-                target.PartyPulses.Remove(key);
             target.ConvergenceUntil = -1;
             target.ConvergenceAccuracyUntil = -1;
             target.Stats.Deaths++;

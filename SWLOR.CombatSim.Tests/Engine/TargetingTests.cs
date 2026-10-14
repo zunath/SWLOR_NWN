@@ -219,6 +219,36 @@ namespace SWLOR.CombatSim.Tests.Engine
             simulation.Get("Add").Hp.Should().Be(addHp, "attacks moved to the boss for good");
         }
 
+        [TestCase(null)]
+        [TestCase("Bos")]
+        [TestCase("Striker")]
+        public void Spawn_RejectsAFocusTargetThatNamesNoOpposingCombatant(string focusTarget)
+        {
+            var scenario = TestScenarios.TwoTeams(false, new[] { TestCombatants.Striker("Striker") }, new[] { TestCombatants.Dummy("Boss", true) });
+            scenario.Teams[0].TargetPolicy = TargetPolicy.Focus;
+            scenario.Teams[0].FocusTarget = focusTarget;
+            var simulation = new Simulation(scenario, RuleSets.Current(), _catalog, 1);
+
+            var act = () => simulation.Spawn();
+
+            act.Should().Throw<InvalidDataException>().WithMessage("*FocusTarget*");
+        }
+
+        [Test]
+        public void Spawn_AcceptsAFocusTargetThatMatchesNumberedCopies()
+        {
+            var bosses = TestCombatants.Dummy("Boss", true);
+            bosses.Count = 2;
+            var scenario = TestScenarios.TwoTeams(false, new[] { TestCombatants.Striker("Striker") }, new[] { bosses });
+            scenario.Teams[0].TargetPolicy = TargetPolicy.Focus;
+            scenario.Teams[0].FocusTarget = "Boss";
+            var simulation = new Simulation(scenario, RuleSets.Current(), _catalog, 1);
+
+            var act = () => simulation.Spawn();
+
+            act.Should().NotThrow();
+        }
+
         [Test]
         public void Spawn_RejectsANegativeRetargetTime()
         {

@@ -2597,48 +2597,6 @@
     "Call": "SendMessageToPC(user, $\"Your {itemName.ToLower()} has been upgraded to tier {TierLabel(targetTier)}.\")"
   },
   {
-    "File": "SWLOR.Game.Server/Feature/ItemDefinition/SpeederItemDefinition.cs",
-    "Line": 47,
-    "Member": "Speeder",
-    "Delivery": "Retained",
-    "Call": "SendMessageToPC(user, \"You dismount your speeder.\")"
-  },
-  {
-    "File": "SWLOR.Game.Server/Feature/ItemDefinition/SpeederItemDefinition.cs",
-    "Line": 54,
-    "Member": "Speeder",
-    "Delivery": "Retained",
-    "Call": "SendMessageToPC(user, \"You mount your speeder.\")"
-  },
-  {
-    "File": "SWLOR.Game.Server/Feature/ItemDefinition/SpeederItemDefinition.cs",
-    "Line": 83,
-    "Member": "AttackedDismount",
-    "Delivery": "Retained",
-    "Call": "FloatingTextStringOnCreature(\"You have been dismounted.\", player, false)"
-  },
-  {
-    "File": "SWLOR.Game.Server/Feature/ItemDefinition/SpeederItemDefinition.cs",
-    "Line": 101,
-    "Member": "AttackDismount",
-    "Delivery": "Retained",
-    "Call": "SendMessageToPC(player, \"You have been dismounted.\")"
-  },
-  {
-    "File": "SWLOR.Game.Server/Feature/ItemDefinition/SpeederItemDefinition.cs",
-    "Line": 102,
-    "Member": "AttackDismount",
-    "Delivery": "Testing only",
-    "Call": "PlayerFeedback.ShowDiagnosticFloatingText(\"You have been dismounted.\", player, false)"
-  },
-  {
-    "File": "SWLOR.Game.Server/Feature/ItemDefinition/SpeederItemDefinition.cs",
-    "Line": 123,
-    "Member": "AreaTransitionDismount",
-    "Delivery": "Retained",
-    "Call": "FloatingTextStringOnCreature(\"You have been dismounted for entering an area with a speeder.\", player, false)"
-  },
-  {
     "File": "SWLOR.Game.Server/Feature/ItemDefinition/TomeItemDefinition.cs",
     "Line": 56,
     "Member": "PerkRefundTome",
@@ -5195,77 +5153,77 @@
   },
   {
     "File": "SWLOR.Game.Server/Service/Space.cs",
-    "Line": 1287,
+    "Line": 1299,
     "Member": "ActivateShipModule",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(activator, \"Unable to use that module.\")"
   },
   {
     "File": "SWLOR.Game.Server/Service/Space.cs",
-    "Line": 1303,
+    "Line": 1315,
     "Member": "ActivateShipModule",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(activator, $\"Your ship does not have enough capacitor to use that module. (Required: {requiredCapacitor})\")"
   },
   {
     "File": "SWLOR.Game.Server/Service/Space.cs",
-    "Line": 1311,
+    "Line": 1323,
     "Member": "ActivateShipModule",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(activator, \"That module is not ready.\")"
   },
   {
     "File": "SWLOR.Game.Server/Service/Space.cs",
-    "Line": 1327,
+    "Line": 1339,
     "Member": "ActivateShipModule",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(activator, \"This module cannot be used on that target type.\")"
   },
   {
     "File": "SWLOR.Game.Server/Service/Space.cs",
-    "Line": 1334,
+    "Line": 1346,
     "Member": "ActivateShipModule",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(activator, \"Invalid target.\")"
   },
   {
     "File": "SWLOR.Game.Server/Service/Space.cs",
-    "Line": 1342,
+    "Line": 1354,
     "Member": "ActivateShipModule",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(activator, $\"Target is too far away. Maximum distance: {maxDistance} meters.\")"
   },
   {
     "File": "SWLOR.Game.Server/Service/Space.cs",
-    "Line": 1360,
+    "Line": 1372,
     "Member": "ActivateShipModule",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(activator, result)"
   },
   {
     "File": "SWLOR.Game.Server/Service/Space.cs",
-    "Line": 2089,
+    "Line": 2101,
     "Member": "ApplyDeath",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature(ColorToken.Red(\"The ship has exploded!\"), player, false)"
   },
   {
     "File": "SWLOR.Game.Server/Service/Space.cs",
-    "Line": 2277,
+    "Line": 2289,
     "Member": "NotifyShipDamage",
     "Delivery": "Retained",
     "Call": "Messaging.SendMessageNearbyToPlayers(attacker, buildMessage, ShipDamageMessageRange)"
   },
   {
     "File": "SWLOR.Game.Server/Service/Space.cs",
-    "Line": 2283,
+    "Line": 2295,
     "Member": "NotifyShipDamage",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(target, buildMessage(target))"
   },
   {
     "File": "SWLOR.Game.Server/Service/Space.cs",
-    "Line": 2495,
+    "Line": 2507,
     "Member": "PreventSpaceStealth",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(creature, ColorToken.Red($\"You cannot enter stealth mode in space.\"))"

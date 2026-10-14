@@ -24,7 +24,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             var template = Gui.GetWindowTemplate(GuiWindowType.ExamineItem);
             var playerWindow = template.CreatePlayerWindowAction();
             var model = (ExamineItemViewModel)playerWindow.ViewModel;
-            model.Geometry = new GuiRectangle(40f, 45f, 430f, 560f);
+            model.Geometry = new GuiRectangle(40f, 45f, 440f, 560f);
             var windows = (Dictionary<string, Dictionary<GuiWindowType, GuiPlayerWindow>>)typeof(Gui)
                 .GetField("_playerWindows", BindingFlags.Static | BindingFlags.NonPublic)!.GetValue(null)!;
             ctx.Assert(!windows.ContainsKey(observer.Id), "headless fixture GUI registration must be isolated");
@@ -54,70 +54,53 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             {
                 foreach (var payload in payloads)
                 {
-                    await ctx.ExecuteInCreatureContextAsync(observer.Creature, () =>
-                        Gui.TogglePlayerWindow(observer.Creature, GuiWindowType.ExamineItem, payload));
-                    await ctx.WaitFrameAsync();
+                    await Open(payload);
                     var token = playerWindow.WindowToken;
                     ctx.Assert(token > 0, "native inspection window must open");
                     var title = JsonGetString(NuiGetBind(observer.Creature, token, nameof(model.WindowTitle)));
                     ctx.Assert(!title.Contains("<c"), "native title must not contain color tokens");
                     var binds = new JObject();
-                    foreach (var name in new[] { nameof(model.WindowTitle), nameof(model.TitleColor), nameof(model.Weight), nameof(model.Geometry) })
+                    foreach (var name in new[] { nameof(model.WindowTitle), nameof(model.TitleColor), nameof(model.Geometry) })
                         binds[name] = JToken.Parse(JsonDump(NuiGetBind(observer.Creature, token, name)));
 
-                    var layouts = new Dictionary<string, string>((Dictionary<string, string>)typeof(ExamineItemViewModel).BaseType!
-                        .GetField("_groupLayouts", BindingFlags.Instance | BindingFlags.NonPublic)!.GetValue(model)!);
-                    var textLayouts = GetTextLayouts();
-                    var description = JObject.Parse(textLayouts[ExamineItemViewModel.DescriptionElement]);
-                    var drawItems = description.SelectTokens("$..draw_list[*]").ToList();
+                    var content = JObject.Parse(GetContentLayout());
+                    var drawItems = content.SelectTokens("$..draw_list[*]").ToList();
+                    ctx.Assert(drawItems.Count > 0, "inspection text must use explicit draw colors");
+                    ctx.Assert(drawItems.All(item => !item["text"]!.Value<string>()!.Contains("<c")), "draw text must contain no color tokens");
                     if (payload.IsIdentified)
                     {
-                        ctx.Assert(drawItems.Count > 0, "colored descriptions must use explicit draw colors");
-                        ctx.Assert(drawItems.All(item => !item["text"]!.Value<string>()!.Contains("<c")), "draw text must contain no color tokens");
-                        ctx.Assert(drawItems.Any(item => item["color"]!["r"]!.Value<int>() != 255), "authored color must reach native JSON");
+                        ctx.Assert(drawItems.Any(item => item["color"]!["r"]!.Value<int>() is not (255 or 226 or 169)), "authored color must reach native JSON");
                         ctx.Assert(binds[nameof(model.TitleColor)]!["g"]!.Value<int>() != 255, "authored title color must reach native bind");
                     }
                     else
-                        ctx.Assert(drawItems.Count == 0, "ordinary unidentified text must retain the native text widget");
-
-                    var window = JObject.Parse(JsonDump(template.Window));
-                    window["root"] = JObject.Parse(GuiLayoutComposer.Compose(template.PartialViewLayouts["%%WINDOW_MAIN%%"], layouts));
-                    ctx.Assert(window.SelectTokens("$..id").Any(id => id.Value<string>() == ExamineItemViewModel.DescriptionElement),
-                        "exported root must include the applied inspection body");
-                    snapshots.Add(new JObject
                     {
-                        ["title"] = title,
-                        ["window"] = window,
-                        ["binds"] = binds
-                    });
+                        ctx.Assert(HasText(content, "Unidentified"), "unidentified items must say so");
+                        ctx.Assert(!HasText(content, "Properties"), "unidentified items must not list properties");
+                    }
+
+                    snapshots.Add(new JObject { ["title"] = title, ["window"] = ExportWindow(), ["binds"] = binds });
                     await VerifyUnchangedRefreshes();
                     if (payload == payloads[1])
                     {
                         await VerifyChangedRefreshes(payload);
-                        var changedLayouts = new Dictionary<string, string>(GetGroupLayouts());
-                        var updatedWindow = JObject.Parse(JsonDump(template.Window));
-                        updatedWindow["root"] = JObject.Parse(GuiLayoutComposer.Compose(template.PartialViewLayouts["%%WINDOW_MAIN%%"], changedLayouts));
-                        snapshots.Add(new JObject { ["title"] = "Updated colored item", ["window"] = updatedWindow, ["binds"] = binds.DeepClone() });
+                        snapshots.Add(new JObject { ["title"] = "Updated colored item", ["window"] = ExportWindow(), ["binds"] = binds.DeepClone() });
 
-                        var cachedDescription = GetTextLayouts()[ExamineItemViewModel.DescriptionElement];
-                        var cachedProperties = GetTextLayouts()[ExamineItemViewModel.PropertiesElement];
+                        var cachedLayout = GetContentLayout();
                         Gui.ClosePlayerWindow(observer.Creature, GuiWindowType.ExamineItem);
                         await ctx.WaitFrameAsync();
-                        await ctx.ExecuteInCreatureContextAsync(observer.Creature, () =>
-                            Gui.TogglePlayerWindow(observer.Creature, GuiWindowType.ExamineItem, payload));
-                        await ctx.WaitFrameAsync();
-                        ctx.Assert(ReferenceEquals(cachedDescription, GetTextLayouts()[ExamineItemViewModel.DescriptionElement]) &&
-                                   ReferenceEquals(cachedProperties, GetTextLayouts()[ExamineItemViewModel.PropertiesElement]),
-                            "reopening identical text must reuse both rendered panels");
+                        await Open(payload);
+                        ctx.Assert(ReferenceEquals(cachedLayout, GetContentLayout()), "reopening identical content must reuse the rendered layout");
                         ctx.Assert(GetGroupLayouts().ContainsKey(ExamineItemViewModel.ContentElement), "reopening must restore the cached content");
                     }
                     Gui.ClosePlayerWindow(observer.Creature, GuiWindowType.ExamineItem);
                     await ctx.WaitFrameAsync();
                 }
+
+                await VerifyLiveItems();
                 var directory = ApplicationSettings.Get().EngineTestResultsDirectory;
                 Directory.CreateDirectory(directory);
                 File.WriteAllText(Path.Combine(directory, "item-inspection-native-states.json"), snapshots.ToString(Formatting.Indented));
-                ctx.SetResultDetail("Real NUI windows verified authored colors, wrapping, unidentified text and cached reopening. Unchanged equip/perk/stat refreshes reused both panels with no redraw; changed descriptions/properties produced one redraw and reused unchanged panels. Native layouts and bindings exported for isolated client replay; no client input was simulated.");
+                ctx.SetResultDetail("Real NUI windows verified authored colors, icons, unidentified masking, live charges/quantity and cached reopening. Unchanged equip/perk/stat refreshes caused no redraw; changed text produced one redraw.");
             }
             finally
             {
@@ -126,16 +109,42 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 windows.Remove(observer.Id);
             }
 
+            async Task Open(ExamineItemPayload payload)
+            {
+                await ctx.ExecuteInCreatureContextAsync(observer.Creature, () =>
+                    Gui.TogglePlayerWindow(observer.Creature, GuiWindowType.ExamineItem, payload));
+                await ctx.WaitFrameAsync();
+            }
+
+            JObject ExportWindow()
+            {
+                var window = JObject.Parse(JsonDump(template.Window));
+                window["root"] = JObject.Parse(GuiLayoutComposer.Compose(template.PartialViewLayouts["%%WINDOW_MAIN%%"], GetGroupLayouts()));
+                return window;
+            }
+
+            string FactValue(string label)
+            {
+                var texts = JObject.Parse(GetContentLayout()).SelectTokens("$..draw_list[*].text").Select(token => token.Value<string>()).ToList();
+                var index = texts.IndexOf(label);
+                return index >= 0 && index + 1 < texts.Count ? texts[index + 1] : null;
+            }
+
+            List<string> IconLayers() => JObject.Parse(GetContentLayout()).SelectTokens("$..draw_list[*].image")
+                .Select(token => token.Value<string>()).ToList();
+
+            static bool HasText(JObject layout, string text) =>
+                layout.SelectTokens("$..draw_list[*].text").Any(token => token.Value<string>()!.Contains(text));
+
             Dictionary<string, string> GetGroupLayouts() => (Dictionary<string, string>)typeof(ExamineItemViewModel).BaseType!
                 .GetField("_groupLayouts", BindingFlags.Instance | BindingFlags.NonPublic)!.GetValue(model)!;
 
-            Dictionary<string, string> GetTextLayouts() => (Dictionary<string, string>)typeof(ExamineItemViewModel)
-                .GetField("_textLayouts", BindingFlags.Instance | BindingFlags.NonPublic)!.GetValue(model)!;
+            string GetContentLayout() => (string)typeof(ExamineItemViewModel)
+                .GetField("_contentLayout", BindingFlags.Instance | BindingFlags.NonPublic)!.GetValue(model)!;
 
             async Task VerifyUnchangedRefreshes()
             {
-                var description = GetTextLayouts()[ExamineItemViewModel.DescriptionElement];
-                var properties = GetTextLayouts()[ExamineItemViewModel.PropertiesElement];
+                var layout = GetContentLayout();
                 await ctx.ExecuteInCreatureContextAsync(observer.Creature, () =>
                 {
                     var height = model.Geometry.Height;
@@ -146,11 +155,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                     for (var index = 0; index < 20; index++) model.Refresh(new StatAdjustmentRefreshEvent());
                     // Every applied root layout synchronously nudges native geometry once.
                     ctx.AssertEqual(height, model.Geometry.Height, "unchanged refreshes must not redraw the window");
-                    ctx.Assert(ReferenceEquals(description, GetTextLayouts()[ExamineItemViewModel.DescriptionElement]) &&
-                               ReferenceEquals(properties, GetTextLayouts()[ExamineItemViewModel.PropertiesElement]),
-                        "unchanged refreshes must not rebuild either text panel");
-                    ctx.AssertEqual("null", JsonDump(NuiGetBind(observer.Creature, playerWindow.WindowToken, nameof(model.Description))), "unused description bind");
-                    ctx.AssertEqual("null", JsonDump(NuiGetBind(observer.Creature, playerWindow.WindowToken, nameof(model.ItemProperties))), "unused properties bind");
+                    ctx.Assert(ReferenceEquals(layout, GetContentLayout()), "unchanged refreshes must not rebuild the content");
                 });
                 await ctx.WaitFrameAsync();
             }
@@ -159,26 +164,63 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             {
                 for (var change = 0; change < 3; change++)
                 {
-                    var description = GetTextLayouts()[ExamineItemViewModel.DescriptionElement];
-                    var properties = GetTextLayouts()[ExamineItemViewModel.PropertiesElement];
                     await ctx.ExecuteInCreatureContextAsync(observer.Creature, () =>
                     {
-                        if (change != 1) payload.Description = ColorToken.Green($"Updated description {change}.");
-                        if (change != 0)
-                        {
-                            payload.ItemProperties = ColorToken.Cyan($"Updated property {change}.");
-                            // Snapshot fixtures have no live item; seed the property value a live item refresh supplies.
-                            typeof(ExamineItemViewModel).GetProperty(nameof(model.ItemProperties))!.SetValue(model, payload.ItemProperties);
-                        }
+                        payload.Description = ColorToken.Green($"Updated description {change}.");
                         var height = model.Geometry.Height;
                         model.Refresh(new StatAdjustmentRefreshEvent());
-                        ctx.AssertEqual(height + 1f, model.Geometry.Height, "changed panels must share one root redraw");
-                        if (change == 0) ctx.Assert(ReferenceEquals(properties, GetTextLayouts()[ExamineItemViewModel.PropertiesElement]), "description changes must reuse properties");
-                        if (change == 1) ctx.Assert(ReferenceEquals(description, GetTextLayouts()[ExamineItemViewModel.DescriptionElement]), "property changes must reuse description");
-                        ctx.Assert(GetGroupLayouts()[ExamineItemViewModel.ContentElement].Contains($"Updated description {(change == 1 ? 0 : change)}."), "new description must reach applied content");
-                        if (change != 0) ctx.Assert(GetGroupLayouts()[ExamineItemViewModel.ContentElement].Contains($"Updated property {change}."), "new properties must reach applied content");
+                        ctx.AssertEqual(height + 1f, model.Geometry.Height, "changed content must redraw once");
+                        ctx.Assert(GetGroupLayouts()[ExamineItemViewModel.ContentElement].Contains($"Updated description {change}."), "new description must reach applied content");
                     });
                     await ctx.WaitFrameAsync();
+                }
+            }
+
+            async Task VerifyLiveItems()
+            {
+                uint extractor = OBJECT_INVALID, cores = OBJECT_INVALID, saber = OBJECT_INVALID;
+                await ctx.ExecuteInCreatureContextAsync(observer.Creature, () =>
+                {
+                    extractor = CreateItemOnObject("dna_extractor_5", observer.Creature);
+                    SetItemCharges(extractor, 3);
+                    cores = CreateItemOnObject("power_core50", observer.Creature, 25);
+                    saber = CreateItemOnObject("lightsaber_zhar", observer.Creature);
+                    SetIdentified(saber, false);
+                });
+                try
+                {
+                    await Open(new ExamineItemPayload(extractor, trackLiveItem: true));
+                    var layout = GetContentLayout();
+                    ctx.AssertEqual(1, IconLayers().Count, "a simple item must draw its one icon");
+                    ctx.AssertEqual("3", FactValue("Charges: "), "extractor must show its remaining charges");
+                    ctx.Assert(layout.Contains("Unique Power"), "extractor must list its properties");
+                    await ctx.ExecuteInCreatureContextAsync(observer.Creature, () =>
+                    {
+                        SetItemCharges(extractor, 2);
+                        model.Refresh(new StatAdjustmentRefreshEvent());
+                        ctx.AssertEqual("2", FactValue("Charges: "), "a refresh must show the live charge count");
+                    });
+                    Gui.ClosePlayerWindow(observer.Creature, GuiWindowType.ExamineItem);
+                    await ctx.WaitFrameAsync();
+
+                    await Open(new ExamineItemPayload(cores, trackLiveItem: true));
+                    ctx.AssertEqual("25", FactValue("Quantity: "), "stacks must show their quantity");
+                    Gui.ClosePlayerWindow(observer.Creature, GuiWindowType.ExamineItem);
+                    await ctx.WaitFrameAsync();
+
+                    await Open(new ExamineItemPayload(saber, trackLiveItem: true));
+                    var title = JsonGetString(NuiGetBind(observer.Creature, playerWindow.WindowToken, nameof(model.WindowTitle)));
+                    ctx.AssertEqual("Lightsaber (Unidentified)", title, "unidentified items must not reveal their name");
+                    ctx.AssertEqual(1, IconLayers().Count, "unidentified items still show their icon");
+                    ctx.Assert(!GetContentLayout().Contains("Properties"), "unidentified items must not list properties");
+                    Gui.ClosePlayerWindow(observer.Creature, GuiWindowType.ExamineItem);
+                    await ctx.WaitFrameAsync();
+                }
+                finally
+                {
+                    DestroyObject(extractor);
+                    DestroyObject(cores);
+                    DestroyObject(saber);
                 }
             }
         }

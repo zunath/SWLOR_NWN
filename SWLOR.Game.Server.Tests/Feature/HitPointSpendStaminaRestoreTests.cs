@@ -21,6 +21,15 @@ public class HitPointSpendStaminaRestoreTests
             .Should().Be(expected);
     }
 
+    [TestCase(50, 0, 50)]
+    [TestCase(50, 20, 30)]
+    [TestCase(50, 50, 0)]
+    [TestCase(50, 400, 0)]
+    public void HitPointsSpent_ExcludeWhatTemporaryHPAbsorbed(int payment, int temporaryHitPoints, int expected)
+    {
+        Combat.CalculateHitPointsSpentThroughTemporaryHitPoints(payment, temporaryHitPoints).Should().Be(expected);
+    }
+
     [TestCase(200, 35, 0, 50)]
     [TestCase(0, 35, 10, 10)]
     [TestCase(200, 0, 10, 10)]

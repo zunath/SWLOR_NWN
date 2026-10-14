@@ -8317,6 +8317,12 @@ namespace SWLOR.Game.Server.Service
             Stat.RestoreStamina(activator, CalculateHitPointSpendStaminaRestore(Stat.GetMaxStamina(activator), percent, hitPointsSpent, hitPointCost));
         }
 
+        /// <summary>HP an HP-cost payment really takes once temporary HP has absorbed its share.</summary>
+        public static int CalculateHitPointsSpentThroughTemporaryHitPoints(int payment, int temporaryHitPoints)
+        {
+            return Math.Max(0, payment - Math.Max(0, temporaryHitPoints));
+        }
+
         /// <summary>
         /// Stamina restored after spending HP: the percent of max Stamina, scaled down when the HP payment was clipped short of its full cost.
         /// </summary>

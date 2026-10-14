@@ -134,11 +134,13 @@ namespace SWLOR.CombatSim.Tests.Report
         }
 
         [Test]
-        public void RecoveryRatio_IsHealingPlusAbsorbedOverHpDamage()
+        public void RecoveryRatio_IsHealingPlusAbsorbedOverHpDamage_WithHpCostsCountedAsHpLost()
         {
             var summary = new BatchSummary { TotalDamageToHp = 200, TotalHealing = 100, TotalAbsorbed = 50 };
 
             summary.RecoveryRatio.Should().BeApproximately(0.75, 1e-9);
+            new BatchSummary { TotalDamageToHp = 200, TotalHitPointsSpent = 100, TotalHealing = 100, TotalAbsorbed = 50 }
+                .RecoveryRatio.Should().BeApproximately(0.5, 1e-9);
             new BatchSummary().RecoveryRatio.Should().Be(0);
         }
 

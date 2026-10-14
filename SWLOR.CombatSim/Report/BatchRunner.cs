@@ -39,6 +39,7 @@ namespace SWLOR.CombatSim.Report
                 foreach (var combatant in result.Combatants)
                 {
                     summary.TotalDamageToHp += combatant.Stats.DamageTakenToHp / runs;
+                    summary.TotalHitPointsSpent += combatant.Stats.HitPointsSpent / runs;
                     summary.TotalAbsorbed += combatant.Stats.DamageAbsorbedByTemporaryHp / runs;
                     summary.TotalHealing += combatant.Stats.HealingReceived / runs;
                     summary.TotalOverhealing += combatant.Stats.Overhealing / runs;
@@ -67,6 +68,7 @@ namespace SWLOR.CombatSim.Report
                     AverageHealingReceived = entries.Average(e => e.Combatant.Stats.HealingReceived),
                     AverageOverhealing = entries.Average(e => e.Combatant.Stats.Overhealing),
                     AverageDamageTakenToHp = entries.Average(e => e.Combatant.Stats.DamageTakenToHp),
+                    AverageHitPointsSpent = entries.Average(e => e.Combatant.Stats.HitPointsSpent),
                     AverageAbsorbed = entries.Average(e => e.Combatant.Stats.DamageAbsorbedByTemporaryHp),
                     AverageFpSpentPerMinute = entries.Average(e => e.Combatant.Stats.FpSpent / e.Minutes),
                     AverageStmSpentPerMinute = entries.Average(e => e.Combatant.Stats.StmSpent / e.Minutes),

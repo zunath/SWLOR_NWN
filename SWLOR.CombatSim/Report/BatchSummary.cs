@@ -16,12 +16,16 @@ namespace SWLOR.CombatSim.Report
         public double AverageRevives { get; set; }
         public double AverageBlockedRevives { get; set; }
         public double TotalDamageToHp { get; set; }
+
+        /// <summary>HP paid for abilities' HP costs; HP lost the way damage is, so heals that restore it are not surplus.</summary>
+        public double TotalHitPointsSpent { get; set; }
         public double TotalAbsorbed { get; set; }
         public double TotalHealing { get; set; }
         public double TotalOverhealing { get; set; }
         public List<CombatantSummary> Combatants { get; } = new();
 
         /// <summary>Healing plus damage absorbed by temporary HP, divided by damage that reached HP.</summary>
-        public double RecoveryRatio => TotalDamageToHp <= 0 ? 0 : (TotalHealing + TotalAbsorbed) / TotalDamageToHp;
+        public double RecoveryRatio =>
+            TotalDamageToHp + TotalHitPointsSpent <= 0 ? 0 : (TotalHealing + TotalAbsorbed) / (TotalDamageToHp + TotalHitPointsSpent);
     }
 }

@@ -13,6 +13,7 @@ namespace SWLOR.CombatSim.Report
         public double AverageHealingReceived { get; set; }
         public double AverageOverhealing { get; set; }
         public double AverageDamageTakenToHp { get; set; }
+        public double AverageHitPointsSpent { get; set; }
         public double AverageAbsorbed { get; set; }
         public double AverageFpSpentPerMinute { get; set; }
         public double AverageStmSpentPerMinute { get; set; }

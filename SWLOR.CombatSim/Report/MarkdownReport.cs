@@ -19,7 +19,7 @@ namespace SWLOR.CombatSim.Report
             text.AppendLine()
                 .AppendLine($"Time limit {Seconds(scenario.DurationSeconds)}, {(scenario.IsPvp ? "PvP" : "PvE")}, {summaries.FirstOrDefault()?.Runs ?? 0} runs per rule set.")
                 .AppendLine()
-                .AppendLine("| Rules | Runs with a player death | First player death: median (p10-p90) | Fight decided | Wins by team | Fight length: median | Player deaths per run | Revives per run | (Healing + absorbed) / HP damage |")
+                .AppendLine("| Rules | Runs with a player death | First player death: median (p10-p90) | Fight decided | Wins by team | Fight length: median | Player deaths per run | Revives per run | (Healing + absorbed) / HP lost |")
                 .AppendLine("| --- | --- | --- | --- | --- | --- | --- | --- | --- |");
 
             foreach (var s in summaries)
@@ -49,8 +49,8 @@ namespace SWLOR.CombatSim.Report
                 text.AppendLine()
                     .AppendLine($"## {s.RuleSetName}: per combatant (averages per run)")
                     .AppendLine()
-                    .AppendLine("| Combatant | Team | Deaths | Damage dealt | Healing done | Healing received | Overheal | HP damage taken | Absorbed by temp HP | FP/min | STM/min | FP refunded | STM refunded | Couldn't afford a wanted ability | First time: median |")
-                    .AppendLine("| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |");
+                    .AppendLine("| Combatant | Team | Deaths | Damage dealt | Healing done | Healing received | Overheal | HP damage taken | HP spent on costs | Absorbed by temp HP | FP/min | STM/min | FP refunded | STM refunded | Couldn't afford a wanted ability | First time: median |")
+                    .AppendLine("| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |");
 
                 foreach (var c in s.Combatants.OrderBy(c => c.TeamIndex).ThenBy(c => c.Name))
                 {
@@ -63,6 +63,7 @@ namespace SWLOR.CombatSim.Report
                         Number(c.AverageHealingReceived, 0),
                         Number(c.AverageOverhealing, 0),
                         Number(c.AverageDamageTakenToHp, 0),
+                        Number(c.AverageHitPointsSpent, 0),
                         Number(c.AverageAbsorbed, 0),
                         Number(c.AverageFpSpentPerMinute, 0),
                         Number(c.AverageStmSpentPerMinute, 0),

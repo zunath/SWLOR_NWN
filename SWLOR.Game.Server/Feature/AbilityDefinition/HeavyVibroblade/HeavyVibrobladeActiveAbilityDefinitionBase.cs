@@ -77,6 +77,12 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.HeavyVibroblade
         {
             var percent = GetHitPointCostPercent(activator, basePercent, minimumPercent);
             var cost = GameMath.PercentOf(GetMaxHitPoints(activator), percent);
+            // Paid as the activator's own action so the combat log shows it, and measured when it lands.
+            AssignCommand(activator, () => PayHitPoints(activator, cost));
+        }
+
+        private static void PayHitPoints(uint activator, int cost)
+        {
             // The payment stops at 1 HP. Temporary HP absorbs it first, so riders such as Bloodlust
             // scale with the HP actually lost.
             var payment = Math.Min(GetCurrentHitPoints(activator) - 1, cost);
@@ -88,11 +94,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.HeavyVibroblade
                 TemporaryHitPointEffects.GetRemaining(activator));
             if (CombatRecorder.IsRecording)
                 CombatRecorder.ExpectHitPointCost(activator, payment);
-            AssignCommand(activator, () =>
-            {
-                ApplyEffectToObject(DurationType.Instant, EffectDamage(payment), activator);
-                Combat.ApplyLowHPDamageTakenEffects(activator, payment);
-            });
+            ApplyEffectToObject(DurationType.Instant, EffectDamage(payment), activator);
+            Combat.ApplyLowHPDamageTakenEffects(activator, payment);
             Combat.ApplyHitPointSpendAbilityEffects(activator, hitPointsSpent, cost);
         }
 

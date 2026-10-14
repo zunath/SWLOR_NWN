@@ -29,21 +29,21 @@ public class ReviveRulesTests
     }
 
     [Test]
-    public void NoPlayerKill_StartsNoPartyDamageWait()
+    public void NoRecentDeath_StartsNoPartyDamageWait()
     {
         ReviveRules.IsWithinPartyDamageWindow(null, Now).Should().BeFalse();
     }
 
     [TestCase(0)]
     [TestCase(14)]
-    public void PlayerKillWithinFifteenSeconds_CountsAsRecentPartyDamage(int secondsAgo)
+    public void DeathWithinFifteenSeconds_CountsAsRecentPartyDamage(int secondsAgo)
     {
         ReviveRules.IsWithinPartyDamageWindow(Now.AddSeconds(-secondsAgo), Now).Should().BeTrue();
     }
 
     [TestCase(15)]
     [TestCase(60)]
-    public void PlayerKillFifteenSecondsAgoOrMore_NoLongerCounts(int secondsAgo)
+    public void DeathFifteenSecondsAgoOrMore_NoLongerCounts(int secondsAgo)
     {
         ReviveRules.IsWithinPartyDamageWindow(Now.AddSeconds(-secondsAgo), Now).Should().BeFalse();
     }

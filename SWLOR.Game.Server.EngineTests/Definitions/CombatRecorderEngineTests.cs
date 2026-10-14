@@ -4,7 +4,9 @@ using System.Linq;
 using System.Text.Json;
 using System.Threading.Tasks;
 using SWLOR.Game.Server.EngineTests.Framework;
+using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Feature.AbilityDefinition;
+using SWLOR.Game.Server.Service.BeastMasteryService;
 using SWLOR.Game.Server.Service.CombatRecorderService;
 using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.PerkService;
@@ -12,6 +14,7 @@ using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.Game.Server.Service.StatService;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.NWN.API.NWScript.Enum.Associate;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
 
 namespace SWLOR.Game.Server.EngineTests.Definitions
@@ -924,6 +927,77 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                                        e.GetProperty("caster").GetInt32() == attackerId &&
                                        e.GetProperty("feat").GetString() == nameof(FeatType.ForceLightning1)),
                 "the cast must be recorded with its feat");
+        }
+
+        [EngineTest("Combat recorder logs a Revive Beast as a resurrection", Category = "CombatRecorder", TimeoutSeconds = 60f)]
+        public static async Task RecordsReviveBeastResurrection(EngineTestContext ctx)
+        {
+            const string beastName = "Recorder Revived Beast";
+            ctx.Assert(!CombatRecorder.IsRecording, "no combat recording may be running before the test");
+
+            using var fixture = await PlayerAbilityFixture.CreateAsync(ctx);
+            var player = fixture.Creature;
+            fixture.Update(record => record.Perks[PerkType.ReviveBeast] = System.Math.Max(record.Perks.GetValueOrDefault(PerkType.ReviveBeast), 1));
+            CreaturePlugin.AddFeat(player, FeatType.ReviveBeast1);
+            var beast = new Beast { OwnerPlayerId = fixture.Id, Name = beastName, Type = BeastType.Womprat, Level = 20, IsDead = true };
+            DB.Set(beast);
+            fixture.Update(record => record.ActiveBeastId = beast.Id);
+
+            var pet = OBJECT_INVALID;
+            CombatRecordWriter writer;
+            try
+            {
+                ctx.Assert(CombatRecorder.Start(GetArea(player), "engine test beast revive", out var startMessage), startMessage);
+                writer = CombatRecorder.LastWriter;
+
+                var activated = false;
+                var denial = string.Empty;
+                await ctx.ExecuteInCreatureContextAsync(player, () =>
+                {
+                    activated = UsePerkFeat.TryUseAbility(player, player, FeatType.ReviveBeast1, GetLocation(player));
+                    denial = Ability.GetLastActivationDenialReason();
+                });
+                ctx.Assert(activated, $"Revive Beast activates: {denial}");
+                await ctx.WaitUntilAsync(() => BeastMastery.IsPlayerBeast(GetAssociate(AssociateType.Henchman, player)), 12f,
+                    "the revived beast to appear");
+                pet = GetAssociate(AssociateType.Henchman, player);
+                ctx.Track(pet);
+                await ctx.DelaySecondsAsync(0.5f);
+            }
+            finally
+            {
+                if (CombatRecorder.IsRecording)
+                    CombatRecorder.Stop("engine test", out _);
+                if (GetIsObjectValid(pet))
+                {
+                    await ctx.ExecuteInCreatureContextAsync(player, () => RemoveHenchman(player, pet));
+                    DestroyObject(pet);
+                }
+                DB.Delete<Beast>(beast.Id);
+                await ctx.WaitFrameAsync();
+                // Queued last so it runs after the fixture clears the player flag.
+                AssignCommand(player, () => DestroyObject(player));
+            }
+
+            await ctx.WaitUntilAsync(() => writer.Completion.IsCompleted, 10f, "the recording writer to finish its files");
+            ctx.Assert(writer.Error == null, $"the recording writer failed: {writer.Error}");
+            var summary = writer.Completion.Result;
+            var events = File.ReadAllLines(writer.EventsPath).Select(ParseLine).ToList();
+
+            var beastParticipant = events.Single(e => Type(e) == "participant" && e.GetProperty("name").GetString() == beastName);
+            var beastId = beastParticipant.GetProperty("id").GetInt32();
+            var resurrection = events.Single(e => Type(e) == "resurrection" && e.GetProperty("target").GetInt32() == beastId);
+            ctx.AssertEqual("Revive Beast I", resurrection.GetProperty("source_name").GetString(), "the reviving ability");
+            var casterId = resurrection.GetProperty("caster").GetInt32();
+            ctx.Assert(events.Any(e => Type(e) == "participant" && e.GetProperty("id").GetInt32() == casterId &&
+                                       e.GetProperty("player").GetBoolean()),
+                "the beast's owner is credited with the revive");
+            ctx.AssertEqual(1, summary.GetParticipant(beastId).RevivesReceived, "summary revives received");
+            ctx.AssertEqual(1, summary.GetParticipant(casterId).RevivesPerformed, "summary revives performed");
+
+            AssertParticipantsDeclaredFirst(ctx, events);
+            File.Delete(writer.EventsPath);
+            File.Delete(writer.SummaryPath);
         }
 
         private static async Task UseAbilityAsync(EngineTestContext ctx, uint caster, uint target, FeatType feat)

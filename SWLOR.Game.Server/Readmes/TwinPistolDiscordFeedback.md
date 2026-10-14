@@ -9,7 +9,7 @@ Each section below is one Discord message under 2,000 characters. Effects show c
 A separate 0-50 weapon skill within the normal 400-rank cap; no Pistol prerequisite. Twin Pistols are one owned item. Equipping it automatically equips a temporary off-hand gun. Removing either gun unequips the pair and destroys the temporary gun. Both guns share the item's weapon profile and upgrades; equipment bonuses apply once. Both guns contribute to attack delay and roll hits separately.
 
 **Barrage:** sustained pressure and stamina management.
-**Crossfire:** reposition, earn Momentum, then spend it on a stronger attack.
+**Crossfire:** reposition, earn Flow, then spend it on a stronger attack.
 
 All perk ranks support cross-skilling. Active attacks produce one impact per eligible equipped attack weapon (maximum two); a single/two-handed weapon gives one, a shield gives none. Each impact keeps its weapon DMG/type; ability scaling remains Twin Pistol PER/AGI.
 
@@ -82,7 +82,7 @@ Stance damage penalties apply after additive weapon auto-attack damage bonuses a
 
 ## Message 4 of 5
 
-**Crossfire — movement and Momentum**
+**Crossfire — movement and Flow**
 ```text
 Perk / unlocks / SP     | Maximum-rank effect
 -----------------------+------------------------------------------
@@ -90,7 +90,7 @@ Blaster Slide          | Retreat 4m, then each weapon D+16 at
 2/12/28/40; 12 SP       | selected foe. Needs 2m safe movement.
                        | STM/CD: 10 / 18s.
 
-Momentum               | Slide/Rush moving 2m+ and landing a
+Flow               | Slide/Rush moving 2m+ and landing a
 5; 2 SP                | hostile hit: +1 charge, max 3, 12s.
                        | Each: +2 weapon auto-attack ACC with any weapon.
 
@@ -98,7 +98,7 @@ Paired Handling        | +10% weapon auto-attack damage.
 8/22/45; 10 SP         | Cannot purchase Matched Rhythm.
 
 Grapple Shot           | Close up to 6m, stop 1.5m from foe.
-10/30/38; 10 SP         | Each weapon D+14, +4 per Momentum.
+10/30/38; 10 SP         | Each weapon D+14, +4 per Flow.
                        | Works already close or at zero charges.
                        | STM/CD: 10 / 24s.
 
@@ -110,7 +110,7 @@ Pistol Rush            | Free ground dash 2-6m; up to 3 foes
 18/32; 6 SP            | in a 4m-wide travel line. Each weapon
                        | floor(.60D)+12. STM/CD: 10 / 30s.
 ```
-Slide/Rush earn at most one Momentum per cast. Empty-space Rush is allowed but earns none. All movement respects roots, collision and terrain, with a shared 2s movement lockout. No invulnerability or cleanse.
+Slide/Rush earn at most one Flow per cast. Empty-space Rush is allowed but earns none. All movement respects roots, collision and terrain, with a shared 2s movement lockout. No invulnerability or cleanse.
 
 ## Message 5 of 5
 
@@ -119,19 +119,19 @@ Slide/Rush earn at most one Momentum per cast. Empty-space Rush is allowed but e
 Perk / unlock / SP | Maximum-rank effect
 -------------------+---------------------------------------------
 Crossfire Stance   | Any weapon: +10% Haste, +10% movement,
-20; 4 SP           | 18s Momentum. ALL weapon auto-attack damage x0.80.
+20; 4 SP           | 18s Flow. ALL weapon auto-attack damage x0.80.
                    | Activated damage unchanged. STM/CD: 0 / 30s.
 
 Follow Through    | Grapple/Final landing any hit restores
-25; 4 SP           | 1 STM per captured Momentum spent, max 3.
+25; 4 SP           | 1 STM per captured Flow spent, max 3.
                    | Once per cast; 12s trigger cooldown.
 
 Second Wind       | Direct hostile accuracy-vs-evasion miss:
-35; 2 SP           | +1 Momentum, at most once per 10s.
-                   | Requires Momentum; other avoidance excluded.
+35; 2 SP           | +1 Flow, at most once per 10s.
+                   | Requires Flow; other avoidance excluded.
 
 Final Salvo       | Stationary, one foe, each weapon D+20;
-50 + mastery; 6 SP | +6 per Momentum spent, max D+38.
+50 + mastery; 6 SP | +6 per Flow spent, max D+38.
                    | STM/CD: 15 / 90s.
 ```
 Grapple/Final capture charges at cast start and spend those on valid paid completion, even on a miss. Later-earned charges are preserved. Swaps preserve charges/expiry; combat end clears them. Refunds/discounts retain at least 1 STM paid.

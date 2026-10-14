@@ -476,9 +476,9 @@ namespace SWLOR.Game.Server.Service.AchievementService
         ExploreViscaraMountainAscent = 182,
 
         [Achievement("Twin Suns", "Completed Jek Talin's sustained Twin Pistol firing trial.", true)]
-        TwinSuns = 183,
-        [Achievement("Final Salvo", "Completed Pavo Orrel's Twin Pistol movement and Momentum trial.", true)]
-        FinalSalvo = 184,
+        TwinSuns = 185,
+        [Achievement("Final Salvo", "Completed Pavo Orrel's Twin Pistol movement and Flow trial.", true)]
+        FinalSalvo = 186,
 	}
 
     public class AchievementAttribute: Attribute

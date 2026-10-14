@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using NumericsVector3 = System.Numerics.Vector3;
 using NumericsVector2 = System.Numerics.Vector2;
 using System.Threading.Tasks;
@@ -61,9 +62,32 @@ public static class WeaponRepositioningEngineTests
             await ctx.DelaySecondsAsync(.3f);
             await ctx.ExecuteInCreatureContextAsync(actor, () =>
             {
+                var targetHP = GetCurrentHitPoints(target);
+                for (var enemy = 0; enemy < 3; enemy++)
+                {
+                    PairedRangedPresentation.OnAbilityWeaponLaunch(actor, target, main, true);
+                    PairedRangedPresentation.OnAbilityWeaponLaunch(actor, target, companion, false);
+                }
+                var launchedSources = GetMuzzleSources(ctx.Arena)
+                    .Where(source => GetPosition(source).Z - GetPosition(actor).Z > 1f)
+                    .ToDictionary(source => source, GetPosition);
+                ctx.AssertEqual(6, launchedSources.Count,
+                    "Both hands against three targets keep six independent in-flight source anchors");
+                var radians = GetFacing(actor) * MathF.PI / 180f;
+                var right = new NumericsVector3(MathF.Sin(radians), -MathF.Cos(radians), 0f);
+                ctx.AssertEqual(3, launchedSources.Values.Count(position =>
+                        NumericsVector3.Dot(position - GetPosition(actor), right) > .1f),
+                    "Three active main-hand shots originate from the right barrel");
+                ctx.AssertEqual(3, launchedSources.Values.Count(position =>
+                        NumericsVector3.Dot(position - GetPosition(actor), right) < -.1f),
+                    "Three active companion shots originate from the left barrel, including misses");
                 for (var shot = 0; shot < 32; shot++)
                     PairedRangedPresentation.OnCompanionLaunch(actor, target, shot % 2 == 0);
-                ctx.AssertEqual(1 + PairedRangedPresentation.MissAnchorCount, CountMuzzles(ctx.Arena),
+                foreach (var source in launchedSources)
+                    ctx.Assert(NumericsVector3.Distance(source.Value, GetPosition(source.Key)) < .001f,
+                        "Pool saturation cannot move an already launched projectile source");
+                ctx.AssertEqual(targetHP, GetCurrentHitPoints(target), "Cosmetic launches never deal additional damage");
+                ctx.AssertEqual(PairedRangedPresentation.SourceAnchorCount + PairedRangedPresentation.MissAnchorCount, CountMuzzles(ctx.Arena),
                     "Repeated preparation and saturated hit/miss launches retain one bounded actor-owned pool");
                 PairedRangedPresentation.Release(actor);
             });
@@ -73,13 +97,22 @@ public static class WeaponRepositioningEngineTests
             await ctx.ExecuteInCreatureContextAsync(actor, () =>
             {
                 PairedRangedPresentation.Prepare(actor);
-                ctx.AssertEqual(1 + PairedRangedPresentation.MissAnchorCount, CountMuzzles(ctx.Arena), "A fresh pool can be warmed after release");
+                ctx.AssertEqual(PairedRangedPresentation.SourceAnchorCount + PairedRangedPresentation.MissAnchorCount, CountMuzzles(ctx.Arena), "A fresh pool can be warmed after release");
                 CreaturePlugin.RunUnequip(actor, companion);
                 PairedRangedPresentation.RemoveAbandonedAnchors();
             });
             await ctx.WaitUntilAsync(() => CountMuzzles(ctx.Arena) == 0, 2f, "unpaired actor cleanup to remove all abandoned anchors");
         }
         finally { PairedRangedPresentation.Release(actor); }
+    }
+
+    private static uint[] GetMuzzleSources(uint area)
+    {
+        var sources = new System.Collections.Generic.List<uint>();
+        for (var obj = GetFirstObjectInArea(area, ObjectType.Placeable); GetIsObjectValid(obj); obj = GetNextObjectInArea(area, ObjectType.Placeable))
+            if (GetTag(obj) == PairedRangedPresentation.MuzzleTag && GetResRef(obj) == PairedRangedPresentation.MuzzleBlueprint)
+                sources.Add(obj);
+        return sources.ToArray();
     }
 
     private static int CountMuzzles(uint area)

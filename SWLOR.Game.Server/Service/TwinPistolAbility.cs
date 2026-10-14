@@ -8,7 +8,6 @@ using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.Game.Server.Service.StatService;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWScript.Enum;
-using SWLOR.NWN.API.NWScript.Enum.Item;
 using NumericsVector3 = System.Numerics.Vector3;
 
 namespace SWLOR.Game.Server.Service
@@ -134,8 +133,7 @@ namespace SWLOR.Game.Server.Service
                         damageType: weapon.DamageType, afterSuccessfulHit: _ => { anyHit = true; handHit = true; },
                         playImpactAnimation: false, combatImpactDamageAbility: weapon.DamageAbility,
                         isAreaImpact: spec.MaximumTargets > 1);
-                    if (GetBaseItemType(weapon.Weapon) == BaseItem.CompanionPistol)
-                        PairedRangedPresentation.OnCompanionLaunch(actor, target, handHit);
+                    PairedRangedPresentation.OnAbilityWeaponLaunch(actor, target, weapon.Weapon, handHit);
                 }
             }
             if (!GetIsObjectValid(actor) || GetIsDead(actor)) return;

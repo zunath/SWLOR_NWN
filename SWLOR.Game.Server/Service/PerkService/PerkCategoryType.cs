@@ -177,10 +177,10 @@ namespace SWLOR.Game.Server.Service.PerkService
         EspionageTradecraft = 60,
 
         [PerkCategory("Twin Pistol - Barrage", true)]
-        TwinPistolBarrage = 61,
+        TwinPistolBarrage = 63,
 
         [PerkCategory("Twin Pistol - Crossfire", true)]
-        TwinPistolCrossfire = 62,
+        TwinPistolCrossfire = 64,
     }
 
     public class PerkCategoryAttribute : Attribute

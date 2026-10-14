@@ -1329,7 +1329,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Two guns and nowhere to stand. Now that's an interesting hand. Want to learn how to leave yourself one last open lane? Here's a canyon range key. Against the range enemies, land Blaster Slide after moving at least two meters, then land Pistol Rush after another two meters. Land Grapple Shot spending at least two Momentum before eighteen seconds pass. You can reverse the first two moves. Empty dashes don't buy you anything.",
+          "Text": "Two guns and nowhere to stand. Now that's an interesting hand. Want to learn how to leave yourself one last open lane? Here's a canyon range key. Against the range enemies, land Blaster Slide after moving at least two meters, then land Pistol Rush after another two meters. Land Grapple Shot spending at least two Flow charges before eighteen seconds pass. You can reverse the first two moves. Empty dashes don't buy you anything.",
           "Style": 0,
           "Color": null
         }
@@ -1409,7 +1409,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "You'll need Blaster Slide, Pistol Rush, Grapple Shot and Momentum. Each movement builder must actually move you at least two meters and land a hit. Second Wind can help in a fight, but it can't replace either part of this trial.",
+          "Text": "You'll need Blaster Slide, Pistol Rush, Grapple Shot and Flow. Each movement builder must actually move you at least two meters and land a hit. Second Wind can help in a fight, but it can't replace either part of this trial.",
           "Style": 0,
           "Color": null
         }
@@ -1495,7 +1495,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "No completed route trace yet. Land the moving Slide and Rush, then a Grapple Shot spending at least two Momentum, all within eighteen seconds.",
+          "Text": "No completed route trace yet. Land the moving Slide and Rush, then a Grapple Shot spending at least two Flow charges, all within eighteen seconds.",
           "Style": 0,
           "Color": null
         }

@@ -22,7 +22,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
             quests[TwinSunsMasteryQuestId].States[1].AddObjective(new TwinPistolTrialObjective(
                 KeyItemType.TwinSunsCanyonFiringTrace, "Land twelve ordinary shots on one canyon-range enemy within 30 seconds, at least six with each gun."));
             quests[FinalSalvoMasteryQuestId].States[1].AddObjective(new TwinPistolTrialObjective(
-                KeyItemType.FinalSalvoCanyonRouteTrace, "Land a moving Blaster Slide and Pistol Rush, then a Grapple Shot spending at least two Momentum within 18 seconds."));
+                KeyItemType.FinalSalvoCanyonRouteTrace, "Land a moving Blaster Slide and Pistol Rush, then a Grapple Shot spending at least two Flow charges within 18 seconds."));
             return quests;
         }
 
@@ -68,9 +68,9 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
                 .RemoveKeyItemOnAbandon(KeyItemType.FinalSalvoCanyonRouteTrace)
                 .RemoveKeyItemOnComplete(KeyItemType.FinalSalvoCanyonRouteTrace)
                 .AddState()
-                .SetStateJournalText("Pavo Orrel gave you access to the Anchorhead Canyon Range on Tatooine. Enter through the sealed door in the Rocky Pass, south of Anchorhead's Southern Entrance. Land both a Blaster Slide and a Pistol Rush after actually moving at least 2m with each, then land Grapple Shot while spending at least two Momentum. Complete the sequence within 18 seconds. Empty dashes, failed movement and Second Wind charges alone do not satisfy the trial.")
+                .SetStateJournalText("Pavo Orrel gave you access to the Anchorhead Canyon Range on Tatooine. Enter through the sealed door in the Rocky Pass, south of Anchorhead's Southern Entrance. Land both a Blaster Slide and a Pistol Rush after actually moving at least 2m with each, then land Grapple Shot while spending at least two Flow charges. Complete the sequence within 18 seconds. Empty dashes, failed movement and Second Wind charges alone do not satisfy the trial.")
                 .AddState()
-                .SetStateJournalText("Your canyon route trace records both repositioning attacks and the successful Momentum spender. Report to Pavo Orrel in Anchorhead - Junix's Joint. His approval lets you purchase Final Salvo for 6 SP; it does not grant the perk automatically.")
+                .SetStateJournalText("Your canyon route trace records both repositioning attacks and the successful Flow spender. Report to Pavo Orrel in Anchorhead - Junix's Joint. His approval lets you purchase Final Salvo for 6 SP; it does not grant the perk automatically.")
                 .OnCompleteAction((player, _) => Achievement.GiveAchievement(player, AchievementType.FinalSalvo));
         }
     }

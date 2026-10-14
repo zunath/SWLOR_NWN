@@ -6,7 +6,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
     public sealed class MomentumStatusEffect : StatusEffectBase
     {
         public int Charges { get; }
-        public override string Name => $"Momentum ({Charges})";
+        public override string Name => $"Flow ({Charges})";
         public override EffectIconType Icon => Charges switch
         {
             2 => EffectIconType.MomentumStatusEffect2,

@@ -145,7 +145,7 @@ namespace SWLOR.Game.Server.Service.CraftService
         [RecipeCategory("Ambient Music Discs", true)]
         AmbientMusicDiscs = 70,
         [RecipeCategory("Companion Pistol", false)]
-        CompanionPistol = 71,
+        CompanionPistol = 73,
         [RecipeCategory("Twin Pistols", true)]
         TwinPistol = 72,
     }

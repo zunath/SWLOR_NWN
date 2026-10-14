@@ -263,11 +263,11 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
         private void TwinPistolMomentum()
         {
             _builder.Create(PerkCategoryType.TwinPistolCrossfire, PerkType.TwinPistolMomentum)
-                .Name("Momentum")
+                .Name("Flow")
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.TwinPistolMomentumTrait)
-                .Description("Slide or Rush moving you at least 2m and landing any hostile hit grants 1 Momentum, max 3. Lasts 12 seconds. Each charge gives +2 ACC to weapon auto-attacks with any weapon. Grapple Shot and Final Salvo spend all charges.")
+                .Description("Slide or Rush moving you at least 2m and landing any hostile hit grants 1 Flow, max 3. Lasts 12 seconds. Each charge gives +2 ACC to weapon auto-attacks with any weapon. Grapple Shot and Final Salvo spend all charges.")
                 .IncreasesStat(StatType.PairedRangedMomentumMaximum, 3)
                 .IncreasesStat(StatType.PairedRangedMomentumDurationSeconds, 12)
                 .IncreasesStat(StatType.PairedRangedMomentumAccuracyPerCharge, 2)
@@ -312,20 +312,20 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.GrappleShot1)
-                .Description("Close up to 6m toward an enemy, then attack with each equipped attack weapon for weapon DMG + 6 per impact. Spend all Momentum for +4 power per charge on each impact. Works with any weapon.")
+                .Description("Close up to 6m toward an enemy, then attack with each equipped attack weapon for weapon DMG + 6 per impact. Spend all Flow for +4 power per charge on each impact. Works with any weapon.")
                 .Price(2)
                 .RequirementSkill(SkillType.TwinPistol, 10)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.GrappleShot2)
-                .Description("Close up to 6m toward an enemy, then attack with each equipped attack weapon for weapon DMG + 10 per impact. Spend all Momentum for +4 power per charge on each impact. Works with any weapon.")
+                .Description("Close up to 6m toward an enemy, then attack with each equipped attack weapon for weapon DMG + 10 per impact. Spend all Flow for +4 power per charge on each impact. Works with any weapon.")
                 .Price(4)
                 .RequirementSkill(SkillType.TwinPistol, 30)
                 .RequirementMustHavePerk(PerkType.GrappleShot, 1)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.GrappleShot3)
-                .Description("Close up to 6m toward an enemy, then attack with each equipped attack weapon for weapon DMG + 14 per impact. Spend all Momentum for +4 power per charge on each impact. Works with any weapon.")
+                .Description("Close up to 6m toward an enemy, then attack with each equipped attack weapon for weapon DMG + 14 per impact. Spend all Flow for +4 power per charge on each impact. Works with any weapon.")
                 .Price(4)
                 .RequirementSkill(SkillType.TwinPistol, 38)
                 .RequirementMustHavePerk(PerkType.GrappleShot, 2);
@@ -372,7 +372,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.CrossfireStance)
-                .Description("With any weapon: +10% Haste, +10% Movement Speed and 18-second Momentum. ALL weapon auto-attacks deal 20% less damage. Activated ability damage is unchanged.")
+                .Description("With any weapon: +10% Haste, +10% Movement Speed and 18-second Flow. ALL weapon auto-attacks deal 20% less damage. Activated ability damage is unchanged.")
                 .Price(4)
                 .RequirementSkill(SkillType.TwinPistol, 20);
         }
@@ -384,7 +384,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.TwinPistolFollowThroughTrait)
-                .Description("A Momentum-spending ability landing any hit restores 1 STM per charge spent, up to 3 STM. At most once per activation and once every 12 seconds.")
+                .Description("A Flow-spending ability landing any hit restores 1 STM per charge spent, up to 3 STM. At most once per activation and once every 12 seconds.")
                 .IncreasesStat(StatType.PairedRangedMomentumStaminaRestorePerCharge, 1)
                 .IncreasesStat(StatType.PairedRangedMomentumStaminaRestoreMaximum, 3)
                 .IncreasesStat(StatType.PairedRangedMomentumRestoreCooldownSeconds, 12)
@@ -399,7 +399,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.TwinPistolSecondWindTrait)
-                .Description("A direct hostile attack missing its accuracy-versus-evasion roll grants 1 Momentum, at most once every 10 seconds.")
+                .Description("A direct hostile attack missing its accuracy-versus-evasion roll grants 1 Flow, at most once every 10 seconds.")
                 .IncreasesStat(StatType.PairedRangedEvasionMomentumCooldownSeconds, 10)
                 .Price(2)
                 .RequirementSkill(SkillType.TwinPistol, 35)
@@ -413,7 +413,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.FinalSalvo)
-                .Description("Without moving, attack one enemy with each equipped attack weapon for weapon DMG + 20 per impact. Spend all Momentum for +6 power per charge on each impact (max +18). Works with any weapon.")
+                .Description("Without moving, attack one enemy with each equipped attack weapon for weapon DMG + 20 per impact. Spend all Flow for +6 power per charge on each impact (max +18). Works with any weapon.")
                 .Price(6)
                 .RequirementSkill(SkillType.TwinPistol, 50)
                 .RequirementQuest(TwinPistolCapstoneQuestDefinition.FinalSalvoMasteryQuestId);

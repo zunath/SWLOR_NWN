@@ -154484,7 +154484,7 @@
                     },
                     "BaseItem": {
                       "type": "int",
-                      "value": 541
+                      "value": 542
                     },
                     "Charges": {
                       "type": "byte",
@@ -154600,7 +154600,7 @@
                           },
                           "Subtype": {
                             "type": "word",
-                            "value": 51
+                            "value": 52
                           }
                         },
                         {

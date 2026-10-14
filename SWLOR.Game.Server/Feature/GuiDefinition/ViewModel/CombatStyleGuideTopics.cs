@@ -155,11 +155,11 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     },
                     "Perks", "Combat Basics", "Saberstaff Combat Styles", "Staff Combat Styles"),
 
-                Topic("Twin Pistol", "Choose Twin Pistol for sustained fire on one enemy or attacks that reposition you to build Momentum.",
+                Topic("Twin Pistol", "Choose Twin Pistol for sustained fire on one enemy or attacks that reposition you to build Flow.",
                     new[]
                     {
                         Style("Twin Pistol - Barrage", "Barrage rewards weapon auto-attack hits on one enemy. Akimbo Stance ramps Haste while reducing all weapon auto-attack damage by 30 percent. Twin Suns strengthens your next six weapon auto-attack attempts."),
-                        Style("Twin Pistol - Crossfire", "Crossfire uses Blaster Slide and Pistol Rush to build up to three Momentum, then spends it with Grapple Shot or Final Salvo. Crossfire Stance adds Haste and Movement Speed while reducing all weapon auto-attack damage by 20 percent."),
+                        Style("Twin Pistol - Crossfire", "Crossfire uses Blaster Slide and Pistol Rush to build up to three Flow charges, then spends them with Grapple Shot or Final Salvo. Crossfire Stance adds Haste and Movement Speed while reducing all weapon auto-attack damage by 20 percent."),
                         Style("Equipment and Cross-skilling", "Twin Pistols are one owned item. Equipping the pair automatically equips a temporary off-hand gun; removing either gun unequips the pair and destroys the temporary gun. Both guns share the item's weapon profile. Weapon auto-attacks train Twin Pistol. Purchased perks also work with other eligible weapons. Matched Rhythm grants Haste; Paired Handling grants weapon auto-attack damage. You cannot purchase both.")
                     },
                     "Perks", "Combat Basics", "Pistol Combat Styles", "Rifle Combat Styles"),

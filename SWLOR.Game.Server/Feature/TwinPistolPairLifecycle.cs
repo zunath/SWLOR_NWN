@@ -8,21 +8,20 @@ namespace SWLOR.Game.Server.Feature;
 /// <summary>The second gun exists only while its owned Twin Pistols item is equipped.</summary>
 public static class TwinPistolPairLifecycle
 {
-    [NWNEventHandler(ScriptName.OnTwinPistolUnequipBefore)]
-    public static void BeforeUnequip()
+    [NWNEventHandler(ScriptName.OnModuleCacheAfter)]
+    public static void RegisterUnequipGuard() => EquipmentUnequip.RegisterGuard("TwinPistol", TryHandleUnequip);
+
+    public static bool TryHandleUnequip(uint actor, uint item)
     {
-        var actor = OBJECT_SELF;
-        var item = StringToObject(EventsPlugin.GetEventData("ITEM"));
         if (!TwinPistolEquipment.IsChanging(actor) && !TwinPistolEquipment.IsDestroyingCompanion(item) &&
             (TwinPistolEquipment.IsPairItem(item) || TwinPistolEquipment.IsGeneratedCompanion(item)))
         {
             // Nested safe removal dispatches the existing stat/perk hooks exactly once.
             // The outer request must never drop the real item or run those hooks a second time.
             TwinPistolEquipment.RemovePair(actor, item);
-            EventsPlugin.SkipEvent();
-            return;
+            return true;
         }
-        ExecuteScript(ScriptName.OnItemUnequipBefore, actor);
+        return false;
     }
 
     [NWNEventHandler(ScriptName.OnItemEquipValidateAfter)]

@@ -88,7 +88,7 @@ BESPOKE_WEAPON_TABS = {
     # reflection) that this description-driven generator cannot express. Do not
     # regenerate it here or the hand-written mechanics are lost.
     "Lightsaber",
-    # Paired gun profiles, movement, Momentum and activation-level accounting are
+    # Paired gun profiles, movement, Flow and activation-level accounting are
     # authored explicitly; description parsing cannot reproduce those contracts.
     "Twin Pistol",
 }
@@ -291,7 +291,7 @@ def authored_animation_builder_lines(skill, row, hostile):
 
 
 PERK_BASE_ID_ALIASES = {
-    ("Twin Pistol", "Momentum"): "TwinPistolMomentum",
+    ("Twin Pistol", "Flow"): "TwinPistolMomentum",
     ("Twin Pistol", "Follow Through"): "TwinPistolFollowThrough",
     ("Twin Pistol", "Second Wind"): "TwinPistolSecondWind",
     ("Vibroknife", "Shadowflow"): "ShadowflowStance",

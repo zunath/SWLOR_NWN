@@ -200,7 +200,7 @@ namespace SWLOR.Game.Server.Feature
             EventsPlugin.SubscribeEvent("NWNX_ON_ITEM_EQUIP_AFTER", ScriptName.OnItemEquipValidateAfter);
 
             // Item Unequip events
-            EventsPlugin.SubscribeEvent("NWNX_ON_ITEM_UNEQUIP_BEFORE", ScriptName.OnTwinPistolUnequipBefore);
+            EventsPlugin.SubscribeEvent("NWNX_ON_ITEM_UNEQUIP_BEFORE", ScriptName.OnEquipmentUnequipBefore);
             EventsPlugin.SubscribeEvent("NWNX_ON_ITEM_UNEQUIP_AFTER", ScriptName.OnItemUnequipAfter);
 
             // Item Destroy events

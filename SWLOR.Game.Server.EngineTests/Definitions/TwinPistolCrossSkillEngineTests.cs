@@ -399,21 +399,24 @@ public static class TwinPistolCrossSkillEngineTests
     [EngineTest("Twin Pistol cross-trained attacks capture one impact per weapon and none from shields", Category = "TwinPistolCrossSkill", TimeoutSeconds = 120f)]
     public static async Task CrossTrainedWeaponCounts(EngineTestContext ctx)
     {
-        var loadouts = new (string Main, string Off, int Impacts)[]
+        var loadouts = new (string Main, string Off, int Impacts, bool Lethal)[]
         {
-            ("b_pistol", null, 1), ("b_pistol", "ec_shield", 1),
-            ("b_longsword", null, 1), ("b_longsword", "b_longsword", 2),
-            ("b_staff", null, 1), ("b_rifle", null, 1),
-            ("saber_train_1", null, 1), ("saber_train_1", "saber_train_1", 2),
-            ("trn_saberstaff_1", null, 1), ("b_twinpistol", null, 2),
+            ("b_pistol", null, 1, false), ("b_pistol", "ec_shield", 1, false),
+            ("b_longsword", null, 1, false), ("b_longsword", "b_longsword", 2, false),
+            ("b_staff", null, 1, false), ("b_rifle", null, 1, false),
+            ("saber_train_1", null, 1, false), ("saber_train_1", "saber_train_1", 2, false),
+            ("trn_saberstaff_1", null, 1, false), ("b_twinpistol", null, 2, false),
+            ("b_twinpistol", null, 2, true),
         };
         Combat.SetAbilityHitResolutionOverride(true);
         Combat.SetAutoAttackHitResolutionOverride(false);
+        var presentationActor = OBJECT_INVALID;
         try
         {
-            foreach (var (mainResref, offResref, impacts) in loadouts)
+            foreach (var (mainResref, offResref, impacts, killingShot) in loadouts)
             {
                 var actor = ctx.SpawnCreature("civilian");
+                presentationActor = actor;
                 var target = ctx.SpawnCreature("nw_rat001", 2f);
                 await ctx.EquipItemAsync(actor, mainResref, InventorySlot.RightHand);
                 if (offResref != null) await ctx.EquipItemAsync(actor, offResref, InventorySlot.LeftHand);
@@ -423,31 +426,63 @@ public static class TwinPistolCrossSkillEngineTests
                     ctx.SetNPCPerkLevel(actor, PerkType.PairedVolley, 1);
                     CreaturePlugin.AddFeat(actor, FeatType.PairedVolley1);
                     ctx.SuppressNPCNaturalRegen(target);
-                    Stat.SetNPCMaxHitPoints(target, 20000, true);
+                    Stat.SetNPCMaxHitPoints(target, killingShot ? 1 : 20000, true);
                     ApplyEffectToObject(DurationType.Temporary, EffectCutsceneParalyze(), target, 120f);
                     ctx.MakeHostile(target);
                     _observedTarget = target;
                     _damageEvents = 0;
                     Ability.ClearLastCompletedAbilityImpactSummary(actor);
+                    if (killingShot)
+                    {
+                        PairedRangedPresentation.Release(actor);
+                        PairedRangedPresentation.Prepare(actor);
+                    }
                     ctx.Assert(UsePerkFeat.TryUseAbility(actor, target, FeatType.PairedVolley1, GetLocation(target)),
                         $"Paired Volley accepts {mainResref}/{offResref}: {Ability.GetLastActivationDenialReason()}");
                 });
-                await ctx.WaitUntilAsync(() => _damageEvents >= impacts &&
+                await ctx.WaitUntilAsync(() => (killingShot ? GetIsDead(target) : _damageEvents >= impacts) &&
                     Ability.GetLastCompletedAbilityImpactSummary(actor)?.AttributedDamage > 0,
-                    8f, $"the captured {mainResref}/{offResref} weapon impacts");
-                await ctx.DelaySecondsAsync(.2f);
-                ctx.AssertEqual(impacts, _damageEvents, $"{mainResref}/{offResref} contributes exactly one impact per equipped attack weapon");
+                    8f, $"the captured {mainResref}/{offResref} weapon impacts (lethal={killingShot})");
+                await ctx.DelaySecondsAsync(.4f);
+                if (!killingShot)
+                    ctx.AssertEqual(impacts, _damageEvents, $"{mainResref}/{offResref} contributes exactly one impact per equipped attack weapon");
+                var firingSources = 0;
+                for (var source = GetFirstObjectInArea(ctx.Arena, ObjectType.Placeable); GetIsObjectValid(source);
+                     source = GetNextObjectInArea(ctx.Arena, ObjectType.Placeable))
+                    if (GetTag(source) == PairedRangedPresentation.MuzzleTag &&
+                        GetResRef(source) == PairedRangedPresentation.MuzzleBlueprint &&
+                        GetPosition(source).Z - GetPosition(actor).Z > 1f)
+                        firingSources++;
+                ctx.AssertEqual(mainResref == "b_twinpistol" ? 2 : 0, firingSources,
+                    "The real ability shows each fired pistol including a killing shot, while cross-skilled weapons create no paired muzzle effects");
+                if (killingShot)
+                {
+                    ctx.Assert(GetIsDead(target), "The lethal ability still presents both fired barrels after its damage flush");
+                    for (var nth = 1; ; nth++)
+                    {
+                        var corpse = GetNearestObject(ObjectType.Placeable, target, nth);
+                        if (!GetIsObjectValid(corpse) || GetDistanceBetween(target, corpse) > 10f) break;
+                        if (GetLocalObject(corpse, Loot.CorpseBodyVariable) != target) continue;
+                        ctx.Track(corpse);
+                        break;
+                    }
+                }
+                ctx.Log($"Ability presentation {mainResref}/{offResref}: lethal={killingShot}, damageCallbacks={_damageEvents}, " +
+                    $"attributedDamage={Ability.GetLastCompletedAbilityImpactSummary(actor).AttributedDamage}, raisedSources={firingSources}");
                 ctx.AssertEqual(SkillType.TwinPistol, Ability.GetLastCompletedAbilityImpactSummary(actor).SkillType,
                     "Cross-trained equipment does not redirect the purchased ability's skill");
                 await ctx.ExecuteInCreatureContextAsync(actor, () => ClearAllActions());
                 _observedTarget = OBJECT_INVALID;
+                PairedRangedPresentation.Release(actor);
                 DestroyObject(actor);
                 DestroyObject(target);
+                presentationActor = OBJECT_INVALID;
                 await ctx.WaitFrameAsync();
             }
         }
         finally
         {
+            PairedRangedPresentation.Release(presentationActor);
             _observedTarget = OBJECT_INVALID;
             Combat.SetAbilityHitResolutionOverride(null);
             Combat.SetAutoAttackHitResolutionOverride(null);

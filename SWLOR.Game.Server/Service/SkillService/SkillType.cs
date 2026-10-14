@@ -506,7 +506,7 @@ namespace SWLOR.Game.Server.Service.SkillService
             false,
             false,
             CombatPointCategoryType.Weapon)]
-        TwinPistol = 51,
+        TwinPistol = 52,
     }
 
     public class SkillAttribute : Attribute

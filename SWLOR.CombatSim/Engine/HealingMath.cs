@@ -37,6 +37,22 @@ namespace SWLOR.CombatSim.Engine
         public static float AffinityMultiplier(int affinity, float cap) =>
             Math.Clamp(1f + 0.05f * affinity, 0.5f, cap);
 
+        /// <summary>The game's CalculateOutgoingAbilityHealingAmount: only a bonus counts; zero or less changes nothing.</summary>
+        public static int AddOutgoingPercent(int amount, float percent) =>
+            amount <= 0 || percent <= 0f ? amount : amount + (int)Math.Ceiling(amount * (percent / 100f));
+
+        /// <summary>
+        /// The game's ApplyHealingReceivedAdjustment: a bonus or a cut of Ceiling(amount x percent), never below 1 HP.
+        /// </summary>
+        public static int AddReceivedPercent(int amount, float percent)
+        {
+            if (amount <= 0 || percent == 0f)
+                return amount;
+
+            var delta = (int)Math.Ceiling(amount * (Math.Abs(percent) / 100f));
+            return Math.Max(1, percent > 0f ? amount + delta : amount - delta);
+        }
+
         public static int AddPercent(int amount, float percent)
         {
             if (amount <= 0 || percent == 0f)
@@ -85,7 +101,7 @@ namespace SWLOR.CombatSim.Engine
         {
             var amount = PercentOfMaxHp(targetMaxHp, effect.Percent * affinityMultiplierAtCast / Math.Max(1, effect.Ticks));
             amount = ScaleByStat(amount, casterStat);
-            return AddPercent(amount, outgoingHealingPercent);
+            return AddOutgoingPercent(amount, outgoingHealingPercent);
         }
 
         public static int PartyPulse(
@@ -138,7 +154,7 @@ namespace SWLOR.CombatSim.Engine
                 amount = ScaleByStat(amount, casterStat);
             if (effect.UsesForceAffinity)
                 amount = (int)Math.Round(amount * AffinityMultiplier(casterAffinity, affinityCap), MidpointRounding.AwayFromZero);
-            amount = AddPercent(amount, outgoingHealingPercent);
+            amount = AddOutgoingPercent(amount, outgoingHealingPercent);
             if (effect.UsesCombatReadiness)
                 amount = AddPercent(amount, combatReadinessPercent);
 

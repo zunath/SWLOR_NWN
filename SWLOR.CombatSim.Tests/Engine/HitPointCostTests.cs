@@ -38,6 +38,17 @@ namespace SWLOR.CombatSim.Tests.Engine
         }
 
         [Test]
+        public void TheCost_RoundsUpLikeTheGamesPercentOf()
+        {
+            var simulation = Spawn(RuleSets.Current(), 10, maxHp: 1001);
+            var blade = simulation.Get("Blade");
+
+            CastOnce(simulation, blade);
+
+            blade.Stats.HitPointsSpent.Should().Be(301, "30% of 1,001 is 300.3, which rounds up");
+        }
+
+        [Test]
         public void TemporaryHp_PaysFirst()
         {
             var simulation = Spawn(RuleSets.Current(), 10);
@@ -96,14 +107,14 @@ namespace SWLOR.CombatSim.Tests.Engine
             blade.Stats.StmRefunded.Should().Be(expectedStamina);
         }
 
-        private Simulation Spawn(RuleSet rules, int might, bool withBloodlust = false)
+        private Simulation Spawn(RuleSet rules, int might, bool withBloodlust = false, int maxHp = BladeMaxHp)
         {
             var burst = TestCombatants.Use("SoulBurst1", AbilityTarget.Enemy, minIntervalSeconds: 600);
             burst.Damage = new DamageSpec { Min = 1f, Max = 1f, HitChance = 1f };
             var blade = new CombatantSpec
             {
                 Name = "Blade",
-                MaxHp = BladeMaxHp,
+                MaxHp = maxHp,
                 Might = might,
                 MaxFp = TestCombatants.EffectivelyUnlimited,
                 MaxStm = BladeMaxStm,

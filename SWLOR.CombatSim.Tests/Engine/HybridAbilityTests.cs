@@ -137,6 +137,31 @@ namespace SWLOR.CombatSim.Tests.Engine
         }
 
         [Test]
+        public void AHostileCastWhoseTargetDiesMidCast_IsStillPaidForAndGoesOnRecast()
+        {
+            var lightning = TestCombatants.Use("ForceLightning3", AbilityTarget.Enemy, minIntervalSeconds: 600);
+            lightning.Damage = new DamageSpec { Min = WaveDamage, Max = WaveDamage, HitChance = 1f };
+            var simulation = TestScenarios.Spawn(
+                TestScenarios.TwoTeams(
+                    false,
+                    new[] { TestCombatants.Medic("Medic", lightning) },
+                    new[] { TestCombatants.Dummy("First", true), TestCombatants.Dummy("Second", true) }),
+                RuleSets.Current(),
+                _catalog);
+            var medic = simulation.Get("Medic");
+            SimulationClock.RunUntil(simulation, () => medic.Casting != null, 10, "Force Lightning started");
+            var targeted = medic.Casting.Target;
+            var other = simulation.Get(targeted.Name == "First" ? "Second" : "First");
+            simulation.ApplyDamage(medic, targeted, TestCombatants.EffectivelyUnlimited * 2.0);
+
+            CastOnce(simulation);
+
+            medic.Stats.FpSpent.Should().BeGreaterThan(0, "the completed cast is paid for");
+            medic.RecastReadyAt.Should().ContainKey("ForceLightning");
+            other.Stats.DamageTakenToHp.Should().Be(0, "a single-target cast does not move to another enemy");
+        }
+
+        [Test]
         public void DamageFromASelfTargetedUse_LandsOnAnEnemy()
         {
             var burst = TestCombatants.Use("ForceBurst1", AbilityTarget.Self, minIntervalSeconds: 600);

@@ -563,16 +563,22 @@ namespace SWLOR.CombatSim.Engine
             var effect = cast.Effect;
             var target = cast.Target;
             var isRevive = effect?.Kind == EffectKind.Revive;
+            var targetLost = false;
             if (isRevive ? !target.IsDead : target.IsDead)
             {
                 // Area damage (also when spread over several targets) and party heals or shields centered on the
                 // caster (Purifying Wave) need no living target: they still land, and their damage goes to enemies
                 // still in the fight.
                 var needsNoTarget = effect == null ? HitsSeveralEnemies(cast.Use.Damage) : IsPartyEffect(effect);
-                if (isRevive || !needsNoTarget)
+                if (isRevive)
                     return;
-
-                target = EnsureAttackTarget(caster);
+                if (needsNoTarget)
+                    target = EnsureAttackTarget(caster);
+                else if (effect == null && cast.Use.Damage != null)
+                    // The game completes a hostile cast at a body: it is paid for and goes on recast, but hits nothing.
+                    targetLost = true;
+                else
+                    return;
             }
 
             // The game checks the revive rules again when the cast completes; a failed check spends nothing.
@@ -600,6 +606,8 @@ namespace SWLOR.CombatSim.Engine
             var hitBonus = ConvergenceHitBonus(caster, cast.Ability);
             if (cast.FpCost > 0 && cast.Ability.SkillType == SkillType.Force)
                 TriggerConvergence(caster);
+            if (targetLost)
+                return;
 
             if (cast.Ability.IsQueuedWeapon && cast.Use.Damage != null)
             {
@@ -909,7 +917,7 @@ namespace SWLOR.CombatSim.Engine
         private double HealFromDamage(Combatant caster, double dealt, float percent, double healingLeft)
         {
             // GameMath.PercentOf rounds both the share and the per-hit cap up.
-            double requested = HealingMath.AddPercent((int)Math.Ceiling(dealt * percent / 100.0), caster.HealingReceivedPercent);
+            double requested = HealingMath.AddReceivedPercent((int)Math.Ceiling(dealt * percent / 100.0), caster.HealingReceivedPercent);
             requested = Math.Min(Math.Min(requested, Math.Ceiling(dealt * DamageHealing.MaximumDamagePercentPerHit / 100.0)), healingLeft);
             var amount = (int)requested;
             if (amount <= 0)
@@ -929,7 +937,8 @@ namespace SWLOR.CombatSim.Engine
             if (currentHp <= 1)
                 return;
 
-            var fullCost = caster.Spec.MaxHp * cost.GetPercent(caster.Spec.Might) / 100.0;
+            // GameMath.PercentOf rounds the cost up.
+            var fullCost = (double)Math.Max(1, (int)Math.Ceiling(caster.Spec.MaxHp * (cost.GetPercent(caster.Spec.Might) / 100f)));
             var payment = Math.Min(currentHp - 1, fullCost);
             var remaining = payment;
             foreach (var pool in caster.TemporaryHp.OrderBy(p => p.ExpiresAt))
@@ -1056,7 +1065,7 @@ namespace SWLOR.CombatSim.Engine
 
             double adjusted = kind == HealKind.NaturalRegeneration || receivedAlreadyApplied
                 ? amount
-                : HealingMath.AddPercent(amount, target.HealingReceivedPercent);
+                : HealingMath.AddReceivedPercent(amount, target.HealingReceivedPercent);
 
             if (IsInPvpCombat(target))
             {

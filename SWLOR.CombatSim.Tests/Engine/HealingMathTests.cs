@@ -190,6 +190,22 @@ namespace SWLOR.CombatSim.Tests.Engine
             tick.Should().Be(48);
         }
 
+        [TestCase(101, -20f, 80)]
+        [TestCase(100, -100f, 1)]
+        [TestCase(100, 25f, 125)]
+        public void AddReceivedPercent_MatchesTheGamesHealingReceivedAdjustment(int amount, float percent, int expected)
+        {
+            HealingMath.AddReceivedPercent(amount, percent).Should().Be(expected);
+        }
+
+        [TestCase(100, -50f, 100)]
+        [TestCase(100, 0f, 100)]
+        [TestCase(101, 10f, 112)]
+        public void AddOutgoingPercent_IgnoresAdjustmentsAtOrBelowZero(int amount, float percent, int expected)
+        {
+            HealingMath.AddOutgoingPercent(amount, percent).Should().Be(expected);
+        }
+
         [Test]
         public void HealOverTimeTick_AppliesAffinityToThePercentBeforeRoundingAndWillpower()
         {

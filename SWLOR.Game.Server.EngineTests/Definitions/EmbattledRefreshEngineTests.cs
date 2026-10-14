@@ -20,11 +20,13 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             var defender = ctx.SpawnCreature(Resref);
             var first = ctx.SpawnCreature(Resref, 2f);
             var second = ctx.SpawnCreature(Resref, -2f);
+            var control = ctx.SpawnCreature(Resref, 0f, 3f);
             // Spawn initialization resets NPC stats after the first frame.
             await ctx.DelaySecondsAsync(1f);
-            foreach (var creature in new[] { defender, first, second })
+            foreach (var creature in new[] { defender, first, second, control })
                 SetAILevel(creature, AILevel.VeryLow);
             ctx.SetNPCPerkLevel(defender, PerkType.SurroundedNotOutmatched, 1);
+            ctx.SetNPCPerkLevel(control, PerkType.SurroundedNotOutmatched, 1);
             ctx.Assert(Stat.GetStatAdjustment(defender, StatType.EmbattledStackDefensePercent) > 0, "the defender has the Embattled trait");
 
             EmbattledStatusEffect.Refresh(defender, first);
@@ -35,6 +37,8 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
 
             await ctx.DelaySecondsAsync(2f);
             EmbattledStatusEffect.Refresh(defender, first);
+            // A fresh Embattled on another defender at the same moment sets the expected expiry.
+            EmbattledStatusEffect.Refresh(control, first);
             var refreshed = StatusEffect.GetStatusEffect<EmbattledStatusEffect>(defender);
             ctx.Assert(ReferenceEquals(applied, refreshed), "another hit from the same attacker keeps the active Embattled");
             ctx.AssertEqual(1, refreshed.Stacks, "the stack count is unchanged");
@@ -47,11 +51,15 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             ctx.Assert(ReferenceEquals(applied, StatusEffect.GetStatusEffect<EmbattledStatusEffect>(defender)),
                 "Embattled outlasts the first hit's window");
 
-            // A fresh application expires on the tick at 6 s; the restarted window must too.
+            // The restarted window must end with the fresh one; comparing them keeps server lag out of the result.
             await ctx.DelaySecondsAsync(1f);
             ctx.Assert(StatusEffect.HasStatusEffect<EmbattledStatusEffect>(defender), "Embattled lasts the full restarted window");
-            await ctx.WaitUntilAsync(() => !StatusEffect.HasStatusEffect<EmbattledStatusEffect>(defender), 1.3f,
-                "Embattled to expire 6 s after the last hit");
+            await ctx.WaitUntilAsync(() => !StatusEffect.HasStatusEffect<EmbattledStatusEffect>(defender) ||
+                                           !StatusEffect.HasStatusEffect<EmbattledStatusEffect>(control), 5f,
+                "the restarted or the fresh Embattled to expire");
+            await ctx.WaitUntilAsync(() => !StatusEffect.HasStatusEffect<EmbattledStatusEffect>(defender) &&
+                                           !StatusEffect.HasStatusEffect<EmbattledStatusEffect>(control), 0.6f,
+                "the restarted Embattled to expire together with the fresh one");
 
             EmbattledStatusEffect.Refresh(defender, first);
             applied = StatusEffect.GetStatusEffect<EmbattledStatusEffect>(defender);

@@ -50,10 +50,12 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             var caster = ctx.SpawnCreature(Resref);
             var otherCaster = ctx.SpawnCreature(Resref, -2f);
             var target = ctx.SpawnCreature(Resref, 2f);
+            var control = ctx.SpawnCreature(Resref, 4f);
             // Spawn initialization resets NPC stats and pools after the first frame.
             await ctx.DelaySecondsAsync(1f);
             ctx.MakeHostile(target);
-            foreach (var creature in new[] { caster, otherCaster, target })
+            ctx.MakeHostile(control);
+            foreach (var creature in new[] { caster, otherCaster, target, control })
             {
                 SetAILevel(creature, AILevel.VeryLow);
                 ApplyEffectToObject(DurationType.Temporary, EffectCutsceneParalyze(), creature, 60f);
@@ -76,20 +78,26 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             await ctx.DelaySecondsAsync(1.5f);
             ctx.Assert(StatusEffect.ApplyStatusEffect(caster, target, typeof(HobbleStatusEffect), 3f), "Hobble re-applies");
             var refreshedAt = DateTime.UtcNow;
+            ctx.Assert(StatusEffect.ApplyStatusEffect(caster, control, typeof(HobbleStatusEffect), 3f), "a fresh Hobble applies to the control");
             var refreshed = StatusEffect.GetStatusEffect<HobbleStatusEffect>(target);
             ctx.Assert(ReferenceEquals(applied, refreshed), "the same source keeps the active Hobble");
             ctx.AssertEqual(slow, StatusEffect.GetStatAdjustment(target, StatType.MovementSpeedPercentAdjustment),
                 "the refresh does not add the slow again");
             ctx.AssertEqual(staminaBefore - 6, Stat.GetCurrentStamina(target), "the refresh still triggers the stamina drain");
 
-            // A fresh application expires on the tick at its full duration; the refresh must too.
+            // The refreshed Hobble must expire with a fresh one applied at the same moment. Comparing the two
+            // keeps server lag in the expiry callbacks out of the result.
             var remaining = refreshed.GetRemainingDurationSeconds(refreshedAt);
             ctx.Assert(remaining > 0.9f, $"the refresh restarts the duration ({remaining:0.00} s left)");
             await ctx.DelaySecondsAsync(remaining - 0.5f);
             ctx.Assert(ReferenceEquals(applied, StatusEffect.GetStatusEffect<HobbleStatusEffect>(target)),
                 "Hobble lasts its restarted duration");
-            await ctx.WaitUntilAsync(() => !StatusEffect.HasStatusEffect<HobbleStatusEffect>(target), 1.3f,
-                "Hobble to expire on time after the refresh");
+            await ctx.WaitUntilAsync(() => !StatusEffect.HasStatusEffect<HobbleStatusEffect>(target) ||
+                                           !StatusEffect.HasStatusEffect<HobbleStatusEffect>(control), 5f,
+                "the refreshed or the fresh Hobble to expire");
+            await ctx.WaitUntilAsync(() => !StatusEffect.HasStatusEffect<HobbleStatusEffect>(target) &&
+                                           !StatusEffect.HasStatusEffect<HobbleStatusEffect>(control), 0.6f,
+                "the refreshed Hobble to expire together with the fresh one");
 
             ctx.Assert(StatusEffect.ApplyStatusEffect(caster, target, typeof(HobbleStatusEffect), 3f), "Hobble applies again");
             var fromCaster = StatusEffect.GetStatusEffect<HobbleStatusEffect>(target);

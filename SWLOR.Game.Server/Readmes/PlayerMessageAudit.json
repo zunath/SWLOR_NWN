@@ -1533,20 +1533,6 @@
     "Call": "SendMessageToPC(Player, ColorToken.Green($\"Blueprint Bonus applied: {bonusName} +{bonus.Amount}\"))"
   },
   {
-    "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/CreatureManagerViewModel.cs",
-    "Line": 100,
-    "Member": "OnSelectCreature",
-    "Delivery": "Retained",
-    "Call": "SendMessageToPC(Player, \"Please click on a location to spawn \" + CreatureNames[SelectedCreatureIndex])"
-  },
-  {
-    "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/CreatureManagerViewModel.cs",
-    "Line": 114,
-    "Member": "OnCreateCreature",
-    "Delivery": "Retained",
-    "Call": "SendMessageToPC(Player, \"Please click on a location to spawn \" + CreatureNames[SelectedCreatureIndex])"
-  },
-  {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/DiceViewModel.cs",
     "Line": 123,
     "Member": "DoDiceRoll",
@@ -1643,6 +1629,83 @@
     "Member": "OnClickConfirm",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature($\"XP cannot be distributed while dead.\", Player, false)"
+  },
+  {
+    "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/DMChooserViewModel.cs",
+    "Line": 384,
+    "Member": "GetLiveSelection",
+    "Delivery": "Retained",
+    "Call": "DMPresence.SendMessage(Player, \"That object no longer exists.\")"
+  },
+  {
+    "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/DMChooserViewModel.cs",
+    "Line": 446,
+    "Member": "OnClickBringHere",
+    "Delivery": "Retained",
+    "Call": "DMPresence.SendMessage(Player, error)"
+  },
+  {
+    "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/DMChooserViewModel.cs",
+    "Line": 469,
+    "Member": "OnClickDestroy",
+    "Delivery": "Retained",
+    "Call": "DMPresence.SendMessage(Player, \"That object no longer exists.\")"
+  },
+  {
+    "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/DMChooserViewModel.cs",
+    "Line": 473,
+    "Member": "OnClickDestroy",
+    "Delivery": "Retained",
+    "Call": "DMPresence.SendMessage(Player, \"A DM is possessing that creature.\")"
+  },
+  {
+    "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/DMCreatorViewModel.cs",
+    "Line": 316,
+    "Member": "ReportCreated",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(DMPresence.GetControlledCreature(Player), GetIsObjectValid(created)\n                ? $\"Created {blueprint.Name} ({blueprint.Resref}).\"\n                : $\"Could not create {blueprint.Name} ({blueprint.Resref}).\")"
+  },
+  {
+    "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/DMPlayerSearchViewModel.cs",
+    "Line": 265,
+    "Member": "GetSelectedOnlinePlayer",
+    "Delivery": "Retained",
+    "Call": "DMPresence.SendMessage(Player, $\"{result.Name} is no longer online.\")"
+  },
+  {
+    "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/DMPlayerSearchViewModel.cs",
+    "Line": 314,
+    "Member": "OnClickJumpTo",
+    "Delivery": "Retained",
+    "Call": "DMPresence.SendMessage(Player, $\"{result.Name} is offline. Jumping to their last saved location.\")"
+  },
+  {
+    "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/DMPlayerSearchViewModel.cs",
+    "Line": 319,
+    "Member": "OnClickJumpTo",
+    "Delivery": "Retained",
+    "Call": "DMPresence.SendMessage(Player, $\"{result.Name} has no saved location in an area that still exists.\")"
+  },
+  {
+    "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/DMPlayerSearchViewModel.cs",
+    "Line": 335,
+    "Member": "OnClickJumpHere",
+    "Delivery": "Retained",
+    "Call": "DMPresence.SendMessage(Player, error)"
+  },
+  {
+    "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/DMPlayerSearchViewModel.cs",
+    "Line": 368,
+    "Member": "OnClickSendMessage",
+    "Delivery": "Retained",
+    "Call": "ChatPlugin.SendMessage(ChatChannel.DMTell, message, DMPresence.GetDM(Player), target)"
+  },
+  {
+    "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/DMPlayerSearchViewModel.cs",
+    "Line": 369,
+    "Member": "OnClickSendMessage",
+    "Delivery": "Retained",
+    "Call": "DMPresence.SendMessage(Player, $\"To {result.Name}: {message}\")"
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/DroidAIViewModel.cs",
@@ -3305,6 +3368,13 @@
   },
   {
     "File": "SWLOR.Game.Server/Feature/UsePerkFeat.cs",
+    "Line": 332,
+    "Member": "UseFeat",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(activator, error)"
+  },
+  {
+    "File": "SWLOR.Game.Server/Feature/UsePerkFeat.cs",
     "Line": 387,
     "Member": "TryUseAbility",
     "Delivery": "Retained",
@@ -3904,6 +3974,13 @@
     "Member": "ApplyPenalties",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, $\"{newDebt} XP added to your debt. (Total: {dbPlayer.XPDebt} XP)\")"
+  },
+  {
+    "File": "SWLOR.Game.Server/Service/DMPresence.cs",
+    "Line": 217,
+    "Member": "SendMessage",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(GetControlledCreature(actor), message)"
   },
   {
     "File": "SWLOR.Game.Server/Service/Droid.cs",
@@ -5125,77 +5202,77 @@
   },
   {
     "File": "SWLOR.Game.Server/Service/Space.cs",
-    "Line": 1287,
+    "Line": 1299,
     "Member": "ActivateShipModule",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(activator, \"Unable to use that module.\")"
   },
   {
     "File": "SWLOR.Game.Server/Service/Space.cs",
-    "Line": 1303,
+    "Line": 1315,
     "Member": "ActivateShipModule",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(activator, $\"Your ship does not have enough capacitor to use that module. (Required: {requiredCapacitor})\")"
   },
   {
     "File": "SWLOR.Game.Server/Service/Space.cs",
-    "Line": 1311,
+    "Line": 1323,
     "Member": "ActivateShipModule",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(activator, \"That module is not ready.\")"
   },
   {
     "File": "SWLOR.Game.Server/Service/Space.cs",
-    "Line": 1327,
+    "Line": 1339,
     "Member": "ActivateShipModule",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(activator, \"This module cannot be used on that target type.\")"
   },
   {
     "File": "SWLOR.Game.Server/Service/Space.cs",
-    "Line": 1334,
+    "Line": 1346,
     "Member": "ActivateShipModule",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(activator, \"Invalid target.\")"
   },
   {
     "File": "SWLOR.Game.Server/Service/Space.cs",
-    "Line": 1342,
+    "Line": 1354,
     "Member": "ActivateShipModule",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(activator, $\"Target is too far away. Maximum distance: {maxDistance} meters.\")"
   },
   {
     "File": "SWLOR.Game.Server/Service/Space.cs",
-    "Line": 1360,
+    "Line": 1372,
     "Member": "ActivateShipModule",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(activator, result)"
   },
   {
     "File": "SWLOR.Game.Server/Service/Space.cs",
-    "Line": 2089,
+    "Line": 2101,
     "Member": "ApplyDeath",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature(ColorToken.Red(\"The ship has exploded!\"), player, false)"
   },
   {
     "File": "SWLOR.Game.Server/Service/Space.cs",
-    "Line": 2277,
+    "Line": 2289,
     "Member": "NotifyShipDamage",
     "Delivery": "Retained",
     "Call": "Messaging.SendMessageNearbyToPlayers(attacker, buildMessage, ShipDamageMessageRange)"
   },
   {
     "File": "SWLOR.Game.Server/Service/Space.cs",
-    "Line": 2283,
+    "Line": 2295,
     "Member": "NotifyShipDamage",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(target, buildMessage(target))"
   },
   {
     "File": "SWLOR.Game.Server/Service/Space.cs",
-    "Line": 2495,
+    "Line": 2507,
     "Member": "PreventSpaceStealth",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(creature, ColorToken.Red($\"You cannot enter stealth mode in space.\"))"

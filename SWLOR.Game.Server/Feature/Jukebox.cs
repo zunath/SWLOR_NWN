@@ -20,15 +20,14 @@ namespace SWLOR.Game.Server.Feature
             if (!GetIsPC(user))
                 return;
 
-            var player = user;
-            var uiTarget = OBJECT_INVALID;
-            if (GetIsDMPossessed(player))
-            {
-                uiTarget = player;
-                player = GetMaster(player);
-            }
+            var payload = new MusicPickerPayload(MusicPickerMode.Jukebox, jukebox);
 
-            Gui.TogglePlayerWindow(player, GuiWindowType.MusicPicker, new MusicPickerPayload(MusicPickerMode.Jukebox, jukebox), jukebox, uiTarget);
+            // DMs open the picker the way the toolbar's Music button does, so the two share one window across
+            // possession changes.
+            if (GetIsDM(user) || GetIsDMPossessed(user))
+                DMPresence.ToggleWindow(user, GuiWindowType.MusicPicker, payload, jukebox);
+            else
+                Gui.TogglePlayerWindow(user, GuiWindowType.MusicPicker, payload, jukebox);
         }
     }
 }

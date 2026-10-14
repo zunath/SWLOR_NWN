@@ -986,10 +986,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 return;
 
             var currentFeats = currentActiveAbilityFeats
+                .Select(QuickCast.GetOriginalFeat)
                 .Where(CanAddFeatToHotBar)
                 .Distinct()
                 .ToList();
             var previousFeats = previousActiveAbilityFeats
+                .Select(QuickCast.GetOriginalFeat)
                 .Where(CanAddFeatToHotBar)
                 .Distinct()
                 .ToList();
@@ -1011,7 +1013,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
                     if (replacementIndex < currentFeats.Count)
                     {
-                        PlayerPlugin.SetQuickBarSlot(Player, slot, PlayerQuickBarSlot.UseFeat(currentFeats[replacementIndex]));
+                        PlayerPlugin.SetQuickBarSlot(Player, slot, PlayerQuickBarSlot.UseFeat(
+                            QuickCast.GetDisplayedFeat(Player, currentFeats[replacementIndex])));
                         replacementIndex++;
                     }
                     else
@@ -1029,6 +1032,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         private static bool CanAddFeatToHotBar(FeatType feat)
         {
+            feat = QuickCast.GetOriginalFeat(feat);
             return Ability.IsFeatRegistered(feat) &&
                    Ability.GetAbilityDetail(feat).ImpactAction != null;
         }
@@ -1036,16 +1040,17 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         private static bool IsFeatHotBarSlot(QuickBarSlot quickBarSlot, IReadOnlySet<FeatType> feats)
         {
             return quickBarSlot.ObjectType == QuickBarSlotType.Feat &&
-                   feats.Contains((FeatType)quickBarSlot.INTParam1);
+                   feats.Contains(QuickCast.GetOriginalFeat((FeatType)quickBarSlot.INTParam1));
         }
 
         private bool IsFeatOnHotBar(FeatType feat)
         {
+            feat = QuickCast.GetOriginalFeat(feat);
             for (var slot = 0; slot < TotalHotBarSlots; slot++)
             {
                 var quickBarSlot = PlayerPlugin.GetQuickBarSlot(Player, slot);
                 if (quickBarSlot.ObjectType == QuickBarSlotType.Feat &&
-                    quickBarSlot.INTParam1 == (int)feat)
+                    QuickCast.GetOriginalFeat((FeatType)quickBarSlot.INTParam1) == feat)
                 {
                     return true;
                 }
@@ -1062,7 +1067,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             if (IsFeatOnHotBar(feat))
                 return;
 
-            var qbs = PlayerQuickBarSlot.UseFeat(feat);
+            var qbs = PlayerQuickBarSlot.UseFeat(QuickCast.GetDisplayedFeat(Player, feat));
 
             // Try to add the new feat to the player's hotbar.
             for (var slot = 0; slot < AutoAddHotBarSlots; slot++)
@@ -1136,7 +1141,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             if (!IsInMyPerksMode)
                 return;
 
-            var featSet = feats.ToHashSet();
+            var featSet = feats.Select(QuickCast.GetOriginalFeat).ToHashSet();
             if (featSet.Count <= 0)
                 return;
 
@@ -1407,7 +1412,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     var feats = perkDetail.PerkLevels.Values.SelectMany(s => s.GrantedFeats).ToList();
                     foreach (var feat in feats)
                     {
-                        CreaturePlugin.RemoveFeat(target, feat);
+                        QuickCast.RemoveFeat(target, feat);
                     }
 
                     Perk.RemoveStatusEffectsOnPerkRefund(target, selectedPerk);

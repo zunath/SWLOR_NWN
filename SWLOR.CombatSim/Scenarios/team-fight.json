@@ -1,0 +1,3601 @@
+{
+  "name": "9v9 team fight",
+  "description": "Two sides of nine, each with two or three healers and shielders, fight for 526 seconds. Side A shares one target (Coordinated: the lowest HP percent, counting shields, among three random enemies, picked again every 1.5 seconds); Side B picks targets at random every 2 seconds. Players join the fight over the first minute (joinAtSeconds), zone heals, party shields and Purifying Wave reach only a few allies (maxTargets), area attacks hit a few distinct enemies (targets), and each ability is used no more often than the cast cadence seen in the test (minIntervalSeconds). Values are synthetic and in the range seen in a playtest team fight: about nine deaths per run under current rules, almost all of them on Side B, the first one after about two minutes, with revives bringing more than half of them back, and healing plus absorbed damage about 1.1x the damage that reached HP.",
+  "durationSeconds": 526,
+  "isPvp": true,
+  "teams": [
+    {
+      "name": "Side A",
+      "targetPolicy": "Coordinated",
+      "retargetSeconds": 1.5,
+      "members": [
+        {
+          "name": "Light Force bruiser",
+          "maxHp": 1125,
+          "hpRegenPer30Seconds": 26,
+          "willpower": 22,
+          "might": 26,
+          "social": 10,
+          "forceAffinity": 10,
+          "maxFp": 75,
+          "fpRegenPer30Seconds": 6,
+          "maxStm": 50,
+          "stmRegenPer30Seconds": 16,
+          "perks": [
+            "ForceConvergence",
+            "DefensiveHarmony"
+          ],
+          "joinAtSeconds": 6,
+          "autoAttack": {
+            "attacksPerSecond": 0.3,
+            "damage": {
+              "min": 26.77,
+              "max": 71.39,
+              "hitChance": 0.38,
+              "hitChanceVs": {
+                "Dark Force controller": 0.83,
+                "Grenadier (high HP)": 0.34,
+                "Light healer-support": 0.28,
+                "Grenadier medic": 0.3,
+                "Heavy blade berserker": 0.25,
+                "Light Force damage dealer": 0.34,
+                "Field-support medic": 0.36,
+                "Light support hybrid": 0.34,
+                "Light healer": 0.34
+              }
+            }
+          },
+          "abilities": [
+            {
+              "feat": "Benevolence3",
+              "target": "Self",
+              "belowHpPercent": 85,
+              "minIntervalSeconds": 520.0
+            },
+            {
+              "feat": "GuardianWard4",
+              "target": "LowestAlly",
+              "keepUp": true,
+              "belowHpPercent": 98,
+              "minIntervalSeconds": 520.0
+            },
+            {
+              "feat": "RadiantLance3",
+              "target": "Enemy",
+              "minIntervalSeconds": 173.3,
+              "damage": {
+                "min": 29,
+                "max": 75.85,
+                "hitChance": 1.0,
+                "type": "Force"
+              }
+            },
+            {
+              "feat": "ShatteringStrike2",
+              "target": "Enemy",
+              "minIntervalSeconds": 130.0,
+              "damage": {
+                "min": 24.54,
+                "max": 64.7,
+                "hitChance": 0.5,
+                "hitChanceVs": {
+                  "Dark Force controller": 0.8,
+                  "Grenadier (high HP)": 0.6,
+                  "Light healer-support": 0.23,
+                  "Grenadier medic": 0.27,
+                  "Heavy blade berserker": 0.17,
+                  "Light Force damage dealer": 0.77,
+                  "Field-support medic": 0.33,
+                  "Light support hybrid": 0.64,
+                  "Light healer": 0.72
+                }
+              }
+            },
+            {
+              "feat": "Flash1",
+              "target": "Self",
+              "minIntervalSeconds": 130.0,
+              "damage": {
+                "min": 0,
+                "max": 0
+              }
+            },
+            {
+              "feat": "ForceLeap2",
+              "target": "Enemy",
+              "minIntervalSeconds": 116.9,
+              "damage": {
+                "min": 10.04,
+                "max": 26.77,
+                "hitChance": 1.0,
+                "type": "Force"
+              }
+            },
+            {
+              "feat": "Epicenter1",
+              "target": "Self",
+              "minIntervalSeconds": 85.5,
+              "damage": {
+                "min": 25.67,
+                "max": 68.05,
+                "hitChance": 0.46,
+                "hitChanceVs": {
+                  "Dark Force controller": 0.77,
+                  "Grenadier (high HP)": 0.56,
+                  "Light healer-support": 0.2,
+                  "Grenadier medic": 0.23,
+                  "Heavy blade berserker": 0.14,
+                  "Light Force damage dealer": 0.73,
+                  "Field-support medic": 0.29,
+                  "Light support hybrid": 0.6,
+                  "Light healer": 0.69
+                },
+                "type": "Force",
+                "targets": 3
+              }
+            },
+            {
+              "feat": "PurifyingWave1",
+              "target": "Self",
+              "minIntervalSeconds": 78.9,
+              "damage": {
+                "min": 14.5,
+                "max": 37.93,
+                "hitChance": 0.48,
+                "hitChanceVs": {
+                  "Dark Force controller": 0.78,
+                  "Grenadier (high HP)": 0.58,
+                  "Light healer-support": 0.21,
+                  "Grenadier medic": 0.25,
+                  "Heavy blade berserker": 0.16,
+                  "Light Force damage dealer": 0.75,
+                  "Field-support medic": 0.31,
+                  "Light support hybrid": 0.62,
+                  "Light healer": 0.7
+                },
+                "type": "Force",
+                "targets": 3
+              },
+              "maxTargets": 3
+            },
+            {
+              "feat": "ForceJudgment3",
+              "target": "Enemy",
+              "minIntervalSeconds": 77.6,
+              "damage": {
+                "min": 30.12,
+                "max": 80.32,
+                "hitChance": 0.65,
+                "hitChanceVs": {
+                  "Dark Force controller": 0.88,
+                  "Grenadier (high HP)": 0.73,
+                  "Light healer-support": 0.36,
+                  "Grenadier medic": 0.41,
+                  "Heavy blade berserker": 0.27,
+                  "Light Force damage dealer": 0.86,
+                  "Field-support medic": 0.48,
+                  "Light support hybrid": 0.77,
+                  "Light healer": 0.83
+                },
+                "type": "Force",
+                "targets": 3
+              }
+            },
+            {
+              "feat": "Earthshatter2",
+              "target": "Enemy",
+              "minIntervalSeconds": 74.7,
+              "damage": {
+                "min": 41.27,
+                "max": 108.2,
+                "hitChance": 0.75,
+                "hitChanceVs": {
+                  "Dark Force controller": 0.92,
+                  "Grenadier (high HP)": 0.82,
+                  "Light healer-support": 0.47,
+                  "Grenadier medic": 0.52,
+                  "Heavy blade berserker": 0.38,
+                  "Light Force damage dealer": 0.91,
+                  "Field-support medic": 0.59,
+                  "Light support hybrid": 0.84,
+                  "Light healer": 0.89
+                }
+              }
+            },
+            {
+              "feat": "GuardiansChallenge2",
+              "target": "Enemy",
+              "minIntervalSeconds": 66.3,
+              "damage": {
+                "min": 33.46,
+                "max": 87.01,
+                "hitChance": 0.6,
+                "hitChanceVs": {
+                  "Dark Force controller": 0.86,
+                  "Grenadier (high HP)": 0.69,
+                  "Light healer-support": 0.31,
+                  "Grenadier medic": 0.35,
+                  "Heavy blade berserker": 0.23,
+                  "Light Force damage dealer": 0.83,
+                  "Field-support medic": 0.42,
+                  "Light support hybrid": 0.73,
+                  "Light healer": 0.8
+                }
+              }
+            },
+            {
+              "feat": "Reprisal2",
+              "target": "Enemy",
+              "minIntervalSeconds": 47.4,
+              "damage": {
+                "min": 35.7,
+                "max": 94.82,
+                "hitChance": 0.7,
+                "hitChanceVs": {
+                  "Dark Force controller": 0.9,
+                  "Grenadier (high HP)": 0.78,
+                  "Light healer-support": 0.41,
+                  "Grenadier medic": 0.46,
+                  "Heavy blade berserker": 0.32,
+                  "Light Force damage dealer": 0.88,
+                  "Field-support medic": 0.53,
+                  "Light support hybrid": 0.81,
+                  "Light healer": 0.86
+                }
+              }
+            },
+            {
+              "feat": "ForceBurst1",
+              "target": "Enemy",
+              "minIntervalSeconds": 37.8,
+              "damage": {
+                "min": 29,
+                "max": 75.85,
+                "hitChance": 0.52,
+                "hitChanceVs": {
+                  "Dark Force controller": 0.81,
+                  "Grenadier (high HP)": 0.62,
+                  "Light healer-support": 0.24,
+                  "Grenadier medic": 0.28,
+                  "Heavy blade berserker": 0.18,
+                  "Light Force damage dealer": 0.78,
+                  "Field-support medic": 0.34,
+                  "Light support hybrid": 0.66,
+                  "Light healer": 0.74
+                },
+                "type": "Force",
+                "targets": 2
+              }
+            },
+            {
+              "feat": "LockstepCrush",
+              "target": "Enemy",
+              "minIntervalSeconds": 24.7,
+              "damage": {
+                "min": 24.54,
+                "max": 63.58,
+                "hitChance": 0.3,
+                "hitChanceVs": {
+                  "Dark Force controller": 0.63,
+                  "Grenadier (high HP)": 0.39,
+                  "Light healer-support": 0.11,
+                  "Grenadier medic": 0.14,
+                  "Heavy blade berserker": 0.08,
+                  "Light Force damage dealer": 0.58,
+                  "Field-support medic": 0.17,
+                  "Light support hybrid": 0.43,
+                  "Light healer": 0.53
+                }
+              }
+            },
+            {
+              "feat": "MercilessAngle",
+              "target": "Enemy",
+              "minIntervalSeconds": 24.7,
+              "damage": {
+                "min": 18.96,
+                "max": 49.08,
+                "hitChance": 0.43,
+                "hitChanceVs": {
+                  "Dark Force controller": 0.75,
+                  "Grenadier (high HP)": 0.53,
+                  "Light healer-support": 0.18,
+                  "Grenadier medic": 0.22,
+                  "Heavy blade berserker": 0.13,
+                  "Light Force damage dealer": 0.71,
+                  "Field-support medic": 0.27,
+                  "Light support hybrid": 0.57,
+                  "Light healer": 0.66
+                }
+              }
+            }
+          ]
+        },
+        {
+          "name": "Pistol sharpshooter",
+          "maxHp": 1525,
+          "hpRegenPer30Seconds": 26,
+          "willpower": 15,
+          "might": 14,
+          "social": 10,
+          "combatReadinessPercent": 3,
+          "outgoingHealingPercent": 10,
+          "maxFp": 60,
+          "fpRegenPer30Seconds": 4,
+          "maxStm": 40,
+          "stmRegenPer30Seconds": 15,
+          "perks": [
+            "DefensiveHarmony"
+          ],
+          "joinAtSeconds": 7,
+          "autoAttack": {
+            "attacksPerSecond": 0.3,
+            "damage": {
+              "min": 31.23,
+              "max": 82.55,
+              "hitChance": 0.41,
+              "hitChanceVs": {
+                "Dark Force controller": 0.84,
+                "Grenadier (high HP)": 0.38,
+                "Light healer-support": 0.32,
+                "Grenadier medic": 0.33,
+                "Heavy blade berserker": 0.29,
+                "Light Force damage dealer": 0.38,
+                "Field-support medic": 0.4,
+                "Light support hybrid": 0.38,
+                "Light healer": 0.38
+              }
+            }
+          },
+          "abilities": [
+            {
+              "feat": "EmergencyTriage1",
+              "target": "LowestAlly",
+              "belowHpPercent": 50,
+              "minIntervalSeconds": 519.0
+            },
+            {
+              "feat": "Infusion2",
+              "target": "LowestAlly",
+              "keepUp": true,
+              "belowHpPercent": 92,
+              "minIntervalSeconds": 259.5
+            },
+            {
+              "feat": "DeflectorShield2",
+              "target": "LowestAlly",
+              "keepUp": true,
+              "belowHpPercent": 98,
+              "minIntervalSeconds": 519.0
+            },
+            {
+              "feat": "KoltoMist2",
+              "target": "Self",
+              "keepUp": true,
+              "belowHpPercent": 101,
+              "maxTargets": 3,
+              "minIntervalSeconds": 259.5
+            },
+            {
+              "feat": "PointBlankBurst2",
+              "target": "Self",
+              "minIntervalSeconds": 129.8,
+              "damage": {
+                "min": 29,
+                "max": 75.85,
+                "hitChance": 0.57,
+                "hitChanceVs": {
+                  "Dark Force controller": 0.84,
+                  "Grenadier (high HP)": 0.67,
+                  "Light healer-support": 0.29,
+                  "Grenadier medic": 0.33,
+                  "Heavy blade berserker": 0.21,
+                  "Light Force damage dealer": 0.81,
+                  "Field-support medic": 0.4,
+                  "Light support hybrid": 0.7,
+                  "Light healer": 0.78
+                },
+                "targets": 2
+              }
+            },
+            {
+              "feat": "CripplingSlice2",
+              "target": "Enemy",
+              "minIntervalSeconds": 129.8,
+              "damage": {
+                "min": 24.54,
+                "max": 64.7,
+                "hitChance": 1.0
+              }
+            },
+            {
+              "feat": "ConcussionGrenade1",
+              "target": "Enemy",
+              "minIntervalSeconds": 129.8,
+              "damage": {
+                "min": 0,
+                "max": 0,
+                "hitChance": 0.0,
+                "type": "Other"
+              }
+            },
+            {
+              "feat": "SuppressingShot4",
+              "target": "Enemy",
+              "minIntervalSeconds": 58.1,
+              "damage": {
+                "min": 53.54,
+                "max": 140.55,
+                "hitChance": 0.83,
+                "hitChanceVs": {
+                  "Dark Force controller": 0.95,
+                  "Grenadier (high HP)": 0.88,
+                  "Light healer-support": 0.6,
+                  "Grenadier medic": 0.65,
+                  "Heavy blade berserker": 0.5,
+                  "Light Force damage dealer": 0.94,
+                  "Field-support medic": 0.71,
+                  "Light support hybrid": 0.9,
+                  "Light healer": 0.93
+                }
+              }
+            },
+            {
+              "feat": "LaceratingTwinCut1",
+              "target": "Enemy",
+              "minIntervalSeconds": 57.4,
+              "damage": {
+                "min": 13.4,
+                "max": 36.81,
+                "hitChance": 0.35,
+                "hits": 2,
+                "hitChanceVs": {
+                  "Dark Force controller": 0.68,
+                  "Grenadier (high HP)": 0.45,
+                  "Light healer-support": 0.14,
+                  "Grenadier medic": 0.17,
+                  "Heavy blade berserker": 0.1,
+                  "Light Force damage dealer": 0.64,
+                  "Field-support medic": 0.21,
+                  "Light support hybrid": 0.49,
+                  "Light healer": 0.58
+                }
+              }
+            },
+            {
+              "feat": "DoubleShot3",
+              "target": "Enemy",
+              "minIntervalSeconds": 22.8,
+              "damage": {
+                "min": 41.27,
+                "max": 107.09,
+                "hitChance": 0.92,
+                "hits": 2,
+                "hitChanceVs": {
+                  "Dark Force controller": 0.98,
+                  "Grenadier (high HP)": 0.95,
+                  "Light healer-support": 0.78,
+                  "Grenadier medic": 0.81,
+                  "Heavy blade berserker": 0.71,
+                  "Light Force damage dealer": 0.97,
+                  "Field-support medic": 0.85,
+                  "Light support hybrid": 0.96,
+                  "Light healer": 0.97
+                }
+              }
+            },
+            {
+              "feat": "DisarmingShot4",
+              "target": "Enemy",
+              "minIntervalSeconds": 17.1,
+              "damage": {
+                "min": 54.66,
+                "max": 145.01,
+                "hitChance": 0.93,
+                "hitChanceVs": {
+                  "Dark Force controller": 0.98,
+                  "Grenadier (high HP)": 0.95,
+                  "Light healer-support": 0.8,
+                  "Grenadier medic": 0.83,
+                  "Heavy blade berserker": 0.72,
+                  "Light Force damage dealer": 0.98,
+                  "Field-support medic": 0.86,
+                  "Light support hybrid": 0.96,
+                  "Light healer": 0.97
+                }
+              }
+            }
+          ]
+        },
+        {
+          "name": "Heavy blade fighter",
+          "maxHp": 1350,
+          "hpRegenPer30Seconds": 27,
+          "willpower": 17,
+          "might": 26,
+          "social": 10,
+          "outgoingHealingPercent": 10,
+          "maxFp": 60,
+          "fpRegenPer30Seconds": 5,
+          "maxStm": 50,
+          "stmRegenPer30Seconds": 18,
+          "perks": [
+            "DefensiveHarmony"
+          ],
+          "joinAtSeconds": 8,
+          "autoAttack": {
+            "attacksPerSecond": 0.3,
+            "damage": {
+              "min": 26.77,
+              "max": 70.28,
+              "hitChance": 0.39,
+              "hitChanceVs": {
+                "Dark Force controller": 0.83,
+                "Grenadier (high HP)": 0.36,
+                "Light healer-support": 0.3,
+                "Grenadier medic": 0.32,
+                "Heavy blade berserker": 0.27,
+                "Light Force damage dealer": 0.36,
+                "Field-support medic": 0.38,
+                "Light support hybrid": 0.36,
+                "Light healer": 0.36
+              }
+            }
+          },
+          "abilities": [
+            {
+              "feat": "MedKit4",
+              "target": "Self",
+              "belowHpPercent": 85,
+              "minIntervalSeconds": 519.0
+            },
+            {
+              "feat": "Earthshatter2",
+              "target": "Enemy",
+              "minIntervalSeconds": 120.9,
+              "damage": {
+                "min": 53.54,
+                "max": 140.55,
+                "hitChance": 0.75,
+                "hitChanceVs": {
+                  "Dark Force controller": 0.92,
+                  "Grenadier (high HP)": 0.82,
+                  "Light healer-support": 0.47,
+                  "Grenadier medic": 0.52,
+                  "Heavy blade berserker": 0.38,
+                  "Light Force damage dealer": 0.91,
+                  "Field-support medic": 0.59,
+                  "Light support hybrid": 0.84,
+                  "Light healer": 0.89
+                }
+              }
+            },
+            {
+              "feat": "SoulBurst1",
+              "target": "Enemy",
+              "minIntervalSeconds": 85.1,
+              "damage": {
+                "min": 54.66,
+                "max": 142.78,
+                "hitChance": 0.4,
+                "hitChanceVs": {
+                  "Dark Force controller": 0.73,
+                  "Grenadier (high HP)": 0.5,
+                  "Light healer-support": 0.17,
+                  "Grenadier medic": 0.2,
+                  "Heavy blade berserker": 0.12,
+                  "Light Force damage dealer": 0.69,
+                  "Field-support medic": 0.25,
+                  "Light support hybrid": 0.55,
+                  "Light healer": 0.64
+                }
+              }
+            },
+            {
+              "feat": "SweepingGuard1",
+              "target": "Self",
+              "minIntervalSeconds": 43.5,
+              "damage": {
+                "min": 22.31,
+                "max": 58.01,
+                "hitChance": 0.25,
+                "hitChanceVs": {
+                  "Dark Force controller": 0.57,
+                  "Grenadier (high HP)": 0.33,
+                  "Light healer-support": 0.09,
+                  "Grenadier medic": 0.11,
+                  "Heavy blade berserker": 0.06,
+                  "Light Force damage dealer": 0.52,
+                  "Field-support medic": 0.14,
+                  "Light support hybrid": 0.37,
+                  "Light healer": 0.47
+                },
+                "targets": 3
+              }
+            },
+            {
+              "feat": "RendingStrike2",
+              "target": "Enemy",
+              "minIntervalSeconds": 42.8,
+              "damage": {
+                "min": 47.97,
+                "max": 124.94,
+                "hitChance": 0.33,
+                "hitChanceVs": {
+                  "Dark Force controller": 0.67,
+                  "Grenadier (high HP)": 0.43,
+                  "Light healer-support": 0.13,
+                  "Grenadier medic": 0.15,
+                  "Heavy blade berserker": 0.09,
+                  "Light Force damage dealer": 0.62,
+                  "Field-support medic": 0.2,
+                  "Light support hybrid": 0.47,
+                  "Light healer": 0.57
+                }
+              }
+            },
+            {
+              "feat": "Flash1",
+              "target": "Self",
+              "minIntervalSeconds": 42.8,
+              "damage": {
+                "min": 0,
+                "max": 0
+              }
+            },
+            {
+              "feat": "LineBreaker2",
+              "target": "Enemy",
+              "minIntervalSeconds": 40.3,
+              "damage": {
+                "min": 20.08,
+                "max": 52.43,
+                "hitChance": 0.56,
+                "hitChanceVs": {
+                  "Dark Force controller": 0.83,
+                  "Grenadier (high HP)": 0.66,
+                  "Light healer-support": 0.28,
+                  "Grenadier medic": 0.32,
+                  "Heavy blade berserker": 0.2,
+                  "Light Force damage dealer": 0.81,
+                  "Field-support medic": 0.38,
+                  "Light support hybrid": 0.69,
+                  "Light healer": 0.77
+                },
+                "targets": 2
+              }
+            },
+            {
+              "feat": "CoveringStrike3",
+              "target": "Self",
+              "minIntervalSeconds": 28.5,
+              "damage": {
+                "min": 42.39,
+                "max": 111.56,
+                "hitChance": 0.51,
+                "hitChanceVs": {
+                  "Dark Force controller": 0.81,
+                  "Grenadier (high HP)": 0.61,
+                  "Light healer-support": 0.24,
+                  "Grenadier medic": 0.28,
+                  "Heavy blade berserker": 0.18,
+                  "Light Force damage dealer": 0.78,
+                  "Field-support medic": 0.34,
+                  "Light support hybrid": 0.65,
+                  "Light healer": 0.73
+                },
+                "targets": 3
+              }
+            },
+            {
+              "feat": "SavageCleave3",
+              "target": "Self",
+              "minIntervalSeconds": 22.8,
+              "damage": {
+                "min": 35.7,
+                "max": 94.82,
+                "hitChance": 0.61,
+                "hitChanceVs": {
+                  "Dark Force controller": 0.86,
+                  "Grenadier (high HP)": 0.7,
+                  "Light healer-support": 0.33,
+                  "Grenadier medic": 0.37,
+                  "Heavy blade berserker": 0.24,
+                  "Light Force damage dealer": 0.84,
+                  "Field-support medic": 0.44,
+                  "Light support hybrid": 0.74,
+                  "Light healer": 0.81
+                },
+                "targets": 3
+              }
+            }
+          ]
+        },
+        {
+          "name": "Light support off-tank",
+          "maxHp": 1125,
+          "hpRegenPer30Seconds": 20,
+          "willpower": 20,
+          "might": 26,
+          "social": 20,
+          "forceAffinity": 10,
+          "combatReadinessPercent": 3,
+          "maxFp": 85,
+          "fpRegenPer30Seconds": 6,
+          "maxStm": 50,
+          "stmRegenPer30Seconds": 22,
+          "perks": [
+            "ForceConvergence",
+            "DefensiveHarmony"
+          ],
+          "joinAtSeconds": 11,
+          "autoAttack": {
+            "attacksPerSecond": 0.3,
+            "damage": {
+              "min": 33.46,
+              "max": 89.24,
+              "hitChance": 0.42,
+              "hitChanceVs": {
+                "Dark Force controller": 0.84,
+                "Grenadier (high HP)": 0.39,
+                "Light healer-support": 0.33,
+                "Grenadier medic": 0.34,
+                "Heavy blade berserker": 0.3,
+                "Light Force damage dealer": 0.39,
+                "Field-support medic": 0.42,
+                "Light support hybrid": 0.39,
+                "Light healer": 0.39
+              }
+            }
+          },
+          "abilities": [
+            {
+              "feat": "Benevolence3",
+              "target": "LowestAlly",
+              "belowHpPercent": 85,
+              "minIntervalSeconds": 171.7
+            },
+            {
+              "feat": "Renewal3",
+              "target": "Self",
+              "keepUp": true,
+              "belowHpPercent": 96,
+              "minIntervalSeconds": 238.9
+            },
+            {
+              "feat": "GuardianWard4",
+              "target": "LowestAlly",
+              "keepUp": true,
+              "belowHpPercent": 98,
+              "minIntervalSeconds": 54.2
+            },
+            {
+              "feat": "RousingShout3",
+              "target": "Self",
+              "keepUp": true,
+              "belowHpPercent": 101,
+              "minIntervalSeconds": 118.9
+            },
+            {
+              "feat": "ForceSanctuary1",
+              "target": "Self",
+              "keepUp": true,
+              "belowHpPercent": 101,
+              "maxTargets": 2,
+              "minIntervalSeconds": 54.5
+            },
+            {
+              "feat": "SunderingSweep3",
+              "target": "Self",
+              "minIntervalSeconds": 210.7,
+              "damage": {
+                "min": 44.62,
+                "max": 118.24,
+                "hitChance": 0.5,
+                "hitChanceVs": {
+                  "Dark Force controller": 0.8,
+                  "Grenadier (high HP)": 0.6,
+                  "Light healer-support": 0.23,
+                  "Grenadier medic": 0.27,
+                  "Heavy blade berserker": 0.17,
+                  "Light Force damage dealer": 0.77,
+                  "Field-support medic": 0.33,
+                  "Light support hybrid": 0.64,
+                  "Light healer": 0.72
+                },
+                "targets": 2
+              }
+            },
+            {
+              "feat": "RadiantLance3",
+              "target": "Enemy",
+              "minIntervalSeconds": 128.8,
+              "damage": {
+                "min": 41.27,
+                "max": 108.2,
+                "hitChance": 0.5,
+                "hitChanceVs": {
+                  "Dark Force controller": 0.8,
+                  "Grenadier (high HP)": 0.6,
+                  "Light healer-support": 0.23,
+                  "Grenadier medic": 0.27,
+                  "Heavy blade berserker": 0.17,
+                  "Light Force damage dealer": 0.77,
+                  "Field-support medic": 0.33,
+                  "Light support hybrid": 0.64,
+                  "Light healer": 0.72
+                },
+                "type": "Force"
+              }
+            },
+            {
+              "feat": "ShatteringStrike2",
+              "target": "Enemy",
+              "minIntervalSeconds": 128.8,
+              "damage": {
+                "min": 118.24,
+                "max": 313.46,
+                "hitChance": 0.75,
+                "hitChanceVs": {
+                  "Dark Force controller": 0.92,
+                  "Grenadier (high HP)": 0.82,
+                  "Light healer-support": 0.47,
+                  "Grenadier medic": 0.52,
+                  "Heavy blade berserker": 0.38,
+                  "Light Force damage dealer": 0.91,
+                  "Field-support medic": 0.59,
+                  "Light support hybrid": 0.84,
+                  "Light healer": 0.89
+                }
+              }
+            },
+            {
+              "feat": "SacrificialBlade1",
+              "target": "Enemy",
+              "minIntervalSeconds": 103.0,
+              "damage": {
+                "min": 69.16,
+                "max": 182.93,
+                "hitChance": 0.8,
+                "hitChanceVs": {
+                  "Dark Force controller": 0.94,
+                  "Grenadier (high HP)": 0.86,
+                  "Light healer-support": 0.55,
+                  "Grenadier medic": 0.59,
+                  "Heavy blade berserker": 0.45,
+                  "Light Force damage dealer": 0.93,
+                  "Field-support medic": 0.66,
+                  "Light support hybrid": 0.88,
+                  "Light healer": 0.91
+                }
+              }
+            },
+            {
+              "feat": "ForcePush3",
+              "target": "Enemy",
+              "minIntervalSeconds": 68.1,
+              "damage": {
+                "min": 37.93,
+                "max": 101.51,
+                "hitChance": 0.62,
+                "hitChanceVs": {
+                  "Dark Force controller": 0.87,
+                  "Grenadier (high HP)": 0.71,
+                  "Light healer-support": 0.33,
+                  "Grenadier medic": 0.38,
+                  "Heavy blade berserker": 0.25,
+                  "Light Force damage dealer": 0.84,
+                  "Field-support medic": 0.45,
+                  "Light support hybrid": 0.75,
+                  "Light healer": 0.81
+                },
+                "type": "Force"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Light Force warden",
+          "maxHp": 600,
+          "hpRegenPer30Seconds": 25,
+          "willpower": 27,
+          "might": 24,
+          "social": 10,
+          "forceAffinity": 10,
+          "combatReadinessPercent": 15,
+          "maxFp": 100,
+          "fpRegenPer30Seconds": 11,
+          "maxStm": 60,
+          "stmRegenPer30Seconds": 20,
+          "perks": [
+            "ForceConvergence",
+            "DefensiveHarmony"
+          ],
+          "joinAtSeconds": 15,
+          "autoAttack": {
+            "attacksPerSecond": 0.3,
+            "damage": {
+              "min": 6.69,
+              "max": 17.85,
+              "hitChance": 0.41,
+              "hitChanceVs": {
+                "Dark Force controller": 0.84,
+                "Grenadier (high HP)": 0.38,
+                "Light healer-support": 0.32,
+                "Grenadier medic": 0.33,
+                "Heavy blade berserker": 0.29,
+                "Light Force damage dealer": 0.38,
+                "Field-support medic": 0.4,
+                "Light support hybrid": 0.38,
+                "Light healer": 0.38
+              }
+            }
+          },
+          "abilities": [
+            {
+              "feat": "Renewal3",
+              "target": "LowestAlly",
+              "keepUp": true,
+              "belowHpPercent": 92,
+              "minIntervalSeconds": 85.6
+            },
+            {
+              "feat": "GuardianWard4",
+              "target": "LowestAlly",
+              "keepUp": true,
+              "belowHpPercent": 98,
+              "minIntervalSeconds": 101.0
+            },
+            {
+              "feat": "ForceSanctuary1",
+              "target": "Self",
+              "keepUp": true,
+              "belowHpPercent": 101,
+              "maxTargets": 2,
+              "minIntervalSeconds": 147.5
+            },
+            {
+              "feat": "ThrowLightsaber3",
+              "target": "Enemy",
+              "minIntervalSeconds": 76.8,
+              "damage": {
+                "min": 47.97,
+                "max": 124.94,
+                "hitChance": 0.56,
+                "hitChanceVs": {
+                  "Dark Force controller": 0.83,
+                  "Grenadier (high HP)": 0.65,
+                  "Light healer-support": 0.27,
+                  "Grenadier medic": 0.31,
+                  "Heavy blade berserker": 0.2,
+                  "Light Force damage dealer": 0.8,
+                  "Field-support medic": 0.38,
+                  "Light support hybrid": 0.69,
+                  "Light healer": 0.77
+                }
+              }
+            },
+            {
+              "feat": "GuardedChannel3",
+              "target": "Enemy",
+              "minIntervalSeconds": 73.3,
+              "damage": {
+                "min": 27.89,
+                "max": 74.75,
+                "hitChance": 0.29,
+                "hitChanceVs": {
+                  "Dark Force controller": 0.61,
+                  "Grenadier (high HP)": 0.37,
+                  "Light healer-support": 0.11,
+                  "Grenadier medic": 0.13,
+                  "Heavy blade berserker": 0.07,
+                  "Light Force damage dealer": 0.57,
+                  "Field-support medic": 0.16,
+                  "Light support hybrid": 0.42,
+                  "Light healer": 0.51
+                }
+              }
+            },
+            {
+              "feat": "PurifyingWave1",
+              "target": "Self",
+              "minIntervalSeconds": 73.0,
+              "damage": {
+                "min": 45.74,
+                "max": 120.47,
+                "hitChance": 0.67,
+                "hitChanceVs": {
+                  "Dark Force controller": 0.89,
+                  "Grenadier (high HP)": 0.75,
+                  "Light healer-support": 0.38,
+                  "Grenadier medic": 0.42,
+                  "Heavy blade berserker": 0.29,
+                  "Light Force damage dealer": 0.87,
+                  "Field-support medic": 0.49,
+                  "Light support hybrid": 0.78,
+                  "Light healer": 0.84
+                },
+                "type": "Force"
+              },
+              "maxTargets": 3
+            },
+            {
+              "feat": "ForcePush3",
+              "target": "Enemy",
+              "minIntervalSeconds": 54.0,
+              "damage": {
+                "min": 25.67,
+                "max": 66.93,
+                "hitChance": 0.73,
+                "hitChanceVs": {
+                  "Dark Force controller": 0.91,
+                  "Grenadier (high HP)": 0.8,
+                  "Light healer-support": 0.45,
+                  "Grenadier medic": 0.49,
+                  "Heavy blade berserker": 0.35,
+                  "Light Force damage dealer": 0.9,
+                  "Field-support medic": 0.57,
+                  "Light support hybrid": 0.83,
+                  "Light healer": 0.88
+                },
+                "type": "Force"
+              }
+            },
+            {
+              "feat": "ForceLeap2",
+              "target": "Enemy",
+              "minIntervalSeconds": 52.2,
+              "damage": {
+                "min": 16.73,
+                "max": 44.62,
+                "hitChance": 0.7,
+                "hitChanceVs": {
+                  "Dark Force controller": 0.9,
+                  "Grenadier (high HP)": 0.78,
+                  "Light healer-support": 0.41,
+                  "Grenadier medic": 0.46,
+                  "Heavy blade berserker": 0.32,
+                  "Light Force damage dealer": 0.88,
+                  "Field-support medic": 0.53,
+                  "Light support hybrid": 0.81,
+                  "Light healer": 0.86
+                },
+                "type": "Force"
+              }
+            },
+            {
+              "feat": "RadiantLance3",
+              "target": "Enemy",
+              "minIntervalSeconds": 39.7,
+              "damage": {
+                "min": 51.31,
+                "max": 137.21,
+                "hitChance": 0.71,
+                "hitChanceVs": {
+                  "Dark Force controller": 0.91,
+                  "Grenadier (high HP)": 0.79,
+                  "Light healer-support": 0.43,
+                  "Grenadier medic": 0.48,
+                  "Heavy blade berserker": 0.34,
+                  "Light Force damage dealer": 0.89,
+                  "Field-support medic": 0.55,
+                  "Light support hybrid": 0.82,
+                  "Light healer": 0.87
+                },
+                "type": "Force"
+              }
+            },
+            {
+              "feat": "ThrowRock3",
+              "target": "Enemy",
+              "minIntervalSeconds": 31.5,
+              "damage": {
+                "min": 39.04,
+                "max": 103.74,
+                "hitChance": 0.82,
+                "hitChanceVs": {
+                  "Dark Force controller": 0.95,
+                  "Grenadier (high HP)": 0.88,
+                  "Light healer-support": 0.58,
+                  "Grenadier medic": 0.63,
+                  "Heavy blade berserker": 0.49,
+                  "Light Force damage dealer": 0.94,
+                  "Field-support medic": 0.69,
+                  "Light support hybrid": 0.89,
+                  "Light healer": 0.92
+                }
+              }
+            },
+            {
+              "feat": "ForceJudgment3",
+              "target": "Enemy",
+              "minIntervalSeconds": 22.6,
+              "damage": {
+                "min": 47.97,
+                "max": 127.17,
+                "hitChance": 0.61,
+                "hitChanceVs": {
+                  "Dark Force controller": 0.86,
+                  "Grenadier (high HP)": 0.7,
+                  "Light healer-support": 0.32,
+                  "Grenadier medic": 0.36,
+                  "Heavy blade berserker": 0.24,
+                  "Light Force damage dealer": 0.83,
+                  "Field-support medic": 0.43,
+                  "Light support hybrid": 0.73,
+                  "Light healer": 0.8
+                },
+                "type": "Force",
+                "targets": 2
+              }
+            },
+            {
+              "feat": "ForceBurst1",
+              "target": "Enemy",
+              "minIntervalSeconds": 20.1,
+              "damage": {
+                "min": 45.74,
+                "max": 121.59,
+                "hitChance": 0.7,
+                "hitChanceVs": {
+                  "Dark Force controller": 0.9,
+                  "Grenadier (high HP)": 0.78,
+                  "Light healer-support": 0.42,
+                  "Grenadier medic": 0.46,
+                  "Heavy blade berserker": 0.32,
+                  "Light Force damage dealer": 0.89,
+                  "Field-support medic": 0.54,
+                  "Light support hybrid": 0.81,
+                  "Light healer": 0.86
+                },
+                "type": "Force",
+                "targets": 2
+              }
+            }
+          ]
+        },
+        {
+          "name": "Shield tank",
+          "maxHp": 1100,
+          "hpRegenPer30Seconds": 26,
+          "willpower": 16,
+          "might": 23,
+          "social": 10,
+          "forceAffinity": 8,
+          "outgoingHealingPercent": 5,
+          "maxFp": 90,
+          "fpRegenPer30Seconds": 13,
+          "maxStm": 55,
+          "stmRegenPer30Seconds": 15,
+          "perks": [
+            "ForceConvergence",
+            "DefensiveHarmony"
+          ],
+          "joinAtSeconds": 11,
+          "autoAttack": {
+            "attacksPerSecond": 0.3,
+            "damage": {
+              "min": 23.42,
+              "max": 60.24,
+              "hitChance": 0.43,
+              "hitChanceVs": {
+                "Dark Force controller": 0.85,
+                "Grenadier (high HP)": 0.39,
+                "Light healer-support": 0.33,
+                "Grenadier medic": 0.34,
+                "Heavy blade berserker": 0.31,
+                "Light Force damage dealer": 0.39,
+                "Field-support medic": 0.44,
+                "Light support hybrid": 0.39,
+                "Light healer": 0.39
+              }
+            }
+          },
+          "abilities": [
+            {
+              "feat": "Renewal3",
+              "target": "Self",
+              "keepUp": true,
+              "belowHpPercent": 92,
+              "minIntervalSeconds": 515.0
+            },
+            {
+              "feat": "ForceSanctuary1",
+              "target": "Self",
+              "keepUp": true,
+              "belowHpPercent": 101,
+              "maxTargets": 2,
+              "minIntervalSeconds": 526.0
+            },
+            {
+              "feat": "Flash1",
+              "target": "Self",
+              "minIntervalSeconds": 156.4,
+              "damage": {
+                "min": 0,
+                "max": 0
+              }
+            },
+            {
+              "feat": "SunderingSweep1",
+              "target": "Self",
+              "minIntervalSeconds": 87.1,
+              "damage": {
+                "min": 15.62,
+                "max": 41.27,
+                "hitChance": 1.0
+              }
+            },
+            {
+              "feat": "Earthshatter2",
+              "target": "Enemy",
+              "minIntervalSeconds": 70.0,
+              "damage": {
+                "min": 12.27,
+                "max": 32.35,
+                "hitChance": 0.38,
+                "hitChanceVs": {
+                  "Dark Force controller": 0.7,
+                  "Grenadier (high HP)": 0.47,
+                  "Light healer-support": 0.15,
+                  "Grenadier medic": 0.18,
+                  "Heavy blade berserker": 0.11,
+                  "Light Force damage dealer": 0.66,
+                  "Field-support medic": 0.23,
+                  "Light support hybrid": 0.52,
+                  "Light healer": 0.61
+                }
+              }
+            },
+            {
+              "feat": "ShatteringStrike2",
+              "target": "Enemy",
+              "minIntervalSeconds": 69.9,
+              "damage": {
+                "min": 18.96,
+                "max": 51.31,
+                "hitChance": 0.38,
+                "hitChanceVs": {
+                  "Dark Force controller": 0.7,
+                  "Grenadier (high HP)": 0.47,
+                  "Light healer-support": 0.15,
+                  "Grenadier medic": 0.18,
+                  "Heavy blade berserker": 0.11,
+                  "Light Force damage dealer": 0.66,
+                  "Field-support medic": 0.23,
+                  "Light support hybrid": 0.52,
+                  "Light healer": 0.61
+                }
+              }
+            }
+          ]
+        },
+        {
+          "name": "Medic (field support)",
+          "maxHp": 575,
+          "hpRegenPer30Seconds": 12,
+          "willpower": 27,
+          "might": 10,
+          "social": 20,
+          "combatReadinessPercent": 15,
+          "outgoingHealingPercent": 10,
+          "maxFp": 90,
+          "fpRegenPer30Seconds": 7,
+          "maxStm": 70,
+          "stmRegenPer30Seconds": 12,
+          "joinAtSeconds": 7,
+          "autoAttack": {
+            "attacksPerSecond": 0.3,
+            "damage": {
+              "min": 7.81,
+              "max": 20.08,
+              "hitChance": 0.38,
+              "hitChanceVs": {
+                "Dark Force controller": 0.83,
+                "Grenadier (high HP)": 0.34,
+                "Light healer-support": 0.29,
+                "Grenadier medic": 0.31,
+                "Heavy blade berserker": 0.26,
+                "Light Force damage dealer": 0.34,
+                "Field-support medic": 0.37,
+                "Light support hybrid": 0.34,
+                "Light healer": 0.34
+              }
+            }
+          },
+          "abilities": [
+            {
+              "feat": "Resuscitation2",
+              "target": "DeadAlly"
+            },
+            {
+              "feat": "EmergencyTriage1",
+              "target": "Self",
+              "belowHpPercent": 58,
+              "minIntervalSeconds": 22.8
+            },
+            {
+              "feat": "MedKit4",
+              "target": "LowestAlly",
+              "belowHpPercent": 101,
+              "minIntervalSeconds": 15.6
+            },
+            {
+              "feat": "Infusion2",
+              "target": "LowestAlly",
+              "keepUp": true,
+              "belowHpPercent": 101,
+              "minIntervalSeconds": 22.8
+            },
+            {
+              "feat": "PainSuppressant2",
+              "target": "LowestAlly",
+              "keepUp": true,
+              "belowHpPercent": 98,
+              "minIntervalSeconds": 134.6
+            },
+            {
+              "feat": "GroupDeflector1",
+              "target": "Self",
+              "keepUp": true,
+              "belowHpPercent": 101,
+              "maxTargets": 3,
+              "minIntervalSeconds": 42.8
+            },
+            {
+              "feat": "CleanseOrder2",
+              "target": "Self",
+              "keepUp": true,
+              "belowHpPercent": 101,
+              "maxTargets": 6,
+              "minIntervalSeconds": 42.8
+            },
+            {
+              "feat": "KoltoMist2",
+              "target": "Self",
+              "keepUp": true,
+              "belowHpPercent": 101,
+              "maxTargets": 3,
+              "minIntervalSeconds": 48.9
+            }
+          ]
+        },
+        {
+          "name": "Light Force support-damage hybrid",
+          "maxHp": 775,
+          "hpRegenPer30Seconds": 26,
+          "willpower": 16,
+          "might": 27,
+          "social": 10,
+          "forceAffinity": 10,
+          "maxFp": 60,
+          "fpRegenPer30Seconds": 5,
+          "maxStm": 50,
+          "stmRegenPer30Seconds": 16,
+          "perks": [
+            "ForceConvergence"
+          ],
+          "joinAtSeconds": 5,
+          "autoAttack": {
+            "attacksPerSecond": 0.31,
+            "damage": {
+              "min": 33.46,
+              "max": 89.24,
+              "hitChance": 0.43,
+              "hitChanceVs": {
+                "Dark Force controller": 0.85,
+                "Grenadier (high HP)": 0.4,
+                "Light healer-support": 0.33,
+                "Grenadier medic": 0.35,
+                "Heavy blade berserker": 0.31,
+                "Light Force damage dealer": 0.4,
+                "Field-support medic": 0.45,
+                "Light support hybrid": 0.4,
+                "Light healer": 0.4
+              }
+            }
+          },
+          "abilities": [
+            {
+              "feat": "Benevolence3",
+              "target": "LowestAlly",
+              "belowHpPercent": 85,
+              "minIntervalSeconds": 173.7
+            },
+            {
+              "feat": "Renewal3",
+              "target": "LowestAlly",
+              "keepUp": true,
+              "belowHpPercent": 92,
+              "minIntervalSeconds": 71.2
+            },
+            {
+              "feat": "GuardianWard4",
+              "target": "LowestAlly",
+              "keepUp": true,
+              "belowHpPercent": 98,
+              "minIntervalSeconds": 173.7
+            },
+            {
+              "feat": "ForceSanctuary1",
+              "target": "Self",
+              "keepUp": true,
+              "belowHpPercent": 101,
+              "maxTargets": 2,
+              "minIntervalSeconds": 115.6
+            },
+            {
+              "feat": "SunderingSweep3",
+              "target": "Self",
+              "minIntervalSeconds": 130.2,
+              "damage": {
+                "min": 21.19,
+                "max": 56.89,
+                "hitChance": 0.6,
+                "hitChanceVs": {
+                  "Dark Force controller": 0.86,
+                  "Grenadier (high HP)": 0.69,
+                  "Light healer-support": 0.31,
+                  "Grenadier medic": 0.35,
+                  "Heavy blade berserker": 0.23,
+                  "Light Force damage dealer": 0.83,
+                  "Field-support medic": 0.42,
+                  "Light support hybrid": 0.73,
+                  "Light healer": 0.8
+                }
+              }
+            },
+            {
+              "feat": "ForcePush3",
+              "target": "Enemy",
+              "minIntervalSeconds": 68.2,
+              "damage": {
+                "min": 15.62,
+                "max": 42.39,
+                "hitChance": 0.56,
+                "hitChanceVs": {
+                  "Dark Force controller": 0.83,
+                  "Grenadier (high HP)": 0.65,
+                  "Light healer-support": 0.27,
+                  "Grenadier medic": 0.31,
+                  "Heavy blade berserker": 0.2,
+                  "Light Force damage dealer": 0.8,
+                  "Field-support medic": 0.38,
+                  "Light support hybrid": 0.69,
+                  "Light healer": 0.77
+                },
+                "type": "Force"
+              }
+            },
+            {
+              "feat": "ShatteringStrike2",
+              "target": "Enemy",
+              "minIntervalSeconds": 68.0,
+              "damage": {
+                "min": 35.7,
+                "max": 93.7,
+                "hitChance": 0.3,
+                "hitChanceVs": {
+                  "Dark Force controller": 0.63,
+                  "Grenadier (high HP)": 0.39,
+                  "Light healer-support": 0.11,
+                  "Grenadier medic": 0.14,
+                  "Heavy blade berserker": 0.08,
+                  "Light Force damage dealer": 0.58,
+                  "Field-support medic": 0.17,
+                  "Light support hybrid": 0.43,
+                  "Light healer": 0.53
+                }
+              }
+            },
+            {
+              "feat": "GrenadeBurst",
+              "target": "Enemy",
+              "minIntervalSeconds": 51.4,
+              "damage": {
+                "min": 20.08,
+                "max": 54.66,
+                "hitChance": 0.56,
+                "hitChanceVs": {
+                  "Dark Force controller": 0.84,
+                  "Grenadier (high HP)": 0.66,
+                  "Light healer-support": 0.28,
+                  "Grenadier medic": 0.32,
+                  "Heavy blade berserker": 0.21,
+                  "Light Force damage dealer": 0.81,
+                  "Field-support medic": 0.39,
+                  "Light support hybrid": 0.7,
+                  "Light healer": 0.77
+                },
+                "type": "Other",
+                "targets": 3
+              }
+            },
+            {
+              "feat": "ToxicCloud",
+              "target": "Enemy",
+              "minIntervalSeconds": 42.4,
+              "damage": {
+                "min": 20.08,
+                "max": 53.54,
+                "hitChance": 0.65,
+                "hitChanceVs": {
+                  "Dark Force controller": 0.88,
+                  "Grenadier (high HP)": 0.74,
+                  "Light healer-support": 0.36,
+                  "Grenadier medic": 0.41,
+                  "Heavy blade berserker": 0.28,
+                  "Light Force damage dealer": 0.86,
+                  "Field-support medic": 0.48,
+                  "Light support hybrid": 0.77,
+                  "Light healer": 0.83
+                },
+                "type": "Other",
+                "targets": 2
+              }
+            },
+            {
+              "feat": "ForceLeap2",
+              "target": "Enemy",
+              "minIntervalSeconds": 34.0,
+              "damage": {
+                "min": 14.5,
+                "max": 39.04,
+                "hitChance": 0.8,
+                "hitChanceVs": {
+                  "Dark Force controller": 0.94,
+                  "Grenadier (high HP)": 0.86,
+                  "Light healer-support": 0.55,
+                  "Grenadier medic": 0.59,
+                  "Heavy blade berserker": 0.45,
+                  "Light Force damage dealer": 0.93,
+                  "Field-support medic": 0.66,
+                  "Light support hybrid": 0.88,
+                  "Light healer": 0.91
+                },
+                "type": "Force"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Dark Force glass cannon",
+          "maxHp": 375,
+          "hpRegenPer30Seconds": 18,
+          "willpower": 27,
+          "might": 24,
+          "social": 10,
+          "forceAffinity": -6,
+          "outgoingHealingPercent": 10,
+          "maxFp": 120,
+          "fpRegenPer30Seconds": 15,
+          "maxStm": 50,
+          "stmRegenPer30Seconds": 17,
+          "perks": [
+            "ForceConvergence"
+          ],
+          "joinAtSeconds": 7,
+          "autoAttack": {
+            "attacksPerSecond": 0.3,
+            "damage": {
+              "min": 4.46,
+              "max": 12.27,
+              "hitChance": 0.38,
+              "hitChanceVs": {
+                "Dark Force controller": 0.83,
+                "Grenadier (high HP)": 0.35,
+                "Light healer-support": 0.29,
+                "Grenadier medic": 0.31,
+                "Heavy blade berserker": 0.26,
+                "Light Force damage dealer": 0.35,
+                "Field-support medic": 0.37,
+                "Light support hybrid": 0.35,
+                "Light healer": 0.35
+              }
+            }
+          },
+          "abilities": [
+            {
+              "feat": "MedKit4",
+              "target": "Self",
+              "belowHpPercent": 101,
+              "minIntervalSeconds": 67.3
+            },
+            {
+              "feat": "PainSuppressant2",
+              "target": "Self",
+              "keepUp": true,
+              "belowHpPercent": 101,
+              "minIntervalSeconds": 96.9
+            },
+            {
+              "feat": "ThrowLightsaber3",
+              "target": "Enemy",
+              "minIntervalSeconds": 101.7,
+              "damage": {
+                "min": 16.73,
+                "max": 44.62,
+                "hitChance": 0.6,
+                "hitChanceVs": {
+                  "Dark Force controller": 0.86,
+                  "Grenadier (high HP)": 0.69,
+                  "Light healer-support": 0.31,
+                  "Grenadier medic": 0.35,
+                  "Heavy blade berserker": 0.23,
+                  "Light Force damage dealer": 0.83,
+                  "Field-support medic": 0.42,
+                  "Light support hybrid": 0.73,
+                  "Light healer": 0.8
+                }
+              }
+            },
+            {
+              "feat": "ShatteringStrike2",
+              "target": "Enemy",
+              "minIntervalSeconds": 98.4,
+              "damage": {
+                "min": 15.62,
+                "max": 42.39,
+                "hitChance": 0.25,
+                "hitChanceVs": {
+                  "Dark Force controller": 0.57,
+                  "Grenadier (high HP)": 0.33,
+                  "Light healer-support": 0.09,
+                  "Grenadier medic": 0.11,
+                  "Heavy blade berserker": 0.06,
+                  "Light Force damage dealer": 0.52,
+                  "Field-support medic": 0.14,
+                  "Light support hybrid": 0.37,
+                  "Light healer": 0.47
+                }
+              }
+            },
+            {
+              "feat": "Reprisal2",
+              "target": "Enemy",
+              "minIntervalSeconds": 75.7,
+              "damage": {
+                "min": 13.4,
+                "max": 34.58,
+                "hitChance": 0.8,
+                "hitChanceVs": {
+                  "Dark Force controller": 0.94,
+                  "Grenadier (high HP)": 0.86,
+                  "Light healer-support": 0.55,
+                  "Grenadier medic": 0.59,
+                  "Heavy blade berserker": 0.45,
+                  "Light Force damage dealer": 0.93,
+                  "Field-support medic": 0.66,
+                  "Light support hybrid": 0.88,
+                  "Light healer": 0.91
+                }
+              }
+            },
+            {
+              "feat": "SunderingSweep3",
+              "target": "Self",
+              "minIntervalSeconds": 73.0,
+              "damage": {
+                "min": 10.04,
+                "max": 25.67,
+                "hitChance": 0.57,
+                "hitChanceVs": {
+                  "Dark Force controller": 0.84,
+                  "Grenadier (high HP)": 0.67,
+                  "Light healer-support": 0.29,
+                  "Grenadier medic": 0.33,
+                  "Heavy blade berserker": 0.21,
+                  "Light Force damage dealer": 0.81,
+                  "Field-support medic": 0.4,
+                  "Light support hybrid": 0.7,
+                  "Light healer": 0.78
+                }
+              }
+            },
+            {
+              "feat": "ForceBurst1",
+              "target": "Enemy",
+              "minIntervalSeconds": 64.9,
+              "damage": {
+                "min": 5.58,
+                "max": 14.5,
+                "hitChance": 0.75,
+                "hitChanceVs": {
+                  "Dark Force controller": 0.92,
+                  "Grenadier (high HP)": 0.82,
+                  "Light healer-support": 0.47,
+                  "Grenadier medic": 0.52,
+                  "Heavy blade berserker": 0.38,
+                  "Light Force damage dealer": 0.91,
+                  "Field-support medic": 0.59,
+                  "Light support hybrid": 0.84,
+                  "Light healer": 0.89
+                },
+                "type": "Force",
+                "targets": 2
+              }
+            },
+            {
+              "feat": "ThrowRock3",
+              "target": "Enemy",
+              "minIntervalSeconds": 62.6,
+              "damage": {
+                "min": 13.4,
+                "max": 35.7,
+                "hitChance": 0.67,
+                "hitChanceVs": {
+                  "Dark Force controller": 0.89,
+                  "Grenadier (high HP)": 0.75,
+                  "Light healer-support": 0.38,
+                  "Grenadier medic": 0.42,
+                  "Heavy blade berserker": 0.29,
+                  "Light Force damage dealer": 0.87,
+                  "Field-support medic": 0.49,
+                  "Light support hybrid": 0.78,
+                  "Light healer": 0.84
+                }
+              }
+            },
+            {
+              "feat": "NightmareField1",
+              "target": "Self",
+              "minIntervalSeconds": 47.9,
+              "damage": {
+                "min": 1.13,
+                "max": 3.35,
+                "hitChance": 0.67,
+                "type": "Force",
+                "hitChanceVs": {
+                  "Dark Force controller": 0.89,
+                  "Grenadier (high HP)": 0.75,
+                  "Light healer-support": 0.38,
+                  "Grenadier medic": 0.42,
+                  "Heavy blade berserker": 0.29,
+                  "Light Force damage dealer": 0.87,
+                  "Field-support medic": 0.49,
+                  "Light support hybrid": 0.78,
+                  "Light healer": 0.84
+                }
+              }
+            },
+            {
+              "feat": "ForceDrain3",
+              "target": "Enemy",
+              "minIntervalSeconds": 39.8,
+              "damage": {
+                "min": 10.04,
+                "max": 25.67,
+                "hitChance": 0.78,
+                "hitChanceVs": {
+                  "Dark Force controller": 0.93,
+                  "Grenadier (high HP)": 0.84,
+                  "Light healer-support": 0.51,
+                  "Grenadier medic": 0.56,
+                  "Heavy blade berserker": 0.41,
+                  "Light Force damage dealer": 0.92,
+                  "Field-support medic": 0.63,
+                  "Light support hybrid": 0.86,
+                  "Light healer": 0.9
+                },
+                "type": "Force"
+              }
+            },
+            {
+              "feat": "ForceSpark2",
+              "target": "Enemy",
+              "minIntervalSeconds": 35.6,
+              "damage": {
+                "min": 7.81,
+                "max": 22.31,
+                "hitChance": 0.7,
+                "hitChanceVs": {
+                  "Dark Force controller": 0.9,
+                  "Grenadier (high HP)": 0.78,
+                  "Light healer-support": 0.41,
+                  "Grenadier medic": 0.46,
+                  "Heavy blade berserker": 0.32,
+                  "Light Force damage dealer": 0.88,
+                  "Field-support medic": 0.53,
+                  "Light support hybrid": 0.81,
+                  "Light healer": 0.86
+                },
+                "type": "Force"
+              }
+            },
+            {
+              "feat": "ForceLightning3",
+              "target": "Enemy",
+              "minIntervalSeconds": 32.9,
+              "damage": {
+                "min": 7.81,
+                "max": 21.19,
+                "hitChance": 0.78,
+                "hitChanceVs": {
+                  "Dark Force controller": 0.93,
+                  "Grenadier (high HP)": 0.84,
+                  "Light healer-support": 0.51,
+                  "Grenadier medic": 0.56,
+                  "Heavy blade berserker": 0.41,
+                  "Light Force damage dealer": 0.92,
+                  "Field-support medic": 0.63,
+                  "Light support hybrid": 0.86,
+                  "Light healer": 0.9
+                },
+                "type": "Force",
+                "targets": 2,
+                "extraTargetDamagePercent": 50
+              }
+            },
+            {
+              "feat": "WeakenResolve2",
+              "target": "Enemy",
+              "minIntervalSeconds": 28.9,
+              "damage": {
+                "min": 1.13,
+                "max": 2.23,
+                "hitChance": 0.64,
+                "hitChanceVs": {
+                  "Dark Force controller": 0.87,
+                  "Grenadier (high HP)": 0.72,
+                  "Light healer-support": 0.34,
+                  "Grenadier medic": 0.39,
+                  "Heavy blade berserker": 0.26,
+                  "Light Force damage dealer": 0.85,
+                  "Field-support medic": 0.46,
+                  "Light support hybrid": 0.76,
+                  "Light healer": 0.82
+                },
+                "type": "Force"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Side B",
+      "targetPolicy": "Random",
+      "retargetSeconds": 2.0,
+      "members": [
+        {
+          "name": "Dark Force controller",
+          "maxHp": 875,
+          "hpRegenPer30Seconds": 24,
+          "willpower": 26,
+          "might": 26,
+          "social": 10,
+          "forceAffinity": -10,
+          "combatReadinessPercent": 10,
+          "outgoingHealingPercent": 10,
+          "maxFp": 140,
+          "fpRegenPer30Seconds": 22,
+          "maxStm": 50,
+          "stmRegenPer30Seconds": 16,
+          "perks": [
+            "ForceConvergence",
+            "DefensiveHarmony"
+          ],
+          "joinAtSeconds": 8,
+          "autoAttack": {
+            "attacksPerSecond": 0.79,
+            "damage": {
+              "min": 32.01,
+              "max": 85.36,
+              "hitChance": 0.42,
+              "hitChanceVs": {
+                "Light Force bruiser": 0.4,
+                "Pistol sharpshooter": 0.38,
+                "Heavy blade fighter": 0.38,
+                "Light support off-tank": 0.2,
+                "Light Force warden": 0.38,
+                "Shield tank": 0.37,
+                "Medic (field support)": 0.55,
+                "Light Force support-damage hybrid": 0.28,
+                "Dark Force glass cannon": 0.83
+              }
+            }
+          },
+          "abilities": [
+            {
+              "feat": "Infusion2",
+              "target": "Self",
+              "keepUp": true,
+              "belowHpPercent": 92,
+              "minIntervalSeconds": 88.4
+            },
+            {
+              "feat": "ForceSpark2",
+              "target": "Enemy",
+              "minIntervalSeconds": 208.8,
+              "damage": {
+                "min": 30.94,
+                "max": 82.16,
+                "hitChance": 0.67,
+                "hitChanceVs": {
+                  "Light Force bruiser": 0.67,
+                  "Pistol sharpshooter": 0.46,
+                  "Heavy blade fighter": 0.89,
+                  "Light support off-tank": 0.25,
+                  "Light Force warden": 0.55,
+                  "Shield tank": 0.67,
+                  "Medic (field support)": 0.78,
+                  "Light Force support-damage hybrid": 0.49,
+                  "Dark Force glass cannon": 0.93
+                },
+                "type": "Force"
+              }
+            },
+            {
+              "feat": "Reprisal2",
+              "target": "Enemy",
+              "minIntervalSeconds": 204.9,
+              "damage": {
+                "min": 35.21,
+                "max": 93.9,
+                "hitChance": 1.0
+              }
+            },
+            {
+              "feat": "ForceLightning3",
+              "target": "Enemy",
+              "minIntervalSeconds": 133.3,
+              "damage": {
+                "min": 24.54,
+                "max": 64.02,
+                "hitChance": 0.31,
+                "hitChanceVs": {
+                  "Light Force bruiser": 0.31,
+                  "Pistol sharpshooter": 0.16,
+                  "Heavy blade fighter": 0.65,
+                  "Light support off-tank": 0.07,
+                  "Light Force warden": 0.22,
+                  "Shield tank": 0.31,
+                  "Medic (field support)": 0.45,
+                  "Light Force support-damage hybrid": 0.18,
+                  "Dark Force glass cannon": 0.74
+                },
+                "type": "Force",
+                "targets": 4,
+                "extraTargetDamagePercent": 50
+              }
+            },
+            {
+              "feat": "WeakenResolve2",
+              "target": "Enemy",
+              "minIntervalSeconds": 130.0,
+              "damage": {
+                "min": 12.8,
+                "max": 34.14,
+                "hitChance": 0.75,
+                "hitChanceVs": {
+                  "Light Force bruiser": 0.75,
+                  "Pistol sharpshooter": 0.56,
+                  "Heavy blade fighter": 0.93,
+                  "Light support off-tank": 0.34,
+                  "Light Force warden": 0.65,
+                  "Shield tank": 0.75,
+                  "Medic (field support)": 0.84,
+                  "Light Force support-damage hybrid": 0.59,
+                  "Dark Force glass cannon": 0.95
+                },
+                "type": "Force"
+              }
+            },
+            {
+              "feat": "ForceChoke4",
+              "target": "Enemy",
+              "minIntervalSeconds": 122.6,
+              "damage": {
+                "min": 0,
+                "max": 0,
+                "hitChance": 0.67,
+                "hitChanceVs": {
+                  "Light Force bruiser": 0.67,
+                  "Pistol sharpshooter": 0.46,
+                  "Heavy blade fighter": 0.89,
+                  "Light support off-tank": 0.25,
+                  "Light Force warden": 0.55,
+                  "Shield tank": 0.67,
+                  "Medic (field support)": 0.78,
+                  "Light Force support-damage hybrid": 0.49,
+                  "Dark Force glass cannon": 0.93
+                },
+                "type": "Force"
+              }
+            },
+            {
+              "feat": "SunderingSweep3",
+              "target": "Self",
+              "minIntervalSeconds": 92.1,
+              "damage": {
+                "min": 28.81,
+                "max": 74.69,
+                "hitChance": 0.43,
+                "hitChanceVs": {
+                  "Light Force bruiser": 0.43,
+                  "Pistol sharpshooter": 0.24,
+                  "Heavy blade fighter": 0.76,
+                  "Light support off-tank": 0.11,
+                  "Light Force warden": 0.31,
+                  "Shield tank": 0.43,
+                  "Medic (field support)": 0.58,
+                  "Light Force support-damage hybrid": 0.26,
+                  "Dark Force glass cannon": 0.83
+                }
+              }
+            },
+            {
+              "feat": "ForceDrain3",
+              "target": "Enemy",
+              "minIntervalSeconds": 89.4,
+              "damage": {
+                "min": 29.88,
+                "max": 80.02,
+                "hitChance": 0.4,
+                "hitChanceVs": {
+                  "Light Force bruiser": 0.4,
+                  "Pistol sharpshooter": 0.22,
+                  "Heavy blade fighter": 0.73,
+                  "Light support off-tank": 0.1,
+                  "Light Force warden": 0.29,
+                  "Shield tank": 0.4,
+                  "Medic (field support)": 0.55,
+                  "Light Force support-damage hybrid": 0.24,
+                  "Dark Force glass cannon": 0.81
+                },
+                "type": "Force"
+              }
+            },
+            {
+              "feat": "ShatteringStrike2",
+              "target": "Enemy",
+              "minIntervalSeconds": 81.5,
+              "damage": {
+                "min": 30.94,
+                "max": 80.02,
+                "hitChance": 0.33,
+                "hitChanceVs": {
+                  "Light Force bruiser": 0.34,
+                  "Pistol sharpshooter": 0.18,
+                  "Heavy blade fighter": 0.68,
+                  "Light support off-tank": 0.08,
+                  "Light Force warden": 0.23,
+                  "Shield tank": 0.33,
+                  "Medic (field support)": 0.48,
+                  "Light Force support-damage hybrid": 0.19,
+                  "Dark Force glass cannon": 0.76
+                }
+              }
+            },
+            {
+              "feat": "NightmareField1",
+              "target": "Self",
+              "minIntervalSeconds": 77.9,
+              "damage": {
+                "min": 7.47,
+                "max": 20.27,
+                "hitChance": 0.61,
+                "type": "Force",
+                "hitChanceVs": {
+                  "Light Force bruiser": 0.62,
+                  "Pistol sharpshooter": 0.41,
+                  "Heavy blade fighter": 0.87,
+                  "Light support off-tank": 0.21,
+                  "Light Force warden": 0.49,
+                  "Shield tank": 0.61,
+                  "Medic (field support)": 0.74,
+                  "Light Force support-damage hybrid": 0.43,
+                  "Dark Force glass cannon": 0.91
+                },
+                "targets": 2
+              }
+            }
+          ]
+        },
+        {
+          "name": "Grenadier (high HP)",
+          "maxHp": 1500,
+          "hpRegenPer30Seconds": 26,
+          "willpower": 14,
+          "might": 20,
+          "social": 10,
+          "outgoingHealingPercent": 10,
+          "maxFp": 50,
+          "fpRegenPer30Seconds": 4,
+          "maxStm": 40,
+          "stmRegenPer30Seconds": 19,
+          "joinAtSeconds": 7,
+          "autoAttack": {
+            "attacksPerSecond": 0.3,
+            "damage": {
+              "min": 14.94,
+              "max": 39.48,
+              "hitChance": 0.41,
+              "hitChanceVs": {
+                "Light Force bruiser": 0.39,
+                "Pistol sharpshooter": 0.38,
+                "Heavy blade fighter": 0.38,
+                "Light support off-tank": 0.2,
+                "Light Force warden": 0.38,
+                "Shield tank": 0.36,
+                "Medic (field support)": 0.53,
+                "Light Force support-damage hybrid": 0.27,
+                "Dark Force glass cannon": 0.82
+              }
+            }
+          },
+          "abilities": [
+            {
+              "feat": "MedKit4",
+              "target": "Self",
+              "belowHpPercent": 85,
+              "minIntervalSeconds": 519.0
+            },
+            {
+              "feat": "Infusion2",
+              "target": "Self",
+              "keepUp": true,
+              "belowHpPercent": 92,
+              "minIntervalSeconds": 74.0
+            },
+            {
+              "feat": "AdhesiveGrenade2",
+              "target": "Enemy",
+              "minIntervalSeconds": 173.0,
+              "damage": {
+                "min": 0,
+                "max": 0,
+                "hitChance": 0.56,
+                "hitChanceVs": {
+                  "Light Force bruiser": 0.56,
+                  "Pistol sharpshooter": 0.35,
+                  "Heavy blade fighter": 0.84,
+                  "Light support off-tank": 0.17,
+                  "Light Force warden": 0.43,
+                  "Shield tank": 0.55,
+                  "Medic (field support)": 0.69,
+                  "Light Force support-damage hybrid": 0.37,
+                  "Dark Force glass cannon": 0.89
+                },
+                "targets": 3
+              }
+            },
+            {
+              "feat": "RemoteCharge2",
+              "target": "Enemy",
+              "minIntervalSeconds": 100.5,
+              "damage": {
+                "min": 13.87,
+                "max": 37.34,
+                "hitChance": 0.52,
+                "hitChanceVs": {
+                  "Light Force bruiser": 0.53,
+                  "Pistol sharpshooter": 0.32,
+                  "Heavy blade fighter": 0.82,
+                  "Light support off-tank": 0.16,
+                  "Light Force warden": 0.4,
+                  "Shield tank": 0.52,
+                  "Medic (field support)": 0.67,
+                  "Light Force support-damage hybrid": 0.34,
+                  "Dark Force glass cannon": 0.87
+                },
+                "type": "Other",
+                "targets": 4
+              }
+            },
+            {
+              "feat": "ConcussionGrenade2",
+              "target": "Enemy",
+              "minIntervalSeconds": 65.4,
+              "damage": {
+                "min": 11.74,
+                "max": 29.88,
+                "hitChance": 0.52,
+                "hitChanceVs": {
+                  "Light Force bruiser": 0.53,
+                  "Pistol sharpshooter": 0.32,
+                  "Heavy blade fighter": 0.82,
+                  "Light support off-tank": 0.16,
+                  "Light Force warden": 0.4,
+                  "Shield tank": 0.52,
+                  "Medic (field support)": 0.67,
+                  "Light Force support-damage hybrid": 0.34,
+                  "Dark Force glass cannon": 0.87
+                },
+                "type": "Other",
+                "targets": 3
+              }
+            },
+            {
+              "feat": "ClusterGrenade1",
+              "target": "Enemy",
+              "minIntervalSeconds": 38.6,
+              "damage": {
+                "min": 7.47,
+                "max": 18.14,
+                "hitChance": 0.6,
+                "hits": 2,
+                "hitChanceVs": {
+                  "Light Force bruiser": 0.61,
+                  "Pistol sharpshooter": 0.4,
+                  "Heavy blade fighter": 0.86,
+                  "Light support off-tank": 0.2,
+                  "Light Force warden": 0.48,
+                  "Shield tank": 0.6,
+                  "Medic (field support)": 0.73,
+                  "Light Force support-damage hybrid": 0.42,
+                  "Dark Force glass cannon": 0.91
+                },
+                "type": "Other",
+                "targets": 4
+              }
+            },
+            {
+              "feat": "FragGrenade3",
+              "target": "Enemy",
+              "minIntervalSeconds": 28.6,
+              "damage": {
+                "min": 13.87,
+                "max": 36.28,
+                "hitChance": 0.52,
+                "hitChanceVs": {
+                  "Light Force bruiser": 0.53,
+                  "Pistol sharpshooter": 0.32,
+                  "Heavy blade fighter": 0.82,
+                  "Light support off-tank": 0.16,
+                  "Light Force warden": 0.4,
+                  "Shield tank": 0.52,
+                  "Medic (field support)": 0.67,
+                  "Light Force support-damage hybrid": 0.34,
+                  "Dark Force glass cannon": 0.87
+                },
+                "type": "Other",
+                "targets": 3
+              }
+            },
+            {
+              "feat": "WristRocket3",
+              "target": "Enemy",
+              "minIntervalSeconds": 21.3,
+              "damage": {
+                "min": 22.41,
+                "max": 59.75,
+                "hitChance": 0.77,
+                "hitChanceVs": {
+                  "Light Force bruiser": 0.77,
+                  "Pistol sharpshooter": 0.58,
+                  "Heavy blade fighter": 0.93,
+                  "Light support off-tank": 0.35,
+                  "Light Force warden": 0.67,
+                  "Shield tank": 0.76,
+                  "Medic (field support)": 0.85,
+                  "Light Force support-damage hybrid": 0.61,
+                  "Dark Force glass cannon": 0.95
+                },
+                "type": "Other"
+              }
+            },
+            {
+              "feat": "SuppressingShot4",
+              "target": "Enemy",
+              "minIntervalSeconds": 17.1,
+              "damage": {
+                "min": 12.8,
+                "max": 32.01,
+                "hitChance": 0.67,
+                "hitChanceVs": {
+                  "Light Force bruiser": 0.67,
+                  "Pistol sharpshooter": 0.46,
+                  "Heavy blade fighter": 0.89,
+                  "Light support off-tank": 0.25,
+                  "Light Force warden": 0.55,
+                  "Shield tank": 0.67,
+                  "Medic (field support)": 0.78,
+                  "Light Force support-damage hybrid": 0.49,
+                  "Dark Force glass cannon": 0.93
+                }
+              }
+            }
+          ]
+        },
+        {
+          "name": "Light healer-support",
+          "maxHp": 1325,
+          "hpRegenPer30Seconds": 26,
+          "willpower": 27,
+          "might": 14,
+          "social": 26,
+          "forceAffinity": 10,
+          "maxFp": 165,
+          "fpRegenPer30Seconds": 23,
+          "maxStm": 30,
+          "stmRegenPer30Seconds": 13,
+          "perks": [
+            "ForceConvergence"
+          ],
+          "joinAtSeconds": 7,
+          "autoAttack": {
+            "attacksPerSecond": 0.3,
+            "damage": {
+              "min": 0,
+              "max": 1.07,
+              "hitChance": 0.58,
+              "hitChanceVs": {
+                "Light Force bruiser": 0.66,
+                "Pistol sharpshooter": 0.59,
+                "Heavy blade fighter": 0.59,
+                "Light support off-tank": 0.29,
+                "Light Force warden": 0.59,
+                "Shield tank": 0.52,
+                "Medic (field support)": 0.8,
+                "Light Force support-damage hybrid": 0.34,
+                "Dark Force glass cannon": 0.85
+              }
+            }
+          },
+          "abilities": [
+            {
+              "feat": "Benevolence3",
+              "target": "LowestAlly",
+              "belowHpPercent": 85,
+              "minIntervalSeconds": 73.0
+            },
+            {
+              "feat": "Renewal3",
+              "target": "LowestAlly",
+              "keepUp": true,
+              "belowHpPercent": 92,
+              "minIntervalSeconds": 85.5
+            },
+            {
+              "feat": "GuardianWard4",
+              "target": "LowestAlly",
+              "keepUp": true,
+              "belowHpPercent": 98,
+              "minIntervalSeconds": 32.4
+            },
+            {
+              "feat": "RousingShout3",
+              "target": "Self",
+              "keepUp": true,
+              "belowHpPercent": 101,
+              "minIntervalSeconds": 86.8
+            },
+            {
+              "feat": "CleanseOrder2",
+              "target": "Self",
+              "keepUp": true,
+              "belowHpPercent": 101,
+              "maxTargets": 6,
+              "minIntervalSeconds": 129.8
+            },
+            {
+              "feat": "ForceSanctuary1",
+              "target": "Self",
+              "keepUp": true,
+              "belowHpPercent": 101,
+              "maxTargets": 2,
+              "minIntervalSeconds": 93.5
+            },
+            {
+              "feat": "PurifyingWave1",
+              "target": "Self",
+              "minIntervalSeconds": 129.8,
+              "damage": {
+                "min": 21.34,
+                "max": 57.62,
+                "hitChance": 0.61,
+                "hitChanceVs": {
+                  "Light Force bruiser": 0.62,
+                  "Pistol sharpshooter": 0.41,
+                  "Heavy blade fighter": 0.87,
+                  "Light support off-tank": 0.21,
+                  "Light Force warden": 0.49,
+                  "Shield tank": 0.61,
+                  "Medic (field support)": 0.74,
+                  "Light Force support-damage hybrid": 0.43,
+                  "Dark Force glass cannon": 0.91
+                },
+                "type": "Force",
+                "targets": 3
+              },
+              "maxTargets": 3
+            },
+            {
+              "feat": "MindTrick2",
+              "target": "Enemy",
+              "minIntervalSeconds": 102.8,
+              "damage": {
+                "min": 0,
+                "max": 0,
+                "hitChance": 0.67,
+                "hitChanceVs": {
+                  "Light Force bruiser": 0.67,
+                  "Pistol sharpshooter": 0.46,
+                  "Heavy blade fighter": 0.89,
+                  "Light support off-tank": 0.25,
+                  "Light Force warden": 0.55,
+                  "Shield tank": 0.67,
+                  "Medic (field support)": 0.78,
+                  "Light Force support-damage hybrid": 0.49,
+                  "Dark Force glass cannon": 0.93
+                },
+                "targets": 2
+              }
+            },
+            {
+              "feat": "ForcePush3",
+              "target": "Enemy",
+              "minIntervalSeconds": 92.5,
+              "damage": {
+                "min": 10.67,
+                "max": 27.74,
+                "hitChance": 0.4,
+                "hitChanceVs": {
+                  "Light Force bruiser": 0.4,
+                  "Pistol sharpshooter": 0.22,
+                  "Heavy blade fighter": 0.73,
+                  "Light support off-tank": 0.1,
+                  "Light Force warden": 0.29,
+                  "Shield tank": 0.4,
+                  "Medic (field support)": 0.55,
+                  "Light Force support-damage hybrid": 0.24,
+                  "Dark Force glass cannon": 0.81
+                },
+                "type": "Force",
+                "targets": 2
+              }
+            },
+            {
+              "feat": "ThrowLightsaber3",
+              "target": "Enemy",
+              "minIntervalSeconds": 89.2,
+              "damage": {
+                "min": 11.74,
+                "max": 29.88,
+                "hitChance": 0.75,
+                "hitChanceVs": {
+                  "Light Force bruiser": 0.75,
+                  "Pistol sharpshooter": 0.56,
+                  "Heavy blade fighter": 0.93,
+                  "Light support off-tank": 0.34,
+                  "Light Force warden": 0.65,
+                  "Shield tank": 0.75,
+                  "Medic (field support)": 0.84,
+                  "Light Force support-damage hybrid": 0.59,
+                  "Dark Force glass cannon": 0.95
+                }
+              }
+            },
+            {
+              "feat": "RadiantLance3",
+              "target": "Enemy",
+              "minIntervalSeconds": 74.4,
+              "damage": {
+                "min": 27.74,
+                "max": 73.62,
+                "hitChance": 0.7,
+                "hitChanceVs": {
+                  "Light Force bruiser": 0.7,
+                  "Pistol sharpshooter": 0.5,
+                  "Heavy blade fighter": 0.91,
+                  "Light support off-tank": 0.28,
+                  "Light Force warden": 0.59,
+                  "Shield tank": 0.7,
+                  "Medic (field support)": 0.81,
+                  "Light Force support-damage hybrid": 0.53,
+                  "Dark Force glass cannon": 0.94
+                },
+                "type": "Force"
+              }
+            },
+            {
+              "feat": "ForceBurst1",
+              "target": "Enemy",
+              "minIntervalSeconds": 73.4,
+              "damage": {
+                "min": 27.74,
+                "max": 74.69,
+                "hitChance": 0.61,
+                "hitChanceVs": {
+                  "Light Force bruiser": 0.61,
+                  "Pistol sharpshooter": 0.4,
+                  "Heavy blade fighter": 0.87,
+                  "Light support off-tank": 0.21,
+                  "Light Force warden": 0.49,
+                  "Shield tank": 0.61,
+                  "Medic (field support)": 0.74,
+                  "Light Force support-damage hybrid": 0.42,
+                  "Dark Force glass cannon": 0.91
+                },
+                "type": "Force",
+                "targets": 3
+              }
+            },
+            {
+              "feat": "ForceJudgment3",
+              "target": "Enemy",
+              "minIntervalSeconds": 60.9,
+              "damage": {
+                "min": 29.88,
+                "max": 77.89,
+                "hitChance": 0.63,
+                "hitChanceVs": {
+                  "Light Force bruiser": 0.63,
+                  "Pistol sharpshooter": 0.42,
+                  "Heavy blade fighter": 0.88,
+                  "Light support off-tank": 0.22,
+                  "Light Force warden": 0.51,
+                  "Shield tank": 0.63,
+                  "Medic (field support)": 0.76,
+                  "Light Force support-damage hybrid": 0.45,
+                  "Dark Force glass cannon": 0.92
+                },
+                "type": "Force",
+                "targets": 3
+              }
+            },
+            {
+              "feat": "ThrowRock3",
+              "target": "Enemy",
+              "minIntervalSeconds": 43.3,
+              "damage": {
+                "min": 17.07,
+                "max": 44.81,
+                "hitChance": 0.91,
+                "hitChanceVs": {
+                  "Light Force bruiser": 0.91,
+                  "Pistol sharpshooter": 0.81,
+                  "Heavy blade fighter": 0.98,
+                  "Light support off-tank": 0.63,
+                  "Light Force warden": 0.86,
+                  "Shield tank": 0.91,
+                  "Medic (field support)": 0.95,
+                  "Light Force support-damage hybrid": 0.83,
+                  "Dark Force glass cannon": 0.98
+                }
+              }
+            }
+          ]
+        },
+        {
+          "name": "Grenadier medic",
+          "maxHp": 800,
+          "hpRegenPer30Seconds": 26,
+          "willpower": 10,
+          "might": 26,
+          "social": 10,
+          "outgoingHealingPercent": 10,
+          "maxFp": 55,
+          "fpRegenPer30Seconds": 8,
+          "maxStm": 75,
+          "stmRegenPer30Seconds": 23,
+          "joinAtSeconds": 12,
+          "autoAttack": {
+            "attacksPerSecond": 0.3,
+            "damage": {
+              "min": 24.54,
+              "max": 65.09,
+              "hitChance": 0.44,
+              "hitChanceVs": {
+                "Light Force bruiser": 0.43,
+                "Pistol sharpshooter": 0.4,
+                "Heavy blade fighter": 0.4,
+                "Light support off-tank": 0.22,
+                "Light Force warden": 0.4,
+                "Shield tank": 0.38,
+                "Medic (field support)": 0.61,
+                "Light Force support-damage hybrid": 0.29,
+                "Dark Force glass cannon": 0.83
+              }
+            }
+          },
+          "abilities": [
+            {
+              "feat": "Resuscitation2",
+              "target": "DeadAlly"
+            },
+            {
+              "feat": "MedKit4",
+              "target": "LowestAlly",
+              "belowHpPercent": 85,
+              "minIntervalSeconds": 37.0
+            },
+            {
+              "feat": "GroupDeflector1",
+              "target": "Self",
+              "keepUp": true,
+              "belowHpPercent": 101,
+              "maxTargets": 3,
+              "minIntervalSeconds": 517.0
+            },
+            {
+              "feat": "WristRocket3",
+              "target": "Enemy",
+              "minIntervalSeconds": 44.8,
+              "damage": {
+                "min": 28.81,
+                "max": 74.69,
+                "hitChance": 0.89,
+                "hitChanceVs": {
+                  "Light Force bruiser": 0.89,
+                  "Pistol sharpshooter": 0.78,
+                  "Heavy blade fighter": 0.97,
+                  "Light support off-tank": 0.57,
+                  "Light Force warden": 0.83,
+                  "Shield tank": 0.89,
+                  "Medic (field support)": 0.94,
+                  "Light Force support-damage hybrid": 0.79,
+                  "Dark Force glass cannon": 0.98
+                },
+                "type": "Other"
+              }
+            },
+            {
+              "feat": "ConcussionGrenade2",
+              "target": "Enemy",
+              "minIntervalSeconds": 42.8,
+              "damage": {
+                "min": 11.74,
+                "max": 32.01,
+                "hitChance": 0.57,
+                "hitChanceVs": {
+                  "Light Force bruiser": 0.57,
+                  "Pistol sharpshooter": 0.36,
+                  "Heavy blade fighter": 0.85,
+                  "Light support off-tank": 0.18,
+                  "Light Force warden": 0.45,
+                  "Shield tank": 0.57,
+                  "Medic (field support)": 0.71,
+                  "Light Force support-damage hybrid": 0.39,
+                  "Dark Force glass cannon": 0.89
+                },
+                "type": "Other",
+                "targets": 4
+              }
+            },
+            {
+              "feat": "ArcProjector3",
+              "target": "Enemy",
+              "minIntervalSeconds": 42.0,
+              "damage": {
+                "min": 26.68,
+                "max": 71.49,
+                "hitChance": 0.78,
+                "hitChanceVs": {
+                  "Light Force bruiser": 0.78,
+                  "Pistol sharpshooter": 0.6,
+                  "Heavy blade fighter": 0.94,
+                  "Light support off-tank": 0.37,
+                  "Light Force warden": 0.68,
+                  "Shield tank": 0.78,
+                  "Medic (field support)": 0.86,
+                  "Light Force support-damage hybrid": 0.62,
+                  "Dark Force glass cannon": 0.96
+                },
+                "type": "Other"
+              }
+            },
+            {
+              "feat": "RailDart3",
+              "target": "Enemy",
+              "minIntervalSeconds": 29.8,
+              "damage": {
+                "min": 20.27,
+                "max": 52.28,
+                "hitChance": 0.67,
+                "hitChanceVs": {
+                  "Light Force bruiser": 0.67,
+                  "Pistol sharpshooter": 0.46,
+                  "Heavy blade fighter": 0.89,
+                  "Light support off-tank": 0.25,
+                  "Light Force warden": 0.55,
+                  "Shield tank": 0.67,
+                  "Medic (field support)": 0.78,
+                  "Light Force support-damage hybrid": 0.49,
+                  "Dark Force glass cannon": 0.93
+                }
+              }
+            },
+            {
+              "feat": "DoubleShot3",
+              "target": "Enemy",
+              "minIntervalSeconds": 22.8,
+              "damage": {
+                "min": 19.21,
+                "max": 51.22,
+                "hitChance": 0.75,
+                "hits": 2,
+                "hitChanceVs": {
+                  "Light Force bruiser": 0.75,
+                  "Pistol sharpshooter": 0.56,
+                  "Heavy blade fighter": 0.93,
+                  "Light support off-tank": 0.34,
+                  "Light Force warden": 0.65,
+                  "Shield tank": 0.75,
+                  "Medic (field support)": 0.84,
+                  "Light Force support-damage hybrid": 0.59,
+                  "Dark Force glass cannon": 0.95
+                }
+              }
+            },
+            {
+              "feat": "SonicBurst3",
+              "target": "Self",
+              "minIntervalSeconds": 17.1,
+              "damage": {
+                "min": 16,
+                "max": 42.68,
+                "hitChance": 0.64,
+                "hitChanceVs": {
+                  "Light Force bruiser": 0.64,
+                  "Pistol sharpshooter": 0.44,
+                  "Heavy blade fighter": 0.88,
+                  "Light support off-tank": 0.23,
+                  "Light Force warden": 0.52,
+                  "Shield tank": 0.64,
+                  "Medic (field support)": 0.77,
+                  "Light Force support-damage hybrid": 0.46,
+                  "Dark Force glass cannon": 0.92
+                },
+                "type": "Other",
+                "targets": 4
+              }
+            },
+            {
+              "feat": "FragGrenade3",
+              "target": "Enemy",
+              "minIntervalSeconds": 7.6,
+              "damage": {
+                "min": 19.21,
+                "max": 50.15,
+                "hitChance": 0.57,
+                "hitChanceVs": {
+                  "Light Force bruiser": 0.57,
+                  "Pistol sharpshooter": 0.36,
+                  "Heavy blade fighter": 0.84,
+                  "Light support off-tank": 0.18,
+                  "Light Force warden": 0.45,
+                  "Shield tank": 0.56,
+                  "Medic (field support)": 0.7,
+                  "Light Force support-damage hybrid": 0.38,
+                  "Dark Force glass cannon": 0.89
+                },
+                "type": "Other",
+                "targets": 5
+              }
+            }
+          ]
+        },
+        {
+          "name": "Heavy blade berserker",
+          "maxHp": 800,
+          "hpRegenPer30Seconds": 26,
+          "willpower": 17,
+          "might": 27,
+          "social": 10,
+          "forceAffinity": 6,
+          "maxFp": 105,
+          "fpRegenPer30Seconds": 17,
+          "maxStm": 80,
+          "stmRegenPer30Seconds": 20,
+          "perks": [
+            "ForceConvergence",
+            "DefensiveHarmony"
+          ],
+          "joinAtSeconds": 33,
+          "autoAttack": {
+            "attacksPerSecond": 0.3,
+            "damage": {
+              "min": 19.21,
+              "max": 51.22,
+              "hitChance": 0.41,
+              "hitChanceVs": {
+                "Light Force bruiser": 0.39,
+                "Pistol sharpshooter": 0.37,
+                "Heavy blade fighter": 0.37,
+                "Light support off-tank": 0.2,
+                "Light Force warden": 0.37,
+                "Shield tank": 0.36,
+                "Medic (field support)": 0.51,
+                "Light Force support-damage hybrid": 0.27,
+                "Dark Force glass cannon": 0.82
+              }
+            }
+          },
+          "abilities": [
+            {
+              "feat": "Resuscitation2",
+              "target": "DeadAlly"
+            },
+            {
+              "feat": "Benevolence3",
+              "target": "LowestAlly",
+              "belowHpPercent": 85,
+              "minIntervalSeconds": 84.8
+            },
+            {
+              "feat": "MedKit4",
+              "target": "Self",
+              "belowHpPercent": 85,
+              "minIntervalSeconds": 493.0
+            },
+            {
+              "feat": "Infusion2",
+              "target": "Self",
+              "keepUp": true,
+              "belowHpPercent": 101,
+              "minIntervalSeconds": 68.8
+            },
+            {
+              "feat": "PainSuppressant2",
+              "target": "Self",
+              "keepUp": true,
+              "belowHpPercent": 98,
+              "minIntervalSeconds": 129.4
+            },
+            {
+              "feat": "GuardianWard1",
+              "target": "Self",
+              "keepUp": true,
+              "belowHpPercent": 98,
+              "minIntervalSeconds": 493.0
+            },
+            {
+              "feat": "SoulBurst1",
+              "target": "Enemy",
+              "minIntervalSeconds": 108.7,
+              "damage": {
+                "min": 33.08,
+                "max": 88.56,
+                "hitChance": 0.2,
+                "hitChanceVs": {
+                  "Light Force bruiser": 0.2,
+                  "Pistol sharpshooter": 0.1,
+                  "Heavy blade fighter": 0.51,
+                  "Light support off-tank": 0.04,
+                  "Light Force warden": 0.13,
+                  "Shield tank": 0.2,
+                  "Medic (field support)": 0.31,
+                  "Light Force support-damage hybrid": 0.11,
+                  "Dark Force glass cannon": 0.61
+                }
+              }
+            },
+            {
+              "feat": "SacrificialBlade1",
+              "target": "Enemy",
+              "minIntervalSeconds": 103.8,
+              "damage": {
+                "min": 21.34,
+                "max": 55.48,
+                "hitChance": 0.4,
+                "hitChanceVs": {
+                  "Light Force bruiser": 0.4,
+                  "Pistol sharpshooter": 0.22,
+                  "Heavy blade fighter": 0.73,
+                  "Light support off-tank": 0.1,
+                  "Light Force warden": 0.29,
+                  "Shield tank": 0.4,
+                  "Medic (field support)": 0.55,
+                  "Light Force support-damage hybrid": 0.24,
+                  "Dark Force glass cannon": 0.81
+                }
+              }
+            },
+            {
+              "feat": "RendingStrike1",
+              "target": "Enemy",
+              "minIntervalSeconds": 86.7,
+              "damage": {
+                "min": 48.02,
+                "max": 126.97,
+                "hitChance": 0.17,
+                "hitChanceVs": {
+                  "Light Force bruiser": 0.17,
+                  "Pistol sharpshooter": 0.08,
+                  "Heavy blade fighter": 0.45,
+                  "Light support off-tank": 0.03,
+                  "Light Force warden": 0.11,
+                  "Shield tank": 0.17,
+                  "Medic (field support)": 0.27,
+                  "Light Force support-damage hybrid": 0.09,
+                  "Dark Force glass cannon": 0.56
+                }
+              }
+            },
+            {
+              "feat": "VigorThrust1",
+              "target": "Enemy",
+              "minIntervalSeconds": 61.6,
+              "damage": {
+                "min": 0,
+                "max": 0,
+                "hitChance": 0.0
+              }
+            },
+            {
+              "feat": "ShatteringStrike2",
+              "target": "Enemy",
+              "minIntervalSeconds": 49.0,
+              "damage": {
+                "min": 50.15,
+                "max": 132.31,
+                "hitChance": 0.2,
+                "hitChanceVs": {
+                  "Light Force bruiser": 0.2,
+                  "Pistol sharpshooter": 0.1,
+                  "Heavy blade fighter": 0.51,
+                  "Light support off-tank": 0.04,
+                  "Light Force warden": 0.13,
+                  "Shield tank": 0.2,
+                  "Medic (field support)": 0.31,
+                  "Light Force support-damage hybrid": 0.11,
+                  "Dark Force glass cannon": 0.61
+                }
+              }
+            }
+          ]
+        },
+        {
+          "name": "Light Force damage dealer",
+          "maxHp": 1175,
+          "hpRegenPer30Seconds": 22,
+          "willpower": 25,
+          "might": 27,
+          "social": 10,
+          "forceAffinity": 10,
+          "maxFp": 125,
+          "fpRegenPer30Seconds": 17,
+          "maxStm": 50,
+          "stmRegenPer30Seconds": 16,
+          "perks": [
+            "ForceConvergence"
+          ],
+          "joinAtSeconds": 7,
+          "autoAttack": {
+            "attacksPerSecond": 0.3,
+            "damage": {
+              "min": 8.54,
+              "max": 23.47,
+              "hitChance": 0.5,
+              "hitChanceVs": {
+                "Light Force bruiser": 0.51,
+                "Pistol sharpshooter": 0.47,
+                "Heavy blade fighter": 0.47,
+                "Light support off-tank": 0.26,
+                "Light Force warden": 0.47,
+                "Shield tank": 0.43,
+                "Medic (field support)": 0.75,
+                "Light Force support-damage hybrid": 0.32,
+                "Dark Force glass cannon": 0.84
+              }
+            }
+          },
+          "abilities": [
+            {
+              "feat": "Benevolence3",
+              "target": "Self",
+              "belowHpPercent": 85,
+              "minIntervalSeconds": 105.1
+            },
+            {
+              "feat": "Renewal3",
+              "target": "Self",
+              "keepUp": true,
+              "belowHpPercent": 92,
+              "minIntervalSeconds": 519.0
+            },
+            {
+              "feat": "ForceSanctuary1",
+              "target": "Self",
+              "keepUp": true,
+              "belowHpPercent": 101,
+              "maxTargets": 2,
+              "minIntervalSeconds": 345.6
+            },
+            {
+              "feat": "SunderingSweep3",
+              "target": "Self",
+              "minIntervalSeconds": 211.2,
+              "damage": {
+                "min": 16,
+                "max": 40.55,
+                "hitChance": 0.4,
+                "hitChanceVs": {
+                  "Light Force bruiser": 0.4,
+                  "Pistol sharpshooter": 0.22,
+                  "Heavy blade fighter": 0.73,
+                  "Light support off-tank": 0.1,
+                  "Light Force warden": 0.29,
+                  "Shield tank": 0.4,
+                  "Medic (field support)": 0.55,
+                  "Light Force support-damage hybrid": 0.24,
+                  "Dark Force glass cannon": 0.81
+                },
+                "targets": 2
+              }
+            },
+            {
+              "feat": "ShatteringStrike2",
+              "target": "Enemy",
+              "minIntervalSeconds": 131.7,
+              "damage": {
+                "min": 12.8,
+                "max": 35.21,
+                "hitChance": 0.5,
+                "hitChanceVs": {
+                  "Light Force bruiser": 0.5,
+                  "Pistol sharpshooter": 0.3,
+                  "Heavy blade fighter": 0.81,
+                  "Light support off-tank": 0.14,
+                  "Light Force warden": 0.38,
+                  "Shield tank": 0.5,
+                  "Medic (field support)": 0.65,
+                  "Light Force support-damage hybrid": 0.32,
+                  "Dark Force glass cannon": 0.86
+                }
+              }
+            },
+            {
+              "feat": "RadiantLance3",
+              "target": "Enemy",
+              "minIntervalSeconds": 131.6,
+              "damage": {
+                "min": 36.28,
+                "max": 94.96,
+                "hitChance": 0.6,
+                "hitChanceVs": {
+                  "Light Force bruiser": 0.6,
+                  "Pistol sharpshooter": 0.39,
+                  "Heavy blade fighter": 0.86,
+                  "Light support off-tank": 0.2,
+                  "Light Force warden": 0.48,
+                  "Shield tank": 0.6,
+                  "Medic (field support)": 0.73,
+                  "Light Force support-damage hybrid": 0.42,
+                  "Dark Force glass cannon": 0.91
+                },
+                "type": "Force"
+              }
+            },
+            {
+              "feat": "ForceJudgment3",
+              "target": "Enemy",
+              "minIntervalSeconds": 110.9,
+              "damage": {
+                "min": 37.34,
+                "max": 98.16,
+                "hitChance": 0.53,
+                "hitChanceVs": {
+                  "Light Force bruiser": 0.53,
+                  "Pistol sharpshooter": 0.32,
+                  "Heavy blade fighter": 0.82,
+                  "Light support off-tank": 0.16,
+                  "Light Force warden": 0.41,
+                  "Shield tank": 0.52,
+                  "Medic (field support)": 0.67,
+                  "Light Force support-damage hybrid": 0.34,
+                  "Dark Force glass cannon": 0.88
+                },
+                "type": "Force",
+                "targets": 4
+              }
+            },
+            {
+              "feat": "ForceBurst1",
+              "target": "Enemy",
+              "minIntervalSeconds": 109.1,
+              "damage": {
+                "min": 29.88,
+                "max": 78.96,
+                "hitChance": 0.6,
+                "hitChanceVs": {
+                  "Light Force bruiser": 0.6,
+                  "Pistol sharpshooter": 0.39,
+                  "Heavy blade fighter": 0.86,
+                  "Light support off-tank": 0.2,
+                  "Light Force warden": 0.48,
+                  "Shield tank": 0.6,
+                  "Medic (field support)": 0.73,
+                  "Light Force support-damage hybrid": 0.42,
+                  "Dark Force glass cannon": 0.91
+                },
+                "type": "Force",
+                "targets": 4
+              }
+            }
+          ]
+        },
+        {
+          "name": "Field-support medic",
+          "maxHp": 975,
+          "hpRegenPer30Seconds": 27,
+          "willpower": 26,
+          "might": 17,
+          "social": 10,
+          "outgoingHealingPercent": 10,
+          "maxFp": 90,
+          "fpRegenPer30Seconds": 7,
+          "maxStm": 70,
+          "stmRegenPer30Seconds": 24,
+          "perks": [
+            "DefensiveHarmony"
+          ],
+          "joinAtSeconds": 5,
+          "autoAttack": {
+            "attacksPerSecond": 0.3,
+            "damage": {
+              "min": 12.8,
+              "max": 34.14,
+              "hitChance": 0.36,
+              "hitChanceVs": {
+                "Light Force bruiser": 0.34,
+                "Pistol sharpshooter": 0.33,
+                "Heavy blade fighter": 0.33,
+                "Light support off-tank": 0.2,
+                "Light Force warden": 0.33,
+                "Shield tank": 0.32,
+                "Medic (field support)": 0.39,
+                "Light Force support-damage hybrid": 0.2,
+                "Dark Force glass cannon": 0.79
+              }
+            }
+          },
+          "abilities": [
+            {
+              "feat": "EmergencyTriage1",
+              "target": "LowestAlly",
+              "belowHpPercent": 50,
+              "minIntervalSeconds": 260.5
+            },
+            {
+              "feat": "Infusion2",
+              "target": "Self",
+              "keepUp": true,
+              "belowHpPercent": 92,
+              "minIntervalSeconds": 260.5
+            },
+            {
+              "feat": "PainSuppressant2",
+              "target": "Self",
+              "keepUp": true,
+              "belowHpPercent": 98,
+              "minIntervalSeconds": 260.5
+            },
+            {
+              "feat": "DeflectorShield3",
+              "target": "Self",
+              "keepUp": true,
+              "belowHpPercent": 98,
+              "minIntervalSeconds": 260.5
+            },
+            {
+              "feat": "GroupDeflector1",
+              "target": "Self",
+              "keepUp": true,
+              "belowHpPercent": 101,
+              "maxTargets": 3,
+              "minIntervalSeconds": 260.5
+            },
+            {
+              "feat": "KoltoMist2",
+              "target": "Self",
+              "keepUp": true,
+              "belowHpPercent": 101,
+              "maxTargets": 3,
+              "minIntervalSeconds": 521.0
+            },
+            {
+              "feat": "DisarmingShot4",
+              "target": "Enemy",
+              "minIntervalSeconds": 173.7,
+              "damage": {
+                "min": 19.21,
+                "max": 51.22,
+                "hitChance": 0.67,
+                "hitChanceVs": {
+                  "Light Force bruiser": 0.67,
+                  "Pistol sharpshooter": 0.46,
+                  "Heavy blade fighter": 0.89,
+                  "Light support off-tank": 0.25,
+                  "Light Force warden": 0.55,
+                  "Shield tank": 0.67,
+                  "Medic (field support)": 0.78,
+                  "Light Force support-damage hybrid": 0.49,
+                  "Dark Force glass cannon": 0.93
+                }
+              }
+            },
+            {
+              "feat": "CoveringStrike3",
+              "target": "Self",
+              "minIntervalSeconds": 173.7,
+              "damage": {
+                "min": 6.4,
+                "max": 16,
+                "hitChance": 0.5,
+                "hitChanceVs": {
+                  "Light Force bruiser": 0.5,
+                  "Pistol sharpshooter": 0.3,
+                  "Heavy blade fighter": 0.81,
+                  "Light support off-tank": 0.14,
+                  "Light Force warden": 0.38,
+                  "Shield tank": 0.5,
+                  "Medic (field support)": 0.65,
+                  "Light Force support-damage hybrid": 0.32,
+                  "Dark Force glass cannon": 0.86
+                },
+                "targets": 3
+              }
+            }
+          ]
+        },
+        {
+          "name": "Light support hybrid",
+          "maxHp": 575,
+          "hpRegenPer30Seconds": 20,
+          "willpower": 27,
+          "might": 16,
+          "social": 25,
+          "forceAffinity": 10,
+          "outgoingHealingPercent": 10,
+          "maxFp": 130,
+          "fpRegenPer30Seconds": 17,
+          "maxStm": 35,
+          "stmRegenPer30Seconds": 14,
+          "perks": [
+            "ForceConvergence"
+          ],
+          "joinAtSeconds": 24,
+          "autoAttack": {
+            "attacksPerSecond": 0.3,
+            "damage": {
+              "min": 1.07,
+              "max": 4.27,
+              "hitChance": 0.41,
+              "hitChanceVs": {
+                "Light Force bruiser": 0.39,
+                "Pistol sharpshooter": 0.38,
+                "Heavy blade fighter": 0.38,
+                "Light support off-tank": 0.2,
+                "Light Force warden": 0.38,
+                "Shield tank": 0.36,
+                "Medic (field support)": 0.52,
+                "Light Force support-damage hybrid": 0.27,
+                "Dark Force glass cannon": 0.82
+              }
+            }
+          },
+          "abilities": [
+            {
+              "feat": "Benevolence3",
+              "target": "LowestAlly",
+              "belowHpPercent": 85,
+              "minIntervalSeconds": 81.7
+            },
+            {
+              "feat": "GuardianWard4",
+              "target": "Self",
+              "keepUp": true,
+              "belowHpPercent": 98,
+              "minIntervalSeconds": 134.6
+            },
+            {
+              "feat": "PurifyingWave1",
+              "target": "Self",
+              "minIntervalSeconds": 172.0,
+              "damage": {
+                "min": 26.68,
+                "max": 69.36,
+                "hitChance": 0.75,
+                "hitChanceVs": {
+                  "Light Force bruiser": 0.75,
+                  "Pistol sharpshooter": 0.56,
+                  "Heavy blade fighter": 0.93,
+                  "Light support off-tank": 0.34,
+                  "Light Force warden": 0.65,
+                  "Shield tank": 0.75,
+                  "Medic (field support)": 0.84,
+                  "Light Force support-damage hybrid": 0.59,
+                  "Dark Force glass cannon": 0.95
+                },
+                "type": "Force"
+              },
+              "maxTargets": 3
+            },
+            {
+              "feat": "ForcePush3",
+              "target": "Enemy",
+              "minIntervalSeconds": 172.0,
+              "damage": {
+                "min": 16,
+                "max": 40.55,
+                "hitChance": 0.5,
+                "hitChanceVs": {
+                  "Light Force bruiser": 0.5,
+                  "Pistol sharpshooter": 0.3,
+                  "Heavy blade fighter": 0.81,
+                  "Light support off-tank": 0.14,
+                  "Light Force warden": 0.38,
+                  "Shield tank": 0.5,
+                  "Medic (field support)": 0.65,
+                  "Light Force support-damage hybrid": 0.32,
+                  "Dark Force glass cannon": 0.86
+                },
+                "type": "Force"
+              }
+            },
+            {
+              "feat": "MindTrick2",
+              "target": "Enemy",
+              "minIntervalSeconds": 132.3,
+              "damage": {
+                "min": 0,
+                "max": 0,
+                "hitChance": 0.71,
+                "hitChanceVs": {
+                  "Light Force bruiser": 0.72,
+                  "Pistol sharpshooter": 0.52,
+                  "Heavy blade fighter": 0.91,
+                  "Light support off-tank": 0.29,
+                  "Light Force warden": 0.6,
+                  "Shield tank": 0.71,
+                  "Medic (field support)": 0.82,
+                  "Light Force support-damage hybrid": 0.54,
+                  "Dark Force glass cannon": 0.94
+                },
+                "targets": 2
+              }
+            },
+            {
+              "feat": "FocusedArc4",
+              "target": "Enemy",
+              "minIntervalSeconds": 74.8,
+              "damage": {
+                "min": 14.94,
+                "max": 39.48,
+                "hitChance": 0.5,
+                "hitChanceVs": {
+                  "Light Force bruiser": 0.5,
+                  "Pistol sharpshooter": 0.3,
+                  "Heavy blade fighter": 0.81,
+                  "Light support off-tank": 0.14,
+                  "Light Force warden": 0.38,
+                  "Shield tank": 0.5,
+                  "Medic (field support)": 0.65,
+                  "Light Force support-damage hybrid": 0.32,
+                  "Dark Force glass cannon": 0.86
+                }
+              }
+            },
+            {
+              "feat": "ForceBurst1",
+              "target": "Enemy",
+              "minIntervalSeconds": 68.0,
+              "damage": {
+                "min": 20.27,
+                "max": 52.28,
+                "hitChance": 0.1,
+                "hitChanceVs": {
+                  "Light Force bruiser": 0.1,
+                  "Pistol sharpshooter": 0.05,
+                  "Heavy blade fighter": 0.32,
+                  "Light support off-tank": 0.02,
+                  "Light Force warden": 0.06,
+                  "Shield tank": 0.1,
+                  "Medic (field support)": 0.17,
+                  "Light Force support-damage hybrid": 0.05,
+                  "Dark Force glass cannon": 0.41
+                },
+                "type": "Force"
+              }
+            },
+            {
+              "feat": "RadiantLance3",
+              "target": "Enemy",
+              "minIntervalSeconds": 66.3,
+              "damage": {
+                "min": 36.28,
+                "max": 96.03,
+                "hitChance": 0.6,
+                "hitChanceVs": {
+                  "Light Force bruiser": 0.6,
+                  "Pistol sharpshooter": 0.39,
+                  "Heavy blade fighter": 0.86,
+                  "Light support off-tank": 0.2,
+                  "Light Force warden": 0.48,
+                  "Shield tank": 0.6,
+                  "Medic (field support)": 0.73,
+                  "Light Force support-damage hybrid": 0.42,
+                  "Dark Force glass cannon": 0.91
+                },
+                "type": "Force"
+              }
+            },
+            {
+              "feat": "ForceJudgment3",
+              "target": "Enemy",
+              "minIntervalSeconds": 56.0,
+              "damage": {
+                "min": 33.08,
+                "max": 87.49,
+                "hitChance": 0.58,
+                "hitChanceVs": {
+                  "Light Force bruiser": 0.58,
+                  "Pistol sharpshooter": 0.38,
+                  "Heavy blade fighter": 0.85,
+                  "Light support off-tank": 0.19,
+                  "Light Force warden": 0.46,
+                  "Shield tank": 0.58,
+                  "Medic (field support)": 0.72,
+                  "Light Force support-damage hybrid": 0.4,
+                  "Dark Force glass cannon": 0.9
+                },
+                "type": "Force",
+                "targets": 2
+              }
+            },
+            {
+              "feat": "ThrowRock3",
+              "target": "Enemy",
+              "minIntervalSeconds": 45.1,
+              "damage": {
+                "min": 35.21,
+                "max": 93.9,
+                "hitChance": 0.44,
+                "hitChanceVs": {
+                  "Light Force bruiser": 0.45,
+                  "Pistol sharpshooter": 0.26,
+                  "Heavy blade fighter": 0.77,
+                  "Light support off-tank": 0.12,
+                  "Light Force warden": 0.33,
+                  "Shield tank": 0.44,
+                  "Medic (field support)": 0.59,
+                  "Light Force support-damage hybrid": 0.28,
+                  "Dark Force glass cannon": 0.83
+                }
+              }
+            }
+          ]
+        },
+        {
+          "name": "Light healer",
+          "maxHp": 425,
+          "hpRegenPer30Seconds": 20,
+          "willpower": 26,
+          "might": 20,
+          "social": 20,
+          "forceAffinity": 10,
+          "combatReadinessPercent": 12,
+          "outgoingHealingPercent": 10,
+          "maxFp": 140,
+          "fpRegenPer30Seconds": 16,
+          "maxStm": 50,
+          "stmRegenPer30Seconds": 17,
+          "perks": [
+            "ForceConvergence"
+          ],
+          "joinAtSeconds": 61,
+          "autoAttack": {
+            "attacksPerSecond": 0.3,
+            "damage": {
+              "min": 2.13,
+              "max": 6.4,
+              "hitChance": 0.41,
+              "hitChanceVs": {
+                "Light Force bruiser": 0.39,
+                "Pistol sharpshooter": 0.38,
+                "Heavy blade fighter": 0.38,
+                "Light support off-tank": 0.2,
+                "Light Force warden": 0.38,
+                "Shield tank": 0.36,
+                "Medic (field support)": 0.52,
+                "Light Force support-damage hybrid": 0.27,
+                "Dark Force glass cannon": 0.82
+              }
+            }
+          },
+          "abilities": [
+            {
+              "feat": "Resuscitation2",
+              "target": "DeadAlly"
+            },
+            {
+              "feat": "EmergencyTriage1",
+              "target": "LowestAlly",
+              "belowHpPercent": 50,
+              "minIntervalSeconds": 61.8
+            },
+            {
+              "feat": "Benevolence3",
+              "target": "LowestAlly",
+              "belowHpPercent": 85,
+              "minIntervalSeconds": 18.6
+            },
+            {
+              "feat": "Renewal3",
+              "target": "LowestAlly",
+              "keepUp": true,
+              "belowHpPercent": 92,
+              "minIntervalSeconds": 25.1
+            },
+            {
+              "feat": "GuardianWard4",
+              "target": "LowestAlly",
+              "keepUp": true,
+              "belowHpPercent": 98,
+              "minIntervalSeconds": 28.8
+            },
+            {
+              "feat": "RousingShout3",
+              "target": "LowestAlly",
+              "keepUp": true,
+              "belowHpPercent": 98,
+              "minIntervalSeconds": 106.7
+            },
+            {
+              "feat": "ForceSanctuary1",
+              "target": "Self",
+              "keepUp": true,
+              "belowHpPercent": 101,
+              "maxTargets": 2,
+              "minIntervalSeconds": 58.1
+            },
+            {
+              "feat": "KoltoMist2",
+              "target": "Self",
+              "keepUp": true,
+              "belowHpPercent": 101,
+              "maxTargets": 3,
+              "minIntervalSeconds": 54.7
+            },
+            {
+              "feat": "SavageRoar",
+              "target": "Self",
+              "minIntervalSeconds": 142.2,
+              "damage": {
+                "min": 0,
+                "max": 0,
+                "hitChance": 0.4,
+                "hitChanceVs": {
+                  "Light Force bruiser": 0.4,
+                  "Pistol sharpshooter": 0.22,
+                  "Heavy blade fighter": 0.73,
+                  "Light support off-tank": 0.1,
+                  "Light Force warden": 0.29,
+                  "Shield tank": 0.4,
+                  "Medic (field support)": 0.55,
+                  "Light Force support-damage hybrid": 0.24,
+                  "Dark Force glass cannon": 0.81
+                },
+                "targets": 2
+              }
+            },
+            {
+              "feat": "TailSweep",
+              "target": "Self",
+              "minIntervalSeconds": 135.9,
+              "damage": {
+                "min": 7.47,
+                "max": 20.27,
+                "hitChance": 0.75,
+                "hitChanceVs": {
+                  "Light Force bruiser": 0.75,
+                  "Pistol sharpshooter": 0.56,
+                  "Heavy blade fighter": 0.93,
+                  "Light support off-tank": 0.34,
+                  "Light Force warden": 0.65,
+                  "Shield tank": 0.75,
+                  "Medic (field support)": 0.84,
+                  "Light Force support-damage hybrid": 0.59,
+                  "Dark Force glass cannon": 0.95
+                }
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -141,7 +141,7 @@ public class ForceLightGuardianTests
             "the stronger resolve bonus depends on Force temporary HP, not ownership of Reflective Barrier");
 
         var temporaryHP = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "TemporaryHitPointEffects.cs").FullName);
-        temporaryHP.Should().Contain("public static void ApplyFlatFromSource(");
+        temporaryHP.Should().Contain("public static int ApplyFlatFromSource(");
         temporaryHP.Should().Contain("ApplyFlatFromSource(OBJECT_INVALID, target, effectKey, amount, durationSeconds);",
             "sourced and unsourced temporary-HP pools must share one metadata-reset path");
         temporaryHP.Should().Contain("public static bool IsActivePoolFromSource(");

@@ -67,6 +67,26 @@ namespace SWLOR.CombatSim.Tests.Engine
         }
 
         [Test]
+        public void FallingBackToACheaperAbility_StillCountsAsNotAffordingTheWantedOne()
+        {
+            var lightning = TestCombatants.Use("ForceLightning3", AbilityTarget.Enemy);
+            lightning.Damage = new DamageSpec { Min = 1f, Max = 1f, HitChance = 1f };
+            var caster = TestCombatants.Medic("Caster", lightning, TestCombatants.Use("MedKit1", AbilityTarget.Self, minIntervalSeconds: 5f));
+            caster.MaxFp = 1;
+            var simulation = TestScenarios.Spawn(
+                TestScenarios.TwoTeams(false, new[] { caster }, new[] { TestCombatants.Dummy("Enemy", true) }),
+                RuleSets.Current(),
+                _catalog);
+            var combatant = simulation.Get("Caster");
+
+            SimulationClock.RunUntil(simulation, WindowSeconds);
+
+            combatant.Stats.AbilitiesUsed.Should().BeGreaterThan(0, "the cheap fallback is cast");
+            combatant.Stats.StarvedSeconds.Should().BeGreaterThan(WindowSeconds - 3,
+                "Force Lightning is wanted first and never affordable, including on the steps the fallback is cast");
+        }
+
+        [Test]
         public void MinIntervalSeconds_IsNotRaisedAsStarvation()
         {
             var (simulation, caster, _) = SpawnCaster(Rock(20f));

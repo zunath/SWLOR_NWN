@@ -250,6 +250,49 @@ namespace SWLOR.CombatSim.Tests.Engine
         }
 
         [Test]
+        public void LowestAlly_CountsTemporaryHp()
+        {
+            var simulation = TestScenarios.Spawn(
+                TestScenarios.TwoTeams(
+                    false,
+                    new[]
+                    {
+                        TestCombatants.Medic("Medic", TestCombatants.Use("Benevolence1", AbilityTarget.LowestAlly, minIntervalSeconds: 600)),
+                        new CombatantSpec { Name = "Shielded", MaxHp = 1000 },
+                        new CombatantSpec { Name = "Exposed", MaxHp = 1000 }
+                    },
+                    new[] { TestCombatants.Dummy("Enemy", true) }),
+                RuleSets.Current(),
+                _catalog);
+            var shielded = simulation.Get("Shielded");
+            shielded.Hp = 300;
+            shielded.TemporaryHp.Add(new TemporaryHpPool { Key = "Shield", Amount = 500, ExpiresAt = 600 });
+            simulation.Get("Exposed").Hp = 600;
+
+            SimulationClock.RunUntil(simulation, () => simulation.Get("Medic").Stats.AbilitiesUsed == 1, 10, "Benevolence cast");
+
+            simulation.Get("Exposed").Stats.HealingReceived.Should().BeGreaterThan(0);
+            shielded.Stats.HealingReceived.Should().Be(0);
+        }
+
+        [Test]
+        public void BelowHpPercent_CountsTemporaryHp()
+        {
+            var medic = TestCombatants.Medic("Medic", TestCombatants.Use("Benevolence1", AbilityTarget.Self, belowHpPercent: 50f));
+            var simulation = TestScenarios.Spawn(
+                TestScenarios.TwoTeams(false, new[] { medic }, new[] { TestCombatants.Dummy("Enemy", true) }),
+                RuleSets.Current(),
+                _catalog);
+            var combatant = simulation.Get("Medic");
+            combatant.Hp = 400;
+            combatant.TemporaryHp.Add(new TemporaryHpPool { Key = "Shield", Amount = 200, ExpiresAt = 600 });
+
+            SimulationClock.RunUntil(simulation, 5);
+
+            combatant.Stats.AbilitiesUsed.Should().Be(0, "40% HP plus a 20% shield is above the 50% threshold");
+        }
+
+        [Test]
         public void Coordinated_CountsTemporaryHp_WhenPickingTheLowestTarget()
         {
             var simulation = Spawn(TargetPolicy.Coordinated, attackers: 1, enemies: 2);

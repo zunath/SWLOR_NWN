@@ -24,6 +24,8 @@ namespace SWLOR.CombatSim.Tests.Rules
         }
 
         [TestCase("{ \"fpCostMultiplier\": -1 }", "FpCostMultiplier")]
+        [TestCase("{ \"fpCostMultiplier\": 1e20 }", "FpCostMultiplier")]
+        [TestCase("{ \"stmCostMultiplier\": 101 }", "StmCostMultiplier")]
         [TestCase("{ \"stmCostMultiplier\": NaN }", "StmCostMultiplier")]
         [TestCase("{ \"forceAffinityHealingCap\": 0.9 }", "ForceAffinityHealingCap")]
         [TestCase("{ \"recastOverrides\": { \"MedKit\": -2 } }", "RecastOverrides[MedKit]")]

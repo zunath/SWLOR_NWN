@@ -9,6 +9,8 @@ namespace SWLOR.CombatSim.Rules
     /// </summary>
     public sealed class RuleSet
     {
+        public const float MaximumCostMultiplier = 100f;
+
         public string Name { get; set; }
 
         /// <summary>Highest multiplier Light affinity may apply to heals and shields (x1.5 today).</summary>
@@ -119,8 +121,9 @@ namespace SWLOR.CombatSim.Rules
             AtLeast(nameof(ConvergenceDurationSeconds), ConvergenceDurationSeconds, 0);
             AtLeast(nameof(HarmonyCooldownSeconds), HarmonyCooldownSeconds, 0);
             AtLeast(nameof(CostSkillThreshold), CostSkillThreshold, 0);
-            AtLeast(nameof(FpCostMultiplier), FpCostMultiplier, 0);
-            AtLeast(nameof(StmCostMultiplier), StmCostMultiplier, 0);
+            // A bound keeps every adjusted cost a sensible whole number.
+            Between(nameof(FpCostMultiplier), FpCostMultiplier, 0, MaximumCostMultiplier);
+            Between(nameof(StmCostMultiplier), StmCostMultiplier, 0, MaximumCostMultiplier);
 
             if (!Enum.IsDefined(Revives))
                 problems.Add($"{nameof(Revives)} must be one of {string.Join(", ", Enum.GetNames<ReviveRule>())}");

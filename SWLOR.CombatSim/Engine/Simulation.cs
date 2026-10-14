@@ -524,7 +524,8 @@ namespace SWLOR.CombatSim.Engine
                 }
 
                 StartCast(caster, use, info, effect, target, fp, stm);
-                caster.IsStarved = false;
+                // Settling for a cheaper ability still counts as not affording the one wanted first.
+                caster.IsStarved = starved;
                 return;
             }
 
@@ -732,7 +733,7 @@ namespace SWLOR.CombatSim.Engine
                     return caster;
                 case AbilityTarget.LowestAlly:
                     // The lowest ally the use can still help: under its HP threshold and, for KeepUp, not yet covered.
-                    return Allies(caster).OrderBy(a => a.HpPercent).FirstOrDefault(a => ConditionHolds(caster, use, effect, a));
+                    return Allies(caster).OrderBy(a => a.HpPercentWithTemporaryHp).FirstOrDefault(a => ConditionHolds(caster, use, effect, a));
                 case AbilityTarget.NamedAlly:
                     return Allies(caster).FirstOrDefault(a => a.Name == use.TargetName);
                 case AbilityTarget.DeadAlly:
@@ -754,7 +755,8 @@ namespace SWLOR.CombatSim.Engine
             if (use.Target == AbilityTarget.DeadAlly)
                 return true;
 
-            if (use.BelowHpPercent.HasValue && target.HpPercent >= use.BelowHpPercent.Value)
+            // Thresholds read current HP, which counts temporary HP, as the game's health checks do.
+            if (use.BelowHpPercent.HasValue && target.HpPercentWithTemporaryHp >= use.BelowHpPercent.Value)
                 return false;
 
             if (!use.KeepUp || effect == null)
@@ -1062,6 +1064,7 @@ namespace SWLOR.CombatSim.Engine
                 adjusted *= _rules.PvpHealingMultiplier * (1 - ramp / 100f);
             }
 
+            adjusted = Math.Max(0, adjusted);
             var effective = Math.Min(adjusted, target.Spec.MaxHp - target.Hp);
             if (effective < 0)
                 effective = 0;

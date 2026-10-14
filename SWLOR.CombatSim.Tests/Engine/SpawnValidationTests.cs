@@ -309,6 +309,8 @@ namespace SWLOR.CombatSim.Tests.Engine
         [TestCase("maxFp")]
         [TestCase("readiness")]
         [TestCase("healingReceived")]
+        [TestCase("outgoingBelowMinusHundred")]
+        [TestCase("receivedBelowMinusHundred")]
         [TestCase("damageReduction")]
         public void Spawn_RejectsACombatantValueOutsideItsRange(string field)
         {
@@ -321,6 +323,8 @@ namespace SWLOR.CombatSim.Tests.Engine
                 case "maxFp": player.MaxFp = -10; break;
                 case "readiness": player.CombatReadinessPercent = float.NaN; break;
                 case "healingReceived": player.HealingReceivedPercent = float.NegativeInfinity; break;
+                case "outgoingBelowMinusHundred": player.OutgoingHealingPercent = -150f; break;
+                case "receivedBelowMinusHundred": player.HealingReceivedPercent = -101f; break;
                 case "damageReduction": player.DamageReductionPercent = 150f; break;
             }
 

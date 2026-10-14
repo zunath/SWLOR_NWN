@@ -55,10 +55,10 @@ namespace SWLOR.CombatSim.Scenario
                     problems.Add($"{name} must be a number of at least 0");
             }
 
-            void Number(string name, float value)
+            void AtLeastMinusHundred(string name, float value)
             {
-                if (!float.IsFinite(value))
-                    problems.Add($"{name} must be a number");
+                if (!float.IsFinite(value) || value < -100f)
+                    problems.Add($"{name} must be a number of at least -100");
             }
 
             AtLeastZero(nameof(HpRegenPer30Seconds), HpRegenPer30Seconds);
@@ -67,8 +67,8 @@ namespace SWLOR.CombatSim.Scenario
             AtLeastZero(nameof(MaxFp), MaxFp);
             AtLeastZero(nameof(MaxStm), MaxStm);
             AtLeastZero(nameof(CombatReadinessPercent), CombatReadinessPercent);
-            Number(nameof(OutgoingHealingPercent), OutgoingHealingPercent);
-            Number(nameof(HealingReceivedPercent), HealingReceivedPercent);
+            AtLeastMinusHundred(nameof(OutgoingHealingPercent), OutgoingHealingPercent);
+            AtLeastMinusHundred(nameof(HealingReceivedPercent), HealingReceivedPercent);
             if (!float.IsFinite(DamageReductionPercent) || DamageReductionPercent < 0f || DamageReductionPercent > 100f)
                 problems.Add($"{nameof(DamageReductionPercent)} must be from 0 to 100");
 

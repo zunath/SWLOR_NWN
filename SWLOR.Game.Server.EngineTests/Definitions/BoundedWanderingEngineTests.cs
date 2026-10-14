@@ -123,6 +123,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
 
         private static uint Spawn(EngineTestContext ctx, uint area, string resref, Vector3 position)
         {
+            ctx.AssertEqual("Dandestroy", GetTag(area), "instance retains the source area's tag");
             var creature = CreateObject(ObjectType.Creature, resref, Location(area, position, 0f));
             ctx.Assert(GetIsObjectValid(creature), $"Spawned {resref}");
             ctx.Track(creature);
@@ -149,28 +150,32 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             var creature = Spawn(ctx, area, "gizka", new Vector3(122f, 75f, 5f));
             await ctx.DelaySecondsAsync(1f);
             Configure(creature);
-            await ctx.ExecuteInCreatureContextAsync(creature, () =>
+            const int samples = 200;
+            double baselineTotal = 0, roamingTotal = 0, roamingMax = 0;
+            for (var batch = 0; batch < samples / 20; batch++)
             {
-                const int samples = 200;
-                double baselineTotal = 0, roamingTotal = 0, roamingMax = 0;
-                for (var index = 0; index < samples; index++)
+                await ctx.ExecuteInCreatureContextAsync(creature, () =>
                 {
+                    for (var index = 0; index < 20; index++)
+                    {
+                        ClearAllActions();
+                        var start = Stopwatch.GetTimestamp();
+                        AI.CreatureHeartbeat();
+                        baselineTotal += Stopwatch.GetElapsedTime(start).TotalMilliseconds;
+                        ClearAllActions();
+                        start = Stopwatch.GetTimestamp();
+                        DantooineRuinFarmWildlife.Heartbeat();
+                        var elapsed = Stopwatch.GetElapsedTime(start).TotalMilliseconds;
+                        roamingTotal += elapsed;
+                        roamingMax = Math.Max(roamingMax, elapsed);
+                    }
                     ClearAllActions();
-                    var start = Stopwatch.GetTimestamp();
-                    AI.CreatureHeartbeat();
-                    baselineTotal += Stopwatch.GetElapsedTime(start).TotalMilliseconds;
-                    ClearAllActions();
-                    start = Stopwatch.GetTimestamp();
-                    DantooineRuinFarmWildlife.Heartbeat();
-                    var elapsed = Stopwatch.GetElapsedTime(start).TotalMilliseconds;
-                    roamingTotal += elapsed;
-                    roamingMax = Math.Max(roamingMax, elapsed);
-                }
-                ClearAllActions();
-                ctx.SetResultDetail($"{samples} paired local samples: shared mean={baselineTotal / samples:0.000}ms, " +
-                    $"area-specific mean={roamingTotal / samples:0.000}ms, max={roamingMax:0.000}ms. " +
-                    "A local microbenchmark, not a production load test.");
-            });
+                });
+                await ctx.WaitFrameAsync();
+            }
+            ctx.SetResultDetail($"{samples} paired local samples: shared mean={baselineTotal / samples:0.000}ms, " +
+                $"area-specific mean={roamingTotal / samples:0.000}ms, max={roamingMax:0.000}ms. " +
+                "A local microbenchmark, not a production load test.");
         }
     }
 }

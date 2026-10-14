@@ -12,7 +12,7 @@ namespace SWLOR.Game.Server.Feature
         public static void AttachHeartbeat(uint creature)
         {
             if (GetIsObjectValid(creature) && !GetIsPC(creature) && !GetIsDM(creature) &&
-                !GetIsDMPossessed(creature) && GetResRef(GetArea(creature)) == "dan_destroyfarm")
+                !GetIsDMPossessed(creature) && GetTag(GetArea(creature)) == "Dandestroy")
                 SetEventScript(creature, EventScript.Creature_OnHeartbeat, ScriptName.OnRuinFarmWildlifeHeartbeat);
         }
 
@@ -25,7 +25,7 @@ namespace SWLOR.Game.Server.Feature
                 return;
 
             AI.CreatureHeartbeat();
-            if (!AI.IsCreatureAIEnabled(creature) || GetResRef(GetArea(creature)) != "dan_destroyfarm" ||
+            if (!AI.IsCreatureAIEnabled(creature) || GetTag(GetArea(creature)) != "Dandestroy" ||
                 GetIsInCombat(creature) || IsInConversation(creature) || AI.IsLeashEvading(creature) ||
                 GetIsObjectValid(Enmity.GetHighestEnmityTarget(creature)))
                 return;

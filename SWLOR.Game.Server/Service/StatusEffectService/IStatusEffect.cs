@@ -41,9 +41,10 @@ namespace SWLOR.Game.Server.Service.StatusEffectService
         IStatusEffect Clone();
         string CanApply(uint creature);
         /// <summary>
-        /// True when applying this effect over <paramref name="active"/>, the same type from the same
-        /// source and ability, would produce the same state, so the active effect restarts its duration
-        /// in place. Only effects whose Apply and Remove change nothing but their own stats may opt in.
+        /// True when applying this effect over <paramref name="active"/>, the same type and ability, would
+        /// produce the same state, so the active effect restarts its duration in place (taking the new
+        /// source when the type does not stack). Only effects whose Apply and Remove change nothing but
+        /// their own stats may opt in.
         /// </summary>
         bool CanRefreshInPlace(IStatusEffect active);
         void AssignResistanceType(ResistanceType type);

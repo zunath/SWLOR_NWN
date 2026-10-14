@@ -748,8 +748,9 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>
-        /// Restarts an opted-in effect's duration when the same source and ability apply it again with the
-        /// same result. Duration, tick schedule, native effect and application triggers match a fresh
+        /// Restarts an opted-in effect in place when applying it again would produce the same state.
+        /// A non-stacking effect from another source is handed to the new source, as a fresh replacement
+        /// would be. Duration, tick schedule, native effect and application triggers match a fresh
         /// application; the remove/add cycle and the repeated application message are skipped.
         /// </summary>
         private static bool TryRefreshInPlace(
@@ -767,8 +768,13 @@ namespace SWLOR.Game.Server.Service
                 return false;
             }
 
-            // A fresh application replaces every instance of a non-stacking type, so only a lone instance qualifies.
+            // Cheap opt-in check first; most effects never refresh in place.
             var type = statusEffect.GetType();
+            var first = creatureEffects.GetEffect(type);
+            if (first == null || !statusEffect.CanRefreshInPlace(first))
+                return false;
+
+            // A fresh application replaces every instance of a non-stacking type, so only a lone instance qualifies.
             var candidates = creatureEffects.GetAllEffects()
                 .Where(effect => effect.GetType() == type &&
                                  (statusEffect.StackingType == StatusEffectStackType.Disabled || effect.Source == source))
@@ -778,8 +784,7 @@ namespace SWLOR.Game.Server.Service
 
             var active = candidates[0];
             var originatingAbility = statusEffect.OriginatingAbility ?? Ability.GetActiveAbilityImpactSummary(source)?.Ability;
-            if (active.Source != source ||
-                active.IsFlaggedForRemoval ||
+            if (active.IsFlaggedForRemoval ||
                 active.DurationTicks < 0 ||
                 active.AppliedResistanceType != resistanceType ||
                 active.OriginatingAbility != originatingAbility ||
@@ -797,6 +802,81 @@ namespace SWLOR.Game.Server.Service
             }
 
             var tickAnchor = GetRefreshTickAnchor(statusEffect, creatureEffects.GetAllEffects(), source);
+            if (active.Source != source)
+                active.ReassignSource(source);
+            RestartInPlace(creature, active, source, durationTicks, durationTicksWithoutResistance, durationSeconds,
+                tickAnchor, resistanceType);
+            return true;
+        }
+
+        /// <summary>
+        /// Restarts an active effect's duration exactly as re-applying the same effect from the same
+        /// source would, without replacing it or repeating its application message. For effects whose
+        /// re-application changes nothing else, such as Embattled with unchanged stacks.
+        /// </summary>
+        public static bool RestartStatusEffectDuration(
+            uint creature,
+            Type statusEffectClass,
+            uint source,
+            float durationSeconds)
+        {
+            if (!_creatureEffects.TryGetValue(creature, out var creatureEffects) ||
+                statusEffectClass == null ||
+                durationSeconds <= 0f)
+            {
+                return false;
+            }
+
+            var matches = creatureEffects.GetAllEffects()
+                .Where(effect => effect.GetType() == statusEffectClass && effect.Source == source)
+                .ToList();
+            if (matches.Count != 1)
+                return false;
+
+            var active = matches[0];
+            if (active.IsFlaggedForRemoval ||
+                active.DurationTicks < 0 ||
+                (active.Categories & StatusEffectCategory.HardCrowdControl) != 0)
+            {
+                return false;
+            }
+
+            var frequency = Math.Max(1f, active.Frequency);
+            var adjustedSeconds = ApplyOutgoingStatusDurationAdjustments(active, source, durationSeconds, false);
+            var ticks = Math.Max(1, (int)Math.Ceiling(adjustedSeconds / frequency));
+            var ticksWithoutResistance = ticks;
+            var resistanceType = active.AppliedResistanceType;
+            if (Resistance.IsValidResistanceType(resistanceType) &&
+                GetIsObjectValid(source) &&
+                GetIsObjectValid(creature) &&
+                GetIsReactionTypeHostile(creature, source))
+            {
+                if (Resistance.HasImmunity(creature, resistanceType))
+                    return false;
+
+                ticks = Resistance.CalculateResistedTicks(creature, resistanceType, ticks);
+            }
+
+            if (ticks <= 0)
+                return false;
+
+            adjustedSeconds = Math.Max(0.1f, Math.Min(adjustedSeconds + Math.Max(0, ticks - ticksWithoutResistance) * frequency,
+                ticks * frequency));
+            var tickAnchor = GetRefreshTickAnchor(active, creatureEffects.GetAllEffects(), source);
+            RestartInPlace(creature, active, source, ticks, ticksWithoutResistance, adjustedSeconds, tickAnchor, resistanceType);
+            return true;
+        }
+
+        private static void RestartInPlace(
+            uint creature,
+            IStatusEffect active,
+            uint source,
+            int durationTicks,
+            int durationTicksWithoutResistance,
+            float durationSeconds,
+            DateTime? tickAnchor,
+            ResistanceType resistanceType)
+        {
             active.RestartDuration(durationTicks, durationSeconds, tickAnchor);
             RemoveNativeStatusEffect(creature, active.Id);
             ApplyTrackedNWNEffect(creature, active, active.DurationTicks, false);
@@ -816,8 +896,6 @@ namespace SWLOR.Game.Server.Service
             {
                 SendMessageToPC(source, durationResistanceMessage);
             }
-
-            return true;
         }
 
         public static string BuildDurationResistanceMessage(

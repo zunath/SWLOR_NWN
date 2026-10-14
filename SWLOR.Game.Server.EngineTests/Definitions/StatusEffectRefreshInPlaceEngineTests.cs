@@ -8,8 +8,8 @@ using SWLOR.NWN.API.NWScript.Enum;
 namespace SWLOR.Game.Server.EngineTests.Definitions
 {
     /// <summary>
-    /// Hobble opts into in-place refresh: the same source re-applying it restarts the active effect with
-    /// a fresh application's timing and triggers, and any other source still replaces it.
+    /// Hobble opts into in-place refresh: re-applying it restarts the active effect with a fresh
+    /// application's timing and triggers, and another source takes it over as a replacement would.
     /// </summary>
     public static class StatusEffectRefreshInPlaceEngineTests
     {
@@ -64,10 +64,13 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
 
             ctx.Assert(StatusEffect.ApplyStatusEffect(caster, target, typeof(HobbleStatusEffect), 3f), "Hobble applies again");
             var fromCaster = StatusEffect.GetStatusEffect<HobbleStatusEffect>(target);
+            await ctx.DelaySecondsAsync(1f);
             ctx.Assert(StatusEffect.ApplyStatusEffect(otherCaster, target, typeof(HobbleStatusEffect), 3f), "another source applies Hobble");
             var fromOther = StatusEffect.GetStatusEffect<HobbleStatusEffect>(target);
-            ctx.Assert(!ReferenceEquals(fromCaster, fromOther), "another source replaces the active Hobble");
-            ctx.AssertEqual(otherCaster, fromOther.Source, "the replacement belongs to the new source");
+            ctx.Assert(ReferenceEquals(fromCaster, fromOther), "another source takes over the active Hobble");
+            ctx.AssertEqual(otherCaster, fromOther.Source, "the Hobble now belongs to the new source, as a replacement would");
+            ctx.Assert(fromOther.GetRemainingDurationSeconds(DateTime.UtcNow) > remaining - 0.2f,
+                "the new source's application restarts the duration");
             ctx.AssertEqual(slow, StatusEffect.GetStatAdjustment(target, StatType.MovementSpeedPercentAdjustment),
                 "only one Hobble slows the target");
         }

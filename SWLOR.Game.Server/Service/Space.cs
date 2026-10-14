@@ -1199,6 +1199,19 @@ namespace SWLOR.Game.Server.Service
             ApplyShipExamineDetails(item);
         }
 
+        /// <summary>
+        /// Combines an item's authored description with its ship module description. An item with no
+        /// authored description reports its base item's placeholder text, which is dropped.
+        /// </summary>
+        public static string BuildShipModuleDescription(string originalDescription, string baseItemDescription, string moduleDescription)
+        {
+            var original = originalDescription?.Trim() ?? string.Empty;
+            if (original.Length == 0 || original == (baseItemDescription?.Trim() ?? string.Empty))
+                return moduleDescription;
+
+            return $"{original}\n{moduleDescription}";
+        }
+
         private static void ApplyShipModuleExamineDetails(uint item)
         {
             // Must be an item
@@ -1214,9 +1227,8 @@ namespace SWLOR.Game.Server.Service
             if (string.IsNullOrWhiteSpace(moduleDetail.Description)) return;
 
             // Append the ship module's description to the item's description.
-            var description = GetDescription(item, true);
-            description += moduleDetail.Description + "\n";
-            SetDescription(item, description);
+            var baseItemDescription = GetStringByStrRef(StringToInt(Get2DAString("baseitems", "Description", (int)GetBaseItemType(item))));
+            SetDescription(item, BuildShipModuleDescription(GetDescription(item, true), baseItemDescription, moduleDetail.Description));
 
             // Apply item properties defined in code.
             foreach (var (perkType, level) in moduleDetail.RequiredPerks)

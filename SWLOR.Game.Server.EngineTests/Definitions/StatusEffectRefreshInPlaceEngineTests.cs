@@ -1,3 +1,4 @@
+using System.Linq;
 using System.Threading.Tasks;
 using SWLOR.Game.Server.EngineTests.Framework;
 using SWLOR.Game.Server.Service.CombatService;
@@ -14,6 +15,34 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
     public static class StatusEffectRefreshInPlaceEngineTests
     {
         private const string Resref = "nw_bandit001";
+
+        [EngineTest("Zone buffs re-applied by their pulses restart in place", Category = "StatusEffect", TimeoutSeconds = 60f)]
+        public static async Task ZoneBuffsRefreshInPlace(EngineTestContext ctx)
+        {
+            var caster = ctx.SpawnCreature(Resref);
+            var ally = ctx.SpawnCreature(Resref, 2f);
+            await ctx.DelaySecondsAsync(1f);
+            foreach (var creature in new[] { caster, ally })
+                SetAILevel(creature, AILevel.VeryLow);
+
+            // Zone pulses re-apply these with 3.2 s every 3 s.
+            foreach (var type in new[] { typeof(ForceSanctuary1StatusEffect), typeof(EmergencyBunker1StatusEffect), typeof(KoltoMistHealingStatusEffect) })
+            {
+                ctx.Assert(StatusEffect.ApplyStatusEffect(caster, ally, type, 3.2f), $"{type.Name} applies");
+                var applied = StatusEffect.GetStatusEffect(ally, type);
+                var stats = applied.StatGroup.Stats.Where(stat => stat.Value != 0)
+                    .ToDictionary(stat => stat.Key, stat => StatusEffect.GetStatAdjustment(ally, stat.Key));
+
+                await ctx.DelaySecondsAsync(1f);
+                ctx.Assert(StatusEffect.ApplyStatusEffect(caster, ally, type, 3.2f), $"{type.Name} re-applies");
+                ctx.Assert(ReferenceEquals(applied, StatusEffect.GetStatusEffect(ally, type)), $"the next pulse keeps the active {type.Name}");
+                ctx.Assert(applied.GetRemainingDurationSeconds(DateTime.UtcNow) > 3f, $"the pulse restarts {type.Name}'s duration");
+                foreach (var (stat, value) in stats)
+                    ctx.AssertEqual(value, StatusEffect.GetStatAdjustment(ally, stat), $"{type.Name} does not add {stat} again");
+
+                StatusEffect.RemoveStatusEffect(type, ally);
+            }
+        }
 
         [EngineTest("Hobble re-applied by the same source restarts in place with fresh timing and triggers", Category = "StatusEffect", TimeoutSeconds = 60f)]
         public static async Task HobbleRefreshesInPlace(EngineTestContext ctx)

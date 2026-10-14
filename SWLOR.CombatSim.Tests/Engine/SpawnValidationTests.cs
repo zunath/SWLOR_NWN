@@ -268,6 +268,29 @@ namespace SWLOR.CombatSim.Tests.Engine
             act.Should().Throw<InvalidDataException>().WithMessage("*Medic*ReactionSeconds*");
         }
 
+        [TestCase(float.NaN)]
+        [TestCase(float.PositiveInfinity)]
+        [TestCase(-10f)]
+        public void Spawn_RejectsABelowHpPercentThatIsNotAFiniteNonNegativeNumber(float threshold)
+        {
+            var medic = TestCombatants.Medic("Medic", TestCombatants.Use("Benevolence1", AbilityTarget.LowestAlly, belowHpPercent: threshold));
+
+            var act = () => new Simulation(Scenario(medic), RuleSets.Current(), _catalog, 1).Spawn();
+
+            act.Should().Throw<InvalidDataException>().WithMessage("*Benevolence1*BelowHpPercent*");
+        }
+
+        [Test]
+        public void Spawn_RejectsATeamWithNoMembers()
+        {
+            var scenario = Scenario(TestCombatants.Dummy("Player"));
+            scenario.Teams[1].Members.Clear();
+
+            var act = () => new Simulation(scenario, RuleSets.Current(), _catalog, 1).Spawn();
+
+            act.Should().Throw<InvalidDataException>().WithMessage("*member*");
+        }
+
         [TestCase(0)]
         [TestCase(-5)]
         public void Spawn_RejectsAMaxHpThatIsNotPositive(int maxHp)

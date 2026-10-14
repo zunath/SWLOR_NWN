@@ -60,6 +60,17 @@ namespace SWLOR.CombatSim.Tests.Engine
         }
 
         [Test]
+        public void ForceDrain_RoundsItsShareUp_AsTheGamesPercentOfDoes()
+        {
+            var simulation = Spawn(101f);
+            var caster = simulation.Get("Caster");
+
+            CastOnce(simulation, caster);
+
+            caster.Stats.HealingReceived.Should().BeApproximately(41, 1e-6, "40% of 101 is 40.4, which rounds up");
+        }
+
+        [Test]
         public void ForceDrain_HealsAtMostFifteenPercentOfMaxHpPerCast()
         {
             var simulation = Spawn(1000f);

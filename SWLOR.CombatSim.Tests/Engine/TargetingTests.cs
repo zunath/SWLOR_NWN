@@ -249,6 +249,22 @@ namespace SWLOR.CombatSim.Tests.Engine
             act.Should().NotThrow();
         }
 
+        [Test]
+        public void Coordinated_CountsTemporaryHp_WhenPickingTheLowestTarget()
+        {
+            var simulation = Spawn(TargetPolicy.Coordinated, attackers: 1, enemies: 2);
+            var shielded = simulation.Get("Enemy 1");
+            var exposed = simulation.Get("Enemy 2");
+            shielded.Hp = shielded.Spec.MaxHp * 0.30;
+            shielded.TemporaryHp.Add(new TemporaryHpPool { Key = "Shield", Amount = shielded.Spec.MaxHp * 0.50, ExpiresAt = 600 });
+            exposed.Hp = exposed.Spec.MaxHp * 0.60;
+
+            SimulationClock.RunUntil(simulation, 3);
+
+            exposed.Hp.Should().BeLessThan(exposed.Spec.MaxHp * 0.60, "the exposed enemy is the lower one counting the shield");
+            shielded.TemporaryHpTotal.Should().Be(shielded.Spec.MaxHp * 0.50);
+        }
+
         [TestCase(-1f)]
         [TestCase(float.NaN)]
         [TestCase(float.PositiveInfinity)]

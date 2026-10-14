@@ -107,6 +107,9 @@ namespace SWLOR.CombatSim.Engine
                 var team = _scenario.Teams[teamIndex];
                 if (team?.Members == null || team.Members.Any(member => member == null))
                     throw new InvalidDataException($"Team {teamIndex + 1} needs a list of members without empty entries.");
+                // An empty side would hand the other a win at the first step.
+                if (team.Members.Count == 0)
+                    throw new InvalidDataException($"Team '{team.Name}' needs at least one member.");
                 foreach (var member in team.Members)
                 {
                     if (member.Abilities == null || member.Abilities.Any(use => use == null))
@@ -295,6 +298,9 @@ namespace SWLOR.CombatSim.Engine
             if (!Enum.IsDefined(use.Target))
                 throw new InvalidDataException($"'{use.Feat}' has an unknown Target; use one of {string.Join(", ", Enum.GetNames<AbilityTarget>())}.");
             RequireTargetFitsEffect(use, effect);
+
+            if (use.BelowHpPercent.HasValue && (!float.IsFinite(use.BelowHpPercent.Value) || use.BelowHpPercent.Value < 0f))
+                throw new InvalidDataException($"'{use.Feat}' needs a finite BelowHpPercent of at least 0.");
 
             if (!(use.MinIntervalSeconds >= 0) || !float.IsFinite(use.MinIntervalSeconds))
                 throw new InvalidDataException($"'{use.Feat}' needs a finite MinIntervalSeconds of at least 0.");
@@ -900,8 +906,9 @@ namespace SWLOR.CombatSim.Engine
         /// </summary>
         private double HealFromDamage(Combatant caster, double dealt, float percent, double healingLeft)
         {
-            double requested = HealingMath.AddPercent((int)(dealt * percent / 100.0), caster.HealingReceivedPercent);
-            requested = Math.Min(Math.Min(requested, Math.Floor(dealt * DamageHealing.MaximumDamagePercentPerHit / 100.0)), healingLeft);
+            // GameMath.PercentOf rounds both the share and the per-hit cap up.
+            double requested = HealingMath.AddPercent((int)Math.Ceiling(dealt * percent / 100.0), caster.HealingReceivedPercent);
+            requested = Math.Min(Math.Min(requested, Math.Ceiling(dealt * DamageHealing.MaximumDamagePercentPerHit / 100.0)), healingLeft);
             var amount = (int)requested;
             if (amount <= 0)
                 return 0;
@@ -1270,10 +1277,13 @@ namespace SWLOR.CombatSim.Engine
         private static Combatant FindFocusTarget(IEnumerable<Combatant> enemies, TeamSpec team) =>
             enemies.FirstOrDefault(e => IsFocusTarget(e, team));
 
-        /// <summary>The <paramref name="count"/> combatants with the lowest HP percent; ties are broken randomly.</summary>
+        /// <summary>
+        /// The <paramref name="count"/> combatants with the lowest HP percent counting temporary HP, as the game's
+        /// current HP does; ties are broken randomly.
+        /// </summary>
         private List<Combatant> PickLowestHp(IEnumerable<Combatant> pool, int count) =>
             pool.Select(c => (Combatant: c, Tie: _random.Next()))
-                .OrderBy(entry => entry.Combatant.HpPercent)
+                .OrderBy(entry => entry.Combatant.HpPercentWithTemporaryHp)
                 .ThenBy(entry => entry.Tie)
                 .Take(count)
                 .Select(entry => entry.Combatant)

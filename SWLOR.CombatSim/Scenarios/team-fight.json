@@ -1,6 +1,6 @@
 {
   "name": "9v9 team fight",
-  "description": "Two sides of nine, each with two or three healers and shielders, fight for 526 seconds. Side A shares one target (Coordinated: the lowest HP percent among three random enemies, picked again every 1.5 seconds); Side B picks targets at random every 2 seconds. Players join the fight over the first minute (joinAtSeconds), zone heals, party shields and Purifying Wave reach only a few allies (maxTargets), area attacks hit a few distinct enemies (targets), and each ability is used no more often than the cast cadence seen in the test (minIntervalSeconds). Values are synthetic and in the range seen in a playtest team fight: nine to ten deaths per run under current rules, almost all of them on Side B, the first one after about two minutes, with revives bringing about two thirds of them back, and healing plus absorbed damage close to 1.2x the damage that reached HP.",
+  "description": "Two sides of nine, each with two or three healers and shielders, fight for 526 seconds. Side A shares one target (Coordinated: the lowest HP percent, counting shields, among three random enemies, picked again every 1.5 seconds); Side B picks targets at random every 2 seconds. Players join the fight over the first minute (joinAtSeconds), zone heals, party shields and Purifying Wave reach only a few allies (maxTargets), area attacks hit a few distinct enemies (targets), and each ability is used no more often than the cast cadence seen in the test (minIntervalSeconds). Values are synthetic and in the range seen in a playtest team fight: about nine deaths per run under current rules, almost all of them on Side B, the first one after about two minutes, with revives bringing more than half of them back, and healing plus absorbed damage about 1.1x the damage that reached HP.",
   "durationSeconds": 526,
   "isPvp": true,
   "teams": [
@@ -29,8 +29,8 @@
           "autoAttack": {
             "attacksPerSecond": 0.3,
             "damage": {
-              "min": 27.6,
-              "max": 73.6,
+              "min": 26.77,
+              "max": 71.39,
               "hitChance": 0.38,
               "hitChanceVs": {
                 "Dark Force controller": 0.83,
@@ -64,8 +64,8 @@
               "target": "Enemy",
               "minIntervalSeconds": 173.3,
               "damage": {
-                "min": 29.9,
-                "max": 78.2,
+                "min": 29,
+                "max": 75.85,
                 "hitChance": 1.0,
                 "type": "Force"
               }
@@ -75,8 +75,8 @@
               "target": "Enemy",
               "minIntervalSeconds": 130.0,
               "damage": {
-                "min": 25.3,
-                "max": 66.7,
+                "min": 24.54,
+                "max": 64.7,
                 "hitChance": 0.5,
                 "hitChanceVs": {
                   "Dark Force controller": 0.8,
@@ -105,8 +105,8 @@
               "target": "Enemy",
               "minIntervalSeconds": 116.9,
               "damage": {
-                "min": 10.35,
-                "max": 27.6,
+                "min": 10.04,
+                "max": 26.77,
                 "hitChance": 1.0,
                 "type": "Force"
               }
@@ -116,8 +116,8 @@
               "target": "Enemy",
               "minIntervalSeconds": 85.5,
               "damage": {
-                "min": 26.46,
-                "max": 70.15,
+                "min": 25.67,
+                "max": 68.05,
                 "hitChance": 0.46,
                 "hitChanceVs": {
                   "Dark Force controller": 0.77,
@@ -139,8 +139,8 @@
               "target": "Enemy",
               "minIntervalSeconds": 78.9,
               "damage": {
-                "min": 14.95,
-                "max": 39.1,
+                "min": 14.5,
+                "max": 37.93,
                 "hitChance": 0.48,
                 "hitChanceVs": {
                   "Dark Force controller": 0.78,
@@ -163,8 +163,8 @@
               "target": "Enemy",
               "minIntervalSeconds": 77.6,
               "damage": {
-                "min": 31.05,
-                "max": 82.8,
+                "min": 30.12,
+                "max": 80.32,
                 "hitChance": 0.65,
                 "hitChanceVs": {
                   "Dark Force controller": 0.88,
@@ -186,8 +186,8 @@
               "target": "Enemy",
               "minIntervalSeconds": 74.7,
               "damage": {
-                "min": 42.55,
-                "max": 111.55,
+                "min": 41.27,
+                "max": 108.2,
                 "hitChance": 0.75,
                 "hitChanceVs": {
                   "Dark Force controller": 0.92,
@@ -207,8 +207,8 @@
               "target": "Enemy",
               "minIntervalSeconds": 66.3,
               "damage": {
-                "min": 34.5,
-                "max": 89.7,
+                "min": 33.46,
+                "max": 87.01,
                 "hitChance": 0.6,
                 "hitChanceVs": {
                   "Dark Force controller": 0.86,
@@ -228,8 +228,8 @@
               "target": "Enemy",
               "minIntervalSeconds": 47.4,
               "damage": {
-                "min": 36.8,
-                "max": 97.75,
+                "min": 35.7,
+                "max": 94.82,
                 "hitChance": 0.7,
                 "hitChanceVs": {
                   "Dark Force controller": 0.9,
@@ -249,8 +249,8 @@
               "target": "Enemy",
               "minIntervalSeconds": 37.8,
               "damage": {
-                "min": 29.9,
-                "max": 78.2,
+                "min": 29,
+                "max": 75.85,
                 "hitChance": 0.52,
                 "hitChanceVs": {
                   "Dark Force controller": 0.81,
@@ -272,8 +272,8 @@
               "target": "Enemy",
               "minIntervalSeconds": 24.7,
               "damage": {
-                "min": 25.3,
-                "max": 65.55,
+                "min": 24.54,
+                "max": 63.58,
                 "hitChance": 0.3,
                 "hitChanceVs": {
                   "Dark Force controller": 0.63,
@@ -293,8 +293,8 @@
               "target": "Enemy",
               "minIntervalSeconds": 24.7,
               "damage": {
-                "min": 19.55,
-                "max": 50.6,
+                "min": 18.96,
+                "max": 49.08,
                 "hitChance": 0.43,
                 "hitChanceVs": {
                   "Dark Force controller": 0.75,
@@ -331,8 +331,8 @@
           "autoAttack": {
             "attacksPerSecond": 0.3,
             "damage": {
-              "min": 32.2,
-              "max": 85.1,
+              "min": 31.23,
+              "max": 82.55,
               "hitChance": 0.41,
               "hitChanceVs": {
                 "Dark Force controller": 0.84,
@@ -381,8 +381,8 @@
               "target": "Enemy",
               "minIntervalSeconds": 129.8,
               "damage": {
-                "min": 29.9,
-                "max": 78.2,
+                "min": 29,
+                "max": 75.85,
                 "hitChance": 0.57,
                 "hitChanceVs": {
                   "Dark Force controller": 0.84,
@@ -403,8 +403,8 @@
               "target": "Enemy",
               "minIntervalSeconds": 129.8,
               "damage": {
-                "min": 25.3,
-                "max": 66.7,
+                "min": 24.54,
+                "max": 64.7,
                 "hitChance": 1.0
               }
             },
@@ -424,8 +424,8 @@
               "target": "Enemy",
               "minIntervalSeconds": 58.1,
               "damage": {
-                "min": 55.2,
-                "max": 144.9,
+                "min": 53.54,
+                "max": 140.55,
                 "hitChance": 0.83,
                 "hitChanceVs": {
                   "Dark Force controller": 0.95,
@@ -445,8 +445,8 @@
               "target": "Enemy",
               "minIntervalSeconds": 57.4,
               "damage": {
-                "min": 13.81,
-                "max": 37.95,
+                "min": 13.4,
+                "max": 36.81,
                 "hitChance": 0.35,
                 "hits": 2,
                 "hitChanceVs": {
@@ -467,8 +467,8 @@
               "target": "Enemy",
               "minIntervalSeconds": 22.8,
               "damage": {
-                "min": 42.55,
-                "max": 110.4,
+                "min": 41.27,
+                "max": 107.09,
                 "hitChance": 0.92,
                 "hits": 2,
                 "hitChanceVs": {
@@ -489,8 +489,8 @@
               "target": "Enemy",
               "minIntervalSeconds": 17.1,
               "damage": {
-                "min": 56.35,
-                "max": 149.5,
+                "min": 54.66,
+                "max": 145.01,
                 "hitChance": 0.93,
                 "hitChanceVs": {
                   "Dark Force controller": 0.98,
@@ -526,8 +526,8 @@
           "autoAttack": {
             "attacksPerSecond": 0.3,
             "damage": {
-              "min": 27.6,
-              "max": 72.45,
+              "min": 26.77,
+              "max": 70.28,
               "hitChance": 0.39,
               "hitChanceVs": {
                 "Dark Force controller": 0.83,
@@ -554,8 +554,8 @@
               "target": "Enemy",
               "minIntervalSeconds": 120.9,
               "damage": {
-                "min": 55.2,
-                "max": 144.9,
+                "min": 53.54,
+                "max": 140.55,
                 "hitChance": 0.75,
                 "hitChanceVs": {
                   "Dark Force controller": 0.92,
@@ -575,8 +575,8 @@
               "target": "Enemy",
               "minIntervalSeconds": 85.1,
               "damage": {
-                "min": 56.35,
-                "max": 147.2,
+                "min": 54.66,
+                "max": 142.78,
                 "hitChance": 0.4,
                 "hitChanceVs": {
                   "Dark Force controller": 0.73,
@@ -596,8 +596,8 @@
               "target": "Enemy",
               "minIntervalSeconds": 43.5,
               "damage": {
-                "min": 23,
-                "max": 59.8,
+                "min": 22.31,
+                "max": 58.01,
                 "hitChance": 0.25,
                 "hitChanceVs": {
                   "Dark Force controller": 0.57,
@@ -618,8 +618,8 @@
               "target": "Enemy",
               "minIntervalSeconds": 42.8,
               "damage": {
-                "min": 49.45,
-                "max": 128.8,
+                "min": 47.97,
+                "max": 124.94,
                 "hitChance": 0.33,
                 "hitChanceVs": {
                   "Dark Force controller": 0.67,
@@ -648,8 +648,8 @@
               "target": "Enemy",
               "minIntervalSeconds": 40.3,
               "damage": {
-                "min": 20.7,
-                "max": 54.05,
+                "min": 20.08,
+                "max": 52.43,
                 "hitChance": 0.56,
                 "hitChanceVs": {
                   "Dark Force controller": 0.83,
@@ -670,8 +670,8 @@
               "target": "Enemy",
               "minIntervalSeconds": 28.5,
               "damage": {
-                "min": 43.7,
-                "max": 115.01,
+                "min": 42.39,
+                "max": 111.56,
                 "hitChance": 0.51,
                 "hitChanceVs": {
                   "Dark Force controller": 0.81,
@@ -692,8 +692,8 @@
               "target": "Enemy",
               "minIntervalSeconds": 22.8,
               "damage": {
-                "min": 36.8,
-                "max": 97.75,
+                "min": 35.7,
+                "max": 94.82,
                 "hitChance": 0.61,
                 "hitChanceVs": {
                   "Dark Force controller": 0.86,
@@ -732,8 +732,8 @@
           "autoAttack": {
             "attacksPerSecond": 0.3,
             "damage": {
-              "min": 34.5,
-              "max": 92,
+              "min": 33.46,
+              "max": 89.24,
               "hitChance": 0.42,
               "hitChanceVs": {
                 "Dark Force controller": 0.84,
@@ -789,8 +789,8 @@
               "target": "Enemy",
               "minIntervalSeconds": 210.7,
               "damage": {
-                "min": 46,
-                "max": 121.9,
+                "min": 44.62,
+                "max": 118.24,
                 "hitChance": 0.5,
                 "hitChanceVs": {
                   "Dark Force controller": 0.8,
@@ -811,8 +811,8 @@
               "target": "Enemy",
               "minIntervalSeconds": 128.8,
               "damage": {
-                "min": 42.55,
-                "max": 111.55,
+                "min": 41.27,
+                "max": 108.2,
                 "hitChance": 0.5,
                 "hitChanceVs": {
                   "Dark Force controller": 0.8,
@@ -833,8 +833,8 @@
               "target": "Enemy",
               "minIntervalSeconds": 128.8,
               "damage": {
-                "min": 121.9,
-                "max": 323.15,
+                "min": 118.24,
+                "max": 313.46,
                 "hitChance": 0.75,
                 "hitChanceVs": {
                   "Dark Force controller": 0.92,
@@ -854,8 +854,8 @@
               "target": "Enemy",
               "minIntervalSeconds": 103.0,
               "damage": {
-                "min": 71.3,
-                "max": 188.59,
+                "min": 69.16,
+                "max": 182.93,
                 "hitChance": 0.8,
                 "hitChanceVs": {
                   "Dark Force controller": 0.94,
@@ -875,8 +875,8 @@
               "target": "Enemy",
               "minIntervalSeconds": 68.1,
               "damage": {
-                "min": 39.1,
-                "max": 104.65,
+                "min": 37.93,
+                "max": 101.51,
                 "hitChance": 0.62,
                 "hitChanceVs": {
                   "Dark Force controller": 0.87,
@@ -915,8 +915,8 @@
           "autoAttack": {
             "attacksPerSecond": 0.3,
             "damage": {
-              "min": 6.9,
-              "max": 18.4,
+              "min": 6.69,
+              "max": 17.85,
               "hitChance": 0.41,
               "hitChanceVs": {
                 "Dark Force controller": 0.84,
@@ -959,8 +959,8 @@
               "target": "Enemy",
               "minIntervalSeconds": 76.8,
               "damage": {
-                "min": 49.45,
-                "max": 128.8,
+                "min": 47.97,
+                "max": 124.94,
                 "hitChance": 0.56,
                 "hitChanceVs": {
                   "Dark Force controller": 0.83,
@@ -980,8 +980,8 @@
               "target": "Enemy",
               "minIntervalSeconds": 73.3,
               "damage": {
-                "min": 28.75,
-                "max": 77.06,
+                "min": 27.89,
+                "max": 74.75,
                 "hitChance": 0.29,
                 "hitChanceVs": {
                   "Dark Force controller": 0.61,
@@ -1001,8 +1001,8 @@
               "target": "Enemy",
               "minIntervalSeconds": 73.0,
               "damage": {
-                "min": 47.15,
-                "max": 124.2,
+                "min": 45.74,
+                "max": 120.47,
                 "hitChance": 0.67,
                 "hitChanceVs": {
                   "Dark Force controller": 0.89,
@@ -1024,8 +1024,8 @@
               "target": "Enemy",
               "minIntervalSeconds": 54.0,
               "damage": {
-                "min": 26.46,
-                "max": 69,
+                "min": 25.67,
+                "max": 66.93,
                 "hitChance": 0.73,
                 "hitChanceVs": {
                   "Dark Force controller": 0.91,
@@ -1046,8 +1046,8 @@
               "target": "Enemy",
               "minIntervalSeconds": 52.2,
               "damage": {
-                "min": 17.25,
-                "max": 46,
+                "min": 16.73,
+                "max": 44.62,
                 "hitChance": 0.7,
                 "hitChanceVs": {
                   "Dark Force controller": 0.9,
@@ -1068,8 +1068,8 @@
               "target": "Enemy",
               "minIntervalSeconds": 39.7,
               "damage": {
-                "min": 52.9,
-                "max": 141.45,
+                "min": 51.31,
+                "max": 137.21,
                 "hitChance": 0.71,
                 "hitChanceVs": {
                   "Dark Force controller": 0.91,
@@ -1090,8 +1090,8 @@
               "target": "Enemy",
               "minIntervalSeconds": 31.5,
               "damage": {
-                "min": 40.25,
-                "max": 106.95,
+                "min": 39.04,
+                "max": 103.74,
                 "hitChance": 0.82,
                 "hitChanceVs": {
                   "Dark Force controller": 0.95,
@@ -1111,8 +1111,8 @@
               "target": "Enemy",
               "minIntervalSeconds": 22.6,
               "damage": {
-                "min": 49.45,
-                "max": 131.1,
+                "min": 47.97,
+                "max": 127.17,
                 "hitChance": 0.61,
                 "hitChanceVs": {
                   "Dark Force controller": 0.86,
@@ -1134,8 +1134,8 @@
               "target": "Enemy",
               "minIntervalSeconds": 20.1,
               "damage": {
-                "min": 47.15,
-                "max": 125.35,
+                "min": 45.74,
+                "max": 121.59,
                 "hitChance": 0.7,
                 "hitChanceVs": {
                   "Dark Force controller": 0.9,
@@ -1175,8 +1175,8 @@
           "autoAttack": {
             "attacksPerSecond": 0.3,
             "damage": {
-              "min": 24.14,
-              "max": 62.1,
+              "min": 23.42,
+              "max": 60.24,
               "hitChance": 0.43,
               "hitChanceVs": {
                 "Dark Force controller": 0.85,
@@ -1221,8 +1221,8 @@
               "target": "Enemy",
               "minIntervalSeconds": 87.1,
               "damage": {
-                "min": 16.1,
-                "max": 42.55,
+                "min": 15.62,
+                "max": 41.27,
                 "hitChance": 1.0
               }
             },
@@ -1231,8 +1231,8 @@
               "target": "Enemy",
               "minIntervalSeconds": 70.0,
               "damage": {
-                "min": 12.65,
-                "max": 33.35,
+                "min": 12.27,
+                "max": 32.35,
                 "hitChance": 0.38,
                 "hitChanceVs": {
                   "Dark Force controller": 0.7,
@@ -1252,8 +1252,8 @@
               "target": "Enemy",
               "minIntervalSeconds": 69.9,
               "damage": {
-                "min": 19.55,
-                "max": 52.9,
+                "min": 18.96,
+                "max": 51.31,
                 "hitChance": 0.38,
                 "hitChanceVs": {
                   "Dark Force controller": 0.7,
@@ -1287,8 +1287,8 @@
           "autoAttack": {
             "attacksPerSecond": 0.3,
             "damage": {
-              "min": 8.05,
-              "max": 20.7,
+              "min": 7.81,
+              "max": 20.08,
               "hitChance": 0.38,
               "hitChanceVs": {
                 "Dark Force controller": 0.83,
@@ -1379,8 +1379,8 @@
           "autoAttack": {
             "attacksPerSecond": 0.31,
             "damage": {
-              "min": 34.5,
-              "max": 92,
+              "min": 33.46,
+              "max": 89.24,
               "hitChance": 0.43,
               "hitChanceVs": {
                 "Dark Force controller": 0.85,
@@ -1429,8 +1429,8 @@
               "target": "Enemy",
               "minIntervalSeconds": 130.2,
               "damage": {
-                "min": 21.85,
-                "max": 58.65,
+                "min": 21.19,
+                "max": 56.89,
                 "hitChance": 0.6,
                 "hitChanceVs": {
                   "Dark Force controller": 0.86,
@@ -1450,8 +1450,8 @@
               "target": "Enemy",
               "minIntervalSeconds": 68.2,
               "damage": {
-                "min": 16.1,
-                "max": 43.7,
+                "min": 15.62,
+                "max": 42.39,
                 "hitChance": 0.56,
                 "hitChanceVs": {
                   "Dark Force controller": 0.83,
@@ -1472,8 +1472,8 @@
               "target": "Enemy",
               "minIntervalSeconds": 68.0,
               "damage": {
-                "min": 36.8,
-                "max": 96.6,
+                "min": 35.7,
+                "max": 93.7,
                 "hitChance": 0.3,
                 "hitChanceVs": {
                   "Dark Force controller": 0.63,
@@ -1493,8 +1493,8 @@
               "target": "Enemy",
               "minIntervalSeconds": 51.4,
               "damage": {
-                "min": 20.7,
-                "max": 56.35,
+                "min": 20.08,
+                "max": 54.66,
                 "hitChance": 0.56,
                 "hitChanceVs": {
                   "Dark Force controller": 0.84,
@@ -1516,8 +1516,8 @@
               "target": "Enemy",
               "minIntervalSeconds": 42.4,
               "damage": {
-                "min": 20.7,
-                "max": 55.2,
+                "min": 20.08,
+                "max": 53.54,
                 "hitChance": 0.65,
                 "hitChanceVs": {
                   "Dark Force controller": 0.88,
@@ -1539,8 +1539,8 @@
               "target": "Enemy",
               "minIntervalSeconds": 34.0,
               "damage": {
-                "min": 14.95,
-                "max": 40.25,
+                "min": 14.5,
+                "max": 39.04,
                 "hitChance": 0.8,
                 "hitChanceVs": {
                   "Dark Force controller": 0.94,
@@ -1578,8 +1578,8 @@
           "autoAttack": {
             "attacksPerSecond": 0.3,
             "damage": {
-              "min": 4.6,
-              "max": 12.65,
+              "min": 4.46,
+              "max": 12.27,
               "hitChance": 0.38,
               "hitChanceVs": {
                 "Dark Force controller": 0.83,
@@ -1613,8 +1613,8 @@
               "target": "Enemy",
               "minIntervalSeconds": 101.7,
               "damage": {
-                "min": 17.25,
-                "max": 46,
+                "min": 16.73,
+                "max": 44.62,
                 "hitChance": 0.6,
                 "hitChanceVs": {
                   "Dark Force controller": 0.86,
@@ -1634,8 +1634,8 @@
               "target": "Enemy",
               "minIntervalSeconds": 98.4,
               "damage": {
-                "min": 16.1,
-                "max": 43.7,
+                "min": 15.62,
+                "max": 42.39,
                 "hitChance": 0.25,
                 "hitChanceVs": {
                   "Dark Force controller": 0.57,
@@ -1655,8 +1655,8 @@
               "target": "Enemy",
               "minIntervalSeconds": 75.7,
               "damage": {
-                "min": 13.81,
-                "max": 35.65,
+                "min": 13.4,
+                "max": 34.58,
                 "hitChance": 0.8,
                 "hitChanceVs": {
                   "Dark Force controller": 0.94,
@@ -1676,8 +1676,8 @@
               "target": "Enemy",
               "minIntervalSeconds": 73.0,
               "damage": {
-                "min": 10.35,
-                "max": 26.46,
+                "min": 10.04,
+                "max": 25.67,
                 "hitChance": 0.57,
                 "hitChanceVs": {
                   "Dark Force controller": 0.84,
@@ -1697,8 +1697,8 @@
               "target": "Enemy",
               "minIntervalSeconds": 64.9,
               "damage": {
-                "min": 5.75,
-                "max": 14.95,
+                "min": 5.58,
+                "max": 14.5,
                 "hitChance": 0.75,
                 "hitChanceVs": {
                   "Dark Force controller": 0.92,
@@ -1720,8 +1720,8 @@
               "target": "Enemy",
               "minIntervalSeconds": 62.6,
               "damage": {
-                "min": 13.81,
-                "max": 36.8,
+                "min": 13.4,
+                "max": 35.7,
                 "hitChance": 0.67,
                 "hitChanceVs": {
                   "Dark Force controller": 0.89,
@@ -1741,8 +1741,8 @@
               "target": "Enemy",
               "minIntervalSeconds": 47.9,
               "damage": {
-                "min": 1.16,
-                "max": 3.45,
+                "min": 1.13,
+                "max": 3.35,
                 "hitChance": 0.67,
                 "type": "Force",
                 "hitChanceVs": {
@@ -1763,8 +1763,8 @@
               "target": "Enemy",
               "minIntervalSeconds": 39.8,
               "damage": {
-                "min": 10.35,
-                "max": 26.46,
+                "min": 10.04,
+                "max": 25.67,
                 "hitChance": 0.78,
                 "hitChanceVs": {
                   "Dark Force controller": 0.93,
@@ -1785,8 +1785,8 @@
               "target": "Enemy",
               "minIntervalSeconds": 35.6,
               "damage": {
-                "min": 8.05,
-                "max": 23,
+                "min": 7.81,
+                "max": 22.31,
                 "hitChance": 0.7,
                 "hitChanceVs": {
                   "Dark Force controller": 0.9,
@@ -1807,8 +1807,8 @@
               "target": "Enemy",
               "minIntervalSeconds": 32.9,
               "damage": {
-                "min": 8.05,
-                "max": 21.85,
+                "min": 7.81,
+                "max": 21.19,
                 "hitChance": 0.78,
                 "hitChanceVs": {
                   "Dark Force controller": 0.93,
@@ -1831,8 +1831,8 @@
               "target": "Enemy",
               "minIntervalSeconds": 28.9,
               "damage": {
-                "min": 1.16,
-                "max": 2.3,
+                "min": 1.13,
+                "max": 2.23,
                 "hitChance": 0.64,
                 "hitChanceVs": {
                   "Dark Force controller": 0.87,
@@ -1879,8 +1879,8 @@
           "autoAttack": {
             "attacksPerSecond": 0.79,
             "damage": {
-              "min": 33,
-              "max": 88,
+              "min": 32.01,
+              "max": 85.36,
               "hitChance": 0.42,
               "hitChanceVs": {
                 "Light Force bruiser": 0.4,
@@ -1908,8 +1908,8 @@
               "target": "Enemy",
               "minIntervalSeconds": 208.8,
               "damage": {
-                "min": 31.9,
-                "max": 84.7,
+                "min": 30.94,
+                "max": 82.16,
                 "hitChance": 0.67,
                 "hitChanceVs": {
                   "Light Force bruiser": 0.67,
@@ -1930,8 +1930,8 @@
               "target": "Enemy",
               "minIntervalSeconds": 204.9,
               "damage": {
-                "min": 36.3,
-                "max": 96.8,
+                "min": 35.21,
+                "max": 93.9,
                 "hitChance": 1.0
               }
             },
@@ -1940,8 +1940,8 @@
               "target": "Enemy",
               "minIntervalSeconds": 133.3,
               "damage": {
-                "min": 25.3,
-                "max": 66,
+                "min": 24.54,
+                "max": 64.02,
                 "hitChance": 0.31,
                 "hitChanceVs": {
                   "Light Force bruiser": 0.31,
@@ -1964,8 +1964,8 @@
               "target": "Enemy",
               "minIntervalSeconds": 130.0,
               "damage": {
-                "min": 13.2,
-                "max": 35.2,
+                "min": 12.8,
+                "max": 34.14,
                 "hitChance": 0.75,
                 "hitChanceVs": {
                   "Light Force bruiser": 0.75,
@@ -2008,8 +2008,8 @@
               "target": "Enemy",
               "minIntervalSeconds": 92.1,
               "damage": {
-                "min": 29.7,
-                "max": 77,
+                "min": 28.81,
+                "max": 74.69,
                 "hitChance": 0.43,
                 "hitChanceVs": {
                   "Light Force bruiser": 0.43,
@@ -2029,8 +2029,8 @@
               "target": "Enemy",
               "minIntervalSeconds": 89.4,
               "damage": {
-                "min": 30.8,
-                "max": 82.5,
+                "min": 29.88,
+                "max": 80.02,
                 "hitChance": 0.4,
                 "hitChanceVs": {
                   "Light Force bruiser": 0.4,
@@ -2051,8 +2051,8 @@
               "target": "Enemy",
               "minIntervalSeconds": 81.5,
               "damage": {
-                "min": 31.9,
-                "max": 82.5,
+                "min": 30.94,
+                "max": 80.02,
                 "hitChance": 0.33,
                 "hitChanceVs": {
                   "Light Force bruiser": 0.34,
@@ -2072,8 +2072,8 @@
               "target": "Enemy",
               "minIntervalSeconds": 77.9,
               "damage": {
-                "min": 7.7,
-                "max": 20.9,
+                "min": 7.47,
+                "max": 20.27,
                 "hitChance": 0.61,
                 "type": "Force",
                 "hitChanceVs": {
@@ -2108,8 +2108,8 @@
           "autoAttack": {
             "attacksPerSecond": 0.3,
             "damage": {
-              "min": 15.4,
-              "max": 40.7,
+              "min": 14.94,
+              "max": 39.48,
               "hitChance": 0.41,
               "hitChanceVs": {
                 "Light Force bruiser": 0.39,
@@ -2165,8 +2165,8 @@
               "target": "Enemy",
               "minIntervalSeconds": 100.5,
               "damage": {
-                "min": 14.3,
-                "max": 38.5,
+                "min": 13.87,
+                "max": 37.34,
                 "hitChance": 0.52,
                 "hitChanceVs": {
                   "Light Force bruiser": 0.53,
@@ -2188,8 +2188,8 @@
               "target": "Enemy",
               "minIntervalSeconds": 65.4,
               "damage": {
-                "min": 12.1,
-                "max": 30.8,
+                "min": 11.74,
+                "max": 29.88,
                 "hitChance": 0.52,
                 "hitChanceVs": {
                   "Light Force bruiser": 0.53,
@@ -2211,8 +2211,8 @@
               "target": "Enemy",
               "minIntervalSeconds": 38.6,
               "damage": {
-                "min": 7.7,
-                "max": 18.7,
+                "min": 7.47,
+                "max": 18.14,
                 "hitChance": 0.6,
                 "hits": 2,
                 "hitChanceVs": {
@@ -2235,8 +2235,8 @@
               "target": "Enemy",
               "minIntervalSeconds": 28.6,
               "damage": {
-                "min": 14.3,
-                "max": 37.4,
+                "min": 13.87,
+                "max": 36.28,
                 "hitChance": 0.52,
                 "hitChanceVs": {
                   "Light Force bruiser": 0.53,
@@ -2258,8 +2258,8 @@
               "target": "Enemy",
               "minIntervalSeconds": 21.3,
               "damage": {
-                "min": 23.1,
-                "max": 61.6,
+                "min": 22.41,
+                "max": 59.75,
                 "hitChance": 0.77,
                 "hitChanceVs": {
                   "Light Force bruiser": 0.77,
@@ -2280,8 +2280,8 @@
               "target": "Enemy",
               "minIntervalSeconds": 17.1,
               "damage": {
-                "min": 13.2,
-                "max": 33,
+                "min": 12.8,
+                "max": 32.01,
                 "hitChance": 0.67,
                 "hitChanceVs": {
                   "Light Force bruiser": 0.67,
@@ -2318,7 +2318,7 @@
             "attacksPerSecond": 0.3,
             "damage": {
               "min": 0,
-              "max": 1.1,
+              "max": 1.07,
               "hitChance": 0.58,
               "hitChanceVs": {
                 "Light Force bruiser": 0.66,
@@ -2382,8 +2382,8 @@
               "target": "Enemy",
               "minIntervalSeconds": 129.8,
               "damage": {
-                "min": 22,
-                "max": 59.4,
+                "min": 21.34,
+                "max": 57.62,
                 "hitChance": 0.61,
                 "hitChanceVs": {
                   "Light Force bruiser": 0.62,
@@ -2428,8 +2428,8 @@
               "target": "Enemy",
               "minIntervalSeconds": 92.5,
               "damage": {
-                "min": 11,
-                "max": 28.6,
+                "min": 10.67,
+                "max": 27.74,
                 "hitChance": 0.4,
                 "hitChanceVs": {
                   "Light Force bruiser": 0.4,
@@ -2451,8 +2451,8 @@
               "target": "Enemy",
               "minIntervalSeconds": 89.2,
               "damage": {
-                "min": 12.1,
-                "max": 30.8,
+                "min": 11.74,
+                "max": 29.88,
                 "hitChance": 0.75,
                 "hitChanceVs": {
                   "Light Force bruiser": 0.75,
@@ -2472,8 +2472,8 @@
               "target": "Enemy",
               "minIntervalSeconds": 74.4,
               "damage": {
-                "min": 28.6,
-                "max": 75.9,
+                "min": 27.74,
+                "max": 73.62,
                 "hitChance": 0.7,
                 "hitChanceVs": {
                   "Light Force bruiser": 0.7,
@@ -2494,8 +2494,8 @@
               "target": "Enemy",
               "minIntervalSeconds": 73.4,
               "damage": {
-                "min": 28.6,
-                "max": 77,
+                "min": 27.74,
+                "max": 74.69,
                 "hitChance": 0.61,
                 "hitChanceVs": {
                   "Light Force bruiser": 0.61,
@@ -2517,8 +2517,8 @@
               "target": "Enemy",
               "minIntervalSeconds": 60.9,
               "damage": {
-                "min": 30.8,
-                "max": 80.3,
+                "min": 29.88,
+                "max": 77.89,
                 "hitChance": 0.63,
                 "hitChanceVs": {
                   "Light Force bruiser": 0.63,
@@ -2540,8 +2540,8 @@
               "target": "Enemy",
               "minIntervalSeconds": 43.3,
               "damage": {
-                "min": 17.6,
-                "max": 46.2,
+                "min": 17.07,
+                "max": 44.81,
                 "hitChance": 0.91,
                 "hitChanceVs": {
                   "Light Force bruiser": 0.91,
@@ -2574,8 +2574,8 @@
           "autoAttack": {
             "attacksPerSecond": 0.3,
             "damage": {
-              "min": 25.3,
-              "max": 67.1,
+              "min": 24.54,
+              "max": 65.09,
               "hitChance": 0.44,
               "hitChanceVs": {
                 "Light Force bruiser": 0.43,
@@ -2614,8 +2614,8 @@
               "target": "Enemy",
               "minIntervalSeconds": 44.8,
               "damage": {
-                "min": 29.7,
-                "max": 77,
+                "min": 28.81,
+                "max": 74.69,
                 "hitChance": 0.89,
                 "hitChanceVs": {
                   "Light Force bruiser": 0.89,
@@ -2636,8 +2636,8 @@
               "target": "Enemy",
               "minIntervalSeconds": 42.8,
               "damage": {
-                "min": 12.1,
-                "max": 33,
+                "min": 11.74,
+                "max": 32.01,
                 "hitChance": 0.57,
                 "hitChanceVs": {
                   "Light Force bruiser": 0.57,
@@ -2659,8 +2659,8 @@
               "target": "Enemy",
               "minIntervalSeconds": 42.0,
               "damage": {
-                "min": 27.5,
-                "max": 73.7,
+                "min": 26.68,
+                "max": 71.49,
                 "hitChance": 0.78,
                 "hitChanceVs": {
                   "Light Force bruiser": 0.78,
@@ -2681,8 +2681,8 @@
               "target": "Enemy",
               "minIntervalSeconds": 29.8,
               "damage": {
-                "min": 20.9,
-                "max": 53.9,
+                "min": 20.27,
+                "max": 52.28,
                 "hitChance": 0.67,
                 "hitChanceVs": {
                   "Light Force bruiser": 0.67,
@@ -2702,8 +2702,8 @@
               "target": "Enemy",
               "minIntervalSeconds": 22.8,
               "damage": {
-                "min": 19.8,
-                "max": 52.8,
+                "min": 19.21,
+                "max": 51.22,
                 "hitChance": 0.75,
                 "hits": 2,
                 "hitChanceVs": {
@@ -2724,8 +2724,8 @@
               "target": "Enemy",
               "minIntervalSeconds": 17.1,
               "damage": {
-                "min": 16.5,
-                "max": 44,
+                "min": 16,
+                "max": 42.68,
                 "hitChance": 0.64,
                 "hitChanceVs": {
                   "Light Force bruiser": 0.64,
@@ -2747,8 +2747,8 @@
               "target": "Enemy",
               "minIntervalSeconds": 7.6,
               "damage": {
-                "min": 19.8,
-                "max": 51.7,
+                "min": 19.21,
+                "max": 50.15,
                 "hitChance": 0.57,
                 "hitChanceVs": {
                   "Light Force bruiser": 0.57,
@@ -2787,8 +2787,8 @@
           "autoAttack": {
             "attacksPerSecond": 0.3,
             "damage": {
-              "min": 19.8,
-              "max": 52.8,
+              "min": 19.21,
+              "max": 51.22,
               "hitChance": 0.41,
               "hitChanceVs": {
                 "Light Force bruiser": 0.39,
@@ -2846,8 +2846,8 @@
               "target": "Enemy",
               "minIntervalSeconds": 108.7,
               "damage": {
-                "min": 34.1,
-                "max": 91.3,
+                "min": 33.08,
+                "max": 88.56,
                 "hitChance": 0.2,
                 "hitChanceVs": {
                   "Light Force bruiser": 0.2,
@@ -2867,8 +2867,8 @@
               "target": "Enemy",
               "minIntervalSeconds": 103.8,
               "damage": {
-                "min": 22,
-                "max": 57.2,
+                "min": 21.34,
+                "max": 55.48,
                 "hitChance": 0.4,
                 "hitChanceVs": {
                   "Light Force bruiser": 0.4,
@@ -2888,8 +2888,8 @@
               "target": "Enemy",
               "minIntervalSeconds": 86.7,
               "damage": {
-                "min": 49.5,
-                "max": 130.9,
+                "min": 48.02,
+                "max": 126.97,
                 "hitChance": 0.17,
                 "hitChanceVs": {
                   "Light Force bruiser": 0.17,
@@ -2919,8 +2919,8 @@
               "target": "Enemy",
               "minIntervalSeconds": 49.0,
               "damage": {
-                "min": 51.7,
-                "max": 136.4,
+                "min": 50.15,
+                "max": 132.31,
                 "hitChance": 0.2,
                 "hitChanceVs": {
                   "Light Force bruiser": 0.2,
@@ -2956,8 +2956,8 @@
           "autoAttack": {
             "attacksPerSecond": 0.3,
             "damage": {
-              "min": 8.8,
-              "max": 24.2,
+              "min": 8.54,
+              "max": 23.47,
               "hitChance": 0.5,
               "hitChanceVs": {
                 "Light Force bruiser": 0.51,
@@ -2999,8 +2999,8 @@
               "target": "Enemy",
               "minIntervalSeconds": 211.2,
               "damage": {
-                "min": 16.5,
-                "max": 41.8,
+                "min": 16,
+                "max": 40.55,
                 "hitChance": 0.4,
                 "hitChanceVs": {
                   "Light Force bruiser": 0.4,
@@ -3021,8 +3021,8 @@
               "target": "Enemy",
               "minIntervalSeconds": 131.7,
               "damage": {
-                "min": 13.2,
-                "max": 36.3,
+                "min": 12.8,
+                "max": 35.21,
                 "hitChance": 0.5,
                 "hitChanceVs": {
                   "Light Force bruiser": 0.5,
@@ -3042,8 +3042,8 @@
               "target": "Enemy",
               "minIntervalSeconds": 131.6,
               "damage": {
-                "min": 37.4,
-                "max": 97.9,
+                "min": 36.28,
+                "max": 94.96,
                 "hitChance": 0.6,
                 "hitChanceVs": {
                   "Light Force bruiser": 0.6,
@@ -3064,8 +3064,8 @@
               "target": "Enemy",
               "minIntervalSeconds": 110.9,
               "damage": {
-                "min": 38.5,
-                "max": 101.2,
+                "min": 37.34,
+                "max": 98.16,
                 "hitChance": 0.53,
                 "hitChanceVs": {
                   "Light Force bruiser": 0.53,
@@ -3087,8 +3087,8 @@
               "target": "Enemy",
               "minIntervalSeconds": 109.1,
               "damage": {
-                "min": 30.8,
-                "max": 81.4,
+                "min": 29.88,
+                "max": 78.96,
                 "hitChance": 0.6,
                 "hitChanceVs": {
                   "Light Force bruiser": 0.6,
@@ -3126,8 +3126,8 @@
           "autoAttack": {
             "attacksPerSecond": 0.3,
             "damage": {
-              "min": 13.2,
-              "max": 35.2,
+              "min": 12.8,
+              "max": 34.14,
               "hitChance": 0.36,
               "hitChanceVs": {
                 "Light Force bruiser": 0.34,
@@ -3191,8 +3191,8 @@
               "target": "Enemy",
               "minIntervalSeconds": 173.7,
               "damage": {
-                "min": 19.8,
-                "max": 52.8,
+                "min": 19.21,
+                "max": 51.22,
                 "hitChance": 0.67,
                 "hitChanceVs": {
                   "Light Force bruiser": 0.67,
@@ -3212,8 +3212,8 @@
               "target": "Enemy",
               "minIntervalSeconds": 173.7,
               "damage": {
-                "min": 6.6,
-                "max": 16.5,
+                "min": 6.4,
+                "max": 16,
                 "hitChance": 0.5,
                 "hitChanceVs": {
                   "Light Force bruiser": 0.5,
@@ -3251,8 +3251,8 @@
           "autoAttack": {
             "attacksPerSecond": 0.3,
             "damage": {
-              "min": 1.1,
-              "max": 4.4,
+              "min": 1.07,
+              "max": 4.27,
               "hitChance": 0.41,
               "hitChanceVs": {
                 "Light Force bruiser": 0.39,
@@ -3286,8 +3286,8 @@
               "target": "Enemy",
               "minIntervalSeconds": 172.0,
               "damage": {
-                "min": 27.5,
-                "max": 71.5,
+                "min": 26.68,
+                "max": 69.36,
                 "hitChance": 0.75,
                 "hitChanceVs": {
                   "Light Force bruiser": 0.75,
@@ -3309,8 +3309,8 @@
               "target": "Enemy",
               "minIntervalSeconds": 172.0,
               "damage": {
-                "min": 16.5,
-                "max": 41.8,
+                "min": 16,
+                "max": 40.55,
                 "hitChance": 0.5,
                 "hitChanceVs": {
                   "Light Force bruiser": 0.5,
@@ -3353,8 +3353,8 @@
               "target": "Enemy",
               "minIntervalSeconds": 74.8,
               "damage": {
-                "min": 15.4,
-                "max": 40.7,
+                "min": 14.94,
+                "max": 39.48,
                 "hitChance": 0.5,
                 "hitChanceVs": {
                   "Light Force bruiser": 0.5,
@@ -3374,8 +3374,8 @@
               "target": "Enemy",
               "minIntervalSeconds": 68.0,
               "damage": {
-                "min": 20.9,
-                "max": 53.9,
+                "min": 20.27,
+                "max": 52.28,
                 "hitChance": 0.1,
                 "hitChanceVs": {
                   "Light Force bruiser": 0.1,
@@ -3396,8 +3396,8 @@
               "target": "Enemy",
               "minIntervalSeconds": 66.3,
               "damage": {
-                "min": 37.4,
-                "max": 99,
+                "min": 36.28,
+                "max": 96.03,
                 "hitChance": 0.6,
                 "hitChanceVs": {
                   "Light Force bruiser": 0.6,
@@ -3418,8 +3418,8 @@
               "target": "Enemy",
               "minIntervalSeconds": 56.0,
               "damage": {
-                "min": 34.1,
-                "max": 90.2,
+                "min": 33.08,
+                "max": 87.49,
                 "hitChance": 0.58,
                 "hitChanceVs": {
                   "Light Force bruiser": 0.58,
@@ -3441,8 +3441,8 @@
               "target": "Enemy",
               "minIntervalSeconds": 45.1,
               "damage": {
-                "min": 36.3,
-                "max": 96.8,
+                "min": 35.21,
+                "max": 93.9,
                 "hitChance": 0.44,
                 "hitChanceVs": {
                   "Light Force bruiser": 0.45,
@@ -3480,8 +3480,8 @@
           "autoAttack": {
             "attacksPerSecond": 0.3,
             "damage": {
-              "min": 2.2,
-              "max": 6.6,
+              "min": 2.13,
+              "max": 6.4,
               "hitChance": 0.41,
               "hitChanceVs": {
                 "Light Force bruiser": 0.39,
@@ -3577,8 +3577,8 @@
               "target": "Enemy",
               "minIntervalSeconds": 135.9,
               "damage": {
-                "min": 7.7,
-                "max": 20.9,
+                "min": 7.47,
+                "max": 20.27,
                 "hitChance": 0.75,
                 "hitChanceVs": {
                   "Light Force bruiser": 0.75,

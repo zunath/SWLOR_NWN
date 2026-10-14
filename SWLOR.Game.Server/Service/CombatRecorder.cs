@@ -610,6 +610,55 @@ namespace SWLOR.Game.Server.Service
             Enqueue(WithTargetLocation(recordEvent, target, targetLocation));
         }
 
+        /// <summary>
+        /// Records an attempted activation the ability's rules refused, with the refusal shown.
+        /// </summary>
+        /// <param name="atCompletion">True when the cast was refused as it completed.</param>
+        public static void RecordAbilityDenied(
+            uint activator, uint target, AbilityDetail ability, FeatType feat, string reason, bool atCompletion)
+        {
+            if (ability == null || !IsRecorded(activator, target))
+                return;
+
+            Enqueue(CombatRecordEvent.AbilityDenied(
+                GetParticipantId(activator),
+                GetParticipantId(target),
+                ability.Name,
+                (int)feat,
+                ability.AbilityLevel,
+                reason,
+                atCompletion));
+        }
+
+        /// <summary>
+        /// Records a cast or channel stopped before it completed. Unless the caster moved, the
+        /// innermost scope of another creature (its ability or effect) is what stopped it.
+        /// </summary>
+        public static void RecordAbilityInterrupted(uint activator, AbilityDetail ability, bool moved)
+        {
+            if (ability == null || !IsInRecordedArea(activator))
+                return;
+
+            var cause = moved ? CombatRecordInterruptCause.Moved : CombatRecordInterruptCause.Other;
+            var interrupter = default(CombatRecordAttribution);
+            if (!moved && _attributionDepth > 0 && _attributions[_attributionDepth - 1].Actor != activator)
+            {
+                interrupter = _attributions[_attributionDepth - 1];
+                cause = CombatRecordInterruptCause.CrowdControl;
+            }
+
+            Enqueue(CombatRecordEvent.AbilityInterrupted(
+                GetParticipantId(activator),
+                ability.Name,
+                GetFeatCode(ability, FeatType.Invalid),
+                ability.AbilityLevel,
+                cause,
+                GetParticipantId(interrupter.Actor),
+                interrupter.Kind,
+                interrupter.Name,
+                interrupter.Code));
+        }
+
         public static void RecordAbilityQueued(uint activator, uint target, AbilityDetail ability, FeatType feat)
         {
             if (ability == null || !IsRecorded(activator, target))

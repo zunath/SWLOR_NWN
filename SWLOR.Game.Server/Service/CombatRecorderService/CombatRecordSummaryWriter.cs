@@ -56,6 +56,8 @@ namespace SWLOR.Game.Server.Service.CombatRecorderService
                 writer.WriteNumber(label, count);
             }
             writer.WriteEndObject();
+            WriteNestedCounts(writer, "ability_denials", participant.AbilityDenials);
+            WriteNestedCounts(writer, "ability_interruptions", participant.AbilityInterruptions);
 
             WriteDamage(writer, "damage_dealt", participant.DamageDealt);
             WriteDamage(writer, "damage_taken", participant.DamageTaken);
@@ -127,6 +129,21 @@ namespace SWLOR.Game.Server.Service.CombatRecorderService
                 writer.WriteEndObject();
             }
             writer.WriteEndObject();
+            writer.WriteEndObject();
+        }
+
+        private static void WriteNestedCounts(Utf8JsonWriter writer, string propertyName, Dictionary<string, Dictionary<string, int>> counts)
+        {
+            writer.WriteStartObject(propertyName);
+            foreach (var (ability, byKey) in counts.OrderBy(pair => pair.Key, StringComparer.Ordinal))
+            {
+                writer.WriteStartObject(ability);
+                foreach (var (key, count) in byKey.OrderByDescending(pair => pair.Value).ThenBy(pair => pair.Key, StringComparer.Ordinal))
+                {
+                    writer.WriteNumber(key, count);
+                }
+                writer.WriteEndObject();
+            }
             writer.WriteEndObject();
         }
     }

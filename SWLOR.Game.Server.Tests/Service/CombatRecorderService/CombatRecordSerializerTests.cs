@@ -34,7 +34,9 @@ public class CombatRecordSerializerTests
             CombatRecordEvent.Death(2, 1, 1),
             CombatRecordEvent.Resurrection(2, 3, CombatRecordSourceKind.Ability, "Resuscitation I", 0),
             CombatRecordEvent.Subdual(2, 1),
-            CombatRecordEvent.Snapshot(1, 90, 120, 5, 40, 50, 30, 60, true, false)
+            CombatRecordEvent.Snapshot(1, 90, 120, 5, 40, 50, 30, 60, true, false),
+            CombatRecordEvent.AbilityDenied(1, 2, "Resuscitation I", (int)FeatType.Resuscitation1, 1, "A hostile player is too close.", false),
+            CombatRecordEvent.AbilityInterrupted(1, "Resuscitation I", (int)FeatType.Resuscitation1, 1, CombatRecordInterruptCause.Moved, 0, CombatRecordSourceKind.Unattributed, null, 0)
         };
 
         events.Select(e => e.Type).Should().OnlyHaveUniqueItems()
@@ -128,6 +130,37 @@ public class CombatRecordSerializerTests
 
         on.GetProperty("toggled_off").GetBoolean().Should().BeFalse();
         off.GetProperty("toggled_off").GetBoolean().Should().BeTrue();
+    }
+
+    [Test]
+    public void AbilityDenied_CarriesTheRefusalAndStage()
+    {
+        var json = Parse(CombatRecordEvent.AbilityDenied(
+            1, 2, "Resuscitation I", (int)FeatType.Resuscitation1, 1, "A hostile player is too close.", true));
+
+        json.GetProperty("caster").GetInt32().Should().Be(1);
+        json.GetProperty("target").GetInt32().Should().Be(2);
+        json.GetProperty("ability").GetString().Should().Be("Resuscitation I");
+        json.GetProperty("reason").GetString().Should().Be("A hostile player is too close.");
+        json.GetProperty("stage").GetString().Should().Be("completion");
+    }
+
+    [Test]
+    public void AbilityInterrupted_NamesTheCauseAndWhoStoppedIt()
+    {
+        var crowdControl = Parse(CombatRecordEvent.AbilityInterrupted(
+            1, "Resuscitation I", (int)FeatType.Resuscitation1, 1, CombatRecordInterruptCause.CrowdControl,
+            3, CombatRecordSourceKind.Ability, "Pounce I", (int)FeatType.Pounce1));
+        var moved = Parse(CombatRecordEvent.AbilityInterrupted(
+            1, "Resuscitation I", (int)FeatType.Resuscitation1, 1, CombatRecordInterruptCause.Moved,
+            0, CombatRecordSourceKind.Unattributed, null, 0));
+
+        crowdControl.GetProperty("cause").GetString().Should().Be("crowd_control");
+        crowdControl.GetProperty("interrupted_by").GetInt32().Should().Be(3);
+        crowdControl.GetProperty("interrupted_by_kind").GetString().Should().Be("ability");
+        crowdControl.GetProperty("interrupted_by_name").GetString().Should().Be("Pounce I");
+        moved.GetProperty("cause").GetString().Should().Be("moved");
+        moved.TryGetProperty("interrupted_by_kind", out _).Should().BeFalse();
     }
 
     [Test]

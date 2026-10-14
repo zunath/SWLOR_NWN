@@ -34,7 +34,19 @@ namespace SWLOR.Game.Server.Service.CombatRecorderService
                 CombatRecordEventType.Resurrection => "resurrection",
                 CombatRecordEventType.Subdual => "subdual",
                 CombatRecordEventType.Snapshot => "snapshot",
+                CombatRecordEventType.AbilityDenied => "ability_denied",
+                CombatRecordEventType.AbilityInterrupted => "ability_interrupted",
                 _ => "unknown"
+            };
+        }
+
+        public static string GetInterruptCauseName(CombatRecordInterruptCause cause)
+        {
+            return cause switch
+            {
+                CombatRecordInterruptCause.Moved => "moved",
+                CombatRecordInterruptCause.CrowdControl => "crowd_control",
+                _ => "other"
             };
         }
 

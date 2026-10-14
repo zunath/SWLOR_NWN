@@ -45,6 +45,16 @@ namespace SWLOR.Game.Server.Service.CombatRecorderService
                     uses.TryGetValue(abilityName, out var count);
                     uses[abilityName] = count + 1;
                     break;
+                case CombatRecordEventType.AbilityDenied:
+                    AddCount(GetParticipant(e.ActorId).AbilityDenials,
+                        CombatRecordSourceLabel.Format(CombatRecordSourceKind.Ability, e.SourceName),
+                        string.IsNullOrEmpty(e.Text) ? "unknown" : e.Text);
+                    break;
+                case CombatRecordEventType.AbilityInterrupted:
+                    AddCount(GetParticipant(e.ActorId).AbilityInterruptions,
+                        CombatRecordSourceLabel.Format(CombatRecordSourceKind.Ability, e.SourceName),
+                        CombatRecordNames.GetInterruptCauseName((CombatRecordInterruptCause)e.Value0));
+                    break;
                 case CombatRecordEventType.Damage:
                     AddDamage(e);
                     break;
@@ -101,6 +111,18 @@ namespace SWLOR.Game.Server.Service.CombatRecorderService
             }
 
             return _summary;
+        }
+
+        private static void AddCount(Dictionary<string, Dictionary<string, int>> counts, string ability, string key)
+        {
+            if (!counts.TryGetValue(ability, out var byKey))
+            {
+                byKey = new Dictionary<string, int>();
+                counts[ability] = byKey;
+            }
+
+            byKey.TryGetValue(key, out var count);
+            byKey[key] = count + 1;
         }
 
         private void AddDamage(in CombatRecordEvent e)

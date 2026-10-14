@@ -180,6 +180,22 @@ public class CombatRecordSummaryBuilderTests
     }
 
     [Test]
+    public void DenialsAndInterruptions_AreCountedByAbilityAndReason()
+    {
+        const string tooClose = "A hostile player is too close.";
+        Add(CombatRecordEvent.AbilityDenied(Healer, Defender, "Resuscitation I", 0, 1, tooClose, false));
+        Add(CombatRecordEvent.AbilityDenied(Healer, Defender, "Resuscitation I", 0, 1, tooClose, true));
+        Add(CombatRecordEvent.AbilityInterrupted(Healer, "Resuscitation I", 0, 1, CombatRecordInterruptCause.Moved, 0, CombatRecordSourceKind.Unattributed, null, 0));
+        Add(CombatRecordEvent.AbilityInterrupted(Healer, "Resuscitation I", 0, 1, CombatRecordInterruptCause.CrowdControl, Attacker, CombatRecordSourceKind.Ability, "Pounce I", 0));
+
+        var healer = Build().GetParticipant(Healer);
+
+        healer.AbilityDenials["Resuscitation I"][tooClose].Should().Be(2);
+        healer.AbilityInterruptions["Resuscitation I"]["moved"].Should().Be(1);
+        healer.AbilityInterruptions["Resuscitation I"]["crowd_control"].Should().Be(1);
+    }
+
+    [Test]
     public void AbilityUses_CountCastsAndQueues()
     {
         Add(CombatRecordEvent.AbilityCast(Healer, Defender, "Benevolence I", 0, 1, 1, 1000));

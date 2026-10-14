@@ -14,6 +14,12 @@ namespace SWLOR.Game.Server.Service.CombatRecorderService
         public string Resref { get; set; }
 
         public Dictionary<string, int> AbilityUses { get; } = new();
+
+        /// <summary>Refused activations: ability, then the refusal shown, then the count.</summary>
+        public Dictionary<string, Dictionary<string, int>> AbilityDenials { get; } = new();
+
+        /// <summary>Interrupted casts: ability, then the cause, then the count.</summary>
+        public Dictionary<string, Dictionary<string, int>> AbilityInterruptions { get; } = new();
         public Dictionary<string, CombatRecordDamageTotals> DamageDealt { get; } = new();
         public Dictionary<string, CombatRecordDamageTotals> DamageTaken { get; } = new();
         public Dictionary<string, CombatRecordHealingTotals> HealingDone { get; } = new();

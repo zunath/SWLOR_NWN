@@ -62,6 +62,25 @@ namespace SWLOR.Game.Server.Service.CombatRecorderService
                         writer.WriteBoolean("toggled_off", e.Flag);
                     }
                     break;
+                case CombatRecordEventType.AbilityDenied:
+                    WriteParticipant(writer, "caster", e.ActorId);
+                    WriteParticipant(writer, "target", e.TargetId);
+                    WriteAbility(writer, e);
+                    WriteNullableString(writer, "reason", e.Text);
+                    writer.WriteString("stage", e.Flag ? "completion" : "activation");
+                    break;
+                case CombatRecordEventType.AbilityInterrupted:
+                    WriteParticipant(writer, "caster", e.ActorId);
+                    WriteAbility(writer, e);
+                    writer.WriteString("cause", CombatRecordNames.GetInterruptCauseName((CombatRecordInterruptCause)e.Value0));
+                    WriteParticipant(writer, "interrupted_by", e.Value1);
+                    if (e.Value1 > 0)
+                    {
+                        var interrupterKind = (CombatRecordSourceKind)e.Value2;
+                        writer.WriteString("interrupted_by_kind", CombatRecordNames.GetSourceKindName(interrupterKind));
+                        WriteNullableString(writer, "interrupted_by_name", CombatRecordNames.GetSourceName(interrupterKind, e.Text, e.Value3));
+                    }
+                    break;
                 case CombatRecordEventType.AbilityImpact:
                     WriteParticipant(writer, "caster", e.ActorId);
                     WriteParticipant(writer, "target", e.TargetId);

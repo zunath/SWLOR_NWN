@@ -80,6 +80,23 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                     10f,
                     "Benevolence I to heal the target");
 
+                // A second Force Lightning during its recast is refused.
+                var refused = false;
+                await ctx.ExecuteInCreatureContextAsync(attacker, () =>
+                    refused = !UsePerkFeat.TryUseAbility(attacker, target, FeatType.ForceLightning1, GetLocation(target)));
+                ctx.Assert(refused, "Force Lightning I is refused during its recast");
+
+                // The healer's ability interrupts the attacker's Benevolence cast.
+                CreaturePlugin.AddFeat(attacker, FeatType.Benevolence1);
+                await UseAbilityAsync(ctx, attacker, attacker, FeatType.Benevolence1);
+                var interrupted = false;
+                await ctx.ExecuteInCreatureContextAsync(healer, () =>
+                {
+                    using var control = CombatRecorder.BeginAbilityFeatAttribution(healer, FeatType.Benevolence1);
+                    interrupted = UsePerkFeat.InterruptAbilityActivation(attacker);
+                });
+                ctx.Assert(interrupted, "the attacker's Benevolence cast is interrupted");
+
                 // At least one snapshot cycle while everyone is registered.
                 await ctx.DelaySecondsAsync(1.5f);
             }
@@ -105,6 +122,18 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             AssertDamage(ctx, events, summary, attackerId, targetId, healerId, targetHitPointsBeforeDamage);
             AssertHealing(ctx, events, summary, healerId, targetId);
             AssertAbilityCost(ctx, events, attackerId);
+
+            var denial = events.Single(e => Type(e) == "ability_denied" && e.GetProperty("caster").GetInt32() == attackerId);
+            ctx.AssertEqual("Force Lightning I", denial.GetProperty("ability").GetString(), "the refused ability");
+            ctx.AssertEqual("activation", denial.GetProperty("stage").GetString(), "the refusal stage");
+            ctx.Assert(!string.IsNullOrEmpty(denial.GetProperty("reason").GetString()), "the refusal carries its reason");
+            var interruption = events.Single(e => Type(e) == "ability_interrupted" && e.GetProperty("caster").GetInt32() == attackerId);
+            ctx.AssertEqual("Benevolence I", interruption.GetProperty("ability").GetString(), "the interrupted ability");
+            ctx.AssertEqual("crowd_control", interruption.GetProperty("cause").GetString(), "the interruption cause");
+            ctx.AssertEqual(healerId, interruption.GetProperty("interrupted_by").GetInt32(), "who interrupted the cast");
+            ctx.AssertEqual("Benevolence I", interruption.GetProperty("interrupted_by_name").GetString(), "what interrupted the cast");
+            ctx.AssertEqual(1, summary.GetParticipant(attackerId).AbilityDenials["Force Lightning I"].Values.Sum(), "summary refusals");
+            ctx.AssertEqual(1, summary.GetParticipant(attackerId).AbilityInterruptions["Benevolence I"]["crowd_control"], "summary interruptions");
 
             ctx.Assert(events.Any(e => Type(e) == "status_apply" && e.GetProperty("target").GetInt32() == targetId &&
                                        e.GetProperty("effect").GetString() == "Shock" &&

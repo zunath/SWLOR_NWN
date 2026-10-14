@@ -156,10 +156,10 @@ namespace SWLOR.Game.Server.Feature
         /// </summary>
         public static bool InterruptAbilityActivation(uint activator)
         {
-            return InterruptAbilityActivation(activator, null);
+            return InterruptAbilityActivation(activator, null, false);
         }
 
-        private static bool InterruptAbilityActivation(uint activator, string expectedActivationId)
+        private static bool InterruptAbilityActivation(uint activator, string expectedActivationId, bool moved)
         {
             if (!_activeAbilityActivations.TryGetValue(activator, out var activation) ||
                 !string.IsNullOrWhiteSpace(expectedActivationId) &&
@@ -168,6 +168,9 @@ namespace SWLOR.Game.Server.Feature
             {
                 return false;
             }
+
+            if (CombatRecorder.IsRecording)
+                CombatRecorder.RecordAbilityInterrupted(activator, activation.Ability, moved);
 
             Log.WriteStructured(
                 LogGroup.Server,
@@ -417,6 +420,8 @@ namespace SWLOR.Game.Server.Feature
                 }
             }
 
+            if (CombatRecorder.IsRecording)
+                CombatRecorder.RecordAbilityDenied(activator, target, ability, feat, Ability.GetLastActivationDenialReason(), false);
             return false;
         }
 
@@ -659,7 +664,7 @@ namespace SWLOR.Game.Server.Feature
                     currentPosition.Y != originalPosition.Y ||
                     currentPosition.Z != originalPosition.Z)
                 {
-                    InterruptAbilityActivation(activator, activationId);
+                    InterruptAbilityActivation(activator, activationId, true);
                     return;
                 }
 
@@ -736,6 +741,8 @@ namespace SWLOR.Game.Server.Feature
 
                 if (!Ability.CanUseAbility(activator, target, feat, effectivePerkLevel, targetLocation))
                 {
+                    if (CombatRecorder.IsRecording)
+                        CombatRecorder.RecordAbilityDenied(activator, target, ability, feat, Ability.GetLastActivationDenialReason(), true);
                     ClearAbilityActivationIdleSnapshots(activator);
                     CancelActivation(true);
                     return;

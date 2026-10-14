@@ -21,6 +21,8 @@ namespace SWLOR.Game.Server.Service.CombatRecorderService
         Death = 16,
         Resurrection = 17,
         Subdual = 18,
-        Snapshot = 19
+        Snapshot = 19,
+        AbilityDenied = 20,
+        AbilityInterrupted = 21
     }
 }

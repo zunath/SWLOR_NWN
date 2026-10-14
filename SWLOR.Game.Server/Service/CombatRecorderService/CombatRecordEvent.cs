@@ -90,6 +90,46 @@ namespace SWLOR.Game.Server.Service.CombatRecorderService
             };
         }
 
+        /// <param name="reason">The refusal shown to the caster.</param>
+        /// <param name="atCompletion">True when the cast was refused as it completed, not as it started.</param>
+        public static CombatRecordEvent AbilityDenied(
+            int casterId, int targetId, string ability, int feat, int rank, string reason, bool atCompletion)
+        {
+            return new CombatRecordEvent
+            {
+                Type = CombatRecordEventType.AbilityDenied,
+                ActorId = casterId,
+                TargetId = targetId,
+                SourceKind = CombatRecordSourceKind.Ability,
+                SourceName = ability,
+                SourceCode = feat,
+                Rank = rank,
+                Text = reason,
+                Flag = atCompletion
+            };
+        }
+
+        /// <param name="interrupterId">The creature whose ability or effect stopped the cast, or 0.</param>
+        public static CombatRecordEvent AbilityInterrupted(
+            int casterId, string ability, int feat, int rank, CombatRecordInterruptCause cause,
+            int interrupterId, CombatRecordSourceKind interrupterKind, string interrupterName, int interrupterCode)
+        {
+            return new CombatRecordEvent
+            {
+                Type = CombatRecordEventType.AbilityInterrupted,
+                ActorId = casterId,
+                SourceKind = CombatRecordSourceKind.Ability,
+                SourceName = ability,
+                SourceCode = feat,
+                Rank = rank,
+                Value0 = (int)cause,
+                Value1 = interrupterId,
+                Value2 = (int)interrupterKind,
+                Value3 = interrupterCode,
+                Text = interrupterName
+            };
+        }
+
         public static CombatRecordEvent AbilityQueued(int casterId, int targetId, string ability, int feat, int rank)
         {
             return new CombatRecordEvent

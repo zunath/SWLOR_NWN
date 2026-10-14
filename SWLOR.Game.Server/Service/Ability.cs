@@ -1200,6 +1200,60 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>
+        /// Enrolls a creature that just joined a party in the party auras it is already standing in,
+        /// and enrolls the party members already standing in its own aura. The aura enter event only
+        /// fires on entry, so without this they would wait until they leave and re-enter the aura.
+        /// </summary>
+        /// <param name="member">The creature that joined the party.</param>
+        public static void EnrollPartyMemberInAuraRanges(uint member)
+        {
+            var area = GetArea(member);
+            if (!GetIsObjectValid(area))
+                return;
+
+            foreach (var aoe in ObjectSnapshot.InArea(area, ObjectType.AreaOfEffect))
+            {
+                var leader = GetAreaOfEffectCreator(aoe);
+                if (leader != member && !Party.IsInParty(leader, member))
+                    continue;
+
+                if (GetEventScript(aoe, EventScript.AreaOfEffect_OnObjectEnter) != ScriptName.OnAuraEnter)
+                    continue;
+
+                var creaturesInside = ObjectSnapshot.Capture(
+                    () => GetFirstInPersistentObject(aoe),
+                    () => GetNextInPersistentObject(aoe),
+                    GetIsObjectValid);
+
+                foreach (var creature in creaturesInside)
+                {
+                    if (creature == leader || GetIsDead(creature))
+                        continue;
+
+                    if (leader == member ? Party.IsInParty(leader, creature) : creature == member)
+                        AddPartyMemberToAuraRange(leader, creature);
+                }
+            }
+        }
+
+        private static void AddPartyMemberToAuraRange(uint leader, uint member)
+        {
+            if (!_playerAuras.ContainsKey(leader))
+                _playerAuras.Add(leader, new PlayerAura());
+
+            if (!_playerAuras[leader].PartyMembersInRange.Contains(member))
+                _playerAuras[leader].PartyMembersInRange.Add(member);
+
+            foreach (var detail in _playerAuras[leader].Auras)
+            {
+                if (detail.TargetsParty)
+                {
+                    ApplyAuraEffect(leader, member, detail.StatusEffect, detail.SuccessfulImpactVisualEffect);
+                }
+            }
+        }
+
+        /// <summary>
         /// Re-applies any aura effects that a creature should be receiving based on their current position
         /// in active aura range lists. Used after in-place resurrection (subdual, revive) where the
         /// AOE enter event may not re-fire for a creature that never physically left the AOE.
@@ -1335,16 +1389,7 @@ namespace SWLOR.Game.Server.Service
             // Party Members
             if (Party.IsInParty(self, entering))
             {
-                if (!_playerAuras[self].PartyMembersInRange.Contains(entering))
-                    _playerAuras[self].PartyMembersInRange.Add(entering);
-
-                foreach (var detail in _playerAuras[self].Auras)
-                {
-                    if (detail.TargetsParty)
-                    {
-                        ApplyAuraEffect(self, entering, detail.StatusEffect, detail.SuccessfulImpactVisualEffect);
-                    }
-                }
+                AddPartyMemberToAuraRange(self, entering);
             }
 
             // Enemies

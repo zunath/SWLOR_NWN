@@ -49,6 +49,9 @@ namespace SWLOR.Game.Server.Service
                 _creatureToParty[creature] = partyId;
             }
 
+            // Party members already standing in each other's auras never re-fire the aura enter event.
+            Ability.EnrollPartyMemberInAuraRanges(creature);
+
             Telegraph.UpdateShadersForPlayers(GetAllPartyMembers(requester));
         }
 

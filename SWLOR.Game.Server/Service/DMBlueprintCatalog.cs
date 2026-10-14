@@ -123,6 +123,15 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>
+        /// Returns whether a created item can be put in an object's inventory: a creature, a store, or a placeable or
+        /// item that is a container.
+        /// </summary>
+        public static bool CanReceiveItems(uint target)
+        {
+            return GetIsObjectValid(target) && GetHasInventory(target);
+        }
+
+        /// <summary>
         /// Returns the width of the square a trigger or encounter blueprint is created as, in meters.
         /// </summary>
         public static float GetSquareSize(DMBlueprintCategory category)
@@ -160,7 +169,8 @@ namespace SWLOR.Game.Server.Service
                     $"{{\"type\":\"list\",\"value\":[{{\"__struct_id\":0,\"X\":{Float(position.X)},\"Y\":{Float(position.Y)},\"Z\":{Float(position.Z)},\"Orientation\":{Float(0f)}}}]}}"));
             }
 
-            return JsonToObject(template, location);
+            // Without the object state, the template's local variables and transition target are dropped.
+            return JsonToObject(template, location, OBJECT_INVALID, true);
         }
 
         // CreateObject cannot create doors either, so they are created from the template, placed and turned the
@@ -177,7 +187,8 @@ namespace SWLOR.Game.Server.Service
             template = JsonObjectSet(template, "Y", JsonParse(Float(position.Y)));
             template = JsonObjectSet(template, "Z", JsonParse(Float(position.Z)));
             template = JsonObjectSet(template, "Bearing", JsonParse(Float(bearing)));
-            return JsonToObject(template, location);
+            // Without the object state, the template's local variables and transition target are dropped.
+            return JsonToObject(template, location, OBJECT_INVALID, true);
         }
 
         // A GFF float field in the engine's JSON form.

@@ -61,7 +61,17 @@ namespace SWLOR.Game.Server.Service.DBService
         /// <param name="search">The text the player or DM typed.</param>
         public static bool HasQueryableWords(string search)
         {
-            return GetWords(search).Any(word => BuildTerm(word) != null);
+            return GetWords(search).Any(IsQueryableWord);
+        }
+
+        /// <summary>
+        /// Returns whether <see cref="Build"/> keeps a word from <see cref="GetWords"/>. A word it drops, such as "\@",
+        /// has no query of its own and matches everything.
+        /// </summary>
+        /// <param name="word">One word of the search.</param>
+        public static bool IsQueryableWord(string word)
+        {
+            return BuildTerm(word) != null;
         }
 
         /// <summary>

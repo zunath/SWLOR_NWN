@@ -399,7 +399,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var location = result.Category == DMObjectCategory.Areas
                 ? DMObjectSearch.GetAreaJumpLocation(result.Object)
                 : GetLocation(result.Object);
-            DMPresence.JumpTo(Player, location);
+            DMPresence.JumpTo(Player, location, $"{result.Category} '{result.Name}' ({result.Resref}, tag '{result.Tag}')");
         };
 
         public Action OnClickBringHere() => () =>

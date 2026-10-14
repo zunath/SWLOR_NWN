@@ -59,6 +59,13 @@ public class PartialMatchSearchTextTests
         PartialMatchSearchText.HasQueryableWords(search).Should().Be(expected);
     }
 
+    [Test]
+    public void IsQueryableWordDropsOnlyWordsBuildDrops()
+    {
+        PartialMatchSearchText.GetWords("\\@ zyn a").Select(PartialMatchSearchText.IsQueryableWord)
+            .Should().Equal(false, true, true);
+    }
+
     [TestCase("zyn", "Zyndari", true)]
     [TestCase("ZYNDARI", "zyndari", true)]
     [TestCase("ynd", "Zyndari", false)]

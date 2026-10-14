@@ -305,14 +305,14 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var target = DMPlayerDirectory.GetOnlinePlayer(result.PlayerId);
             if (GetIsObjectValid(target))
             {
-                DMPresence.JumpTo(Player, GetLocation(target));
+                DMPresence.JumpTo(Player, GetLocation(target), $"{result.Name} ({result.PlayerId})");
                 return;
             }
 
             if (DMPlayerDirectory.TryGetLastLocation(result.PlayerId, out var location))
             {
                 DMPresence.SendMessage(Player, $"{result.Name} is offline. Jumping to their last saved location.");
-                DMPresence.JumpTo(Player, location);
+                DMPresence.JumpTo(Player, location, $"offline {result.Name} ({result.PlayerId})'s last location");
             }
             else
             {

@@ -327,6 +327,24 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             await ctx.WaitUntilAsync(() => GetIsObjectValid(FindInventoryItem(dm.Creature, "001")), 5f, "the helmet to be created in the DM's inventory");
             DestroyObject(FindInventoryItem(dm.Creature, "001"));
 
+            // Stores and container items take a created item into their inventory, like creatures and container
+            // placeables. CreateItemOnObject only works inside a script context, as the Creator's targeting event is.
+            var helmet = DMBlueprintCatalog.GetPalette(DMBlueprintCategory.Items, DMBlueprintSource.Custom)
+                .Blueprints.First(blueprint => blueprint.Resref == "001");
+            var bag = CreateObject(ObjectType.Item, "bag_sm", GetLocation(dm.Creature));
+            ctx.Track(bag);
+            var store = CreateObject(ObjectType.Store, "nw_storemagic001", GetLocation(dm.Creature));
+            ctx.Track(store);
+            ctx.Assert(new[] { bag, store, dm.Creature }.All(DMBlueprintCatalog.CanReceiveItems),
+                "creatures, stores and container items receive created items");
+            await InContext(ctx, dm.Creature, () =>
+            {
+                DMBlueprintCatalog.CreateInInventory(dm.Creature, helmet, bag);
+                DMBlueprintCatalog.CreateInInventory(dm.Creature, helmet, store);
+            });
+            ctx.Assert(GetIsObjectValid(FindInventoryItem(bag, "001")), "an item is created in a container item's inventory");
+            ctx.Assert(GetIsObjectValid(FindInventoryItem(store, "001")), "an item is created in a store's inventory");
+
             // Triggers are listed and described like the other blueprint types.
             await InContext(ctx, dm.Creature, () => model.SelectedType = (int)DMBlueprintCategory.Triggers);
             await InContext(ctx, dm.Creature, () => model.SearchText = "anti_spawn");
@@ -405,6 +423,12 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 ctx.Assert(Math.Abs(doorPosition.X - wanted.X) < 0.01f && Math.Abs(doorPosition.Y - wanted.Y) < 0.01f,
                     "the door stands at the chosen spot");
                 ctx.Assert(Math.Abs(GetFacing(createdDoor) - 90f) < 1f, "the door faces the chosen direction");
+
+                // A blueprint's local variables come with it, like the locked door's conversation and waypoint.
+                var lockedDoor = doorPalette.Blueprints.Single(blueprint => blueprint.Resref == "locked_door");
+                var createdLockedDoor = DMBlueprintCatalog.CreateAtLocation(player.Creature, lockedDoor, ctx.GetArenaLocation(0f, -6f));
+                ctx.Track(createdLockedDoor);
+                ctx.AssertEqual("LockedDoorDialog", GetLocalString(createdLockedDoor, "CONVERSATION"), "the door keeps its blueprint's local variables");
             }
             finally
             {
@@ -592,6 +616,9 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 await InContext(ctx, dm.Creature, () => model.SearchText = "hooded smug");
                 await InContext(ctx, dm.Creature, model.OnClickSearch());
                 ctx.Assert(model.ResultNames.Contains("Talen Orsk"), "offline search finds an active disguise's descriptor");
+
+                ctx.Assert(DMPlayerDirectory.Search("\\@ Qorin", DMPlayerSearchScope.Offline, out _).Any(result => result.Name == "Qorin Zyndari"),
+                    "a word the index cannot query does not stop the other words from finding offline characters");
 
                 var bulk = DMPlayerDirectory.Search("Bulkprobe", DMPlayerSearchScope.Offline, out var bulkTruncated);
                 ctx.AssertEqual(DMPlayerDirectory.MaxResults, bulk.Count, "offline search returns up to the result limit");

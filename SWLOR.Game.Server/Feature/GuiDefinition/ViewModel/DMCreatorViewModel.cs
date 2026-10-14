@@ -367,10 +367,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             Targeting.EnterTargetingMode(controlled, ObjectType.All, $"Click where to create {blueprint.Name}.", target =>
             {
                 var area = GetArea(controlled);
-                var targetType = GetIsObjectValid(target) ? GetObjectType(target) : ObjectType.Invalid;
-                if (blueprint.Category == DMBlueprintCategory.Items &&
-                    (targetType == ObjectType.Creature || targetType == ObjectType.Placeable) &&
-                    GetHasInventory(target))
+                // Creatures, stores, and container placeables or items take the item into their inventory.
+                if (blueprint.Category == DMBlueprintCategory.Items && DMBlueprintCatalog.CanReceiveItems(target))
                 {
                     ReportCreated(blueprint, DMBlueprintCatalog.CreateInInventory(dm, blueprint, target));
                     return;

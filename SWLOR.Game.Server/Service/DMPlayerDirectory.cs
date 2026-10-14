@@ -184,7 +184,9 @@ namespace SWLOR.Game.Server.Service
             if (terms.Count == 1 && Guid.TryParse(terms[0], out var playerId))
                 Consider(DB.Get<Player>(playerId.ToString()));
 
+            // A word the index cannot query matches everything, so it can never narrow the candidates.
             var seed = PartialMatchSearchText.GetWords(search)
+                .Where(PartialMatchSearchText.IsQueryableWord)
                 .OrderBy(CountOfflineHits)
                 .FirstOrDefault();
             if (seed == null)

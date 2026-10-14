@@ -47,13 +47,16 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         /// <param name="dm">The DM avatar or the creature they possess.</param>
         /// <param name="location">The destination.</param>
-        public static void JumpTo(uint dm, Location location)
+        /// <param name="destination">What the DM jumped to, for the DM log.</param>
+        public static void JumpTo(uint dm, Location location, string destination)
         {
             AssignCommand(GetControlledCreature(dm), () =>
             {
                 ClearAllActions();
                 JumpToLocation(location);
             });
+
+            Log.Write(LogGroup.DM, $"{DescribeDM(dm)} jumped to {destination} in {GetResRef(GetAreaFromLocation(location))}.");
         }
 
         /// <summary>

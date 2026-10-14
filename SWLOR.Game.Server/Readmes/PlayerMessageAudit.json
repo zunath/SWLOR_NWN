@@ -2773,7 +2773,7 @@
   },
   {
     "File": "SWLOR.Game.Server/Feature/RoleplayXP.cs",
-    "Line": 104,
+    "Line": 115,
     "Member": "ProcessPlayerRoleplayXP",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, $\"You gained {xp} roleplay XP.\")"
@@ -4922,59 +4922,80 @@
   },
   {
     "File": "SWLOR.Game.Server/Service/Shuttle.cs",
-    "Line": 209,
+    "Line": 217,
     "Member": "BoardPassengers",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, $\"You board the shuttle to {destinationName}. Estimated flight time: {transit}.\")"
   },
   {
     "File": "SWLOR.Game.Server/Service/Shuttle.cs",
-    "Line": 229,
+    "Line": 237,
     "Member": "NotifyMissedBoarding",
     "Delivery": "Retained",
-    "Call": "SendMessageToPC(player, ColorToken.Yellow($\"You missed your shuttle to {destinationName}! Your ticket remains valid. The next shuttle departs in {wait} - be within {(int)BoardingRangeMeters} meters of the flights terminal.\"))"
+    "Call": "SendMessageToPC(player, ColorToken.Yellow($\"You missed your shuttle to {destinationName}! Your ticket remains valid. The next shuttle departs in {wait} - be within {(int)BoardingRangeMeters} meters of the flights terminal. You can refund your ticket at any flights terminal before boarding.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/Shuttle.cs",
-    "Line": 260,
+    "Line": 271,
     "Member": "ProcessBoardingCalls",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Cyan($\"Now boarding: shuttle to {destinationName} departs in {wait}. Be within {(int)BoardingRangeMeters} meters of the flights terminal!\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/Shuttle.cs",
-    "Line": 304,
+    "Line": 315,
     "Member": "ProcessArrival",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, $\"The shuttle touches down at {destinationName}.\")"
   },
   {
     "File": "SWLOR.Game.Server/Service/Shuttle.cs",
-    "Line": 430,
+    "Line": 441,
     "Member": "ProcessTransitBroadcasts",
     "Delivery": "Retained",
     "Call": "SpeakString($\"Now arriving at {destinationName} in {remaining}.\")"
   },
   {
     "File": "SWLOR.Game.Server/Service/Shuttle.cs",
-    "Line": 617,
+    "Line": 628,
     "Member": "TryPurchaseTicket",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red(\"You already have a shuttle ticket.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/Shuttle.cs",
-    "Line": 627,
+    "Line": 638,
     "Member": "TryPurchaseTicket",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red(\"You do not have enough credits to purchase this flight!\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/Shuttle.cs",
-    "Line": 675,
+    "Line": 688,
     "Member": "RefundTicket",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, $\"Your shuttle ticket has been refunded for {ride.FarePaid} credits. Taxes are non-refundable.\")"
+  },
+  {
+    "File": "SWLOR.Game.Server/Service/Shuttle.cs",
+    "Line": 743,
+    "Member": "CompleteRideOnLogin",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(player, $\"Your shuttle has arrived at {Planet.GetPlanetByType(ride.Destination).Name}.\")"
+  },
+  {
+    "File": "SWLOR.Game.Server/Service/Shuttle.cs",
+    "Line": 771,
+    "Member": "RestoreTicketedSession",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(player, ColorToken.Yellow($\"You still have a shuttle ticket from {originName} to {destinationName}. Automatic boarding resumes in {wait} if you are within {(int)BoardingRangeMeters} meters of a flights terminal at {originName}. You can refund your ticket at any flights terminal before boarding.\"))"
+  },
+  {
+    "File": "SWLOR.Game.Server/Service/Shuttle.cs",
+    "Line": 819,
+    "Member": "EnterServer",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(current, $\"You resume your shuttle flight to {Planet.GetPlanetByType(ride.Destination).Name}. Estimated arrival: {remaining}.\")"
   },
   {
     "File": "SWLOR.Game.Server/Service/Skill.cs",
@@ -4992,35 +5013,35 @@
   },
   {
     "File": "SWLOR.Game.Server/Service/Skill.cs",
-    "Line": 195,
+    "Line": 203,
     "Member": "GiveSkillXP",
     "Delivery": "Rate limited in Production",
     "Call": "PlayerFeedback.SendWarningToPlayer(player, \"SKILL_CAP\", ColorToken.Red($\"You cannot gain {details.Name} XP. You are at the skill cap of {SkillCap} and all of your other skills are locked from decay. Unlock a skill in the Skills menu to resume gaining {details.Name} XP.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/Skill.cs",
-    "Line": 200,
+    "Line": 208,
     "Member": "GiveSkillXP",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, $\"You earned {details.Name} skill experience. ({xp})\")"
   },
   {
     "File": "SWLOR.Game.Server/Service/Skill.cs",
-    "Line": 225,
+    "Line": 228,
     "Member": "GiveSkillXP",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature($\"Your {details.Name} skill level increased to rank {pcSkill.Rank}!\", player, false)"
   },
   {
     "File": "SWLOR.Game.Server/Service/Skill.cs",
-    "Line": 258,
+    "Line": 261,
     "Member": "GiveSkillXP",
     "Delivery": "Rate limited in Production",
     "Call": "PlayerFeedback.SendWarningToPlayer(player, \"SKILL_CAP\", ColorToken.Red($\"You have reached the skill cap of {SkillCap} and all of your other skills are locked from decay. Excess {details.Name} XP was lost.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/Skill.cs",
-    "Line": 319,
+    "Line": 322,
     "Member": "ApplyAbilityPoint",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Green(\"You acquired 1 ability point!\"))"
@@ -5055,105 +5076,126 @@
   },
   {
     "File": "SWLOR.Game.Server/Service/Space.cs",
-    "Line": 513,
+    "Line": 539,
     "Member": "UseShipComputer",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red(\"You do not have permission to pilot this starship.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/Space.cs",
-    "Line": 523,
+    "Line": 549,
     "Member": "UseShipComputer",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red(\"ERROR: Could not locate ship. Notify an admin.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/Space.cs",
-    "Line": 530,
+    "Line": 556,
     "Member": "UseShipComputer",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red(\"This ship's controls are in use.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/Space.cs",
-    "Line": 536,
+    "Line": 562,
     "Member": "UseShipComputer",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red(\"You do not have the ability to pilot this ship.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/Space.cs",
-    "Line": 1186,
+    "Line": 576,
+    "Member": "UseShipComputer",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(player, ColorToken.Red(\"Unable to locate this starship's space destination. Notify an admin.\"))"
+  },
+  {
+    "File": "SWLOR.Game.Server/Service/Space.cs",
+    "Line": 584,
+    "Member": "UseShipComputer",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(player, ColorToken.Red(\"This starship's space destination is unavailable. Notify an admin.\"))"
+  },
+  {
+    "File": "SWLOR.Game.Server/Service/Space.cs",
+    "Line": 661,
+    "Member": "CheckShipLaunch",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(player, ColorToken.Red(\"Unable to reach this starship's space destination. Please try again or notify an admin.\"))"
+  },
+  {
+    "File": "SWLOR.Game.Server/Service/Space.cs",
+    "Line": 1287,
     "Member": "ActivateShipModule",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(activator, \"Unable to use that module.\")"
   },
   {
     "File": "SWLOR.Game.Server/Service/Space.cs",
-    "Line": 1202,
+    "Line": 1303,
     "Member": "ActivateShipModule",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(activator, $\"Your ship does not have enough capacitor to use that module. (Required: {requiredCapacitor})\")"
   },
   {
     "File": "SWLOR.Game.Server/Service/Space.cs",
-    "Line": 1210,
+    "Line": 1311,
     "Member": "ActivateShipModule",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(activator, \"That module is not ready.\")"
   },
   {
     "File": "SWLOR.Game.Server/Service/Space.cs",
-    "Line": 1226,
+    "Line": 1327,
     "Member": "ActivateShipModule",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(activator, \"This module cannot be used on that target type.\")"
   },
   {
     "File": "SWLOR.Game.Server/Service/Space.cs",
-    "Line": 1233,
+    "Line": 1334,
     "Member": "ActivateShipModule",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(activator, \"Invalid target.\")"
   },
   {
     "File": "SWLOR.Game.Server/Service/Space.cs",
-    "Line": 1241,
+    "Line": 1342,
     "Member": "ActivateShipModule",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(activator, $\"Target is too far away. Maximum distance: {maxDistance} meters.\")"
   },
   {
     "File": "SWLOR.Game.Server/Service/Space.cs",
-    "Line": 1259,
+    "Line": 1360,
     "Member": "ActivateShipModule",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(activator, result)"
   },
   {
     "File": "SWLOR.Game.Server/Service/Space.cs",
-    "Line": 1987,
+    "Line": 2089,
     "Member": "ApplyDeath",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature(ColorToken.Red(\"The ship has exploded!\"), player, false)"
   },
   {
     "File": "SWLOR.Game.Server/Service/Space.cs",
-    "Line": 2175,
+    "Line": 2277,
     "Member": "NotifyShipDamage",
     "Delivery": "Retained",
     "Call": "Messaging.SendMessageNearbyToPlayers(attacker, buildMessage, ShipDamageMessageRange)"
   },
   {
     "File": "SWLOR.Game.Server/Service/Space.cs",
-    "Line": 2181,
+    "Line": 2283,
     "Member": "NotifyShipDamage",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(target, buildMessage(target))"
   },
   {
     "File": "SWLOR.Game.Server/Service/Space.cs",
-    "Line": 2392,
+    "Line": 2495,
     "Member": "PreventSpaceStealth",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(creature, ColorToken.Red($\"You cannot enter stealth mode in space.\"))"

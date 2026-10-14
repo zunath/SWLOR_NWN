@@ -1,0 +1,47 @@
+{
+  "name": "Defensive 1v1 duel",
+  "description": "A medic with devices against a heavy-blade fighter, both built to survive. Hit rates and damage are in the range seen in the October 2026 PvP test, where a duel like this ran about 9 minutes with no death.",
+  "durationSeconds": 900,
+  "isPvp": true,
+  "teams": [
+    {
+      "name": "Medic",
+      "members": [
+        {
+          "name": "Medic duelist",
+          "maxHp": 805, "hpRegenPer30Seconds": 26,
+          "willpower": 20, "might": 20, "social": 10,
+          "outgoingHealingPercent": 10, "damageReductionPercent": 11,
+          "maxFp": 55, "fpRegenPer30Seconds": 8,
+          "maxStm": 76, "stmRegenPer30Seconds": 23,
+          "autoAttack": { "attacksPerSecond": 0.35, "damage": { "min": 9, "max": 19, "hitChance": 0.29 } },
+          "abilities": [
+            { "feat": "MedKit4", "target": "Self", "belowHpPercent": 75 },
+            { "feat": "Infusion2", "target": "Self", "keepUp": true, "belowHpPercent": 90 },
+            { "feat": "WristRocket3", "target": "Enemy", "damage": { "min": 25, "max": 45, "hitChance": 0.45, "type": "Other" } },
+            { "feat": "ArcProjector3", "target": "Enemy", "damage": { "min": 25, "max": 45, "hitChance": 0.45, "type": "Other" } }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Heavy blade",
+      "members": [
+        {
+          "name": "Heavy blade duelist",
+          "maxHp": 811, "hpRegenPer30Seconds": 26,
+          "willpower": 16, "might": 27, "social": 10,
+          "maxFp": 103, "fpRegenPer30Seconds": 17,
+          "maxStm": 78, "stmRegenPer30Seconds": 20,
+          "perks": [ "DefensiveHarmony" ],
+          "autoAttack": { "attacksPerSecond": 0.23, "damage": { "min": 40, "max": 80, "hitChance": 0.29, "critChance": 0.1 } },
+          "abilities": [
+            { "feat": "Infusion2", "target": "Self", "keepUp": true, "belowHpPercent": 85 },
+            { "feat": "RendingStrike1", "target": "Enemy", "damage": { "min": 60, "max": 100, "hitChance": 0.3 } },
+            { "feat": "ShatteringStrike2", "target": "Enemy", "damage": { "min": 50, "max": 90, "hitChance": 0.5 } }
+          ]
+        }
+      ]
+    }
+  ]
+}

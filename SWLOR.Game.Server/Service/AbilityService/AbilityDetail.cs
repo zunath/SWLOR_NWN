@@ -75,6 +75,8 @@ namespace SWLOR.Game.Server.Service.AbilityService
         public bool RequiresTarget { get; set; }
         public bool HasExplicitMaxRange { get; set; }
         public bool UsesActiveAttackTarget { get; set; }
+        /// <summary>Allows the optional cursor-free self-cast command for a self-legal support cast.</summary>
+        public bool AllowsSelfQuickCast { get; set; }
         public int AbilityLevel { get; set; }
         public SkillType SkillType { get; set; }
         public AbilityType CombatImpactDamageAbility { get; set; }

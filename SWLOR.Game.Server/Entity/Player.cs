@@ -285,6 +285,8 @@ namespace SWLOR.Game.Server.Entity
         public bool? ScrambleAccountName { get; set; }
         public bool? DisplayCommsOutOfRangeWarnings { get; set; }
         public bool DisplayCooldownFloatingText { get; set; }
+        public bool SelfQuickCastEnabled { get; set; }
+        public bool EnemyQuickCastEnabled { get; set; }
 
         // When enabled, Stamina and FP are shown as thin bars overlaid on the character portrait
         // instead of the standalone HP/STM/FP window docked in the lower-right corner.

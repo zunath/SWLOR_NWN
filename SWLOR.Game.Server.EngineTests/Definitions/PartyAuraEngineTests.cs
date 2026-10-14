@@ -5,6 +5,7 @@ using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.EngineTests.Framework;
 using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.StatService;
+using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.Game.Server.EngineTests.Definitions
@@ -100,6 +101,64 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 if (Party.IsInParty(joiner.Creature, member))
                     await ctx.ExecuteInCreatureContextAsync(joiner.Creature, () => InvokeParty("RemoveCreatureFromParty", joiner.Creature));
             }
+        }
+
+        /// <summary>
+        /// A stronger player's aura replaces a weaker player's own copy of the same aura when they join.
+        /// Once the stronger copy goes away, the weaker player's still-active aura must cover them again.
+        /// </summary>
+        [EngineTest("A weaker aura returns when the stronger party aura that replaced it ends", Category = "PartyAura", TimeoutSeconds = 60f)]
+        public static async Task WeakerAuraReturnsWhenStrongerSourceEnds(EngineTestContext ctx)
+        {
+            using var strong = await PlayerAbilityFixture.CreateAsync(ctx);
+            using var weak = await PlayerAbilityFixture.CreateAsync(ctx, 2f);
+            CreaturePlugin.SetRawAbilityScore(strong.Creature, AbilityType.Social, 20);
+            CreaturePlugin.SetRawAbilityScore(weak.Creature, AbilityType.Social, 10);
+            foreach (var player in new[] { strong.Creature, weak.Creature })
+            {
+                TemporaryStatModifier.Add(player, StatType.ChargeOrderAuraLevel, 1, 120f);
+                Ability.ReapplyPlayerAuraAOE(player);
+            }
+
+            await ctx.WaitUntilAsync(() => IsInsidePlayerAura(strong.Creature, weak.Creature) && IsInsidePlayerAura(weak.Creature, strong.Creature), 10f,
+                "both players to stand inside each other's aura");
+            await ctx.DelaySecondsAsync(1f);
+
+            try
+            {
+                await ToggleChargeOrderAsync(ctx, strong.Creature);
+                await ToggleChargeOrderAsync(ctx, weak.Creature);
+                ctx.Assert(HasChargeOrder(strong.Creature, strong.Creature) && HasChargeOrder(weak.Creature, weak.Creature),
+                    "each player starts with their own Charge Order");
+
+                await JoinStrongPartyAsync(ctx, strong.Creature, weak.Creature);
+                await ctx.ExecuteInCreatureContextAsync(weak.Creature, () => InvokeParty("RemoveCreatureFromParty", weak.Creature));
+                ctx.Assert(HasChargeOrder(weak.Creature, weak.Creature) && !HasChargeOrder(weak.Creature, strong.Creature),
+                    "leaving the party restores the weaker player's own Charge Order");
+
+                await JoinStrongPartyAsync(ctx, strong.Creature, weak.Creature);
+                await ToggleChargeOrderAsync(ctx, strong.Creature);
+                ctx.Assert(HasChargeOrder(weak.Creature, weak.Creature) && !HasChargeOrder(weak.Creature, strong.Creature),
+                    "toggling the stronger Charge Order off restores the weaker player's own Charge Order");
+                ctx.Assert(HasChargeOrder(strong.Creature, weak.Creature),
+                    "the stronger player is covered by the weaker player's Charge Order once their own ends");
+            }
+            finally
+            {
+                Ability.RemoveAura(strong.Creature, typeof(ChargeOrder1StatusEffect));
+                Ability.RemoveAura(weak.Creature, typeof(ChargeOrder1StatusEffect));
+                if (Party.IsInParty(strong.Creature, weak.Creature))
+                    await ctx.ExecuteInCreatureContextAsync(weak.Creature, () => InvokeParty("RemoveCreatureFromParty", weak.Creature));
+            }
+        }
+
+        private static async Task JoinStrongPartyAsync(EngineTestContext ctx, uint strong, uint weak)
+        {
+            await ctx.ExecuteInCreatureContextAsync(weak, () => InvokeParty("AddToParty", strong, weak));
+            ctx.Assert(HasChargeOrder(weak, strong) && !HasChargeOrder(weak, weak),
+                "the stronger Charge Order replaces the weaker player's own copy on joining");
+            ctx.Assert(HasChargeOrder(strong, strong) && !HasChargeOrder(strong, weak),
+                "the stronger player keeps their own Charge Order");
         }
 
         private static async Task ApplyAuraAndWaitForCreatureInsideAsync(EngineTestContext ctx, uint player, uint creature)

@@ -918,6 +918,55 @@ namespace SWLOR.Game.Server.Service
         private static void RemoveAuraEffect(uint source, uint recipient, Type type, bool sendsWornOffMessage = false)
         {
             StatusEffect.RemoveStatusEffect(recipient, type, source, sendsWornOffMessage);
+            RestoreStrongestAuraEffect(recipient, type, source);
+        }
+
+        /// <summary>
+        /// A stronger source replaces weaker copies of the same aura on a recipient. Once a source's copy
+        /// is removed, the strongest other source still covering the recipient applies its copy again.
+        /// </summary>
+        private static void RestoreStrongestAuraEffect(uint recipient, Type type, uint removedSource)
+        {
+            if (!GetIsObjectValid(recipient) || GetIsDead(recipient) || StatusEffect.HasStatusEffect(recipient, type))
+                return;
+
+            var strongestSource = OBJECT_INVALID;
+            PlayerAuraDetail strongestDetail = null;
+            var strongestSocial = int.MinValue;
+            foreach (var (source, playerAura) in _playerAuras)
+            {
+                if (source == removedSource)
+                    continue;
+
+                var detail = playerAura.Auras.FirstOrDefault(x => x.StatusEffect == type);
+                if (detail == null || !IsAuraRecipient(source, playerAura, detail, recipient))
+                    continue;
+
+                var social = GetAuraSourceSocial(source);
+                if (social <= strongestSocial)
+                    continue;
+
+                strongestSource = source;
+                strongestDetail = detail;
+                strongestSocial = social;
+            }
+
+            if (strongestDetail != null)
+                ApplyAuraEffect(strongestSource, recipient, type, strongestDetail.SuccessfulImpactVisualEffect);
+        }
+
+        private static bool IsAuraRecipient(uint source, PlayerAura playerAura, PlayerAuraDetail detail, uint recipient)
+        {
+            if (detail.TargetsSelf && source == recipient)
+                return true;
+
+            if (detail.TargetsParty && playerAura.PartyMembersInRange.Contains(recipient) && Party.IsInParty(source, recipient))
+                return true;
+
+            return detail.TargetsEnemies &&
+                   playerAura.CreaturesInRange.Contains(recipient) &&
+                   !GetIsDMPossessed(recipient) && !GetIsDM(recipient) &&
+                   (GetIsEnemy(source, recipient) || GetIsEnemy(recipient, source));
         }
 
         private static bool HasEqualOrStrongerAuraEffect(uint source, uint recipient, Type type)
@@ -1150,6 +1199,8 @@ namespace SWLOR.Game.Server.Service
         /// <param name="target">The creature to remove from all aura ranges.</param>
         public static void RemoveCreatureFromAllAuraRanges(uint target)
         {
+            // Leave every range first so removing one aura copy cannot restore another source's copy.
+            var removedEffects = new List<(uint Leader, Type StatusEffect)>();
             foreach (var (leader, playerAura) in _playerAuras)
             {
                 if (playerAura.PartyMembersInRange.Remove(target))
@@ -1157,7 +1208,7 @@ namespace SWLOR.Game.Server.Service
                     foreach (var aura in playerAura.Auras)
                     {
                         if (aura.TargetsParty)
-                            RemoveAuraEffect(leader, target, aura.StatusEffect);
+                            removedEffects.Add((leader, aura.StatusEffect));
                     }
                 }
 
@@ -1166,9 +1217,14 @@ namespace SWLOR.Game.Server.Service
                     foreach (var aura in playerAura.Auras)
                     {
                         if (aura.TargetsEnemies)
-                            RemoveAuraEffect(leader, target, aura.StatusEffect);
+                            removedEffects.Add((leader, aura.StatusEffect));
                     }
                 }
+            }
+
+            foreach (var (leader, statusEffect) in removedEffects)
+            {
+                RemoveAuraEffect(leader, target, statusEffect);
             }
         }
 

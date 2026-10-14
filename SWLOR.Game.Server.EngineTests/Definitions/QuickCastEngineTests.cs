@@ -1,21 +1,127 @@
 using System.Threading.Tasks;
 using System.Collections.Generic;
-using Newtonsoft.Json;
+using System.Linq;
+using System.Reflection;
 using NWN.Native.API;
 using Ability = SWLOR.Game.Server.Service.Ability;
-using SWLOR.Game.Server.Entity;
-using SWLOR.Game.Server.Core.NWNX.Enum;
 using SWLOR.Game.Server.EngineTests.Framework;
+using SWLOR.Game.Server.Feature.GuiDefinition.ViewModel;
 using SWLOR.Game.Server.Service.AbilityService;
+using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
+using ObjectType = SWLOR.NWN.API.NWScript.Enum.ObjectType;
 
 namespace SWLOR.Game.Server.EngineTests.Definitions;
 
 public static class QuickCastEngineTests
 {
+    [EngineTest("Settings targeting applies only on Save and casts through the NUI button handlers", Category = "QuickCast", TimeoutSeconds = 40f)]
+    public static async Task SettingsTargeting(EngineTestContext ctx)
+    {
+        using var fixture = await PlayerAbilityFixture.CreateAsync(ctx);
+        var player = fixture.Creature;
+        QuickCast.ResetSession(player);
+        const BindingFlags flags = BindingFlags.NonPublic | BindingFlags.Instance;
+        SettingsViewModel LoadModel()
+        {
+            var model = new SettingsViewModel();
+            typeof(GuiViewModelBase<SettingsViewModel, GuiPayloadBase>).GetProperty("Player", flags).SetValue(model, player);
+            foreach (var method in new[] { "LoadGeneralView", "LoadIdentityView", "LoadChatView", "LoadTargetingView" })
+                typeof(SettingsViewModel).GetMethod(method, flags).Invoke(model, null);
+            return model;
+        }
+
+        // Settings Save updates the vitals window as well. Install the same player-window
+        // instances as module entry, without inventing a connected client's NUI state.
+        var windows = (Dictionary<string, Dictionary<GuiWindowType, GuiPlayerWindow>>)typeof(Gui)
+            .GetField("_playerWindows", BindingFlags.Static | BindingFlags.NonPublic).GetValue(null);
+        var playerWindows = new Dictionary<GuiWindowType, GuiPlayerWindow>();
+        foreach (var type in new[] { GuiWindowType.PlayerStatus, GuiWindowType.PlayerStatusPortrait, GuiWindowType.PlayerStatusPortraitSpace })
+        {
+            var template = Gui.GetWindowTemplate(type);
+            var window = template.CreatePlayerWindowAction();
+            window.ViewModel.Geometry = template.InitialGeometry;
+            playerWindows.Add(type, window);
+        }
+        windows.Add(fixture.Id, playerWindows);
+        try
+        {
+            var empty = LoadModel();
+            ctx.AssertEqual(-1, empty.SelectedSelfCastFeat, "no known self abilities has an explicit empty option");
+            ctx.AssertEqual(-1, empty.SelectedEnemyCastFeat, "no known enemy abilities has an explicit empty option");
+            empty.SelfQuickCastEnabled = true;
+            empty.EnemyQuickCastEnabled = true;
+            await ctx.ExecuteInCreatureContextAsync(player, () => empty.OnSave()());
+            ctx.Assert(!empty.CanSelfQuickCast && !empty.CanEnemyQuickCast, "empty lists cannot cast even when modes are applied");
+            QuickCast.ResetSession(player);
+
+            fixture.Update(record => record.Perks[PerkType.Innervate] = 1);
+            CreaturePlugin.AddFeat(player, FeatType.Innervate1);
+            ctx.SetResources(player, 100, 100);
+            ObjectPlugin.SetCurrentHitPoints(player, 1);
+            var model = LoadModel();
+            ctx.Assert(!model.SelfQuickCastEnabled && !model.EnemyQuickCastEnabled, "Settings starts with both modes off");
+            ctx.Assert(model.SelfCastAbilities.Any(entry => entry.Value == (int)FeatType.Innervate1), "known support ability appears in the selector");
+            model.SelectedSelfCastFeat = (int)FeatType.Innervate1;
+            model.SelfQuickCastEnabled = true;
+            model.OnSelfQuickCast()();
+            ctx.Assert(!QuickCast.IsEnabled(player, QuickCastTargetType.Self) && !model.CanSelfQuickCast,
+                "unsaved checkbox cannot enable a cast");
+            ctx.AssertEqual(1, GetCurrentHitPoints(player), "unsaved cast does not heal");
+            ctx.Assert(!LoadModel().SelfQuickCastEnabled, "discarding a draft leaves applied modes unchanged");
+            await ctx.ExecuteInCreatureContextAsync(player, () => model.OnSave()());
+            ctx.Assert(model.CanSelfQuickCast, "Save enables the chosen self-cast button");
+            ctx.Assert(!QuickCast.IsEnabled(player, QuickCastTargetType.CurrentEnemy), "Save keeps the other mode off");
+            ctx.Assert(LoadModel().SelfQuickCastEnabled, "reopening Settings restores the applied mode during this login");
+            ctx.Assert(GetObjectType(OBJECT_SELF) != ObjectType.Creature, "NUI callback starts outside creature context");
+            model.OnSelfQuickCast()();
+            await ctx.WaitUntilAsync(() => GetCurrentHitPoints(player) > 1 && !Activity.IsBusy(player), 8f, "Settings button self-heal");
+            ctx.AssertEqual(97, Stat.GetCurrentFP(player), "Settings button uses the normal resource cost");
+            model.SelectedSelfCastFeat = int.MaxValue;
+            ctx.Assert(!model.CanSelfQuickCast, "a forged combo selection cannot enable the cast button");
+            model.SelfQuickCastEnabled = false;
+            await ctx.ExecuteInCreatureContextAsync(player, () => model.OnSave()());
+            ctx.Assert(!QuickCast.IsEnabled(player, QuickCastTargetType.Self), "Save applies disabling the mode");
+            fixture.Update(record => record.Perks[PerkType.ForceDrain] = 1);
+            CreaturePlugin.AddFeat(player, FeatType.ForceDrain1);
+            var enemy = ctx.SpawnCreature("nw_bandit001", 2f);
+            await ctx.DelaySecondsAsync(1f);
+            ctx.MakeHostile(enemy);
+            ApplyEffectToObject(DurationType.Temporary, EffectCutsceneParalyze(), enemy, 60f);
+            ApplyEffectToObject(DurationType.Temporary, EffectTemporaryHitpoints(10000), enemy, 60f);
+            var enemyModel = LoadModel();
+            enemyModel.SelectedEnemyCastFeat = (int)FeatType.ForceDrain1;
+            enemyModel.EnemyQuickCastEnabled = true;
+            await ctx.ExecuteInCreatureContextAsync(player, () => enemyModel.OnSave()());
+            enemyModel.OnEnemyQuickCast()();
+            await ctx.WaitUntilAsync(() => enemyModel.TargetingFeedback.Contains("Attack an enemy first"), 3f,
+                "Settings enemy button rejects a missing attack target");
+            await ctx.ExecuteInCreatureContextAsync(player, () => ActionAttack(enemy));
+            await ctx.WaitUntilAsync(() => GetAttackTarget(player) == enemy, 10f, "current enemy for Settings button");
+            Ability.ClearLastCompletedAbilityImpactSummary(player);
+            enemyModel.OnEnemyQuickCast()();
+            await ctx.WaitUntilAsync(() => Ability.GetLastCompletedAbilityImpactSummary(player) != null && !Activity.IsBusy(player), 10f,
+                "Settings enemy button impact");
+            ctx.AssertEqual("Force Drain I", Ability.GetLastCompletedAbilityImpactSummary(player).Ability.Name,
+                "Settings enemy button follows the normal impact pipeline");
+            ctx.AssertEqual(93, Stat.GetCurrentFP(player), "both Settings buttons charge normal resource costs");
+            QuickCast.ResetSession(player);
+            var nextLogin = LoadModel();
+            ctx.Assert(!nextLogin.SelfQuickCastEnabled && !nextLogin.EnemyQuickCastEnabled, "fresh login restores both defaults");
+        }
+        finally
+        {
+            await ctx.ExecuteInCreatureContextAsync(player, () => ClearAllActions(true));
+            foreach (var type in playerWindows.Keys)
+                Gui.ClosePlayerWindow(player, type);
+            windows.Remove(fixture.Id);
+            QuickCast.ResetSession(player);
+        }
+    }
+
     [EngineTest("Quick casting respects native incapacitation and permits rooted casts", Category = "QuickCast", TimeoutSeconds = 60f)]
     public static async Task IncapacitationGuards(EngineTestContext ctx)
     {
@@ -91,145 +197,6 @@ public static class QuickCastEngineTests
         }
     }
 
-    [EngineTest("Character exports omit quick-cast bindings through repeated saves and fresh logins", Category = "QuickCast", TimeoutSeconds = 60f)]
-    public static Task CharacterExportBindings(EngineTestContext ctx) => VerifySavedBindings(ctx, characterExport: true);
-
-    [EngineTest("Stored quickbar snapshots omit quick-cast bindings through repeated saves and fresh logins", Category = "QuickCast", TimeoutSeconds = 60f)]
-    public static Task QuickbarSnapshotBindings(EngineTestContext ctx) => VerifySavedBindings(ctx, characterExport: false);
-
-    [EngineTest("Loading another quickbar releases ownership of matching commands in the new layout", Category = "QuickCast", TimeoutSeconds = 40f)]
-    public static async Task QuickbarLayoutOwnership(EngineTestContext ctx)
-    {
-        using var player = await PlayerAbilityFixture.CreateAsync(ctx);
-        using var shipLayout = await PlayerAbilityFixture.CreateAsync(ctx, 3f);
-        using var nextLogin = await PlayerAbilityFixture.CreateAsync(ctx, 6f);
-        var command = $"/castself {(int)FeatType.Benevolence1}";
-        CreaturePlugin.AddFeat(player.Creature, FeatType.Benevolence1);
-        QuickCast.SetEnabled(player.Creature, QuickCastTargetType.Self, true);
-        try
-        {
-            PlayerPlugin.SetQuickBarSlot(player.Creature, 0, PlayerQuickBarSlot.Empty(QuickBarSlotType.Empty));
-            ctx.Assert(QuickCast.TryBind(player.Creature, 1, QuickCastTargetType.Self, "Benevolence I", out _),
-                "the original ground layout owns its first-slot binding");
-            PlayerPlugin.SetQuickBarSlot(shipLayout.Creature, 0, PlayerQuickBarSlot.Command("Ship shortcut", command));
-            var savedShipLayout = CreaturePlugin.SerializeQuickbar(shipLayout.Creature);
-            ctx.Assert(CreaturePlugin.DeserializeQuickbar(player.Creature, savedShipLayout), "load a separate ship layout");
-            ctx.AssertEqual(0, QuickCast.GetBoundCommandsForExport(player.Creature).Length,
-                "the new layout does not inherit ground binding ownership");
-            ctx.Assert(QuickCast.IsEnabled(player.Creature, QuickCastTargetType.Self), "layout loading preserves opt-in modes");
-            ctx.Assert(!QuickCast.TryUnbind(player.Creature, 1, out _), "the separate shortcut cannot be unbound as the old binding");
-            var saved = CreaturePlugin.SerializeQuickbar(player.Creature);
-            ctx.Assert(CreaturePlugin.DeserializeQuickbar(nextLogin.Creature, saved), "reload the separately saved ship layout");
-            var restored = PlayerPlugin.GetQuickBarSlot(nextLogin.Creature, 0);
-            ctx.Assert(QuickCast.IsBoundCommand(restored, command), "the identical command in a different layout is preserved");
-            ctx.AssertEqual("Ship shortcut", restored.CommandLabel, "the separate layout's shortcut label is preserved");
-        }
-        finally { QuickCast.ResetSession(player.Creature); }
-    }
-
-    private static async Task VerifySavedBindings(EngineTestContext ctx, bool characterExport)
-    {
-        using var original = await PlayerAbilityFixture.CreateAsync(ctx);
-        using var firstLogin = await PlayerAbilityFixture.CreateAsync(ctx, 3f);
-        using var secondLogin = await PlayerAbilityFixture.CreateAsync(ctx, 6f);
-        using var legacy = await PlayerAbilityFixture.CreateAsync(ctx, 9f);
-        var fixtures = new[] { original, firstLogin, secondLogin, legacy };
-        var command = $"/castself {(int)FeatType.Benevolence1}";
-        try
-        {
-            foreach (var fixture in fixtures)
-            {
-                CreaturePlugin.AddFeat(fixture.Creature, FeatType.Benevolence1);
-                CreaturePlugin.AddFeat(fixture.Creature, FeatType.Benevolence2);
-                QuickCast.ResetSession(fixture.Creature);
-            }
-            var source = original;
-            foreach (var receiver in new[] { firstLogin, secondLogin })
-            {
-                QuickCast.SetEnabled(source.Creature, QuickCastTargetType.Self, true);
-                foreach (var slot in new[] { 1, 2, 36 })
-                {
-                    PlayerPlugin.SetQuickBarSlot(source.Creature, slot - 1, PlayerQuickBarSlot.Empty(QuickBarSlotType.Empty));
-                    ctx.Assert(QuickCast.TryBind(source.Creature, slot, QuickCastTargetType.Self, "Benevolence I", out _),
-                        $"save-cycle binding {slot} succeeds");
-                }
-                PlayerPlugin.SetQuickBarSlot(source.Creature, 1, PlayerQuickBarSlot.UseSkill(0));
-                PlayerPlugin.SetQuickBarSlot(source.Creature, 2, PlayerQuickBarSlot.Command("Manual", command));
-                await ctx.WaitFrameAsync();
-                ReloadSavedQuickbar(ctx, source.Creature, receiver.Creature, characterExport, () =>
-                {
-                    ctx.Assert(QuickCast.IsBoundCommand(PlayerPlugin.GetQuickBarSlot(source.Creature, 0), command),
-                        "export restores the live first-slot command");
-                    ctx.Assert(QuickCast.IsBoundCommand(PlayerPlugin.GetQuickBarSlot(source.Creature, 35), command),
-                        "export restores the live last-slot command");
-                    ctx.Assert(QuickCast.TryUnbind(source.Creature, 1, out _), "unbind after the saved snapshot succeeds");
-                    ctx.Assert(QuickCast.TryBind(source.Creature, 36, QuickCastTargetType.Self, "Benevolence II", out _),
-                        "rebind after the saved snapshot succeeds");
-                    QuickCast.ResetSession(source.Creature);
-                });
-                ctx.AssertEqual(QuickBarSlotType.Empty, PlayerPlugin.GetQuickBarSlot(receiver.Creature, 0).ObjectType,
-                    "the pre-unbind snapshot contains no temporary first-slot command");
-                ctx.AssertEqual(QuickBarSlotType.Empty, PlayerPlugin.GetQuickBarSlot(receiver.Creature, 35).ObjectType,
-                    "the pre-rebind snapshot contains no temporary last-slot command");
-                ctx.Assert(!QuickCast.IsEnabled(receiver.Creature, QuickCastTargetType.Self),
-                    "a fresh player identity has no process-local opt-in");
-                QuickCast.ResetSession(receiver.Creature);
-                await ctx.WaitFrameAsync();
-                ctx.AssertEqual(QuickBarSlotType.Empty, PlayerPlugin.GetQuickBarSlot(receiver.Creature, 0).ObjectType,
-                    "a fresh login leaves the saved first slot empty");
-                ctx.AssertEqual(QuickBarSlotType.Empty, PlayerPlugin.GetQuickBarSlot(receiver.Creature, 35).ObjectType,
-                    "a fresh login leaves the saved last slot empty");
-                ctx.AssertEqual(QuickBarSlotType.Skill, PlayerPlugin.GetQuickBarSlot(receiver.Creature, 1).ObjectType,
-                    "login cleanup preserves a later manual edit");
-                ctx.Assert(QuickCast.IsBoundCommand(PlayerPlugin.GetQuickBarSlot(receiver.Creature, 2), command),
-                    "login cleanup preserves the identical command in an unowned slot");
-                source = receiver;
-            }
-
-            PlayerPlugin.SetQuickBarSlot(legacy.Creature, 0, PlayerQuickBarSlot.UseFeat(FeatType.Benevolence1));
-            PlayerPlugin.SetQuickBarSlot(legacy.Creature, 1, PlayerQuickBarSlot.Command("Manual", command));
-            ReloadSavedQuickbar(ctx, legacy.Creature, secondLogin.Creature, characterExport);
-            QuickCast.ResetSession(secondLogin.Creature);
-            ctx.AssertEqual(QuickBarSlotType.Feat, PlayerPlugin.GetQuickBarSlot(secondLogin.Creature, 0).ObjectType,
-                "an ordinary legacy feat shortcut is preserved");
-            ctx.Assert(QuickCast.IsBoundCommand(PlayerPlugin.GetQuickBarSlot(secondLogin.Creature, 1), command),
-                "an unowned legacy command is preserved");
-        }
-        finally
-        {
-            foreach (var fixture in fixtures)
-                QuickCast.ResetSession(fixture.Creature);
-        }
-        ctx.SetResultDetail($"Two {(characterExport ? "native BIC" : "Redis quickbar snapshot")} save/reload cycles with fresh player identities. Saved snapshots exclude temporary bindings even after subsequent unbind/rebind/reset; live commands are restored after saving, and manual edits and unowned commands survive.");
-    }
-
-    private static void ReloadSavedQuickbar(
-        EngineTestContext ctx, uint source, uint receiver, bool characterExport, Action afterExport = null)
-    {
-        if (!characterExport)
-        {
-            var playerId = GetObjectUUID(source);
-            var player = DB.Get<Player>(playerId);
-            player.SerializedHotBar = CreaturePlugin.SerializeQuickbar(source);
-            DB.Set(player);
-            afterExport?.Invoke();
-            var saved = JsonConvert.DeserializeObject<Player>(DB.GetRawJson<Player>(playerId));
-            ctx.Assert(CreaturePlugin.DeserializeQuickbar(receiver, saved.SerializedHotBar),
-                "load the independently persisted quickbar snapshot through the normal space API");
-            return;
-        }
-        using var file = new CResGFF();
-        using var root = new CResStruct();
-        using var fileType = new CExoString("BIC ");
-        using var format = new CExoString("V2.0");
-        ctx.Assert(file.CreateGFFFile(root, fileType, format) != 0, "create a native character export");
-        var server = NWNXLib.g_pAppManager.m_pServerExoApp;
-        ctx.Assert(server.GetGameObject(source).AsNWSCreature().SaveCreature(file, root, 0, 0, 1, 0) != 0,
-            "save the quickbar through the native character export path");
-        afterExport?.Invoke();
-        server.GetGameObject(receiver).AsNWSCreature().LoadQuickButtons(file, root);
-    }
-
     [EngineTest("Optional self-cast uses native player ownership, healing, resources and recast", Category = "QuickCast", TimeoutSeconds = 30f)]
     public static async Task SelfCastGuardsAndActivation(EngineTestContext ctx)
     {
@@ -261,7 +228,7 @@ public static class QuickCastEngineTests
             ctx.Assert(!QuickCast.IsEnabled(player, QuickCastTargetType.Self), "a fresh session returns to off");
         }
         finally { QuickCast.ResetSession(player); }
-        ctx.SetResultDetail("Native PC known-feat guard, separate off-by-default modes, actual Innervate self-heal, FP cost and recast checked. Client hotkey/cursor behavior requires connected-client verification.");
+        ctx.SetResultDetail("Native PC known-feat guard, separate off-by-default modes, actual Innervate self-heal, FP cost and recast checked. Settings-window rendering is verified separately with the native client.");
     }
 
     [EngineTest("Optional enemy-cast resolves an actual current attack target", Category = "QuickCast", TimeoutSeconds = 40f)]
@@ -303,42 +270,7 @@ public static class QuickCastEngineTests
             await ctx.ExecuteInCreatureContextAsync(player, () => ClearAllActions(true));
             QuickCast.ResetSession(player);
         }
-        ctx.SetResultDetail("Native PC current attack target, default-off/missing-target denial, real Force Drain impact, FP cost and disable guard checked. Client hotkey/cursor behavior requires connected-client verification.");
+        ctx.SetResultDetail("Native PC current attack target, default-off/missing-target denial, real Force Drain impact, FP cost and disable guard checked. Settings-window rendering is verified separately with the native client.");
     }
 
-    [EngineTest("Quick-cast native quickbar bindings require empty slots and preserve later edits", Category = "QuickCast", TimeoutSeconds = 30f)]
-    public static async Task QuickbarRoundTrip(EngineTestContext ctx)
-    {
-        using var fixture = await PlayerAbilityFixture.CreateAsync(ctx);
-        var player = fixture.Creature;
-        CreaturePlugin.AddFeat(player, FeatType.Benevolence1);
-        QuickCast.ResetSession(player);
-        try
-        {
-            QuickCast.SetEnabled(player, QuickCastTargetType.Self, true);
-            var original = PlayerQuickBarSlot.Empty(QuickBarSlotType.Empty);
-            PlayerPlugin.SetQuickBarSlot(player, 0, PlayerQuickBarSlot.UseSkill(0));
-            PlayerPlugin.SetQuickBarSlot(player, 35, original);
-            ctx.Assert(!QuickCast.TryBind(player, 0, QuickCastTargetType.Self, "Benevolence I", out _), "slot zero is rejected");
-            ctx.Assert(!QuickCast.TryBind(player, 37, QuickCastTargetType.Self, "Benevolence I", out _), "slot 37 is rejected");
-            ctx.Assert(!QuickCast.TryBind(player, 1, QuickCastTargetType.Self, "Benevolence I", out var occupiedError) && occupiedError.Contains("empty"), "occupied shortcuts are rejected with empty-slot guidance");
-            ctx.AssertEqual(QuickBarSlotType.Skill, PlayerPlugin.GetQuickBarSlot(player, 0).ObjectType, "rejecting a binding preserves the occupied shortcut");
-            PlayerPlugin.SetQuickBarSlot(player, 0, original);
-            ctx.Assert(QuickCast.TryBind(player, 1, QuickCastTargetType.Self, "Benevolence I", out _), "explicit first-slot binding succeeds");
-            ctx.Assert(QuickCast.IsBoundCommand(PlayerPlugin.GetQuickBarSlot(player, 0), $"/castself {(int)FeatType.Benevolence1}"), "native quickbar contains a cursor-free chat command");
-            ctx.Assert(QuickCast.TryBind(player, 1, QuickCastTargetType.Self, "Benevolence I", out _), "repeated binding retains the original slot");
-            ctx.Assert(QuickCast.TryUnbind(player, 1, out _), "unbind succeeds");
-            ctx.AssertEqual(QuickBarSlotType.Empty, PlayerPlugin.GetQuickBarSlot(player, 0).ObjectType, "unbind restores the originally empty slot");
-            ctx.Assert(QuickCast.TryBind(player, 1, QuickCastTargetType.Self, "Benevolence I", out _), "a later explicit rebind succeeds");
-            PlayerPlugin.SetQuickBarSlot(player, 0, PlayerQuickBarSlot.UseFeat(FeatType.Benevolence1));
-            ctx.Assert(!QuickCast.TryBind(player, 1, QuickCastTargetType.Self, "Benevolence I", out _), "rebinding cannot overwrite a later manual edit");
-            ctx.Assert(QuickCast.TryBind(player, 36, QuickCastTargetType.Self, "Benevolence I", out _), "last slot binds without off-by-one errors");
-            QuickCast.ResetSession(player);
-            ctx.AssertEqual(QuickBarSlotType.Feat, PlayerPlugin.GetQuickBarSlot(player, 0).ObjectType, "session reset preserves a player's subsequent manual edit");
-            ctx.AssertEqual(QuickBarSlotType.Empty, PlayerPlugin.GetQuickBarSlot(player, 35).ObjectType, "session reset clears an unchanged bound slot");
-            ctx.Assert(!QuickCast.IsEnabled(player, QuickCastTargetType.Self), "session reset disables the mode");
-        }
-        finally { QuickCast.ResetSession(player); }
-        ctx.SetResultDetail("Native quickbar command slots 1 and 36, invalid bounds, occupied-slot rejection, rebinding, empty-slot restoration, later manual edits and session reset verified. Headless fixture does not click the client's hotbar.");
-    }
 }

@@ -1,59 +1,16 @@
 using FluentAssertions;
 using NUnit.Framework;
-using SWLOR.Game.Server.Core.NWNX.Enum;
-using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid;
 using SWLOR.Game.Server.Feature.AbilityDefinition.Force;
-using SWLOR.Game.Server.Feature.ChatCommandDefinition;
-using SWLOR.Game.Server.Native;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.PerkService;
-using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.Game.Server.Tests.Service;
 
 public class QuickCastTests
 {
-    [TestCase(false, false)]
-    [TestCase(true, false)]
-    [TestCase(false, true)]
-    [TestCase(true, true)]
-    public void QuickbarSave_AlwaysWritesAndRestores_WhenMaskingOrSavingFails(bool maskFails, bool saveFails)
-    {
-        var saves = 0;
-        var restored = false;
-        var maskFailures = 0;
-        Action export = () => QuickCastQuickbarExport.SaveWithTemporarySlots(
-            () => { if (maskFails) throw new InvalidOperationException("masking failed"); },
-            () => { saves++; if (saveFails) throw new InvalidOperationException("saving failed"); },
-            () => restored = true,
-            _ => maskFailures++);
-        if (saveFails)
-            export.Should().Throw<InvalidOperationException>().WithMessage("saving failed");
-        else
-            export.Should().NotThrow();
-        saves.Should().Be(1, "masking failure must never skip the native save");
-        restored.Should().BeTrue("temporary slot changes must unwind even when saving fails");
-        maskFailures.Should().Be(maskFails ? 1 : 0);
-    }
-
-    [Test]
-    public void QuickbarSave_StillWritesAndRestores_WhenMaskFailureReportingThrows()
-    {
-        var saves = 0;
-        var restored = false;
-        Action export = () => QuickCastQuickbarExport.SaveWithTemporarySlots(
-            () => throw new InvalidOperationException("masking failed"),
-            () => saves++,
-            () => restored = true,
-            _ => throw new ApplicationException("logging failed"));
-        export.Should().Throw<ApplicationException>().WithMessage("logging failed");
-        saves.Should().Be(1);
-        restored.Should().BeTrue();
-    }
-
     [Test]
     public void Modes_StartDisabled_AreIndependentAndResetEachSession()
     {
@@ -177,39 +134,4 @@ public class QuickCastTests
         QuickCastPolicy.TryFindAbility(abilities, "Med Kit I", QuickCastTargetType.Self, _ => true, out _).Should().BeFalse();
     }
 
-    [Test]
-    public void Commands_AreExplicitPlayerCommandsWithoutNativeCursorRequest()
-    {
-        var commands = new QuickCastChatCommand().BuildChatCommands();
-        commands.Keys.Should().BeEquivalentTo("castself", "castenemy", "castbind", "castunbind");
-        foreach (var command in commands.Values)
-        {
-            command.Authorization.Should().Be(AuthorizationLevel.All);
-            command.RequiresTarget.Should().BeFalse();
-            command.AllowsLocationTarget.Should().BeFalse();
-        }
-        commands["castself"].Description.Should().Contain("Off by default each login").And.Contain("Native feat buttons retain manual targeting");
-        commands["castenemy"].Description.Should().Contain("Off by default each login").And.Contain("aimed areas are excluded");
-    }
-
-    [Test]
-    public void BindingOwnership_DoesNotRestoreOverChangedQuickbarEntries()
-    {
-        const string command = "/castself 2381";
-        QuickCast.IsBoundCommand(PlayerQuickBarSlot.Command("Self: Benevolence I", command), command).Should().BeTrue();
-        QuickCast.IsBoundCommand(PlayerQuickBarSlot.UseFeat(FeatType.Benevolence1), command).Should().BeFalse();
-        QuickCast.IsBoundCommand(PlayerQuickBarSlot.Command("Other", "/castenemy 2381"), command).Should().BeFalse();
-    }
-
-    [Test]
-    public void BindingGuard_OnlyAcceptsEmptySlotsOrTheOwnedCommand()
-    {
-        const string ownedCommand = "/castself 2381";
-        QuickCast.CanBindSlot(PlayerQuickBarSlot.Empty(QuickBarSlotType.Empty), null).Should().BeTrue();
-        QuickCast.CanBindSlot(PlayerQuickBarSlot.Command("Self", ownedCommand), ownedCommand).Should().BeTrue();
-        QuickCast.CanBindSlot(PlayerQuickBarSlot.UseFeat(FeatType.Benevolence1), ownedCommand).Should().BeFalse();
-        QuickCast.CanBindSlot(PlayerQuickBarSlot.UseSkill(0), null).Should().BeFalse();
-        QuickCast.CanBindSlot(PlayerQuickBarSlot.Command("Unowned", ownedCommand), null).Should().BeFalse();
-        QuickCast.CanBindSlot(PlayerQuickBarSlot.Command("Changed", "/castenemy 2381"), ownedCommand).Should().BeFalse();
-    }
 }

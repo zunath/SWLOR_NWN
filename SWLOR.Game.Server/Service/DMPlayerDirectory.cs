@@ -187,6 +187,7 @@ namespace SWLOR.Game.Server.Service
             // A word the index cannot query matches everything, so it can never narrow the candidates.
             var seed = PartialMatchSearchText.GetWords(search)
                 .Where(PartialMatchSearchText.IsQueryableWord)
+                .Distinct(StringComparer.OrdinalIgnoreCase)
                 .OrderBy(CountOfflineHits)
                 .FirstOrDefault();
             if (seed == null)

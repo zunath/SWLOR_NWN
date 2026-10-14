@@ -331,7 +331,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 return false;
 
             SendMessageToPC(Player, ColorToken.Red(message));
-            Gui.CloseWindow(Player, WindowType, Player);
+            // A DM's window belongs to their avatar even while it is shown on a possessed creature.
+            Gui.ClosePlayerWindow(DMPresence.GetDM(Player), WindowType, Player);
             return true;
         }
 

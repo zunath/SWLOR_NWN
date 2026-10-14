@@ -311,10 +311,10 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             var category = result.Category;
             CanJumpTo = true;
-            CanBringHere = category == DMObjectCategory.Creatures;
+            CanBringHere = category == DMObjectCategory.Creatures && !GetIsDMPossessed(result.Object);
             CanExamine = category is DMObjectCategory.Creatures or DMObjectCategory.Placeables
                 or DMObjectCategory.Items or DMObjectCategory.Doors;
-            // A creature a DM is possessing is someone else's body for now.
+            // A creature a DM is possessing is someone else's body for now. Bring Here also rechecks when clicked.
             CanDestroy = category is DMObjectCategory.Creatures or DMObjectCategory.Placeables
                 or DMObjectCategory.Items && !GetIsDMPossessed(result.Object);
         }

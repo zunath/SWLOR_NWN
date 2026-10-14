@@ -73,6 +73,10 @@ namespace SWLOR.Game.Server.Service
             if (!GetIsObjectValid(target))
                 return "That target no longer exists.";
 
+            // Moving a possessed creature would drag the DM controlling it along.
+            if (GetIsDMPossessed(target))
+                return "A DM is possessing that creature.";
+
             if (GetIsPC(target) && Space.IsPlayerInSpaceMode(target))
                 return $"{GetName(target)} is piloting a ship in space and cannot be summoned.";
 

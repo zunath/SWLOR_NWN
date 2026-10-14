@@ -25,11 +25,38 @@ namespace SWLOR.Game.Server.Service.SlicingService
         public static SlicingRewardCategory GetCategoryForRoll(int roll)
         {
             var normalized = Normalize(roll, 10000);
-            if (normalized < 6500) return SlicingRewardCategory.Common;
             if (normalized < 8000) return SlicingRewardCategory.Tool;
             if (normalized < 9200) return SlicingRewardCategory.NamedItem;
             if (normalized < 9800) return SlicingRewardCategory.Schematic;
             return SlicingRewardCategory.FieldNote;
+        }
+
+        public static IReadOnlyList<SlicingRewardEntry> RollSuccess(
+            SlicingSourceType source, int tier, int categoryRoll, int itemRoll, int suppliesRoll)
+        {
+            return new[]
+            {
+                RollSupplies(source, tier, suppliesRoll),
+                Roll(source, tier, categoryRoll, itemRoll)
+            };
+        }
+
+        private static SlicingRewardEntry RollSupplies(SlicingSourceType source, int tier, int suppliesRoll)
+        {
+            if (tier < 1 || tier > 5)
+                throw new ArgumentOutOfRangeException(nameof(tier));
+
+            var pool = _commonItems[tier];
+            return new SlicingRewardEntry
+            {
+                Source = source,
+                Tier = tier,
+                Resref = pool[Normalize(suppliesRoll, pool.Length)],
+                Name = "Recovered supplies",
+                Category = SlicingRewardCategory.Common,
+                IsNewDirectReward = false,
+                Quantity = 3 + Normalize(suppliesRoll / pool.Length, 3)
+            };
         }
 
         public static SlicingRewardEntry Roll(SlicingSourceType source, int tier, int categoryRoll, int itemRoll)
@@ -38,21 +65,6 @@ namespace SWLOR.Game.Server.Service.SlicingService
                 throw new ArgumentOutOfRangeException(nameof(tier));
 
             var category = GetCategoryForRoll(categoryRoll);
-            if (category == SlicingRewardCategory.Common)
-            {
-                var pool = _commonItems[tier];
-                return new SlicingRewardEntry
-                {
-                    Source = source,
-                    Tier = tier,
-                    Resref = pool[Normalize(itemRoll, pool.Length)],
-                    Name = "Recovered supplies",
-                    Category = category,
-                    IsNewDirectReward = false,
-                    Quantity = 1 + Normalize(itemRoll / Math.Max(1, pool.Length), 3)
-                };
-            }
-
             if (category == SlicingRewardCategory.NamedItem)
                 return RollNamed(source, tier, itemRoll);
 

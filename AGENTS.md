@@ -44,7 +44,7 @@ Before writing code in an unfamiliar area, find two or three existing examples o
 
 ## Build and Test
 
-- Visual changes (NPC/object placement, models, textures, equipment, VFX, or in-game UI) require actual NWN client screenshot evidence before handoff. **Run the NWN client in the background using the isolated private-desktop workflow; never bring it to the foreground, take user focus, or switch the user's desktop, and disable its sound by zeroing every volume channel in its isolated profile.** Read `SWLOR.Game.Server/Readmes/InEngineVisualVerification.md` first; verify every changed placement from a public approach with normal collision and include the images in the report. The owned background client is required for this verification and must be stopped afterward.
+- Visual changes require actual NWN client screenshot evidence before handoff. Every agent, including Codex/GPT and Claude, must first read and follow `SWLOR.Game.Server/Readmes/InEngineVisualVerification.md`, the single shared procedure for the repository's isolated, silent background launcher.
 - Always pass `-p:RunPostBuildEvent=Never` when building. Without it, building `SWLOR.Game.Server` runs a slow deploy to the local NWN install.
 - Build once, then run only the relevant tests without rebuilding:
   - `dotnet build SWLOR.Game.Server.Tests\SWLOR.Game.Server.Tests.csproj -p:RunPostBuildEvent=Never`
@@ -97,8 +97,7 @@ Before writing code in an unfamiliar area, find two or three existing examples o
 ## Abilities
 
 - Each distinct ability gets its own `*AbilityDefinition.cs` file and matching `IAbilityListDefinition` class named for it. Ranks of one ability share its file; unrelated abilities never share a file.
-- Targeting metadata is declared on the ability definition through the builder, never in separate per-ability lists.
-- Only single-target hostile casts and **aimed** areas ("in a line", "in a cone") show a target cursor. Queued weapon abilities and **self-centered** areas ("enemies within Nm") use `TARGETSELF=1` with `HostileFeat` cleared and never call `RequiresTarget()`. Every rank of an area ability needs its own `spells.2da` row and `Spell` value, never `Spell.Invalid`. Read `SWLOR.Game.Server/Readmes/AbilityTargeting.md` before adding or changing an active ability; `AreaAbilityTargetingTests` enforces it.
+- Read `SWLOR.Game.Server/Readmes/AbilityTargeting.md` before adding or changing an active ability, its targeting metadata, or its native feat/spell rows.
 - **Icons:** read `SWLOR.Game.Server/Readmes/IconStandards.md` first. Icon resrefs are meaningful abbreviations within 16 characters, with no hash or generator suffixes. After changing an icon referenced by `feat.2da` or `spells.2da`, run `powershell -ExecutionPolicy Bypass -File tools/GenerateCooldownIcons.ps1 -Force` (ImageMagick output only). After changing any gameplay icon or manifest entry, run `powershell -ExecutionPolicy Bypass -File tools/UpdateGameplayIconStandards.ps1 -AuditOnly` and fix every failure.
 - **VFX:** choose perk, ability, status-effect, trap, and creature VFX from `SWLOR.Game.Server/Readmes/VisualEffectSelection.md` and `VisualEffectReference.csv` by gameplay moment, colors, and location, not by constant name. Use the CSV `CSharpEnum` value: `BEAM` with `EffectBeam`, `FNF` for location bursts, `IMP`/`COM` for impacts, `DUR` for persistent auras, `EYES` only when the eye cue is intended.
 

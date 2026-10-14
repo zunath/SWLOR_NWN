@@ -24,6 +24,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         private bool _isTruncated;
         private bool _suppressSearch;
         private string _contentPartial;
+        private uint _dm;
 
         public int SelectedCategory
         {
@@ -173,6 +174,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         protected override void Initialize(GuiPayloadBase initialPayload)
         {
+            _dm = DMPresence.GetDM(Player);
             Geometry = DMToolbarViewModel.PlaceBelowToolbar(Player, Geometry);
             _suppressSearch = true;
             SelectedCategory = (int)DMObjectCategory.Areas;
@@ -221,8 +223,10 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             if (Player == 0 || WindowToken <= 0)
                 return;
 
+            // The window can stay on a creature the DM no longer possesses, so Current Area is the area of
+            // whatever the DM controls now.
             _results = DMObjectSearch.Search(
-                Player,
+                _dm,
                 (DMObjectCategory)SelectedCategory,
                 (DMObjectSearchScope)SelectedScope,
                 SearchText,

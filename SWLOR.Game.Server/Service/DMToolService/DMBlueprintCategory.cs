@@ -11,6 +11,7 @@ namespace SWLOR.Game.Server.Service.DMToolService
         Stores = 3,
         Waypoints = 4,
         Triggers = 5,
-        Encounters = 6
+        Encounters = 6,
+        Doors = 7
     }
 }

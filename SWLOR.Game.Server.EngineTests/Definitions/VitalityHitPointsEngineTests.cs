@@ -4,6 +4,7 @@ using NWN.Native.API;
 using SWLOR.Game.Server.EngineTests.Framework;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
+using AssociateType = SWLOR.NWN.API.NWScript.Enum.Associate.AssociateType;
 using ImmunityType = SWLOR.NWN.API.NWScript.Enum.ImmunityType;
 using InventorySlot = SWLOR.NWN.API.NWScript.Enum.InventorySlot;
 
@@ -12,6 +13,45 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
     public static class VitalityHitPointsEngineTests
     {
         private const int MissingHP = 75;
+
+        [EngineTest("Cached Vitality is discarded when native player stats are destroyed", Category = "VitalityHitPoints", TimeoutSeconds = 30f)]
+        public static Task CacheLifetime(EngineTestContext ctx)
+        {
+            var states = (System.Collections.IDictionary)typeof(Native.VitalityHitPoints)
+                .GetField("PlayerStates", BindingFlags.Static | BindingFlags.NonPublic).GetValue(null);
+            var originalCount = states.Count;
+            for (var cycle = 0; cycle < 3; cycle++)
+            {
+                using (var creature = new CNWSCreature(OBJECT_INVALID, 0, 1))
+                {
+                    creature.m_pStats.m_bIsPC = 1;
+                    creature.m_pStats.SetCONBase(27, 0);
+                    creature.GetMaxHitPoints(1);
+                    ctx.AssertEqual(originalCount + 1, states.Count, "the player has one cached state");
+                }
+                ctx.AssertEqual(originalCount, states.Count, "native stats destruction removes the cached wrappers and score");
+            }
+            return Task.CompletedTask;
+        }
+
+        [EngineTest("Possessed familiars retain the native NPC HP formula", Category = "VitalityHitPoints", TimeoutSeconds = 60f)]
+        public static async Task PossessedFamiliar(EngineTestContext ctx)
+        {
+            using var fixture = await PreparePlayer(ctx);
+            var creature = NWNXLib.g_pAppManager.m_pServerExoApp.GetGameObject(fixture.Creature).AsNWSCreature();
+            var associateType = creature.m_nAssociateType;
+            // The native familiar branch checks associate type plus client control.
+            creature.SetAssociateType((ushort)AssociateType.Familiar);
+            try
+            {
+                ctx.Assert(creature.GetIsPossessedFamiliar() != 0, "fixture uses the actual possessed-familiar branch");
+                CreaturePlugin.SetRawAbilityScore(fixture.Creature, AbilityType.Vitality, 26);
+                var evenMaximum = creature.GetMaxHitPoints(1);
+                CreaturePlugin.SetRawAbilityScore(fixture.Creature, AbilityType.Vitality, 27);
+                ctx.AssertEqual(evenMaximum, creature.GetMaxHitPoints(1), "familiar HP must not receive the player odd-score bonus");
+            }
+            finally { creature.SetAssociateType(associateType); }
+        }
 
         [EngineTest("Every player Vitality point grants 20 HP without healing damage", Category = "VitalityHitPoints", TimeoutSeconds = 60f)]
         public static async Task PermanentScores(EngineTestContext ctx)
@@ -29,6 +69,11 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 ctx.AssertEqual((score - 10) / 2, GetAbilityModifier(AbilityType.Vitality, player),
                     "the native Constitution modifier is unchanged");
             }
+            var stats = NWNXLib.g_pAppManager.m_pServerExoApp.GetGameObject(player).AsNWSCreature().m_pStats;
+            stats.SetCONBase(27, 0);
+            ctx.AssertEqual(baseline + 340, GetMaxHitPoints(player), "load/level-up setters refresh cached Vitality with HP recalculation disabled");
+            ctx.AssertEqual(baseline - MissingHP, ObjectPlugin.GetCurrentHitPoints(player), "the native no-recalculation flag preserves current HP");
+            stats.SetCONBase(10, 0);
         }
 
         [EngineTest("Vitality buffs and debuffs preserve damage and temporary HP", Category = "VitalityHitPoints", TimeoutSeconds = 60f)]

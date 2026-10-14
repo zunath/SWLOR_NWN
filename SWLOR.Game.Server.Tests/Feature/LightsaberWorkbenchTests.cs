@@ -322,8 +322,8 @@ public class LightsaberWorkbenchTests
         {
             color.PreviewResref.Length.Should().BeLessThanOrEqualTo(16);
             (File.Exists(Path.Combine(uiRoot, $"{color.PreviewResref}.tga")) ||
-             File.Exists(Path.Combine(root.FullName, "SWLOR_Haks", "sw_weapon", $"{color.PreviewResref}.dds")))
-                .Should().BeTrue($"preview texture {color.PreviewResref}.tga must exist in sw_ui");
+             File.Exists(Path.Combine(uiRoot, $"{color.PreviewResref}.dds")))
+                .Should().BeTrue($"preview texture {color.PreviewResref} (.tga or .dds) must exist in sw_ui");
         }
 
         // Every selectable top value must have a blade model and inventory icon in sw_weapon.

@@ -51,7 +51,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             set => Set(value);
         }
 
-        public int SelectedLightBrightness
+        public int SelectedLightBrightnessIndex
         {
             get => Get<int>();
             set => Set(value);
@@ -187,9 +187,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             RefreshWeaponType();
             SelectedLightColor = (int)SelectedTop.LightColor;
-            SelectedLightBrightness = (int)LightBrightness.Normal;
+            SelectedLightBrightnessIndex = 1;
             WatchOnClient(model => model.SelectedLightColor);
-            WatchOnClient(model => model.SelectedLightBrightness);
+            WatchOnClient(model => model.SelectedLightBrightnessIndex);
         }
 
         private void RefreshWeaponType()
@@ -524,8 +524,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 return;
             }
 
-            if (SelectedLightBrightness != (int)LightBrightness.Dim &&
-                SelectedLightBrightness != (int)LightBrightness.Normal)
+            if (SelectedLightBrightnessIndex != 0 &&
+                SelectedLightBrightnessIndex != 1)
             {
                 StatusText = "Select Dim (5m) or Normal (15m) lighting.";
                 StatusColor = GuiColor.Red;
@@ -533,7 +533,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             }
 
             var lightColor = (LightColor)SelectedLightColor;
-            var lightBrightness = (LightBrightness)SelectedLightBrightness;
+            var lightBrightness = SelectedLightBrightnessIndex == 0
+                ? LightBrightness.Dim
+                : LightBrightness.Normal;
             if (!ValidateSelectedInputs())
             {
                 StatusText = "A selected input is no longer available. Reselect your inputs and try again.";

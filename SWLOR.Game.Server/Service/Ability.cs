@@ -198,10 +198,12 @@ namespace SWLOR.Game.Server.Service
                 sequence)
             {
                 SequenceOwner = sequenceOwner?.SequenceOwner ?? sequenceOwner,
-                TriggeringWeaponDamage = triggeringWeaponDamage ?? sequenceOwner?.TriggeringWeaponDamage ?? Combat.GetCombatImpactWeaponDamage(
+                TriggeringWeaponDamage = triggeringWeaponDamage ?? sequenceOwner?.TriggeringWeaponDamage ??
+                    MeleeTechnique.GetCapturedWeaponDamage(activator, ability) ?? Combat.GetCombatImpactWeaponDamage(
                     activator, abilitySkillType, usesQueuedNaturalWeapon),
                 // Captured with the DMG so a delayed impact cannot pair it with a weapon swapped in later.
                 TriggeringWeaponDamageType = triggeringWeaponDamageType ?? sequenceOwner?.TriggeringWeaponDamageType ??
+                    MeleeTechnique.GetCapturedWeaponDamageType(activator, ability) ??
                     Combat.GetCombatImpactWeaponDamageType(activator, abilitySkillType, usesQueuedNaturalWeapon)
             };
             if (resolveDamageBonusesFromOwner && sequenceOwner != null)
@@ -407,6 +409,7 @@ namespace SWLOR.Game.Server.Service
                     impact.Summary);
             }
             _lastCompletedImpactSummaries[activator] = impact.Summary;
+            MeleeTechnique.CompleteActivation(activator, impact.Summary);
             return impact.Summary;
         }
 
@@ -769,6 +772,10 @@ namespace SWLOR.Game.Server.Service
             }
 
             // Perk-specific requirement checks
+            var techniqueError = MeleeTechnique.ValidateActivation(activator, ability);
+            if (!string.IsNullOrWhiteSpace(techniqueError))
+                return Deny(techniqueError);
+
             foreach (var req in ability.Requirements)
             {
                 var requirementError = req.CheckRequirements(activator, ability);
@@ -2405,6 +2412,8 @@ namespace SWLOR.Game.Server.Service
         {
             using var damageDerivedHealing = Combat.BeginDamageDerivedHealing(activator, target);
             var trackedImpact = GetTrackedAbilityImpact(activator);
+            var allowsHitProcs = trackedImpact?.Ability.MeleeTechnique == null ||
+                trackedImpact.Sequence.TryTriggerDamageRider($"TechniqueHitProcs:{target}");
 
             // Register the combat point before applying damage. A lethal hit resolves the target's
             // death (and its skill XP distribution) synchronously during EffectDamage below, so
@@ -2443,7 +2452,8 @@ namespace SWLOR.Game.Server.Service
                     damage,
                     skillType,
                     damageType,
-                    isAbilityDamage: true);
+                    isAbilityDamage: true,
+                    allowsHitProcs: allowsHitProcs);
                 StatusEffect.NotifyDamageStatusEffects(activator, target, damage, damageType);
                 if (trackedImpact == null)
                     Combat.ApplyDamageReflectionEffects(activator, target, damage, damageType);
@@ -2484,7 +2494,8 @@ namespace SWLOR.Game.Server.Service
                 additionalStatusEffects,
                 firstHostileAbilityHitDamageBonusApplied,
                 trackedImpact == null || trackedImpact.Summary.ImpactedTargetCount == 0,
-                appliedStatusCategories);
+                appliedStatusCategories,
+                allowsHitProcs);
 
             if (damage > 0 && trackedImpact?.Ability is { } impactAbility &&
                 impactAbility.DamageImpactVisualEffect != VisualEffect.None)
@@ -2536,6 +2547,27 @@ namespace SWLOR.Game.Server.Service
                    skillType == SkillType.BeastMastery;
         }
 
+        private static int ScaleImpactWeaponDamage(int damage, TrackedAbilityImpact impact)
+        {
+            return impact?.Ability.MeleeTechnique is { } technique
+                ? TechniqueSequence.ScaleWeaponDamage(damage, technique.WeaponDamagePercent) : damage;
+        }
+
+        private static bool CanApplyTechniqueWeaponProc(uint activator, uint target)
+        {
+            var impact = GetTrackedAbilityImpact(activator);
+            return impact?.Ability.MeleeTechnique == null ||
+                   impact.Sequence.TryTriggerDamageRider($"TechniqueWeaponProc:{target}");
+        }
+
+        private static void ApplyTrackedCriticalHitEffects(uint activator, uint target, int damage,
+            int criticalRating, bool singleTarget, SkillType skillType)
+        {
+            var impact = GetTrackedAbilityImpact(activator);
+            if (impact?.Ability.MeleeTechnique == null || impact.Sequence.TryTriggerDamageRider("TechniqueCriticalNotification"))
+                Combat.ApplyCriticalHitEffects(activator, target, damage, criticalRating, singleTarget, skillType);
+        }
+
         private static int ApplyHostileCombatImpact(
             uint activator,
             uint target,
@@ -2566,6 +2598,8 @@ namespace SWLOR.Game.Server.Service
             using var damageDerivedHealing = Combat.BeginDamageDerivedHealing(activator, target);
             var trackedImpact = GetTrackedAbilityImpact(activator);
             // Unscaled impacts add no weapon DMG, so they keep their authored type.
+            if (!MeleeTechnique.IsImpactValid(activator, target, trackedImpact?.Ability))
+                return 0;
             if (!useUnscaledDamage)
                 damageType = ResolveWeaponAbilityDamageType(activator, skillType, damageType, trackedImpact);
             Combat.TrackHostileAbilityActivity(activator);
@@ -2594,7 +2628,8 @@ namespace SWLOR.Game.Server.Service
                     // auto-attacks use. GetNPCAbilityScalingRank stays on the damage path only:
                     // feeding it here made a level 40 enemy resolve ability accuracy as rank 11.
                     -1,
-                    damageAbility))
+                    damageAbility,
+                    trackedImpact?.Ability.MeleeTechnique == null ? 0 : MeleeTechnique.GetConditionalAccuracy(activator, target)))
             {
                 SendCombatImpactResultMessage(activator, target, trackedImpact?.Ability, 4, hitRate);
                 if (awardsCombatPoints)
@@ -2926,7 +2961,9 @@ namespace SWLOR.Game.Server.Service
             var perkType = trackedImpact?.Ability?.EffectiveLevelPerkType ?? PerkType.Invalid;
             var idleBonuses = Combat.GetIdleSkillAbilityBonuses(activator, skillType);
             var damage = baseDamage +
-                Combat.GetCombatImpactWeaponDamage(activator, skillType, usesQueuedNaturalWeapon, triggeringWeaponDamage: trackedImpact?.TriggeringWeaponDamage) +
+                ScaleImpactWeaponDamage(
+                    Combat.GetCombatImpactWeaponDamage(activator, skillType, usesQueuedNaturalWeapon, triggeringWeaponDamage: trackedImpact?.TriggeringWeaponDamage),
+                    trackedImpact) +
                 Combat.GetAbilityDamageBonus(activator, skillType) +
                 Combat.GetAbilityDamageFlatAdjustment(activator, perkType, skillType) +
                 Combat.GetCostlyAbilityDamageBonus(activator, trackedImpact?.Ability, skillType) +
@@ -2998,7 +3035,7 @@ namespace SWLOR.Game.Server.Service
                 skillType,
                 damageType,
                 true,
-                true,
+                CanApplyTechniqueWeaponProc(activator, target),
                 true,
                 trackedImpact?.Ability,
                 out var targetStatusDamageAdjustment,
@@ -3026,7 +3063,7 @@ namespace SWLOR.Game.Server.Service
                     activator,
                     target,
                     trackedImpact?.Ability?.Name);
-                Combat.ApplyCriticalHitEffects(
+                ApplyTrackedCriticalHitEffects(
                     activator,
                     target,
                     calculatedDamage,
@@ -3137,7 +3174,9 @@ namespace SWLOR.Game.Server.Service
             var idleBonuses = Combat.GetIdleSkillAbilityBonuses(activator, skillType);
             var scalingRank = GetNPCAbilityScalingRank(activator, skillType, damageType, combatImpactDamageAbility);
             var damage = baseDamage +
-                Combat.GetCombatImpactWeaponDamage(activator, skillType, usesQueuedNaturalWeapon, triggeringWeaponDamage: trackedImpact?.TriggeringWeaponDamage) +
+                ScaleImpactWeaponDamage(
+                    Combat.GetCombatImpactWeaponDamage(activator, skillType, usesQueuedNaturalWeapon, triggeringWeaponDamage: trackedImpact?.TriggeringWeaponDamage),
+                    trackedImpact) +
                 (int)Math.Ceiling(scalingRank * 0.15f) +
                 Combat.GetAbilityDamageFlatAdjustment(activator, perkType, skillType) +
                 Combat.GetCostlyAbilityDamageBonus(activator, trackedImpact?.Ability, skillType) +
@@ -3220,7 +3259,7 @@ namespace SWLOR.Game.Server.Service
                 skillType,
                 damageType,
                 true,
-                true,
+                CanApplyTechniqueWeaponProc(activator, target),
                 true,
                 trackedImpact?.Ability,
                 out var targetStatusDamageAdjustment,
@@ -3248,7 +3287,7 @@ namespace SWLOR.Game.Server.Service
                     activator,
                     target,
                     trackedImpact?.Ability?.Name);
-                Combat.ApplyCriticalHitEffects(
+                ApplyTrackedCriticalHitEffects(
                     activator,
                     target,
                     calculatedDamage,

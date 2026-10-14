@@ -71,6 +71,9 @@ namespace SWLOR.Game.Server.Service
             _itemToSkillMapping[BaseItem.Gloves] = SkillType.Katar;
             _itemToSkillMapping[BaseItem.Katar] = SkillType.Katar;
 
+            // Power Glove
+            _itemToSkillMapping[BaseItem.PowerGlove] = SkillType.Unarmed;
+
             // Staff
             _itemToSkillMapping[BaseItem.Club] = SkillType.Staff;
             _itemToSkillMapping[BaseItem.LightFlail] = SkillType.Staff;

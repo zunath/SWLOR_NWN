@@ -1594,7 +1594,8 @@ namespace SWLOR.Game.Server.Service
             SkillType skillType = SkillType.Invalid,
             CombatDamageType damageType = CombatDamageType.Physical,
             CombatDamageDeliveryType deliveryType = CombatDamageDeliveryType.Direct,
-            bool isAbilityDamage = false)
+            bool isAbilityDamage = false,
+            bool allowsHitProcs = true)
         {
             if (damage <= 0)
                 return;
@@ -1625,7 +1626,8 @@ namespace SWLOR.Game.Server.Service
 
             ApplyDamageDealtForceErosionEffect(attacker, defender, deliveryType);
             ApplyDamageDealtHamstringEffect(attacker, defender, skillType, damageType);
-            ApplyDamageDealtMimicryTraitProcs(attacker, defender);
+            if (allowsHitProcs)
+                ApplyDamageDealtMimicryTraitProcs(attacker, defender);
             ApplyNextDamageDealtBleedEffect(attacker, defender, damageType);
             ApplyRangedHitSuppressionStack(attacker, defender, skillType, damageType);
             ApplyBleedingTargetStaminaRestore(attacker, defender, skillType, isAbilityDamage);
@@ -3306,6 +3308,9 @@ namespace SWLOR.Game.Server.Service
             ReportFirstStrikeCombatEntry(creature, now);
         }
 
+        public static bool HasRecentHostileCombatActivity(uint creature) =>
+            GetIsObjectValid(creature) && (GetIsInCombat(creature) || HasRecentCombatEntryActivity(creature, DateTime.UtcNow));
+
         private static bool HasRecentCombatEntryActivity(uint creature, DateTime now)
         {
             return (_lastCombatActivity.TryGetValue(creature, out var lastCombatActivity) &&
@@ -4691,7 +4696,7 @@ namespace SWLOR.Game.Server.Service
             return ApplyPercentDamageAdjustment(damage, adjustment);
         }
 
-        private static int ApplyPercentDamageAdjustment(int damage, int adjustment)
+        public static int ApplyPercentDamageAdjustment(int damage, int adjustment)
         {
             if (damage <= 0 || adjustment == 0)
                 return damage;
@@ -5820,7 +5825,8 @@ namespace SWLOR.Game.Server.Service
             IEnumerable<Type> additionalStatusEffects,
             bool firstHostileAbilityHitDamageBonusApplied,
             bool isFirstSuccessfulTarget,
-            StatusEffectCategory appliedStatusCategories)
+            StatusEffectCategory appliedStatusCategories,
+            bool allowsHitProcs = true)
         {
             if (!GetIsObjectValid(activator) || !GetIsObjectValid(target) || ability == null)
                 return;
@@ -5829,7 +5835,7 @@ namespace SWLOR.Game.Server.Service
 
             if (firstHostileAbilityHitDamageBonusApplied)
                 ApplyFirstHostileAbilityHitCount(activator, ability);
-            if (ability.IsHostileAbility && !ability.SuppressesSourceStatusStackRiders)
+            if (allowsHitProcs && ability.IsHostileAbility && !ability.SuppressesSourceStatusStackRiders)
             {
                 ApplySourceStatusStackEffects(activator, target);
             }
@@ -8552,7 +8558,8 @@ namespace SWLOR.Game.Server.Service
             out int hitRate,
             int hitChancePercentAdjustment = 0,
             int skillLevelOverride = -1,
-            AbilityType statOverride = AbilityType.Invalid)
+            AbilityType statOverride = AbilityType.Invalid,
+            int accuracyFlatAdjustment = 0)
         {
             hitRate = 100;
             if (!GetIsObjectValid(attacker) ||
@@ -8560,7 +8567,7 @@ namespace SWLOR.Game.Server.Service
                 skillType == SkillType.Invalid)
                 return true;
 
-            var accuracy = GetAbilityAccuracy(attacker, defender, skillType, skillLevelOverride, statOverride);
+            var accuracy = GetAbilityAccuracy(attacker, defender, skillType, skillLevelOverride, statOverride) + accuracyFlatAdjustment;
             var evasion = Stat.GetEvasion(defender, SkillType.Invalid, skillType);
             evasion = ApplySideAttackEvasionIgnore(attacker, defender, skillType, evasion);
 
@@ -10193,7 +10200,8 @@ namespace SWLOR.Game.Server.Service
 
         /// <summary>Hit rewards share the actual activation's stamina spend, retaining at least
         /// one stamina of cost. FP-funded abilities and explicit recovery actions keep their payouts.</summary>
-        public static int RestoreAbilityHitStamina(uint creature, AbilityDetail ability, int requested, bool sendFeedback = true)
+        public static int RestoreAbilityHitStamina(uint creature, AbilityDetail ability, int requested, bool sendFeedback = true,
+            bool retainMinimumCost = true)
         {
             if (requested <= 0)
                 return 0;
@@ -10205,7 +10213,9 @@ namespace SWLOR.Game.Server.Service
             if (!TryGetAbilityStaminaCostState(creature, ability, out var state))
                 return 0;
 
-            var amount = CalculateAbilityHitStaminaRestore(state.Cost, state.HitStaminaRefunded, requested);
+            var amount = retainMinimumCost
+                ? CalculateAbilityHitStaminaRestore(state.Cost, state.HitStaminaRefunded, requested)
+                : Math.Clamp(requested, 0, Math.Max(0, state.Cost - Math.Max(0, state.HitStaminaRefunded)));
             state.HitStaminaRefunded += amount;
             return amount > 0 ? Stat.RestoreStamina(creature, amount, sendFeedback: sendFeedback) : 0;
         }
@@ -10219,6 +10229,9 @@ namespace SWLOR.Game.Server.Service
         {
             return Math.Clamp(requested, 0, Math.Max(0, cost - 1 - Math.Max(0, refunded)));
         }
+
+        public static int GetPaidAbilityStaminaCost(uint creature, AbilityDetail ability) =>
+            TryGetAbilityStaminaCostState(creature, ability, out var state) ? state.Cost : 0;
 
         public static void DeferAbilityStaminaCostContext(uint creature, AbilityDetail ability)
         {

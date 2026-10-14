@@ -909,6 +909,21 @@ namespace SWLOR.Game.Server.Service.AbilityService
         [RecastGroup("Low Slot 10", "Low Slot 10", true)]
         ShipModule20 = 573,
 
+        [RecastGroup("Unarmed Opener", "Fist Opener", true)]
+        UnarmedOpener = 574,
+
+        [RecastGroup("Unarmed Response", "Fist Response", true)]
+        UnarmedResponse = 575,
+
+        [RecastGroup("Unarmed Technique", "Fist Technique", true)]
+        UnarmedTechnique = 576,
+
+        [RecastGroup("Flow Stance", "Flow Stance", true)]
+        FlowStance = 577,
+
+        [RecastGroup("Bruiser Stance", "Bruiser Stance", true)]
+        BruiserStance = 578,
+
     }
 
     public class RecastGroupAttribute : Attribute

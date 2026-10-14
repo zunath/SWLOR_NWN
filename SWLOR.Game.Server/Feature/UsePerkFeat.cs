@@ -426,12 +426,13 @@ namespace SWLOR.Game.Server.Feature
         /// </summary>
         /// <param name="activator">The activator of the ability.</param>
         /// <param name="ability">The ability details</param>
-        private static void ApplyRequirementEffects(uint activator, AbilityDetail ability)
+        private static void ApplyRequirementEffects(uint activator, uint target, AbilityDetail ability)
         {
             foreach (var req in ability.Requirements)
             {
                 req.AfterActivationAction(activator, ability);
             }
+            MeleeTechnique.BeginPaidActivation(activator, target, ability);
         }
 
         private static void PlayAbilitySound(uint activator, string soundResref)
@@ -502,6 +503,7 @@ namespace SWLOR.Game.Server.Feature
                 }
 
                 Combat.CompleteAbilityStaminaCostContext(activator, ability);
+                MeleeTechnique.AbortActivation(activator);
             }
         }
 
@@ -736,7 +738,7 @@ namespace SWLOR.Game.Server.Feature
                     return;
                 }
 
-                ApplyRequirementEffects(activator, ability);
+                ApplyRequirementEffects(activator, target, ability);
                 HandleStealthBreaking(activator, ability);
 
                 /// <summary>
@@ -870,7 +872,7 @@ namespace SWLOR.Game.Server.Feature
             // channel interrupt action but does not refund the recast delay.
             if (ability.IsChanneled)
             {
-                ApplyRequirementEffects(activator, ability);
+                ApplyRequirementEffects(activator, target, ability);
                 HandleStealthBreaking(activator, ability);
                 ExecuteAbilityImpact(
                     activator,
@@ -921,7 +923,7 @@ namespace SWLOR.Game.Server.Feature
 
             QueuedAttackAnimation.Begin(activator, AbilityAnimationBinding.QueuedClip(ability, activator));
 
-            ApplyRequirementEffects(activator, ability);
+            ApplyRequirementEffects(activator, target, ability);
 
             var abilityRecastDelay = Combat.ApplyAbilityRecastDelayModifiers(
                 activator,

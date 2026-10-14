@@ -38,6 +38,7 @@ public class SingleWeaponDamageTests
     [TestCase(BaseItem.Lightsaber, true)]
     [TestCase(BaseItem.ShortSpear, true)]
     [TestCase(BaseItem.Katar, true)]
+    [TestCase(BaseItem.PowerGlove, true)]
     [TestCase(BaseItem.Shuriken, true)]
     [TestCase(BaseItem.GreatSword, false)]
     [TestCase(BaseItem.Saberstaff, false)]

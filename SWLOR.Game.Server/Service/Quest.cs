@@ -221,6 +221,33 @@ namespace SWLOR.Game.Server.Service
             return _npcsWithKillQuests[npcGroupType];
         }
 
+        /// <summary>Credits only the reporting player's active, matching combat objectives.</summary>
+        public static void RecordCombatObjective(uint player, string key, uint source)
+        {
+            if (!GetIsPC(player) || GetIsDM(player) || string.IsNullOrWhiteSpace(key))
+                return;
+
+            var record = DB.Get<Player>(GetObjectUUID(player));
+            if (record == null)
+                return;
+
+            foreach (var (questId, progress) in record.Quests.ToArray())
+            {
+                var quest = GetQuestByIdOrDefault(questId);
+                if (progress.CurrentState <= 0 || progress.DateLastCompleted != null ||
+                    quest == null || !quest.States.TryGetValue(progress.CurrentState, out var state))
+                    continue;
+
+                var objective = state.GetObjectives().OfType<CombatObjective>()
+                    .FirstOrDefault(candidate => candidate.Key == key);
+                if (objective == null || objective.IsComplete(player, questId))
+                    continue;
+
+                objective.Advance(player, questId);
+                quest.Advance(player, source);
+            }
+        }
+
         public static void AbandonQuest(uint player, string questId)
         {
             _quests[questId].Abandon(player);

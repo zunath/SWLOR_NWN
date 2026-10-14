@@ -129,6 +129,9 @@ namespace SWLOR.Game.Server.Native
                 var abilitySkillType = UsePerkFeat.TryGetQueuedWeaponAbility(attacker.m_idSelf, weaponSkillType, out var queuedAbility, attacker.m_pcCombatRound.m_nCurrentAttack)
                     ? Combat.GetAbilitySkillType(attacker.m_idSelf, queuedAbility)
                     : weaponSkillType;
+                var techniqueAccuracy = MeleeTechnique.PrepareOrdinaryAttempt(
+                    attacker.m_idSelf, targetObject.m_idSelf, weaponSkillType, queuedAbility != null,
+                    pCombatRound.m_nCurrentAttack);
 
                 if (targetObject.m_nObjectType != (int)ObjectType.Creature)
                 {
@@ -167,6 +170,8 @@ namespace SWLOR.Game.Server.Native
                     ? AbilityType.Invalid
                     : Combat.GetQueuedAbilityAccuracyAbilityType(attacker.m_idSelf, abilitySkillType);
                 var attackerAccuracy = Stat.GetAccuracyNative(attacker, weapon, abilitySkillType, accuracyAbility);
+                if (queuedAbility == null)
+                    attackerAccuracy += techniqueAccuracy - Stat.GetStatAdjustment(attacker.m_idSelf, StatType.OrdinaryWeaponAccuracyPenalty);
                 attackerAccuracy = Combat.ApplyStatusSourceAccuracyModifiers(
                     attacker.m_idSelf,
                     defender.m_idSelf,

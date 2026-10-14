@@ -479,6 +479,16 @@ namespace SWLOR.NWN.API.NWScript.Enum
         BloodFrenzyStatusEffect = 476,
         SoulAscensionBurstStatusEffect = 477,
         ChallengeEnmityStatusEffect = 478,
+        RattledStatusEffect = 479,
+        LowKickStatusEffect = 480,
+        FlowStanceStatusEffect = 481,
+        BruiserStanceStatusEffect = 482,
+        OpeningStatusEffect = 483,
+        FinishStatusEffect = 484,
+        PaybackStatusEffect = 485,
+        SlipAwayStatusEffect = 486,
+        PressForwardStatusEffect = 487,
+        RetaliationStatusEffect = 488,
         // End custom status effect icons
 
         // Retain the legacy name for the same icon row.

@@ -474,6 +474,12 @@ namespace SWLOR.Game.Server.Service.AchievementService
 
         [Achievement("Explore Mountain Ascent", "Explore the Mountain Ascent on Viscara.", true)]
         ExploreViscaraMountainAscent = 182,
+
+        [Achievement("Perfect Form", "Completed the Martial Artist technique mastery trial.", true)]
+        PerfectForm = 183,
+
+        [Achievement("Haymaker", "Completed the Brawler technique mastery trial.", true)]
+        Haymaker = 184,
 	}
 
     public class AchievementAttribute: Attribute

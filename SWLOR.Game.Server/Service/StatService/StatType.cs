@@ -6192,6 +6192,81 @@ namespace SWLOR.Game.Server.Service.StatService
         [StatType(StatTypeCategory.BeneficialWhenPositive)]
         DamageEnmityPercentAdjustment = 1098,
 
+        /// <summary>Sequence line selector belonging to the same source as its technique payload.</summary>
+        [StatType(StatTypeCategory.NonBeneficial, StatTypeAggregation.Maximum)]
+        TechniqueLine = 1099,
+
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        TechniqueWindowExtensionSeconds = 1100,
+
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        TechniqueWeavePower = 1101,
+
+        [StatType(StatTypeCategory.BeneficialWhenPositive, StatTypeAggregation.Maximum)]
+        TechniqueWeaveEnabled = 1102,
+
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        TechniqueConditionalPower = 1103,
+
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        TechniqueConditionalAccuracy = 1104,
+
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        TechniqueRefundStamina = 1105,
+
+        [StatType(StatTypeCategory.NonBeneficial, StatTypeAggregation.Maximum)]
+        TechniqueRefundCooldownSeconds = 1106,
+
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        TechniqueDebuffTargetOrdinaryAccuracy = 1107,
+
+        /// <summary>Positive ordinary attack ACC penalty; multiple sources use the strongest.</summary>
+        [StatType(StatTypeCategory.BeneficialWhenNegative, StatTypeAggregation.Maximum)]
+        OrdinaryWeaponAccuracyPenalty = 1108,
+
+        /// <summary>Positive ordinary Physical damage penalty; multiple sources use the strongest.</summary>
+        [StatType(StatTypeCategory.BeneficialWhenNegative, StatTypeAggregation.Maximum)]
+        OrdinaryPhysicalDamagePenaltyPercent = 1109,
+
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        OrdinarySkillDamagePercentAdjustment = 1110,
+
+        [StatType(StatTypeCategory.NonBeneficial, StatTypeAggregation.Maximum)]
+        OrdinarySkillDamagePercentAdjustmentSkillType = 1111,
+
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        DirectHostileDamageNextTechniqueStaminaDiscount = 1112,
+
+        [StatType(StatTypeCategory.NonBeneficial, StatTypeAggregation.Maximum)]
+        DirectHostileDamageNextTechniqueDiscountDurationSeconds = 1113,
+
+        [StatType(StatTypeCategory.NonBeneficial, StatTypeAggregation.Maximum)]
+        DirectHostileDamageNextTechniqueDiscountCooldownSeconds = 1114,
+
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        TechniqueOpeningFinisherEvasionPercent = 1115,
+
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        TechniqueOpeningFinisherMovementSpeedPercent = 1116,
+
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        TechniqueFinishFinisherHastePercent = 1117,
+
+        [StatType(StatTypeCategory.BeneficialWhenPositive, StatTypeAggregation.Maximum)]
+        TechniqueFinisherWindowDurationSeconds = 1118,
+
+        [StatType(StatTypeCategory.NonBeneficial, StatTypeAggregation.Maximum)]
+        TechniqueFinisherWindowCooldownSeconds = 1119,
+
+        [StatType(StatTypeCategory.BeneficialWhenPositive, StatTypeAggregation.Maximum)]
+        TechniqueSetupBraceWindowSeconds = 1120,
+
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        TechniqueSetupRetaliationPower = 1121,
+
+        [StatType(StatTypeCategory.NonBeneficial, StatTypeAggregation.Maximum)]
+        TechniqueSetupRetaliationCooldownSeconds = 1122,
+
     }
 
     public class StatTypeAttribute : Attribute

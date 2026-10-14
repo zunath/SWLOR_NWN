@@ -419,6 +419,12 @@ namespace SWLOR.Game.Server.Service.AbilityService
             return this;
         }
 
+        public AbilityBuilder MeleeTechnique(MeleeTechniqueDetail detail)
+        {
+            _activeAbility.MeleeTechnique = detail ?? throw new ArgumentNullException(nameof(detail));
+            return this;
+        }
+
         /// <summary>
         /// Delays impact resolution after activation completes while keeping the activator busy.
         /// This is intended for effect choreography such as travel animations, not cast time.

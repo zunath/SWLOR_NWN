@@ -3458,5 +3458,15 @@ namespace SWLOR.Game.Server.Service.CraftService
         SongDiscStormtroopers = 6275,
         SongDiscThemeLando = 6276,
         SongDiscLandoCalrissian = 6277,
+        BasicPowerGlove = 6278,
+        FieldPowerGlove = 6279,
+        TitanPowerGlove = 6280,
+        VeteranPowerGlove = 6281,
+        DeltaPowerGlove = 6282,
+        PrimePowerGlove = 6283,
+        ProtoPowerGlove = 6284,
+        AscendantPowerGlove = 6285,
+        OphidianPowerGlove = 6286,
+        ChiroPowerGlove = 6287,
     }
 }

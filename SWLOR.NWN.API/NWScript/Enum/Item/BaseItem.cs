@@ -131,5 +131,7 @@ namespace SWLOR.NWN.API.NWScript.Enum.Item
         TwinElectroBlade = 537,
         MiscellaneousThinStackable = 538,
 
+        PowerGlove = 541,
+
     }
 }

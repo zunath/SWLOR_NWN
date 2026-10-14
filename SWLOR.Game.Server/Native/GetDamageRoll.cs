@@ -516,6 +516,8 @@ namespace SWLOR.Game.Server.Native
                 ? Combat.ConsumeAutoAttackCycleDamageBonus(attacker.m_idSelf, skillType)
                 : 0;
             var attackDamage = damageProfile.Damage +
+                               MeleeTechnique.TakeOrdinaryPower(attacker.m_idSelf, target.m_idSelf, skillType,
+                                   attacker.m_pcCombatRound.m_nCurrentAttack, isLandedAttack) +
                                Combat.GetRangedAttackDamageFlatAdjustment(attacker.m_idSelf, skillType) +
                                cycleDamageBonus +
                                guardedHitBonuses.DMGBonus +
@@ -569,6 +571,8 @@ namespace SWLOR.Game.Server.Native
                 isLandedAttack,
                 null,
                 out var targetStatusDamageAdjustment);
+
+            damage = MeleeTechnique.ApplyOrdinaryDamageModifiers(attacker.m_idSelf, damage, skillType, damageType);
 
             // Saber Ward / Aegis Eternal: re-type a share of the physical hit into a real Force
             // instance (mitigated by Force resistance, shown as Force) before physical resistance.

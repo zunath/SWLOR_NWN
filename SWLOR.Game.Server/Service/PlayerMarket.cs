@@ -160,6 +160,8 @@ namespace SWLOR.Game.Server.Service
                 return MarketCategoryType.TwinBlade;
             if (Item.KatarBaseItemTypes.Contains(baseItemType))
                 return MarketCategoryType.Katar;
+            if (Item.PowerGloveBaseItemTypes.Contains(baseItemType))
+                return MarketCategoryType.PowerGlove;
             if (Item.LightsaberBaseItemTypes.Contains(baseItemType))
                 return MarketCategoryType.Lightsaber;
             if (Item.SaberstaffBaseItemTypes.Contains(baseItemType))

@@ -29,6 +29,7 @@ public class AbilityAnimationEquipmentTests
     [TestCase(BaseItem.Dart, 11, 2, 2, 3, Grip.Throwing)]
     [TestCase(BaseItem.SmallShield, 7, null, null, 3, Grip.Shield)]
     [TestCase(BaseItem.Katar, null, 2, 2, 3, Grip.Unarmed)]
+    [TestCase(BaseItem.PowerGlove, null, 1, 1, 3, Grip.Unarmed)]
     [TestCase(BaseItem.Invalid, null, null, null, 3, Grip.Empty)]
     [TestCase(BaseItem.Longsword, null, null, null, 3, Grip.Unknown)]
     [TestCase(BaseItem.Longsword, 99, 3, 3, 3, Grip.Unknown)]

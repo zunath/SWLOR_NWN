@@ -24,7 +24,7 @@ public class EquipmentRecipeProgressionTests
     {
         var intermediate = Recipes.Values.Where(IsIntermediateEquipment).ToList();
 
-        intermediate.Count(recipe => recipe.Skill == SkillType.Smithery).Should().Be(156);
+        intermediate.Count(recipe => recipe.Skill == SkillType.Smithery).Should().Be(160);
         intermediate.Count(recipe => recipe.Skill == SkillType.Engineering).Should().Be(64);
     }
 

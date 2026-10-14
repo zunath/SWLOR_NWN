@@ -77,7 +77,8 @@ namespace SWLOR.Game.Server.Service.AbilityService
             adjustment += consumeNextAdjustment
                 ? Combat.ConsumeNextAbilityStaminaCostAdjustment(player, ability.EffectiveLevelPerkType)
                 : Combat.GetNextAbilityStaminaCostAdjustment(player, ability.EffectiveLevelPerkType);
-            return Math.Max(0, requiredSTM + adjustment);
+            requiredSTM = Math.Max(0, requiredSTM + adjustment);
+            return requiredSTM - MeleeTechnique.GetStaminaDiscount(player, ability, requiredSTM, consumeNextAdjustment);
         }
     }
 }

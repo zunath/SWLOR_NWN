@@ -72,6 +72,7 @@ namespace SWLOR.Game.Server.Service
             BaseItem.Gloves,
             BaseItem.QuarterStaff,
             BaseItem.Katar,
+            BaseItem.PowerGlove,
             BaseItem.CreatureBludgeonWeapon,
             BaseItem.CreaturePierceWeapon,
             BaseItem.CreatureSlashPierceWeapon,
@@ -649,6 +650,7 @@ namespace SWLOR.Game.Server.Service
             BaseItem.Saberstaff,
             BaseItem.TwinElectroBlade,
             BaseItem.Katar,
+            BaseItem.PowerGlove,
             BaseItem.QuarterStaff,
             BaseItem.LightMace,
             BaseItem.Pistol,
@@ -805,6 +807,12 @@ namespace SWLOR.Game.Server.Service
             BaseItem.Katar
         };
 
+        /// <summary>Equipped hand-to-hand weapons. Armor-slot gloves remain armor.</summary>
+        public static List<BaseItem> PowerGloveBaseItemTypes { get; } = new()
+        {
+            BaseItem.PowerGlove
+        };
+
         /// <summary>
         /// Retrieves the list of Staff base item types.
         /// </summary>
@@ -870,6 +878,7 @@ namespace SWLOR.Game.Server.Service
             BaseItem.Electroblade,
             BaseItem.ShortSpear,
             BaseItem.Katar,
+            BaseItem.PowerGlove,
         };
 
         /// <summary>

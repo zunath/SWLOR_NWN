@@ -496,6 +496,17 @@ namespace SWLOR.Game.Server.Service.SkillService
             false,
             false)]
         Arkanian = 50,
+
+        [Skill(SkillCategoryType.Combat,
+            "Unarmed",
+            50,
+            true,
+            "Ability to fight with equipped Power Gloves and hand-to-hand striking weapons.",
+            true,
+            false,
+            false,
+            CombatPointCategoryType.Weapon)]
+        Unarmed = 51,
     }
 
     public class SkillAttribute : Attribute

@@ -50,6 +50,19 @@ namespace SWLOR.Game.Server.Service.PerkService
             return HasItemInSlot(creature, InventorySlot.RightHand, Item.KatarBaseItemTypes);
         }
 
+        /// <summary>Power Gloves in the main hand with an empty hand or a second Power Glove.</summary>
+        public static bool HasUnarmedGrip(uint creature)
+        {
+            var mainHand = GetItemInSlot(InventorySlot.RightHand, creature);
+            var offHand = GetItemInSlot(InventorySlot.LeftHand, creature);
+            return HasUnarmedGrip(
+                GetIsObjectValid(mainHand) ? GetBaseItemType(mainHand) : null,
+                GetIsObjectValid(offHand) ? GetBaseItemType(offHand) : null);
+        }
+
+        public static bool HasUnarmedGrip(BaseItem? mainHand, BaseItem? offHand) =>
+            mainHand == BaseItem.PowerGlove && (offHand == null || offHand == BaseItem.PowerGlove);
+
         public static bool HasDualWieldKatar(uint creature)
         {
             return HasItemInSlot(creature, InventorySlot.RightHand, Item.KatarBaseItemTypes) &&

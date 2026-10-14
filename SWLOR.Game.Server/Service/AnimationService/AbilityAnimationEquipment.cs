@@ -34,7 +34,7 @@ public static class AbilityAnimationEquipment
     public static AnimationWeaponGrip ResolveGrip(BaseItem type, int? wield, int? size, int? weaponType, int creatureSize)
     {
         if (type == BaseItem.Invalid) return AnimationWeaponGrip.Empty;
-        if (type == BaseItem.Katar) return AnimationWeaponGrip.Unarmed;
+        if (type is BaseItem.Katar or BaseItem.PowerGlove) return AnimationWeaponGrip.Unarmed;
         if (wield == 7) return AnimationWeaponGrip.Shield;
         if (size is not (>= 1 and <= 5) || creatureSize is < 1 or > 5 || size > creatureSize + 1)
             return AnimationWeaponGrip.Unknown;

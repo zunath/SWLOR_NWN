@@ -27,9 +27,10 @@ public class PlayerNameRecognitionTests
         disabledExamine.Should().Contain("ShowExamineWindow(GetLastGuiEventPlayer(), GetLastGuiEventObject())");
         disabledExamine.Should().NotContain("Gui.TogglePlayerWindow");
         examine.Should().Contain("if (!GetIsDM(dm) && !GetIsDMPossessed(dm))");
-        examine.Should().Contain("Gui.TogglePlayerWindow");
+        // DMPresence keeps the window under the DM avatar while a possessing DM examines as the creature.
+        examine.Should().Contain("DMPresence.ToggleWindow(dm, GuiWindowType.DMPlayerExamine, payload);");
         examine.IndexOf("return;", StringComparison.Ordinal).Should()
-            .BeLessThan(examine.IndexOf("Gui.TogglePlayerWindow", StringComparison.Ordinal));
+            .BeLessThan(examine.IndexOf("DMPresence.ToggleWindow", StringComparison.Ordinal));
         initialize.Should().Contain("_target = initialPayload.Target;");
         initialize.Should().Contain("LoadTargetDetails();");
         details.Should().Contain("Descriptor = GetIsPC(_target) && !GetIsDM(_target) ? Disguise.GetDisplayDescriptor(_target) : \"N/A\";");

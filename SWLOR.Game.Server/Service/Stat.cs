@@ -2376,11 +2376,20 @@ namespace SWLOR.Game.Server.Service
         /// <returns>An NPCStats object.</returns>
         public static NPCStats GetNPCStats(uint npc)
         {
-            var npcStats = new NPCStats();
-
             var skin = GetItemInSlot(InventorySlot.CreatureArmor, npc);
-            if (!GetIsObjectValid(skin))
-                return npcStats;
+            return GetIsObjectValid(skin)
+                ? GetNPCSkinStats(skin)
+                : new NPCStats();
+        }
+
+        /// <summary>
+        /// Reads the NPC stats a stat skin grants. Works on any skin item, equipped or not.
+        /// </summary>
+        /// <param name="skin">The stat skin item.</param>
+        /// <returns>An NPCStats object.</returns>
+        public static NPCStats GetNPCSkinStats(uint skin)
+        {
+            var npcStats = new NPCStats();
 
             for (var ip = GetFirstItemProperty(skin); GetIsItemPropertyValid(ip); ip = GetNextItemProperty(skin))
             {
@@ -2609,7 +2618,23 @@ namespace SWLOR.Game.Server.Service
         public static void LoadNPCStats(uint self)
         {
             var skin = GetItemInSlot(InventorySlot.CreatureArmor, self);
+            var maxHP = GetNPCSkinMaxHP(skin);
 
+            if (maxHP > 0)
+            {
+                SetNPCMaxHitPoints(self, maxHP, true);
+            }
+
+            SetLocalInt(self, "FP", GetMaxFP(self));
+            SetLocalInt(self, "STAMINA", GetMaxStamina(self));
+        }
+
+        /// <summary>
+        /// Returns the maximum HP a stat skin grants, or 0 when it grants none.
+        /// </summary>
+        /// <param name="skin">The stat skin item.</param>
+        public static int GetNPCSkinMaxHP(uint skin)
+        {
             var maxHP = 0;
             for (var ip = GetFirstItemProperty(skin); GetIsItemPropertyValid(ip); ip = GetNextItemProperty(skin))
             {
@@ -2619,16 +2644,7 @@ namespace SWLOR.Game.Server.Service
                 }
             }
 
-            if (maxHP > MaximumNPCHitPoints)
-                maxHP = MaximumNPCHitPoints;
-
-            if (maxHP > 0)
-            {
-                SetNPCMaxHitPoints(self, maxHP, true);
-            }
-
-            SetLocalInt(self, "FP", GetMaxFP(self));
-            SetLocalInt(self, "STAMINA", GetMaxStamina(self));
+            return Math.Min(maxHP, MaximumNPCHitPoints);
         }
 
         /// <summary>

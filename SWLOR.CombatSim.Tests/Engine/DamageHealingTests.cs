@@ -71,6 +71,19 @@ namespace SWLOR.CombatSim.Tests.Engine
         }
 
         [Test]
+        public void ForceDrain_HealsOnlyWhatTheCasterIsMissing_WithoutCountingOverheal()
+        {
+            var simulation = Spawn(100f);
+            var caster = simulation.Get("Caster");
+            caster.Hp = CasterMaxHp - 10;
+
+            CastOnce(simulation, caster);
+
+            caster.Stats.HealingReceived.Should().BeApproximately(10, 1e-6);
+            caster.Stats.Overhealing.Should().Be(0, "the game trims a drain heal to the missing HP before applying it");
+        }
+
+        [Test]
         public void ForceDrain_HealsAtMostFifteenPercentOfMaxHpPerCast()
         {
             var simulation = Spawn(1000f);

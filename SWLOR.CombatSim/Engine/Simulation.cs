@@ -919,7 +919,9 @@ namespace SWLOR.CombatSim.Engine
             // GameMath.PercentOf rounds both the share and the per-hit cap up.
             double requested = HealingMath.AddReceivedPercent((int)Math.Ceiling(dealt * percent / 100.0), caster.HealingReceivedPercent);
             requested = Math.Min(Math.Min(requested, Math.Ceiling(dealt * DamageHealing.MaximumDamagePercentPerHit / 100.0)), healingLeft);
-            var amount = (int)requested;
+            // Only the HP the caster is missing is healed and charged to the cast's cap, as the game's
+            // CalculateEffectiveHealingAmount runs before the activated-healing budget.
+            var amount = (int)Math.Min(requested, Math.Max(0, caster.Spec.MaxHp - caster.Hp));
             if (amount <= 0)
                 return 0;
 
@@ -974,7 +976,8 @@ namespace SWLOR.CombatSim.Engine
             if (maximum > 0)
                 percent = Math.Min(maximum, percent);
 
-            var stamina = caster.Spec.MaxStm * percent / 100.0;
+            // GameMath.PercentOf rounds the restore up, to at least 1.
+            double stamina = Math.Max(1, (int)Math.Ceiling(caster.Spec.MaxStm * (percent / 100f)));
             // Wave 1 scales the restore by the share of the cost actually lost, at least 1.
             if (_rules.ScaleHitPointSpendRestoreToHitPointsLost && hitPointsLost < fullCost)
                 stamina = Math.Max(1, Math.Ceiling(stamina * hitPointsLost / fullCost));

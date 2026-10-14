@@ -44,6 +44,8 @@ namespace SWLOR.CombatSim.Scenario
         public AutoAttackSpec AutoAttack { get; set; }
         public List<AbilityUseSpec> Abilities { get; set; } = new();
 
+        public const float MaximumPercentBonus = 1000f;
+
         /// <summary>Numbers outside their documented range; empty when the combatant is usable.</summary>
         public List<string> GetProblems()
         {
@@ -55,10 +57,11 @@ namespace SWLOR.CombatSim.Scenario
                     problems.Add($"{name} must be a number of at least 0");
             }
 
-            void AtLeastMinusHundred(string name, float value)
+            // Percent bonuses stay small enough for every adjusted heal to remain a sensible whole number.
+            void Percent(string name, float value, float minimum)
             {
-                if (!float.IsFinite(value) || value < -100f)
-                    problems.Add($"{name} must be a number of at least -100");
+                if (!float.IsFinite(value) || value < minimum || value > MaximumPercentBonus)
+                    problems.Add($"{name} must be from {minimum} to {MaximumPercentBonus}");
             }
 
             AtLeastZero(nameof(HpRegenPer30Seconds), HpRegenPer30Seconds);
@@ -66,9 +69,11 @@ namespace SWLOR.CombatSim.Scenario
             AtLeastZero(nameof(StmRegenPer30Seconds), StmRegenPer30Seconds);
             AtLeastZero(nameof(MaxFp), MaxFp);
             AtLeastZero(nameof(MaxStm), MaxStm);
-            AtLeastZero(nameof(CombatReadinessPercent), CombatReadinessPercent);
-            AtLeastMinusHundred(nameof(OutgoingHealingPercent), OutgoingHealingPercent);
-            AtLeastMinusHundred(nameof(HealingReceivedPercent), HealingReceivedPercent);
+            Percent(nameof(CombatReadinessPercent), CombatReadinessPercent, 0f);
+            Percent(nameof(OutgoingHealingPercent), OutgoingHealingPercent, -100f);
+            Percent(nameof(HealingReceivedPercent), HealingReceivedPercent, -100f);
+            if (ForceAffinity < -10 || ForceAffinity > 10)
+                problems.Add($"{nameof(ForceAffinity)} must be from -10 to 10");
             if (!float.IsFinite(DamageReductionPercent) || DamageReductionPercent < 0f || DamageReductionPercent > 100f)
                 problems.Add($"{nameof(DamageReductionPercent)} must be from 0 to 100");
 

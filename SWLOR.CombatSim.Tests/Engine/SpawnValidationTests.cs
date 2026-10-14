@@ -312,6 +312,10 @@ namespace SWLOR.CombatSim.Tests.Engine
         [TestCase("outgoingBelowMinusHundred")]
         [TestCase("receivedBelowMinusHundred")]
         [TestCase("damageReduction")]
+        [TestCase("affinityHigh")]
+        [TestCase("affinityLow")]
+        [TestCase("outgoingHuge")]
+        [TestCase("readinessHuge")]
         public void Spawn_RejectsACombatantValueOutsideItsRange(string field)
         {
             var player = TestCombatants.Dummy("Player");
@@ -326,6 +330,10 @@ namespace SWLOR.CombatSim.Tests.Engine
                 case "outgoingBelowMinusHundred": player.OutgoingHealingPercent = -150f; break;
                 case "receivedBelowMinusHundred": player.HealingReceivedPercent = -101f; break;
                 case "damageReduction": player.DamageReductionPercent = 150f; break;
+                case "affinityHigh": player.ForceAffinity = 11; break;
+                case "affinityLow": player.ForceAffinity = -11; break;
+                case "outgoingHuge": player.OutgoingHealingPercent = 1e20f; break;
+                case "readinessHuge": player.CombatReadinessPercent = 5000f; break;
             }
 
             var act = () => new Simulation(Scenario(player), RuleSets.Current(), _catalog, 1).Spawn();

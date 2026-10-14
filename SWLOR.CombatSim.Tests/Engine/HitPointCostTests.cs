@@ -107,7 +107,19 @@ namespace SWLOR.CombatSim.Tests.Engine
             blade.Stats.StmRefunded.Should().Be(expectedStamina);
         }
 
-        private Simulation Spawn(RuleSet rules, int might, bool withBloodlust = false, int maxHp = BladeMaxHp)
+        [Test]
+        public void Bloodlust_RoundsItsRestoreUp()
+        {
+            var simulation = Spawn(RuleSets.Current(), 20, withBloodlust: true, maxStm: 50);
+            var blade = simulation.Get("Blade");
+            blade.Stm = 25;
+
+            CastOnce(simulation, blade);
+
+            blade.Stats.StmRefunded.Should().Be(18, "35% of 50 is 17.5, which rounds up");
+        }
+
+        private Simulation Spawn(RuleSet rules, int might, bool withBloodlust = false, int maxHp = BladeMaxHp, int maxStm = BladeMaxStm)
         {
             var burst = TestCombatants.Use("SoulBurst1", AbilityTarget.Enemy, minIntervalSeconds: 600);
             burst.Damage = new DamageSpec { Min = 1f, Max = 1f, HitChance = 1f };
@@ -117,7 +129,7 @@ namespace SWLOR.CombatSim.Tests.Engine
                 MaxHp = maxHp,
                 Might = might,
                 MaxFp = TestCombatants.EffectivelyUnlimited,
-                MaxStm = BladeMaxStm,
+                MaxStm = maxStm,
                 Perks = withBloodlust ? new List<string> { nameof(PerkType.Bloodlust) } : new List<string>(),
                 Abilities = new List<AbilityUseSpec> { burst }
             };

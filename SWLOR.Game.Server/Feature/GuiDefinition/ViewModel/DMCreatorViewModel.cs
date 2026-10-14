@@ -199,7 +199,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 DMBlueprintCategory.Creatures => "Level · Faction",
                 DMBlueprintCategory.Items => "Type",
                 DMBlueprintCategory.Placeables => "Use",
-                DMBlueprintCategory.Doors => "State",
                 _ => "Category"
             };
 

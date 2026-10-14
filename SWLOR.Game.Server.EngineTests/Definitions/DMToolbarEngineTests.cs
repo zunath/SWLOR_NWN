@@ -407,28 +407,6 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 await ctx.WaitUntilAsync(() => HasSpawnInside(createdEncounter, player.Creature, existingCreatures), 20f,
                     "the encounter to spawn a creature inside its square when the player enters it");
 
-                // CreateObject cannot make doors, so the Creator builds them from the template at the chosen spot and facing.
-                var doorPalette = DMBlueprintCatalog.GetPalette(DMBlueprintCategory.Doors, DMBlueprintSource.Custom);
-                ctx.Log($"Custom doors: {doorPalette.Blueprints.Count} blueprints in {doorPalette.CategoryPaths.Count} categories.");
-                ctx.Assert(doorPalette.Blueprints.Count > 0, "the custom door palette lists blueprints");
-                var door = doorPalette.Blueprints[0];
-                ctx.Assert(!string.IsNullOrWhiteSpace(DMObjectDetails.DescribeBlueprint(door).Body), "door details describe the template");
-                var doorLocation = ctx.GetArenaLocation(0f, 6f, 90f);
-                var createdDoor = DMBlueprintCatalog.CreateAtLocation(player.Creature, door, doorLocation);
-                ctx.Track(createdDoor);
-                ctx.AssertEqual(ObjectType.Door, GetObjectType(createdDoor), $"a door is created from '{door.Resref}'");
-                var doorPosition = GetPosition(createdDoor);
-                var wanted = GetPositionFromLocation(doorLocation);
-                ctx.Log($"Door {door.Resref} at ({doorPosition.X:0.##}, {doorPosition.Y:0.##}, {doorPosition.Z:0.##}) facing {GetFacing(createdDoor):0.#}");
-                ctx.Assert(Math.Abs(doorPosition.X - wanted.X) < 0.01f && Math.Abs(doorPosition.Y - wanted.Y) < 0.01f,
-                    "the door stands at the chosen spot");
-                ctx.Assert(Math.Abs(GetFacing(createdDoor) - 90f) < 1f, "the door faces the chosen direction");
-
-                // A blueprint's local variables come with it, like the locked door's conversation and waypoint.
-                var lockedDoor = doorPalette.Blueprints.Single(blueprint => blueprint.Resref == "locked_door");
-                var createdLockedDoor = DMBlueprintCatalog.CreateAtLocation(player.Creature, lockedDoor, ctx.GetArenaLocation(0f, -6f));
-                ctx.Track(createdLockedDoor);
-                ctx.AssertEqual("LockedDoorDialog", GetLocalString(createdLockedDoor, "CONVERSATION"), "the door keeps its blueprint's local variables");
             }
             finally
             {

@@ -72,7 +72,6 @@ namespace SWLOR.Game.Server.Service
                 DMBlueprintCategory.Stores => DescribeStoreTemplate(template),
                 DMBlueprintCategory.Triggers => DescribeTriggerTemplate(template),
                 DMBlueprintCategory.Encounters => DescribeEncounterTemplate(template),
-                DMBlueprintCategory.Doors => DescribeDoorTemplate(template),
                 _ => DescribeWaypointTemplate(template)
             };
 
@@ -171,13 +170,6 @@ namespace SWLOR.Game.Server.Service
                 return (string.Empty, leafCategory);
 
             var icon = GetBlueprintIcon(blueprint, template, ListPortraitSize);
-            if (blueprint.Category == DMBlueprintCategory.Doors)
-            {
-                return (icon, JoinFlags(
-                    (DMTemplateFields.ReadInt(template, "Locked") != 0, "Locked"),
-                    (DMTemplateFields.ReadInt(template, "Plot") != 0, "Plot")));
-            }
-
             if (blueprint.Category == DMBlueprintCategory.Placeables)
             {
                 return (icon, JoinFlags(
@@ -304,24 +296,6 @@ namespace SWLOR.Game.Server.Service
             }
 
             AddDescription(lines, GetDescription(item, false, true));
-            return lines;
-        }
-
-        private static List<string> DescribeDoorTemplate(Json template)
-        {
-            var lines = new List<string>();
-            AddFlags(lines,
-                (DMTemplateFields.ReadInt(template, "Locked") != 0, "Locked"),
-                (DMTemplateFields.ReadInt(template, "Plot") != 0, "Plot"));
-            if (DMTemplateFields.ReadInt(template, "KeyRequired") != 0)
-                lines.Add($"Key required: {DMTemplateFields.ReadString(template, "KeyName")}");
-            lines.Add($"HP {DMTemplateFields.ReadInt(template, "HP")}");
-
-            var conversation = DMTemplateFields.ReadString(template, "Conversation");
-            if (!string.IsNullOrWhiteSpace(conversation))
-                lines.Add($"Conversation: {conversation}");
-
-            AddDescription(lines, DMTemplateFields.ReadLocString(template, "Description"));
             return lines;
         }
 
@@ -686,7 +660,7 @@ namespace SWLOR.Game.Server.Service
             if (blueprint.Category == DMBlueprintCategory.Items)
                 return Cache.GetItemIconByResref(blueprint.Resref);
 
-            if (blueprint.Category is not (DMBlueprintCategory.Creatures or DMBlueprintCategory.Placeables or DMBlueprintCategory.Doors))
+            if (blueprint.Category is not (DMBlueprintCategory.Creatures or DMBlueprintCategory.Placeables))
                 return string.Empty;
 
             var portraitId = DMTemplateFields.ReadInt(template, "PortraitId");

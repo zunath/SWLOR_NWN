@@ -104,7 +104,6 @@ public class DMPaletteReaderTests
     [TestCase("waypointpalcus", DMBlueprintCategory.Waypoints)]
     [TestCase("triggerpalcus", DMBlueprintCategory.Triggers)]
     [TestCase("encounterpalcus", DMBlueprintCategory.Encounters)]
-    [TestCase("doorpalcus", DMBlueprintCategory.Doors)]
     public void Read_ModulePaletteListsEveryBlueprintUnderAListedCategory(string paletteName, DMBlueprintCategory category)
     {
         var json = File.ReadAllText(Path.Combine(FindRepositoryRoot().FullName, "Module", "itp", paletteName + ".itp.json"));

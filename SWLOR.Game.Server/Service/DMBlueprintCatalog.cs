@@ -79,7 +79,6 @@ namespace SWLOR.Game.Server.Service
             var created = blueprint.Category switch
             {
                 DMBlueprintCategory.Triggers or DMBlueprintCategory.Encounters => CreateSquareObject(blueprint, location),
-                DMBlueprintCategory.Doors => CreateDoor(blueprint, location),
                 _ => CreateObject(GetObjectType(blueprint.Category), blueprint.Resref, location)
             };
             if (!GetIsObjectValid(created))
@@ -173,24 +172,6 @@ namespace SWLOR.Game.Server.Service
             return JsonToObject(template, location, OBJECT_INVALID, true);
         }
 
-        // CreateObject cannot create doors either, so they are created from the template, placed and turned the
-        // way a door placed in the toolset is.
-        private static uint CreateDoor(DMBlueprint blueprint, Location location)
-        {
-            var template = ReadTemplate(blueprint);
-            if (JsonGetType(template) != JsonType.Object)
-                return OBJECT_INVALID;
-
-            var position = GetPositionFromLocation(location);
-            var bearing = GetFacingFromLocation(location) * MathF.PI / 180f;
-            template = JsonObjectSet(template, "X", JsonParse(Float(position.X)));
-            template = JsonObjectSet(template, "Y", JsonParse(Float(position.Y)));
-            template = JsonObjectSet(template, "Z", JsonParse(Float(position.Z)));
-            template = JsonObjectSet(template, "Bearing", JsonParse(Float(bearing)));
-            // Without the object state, the template's local variables and transition target are dropped.
-            return JsonToObject(template, location, OBJECT_INVALID, true);
-        }
-
         // A GFF float field in the engine's JSON form.
         private static string Float(float value) =>
             $"{{\"type\":\"float\",\"value\":{value.ToString("0.0###", CultureInfo.InvariantCulture)}}}";
@@ -263,7 +244,6 @@ namespace SWLOR.Game.Server.Service
                 DMBlueprintCategory.Waypoints => "waypoint",
                 DMBlueprintCategory.Triggers => "trigger",
                 DMBlueprintCategory.Encounters => "encounter",
-                DMBlueprintCategory.Doors => "door",
                 _ => throw new ArgumentOutOfRangeException(nameof(category), category, null)
             };
 
@@ -282,7 +262,6 @@ namespace SWLOR.Game.Server.Service
                 DMBlueprintCategory.Waypoints => ResRefType.Waypoint,
                 DMBlueprintCategory.Triggers => ResRefType.Trigger,
                 DMBlueprintCategory.Encounters => ResRefType.Encounter,
-                DMBlueprintCategory.Doors => ResRefType.Door,
                 _ => throw new ArgumentOutOfRangeException(nameof(category), category, null)
             };
         }
@@ -298,7 +277,6 @@ namespace SWLOR.Game.Server.Service
                 DMBlueprintCategory.Waypoints => ResType.UTW,
                 DMBlueprintCategory.Triggers => ResType.UTT,
                 DMBlueprintCategory.Encounters => ResType.UTE,
-                DMBlueprintCategory.Doors => ResType.UTD,
                 _ => throw new ArgumentOutOfRangeException(nameof(category), category, null)
             };
         }
@@ -317,7 +295,6 @@ namespace SWLOR.Game.Server.Service
                 DMBlueprintCategory.Waypoints => ObjectType.Waypoint,
                 DMBlueprintCategory.Triggers => ObjectType.Trigger,
                 DMBlueprintCategory.Encounters => ObjectType.Encounter,
-                DMBlueprintCategory.Doors => ObjectType.Door,
                 _ => throw new ArgumentOutOfRangeException(nameof(category), category, null)
             };
         }

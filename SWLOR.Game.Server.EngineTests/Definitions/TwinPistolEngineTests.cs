@@ -33,14 +33,18 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
     {
         private static uint _observed = OBJECT_INVALID;
         private static readonly List<(uint Weapon, CombatDamageType Type, int Damage)> Hits = new();
+        private static readonly List<long> HitTimes = new();
 
         [NWNEventHandler(ScriptName.OnSWLORDamage)]
         public static void ObserveDamage()
         {
             if (OBJECT_SELF == _observed)
+            {
                 Hits.Add((StringToObject(EventsPlugin.GetEventData("WEAPON")),
                     (CombatDamageType)int.Parse(EventsPlugin.GetEventData("DAMAGE_TYPE")),
                     int.Parse(EventsPlugin.GetEventData("DAMAGE"))));
+                HitTimes.Add(Environment.TickCount64);
+            }
         }
 
         [EngineTest("Twin Pistol ordinary pair keeps each gun's damage accuracy and type", Category = "TwinPistol", TimeoutSeconds = 45f)]
@@ -96,12 +100,117 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
         }
 
         [EngineTest("Twin Pistol finite ammunition caps ordinary and hasted logical shot budgets", Category = "TwinPistol", TimeoutSeconds = 90f)]
-        public static async Task FiniteAmmunition(EngineTestContext ctx)
+        public static Task FiniteAmmunition(EngineTestContext ctx) => VerifyFiniteAmmunition(ctx, false);
+
+        [EngineTest("Twin Pistol legacy pistol conversion preserves finite ordinary and hasted ammunition budgets", Category = "TwinPistol", TimeoutSeconds = 90f)]
+        public static Task LegacyFiniteAmmunition(EngineTestContext ctx) => VerifyFiniteAmmunition(ctx, true);
+
+        [EngineTest("Twin Pistol finite launched native shot keeps original damage and ammo after stop or swaps", Category = "TwinPistol", TimeoutSeconds = 75f)]
+        public static async Task LaunchedFiniteShot(EngineTestContext ctx)
         {
-            foreach (var canonical in new[] { false, true })
-            foreach (var (quantity, hasted) in new[] { (0, false), (1, false), (2, false), (2, true) })
+            foreach (var interruption in new[] { "stop", "ammo swap", "weapon swap" })
             {
-                var (actor, target, main, companion) = await CreatePair(ctx);
+                using var player = await PlayerAbilityFixture.CreateAsync(ctx);
+                var actor = player.Creature;
+                player.Update(record => record.Skills[SkillType.TwinPistol].Rank = 50);
+                var ammunition = await ctx.EquipItemAsync(actor, "blaster_bullets", InventorySlot.Bullets);
+                await ctx.ExecuteInCreatureContextAsync(actor, () =>
+                {
+                    SetItemCursedFlag(ammunition, false);
+                    SetItemStackSize(ammunition, 3);
+                });
+                var pair = await CreatePair(ctx, finiteAmmunition: true, actorOverride: actor);
+                var replacement = OBJECT_INVALID;
+                var ammunitionBag = OBJECT_INVALID;
+                if (interruption == "ammo swap")
+                {
+                    await ctx.ExecuteInCreatureContextAsync(actor, () => ammunitionBag = CreateItemOnObject("bag_b", actor));
+                    await ctx.WaitFrameAsync();
+                    ctx.Assert(GetIsObjectValid(ammunitionBag), "An owned container keeps the original ammo stack separate from the replacement");
+                }
+                var hpBefore = GetCurrentHitPoints(pair.Target);
+                var started = Environment.TickCount64;
+                try
+                {
+                    Observe(actor);
+                    Combat.SetAutoAttackHitResolutionOverride(true);
+                    AssignCommand(actor, () => ActionAttack(pair.Target));
+                    await ctx.WaitUntilAsync(() => Hits.Any(x => x.Weapon == pair.Main), 7f, "the original native main shot to launch");
+                    var originalDamage = Hits.First(x => x.Weapon == pair.Main).Damage;
+                    await ctx.ExecuteInCreatureContextAsync(actor, () =>
+                    {
+                        ClearAllActions();
+                        ReplaceWeaponProperty(pair.Main, ItemPropertyType.DMG, ItemPropertyCustom(ItemPropertyType.DMG, -1, 200));
+                        if (interruption == "ammo swap")
+                        {
+                            CreaturePlugin.RunUnequip(actor, ammunition);
+                            ctx.Assert(ItemPlugin.MoveTo(ammunition, ammunitionBag, true), "The original stack remains distinct in owned storage");
+                        }
+                        if (interruption == "weapon swap") CreaturePlugin.RunUnequip(actor, pair.Main);
+                    });
+                    if (interruption == "ammo swap")
+                    {
+                        replacement = await ctx.EquipItemAsync(actor, "blaster_bullets", InventorySlot.Bullets);
+                        ctx.Assert(replacement != ammunition, "The replacement is a different original engine item, not a merged stack");
+                        await ctx.ExecuteInCreatureContextAsync(actor, () =>
+                        {
+                            SetItemCursedFlag(replacement, false);
+                            SetItemStackSize(replacement, 9);
+                        });
+                    }
+                    if (interruption == "weapon swap") await ctx.EquipItemAsync(actor, "b_longsword", InventorySlot.RightHand);
+                    await ctx.WaitUntilAsync(() => GetIsObjectValid(ammunition) && GetItemStackSize(ammunition) == 2,
+                        7f, "the launched native projectile to debit its original finite stack");
+                    await ctx.WaitUntilAsync(() => GetCurrentHitPoints(pair.Target) < hpBefore, 7f, "the launched native projectile's actual impact");
+                    await ctx.DelaySecondsAsync(.7f);
+                    ctx.AssertEqual(1, Hits.Count, "Stop and swaps cancel the pending companion and all new ordinary rolls");
+                    ctx.AssertEqual(originalDamage, hpBefore - GetCurrentHitPoints(pair.Target), "The launched projectile keeps its original captured damage");
+                    ctx.AssertEqual(actor, GetItemPossessor(ammunition), "The original finite ammunition stays owned");
+                    ctx.AssertEqual(2, GetItemStackSize(ammunition), "Exactly the launched main bullet is consumed");
+                    if (GetIsObjectValid(replacement)) ctx.AssertEqual(9, GetItemStackSize(replacement), "Delayed native consumption never touches replacement ammunition");
+                    ctx.Log($"Finite launch {interruption}: elapsedMs={Environment.TickCount64 - started}, originalDamage={originalDamage}, " +
+                        $"actualDamage={hpBefore - GetCurrentHitPoints(pair.Target)}, originalAmmo={GetItemStackSize(ammunition)}, " +
+                        $"replacementAmmo={(GetIsObjectValid(replacement) ? GetItemStackSize(replacement) : 0)}");
+                }
+                catch
+                {
+                    var native = NWNXLib.g_pAppManager.m_pServerExoApp.GetGameObject(actor).AsNWSCreature();
+                    ctx.Log($"Finite launch failure: mode={interruption}, elapsedMs={Environment.TickCount64 - started}, pc={GetIsPC(actor)}, " +
+                        $"nativeBase={(int)GetBaseItemType(pair.Main)}, shots={Hits.Count}, magicalBullets={native.m_bMagicalBulletsEquipped}, " +
+                        $"originalAmmo={ammunition:X}/{(GetIsObjectValid(ammunition) ? GetItemStackSize(ammunition) : 0)}, " +
+                        $"originalOwner={GetItemPossessor(ammunition):X}, replacementAmmo={replacement:X}/{(GetIsObjectValid(replacement) ? GetItemStackSize(replacement) : 0)}, " +
+                        $"equippedAmmo={GetItemInSlot(InventorySlot.Bullets, actor):X}, actualDamage={hpBefore - GetCurrentHitPoints(pair.Target)}");
+                    throw;
+                }
+                finally
+                {
+                    await ctx.ExecuteInCreatureContextAsync(actor, () => ClearAllActions());
+                    Stop(actor);
+                    player.Dispose();
+                    DestroyObject(actor);
+                    DestroyObject(pair.Target);
+                    await ctx.WaitFrameAsync();
+                }
+            }
+        }
+
+        private static async Task VerifyFiniteAmmunition(EngineTestContext ctx, bool legacyInput)
+        {
+            foreach (var (quantity, hasted) in new[] { (0, false), (1, false), (2, false), (2, true), (4, true), (5, true) })
+            {
+                using var player = await PlayerAbilityFixture.CreateAsync(ctx);
+                var actor = player.Creature;
+                player.Update(record => record.Skills[SkillType.TwinPistol].Rank = 50);
+                var ammunition = await ctx.EquipItemAsync(actor, "blaster_bullets", InventorySlot.Bullets);
+                await ctx.ExecuteInCreatureContextAsync(actor, () =>
+                {
+                    SetItemCursedFlag(ammunition, false);
+                    SetItemStackSize(ammunition, Math.Max(1, quantity));
+                });
+                var pair = await CreatePair(ctx, finiteAmmunition: true, actorOverride: actor);
+                var target = pair.Target;
+                var main = pair.Main;
+                var companion = pair.Companion;
                 try
                 {
                     await ctx.ExecuteInCreatureContextAsync(actor, () =>
@@ -112,41 +221,119 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                         CreaturePlugin.RunUnequip(actor, main);
                     });
                     await ctx.WaitFrameAsync();
-                    var ammunition = quantity > 0 ? await ctx.EquipItemAsync(actor, "blaster_bullets", InventorySlot.Bullets) : OBJECT_INVALID;
                     await ctx.ExecuteInCreatureContextAsync(actor, () =>
                     {
-                        if (GetIsObjectValid(ammunition)) SetItemStackSize(ammunition, quantity);
-                        CreaturePlugin.RunEquip(actor, main, InventorySlot.RightHand);
-                        // Equip normalization intentionally canonicalizes player pistol resrefs.
-                        // Set the raw native fixture only after that boundary to test both paths.
-                        ItemPlugin.SetBaseItemType(main, canonical ? BaseItem.Sling : BaseItem.Pistol);
-                        ctx.AssertEqual(canonical ? BaseItem.Sling : BaseItem.Pistol, GetBaseItemType(main),
-                            "The finite fixture exercises its requested native launcher ID");
+                        if (GetIsObjectValid(ammunition))
+                        {
+                            // This blueprint also supplies generated ammunition. This fixture
+                            // explicitly owns a normal removable finite stack instead.
+                            SetItemCursedFlag(ammunition, false);
+                            SetItemStackSize(ammunition, Math.Max(1, quantity));
+                            ctx.Assert(!GetItemCursedFlag(ammunition), "Finite ammunition is a real removable item");
+                        }
+                        if (legacyInput)
+                        {
+                            ItemPlugin.SetBaseItemType(main, BaseItem.Pistol);
+                            ctx.AssertEqual(BaseItem.Pistol, GetBaseItemType(main), "The compatibility fixture starts with real legacy base-item data");
+                            ctx.Assert(PistolBaseItemCompatibility.Normalize(main), "The actual compatibility converter repairs the legacy input");
+                            ctx.AssertEqual(actor, GetItemPossessor(main), "Compatibility conversion preserves the original pistol and owner");
+                            if (GetIsObjectValid(ammunition))
+                            {
+                                ctx.AssertEqual(actor, GetItemPossessor(ammunition), "Conversion preserves the original finite ammunition owner");
+                                ctx.AssertEqual(Math.Max(1, quantity), GetItemStackSize(ammunition), "Conversion preserves the finite ammunition quantity");
+                            }
+                        }
+                        ctx.Assert(CreaturePlugin.RunEquip(actor, main, InventorySlot.RightHand), "The finite main equips beside its real ammunition");
+                        ctx.AssertEqual(BaseItem.Sling, GetBaseItemType(main), "Ordinary paired attacks use the canonical native launcher after compatibility conversion");
                         var native = NWNXLib.g_pAppManager.m_pServerExoApp.GetGameObject(actor).AsNWSCreature();
+                        ctx.Assert(GetIsPC(actor) && native.m_bPlayerCharacter != 0, "Native player ammunition consumption is exercised");
                         ctx.AssertEqual(0, native.m_bMagicalBulletsEquipped, "Finite fixture has no generated unlimited bullets");
+                        if (quantity == 0)
+                        {
+                            CreaturePlugin.RunUnequip(actor, ammunition);
+                            DestroyObject(ammunition);
+                        }
                         if (hasted)
                         {
-                            ReplaceWeaponProperty(main, ItemPropertyType.Delay, ItemPropertyCustom(ItemPropertyType.Delay, -1, 23));
-                            ReplaceWeaponProperty(companion, ItemPropertyType.Delay, ItemPropertyCustom(ItemPropertyType.Delay, -1, 23));
                             TemporaryStatModifier.Add(actor, StatType.AttackDelayReductionPercent, 35, 30f, "TWIN_AMMO_HASTE");
+                            var haste = Stat.GetStatAdjustment(actor, StatType.AttackDelayReductionPercent);
+                            ctx.AssertEqual(35, haste, "The real PC hasted control has the intended global speed adjustment");
+                            var delay = Enumerable.Range(1, 600).First(cost =>
+                            {
+                                var effective = Combat.CalculateEffectiveAttackDelay(Combat.CalculateAttackDelayMilliseconds(cost * 10, cost * 10,
+                                    haste, Combat.CalculateOffhandAttackDelayReduction(actor)));
+                                return Combat.CalculateAttackSwingDelay(effective) == Combat.BaseAttackDelayMilliseconds &&
+                                       Combat.CalculateAttacksPerSwing(effective, 0, out _) == (quantity <= 2 ? 2 : 1);
+                            });
+                            ReplaceWeaponProperty(main, ItemPropertyType.Delay, ItemPropertyCustom(ItemPropertyType.Delay, -1, delay));
+                            ReplaceWeaponProperty(companion, ItemPropertyType.Delay, ItemPropertyCustom(ItemPropertyType.Delay, -1, delay));
                             var effectiveDelay = Combat.CalculateEffectiveAttackDelay(Combat.CalculateAttackDelay(actor));
-                            ctx.AssertEqual(4, Combat.CalculateAttacksPerSwing(effectiveDelay, 0, out _) * 2,
-                                "The hasted fixture requests four logical shots before its two-bullet ammunition limit");
+                            ctx.Log($"Finite haste setup: pc={GetIsPC(actor)}, quantity={quantity}, delayCost={delay}, haste={haste}, " +
+                                $"offhandReduction={Combat.CalculateOffhandAttackDelayReduction(actor)}, effectiveMs={effectiveDelay}, " +
+                                $"swingMs={Combat.CalculateAttackSwingDelay(effectiveDelay)}");
+                            ctx.AssertEqual(quantity <= 2 ? 4 : 2, Combat.CalculateAttacksPerSwing(effectiveDelay, 0, out _) * 2,
+                                "The hasted batch has its requested logical-shot budget before finite ammunition limits");
+                            ctx.AssertEqual(Combat.BaseAttackDelayMilliseconds, Combat.CalculateAttackSwingDelay(effectiveDelay),
+                                "Hasted finite tests use the production native swing floor");
                         }
                     });
+                    if (quantity == 0)
+                        await ctx.WaitUntilAsync(() => !GetIsObjectValid(ammunition), 5f, "the zero-ammunition fixture to remove its temporary equip prerequisite");
                     Observe(actor);
                     Combat.SetAutoAttackHitResolutionOverride(true);
+                    var started = Environment.TickCount64;
+                    var hpBefore = GetCurrentHitPoints(target);
                     AssignCommand(actor, () => ActionAttack(target));
                     if (quantity > 0)
-                        await ctx.WaitUntilAsync(() => Hits.Count >= quantity, 7f, $"{quantity} affordable logical shots");
+                    {
+                        try
+                        {
+                            await ctx.WaitUntilAsync(() => Hits.Count >= quantity, 7f,
+                                $"{quantity} affordable logical shots (nativeBase={(int)GetBaseItemType(main)}, hasted={hasted})");
+                            await ctx.WaitUntilAsync(() =>
+                            {
+                                ctx.Assert(Hits.Count <= quantity, "Delayed native debits cannot allow ammunition to be reused by later cycles");
+                                return !GetIsObjectValid(ammunition) || GetItemStackSize(ammunition) == 0;
+                            }, 7f, "the original player ammunition stack's native delayed debit to drain");
+                        }
+                        catch
+                        {
+                            var native = NWNXLib.g_pAppManager.m_pServerExoApp.GetGameObject(actor).AsNWSCreature();
+                            ctx.Log($"Finite ammunition failure: nativeBase={(int)GetBaseItemType(main)}, start={quantity}, " +
+                                $"hasted={hasted}, pc={GetIsPC(actor)}, elapsedMs={Environment.TickCount64 - started}, landed={Hits.Count}, attack={native.m_pcCombatRound.m_nCurrentAttack}, " +
+                                $"paired={TwinPistolEquipment.IsActivePair(actor)}, bullets={GetItemInSlot(InventorySlot.Bullets, actor):X}, " +
+                                $"arrows={GetItemInSlot(InventorySlot.Arrows, actor):X}, " +
+                                $"remaining={(GetIsObjectValid(ammunition) ? GetItemStackSize(ammunition) : 0)}");
+                            throw;
+                        }
+                    }
                     await ctx.DelaySecondsAsync(1f);
-                    ctx.AssertEqual(quantity, Hits.Count, $"{quantity} bullets permit exactly {quantity} shots (hasted={hasted}, canonical={canonical})");
-                    ctx.AssertEqual(quantity > 1 ? 1 : 0, Hits.Count(x => x.Weapon == companion), "Companion consumes its own available bullet");
+                    ctx.AssertEqual(quantity, Hits.Count, $"{quantity} bullets permit exactly {quantity} shots (hasted={hasted}, legacyInput={legacyInput})");
+                    ctx.AssertEqual(quantity / 2, Hits.Count(x => x.Weapon == companion), "Each launched companion consumes its own available bullet");
                     ctx.Assert(!GetIsObjectValid(ammunition) || GetItemStackSize(ammunition) == 0,
-                        $"No spent finite ammunition is duplicated or refunded (start={quantity}, hasted={hasted}, canonical={canonical}, " +
+                        $"No spent finite ammunition is duplicated or refunded (start={quantity}, hasted={hasted}, legacyInput={legacyInput}, " +
                         $"remaining={(GetIsObjectValid(ammunition) ? GetItemStackSize(ammunition) : 0)})");
+                    if (quantity >= 4)
+                    {
+                        var mainTimes = Hits.Select((hit, index) => (hit, time: HitTimes[index])).Where(x => x.hit.Weapon == main).Select(x => x.time).ToArray();
+                        ctx.Assert(mainTimes.Last() - mainTimes.First() >= Combat.BaseAttackDelayMilliseconds - 50,
+                            "Four and five bullets cover at least two real native-floor cycles");
+                    }
+                    ctx.Assert(quantity == 0 ? GetCurrentHitPoints(target) == hpBefore : GetCurrentHitPoints(target) < hpBefore,
+                        "Real projectile impacts require an affordable finite shot");
+                    ctx.Log($"Finite PC ammo: start={quantity}, hasted={hasted}, legacyInput={legacyInput}, nativeBase={(int)GetBaseItemType(main)}, " +
+                        $"elapsedMs={Environment.TickCount64 - started}, logicalShots={Hits.Count}, companionShots={Hits.Count(x => x.Weapon == companion)}, " +
+                        $"actualDamage={hpBefore - GetCurrentHitPoints(target)}, remaining={(GetIsObjectValid(ammunition) ? GetItemStackSize(ammunition) : 0)}");
                 }
-                finally { Stop(actor); }
+                finally
+                {
+                    await ctx.ExecuteInCreatureContextAsync(actor, () => ClearAllActions());
+                    Stop(actor);
+                    player.Dispose();
+                    DestroyObject(actor);
+                    DestroyObject(target);
+                    await ctx.WaitFrameAsync();
+                }
             }
         }
 
@@ -498,13 +685,16 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                             destination = travel;
                             found = true;
                         }
-                        ctx.Assert(found, "The arena provides a reachable lane and a legal hostile target position");
+                        ctx.Assert(found, $"The arena provides a reachable {movement} lane and a legal hostile target position");
                         ctx.SetNPCResources(actor, 100, 100);
                         TemporaryStatModifier.Add(actor, StatType.PairedRangedMomentumMaximum, 3, 60f);
                         TemporaryStatModifier.Add(actor, StatType.PairedRangedMomentumDurationSeconds, 12, 60f);
                     });
-                    await ctx.ExecuteInCreatureContextAsync(target, () => JumpToLocation(Location(ctx.Arena, enemyPosition, 0)));
+                    // The controlled target is paralyzed; queued JumpToLocation cannot relocate it.
+                    ObjectPlugin.SetPosition(target, enemyPosition);
                     await ctx.WaitFrameAsync();
+                    ctx.Assert(NumericsVector3.Distance(enemyPosition, GetPosition(target)) < .05f,
+                        "The stationary target is at the authored relative position before validating movement");
                     var feat = movement switch
                     {
                         TwinPistolMovementType.Retreat => FeatType.BlasterSlide1,
@@ -528,7 +718,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                             movement == TwinPistolMovementType.FreeDestination ? OBJECT_INVALID : target,
                             feat, destination);
                         ctx.Assert(activated, $"{feat} prepayment validation: {Ability.GetLastActivationDenialReason()}; " +
-                            $"actor={GetPosition(actor)}, target={GetPosition(target)}, requested={enemyPosition}, " +
+                            $"actor={GetPosition(actor)}, target={GetPosition(target)}, requested={GetPositionFromLocation(destination)}, " +
                             $"hostile={GetIsReactionTypeHostile(target, actor)}, objectLOS={LineOfSightObject(actor, target)}, " +
                             $"vectorLOS={LineOfSightVector(GetPosition(actor), GetPosition(target))}");
                         ctx.Assert(TwinPistolAbility.HasActiveActivation(actor), "The cast captures its weapon and trait state");
@@ -553,17 +743,45 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                     TwinPistolAbility.Cancel(actor);
                     Combat.SetAbilityHitResolutionOverride(null);
                     Stop(actor);
+                    // Finished controlled actors must not occupy the next relative-movement lane.
+                    DestroyObject(actor);
+                    DestroyObject(target);
+                    await ctx.WaitFrameAsync();
                 }
             }
         }
 
-        private static async Task<(uint Actor, uint Target, uint Main, uint Companion)> CreatePair(EngineTestContext ctx, string targetBlueprint = "nw_rat001")
+        private static async Task<(uint Actor, uint Target, uint Main, uint Companion)> CreatePair(EngineTestContext ctx, string targetBlueprint = "nw_rat001", bool finiteAmmunition = false, uint actorOverride = OBJECT_INVALID)
         {
             ctx.SeedRandom(20261013);
-            var actor = ctx.SpawnCreature("nw_bandit001", -.5f);
+            var actor = GetIsObjectValid(actorOverride) ? actorOverride : ctx.SpawnCreature("nw_bandit001", -.5f);
             var target = ctx.SpawnCreature(targetBlueprint, 1f);
             await ctx.WaitFrameAsync();
-            var main = await ctx.EquipItemAsync(actor, "b_pistol", InventorySlot.RightHand);
+            var main = OBJECT_INVALID;
+            if (finiteAmmunition)
+            {
+                await ctx.ExecuteInCreatureContextAsync(actor, () =>
+                {
+                    main = CreateItemOnObject("b_pistol", actor);
+                    ctx.Assert(GetIsObjectValid(main), "The finite fixture owns its main pistol before first equip");
+                    var unlimited = new List<ItemProperty>();
+                    for (var ip = GetFirstItemProperty(main); GetIsItemPropertyValid(ip); ip = GetNextItemProperty(main))
+                        if (GetItemPropertyType(ip) == ItemPropertyType.UnlimitedAmmunition) unlimited.Add(ip);
+                    foreach (var ip in unlimited) RemoveItemProperty(main, ip);
+                });
+                await ctx.WaitFrameAsync();
+                ctx.ApplyStandardOnHitProperty(main);
+                await ctx.ExecuteInCreatureContextAsync(actor, () =>
+                {
+                    var existing = GetItemInSlot(InventorySlot.RightHand, actor);
+                    if (GetIsObjectValid(existing)) CreaturePlugin.RunUnequip(actor, existing);
+                    ClearAllActions();
+                    ActionEquipItem(main, InventorySlot.RightHand);
+                });
+                await ctx.WaitUntilAsync(() => GetItemInSlot(InventorySlot.RightHand, actor) == main, 5f,
+                    "the finite pistol to equip without ever generating unlimited ammunition");
+            }
+            else main = await ctx.EquipItemAsync(actor, "b_pistol", InventorySlot.RightHand);
             var companion = await ctx.EquipItemAsync(actor, "tp_comp_proto", InventorySlot.LeftHand);
             await ctx.ExecuteInCreatureContextAsync(actor, () =>
             {
@@ -596,6 +814,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
         {
             _observed = actor;
             Hits.Clear();
+            HitTimes.Clear();
         }
 
         private static void Stop(uint actor)
@@ -605,6 +824,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             Combat.SetAutoAttackHitResolutionOverride(null);
             _observed = OBJECT_INVALID;
             Hits.Clear();
+            HitTimes.Clear();
         }
     }
 }

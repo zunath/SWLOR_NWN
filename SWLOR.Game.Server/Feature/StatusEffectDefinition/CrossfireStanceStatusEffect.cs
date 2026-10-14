@@ -9,6 +9,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
     public sealed class CrossfireStanceStatusEffect : StatusEffectBase
     {
         public override string Name => "Crossfire Stance";
+        public override float Frequency => 1f;
         public override EffectIconType Icon => EffectIconType.CrossfireStanceStatusEffect;
         public override StatusEffectCategory Categories => StatusEffectCategory.Buff;
         public override bool PersistsOnLogout => false;

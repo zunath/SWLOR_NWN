@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using NWN.Native.API;
 using SWLOR.Game.Server.Core;
+using SWLOR.Game.Server.Feature;
 using SWLOR.Game.Server.Service;
 using NWNX.NET;
 using SWLOR.Game.Server.Service.LogService;
@@ -119,6 +120,16 @@ namespace SWLOR.Game.Server.Native
                     Combat.ClearAttackSwingDebt(pCreature.m_idSelf);
 
                     pCreature.ChangeAttackTarget(pNode, OBJECT_INVALID);
+                    return ACTION_FAILED;
+                }
+
+                var equipmentError = TwinPistolEquipmentValidation.GetUnusableEquipmentError(pCreature.m_idSelf);
+                if (!string.IsNullOrEmpty(equipmentError))
+                {
+                    PairedRangedAttackCycle.Cancel(pCreature.m_idSelf);
+                    Combat.ClearAttackSwingDebt(pCreature.m_idSelf);
+                    pCreature.ChangeAttackTarget(pNode, OBJECT_INVALID);
+                    SendMessageToPC(pCreature.m_idSelf, ColorToken.Red(equipmentError));
                     return ACTION_FAILED;
                 }
 

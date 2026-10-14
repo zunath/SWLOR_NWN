@@ -8,6 +8,7 @@ using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.EngineTests.Framework;
 using SWLOR.Game.Server.Service.StatService;
 using SWLOR.NWN.API.NWNX;
+using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.Game.Server.EngineTests.Definitions.AbilityBehaviors
@@ -213,8 +214,9 @@ namespace SWLOR.Game.Server.EngineTests.Definitions.AbilityBehaviors
                     target = ctx.SpawnCreature(TargetResref, -0.5f + behaviorCase.TargetDistanceMeters, 0f);
                     SetAILevel(target, AILevel.VeryLow);
                     ctx.MakeHostile(target);
-                    if (playerFixture != null)
+                    if (playerFixture != null || behaviorCase.TargetIsStationary)
                         ApplyEffectToObject(DurationType.Temporary, EffectCutsceneParalyze(), target, 120f);
+                    if (behaviorCase.TargetIsStationary) SetCommandable(false, target);
                     ApplyEffectToObject(
                         DurationType.Temporary,
                         EffectTemporaryHitpoints(TargetTemporaryHP),
@@ -305,6 +307,9 @@ namespace SWLOR.Game.Server.EngineTests.Definitions.AbilityBehaviors
                         playerFixture.Update(record => record.Perks[setupPerk] = setupLevel);
                 }
 
+                if (!string.IsNullOrWhiteSpace(behaviorCase.EquipOffHandResref))
+                    await ctx.EquipItemAsync(caster, behaviorCase.EquipOffHandResref, InventorySlot.LeftHand);
+
                 if (!string.IsNullOrWhiteSpace(behaviorCase.EquipMainHandResref))
                 {
                     await ctx.EquipItemAsync(caster, behaviorCase.EquipMainHandResref, InventorySlot.RightHand);
@@ -381,6 +386,24 @@ namespace SWLOR.Game.Server.EngineTests.Definitions.AbilityBehaviors
                         "the target must start outside the asserted post-impact distance or the movement assertion is vacuous");
                 }
 
+                if (behaviorCase.MinimumActivatorDistanceToTargetAfterImpact.HasValue)
+                    ctx.Assert(target != caster && GetDistanceBetween(caster, target) < behaviorCase.MinimumActivatorDistanceToTargetAfterImpact.Value,
+                        "the target must start inside the asserted retreat distance");
+
+                var casterPositionBefore = GetPosition(caster);
+                var activationLocation = GetLocation(target);
+                if (behaviorCase.GroundTargetOffsetMeters is { } offset)
+                {
+                    var direction = GetPosition(target) - casterPositionBefore;
+                    direction.Z = 0;
+                    ctx.Assert(direction.LengthSquared() > .001f, "a ground cursor direction requires a distinct target position");
+                    direction = System.Numerics.Vector3.Normalize(direction);
+                    var position = casterPositionBefore + direction * offset.X +
+                        new System.Numerics.Vector3(-direction.Y, direction.X, 0) * offset.Y;
+                    position.Z = GetGroundHeight(Location(GetArea(caster), position, 0));
+                    activationLocation = Location(GetArea(caster), position, 0);
+                }
+
                 foreach (var effectType in behaviorCase.ExpectedActivatorStatusEffects)
                 {
                     ctx.Assert(
@@ -432,7 +455,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions.AbilityBehaviors
                         activationAttempted = true;
                         try
                         {
-                            used = UsePerkFeat.TryUseAbility(caster, target, behaviorCase.Feat, GetLocation(target));
+                            used = UsePerkFeat.TryUseAbility(caster, target, behaviorCase.Feat, activationLocation);
 
                             // Captured HERE, not after the next yield: the denial reason is a
                             // process-wide slot that any other creature's CanUseAbility call
@@ -587,6 +610,18 @@ namespace SWLOR.Game.Server.EngineTests.Definitions.AbilityBehaviors
                         targetTemporaryHPBefore);
                 }
 
+                if (behaviorCase.MinimumActivatorTravelDistanceAfterImpact is { } minimumTravel)
+                    await ctx.WaitUntilAsync(() => System.Numerics.Vector3.Distance(casterPositionBefore, GetPosition(caster)) >= minimumTravel,
+                        EffectWaitSeconds, $"the activator to travel at least {minimumTravel:0.##}m from its activation position");
+
+                if (behaviorCase.MinimumActivatorDistanceToTargetAfterImpact is { } minimumSeparation)
+                    await ctx.WaitUntilAsync(() => GetDistanceBetween(caster, target) >= minimumSeparation,
+                        EffectWaitSeconds, $"the activator to disengage at least {minimumSeparation:0.##}m from the stationary target");
+
+                if (behaviorCase.MaximumActivatorDistanceToGroundTargetAfterImpact is { } maximumGroundDistance)
+                    await ctx.WaitUntilAsync(() => System.Numerics.Vector3.Distance(GetPosition(caster), GetPositionFromLocation(activationLocation)) <= maximumGroundDistance,
+                        EffectWaitSeconds, "the activator to arrive at the selected ground destination");
+
                 if (behaviorCase.ExpectsRecast)
                 {
                     await ctx.WaitUntilAsync(
@@ -597,7 +632,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions.AbilityBehaviors
 
                 if (behaviorCase.VerifiesImmediateRecastRejection)
                 {
-                    await AssertImmediateRecastRejectionAsync(ctx, behaviorCase, ability, caster, target);
+                    await AssertImmediateRecastRejectionAsync(ctx, behaviorCase, ability, caster, target, activationLocation);
                 }
             }
             finally
@@ -615,7 +650,8 @@ namespace SWLOR.Game.Server.EngineTests.Definitions.AbilityBehaviors
             AbilityBehaviorCase behaviorCase,
             AbilityDetail ability,
             uint caster,
-            uint target)
+            uint target,
+            Location activationLocation)
         {
             // Restore both pools so the second attempt can only fail because the shared
             // recast is still active, not because the first activation consumed a resource.
@@ -630,7 +666,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions.AbilityBehaviors
                 attempted = true;
                 try
                 {
-                    used = UsePerkFeat.TryUseAbility(caster, target, behaviorCase.Feat, GetLocation(target));
+                    used = UsePerkFeat.TryUseAbility(caster, target, behaviorCase.Feat, activationLocation);
                     if (!used)
                         denial = Ability.GetLastActivationDenialReason();
                 }
@@ -846,6 +882,8 @@ namespace SWLOR.Game.Server.EngineTests.Definitions.AbilityBehaviors
         {
             if (!GetIsObjectValid(creature))
                 return;
+
+            SetCommandable(true, creature);
 
             // Both calls run inside one assigned context: SetIsDestroyable executes
             // immediately there (it operates on OBJECT_SELF, so it cannot be called

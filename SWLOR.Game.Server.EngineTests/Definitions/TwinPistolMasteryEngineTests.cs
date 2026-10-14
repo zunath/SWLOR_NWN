@@ -23,8 +23,11 @@ public static class TwinPistolMasteryEngineTests
     [EngineTest("Twin Pistol actual mastery trials save and reload independent proof and unlocks", Category = "TwinPistolMastery", TimeoutSeconds = 150f)]
     public static async Task ActualTrialsPersist(EngineTestContext ctx)
     {
-        var range = ctx.CreateInstancedArea("pw_sc_canyonrng");
-        await ctx.WaitFrameAsync();
+        // Created area copies receive a generated native resref. The trial deliberately
+        // requires the authored public range, so use that loaded area without changing its gate.
+        var range = Area.GetAreaByResref("pw_sc_canyonrng");
+        ctx.Assert(GetIsObjectValid(range), "The authored Canyon Range is loaded");
+        ctx.AssertEqual("pw_sc_canyonrng", GetResRef(range), "The real trial area retains its required native identity");
         var entry = OBJECT_INVALID;
         for (var waypoint = GetFirstObjectInArea(range, ObjectType.Waypoint); GetIsObjectValid(waypoint);
              waypoint = GetNextObjectInArea(range, ObjectType.Waypoint))
@@ -37,6 +40,7 @@ public static class TwinPistolMasteryEngineTests
         {
             using var player = await PlayerAbilityFixture.CreateAsync(trial);
             actor = player.Creature;
+            ctx.AssertEqual(range, GetArea(actor), "The trial player starts in the authored Canyon Range");
             player.Update(record =>
             {
                 record.Skills[SkillType.TwinPistol].Rank = 50;
@@ -68,7 +72,7 @@ public static class TwinPistolMasteryEngineTests
                 }
                 ctx.Assert(found, "The public Canyon Range entrance provides a reachable firing target location");
             });
-            await trial.ExecuteInCreatureContextAsync(target, () => JumpToLocation(GroundLocation(range, firingPosition)));
+            ObjectPlugin.SetPosition(target, firingPosition);
             await trial.WaitFrameAsync();
             await trial.ExecuteInCreatureContextAsync(actor, () =>
             {
@@ -138,7 +142,7 @@ public static class TwinPistolMasteryEngineTests
                 }
                 ctx.Assert(laneFound, "The authored entrance supplies a safe forward lane and rear target position");
             });
-            await trial.ExecuteInCreatureContextAsync(target, () => JumpToLocation(GroundLocation(range, origin - unit * 2f)));
+            ObjectPlugin.SetPosition(target, GetPositionFromLocation(GroundLocation(range, origin - unit * 2f)));
             await trial.WaitFrameAsync();
             await UseMovement(trial, actor, target, FeatType.BlasterSlide1, GetLocation(target));
             await trial.DelaySecondsAsync(2.05f);
@@ -213,6 +217,10 @@ public static class TwinPistolMasteryEngineTests
         await context.WaitUntilAsync(() => !WeaponRepositioning.IsMoving(actor) &&
             Ability.GetLastCompletedAbilityImpactSummary(actor)?.AttributedDamage > 0,
             8f, "confirmed movement and a landed captured attack");
+        // A single melee weapon naturally resumes pursuit after its paid impact.
+        // Stop that ordinary follow-up before choosing the next player-directed route leg.
+        await context.ExecuteInCreatureContextAsync(actor, () => ClearAllActions());
+        PairedRangedAttackStop(actor);
     }
 
     private static void PairedRangedAttackStop(uint actor) => SWLOR.Game.Server.Native.PairedRangedAttackCycle.Cancel(actor);

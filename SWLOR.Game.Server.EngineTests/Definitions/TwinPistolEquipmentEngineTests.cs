@@ -13,6 +13,64 @@ namespace SWLOR.Game.Server.EngineTests.Definitions;
 
 public static class TwinPistolEquipmentEngineTests
 {
+    [EngineTest("Twin Pistol losing a companion preserves an ineligible main pistol with a full inventory", Category = "TwinPistolEquipment", TimeoutSeconds = 35f)]
+    public static async Task CompanionRemovalWithFullInventory(EngineTestContext ctx)
+    {
+        using var player = await PlayerAbilityFixture.CreateAsync(ctx);
+        var actor = player.Creature;
+        player.Update(record =>
+        {
+            record.Skills[SkillType.TwinPistol].Rank = 25;
+            record.Skills[SkillType.Pistol].Rank = 0;
+        });
+        var companion = await ctx.EquipItemAsync(actor, "fld_companion", InventorySlot.LeftHand);
+        var main = await ctx.EquipItemAsync(actor, "fld_pistol", InventorySlot.RightHand);
+        var repository = global::NWN.Native.API.NWNXLib.g_pAppManager.m_pServerExoApp.GetGameObject(actor).AsNWSCreature().m_pcItemRepository;
+        var width = repository.m_nWidth;
+        var height = repository.m_nHeight;
+        var boundary = repository.m_nBoundary;
+        var scalable = repository.m_bScalable;
+        var bag = OBJECT_INVALID;
+        try
+        {
+            await ctx.ExecuteInCreatureContextAsync(actor, () =>
+            {
+                bag = CreateItemOnObject("bag_b", actor);
+                ctx.Track(bag);
+                ctx.AssertEqual(actor, GetItemPossessor(bag), "The recovery container belongs to the player");
+                repository.m_nWidth = 2;
+                repository.m_nHeight = 3;
+                repository.m_nBoundary = 6;
+                repository.m_bScalable = 0;
+                var probe = CreateObject(ObjectType.Item, "b_pistol", GetLocation(actor));
+                ctx.Track(probe);
+                ctx.Assert(!ItemPlugin.MoveTo(probe, actor, true), "The main inventory cannot accept another pistol");
+                DestroyObject(probe);
+                ctx.Assert(ItemPlugin.MoveTo(companion, bag, true), "The original companion is stored in the owned bag");
+            });
+            await ctx.WaitUntilAsync(() => GetItemInSlot(InventorySlot.RightHand, actor) != main, 5f,
+                "the now-ineligible main pistol to leave its equipment slot safely");
+            await ctx.DelaySecondsAsync(.3f);
+            ctx.AssertEqual(actor, GetItemPossessor(main), "Full inventory revalidation retains the original main pistol's owner");
+            ctx.AssertEqual(actor, GetItemPossessor(companion), "Companion removal retains the original companion's owner");
+            ctx.AssertEqual(bag, GetItemPossessor(main, true), "The ineligible main pistol uses existing owned storage");
+            ctx.AssertEqual(bag, GetItemPossessor(companion, true), "The removed companion remains in its chosen container");
+            ctx.AssertEqual(1, GetItemStackSize(main), "Revalidation preserves one original main pistol");
+            ctx.AssertEqual(1, GetItemStackSize(companion), "Revalidation preserves one original companion");
+            ctx.Assert(!TwinPistolEquipment.IsActivePair(actor), "A stored companion cannot leave the ordinary paired context active");
+            ctx.Assert(!string.IsNullOrEmpty(Item.CanEquip(actor, main, InventorySlot.RightHand)), "The unqualified lone pistol cannot bypass its Pistol skill requirement");
+            ctx.Assert(!Combat.HasEquippedWeaponForAbility(actor), "The invalidated arrangement cannot deliver weapon attacks");
+            ctx.AssertEqual(2, Item.GetInventoryItemCount(bag), "Safe revalidation creates no copied weapon or extra item");
+        }
+        finally
+        {
+            repository.m_nWidth = width;
+            repository.m_nHeight = height;
+            repository.m_nBoundary = boundary;
+            repository.m_bScalable = scalable;
+        }
+    }
+
     [EngineTest("Twin Pistol rejects combat droids and incompatible legacy native launchers clearly", Category = "TwinPistolEquipment", TimeoutSeconds = 30f)]
     public static async Task UnsupportedEquipmentContexts(EngineTestContext ctx)
     {

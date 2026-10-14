@@ -9,6 +9,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
     public sealed class AkimboStanceStatusEffect : StatusEffectBase
     {
         public override string Name => "Akimbo Stance";
+        public override float Frequency => 1f;
         public override EffectIconType Icon => EffectIconType.AkimboStanceStatusEffect;
         public override StatusEffectCategory Categories => StatusEffectCategory.Buff;
         public override bool PersistsOnLogout => false;

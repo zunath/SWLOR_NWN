@@ -23,6 +23,9 @@ public static class WeaponRepositioningEngineTests
         await ctx.DelaySecondsAsync(1f);
         Location destination = null;
         var groundAnchor = OBJECT_INVALID;
+        var groundMissAnchor = OBJECT_INVALID;
+        var callbacks = 0;
+        var arrived = false;
         await ctx.ExecuteInCreatureContextAsync(actor, () =>
         {
             ClearAllActions();
@@ -31,6 +34,10 @@ public static class WeaponRepositioningEngineTests
             groundAnchor = CreateObject(ObjectType.Placeable, PairedRangedPresentation.MuzzleBlueprint,
                 Location(ctx.Arena, middle, 0f));
             ctx.Track(groundAnchor);
+            groundMissAnchor = CreateObject(ObjectType.Placeable, PairedRangedPresentation.MissBlueprint,
+                Location(ctx.Arena, NumericsVector3.Lerp(GetPosition(actor), GetPositionFromLocation(destination), .7f), 0f));
+            ctx.Track(groundMissAnchor);
+            SetTag(groundMissAnchor, "miss_collision_probe");
         });
         await ctx.WaitFrameAsync();
         try
@@ -38,11 +45,19 @@ public static class WeaponRepositioningEngineTests
             await ctx.ExecuteInCreatureContextAsync(actor, () =>
             {
                 ctx.Assert(GetIsObjectValid(groundAnchor), "The runtime has the dedicated collision-free muzzle blueprint");
+                ctx.Assert(GetIsObjectValid(groundMissAnchor), "The runtime has the stock invisible miss-endpoint blueprint");
+                ctx.AssertEqual(32093, ObjectPlugin.GetAppearance(groundAnchor),
+                    "The actual source uses its allocated custom placeable row");
+                ctx.AssertEqual(479, ObjectPlugin.GetAppearance(groundMissAnchor),
+                    "The actual miss endpoint uses the verified stock invisible model");
                 ctx.AssertEqual(string.Empty, WeaponRepositioning.Validate(actor, GetLocation(actor), destination, 2f, 6f),
-                    "A muzzle anchor at ground level must preserve the native direct movement corridor");
+                    "Both source and stock invisible miss endpoint preserve the native direct movement corridor at ground level");
                 PairedRangedPresentation.Prepare(actor);
                 PairedRangedPresentation.Prepare(actor);
+                WeaponRepositioning.Begin(actor, destination, (success, _) => { callbacks++; arrived = success; });
             });
+            await ctx.WaitUntilAsync(() => callbacks > 0, 5f, "normal collision movement through source and stock miss anchors");
+            ctx.Assert(arrived, "The normal movement action crosses both cosmetic placeables successfully");
             await ctx.DelaySecondsAsync(.3f);
             await ctx.ExecuteInCreatureContextAsync(actor, () =>
             {
@@ -54,6 +69,7 @@ public static class WeaponRepositioningEngineTests
             });
             await ctx.WaitUntilAsync(() => CountMuzzles(ctx.Arena) == 0, 2f, "explicit actor release to remove its owned pool");
             ctx.Assert(GetIsObjectValid(groundAnchor), "Pool cleanup leaves an unrelated collision-test anchor alone");
+            ctx.Assert(GetIsObjectValid(groundMissAnchor), "Pool cleanup leaves the unrelated stock miss anchor alone");
             await ctx.ExecuteInCreatureContextAsync(actor, () =>
             {
                 PairedRangedPresentation.Prepare(actor);

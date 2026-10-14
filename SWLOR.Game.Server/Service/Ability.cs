@@ -723,6 +723,13 @@ namespace SWLOR.Game.Server.Service
                 return Deny("You must equip a weapon to use this ability.");
             }
 
+            if (ability.ActivationType == AbilityActivationType.Weapon ||
+                ability.IsHostileAbility && Combat.IsWeaponSkillType(ability.SkillType))
+            {
+                var equipmentError = TwinPistolEquipmentValidation.GetUnusableEquipmentError(activator);
+                if (!string.IsNullOrEmpty(equipmentError)) return Deny(equipmentError);
+            }
+
             if (Combat.GetAbilitySkillType(activator, ability) == SkillType.Force &&
                 Stat.GetStatAdjustment(activator, StatType.ForceAbilityActivationDisabled) > 0)
             {

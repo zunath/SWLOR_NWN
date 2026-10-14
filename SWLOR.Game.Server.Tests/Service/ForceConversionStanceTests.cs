@@ -138,9 +138,14 @@ public class ForceConversionStanceTests
             "SWLOR.Game.Server", "Native", "ResolveAttackRoll.cs"))).GetRoot();
         var hook = attackSource.DescendantNodes().OfType<MethodDeclarationSyntax>()
             .Single(node => node.Identifier.ValueText == "OnResolveAttackRoll");
-        var preparation = hook.DescendantNodes().OfType<InvocationExpressionSyntax>()
+        var delegation = hook.DescendantNodes().OfType<InvocationExpressionSyntax>().Should().ContainSingle().Which;
+        delegation.Expression.ToString().Should().Be("ResolveWeaponRoll");
+        delegation.ArgumentList.Arguments.Select(argument => argument.ToString()).Should().Equal("thisPtr", "pTarget");
+        var sharedRoll = attackSource.DescendantNodes().OfType<MethodDeclarationSyntax>()
+            .Single(node => node.Identifier.ValueText == "ResolveWeaponRoll");
+        var preparation = sharedRoll.DescendantNodes().OfType<InvocationExpressionSyntax>()
             .Single(node => node.Expression.ToString() == "GetDamageRoll.PrepareForceConversionStanceAttack");
-        preparation.SpanStart.Should().BeLessThan(hook.DescendantNodes().OfType<IfStatementSyntax>()
+        preparation.SpanStart.Should().BeLessThan(sharedRoll.DescendantNodes().OfType<IfStatementSyntax>()
             .Single(node => node.Condition.ToString() == "targetObject.m_nObjectType != (int)ObjectType.Creature").SpanStart);
     }
 

@@ -15,6 +15,7 @@ namespace SWLOR.Game.Server.Native;
 public static class PairedRangedPresentation
 {
     public const string MuzzleBlueprint = "tp_muzzle";
+    public const string MissBlueprint = "tp_miss";
     public const string MuzzleTag = "paired_pistol_muzzle";
     public const int MissAnchorCount = 8;
     private const long ReplicationWarmupMilliseconds = 250;
@@ -51,7 +52,7 @@ public static class PairedRangedPresentation
         var targets = new uint[MissAnchorCount];
         for (var index = 0; index < targets.Length; index++)
         {
-            targets[index] = CreateAnchor(actor);
+            targets[index] = CreateAnchor(actor, MissBlueprint);
             if (GetIsObjectValid(targets[index])) continue;
             DestroyObject(source);
             foreach (var target in targets)
@@ -128,9 +129,9 @@ public static class PairedRangedPresentation
         AssignCommand(actor, () => PlaySound(PistolAnimationRemap.PistolShotSound));
     }
 
-    private static uint CreateAnchor(uint actor)
+    private static uint CreateAnchor(uint actor, string blueprint = MuzzleBlueprint)
     {
-        return CreateObject(ObjectType.Placeable, MuzzleBlueprint, GetLocation(actor), false, MuzzleTag);
+        return CreateObject(ObjectType.Placeable, blueprint, GetLocation(actor), false, MuzzleTag);
     }
 
     [NWNEventHandler(ScriptName.OnAreaEnter)]

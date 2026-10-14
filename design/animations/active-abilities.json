@@ -5910,6 +5910,7 @@
   },
   {
     "Id": "PairedVolley",
+    "NativeImpactVisualEffect": "Vfx_Com_Blood_Spark_Small",
     "EquipmentRequirement": "TwinPistol",
     "Name": "Paired Volley",
     "DisplayName": "Paired Volley",
@@ -5935,6 +5936,7 @@
   },
   {
     "Id": "FocusedBurst",
+    "NativeImpactVisualEffect": "Vfx_Com_Blood_Spark_Small",
     "EquipmentRequirement": "TwinPistol",
     "Name": "Focused Burst",
     "DisplayName": "Focused Burst",
@@ -5959,6 +5961,7 @@
   },
   {
     "Id": "ControlledBurst",
+    "NativeImpactVisualEffect": "Vfx_Com_Blood_Spark_Small",
     "EquipmentRequirement": "TwinPistol",
     "Name": "Controlled Burst",
     "DisplayName": "Controlled Burst",
@@ -5982,6 +5985,7 @@
   },
   {
     "Id": "AkimboStance",
+    "NativeImpactVisualEffect": "Vfx_Imp_Haste",
     "EquipmentRequirement": "TwinPistol",
     "Name": "Akimbo Stance",
     "DisplayName": "Akimbo Stance",
@@ -6004,6 +6008,7 @@
   },
   {
     "Id": "TwinSuns",
+    "NativeImpactVisualEffect": "Vfx_Com_Blood_Spark_Small",
     "EquipmentRequirement": "TwinPistol",
     "Name": "Twin Suns",
     "DisplayName": "Twin Suns",
@@ -6026,6 +6031,7 @@
   },
   {
     "Id": "BlasterSlide",
+    "NativeImpactVisualEffect": "Vfx_Com_Blood_Spark_Small",
     "EquipmentRequirement": "TwinPistol",
     "Name": "Blaster Slide",
     "DisplayName": "Blaster Slide",
@@ -6051,6 +6057,7 @@
   },
   {
     "Id": "GrappleShot",
+    "NativeImpactVisualEffect": "Vfx_Com_Blood_Spark_Small",
     "EquipmentRequirement": "TwinPistol",
     "Name": "Grapple Shot",
     "DisplayName": "Grapple Shot",
@@ -6075,6 +6082,7 @@
   },
   {
     "Id": "PistolRush",
+    "NativeImpactVisualEffect": "Vfx_Com_Blood_Spark_Small",
     "EquipmentRequirement": "TwinPistol",
     "Name": "Pistol Rush",
     "DisplayName": "Pistol Rush",
@@ -6098,6 +6106,7 @@
   },
   {
     "Id": "CrossfireStance",
+    "NativeImpactVisualEffect": "Vfx_Imp_Haste",
     "EquipmentRequirement": "TwinPistol",
     "Name": "Crossfire Stance",
     "DisplayName": "Crossfire Stance",
@@ -6120,6 +6129,7 @@
   },
   {
     "Id": "FinalSalvo",
+    "NativeImpactVisualEffect": "Vfx_Com_Blood_Spark_Small",
     "EquipmentRequirement": "TwinPistol",
     "Name": "Final Salvo",
     "DisplayName": "Final Salvo",

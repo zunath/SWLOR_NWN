@@ -3,6 +3,30 @@
   "Title": "cq_lastword",
   "EntryPoints": [
     {
+      "TargetNodeId": "training-menu",
+      "Conditions": [
+        {
+          "Key": "condition-has-quest",
+          "Arguments": [
+            "twin_suns_mastery"
+          ],
+          "IsNegated": false
+        }
+      ]
+    },
+    {
+      "TargetNodeId": "training-menu",
+      "Conditions": [
+        {
+          "Key": "condition-can-accept-quest",
+          "Arguments": [
+            "twin_suns_mastery"
+          ],
+          "IsNegated": false
+        }
+      ]
+    },
+    {
       "TargetNodeId": "entry-00000",
       "Conditions": [
         {
@@ -224,12 +248,7 @@
         }
       ],
       "OnEnterActions": [],
-      "Choices": [
-        {
-          "ChoiceId": "twin-open",
-          "Conditions": []
-        }
-      ]
+      "Choices": []
     },
     "entry-00001": {
       "Id": "entry-00001",
@@ -250,12 +269,7 @@
         }
       ],
       "OnEnterActions": [],
-      "Choices": [
-        {
-          "ChoiceId": "twin-open",
-          "Conditions": []
-        }
-      ]
+      "Choices": []
     },
     "entry-00002": {
       "Id": "entry-00002",
@@ -295,10 +309,6 @@
         },
         {
           "ChoiceId": "reply-00005",
-          "Conditions": []
-        },
-        {
-          "ChoiceId": "twin-open",
           "Conditions": []
         }
       ]
@@ -421,12 +431,7 @@
         }
       ],
       "OnEnterActions": [],
-      "Choices": [
-        {
-          "ChoiceId": "twin-open",
-          "Conditions": []
-        }
-      ]
+      "Choices": []
     },
     "entry-00008": {
       "Id": "entry-00008",
@@ -450,10 +455,6 @@
       "Choices": [
         {
           "ChoiceId": "reply-00006",
-          "Conditions": []
-        },
-        {
-          "ChoiceId": "twin-open",
           "Conditions": []
         }
       ]
@@ -517,10 +518,6 @@
         },
         {
           "ChoiceId": "reply-00012",
-          "Conditions": []
-        },
-        {
-          "ChoiceId": "twin-open",
           "Conditions": []
         }
       ]
@@ -643,12 +640,7 @@
         }
       ],
       "OnEnterActions": [],
-      "Choices": [
-        {
-          "ChoiceId": "twin-open",
-          "Conditions": []
-        }
-      ]
+      "Choices": []
     },
     "entry-00016": {
       "Id": "entry-00016",
@@ -672,10 +664,6 @@
       "Choices": [
         {
           "ChoiceId": "reply-00013",
-          "Conditions": []
-        },
-        {
-          "ChoiceId": "twin-open",
           "Conditions": []
         }
       ]
@@ -739,10 +727,6 @@
         },
         {
           "ChoiceId": "reply-00019",
-          "Conditions": []
-        },
-        {
-          "ChoiceId": "twin-open",
           "Conditions": []
         }
       ]
@@ -865,12 +849,7 @@
         }
       ],
       "OnEnterActions": [],
-      "Choices": [
-        {
-          "ChoiceId": "twin-open",
-          "Conditions": []
-        }
-      ]
+      "Choices": []
     },
     "entry-00024": {
       "Id": "entry-00024",
@@ -894,10 +873,6 @@
       "Choices": [
         {
           "ChoiceId": "reply-00020",
-          "Conditions": []
-        },
-        {
-          "ChoiceId": "twin-open",
           "Conditions": []
         }
       ]
@@ -961,10 +936,6 @@
         },
         {
           "ChoiceId": "reply-00026",
-          "Conditions": []
-        },
-        {
-          "ChoiceId": "twin-open",
           "Conditions": []
         }
       ]
@@ -1087,12 +1058,7 @@
         }
       ],
       "OnEnterActions": [],
-      "Choices": [
-        {
-          "ChoiceId": "twin-open",
-          "Conditions": []
-        }
-      ]
+      "Choices": []
     },
     "entry-00032": {
       "Id": "entry-00032",
@@ -1116,10 +1082,6 @@
       "Choices": [
         {
           "ChoiceId": "reply-00027",
-          "Conditions": []
-        },
-        {
-          "ChoiceId": "twin-open",
           "Conditions": []
         }
       ]
@@ -1183,10 +1145,6 @@
         },
         {
           "ChoiceId": "reply-00033",
-          "Conditions": []
-        },
-        {
-          "ChoiceId": "twin-open",
           "Conditions": []
         }
       ]
@@ -1309,12 +1267,7 @@
         }
       ],
       "OnEnterActions": [],
-      "Choices": [
-        {
-          "ChoiceId": "twin-open",
-          "Conditions": []
-        }
-      ]
+      "Choices": []
     },
     "entry-00040": {
       "Id": "entry-00040",
@@ -1338,10 +1291,6 @@
       "Choices": [
         {
           "ChoiceId": "reply-00034",
-          "Conditions": []
-        },
-        {
-          "ChoiceId": "twin-open",
           "Conditions": []
         }
       ]
@@ -1645,6 +1594,36 @@
       "Choices": [
         {
           "ChoiceId": "twin-leave",
+          "Conditions": []
+        }
+      ]
+    },
+    "training-menu": {
+      "Id": "training-menu",
+      "SpeakerName": "",
+      "SpeakerTag": "",
+      "PortraitResref": "",
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Text": [
+        {
+          "Text": "I've got lessons for one blaster or two. Which do you want to work on?",
+          "Style": 0,
+          "Color": null
+        }
+      ],
+      "OnEnterActions": [],
+      "Choices": [
+        {
+          "ChoiceId": "pistol-open",
+          "Conditions": []
+        },
+        {
+          "ChoiceId": "twin-open",
           "Conditions": []
         }
       ]
@@ -2718,6 +2697,226 @@
       "Actions": [],
       "Next": [],
       "EndsConversation": true,
+      "IsAutomatic": false
+    },
+    "pistol-open": {
+      "Id": "pistol-open",
+      "Text": {
+        "Text": "I want to work on Last Word.",
+        "Style": 4,
+        "Color": null
+      },
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Actions": [],
+      "Next": [
+        {
+          "TargetNodeId": "entry-00000",
+          "Conditions": [
+            {
+              "Key": "condition-completed-quest",
+              "Arguments": [
+                "last_word_mastery"
+              ],
+              "IsNegated": false
+            }
+          ]
+        },
+        {
+          "TargetNodeId": "entry-00040",
+          "Conditions": [
+            {
+              "Key": "condition-on-quest-state",
+              "Arguments": [
+                "last_word_mastery",
+                "2"
+              ],
+              "IsNegated": false
+            }
+          ]
+        },
+        {
+          "TargetNodeId": "entry-00039",
+          "Conditions": [
+            {
+              "Key": "condition-has-quest",
+              "Arguments": [
+                "last_word_mastery"
+              ],
+              "IsNegated": false
+            }
+          ]
+        },
+        {
+          "TargetNodeId": "entry-00034",
+          "Conditions": [
+            {
+              "Key": "condition-can-accept-quest",
+              "Arguments": [
+                "last_word_mastery"
+              ],
+              "IsNegated": false
+            }
+          ]
+        },
+        {
+          "TargetNodeId": "entry-00032",
+          "Conditions": [
+            {
+              "Key": "condition-on-quest-state",
+              "Arguments": [
+                "last_word_circle",
+                "2"
+              ],
+              "IsNegated": false
+            }
+          ]
+        },
+        {
+          "TargetNodeId": "entry-00031",
+          "Conditions": [
+            {
+              "Key": "condition-has-quest",
+              "Arguments": [
+                "last_word_circle"
+              ],
+              "IsNegated": false
+            }
+          ]
+        },
+        {
+          "TargetNodeId": "entry-00026",
+          "Conditions": [
+            {
+              "Key": "condition-can-accept-quest",
+              "Arguments": [
+                "last_word_circle"
+              ],
+              "IsNegated": false
+            }
+          ]
+        },
+        {
+          "TargetNodeId": "entry-00024",
+          "Conditions": [
+            {
+              "Key": "condition-on-quest-state",
+              "Arguments": [
+                "last_word_breach",
+                "2"
+              ],
+              "IsNegated": false
+            }
+          ]
+        },
+        {
+          "TargetNodeId": "entry-00023",
+          "Conditions": [
+            {
+              "Key": "condition-has-quest",
+              "Arguments": [
+                "last_word_breach"
+              ],
+              "IsNegated": false
+            }
+          ]
+        },
+        {
+          "TargetNodeId": "entry-00018",
+          "Conditions": [
+            {
+              "Key": "condition-can-accept-quest",
+              "Arguments": [
+                "last_word_breach"
+              ],
+              "IsNegated": false
+            }
+          ]
+        },
+        {
+          "TargetNodeId": "entry-00016",
+          "Conditions": [
+            {
+              "Key": "condition-on-quest-state",
+              "Arguments": [
+                "last_word_measure",
+                "2"
+              ],
+              "IsNegated": false
+            }
+          ]
+        },
+        {
+          "TargetNodeId": "entry-00015",
+          "Conditions": [
+            {
+              "Key": "condition-has-quest",
+              "Arguments": [
+                "last_word_measure"
+              ],
+              "IsNegated": false
+            }
+          ]
+        },
+        {
+          "TargetNodeId": "entry-00010",
+          "Conditions": [
+            {
+              "Key": "condition-can-accept-quest",
+              "Arguments": [
+                "last_word_measure"
+              ],
+              "IsNegated": false
+            }
+          ]
+        },
+        {
+          "TargetNodeId": "entry-00008",
+          "Conditions": [
+            {
+              "Key": "condition-on-quest-state",
+              "Arguments": [
+                "last_word_foundation",
+                "2"
+              ],
+              "IsNegated": false
+            }
+          ]
+        },
+        {
+          "TargetNodeId": "entry-00007",
+          "Conditions": [
+            {
+              "Key": "condition-has-quest",
+              "Arguments": [
+                "last_word_foundation"
+              ],
+              "IsNegated": false
+            }
+          ]
+        },
+        {
+          "TargetNodeId": "entry-00002",
+          "Conditions": [
+            {
+              "Key": "condition-can-accept-quest",
+              "Arguments": [
+                "last_word_foundation"
+              ],
+              "IsNegated": false
+            }
+          ]
+        },
+        {
+          "TargetNodeId": "entry-00001",
+          "Conditions": []
+        }
+      ],
+      "EndsConversation": false,
       "IsAutomatic": false
     }
   },

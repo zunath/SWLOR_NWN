@@ -27,6 +27,9 @@ namespace SWLOR.Game.Server.EngineTests.Definitions.AbilityBehaviors
         /// </summary>
         public string EquipMainHandResref { get; set; }
 
+        /// <summary>Optional left-hand item, equipped before the main hand.</summary>
+        public string EquipOffHandResref { get; set; }
+
         /// <summary>
         /// Status effect classes expected on the ACTIVATOR after impact.
         /// </summary>
@@ -149,6 +152,21 @@ namespace SWLOR.Game.Server.EngineTests.Definitions.AbilityBehaviors
         /// movement observable instead of passing on damage or status alone.
         /// </summary>
         public float? MaximumActivatorDistanceToTargetAfterImpact { get; set; }
+
+        /// <summary>Minimum separation after a disengage; the target must start closer.</summary>
+        public float? MinimumActivatorDistanceToTargetAfterImpact { get; set; }
+
+        /// <summary>Minimum displacement from the caster's position at activation.</summary>
+        public float? MinimumActivatorTravelDistanceAfterImpact { get; set; }
+
+        /// <summary>Ground cursor offset, in forward and sideways meters relative to the target.</summary>
+        public System.Numerics.Vector2? GroundTargetOffsetMeters { get; set; }
+
+        /// <summary>Maximum distance from the selected ground location after impact.</summary>
+        public float? MaximumActivatorDistanceToGroundTargetAfterImpact { get; set; }
+
+        /// <summary>Immobilizes the dummy so movement assertions use a stationary reference.</summary>
+        public bool TargetIsStationary { get; set; }
 
         /// <summary>
         /// Perk levels seeded onto the caster before activation, for abilities whose impact

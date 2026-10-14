@@ -16,7 +16,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                 .SetIsResizable(true)
                 .SetIsCollapsible(true)
                 .SetIsClosable(true)
-                .SetInitialGeometry(0, 0, 400f, 430f)
+                .SetInitialGeometry(0, 0, 400f, 600f)
                 .SetTitle("Settings")
 
                 .DefinePartialView(SettingsViewModel.GeneralPartial, view =>
@@ -331,9 +331,15 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                 });
                 layout.AddTabRow(row =>
                 {
-                    row.AddButton().SetText("Save").SetWidth(100f).SetHeight(32f)
+                    row.AddButton()
+                        .SetText("Save")
+                        .SetWidth(100f)
+                        .SetHeight(32f)
                         .BindOnClicked(model => model.OnSave());
-                    row.AddButton().SetText("Cancel").SetWidth(100f).SetHeight(32f)
+                    row.AddButton()
+                        .SetText("Cancel")
+                        .SetWidth(100f)
+                        .SetHeight(32f)
                         .BindOnClicked(model => model.OnCancel());
                     row.AddSpacer();
                 });

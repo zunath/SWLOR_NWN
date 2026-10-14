@@ -2,6 +2,7 @@ using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid;
 using SWLOR.Game.Server.Feature.AbilityDefinition.Force;
+using SWLOR.Game.Server.Feature.AbilityDefinition.Leadership;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.PerkService;
@@ -74,6 +75,8 @@ public class QuickCastTests
         var support = new MedKitAbilityDefinition().BuildAbilities();
         support.Values.Should().OnlyContain(ability => QuickCastPolicy.IsEligible(ability, QuickCastTargetType.Self));
         new BenevolenceAbilityDefinition().BuildAbilities().Values.Should()
+            .OnlyContain(ability => QuickCastPolicy.IsEligible(ability, QuickCastTargetType.Self));
+        new RousingShoutAbilityDefinition().BuildAbilities().Values.Should()
             .OnlyContain(ability => QuickCastPolicy.IsEligible(ability, QuickCastTargetType.Self));
         new ResuscitationAbilityDefinition().BuildAbilities().Values.Should()
             .OnlyContain(ability => !QuickCastPolicy.IsEligible(ability, QuickCastTargetType.Self));

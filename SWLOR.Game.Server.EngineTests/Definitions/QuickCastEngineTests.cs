@@ -9,6 +9,7 @@ using SWLOR.Game.Server.Feature.GuiDefinition.ViewModel;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.PerkService;
+using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
@@ -108,6 +109,24 @@ public static class QuickCastEngineTests
             ctx.AssertEqual("Force Drain I", Ability.GetLastCompletedAbilityImpactSummary(player).Ability.Name,
                 "Settings enemy button follows the normal impact pipeline");
             ctx.AssertEqual(93, Stat.GetCurrentFP(player), "both Settings buttons charge normal resource costs");
+            fixture.Update(record =>
+            {
+                record.Perks[PerkType.RousingShout] = 3;
+                record.Skills[SkillType.Leadership].Rank = 50;
+            });
+            CreaturePlugin.AddFeat(player, FeatType.RousingShout3);
+            ctx.SetResources(player, 100, 100);
+            var shoutModel = LoadModel();
+            ctx.Assert(shoutModel.SelfCastAbilities.Any(entry => entry.Value == (int)FeatType.RousingShout3),
+                "Rousing Shout is offered as a self-legal support ability");
+            shoutModel.SelectedSelfCastFeat = (int)FeatType.RousingShout3;
+            shoutModel.SelfQuickCastEnabled = true;
+            await ctx.ExecuteInCreatureContextAsync(player, () => shoutModel.OnSave()());
+            var beforeShoutHP = GetCurrentHitPoints(player);
+            shoutModel.OnSelfQuickCast()();
+            await ctx.WaitUntilAsync(() => GetCurrentHitPoints(player) > beforeShoutHP && !Activity.IsBusy(player), 8f,
+                "Settings Rousing Shout self-support impact");
+            ctx.AssertEqual(90, Stat.GetCurrentStamina(player), "Rousing Shout III charges its normal stamina cost");
             QuickCast.ResetSession(player);
             var nextLogin = LoadModel();
             ctx.Assert(!nextLogin.SelfQuickCastEnabled && !nextLogin.EnemyQuickCastEnabled, "fresh login restores both defaults");

@@ -386,6 +386,12 @@ namespace SWLOR.CombatSim.Engine
             if (effect != null && IsPartyEffect(effect) && !info.IsHostile && use.Target == AbilityTarget.Enemy)
                 throw new InvalidDataException(
                     $"'{use.Feat}' is a friendly zone or party effect, so its Target must be Self, LowestAlly or NamedAlly.");
+
+            // A hostile cast the game aims at a creature or spot needs an enemy; a self-centered one may be gated on the caster.
+            if (info.IsHostile && effect == null && use.Damage != null &&
+                (use.Target is AbilityTarget.LowestAlly or AbilityTarget.NamedAlly || use.Target == AbilityTarget.Self && info.IsAimed))
+                throw new InvalidDataException(
+                    $"'{use.Feat}' is a hostile cast, so its Target must be Enemy{(info.IsAimed ? "" : " or Self")}.");
         }
 
         private static void RequireValidDamage(string owner, DamageSpec damage)

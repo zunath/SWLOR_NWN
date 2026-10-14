@@ -86,13 +86,13 @@ static int DumpAbilities(string[] args)
 {
     var options = CommandLineOptions.Parse(args, new[] { "--out" });
     var catalog = AbilityCatalog.Load();
-    var lines = new List<string> { "feat,name,perk,recast_group,skill_requirement,fp,stm,recast_seconds,cast_seconds,queued_weapon,hostile,healing,force_affinity,unreadable_timing" };
+    var lines = new List<string> { "feat,name,perk,recast_group,skill_requirement,fp,stm,recast_seconds,cast_seconds,queued_weapon,hostile,aimed,healing,force_affinity,unreadable_timing" };
     lines.AddRange(catalog.Abilities.Values
         .OrderBy(a => a.PerkName).ThenBy(a => a.Name)
         .Select(a => string.Join(",",
             a.Feat, Csv(a.Name), Csv(a.PerkName), a.RecastGroup, a.SkillRequirement, a.FP, a.STM,
             a.RecastSeconds.ToString(CultureInfo.InvariantCulture), a.CastSeconds.ToString(CultureInfo.InvariantCulture),
-            a.IsQueuedWeapon, a.IsHostile, a.IsHealing, a.ForceAffinity, a.UnreadableTiming)));
+            a.IsQueuedWeapon, a.IsHostile, a.IsAimed, a.IsHealing, a.ForceAffinity, a.UnreadableTiming)));
 
     var output = options.GetValueOrDefault("--out", new List<string> { "abilities.csv" })[0];
     File.WriteAllLines(output, lines);

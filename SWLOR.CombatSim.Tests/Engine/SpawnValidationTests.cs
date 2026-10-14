@@ -259,6 +259,33 @@ namespace SWLOR.CombatSim.Tests.Engine
             act.Should().Throw<InvalidDataException>().WithMessage("*Medic*ReactionSeconds*time step*");
         }
 
+        [TestCase(AbilityTarget.Self)]
+        [TestCase(AbilityTarget.LowestAlly)]
+        [TestCase(AbilityTarget.NamedAlly)]
+        public void Spawn_RejectsANonEnemyTargetForAnAimedHostileCast(AbilityTarget target)
+        {
+            var use = TestCombatants.Use("ForceSpark1", target);
+            use.TargetName = "Medic";
+            use.Damage = new DamageSpec { Min = 10f, Max = 10f };
+            var medic = TestCombatants.Medic("Medic", use);
+
+            var act = () => new Simulation(Scenario(medic), RuleSets.Current(), _catalog, 1).Spawn();
+
+            act.Should().Throw<InvalidDataException>().WithMessage("*ForceSpark1*must be Enemy*");
+        }
+
+        [Test]
+        public void Spawn_AcceptsASelfTargetForASelfCenteredHostileArea()
+        {
+            var use = TestCombatants.Use("SpinningWhirl1", AbilityTarget.Self);
+            use.Damage = new DamageSpec { Min = 10f, Max = 10f };
+            var medic = TestCombatants.Medic("Medic", use);
+
+            var act = () => new Simulation(Scenario(medic), RuleSets.Current(), _catalog, 1).Spawn();
+
+            act.Should().NotThrow();
+        }
+
         [TestCase("ForceSanctuary1")]
         [TestCase("GroupDeflector1")]
         [TestCase("KoltoMist1")]

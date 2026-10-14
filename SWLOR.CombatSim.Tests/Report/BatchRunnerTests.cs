@@ -106,6 +106,18 @@ namespace SWLOR.CombatSim.Tests.Report
         }
 
         [Test]
+        public void Run_RejectsMoreCombatantStepsThanABatchCanFinishPromptly()
+        {
+            var scenario = TestScenarios.TwoTeams(false, new[] { TestCombatants.Dummy("Player") }, new[] { TestCombatants.Dummy("Enemy", true) },
+                durationSeconds: 86_400f);
+            scenario.TimeStepSeconds = 0.001f;
+
+            var act = () => BatchRunner.Run(scenario, RuleSets.Current(), _catalog, 3, seed: 1);
+
+            act.Should().Throw<ArgumentException>().WithMessage("*combatant-steps*");
+        }
+
+        [Test]
         public void Run_RejectsMoreCombatantRunsThanItCanSummarise()
         {
             var crowd = TestCombatants.Dummy("Crowd");

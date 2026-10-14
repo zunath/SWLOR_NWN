@@ -22,6 +22,10 @@ namespace SWLOR.CombatSim.Rules
         /// <summary>Total temporary HP from all sources as a percent of max HP; null means no cap.</summary>
         public float? TemporaryHpCapPercent { get; set; }
 
+        /// <summary>
+        /// How long Force Convergence restores FP. The status, and its Force accuracy bonus, lasts 30 seconds under every
+        /// rule set; the tuned game restores its FP over the first 20.
+        /// </summary>
         public float ConvergenceDurationSeconds { get; set; } = 30f;
         public bool HarmonyInstantHealsOnly { get; set; }
         public float HarmonyCooldownSeconds { get; set; }

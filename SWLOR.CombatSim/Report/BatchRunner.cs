@@ -16,12 +16,22 @@ namespace SWLOR.CombatSim.Report
         /// <summary>Runs times combatants per run; each keeps at most one first-starved time for the median.</summary>
         public const long MaximumCombatantRuns = 10_000_000;
 
+        /// <summary>Runs times steps per run times combatants per run, which keeps a batch to minutes.</summary>
+        public const long MaximumCombatantSteps = 500_000_000;
+
         public static BatchSummary Run(ScenarioSpec scenario, RuleSet rules, AbilityCatalog catalog, int runs, int seed)
         {
             var combatantsPerRun = scenario.Teams.Sum(team => team?.Members?.Sum(member => (long)Math.Max(1, member?.Count ?? 1)) ?? 0);
             if (runs * combatantsPerRun > MaximumCombatantRuns)
                 throw new ArgumentException(
                     $"{runs} runs of {combatantsPerRun} combatants is more than {MaximumCombatantRuns} combatant-runs; use fewer runs.");
+
+            // A duration or time step out of range is reported by the simulation itself.
+            var stepsPerRun = Math.Ceiling(scenario.DurationSeconds / (double)scenario.TimeStepSeconds);
+            if (double.IsFinite(stepsPerRun) && stepsPerRun > 0 && runs * stepsPerRun * combatantsPerRun > MaximumCombatantSteps)
+                throw new ArgumentException(
+                    $"{runs} runs of {stepsPerRun} steps with {combatantsPerRun} combatants is more than {MaximumCombatantSteps} " +
+                    "combatant-steps; use fewer runs, a shorter duration or a longer time step.");
 
             var summary = new BatchSummary { RuleSetName = rules.Name, Runs = runs };
             var perCombatant = new Dictionary<(int TeamIndex, string Name), CombatantAccumulator>();

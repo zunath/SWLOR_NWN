@@ -91,6 +91,7 @@ namespace SWLOR.CombatSim.Data
                 UnreadableTiming = unreadable.Length > 0 ? unreadable : null,
                 SkillType = detail.SkillType,
                 IsHostile = detail.IsHostileAbility,
+                IsAimed = detail.RequiresTarget || detail.RequiresLocationTarget,
                 IsHealing = detail.IsHealingAbility,
                 ForceAffinity = perk?.ForceAffinityType?.ToString() ?? string.Empty
             };

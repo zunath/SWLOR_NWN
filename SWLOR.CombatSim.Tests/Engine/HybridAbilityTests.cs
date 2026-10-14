@@ -164,7 +164,7 @@ namespace SWLOR.CombatSim.Tests.Engine
         [Test]
         public void DamageFromASelfTargetedUse_LandsOnAnEnemy()
         {
-            var burst = TestCombatants.Use("ForceBurst1", AbilityTarget.Self, minIntervalSeconds: 600);
+            var burst = TestCombatants.Use("SpinningWhirl1", AbilityTarget.Self, minIntervalSeconds: 600);
             burst.Damage = new DamageSpec { Min = WaveDamage, Max = WaveDamage, HitChance = 1f };
             var simulation = TestScenarios.Spawn(
                 TestScenarios.TwoTeams(

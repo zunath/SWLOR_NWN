@@ -26,6 +26,9 @@ namespace SWLOR.CombatSim.Data
 
         public SkillType SkillType { get; init; }
         public bool IsHostile { get; init; }
+
+        /// <summary>The game aims it at a creature or a location; false for self-centered areas and queued weapon abilities.</summary>
+        public bool IsAimed { get; init; }
         public bool IsHealing { get; init; }
         public string ForceAffinity { get; init; }
     }

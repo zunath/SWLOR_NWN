@@ -27,6 +27,8 @@ namespace SWLOR.CombatSim.Tests.Rules
         [TestCase("{ \"stmCostMultiplier\": NaN }", "StmCostMultiplier")]
         [TestCase("{ \"forceAffinityHealingCap\": 0.9 }", "ForceAffinityHealingCap")]
         [TestCase("{ \"recastOverrides\": { \"MedKit\": -2 } }", "RecastOverrides[MedKit]")]
+        [TestCase("{ \"recastOverrides\": { \"Benevolance\": 10 } }", "Benevolance")]
+        [TestCase("{ \"recastOverrides\": { \"benevolence\": 10 } }", "benevolence")]
         [TestCase("{ \"temporaryHpCapPercent\": -5 }", "TemporaryHpCapPercent")]
         [TestCase("{ \"convergenceDurationSeconds\": Infinity }", "ConvergenceDurationSeconds")]
         [TestCase("{ \"pvpCombatWindowSeconds\": 0 }", "PvpCombatWindowSeconds")]

@@ -1,4 +1,5 @@
 using SWLOR.CombatSim.Data;
+using SWLOR.Game.Server.Service.AbilityService;
 
 namespace SWLOR.CombatSim.Rules
 {
@@ -99,7 +100,12 @@ namespace SWLOR.CombatSim.Rules
                 problems.Add($"{nameof(RecastOverrides)} must be an object; use {{}} for none");
             else
                 foreach (var (group, seconds) in RecastOverrides)
+                {
+                    // Keys must match the game's recast group names exactly, or the override would never apply.
+                    if (!Enum.GetNames<RecastGroup>().Contains(group))
+                        problems.Add($"{nameof(RecastOverrides)} names an unknown recast group '{group}'");
                     AtLeast($"{nameof(RecastOverrides)}[{group}]", seconds, 0);
+                }
 
             if (TemporaryHpCapPercent.HasValue)
                 AtLeast(nameof(TemporaryHpCapPercent), TemporaryHpCapPercent.Value, 0);

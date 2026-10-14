@@ -77,12 +77,14 @@ namespace SWLOR.CombatSim.Tests.Engine
             caster.Stats.FirstStarvedAt.Should().BeNull();
         }
 
-        [Test]
-        public void Spawn_RejectsANegativeInterval()
+        [TestCase(-1f)]
+        [TestCase(float.NaN)]
+        [TestCase(float.PositiveInfinity)]
+        public void Spawn_RejectsAnIntervalThatIsNegativeOrNotFinite(float interval)
         {
             var scenario = TestScenarios.TwoTeams(
                 false,
-                new[] { TestCombatants.Medic("Caster", Rock(-1f)) },
+                new[] { TestCombatants.Medic("Caster", Rock(interval)) },
                 new[] { TestCombatants.Dummy("Enemy", true) });
             var simulation = new Simulation(scenario, RuleSets.Current(), _catalog, 1);
 

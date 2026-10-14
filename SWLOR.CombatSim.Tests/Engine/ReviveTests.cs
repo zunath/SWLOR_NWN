@@ -219,6 +219,25 @@ namespace SWLOR.CombatSim.Tests.Engine
             ally.Stats.RevivesReceived.Should().Be(1);
         }
 
+        [Test]
+        public void TunedPvp_AReviveFailsWhenItLands_IfAnEnemyJoinedDuringTheCast()
+        {
+            var medic = TestCombatants.Medic("Medic", TestCombatants.Use("Resuscitation2", AbilityTarget.DeadAlly));
+            var ally = new CombatantSpec { Name = "Ally", MaxHp = 1000 };
+            var enemy = TestCombatants.Dummy("Enemy");
+            enemy.JoinAtSeconds = 2f;
+            var simulation = TestScenarios.Spawn(TestScenarios.TwoTeams(true, new[] { medic, ally }, new[] { enemy }), RuleSets.Tuned(), _catalog);
+            simulation.ApplyDamage(simulation.Get("Enemy"), simulation.Get("Ally"), TestCombatants.EffectivelyUnlimited);
+            var caster = simulation.Get("Medic");
+
+            SimulationClock.RunUntil(simulation, () => caster.Casting != null, 2, "the revive cast to start before the enemy joins");
+            SimulationClock.RunUntil(simulation, simulation.Now + ResuscitationCastSeconds + 1);
+
+            simulation.Get("Ally").IsDead.Should().BeTrue("the PvP gate is checked again when the cast lands");
+            caster.Stats.StmSpent.Should().Be(0, "a revive that fails when it lands spends nothing");
+            caster.Stats.BlockedRevives.Should().BeGreaterThan(0);
+        }
+
         private (Simulation Simulation, Combatant Medic, Combatant Ally, Combatant Enemy) SpawnAndKillAlly(RuleSet rules, bool isPvp)
         {
             var medic = TestCombatants.Medic("Medic", TestCombatants.Use("Resuscitation2", AbilityTarget.DeadAlly));

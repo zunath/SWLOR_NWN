@@ -128,6 +128,38 @@ namespace SWLOR.CombatSim.Tests.Engine
             act.Should().Throw<InvalidDataException>().WithMessage("*TargetPolicy*");
         }
 
+        [TestCase(null)]
+        [TestCase("Tank")]
+        [TestCase("Enemy")]
+        public void Spawn_RejectsANamedAllyThatIsNotOnTheCastersTeam(string targetName)
+        {
+            var scenario = NamedAllyScenario(targetName, joinAtSeconds: 0f);
+
+            var act = () => new Simulation(scenario, RuleSets.Current(), _catalog, 1).Spawn();
+
+            act.Should().Throw<InvalidDataException>().WithMessage("*NamedAlly*");
+        }
+
+        [Test]
+        public void Spawn_AcceptsANamedAllyThatJoinsLater()
+        {
+            var scenario = NamedAllyScenario("Tank 2", joinAtSeconds: 30f);
+
+            var act = () => new Simulation(scenario, RuleSets.Current(), _catalog, 1).Spawn();
+
+            act.Should().NotThrow();
+        }
+
+        private static ScenarioSpec NamedAllyScenario(string targetName, float joinAtSeconds) =>
+            TestScenarios.TwoTeams(
+                false,
+                new[]
+                {
+                    TestCombatants.Medic("Medic", TestCombatants.Use("Benevolence1", AbilityTarget.NamedAlly, targetName: targetName)),
+                    new CombatantSpec { Name = "Tank", MaxHp = 1000, Count = 2, JoinAtSeconds = joinAtSeconds }
+                },
+                new[] { TestCombatants.Dummy("Enemy", true) });
+
         [TestCase(0)]
         [TestCase(-2)]
         public void Spawn_RejectsACountBelowOne(int count)

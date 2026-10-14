@@ -191,7 +191,7 @@ namespace SWLOR.CombatSim.Tests.Engine
             var medic = simulation.Get("Medic");
             SimulationClock.RunUntil(
                 simulation,
-                () => medic.PartyPulses.TryGetValue(ZoneKey, out var pulse) && pulse.TicksLeft <= pulse.Effect.Ticks - pulses,
+                () => medic.GetZone(ZoneKey) is { } pulse && pulse.TicksLeft <= pulse.Effect.Ticks - pulses,
                 30,
                 $"{pulses} zone pulse(s) applied");
         }

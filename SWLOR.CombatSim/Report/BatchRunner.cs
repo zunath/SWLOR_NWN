@@ -46,7 +46,8 @@ namespace SWLOR.CombatSim.Report
 
                     if (!perCombatant.TryGetValue((combatant.TeamIndex, combatant.Name), out var list))
                         perCombatant[(combatant.TeamIndex, combatant.Name)] = list = new List<(Combatant, double)>();
-                    list.Add((combatant, minutes));
+                    // Resource rates count only the time a combatant was in the fight.
+                    list.Add((combatant, Math.Max(result.EndedAt - combatant.Spec.JoinAtSeconds, 1) / 60.0));
                 }
             }
 

@@ -1744,6 +1744,7 @@
                 "min": 1.16,
                 "max": 3.45,
                 "hitChance": 0.67,
+                "type": "Force",
                 "hitChanceVs": {
                   "Dark Force controller": 0.89,
                   "Grenadier (high HP)": 0.75,
@@ -2072,6 +2073,7 @@
                 "min": 7.7,
                 "max": 20.9,
                 "hitChance": 0.61,
+                "type": "Force",
                 "hitChanceVs": {
                   "Light Force bruiser": 0.62,
                   "Pistol sharpshooter": 0.41,

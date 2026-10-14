@@ -114,6 +114,25 @@ namespace SWLOR.CombatSim.Tests.Engine
         }
 
         [Test]
+        public void DamageFromASelfTargetedUse_LandsOnAnEnemy()
+        {
+            var burst = TestCombatants.Use("ForceBurst1", AbilityTarget.Self, minIntervalSeconds: 600);
+            burst.Damage = new DamageSpec { Min = WaveDamage, Max = WaveDamage, HitChance = 1f };
+            var simulation = TestScenarios.Spawn(
+                TestScenarios.TwoTeams(
+                    false,
+                    new[] { TestCombatants.Medic("Medic", burst) },
+                    new[] { TestCombatants.Dummy("Enemy", true) }),
+                RuleSets.Current(),
+                _catalog);
+
+            CastOnce(simulation);
+
+            simulation.Get("Medic").Stats.DamageTakenToHp.Should().Be(0, "a self-centered area never hits its caster");
+            simulation.Get("Enemy").Stats.DamageTakenToHp.Should().Be(WaveDamage);
+        }
+
+        [Test]
         public void Spawn_RejectsADamageProfileOnASingleTargetHeal()
         {
             var use = TestCombatants.Use("Benevolence1", AbilityTarget.Enemy);

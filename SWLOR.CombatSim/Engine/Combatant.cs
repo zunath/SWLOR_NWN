@@ -34,7 +34,8 @@ namespace SWLOR.CombatSim.Engine
 
         public List<TemporaryHpPool> TemporaryHp { get; } = new();
         public Dictionary<string, HealOverTimeInstance> HealsOverTime { get; } = new();
-        public Dictionary<string, PartyPulseInstance> PartyPulses { get; } = new();
+        /// <summary>Zone schedules, one per cast; a zone with a damage reduction has a second entry that refreshes it.</summary>
+        public List<PartyPulseInstance> PartyPulses { get; } = new();
         public Dictionary<string, DamageReductionInstance> DamageReductions { get; } = new();
         public Dictionary<string, double> RecastReadyAt { get; } = new();
 
@@ -75,5 +76,9 @@ namespace SWLOR.CombatSim.Engine
 
         /// <summary>The combined bonus the combatant's perks give to a stat the simulator reads.</summary>
         public int GetStat(StatType stat) => _perkStats.TryGetValue(stat, out var value) ? value : 0;
+
+        /// <summary>The most recent healing schedule of the caster's zone with this key, or null when none is active.</summary>
+        public PartyPulseInstance GetZone(string key) =>
+            PartyPulses.LastOrDefault(pulse => !pulse.RefreshesDamageReduction && pulse.Effect.Key == key);
     }
 }

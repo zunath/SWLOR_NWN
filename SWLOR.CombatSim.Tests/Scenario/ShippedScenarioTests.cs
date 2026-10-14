@@ -33,6 +33,18 @@ namespace SWLOR.CombatSim.Tests.Scenario
         }
 
         [TestCaseSource(nameof(ScenarioFiles))]
+        public void NightmareField_DealsForceDamage_AsInTheGame(string path)
+        {
+            var profiles = ScenarioSpec.Load(path).Teams
+                .SelectMany(team => team.Members)
+                .SelectMany(member => member.Abilities)
+                .Where(use => use.Feat.StartsWith("NightmareField") && use.Damage != null)
+                .Select(use => use.Damage.Type);
+
+            profiles.Should().OnlyContain(type => type == DamageType.Force);
+        }
+
+        [TestCaseSource(nameof(ScenarioFiles))]
         public void EveryShippedScenario_LoadsSpawnsAndRunsUnderEveryRuleSet(string path)
         {
             foreach (var ruleSetName in RuleSets.Names)

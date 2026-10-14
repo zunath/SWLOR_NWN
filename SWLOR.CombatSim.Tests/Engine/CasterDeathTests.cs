@@ -52,18 +52,43 @@ namespace SWLOR.CombatSim.Tests.Engine
             var wounded = simulation.Get("Wounded");
             wounded.Hp = 100;
 
-            SimulationClock.RunUntil(simulation, () => medic.PartyPulses.ContainsKey("KoltoMist"), 10, "the zone placed");
+            SimulationClock.RunUntil(simulation, () => medic.GetZone("KoltoMist") != null, 10, "the zone placed");
             simulation.ApplyDamage(simulation.Get("Enemy"), medic, TestCombatants.EffectivelyUnlimited);
-            var ticksAtDeath = medic.PartyPulses["KoltoMist"].TicksLeft;
+            var ticksAtDeath = medic.GetZone("KoltoMist").TicksLeft;
             var hpAtDeath = wounded.Hp;
 
             SimulationClock.RunUntil(simulation, () => !medic.IsDead, 15, "the medic revived");
             wounded.Hp.Should().Be(hpAtDeath, "pulses while the caster is dead heal no one");
-            medic.PartyPulses["KoltoMist"].TicksLeft.Should().BeLessThan(ticksAtDeath, "those pulses are spent, not saved");
+            medic.GetZone("KoltoMist").TicksLeft.Should().BeLessThan(ticksAtDeath, "those pulses are spent, not saved");
 
             var before = wounded.Hp;
             SimulationClock.RunUntil(simulation, simulation.Now + 10);
             (wounded.Hp - before).Should().BeGreaterThan(0, "the zone's remaining pulses land once its caster is alive again");
+        }
+
+        [Test]
+        public void KoltoMist_RecastBeforeItsZoneEnds_KeepsBothZonesPulsing()
+        {
+            var rules = RuleSets.Current();
+            rules.RecastOverrides["KoltoMist"] = 3f;
+            var simulation = TestScenarios.Spawn(
+                TestScenarios.TwoTeams(
+                    false,
+                    new[]
+                    {
+                        TestCombatants.Medic("Medic", TestCombatants.Use("KoltoMist1", AbilityTarget.Self, minIntervalSeconds: 10)),
+                        new CombatantSpec { Name = "Wounded", MaxHp = 1000 }
+                    },
+                    new[] { TestCombatants.Dummy("Enemy", true) }),
+                rules,
+                _catalog);
+            simulation.Get("Wounded").Hp = 100;
+            var medic = simulation.Get("Medic");
+
+            SimulationClock.RunUntil(simulation, () => medic.Stats.AbilitiesUsed == 2, 20, "the second zone placed");
+
+            medic.PartyPulses.Count(pulse => pulse.Effect.Key == "KoltoMist").Should().Be(2,
+                "each cast schedules its own pulses, as the game's delayed callbacks do");
         }
 
         private double HealingAfterCasterDeath(string feat, string pulseKey)
@@ -79,7 +104,7 @@ namespace SWLOR.CombatSim.Tests.Engine
             var wounded = simulation.Get("Wounded");
             wounded.Hp = 100;
 
-            SimulationClock.RunUntil(simulation, () => medic.PartyPulses.ContainsKey(pulseKey), 10, "the zone placed");
+            SimulationClock.RunUntil(simulation, () => medic.GetZone(pulseKey) != null, 10, "the zone placed");
             simulation.ApplyDamage(simulation.Get("Enemy"), medic, TestCombatants.EffectivelyUnlimited);
             medic.IsDead.Should().BeTrue();
 

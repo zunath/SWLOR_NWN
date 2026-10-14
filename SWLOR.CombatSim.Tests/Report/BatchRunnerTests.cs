@@ -81,6 +81,31 @@ namespace SWLOR.CombatSim.Tests.Report
         }
 
         [Test]
+        public void Run_MeasuresResourceRatesOverTheTimeEachCombatantWasInTheFight()
+        {
+            var scenario = TestScenarios.TwoTeams(
+                false,
+                new[] { TestCombatants.Medic("Early", Burst()), TestCombatants.Medic("Late", Burst()) },
+                new[] { TestCombatants.Dummy("Enemy", true) },
+                durationSeconds: 60f);
+            scenario.Teams[0].Members[1].JoinAtSeconds = 30f;
+
+            var summary = BatchRunner.Run(scenario, RuleSets.Current(), _catalog, 5, seed: 1);
+
+            var early = summary.Combatants.Single(c => c.Name == "Early").AverageFpSpentPerMinute;
+            var late = summary.Combatants.Single(c => c.Name == "Late").AverageFpSpentPerMinute;
+            early.Should().BeGreaterThan(0);
+            late.Should().BeApproximately(early, early * 0.2, "both cast at the same cadence while they are in the fight");
+
+            static AbilityUseSpec Burst()
+            {
+                var use = TestCombatants.Use("ForceBurst1", AbilityTarget.Enemy, minIntervalSeconds: 10f);
+                use.Damage = new DamageSpec { Min = 1f, Max = 1f, HitChance = 1f };
+                return use;
+            }
+        }
+
+        [Test]
         public void Run_WhenNobodyCanHurtAnybody_ReportsFightsEndedByTheTimeLimit()
         {
             var scenario = TestScenarios.TwoTeams(true,

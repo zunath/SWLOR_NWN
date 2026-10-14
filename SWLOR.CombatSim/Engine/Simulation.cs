@@ -23,7 +23,6 @@ namespace SWLOR.CombatSim.Engine
         private const double ConvergenceAccuracySeconds = 30.0;
         private const float ConvergenceHitChanceBonus = 0.05f;
         private const double ReviveHealDelaySeconds = 0.1;
-        private const string DamageReductionRefreshKeySuffix = ":refresh";
         private const int CoordinatedSampleSize = 3;
 
         /// <summary>Perk stats the simulator models; listed perks contribute only these.</summary>
@@ -152,6 +151,22 @@ namespace SWLOR.CombatSim.Engine
 
             for (var teamIndex = 0; teamIndex < _scenario.Teams.Count; teamIndex++)
                 RequireFocusTarget(teamIndex);
+            RequireNamedAllies();
+        }
+
+        // A named ally may join the fight late, but it has to be a combatant on the caster's team.
+        private void RequireNamedAllies()
+        {
+            foreach (var combatant in _combatants)
+            {
+                foreach (var use in combatant.Spec.Abilities.Where(use => use.Target == AbilityTarget.NamedAlly))
+                {
+                    if (!_combatants.Any(c => c.TeamIndex == combatant.TeamIndex && c.Name == use.TargetName))
+                        throw new InvalidDataException(
+                            $"'{combatant.Name}' casts '{use.Feat}' on a NamedAlly '{use.TargetName}' that is not on its team; " +
+                            "copies of a combatant with a Count are named '<name> 1', '<name> 2' and so on.");
+                }
+            }
         }
 
         // A focus target may join the fight late, but it has to exist on an opposing team.
@@ -232,8 +247,8 @@ namespace SWLOR.CombatSim.Engine
             if (!Enum.IsDefined(use.Target))
                 throw new InvalidDataException($"'{use.Feat}' has an unknown Target; use one of {string.Join(", ", Enum.GetNames<AbilityTarget>())}.");
 
-            if (use.MinIntervalSeconds < 0)
-                throw new InvalidDataException($"'{use.Feat}' has a negative MinIntervalSeconds.");
+            if (!(use.MinIntervalSeconds >= 0) || !float.IsFinite(use.MinIntervalSeconds))
+                throw new InvalidDataException($"'{use.Feat}' needs a finite MinIntervalSeconds of at least 0.");
 
             if (use.Damage != null)
                 RequireValidDamage($"'{use.Feat}'", use.Damage);
@@ -332,7 +347,7 @@ namespace SWLOR.CombatSim.Engine
 
         private void ProcessPartyPulses(Combatant caster)
         {
-            foreach (var (key, pulse) in caster.PartyPulses.ToList())
+            foreach (var pulse in caster.PartyPulses.ToList())
             {
                 while (pulse.TicksLeft > 0 && _now >= pulse.NextTickAt)
                 {
@@ -350,7 +365,7 @@ namespace SWLOR.CombatSim.Engine
                 }
 
                 if (pulse.TicksLeft <= 0)
-                    caster.PartyPulses.Remove(key);
+                    caster.PartyPulses.Remove(pulse);
             }
         }
 
@@ -479,6 +494,13 @@ namespace SWLOR.CombatSim.Engine
                 target = EnsureAttackTarget(caster);
             }
 
+            // The game checks the revive rules again when the cast completes; a failed check spends nothing.
+            if (isRevive && !CanRevive(caster, target))
+            {
+                caster.Stats.BlockedRevives++;
+                return;
+            }
+
             if (caster.Fp < cast.FpCost || caster.Stm < cast.StmCost)
             {
                 caster.IsStarved = true;
@@ -499,8 +521,13 @@ namespace SWLOR.CombatSim.Engine
             if (cast.FpCost > 0 && isForce)
                 TriggerConvergence(caster);
 
-            if (cast.Use.Damage != null && (target != null || cast.Use.Damage.Area))
-                ApplyDamageProfile(caster, target, cast.Use.Damage, hitBonus);
+            if (cast.Use.Damage != null)
+            {
+                // Damage lands on enemies even when the use targets the caster or an ally (self-centered areas).
+                var victim = target != null && target.TeamIndex != caster.TeamIndex ? target : EnsureAttackTarget(caster);
+                if (victim != null || cast.Use.Damage.Area)
+                    ApplyDamageProfile(caster, victim, cast.Use.Damage, hitBonus);
+            }
 
             if (effect == null)
                 return;
@@ -543,26 +570,27 @@ namespace SWLOR.CombatSim.Engine
                         break;
                     }
 
-                    caster.PartyPulses[effect.Key] = new PartyPulseInstance
+                    // Each cast keeps its own schedule, so a zone recast before the last one ends doesn't cut it short.
+                    caster.PartyPulses.Add(new PartyPulseInstance
                     {
                         Effect = effect,
                         MaxTargets = cast.Use.MaxTargets,
                         TicksLeft = effect.Ticks,
                         NextTickAt = _now + effect.TickSeconds
-                    };
+                    });
 
                     // The zone's status refreshes at once and then every pulse, ahead of the heals (0, 3 ... 27 seconds).
                     if (effect.DamageReductionPercent > 0)
                     {
                         RefreshPartyDamageReduction(caster, effect, cast.Use.MaxTargets);
-                        caster.PartyPulses[effect.Key + DamageReductionRefreshKeySuffix] = new PartyPulseInstance
+                        caster.PartyPulses.Add(new PartyPulseInstance
                         {
                             Effect = effect,
                             MaxTargets = cast.Use.MaxTargets,
                             RefreshesDamageReduction = true,
                             TicksLeft = effect.Ticks - 1,
                             NextTickAt = _now + effect.TickSeconds
-                        };
+                        });
                     }
                     break;
 
@@ -640,7 +668,7 @@ namespace SWLOR.CombatSim.Engine
             return effect.Kind switch
             {
                 EffectKind.HealOverTime => !target.HealsOverTime.ContainsKey(effect.Key),
-                EffectKind.PartyHealOverTime => !caster.PartyPulses.ContainsKey(effect.Key),
+                EffectKind.PartyHealOverTime => caster.GetZone(effect.Key) == null,
                 EffectKind.TemporaryHp => target.TemporaryHp.All(p => p.Key != effect.Key),
                 EffectKind.PartyTemporaryHp => caster.TemporaryHp.All(p => p.Key != effect.Key),
                 _ => true

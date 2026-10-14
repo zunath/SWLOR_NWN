@@ -197,6 +197,34 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 await InContext(ctx, dm.Creature, model.OnClickSearch());
                 ctx.AssertEqual(0, model.ResultNames.Count, "player characters are excluded from the creature list");
 
+                // A search of every area reads a slice of objects per server tick instead of stalling one.
+                var scan = DMObjectSearch.StartSearch(dm.Creature, DMObjectCategory.Placeables, DMObjectSearchScope.AllAreas, "zzqq nomatch");
+                var slices = 0;
+                var slowestSlice = 0L;
+                var sliceWatch = new System.Diagnostics.Stopwatch();
+                bool isScanComplete;
+                do
+                {
+                    sliceWatch.Restart();
+                    isScanComplete = scan.Continue(DMObjectSearch.ObjectsPerSlice);
+                    slowestSlice = Math.Max(slowestSlice, sliceWatch.ElapsedMilliseconds);
+                    slices++;
+                } while (!isScanComplete);
+                ctx.Log($"All-areas placeable search with no matches: {slices} slices, slowest {slowestSlice} ms.");
+                ctx.Assert(slices > 1, "the module's placeables span more than one search slice");
+
+                var placedProbe = CreateObject(ObjectType.Placeable, "plc_chair", ctx.GetArenaLocation(4f, 4f));
+                SetTag(placedProbe, "dm_chooser_all_areas_probe");
+                await InContext(ctx, dm.Creature, () => model.SelectedCategory = (int)DMObjectCategory.Placeables);
+                await InContext(ctx, dm.Creature, () => model.SearchText = "dm_chooser_all_areas_probe");
+                await ctx.ExecuteInCreatureContextAsync(dm.Creature, () => model.SelectedScope = (int)DMObjectSearchScope.AllAreas);
+                ctx.AssertEqual("Searching every area...", model.ResultSummary, "an all-areas search reports progress");
+                await ctx.WaitUntilAsync(() => model.ResultSummary != "Searching every area...", 10f, "the all-areas search to finish");
+                ctx.AssertEqual(1, model.ResultNames.Count, "the all-areas search finds the placed probe");
+                DestroyObject(placedProbe);
+                await InContext(ctx, dm.Creature, () => model.SelectedScope = (int)DMObjectSearchScope.CurrentArea);
+                await InContext(ctx, dm.Creature, () => model.SelectedCategory = (int)DMObjectCategory.Creatures);
+
                 await InContext(ctx, dm.Creature, () => model.SearchText = "dm_chooser_probe");
                 await InContext(ctx, dm.Creature, model.OnClickSearch());
                 await SelectRow(ctx, dm.Creature, model, 0);

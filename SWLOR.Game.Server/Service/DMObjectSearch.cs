@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.Linq;
 using System.Numerics;
 using SWLOR.Game.Server.Service.DMToolService;
 using SWLOR.NWN.API.NWScript.Enum;
@@ -14,94 +13,36 @@ namespace SWLOR.Game.Server.Service
     public static class DMObjectSearch
     {
         /// <summary>
-        /// Searches stop after this many matches so an all-areas search stays cheap.
+        /// Searches stop after this many matches.
         /// </summary>
         public const int MaxResults = 500;
 
         /// <summary>
-        /// Finds areas or objects whose name, tag, or resref contain every search word.
+        /// How many objects a search examines per server tick before it continues on the next one.
         /// </summary>
-        /// <param name="dm">The DM searching. Their area is used for the current-area scope.</param>
+        public const int ObjectsPerSlice = 4000;
+
+        /// <summary>
+        /// Starts a search for areas or objects whose name, tag, or resref contain every search word.
+        /// Run it with <see cref="DMObjectScan.Continue"/>.
+        /// </summary>
+        /// <param name="dm">The DM searching. The area of whatever they control is used for the current-area scope.</param>
         /// <param name="category">The kind of object to find.</param>
         /// <param name="scope">Whether to search the DM's area or every area. Ignored for areas.</param>
         /// <param name="search">The search text. Empty matches everything.</param>
-        /// <param name="isTruncated">Set when more matches existed than <see cref="MaxResults"/>.</param>
-        public static List<DMObjectSearchResult> Search(
+        public static DMObjectScan StartSearch(
             uint dm,
             DMObjectCategory category,
             DMObjectSearchScope scope,
-            string search,
-            out bool isTruncated)
+            string search)
         {
-            var terms = DMSearchText.GetTerms(search);
-            var results = new List<DMObjectSearchResult>();
-            isTruncated = false;
-
             if (category == DMObjectCategory.Areas)
-            {
-                foreach (var area in GetAllAreas())
-                {
-                    var name = GetName(area);
-                    var tag = GetTag(area);
-                    var resref = GetResRef(area);
-                    if (!DMSearchText.Matches(terms, name, tag, resref))
-                        continue;
+                return new DMObjectScan(category, ObjectType.All, GetAllAreas(), search);
 
-                    if (results.Count >= MaxResults)
-                    {
-                        isTruncated = true;
-                        break;
-                    }
-
-                    results.Add(new DMObjectSearchResult(area, category, name, tag, resref, name));
-                }
-            }
-            else
-            {
-                var objectType = GetObjectType(category);
-                var areas = scope == DMObjectSearchScope.AllAreas
-                    ? GetAllAreas()
-                    : new List<uint> { GetArea(DMPresence.GetControlledCreature(dm)) };
-
-                foreach (var area in areas)
-                {
-                    if (!GetIsObjectValid(area))
-                        continue;
-
-                    var areaName = GetName(area);
-                    for (var obj = GetFirstObjectInArea(area, objectType);
-                         GetIsObjectValid(obj);
-                         obj = GetNextObjectInArea(area, objectType))
-                    {
-                        // Player characters and DMs belong to the player search.
-                        if (category == DMObjectCategory.Creatures &&
-                            (GetIsDM(obj) || (GetIsPC(obj) && !GetIsDMPossessed(obj))))
-                            continue;
-
-                        var name = GetName(obj);
-                        var tag = GetTag(obj);
-                        var resref = GetResRef(obj);
-                        if (!DMSearchText.Matches(terms, name, tag, resref))
-                            continue;
-
-                        if (results.Count >= MaxResults)
-                        {
-                            isTruncated = true;
-                            break;
-                        }
-
-                        results.Add(new DMObjectSearchResult(obj, category, name, tag, resref, areaName));
-                    }
-
-                    if (isTruncated)
-                        break;
-                }
-            }
-
-            return results
-                .OrderBy(result => result.Name, StringComparer.OrdinalIgnoreCase)
-                .ThenBy(result => result.AreaName, StringComparer.OrdinalIgnoreCase)
-                .ToList();
+            var areas = scope == DMObjectSearchScope.AllAreas
+                ? GetAllAreas()
+                : new List<uint> { GetArea(DMPresence.GetControlledCreature(dm)) };
+            return new DMObjectScan(category, GetObjectType(category), areas, search);
         }
 
         /// <summary>

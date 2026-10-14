@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Feature.GuiDefinition.RefreshEvent;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.DMToolService;
@@ -25,6 +26,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         private bool _suppressSearch;
         private string _contentPartial;
         private uint _dm;
+        private DMObjectScan _scan;
+        private int _searchGeneration;
 
         public int SelectedCategory
         {
@@ -225,13 +228,43 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             // The window can stay on a creature the DM no longer possesses, so Current Area is the area of
             // whatever the DM controls now.
-            _results = DMObjectSearch.Search(
+            _scan = DMObjectSearch.StartSearch(
                 _dm,
                 (DMObjectCategory)SelectedCategory,
                 (DMObjectSearchScope)SelectedScope,
-                SearchText,
-                out _isTruncated);
+                SearchText);
+            ContinueSearch(++_searchGeneration, true);
+        }
 
+        // A search of every area reads a slice of objects per server tick, so a large search never stalls the server.
+        private void ContinueSearch(int generation, bool isFirstSlice)
+        {
+            if (generation != _searchGeneration ||
+                !GetIsObjectValid(Player) ||
+                NuiFindWindow(Player, Gui.BuildWindowId(WindowType)) != WindowToken)
+                return;
+
+            if (!_scan.Continue(DMObjectSearch.ObjectsPerSlice))
+            {
+                if (isFirstSlice)
+                {
+                    _results = new List<DMObjectSearchResult>();
+                    _isTruncated = false;
+                    ShowResults();
+                    ResultSummary = "Searching every area...";
+                }
+
+                Scheduler.Schedule(() => ContinueSearch(generation, false), TimeSpan.Zero);
+                return;
+            }
+
+            _results = _scan.Results.ToList();
+            _isTruncated = _scan.IsTruncated;
+            ShowResults();
+        }
+
+        private void ShowResults()
+        {
             _suppressSearch = true;
             SelectedPageIndex = 0;
             _suppressSearch = false;

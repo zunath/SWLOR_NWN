@@ -18,6 +18,8 @@ namespace SWLOR.Game.Server.Service
         private const int CandidatePageSize = 200;
         // Keeps a search whose words are all common from loading most of the character records.
         private const int MaxOfflineCandidates = 1000;
+        // Bounds the index count queries one search can make.
+        private const int MaxCountedSeedWords = 3;
 
         private static readonly string[] OfflineSearchFields =
         {
@@ -184,10 +186,13 @@ namespace SWLOR.Game.Server.Service
             if (terms.Count == 1 && Guid.TryParse(terms[0], out var playerId))
                 Consider(DB.Get<Player>(playerId.ToString()));
 
-            // A word the index cannot query matches everything, so it can never narrow the candidates.
+            // A word the index cannot query matches everything, so it can never narrow the candidates. Counting
+            // hits costs several queries per word, so only the longest few words, usually the rarest, are counted.
             var seed = PartialMatchSearchText.GetWords(search)
                 .Where(PartialMatchSearchText.IsQueryableWord)
                 .Distinct(StringComparer.OrdinalIgnoreCase)
+                .OrderByDescending(word => word.Length)
+                .Take(MaxCountedSeedWords)
                 .OrderBy(CountOfflineHits)
                 .FirstOrDefault();
             if (seed == null)

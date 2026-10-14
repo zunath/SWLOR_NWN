@@ -16,8 +16,13 @@ namespace SWLOR.Game.Server.Service.StatusEffectService
         {
             _allActiveEffects.Add(statusEffect);
 
+            // Every StatGroup lists every stat, mostly at zero. A zero never changes a sum, or a
+            // maximum or bitwise OR built up from zero, so only nonzero entries are applied.
             foreach (var (type, value) in statusEffect.StatGroup.Stats)
             {
+                if (value == 0)
+                    continue;
+
                 // Non-additive stats cannot be maintained as a running sum. Recompute them from
                 // the active set so removing one effect reveals the next active value correctly.
                 if (Stat.GetStatTypeAggregation(type) != StatTypeAggregation.Additive)
@@ -32,12 +37,18 @@ namespace SWLOR.Game.Server.Service.StatusEffectService
 
             foreach (var (type, value) in statusEffect.StatGroup.Resists)
             {
+                if (value == 0)
+                    continue;
+
                 StatGroup.Resists.TryGetValue(type, out var current);
                 StatGroup.Resists[type] = current + value;
             }
 
             foreach (var (type, value) in statusEffect.StatGroup.Abilities)
             {
+                if (value == 0)
+                    continue;
+
                 StatGroup.Abilities.TryGetValue(type, out var current);
                 StatGroup.Abilities[type] = current + value;
             }
@@ -46,6 +57,9 @@ namespace SWLOR.Game.Server.Service.StatusEffectService
             {
                 foreach (var (skill, value) in skills)
                 {
+                    if (value == 0)
+                        continue;
+
                     StatGroup.CraftSkillBonuses[bonusType].TryGetValue(skill, out var current);
                     StatGroup.CraftSkillBonuses[bonusType][skill] = current + value;
                 }
@@ -71,6 +85,9 @@ namespace SWLOR.Game.Server.Service.StatusEffectService
 
             foreach (var (type, value) in statusEffect.StatGroup.Stats)
             {
+                if (value == 0)
+                    continue;
+
                 if (Stat.GetStatTypeAggregation(type) != StatTypeAggregation.Additive)
                 {
                     RecomputeNonAdditiveStat(type);
@@ -83,13 +100,13 @@ namespace SWLOR.Game.Server.Service.StatusEffectService
 
             foreach (var (type, value) in statusEffect.StatGroup.Resists)
             {
-                if (StatGroup.Resists.TryGetValue(type, out var current))
+                if (value != 0 && StatGroup.Resists.TryGetValue(type, out var current))
                     StatGroup.Resists[type] = current - value;
             }
 
             foreach (var (type, value) in statusEffect.StatGroup.Abilities)
             {
-                if (StatGroup.Abilities.TryGetValue(type, out var current))
+                if (value != 0 && StatGroup.Abilities.TryGetValue(type, out var current))
                     StatGroup.Abilities[type] = current - value;
             }
 
@@ -97,7 +114,7 @@ namespace SWLOR.Game.Server.Service.StatusEffectService
             {
                 foreach (var (skill, value) in skills)
                 {
-                    if (StatGroup.CraftSkillBonuses[bonusType].TryGetValue(skill, out var current))
+                    if (value != 0 && StatGroup.CraftSkillBonuses[bonusType].TryGetValue(skill, out var current))
                         StatGroup.CraftSkillBonuses[bonusType][skill] = current - value;
                 }
             }

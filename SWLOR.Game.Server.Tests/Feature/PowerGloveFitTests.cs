@@ -31,6 +31,8 @@ public class PowerGloveFitTests
     {
         PowerGloveHandFitCatalog.GetScale("pmh0_handr001", appearance).Should().Be(1f);
         PowerGloveHandFitCatalog.GetScale("pmh0_handl001", appearance).Should().Be(1f);
+        PowerGloveHandFitCatalog.GetScale("pfh0_handr109", appearance).Should().Be(1f);
+        PowerGloveHandFitCatalog.GetScale("pfh0_handl109", appearance).Should().Be(1f);
         var larger = PowerGloveHandFitCatalog.GetScale("pme0_handl208", appearance);
         larger.Should().BeGreaterThan(1f);
         Invoke<float>("ResolveScale", "pmh0_handr001", "pme0_handl208", appearance).Should().Be(larger);

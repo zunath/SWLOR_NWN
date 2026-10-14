@@ -387,7 +387,7 @@ namespace SWLOR.NWN.API.NWScript.Enum
         SentinelGuardStatusEffect = 383,
         SentinelStanceStatusEffect = 384,
         SereneFocusStatusEffect = 385,
-        ShadowflowTechniqueStatusEffect = 386,
+        ShadowflowStatusEffect = 386,
         ShadowStrikeStatusEffect = 387,
         ShelterCircleStatusEffect = 388,
         Shielding1StatusEffect = 389,

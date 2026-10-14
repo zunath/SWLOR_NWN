@@ -1005,7 +1005,7 @@ public class GeneratedWeaponPerkBehaviorTests
         AssertStatusStat(assassins, StatType.PoisonDamageDealtPercentAdjustment, 20);
         AssertStatusStat(assassins, StatType.AttackPercentAdjustment, -10);
 
-        var shadowflow = new ShadowflowTechniqueStatusEffect();
+        var shadowflow = new ShadowflowStatusEffect();
         AssertStatusStat(shadowflow, StatType.AutoAttackHamstringSkillType, (int)SkillType.Invalid);
         AssertStatusStat(shadowflow, StatType.AutoAttackHamstringDurationSeconds, 18);
         AssertStatusStat(shadowflow, StatType.DefensePercentAdjustment, -20);
@@ -1230,7 +1230,7 @@ public class GeneratedWeaponPerkBehaviorTests
             AssertFeatSpellTargeting(featRows, spellRows, feat, "****", "1", "M", "0x03", "0");
         }
 
-        var shadowflow = new ShadowflowTechniqueAbilityDefinition().BuildAbilities()[FeatType.ShadowflowStance1];
+        var shadowflow = new ShadowflowAbilityDefinition().BuildAbilities()[FeatType.ShadowflowStance1];
         shadowflow.IsHostileAbility.Should().BeFalse();
         shadowflow.RequiresTarget.Should().BeFalse();
 

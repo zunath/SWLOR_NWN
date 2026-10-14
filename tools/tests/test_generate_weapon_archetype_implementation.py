@@ -17,7 +17,7 @@ SPEC.loader.exec_module(GENERATOR)
 class GeneratedWeaponTargetingTests(unittest.TestCase):
     def test_shadowflow_rename_preserves_identity_and_timed_effects(self):
         row = next(row for row in GENERATOR.read_manifest()
-                   if row["PerkName"] == "Shadowflow Technique")
+                   if row["PerkName"] == "Shadowflow")
         _, feats = GENERATOR.parse_enum_values(ROOT / "SWLOR.NWN.API/NWScript/Enum/FeatType.cs")
         targeting = GENERATOR.read_spell_targeting()
         status_types = GENERATOR.known_status_effect_types()
@@ -36,11 +36,11 @@ class GeneratedWeaponTargetingTests(unittest.TestCase):
                 GENERATOR.generate_ability_definitions([row], feats, {})
                 GENERATOR.generate_stance_status_effects([row])
             for root in (output_root, ROOT):
-                ability = (root / "SWLOR.Game.Server/Feature/AbilityDefinition/Vibroknife/ShadowflowTechniqueAbilityDefinition.cs").read_text()
-                self.assertIn('.Name("Shadowflow Technique")', ability)
-                self.assertRegex(ability, r"SkillType\.Vibroknife,\s+8,\s+18,\s+typeof\(ShadowflowTechniqueStatusEffect\)")
-                status = (root / "SWLOR.Game.Server/Feature/StatusEffectDefinition/ShadowflowTechniqueStatusEffect.cs").read_text()
-                self.assertIn('Name => "Shadowflow Technique"', status)
+                ability = (root / "SWLOR.Game.Server/Feature/AbilityDefinition/Vibroknife/ShadowflowAbilityDefinition.cs").read_text()
+                self.assertIn('.Name("Shadowflow")', ability)
+                self.assertRegex(ability, r"SkillType\.Vibroknife,\s+8,\s+18,\s+typeof\(ShadowflowStatusEffect\)")
+                status = (root / "SWLOR.Game.Server/Feature/StatusEffectDefinition/ShadowflowStatusEffect.cs").read_text()
+                self.assertIn('Name => "Shadowflow"', status)
                 self.assertIn("AutoAttackHamstringDurationSeconds] = 18", status)
 
     def test_regeneration_preserves_weapon_independent_attack_triggers(self):
@@ -59,7 +59,7 @@ class GeneratedWeaponTargetingTests(unittest.TestCase):
             with self.subTest(perk=name):
                 stats = dict(GENERATOR.description_stat_entries(rows[name], name))
                 self.assertEqual("(int)SkillType.Invalid", stats[stat])
-        shadow = dict(GENERATOR.exact_weapon_stance_stat_entries(rows["Shadowflow Technique"], "Shadowflow Technique"))
+        shadow = dict(GENERATOR.exact_weapon_stance_stat_entries(rows["Shadowflow"], "Shadowflow"))
         self.assertEqual("(int)SkillType.Invalid", shadow["AutoAttackHamstringSkillType"])
         last_word = dict(GENERATOR.profile_property_lines(rows["Last Word"], 1, None))
         self.assertEqual("(int)SkillType.Invalid", last_word["TemporaryAvoidedAttackNextAutoAttackNoDelaySkillType"])

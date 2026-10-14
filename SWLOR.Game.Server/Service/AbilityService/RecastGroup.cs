@@ -704,7 +704,7 @@ namespace SWLOR.Game.Server.Service.AbilityService
         RuptureStrike = 436,
         [RecastGroup("Hemorrhage", "Hemorrhage", true)]
         Hemorrhage = 437,
-        [RecastGroup("Shadowflow Technique", "Shadowflow", true)]
+        [RecastGroup("Shadowflow", "Shadowflow", true)]
         ShadowflowStance = 438,
         [RecastGroup("Severing Strike", "Sever. Strike", true)]
         SeveringStrike = 439,

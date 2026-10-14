@@ -5805,8 +5805,8 @@
   {
     "Id": "ShadowflowStance",
     "EquipmentRequirement": "OneHanded",
-    "Name": "Shadowflow Technique",
-    "DisplayName": "Shadowflow Technique",
+    "Name": "Shadowflow",
+    "DisplayName": "Shadowflow",
     "InternalName": "sw_shadf_stn",
     "Category": "Vibroknife",
     "Type": "Stance",
@@ -5818,7 +5818,7 @@
       "ShadowflowStance1"
     ],
     "DefinitionFiles": [
-      "SWLOR.Game.Server/Feature/AbilityDefinition/Vibroknife/ShadowflowTechniqueAbilityDefinition.cs"
+      "SWLOR.Game.Server/Feature/AbilityDefinition/Vibroknife/ShadowflowAbilityDefinition.cs"
     ],
     "CurrentPlayback": "DoubleStrike"
   },

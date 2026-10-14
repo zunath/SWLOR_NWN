@@ -1732,7 +1732,7 @@
 "StatusEffect","SentinelGuardStatusEffect","Sentinel Guard","Beneficial","","ief_sentgrd","SWLOR.Game.Server\Feature\StatusEffectDefinition\SentinelGuardStatusEffect.cs",""
 "StatusEffect","SentinelStanceStatusEffect","Sentinel Stance","Beneficial","","ief_sentstnc","SWLOR.Game.Server\Feature\StatusEffectDefinition\SentinelStanceStatusEffect.cs",""
 "StatusEffect","SereneFocusStatusEffect","Serene Focus","Beneficial","","ief_srnfoc","SWLOR.Game.Server\Feature\StatusEffectDefinition\SereneFocusStatusEffect.cs",""
-"StatusEffect","ShadowflowTechniqueStatusEffect","Shadowflow Technique","Beneficial","","ief_shdwflwstnc","SWLOR.Game.Server\Feature\StatusEffectDefinition\ShadowflowTechniqueStatusEffect.cs",""
+"StatusEffect","ShadowflowStatusEffect","Shadowflow","Beneficial","","ief_shdwflwstnc","SWLOR.Game.Server\Feature\StatusEffectDefinition\ShadowflowStatusEffect.cs",""
 "StatusEffect","ShadowStrikeStatusEffect","Shadow Strike","Harmful","","ief_shdwstrk","SWLOR.Game.Server\Feature\StatusEffectDefinition\ShadowStrikeStatusEffect.cs",""
 "StatusEffect","ShelterCircleStatusEffect","Shelter Circle","Beneficial","","ief_shelcirc","SWLOR.Game.Server\Feature\StatusEffectDefinition\ShelterCircleStatusEffect.cs",""
 "StatusEffect","Shielding1StatusEffect","Shielding I","Beneficial","1","ief_shld1","SWLOR.Game.Server\Feature\StatusEffectDefinition\Shielding1StatusEffect.cs",""

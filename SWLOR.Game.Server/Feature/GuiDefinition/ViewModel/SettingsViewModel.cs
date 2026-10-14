@@ -164,6 +164,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         protected override void Initialize(GuiPayloadBase initialPayload)
         {
+            EnsureUsableWindowGeometry();
             SelectedIndex = -1;
             SelectedColor = new GuiColor(0, 0, 0);
             SelectedTabId = 0;
@@ -194,6 +195,38 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             WatchOnClient(model => model.SelectedColor);
             WatchOnClient(model => model.SelfQuickCastEnabled);
             WatchOnClient(model => model.EnemyQuickCastEnabled);
+
+            // Reapply after both the root and initial tab redraw nudges complete.
+            DelayCommand(0.0f, () => EnsureUsableWindowGeometry());
+        }
+
+        protected override void OnClientPropertyUpdated(string propertyName)
+        {
+            if (propertyName != nameof(Geometry) || !EnsureUsableWindowGeometry() || WindowToken <= 0)
+                return;
+
+            // A client resize can commit after its watch callback. Republish on the next tick.
+            DelayCommand(0.0f, () =>
+            {
+                if (Gui.IsWindowOpen(Player, WindowType))
+                    OnPropertyChanged(nameof(Geometry));
+            });
+        }
+
+        private bool EnsureUsableWindowGeometry()
+        {
+            var current = Geometry;
+            if (current == null ||
+                current.Width >= SettingsDefinition.MinimumWindowWidth &&
+                current.Height >= SettingsDefinition.MinimumWindowHeight)
+                return false;
+
+            Geometry = new GuiRectangle(
+                current.X,
+                current.Y,
+                Math.Max(current.Width, SettingsDefinition.MinimumWindowWidth),
+                Math.Max(current.Height, SettingsDefinition.MinimumWindowHeight));
+            return true;
         }
 
         private void LoadTargetingView()

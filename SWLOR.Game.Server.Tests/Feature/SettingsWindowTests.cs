@@ -3,12 +3,104 @@ using Newtonsoft.Json;
 using NUnit.Framework;
 using System.Reflection;
 using SWLOR.Game.Server.Entity;
+using SWLOR.Game.Server.Feature.GuiDefinition;
 using SWLOR.Game.Server.Feature.GuiDefinition.ViewModel;
+using SWLOR.Game.Server.Service.GuiService;
+using SWLOR.Game.Server.Service.GuiService.Component;
 
 namespace SWLOR.Game.Server.Tests.Feature;
 
 public class SettingsWindowTests
 {
+    [TestCase(375f, 340f, 400f, 450f)]
+    [TestCase(100f, 20f, 400f, 450f)]
+    [TestCase(600f, 340f, 600f, 450f)]
+    [TestCase(375f, 640f, 400f, 640f)]
+    [TestCase(400f, 450f, 400f, 450f)]
+    [TestCase(600f, 640f, 600f, 640f)]
+    public void Geometry_RepairsLegacySizesWithoutMovingOrShrinkingTheWindow(
+        float width, float height, float expectedWidth, float expectedHeight)
+    {
+        var model = new SettingsViewModel { Geometry = new GuiRectangle(37f, 52f, width, height) };
+
+        typeof(SettingsViewModel).GetMethod("EnsureUsableWindowGeometry", BindingFlags.Instance | BindingFlags.NonPublic)!
+            .Invoke(model, null);
+
+        model.Geometry.X.Should().Be(37f);
+        model.Geometry.Y.Should().Be(52f);
+        model.Geometry.Width.Should().Be(expectedWidth);
+        model.Geometry.Height.Should().Be(expectedHeight);
+    }
+
+    [Test]
+    public void Geometry_ClientResizeCorrectionPreservesDraftsAndSelectedTab()
+    {
+        var model = new SettingsViewModel { SelfQuickCastEnabled = true, EnemyQuickCastEnabled = false };
+        typeof(SettingsViewModel).GetProperty(nameof(SettingsViewModel.SelectedTabId))!.SetValue(model, 3);
+        var callback = typeof(SettingsViewModel).GetMethod("OnClientPropertyUpdated", BindingFlags.Instance | BindingFlags.NonPublic)!;
+        var published = new List<string>();
+        model.PropertyChanged += (_, args) => published.Add(args.PropertyName!);
+
+        for (var cycle = 0; cycle < 3; cycle++)
+        {
+            model.Geometry = new GuiRectangle(37f, 52f, 375f, 340f);
+            published.Clear();
+            callback.Invoke(model, new object[] { nameof(model.Geometry) });
+
+            model.Geometry.Width.Should().Be(400f);
+            model.Geometry.Height.Should().Be(450f);
+            model.Geometry.X.Should().Be(37f);
+            model.Geometry.Y.Should().Be(52f);
+            model.SelectedTabId.Should().Be(3);
+            model.SelfQuickCastEnabled.Should().BeTrue();
+            model.EnemyQuickCastEnabled.Should().BeFalse();
+            published.Should().Equal(nameof(model.Geometry));
+
+            published.Clear();
+            callback.Invoke(model, new object[] { nameof(model.Geometry) });
+            published.Should().BeEmpty("the corrected client echo must not trigger another correction");
+
+            model.Geometry = new GuiRectangle(37f, 52f, 600f, 640f);
+            published.Clear();
+            callback.Invoke(model, new object[] { nameof(model.Geometry) });
+            model.Geometry.Width.Should().Be(600f);
+            model.Geometry.Height.Should().Be(640f);
+            published.Should().BeEmpty("enlarging remains supported");
+        }
+    }
+
+    [Test]
+    public void Geometry_RepairsSavedSizesOnOpenWithoutFixingColumnsToOneRowHeight()
+    {
+        var (definition, viewModel) = LoadSettingsSources();
+        definition.Should().Contain(".SetInitialGeometry(0, 0, MinimumWindowWidth, MinimumWindowHeight)");
+        SettingsDefinition.MinimumWindowWidth.Should().Be(400f);
+        SettingsDefinition.MinimumWindowHeight.Should().Be(450f);
+
+        var initialize = ExtractMethod(viewModel, "protected override void Initialize", "protected override void OnClientPropertyUpdated");
+        initialize.IndexOf("EnsureUsableWindowGeometry();", StringComparison.Ordinal)
+            .Should().BeLessThan(initialize.IndexOf("LoadGeneralView();", StringComparison.Ordinal));
+        initialize.Should().Contain("DelayCommand(0.0f, () => EnsureUsableWindowGeometry());");
+        initialize.IndexOf("DelayCommand(0.0f, () => EnsureUsableWindowGeometry());", StringComparison.Ordinal)
+            .Should().BeGreaterThan(initialize.IndexOf("Tabs.Select(this, SettingsView, SelectedTabId", StringComparison.Ordinal));
+        var resize = ExtractMethod(viewModel, "protected override void OnClientPropertyUpdated", "private bool EnsureUsableWindowGeometry");
+        resize.Should().Contain("propertyName != nameof(Geometry) || !EnsureUsableWindowGeometry() || WindowToken <= 0");
+        resize.Should().Contain("DelayCommand(0.0f, () =>");
+        resize.Should().Contain("if (Gui.IsWindowOpen(Player, WindowType))");
+        resize.Should().Contain("OnPropertyChanged(nameof(Geometry));");
+        resize.Should().NotContain("Geometry =", "the deferred callback must publish the latest rectangle instead of capturing an old drag position");
+        resize.Should().NotContain("LoadGeneralView");
+        resize.Should().NotContain("LoadTargetingView");
+
+        var general = ExtractSection(definition, ".DefinePartialView(SettingsViewModel.GeneralPartial", ".DefinePartialView(SettingsViewModel.IdentityPartial");
+        var identity = ExtractSection(definition, ".DefinePartialView(SettingsViewModel.IdentityPartial", ".DefinePartialView(SettingsViewModel.ChatPartial");
+        general.Should().NotContain(".SetHeight(30f)", "AddRow returns the column, so chained row heights fix the whole column to one row's height");
+        identity.Should().NotContain(".SetHeight(30f)");
+        general.Should().Contain(".SetText(\"Cooldown Floating Text\")");
+        general.Should().Contain(".SetText(\"Change Description\")");
+        definition.Should().Contain("panel.SetScrollbars(NuiScrollbars.None);");
+    }
+
     [Test]
     public void Tabs_UseSeparatePartialViewsAndPreserveWindowGeometry()
     {

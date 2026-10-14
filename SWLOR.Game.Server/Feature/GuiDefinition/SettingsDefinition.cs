@@ -8,6 +8,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
 {
     public class SettingsDefinition : IGuiWindowDefinition
     {
+        public const float MinimumWindowWidth = 400f;
+        public const float MinimumWindowHeight = 450f;
+
         private readonly GuiWindowBuilder<SettingsViewModel> _builder = new();
 
         public GuiConstructedWindow BuildWindow()
@@ -16,7 +19,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                 .SetIsResizable(true)
                 .SetIsCollapsible(true)
                 .SetIsClosable(true)
-                .SetInitialGeometry(0, 0, 400f, 450f)
+                .SetInitialGeometry(0, 0, MinimumWindowWidth, MinimumWindowHeight)
                 .SetTitle("Settings")
 
                 .DefinePartialView(SettingsViewModel.GeneralPartial, view =>
@@ -33,8 +36,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                                 .SetTooltip("Shows or hides achievement notification window. You will still continue to acquire achievements even if this setting is disabled.")
                                 .SetWidth(230f)
                                 .BindIsChecked(model => model.DisplayAchievementNotification);
-                        })
-                        .SetHeight(30f);
+                        });
 
                         col.AddRow(row =>
                         {
@@ -46,8 +48,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                                 .SetTooltip("Toggles Subdual Mode. If turned on, when you kill an opponent they will be brought to 1 hit point and be knocked down for a minute instead of dying.")
                                 .SetWidth(230f)
                                 .BindIsChecked(model => model.SubdualMode);
-                        })
-                            .SetHeight(30f);
+                        });
 
 
                         col.AddRow(row =>
@@ -60,8 +61,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                                 .SetTooltip("If enabled, you will receive periodic reminders about automatic server resets.")
                                 .SetWidth(230f)
                                 .BindIsChecked(model => model.DisplayServerResetReminders);
-                        })
-                            .SetHeight(30f);
+                        });
 
                         col.AddRow(row =>
                         {
@@ -73,8 +73,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                                 .SetTooltip("If enabled, your Stamina and FP show as compact bars on your character portrait. If disabled, they appear in the full HP/STM/FP window docked in the lower-right corner.")
                                 .SetWidth(230f)
                                 .BindIsChecked(model => model.PortraitVitals);
-                        })
-                            .SetHeight(30f);
+                        });
 
                         col.AddRow(row =>
                         {
@@ -86,8 +85,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                                 .SetTooltip("Warns you when one or more party members are outside the range of a Comms message and do not receive it.")
                                 .SetWidth(230f)
                                 .BindIsChecked(model => model.DisplayCommsOutOfRangeWarnings);
-                        })
-                            .SetHeight(30f);
+                        });
 
                         col.AddRow(row =>
                         {
@@ -132,8 +130,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                                 .SetTooltip("Shows your gray public description beside your own character name.")
                                 .SetWidth(230f)
                                 .BindIsChecked(model => model.ShowOwnDescriptor);
-                        })
-                            .SetHeight(30f);
+                        });
 
                         col.AddRow(row =>
                         {
@@ -145,8 +142,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                                 .SetTooltip("Shows another character's gray public description beside your private label for them.")
                                 .SetWidth(230f)
                                 .BindIsChecked(model => model.ShowDescriptorsForNamedPlayers);
-                        })
-                            .SetHeight(30f);
+                        });
 
                         col.AddRow(row =>
                         {
@@ -158,8 +154,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                                 .SetTooltip("Hides your account/community name from player-facing lists. This is enabled by default.")
                                 .SetWidth(230f)
                                 .BindIsChecked(model => model.ScrambleAccountName);
-                        })
-                            .SetHeight(30f);
+                        });
                     });
                 })
 

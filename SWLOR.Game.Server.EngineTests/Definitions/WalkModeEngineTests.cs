@@ -57,10 +57,12 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 AssertSpeed(0.75f, "disabling walk does not clear a movement penalty");
 
                 TemporaryStatModifier.Add(player, StatType.MovementSpeedDisabled, 1, 30f);
+                Stat.ApplyCreatureMovementRate(player);
+                var disabledMovementFactor = CreaturePlugin.GetMovementRateFactor(player);
                 await ToggleAsync();
-                AssertSpeed(0f, "walking cannot bypass disabled movement");
+                AssertSpeed(0f, "walking preserves disabled movement", disabledMovementFactor);
                 await ToggleAsync();
-                AssertSpeed(0f, "disabling walk cannot bypass disabled movement");
+                AssertSpeed(0f, "disabling walk preserves disabled movement", disabledMovementFactor);
             }
             finally
             {
@@ -74,14 +76,15 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             Task ToggleAsync() => ctx.ExecuteInCreatureContextAsync(player, () =>
                 command.DoAction(player, OBJECT_INVALID, null));
 
-            void AssertSpeed(float expected, string label)
+            void AssertSpeed(float expected, string label, float? expectedNative = null)
             {
                 var calculated = Stat.GetMovementSpeedMultiplier(player);
                 var applied = CreaturePlugin.GetMovementRateFactor(player);
                 ctx.Assert(Math.Abs(expected - calculated) < 0.001f,
                     $"{label}: calculated multiplier expected {expected}, got {calculated}");
-                ctx.Assert(Math.Abs(expected - applied) < 0.001f,
-                    $"{label}: native movement factor expected {expected}, got {applied}");
+                var nativeExpected = expectedNative ?? expected;
+                ctx.Assert(Math.Abs(nativeExpected - applied) < 0.001f,
+                    $"{label}: native movement factor expected {nativeExpected}, got {applied}");
             }
         }
     }

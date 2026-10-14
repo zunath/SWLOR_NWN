@@ -2,7 +2,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using SWLOR.Game.Server.Core.Beamdog;
-using SWLOR.Game.Server.Feature.GuiDefinition.ViewModel;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.GuiService.Component;
@@ -128,6 +127,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                 {
                     x = 0;
                     y += LineHeight;
+                    // A space that forces a wrap would otherwise indent the next line.
+                    if (string.IsNullOrWhiteSpace(character.Text))
+                        continue;
                 }
 
                 var last = result.LastOrDefault();
@@ -146,9 +148,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
             var value = character[0];
             return value is >= ' ' and <= '~' ? GlyphAdvances[value - ' '] * (17f / 1080f) + 0.5f : 17f;
         }
-
-        public static Json BuildLayout(string text, float height) =>
-            BuildLayout<ExamineItemViewModel>(text, height);
 
         public static Json BuildLayout<TViewModel>(string text, float height, float width = TextWidth)
             where TViewModel : IGuiViewModel

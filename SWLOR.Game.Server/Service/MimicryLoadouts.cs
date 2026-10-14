@@ -11,17 +11,16 @@ public static class MimicryLoadouts
     public const int MaxLoadouts = 5;
     public const int MaxNameLength = 24;
 
-    public static bool EnsureDefault(Player player)
+    public const string StartingBuildName = "Default";
+
+    /// <summary>Gives a character with no saved builds an empty starting build.</summary>
+    public static bool EnsureStartingBuild(Player player)
     {
         player.MimicryLoadouts ??= new List<MimicryLoadout>();
         if (player.MimicryLoadouts.Count > 0)
             return false;
 
-        var loadout = new MimicryLoadout
-        {
-            Name = "Default",
-            Techniques = new List<FeatType>(player.EquippedTechniques)
-        };
+        var loadout = new MimicryLoadout { Name = StartingBuildName };
         player.MimicryLoadouts.Add(loadout);
         player.ActiveMimicryLoadoutId = loadout.Id;
         return true;

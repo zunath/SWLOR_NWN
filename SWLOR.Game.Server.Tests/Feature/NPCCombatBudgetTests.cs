@@ -5,6 +5,7 @@ using System.Xml.Linq;
 using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.Service.CombatService;
 
 namespace SWLOR.Game.Server.Tests.Feature;
 
@@ -194,6 +195,35 @@ public class NPCCombatBudgetTests
             count++;
         }
         count.Should().Be(15, "all existing premium loot families, including the Great Arkanian Dragon and Foundry Overseer, must receive the group encounter budget");
+    }
+
+    [TestCase("E", "W", "AE", ResistanceType.Fire, -10)]
+    [TestCase("I", "AA", "AI", ResistanceType.Mind, -15)]
+    [TestCase("L", "AD", "AL", ResistanceType.Disruption, -10)]
+    public void GreatArkanianDragon_PreservesBeastPackageWeaknesses(
+        string packageColumn, string resistanceColumn, string adjustmentColumn,
+        ResistanceType resistanceType, int expectedWeakness)
+    {
+        var root = FindRoot();
+        var dragon = ReadRows(root, "World NPCs").Single(r => r["C"] == "garkaniandragon");
+        var packageKey = $"{Number(dragon["D"])}|{dragon["E"]}|{dragon["G"]}";
+        packageKey.Should().Be("48|Boss|Beast");
+        var package = ReadRows(root, "Enemy Resistance Packages").Single(r => r["A"] == packageKey);
+        var weakness = Number(package[packageColumn]);
+        weakness.Should().Be(expectedWeakness, "the reviewed Beast package defines the dragon's weaknesses");
+        Number(dragon[adjustmentColumn]).Should().Be(weakness,
+            "the resistance formula clamps the base package to zero before applying the authored adjustment");
+        Number(dragon[resistanceColumn]).Should().Be(weakness,
+            "the adjusted combat budget must retain the Beast package weakness");
+
+        using var utc = ReadAsset(root, "utc", dragon["C"]);
+        using var skin = ReadAsset(root, "uti", Equipment(utc.RootElement)[SkinSlot]);
+        var property = skin.RootElement.GetProperty("PropertiesList").GetProperty("value").EnumerateArray()
+            .Single(p => Int(p, "PropertyName") == 133 && Int(p, "Subtype") == (int)resistanceType);
+        Int(property, "CostTable").Should().Be(54);
+        Int(property, "CostValue").Should().Be(Resistance.EncodeItemPropertyCostTableValue(weakness));
+        Resistance.DecodeItemPropertyCostTableValue(Int(property, "CostValue")).Should().Be(weakness,
+            "the equipped stat skin must apply the source package weakness at runtime");
     }
 
     [Test]

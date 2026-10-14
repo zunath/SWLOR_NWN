@@ -27,7 +27,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwinPistol
                 .HasRecastDelay(recastGroup, cooldown)
                 .HasMaxRange(spec.MaxRange)
                 .UsesAuthoredAnimationAtImpact()
-                .UsesImpactAnimation(Animation.DoubleShot)
+                .UsesImpactAnimation(Animation.CastOutAnimation)
                 .DisplaysVisualEffectOnSuccessfulImpact(VisualEffect.Vfx_Com_Blood_Spark_Small)
                 .HasCustomValidation((actor, target, _, location) => TwinPistolAbility.Validate(actor, target, location, spec))
                 .HasActivationAction((actor, target, _, location) => TwinPistolAbility.Begin(actor, target, location, spec))
@@ -54,7 +54,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwinPistol
                 .CombatImpactDamageAbility(AbilityType.Perception)
                 .HasRecastDelay(recastGroup, 30f)
                 .UsesImmediateAuthoredAnimation()
-                .UsesAnimation(Animation.PointPistol)
+                .UsesAnimation(Animation.CastOutAnimation)
                 .DisplaysVisualEffectOnSuccessfulImpact(VisualEffect.Vfx_Imp_Haste);
             ConfigureToggle(builder, status);
         }

@@ -1865,3 +1865,4 @@
 "StatusEffect","OrdinaryAttackHasteStatusEffect3","Attack Rhythm 3","Beneficial","3","ief_akimboramp3","SWLOR.Game.Server\Feature\StatusEffectDefinition\OrdinaryAttackHasteStatusEffect.cs",""
 "StatusEffect","OrdinaryAttackHasteStatusEffect4","Attack Rhythm 4","Beneficial","4","ief_akimboramp4","SWLOR.Game.Server\Feature\StatusEffectDefinition\OrdinaryAttackHasteStatusEffect.cs",""
 "StatusEffect","OrdinaryAttackHasteStatusEffect5","Attack Rhythm 5","Beneficial","5","ief_akimboramp5","SWLOR.Game.Server\Feature\StatusEffectDefinition\OrdinaryAttackHasteStatusEffect.cs",""
+"StatusEffect","LastBastionBarrierStatusEffect","Last Bastion Barrier","Beneficial","","ief_bastbar","SWLOR.Game.Server\Feature\StatusEffectDefinition\LastBastionBarrierStatusEffect.cs",""

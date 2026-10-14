@@ -3,12 +3,43 @@ using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Game.Server.Native;
 using SWLOR.Game.Server.Service.AnimationService;
+using SWLOR.Game.Server.Service.AbilityService;
+using SWLOR.Game.Server.Feature.AbilityDefinition.TwinPistol;
+using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Item;
 
 namespace SWLOR.Game.Server.Tests.Service;
 
 public class TwinPistolPresentationTests
 {
+    [Test]
+    public void CrossSkillRanksKeepANeutralFallbackAndReservePairedClipsForCompatibleEquipment()
+    {
+        var abilities = typeof(TwinPistolAbilityDefinitionBase).Assembly.GetTypes()
+            .Where(type => !type.IsAbstract && typeof(TwinPistolAbilityDefinitionBase).IsAssignableFrom(type))
+            .SelectMany(type => ((IAbilityListDefinition)Activator.CreateInstance(type)!).BuildAbilities())
+            .ToDictionary(pair => pair.Key, pair => pair.Value);
+        abilities.Should().HaveCount(22);
+        AbilityAnimationBinding.Apply(abilities, ActiveAbilityAnimationCatalog.Entries
+            .Where(entry => entry.Feats.Any(abilities.ContainsKey)));
+        foreach (var ability in abilities.Values)
+        {
+            ability.AnimationEquipmentRequirement.Should().Be(AnimationEquipmentRequirement.TwinPistol);
+            AbilityAnimationBinding.ActivationClip(ability, true, 0, equipmentCompatible: false).Should().BeNull();
+            AbilityAnimationBinding.ImpactClip(ability, true, equipmentCompatible: false).Should().BeNull();
+            if (ability.UsesAuthoredImpactAnimation)
+            {
+                ability.ImpactAnimationType.Should().Be(Animation.CastOutAnimation);
+                AbilityAnimationBinding.ImpactClip(ability, true).Should().NotBeNull();
+            }
+            else
+            {
+                AbilityAnimationBinding.ActivationType(ability, true, 0, equipmentCompatible: false).Should().Be(Animation.CastOutAnimation);
+                AbilityAnimationBinding.ActivationClip(ability, true, 0).Should().NotBeNull();
+            }
+        }
+    }
+
     [TestCase(0f)]
     [TestCase(90f)]
     [TestCase(180f)]

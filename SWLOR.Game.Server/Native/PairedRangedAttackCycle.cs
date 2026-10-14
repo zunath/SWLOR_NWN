@@ -7,7 +7,6 @@ using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.NWN.API.NWScript.Enum;
 using InventorySlot = SWLOR.NWN.API.NWScript.Enum.InventorySlot;
-using BaseItem = SWLOR.NWN.API.NWScript.Enum.Item.BaseItem;
 using Ability = SWLOR.Game.Server.Service.Ability;
 
 namespace SWLOR.Game.Server.Native
@@ -50,26 +49,7 @@ namespace SWLOR.Game.Server.Native
                 round.m_nBonusEffectAttacks = 0;
                 round.m_nOffHandAttacksTaken = 0;
                 round.m_nExtraAttacksTaken = 0;
-                var firstAttack = round.m_nCurrentAttack;
-                var startingAmmunition = GetIsObjectValid(ammunition) ? GetItemStackSize(ammunition) : 0;
                 creature.ResolveAttack(target, mainAttacks, duration);
-                if (!unlimited && GetBaseItemType(main.Weapon) == BaseItem.Pistol)
-                {
-                    // The legacy native bow ID checks Arrows in ResolveAmmunition,
-                    // while SWLOR pistols use Bullets. Canonical sling-ID pistols
-                    // retain their native debit; only this legacy ID needs repair.
-                    var attempted = Math.Clamp(round.m_nCurrentAttack - firstAttack, 0, mainAttacks);
-                    var remaining = GetIsObjectValid(ammunition) ? GetItemStackSize(ammunition) : 0;
-                    var nativeDebit = Math.Max(0, startingAmmunition - remaining);
-                    var debit = Math.Max(0, attempted - nativeDebit);
-                    if (debit > 0 && GetIsObjectValid(ammunition))
-                    {
-                        if (remaining <= debit)
-                            DestroyObject(ammunition,
-                                PairedRangedPresentation.FlightSeconds(GetDistanceBetween(actor, target)) + .1f);
-                        else SetItemStackSize(ammunition, remaining - debit);
-                    }
-                }
                 var pending = new Pending(target, main, companion, ammunition, unlimited,
                     round.m_nCurrentAttack, attacks / 2);
                 PendingHands[actor] = pending;

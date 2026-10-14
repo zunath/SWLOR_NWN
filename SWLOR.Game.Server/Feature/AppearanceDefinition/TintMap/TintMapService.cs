@@ -140,6 +140,8 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
             if (!GetIsObjectValid(creature))
                 return;
 
+            PowerGloveFit.Apply(creature);
+
             // Rebuild the complete tint state in one pass. Parameter-scoped wildcard resets are
             // not reliable for modular creatures: on the game client they can discard palette
             // rows already written for other layers, which leaves equipped clothing at row zero.

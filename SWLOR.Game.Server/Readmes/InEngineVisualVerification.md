@@ -141,8 +141,7 @@ Remove-Item Env:SWLOR_NATIVE_ISOLATION_TESTS
    area's actual `Module/are` and `Module/git` resources (plus GIC when needed),
    required blueprints, and the probe `.nss` script. Retain area geometry and all
    placed objects. Preserve the subject's authored position, facing, appearance,
-   and equipment. An empty
-   test room cannot validate world placement.
+   and equipment. An empty test room cannot validate world placement.
 3. Build or copy the HAKs named by `Module/ifo/module.ifo.json` into the isolated
    profile, with the matching custom TLK. Use current assets, not an unrelated
    installed HAK that may predate the change. Keep large generated archives
@@ -185,8 +184,8 @@ at zero volume. Mute only the task-owned profile; never change the user's normal
 during a run, stop it and fix the profile before relaunching.
 
 The launcher creates the isolated `settings.tml` with the following sound,
-movie, window, and focus settings. The optional keyholing setting shown here can
-help a fixture's camera; disclose it when used. Do not edit the user's profile:
+movie, window, and focus settings. These are reference values, not a step to edit
+its internally managed profile. Do not edit the user's profile:
 
 ```toml
 [sound.effects]
@@ -210,18 +209,14 @@ width=1280
 height=720
 [game.auto-pause.on-focus-loss]
 enabled=false
-[graphics.keyholing]
-enabled=true
 [graphics.video.vsync]
 mode="off"
 ```
 
-A `-dmc` (DM client) launch ignores `+TestNewModule` and plays the intro movies
-on its way to the main menu, so it needs the movie settings above. For DM-UI
-checks, a Player DM login works offline instead. In the task-owned profile, set
-`[server.login] dm-password` to a one-off value and
-`[server.login.player-dm] enabled=true`, then post `##dm_login <password>` to
-the owned private-desktop window.
+The CLI does not expose profile overrides, Player-DM login, or arbitrary window
+messages. DM-only UI and explicit keyholing customization are not supported by
+this command. Report those checks as unverified when required; do not edit the
+managed profile or build an alternative launcher to work around that limit.
 
 For each subject, set the camera after area loading settles, then wait for a
 fresh render before capturing. The capstone script set a close camera at four
@@ -244,14 +239,16 @@ coordinate; correct the source and capture again.
 
 Capture at least a clear close view and a contextual overview for each moved
 NPC or object. Preserve original native PNGs at their capture resolution.
-Contact sheets may resize copies, but must link to the originals. Camera
-keyholing can cut away foreground scenery; disclose it and use an overview
-that makes the surrounding layout clear. Do not edit away clipping or obstacles.
+Contact sheets may resize copies, but must link to the originals. Inspect any
+camera cutaway of foreground scenery and use an overview that makes the
+surrounding layout clear. Do not edit away clipping or obstacles.
 
 ## Known client traps and live-server limits
 
 - Offline `+TestNewModule` runs need no CD key. Use the launcher's key-free
   profile and never copy the user's credentials.
+- `-dmc` ignores `+TestNewModule` and reaches the main menu through intro movies.
+  Do not add it to the launcher command; it cannot provide offline DM-UI captures.
 - Do not resize the client window. A DPI-unaware resize at 150% scaling caused
   black captures. Keep the launcher's native 1280x720 capture size.
 - Do not capture during area loads or transitions or in a tight loop; both have

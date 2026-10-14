@@ -44,7 +44,7 @@ Before writing code in an unfamiliar area, find two or three existing examples o
 
 ## Build and Test
 
-- Visual changes (NPC/object placement, models, textures, equipment, VFX, or in-game UI) require actual NWN client screenshot evidence before handoff. **Every agent, including Codex/GPT and Claude, must first read `SWLOR.Game.Server/Readmes/InEngineVisualVerification.md`, the single shared procedure, and use only `python tools/VerifyNwnVisuals.py` with the repository's isolated, silent private-desktop runtime.** Never launch `nwmain.exe` directly, write a replacement launcher, use real mouse/keyboard input, take focus, or switch desktops. If the launcher fails, report the concrete error and affected items as unverified; there is no visible fallback. Verify every changed placement from a public approach with normal collision, show the images in the report, and confirm the owned client has stopped.
+- Visual changes require actual NWN client screenshot evidence before handoff. Every agent, including Codex/GPT and Claude, must first read and follow `SWLOR.Game.Server/Readmes/InEngineVisualVerification.md`, the single shared procedure for the repository's isolated, silent background launcher.
 - Always pass `-p:RunPostBuildEvent=Never` when building. Without it, building `SWLOR.Game.Server` runs a slow deploy to the local NWN install.
 - Build once, then run only the relevant tests without rebuilding:
   - `dotnet build SWLOR.Game.Server.Tests\SWLOR.Game.Server.Tests.csproj -p:RunPostBuildEvent=Never`

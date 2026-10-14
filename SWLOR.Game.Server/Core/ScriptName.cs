@@ -52,6 +52,7 @@ namespace SWLOR.Game.Server.Core
 
         // Creature events
         public const string OnCreatureHeartbeatAfter = "crea_hb_aft";
+        public const string OnRuinFarmWildlifeHeartbeat = "dan_farm_roam";
         public const string OnCreaturePerceptionAfter = "crea_perc_aft";
         public const string OnCreatureRoundEndAfter = "crea_rndend_aft";
         public const string OnCreatureConversationBefore = "crea_convo_bef";

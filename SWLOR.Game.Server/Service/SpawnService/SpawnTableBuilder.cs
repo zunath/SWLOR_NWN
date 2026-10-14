@@ -173,13 +173,6 @@ namespace SWLOR.Game.Server.Service.SpawnService
             return this;
         }
 
-        public SpawnTableBuilder RandomlyWalksWithin(WanderBounds bounds)
-        {
-            ArgumentNullException.ThrowIfNull(bounds);
-            ActiveSpawn.WanderBounds = bounds;
-            return RandomlyWalks();
-        }
-
         /// <summary>
         /// Indicates that this spawn object will return home if they stray too far from their spawn point.
         /// </summary>

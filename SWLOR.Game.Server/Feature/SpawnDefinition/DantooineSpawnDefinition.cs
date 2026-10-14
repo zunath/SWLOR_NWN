@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using SWLOR.Game.Server.Service.AIService;
 using SWLOR.Game.Server.Service.SpawnService;
 using SWLOR.NWN.API.NWScript.Enum;
 using Random = SWLOR.Game.Server.Service.Random;
@@ -82,17 +81,17 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
         {
             _builder.Create("DANTOOINE_RUIN_FARM")
                 .AddSpawn(ObjectType.Creature, "pthune")
-                .RandomlyWalksWithin(new WanderBounds(0f, 0f, 124f, 150f))
+                .SpawnAction(DantooineRuinFarmWildlife.AttachHeartbeat)
                 .WithFrequency(100)
                 .ReturnsHome()
 
                 .AddSpawn(ObjectType.Creature, "gizka")
-                .RandomlyWalksWithin(new WanderBounds(0f, 0f, 124f, 150f))
+                .SpawnAction(DantooineRuinFarmWildlife.AttachHeartbeat)
                 .WithFrequency(20)
                 .ReturnsHome()
 
                 .AddSpawn(ObjectType.Creature, "thune")
-                .RandomlyWalksWithin(new WanderBounds(0f, 0f, 124f, 150f))
+                .SpawnAction(DantooineRuinFarmWildlife.AttachHeartbeat)
                 .WithFrequency(5)
                 .ReturnsHome();
         }

@@ -1,6 +1,7 @@
 using System.Text.Json;
 using FluentAssertions;
 using NUnit.Framework;
+using SWLOR.Game.Server.Feature;
 using SWLOR.Game.Server.Feature.SpawnDefinition;
 using SWLOR.Game.Server.Service.AIService;
 
@@ -13,15 +14,28 @@ public class DantooineRuinFarmBoundaryTests
     {
         var spawns = new DantooineSpawnDefinition().BuildSpawnTables()["DANTOOINE_RUIN_FARM"].Spawns;
         spawns.Select(spawn => spawn.Resref).Should().BeEquivalentTo("pthune", "gizka", "thune");
-        spawns.Should().OnlyContain(spawn => spawn.AIFlags == (AIFlag.ReturnHome | AIFlag.RandomWalk));
-        spawns.Should().OnlyContain(spawn => spawn.WanderBounds != null &&
-            spawn.WanderBounds.MinX == 0f && spawn.WanderBounds.MinY == 0f &&
-            spawn.WanderBounds.MaxX == 124f && spawn.WanderBounds.MaxY == 150f,
-            "idle roaming must stay on the interior side of the spawn-exclusion strip");
+        spawns.Should().OnlyContain(spawn => spawn.AIFlags == AIFlag.ReturnHome);
+        spawns.Should().OnlyContain(spawn => spawn.OnSpawnActions.Count == 1 &&
+            spawn.OnSpawnActions[0].Method.DeclaringType == typeof(DantooineRuinFarmWildlife) &&
+            spawn.OnSpawnActions[0].Method.Name == nameof(DantooineRuinFarmWildlife.AttachHeartbeat),
+            "these wildlife entries use their area-specific roaming heartbeat");
         new DantooineSpawnDefinition().BuildSpawnTables()
             .Where(table => table.Key != "DANTOOINE_RUIN_FARM")
-            .SelectMany(table => table.Value.Spawns).Should().OnlyContain(spawn => spawn.WanderBounds == null,
-                "the opt-in limit must not change wildlife elsewhere");
+            .SelectMany(table => table.Value.Spawns).Should().OnlyContain(spawn =>
+                spawn.OnSpawnActions.All(action => action.Method.DeclaringType != typeof(DantooineRuinFarmWildlife)),
+                "wildlife elsewhere must not receive this heartbeat");
+    }
+
+    [TestCase(0f, 0f, 5f, true)]
+    [TestCase(124f, 150f, 5f, true)]
+    [TestCase(124.1f, 70f, 5f, false)]
+    [TestCase(-0.1f, 70f, 5f, false)]
+    [TestCase(117f, -0.1f, 5f, false)]
+    [TestCase(117f, 150.1f, 5f, false)]
+    [TestCase(117f, 70f, float.NaN, false)]
+    public void RoamingBounds_ExcludeUnsafePositions(float x, float y, float z, bool expected)
+    {
+        DantooineRuinFarmWildlife.IsSafePosition(new System.Numerics.Vector3(x, y, z)).Should().Be(expected);
     }
 
     [Test]

@@ -15,7 +15,6 @@ namespace SWLOR.Game.Server.Service.SpawnService
         public bool IsRare { get; set; }
         public AIFlag AIFlags { get; set; }
         public AIProfileType AIProfile { get; set; }
-        public WanderBounds WanderBounds { get; set; }
 
         public List<DayOfWeek> RealWorldDayOfWeekRestriction { get; set; }
         public TimeSpan? RealWorldStartRestriction { get; set; }

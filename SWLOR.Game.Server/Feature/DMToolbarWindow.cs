@@ -15,12 +15,27 @@ namespace SWLOR.Game.Server.Feature
         [NWNEventHandler(ScriptName.OnAreaEnter)]
         public static void OpenToolbar()
         {
-            var dm = GetEnteringObject();
+            var dm = DMPresence.GetDM(GetEnteringObject());
             if (!GetIsDM(dm))
                 return;
 
-            if (!Gui.IsWindowOpen(dm, GuiWindowType.DMToolbar))
-                Gui.TogglePlayerWindow(dm, GuiWindowType.DMToolbar);
+            DMPresence.ShowWindow(dm, GuiWindowType.DMToolbar);
+        }
+
+        /// <summary>
+        /// Moves the toolbar to whatever the DM controls when they possess a creature or return to their avatar.
+        /// </summary>
+        [NWNEventHandler(ScriptName.OnDMPossessAfter)]
+        [NWNEventHandler(ScriptName.OnDMPossessFullPowerAfter)]
+        public static void MoveToolbarOnPossession()
+        {
+            var self = OBJECT_SELF;
+            var dm = GetIsDM(self) ? self : GetMaster(self);
+            if (!GetIsDM(dm))
+                return;
+
+            // Possession has not settled while the event runs, so follow it on the next tick.
+            DelayCommand(0.1f, () => DMPresence.ShowWindow(dm, GuiWindowType.DMToolbar));
         }
 
         /// <summary>
@@ -51,8 +66,12 @@ namespace SWLOR.Game.Server.Feature
             if (GetIsDMPossessed(dm))
                 dm = GetMaster(dm);
 
-            if (GetIsDM(dm))
-                Gui.PublishRefreshEvent(dm, new DMPresenceRefreshEvent());
+            if (!GetIsDM(dm))
+                return;
+
+            // The toolbar is shown on whatever the DM controls, which can be a possessed creature.
+            foreach (var target in DMPresence.GetShownOn(DMPresence.GetControlledCreature(dm), GuiWindowType.DMToolbar))
+                Gui.PublishRefreshEvent(dm, new DMPresenceRefreshEvent(), target);
         }
     }
 }

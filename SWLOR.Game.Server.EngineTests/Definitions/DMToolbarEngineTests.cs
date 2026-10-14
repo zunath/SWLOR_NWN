@@ -74,6 +74,10 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 ctx.AssertEqual("Disappear", toolbar.AppearText, "label while visible to players");
                 Capture(player.Creature, GuiWindowType.DMToolbar, "toolbar-visible");
 
+                // Area entry and possession changes re-show the toolbar; one already in place stays open.
+                await InContext(ctx, player.Creature, () => DMPresence.ShowWindow(player.Creature, GuiWindowType.DMToolbar));
+                ctx.Assert(Gui.IsWindowOpen(player.Creature, GuiWindowType.DMToolbar), "showing an open toolbar keeps it open");
+
                 // Appear and Disappear only ever act on DM avatars.
                 await InContext(ctx, player.Creature, toolbar.OnClickToggleAppear());
                 ctx.Assert(DMPresence.GetIsManifested(player.Creature), "a non-DM's manifest state is left alone");

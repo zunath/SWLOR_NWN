@@ -17,9 +17,10 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// Returns true when the DM's avatar is visible to players (the native "Appear" state).
         /// </summary>
-        /// <param name="dm">The DM avatar.</param>
+        /// <param name="dm">The DM avatar or the creature they possess.</param>
         public static bool GetIsManifested(uint dm)
         {
+            dm = GetDM(dm);
             var creature = NWNXLib.g_pAppManager.m_pServerExoApp.GetCreatureByGameObjectID(dm);
             return creature?.m_pStats != null && creature.m_pStats.m_bDMManifested != 0;
         }
@@ -27,10 +28,11 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// Shows or hides the DM's avatar from players, matching the native Appear and Disappear buttons.
         /// </summary>
-        /// <param name="dm">The DM avatar.</param>
+        /// <param name="dm">The DM avatar or the creature they possess.</param>
         /// <param name="isManifested">true to appear to players, false to disappear.</param>
         public static void SetIsManifested(uint dm, bool isManifested)
         {
+            dm = GetDM(dm);
             if (!GetIsDM(dm))
                 return;
 
@@ -152,6 +154,28 @@ namespace SWLOR.Game.Server.Service
 
             if (!moved || !Gui.IsWindowOpen(controlled, type))
                 Gui.TogglePlayerWindow(dm, type, payload, tetherObject, controlled);
+
+            _windowTargets[(GetObjectUUID(dm), type)] = controlled;
+        }
+
+        /// <summary>
+        /// Shows a DM window on the creature the DM controls, moving it from any object it was left on.
+        /// Unlike <see cref="ToggleWindow"/>, a window already shown in the right place stays open.
+        /// </summary>
+        /// <param name="actor">A DM avatar or the creature they possess.</param>
+        /// <param name="type">The window to show.</param>
+        public static void ShowWindow(uint actor, GuiWindowType type)
+        {
+            var dm = GetDM(actor);
+            var controlled = GetControlledCreature(dm);
+            foreach (var target in GetWindowTargets(dm, type))
+            {
+                if (target != controlled && GetIsObjectValid(target) && Gui.IsWindowOpen(target, type))
+                    Gui.ClosePlayerWindow(dm, type, target);
+            }
+
+            if (!Gui.IsWindowOpen(controlled, type))
+                Gui.TogglePlayerWindow(dm, type, uiTarget: controlled);
 
             _windowTargets[(GetObjectUUID(dm), type)] = controlled;
         }

@@ -43,6 +43,7 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
             AlwaysWalk();
             AssociateCommands();
             Follow();
+            Afk();
             SetKnownName();
             ForgetKnownName();
             Introductions();
@@ -536,6 +537,23 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                     {
                         ActionMoveToObject(target, true);
                     });
+                });
+        }
+
+        private void Afk()
+        {
+            _builder.Create("afk")
+                .Description("Toggles a purple [AFK] indicator on your displayed name. Moving or using /afk again removes it.")
+                .Permissions(AuthorizationLevel.All)
+                .Validate((user, args) => !GetIsPC(user) || GetIsDM(user)
+                    ? "This command can only be used on player characters."
+                    : string.Empty)
+                .Action((user, target, location, args) =>
+                {
+                    var isAfk = PlayerName.ToggleAfk(user);
+                    SendMessageToPC(user, isAfk
+                        ? ColorToken.Purple("You are now AFK. Move or use /afk again when you return.")
+                        : "You are no longer AFK.");
                 });
         }
 

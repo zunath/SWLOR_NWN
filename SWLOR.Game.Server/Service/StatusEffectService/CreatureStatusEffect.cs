@@ -126,6 +126,26 @@ namespace SWLOR.Game.Server.Service.StatusEffectService
             }
         }
 
+        /// <summary>
+        /// Changes one stat payload of an effect. A tracked effect is removed and re-added around the change
+        /// so the creature total reflects the new value and a later Remove subtracts what was added.
+        /// </summary>
+        public void SetStat(IStatusEffect statusEffect, StatType type, int value)
+        {
+            if (statusEffect.StatGroup.Stats.TryGetValue(type, out var current) && current == value)
+                return;
+
+            if (!_allActiveEffects.Contains(statusEffect))
+            {
+                statusEffect.StatGroup.Stats[type] = value;
+                return;
+            }
+
+            Remove(statusEffect);
+            statusEffect.StatGroup.Stats[type] = value;
+            Add(statusEffect);
+        }
+
         private void RecomputeNonAdditiveStat(StatType type)
         {
             var combined = 0;

@@ -49,9 +49,8 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
                 ? penalty
                 : 0;
             var hasteFromOtherSources = Stat.GetStatAdjustment(creature, StatType.AttackDelayReductionPercent) - currentPenalty;
-            StatGroup.Stats[StatType.AttackDelayReductionPercent] = hasteFromOtherSources > 0
-                ? -hasteFromOtherSources
-                : 0;
+            var suppression = hasteFromOtherSources > 0 ? -hasteFromOtherSources : 0;
+            StatusEffect.SetStatusEffectStat(creature, this, StatType.AttackDelayReductionPercent, suppression);
         }
     }
 }

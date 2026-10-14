@@ -67,6 +67,9 @@ namespace SWLOR.CombatSim.Engine
         public double TemporaryHpTotal => TemporaryHp.Sum(p => p.Amount);
         public float HpPercent => Spec.MaxHp <= 0 ? 0f : (float)(Hp / Spec.MaxHp * 100.0);
 
+        /// <summary>HP percent counting temporary HP, as the game's current HP does.</summary>
+        public float HpPercentWithTemporaryHp => Spec.MaxHp <= 0 ? 0f : (float)((Hp + TemporaryHpTotal) / Spec.MaxHp * 100.0);
+
         public float OutgoingHealingPercent => Spec.OutgoingHealingPercent + GetStat(StatType.OutgoingAbilityHealingPercentAdjustment);
         public float HealingReceivedPercent => Spec.HealingReceivedPercent + GetStat(StatType.HealingReceivedPercentAdjustment);
 

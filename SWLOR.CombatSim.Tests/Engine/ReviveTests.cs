@@ -61,6 +61,8 @@ namespace SWLOR.CombatSim.Tests.Engine
 
             enemy.IsDead.Should().BeFalse("the revive happened with an enemy still standing");
             ally.Stats.RevivesReceived.Should().Be(1);
+            ally.Hp.Should().Be(1, "the game heals 0.1 seconds after the revive");
+            SimulationClock.RunUntil(simulation, simulation.Now + 0.2);
             ally.Hp.Should().Be(251, "1 HP from the revive plus the 20% heal of 200 scaled by 26 Willpower");
             medic.Stats.BlockedRevives.Should().Be(0);
         }

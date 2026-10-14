@@ -133,6 +133,19 @@ namespace SWLOR.CombatSim.Tests.Engine
                 landed.Should().Be(0);
         }
 
+        [Test]
+        public void Death_EndsTheAccuracyWindowWithTheRestOfTheBuff()
+        {
+            var spark = TestCombatants.Use("ForceSpark1", AbilityTarget.Enemy, minIntervalSeconds: 600);
+            spark.Damage = new DamageSpec { Min = 1, Max = 1 };
+            var (simulation, caster) = SpawnAttacker(spark, withPerk: true);
+            SimulationClock.RunUntil(simulation, () => caster.ConvergenceAccuracyUntil > simulation.Now, 10, "Convergence triggered");
+
+            simulation.ApplyDamage(simulation.Get("Enemy"), caster, TestCombatants.EffectivelyUnlimited);
+
+            caster.ConvergenceAccuracyUntil.Should().BeLessThan(simulation.Now);
+        }
+
         private (Simulation Simulation, Combatant Caster) SpawnAttacker(AbilityUseSpec use, bool withPerk)
         {
             var caster = new CombatantSpec

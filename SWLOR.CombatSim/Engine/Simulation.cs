@@ -22,6 +22,8 @@ namespace SWLOR.CombatSim.Engine
         private const double ConvergenceCooldownSeconds = 45.0;
         private const double ConvergenceAccuracySeconds = 30.0;
         private const float ConvergenceHitChanceBonus = 0.05f;
+        private const double ReviveHealDelaySeconds = 0.1;
+        private const string DamageReductionRefreshKeySuffix = ":refresh";
         private const int CoordinatedSampleSize = 3;
 
         /// <summary>Perk stats the simulator models; listed perks contribute only these.</summary>
@@ -44,6 +46,7 @@ namespace SWLOR.CombatSim.Engine
         private readonly List<DeathRecord> _deaths = new();
         private readonly Dictionary<AbilityUseSpec, (AbilityInfo Info, AbilityEffect Effect)> _resolvedUses = new();
         private readonly Dictionary<int, SharedTarget> _sharedTargets = new();
+        private readonly List<PendingHeal> _pendingHeals = new();
         private int _revives;
         private double _now;
 
@@ -121,8 +124,11 @@ namespace SWLOR.CombatSim.Engine
                             $"'{spec.Name}' has a ReactionSeconds of {spec.ReactionSeconds}, below the {_scenario.TimeStepSeconds}s time step; " +
                             "use a TimeStepSeconds no longer than every ability user's ReactionSeconds.");
 
+                    if (spec.Count < 1)
+                        throw new InvalidDataException($"'{spec.Name}' needs a Count of at least 1.");
+
                     var perkStats = _catalog.Perks.GetStats(spec.Perks, PerkStatsRead);
-                    for (var copy = 1; copy <= Math.Max(1, spec.Count); copy++)
+                    for (var copy = 1; copy <= spec.Count; copy++)
                     {
                         var name = spec.Count > 1 ? $"{spec.Name} {copy}" : spec.Name;
                         if (!names.Add(name))
@@ -144,6 +150,12 @@ namespace SWLOR.CombatSim.Engine
 
         public void Step(double step)
         {
+            foreach (var heal in _pendingHeals.Where(heal => _now >= heal.At).ToList())
+            {
+                _pendingHeals.Remove(heal);
+                ApplyHealing(heal.Source, heal.Target, heal.Amount, heal.Kind);
+            }
+
             foreach (var combatant in _combatants.ToList())
             {
                 if (combatant.IsDead)
@@ -197,6 +209,9 @@ namespace SWLOR.CombatSim.Engine
             // A damage profile picks an enemy target, so only party-wide effects can resolve alongside it.
             if (effect != null && use.Damage != null && !IsPartyEffect(effect))
                 throw new InvalidDataException($"'{use.Feat}' has a damage profile and a single-target effect; only party heals and shields can be paired with damage.");
+
+            if (!Enum.IsDefined(use.Target))
+                throw new InvalidDataException($"'{use.Feat}' has an unknown Target; use one of {string.Join(", ", Enum.GetNames<AbilityTarget>())}.");
 
             if (use.MinIntervalSeconds < 0)
                 throw new InvalidDataException($"'{use.Feat}' has a negative MinIntervalSeconds.");
@@ -302,7 +317,10 @@ namespace SWLOR.CombatSim.Engine
             {
                 while (pulse.TicksLeft > 0 && _now >= pulse.NextTickAt)
                 {
-                    PulseParty(caster, pulse.Effect, pulse.MaxTargets, HealKind.OverTime);
+                    if (pulse.RefreshesDamageReduction)
+                        RefreshPartyDamageReduction(caster, pulse.Effect, pulse.MaxTargets);
+                    else
+                        PulseParty(caster, pulse.Effect, pulse.MaxTargets, HealKind.OverTime);
                     pulse.TicksLeft--;
                     pulse.NextTickAt += pulse.Effect.TickSeconds;
                 }
@@ -316,7 +334,6 @@ namespace SWLOR.CombatSim.Engine
         {
             foreach (var ally in PartyTargets(caster, maxTargets))
             {
-                ApplyDamageReduction(caster, ally, effect, ally.HpPercent);
                 var amount = HealingMath.PartyPulse(
                     effect,
                     ally.Spec.MaxHp,
@@ -327,6 +344,12 @@ namespace SWLOR.CombatSim.Engine
                     caster.Spec.CombatReadinessPercent);
                 ApplyHealing(caster, ally, amount, kind);
             }
+        }
+
+        private void RefreshPartyDamageReduction(Combatant caster, AbilityEffect effect, int? maxTargets)
+        {
+            foreach (var ally in PartyTargets(caster, maxTargets))
+                ApplyDamageReduction(caster, ally, effect, ally.HpPercentWithTemporaryHp);
         }
 
         private void ProcessCast(Combatant caster)
@@ -452,7 +475,7 @@ namespace SWLOR.CombatSim.Engine
                 TriggerConvergence(caster);
 
             if (cast.Use.Damage != null && (target != null || cast.Use.Damage.Area))
-                ApplyAbilityDamage(caster, target, cast.Use.Damage, hitBonus);
+                ApplyDamageProfile(caster, target, cast.Use.Damage, hitBonus);
 
             if (effect == null)
                 return;
@@ -501,12 +524,26 @@ namespace SWLOR.CombatSim.Engine
                         TicksLeft = effect.Ticks,
                         NextTickAt = _now + effect.TickSeconds
                     };
+
+                    // The zone's status refreshes at once and then every pulse, ahead of the heals (0, 3 ... 27 seconds).
+                    if (effect.DamageReductionPercent > 0)
+                    {
+                        RefreshPartyDamageReduction(caster, effect, cast.Use.MaxTargets);
+                        caster.PartyPulses[effect.Key + DamageReductionRefreshKeySuffix] = new PartyPulseInstance
+                        {
+                            Effect = effect,
+                            MaxTargets = cast.Use.MaxTargets,
+                            RefreshesDamageReduction = true,
+                            TicksLeft = effect.Ticks - 1,
+                            NextTickAt = _now + effect.TickSeconds
+                        };
+                    }
                     break;
 
                 case EffectKind.TemporaryHp:
                 {
-                    // Rousing Shout's rescue is judged on the HP the target had before the shield.
-                    var hpPercentBeforeShield = target.HpPercent;
+                    // Rousing Shout's rescue is judged before the shield, on current HP including temporary HP.
+                    var hpPercentBeforeShield = target.HpPercentWithTemporaryHp;
                     GrantTemporaryHp(caster, target, effect);
                     ApplyDamageReduction(caster, target, effect, hpPercentBeforeShield);
                     break;
@@ -515,7 +552,7 @@ namespace SWLOR.CombatSim.Engine
                 case EffectKind.PartyTemporaryHp:
                     foreach (var ally in PartyTargets(caster, cast.Use.MaxTargets))
                     {
-                        var hpPercentBeforeShield = ally.HpPercent;
+                        var hpPercentBeforeShield = ally.HpPercentWithTemporaryHp;
                         GrantTemporaryHp(caster, ally, effect);
                         ApplyDamageReduction(caster, ally, effect, hpPercentBeforeShield);
                     }
@@ -556,8 +593,10 @@ namespace SWLOR.CombatSim.Engine
                         .OrderBy(c => CanRevive(caster, c) ? 0 : 1)
                         .ThenBy(c => c.DiedAt)
                         .FirstOrDefault();
-                default:
+                case AbilityTarget.Enemy:
                     return EnsureAttackTarget(caster);
+                default:
+                    throw new InvalidDataException($"'{use.Feat}' has an unknown Target.");
             }
         }
 
@@ -623,7 +662,7 @@ namespace SWLOR.CombatSim.Engine
                 caster.OutgoingHealingPercent,
                 // The game heals 0.1s after the revive, once the ability's impact has ended, so Combat Readiness never applies.
                 0f);
-            ApplyHealing(caster, target, heal, HealKind.Revive);
+            _pendingHeals.Add(new PendingHeal { Source = caster, Target = target, Amount = heal, Kind = HealKind.Revive, At = _now + ReviveHealDelaySeconds });
         }
 
         private void ProcessAutoAttack(Combatant attacker, double step)
@@ -641,11 +680,11 @@ namespace SWLOR.CombatSim.Engine
                 if (target == null)
                     return;
 
-                RollAndApply(attacker, target, attack.Damage);
+                ApplyDamageProfile(attacker, target, attack.Damage, 0f);
             }
         }
 
-        private void ApplyAbilityDamage(Combatant attacker, Combatant target, DamageSpec damage, float hitBonus)
+        private void ApplyDamageProfile(Combatant attacker, Combatant target, DamageSpec damage, float hitBonus)
         {
             var targets = damage.Area ? Enemies(attacker).ToList() : new List<Combatant> { target };
             foreach (var victim in targets)
@@ -871,6 +910,7 @@ namespace SWLOR.CombatSim.Engine
             foreach (var key in target.PartyPulses.Where(p => !p.Value.Effect.ContinuesAfterCasterDeath).Select(p => p.Key).ToList())
                 target.PartyPulses.Remove(key);
             target.ConvergenceUntil = -1;
+            target.ConvergenceAccuracyUntil = -1;
             target.Stats.Deaths++;
             _deaths.Add(new DeathRecord { Name = target.Name, TeamIndex = target.TeamIndex, IsNpc = target.Spec.IsNpc, At = _now, KilledBy = killer?.Name });
 

@@ -115,6 +115,28 @@ namespace SWLOR.CombatSim.Tests.Engine
             act.Should().Throw<InvalidDataException>().WithMessage("*ShatteringStrike1*damage profile*");
         }
 
+        [TestCase(0)]
+        [TestCase(-2)]
+        public void Spawn_RejectsACountBelowOne(int count)
+        {
+            var dummy = TestCombatants.Dummy("Player");
+            dummy.Count = count;
+
+            var act = () => new Simulation(Scenario(dummy), RuleSets.Current(), _catalog, 1).Spawn();
+
+            act.Should().Throw<InvalidDataException>().WithMessage("*Player*Count*");
+        }
+
+        [Test]
+        public void Spawn_RejectsAnUnknownAbilityTarget()
+        {
+            var medic = TestCombatants.Medic("Medic", TestCombatants.Use("Benevolence1", (AbilityTarget)99));
+
+            var act = () => new Simulation(Scenario(medic), RuleSets.Current(), _catalog, 1).Spawn();
+
+            act.Should().Throw<InvalidDataException>().WithMessage("*Benevolence1*Target*");
+        }
+
         [Test]
         public void Spawn_RejectsAnAutoattackProfileOutOfRange()
         {

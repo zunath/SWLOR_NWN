@@ -35,13 +35,19 @@ namespace SWLOR.CombatSim.Tests.Engine
             DamageTaken(simulation, ally, DamageType.Physical).Should().BeApproximately(Hit, 1e-6, "the reduction ends with the effect");
         }
 
-        [TestCase(30, 75)]
-        [TestCase(50, Hit)]
-        public void RousingShout_CutsPhysicalAndForceDamageOnlyForATargetInDanger(int hpPercent, double expected)
+        [TestCase(30, 0, 75)]
+        [TestCase(50, 0, Hit)]
+        [TestCase(30, 10, Hit)]
+        public void RousingShout_CutsPhysicalAndForceDamageOnlyForATargetInDanger(int hpPercent, int shieldPercent, double expected)
         {
             var simulation = Spawn(TestCombatants.Use("RousingShout3", AbilityTarget.NamedAlly, targetName: "Ally", minIntervalSeconds: 600));
             var ally = simulation.Get("Ally");
             ally.Hp = ally.Spec.MaxHp * hpPercent / 100.0;
+            if (shieldPercent > 0)
+            {
+                // The game's danger check reads current HP, which counts an existing shield.
+                ally.TemporaryHp.Add(new TemporaryHpPool { Key = "Existing", Amount = ally.Spec.MaxHp * shieldPercent / 100.0, ExpiresAt = 600 });
+            }
             CastOnce(simulation);
 
             DamageTaken(simulation, ally, DamageType.Physical).Should().BeApproximately(expected, 1e-6);
@@ -50,14 +56,20 @@ namespace SWLOR.CombatSim.Tests.Engine
         }
 
         [Test]
-        public void ForceSanctuary_CutsOnlyForceDamageWhileItPulses()
+        public void ForceSanctuary_CutsOnlyForceDamage_FromTheMomentItLandsUntilItsZoneEnds()
         {
             var simulation = Spawn(TestCombatants.Use("ForceSanctuary1", AbilityTarget.Self, minIntervalSeconds: 600));
             var ally = simulation.Get("Ally");
-            SimulationClock.RunUntil(simulation, () => ally.DamageReductions.ContainsKey("ForceSanctuary"), 10, "a Sanctuary pulse reached the ally");
+            CastOnce(simulation);
+            var landedAt = simulation.Now;
 
-            DamageTaken(simulation, ally, DamageType.Force).Should().BeApproximately(95, 1e-6);
+            DamageTaken(simulation, ally, DamageType.Force).Should().BeApproximately(95, 1e-6, "the zone's status applies as it lands, before the first heal");
             DamageTaken(simulation, ally, DamageType.Physical).Should().BeApproximately(Hit, 1e-6);
+
+            SimulationClock.RunUntil(simulation, landedAt + 29.5);
+            DamageTaken(simulation, ally, DamageType.Force).Should().BeApproximately(95, 1e-6, "the last refresh lasts to the end of the zone");
+            SimulationClock.RunUntil(simulation, landedAt + 31);
+            DamageTaken(simulation, ally, DamageType.Force).Should().BeApproximately(Hit, 1e-6, "refreshes stop with the zone at 30 seconds");
         }
 
         private Simulation Spawn(AbilityUseSpec use)

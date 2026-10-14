@@ -32,6 +32,25 @@ namespace SWLOR.CombatSim.Tests.Engine
             AttackDamageWithStep(step).Should().Be(baseline);
         }
 
+        [Test]
+        public void Autoattacks_HonorTheirHitsAndArea()
+        {
+            var striker = TestCombatants.Striker("Striker", attacksPerSecond: 1f, damage: 10f);
+            striker.AutoAttack.Damage.Hits = 3;
+            striker.AutoAttack.Damage.Area = true;
+            var simulation = TestScenarios.Spawn(
+                TestScenarios.TwoTeams(false, new[] { striker }, new[] { TestCombatants.Dummy("First", true), TestCombatants.Dummy("Second", true) }),
+                RuleSets.Current(),
+                _catalog);
+
+            RunThrough(simulation, BaselineStep);
+
+            var perEnemy = simulation.Get("First").Stats.DamageTakenToHp;
+            perEnemy.Should().BeGreaterThan(0);
+            (perEnemy % 30).Should().Be(0, "every attack lands three hits of 10");
+            simulation.Get("Second").Stats.DamageTakenToHp.Should().Be(perEnemy, "an area attack hits every enemy");
+        }
+
         [TestCase(1.0)]
         [TestCase(7.0)]
         public void Regeneration_IsAllApplied_WhateverTheTimeStep(double step)

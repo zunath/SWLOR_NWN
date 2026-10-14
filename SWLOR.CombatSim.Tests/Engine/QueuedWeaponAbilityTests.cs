@@ -62,6 +62,18 @@ namespace SWLOR.CombatSim.Tests.Engine
         }
 
         [Test]
+        public void ASwingDueWhenTheAbilityIsQueued_DoesNotCarryIt()
+        {
+            // A swing is due every step, so only the 0.1s resume delay keeps it from taking the ability at once.
+            var simulation = Spawn(attacksPerSecond: 10f, strikeHitChance: 1f);
+            var fighter = simulation.Get("Fighter");
+
+            SimulationClock.RunUntil(simulation, () => fighter.Stats.AbilitiesUsed == 1, 10, "Fortress Strike queued");
+
+            fighter.QueuedWeaponAbility.Should().NotBeNull("the game resumes the attack 0.1s after queueing a weapon ability");
+        }
+
+        [Test]
         public void AQueuedArea_LandsOnEveryRecipient_OnlyWhenTheSwingHits()
         {
             var strike = TestCombatants.Use("FortressStrike3", AbilityTarget.Enemy, minIntervalSeconds: 600);

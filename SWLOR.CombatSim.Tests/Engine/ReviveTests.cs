@@ -174,6 +174,31 @@ namespace SWLOR.CombatSim.Tests.Engine
             SimulationClock.RunUntil(simulation, () => simulation.Get("Medic").Stats.AbilitiesUsed > 0, 60, "a revive after the window");
         }
 
+        // Combatants act in a random order each step, so several seeds cover a revive landing before the fighter acts.
+        [TestCase(1)]
+        [TestCase(2)]
+        [TestCase(3)]
+        [TestCase(4)]
+        [TestCase(5)]
+        [TestCase(6)]
+        public void ARevivedFighter_DoesNotReplaySwingsFromWhileItWasDead(int seed)
+        {
+            var medic = TestCombatants.Medic("Medic", TestCombatants.Use("Resuscitation2", AbilityTarget.DeadAlly));
+            var simulation = TestScenarios.Spawn(
+                TestScenarios.TwoTeams(false, new[] { medic, TestCombatants.Striker("Fighter", attacksPerSecond: 20f, damage: 1f) },
+                    new[] { TestCombatants.Dummy("Enemy", true) }),
+                RuleSets.Current(),
+                _catalog,
+                seed);
+            var fighter = simulation.Get("Fighter");
+            var enemy = simulation.Get("Enemy");
+            simulation.ApplyDamage(enemy, fighter, TestCombatants.EffectivelyUnlimited);
+
+            SimulationClock.RunUntil(simulation, () => !fighter.IsDead, 30, "the fighter revived", stepSeconds: 1.0);
+
+            enemy.Stats.DamageTakenToHp.Should().BeLessThanOrEqualTo(1, "at most the swing due at the revive, none from while it was dead");
+        }
+
         [Test]
         public void Tuned_InPve_TheFirstReviveTakesTheFourSecondCast()
         {

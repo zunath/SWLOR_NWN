@@ -621,10 +621,9 @@ namespace SWLOR.CombatSim.Engine
             };
 
             caster.NextActionAt = _now + info.CastSeconds + info.ImpactDelaySeconds + caster.Spec.ReactionSeconds;
-            // The game stops the attack for an ability and resumes it 0.1s after the impact; a queued weapon ability
-            // rides the swings instead.
-            if (!info.IsQueuedWeapon)
-                caster.NextAttackAt = Math.Max(caster.NextAttackAt, _now + info.CastSeconds + info.ImpactDelaySeconds + ResumeAttackDelaySeconds);
+            // The game stops the attack for an ability and resumes it 0.1s after the impact, or after queueing a weapon
+            // ability (QueueWeaponAbility), so a swing due now cannot carry the ability queued with it.
+            caster.NextAttackAt = Math.Max(caster.NextAttackAt, _now + info.CastSeconds + info.ImpactDelaySeconds + ResumeAttackDelaySeconds);
             if (info.CastSeconds <= 0)
             {
                 Resolve(caster, cast);
@@ -895,6 +894,8 @@ namespace SWLOR.CombatSim.Engine
         {
             target.IsDead = false;
             target.Hp = 1;
+            // Swings scheduled while dead are not made up.
+            target.NextAttackAt = Math.Max(target.NextAttackAt, _now);
             target.Stats.RevivesReceived++;
             _revives++;
 

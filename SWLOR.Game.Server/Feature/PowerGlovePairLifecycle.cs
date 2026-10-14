@@ -54,6 +54,9 @@ public static class PowerGlovePairLifecycle
     [NWNEventHandler(ScriptName.OnModuleExit)]
     public static void OnExit() => PowerGloveEquipment.ReleaseCompanions(GetExitingObject());
 
+    [NWNEventHandler(ScriptName.OnObjectDestroyed)]
+    public static void OnDestroyed() => PowerGloveEquipment.ReleaseDestroyedOwner(OBJECT_SELF);
+
     [NWNEventHandler(ScriptName.OnModuleDeath)]
     public static void OnDeath() => PowerGloveEquipment.EnsurePair(GetLastPlayerDied());
 

@@ -142,6 +142,63 @@ public class PowerGloveEquipmentTests
     public void FullTechniqueGripUsesOneRealGloveAndItsCosmeticHand(BaseItem? mainHand, BaseItem? offHand, bool expected) =>
         EquipmentPredicates.HasUnarmedGrip(mainHand, offHand).Should().Be(expected);
 
+    [Test, NonParallelizable]
+    public void DestroyedOwnerStateCannotSurviveIntoAReusedObjectId()
+    {
+        var pairs = (Dictionary<uint, (uint Main, uint Companion)>)typeof(PowerGloveEquipment)
+            .GetField("Pairs", BindingFlags.Static | BindingFlags.NonPublic)!.GetValue(null)!;
+        var changing = (HashSet<uint>)typeof(PowerGloveEquipment)
+            .GetField("Changing", BindingFlags.Static | BindingFlags.NonPublic)!.GetValue(null)!;
+        var refreshing = (HashSet<uint>)typeof(PowerGloveEquipment)
+            .GetField("RefreshingAppearance", BindingFlags.Static | BindingFlags.NonPublic)!.GetValue(null)!;
+        var remove = typeof(PowerGloveEquipment).GetMethod("RemoveOwnerState", BindingFlags.Static | BindingFlags.NonPublic)!;
+        var originalPairs = pairs.ToArray();
+        var originalChanging = changing.ToArray();
+        var originalRefreshing = refreshing.ToArray();
+        const uint owner = 41, other = 42, uncachedOwner = 43;
+        try
+        {
+            pairs.Clear();
+            changing.Clear();
+            refreshing.Clear();
+            pairs[owner] = (101, 102);
+            pairs[other] = (201, 202);
+            foreach (var actor in new[] { owner, other, uncachedOwner })
+            {
+                changing.Add(actor);
+                refreshing.Add(actor);
+            }
+
+            var removed = ((uint Main, uint Companion)?)remove.Invoke(null, new object[] { owner });
+            removed.Should().Be((101u, 102u));
+            pairs.Should().NotContainKey(owner);
+            changing.Should().NotContain(owner);
+            refreshing.Should().NotContain(owner);
+            remove.Invoke(null, new object[] { owner }).Should().BeNull();
+
+            // An owner destroyed before a pair is cached must also release its reentrancy guards.
+            remove.Invoke(null, new object[] { uncachedOwner }).Should().BeNull();
+            changing.Should().NotContain(uncachedOwner);
+            refreshing.Should().NotContain(uncachedOwner);
+            pairs[other].Should().Be((201u, 202u));
+            changing.Should().Contain(other);
+            refreshing.Should().Contain(other);
+
+            pairs[owner] = (301, 302);
+            ((ValueTuple<uint, uint>?)remove.Invoke(null, new object[] { owner })).Should().Be((301u, 302u));
+            pairs[other].Should().Be((201u, 202u));
+        }
+        finally
+        {
+            pairs.Clear();
+            foreach (var (actor, pair) in originalPairs) pairs.Add(actor, pair);
+            changing.Clear();
+            changing.UnionWith(originalChanging);
+            refreshing.Clear();
+            refreshing.UnionWith(originalRefreshing);
+        }
+    }
+
     private static string RepositoryRoot()
     {
         for (var directory = new DirectoryInfo(TestContext.CurrentContext.TestDirectory); directory != null; directory = directory.Parent)

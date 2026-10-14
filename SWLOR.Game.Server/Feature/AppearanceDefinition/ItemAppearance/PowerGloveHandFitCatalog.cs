@@ -90,6 +90,9 @@ public static class PowerGloveHandFitCatalog
 
     public static float GetScale(string handModel, int appearanceId)
     {
+        if (PowerGloveOpenFrameFits.TryGetScale(handModel, appearanceId, out var frameScale))
+            return frameScale;
+
         var compactScale = appearanceId switch
         {
             101 => .65f,

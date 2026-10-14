@@ -237,6 +237,27 @@ public static class PowerGloveEquipment
         finally { Changing.Remove(creature); }
     }
 
+    internal static (uint Main, uint Companion)? RemoveOwnerState(uint creature)
+    {
+        Changing.Remove(creature);
+        RefreshingAppearance.Remove(creature);
+        return Pairs.Remove(creature, out var pair) ? pair : null;
+    }
+
+    /// <summary>Forgets a destroyed owner before native object IDs can be reused.</summary>
+    public static void ReleaseDestroyedOwner(uint creature)
+    {
+        var pair = RemoveOwnerState(creature);
+        if (!pair.HasValue) return;
+
+        if (IsPairItem(pair.Value.Main) &&
+            GetLocalObject(pair.Value.Main, CompanionVariable) == pair.Value.Companion)
+            DeleteLocalObject(pair.Value.Main, CompanionVariable);
+        if (IsGeneratedCompanion(pair.Value.Companion) &&
+            GetLocalObject(pair.Value.Companion, OwnerVariable) == creature)
+            DestroyCompanion(pair.Value.Companion);
+    }
+
     public static void DestroyCompanion(uint companion)
     {
         if (!IsGeneratedCompanion(companion) || IsDestroyingCompanion(companion)) return;
@@ -325,12 +346,6 @@ public static class PowerGloveEquipment
 
     private static void UnequipOwnedItem(uint creature, uint item, InventorySlot slot)
     {
-        if (GetIsPC(creature)) PlayerEquipmentStorage.Unequip(creature, item, slot);
-        else
-        {
-            CreaturePlugin.RunUnequip(creature, item);
-            if (GetItemInSlot(slot, creature) == item || GetItemPossessor(item) != creature)
-                throw new InvalidOperationException("The real equipment could not be preserved.");
-        }
+        PlayerEquipmentStorage.Unequip(creature, item, slot);
     }
 }

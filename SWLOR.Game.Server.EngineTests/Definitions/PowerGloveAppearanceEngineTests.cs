@@ -38,7 +38,14 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 [GuiWindowType.AppearanceEditor] = playerWindow
             });
             var snapshots = new JArray();
-            var labels = new[] { "Power Glove", "Vibroknuckler", "Blastknuckle", "Shock Glove", "Power Fist", "Bare Fists (Invisible)" };
+            var labels = new[]
+            {
+                "Power Glove", "Vibroknuckler", "Blastknuckle", "Shock Glove", "Power Fist", "Bare Fists (Invisible)",
+                "Rivet Knuckler", "Arc Knuckler", "Breacher Cestus", "Fang Claws", "Pulse Cestus", "Talon Knuckler",
+                "Aegis Guard", "Cinder Knuckler", "Obsidian Cestus", "Rail Claws", "Thunder Knuckle", "Spine Cestus",
+                "Ion Guard", "Impact Knuckler", "Relic Claws"
+            };
+            var invisibleIndex = Array.IndexOf(labels, "Bare Fists (Invisible)");
             try
             {
                 await ctx.ExecuteInCreatureContextAsync(player.Creature, () =>
@@ -63,7 +70,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                         var nativeCategories = JArray.Parse(JsonDump(NuiGetBind(player.Creature, playerWindow.WindowToken, nameof(editor.PartCategorySelected))));
                         ctx.Assert(new[] { false, true, false }.SequenceEqual(nativeCategories.Values<bool>()),
                             "the actual native category selection highlights Middle and clears Top and Bottom");
-                        ctx.Assert(labels.SequenceEqual(editor.PartOptions), "the real picker offers all six named cosmetic choices");
+                        ctx.Assert(labels.SequenceEqual(editor.PartOptions), "the real picker offers every named cosmetic choice");
                         var nativeLabels = JArray.Parse(JsonDump(NuiGetBind(player.Creature, playerWindow.WindowToken, nameof(editor.PartOptions))));
                         ctx.Assert(labels.SequenceEqual(nativeLabels.Values<string>()), "the named options reach actual native NUI bindings");
                         ctx.AssertEqual(0, editor.SelectedPartIndex, "the training glove starts at the first catalog option");
@@ -87,20 +94,25 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                                 ctx.AssertEqual(1, GetItemAppearance(item, ItemAppearanceType.WeaponColor, (int)outer), "the blank outer model keeps its valid color family");
                             }
                         }
+                        for (var index = labels.Length - 1; index > invisibleIndex; index--)
+                            editor.OnPreviousPart()();
+                        ctx.AssertEqual(invisibleIndex, editor.SelectedPartIndex, "public navigation reaches the retained invisible option");
+                        ctx.AssertEqual(6, GetItemAppearance(item, ItemAppearanceType.WeaponModel, (int)AppearanceWeapon.Middle), "the invisible appearance remains available between visible choices");
+                        ctx.AssertEqual(6, GetItemAppearance(off, ItemAppearanceType.WeaponModel, (int)AppearanceWeapon.Middle), "the invisible choice reaches both hands");
                         Capture(slot.ToString());
                         editor.OnPreviousPart()();
                         ctx.AssertEqual(5, GetItemAppearance(item, ItemAppearanceType.WeaponModel, (int)AppearanceWeapon.Middle), "the invisible option can return to a visible Power Fist through public navigation");
                         ctx.AssertEqual(5, GetItemAppearance(off, ItemAppearanceType.WeaponModel, (int)AppearanceWeapon.Middle), "returning to a visible appearance restores both hands");
                         editor.OnNextPart()();
                         PowerGlovePairEngineTests.AssertOwnedItems(ctx, player.Creature, main, 1);
-                        for (var index = 0; index < labels.Length - 1; index++)
+                        for (var index = 0; index < invisibleIndex; index++)
                             editor.OnPreviousPart()();
                     });
                 }
                 var directory = ApplicationSettings.Get().EngineTestResultsDirectory;
                 Directory.CreateDirectory(directory);
                 File.WriteAllText(Path.Combine(directory, "power-glove-appearance-native-states.json"), snapshots.ToString(Formatting.Indented));
-                ctx.SetResultDetail("All six named choices, including Bare Fists (Invisible), applied through the production editor to one real glove and its generated companion. Original item identity, blank outer models, weight and damage are preserved. Actual native NUI window and bindings exported for isolated offline client rendering; no mouse-event transport was simulated.");
+                ctx.SetResultDetail($"All {labels.Length} named choices, including Bare Fists (Invisible), applied through the production editor to one real glove and its generated companion. Original item identity, blank outer models, weight and damage are preserved. Actual native NUI window and bindings exported for isolated offline client rendering; no mouse-event transport was simulated.");
             }
             finally
             {

@@ -60,14 +60,23 @@ public static class PowerGloveFitEngineTests
             EquippedItemAppearance.Refresh(wearer, armor);
             AssertPair(ctx, right, left, 1f, "Human female armored hands retain the compact fit");
 
+            ClearArmorHands(armor);
+            SetBody(wearer, AppearanceType.Human, 45, 45);
+            ChangeGlove(wearer, right, 121);
+            AssertPair(ctx, right, left, 1.24f, "Relic Claws use the validated hand045 pair clearance");
+            SetBody(wearer, AppearanceType.Elf, 208, 208);
+            SetGender(wearer, Gender.Female);
+            ChangeGlove(wearer, right, 119);
+            AssertPair(ctx, right, left, 1.30f, "Ion Guard uses the validated female hand208 pair clearance");
+
             SetBody(wearer, AppearanceType.Cathar, 201, 201);
             ClearArmorHands(armor);
             EquippedItemAppearance.Refresh(wearer, armor);
-            foreach (var appearance in new[] { 101, 102, 104, 105 })
+            foreach (var appearance in new[] { 101, 102, 104, 105 }.Concat(Enumerable.Range(107, 15)))
             {
                 ChangeGlove(wearer, right, appearance);
                 var expected = Expected("pmo0_handr201", "pmo0_handl201", appearance);
-                ctx.Assert(expected > 1f, "Cathar hands enlarge every compact shell");
+                ctx.Assert(expected >= 1f, "Measured fit never shrinks the authored model");
                 var savedAppearance = ReadAppearance(right);
                 for (var pass = 0; pass < 5; pass++)
                     TintMapService.ApplyCurrentColors(wearer);

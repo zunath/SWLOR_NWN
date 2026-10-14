@@ -122,15 +122,18 @@ public class PowerGloveContentTests
     }
 
     [Test]
-    public void AppearanceCatalogOffersSixCosmeticModelsWithValidBlankOuterParts()
+    public void AppearanceCatalogOffersNamedCosmeticsWithValidBlankOuterParts()
     {
         var appearances = new PowerGloveAppearanceDefinition();
         appearances.IsSimple.Should().BeFalse();
         appearances.TopParts.Should().Equal(101);
-        appearances.MiddleParts.Should().Equal(101, 102, 103, 104, 105, 106);
+        appearances.MiddleParts.Should().Equal(Enumerable.Range(101, 21));
         appearances.BottomParts.Should().Equal(101);
         appearances.MiddleParts.Select(partId => appearances.GetPartName(AppearanceWeapon.Middle, partId))
-            .Should().Equal("Power Glove", "Vibroknuckler", "Blastknuckle", "Shock Glove", "Power Fist", "Bare Fists (Invisible)");
+            .Should().Equal("Power Glove", "Vibroknuckler", "Blastknuckle", "Shock Glove", "Power Fist", "Bare Fists (Invisible)",
+                "Rivet Knuckler", "Arc Knuckler", "Breacher Cestus", "Fang Claws", "Pulse Cestus", "Talon Knuckler",
+                "Aegis Guard", "Cinder Knuckler", "Obsidian Cestus", "Rail Claws", "Thunder Knuckle", "Spine Cestus",
+                "Ion Guard", "Impact Knuckler", "Relic Claws");
         appearances.GetPartName(AppearanceWeapon.Top, 101).Should().Be("Part #101");
         appearances.GetPartName(AppearanceWeapon.Bottom, 101).Should().Be("Part #101");
         new KatarAppearanceDefinition().GetPartName(AppearanceWeapon.Middle, 101).Should().Be("Part #101",
@@ -141,12 +144,9 @@ public class PowerGloveContentTests
     public void EveryAppearanceHasACompiledModelAndNativeCompositeInventoryIcon()
     {
         var folder = Path.Combine(Root(), "SWLOR_Haks/sw_weapon");
-        foreach (var (part, native, visible) in new[]
-        {
-            ("t", 11, false), ("b", 11, false),
-            ("m", 11, true), ("m", 21, true), ("m", 31, true),
-            ("m", 41, true), ("m", 51, true), ("m", 61, false)
-        })
+        var middleParts = new PowerGloveAppearanceDefinition().MiddleParts
+            .Select(id => (part: "m", native: id % 100 * 10 + id / 100, visible: id != 106));
+        foreach (var (part, native, visible) in new[] { ("t", 11, false), ("b", 11, false) }.Concat(middleParts))
         {
             var resref = $"wpg_{part}_{native:000}";
             var model = File.ReadAllBytes(Path.Combine(folder, resref + ".mdl"));

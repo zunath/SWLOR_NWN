@@ -67,6 +67,47 @@ public class PowerGloveFitTests
         PowerGloveHandFitCatalog.GetScale("unmeasured", appearance).Should().Be(1f);
     }
 
+    [TestCase(107, 1.16f, 1.00f, 1.48f)]
+    [TestCase(108, 1.22f, 1.24f, 1.86f)]
+    [TestCase(109, 1.14f, 1.14f, 1.82f)]
+    [TestCase(110, 1.24f, 1.24f, 1.92f)]
+    [TestCase(111, 1.24f, 1.26f, 1.84f)]
+    [TestCase(112, 1.16f, 1.08f, 1.80f)]
+    [TestCase(113, 1.20f, 1.20f, 1.82f)]
+    [TestCase(114, 1.22f, 1.20f, 1.76f)]
+    [TestCase(115, 1.40f, 1.40f, 1.92f)]
+    [TestCase(116, 1.00f, 1.48f, 1.96f)]
+    [TestCase(117, 1.22f, 1.26f, 1.68f)]
+    [TestCase(118, 1.08f, 1.16f, 1.66f)]
+    [TestCase(119, 1.08f, 1.10f, 1.92f)]
+    [TestCase(120, 1.10f, 1.08f, 1.64f)]
+    [TestCase(121, 1.00f, 1.82f, 1.82f)]
+    public void OpenFramesUseTheirOwnMeasuredClearanceOnBothHands(
+        int appearance, float right, float left, float fallback)
+    {
+        foreach (var hand in new[] { "pmh0_handr001", "pmh0_handl001", "pfh0_handr001", "pfh0_handl001" })
+            PowerGloveHandFitCatalog.GetScale(hand, appearance).Should().Be(1f);
+
+        PowerGloveHandFitCatalog.GetScale("pmh0_handr201", appearance).Should().Be(right);
+        PowerGloveHandFitCatalog.GetScale("PMH0_HANDL201", appearance).Should().Be(left);
+        var pair = Math.Max(right, left);
+        Invoke<float>("ResolveScale", "pmh0_handr201", "pmh0_handl201", appearance).Should().Be(pair);
+        Invoke<float>("ResolveScale", "pmh0_handl201", "pmh0_handr201", appearance).Should().Be(pair);
+
+        PowerGloveHandFitCatalog.GetScale("pmh0_handr999", appearance).Should().Be(fallback);
+        PowerGloveHandFitCatalog.GetScale(null, appearance).Should().Be(fallback);
+        Invoke<float>("ResolveScale", "pmh0_handr001", "unknown", appearance).Should().Be(fallback);
+    }
+
+    [TestCase(119, "pfe0_handr208", "pfe0_handl208", 1.30f)]
+    [TestCase(121, "pmh0_handr045", "pmh0_handl045", 1.24f)]
+    public void PairClearanceIncludesTheValidatedSharedScaleCorrection(
+        int appearance, string right, string left, float expected)
+    {
+        Invoke<float>("ResolveScale", right, left, appearance).Should().Be(expected);
+        Invoke<float>("ResolveScale", left, right, appearance).Should().Be(expected);
+    }
+
     private static T Invoke<T>(string method, params object[] arguments) =>
         (T)typeof(PowerGloveFit).GetMethod(method, BindingFlags.Static | BindingFlags.NonPublic)!
             .Invoke(null, arguments)!;

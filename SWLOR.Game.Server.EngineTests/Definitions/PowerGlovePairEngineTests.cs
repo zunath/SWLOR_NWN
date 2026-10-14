@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Threading.Tasks;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.EngineTests.Framework;
@@ -442,6 +443,124 @@ public static class PowerGlovePairEngineTests
             Combat.SetAutoAttackHitResolutionOverride(null);
             _observedAttacker = OBJECT_INVALID;
             Hits.Clear();
+        }
+    }
+
+    [EngineTest("NPC Power Glove removal preserves packed inventory and uses an owned bag for either hand", Category = "PowerGlovePair", TimeoutSeconds = 45f)]
+    public static async Task NpcFullInventoryAndBagRemoval(EngineTestContext ctx)
+    {
+        var actor = ctx.SpawnCreature("civilian");
+        var main = await EquipMain(ctx, actor);
+        ctx.Track(main);
+        var companion = await WaitForPair(ctx, actor, main);
+        var identity = GetObjectUUID(main);
+        var properties = Properties(main);
+        var escrow = ctx.SpawnCreature("civilian", 6f);
+        SetCommandable(false, escrow);
+        var repository = global::NWN.Native.API.NWNXLib.g_pAppManager.m_pServerExoApp.GetGameObject(actor).AsNWSCreature().m_pcItemRepository;
+        var width = repository.m_nWidth;
+        var height = repository.m_nHeight;
+        var boundary = repository.m_nBoundary;
+        var scalable = repository.m_bScalable;
+        try
+        {
+            await ctx.ExecuteInCreatureContextAsync(actor, () =>
+            {
+                ctx.Assert(!GetIsPC(actor), "The storage regression exercises a real NPC owner");
+                foreach (var item in OwnedItems(actor).Where(item =>
+                             GetItemPossessor(item, true) == actor && Item.GetItemSlot(actor, item) == InventorySlot.Invalid).ToArray())
+                    ctx.Assert(ItemPlugin.MoveTo(item, escrow, true), "Setup retains carried objects in test-owned storage");
+            });
+            var filler = await CreateCarriedItem(ctx, actor, "sardine_ball");
+            ctx.Track(filler);
+            await ctx.ExecuteInCreatureContextAsync(actor, () =>
+            {
+                repository.m_nWidth = 1;
+                repository.m_nHeight = 1;
+                repository.m_nBoundary = 1;
+                repository.m_bScalable = 0;
+                foreach (var hand in new[] { main, companion })
+                {
+                    CreaturePlugin.RunUnequip(actor, hand);
+                    ctx.AssertEqual(main, GetItemInSlot(InventorySlot.RightHand, actor), "No-space removal leaves the real item equipped");
+                    ctx.AssertEqual(companion, GetItemInSlot(InventorySlot.LeftHand, actor), "No-space removal retains the linked cosmetic hand");
+                    ctx.Assert(PowerGloveEquipment.IsActivePair(actor), "Rejected NPC removal leaves the existing pair usable");
+                    ctx.AssertEqual(actor, GetItemPossessor(main), "The real NPC glove never drops or transfers before validation");
+                    ctx.AssertEqual(actor, GetItemPossessor(filler, true), "Rejected removal preserves packed inventory contents");
+                    ctx.AssertEqual(identity, GetObjectUUID(main), "Rejected NPC removal retains the original item UUID");
+                    ctx.AssertEqual(properties, Properties(main), "Rejected NPC removal retains all real upgrades");
+                    AssertOwnedItems(ctx, actor, main, 1);
+                }
+                repository.m_nWidth = 2;
+                repository.m_nHeight = 2;
+                repository.m_nBoundary = 4;
+                ctx.Assert(ItemPlugin.MoveTo(filler, escrow, true), "Opening space retains the packed filler in owned storage");
+            });
+            var bag = await CreateCarriedItem(ctx, actor, "bag_b");
+            ctx.Track(bag);
+            await ctx.ExecuteInCreatureContextAsync(actor, () =>
+            {
+                var probe = CreateObject(ObjectType.Item, "sardine_ball", GetLocation(actor));
+                ctx.Track(probe);
+                ctx.Assert(!ItemPlugin.MoveTo(probe, actor, true), "The existing bag fills all top-level NPC inventory cells");
+                DestroyObject(probe);
+            });
+            foreach (var removeMain in new[] { false, true })
+            {
+                await ctx.ExecuteInCreatureContextAsync(actor, () => ActionUnequipItem(removeMain ? main : companion));
+                await WaitForRemovedPair(ctx, actor, main, companion);
+                ctx.AssertEqual(bag, GetItemPossessor(main, true), "Either-hand NPC removal reserves the existing owned bag");
+                ctx.AssertEqual(actor, GetItemPossessor(bag), "The recovery destination remains owned by the same NPC");
+                ctx.AssertEqual(identity, GetObjectUUID(main), "Bag recovery never replaces the real NPC glove");
+                ctx.AssertEqual(properties, Properties(main), "Bag recovery preserves the real weapon properties");
+                ctx.AssertEqual(escrow, GetItemPossessor(filler), "Bag recovery retains the original packed filler");
+                AssertOwnedItems(ctx, actor, main, 0);
+                if (removeMain) continue;
+                await EquipExisting(ctx, actor, main, InventorySlot.RightHand);
+                companion = await WaitForPair(ctx, actor, main);
+            }
+        }
+        finally
+        {
+            repository.m_nWidth = width;
+            repository.m_nHeight = height;
+            repository.m_nBoundary = boundary;
+            repository.m_bScalable = scalable;
+            SetCommandable(true, escrow);
+        }
+    }
+
+    [EngineTest("Destroyed NPC Power Glove owners release cached pairs and orphan companions", Category = "PowerGlovePair", TimeoutSeconds = 45f)]
+    public static async Task DestroyedNpcOwnerReleasesPairState(EngineTestContext ctx)
+    {
+        var pairs = (Dictionary<uint, (uint Main, uint Companion)>)typeof(PowerGloveEquipment)
+            .GetField("Pairs", BindingFlags.Static | BindingFlags.NonPublic)!.GetValue(null)!;
+        var keeper = ctx.SpawnCreature("civilian", 4f);
+        var keeperMain = await EquipMain(ctx, keeper);
+        ctx.Track(keeperMain);
+        var keeperCompanion = await WaitForPair(ctx, keeper, keeperMain);
+        for (var cycle = 0; cycle < 2; cycle++)
+        {
+            var actor = ctx.SpawnCreature("civilian");
+            var main = await EquipMain(ctx, actor);
+            ctx.Track(main);
+            var companion = await WaitForPair(ctx, actor, main);
+            ctx.Assert(pairs.TryGetValue(actor, out var pair) && pair == (main, companion), "A native NPC equip establishes its exact cached pair");
+            await ctx.ExecuteInCreatureContextAsync(actor, () =>
+            {
+                DestroyObject(actor);
+                ctx.Assert(!pairs.ContainsKey(actor), "The actual destruction event clears the owner ID synchronously");
+                if (GetIsObjectValid(main))
+                    ctx.AssertEqual(OBJECT_INVALID, GetLocalObject(main, PowerGloveEquipment.CompanionVariable), "Destroyed-owner cleanup releases the real glove's cosmetic link");
+                ctx.AssertEqual((keeperMain, keeperCompanion), pairs[keeper], "Destroying one owner never clears another owner's pair");
+            });
+            await ctx.WaitUntilAsync(() => !GetIsObjectValid(actor) && !GetIsObjectValid(companion), 6f,
+                "the destroyed NPC and its generated companion to leave the engine");
+            ctx.Assert(!pairs.ContainsKey(actor), "No destroyed-owner cache entry survives native destruction");
+            ctx.Assert(PowerGloveEquipment.IsActivePair(keeper), "An unrelated live owner keeps its original active pair");
+            ctx.AssertEqual(keeperMain, GetItemInSlot(InventorySlot.RightHand, keeper), "Cleanup preserves the other real weapon identity");
+            ctx.AssertEqual(keeperCompanion, GetItemInSlot(InventorySlot.LeftHand, keeper), "Cleanup preserves the other cosmetic identity");
+            ctx.Log($"Destroyed NPC cycle {cycle + 1}: owner {actor:X8} cache removed and companion {companion:X8} released.");
         }
     }
 

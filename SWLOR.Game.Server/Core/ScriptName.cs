@@ -301,10 +301,6 @@ namespace SWLOR.Game.Server.Core
         public const string OnResourceUsed = "res_used";
         public const string OnResourceHeartbeat = "res_heartbeat";
 
-        // Speeder events
-        public const string OnEnmityAcquired = "enmity_acquired";
-        public const string OnSpeederHook = "speeder_hook";
-
         // World events
         public const string OnEnterWorld = "enter_world";
         public const string OnExploreTrigger = "explore_trigger";

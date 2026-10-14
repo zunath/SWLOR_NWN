@@ -13,6 +13,7 @@ public class FrameProfilerTests
     {
         if (FrameProfiler.IsCapturing)
             FrameProfiler.EndCapture();
+        FrameProfiler.Configure(false, 50, 60);
     }
 
     [Test]
@@ -40,6 +41,37 @@ public class FrameProfilerTests
         summary.Totals.Count(FrameMetric.DBGet).Should().Be(1);
         summary.Totals.ByteCount(FrameMetric.DBGet).Should().Be(2048);
         FrameProfiler.IsEnabled.Should().BeFalse();
+    }
+
+    [Test]
+    public void CaptureWhileProfilingEnabled_StartsAtNextFrame()
+    {
+        // Thresholds high enough that no slow-frame or summary log is written.
+        FrameProfiler.Configure(true, 100000, 100000);
+        FrameProfiler.OnFrameStart(1);
+        for (var write = 0; write < 99; write++)
+            FrameProfiler.Stop(FrameMetric.DBSet, FrameProfiler.Start(), 10);
+        FrameProfiler.Stop(FrameMetric.StatusEffectApply, FrameProfiler.Start(), "Before capture");
+
+        FrameProfiler.BeginCapture();
+        FrameProfiler.Stop(FrameMetric.DBSet, FrameProfiler.Start(), 10);
+        FrameProfiler.Stop(FrameMetric.StatusEffectApply, FrameProfiler.Start(), "Capture start frame");
+        FrameProfiler.OnFrameStart(2);
+        FrameProfiler.Stop(FrameMetric.DBSet, FrameProfiler.Start(), 10);
+        FrameProfiler.Stop(FrameMetric.DBSet, FrameProfiler.Start(), 10);
+        FrameProfiler.Stop(FrameMetric.StatusEffectApply, FrameProfiler.Start(), "Captured frame");
+        FrameProfiler.OnFrameStart(3);
+
+        var summary = FrameProfiler.EndCapture();
+
+        summary.Frames.Should().Be(1);
+        summary.Totals.Count(FrameMetric.DBSet).Should().Be(2);
+        summary.Totals.ByteCount(FrameMetric.DBSet).Should().Be(20);
+        summary.Totals.Count(FrameMetric.StatusEffectApply).Should().Be(1);
+        summary.TopHandlers.Should().Contain("StatusEffectApply Captured frame")
+            .And.NotContain("Before capture")
+            .And.NotContain("Capture start frame");
+        FrameProfiler.IsEnabled.Should().BeTrue("configured profiling continues after the capture");
     }
 
     [Test]

@@ -28,11 +28,13 @@ namespace SWLOR.Game.Server.Service
         private static readonly Dictionary<string, (int Calls, long Ticks)> _frameNamed = new();
         private static bool _configured;
         private static bool _capturing;
+        // True only for frames that started after BeginCapture, so a capture never includes earlier work.
+        private static bool _captureFrame;
         private static double _slowFrameMilliseconds = 50;
         private static double _summarySeconds = 60;
         private static long _frameStart;
         private static long _windowStart;
-        private static long _captureStart;
+        private static long _captureTicks;
         private static int _managedDepth;
         private static long _excludedTicks;
 
@@ -43,14 +45,24 @@ namespace SWLOR.Game.Server.Service
         public static void Load()
         {
             var settings = ApplicationSettings.Get();
-            _configured = settings.FrameProfilerEnabled;
-            _slowFrameMilliseconds = settings.FrameProfilerSlowFrameMilliseconds;
-            _summarySeconds = settings.FrameProfilerSummarySeconds;
-            IsEnabled = _configured || _capturing;
+            Configure(settings.FrameProfilerEnabled, settings.FrameProfilerSlowFrameMilliseconds, settings.FrameProfilerSummarySeconds);
 
             if (_configured)
                 Log.Write(LogGroup.Performance,
                     $"Frame profiler enabled: slow frames over {_slowFrameMilliseconds} ms, summary every {_summarySeconds} s.", true);
+        }
+
+        /// <summary>
+        /// Applies the always-on profiling settings. A running capture keeps the profiler enabled.
+        /// </summary>
+        public static void Configure(bool enabled, double slowFrameMilliseconds, double summarySeconds)
+        {
+            _configured = enabled;
+            _slowFrameMilliseconds = slowFrameMilliseconds;
+            _summarySeconds = summarySeconds;
+            IsEnabled = _configured || _capturing;
+            if (!IsEnabled)
+                _frameStart = 0;
         }
 
         /// <summary>
@@ -79,6 +91,7 @@ namespace SWLOR.Game.Server.Service
                 now = Stopwatch.GetTimestamp();
             }
 
+            _captureFrame = _capturing;
             _frameStart = now;
         }
 
@@ -108,7 +121,7 @@ namespace SWLOR.Game.Server.Service
             _frame.Counts[index]++;
             _frame.Ticks[index] += elapsed;
 
-            if (_capturing)
+            if (_captureFrame)
             {
                 var key = $"{metric} {name}";
                 _frameNamed.TryGetValue(key, out var total);
@@ -179,7 +192,9 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>
-        /// Starts recording every frame until <see cref="EndCapture"/>, enabling the profiler if needed.
+        /// Records every frame that starts from the next frame boundary until <see cref="EndCapture"/>,
+        /// enabling the profiler if needed. The frame in progress is left out because part of it ran
+        /// before the call.
         /// </summary>
         public static void BeginCapture()
         {
@@ -187,21 +202,26 @@ namespace SWLOR.Game.Server.Service
             _captureFrames.Clear();
             _captureHandlers.Clear();
             _captureNamed.Clear();
-            _captureStart = Stopwatch.GetTimestamp();
+            _captureTicks = 0;
             if (!IsEnabled)
                 _frameStart = 0;
             _capturing = true;
+            _captureFrame = false;
             IsEnabled = true;
         }
 
+        /// <summary>
+        /// Ends the capture. Its duration covers only the completed frames it recorded.
+        /// </summary>
         public static FrameCaptureSummary EndCapture()
         {
-            var seconds = FrameCounters.TicksToMilliseconds(Stopwatch.GetTimestamp() - _captureStart) / 1000d;
+            var seconds = FrameCounters.TicksToMilliseconds(_captureTicks) / 1000d;
             var totals = new FrameCounters();
             _capture.AddTo(totals);
             var summary = new FrameCaptureSummary(_captureFrames, seconds, _slowFrameMilliseconds, totals,
                 $"{DescribeHandlers(_captureHandlers, CaptureTopHandlerCount)}; top named: {DescribeHandlers(_captureNamed, CaptureTopHandlerCount)}");
             _capturing = false;
+            _captureFrame = false;
             IsEnabled = _configured;
             if (!IsEnabled)
                 _frameStart = 0;
@@ -232,10 +252,11 @@ namespace SWLOR.Game.Server.Service
                 }
             }
 
-            if (_capturing)
+            if (_captureFrame)
             {
                 _frame.AddTo(_capture);
                 _captureFrames.Add(milliseconds);
+                _captureTicks += now - _frameStart;
                 foreach (var (handler, total) in _handlers)
                 {
                     _captureHandlers.TryGetValue(handler, out var captured);

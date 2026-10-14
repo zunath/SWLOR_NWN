@@ -284,7 +284,10 @@ namespace SWLOR.CombatSim.Engine
                 if (combatant.IsDead)
                 {
                     // The game's regeneration heartbeat has no dead-player check, so FP and STM keep coming back.
-                    if (!combatant.Spec.IsNpc)
+                    // A dead NPC restores nothing but keeps its schedule, so a revive does not replay missed ticks.
+                    if (combatant.Spec.IsNpc)
+                        SkipHeartbeats(combatant);
+                    else
                         ProcessHeartbeat(combatant);
                     // A dead caster's zones keep their schedule; only those that outlive the caster land.
                     ProcessPartyPulses(combatant);
@@ -336,9 +339,9 @@ namespace SWLOR.CombatSim.Engine
             if (effect != null && use.Damage != null && !IsPartyEffect(effect))
                 throw new InvalidDataException($"'{use.Feat}' has a damage profile and a single-target effect; only party heals and shields can be paired with damage.");
 
-            // A friendly zone or shield cannot also hurt enemies; hostile hybrids such as Purifying Wave can.
-            if (effect != null && use.Damage != null && !info.IsHostile)
-                throw new InvalidDataException($"'{use.Feat}' is not a hostile ability, so its modeled effect cannot carry a damage profile.");
+            // Only a hostile ability hurts enemies; hostile hybrids such as Purifying Wave may also heal or shield.
+            if (use.Damage != null && !info.IsHostile)
+                throw new InvalidDataException($"'{use.Feat}' is not a hostile ability, so it cannot carry a damage profile.");
 
             if (!Enum.IsDefined(use.Target))
                 throw new InvalidDataException($"'{use.Feat}' has an unknown Target; use one of {string.Join(", ", Enum.GetNames<AbilityTarget>())}.");
@@ -426,6 +429,15 @@ namespace SWLOR.CombatSim.Engine
                 if (!combatant.IsDead && combatant.Spec.HpRegenPer30Seconds > 0 &&
                     combatant.Hp + combatant.TemporaryHpTotal < combatant.Spec.MaxHp)
                     ApplyHealing(null, combatant, (int)combatant.Spec.HpRegenPer30Seconds, HealKind.NaturalRegeneration);
+            }
+        }
+
+        private void SkipHeartbeats(Combatant combatant)
+        {
+            while (_now >= combatant.NextHeartbeatAt)
+            {
+                combatant.NextHeartbeatAt += HeartbeatSeconds;
+                combatant.HeartbeatCount++;
             }
         }
 

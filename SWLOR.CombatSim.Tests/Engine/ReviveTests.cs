@@ -262,6 +262,27 @@ namespace SWLOR.CombatSim.Tests.Engine
         }
 
         [Test]
+        public void ARevivedNpc_DoesNotCatchUpRegenerationMissedWhileDead()
+        {
+            var medic = TestCombatants.Medic("Medic", TestCombatants.Use("Resuscitation2", AbilityTarget.DeadAlly));
+            medic.IsNpc = true;
+            medic.JoinAtSeconds = 120f;
+            var fallen = new CombatantSpec { Name = "Fallen", IsNpc = true, MaxHp = 1000, HpRegenPer30Seconds = 100 };
+            var simulation = TestScenarios.Spawn(
+                TestScenarios.TwoTeams(false, new[] { medic, fallen }, new[] { TestCombatants.Dummy("Enemy") }),
+                RuleSets.Current(),
+                _catalog);
+            var npc = simulation.Get("Fallen");
+            simulation.ApplyDamage(simulation.Get("Enemy"), npc, TestCombatants.EffectivelyUnlimited);
+
+            SimulationClock.RunUntil(simulation, () => !npc.IsDead, 140, "the NPC revived");
+            SimulationClock.RunUntil(simulation, simulation.Now + 1);
+
+            npc.Stats.HealingReceived.Should().BeLessThanOrEqualTo(250 + 100,
+                "the 250-point revive heal and at most one regeneration tick, not the four cycles missed while dead");
+        }
+
+        [Test]
         public void TunedPvp_AnNpcEnemyDoesNotBlockRevives_AndAnNpcKillHasNoDamageWindow()
         {
             var medic = TestCombatants.Medic("Medic", TestCombatants.Use("Resuscitation2", AbilityTarget.DeadAlly));

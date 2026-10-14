@@ -285,7 +285,9 @@ namespace SWLOR.CombatSim.Tests.Engine
 
         [TestCase("ForceSanctuary1")]
         [TestCase("GroupDeflector1")]
-        public void Spawn_RejectsADamageProfileOnAFriendlyZoneOrShield(string feat)
+        [TestCase("AdrenalStim1")]
+        [TestCase("RendingBiteTechnique")]
+        public void Spawn_RejectsADamageProfileOnANonHostileAbility(string feat)
         {
             var use = TestCombatants.Use(feat, AbilityTarget.Self);
             use.Damage = new DamageSpec { Min = 10f, Max = 10f };

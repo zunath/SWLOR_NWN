@@ -116,7 +116,7 @@ namespace SWLOR.Game.Server.Service
             RegisterTrap(record, ownerTraps);
             var trigger = Ability.CaptureRepeatedAbilityImpact(owner, () => ApplyTrapImpact(
                 record, snapshotDamage, damageType, statusEffect, statusDurationSeconds, triggerVisualEffect),
-                snapshotDamage);
+                snapshotDamage, requiresLivingActivator: false);
             ScheduleArming(record, trigger);
 
             return true;

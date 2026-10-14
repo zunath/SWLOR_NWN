@@ -19,6 +19,26 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
         public static Task RazorTrapTwo(EngineTestContext ctx) =>
             VerifyActiveTrap(ctx, FeatType.RazorTrap2, 30, CombatDamageType.Physical);
 
+        [EngineTest("Razor Trap retains its captured damage after owner death", Category = "TrapDamage", TimeoutSeconds = 20f)]
+        public static Task RazorTrapOwnerDeath(EngineTestContext ctx) =>
+            VerifyActiveTrap(ctx, FeatType.RazorTrap1, 14, CombatDamageType.Physical, ownerDiesAfterPlacement: true);
+
+        [EngineTest("Captured recurring impacts still require a living owner by default", Category = "TrapDamage", TimeoutSeconds = 20f)]
+        public static async Task RecurringImpactOwnerDeath(EngineTestContext ctx)
+        {
+            var caster = ctx.SpawnCreature("nw_rat001");
+            await ctx.WaitFrameAsync();
+            var invoked = false;
+            Ability.BeginAbilityImpact(caster, Ability.GetAbilityDetail(FeatType.RazorTrap1));
+            var trigger = Ability.CaptureRepeatedAbilityImpact(caster, () => invoked = true, baseDamage: 14);
+            Ability.EndAbilityImpact(caster);
+            ObjectPlugin.SetCurrentHitPoints(caster, 0);
+            ctx.Assert(GetIsObjectValid(caster) && GetCurrentHitPoints(caster) <= 0,
+                "The default recurring impact has a valid dead owner");
+            trigger();
+            ctx.Assert(!invoked, "Other recurring impacts keep their existing living-owner requirement");
+        }
+
         [EngineTest("Shock Trap retains Perception damage and its cast through delayed detonation", Category = "TrapDamage", TimeoutSeconds = 20f)]
         public static Task ShockTrap(EngineTestContext ctx) =>
             VerifyActiveTrap(ctx, FeatType.ShockTrap, 22, CombatDamageType.Electrical);
@@ -59,7 +79,8 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
         }
 
         private static async Task VerifyActiveTrap(
-            EngineTestContext ctx, FeatType feat, int baseDamage, CombatDamageType damageType)
+            EngineTestContext ctx, FeatType feat, int baseDamage, CombatDamageType damageType,
+            bool ownerDiesAfterPlacement = false)
         {
             const int capturedDamageBonus = 31;
             const int newerDamageBonus = 73;
@@ -97,6 +118,13 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
 
                 Ability.BeginAbilityImpact(caster, renewal);
                 trackerOpen = true;
+                if (ownerDiesAfterPlacement)
+                {
+                    StatusEffect.RemoveAllStatusEffects(caster);
+                    ObjectPlugin.SetCurrentHitPoints(caster, 0);
+                    ctx.Assert(GetIsObjectValid(caster) && GetCurrentHitPoints(caster) <= 0,
+                        "The trap owner remains valid but is dead before detonation");
+                }
                 await ctx.WaitUntilAsync(
                     () => ReferenceEquals(trapAbility, Ability.GetLastCompletedAbilityImpactSummary(caster)?.Ability) &&
                           Ability.GetLastCompletedAbilityImpactSummary(caster).AttributedDamage > 0,

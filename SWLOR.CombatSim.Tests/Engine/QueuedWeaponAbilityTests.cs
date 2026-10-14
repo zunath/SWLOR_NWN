@@ -46,6 +46,34 @@ namespace SWLOR.CombatSim.Tests.Engine
         }
 
         [Test]
+        public void AQueuedArea_LandsOnEveryRecipient_OnlyWhenTheSwingHits()
+        {
+            var strike = TestCombatants.Use("FortressStrike3", AbilityTarget.Enemy, minIntervalSeconds: 600);
+            strike.Damage = new DamageSpec
+            {
+                Min = StrikeDamage, Max = StrikeDamage, HitChance = 1f, Targets = 3,
+                HitChanceVs = new Dictionary<string, float> { ["Enemy 2"] = 0f, ["Enemy 3"] = 0f }
+            };
+            var fighter = TestCombatants.Striker("Fighter", 0.25f, SwingDamage);
+            fighter.MaxFp = TestCombatants.EffectivelyUnlimited;
+            fighter.MaxStm = TestCombatants.EffectivelyUnlimited;
+            fighter.Abilities.Add(strike);
+            var scenario = TestScenarios.TwoTeams(
+                false, new[] { fighter }, Enumerable.Range(1, 3).Select(i => TestCombatants.Dummy($"Enemy {i}", true)));
+            scenario.Teams[0].TargetPolicy = TargetPolicy.Focus;
+            scenario.Teams[0].FocusTarget = "Enemy 1";
+            var simulation = TestScenarios.Spawn(scenario, RuleSets.Current(), _catalog);
+            var attacker = simulation.Get("Fighter");
+
+            SimulationClock.RunUntil(simulation, () => attacker.Stats.AbilitiesUsed == 1, 10, "Fortress Strike queued");
+            SimulationClock.RunUntil(simulation, () => attacker.QueuedWeaponAbility == null, 10, "the next swing");
+
+            simulation.Get("Enemy 2").Stats.DamageTakenToHp.Should().Be(StrikeDamage,
+                "the swing's hit carries the whole activation; secondary recipients take no hit roll of their own");
+            simulation.Get("Enemy 3").Stats.DamageTakenToHp.Should().Be(StrikeDamage);
+        }
+
+        [Test]
         public void AQueuedAbility_KeepsWaitingThroughMisses_AndWearsOffAfterThirtySeconds()
         {
             var simulation = Spawn(attacksPerSecond: 1f, strikeHitChance: 0f);

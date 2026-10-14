@@ -24,6 +24,8 @@ namespace SWLOR.CombatSim.Tests.Engine
         [TestCase(-0.1f)]
         [TestCase(float.NaN)]
         [TestCase(float.PositiveInfinity)]
+        [TestCase(float.Epsilon)]
+        [TestCase(0.0001f)]
         public void Run_RejectsATimeStepThatWouldNeverEnd(float step)
         {
             var scenario = Scenario(TestCombatants.Dummy("Player"));
@@ -37,6 +39,7 @@ namespace SWLOR.CombatSim.Tests.Engine
         [TestCase(0f)]
         [TestCase(-5f)]
         [TestCase(float.PositiveInfinity)]
+        [TestCase(1e30f)]
         public void Run_RejectsANonPositiveDuration(float duration)
         {
             var scenario = Scenario(TestCombatants.Dummy("Player"));
@@ -269,6 +272,18 @@ namespace SWLOR.CombatSim.Tests.Engine
             act.Should().Throw<InvalidDataException>().WithMessage($"*{feat}*not a hostile ability*");
         }
 
+        [TestCase(null)]
+        [TestCase("  ")]
+        public void Spawn_RejectsAMemberWithoutAName(string name)
+        {
+            var player = TestCombatants.Dummy("Player");
+            player.Name = name;
+
+            var act = () => new Simulation(Scenario(player), RuleSets.Current(), _catalog, 1).Spawn();
+
+            act.Should().Throw<InvalidDataException>().WithMessage("*Name*");
+        }
+
         [Test]
         public void Spawn_RejectsAPerkListedTwice()
         {
@@ -349,6 +364,9 @@ namespace SWLOR.CombatSim.Tests.Engine
             act.Should().Throw<InvalidDataException>().WithMessage("*Player*MaxHp*");
         }
 
+        [TestCase("hpRegenFraction")]
+        [TestCase("fpRegenFraction")]
+        [TestCase("readinessAboveCap")]
         [TestCase("hpRegen")]
         [TestCase("fpRegen")]
         [TestCase("stmRegen")]
@@ -367,6 +385,9 @@ namespace SWLOR.CombatSim.Tests.Engine
             var player = TestCombatants.Dummy("Player");
             switch (field)
             {
+                case "hpRegenFraction": player.HpRegenPer30Seconds = 0.5f; break;
+                case "fpRegenFraction": player.FpRegenPer30Seconds = 1.5f; break;
+                case "readinessAboveCap": player.CombatReadinessPercent = 16f; break;
                 case "hpRegen": player.HpRegenPer30Seconds = -1f; break;
                 case "fpRegen": player.FpRegenPer30Seconds = float.NaN; break;
                 case "stmRegen": player.StmRegenPer30Seconds = float.PositiveInfinity; break;

@@ -28,6 +28,11 @@ namespace SWLOR.CombatSim.Engine
         /// <summary>Well above any real attack rate, and small enough for each swing to move the clock.</summary>
         public const float MaximumAttacksPerSecond = 20f;
 
+        public const float MinimumTimeStepSeconds = 0.001f;
+
+        /// <summary>One day of simulated fighting.</summary>
+        public const float MaximumDurationSeconds = 86_400f;
+
         /// <summary>Copies one combatant entry may spawn; far beyond any fight on the server.</summary>
         public const int MaximumCount = 200;
         private const int CoordinatedSampleSize = 3;
@@ -102,10 +107,11 @@ namespace SWLOR.CombatSim.Engine
 
         public void Spawn()
         {
-            if (!(_scenario.TimeStepSeconds > 0) || !float.IsFinite(_scenario.TimeStepSeconds))
-                throw new InvalidDataException("The scenario's TimeStepSeconds must be a finite number greater than zero.");
-            if (!(_scenario.DurationSeconds > 0) || !float.IsFinite(_scenario.DurationSeconds))
-                throw new InvalidDataException("The scenario's DurationSeconds must be a finite number greater than zero.");
+            // Bounds keep every step moving the clock, so a run always ends.
+            if (!(_scenario.TimeStepSeconds >= MinimumTimeStepSeconds) || !float.IsFinite(_scenario.TimeStepSeconds))
+                throw new InvalidDataException($"The scenario's TimeStepSeconds must be a finite number of at least {MinimumTimeStepSeconds}.");
+            if (!(_scenario.DurationSeconds > 0) || !(_scenario.DurationSeconds <= MaximumDurationSeconds))
+                throw new InvalidDataException($"The scenario's DurationSeconds must be greater than zero and at most {MaximumDurationSeconds}.");
 
             for (var teamIndex = 0; teamIndex < _scenario.Teams.Count; teamIndex++)
             {
@@ -168,6 +174,8 @@ namespace SWLOR.CombatSim.Engine
                     var perkStats = _catalog.Perks.GetStats(spec.Perks, PerkStatsRead);
                     for (var copy = 1; copy <= spec.Count; copy++)
                     {
+                        if (string.IsNullOrWhiteSpace(spec.Name))
+                            throw new InvalidDataException($"Every member of team '{_scenario.Teams[teamIndex].Name}' needs a Name.");
                         var name = spec.Count > 1 ? $"{spec.Name} {copy}" : spec.Name;
                         if (!names.Add(name))
                             throw new InvalidDataException($"Team '{_scenario.Teams[teamIndex].Name}' has more than one combatant named '{name}'.");
@@ -253,6 +261,10 @@ namespace SWLOR.CombatSim.Engine
                 ApplyHealing(heal.Source, heal.Target, heal.Amount, heal.Kind);
             }
 
+            // Shields ending now are gone before regeneration, heals over time and zone pulses read anyone's HP.
+            foreach (var combatant in _combatants)
+                combatant.TemporaryHp.RemoveAll(p => p.ExpiresAt <= _now || p.Amount <= 0);
+
             foreach (var combatant in _combatants.ToList())
             {
                 if (combatant.IsDead)
@@ -266,7 +278,6 @@ namespace SWLOR.CombatSim.Engine
                 ProcessConvergence(combatant);
                 ProcessHealsOverTime(combatant);
                 ProcessPartyPulses(combatant);
-                combatant.TemporaryHp.RemoveAll(p => p.ExpiresAt <= _now || p.Amount <= 0);
             }
 
             var order = _combatants.OrderBy(_ => _random.Next()).ToList();
@@ -860,10 +871,14 @@ namespace SWLOR.CombatSim.Engine
                     continue;
                 }
 
-                // The queued ability's profile stands in for this swing; a miss keeps it waiting for the next one.
-                DamageHealingCatalog.TryGet(queued.Ability.Feat, out var damageHealing);
-                if (!ApplyDamageProfile(attacker, target, queued.Use.Damage, ConvergenceHitBonus(attacker, queued.Ability), damageHealing))
+                // The queued ability rides this swing: the swing's roll decides it, a miss keeps it waiting for the
+                // next one, and a hit lands the whole activation on every recipient without further rolls.
+                var hitChance = Math.Min(1f, queued.Use.Damage.GetHitChance(target.Name) + ConvergenceHitBonus(attacker, queued.Ability));
+                if (_random.NextDouble() >= hitChance)
                     continue;
+
+                DamageHealingCatalog.TryGet(queued.Ability.Feat, out var damageHealing);
+                ApplyDamageProfile(attacker, target, queued.Use.Damage, 0f, damageHealing, alwaysHits: true);
 
                 attacker.QueuedWeaponAbility = null;
                 if (HitPointCostCatalog.TryGet(queued.Ability.Feat, out var hitPointCost))
@@ -884,7 +899,7 @@ namespace SWLOR.CombatSim.Engine
 
         /// <returns>Whether a hit landed on the chosen target, or on anyone for an area.</returns>
         private bool ApplyDamageProfile(
-            Combatant attacker, Combatant target, DamageSpec damage, float hitBonus, DamageHealing damageHealing = null)
+            Combatant attacker, Combatant target, DamageSpec damage, float hitBonus, DamageHealing damageHealing = null, bool alwaysHits = false)
         {
             var targets = damage.Area ? Enemies(attacker).ToList() : new List<Combatant> { target };
             if (!damage.Area && damage.Targets > 1)
@@ -906,7 +921,7 @@ namespace SWLOR.CombatSim.Engine
                 var multiplier = !damage.Area && index > 0 ? damage.ExtraTargetDamagePercent / 100.0 : 1.0;
                 for (var hit = 0; hit < damage.Hits; hit++)
                 {
-                    var (hitLanded, dealt) = RollAndApply(attacker, victim, damage, hitBonus, multiplier);
+                    var (hitLanded, dealt) = RollAndApply(attacker, victim, damage, hitBonus, multiplier, alwaysHits);
                     if (hitLanded && (damage.Area || index == 0))
                         landed = true;
                     // The game picks the low-HP rate after the hit, from the victim's HP it left.
@@ -995,9 +1010,9 @@ namespace SWLOR.CombatSim.Engine
 
         /// <returns>Whether the roll hit, and the damage that landed on temporary HP or HP.</returns>
         private (bool Hit, double Dealt) RollAndApply(
-            Combatant attacker, Combatant target, DamageSpec damage, float hitBonus = 0f, double multiplier = 1.0)
+            Combatant attacker, Combatant target, DamageSpec damage, float hitBonus = 0f, double multiplier = 1.0, bool alwaysHits = false)
         {
-            if (target.IsDead || _random.NextDouble() >= Math.Min(1f, damage.GetHitChance(target.Name) + hitBonus))
+            if (target.IsDead || (!alwaysHits && _random.NextDouble() >= Math.Min(1f, damage.GetHitChance(target.Name) + hitBonus)))
                 return (false, 0);
 
             var amount = damage.Min + _random.NextDouble() * Math.Max(0, damage.Max - damage.Min);

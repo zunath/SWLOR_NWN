@@ -46,10 +46,19 @@ namespace SWLOR.CombatSim.Scenario
 
         public const float MaximumPercentBonus = 1000f;
 
+        /// <summary>The game's Stat.MaximumCombatReadinessPercent.</summary>
+        public const float MaximumCombatReadinessPercent = 15f;
+
         /// <summary>Numbers outside their documented range; empty when the combatant is usable.</summary>
         public List<string> GetProblems()
         {
             var problems = new List<string>();
+
+            void WholeNumber(string name, float value)
+            {
+                if (!float.IsFinite(value) || value < 0f || value != MathF.Floor(value))
+                    problems.Add($"{name} must be a whole number of at least 0");
+            }
 
             void AtLeastZero(string name, float value)
             {
@@ -64,12 +73,14 @@ namespace SWLOR.CombatSim.Scenario
                     problems.Add($"{name} must be from {minimum} to {MaximumPercentBonus}");
             }
 
-            AtLeastZero(nameof(HpRegenPer30Seconds), HpRegenPer30Seconds);
-            AtLeastZero(nameof(FpRegenPer30Seconds), FpRegenPer30Seconds);
+            // The game's HP and FP regeneration are whole points per cycle; only stamina is split per heartbeat.
+            WholeNumber(nameof(HpRegenPer30Seconds), HpRegenPer30Seconds);
+            WholeNumber(nameof(FpRegenPer30Seconds), FpRegenPer30Seconds);
             AtLeastZero(nameof(StmRegenPer30Seconds), StmRegenPer30Seconds);
             AtLeastZero(nameof(MaxFp), MaxFp);
             AtLeastZero(nameof(MaxStm), MaxStm);
-            Percent(nameof(CombatReadinessPercent), CombatReadinessPercent, 0f);
+            if (!float.IsFinite(CombatReadinessPercent) || CombatReadinessPercent < 0f || CombatReadinessPercent > MaximumCombatReadinessPercent)
+                problems.Add($"{nameof(CombatReadinessPercent)} must be from 0 to {MaximumCombatReadinessPercent}");
             Percent(nameof(OutgoingHealingPercent), OutgoingHealingPercent, -100f);
             Percent(nameof(HealingReceivedPercent), HealingReceivedPercent, -100f);
             if (ForceAffinity < -10 || ForceAffinity > 10)

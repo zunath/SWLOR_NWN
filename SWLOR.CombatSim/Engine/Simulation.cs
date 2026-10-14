@@ -283,6 +283,9 @@ namespace SWLOR.CombatSim.Engine
             {
                 if (combatant.IsDead)
                 {
+                    // The game's regeneration heartbeat has no dead-player check, so FP and STM keep coming back.
+                    if (!combatant.Spec.IsNpc)
+                        ProcessHeartbeat(combatant);
                     // A dead caster's zones keep their schedule; only those that outlive the caster land.
                     ProcessPartyPulses(combatant);
                     continue;
@@ -339,7 +342,7 @@ namespace SWLOR.CombatSim.Engine
 
             if (!Enum.IsDefined(use.Target))
                 throw new InvalidDataException($"'{use.Feat}' has an unknown Target; use one of {string.Join(", ", Enum.GetNames<AbilityTarget>())}.");
-            RequireTargetFitsEffect(use, effect);
+            RequireTargetFitsEffect(use, effect, info);
 
             if (use.BelowHpPercent.HasValue && (!float.IsFinite(use.BelowHpPercent.Value) || use.BelowHpPercent.Value < 0f))
                 throw new InvalidDataException($"'{use.Feat}' needs a finite BelowHpPercent of at least 0.");
@@ -363,7 +366,7 @@ namespace SWLOR.CombatSim.Engine
         }
 
         // The game refuses these pairings, so a scenario that asks for them would heal or shield the wrong side.
-        private static void RequireTargetFitsEffect(AbilityUseSpec use, AbilityEffect effect)
+        private static void RequireTargetFitsEffect(AbilityUseSpec use, AbilityEffect effect, AbilityInfo info)
         {
             var isRevive = effect?.Kind == EffectKind.Revive;
             if (isRevive != (use.Target == AbilityTarget.DeadAlly))
@@ -375,6 +378,11 @@ namespace SWLOR.CombatSim.Engine
             if (isFriendlySingleTarget && use.Target == AbilityTarget.Enemy)
                 throw new InvalidDataException(
                     $"'{use.Feat}' heals or shields one creature, so its Target must be Self, LowestAlly or NamedAlly.");
+
+            // A friendly zone or party shield centers on the caster; only hostile hybrids (Purifying Wave) aim at an enemy.
+            if (effect != null && IsPartyEffect(effect) && !info.IsHostile && use.Target == AbilityTarget.Enemy)
+                throw new InvalidDataException(
+                    $"'{use.Feat}' is a friendly zone or party effect, so its Target must be Self, LowestAlly or NamedAlly.");
         }
 
         private static void RequireValidDamage(string owner, DamageSpec damage)
@@ -414,7 +422,9 @@ namespace SWLOR.CombatSim.Engine
 
                 RestoreFp(combatant, Math.Floor(combatant.Spec.FpRegenPer30Seconds), false);
                 // The game's tick needs current HP, which counts temporary HP, below max HP.
-                if (combatant.Spec.HpRegenPer30Seconds > 0 && combatant.Hp + combatant.TemporaryHpTotal < combatant.Spec.MaxHp)
+                // A heal does nothing to the dead.
+                if (!combatant.IsDead && combatant.Spec.HpRegenPer30Seconds > 0 &&
+                    combatant.Hp + combatant.TemporaryHpTotal < combatant.Spec.MaxHp)
                     ApplyHealing(null, combatant, (int)combatant.Spec.HpRegenPer30Seconds, HealKind.NaturalRegeneration);
             }
         }
@@ -838,7 +848,6 @@ namespace SWLOR.CombatSim.Engine
         {
             target.IsDead = false;
             target.Hp = 1;
-            target.NextHeartbeatAt = Math.Max(target.NextHeartbeatAt, _now + HeartbeatSeconds);
             target.Stats.RevivesReceived++;
             _revives++;
 
@@ -870,7 +879,7 @@ namespace SWLOR.CombatSim.Engine
                 return;
 
             // Attacks due during this step are all made; ones missed before it (not yet engaged) are not made up.
-            attacker.NextAttackAt = Math.Max(attacker.NextAttackAt, _now - step);
+            attacker.NextAttackAt = Math.Max(attacker.NextAttackAt, Math.Max(_now - step, attacker.Spec.JoinAtSeconds));
             while (_now >= attacker.NextAttackAt)
             {
                 attacker.NextAttackAt += 1.0 / attack.AttacksPerSecond;

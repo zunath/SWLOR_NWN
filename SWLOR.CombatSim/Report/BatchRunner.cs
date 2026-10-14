@@ -13,10 +13,18 @@ namespace SWLOR.CombatSim.Report
         /// <summary>Every run's results are kept for the report, so the count stays practical.</summary>
         public const int MaximumRuns = 100_000;
 
+        /// <summary>Runs times combatants per run; each keeps at most one first-starved time for the median.</summary>
+        public const long MaximumCombatantRuns = 10_000_000;
+
         public static BatchSummary Run(ScenarioSpec scenario, RuleSet rules, AbilityCatalog catalog, int runs, int seed)
         {
+            var combatantsPerRun = scenario.Teams.Sum(team => team?.Members?.Sum(member => (long)Math.Max(1, member?.Count ?? 1)) ?? 0);
+            if (runs * combatantsPerRun > MaximumCombatantRuns)
+                throw new ArgumentException(
+                    $"{runs} runs of {combatantsPerRun} combatants is more than {MaximumCombatantRuns} combatant-runs; use fewer runs.");
+
             var summary = new BatchSummary { RuleSetName = rules.Name, Runs = runs };
-            var perCombatant = new Dictionary<(int TeamIndex, string Name), List<(Combatant Combatant, double Minutes)>>();
+            var perCombatant = new Dictionary<(int TeamIndex, string Name), CombatantAccumulator>();
 
             for (var run = 0; run < runs; run++)
             {
@@ -48,41 +56,15 @@ namespace SWLOR.CombatSim.Report
                     summary.TotalOverhealing += combatant.Stats.Overhealing / runs;
                     summary.AverageBlockedRevives += combatant.Stats.BlockedRevives / (double)runs;
 
-                    if (!perCombatant.TryGetValue((combatant.TeamIndex, combatant.Name), out var list))
-                        perCombatant[(combatant.TeamIndex, combatant.Name)] = list = new List<(Combatant, double)>();
+                    var key = (combatant.TeamIndex, combatant.Name);
+                    if (!perCombatant.TryGetValue(key, out var accumulator))
+                        perCombatant[key] = accumulator = new CombatantAccumulator(combatant.Name, combatant.TeamIndex);
                     // Resource rates count only the time a combatant was in the fight.
-                    list.Add((combatant, Math.Max(result.EndedAt - combatant.Spec.JoinAtSeconds, 1) / 60.0));
+                    accumulator.Add(combatant.Stats, Math.Max(result.EndedAt - combatant.Spec.JoinAtSeconds, 1) / 60.0);
                 }
             }
 
-            foreach (var ((_, name), entries) in perCombatant)
-            {
-                var starved = entries.Where(e => e.Combatant.Stats.FirstStarvedAt.HasValue)
-                    .Select(e => e.Combatant.Stats.FirstStarvedAt.Value)
-                    .ToList();
-
-                summary.Combatants.Add(new CombatantSummary
-                {
-                    Name = name,
-                    TeamIndex = entries[0].Combatant.TeamIndex,
-                    AverageDeaths = entries.Average(e => e.Combatant.Stats.Deaths),
-                    AverageDamageDealt = entries.Average(e => e.Combatant.Stats.DamageDealt),
-                    AverageHealingDone = entries.Average(e => e.Combatant.Stats.HealingDone),
-                    AverageHealingReceived = entries.Average(e => e.Combatant.Stats.HealingReceived),
-                    AverageOverhealing = entries.Average(e => e.Combatant.Stats.Overhealing),
-                    AverageDamageTakenToHp = entries.Average(e => e.Combatant.Stats.DamageTakenToHp),
-                    AverageHitPointsSpent = entries.Average(e => e.Combatant.Stats.HitPointsSpent),
-                    AverageAbsorbed = entries.Average(e => e.Combatant.Stats.DamageAbsorbedByTemporaryHp),
-                    AverageFpSpentPerMinute = entries.Average(e => e.Combatant.Stats.FpSpent / e.Minutes),
-                    AverageStmSpentPerMinute = entries.Average(e => e.Combatant.Stats.StmSpent / e.Minutes),
-                    AverageFpRefunded = entries.Average(e => e.Combatant.Stats.FpRefunded),
-                    AverageStmRefunded = entries.Average(e => e.Combatant.Stats.StmRefunded),
-                    AverageStarvedSeconds = entries.Average(e => e.Combatant.Stats.StarvedSeconds),
-                    MedianFirstStarvedAt = Percentile.Of(starved, 50),
-                    ShareOfRunsStarved = starved.Count / (double)entries.Count
-                });
-            }
-
+            summary.Combatants.AddRange(perCombatant.Values.Select(accumulator => accumulator.ToSummary()));
             return summary;
         }
     }

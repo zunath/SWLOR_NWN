@@ -106,6 +106,18 @@ namespace SWLOR.CombatSim.Tests.Report
         }
 
         [Test]
+        public void Run_RejectsMoreCombatantRunsThanItCanSummarise()
+        {
+            var crowd = TestCombatants.Dummy("Crowd");
+            crowd.Count = 200;
+            var scenario = TestScenarios.TwoTeams(false, new[] { crowd }, new[] { TestCombatants.Dummy("Enemy", true) });
+
+            var act = () => BatchRunner.Run(scenario, RuleSets.Current(), _catalog, 100_000, seed: 1);
+
+            act.Should().Throw<ArgumentException>().WithMessage("*combatant-runs*");
+        }
+
+        [Test]
         public void Run_WhenNobodyCanHurtAnybody_ReportsFightsEndedByTheTimeLimit()
         {
             var scenario = TestScenarios.TwoTeams(true,

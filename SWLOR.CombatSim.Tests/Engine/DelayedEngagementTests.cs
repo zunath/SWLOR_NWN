@@ -142,6 +142,20 @@ namespace SWLOR.CombatSim.Tests.Engine
             result.EndedAt.Should().BeApproximately(30.0, 1e-6);
         }
 
+        [Test]
+        public void ALateJoiner_DoesNotCatchUpSwingsFromBeforeItJoined()
+        {
+            var striker = TestCombatants.Striker("Striker", attacksPerSecond: 20f, damage: 1f);
+            striker.JoinAtSeconds = 9.9f;
+            var scenario = TestScenarios.TwoTeams(false, new[] { striker }, new[] { TestCombatants.Dummy("Enemy", true) }, durationSeconds: 10f);
+            scenario.TimeStepSeconds = 10f;
+
+            var result = new Simulation(scenario, RuleSets.Current(), _catalog, 1).Run();
+
+            result.Combatants.Single(c => c.Name == "Enemy").Stats.DamageTakenToHp.Should().BeLessThanOrEqualTo(5,
+                "only the tenth of a second after joining is caught up, about two swings");
+        }
+
         [TestCase(-1f)]
         [TestCase(float.NaN)]
         [TestCase(float.PositiveInfinity)]

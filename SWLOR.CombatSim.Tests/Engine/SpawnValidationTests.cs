@@ -261,6 +261,30 @@ namespace SWLOR.CombatSim.Tests.Engine
 
         [TestCase("ForceSanctuary1")]
         [TestCase("GroupDeflector1")]
+        [TestCase("KoltoMist1")]
+        public void Spawn_RejectsAnEnemyTargetForAFriendlyZoneOrPartyEffect(string feat)
+        {
+            var medic = TestCombatants.Medic("Medic", TestCombatants.Use(feat, AbilityTarget.Enemy));
+
+            var act = () => new Simulation(Scenario(medic), RuleSets.Current(), _catalog, 1).Spawn();
+
+            act.Should().Throw<InvalidDataException>().WithMessage($"*{feat}*friendly zone*");
+        }
+
+        [TestCase(256)]
+        [TestCase(-1)]
+        public void Spawn_RejectsAnAbilityScoreOutsideItsRange(int might)
+        {
+            var player = TestCombatants.Dummy("Player");
+            player.Might = might;
+
+            var act = () => new Simulation(Scenario(player), RuleSets.Current(), _catalog, 1).Spawn();
+
+            act.Should().Throw<InvalidDataException>().WithMessage("*Might*");
+        }
+
+        [TestCase("ForceSanctuary1")]
+        [TestCase("GroupDeflector1")]
         public void Spawn_RejectsADamageProfileOnAFriendlyZoneOrShield(string feat)
         {
             var use = TestCombatants.Use(feat, AbilityTarget.Self);

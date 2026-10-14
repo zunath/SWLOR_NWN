@@ -239,6 +239,29 @@ namespace SWLOR.CombatSim.Tests.Engine
         }
 
         [Test]
+        public void ADeadPlayer_KeepsRegainingFpAndStamina()
+        {
+            var fallen = new CombatantSpec
+            {
+                Name = "Fallen", MaxHp = 1000, MaxFp = 100, FpRegenPer30Seconds = 10, MaxStm = 100, StmRegenPer30Seconds = 10
+            };
+            var simulation = TestScenarios.Spawn(
+                TestScenarios.TwoTeams(false, new[] { fallen, new CombatantSpec { Name = "Ally", MaxHp = 1000 } }, new[] { TestCombatants.Dummy("Enemy", true) }),
+                RuleSets.Current(),
+                _catalog);
+            var player = simulation.Get("Fallen");
+            player.Fp = 50;
+            player.Stm = 50;
+            simulation.ApplyDamage(simulation.Get("Enemy"), player, TestCombatants.EffectivelyUnlimited);
+
+            SimulationClock.RunUntil(simulation, 40);
+
+            player.IsDead.Should().BeTrue();
+            player.Fp.Should().BeGreaterThan(50, "the game's regeneration heartbeat has no dead-player check");
+            player.Stm.Should().BeGreaterThan(50);
+        }
+
+        [Test]
         public void TunedPvp_AnNpcEnemyDoesNotBlockRevives_AndAnNpcKillHasNoDamageWindow()
         {
             var medic = TestCombatants.Medic("Medic", TestCombatants.Use("Resuscitation2", AbilityTarget.DeadAlly));

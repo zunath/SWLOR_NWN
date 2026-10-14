@@ -48,6 +48,9 @@ namespace SWLOR.CombatSim.Scenario
 
         public const float MaximumRegenPer30Seconds = 1_000_000f;
 
+        /// <summary>The game's ability scores stay far below this; it keeps perk scaling clear of overflow.</summary>
+        public const int MaximumAbilityScore = 255;
+
         /// <summary>The game's Stat.MaximumCombatReadinessPercent.</summary>
         public const float MaximumCombatReadinessPercent = 15f;
 
@@ -73,6 +76,12 @@ namespace SWLOR.CombatSim.Scenario
             {
                 if (!float.IsFinite(value) || value < minimum || value > MaximumPercentBonus)
                     problems.Add($"{name} must be from {minimum} to {MaximumPercentBonus}");
+            }
+
+            foreach (var (name, value) in new[] { (nameof(Willpower), Willpower), (nameof(Might), Might), (nameof(Social), Social) })
+            {
+                if (value < 0 || value > MaximumAbilityScore)
+                    problems.Add($"{name} must be from 0 to {MaximumAbilityScore}");
             }
 
             // The game's HP and FP regeneration are whole points per cycle; only stamina is split per heartbeat.

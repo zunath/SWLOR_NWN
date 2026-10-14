@@ -9,6 +9,7 @@ namespace SWLOR.CombatSim.Effects
     public static class EffectCatalog
     {
         private const string RegenerativeHealingKey = "RegenerativeHealing";
+        private const string LeadershipReductionGroup = "Leadership";
 
         private static readonly Dictionary<FeatType, AbilityEffect> Effects = new()
         {
@@ -66,9 +67,9 @@ namespace SWLOR.CombatSim.Effects
                 UsesCombatReadiness = true, Key = "GroupDeflector", DurationSeconds = 30f
             },
 
-            [FeatType.RousingShout1] = Shout(10, 13, 10, 12),
-            [FeatType.RousingShout2] = Shout(15, 19, 15, 18),
-            [FeatType.RousingShout3] = Shout(20, 25, 20, 25),
+            [FeatType.RousingShout1] = Shout(10, 13, 10, 12, "RousingShout1"),
+            [FeatType.RousingShout2] = Shout(15, 19, 15, 18, "RousingShout2"),
+            [FeatType.RousingShout3] = Shout(20, 25, 20, 25, "RousingShout3"),
             [FeatType.CleanseOrder1] = PartyShout(6, 8),
             [FeatType.CleanseOrder2] = PartyShout(12, 15),
 
@@ -124,12 +125,14 @@ namespace SWLOR.CombatSim.Effects
         };
 
         /// <summary>Temporary HP; a target at or below 35% HP also takes less physical and Force damage.</summary>
-        private static AbilityEffect Shout(float minimum, float maximum, float minimumReduction, float maximumReduction) => new()
+        private static AbilityEffect Shout(float minimum, float maximum, float minimumReduction, float maximumReduction, string rankKey) => new()
         {
             Kind = EffectKind.TemporaryHp, Percent = minimum, MaximumPercent = maximum, Scaling = ScalingStat.Social,
             Key = "RousingShout", DurationSeconds = 30f,
             DamageReductionPercent = minimumReduction, DamageReductionMaximumPercent = maximumReduction,
-            DamageReductionScope = DamageReductionScope.PhysicalAndForce, DamageReductionBelowHpPercent = 35f
+            DamageReductionScope = DamageReductionScope.PhysicalAndForce, DamageReductionBelowHpPercent = 35f,
+            // Each rank is its own status; overlapping Leadership reductions keep the strongest.
+            DamageReductionKey = rankKey, DamageReductionGroup = LeadershipReductionGroup
         };
 
         private static AbilityEffect PartyShout(float minimum, float maximum) => new()

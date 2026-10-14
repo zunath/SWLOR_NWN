@@ -137,6 +137,11 @@ namespace SWLOR.CombatSim.Engine
 
                     // Each step makes at most one decision per combatant, so a step longer than the
                     // reaction time would skip decisions and make results depend on the step size.
+                    if (!(spec.MaxHp > 0))
+                        throw new InvalidDataException($"'{spec.Name}' needs a MaxHp greater than 0.");
+
+                    if (spec.Abilities.Count > 0 && !float.IsFinite(spec.ReactionSeconds))
+                        throw new InvalidDataException($"'{spec.Name}' needs a finite ReactionSeconds.");
                     if (spec.Abilities.Count > 0 && !(spec.ReactionSeconds >= _scenario.TimeStepSeconds))
                         throw new InvalidDataException(
                             $"'{spec.Name}' has a ReactionSeconds of {spec.ReactionSeconds}, below the {_scenario.TimeStepSeconds}s time step; " +
@@ -285,6 +290,7 @@ namespace SWLOR.CombatSim.Engine
 
             if (!Enum.IsDefined(use.Target))
                 throw new InvalidDataException($"'{use.Feat}' has an unknown Target; use one of {string.Join(", ", Enum.GetNames<AbilityTarget>())}.");
+            RequireTargetFitsEffect(use, effect);
 
             if (!(use.MinIntervalSeconds >= 0) || !float.IsFinite(use.MinIntervalSeconds))
                 throw new InvalidDataException($"'{use.Feat}' needs a finite MinIntervalSeconds of at least 0.");
@@ -302,6 +308,21 @@ namespace SWLOR.CombatSim.Engine
             }
 
             _resolvedUses[use] = (info, effect);
+        }
+
+        // The game refuses these pairings, so a scenario that asks for them would heal or shield the wrong side.
+        private static void RequireTargetFitsEffect(AbilityUseSpec use, AbilityEffect effect)
+        {
+            var isRevive = effect?.Kind == EffectKind.Revive;
+            if (isRevive != (use.Target == AbilityTarget.DeadAlly))
+                throw new InvalidDataException(isRevive
+                    ? $"'{use.Feat}' revives, so its Target must be DeadAlly."
+                    : $"'{use.Feat}' does not revive, so it cannot target a DeadAlly.");
+
+            var isFriendlySingleTarget = effect != null && !isRevive && !IsPartyEffect(effect);
+            if (isFriendlySingleTarget && use.Target == AbilityTarget.Enemy)
+                throw new InvalidDataException(
+                    $"'{use.Feat}' heals or shields one creature, so its Target must be Self, LowestAlly or NamedAlly.");
         }
 
         private static void RequireValidDamage(string owner, DamageSpec damage)
@@ -913,10 +934,14 @@ namespace SWLOR.CombatSim.Engine
             }
 
             amount *= 1 - target.Spec.DamageReductionPercent / 100f;
-            // Cuts to all damage share the game's one summed damage-taken stat; typed cuts apply on their own.
+            // A family of overlapping cuts (Leadership's) keeps only its strongest; ungrouped cuts to all damage
+            // share the game's one summed damage-taken stat; other typed cuts apply on their own.
             var active = target.DamageReductions.Values.Where(r => r.ExpiresAt > _now && r.Applies(type)).ToList();
-            amount *= 1 - Math.Min(100.0, active.Where(r => r.Scope == DamageReductionScope.All).Sum(r => (double)r.Percent)) / 100.0;
-            foreach (var reduction in active.Where(r => r.Scope != DamageReductionScope.All))
+            foreach (var family in active.Where(r => r.Group != null).GroupBy(r => r.Group))
+                amount *= 1 - family.Max(r => r.Percent) / 100.0;
+            var ungrouped = active.Where(r => r.Group == null).ToList();
+            amount *= 1 - Math.Min(100.0, ungrouped.Where(r => r.Scope == DamageReductionScope.All).Sum(r => (double)r.Percent)) / 100.0;
+            foreach (var reduction in ungrouped.Where(r => r.Scope != DamageReductionScope.All))
                 amount *= 1 - reduction.Percent / 100.0;
 
             var landed = 0.0;
@@ -1035,6 +1060,7 @@ namespace SWLOR.CombatSim.Engine
             {
                 Percent = percent,
                 Scope = effect.DamageReductionScope,
+                Group = effect.DamageReductionGroup,
                 ExpiresAt = _now + seconds
             };
         }

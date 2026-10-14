@@ -55,6 +55,12 @@ namespace SWLOR.CombatSim.Effects
         /// </summary>
         public string DamageReductionKey { get; init; }
 
+        /// <summary>
+        /// A family whose overlapping reductions keep only the strongest, such as Leadership's (the game's
+        /// ReconcileLeadershipDamageReduction). Null means the reduction stands on its own.
+        /// </summary>
+        public string DamageReductionGroup { get; init; }
+
         public bool IsInstantHeal => Kind == EffectKind.DirectHeal;
     }
 }

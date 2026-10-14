@@ -256,6 +256,57 @@ namespace SWLOR.CombatSim.Tests.Engine
             act.Should().Throw<InvalidDataException>().WithMessage("*Medic*ReactionSeconds*time step*");
         }
 
+        [TestCase(float.PositiveInfinity)]
+        [TestCase(float.NaN)]
+        public void Spawn_RejectsAReactionTimeThatIsNotFinite(float seconds)
+        {
+            var medic = TestCombatants.Medic("Medic", TestCombatants.Use("Benevolence1", AbilityTarget.Self));
+            medic.ReactionSeconds = seconds;
+
+            var act = () => new Simulation(Scenario(medic), RuleSets.Current(), _catalog, 1).Spawn();
+
+            act.Should().Throw<InvalidDataException>().WithMessage("*Medic*ReactionSeconds*");
+        }
+
+        [TestCase(0)]
+        [TestCase(-5)]
+        public void Spawn_RejectsAMaxHpThatIsNotPositive(int maxHp)
+        {
+            var player = TestCombatants.Dummy("Player");
+            player.MaxHp = maxHp;
+
+            var act = () => new Simulation(Scenario(player), RuleSets.Current(), _catalog, 1).Spawn();
+
+            act.Should().Throw<InvalidDataException>().WithMessage("*Player*MaxHp*");
+        }
+
+        [TestCase("Benevolence1", AbilityTarget.Enemy)]
+        [TestCase("GuardianWard1", AbilityTarget.Enemy)]
+        [TestCase("Renewal1", AbilityTarget.Enemy)]
+        [TestCase("MedKit1", AbilityTarget.DeadAlly)]
+        [TestCase("Resuscitation1", AbilityTarget.Self)]
+        [TestCase("Resuscitation1", AbilityTarget.Enemy)]
+        public void Spawn_RejectsATargetTheEffectCannotHave(string feat, AbilityTarget target)
+        {
+            var medic = TestCombatants.Medic("Medic", TestCombatants.Use(feat, target));
+
+            var act = () => new Simulation(Scenario(medic), RuleSets.Current(), _catalog, 1).Spawn();
+
+            act.Should().Throw<InvalidDataException>().WithMessage($"*{feat}*Target*");
+        }
+
+        [TestCase("KoltoMist1", AbilityTarget.Self)]
+        [TestCase("Benevolence1", AbilityTarget.LowestAlly)]
+        [TestCase("Resuscitation1", AbilityTarget.DeadAlly)]
+        public void Spawn_AcceptsATargetTheEffectCanHave(string feat, AbilityTarget target)
+        {
+            var medic = TestCombatants.Medic("Medic", TestCombatants.Use(feat, target));
+
+            var act = () => new Simulation(Scenario(medic), RuleSets.Current(), _catalog, 1).Spawn();
+
+            act.Should().NotThrow();
+        }
+
         [Test]
         public void Spawn_AllowsALongTimeStepForCombatantsWithoutAbilities()
         {

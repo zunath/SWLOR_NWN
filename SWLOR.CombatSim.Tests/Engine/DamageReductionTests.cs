@@ -63,6 +63,35 @@ namespace SWLOR.CombatSim.Tests.Engine
         }
 
         [Test]
+        public void RousingShoutRanks_KeepTheStrongestLeadershipReduction()
+        {
+            var late = TestCombatants.Medic("Second Medic", TestCombatants.Use("RousingShout1", AbilityTarget.NamedAlly, targetName: "Ally", minIntervalSeconds: 600));
+            late.JoinAtSeconds = 3f;
+            var simulation = TestScenarios.Spawn(
+                TestScenarios.TwoTeams(
+                    false,
+                    new[]
+                    {
+                        TestCombatants.Medic("Medic", TestCombatants.Use("RousingShout3", AbilityTarget.NamedAlly, targetName: "Ally", minIntervalSeconds: 600)),
+                        late,
+                        new CombatantSpec { Name = "Ally", MaxHp = TestCombatants.EffectivelyUnlimited }
+                    },
+                    new[] { TestCombatants.Dummy("Enemy", true) }),
+                RuleSets.Current(),
+                _catalog);
+            var ally = simulation.Get("Ally");
+            ally.Hp = ally.Spec.MaxHp * 0.30;
+            SimulationClock.RunUntil(simulation, () => simulation.Get("Medic").Stats.AbilitiesUsed == 1, 10, "rank III cast");
+            // Without its shield the ally is still in danger when rank I lands, so rank I's reduction applies too.
+            ally.TemporaryHp.Clear();
+            SimulationClock.RunUntil(simulation, () => simulation.Get("Second Medic").Stats.AbilitiesUsed == 1, 10, "rank I cast");
+            ally.TemporaryHp.Clear();
+
+            DamageTaken(simulation, ally, DamageType.Physical).Should().BeApproximately(75, 1e-6,
+                "rank III's 25% stays while it outlasts rank I's 12%, as the game keeps the strongest Leadership cut");
+        }
+
+        [Test]
         public void TypedReductions_MultiplyWithTheSummedAllDamageCut()
         {
             var simulation = Spawn(TestCombatants.Use("PainSuppressant2", AbilityTarget.NamedAlly, targetName: "Ally", minIntervalSeconds: 600));

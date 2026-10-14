@@ -8,6 +8,9 @@ namespace SWLOR.CombatSim.Engine
     {
         public float Percent { get; init; }
         public DamageReductionScope Scope { get; init; }
+
+        /// <summary>Cuts in the same family keep only the strongest active one; null for none.</summary>
+        public string Group { get; init; }
         public double ExpiresAt { get; init; }
 
         public bool Applies(DamageType type) => Scope switch

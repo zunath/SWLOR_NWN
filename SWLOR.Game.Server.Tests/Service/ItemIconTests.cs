@@ -141,8 +141,23 @@ public class ItemIconTests
         BitConverter.ToUInt16(bytes, 14).Should().Be((ushort)size);
         bytes[16].Should().Be(32);
         bytes[17].Should().Be(8, "classic NWN requires bottom-left TGA origin");
-        for (var index = 18 + bytes[0] + 3; index < 18 + bytes[0] + size * size * 4; index += 4)
-            bytes[index].Should().Be(255);
+        var offset = 18 + bytes[0];
+        if (size == 64)
+        {
+            var opaquePixels = 0;
+            for (var y = 0; y < size; y++)
+            for (var x = 0; x < size; x++)
+            {
+                var alpha = bytes[offset + (y * size + x) * 4 + 3];
+                if (Math.Min(Math.Min(x, y), Math.Min(size - 1 - x, size - 1 - y)) < 6)
+                    alpha.Should().Be(0, "inventory artwork must have no baked-in frame or matte");
+                if (alpha > 0) opaquePixels++;
+            }
+            opaquePixels.Should().BeGreaterThan(100, "the item artwork must survive background removal");
+        }
+        else
+            for (var index = offset + 3; index < offset + size * size * 4; index += 4)
+                bytes[index].Should().Be(255);
     }
 
     private static List<Dictionary<string, string>> ReadCsv(string name)

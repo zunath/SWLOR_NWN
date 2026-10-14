@@ -19,7 +19,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             using var observer = await PlayerAbilityFixture.CreateAsync(ctx);
             using var target = await PlayerAbilityFixture.CreateAsync(ctx, 3f);
             using var bystander = await PlayerAbilityFixture.CreateAsync(ctx, -3f);
-            var command = new AfkChatCommand().BuildChatCommands()["afk"];
+            var command = new CharacterChatCommand().BuildChatCommands()["afk"];
             var snapshots = new List<object>();
             var suffix = " " + ColorToken.Purple("[AFK]");
             PlayerDisguise disguise = null;
@@ -37,13 +37,29 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 await ToggleAsync();
                 ctx.Assert(PlayerName.IsAfk(target.Creature), "first /afk enables status");
                 AssertOverride("unknown", ColorToken.Gray("A quiet traveler") + suffix);
-                ctx.AssertEqual(canonicalName + suffix, RenamePlugin.GetPCNameOverride(target.Creature, target.Creature), "self override");
+                AssertOverride("self", canonicalName + suffix, target.Creature);
+                targetRecord = DB.Get<Player>(target.Id);
+                targetRecord.Settings.ShowOwnDescriptor = true;
+                DB.Set(targetRecord);
+                PlayerName.RefreshNameOverridesForPlayer(target.Creature);
+                AssertOverride("self-with-descriptor", canonicalName + " [" + ColorToken.Gray("A quiet traveler") + "]" + suffix, target.Creature);
+                targetRecord.Settings.ShowOwnDescriptor = false;
+                DB.Set(targetRecord);
+                PlayerName.RefreshNameOverridesForPlayer(target.Creature);
                 ctx.AssertEqual(PlayerName.GetDisplayName(observer.Creature, bystander.Creature),
                     PlayerName.GetDisplayName(observer.Creature, target.Creature), "AFK cannot disambiguate identical tell identities");
                 ctx.AssertEqual(identityKey, Disguise.GetIdentityKey(target.Creature), "AFK cannot change identity");
 
                 PlayerName.SetKnownName(observer.Creature, target.Creature, "Vessa Tal");
                 AssertOverride("known", PlayerName.GetDisplayName(observer.Creature, target.Creature) + suffix);
+                var observerRecord = DB.Get<Player>(observer.Id);
+                observerRecord.Settings.ShowDescriptorsForNamedPlayers = false;
+                DB.Set(observerRecord);
+                PlayerName.RefreshNameOverridesForObserver(observer.Creature);
+                AssertOverride("known-without-descriptor", "Vessa Tal" + suffix);
+                observerRecord.Settings.ShowDescriptorsForNamedPlayers = true;
+                DB.Set(observerRecord);
+                PlayerName.RefreshNameOverridesForObserver(observer.Creature);
                 ctx.Assert(!string.IsNullOrEmpty(PlayerName.ValidateKnownNameAssignment(observer.Creature, bystander.Creature, "Vessa Tal")),
                     "AFK cannot bypass private-label uniqueness");
                 PlayerDescriptor.SetUnknownDisplayName(target.Creature, "A seasoned traveler");
@@ -106,9 +122,9 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             Task ToggleAsync() => ctx.ExecuteInCreatureContextAsync(target.Creature, () =>
                 command.DoAction(target.Creature, OBJECT_INVALID, null));
 
-            void AssertOverride(string label, string expected)
+            void AssertOverride(string label, string expected, uint? viewer = null)
             {
-                var actual = RenamePlugin.GetPCNameOverride(target.Creature, observer.Creature);
+                var actual = RenamePlugin.GetPCNameOverride(target.Creature, viewer ?? observer.Creature);
                 ctx.AssertEqual(expected, actual, label);
                 snapshots.Add(new { Label = label, Name = actual });
             }

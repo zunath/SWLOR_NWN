@@ -11,7 +11,7 @@ public class PlayerNameChatCommandTests
     [Test]
     public void AfkCommand_IsAvailableToAllPlayerAccountsWithoutTargeting()
     {
-        var command = new AfkChatCommand().BuildChatCommands()["afk"];
+        var command = new CharacterChatCommand().BuildChatCommands()["afk"];
 
         command.Authorization.Should().Be(AuthorizationLevel.All);
         command.RequiresTarget.Should().BeFalse();

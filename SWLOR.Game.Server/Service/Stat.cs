@@ -48,6 +48,7 @@ namespace SWLOR.Game.Server.Service
         public const int MaximumNPCDetection = 50;
         public const float MinimumMovementSpeedMultiplier = 0f;
         public const float MaximumMovementSpeedMultiplier = 1.5f;
+        public const string WalkToggleVariable = "WALK_TOGGLE";
         private const float DeflectionEvasionBoostDurationSeconds = 30f;
         private const float DeflectionEnmityBoostDurationSeconds = 30f;
         private const float DeflectionDefenseBoostDurationSeconds = 30f;
@@ -694,7 +695,10 @@ namespace SWLOR.Game.Server.Service
                 }
             }
 
-            return Math.Clamp(movementRate, MinimumMovementSpeedMultiplier, MaximumMovementSpeedMultiplier);
+            var maximumMovementRate = GetLocalInt(creature, WalkToggleVariable) == 1
+                ? 1.0f
+                : MaximumMovementSpeedMultiplier;
+            return Math.Clamp(movementRate, MinimumMovementSpeedMultiplier, maximumMovementRate);
         }
 
         private static float GetBaseMovementSpeedIncrease(uint creature, bool isPlayer)

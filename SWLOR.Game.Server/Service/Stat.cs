@@ -606,7 +606,7 @@ namespace SWLOR.Game.Server.Service
                 SetCurrentHitPoints(player, maxHP);
             }
 
-            TemporaryHitPointEffects.EnforceLimit(player);
+            TemporaryHitPointEffects.ScheduleLimitCheck(player);
         }
 
         /// <summary>
@@ -719,6 +719,8 @@ namespace SWLOR.Game.Server.Service
             if (ability == AbilityType.Invalid) return;
 
             CreaturePlugin.SetRawAbilityScore(player, ability, GetPlayerAttributeScore(entity, ability));
+            if (ability == AbilityType.Vitality)
+                TemporaryHitPointEffects.ScheduleLimitCheck(player);
         }
 
         private static int GetPlayerAttributeScore(Player entity, AbilityType ability)
@@ -2685,7 +2687,7 @@ namespace SWLOR.Game.Server.Service
                     System.Math.Min(originalCurrentHitPoints, alignedMaxHitPoints));
             }
 
-            TemporaryHitPointEffects.EnforceLimit(creature);
+            TemporaryHitPointEffects.ScheduleLimitCheck(creature);
         }
 
         /// <summary>

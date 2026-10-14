@@ -16,6 +16,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
         private const string GenerationVariableSuffix = "_GENERATION";
         private const string DeferredVariableSuffix = "_DEFERRED";
         private const string PendingTagSuffix = "_PENDING";
+        private const string GrantedVariableSuffix = "_GRANTED";
+        // Lets max-HP hooks skip creatures without pools without iterating their effects.
+        private const string PoolsActiveUntilVariable = EffectTagPrefix + "POOLS_ACTIVE_UNTIL";
         private const string DeferredTotalVariable = EffectTagPrefix + "DEFERRED_TOTAL";
         private const float PendingRemovalDelaySeconds = 0.1f;
 
@@ -52,11 +55,20 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
         }
 
         /// <summary>
-        /// Returns the keyed pool plus any part of it still waiting for the engine to release room.
+        /// Identifies the latest grant or removal of the keyed pool. It changes whenever the pool
+        /// is replaced, removed, or trimmed for any reason other than absorbed damage.
         /// </summary>
-        public static int GetRemainingIncludingPending(uint target, string effectKey)
+        public static int GetGrantGeneration(uint target, string effectKey)
         {
-            return GetRemaining(target, effectKey) + GetLocalInt(target, GetDeferredVariable(effectKey));
+            return GetLocalInt(target, GetGenerationVariable(effectKey));
+        }
+
+        /// <summary>
+        /// The amount the latest grant of the keyed pool accepted, including any deferred part.
+        /// </summary>
+        public static int GetGrantedAmount(uint target, string effectKey)
+        {
+            return GetLocalInt(target, GetGrantedVariable(effectKey));
         }
 
         /// <summary>
@@ -71,7 +83,22 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
 
         private static int GetLimitingHitPoints(uint target)
         {
-            return Math.Max(GetMaxHitPoints(target), ObjectPlugin.GetCurrentHitPoints(target));
+            return Math.Max(GetMaxHitPoints(target), ObjectPlugin.GetCurrentHitPoints(target)) +
+                   GetVitalityPenaltyHitPoints(target);
+        }
+
+        // When a Vitality penalty ends, the engine restores its hit points through the wrapped
+        // 16-bit total and kills a creature at the limit, so room for them is held back up front.
+        private static int GetVitalityPenaltyHitPoints(uint target)
+        {
+            var penalty = 0;
+            foreach (var statusEffect in StatusEffect.GetCreatureStatusEffects(target).GetAllEffects())
+            {
+                if (statusEffect.StatGroup.Abilities.TryGetValue(AbilityType.Vitality, out var vitality) && vitality < 0)
+                    penalty -= vitality;
+            }
+
+            return penalty <= 0 ? 0 : GetHitDice(target) * ((penalty + 1) / 2);
         }
 
         public static int GetCapacity(int hitPoints, int remainingTemporaryHitPoints)
@@ -181,18 +208,25 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
             var releasedRoom = GetCapacity(hitPoints, GetRemaining(target) + GetLocalInt(target, DeferredTotalVariable));
             var grantedAmount = Math.Min(amount, releasedRoom);
             if (grantedAmount <= 0)
+            {
+                DeleteLocalInt(target, GetGrantedVariable(effectKey));
                 return 0;
+            }
 
             var immediateAmount = Math.Min(grantedAmount, immediateRoom);
             if (immediateAmount > 0)
                 ApplyPoolEffect(target, effectTag, immediateAmount, durationSeconds);
 
             var deferredAmount = grantedAmount - immediateAmount;
+            if (deferredAmount > 0 && durationSeconds <= PendingRemovalDelaySeconds)
+            {
+                grantedAmount = immediateAmount;
+                deferredAmount = 0;
+            }
+
+            SetLocalInt(target, GetGrantedVariable(effectKey), grantedAmount);
             if (deferredAmount <= 0)
                 return grantedAmount;
-
-            if (durationSeconds <= PendingRemovalDelaySeconds)
-                return immediateAmount;
 
             ScheduleDeferredGrant(target, effectKey, generation, deferredAmount, durationSeconds - PendingRemovalDelaySeconds);
             return grantedAmount;
@@ -222,28 +256,36 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
 
             ReleaseDeferredGrant(target, effectKey);
             var pendingTag = GetPendingTag(effectKey);
-            if (!HasEffectWithTag(target, pendingTag))
+            var remainingAmount = amount;
+            if (HasEffectWithTag(target, pendingTag))
             {
-                if (GetRemaining(target, effectKey) <= 0)
-                    Remove(target, effectKey);
-                return;
+                RemoveEffectByTag(target, pendingTag);
+                var appliedAmount = Math.Min(amount, GetCapacity(target));
+                if (appliedAmount > 0)
+                    ApplyPoolEffect(target, EffectTagPrefix + effectKey, appliedAmount, durationSeconds);
+
+                remainingAmount = amount - appliedAmount;
+                if (remainingAmount > 0 && GetPendingRemoval(target) > 0 && durationSeconds > PendingRemovalDelaySeconds)
+                {
+                    ScheduleDeferredGrant(target, effectKey, generation, remainingAmount, durationSeconds - PendingRemovalDelaySeconds);
+                    return;
+                }
             }
 
-            RemoveEffectByTag(target, pendingTag);
-            var appliedAmount = Math.Min(amount, GetCapacity(target));
-            if (appliedAmount > 0)
-                ApplyPoolEffect(target, EffectTagPrefix + effectKey, appliedAmount, durationSeconds);
-
-            var remainingAmount = amount - appliedAmount;
-            if (remainingAmount > 0 && GetPendingRemoval(target) > 0 && durationSeconds > PendingRemovalDelaySeconds)
-            {
-                ScheduleDeferredGrant(target, effectKey, generation, remainingAmount, durationSeconds - PendingRemovalDelaySeconds);
+            if (remainingAmount <= 0)
                 return;
-            }
 
             // A pool that never landed must not keep its source, owner or barrier visual.
-            if (GetRemaining(target, effectKey) <= 0)
+            var landedAmount = GetRemaining(target, effectKey);
+            if (landedAmount <= 0)
+            {
                 Remove(target, effectKey);
+                return;
+            }
+
+            // Mark the shortfall as a new grant so companions tracking the pool reconcile.
+            AdvanceGeneration(target, effectKey);
+            SetLocalInt(target, GetGrantedVariable(effectKey), landedAmount);
         }
 
         private static void ReleaseDeferredGrant(uint target, string effectKey)
@@ -272,6 +314,15 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                 TagEffect(EffectTemporaryHitpoints(amount), effectTag),
                 target,
                 durationSeconds);
+
+            var activeUntil = GetUnixTimeSeconds() + (int)Math.Ceiling(durationSeconds);
+            if (activeUntil > GetLocalInt(target, PoolsActiveUntilVariable))
+                SetLocalInt(target, PoolsActiveUntilVariable, activeUntil);
+        }
+
+        private static int GetUnixTimeSeconds()
+        {
+            return (int)DateTimeOffset.UtcNow.ToUnixTimeSeconds();
         }
 
         // Cancels and releases any deferred grant still waiting for the previous application of this key.
@@ -285,10 +336,27 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
         }
 
         /// <summary>
+        /// Schedules <see cref="EnforceLimit"/> after a change that can raise maximum HP, such as
+        /// an HP budget or a native Vitality effect. The check runs once the change has settled and
+        /// never iterates effects synchronously, so it is safe inside effect removal callbacks.
+        /// </summary>
+        public static void ScheduleLimitCheck(uint target)
+        {
+            if (!GetIsObjectValid(target) || GetUnixTimeSeconds() > GetLocalInt(target, PoolsActiveUntilVariable))
+                return;
+
+            AssignCommand(GetModule(), () => DelayCommand(PendingRemovalDelaySeconds, () =>
+            {
+                if (GetIsObjectValid(target))
+                    EnforceLimit(target);
+            }));
+        }
+
+        /// <summary>
         /// Re-applies pools through the clamp after the target's maximum HP rises, so healing
         /// toward the new maximum cannot push the reported total past the engine limit.
         /// </summary>
-        public static void EnforceLimit(uint target)
+        private static void EnforceLimit(uint target)
         {
             var hitPoints = GetLimitingHitPoints(target);
             if (hitPoints + GetRemaining(target) <= MaximumReportedHitPoints)
@@ -352,6 +420,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
             ValidateEffectKey(effectKey);
             DeleteLocalString(target, GetOwnerVariable(effectKey));
             DeleteLocalObject(target, GetSourceVariable(effectKey));
+            DeleteLocalInt(target, GetGrantedVariable(effectKey));
             AdvanceGeneration(target, effectKey);
 
             var effectTag = EffectTagPrefix + effectKey;
@@ -409,6 +478,11 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
         private static string GetDeferredVariable(string effectKey)
         {
             return EffectTagPrefix + effectKey + DeferredVariableSuffix;
+        }
+
+        private static string GetGrantedVariable(string effectKey)
+        {
+            return EffectTagPrefix + effectKey + GrantedVariableSuffix;
         }
 
         private static string GetPendingTag(string effectKey)

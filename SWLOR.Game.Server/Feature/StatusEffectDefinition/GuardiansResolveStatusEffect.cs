@@ -9,6 +9,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
     public sealed class GuardiansResolveStatusEffect : StatusEffectBase
     {
         private int _remainingShield;
+        private int _poolGeneration;
 
         public override string Name => "Guardian's Resolve";
         public override EffectIconType Icon => EffectIconType.GuardiansResolveStatusEffect;
@@ -17,25 +18,31 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
         {
         }
 
-        public GuardiansResolveStatusEffect(int shieldAmount)
+        public GuardiansResolveStatusEffect(int shieldAmount, int poolGeneration)
         {
             _remainingShield = Math.Max(0, shieldAmount);
+            _poolGeneration = poolGeneration;
         }
 
         protected override void OnDamageTaken(uint defender, uint attacker, int damage, CombatDamageType damageType)
         {
-            // The pool can shrink without damage, e.g. when a raised maximum HP trims it to the
-            // engine's HP limit, so never track more shield than still exists.
-            _remainingShield = Math.Min(
-                _remainingShield,
-                TemporaryHitPointEffects.GetRemainingIncludingPending(defender, TemporaryHitPointEffectKey.GuardiansResolve));
-            if (_remainingShield <= 0)
+            // A new generation means the pool was replaced, removed or trimmed without damage,
+            // e.g. to the engine's HP limit, so never track more shield than that grant holds.
+            var poolGeneration = TemporaryHitPointEffects.GetGrantGeneration(defender, TemporaryHitPointEffectKey.GuardiansResolve);
+            if (poolGeneration != _poolGeneration)
             {
-                StatusEffect.RemoveStatusEffect(defender, GetType(), Source);
-                return;
+                _poolGeneration = poolGeneration;
+                _remainingShield = Math.Min(
+                    _remainingShield,
+                    TemporaryHitPointEffects.GetGrantedAmount(defender, TemporaryHitPointEffectKey.GuardiansResolve));
+                if (_remainingShield <= 0)
+                {
+                    StatusEffect.RemoveStatusEffect(defender, GetType(), Source);
+                    return;
+                }
             }
 
-            if (damage <= 0)
+            if (damage <= 0 || _remainingShield <= 0)
                 return;
 
             var absorbed = Math.Min(_remainingShield, damage);
@@ -52,7 +59,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
 
         public override IStatusEffect Clone()
         {
-            return new GuardiansResolveStatusEffect(_remainingShield);
+            return new GuardiansResolveStatusEffect(_remainingShield, _poolGeneration);
         }
     }
 }

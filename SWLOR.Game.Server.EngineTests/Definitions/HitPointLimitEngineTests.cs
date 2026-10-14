@@ -254,24 +254,81 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             var attacker = arena.Spawn("nw_rat001", 3f, 0f);
             await ctx.WaitFrameAsync();
 
-            var shield = TemporaryHitPointEffects.ApplyFlat(npc, TemporaryHitPointEffectKey.GuardiansResolve, Limit - 25000, 60f);
+            const string key = TemporaryHitPointEffectKey.GuardiansResolve;
+            var shield = TemporaryHitPointEffects.ApplyFlat(npc, key, Limit - 25000, 60f);
             ctx.AssertEqual(Limit - 25000, shield, "Guardian's Resolve pool");
-            StatusEffect.ApplyStatusEffect(npc, npc, new GuardiansResolveStatusEffect(shield), 60f);
+            StatusEffect.ApplyStatusEffect(npc, npc,
+                new GuardiansResolveStatusEffect(shield, TemporaryHitPointEffects.GetGrantGeneration(npc, key)), 60f);
 
             Stat.SetNPCMaxHitPoints(npc, MaximumNPCHitPoints);
-            await ctx.WaitUntilAsync(() => TemporaryHitPointEffects.GetRemaining(npc, TemporaryHitPointEffectKey.GuardiansResolve) == Headroom,
+            await ctx.WaitUntilAsync(() => TemporaryHitPointEffects.GetRemaining(npc, key) == Headroom,
                 3f, "the pool to be trimmed under the raised maximum");
+            ctx.AssertEqual(Headroom, TemporaryHitPointEffects.GetGrantedAmount(npc, key), "recorded grant after the trim");
 
-            AssignCommand(npc, () => ApplyEffectToObject(DurationType.Instant, EffectDamage(Headroom + 233), npc));
-            await ctx.WaitUntilAsync(() => TemporaryHitPointEffects.GetRemaining(npc, TemporaryHitPointEffectKey.GuardiansResolve) == 0,
-                3f, "damage to exhaust the trimmed pool");
+            // Status hooks see each hit before the pool absorbs it; these notifications drive
+            // only the status, so its healing shows how much shield it still tracks.
             var baseHitPoints = ObjectPlugin.GetCurrentHitPoints(npc);
+            StatusEffect.NotifyDamageStatusEffects(attacker, npc, 2000, CombatDamageType.Physical);
+            await ctx.WaitFrameAsync();
+            var firstHeal = Stat.ApplyHealingReceivedAdjustment(npc, GameMath.PercentOf(2000, 15));
+            ctx.AssertEqual(baseHitPoints + firstHeal, ObjectPlugin.GetCurrentHitPoints(npc), "healing from a hit inside the trimmed shield");
 
             StatusEffect.NotifyDamageStatusEffects(attacker, npc, 1000, CombatDamageType.Physical);
             await ctx.WaitFrameAsync();
-            ctx.AssertEqual(baseHitPoints, ObjectPlugin.GetCurrentHitPoints(npc), "base HP after a hit with no shield left");
+            var secondHeal = Stat.ApplyHealingReceivedAdjustment(npc, GameMath.PercentOf(Headroom - 2000, 15));
+            ctx.AssertEqual(baseHitPoints + firstHeal + secondHeal, ObjectPlugin.GetCurrentHitPoints(npc),
+                "healing from a hit that exhausts the trimmed shield");
             ctx.Assert(!StatusEffect.HasStatusEffect<GuardiansResolveStatusEffect>(npc),
-                "Guardian's Resolve must end once its trimmed pool is gone.");
+                "Guardian's Resolve must end once its trimmed shield is spent.");
+        }
+
+        [EngineTest("Restoring Vitality at the HP limit kills an NPC through the wrapped HP total", Category = LimitCategory, TimeoutSeconds = 45f)]
+        public static async Task VitalityRestoreAtLimitKills(EngineTestContext ctx)
+        {
+            var arena = await QuietArena.CreateAsync(ctx);
+            var npc = await SpawnNPCAsync(ctx, arena, "nw_bandit001", MaximumNPCHitPoints, immortal: false);
+            const string penaltyTag = "HIT_POINT_LIMIT_VITALITY";
+
+            // Raw effects on purpose: this pins the engine behavior the grant clamp reserves room for.
+            ApplyEffectToObject(DurationType.Permanent, TagEffect(EffectAbilityDecrease(AbilityType.Vitality, 2), penaltyTag), npc);
+            await ctx.WaitUntilAsync(() => GetMaxHitPoints(npc) < MaximumNPCHitPoints, 3f, "the Vitality decrease to lower maximum HP");
+            var penalized = Math.Max(GetMaxHitPoints(npc), ObjectPlugin.GetCurrentHitPoints(npc));
+            ApplyEffectToObject(DurationType.Temporary, EffectTemporaryHitpoints(Limit - penalized), npc, 60f);
+            ctx.AssertEqual(Limit, GetCurrentHitPoints(npc), "reported HP at the limit under the decrease");
+
+            RemoveEffectByTag(npc, penaltyTag);
+            await ctx.WaitUntilAsync(() => GetMaxHitPoints(npc) == MaximumNPCHitPoints, 3f, "maximum HP to recover");
+            await ctx.DelaySecondsAsync(1f);
+            var detail = $"Restoring {MaximumNPCHitPoints - penalized} HP at the limit left base HP {ObjectPlugin.GetCurrentHitPoints(npc)}, dead {GetIsDead(npc)}.";
+            ctx.Log(detail);
+            ctx.SetResultDetail(detail);
+            ctx.Assert(GetIsDead(npc) && ObjectPlugin.GetCurrentHitPoints(npc) < 0,
+                $"The engine is expected to kill an NPC whose Vitality recovers at the limit. {detail}");
+        }
+
+        [EngineTest("Temporary HP granted under a Vitality penalty leaves room for the HP it restores", Category = LimitCategory, TimeoutSeconds = 45f)]
+        public static async Task VitalityPenaltyReservesRestoredHitPoints(EngineTestContext ctx)
+        {
+            var arena = await QuietArena.CreateAsync(ctx);
+            var npc = await SpawnNPCAsync(ctx, arena, "nw_bandit001", MaximumNPCHitPoints, immortal: false);
+
+            StatusEffect.ApplyStatusEffect(npc, npc, typeof(DiseaseVitalityPenaltyStatusEffect), 60f);
+            await ctx.WaitUntilAsync(() => GetMaxHitPoints(npc) < MaximumNPCHitPoints, 3f, "the Vitality penalty to lower maximum HP");
+            ctx.Log($"Vitality penalty lowered maximum HP by {MaximumNPCHitPoints - GetMaxHitPoints(npc)}.");
+
+            ctx.AssertEqual(Headroom, TemporaryHitPointEffects.ApplyFlat(npc, FirstKey, 10000, 60f), "grant under the penalty");
+
+            StatusEffect.RemoveStatusEffect<DiseaseVitalityPenaltyStatusEffect>(npc);
+            await ctx.WaitUntilAsync(() => GetMaxHitPoints(npc) == MaximumNPCHitPoints, 3f, "maximum HP to recover");
+            await ctx.DelaySecondsAsync(1f);
+            ctx.Assert(!GetIsDead(npc) && ObjectPlugin.GetCurrentHitPoints(npc) > 0,
+                $"Recovering Vitality must not kill the NPC (base {ObjectPlugin.GetCurrentHitPoints(npc)}).");
+
+            ApplyEffectToObject(DurationType.Instant, EffectHeal(1000), npc);
+            await ctx.WaitUntilAsync(() => ObjectPlugin.GetCurrentHitPoints(npc) == MaximumNPCHitPoints,
+                5f, "the heal to restore the NPC to its recovered maximum");
+            ctx.AssertEqual(Limit, GetCurrentHitPoints(npc), "reported HP after healing to the recovered maximum");
+            ctx.Assert(!GetIsDead(npc), "The NPC must stay alive after its Vitality recovers.");
         }
 
         [EngineTest("Guardian Ward IV on a 30,000 HP NPC stops at the HP limit and leaves it alive", Category = LimitCategory, TimeoutSeconds = 45f)]

@@ -7925,7 +7925,8 @@ namespace SWLOR.Game.Server.Service
             if (shieldAmount <= 0)
                 return;
 
-            StatusEffect.ApplyStatusEffect(activator, activator, new GuardiansResolveStatusEffect(shieldAmount), duration);
+            var poolGeneration = TemporaryHitPointEffects.GetGrantGeneration(activator, TemporaryHitPointEffectKey.GuardiansResolve);
+            StatusEffect.ApplyStatusEffect(activator, activator, new GuardiansResolveStatusEffect(shieldAmount, poolGeneration), duration);
         }
 
         private static void ApplyHeavyVibrobladeActivatedEffects(

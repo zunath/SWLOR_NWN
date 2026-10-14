@@ -321,11 +321,15 @@
               },
               "DescIdentified": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "A corporate militia outfit with utilitarian seams and the disciplined outline Czerka likes to put between its property and everyone else. The fabric makes no distinction between guarding a warehouse and enforcing the company's idea of order."
+                }
               },
               "Description": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "A corporate militia outfit with utilitarian seams and the disciplined outline Czerka likes to put between its property and everyone else. The fabric makes no distinction between guarding a warehouse and enforcing the company's idea of order."
+                }
               },
               "Identified": {
                 "type": "byte",
@@ -2510,11 +2514,15 @@
               },
               "DescIdentified": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "A corporate militia outfit with utilitarian seams and the disciplined outline Czerka likes to put between its property and everyone else. The fabric makes no distinction between guarding a warehouse and enforcing the company's idea of order."
+                }
               },
               "Description": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "A corporate militia outfit with utilitarian seams and the disciplined outline Czerka likes to put between its property and everyone else. The fabric makes no distinction between guarding a warehouse and enforcing the company's idea of order."
+                }
               },
               "Identified": {
                 "type": "byte",
@@ -3516,11 +3524,15 @@
               },
               "DescIdentified": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "A corporate militia outfit with utilitarian seams and the disciplined outline Czerka likes to put between its property and everyone else. The fabric makes no distinction between guarding a warehouse and enforcing the company's idea of order."
+                }
               },
               "Description": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "A corporate militia outfit with utilitarian seams and the disciplined outline Czerka likes to put between its property and everyone else. The fabric makes no distinction between guarding a warehouse and enforcing the company's idea of order."
+                }
               },
               "Identified": {
                 "type": "byte",
@@ -4790,11 +4802,15 @@
               },
               "DescIdentified": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "A corporate militia outfit with utilitarian seams and the disciplined outline Czerka likes to put between its property and everyone else. The fabric makes no distinction between guarding a warehouse and enforcing the company's idea of order."
+                }
               },
               "Description": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "A corporate militia outfit with utilitarian seams and the disciplined outline Czerka likes to put between its property and everyone else. The fabric makes no distinction between guarding a warehouse and enforcing the company's idea of order."
+                }
               },
               "Identified": {
                 "type": "byte",
@@ -5545,11 +5561,15 @@
               },
               "DescIdentified": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "Czerka's captain's outfit gives corporate authority a clean collar and an unmistakably disciplined outline. Its useful fittings remain accessible, a reminder that a company uniform still expects its wearer to get results."
+                }
               },
               "Description": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "Czerka's captain's outfit gives corporate authority a clean collar and an unmistakably disciplined outline. Its useful fittings remain accessible, a reminder that a company uniform still expects its wearer to get results."
+                }
               },
               "Identified": {
                 "type": "byte",
@@ -7252,12 +7272,14 @@
               },
               "DescIdentified": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "Weathered outer layers hide a surprisingly orderly lining in this smuggler's outfit. It looks ready to spend a passage folded beneath a bunk and still emerge respectable enough to bargain over the cargo."
+                }
               },
               "Description": {
                 "type": "cexolocstring",
                 "value": {
-                  "0": ""
+                  "0": "Weathered outer layers hide a surprisingly orderly lining in this smuggler's outfit. It looks ready to spend a passage folded beneath a bunk and still emerge respectable enough to bargain over the cargo."
                 }
               },
               "Identified": {
@@ -71702,7 +71724,7 @@
         },
         "X": {
           "type": "float",
-          "value": 88.07095336914063
+          "value": 87.92095184326172
         },
         "Y": {
           "type": "float",

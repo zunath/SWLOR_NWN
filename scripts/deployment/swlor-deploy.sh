@@ -330,6 +330,7 @@ server_runtime_configuration_files=(
     "$SERVER_ROOT/nwn.ini"
     "$SERVER_ROOT/nwnplayer.ini"
     "$SERVER_ROOT/settings.tml"
+    "$SERVER_ROOT/rpxp-ooc-detection.json"
 )
 server_protected_configuration_files=(
     "$SERVER_ENV_FILE"

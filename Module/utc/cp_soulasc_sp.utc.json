@@ -2,15 +2,15 @@
   "__data_type": "UTC ",
   "Appearance_Head": {
     "type": "byte",
-    "value": 78
+    "value": 56
   },
   "Appearance_Type": {
     "type": "word",
-    "value": 10009
+    "value": 10002
   },
   "ArmorPart_RFoot": {
     "type": "byte",
-    "value": 242
+    "value": 1
   },
   "BodyBag": {
     "type": "byte",
@@ -18,27 +18,27 @@
   },
   "BodyPart_Belt": {
     "type": "byte",
-    "value": 7
+    "value": 0
   },
   "BodyPart_LBicep": {
     "type": "byte",
-    "value": 249
+    "value": 1
   },
   "BodyPart_LFArm": {
     "type": "byte",
-    "value": 246
+    "value": 1
   },
   "BodyPart_LFoot": {
     "type": "byte",
-    "value": 242
+    "value": 1
   },
   "BodyPart_LHand": {
     "type": "byte",
-    "value": 152
+    "value": 1
   },
   "BodyPart_LShin": {
     "type": "byte",
-    "value": 23
+    "value": 1
   },
   "BodyPart_LShoul": {
     "type": "byte",
@@ -46,31 +46,31 @@
   },
   "BodyPart_LThigh": {
     "type": "byte",
-    "value": 104
+    "value": 1
   },
   "BodyPart_Neck": {
     "type": "byte",
-    "value": 7
+    "value": 1
   },
   "BodyPart_Pelvis": {
     "type": "byte",
-    "value": 106
+    "value": 1
   },
   "BodyPart_RBicep": {
     "type": "byte",
-    "value": 249
+    "value": 1
   },
   "BodyPart_RFArm": {
     "type": "byte",
-    "value": 246
+    "value": 1
   },
   "BodyPart_RHand": {
     "type": "byte",
-    "value": 152
+    "value": 1
   },
   "BodyPart_RShin": {
     "type": "byte",
-    "value": 23
+    "value": 1
   },
   "BodyPart_RShoul": {
     "type": "byte",
@@ -78,11 +78,11 @@
   },
   "BodyPart_RThigh": {
     "type": "byte",
-    "value": 104
+    "value": 1
   },
   "BodyPart_Torso": {
     "type": "byte",
-    "value": 100
+    "value": 1
   },
   "Cha": {
     "type": "byte",
@@ -110,11 +110,11 @@
   },
   "Color_Hair": {
     "type": "byte",
-    "value": 16
+    "value": 23
   },
   "Color_Skin": {
     "type": "byte",
-    "value": 128
+    "value": 4
   },
   "Color_Tattoo1": {
     "type": "byte",
@@ -126,7 +126,7 @@
   },
   "Comment": {
     "type": "cexostring",
-    "value": "Capstone quest creature for Soul Ascension in Korriban Forge Caverns."
+    "value": "Soul Ascension specialist in Tatooine - Forge Caverns."
   },
   "Con": {
     "type": "byte",
@@ -155,7 +155,7 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "A level 50 capstone quest enemy for Soul Ascension in Korriban Forge Caverns."
+      "0": "A Zabrak deacon of the quench troughs in Sith trooper armor, his hands burned from tempering edges that whisper appetite. He wields his heavy vibroblade slowly and deliberately, like a man taking communion."
     }
   },
   "Dex": {
@@ -169,6 +169,13 @@
   "Equip_ItemList": {
     "type": "list",
     "value": [
+      {
+        "__struct_id": 2,
+        "EquippedRes": {
+          "type": "resref",
+          "value": "sith_tarmour"
+        }
+      },
       {
         "__struct_id": 16,
         "EquippedRes": {
@@ -374,11 +381,11 @@
   },
   "PortraitId": {
     "type": "word",
-    "value": 3567
+    "value": 3646
   },
   "Race": {
     "type": "byte",
-    "value": 167
+    "value": 154
   },
   "refbonus": {
     "type": "short",

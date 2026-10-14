@@ -2,15 +2,15 @@
   "__data_type": "UTC ",
   "Appearance_Head": {
     "type": "byte",
-    "value": 100
+    "value": 40
   },
   "Appearance_Type": {
     "type": "word",
-    "value": 10006
+    "value": 6
   },
   "ArmorPart_RFoot": {
     "type": "byte",
-    "value": 10
+    "value": 1
   },
   "BodyBag": {
     "type": "byte",
@@ -18,7 +18,7 @@
   },
   "BodyPart_Belt": {
     "type": "byte",
-    "value": 154
+    "value": 0
   },
   "BodyPart_LBicep": {
     "type": "byte",
@@ -26,27 +26,27 @@
   },
   "BodyPart_LFArm": {
     "type": "byte",
-    "value": 198
+    "value": 1
   },
   "BodyPart_LFoot": {
     "type": "byte",
-    "value": 10
+    "value": 1
   },
   "BodyPart_LHand": {
     "type": "byte",
-    "value": 101
+    "value": 1
   },
   "BodyPart_LShin": {
     "type": "byte",
-    "value": 10
+    "value": 1
   },
   "BodyPart_LShoul": {
     "type": "byte",
-    "value": 25
+    "value": 0
   },
   "BodyPart_LThigh": {
     "type": "byte",
-    "value": 12
+    "value": 1
   },
   "BodyPart_Neck": {
     "type": "byte",
@@ -54,7 +54,7 @@
   },
   "BodyPart_Pelvis": {
     "type": "byte",
-    "value": 10
+    "value": 1
   },
   "BodyPart_RBicep": {
     "type": "byte",
@@ -62,27 +62,27 @@
   },
   "BodyPart_RFArm": {
     "type": "byte",
-    "value": 198
+    "value": 1
   },
   "BodyPart_RHand": {
     "type": "byte",
-    "value": 101
+    "value": 1
   },
   "BodyPart_RShin": {
     "type": "byte",
-    "value": 10
+    "value": 1
   },
   "BodyPart_RShoul": {
     "type": "byte",
-    "value": 25
+    "value": 0
   },
   "BodyPart_RThigh": {
     "type": "byte",
-    "value": 12
+    "value": 1
   },
   "BodyPart_Torso": {
     "type": "byte",
-    "value": 53
+    "value": 1
   },
   "Cha": {
     "type": "byte",
@@ -110,11 +110,11 @@
   },
   "Color_Hair": {
     "type": "byte",
-    "value": 31
+    "value": 7
   },
   "Color_Skin": {
     "type": "byte",
-    "value": 105
+    "value": 0
   },
   "Color_Tattoo1": {
     "type": "byte",
@@ -126,7 +126,7 @@
   },
   "Comment": {
     "type": "cexostring",
-    "value": "Capstone quest creature for Kill Box in Czerka Arms Test Range."
+    "value": "Kill Box adept in Smuggler's Moon - Czerka Weapons Testing Facility."
   },
   "Con": {
     "type": "byte",
@@ -155,7 +155,7 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "A level 50 capstone quest enemy for Kill Box in Czerka Arms Test Range."
+      "0": "A human shooter in a Czerka uniform the company stopped paying for long ago, blaster rifle held at a drilled, regulation angle. He is one of the off-contract test cell running live kill box drills in the lanes of the Czerka Arms Test Range, scoring every trial as though Czerka still signed off on it."
     }
   },
   "Dex": {
@@ -169,6 +169,13 @@
   "Equip_ItemList": {
     "type": "list",
     "value": [
+      {
+        "__struct_id": 2,
+        "EquippedRes": {
+          "type": "resref",
+          "value": "czerkauniform"
+        }
+      },
       {
         "__struct_id": 16,
         "EquippedRes": {
@@ -430,11 +437,11 @@
   },
   "PortraitId": {
     "type": "word",
-    "value": 2286
+    "value": 4179
   },
   "Race": {
     "type": "byte",
-    "value": 15
+    "value": 6
   },
   "refbonus": {
     "type": "short",
@@ -695,7 +702,7 @@
   },
   "SoundSetFile": {
     "type": "word",
-    "value": 448
+    "value": 413
   },
   "SpecAbilityList": {
     "type": "list",

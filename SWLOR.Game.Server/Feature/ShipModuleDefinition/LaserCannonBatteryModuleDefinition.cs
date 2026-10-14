@@ -69,7 +69,7 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                     var delay = i * 2f;
                     DelayCommand(delay, () =>
                     {
-                        if (!GetIsDead(activator))
+                        if (Space.CanShipFire(activator))
                         {
                             foreach (var nearbyTarget in ObjectSnapshot.InShape(Shape.Sphere, 20f, GetLocation(activator), true, ObjectType.Creature))
                             {

@@ -58,14 +58,14 @@ public class TeleportPlaceableConfigurationTests
         {
             "Module/git/veles_sewers.git.json|Enter Sewers Depths|VISC_SEWER_DEPTHS_INSIDE|tele_obj|tele_obj",
             "Module/git/veles_sheriff.git.json|Veles Militia Annex|VELES_ANNEX_ENTRY|tele_obj|tele_obj",
-            "Module/git/dan_jedienlibry.git.json|Jedi Enclave Trial Halls|pw_sc_jedihalls_entry|tele_obj|tele_obj",
-            "Module/git/valkorrdung1c.git.json|Forge Caverns|pw_sc_forgecav_entry|tele_obj|tele_obj",
+            "Module/git/hutlar_testsite.git.json|Jedi Trial Halls|pw_sc_jedihalls_entry|tele_obj|tele_obj",
+            "Module/git/tat_anc_nminecli.git.json|Forge Caverns|pw_sc_forgecav_entry|tele_obj|tele_obj",
             "Module/git/tat_anc_rckpass2.git.json|Anchorhead Canyon Range|pw_sc_canyonrng_entry|tele_obj|tele_obj",
             "Module/git/sol_hutlarqcanyo.git.json|Qion Test Site|pw_sc_qiontest_entry|tele_obj|tele_obj",
-            "Module/git/korr_crypt_zil.git.json|Sith Crypt Depths|pw_sc_cryptdeep_entry|tele_obj|tele_obj",
-            "Module/git/v_repubbase_cd.git.json|Republic Engineering Bunker|pw_sc_repubeng_entry|tele_obj|tele_obj",
+            "Module/git/moncaladungeon1.git.json|Sith Crypt Depths|pw_sc_cryptdeep_entry|tele_obj|tele_obj",
+            "Module/git/viscaranwswamp.git.json|Republic Engineering Bunker|pw_sc_repubeng_entry|tele_obj|tele_obj",
             "Module/git/dath_tarnjungles.git.json|Tarn Jungle Preserve|pw_sc_tarnpres_entry|tele_obj|tele_obj",
-            "Module/git/dan_warehouse.git.json|Dantooine Medical Sublevel|to_medsublevel|tele_obj|tele_obj",
+            "Module/git/moncalacifacilit.git.json|Medical Sublevel|to_medsublevel|tele_obj|tele_obj",
             "Module/git/dathgrottocavern.git.json|Enter the Grotto Apex Den|DATH_APEX_DEN_INSIDE|tele_obj|tele_obj",
             "Module/git/pw_ar_nsficlub.git.json|[Back Rooms]|SMUG_BACKROOMS|tele_obj|tele_obj",
             "Module/git/czs220_maintlvl.git.json|Enter the Breaker Bay|CZ220_MAINT_ENTRANCE_BREAKER|tele_obj|tele_obj",
@@ -85,7 +85,6 @@ public class TeleportPlaceableConfigurationTests
     private static readonly string[] KnownUnbuiltTeleporters =
     {
         "Module/git/druz_shalim.git.json|Invisible Object (Large)|Druzer_Starport_Inside",
-        "Module/git/zomb_abanstation.git.json|Take Shuttle Back to Viscara|",
     };
 
     [Test]

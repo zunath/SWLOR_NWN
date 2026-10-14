@@ -2,7 +2,7 @@
   "__data_type": "UTC ",
   "Appearance_Head": {
     "type": "byte",
-    "value": 244
+    "value": 235
   },
   "Appearance_Type": {
     "type": "word",
@@ -10,7 +10,7 @@
   },
   "ArmorPart_RFoot": {
     "type": "byte",
-    "value": 160
+    "value": 1
   },
   "BodyBag": {
     "type": "byte",
@@ -30,15 +30,15 @@
   },
   "BodyPart_LFoot": {
     "type": "byte",
-    "value": 160
+    "value": 1
   },
   "BodyPart_LHand": {
     "type": "byte",
-    "value": 63
+    "value": 1
   },
   "BodyPart_LShin": {
     "type": "byte",
-    "value": 243
+    "value": 1
   },
   "BodyPart_LShoul": {
     "type": "byte",
@@ -46,15 +46,15 @@
   },
   "BodyPart_LThigh": {
     "type": "byte",
-    "value": 241
+    "value": 1
   },
   "BodyPart_Neck": {
     "type": "byte",
-    "value": 107
+    "value": 1
   },
   "BodyPart_Pelvis": {
     "type": "byte",
-    "value": 237
+    "value": 1
   },
   "BodyPart_RBicep": {
     "type": "byte",
@@ -66,11 +66,11 @@
   },
   "BodyPart_RHand": {
     "type": "byte",
-    "value": 63
+    "value": 1
   },
   "BodyPart_RShin": {
     "type": "byte",
-    "value": 243
+    "value": 1
   },
   "BodyPart_RShoul": {
     "type": "byte",
@@ -78,11 +78,11 @@
   },
   "BodyPart_RThigh": {
     "type": "byte",
-    "value": 241
+    "value": 1
   },
   "BodyPart_Torso": {
     "type": "byte",
-    "value": 54
+    "value": 1
   },
   "Cha": {
     "type": "byte",
@@ -114,7 +114,7 @@
   },
   "Color_Skin": {
     "type": "byte",
-    "value": 138
+    "value": 102
   },
   "Color_Tattoo1": {
     "type": "byte",
@@ -126,7 +126,7 @@
   },
   "Comment": {
     "type": "cexostring",
-    "value": "Capstone quest creature for Dead Man's Hand in Anchorhead Canyon Range."
+    "value": "Dead Man's Hand adept in Tatooine - Anchorhead Canyon Range."
   },
   "Con": {
     "type": "byte",
@@ -155,7 +155,7 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "A level 50 capstone quest enemy for Dead Man's Hand in Anchorhead Canyon Range."
+      "0": "A Nautolan in a trader's clothes with a blaster pistol and an easy smile. He is one of the eager students at a crooked table in the Anchorhead Canyon Range, learning an old dealer's draw and the house's cheating along with it, and he bets like he holds aces."
     }
   },
   "Dex": {
@@ -169,6 +169,13 @@
   "Equip_ItemList": {
     "type": "list",
     "value": [
+      {
+        "__struct_id": 2,
+        "EquippedRes": {
+          "type": "resref",
+          "value": "vendoroutfit"
+        }
+      },
       {
         "__struct_id": 16,
         "EquippedRes": {
@@ -430,11 +437,11 @@
   },
   "PortraitId": {
     "type": "word",
-    "value": 4433
+    "value": 4438
   },
   "Race": {
     "type": "byte",
-    "value": 15
+    "value": 168
   },
   "refbonus": {
     "type": "short",

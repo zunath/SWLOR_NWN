@@ -3,9 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using NWN.Native.API;
 using SWLOR.Game.Server.Core;
+using SWLOR.Game.Server.Feature.AppearanceDefinition.ItemAppearance;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.LogService;
 using SWLOR.NWN.API.NWScript.Enum.Item;
+using InventorySlot = SWLOR.NWN.API.NWScript.Enum.InventorySlot;
 
 namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
 {
@@ -109,6 +111,19 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
                 nativeCreature.m_pStats.m_nPhenoType = checked((byte)desired);
                 nativeCreature.m_cAppearance.m_nPhenoType = checked((byte)desired);
                 server.SetForceUpdate();
+
+                var cloak = GetItemInSlot(InventorySlot.Cloak, creature);
+                if (GetIsObjectValid(cloak))
+                {
+                    // The client must receive the new body before rebuilding its cloak.
+                    // A failed attachment otherwise survives a return to the base phenotype.
+                    DelayCommand(0.2f, () =>
+                    {
+                        if (GetIsObjectValid(creature) && (int)GetPhenoType(creature) == desired &&
+                            GetItemInSlot(InventorySlot.Cloak, creature) == cloak)
+                            EquippedItemAppearance.Refresh(creature, cloak, resetShaderOverrides: false);
+                    });
+                }
             }
             return desired != _catalog.GetBasePhenotype(desired);
         }

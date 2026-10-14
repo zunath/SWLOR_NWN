@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using NWNXLib = NWN.Native.API.NWNXLib;
 using Newtonsoft.Json;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.Bioware;
@@ -32,6 +33,9 @@ namespace SWLOR.Game.Server.Service
         private const string ConstructedDroidVariable = "CONSTRUCTED_DROID";
         private const string DroidIsSpawning = "DROID_IS_SPAWNING";
         private const string DroidItemId = "DROID_ITEM_ID";
+        // Keep undeliverable returns in the existing inventory payloads so item migrations still visit them.
+        private const string PendingItemReturnPrefix = "DROID_RETURN_ITEM:";
+        private const string PendingItemRestorePrefix = "DROID_RESTORE_ITEM:";
         private const float RecastDelaySeconds = 1800f;
 
         public static string GetInstructionDiscValidationError(uint user, uint item)
@@ -153,14 +157,19 @@ namespace SWLOR.Game.Server.Service
         public static void OnAcquireItem()
         {
             var droid = GetModuleItemAcquiredBy();
+            AcquireDroidItem(droid, GetModuleItemAcquired());
+        }
+
+        private static void AcquireDroidItem(uint droid, uint item)
+        {
             if (!IsDroid(droid))
                 return;
 
-            if (GetLocalBool(droid, DroidIsSpawning))
+            if (GetLocalBool(droid, DroidIsSpawning) || !GetIsObjectValid(GetControllerItem(droid)) ||
+                !GetIsObjectValid(item) || GetItemPossessor(item) != droid || !IsStoredItem(item))
                 return;
 
             var master = GetMaster(droid);
-            var item = GetModuleItemAcquired();
 
             var giveItemMessage = CanGiveItemToDroid(item);
             if (!string.IsNullOrWhiteSpace(giveItemMessage))
@@ -185,7 +194,8 @@ namespace SWLOR.Game.Server.Service
                 return;
             }
 
-            UpdateDroidInventory(droid, item, true);
+            SetDroppableFlag(item, false);
+            SaveItemSnapshot(droid);
         }
 
         /// <summary>
@@ -199,11 +209,13 @@ namespace SWLOR.Game.Server.Service
                 return;
 
             var item = GetModuleItemLost();
-            UpdateDroidInventory(droid, item, false);
+            if (GetIsObjectValid(item) && IsStoredItem(item))
+                SetDroppableFlag(item, true);
+            SaveItemSnapshot(droid);
         }
 
         /// <summary>
-        /// When a droid equips an item, it is removed from its inventory and added to its equipped items.
+        /// Hides a droid's native helmet model before equipping it.
         /// </summary>
         [NWNEventHandler(ScriptName.OnSWLORItemEquipValidBefore)]
         public static void OnEquipItem()
@@ -213,32 +225,11 @@ namespace SWLOR.Game.Server.Service
                 return;
 
             var item = StringToObject(EventsPlugin.GetEventData("ITEM"));
-            var itemId = GetDroidItemId(item);
-            var controller = GetControllerItem(droid);
-            var slot = (InventorySlot)Convert.ToInt32(EventsPlugin.GetEventData("SLOT"));
-
-            if (slot == InventorySlot.CreatureArmor ||
-                slot == InventorySlot.CreatureBite ||
-                slot == InventorySlot.CreatureLeft ||
-                slot == InventorySlot.CreatureRight)
-                return;
 
             if (GetBaseItemType(item) == BaseItem.Helmet)
             {
                 HelmetModelRenderer.SetShownByOwner(item, false);
             }
-
-            var constructedDroid = LoadConstructedDroid(controller);
-
-            // Equipment won't be in the inventory but it does get equipped on spawn-in.
-            // Avoid proceeding in this situation.
-            if (!constructedDroid.Inventory.ContainsKey(itemId))
-                return;
-
-            constructedDroid.EquippedItems[slot] = constructedDroid.Inventory[itemId];
-            constructedDroid.Inventory.Remove(itemId);
-
-            SaveConstructedDroid(controller, constructedDroid);
         }
 
         /// <summary>
@@ -268,7 +259,7 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>
-        /// When a droid unequips an item, it is removed from its equipped items and added to its inventory.
+        /// Restores a droid helmet's native model before unequipping it.
         /// </summary>
         [NWNEventHandler(ScriptName.OnItemUnequipBefore)]
         public static void OnUnequipItem()
@@ -278,27 +269,21 @@ namespace SWLOR.Game.Server.Service
                 return;
 
             var item = StringToObject(EventsPlugin.GetEventData("ITEM"));
-            var itemId = GetDroidItemId(item);
-            var controller = GetControllerItem(droid);
-            var slot = Item.GetItemSlot(droid, item);
-
-            if (slot == InventorySlot.CreatureArmor ||
-                slot == InventorySlot.CreatureBite ||
-                slot == InventorySlot.CreatureLeft ||
-                slot == InventorySlot.CreatureRight)
-                return;
 
             if (GetBaseItemType(item) == BaseItem.Helmet)
             {
                 HelmetModelRenderer.SetShownByOwner(item, true);
             }
+        }
 
-            var constructedDroid = LoadConstructedDroid(controller);
-
-            constructedDroid.Inventory[itemId] = ObjectPlugin.Serialize(item);
-            constructedDroid.EquippedItems.Remove(slot);
-
-            SaveConstructedDroid(controller, constructedDroid);
+        /// <summary>
+        /// Saves completed equipment changes, including changes without a matching unequip event.
+        /// </summary>
+        [NWNEventHandler(ScriptName.OnItemEquipValidateAfter)]
+        [NWNEventHandler(ScriptName.OnItemUnequipAfter)]
+        public static void OnEquipmentChanged()
+        {
+            SaveItemSnapshot(OBJECT_SELF);
         }
 
         /// <summary>
@@ -687,25 +672,58 @@ namespace SWLOR.Game.Server.Service
 
             // Inventory / Equipment
             var constructedDroid = LoadConstructedDroid(controller);
+            var savedInventory = constructedDroid.Inventory.ToArray();
 
             foreach (var (slot, serialized) in constructedDroid.EquippedItems)
             {
-                var deserialized = ObjectPlugin.Deserialize(serialized);
-                ObjectPlugin.AcquireItem(droid, deserialized);
-                SetDroppableFlag(deserialized, false);
-
-                AssignCommand(droid, () => ActionEquipItem(deserialized, slot));
+                RestoreDroidItem(droid, constructedDroid, serialized, slot);
             }
 
-            foreach (var (id, serialized) in constructedDroid.Inventory)
+            // Retry equipment before carried items so equipped gear does not consume repository space.
+            foreach (var (key, serialized) in savedInventory
+                         .Where(pair => pair.Key.StartsWith(PendingItemRestorePrefix, StringComparison.Ordinal))
+                         .OrderBy(pair => pair.Key.StartsWith(PendingItemRestorePrefix + (int)InventorySlot.Invalid + ":", StringComparison.Ordinal)))
+            {
+                var identity = key.Substring(PendingItemRestorePrefix.Length).Split(':', 2);
+                if (identity.Length != 2 || !int.TryParse(identity[0], out var slot) ||
+                    slot < (int)InventorySlot.Invalid || slot > (int)InventorySlot.Bolts)
+                    continue;
+
+                constructedDroid.Inventory.Remove(key);
+                RestoreDroidItem(droid, constructedDroid, serialized, (InventorySlot)slot, identity[1]);
+            }
+
+            foreach (var (id, serialized) in savedInventory.Where(pair => !pair.Key.StartsWith(PendingItemRestorePrefix, StringComparison.Ordinal)))
             {
                 var deserialized = ObjectPlugin.Deserialize(serialized);
                 if(!GetIsObjectValid(deserialized))
                     continue;
 
-                ObjectPlugin.AcquireItem(droid, deserialized);
-                SetDroppableFlag(deserialized, false);
+                if (id.StartsWith(PendingItemReturnPrefix, StringComparison.Ordinal) ||
+                    !string.IsNullOrWhiteSpace(CanGiveItemToDroid(deserialized)))
+                {
+                    constructedDroid.Inventory.Remove(id);
+                    if (ItemPlugin.MoveTo(deserialized, player, true) &&
+                        (!GetIsObjectValid(deserialized) || GetItemPossessor(deserialized) == player))
+                    {
+                        SetDroppableFlag(deserialized, true);
+                    }
+                    else
+                    {
+                        var returnId = id.StartsWith(PendingItemReturnPrefix, StringComparison.Ordinal)
+                            ? id
+                            : PendingItemReturnPrefix + Guid.NewGuid();
+                        constructedDroid.Inventory[returnId] = serialized;
+                        DestroyObject(deserialized);
+                        SendMessageToPC(player, "Make room in your inventory and summon your droid again to recover its returned items.");
+                    }
+                    continue;
+                }
+
+                // The controller's key is authoritative for older serialized items.
+                RestoreDroidItem(droid, constructedDroid, serialized, InventorySlot.Invalid, id, deserialized);
             }
+            SaveConstructedDroid(controller, constructedDroid);
 
             // Appearance
             var defaultDroid = Race.GetDefaultAppearance(RacialType.Droid, Gender.Male);
@@ -820,14 +838,43 @@ namespace SWLOR.Game.Server.Service
             // because it doesn't exist at the time of the droid being created.
             ExecuteScript(GetEventScript(droid, EventScript.Creature_OnSpawnIn), droid);
 
+            DeleteLocalBool(droid, DroidIsSpawning);
+            SaveItemSnapshot(droid);
             AssignCommand(GetModule(), () =>
             {
-                DelayCommand(0.1f, () => DeleteLocalBool(droid, DroidIsSpawning));
                 DelayCommand(4f, () =>
                 {
                     ApplyEffectToObject(DurationType.Instant, EffectHeal(GetMaxHitPoints(droid)), droid);
                 });
             });
+        }
+
+        private static void RestoreDroidItem(uint droid, ConstructedDroid constructedDroid, string serialized,
+            InventorySlot slot, string id = null, uint item = OBJECT_INVALID)
+        {
+            if (!GetIsObjectValid(item))
+                item = ObjectPlugin.Deserialize(serialized);
+
+            id ??= GetIsObjectValid(item) ? GetDroidItemId(item) : Guid.NewGuid().ToString();
+            var retryKey = PendingItemRestorePrefix + (int)slot + ":" + id;
+            if (GetIsObjectValid(item))
+                SetLocalString(item, DroidItemId, id);
+
+            if (!GetIsObjectValid(item) || !ObjectPlugin.AcquireItem(droid, item) ||
+                (GetIsObjectValid(item) && GetItemPossessor(item, true) != droid))
+            {
+                constructedDroid.Inventory.Remove(id);
+                constructedDroid.Inventory[retryKey] = GetIsObjectValid(item) ? ObjectPlugin.Serialize(item) : serialized;
+                if (GetIsObjectValid(item))
+                    DestroyObject(item);
+                SendMessageToPC(GetMaster(droid), "Some droid items could not be restored. They remain saved and will be retried on the next summon.");
+                return;
+            }
+
+            constructedDroid.Inventory.Remove(retryKey);
+            SetDroppableFlag(item, false);
+            if (slot != InventorySlot.Invalid && GetIsObjectValid(item) && !GetIsObjectValid(GetItemInSlot(slot, droid)))
+                CreaturePlugin.RunEquip(droid, item, slot);
         }
 
         private static void ClearTemporaryData(uint player, uint droid)
@@ -856,6 +903,8 @@ namespace SWLOR.Game.Server.Service
             });
 
             CompanionControl.Clear(droid);
+            ReturnRejectedItems(droid, player);
+            SaveItemSnapshot(droid);
             DestroyObject(droid, 0.1f);
             ClearTemporaryData(player, droid);
 
@@ -924,34 +973,116 @@ namespace SWLOR.Game.Server.Service
             return GetLocalString(item, DroidItemId);
         }
 
-        private static void UpdateDroidInventory(uint droid, uint item, bool wasAcquired)
+        private static string GetDroidItemId(uint item, HashSet<string> itemIds)
         {
+            var itemId = GetDroidItemId(item);
+            while (!itemIds.Add(itemId))
+            {
+                itemId = Guid.NewGuid().ToString();
+                SetLocalString(item, DroidItemId, itemId);
+            }
+            return itemId;
+        }
 
+        private static bool IsStoredItem(uint item)
+        {
             var itemType = GetBaseItemType(item);
+            return itemType != BaseItem.CreatureBludgeonWeapon &&
+                   itemType != BaseItem.CreaturePierceWeapon &&
+                   itemType != BaseItem.CreatureSlashPierceWeapon &&
+                   itemType != BaseItem.CreatureSlashWeapon &&
+                   itemType != BaseItem.CreatureItem;
+        }
 
-            if (itemType == BaseItem.CreatureBludgeonWeapon ||
-                itemType == BaseItem.CreaturePierceWeapon ||
-                itemType == BaseItem.CreatureSlashPierceWeapon ||
-                itemType == BaseItem.CreatureSlashWeapon ||
-                itemType == BaseItem.CreatureItem)
+        private static void ReturnRejectedItems(uint droid, uint player)
+        {
+            var controller = GetControllerItem(droid);
+            if (!GetIsObjectValid(controller))
                 return;
 
+            var rejectedItems = new List<uint>();
+            for (var item = GetFirstItemInInventory(droid); GetIsObjectValid(item); item = GetNextItemInInventory(droid))
+            {
+                if (GetItemPossessor(item, true) == droid && !string.IsNullOrWhiteSpace(CanGiveItemToDroid(item)))
+                    rejectedItems.Add(item);
+            }
+
+            foreach (var item in rejectedItems)
+            {
+                if (GetIsObjectValid(player) && ItemPlugin.MoveTo(item, player, true) &&
+                    (!GetIsObjectValid(item) || GetItemPossessor(item) == player))
+                {
+                    SetDroppableFlag(item, true);
+                    continue;
+                }
+
+                var constructedDroid = LoadConstructedDroid(controller);
+                constructedDroid.Inventory[PendingItemReturnPrefix + Guid.NewGuid()] = ObjectPlugin.Serialize(item);
+                SaveConstructedDroid(controller, constructedDroid);
+                DestroyObject(item);
+            }
+        }
+
+        private static HashSet<uint> GetGeneratedAmmunition(uint droid)
+        {
+            var generatedItems = new HashSet<uint>();
+            var native = NWNXLib.g_pAppManager.m_pServerExoApp.GetGameObject(droid)?.AsNWSCreature();
+            if (native == null)
+                return generatedItems;
+
+            foreach (var (slot, generated) in new[]
+                     {
+                         (InventorySlot.Arrows, native.m_bMagicalArrowsEquipped != 0),
+                         (InventorySlot.Bullets, native.m_bMagicalBulletsEquipped != 0),
+                         (InventorySlot.Bolts, native.m_bMagicalBoltsEquipped != 0)
+                     })
+            {
+                if (generated)
+                    generatedItems.Add(GetItemInSlot(slot, droid));
+            }
+            return generatedItems;
+        }
+
+        private static void SaveItemSnapshot(uint droid)
+        {
+            if (!IsDroid(droid) || GetLocalBool(droid, DroidIsSpawning))
+                return;
             var controller = GetControllerItem(droid);
+            if (!GetIsObjectValid(controller))
+                return;
+
             var constructedDroid = LoadConstructedDroid(controller);
+            var equippedItems = new Dictionary<InventorySlot, string>();
+            var inventory = constructedDroid.Inventory
+                .Where(pair => pair.Key.StartsWith(PendingItemReturnPrefix, StringComparison.Ordinal) ||
+                               pair.Key.StartsWith(PendingItemRestorePrefix, StringComparison.Ordinal))
+                .ToDictionary(pair => pair.Key, pair => pair.Value);
+            var equippedObjects = new HashSet<uint>();
+            var itemIds = new HashSet<string>();
+            var generatedAmmunition = GetGeneratedAmmunition(droid);
 
-            if (wasAcquired)
+            for (var slot = InventorySlot.Head; slot <= InventorySlot.Bolts; slot++)
             {
-                var itemId = GetDroidItemId(item);
-                constructedDroid.Inventory[itemId] = ObjectPlugin.Serialize(item);
-                SetDroppableFlag(item, false);
-            }
-            else
-            {
-                var itemId = GetDroidItemId(item);
-                constructedDroid.Inventory.Remove(itemId);
-                SetDroppableFlag(item, true);
+                var item = GetItemInSlot(slot, droid);
+                if (!GetIsObjectValid(item) || generatedAmmunition.Contains(item) || !IsStoredItem(item) || !string.IsNullOrWhiteSpace(CanGiveItemToDroid(item)))
+                    continue;
+
+                GetDroidItemId(item, itemIds);
+                equippedItems[slot] = ObjectPlugin.Serialize(item);
+                equippedObjects.Add(item);
             }
 
+            for (var item = GetFirstItemInInventory(droid); GetIsObjectValid(item); item = GetNextItemInInventory(droid))
+            {
+                if (GetItemPossessor(item, true) != droid || equippedObjects.Contains(item) || generatedAmmunition.Contains(item) || !IsStoredItem(item) || !string.IsNullOrWhiteSpace(CanGiveItemToDroid(item)))
+                    continue;
+
+                var itemId = GetDroidItemId(item, itemIds);
+                inventory[itemId] = ObjectPlugin.Serialize(item);
+            }
+
+            constructedDroid.EquippedItems = equippedItems;
+            constructedDroid.Inventory = inventory;
             SaveConstructedDroid(controller, constructedDroid);
         }
 
@@ -1036,6 +1167,8 @@ namespace SWLOR.Game.Server.Service
         {
             var droid = OBJECT_SELF;
             var player = GetMaster(droid);
+            ReturnRejectedItems(droid, player);
+            SaveItemSnapshot(droid);
             CompanionControl.Clear(droid);
             ExecuteScript("x2_hen_death", droid);
 
@@ -1052,7 +1185,23 @@ namespace SWLOR.Game.Server.Service
         [NWNEventHandler(ScriptName.OnDroidDisturbed)]
         public static void DroidOnDisturbed()
         {
-            ExecuteScript("x0_ch_hen_distrb", OBJECT_SELF);
+            var droid = OBJECT_SELF;
+            var item = GetInventoryDisturbItem(droid);
+            var disturbType = GetInventoryDisturbType(droid);
+            if (disturbType == DisturbType.Added)
+            {
+                AcquireDroidItem(droid, item);
+            }
+            else
+            {
+                if (GetIsObjectValid(item) && IsStoredItem(item))
+                    SetDroppableFlag(item, true);
+                SaveItemSnapshot(droid);
+            }
+            // The stock henchman reaction can switch ranged weapons to melee.
+            // Preserve theft retaliation through the companion's combat handlers.
+            if (disturbType == DisturbType.Stolen)
+                CompanionControl.RegisterDefensiveThreat(droid, GetLastDisturbed());
         }
 
         [NWNEventHandler(ScriptName.OnDroidHeartbeat)]

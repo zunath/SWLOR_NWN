@@ -34,7 +34,7 @@
   },
   "Comment": {
     "type": "cexostring",
-    "value": "Capstone quest creature for Alpha Rhythm in Dathomir Tarn Jungle Preserve."
+    "value": "Alpha Rhythm warden in Dathomir - Tarn Jungle Preserve."
   },
   "Con": {
     "type": "byte",
@@ -63,7 +63,7 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "A level 50 capstone quest enemy for Alpha Rhythm in Dathomir Tarn Jungle Preserve."
+      "0": "A heavy-horned iriaz bull stamping a fast, restless rhythm into the ground, a clawed-apart totem strapped to his harness. He once led his own herd honestly, before the pit-breeders set him over the kinrath to drive their beat."
     }
   },
   "Dex": {

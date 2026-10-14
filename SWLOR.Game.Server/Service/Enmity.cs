@@ -173,9 +173,9 @@ namespace SWLOR.Game.Server.Service
 
             for (var x = 1; x <= count; x++)
             {
-                var targetData = EventsPlugin.GetEventData($"TARGET_{x}");
+                var target = StringToObject(EventsPlugin.GetEventData($"TARGET_{x}"));
 
-                if (uint.TryParse(targetData, out var target))
+                if (GetIsObjectValid(target))
                 {
                     ClearEnmityTables(target);
                     RemoveCreatureEnmity(target);
@@ -215,7 +215,7 @@ namespace SWLOR.Game.Server.Service
 
         /// <summary>
         /// Retrieves the creature with the highest amount of enmity that the enemy can attack.
-        /// Creatures hidden from the enemy by invisibility keep their enmity but are skipped until
+        /// Creatures hidden from the enemy by invisibility or undetected stealth keep their enmity but are skipped until
         /// they can be seen again. If no creature can be attacked, OBJECT_INVALID will be returned.
         /// </summary>
         /// <param name="enemy">The enemy to retrieve the attack target for.</param>
@@ -236,7 +236,7 @@ namespace SWLOR.Game.Server.Service
         {
             return GetIsObjectValid(creature) && !GetIsDead(creature) &&
                    GetCurrentHitPoints(creature) > 0 && GetArea(enemy) == GetArea(creature) &&
-                   !Stealth.IsHiddenByInvisibility(enemy, creature);
+                   !Stealth.IsHiddenFrom(enemy, creature);
         }
 
         /// <summary>
@@ -337,11 +337,6 @@ namespace SWLOR.Game.Server.Service
 
             // Retrieve the creature's list of associated enemies.
             var enemyList = _creatureToEnemies.ContainsKey(creature) ? _creatureToEnemies[creature] : new List<uint>();
-
-            // Fire off an event if this creature isn't currently on
-            // any enmity lists already.
-            if (enemyList.Count <= 0)
-                ExecuteScript(ScriptName.OnEnmityAcquired, creature);
 
             // Enemy isn't on the creature's list. Add it now.
             if (!enemyList.Contains(enemy))
@@ -753,7 +748,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// Forces a creature to attack the highest enmity target it can see.
         /// Stops an existing chase when its last proximity target is no longer in range.
-        /// Stops attacking, but keeps its enmity, while every target is hidden by invisibility.
+        /// Stops attacking, but keeps its enmity, while every target is hidden by invisibility or stealth.
         /// If creature did not have enmity, nothing will happen.
         /// If the creature is already actively attacking that target, nothing will happen.
         /// </summary>
@@ -792,7 +787,7 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>
-        /// Every creature on the enemy's enmity table is hidden by invisibility. Drops the enemy's
+        /// Every creature on the enemy's enmity table is hidden by invisibility or stealth. Drops the enemy's
         /// attack or chase so it stops striking at a target it cannot see. The enmity table is kept,
         /// so the enemy resumes once one of its targets can be seen again.
         /// </summary>
@@ -898,8 +893,8 @@ namespace SWLOR.Game.Server.Service
                     if (AI.TryStartCombatLeashEvade(creature, target))
                         return;
 
-                    // The target may have turned invisible during the approach.
-                    if (Stealth.IsHiddenByInvisibility(creature, target))
+                    // The target may have turned invisible or slipped into stealth during the approach.
+                    if (Stealth.IsHiddenFrom(creature, target))
                         return;
 
                     ActionAttack(target);

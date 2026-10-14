@@ -110,12 +110,14 @@
   },
   "DescIdentified": {
     "type": "cexolocstring",
-    "value": {}
+    "value": {
+      "0": "An everyday outfit from Duskhaven, with unshowy fastenings and room for the small necessities of a working day. Its strongest seams are hidden, leaving little reason for a passerby to remember it."
+    }
   },
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": ""
+      "0": "An everyday outfit from Duskhaven, with unshowy fastenings and room for the small necessities of a working day. Its strongest seams are hidden, leaving little reason for a passerby to remember it."
     }
   },
   "Identified": {

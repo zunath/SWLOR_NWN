@@ -25,16 +25,15 @@
     "value": 0
   },
   "DescIdentified": {
-    "id": 48321,
     "type": "cexolocstring",
     "value": {
-      "0": ""
+      "0": "A shadowed vambrace taken from a sealed sepulcher, cold to the touch."
     }
   },
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": ""
+      "0": "A shadowed vambrace taken from a sealed sepulcher, cold to the touch."
     }
   },
   "Identified": {
@@ -42,7 +41,6 @@
     "value": 1
   },
   "LocalizedName": {
-    "id": 48320,
     "type": "cexolocstring",
     "value": {
       "0": "Umbral Sepulcher Vambrace"

@@ -110,12 +110,14 @@
   },
   "DescIdentified": {
     "type": "cexolocstring",
-    "value": {}
+    "value": {
+      "0": "Ro Solus's threads have a confident cut and pockets strengthened beneath the lining. They give the impression of somebody who appreciates a good entrance but would still like their possessions to survive it."
+    }
   },
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": ""
+      "0": "Ro Solus's threads have a confident cut and pockets strengthened beneath the lining. They give the impression of somebody who appreciates a good entrance but would still like their possessions to survive it."
     }
   },
   "Identified": {

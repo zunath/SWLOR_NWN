@@ -39,11 +39,72 @@ function Read-ZipEntryText {
     }
 }
 
-function Write-ZipEntryText {
+function Read-ZipEntryBytes {
+    param(
+        [object]$Zip,
+        [string]$EntryPath
+    )
+
+    $entry = $Zip.GetEntry($EntryPath)
+    if ($null -eq $entry) {
+        throw "Workbook entry '$EntryPath' was not found."
+    }
+
+    $buffer = [System.IO.MemoryStream]::new()
+    $stream = $entry.Open()
+    try {
+        $stream.CopyTo($buffer)
+    }
+    finally {
+        $stream.Dispose()
+    }
+
+    return ,$buffer.ToArray()
+}
+
+# XmlTextReader does not normalize line breaks and NewLineHandling.None writes them back as read,
+# so LF and CRLF inside cell text round-trip byte-for-byte instead of becoming Environment.NewLine.
+function ConvertFrom-WorkbookXmlBytes {
+    param([byte[]]$Bytes)
+
+    $document = [System.Xml.XmlDocument]::new()
+    $document.PreserveWhitespace = $true
+    $reader = [System.Xml.XmlTextReader]::new([System.IO.MemoryStream]::new($Bytes))
+    try {
+        $reader.DtdProcessing = [System.Xml.DtdProcessing]::Prohibit
+        $document.Load($reader)
+    }
+    finally {
+        $reader.Dispose()
+    }
+
+    return ,$document
+}
+
+function ConvertTo-WorkbookXmlBytes {
+    param([System.Xml.XmlDocument]$Document)
+
+    $settings = [System.Xml.XmlWriterSettings]::new()
+    $settings.Encoding = [System.Text.UTF8Encoding]::new($false)
+    $settings.Indent = $false
+    $settings.NewLineHandling = [System.Xml.NewLineHandling]::None
+    $buffer = [System.IO.MemoryStream]::new()
+    $writer = [System.Xml.XmlWriter]::Create($buffer, $settings)
+    try {
+        $Document.Save($writer)
+    }
+    finally {
+        $writer.Dispose()
+    }
+
+    return ,$buffer.ToArray()
+}
+
+function Set-ZipEntryBytes {
     param(
         [object]$Zip,
         [string]$EntryPath,
-        [xml]$Document
+        [byte[]]$Bytes
     )
 
     $oldEntry = $Zip.GetEntry($EntryPath)
@@ -55,16 +116,7 @@ function Write-ZipEntryText {
     $newEntry = $Zip.CreateEntry($EntryPath, [System.IO.Compression.CompressionLevel]::Optimal)
     $stream = $newEntry.Open()
     try {
-        $settings = [System.Xml.XmlWriterSettings]::new()
-        $settings.Encoding = [System.Text.UTF8Encoding]::new($false)
-        $settings.Indent = $false
-        $writer = [System.Xml.XmlWriter]::Create($stream, $settings)
-        try {
-            $Document.Save($writer)
-        }
-        finally {
-            $writer.Dispose()
-        }
+        $stream.Write($Bytes, 0, $Bytes.Length)
     }
     finally {
         $stream.Dispose()
@@ -468,7 +520,8 @@ if (Test-Path -LiteralPath $layoutFullPath) {
 Add-Type -AssemblyName System.IO.Compression
 Add-Type -AssemblyName System.IO.Compression.FileSystem
 
-$zip = [System.IO.Compression.ZipFile]::Open($workbookFullPath, [System.IO.Compression.ZipArchiveMode]::Update)
+$changedWorksheetBytes = [ordered]@{}
+$zip = [System.IO.Compression.ZipFile]::OpenRead($workbookFullPath)
 try {
     $sharedStrings = Get-SharedStrings -Zip $zip
 
@@ -488,7 +541,8 @@ try {
         $sheetName = $sheet.GetAttribute("name")
         $relationshipId = $sheet.GetAttribute("id", "http://schemas.openxmlformats.org/officeDocument/2006/relationships")
         $worksheetEntryPath = $relationshipsById[$relationshipId]
-        [xml]$worksheetXml = Read-ZipEntryText -Zip $zip -EntryPath $worksheetEntryPath
+        $worksheetXml = ConvertFrom-WorkbookXmlBytes -Bytes (Read-ZipEntryBytes -Zip $zip -EntryPath $worksheetEntryPath)
+        $unformattedBytes = ConvertTo-WorkbookXmlBytes -Document $worksheetXml
         $worksheetNamespace = [System.Xml.XmlNamespaceManager]::new($worksheetXml.NameTable)
         $worksheetNamespace.AddNamespace("d", "http://schemas.openxmlformats.org/spreadsheetml/2006/main")
 
@@ -512,9 +566,26 @@ try {
         }
 
         Remove-CustomRowHeights -WorksheetXml $worksheetXml -Namespace $worksheetNamespace
-        Write-ZipEntryText -Zip $zip -EntryPath $worksheetEntryPath -Document $worksheetXml
+
+        # Only worksheets the formatting changed are rewritten; every other entry keeps its exact bytes.
+        $formattedBytes = ConvertTo-WorkbookXmlBytes -Document $worksheetXml
+        if (![System.Linq.Enumerable]::SequenceEqual([byte[]]$unformattedBytes, [byte[]]$formattedBytes)) {
+            $changedWorksheetBytes[$worksheetEntryPath] = $formattedBytes
+        }
     }
 }
 finally {
     $zip.Dispose()
+}
+
+if ($changedWorksheetBytes.Count -gt 0) {
+    $zip = [System.IO.Compression.ZipFile]::Open($workbookFullPath, [System.IO.Compression.ZipArchiveMode]::Update)
+    try {
+        foreach ($entryPath in $changedWorksheetBytes.Keys) {
+            Set-ZipEntryBytes -Zip $zip -EntryPath $entryPath -Bytes $changedWorksheetBytes[$entryPath]
+        }
+    }
+    finally {
+        $zip.Dispose()
+    }
 }

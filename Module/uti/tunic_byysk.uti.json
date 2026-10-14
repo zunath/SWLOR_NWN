@@ -110,11 +110,15 @@
   },
   "DescIdentified": {
     "type": "cexolocstring",
-    "value": {}
+    "value": {
+      "0": "Rough hide panels give this Byysk tunic a severe outline. Its fastenings are plain and readily repaired, a practical counterpoint to a garment that already makes a strong enough impression."
+    }
   },
   "Description": {
     "type": "cexolocstring",
-    "value": {}
+    "value": {
+      "0": "Rough hide panels give this Byysk tunic a severe outline. Its fastenings are plain and readily repaired, a practical counterpoint to a garment that already makes a strong enough impression."
+    }
   },
   "Identified": {
     "type": "byte",

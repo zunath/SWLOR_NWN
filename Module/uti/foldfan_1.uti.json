@@ -26,12 +26,14 @@
   },
   "DescIdentified": {
     "type": "cexolocstring",
-    "value": {}
+    "value": {
+      "0": "Flowers spread across the leaves of this folding fan, disappearing into a neat stack when it closes. It is as useful for punctuating a conversation as it is for finding a little relief from a crowded room."
+    }
   },
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": ""
+      "0": "Flowers spread across the leaves of this folding fan, disappearing into a neat stack when it closes. It is as useful for punctuating a conversation as it is for finding a little relief from a crowded room."
     }
   },
   "Identified": {

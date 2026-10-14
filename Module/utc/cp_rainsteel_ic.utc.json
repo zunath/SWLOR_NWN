@@ -2,15 +2,15 @@
   "__data_type": "UTC ",
   "Appearance_Head": {
     "type": "byte",
-    "value": 100
+    "value": 13
   },
   "Appearance_Type": {
     "type": "word",
-    "value": 10006
+    "value": 6
   },
   "ArmorPart_RFoot": {
     "type": "byte",
-    "value": 10
+    "value": 1
   },
   "BodyBag": {
     "type": "byte",
@@ -18,7 +18,7 @@
   },
   "BodyPart_Belt": {
     "type": "byte",
-    "value": 154
+    "value": 0
   },
   "BodyPart_LBicep": {
     "type": "byte",
@@ -26,27 +26,27 @@
   },
   "BodyPart_LFArm": {
     "type": "byte",
-    "value": 198
+    "value": 1
   },
   "BodyPart_LFoot": {
     "type": "byte",
-    "value": 10
+    "value": 1
   },
   "BodyPart_LHand": {
     "type": "byte",
-    "value": 101
+    "value": 1
   },
   "BodyPart_LShin": {
     "type": "byte",
-    "value": 10
+    "value": 1
   },
   "BodyPart_LShoul": {
     "type": "byte",
-    "value": 25
+    "value": 0
   },
   "BodyPart_LThigh": {
     "type": "byte",
-    "value": 12
+    "value": 1
   },
   "BodyPart_Neck": {
     "type": "byte",
@@ -54,7 +54,7 @@
   },
   "BodyPart_Pelvis": {
     "type": "byte",
-    "value": 10
+    "value": 1
   },
   "BodyPart_RBicep": {
     "type": "byte",
@@ -62,27 +62,27 @@
   },
   "BodyPart_RFArm": {
     "type": "byte",
-    "value": 198
+    "value": 1
   },
   "BodyPart_RHand": {
     "type": "byte",
-    "value": 101
+    "value": 1
   },
   "BodyPart_RShin": {
     "type": "byte",
-    "value": 10
+    "value": 1
   },
   "BodyPart_RShoul": {
     "type": "byte",
-    "value": 25
+    "value": 0
   },
   "BodyPart_RThigh": {
     "type": "byte",
-    "value": 12
+    "value": 1
   },
   "BodyPart_Torso": {
     "type": "byte",
-    "value": 53
+    "value": 1
   },
   "Cha": {
     "type": "byte",
@@ -110,11 +110,11 @@
   },
   "Color_Hair": {
     "type": "byte",
-    "value": 31
+    "value": 7
   },
   "Color_Skin": {
     "type": "byte",
-    "value": 105
+    "value": 0
   },
   "Color_Tattoo1": {
     "type": "byte",
@@ -126,7 +126,7 @@
   },
   "Comment": {
     "type": "cexostring",
-    "value": "Capstone quest creature for Rain of Steel in Czerka Arms Test Range."
+    "value": "Rain of Steel inner circle in Smuggler's Moon - Czerka Weapons Testing Facility."
   },
   "Con": {
     "type": "byte",
@@ -155,7 +155,7 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "A level 50 capstone quest enemy for Rain of Steel in Czerka Arms Test Range."
+      "0": "A hard-eyed human in rough street clothes, throwing blades close at hand. He is one of the four who countersign every stolen crate and hot trial on the range from the stockrooms behind the deep range, and he throws as well as he signs."
     }
   },
   "Dex": {
@@ -169,6 +169,13 @@
   "Equip_ItemList": {
     "type": "list",
     "value": [
+      {
+        "__struct_id": 2,
+        "EquippedRes": {
+          "type": "resref",
+          "value": "criminal003"
+        }
+      },
       {
         "__struct_id": 16,
         "EquippedRes": {
@@ -437,11 +444,11 @@
   },
   "PortraitId": {
     "type": "word",
-    "value": 4112
+    "value": 4176
   },
   "Race": {
     "type": "byte",
-    "value": 15
+    "value": 6
   },
   "refbonus": {
     "type": "short",
@@ -702,7 +709,7 @@
   },
   "SoundSetFile": {
     "type": "word",
-    "value": 448
+    "value": 413
   },
   "SpecAbilityList": {
     "type": "list",

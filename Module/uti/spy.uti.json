@@ -110,11 +110,15 @@
   },
   "DescIdentified": {
     "type": "cexolocstring",
-    "value": {}
+    "value": {
+      "0": "An understated outfit whose strongest details are hidden beneath the surface. Its unremarkable cut would travel through offices and port concourses without giving a witness much to describe afterward."
+    }
   },
   "Description": {
     "type": "cexolocstring",
-    "value": {}
+    "value": {
+      "0": "An understated outfit whose strongest details are hidden beneath the surface. Its unremarkable cut would travel through offices and port concourses without giving a witness much to describe afterward."
+    }
   },
   "Identified": {
     "type": "byte",

@@ -26,11 +26,15 @@
   },
   "DescIdentified": {
     "type": "cexolocstring",
-    "value": {}
+    "value": {
+      "0": "Light cloth and a softly bound inner edge make this bracer comfortable against the wrist. Its relaxed finish suggests a brief patch of shade in the middle of a demanding working day."
+    }
   },
   "Description": {
     "type": "cexolocstring",
-    "value": {}
+    "value": {
+      "0": "Light cloth and a softly bound inner edge make this bracer comfortable against the wrist. Its relaxed finish suggests a brief patch of shade in the middle of a demanding working day."
+    }
   },
   "Identified": {
     "type": "byte",

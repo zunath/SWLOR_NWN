@@ -210,7 +210,7 @@
         "Description": {
           "type": "cexolocstring",
           "value": {
-            "0": "A human woman in worn travelling robes, Seris Nahl keeps to the edge of the Promenade crowd with a medpac on her hip and the alert stillness of someone used to watching exits. Grave dust from Korriban still clings to her boots and the hem of her cloak. She speaks quietly with spacers and pilots, arranging passage for wounded people who cannot afford to be asked questions."
+            "0": "A human woman in worn travelling robes, Seris Nahl keeps to the edge of the Promenade crowd with a medpac on her hip and the alert stillness of someone used to watching exits. Cave grit and dried jungle mud still cling to her boots and the hem of her cloak. She speaks quietly with spacers and pilots, arranging passage for wounded people who cannot afford to be asked questions."
           }
         },
         "Dex": {
@@ -332,12 +332,14 @@
               },
               "DescIdentified": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "Artemis' robes have a composed, almost gentle drape that becomes more exacting under close inspection. The seams and bindings are maintained to the same severe standard, allowing softness of cloth without carelessness of presentation."
+                }
               },
               "Description": {
                 "type": "cexolocstring",
                 "value": {
-                  "0": ""
+                  "0": "Artemis' robes have a composed, almost gentle drape that becomes more exacting under close inspection. The seams and bindings are maintained to the same severe standard, allowing softness of cloth without carelessness of presentation."
                 }
               },
               "Identified": {

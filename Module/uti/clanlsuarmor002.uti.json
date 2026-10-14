@@ -110,11 +110,15 @@
   },
   "DescIdentified": {
     "type": "cexolocstring",
-    "value": {}
+    "value": {
+      "0": "The fastenings of this armor are bound in Clan Lsu's familiar style. Repairs have been worked into the original pattern rather than hidden, letting a useful piece of equipment keep the identity of the hands that made it."
+    }
   },
   "Description": {
     "type": "cexolocstring",
-    "value": {}
+    "value": {
+      "0": "The fastenings of this armor are bound in Clan Lsu's familiar style. Repairs have been worked into the original pattern rather than hidden, letting a useful piece of equipment keep the identity of the hands that made it."
+    }
   },
   "Identified": {
     "type": "byte",

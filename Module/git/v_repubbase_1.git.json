@@ -319,12 +319,14 @@
               },
               "DescIdentified": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "This Republic office uniform is neater at the collar than at the cuffs. Its quiet wear belongs to datapads, requisitions, and the machinery of an army that continues working after the gunfire moves elsewhere."
+                }
               },
               "Description": {
                 "type": "cexolocstring",
                 "value": {
-                  "0": ""
+                  "0": "This Republic office uniform is neater at the collar than at the cuffs. Its quiet wear belongs to datapads, requisitions, and the machinery of an army that continues working after the gunfire moves elsewhere."
                 }
               },
               "Identified": {
@@ -1836,11 +1838,15 @@
               },
               "DescIdentified": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "Substantial panels and a broad load-bearing fit distinguish this Republic gunner's armor. The less visible fittings are arranged around long service beside heavy equipment, where an awkward strap soon stops being a small annoyance."
+                }
               },
               "Description": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "Substantial panels and a broad load-bearing fit distinguish this Republic gunner's armor. The less visible fittings are arranged around long service beside heavy equipment, where an awkward strap soon stops being a small annoyance."
+                }
               },
               "Identified": {
                 "type": "byte",
@@ -3755,11 +3761,15 @@
               },
               "DescIdentified": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "Substantial panels and a broad load-bearing fit distinguish this Republic gunner's armor. The less visible fittings are arranged around long service beside heavy equipment, where an awkward strap soon stops being a small annoyance."
+                }
               },
               "Description": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "Substantial panels and a broad load-bearing fit distinguish this Republic gunner's armor. The less visible fittings are arranged around long service beside heavy equipment, where an awkward strap soon stops being a small annoyance."
+                }
               },
               "Identified": {
                 "type": "byte",
@@ -15677,12 +15687,14 @@
               },
               "DescIdentified": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "Clean, practical layers make up this chef's working outfit. Its sleeves can be secured clear of a preparation surface, and its front has survived the sort of scrubbing that fine dining rarely includes in its stories."
+                }
               },
               "Description": {
                 "type": "cexolocstring",
                 "value": {
-                  "0": ""
+                  "0": "Clean, practical layers make up this chef's working outfit. Its sleeves can be secured clear of a preparation surface, and its front has survived the sort of scrubbing that fine dining rarely includes in its stories."
                 }
               },
               "Identified": {
@@ -16683,12 +16695,14 @@
               },
               "DescIdentified": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "Clean, practical layers make up this chef's working outfit. Its sleeves can be secured clear of a preparation surface, and its front has survived the sort of scrubbing that fine dining rarely includes in its stories."
+                }
               },
               "Description": {
                 "type": "cexolocstring",
                 "value": {
-                  "0": ""
+                  "0": "Clean, practical layers make up this chef's working outfit. Its sleeves can be secured clear of a preparation surface, and its front has survived the sort of scrubbing that fine dining rarely includes in its stories."
                 }
               },
               "Identified": {
@@ -17691,12 +17705,14 @@
               },
               "DescIdentified": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "Clean, practical layers make up this chef's working outfit. Its sleeves can be secured clear of a preparation surface, and its front has survived the sort of scrubbing that fine dining rarely includes in its stories."
+                }
               },
               "Description": {
                 "type": "cexolocstring",
                 "value": {
-                  "0": ""
+                  "0": "Clean, practical layers make up this chef's working outfit. Its sleeves can be secured clear of a preparation surface, and its front has survived the sort of scrubbing that fine dining rarely includes in its stories."
                 }
               },
               "Identified": {
@@ -18814,11 +18830,15 @@
               },
               "DescIdentified": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "Substantial panels and a broad load-bearing fit distinguish this Republic gunner's armor. The less visible fittings are arranged around long service beside heavy equipment, where an awkward strap soon stops being a small annoyance."
+                }
               },
               "Description": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "Substantial panels and a broad load-bearing fit distinguish this Republic gunner's armor. The less visible fittings are arranged around long service beside heavy equipment, where an awkward strap soon stops being a small annoyance."
+                }
               },
               "Identified": {
                 "type": "byte",
@@ -20733,11 +20753,15 @@
               },
               "DescIdentified": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "Substantial panels and a broad load-bearing fit distinguish this Republic gunner's armor. The less visible fittings are arranged around long service beside heavy equipment, where an awkward strap soon stops being a small annoyance."
+                }
               },
               "Description": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "Substantial panels and a broad load-bearing fit distinguish this Republic gunner's armor. The less visible fittings are arranged around long service beside heavy equipment, where an awkward strap soon stops being a small annoyance."
+                }
               },
               "Identified": {
                 "type": "byte",
@@ -26805,11 +26829,15 @@
               },
               "DescIdentified": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "A regulation Republic officer's uniform with a clean collar and restrained service fittings. Its orderly appearance asks the wearer to look certain even before the next report has reached their datapad."
+                }
               },
               "Description": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "A regulation Republic officer's uniform with a clean collar and restrained service fittings. Its orderly appearance asks the wearer to look certain even before the next report has reached their datapad."
+                }
               },
               "Identified": {
                 "type": "byte",
@@ -114692,7 +114720,7 @@
         },
         "Y": {
           "type": "float",
-          "value": 104.5030059814453
+          "value": 104.3530044555664
         },
         "Z": {
           "type": "float",
@@ -114913,11 +114941,11 @@
         },
         "X": {
           "type": "float",
-          "value": 52.69606399536133
+          "value": 52.71442413330078
         },
         "Y": {
           "type": "float",
-          "value": 105.0951538085938
+          "value": 104.9462814331055
         },
         "Z": {
           "type": "float",
@@ -115138,11 +115166,11 @@
         },
         "X": {
           "type": "float",
-          "value": 57.22750091552734
+          "value": 57.20549011230469
         },
         "Y": {
           "type": "float",
-          "value": 105.2411346435547
+          "value": 105.0927581787109
         },
         "Z": {
           "type": "float",

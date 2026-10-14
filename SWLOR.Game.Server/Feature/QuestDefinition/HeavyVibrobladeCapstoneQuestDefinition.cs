@@ -51,19 +51,19 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
                 .PrerequisiteSkill(SkillType.HeavyVibroblade, 50)
                 .OnAcceptAction((player, sourceObject) =>
                 {
-                    KeyItem.GiveKeyItem(player, KeyItemType.CapstoneKorribanForgeCavernsKey);
+                    KeyItem.GiveKeyItem(player, KeyItemType.CapstoneTatooineForgeCavernsKey);
                 })
                 .OnAbandonAction(player =>
                 {
-                    RemoveKorribanForgeCavernsAccessIfNoLongerNeeded(player);
+                    RemoveTatooineForgeCavernsAccessIfNoLongerNeeded(player);
                 })
                 .RemoveKeyItemOnAbandon(KeyItemType.CapstoneAbsoluteDefenseForgeHeatLedger)
                 .RemoveKeyItemOnComplete(KeyItemType.CapstoneAbsoluteDefenseForgeHeatLedger)
 
                 .AddState()
                 .SetStateJournalText(
-                    "Valis Korr gave you the Korriban Forge Caverns Key. On Korriban, cross the Sith Fortress Forgeworks to the sealed passage in its far north-east corner and enter the Korriban Forge Caverns. Defeat 6 Absolute Defense adepts and secure the Absolute Defense Forge Heat Ledger they keep near the crucibles.")
-                .AddKillObjective(NPCGroupType.Korriban_AbsoluteDefense_Adept, 6)
+                    "Valis Korr gave you the Tatooine Forge Caverns Key. On Tatooine, go south from the Anchorhead spaceport through the South District to the Southern Entrance, leave by its east side into the Rocky Desert, then head north into the North Mine Cliffs and take the ramp down into the Forge Caverns under the arched mine tunnel entrance a short walk ahead, beside an old mine cart. Defeat 6 Absolute Defense adepts and secure the Absolute Defense Forge Heat Ledger they keep near the crucibles.")
+                .AddKillObjective(NPCGroupType.Tatooine_AbsoluteDefense_Adept, 6)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneAbsoluteDefenseForgeHeatLedger)
 
                 .AddState()
@@ -83,8 +83,8 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "Defeat 5 Absolute Defense specialists in the Korriban Forge Caverns on Korriban and recover the Absolute Defense Sith Tempering Matrix from the quench racks.")
-                .AddKillObjective(NPCGroupType.Korriban_AbsoluteDefense_Specialist, 5)
+                    "Defeat 5 Absolute Defense specialists in the Forge Caverns on Tatooine and recover the Absolute Defense Sith Tempering Matrix from the quench racks.")
+                .AddKillObjective(NPCGroupType.Tatooine_AbsoluteDefense_Specialist, 5)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneAbsoluteDefenseSithTemperingMatrix)
 
                 .AddState()
@@ -104,8 +104,8 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "With at least two allies, defeat the Absolute Defense warden at the trial altar on the west side of the Korriban Forge Caverns on Korriban and take the Absolute Defense Cracked Anvil Sigil he wears.")
-                .AddKillObjective(NPCGroupType.Korriban_AbsoluteDefense_Warden, 1)
+                    "With at least two allies, defeat the Absolute Defense warden at the trial altar on the west side of the Forge Caverns on Tatooine and take the Absolute Defense Cracked Anvil Sigil he wears.")
+                .AddKillObjective(NPCGroupType.Tatooine_AbsoluteDefense_Warden, 1)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneAbsoluteDefenseCrackedAnvilSigil)
 
                 .AddState()
@@ -125,8 +125,8 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "Defeat 4 members of the Absolute Defense inner circle in the Korriban Forge Caverns on Korriban and secure an Absolute Defense Overseer's Clearance Token.")
-                .AddKillObjective(NPCGroupType.Korriban_AbsoluteDefense_InnerCircle, 4)
+                    "Defeat 4 members of the Absolute Defense inner circle in the Forge Caverns on Tatooine and secure an Absolute Defense Overseer's Clearance Token.")
+                .AddKillObjective(NPCGroupType.Tatooine_AbsoluteDefense_InnerCircle, 4)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneAbsoluteDefenseOverseersClearanceToken)
 
                 .AddState()
@@ -144,8 +144,8 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "With at least two trusted allies, defeat the Absolute Defense master in the Champion Forge, through the door at the north end of the Korriban Forge Caverns on Korriban.")
-                .AddKillObjective(NPCGroupType.Korriban_AbsoluteDefense_Master, 1)
+                    "With at least two trusted allies, defeat the Absolute Defense master in the Champion Forge, through the door at the north end of the Forge Caverns on Tatooine.")
+                .AddKillObjective(NPCGroupType.Tatooine_AbsoluteDefense_Master, 1)
 
                 .AddState()
                 .SetStateJournalText(
@@ -164,19 +164,19 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
                 .PrerequisiteSkill(SkillType.HeavyVibroblade, 50)
                 .OnAcceptAction((player, sourceObject) =>
                 {
-                    KeyItem.GiveKeyItem(player, KeyItemType.CapstoneKorribanForgeCavernsKey);
+                    KeyItem.GiveKeyItem(player, KeyItemType.CapstoneTatooineForgeCavernsKey);
                 })
                 .OnAbandonAction(player =>
                 {
-                    RemoveKorribanForgeCavernsAccessIfNoLongerNeeded(player);
+                    RemoveTatooineForgeCavernsAccessIfNoLongerNeeded(player);
                 })
                 .RemoveKeyItemOnAbandon(KeyItemType.CapstoneSoulAscensionForgeHeatLedger)
                 .RemoveKeyItemOnComplete(KeyItemType.CapstoneSoulAscensionForgeHeatLedger)
 
                 .AddState()
                 .SetStateJournalText(
-                    "Senn Dralok gave you the Korriban Forge Caverns Key. On Korriban, cross the Sith Fortress Forgeworks to the sealed passage in its far north-east corner and enter the Korriban Forge Caverns. Defeat 6 Soul Ascension adepts and secure the Soul Ascension Forge Heat Ledger kept near the crucibles.")
-                .AddKillObjective(NPCGroupType.Korriban_SoulAscension_Adept, 6)
+                    "Senn Dralok gave you the Tatooine Forge Caverns Key. On Tatooine, go south from the Anchorhead spaceport through the South District to the Southern Entrance, leave by its east side into the Rocky Desert, then head north into the North Mine Cliffs and take the ramp down into the Forge Caverns under the arched mine tunnel entrance a short walk ahead, beside an old mine cart. Defeat 6 Soul Ascension adepts and secure the Soul Ascension Forge Heat Ledger kept near the crucibles.")
+                .AddKillObjective(NPCGroupType.Tatooine_SoulAscension_Adept, 6)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneSoulAscensionForgeHeatLedger)
 
                 .AddState()
@@ -196,8 +196,8 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "Defeat 5 Soul Ascension specialists in the Korriban Forge Caverns on Korriban and recover the Soul Ascension Sith Tempering Matrix from the quench troughs.")
-                .AddKillObjective(NPCGroupType.Korriban_SoulAscension_Specialist, 5)
+                    "Defeat 5 Soul Ascension specialists in the Forge Caverns on Tatooine and recover the Soul Ascension Sith Tempering Matrix from the quench troughs.")
+                .AddKillObjective(NPCGroupType.Tatooine_SoulAscension_Specialist, 5)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneSoulAscensionSithTemperingMatrix)
 
                 .AddState()
@@ -217,8 +217,8 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "With at least two allies, defeat the Soul Ascension warden at the trial altar in the north-west of the Korriban Forge Caverns on Korriban and take the Soul Ascension Cracked Anvil Sigil he wears.")
-                .AddKillObjective(NPCGroupType.Korriban_SoulAscension_Warden, 1)
+                    "With at least two allies, defeat the Soul Ascension warden at the trial altar in the north-west of the Forge Caverns on Tatooine and take the Soul Ascension Cracked Anvil Sigil he wears.")
+                .AddKillObjective(NPCGroupType.Tatooine_SoulAscension_Warden, 1)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneSoulAscensionCrackedAnvilSigil)
 
                 .AddState()
@@ -238,8 +238,8 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "Defeat 4 members of the Soul Ascension inner circle in the Korriban Forge Caverns on Korriban and secure a Soul Ascension Overseer's Clearance Token.")
-                .AddKillObjective(NPCGroupType.Korriban_SoulAscension_InnerCircle, 4)
+                    "Defeat 4 members of the Soul Ascension inner circle in the Forge Caverns on Tatooine and secure a Soul Ascension Overseer's Clearance Token.")
+                .AddKillObjective(NPCGroupType.Tatooine_SoulAscension_InnerCircle, 4)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneSoulAscensionOverseersClearanceToken)
 
                 .AddState()
@@ -257,8 +257,8 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "With at least two trusted allies, defeat the Soul Ascension master in the Champion Forge, through the door at the north end of the Korriban Forge Caverns on Korriban.")
-                .AddKillObjective(NPCGroupType.Korriban_SoulAscension_Master, 1)
+                    "With at least two trusted allies, defeat the Soul Ascension master in the Champion Forge, through the door at the north end of the Forge Caverns on Tatooine.")
+                .AddKillObjective(NPCGroupType.Tatooine_SoulAscension_Master, 1)
 
                 .AddState()
                 .SetStateJournalText(
@@ -271,7 +271,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
                 });
         }
 
-        private static void RemoveKorribanForgeCavernsAccessIfNoLongerNeeded(uint player)
+        private static void RemoveTatooineForgeCavernsAccessIfNoLongerNeeded(uint player)
         {
             var questIds = new[]
             {
@@ -292,7 +292,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
                 SpearCapstoneQuestDefinition.ForcebaneMasteryQuestId,
             };
 
-            RemoveAreaAccessIfNoLongerNeeded(player, KeyItemType.CapstoneKorribanForgeCavernsKey, questIds);
+            RemoveAreaAccessIfNoLongerNeeded(player, KeyItemType.CapstoneTatooineForgeCavernsKey, questIds);
         }
 
         private static void RemoveAreaAccessIfNoLongerNeeded(

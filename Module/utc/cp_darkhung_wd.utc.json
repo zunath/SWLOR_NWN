@@ -2,15 +2,15 @@
   "__data_type": "UTC ",
   "Appearance_Head": {
     "type": "byte",
-    "value": 100
+    "value": 56
   },
   "Appearance_Type": {
     "type": "word",
-    "value": 10006
+    "value": 10002
   },
   "ArmorPart_RFoot": {
     "type": "byte",
-    "value": 10
+    "value": 1
   },
   "BodyBag": {
     "type": "byte",
@@ -18,7 +18,7 @@
   },
   "BodyPart_Belt": {
     "type": "byte",
-    "value": 154
+    "value": 0
   },
   "BodyPart_LBicep": {
     "type": "byte",
@@ -26,27 +26,27 @@
   },
   "BodyPart_LFArm": {
     "type": "byte",
-    "value": 198
+    "value": 1
   },
   "BodyPart_LFoot": {
     "type": "byte",
-    "value": 10
+    "value": 1
   },
   "BodyPart_LHand": {
     "type": "byte",
-    "value": 101
+    "value": 1
   },
   "BodyPart_LShin": {
     "type": "byte",
-    "value": 10
+    "value": 1
   },
   "BodyPart_LShoul": {
     "type": "byte",
-    "value": 25
+    "value": 0
   },
   "BodyPart_LThigh": {
     "type": "byte",
-    "value": 12
+    "value": 1
   },
   "BodyPart_Neck": {
     "type": "byte",
@@ -54,7 +54,7 @@
   },
   "BodyPart_Pelvis": {
     "type": "byte",
-    "value": 10
+    "value": 1
   },
   "BodyPart_RBicep": {
     "type": "byte",
@@ -62,27 +62,27 @@
   },
   "BodyPart_RFArm": {
     "type": "byte",
-    "value": 198
+    "value": 1
   },
   "BodyPart_RHand": {
     "type": "byte",
-    "value": 101
+    "value": 1
   },
   "BodyPart_RShin": {
     "type": "byte",
-    "value": 10
+    "value": 1
   },
   "BodyPart_RShoul": {
     "type": "byte",
-    "value": 25
+    "value": 0
   },
   "BodyPart_RThigh": {
     "type": "byte",
-    "value": 12
+    "value": 1
   },
   "BodyPart_Torso": {
     "type": "byte",
-    "value": 53
+    "value": 1
   },
   "Cha": {
     "type": "byte",
@@ -110,11 +110,11 @@
   },
   "Color_Hair": {
     "type": "byte",
-    "value": 31
+    "value": 23
   },
   "Color_Skin": {
     "type": "byte",
-    "value": 105
+    "value": 4
   },
   "Color_Tattoo1": {
     "type": "byte",
@@ -126,7 +126,7 @@
   },
   "Comment": {
     "type": "cexostring",
-    "value": "A living tomb raider in the Korriban Sith Crypt Depths. This independent looting expedition attacks anyone who obstructs its theft of sealed relics. Its members have no authority from the Sith Academy."
+    "value": "Hunger of the Dark warden in Mon Cala - Sith Crypt Depths."
   },
   "Con": {
     "type": "byte",
@@ -155,7 +155,7 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "A living tomb raider in the Korriban Sith Crypt Depths. This independent looting expedition attacks anyone who obstructs its theft of sealed relics. Its members have no authority from the Sith Academy."
+      "0": "A Zabrak in heavy sorcerer's robes who guards the Vitae Reavers' dig in the Sith Crypt Depths, staff in hand. He has drained enough from the captured survey crews to stand through wounds that would drop most fighters."
     }
   },
   "Dex": {
@@ -169,6 +169,13 @@
   "Equip_ItemList": {
     "type": "list",
     "value": [
+      {
+        "__struct_id": 2,
+        "EquippedRes": {
+          "type": "resref",
+          "value": "vnpcasorc2"
+        }
+      },
       {
         "__struct_id": 16,
         "EquippedRes": {
@@ -451,11 +458,11 @@
   },
   "PortraitId": {
     "type": "word",
-    "value": 4380
+    "value": 3640
   },
   "Race": {
     "type": "byte",
-    "value": 15
+    "value": 154
   },
   "refbonus": {
     "type": "short",

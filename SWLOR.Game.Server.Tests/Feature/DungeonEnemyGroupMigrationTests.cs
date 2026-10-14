@@ -12,36 +12,36 @@ namespace SWLOR.Game.Server.Tests.Feature;
 
 public class DungeonEnemyGroupMigrationTests
 {
-    [TestCase("Dantooine_SaberStorm_Adept", 87, NPCGroupType.Dantooine_StormDrillDroid)]
-    [TestCase("Dantooine_SaberStorm_Specialist", 88, NPCGroupType.Dantooine_StormDuelistDroid)]
-    [TestCase("Dantooine_SaberStorm_Warden", 89, NPCGroupType.Dantooine_StormGatekeeperDroid)]
-    [TestCase("Dantooine_SaberStorm_InnerCircle", 90, NPCGroupType.Dantooine_StormExaminerDroid)]
-    [TestCase("Dantooine_SaberStorm_Master", 91, NPCGroupType.Dantooine_TempestTrainingEngine)]
-    [TestCase("Dantooine_GuardianMaster_Adept", 92, NPCGroupType.Dantooine_GuardianPatrolDroid)]
-    [TestCase("Dantooine_GuardianMaster_Specialist", 93, NPCGroupType.Dantooine_GuardianBulwarkDroid)]
-    [TestCase("Dantooine_GuardianMaster_Warden", 94, NPCGroupType.Dantooine_GuardianGatekeeperDroid)]
-    [TestCase("Dantooine_GuardianMaster_InnerCircle", 95, NPCGroupType.Dantooine_GuardianShieldDroid)]
-    [TestCase("Dantooine_GuardianMaster_Paragon", 96, NPCGroupType.Dantooine_BastionTrainingEngine)]
-    [TestCase("Dantooine_SaberCyclone_Adept", 97, NPCGroupType.Dantooine_CycloneDrillDroid)]
-    [TestCase("Dantooine_SaberCyclone_Specialist", 98, NPCGroupType.Dantooine_CycloneDuelistDroid)]
-    [TestCase("Dantooine_SaberCyclone_Warden", 99, NPCGroupType.Dantooine_CycloneGatekeeperDroid)]
-    [TestCase("Dantooine_SaberCyclone_InnerCircle", 100, NPCGroupType.Dantooine_CycloneExaminerDroid)]
-    [TestCase("Dantooine_SaberCyclone_Master", 101, NPCGroupType.Dantooine_VortexTrainingEngine)]
-    [TestCase("Korriban_LastStandOfTheLight_Adept", 192, NPCGroupType.Korriban_CryptRaider)]
-    [TestCase("Korriban_LastStandOfTheLight_Specialist", 193, NPCGroupType.Korriban_CryptMarauder)]
-    [TestCase("Korriban_LastStandOfTheLight_Warden", 194, NPCGroupType.Korriban_CryptBreachCaptain)]
-    [TestCase("Korriban_LastStandOfTheLight_InnerCircle", 195, NPCGroupType.Korriban_CryptReaver)]
-    [TestCase("Korriban_LastStandOfTheLight_Master", 196, NPCGroupType.Korriban_CryptExpeditionLeader)]
-    [TestCase("Korriban_HungerOfTheDark_Adept", 197, NPCGroupType.Korriban_VitaeReaverInitiate)]
-    [TestCase("Korriban_HungerOfTheDark_Specialist", 198, NPCGroupType.Korriban_VitaeReaverAdept)]
-    [TestCase("Korriban_HungerOfTheDark_Warden", 199, NPCGroupType.Korriban_VitaeReaverEnforcer)]
-    [TestCase("Korriban_HungerOfTheDark_InnerCircle", 200, NPCGroupType.Korriban_VitaeReaverBinder)]
-    [TestCase("Korriban_HungerOfTheDark_Master", 201, NPCGroupType.Korriban_VitaeReaverChief)]
-    [TestCase("Korriban_EclipseOfResolve_Adept", 202, NPCGroupType.Korriban_UmbralRaiderScout)]
-    [TestCase("Korriban_EclipseOfResolve_Specialist", 203, NPCGroupType.Korriban_UmbralRaiderAdept)]
-    [TestCase("Korriban_EclipseOfResolve_Warden", 204, NPCGroupType.Korriban_UmbralRaiderCaptain)]
-    [TestCase("Korriban_EclipseOfResolve_InnerCircle", 205, NPCGroupType.Korriban_UmbralRaiderSaboteur)]
-    [TestCase("Korriban_EclipseOfResolve_Master", 206, NPCGroupType.Korriban_UmbralRaiderCommander)]
+    [TestCase("Dantooine_SaberStorm_Adept", 87, NPCGroupType.Hutlar_StormDrillDroid)]
+    [TestCase("Dantooine_SaberStorm_Specialist", 88, NPCGroupType.Hutlar_StormDuelistDroid)]
+    [TestCase("Dantooine_SaberStorm_Warden", 89, NPCGroupType.Hutlar_StormGatekeeperDroid)]
+    [TestCase("Dantooine_SaberStorm_InnerCircle", 90, NPCGroupType.Hutlar_StormExaminerDroid)]
+    [TestCase("Dantooine_SaberStorm_Master", 91, NPCGroupType.Hutlar_TempestTrainingEngine)]
+    [TestCase("Dantooine_GuardianMaster_Adept", 92, NPCGroupType.Hutlar_GuardianPatrolDroid)]
+    [TestCase("Dantooine_GuardianMaster_Specialist", 93, NPCGroupType.Hutlar_GuardianBulwarkDroid)]
+    [TestCase("Dantooine_GuardianMaster_Warden", 94, NPCGroupType.Hutlar_GuardianGatekeeperDroid)]
+    [TestCase("Dantooine_GuardianMaster_InnerCircle", 95, NPCGroupType.Hutlar_GuardianShieldDroid)]
+    [TestCase("Dantooine_GuardianMaster_Paragon", 96, NPCGroupType.Hutlar_BastionTrainingEngine)]
+    [TestCase("Dantooine_SaberCyclone_Adept", 97, NPCGroupType.Hutlar_CycloneDrillDroid)]
+    [TestCase("Dantooine_SaberCyclone_Specialist", 98, NPCGroupType.Hutlar_CycloneDuelistDroid)]
+    [TestCase("Dantooine_SaberCyclone_Warden", 99, NPCGroupType.Hutlar_CycloneGatekeeperDroid)]
+    [TestCase("Dantooine_SaberCyclone_InnerCircle", 100, NPCGroupType.Hutlar_CycloneExaminerDroid)]
+    [TestCase("Dantooine_SaberCyclone_Master", 101, NPCGroupType.Hutlar_VortexTrainingEngine)]
+    [TestCase("Korriban_LastStandOfTheLight_Adept", 192, NPCGroupType.MonCala_CryptRaider)]
+    [TestCase("Korriban_LastStandOfTheLight_Specialist", 193, NPCGroupType.MonCala_CryptMarauder)]
+    [TestCase("Korriban_LastStandOfTheLight_Warden", 194, NPCGroupType.MonCala_CryptBreachCaptain)]
+    [TestCase("Korriban_LastStandOfTheLight_InnerCircle", 195, NPCGroupType.MonCala_CryptReaver)]
+    [TestCase("Korriban_LastStandOfTheLight_Master", 196, NPCGroupType.MonCala_CryptExpeditionLeader)]
+    [TestCase("Korriban_HungerOfTheDark_Adept", 197, NPCGroupType.MonCala_VitaeReaverInitiate)]
+    [TestCase("Korriban_HungerOfTheDark_Specialist", 198, NPCGroupType.MonCala_VitaeReaverAdept)]
+    [TestCase("Korriban_HungerOfTheDark_Warden", 199, NPCGroupType.MonCala_VitaeReaverEnforcer)]
+    [TestCase("Korriban_HungerOfTheDark_InnerCircle", 200, NPCGroupType.MonCala_VitaeReaverBinder)]
+    [TestCase("Korriban_HungerOfTheDark_Master", 201, NPCGroupType.MonCala_VitaeReaverChief)]
+    [TestCase("Korriban_EclipseOfResolve_Adept", 202, NPCGroupType.MonCala_UmbralRaiderScout)]
+    [TestCase("Korriban_EclipseOfResolve_Specialist", 203, NPCGroupType.MonCala_UmbralRaiderAdept)]
+    [TestCase("Korriban_EclipseOfResolve_Warden", 204, NPCGroupType.MonCala_UmbralRaiderCaptain)]
+    [TestCase("Korriban_EclipseOfResolve_InnerCircle", 205, NPCGroupType.MonCala_UmbralRaiderSaboteur)]
+    [TestCase("Korriban_EclipseOfResolve_Master", 206, NPCGroupType.MonCala_UmbralRaiderCommander)]
     public void LegacyNamedAndNumericKeysLoadAndMigrateWithoutLosingQuestState(string legacyName, int legacyId, NPCGroupType replacement)
     {
         ((int)Enum.Parse<NPCGroupType>(legacyName)).Should().Be(legacyId,
@@ -94,13 +94,13 @@ public class DungeonEnemyGroupMigrationTests
             KillProgresses = new Dictionary<NPCGroupType, int>
             {
                 [NPCGroupType.Dantooine_SaberStorm_Adept] = oldRemaining,
-                [NPCGroupType.Dantooine_StormDrillDroid] = newRemaining
+                [NPCGroupType.Hutlar_StormDrillDroid] = newRemaining
             }
         };
         DungeonEnemyGroupMigration.MigrateQuestProgress(player).Should().BeTrue();
         var quest = player.Quests["saber_storm_foundation"];
         quest.KillProgresses.Should().ContainSingle().Which.Should().Be(
-            new KeyValuePair<NPCGroupType, int>(NPCGroupType.Dantooine_StormDrillDroid, expected));
+            new KeyValuePair<NPCGroupType, int>(NPCGroupType.Hutlar_StormDrillDroid, expected));
         quest.CurrentState.Should().Be(2);
     }
 

@@ -110,11 +110,11 @@
   },
   "Color_Hair": {
     "type": "byte",
-    "value": 125
+    "value": 9
   },
   "Color_Skin": {
     "type": "byte",
-    "value": 41
+    "value": 6
   },
   "Color_Tattoo1": {
     "type": "byte",
@@ -126,7 +126,7 @@
   },
   "Comment": {
     "type": "cexostring",
-    "value": "A living tomb raider in the Korriban Sith Crypt Depths. This independent looting expedition attacks anyone who obstructs its theft of sealed relics. Its members have no authority from the Sith Academy."
+    "value": "Last Stand of the Light adept in Mon Cala - Sith Crypt Depths."
   },
   "Con": {
     "type": "byte",
@@ -155,7 +155,7 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "A living tomb raider in the Korriban Sith Crypt Depths. This independent looting expedition attacks anyone who obstructs its theft of sealed relics. Its members have no authority from the Sith Academy."
+      "0": "A Wookiee hired by the relic expedition that is looting the Sith Crypt Depths, armed with a heavy staff. Crypt Raiders hold the outer chambers and the way out, and they turn on anyone who tries to leave with the survey records."
     }
   },
   "Dex": {
@@ -430,11 +430,11 @@
   },
   "PortraitId": {
     "type": "word",
-    "value": 237
+    "value": 3502
   },
   "Race": {
     "type": "byte",
-    "value": 15
+    "value": 155
   },
   "refbonus": {
     "type": "short",

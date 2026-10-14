@@ -2,15 +2,15 @@
   "__data_type": "UTC ",
   "Appearance_Head": {
     "type": "byte",
-    "value": 111
+    "value": 224
   },
   "Appearance_Type": {
     "type": "word",
-    "value": 10007
+    "value": 10097
   },
   "ArmorPart_RFoot": {
     "type": "byte",
-    "value": 247
+    "value": 1
   },
   "BodyBag": {
     "type": "byte",
@@ -18,27 +18,27 @@
   },
   "BodyPart_Belt": {
     "type": "byte",
-    "value": 100
+    "value": 0
   },
   "BodyPart_LBicep": {
     "type": "byte",
-    "value": 112
+    "value": 1
   },
   "BodyPart_LFArm": {
     "type": "byte",
-    "value": 101
+    "value": 1
   },
   "BodyPart_LFoot": {
     "type": "byte",
-    "value": 247
+    "value": 1
   },
   "BodyPart_LHand": {
     "type": "byte",
-    "value": 151
+    "value": 1
   },
   "BodyPart_LShin": {
     "type": "byte",
-    "value": 241
+    "value": 1
   },
   "BodyPart_LShoul": {
     "type": "byte",
@@ -46,31 +46,31 @@
   },
   "BodyPart_LThigh": {
     "type": "byte",
-    "value": 240
+    "value": 1
   },
   "BodyPart_Neck": {
     "type": "byte",
-    "value": 104
+    "value": 1
   },
   "BodyPart_Pelvis": {
     "type": "byte",
-    "value": 237
+    "value": 1
   },
   "BodyPart_RBicep": {
     "type": "byte",
-    "value": 112
+    "value": 1
   },
   "BodyPart_RFArm": {
     "type": "byte",
-    "value": 101
+    "value": 1
   },
   "BodyPart_RHand": {
     "type": "byte",
-    "value": 151
+    "value": 1
   },
   "BodyPart_RShin": {
     "type": "byte",
-    "value": 241
+    "value": 1
   },
   "BodyPart_RShoul": {
     "type": "byte",
@@ -78,11 +78,11 @@
   },
   "BodyPart_RThigh": {
     "type": "byte",
-    "value": 240
+    "value": 1
   },
   "BodyPart_Torso": {
     "type": "byte",
-    "value": 104
+    "value": 1
   },
   "Cha": {
     "type": "byte",
@@ -114,7 +114,7 @@
   },
   "Color_Skin": {
     "type": "byte",
-    "value": 107
+    "value": 6
   },
   "Color_Tattoo1": {
     "type": "byte",
@@ -126,7 +126,7 @@
   },
   "Comment": {
     "type": "cexostring",
-    "value": "Capstone quest creature for Systemic Shutdown in Veles Militia Annex."
+    "value": "Systemic Shutdown inner circle member in Viscara - Veles Militia Annex."
   },
   "Con": {
     "type": "byte",
@@ -155,7 +155,7 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "A level 50 capstone quest enemy for Systemic Shutdown in Veles Militia Annex."
+      "0": "A Kel Dor in black work clothes, one of four instructors in the annex who knew exactly what they were teaching. He keeps to quarters apart from the students, and his vibroknife goes for the nerves."
     }
   },
   "Dex": {
@@ -169,6 +169,13 @@
   "Equip_ItemList": {
     "type": "list",
     "value": [
+      {
+        "__struct_id": 2,
+        "EquippedRes": {
+          "type": "resref",
+          "value": "worker_outfit_2"
+        }
+      },
       {
         "__struct_id": 16,
         "EquippedRes": {
@@ -437,11 +444,11 @@
   },
   "PortraitId": {
     "type": "word",
-    "value": 742
+    "value": 4398
   },
   "Race": {
     "type": "byte",
-    "value": 15
+    "value": 166
   },
   "refbonus": {
     "type": "short",

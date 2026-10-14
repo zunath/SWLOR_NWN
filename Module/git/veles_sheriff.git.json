@@ -935,12 +935,14 @@
               },
               "DescIdentified": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "Deep red cloth gives this bounty hunter's outfit a memorable outline. Its pockets and closures are considerably less theatrical, fitted for the business that begins after the client has finished admiring the entrance."
+                }
               },
               "Description": {
                 "type": "cexolocstring",
                 "value": {
-                  "0": ""
+                  "0": "Deep red cloth gives this bounty hunter's outfit a memorable outline. Its pockets and closures are considerably less theatrical, fitted for the business that begins after the client has finished admiring the entrance."
                 }
               },
               "Identified": {
@@ -2093,11 +2095,15 @@
               },
               "DescIdentified": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "Angular plates cover a workmanlike harness in the familiar Mandalorian style. Its fittings are made to be opened for maintenance, with the expectation that their owner will know how to close them again."
+                }
               },
               "Description": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "Angular plates cover a workmanlike harness in the familiar Mandalorian style. Its fittings are made to be opened for maintenance, with the expectation that their owner will know how to close them again."
+                }
               },
               "Identified": {
                 "type": "byte",
@@ -17777,11 +17783,15 @@
               },
               "DescIdentified": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "Angular plates cover a workmanlike harness in the familiar Mandalorian style. Its fittings are made to be opened for maintenance, with the expectation that their owner will know how to close them again."
+                }
               },
               "Description": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "Angular plates cover a workmanlike harness in the familiar Mandalorian style. Its fittings are made to be opened for maintenance, with the expectation that their owner will know how to close them again."
+                }
               },
               "Identified": {
                 "type": "byte",
@@ -33461,11 +33471,15 @@
               },
               "DescIdentified": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "Angular plates cover a workmanlike harness in the familiar Mandalorian style. Its fittings are made to be opened for maintenance, with the expectation that their owner will know how to close them again."
+                }
               },
               "Description": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "Angular plates cover a workmanlike harness in the familiar Mandalorian style. Its fittings are made to be opened for maintenance, with the expectation that their owner will know how to close them again."
+                }
               },
               "Identified": {
                 "type": "byte",
@@ -49003,12 +49017,14 @@
               },
               "DescIdentified": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "Deep red cloth gives this bounty hunter's outfit a memorable outline. Its pockets and closures are considerably less theatrical, fitted for the business that begins after the client has finished admiring the entrance."
+                }
               },
               "Description": {
                 "type": "cexolocstring",
                 "value": {
-                  "0": ""
+                  "0": "Deep red cloth gives this bounty hunter's outfit a memorable outline. Its pockets and closures are considerably less theatrical, fitted for the business that begins after the client has finished admiring the entrance."
                 }
               },
               "Identified": {
@@ -50633,37 +50649,6 @@
                     "Subtype": {
                       "type": "word",
                       "value": 0
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "ChanceAppear": {
-                      "type": "byte",
-                      "value": 100
-                    },
-                    "CostTable": {
-                      "type": "byte",
-                      "value": 0
-                    },
-                    "CostValue": {
-                      "type": "word",
-                      "value": 0
-                    },
-                    "Param1": {
-                      "type": "byte",
-                      "value": 255
-                    },
-                    "Param1Value": {
-                      "type": "byte",
-                      "value": 0
-                    },
-                    "PropertyName": {
-                      "type": "word",
-                      "value": 134
-                    },
-                    "Subtype": {
-                      "type": "word",
-                      "value": 1
                     }
                   },
                   {
@@ -54410,11 +54395,15 @@
               },
               "DescIdentified": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "A corporate militia outfit with utilitarian seams and the disciplined outline Czerka likes to put between its property and everyone else. The fabric makes no distinction between guarding a warehouse and enforcing the company's idea of order."
+                }
               },
               "Description": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "A corporate militia outfit with utilitarian seams and the disciplined outline Czerka likes to put between its property and everyone else. The fabric makes no distinction between guarding a warehouse and enforcing the company's idea of order."
+                }
               },
               "Identified": {
                 "type": "byte",
@@ -101032,7 +101021,7 @@
         },
         "X": {
           "type": "float",
-          "value": 30.0
+          "value": 30.299999237060547
         },
         "Y": {
           "type": "float",
@@ -175681,7 +175670,6 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 64105,
                       "type": "cexolocstring",
                       "value": {
                         "0": ""
@@ -179267,7 +179255,6 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 64105,
                       "type": "cexolocstring",
                       "value": {
                         "0": ""
@@ -183114,7 +183101,6 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 64105,
                       "type": "cexolocstring",
                       "value": {
                         "0": ""
@@ -186700,7 +186686,6 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 64105,
                       "type": "cexolocstring",
                       "value": {
                         "0": ""
@@ -190282,7 +190267,6 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 64105,
                       "type": "cexolocstring",
                       "value": {
                         "0": ""

@@ -125,6 +125,7 @@ namespace SWLOR.Game.Server.Native
                 var weaponSkillType = weapon == null
                     ? SkillType.Invalid
                     : SWLOR.Game.Server.Service.Skill.GetSkillTypeByBaseItem((BaseItem)weapon.m_nBaseItem);
+                GetDamageRoll.PrepareForceConversionStanceAttack(attacker, targetObject, weaponSkillType);
                 var abilitySkillType = UsePerkFeat.TryGetQueuedWeaponAbility(attacker.m_idSelf, weaponSkillType, out var queuedAbility, attacker.m_pcCombatRound.m_nCurrentAttack)
                     ? Combat.GetAbilitySkillType(attacker.m_idSelf, queuedAbility)
                     : weaponSkillType;
@@ -607,7 +608,7 @@ namespace SWLOR.Game.Server.Native
                 ? SkillType.Invalid
                 : SWLOR.Game.Server.Service.Skill.GetSkillTypeByBaseItem((BaseItem)weapon.m_nBaseItem);
 
-            if (attacker.m_bPlayerCharacter == 1)
+            if (attacker.m_bPlayerCharacter == 1 && !GetIsDMPossessed(attacker.m_idSelf))
             {
                 if (skillType == SkillType.Invalid)
                     return 0;

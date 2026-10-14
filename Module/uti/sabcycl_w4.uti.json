@@ -25,16 +25,15 @@
     "value": 0
   },
   "DescIdentified": {
-    "id": 56620,
     "type": "cexolocstring",
     "value": {
-      "0": ""
+      "0": "The cuffs of these gauntlets turn back in smooth, continuous curves. Fine scratches cross their plates at changing angles, the accumulated record of a blade kept moving."
     }
   },
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": ""
+      "0": "The cuffs of these gauntlets turn back in smooth, continuous curves. Fine scratches cross their plates at changing angles, the accumulated record of a blade kept moving."
     }
   },
   "Identified": {

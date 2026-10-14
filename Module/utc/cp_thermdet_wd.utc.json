@@ -1,12 +1,88 @@
 {
   "__data_type": "UTC ",
+  "Appearance_Head": {
+    "type": "byte",
+    "value": 101
+  },
   "Appearance_Type": {
     "type": "word",
-    "value": 2123
+    "value": 10007
+  },
+  "ArmorPart_RFoot": {
+    "type": "byte",
+    "value": 1
   },
   "BodyBag": {
     "type": "byte",
     "value": 0
+  },
+  "BodyPart_Belt": {
+    "type": "byte",
+    "value": 0
+  },
+  "BodyPart_LBicep": {
+    "type": "byte",
+    "value": 1
+  },
+  "BodyPart_LFArm": {
+    "type": "byte",
+    "value": 1
+  },
+  "BodyPart_LFoot": {
+    "type": "byte",
+    "value": 1
+  },
+  "BodyPart_LHand": {
+    "type": "byte",
+    "value": 1
+  },
+  "BodyPart_LShin": {
+    "type": "byte",
+    "value": 1
+  },
+  "BodyPart_LShoul": {
+    "type": "byte",
+    "value": 0
+  },
+  "BodyPart_LThigh": {
+    "type": "byte",
+    "value": 1
+  },
+  "BodyPart_Neck": {
+    "type": "byte",
+    "value": 1
+  },
+  "BodyPart_Pelvis": {
+    "type": "byte",
+    "value": 1
+  },
+  "BodyPart_RBicep": {
+    "type": "byte",
+    "value": 1
+  },
+  "BodyPart_RFArm": {
+    "type": "byte",
+    "value": 1
+  },
+  "BodyPart_RHand": {
+    "type": "byte",
+    "value": 1
+  },
+  "BodyPart_RShin": {
+    "type": "byte",
+    "value": 1
+  },
+  "BodyPart_RShoul": {
+    "type": "byte",
+    "value": 0
+  },
+  "BodyPart_RThigh": {
+    "type": "byte",
+    "value": 1
+  },
+  "BodyPart_Torso": {
+    "type": "byte",
+    "value": 1
   },
   "Cha": {
     "type": "byte",
@@ -32,9 +108,25 @@
       }
     ]
   },
+  "Color_Hair": {
+    "type": "byte",
+    "value": 1
+  },
+  "Color_Skin": {
+    "type": "byte",
+    "value": 107
+  },
+  "Color_Tattoo1": {
+    "type": "byte",
+    "value": 1
+  },
+  "Color_Tattoo2": {
+    "type": "byte",
+    "value": 1
+  },
   "Comment": {
     "type": "cexostring",
-    "value": "Capstone quest creature for Thermal Detonator in Hutlar Qion Test Site."
+    "value": "Thermal Detonator warden in Hutlar - Qion Test Site."
   },
   "Con": {
     "type": "byte",
@@ -50,7 +142,7 @@
   },
   "CurrentHitPoints": {
     "type": "short",
-    "value": 4151
+    "value": 4883
   },
   "DecayTime": {
     "type": "dword",
@@ -63,7 +155,7 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "A level 50 capstone quest enemy for Thermal Detonator in Hutlar Qion Test Site."
+      "0": "A hulking Trandoshan in heavy gunner's armor, blaster pistol in his claw and a frostburned test crest on his chest. He runs the test site like his own private range and stages his detonators in pairs, the second set for whoever survives the first."
     }
   },
   "Dex": {
@@ -77,6 +169,13 @@
   "Equip_ItemList": {
     "type": "list",
     "value": [
+      {
+        "__struct_id": 2,
+        "EquippedRes": {
+          "type": "resref",
+          "value": "vnpcahgunner"
+        }
+      },
       {
         "__struct_id": 16,
         "EquippedRes": {
@@ -297,7 +396,7 @@
   },
   "HitPoints": {
     "type": "short",
-    "value": 4043
+    "value": 4775
   },
   "Int": {
     "type": "byte",
@@ -331,7 +430,7 @@
   },
   "MaxHitPoints": {
     "type": "short",
-    "value": 4151
+    "value": 4883
   },
   "NaturalAC": {
     "type": "byte",
@@ -359,11 +458,11 @@
   },
   "PortraitId": {
     "type": "word",
-    "value": 3567
+    "value": 3585
   },
   "Race": {
     "type": "byte",
-    "value": 15
+    "value": 159
   },
   "refbonus": {
     "type": "short",
@@ -624,7 +723,7 @@
   },
   "SoundSetFile": {
     "type": "word",
-    "value": 448
+    "value": 938
   },
   "SpecAbilityList": {
     "type": "list",

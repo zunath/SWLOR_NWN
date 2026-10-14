@@ -37,11 +37,15 @@ namespace SWLOR.Toolset.Domain.Render
 
             try
             {
-                var table = TwoDaReader.Read(handle.GetBytes(), TwoDaReadOptions.EngineCompatible);
+                // cloaktint.2da registers the shared cloak material for each cloakmodel.TEXTURE.
+                var tables = new List<TwoDaTable> { TwoDaReader.Read(handle.GetBytes(), TwoDaReadOptions.EngineCompatible) };
+                if (resourceIndex.TryLookup(new ResourceIdentity("cloaktint", identity.ResourceType), out var cloakHandle))
+                    tables.Add(TwoDaReader.Read(cloakHandle.GetBytes(), TwoDaReadOptions.EngineCompatible));
                 var layersByMaterial = new Dictionary<string, HashSet<TintMapLayerType>>(
                     StringComparer.OrdinalIgnoreCase);
                 var materialsByModel = new Dictionary<string, List<TintMapMaterialDefinition>>(
                     StringComparer.OrdinalIgnoreCase);
+                foreach (var table in tables)
                 for (var row = 0; row < table.Rows.Count; row++)
                 {
                     var model = table.GetValue(row, "MODEL");
@@ -126,7 +130,13 @@ namespace SWLOR.Toolset.Domain.Render
             foreach (var mesh in model.Meshes)
             {
                 TintMapMaterialDefinition? material = null;
-                if (!string.IsNullOrWhiteSpace(mesh.MaterialName))
+                if (string.Equals(mesh.MaterialName, CloakTintRenderer.MaterialResref, StringComparison.OrdinalIgnoreCase))
+                {
+                    var texture = mesh.TextureName?.Split('_').Last();
+                    if (_materialsByModel.TryGetValue($"cloak_{texture}", out var cloakMaterials))
+                        material = cloakMaterials.SingleOrDefault();
+                }
+                else if (!string.IsNullOrWhiteSpace(mesh.MaterialName))
                     _materials.TryGetValue(mesh.MaterialName, out material);
                 if (material == null && !string.IsNullOrWhiteSpace(mesh.TextureName))
                     _materials.TryGetValue(mesh.TextureName, out material);

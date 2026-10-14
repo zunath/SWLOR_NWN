@@ -25,16 +25,15 @@
     "value": 0
   },
   "DescIdentified": {
-    "id": 56620,
     "type": "cexolocstring",
     "value": {
-      "0": ""
+      "0": "This bone-trimmed cowl seems to have collected the dust of every crypt it passed through. The pale edging makes its folds look deeper and darker by comparison."
     }
   },
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": ""
+      "0": "This bone-trimmed cowl seems to have collected the dust of every crypt it passed through. The pale edging makes its folds look deeper and darker by comparison."
     }
   },
   "Identified": {

@@ -260,7 +260,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "You came. Good. The Dantooine Medical Sublevel was my ward for twenty years, and the staff I trained have sealed it from the inside. They call what they practice down there holding the line. It is not. They drill in my old triage hall and turn the sick away at the door. Six of their adepts run the intake now. Put them down, and bring me the Triage Ward Ledger they keep at the desk. I signed every name in that book, and I want it back where names still mean something.",
+          "Text": "You came. Good. The Medical Sublevel beneath the Coral Isles Facility on Mon Cala was my ward for twenty years, and the staff I trained have sealed it from the inside. They call what they practice down there holding the line. It is not. They drill in my old triage hall and turn the sick away at the door. Six of their adepts run the intake now. Put them down, and bring me the Triage Ward Ledger they keep at the desk. I signed every name in that book, and I want it back where names still mean something.",
           "Style": 0,
           "Color": null
         }
@@ -306,7 +306,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Then take the sublevel key. Land at Colony Central on Dantooine, go north through the Wild Plains to the Medical Safehouse, then west through the Iriaz Fields and the Ruined Farmlands, and north through the Forsaken Jungles to the Jungle Mountain. The Abandoned Warehouse door is on the mountain's north-west side; the sealed way down is on its far west wall. Start in the triage hall. And walk in like you belong to the ward. You do, now.",
+          "Text": "Then take the sublevel key; it works the service lift down to my ward. From Dac City on Mon Cala, go east through the Coral Isles, the inner isles and then the outer. The Coral Isles Facility stands on the south-west side of the outer isles. Eco-terrorists hold it now, so go in ready. Take the sliding door off the entry hall; the lift stands in the red-walled bay just east of the office block. Start in the triage hall. And walk in like you belong to the ward. You do, now.",
           "Style": 0,
           "Color": null
         }
@@ -353,7 +353,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "My own people. Orderlies I trained, ward guards I chose, a charge nurse I trusted with the night shift. Something in the doctrine curdled for them. They decided the ward could only be kept safe if it was kept empty, so they barricaded the sublevel against its own patients. I do not need them punished. I need them stopped.",
+          "Text": "My own people. Orderlies I trained, ward guards I chose, a charge nurse I trusted with the night shift. When the eco-terrorists took the facility above, they sealed the sublevel to keep the patients safe. Then something in the doctrine curdled. They decided the ward could only be kept safe if it was kept empty, and barricaded it against its own patients. I do not need them punished. I need them stopped.",
           "Style": 0,
           "Color": null
         }
@@ -635,7 +635,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The pressure gauges climbed an hour ago - I felt the pipes hum through the floor. That is the coupler in your pack, or I am no judge of plumbing. Give it here.",
+          "Text": "Word came from Mon Cala an hour ago: the sublevel's pressure gauges are climbing. That is the coupler in your pack, or I am no judge of plumbing. Give it here.",
           "Style": 0,
           "Color": null
         }
@@ -661,7 +661,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Listen. That hiss in the walls is kolto moving where it should. Recovery gets full flow tonight for the first time in a season. You are not a stranger to this ward anymore - the night staff know your name, and I use it carefully. Be ready for what I ask next. It is the door I have been dreading.",
+          "Text": "Full pressure, they tell me - kolto moving where it should. Recovery gets full flow tonight for the first time in a season. You are not a stranger to this ward anymore - the night staff know your name, and I use it carefully. Be ready for what I ask next. It is the door I have been dreading.",
           "Style": 0,
           "Color": null
         }
@@ -844,7 +844,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "You came back up the stairs slower than you went down. I know what that weight is. Show me the sigil.",
+          "Text": "You walk slower than you did before you went down. I know what that weight is. Show me the sigil.",
           "Style": 0,
           "Color": null
         }
@@ -980,7 +980,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "A flat disc, worn smooth, older than the facility's charter. Whoever holds it answers for every bed. That is all it means, and that is everything. In their hands it says the ward belongs to them. In yours, on the way back up the stairs, it will say the ward belongs to its patients again. Do you see now why I sent you for a book first? You have been earning the right to carry that token since the day you walked in.",
+          "Text": "A flat disc, worn smooth, older than the facility's charter. Whoever holds it answers for every bed. That is all it means, and that is everything. In their hands it says the ward belongs to them. In yours, on the ride back up, it will say the ward belongs to its patients again. Do you see now why I sent you for a book first? You have been earning the right to carry that token since the day you walked in.",
           "Style": 0,
           "Color": null
         }
@@ -1189,7 +1189,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "When it is done, we open the sublevel. Sera's mother goes back to a real recovery bed. The far beds get sunlight lamps, and the triage hall gets its desk back. And the doctrine gets taught again - properly, by someone who has carried it up and down those stairs. I had planned to say by me. We both know I mean by you.",
+          "Text": "When it is done, we open the sublevel. Sera's mother goes back to a real recovery bed. The far beds get sunlight lamps, and the triage hall gets its desk back. And the doctrine gets taught again - properly, by someone who has carried it down into that ward and back up again. I had planned to say by me. We both know I mean by you.",
           "Style": 0,
           "Color": null
         }
@@ -1309,7 +1309,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The Foreman's Office in the Shipping District on Smuggler's Moon gives me a desk and a steady stream of dock crews who need someone to keep them alive and keep them working. I run them the way I ran my ward. My old ward is the Dantooine Medical Sublevel, on Dantooine. The key opens it; what you recover comes back to this office.",
+          "Text": "The foreman's shack in the Shipping District on Smuggler's Moon is sealed, so I work the street outside it. The dock crews come to me with their injuries and their quarrels, and I keep them alive and working, the way I ran my ward. Nobody here asks which side you serve. My old ward is the Medical Sublevel, beneath the Coral Isles Facility on Mon Cala. The key opens it; what you recover comes back to me here.",
           "Style": 0,
           "Color": null
         }
@@ -1977,7 +1977,7 @@
     "reply-00027": {
       "Id": "reply-00027",
       "Text": {
-        "Text": "Your token, matron. Carried up the stairs, like you said.",
+        "Text": "Your token, matron. Carried back up, like you said.",
         "Style": 4,
         "Color": null
       },

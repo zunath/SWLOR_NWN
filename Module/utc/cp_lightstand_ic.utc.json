@@ -2,7 +2,7 @@
   "__data_type": "UTC ",
   "Appearance_Head": {
     "type": "byte",
-    "value": 193
+    "value": 198
   },
   "Appearance_Type": {
     "type": "word",
@@ -110,11 +110,11 @@
   },
   "Color_Hair": {
     "type": "byte",
-    "value": 125
+    "value": 9
   },
   "Color_Skin": {
     "type": "byte",
-    "value": 41
+    "value": 6
   },
   "Color_Tattoo1": {
     "type": "byte",
@@ -126,7 +126,7 @@
   },
   "Comment": {
     "type": "cexostring",
-    "value": "A living tomb raider in the Korriban Sith Crypt Depths. This independent looting expedition attacks anyone who obstructs its theft of sealed relics. Its members have no authority from the Sith Academy."
+    "value": "Last Stand of the Light inner circle member in Mon Cala - Sith Crypt Depths."
   },
   "Con": {
     "type": "byte",
@@ -155,7 +155,7 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "A living tomb raider in the Korriban Sith Crypt Depths. This independent looting expedition attacks anyone who obstructs its theft of sealed relics. Its members have no authority from the Sith Academy."
+      "0": "One of the expedition's senior Wookiee fighters, bound to it by pay or by debt. Crypt Reavers guard the way to the deepest vaults of the Sith Crypt Depths and turn a narrow tunnel into a wall with their staffs."
     }
   },
   "Dex": {
@@ -437,11 +437,11 @@
   },
   "PortraitId": {
     "type": "word",
-    "value": 3508
+    "value": 3504
   },
   "Race": {
     "type": "byte",
-    "value": 15
+    "value": 155
   },
   "refbonus": {
     "type": "short",

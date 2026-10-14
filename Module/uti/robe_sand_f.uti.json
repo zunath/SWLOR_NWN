@@ -110,11 +110,15 @@
   },
   "DescIdentified": {
     "type": "cexolocstring",
-    "value": {}
+    "value": {
+      "0": "Sand-colored cloth gives these robes the worn, muted look of a long desert journey. Their inner ties remain easy to reach beneath the outer folds, where Tatooine dust is less able to make a nuisance of itself."
+    }
   },
   "Description": {
     "type": "cexolocstring",
-    "value": {}
+    "value": {
+      "0": "Sand-colored cloth gives these robes the worn, muted look of a long desert journey. Their inner ties remain easy to reach beneath the outer folds, where Tatooine dust is less able to make a nuisance of itself."
+    }
   },
   "Identified": {
     "type": "byte",

@@ -126,7 +126,7 @@
   },
   "Comment": {
     "type": "cexostring",
-    "value": "Capstone quest creature for Emergency Cocktail in Dantooine Medical Sublevel."
+    "value": "Named rare ranged elite in Mon Cala - Medical Sublevel."
   },
   "Con": {
     "type": "byte",
@@ -155,7 +155,7 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "A named rare elite of the Dantooine Medical Sublevel. Ranged."
+      "0": "Ovo mixes his throws the way the crew mixes its doses, with a bandolier of hand-labeled vials strapped across a chest that is more machine than flesh. What he flings across the ward hisses where it lands, and he keeps a blade for anyone who closes the distance."
     }
   },
   "Dex": {
@@ -649,6 +649,21 @@
         "Value": {
           "type": "cexostring",
           "value": "DANMED_CHEM_COMP,100,1"
+        }
+      },
+      {
+        "__struct_id": 0,
+        "Name": {
+          "type": "cexostring",
+          "value": "LOOT_TABLE_4"
+        },
+        "Type": {
+          "type": "dword",
+          "value": 3
+        },
+        "Value": {
+          "type": "cexostring",
+          "value": "MUSIC_DISCS,1,1"
         }
       }
     ]

@@ -110,11 +110,15 @@
   },
   "DescIdentified": {
     "type": "cexolocstring",
-    "value": {}
+    "value": {
+      "0": "Light grey cloth and uncomplicated layers keep this outfit easy to wear through a long passage. The strongest stitching is inside the pockets, where a traveller tends to keep the things that cannot be replaced at the next port."
+    }
   },
   "Description": {
     "type": "cexolocstring",
-    "value": {}
+    "value": {
+      "0": "Light grey cloth and uncomplicated layers keep this outfit easy to wear through a long passage. The strongest stitching is inside the pockets, where a traveller tends to keep the things that cannot be replaced at the next port."
+    }
   },
   "Identified": {
     "type": "byte",

@@ -181,7 +181,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The One Shot Czerka Test Docket is secured. Return it to Orin Tal at the Czerka Shipyard Office by the Landing Pads on Smuggler's Moon.")
+                    "The One Shot Czerka Test Docket is secured. Return it to Orin Tal, outside the Czerka shipyard compound on the Landing Pads on Smuggler's Moon.")
                 .AddXPReward(15000)
                 .AddGoldReward(7500);
         }
@@ -202,7 +202,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The One Shot Blast-Cell Regulator is recovered. Return it to Orin Tal at the Czerka Shipyard Office by the Landing Pads on Smuggler's Moon.")
+                    "The One Shot Blast-Cell Regulator is recovered. Return it to Orin Tal, outside the Czerka shipyard compound on the Landing Pads on Smuggler's Moon.")
                 .AddXPReward(17500)
                 .AddGoldReward(9000);
         }
@@ -223,7 +223,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The One Shot Scored Range Crest is taken from the warden. Return it to Orin Tal at the Czerka Shipyard Office by the Landing Pads on Smuggler's Moon.")
+                    "The One Shot Scored Range Crest is taken from the warden. Return it to Orin Tal, outside the Czerka shipyard compound on the Landing Pads on Smuggler's Moon.")
                 .AddXPReward(20000)
                 .AddGoldReward(10500);
         }
@@ -244,7 +244,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The One Shot Czerka Clearance Chit is secured. Return it to Orin Tal at the Czerka Shipyard Office by the Landing Pads on Smuggler's Moon.")
+                    "The One Shot Czerka Clearance Chit is secured. Return it to Orin Tal, outside the Czerka shipyard compound on the Landing Pads on Smuggler's Moon.")
                 .AddXPReward(22500)
                 .AddGoldReward(12000);
         }
@@ -262,7 +262,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The One Shot master is defeated. Return to Orin Tal at the Czerka Shipyard Office by the Landing Pads on Smuggler's Moon.")
+                    "The One Shot master is defeated. Return to Orin Tal, outside the Czerka shipyard compound on the Landing Pads on Smuggler's Moon.")
                 .AddXPReward(30000)
                 .AddGoldReward(18000)
                 .OnCompleteAction((player, sourceObject) =>

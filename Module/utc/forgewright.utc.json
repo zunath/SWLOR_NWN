@@ -126,7 +126,7 @@
   },
   "Comment": {
     "type": "cexostring",
-    "value": "Capstone quest creature for Absolute Defense in Korriban Forge Caverns."
+    "value": "Named rare elite (melee) for Absolute Defense in Tatooine - Forge Caverns."
   },
   "Con": {
     "type": "byte",
@@ -155,7 +155,7 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "A named rare elite of the Korriban Forge Caverns. Melee."
+      "0": "An Echani forgewright who calls himself Malak's kin. He roams the galleries of the Forge Caverns testing blades of his own making on anyone who trespasses near his work."
     }
   },
   "Dex": {
@@ -649,6 +649,21 @@
         "Value": {
           "type": "cexostring",
           "value": "KORFORGE_FORGE_COMP,100,1"
+        }
+      },
+      {
+        "__struct_id": 0,
+        "Name": {
+          "type": "cexostring",
+          "value": "LOOT_TABLE_4"
+        },
+        "Type": {
+          "type": "dword",
+          "value": 3
+        },
+        "Value": {
+          "type": "cexostring",
+          "value": "MUSIC_DISCS,1,1"
         }
       }
     ]

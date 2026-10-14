@@ -104,6 +104,14 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>
+        /// Retrieves the creature a DM is currently possessing, or OBJECT_INVALID if there is none.
+        /// </summary>
+        public static uint GetDMPossessedCreature(uint dm)
+        {
+            return GetLocalObject(dm, DMPossessedCreature);
+        }
+
+        /// <summary>
         /// When a player focuses the chatbar, set a typing indicator on the player; when
         /// unfocused, remove the indicator.
         /// </summary>

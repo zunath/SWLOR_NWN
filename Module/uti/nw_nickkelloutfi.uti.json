@@ -110,11 +110,15 @@
   },
   "DescIdentified": {
     "type": "cexolocstring",
-    "value": {}
+    "value": {
+      "0": "Nickkell's outfit keeps a neat outer shape while accommodating practical pockets inside. Its smaller wear marks gather around the same closures, suggesting a garment reached for habitually rather than saved for an occasion."
+    }
   },
   "Description": {
     "type": "cexolocstring",
-    "value": {}
+    "value": {
+      "0": "Nickkell's outfit keeps a neat outer shape while accommodating practical pockets inside. Its smaller wear marks gather around the same closures, suggesting a garment reached for habitually rather than saved for an occasion."
+    }
   },
   "Identified": {
     "type": "byte",

@@ -110,11 +110,15 @@
   },
   "DescIdentified": {
     "type": "cexolocstring",
-    "value": {}
+    "value": {
+      "0": "This tunic has been cut with the practical independence of a frontier workshop in mind. Its fittings are easy to reach, and its strongest seams lie where a distant replacement would be most inconvenient."
+    }
   },
   "Description": {
     "type": "cexolocstring",
-    "value": {}
+    "value": {
+      "0": "This tunic has been cut with the practical independence of a frontier workshop in mind. Its fittings are easy to reach, and its strongest seams lie where a distant replacement would be most inconvenient."
+    }
   },
   "Identified": {
     "type": "byte",

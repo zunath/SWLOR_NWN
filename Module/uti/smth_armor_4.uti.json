@@ -110,11 +110,15 @@
   },
   "DescIdentified": {
     "type": "cexolocstring",
-    "value": {}
+    "value": {
+      "0": "The folds of this tunic settle with an unexpectedly easy grace. Its careful interior construction is the sort of quiet accomplishment a smith notices after spending years learning to make stubborn things fit."
+    }
   },
   "Description": {
     "type": "cexolocstring",
-    "value": {}
+    "value": {
+      "0": "The folds of this tunic settle with an unexpectedly easy grace. Its careful interior construction is the sort of quiet accomplishment a smith notices after spending years learning to make stubborn things fit."
+    }
   },
   "Identified": {
     "type": "byte",

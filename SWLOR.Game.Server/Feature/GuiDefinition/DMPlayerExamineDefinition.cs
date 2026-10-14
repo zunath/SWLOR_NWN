@@ -142,7 +142,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
             AddDetailRow(col, "Public CD key", model => model.PublicCDKey);
             col.AddRow(r => r.AddLabel().SetText("Description").SetHeight(20f)
                 .SetHorizontalAlign(NuiHorizontalAlign.Left));
-            col.AddRow(r => r.AddText().BindText(model => model.Description).SetHeight(96f));
+            col.AddRow(r => r.AddPartialView(DMPlayerExamineViewModel.DescriptionElement).SetHeight(96f));
         });
 
         private static void AddDetailRow(GuiColumn<DMPlayerExamineViewModel> col, string label,

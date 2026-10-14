@@ -2,15 +2,15 @@
   "__data_type": "UTC ",
   "Appearance_Head": {
     "type": "byte",
-    "value": 170
+    "value": 59
   },
   "Appearance_Type": {
     "type": "word",
-    "value": 10005
+    "value": 10095
   },
   "ArmorPart_RFoot": {
     "type": "byte",
-    "value": 242
+    "value": 1
   },
   "BodyBag": {
     "type": "byte",
@@ -18,11 +18,11 @@
   },
   "BodyPart_Belt": {
     "type": "byte",
-    "value": 106
+    "value": 0
   },
   "BodyPart_LBicep": {
     "type": "byte",
-    "value": 68
+    "value": 1
   },
   "BodyPart_LFArm": {
     "type": "byte",
@@ -30,15 +30,15 @@
   },
   "BodyPart_LFoot": {
     "type": "byte",
-    "value": 242
+    "value": 1
   },
   "BodyPart_LHand": {
     "type": "byte",
-    "value": 113
+    "value": 1
   },
   "BodyPart_LShin": {
     "type": "byte",
-    "value": 222
+    "value": 1
   },
   "BodyPart_LShoul": {
     "type": "byte",
@@ -46,19 +46,19 @@
   },
   "BodyPart_LThigh": {
     "type": "byte",
-    "value": 235
+    "value": 1
   },
   "BodyPart_Neck": {
     "type": "byte",
-    "value": 103
+    "value": 1
   },
   "BodyPart_Pelvis": {
     "type": "byte",
-    "value": 234
+    "value": 1
   },
   "BodyPart_RBicep": {
     "type": "byte",
-    "value": 68
+    "value": 1
   },
   "BodyPart_RFArm": {
     "type": "byte",
@@ -66,11 +66,11 @@
   },
   "BodyPart_RHand": {
     "type": "byte",
-    "value": 113
+    "value": 1
   },
   "BodyPart_RShin": {
     "type": "byte",
-    "value": 222
+    "value": 1
   },
   "BodyPart_RShoul": {
     "type": "byte",
@@ -78,11 +78,11 @@
   },
   "BodyPart_RThigh": {
     "type": "byte",
-    "value": 235
+    "value": 1
   },
   "BodyPart_Torso": {
     "type": "byte",
-    "value": 249
+    "value": 1
   },
   "Cha": {
     "type": "byte",
@@ -110,11 +110,11 @@
   },
   "Color_Hair": {
     "type": "byte",
-    "value": 4
+    "value": 1
   },
   "Color_Skin": {
     "type": "byte",
-    "value": 1
+    "value": 80
   },
   "Color_Tattoo1": {
     "type": "byte",
@@ -126,7 +126,7 @@
   },
   "Comment": {
     "type": "cexostring",
-    "value": "Capstone quest creature for Hold the Line in Dantooine Medical Sublevel."
+    "value": "Hold the Line adept in Mon Cala - Medical Sublevel."
   },
   "Con": {
     "type": "byte",
@@ -155,7 +155,7 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "A level 50 capstone quest enemy for Hold the Line in Dantooine Medical Sublevel."
+      "0": "A Rodian orderly in work clothes, holding a vibroblade low the way he was once taught to hold a stretcher pole. He guards the triage hall's intake as if the sick on the other side were the threat, and he will not step back from it."
     }
   },
   "Dex": {
@@ -169,6 +169,13 @@
   "Equip_ItemList": {
     "type": "list",
     "value": [
+      {
+        "__struct_id": 2,
+        "EquippedRes": {
+          "type": "resref",
+          "value": "worker_outfit_2"
+        }
+      },
       {
         "__struct_id": 16,
         "EquippedRes": {
@@ -430,11 +437,11 @@
   },
   "PortraitId": {
     "type": "word",
-    "value": 742
+    "value": 4382
   },
   "Race": {
     "type": "byte",
-    "value": 15
+    "value": 165
   },
   "refbonus": {
     "type": "short",

@@ -10,7 +10,7 @@
   },
   "ArmorPart_RFoot": {
     "type": "byte",
-    "value": 241
+    "value": 1
   },
   "BodyBag": {
     "type": "byte",
@@ -22,7 +22,7 @@
   },
   "BodyPart_LBicep": {
     "type": "byte",
-    "value": 133
+    "value": 1
   },
   "BodyPart_LFArm": {
     "type": "byte",
@@ -30,7 +30,7 @@
   },
   "BodyPart_LFoot": {
     "type": "byte",
-    "value": 241
+    "value": 1
   },
   "BodyPart_LHand": {
     "type": "byte",
@@ -38,7 +38,7 @@
   },
   "BodyPart_LShin": {
     "type": "byte",
-    "value": 228
+    "value": 1
   },
   "BodyPart_LShoul": {
     "type": "byte",
@@ -58,7 +58,7 @@
   },
   "BodyPart_RBicep": {
     "type": "byte",
-    "value": 133
+    "value": 1
   },
   "BodyPart_RFArm": {
     "type": "byte",
@@ -70,7 +70,7 @@
   },
   "BodyPart_RShin": {
     "type": "byte",
-    "value": 228
+    "value": 1
   },
   "BodyPart_RShoul": {
     "type": "byte",
@@ -82,7 +82,7 @@
   },
   "BodyPart_Torso": {
     "type": "byte",
-    "value": 28
+    "value": 1
   },
   "Cha": {
     "type": "byte",
@@ -110,11 +110,11 @@
   },
   "Color_Hair": {
     "type": "byte",
-    "value": 120
+    "value": 9
   },
   "Color_Skin": {
     "type": "byte",
-    "value": 4
+    "value": 6
   },
   "Color_Tattoo1": {
     "type": "byte",
@@ -126,7 +126,7 @@
   },
   "Comment": {
     "type": "cexostring",
-    "value": "Capstone quest creature for Decisive Command in Viscara Republic Engineering Bunker."
+    "value": "Decisive Command warden, Captain Grenn Vhon, in Viscara - Republic Engineering Bunker."
   },
   "Con": {
     "type": "byte",
@@ -155,7 +155,7 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "A level 50 capstone quest enemy for Decisive Command in Viscara Republic Engineering Bunker."
+      "0": "Captain Grenn Vhon, an Ugnaught breach officer in Republic elite armor, carries a blaster pistol and wears a cracked command crest at his shoulder. He holds the bunker's inner blast doors for Halden Rhee and meets every assault head-on."
     }
   },
   "Dex": {
@@ -169,6 +169,13 @@
   "Equip_ItemList": {
     "type": "list",
     "value": [
+      {
+        "__struct_id": 2,
+        "EquippedRes": {
+          "type": "resref",
+          "value": "vrepnpcelitearm"
+        }
+      },
       {
         "__struct_id": 16,
         "EquippedRes": {
@@ -451,11 +458,11 @@
   },
   "PortraitId": {
     "type": "word",
-    "value": 4286
+    "value": 4296
   },
   "Race": {
     "type": "byte",
-    "value": 15
+    "value": 163
   },
   "refbonus": {
     "type": "short",

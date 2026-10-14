@@ -26,11 +26,15 @@
   },
   "DescIdentified": {
     "type": "cexolocstring",
-    "value": {}
+    "value": {
+      "0": "Lilies have been arranged to give their broad petals a little room. The result has a quiet formality, suitable for a room where another loud decoration would be one too many."
+    }
   },
   "Description": {
     "type": "cexolocstring",
-    "value": {}
+    "value": {
+      "0": "Lilies have been arranged to give their broad petals a little room. The result has a quiet formality, suitable for a room where another loud decoration would be one too many."
+    }
   },
   "Identified": {
     "type": "byte",

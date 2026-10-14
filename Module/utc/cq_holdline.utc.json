@@ -137,7 +137,7 @@
   },
   "Comment": {
     "type": "cexostring",
-    "value": "Capstone quest giver for Hold the Line in Dantooine Medical Sublevel."
+    "value": "Quest giver for the Hold the Line line in Mon Cala - Medical Sublevel."
   },
   "Con": {
     "type": "byte",
@@ -166,7 +166,7 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "A composed woman in sturdy work clothes, with the calm, carrying voice of someone used to giving orders in a crisis. Dock crews come to her desk with injuries and problems, and leave with both handled. Her hands are steady and quick, and she counts quietly under her breath when the room grows tense. Every so often she glances at the door as if measuring how long it would hold."
+      "0": "A composed woman in sturdy work clothes stands in the street outside a sealed foreman's shack, with the calm, carrying voice of someone used to giving orders in a crisis. Dock crews come to her with injuries and problems, and leave with both handled. Her hands are steady and quick, and she counts quietly under her breath when the street grows tense. Every so often she glances at the shack's sealed door as if measuring how long it would hold."
     }
   },
   "Dex": {

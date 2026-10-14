@@ -25,16 +25,15 @@
     "value": 0
   },
   "DescIdentified": {
-    "id": 56620,
     "type": "cexolocstring",
     "value": {
-      "0": ""
+      "0": "Strips of pale wrapping lie across this dark cowl like exposed ribs. In a ruined corridor, its wearer could easily be mistaken for another bundle of bones until the cloth began to move."
     }
   },
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": ""
+      "0": "Strips of pale wrapping lie across this dark cowl like exposed ribs. In a ruined corridor, its wearer could easily be mistaken for another bundle of bones until the cloth began to move."
     }
   },
   "Identified": {

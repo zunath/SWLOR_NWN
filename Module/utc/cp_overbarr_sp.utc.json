@@ -1,12 +1,88 @@
 {
   "__data_type": "UTC ",
+  "Appearance_Head": {
+    "type": "byte",
+    "value": 70
+  },
   "Appearance_Type": {
     "type": "word",
-    "value": 2124
+    "value": 10002
+  },
+  "ArmorPart_RFoot": {
+    "type": "byte",
+    "value": 1
   },
   "BodyBag": {
     "type": "byte",
     "value": 0
+  },
+  "BodyPart_Belt": {
+    "type": "byte",
+    "value": 0
+  },
+  "BodyPart_LBicep": {
+    "type": "byte",
+    "value": 1
+  },
+  "BodyPart_LFArm": {
+    "type": "byte",
+    "value": 1
+  },
+  "BodyPart_LFoot": {
+    "type": "byte",
+    "value": 1
+  },
+  "BodyPart_LHand": {
+    "type": "byte",
+    "value": 1
+  },
+  "BodyPart_LShin": {
+    "type": "byte",
+    "value": 1
+  },
+  "BodyPart_LShoul": {
+    "type": "byte",
+    "value": 0
+  },
+  "BodyPart_LThigh": {
+    "type": "byte",
+    "value": 1
+  },
+  "BodyPart_Neck": {
+    "type": "byte",
+    "value": 1
+  },
+  "BodyPart_Pelvis": {
+    "type": "byte",
+    "value": 1
+  },
+  "BodyPart_RBicep": {
+    "type": "byte",
+    "value": 1
+  },
+  "BodyPart_RFArm": {
+    "type": "byte",
+    "value": 1
+  },
+  "BodyPart_RHand": {
+    "type": "byte",
+    "value": 1
+  },
+  "BodyPart_RShin": {
+    "type": "byte",
+    "value": 1
+  },
+  "BodyPart_RShoul": {
+    "type": "byte",
+    "value": 0
+  },
+  "BodyPart_RThigh": {
+    "type": "byte",
+    "value": 1
+  },
+  "BodyPart_Torso": {
+    "type": "byte",
+    "value": 1
   },
   "Cha": {
     "type": "byte",
@@ -32,9 +108,25 @@
       }
     ]
   },
+  "Color_Hair": {
+    "type": "byte",
+    "value": 23
+  },
+  "Color_Skin": {
+    "type": "byte",
+    "value": 4
+  },
+  "Color_Tattoo1": {
+    "type": "byte",
+    "value": 1
+  },
+  "Color_Tattoo2": {
+    "type": "byte",
+    "value": 1
+  },
   "Comment": {
     "type": "cexostring",
-    "value": "Capstone quest creature for Overload Barrage in Hutlar Qion Test Site."
+    "value": "Overload Barrage specialist in Hutlar - Qion Test Site."
   },
   "Con": {
     "type": "byte",
@@ -63,7 +155,7 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "A level 50 capstone quest enemy for Overload Barrage in Hutlar Qion Test Site."
+      "0": "A Zabrak woman in a Czerka employee's uniform, blaster pistol in hand. She keeps the site's cryo-range regulator running off stolen charge tables whose safety curve was stripped out, so every barrage run through it either fizzles or cooks whoever fires it."
     }
   },
   "Dex": {
@@ -77,6 +169,13 @@
   "Equip_ItemList": {
     "type": "list",
     "value": [
+      {
+        "__struct_id": 2,
+        "EquippedRes": {
+          "type": "resref",
+          "value": "czerkauniform"
+        }
+      },
       {
         "__struct_id": 16,
         "EquippedRes": {
@@ -282,11 +381,11 @@
   },
   "PortraitId": {
     "type": "word",
-    "value": 4257
+    "value": 3563
   },
   "Race": {
     "type": "byte",
-    "value": 167
+    "value": 154
   },
   "refbonus": {
     "type": "short",

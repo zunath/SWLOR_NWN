@@ -50,6 +50,8 @@
             "tat_anc_hillydes",
             "tat_anc_nedunes",
             "tat_anc_nminecli",
+            "pw_sc_forgecav",
+            "pw_sc_korrforge",
             "tat_anc_northhil",
             "tat_anc_nthdunes",
             "tat_anc_rckpass1",
@@ -144,9 +146,7 @@
                 "v_repubbase_ext",
                 "v_repubbase_hang",
                 "v_repubbase_jnrm",
-                "v_repubbase_off",
-                "pw_sc_repubcmd",
-                "pw_sc_repubeng"
+                "v_repubbase_off"
               ]
             }
           ],
@@ -165,6 +165,8 @@
             "viscaralake",
             "viscaranswamp",
             "viscaranwswamp",
+            "pw_sc_repubeng",
+            "pw_sc_repubcmd",
             "viscarawildlands",
             "viscarawildwest",
             "viscarawildwoods",
@@ -538,11 +540,7 @@
             "valkorrdung1a",
             "valkorrdung1b",
             "valkorrdung1c",
-            "valkorrdung1d",
-            "pw_sc_korrforge",
-            "pw_sc_forgecav",
-            "pw_sc_sithritual",
-            "pw_sc_cryptdeep"
+            "valkorrdung1d"
           ]
         },
         {
@@ -631,11 +629,7 @@
             "dan_smugcaverns",
             "dan_tribefields",
             "dan_warehouse",
-            "dan_wildplain",
-            "pw_sc_dantmedsub",
-            "pw_sc_dantprowar",
-            "pw_sc_jeditrial",
-            "pw_sc_jedihalls"
+            "dan_wildplain"
           ]
         },
         {
@@ -699,6 +693,14 @@
                 "pw_sc_qioncore",
                 "pw_sc_qiontest"
               ]
+            },
+            {
+              "name": "Droid Foundry",
+              "members": [
+                "hut_fdy_intake",
+                "hut_fdy_assembly",
+                "hut_fdy_core"
+              ]
             }
           ],
           "members": [
@@ -706,6 +708,8 @@
             "hutlar_outpost",
             "hutlar_qion",
             "hutlar_smuggleba",
+            "pw_sc_jedihalls",
+            "pw_sc_jeditrial",
             "hutlar_testsite",
             "hutlar_valley",
             "hutlar_wastes_ca",
@@ -751,6 +755,8 @@
               "name": "Coral Isles",
               "members": [
                 "moncalacifacilit",
+                "pw_sc_dantmedsub",
+                "pw_sc_dantprowar",
                 "moncalacorali001",
                 "moncalacoralisle"
               ]
@@ -766,6 +772,8 @@
               "name": "Sharptooth Jungle",
               "members": [
                 "moncaladungeon1",
+                "pw_sc_cryptdeep",
+                "pw_sc_sithritual",
                 "moncalajungelsu",
                 "moncalawildjungl"
               ]

@@ -18,6 +18,9 @@ namespace SWLOR.CombatSim.Data
         public float RecastSeconds { get; init; }
         public float CastSeconds { get; init; }
 
+        /// <summary>Seconds between paying for the ability and its impact (Force Leap's jump); the caster is busy throughout.</summary>
+        public float ImpactDelaySeconds { get; init; }
+
         /// <summary>A weapon ability: paid when queued, it lands on the caster's next landed attack.</summary>
         public bool IsQueuedWeapon { get; init; }
 

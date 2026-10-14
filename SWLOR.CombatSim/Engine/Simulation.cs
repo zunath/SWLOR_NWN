@@ -619,7 +619,7 @@ namespace SWLOR.CombatSim.Engine
                 StmCost = stm
             };
 
-            caster.NextActionAt = _now + info.CastSeconds + caster.Spec.ReactionSeconds;
+            caster.NextActionAt = _now + info.CastSeconds + info.ImpactDelaySeconds + caster.Spec.ReactionSeconds;
             if (info.CastSeconds <= 0)
             {
                 Resolve(caster, cast);
@@ -653,32 +653,47 @@ namespace SWLOR.CombatSim.Engine
                     return;
             }
 
-            // The game checks the revive rules again when the cast completes; a failed check spends nothing.
-            if (isRevive && !CanRevive(caster, target))
-            {
-                caster.Stats.BlockedRevives++;
-                return;
-            }
-
-            if (caster.Fp < cast.FpCost || caster.Stm < cast.StmCost)
-            {
-                caster.IsStarved = true;
-                return;
-            }
-
-            caster.Fp -= cast.FpCost;
-            caster.Stm -= cast.StmCost;
-            caster.Stats.FpSpent += cast.FpCost;
-            caster.Stats.StmSpent += cast.StmCost;
-            caster.Stats.AbilitiesUsed++;
-            caster.RecastReadyAt[cast.Ability.RecastGroup] = _now + _rules.GetRecastSeconds(cast.Ability);
-            caster.LastUsedAt[cast.Use.Feat] = _now;
-
-            // Convergence's accuracy comes from an earlier trigger; the cast that triggers it resolves first.
+            // Convergence's accuracy comes from an earlier trigger; the cast that triggers it resolves first,
+            // though a delayed impact lands after it.
             var hitBonus = ConvergenceHitBonus(caster, cast.Ability);
-            // The game checks the ability's declared FP requirement, not the adjusted amount charged.
-            if (cast.Ability.FP > 0 && cast.Ability.SkillType == SkillType.Force)
-                TriggerConvergence(caster);
+            if (!cast.Activated)
+            {
+                // The game checks the revive rules again when the cast completes; a failed check spends nothing.
+                if (isRevive && !CanRevive(caster, target))
+                {
+                    caster.Stats.BlockedRevives++;
+                    return;
+                }
+
+                if (caster.Fp < cast.FpCost || caster.Stm < cast.StmCost)
+                {
+                    caster.IsStarved = true;
+                    return;
+                }
+
+                caster.Fp -= cast.FpCost;
+                caster.Stm -= cast.StmCost;
+                caster.Stats.FpSpent += cast.FpCost;
+                caster.Stats.StmSpent += cast.StmCost;
+                caster.Stats.AbilitiesUsed++;
+                caster.RecastReadyAt[cast.Ability.RecastGroup] = _now + _rules.GetRecastSeconds(cast.Ability);
+                caster.LastUsedAt[cast.Use.Feat] = _now;
+
+                // The game checks the ability's declared FP requirement, not the adjusted amount charged.
+                if (cast.Ability.FP > 0 && cast.Ability.SkillType == SkillType.Force)
+                    TriggerConvergence(caster);
+
+                // A delayed impact is paid for and on recast now; the caster stays busy until it lands.
+                if (cast.Ability.ImpactDelaySeconds > 0)
+                {
+                    cast.Activated = true;
+                    cast.ImpactAt = _now + cast.Ability.ImpactDelaySeconds;
+                    caster.Casting = cast;
+                    caster.NextAttackAt = Math.Max(caster.NextAttackAt, cast.ImpactAt);
+                    return;
+                }
+            }
+
             if (targetLost)
                 return;
 
@@ -1129,6 +1144,8 @@ namespace SWLOR.CombatSim.Engine
                 target.Casting = null;
                 target.Stats.InterruptedCasts++;
                 target.NextActionAt = _now + target.Spec.ReactionSeconds;
+                // The game resumes the caster's attack as soon as the cast is interrupted.
+                target.NextAttackAt = Math.Min(target.NextAttackAt, _now);
             }
 
             if (target.Hp <= 0)

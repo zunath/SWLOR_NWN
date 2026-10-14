@@ -205,6 +205,30 @@ namespace SWLOR.CombatSim.Tests.Engine
         }
 
         [Test]
+        public void Tuned_InPve_AnInterruptedReviverResumesItsAttack()
+        {
+            var medic = TestCombatants.Medic("Medic", TestCombatants.Use("Resuscitation2", AbilityTarget.DeadAlly));
+            medic.AutoAttack = new AutoAttackSpec { AttacksPerSecond = 2f, Damage = new DamageSpec { Min = 1f, Max = 1f, HitChance = 1f } };
+            var simulation = TestScenarios.Spawn(
+                TestScenarios.TwoTeams(false, new[] { medic, new CombatantSpec { Name = "Ally", MaxHp = 1000 } }, new[] { TestCombatants.Dummy("Enemy", true) }),
+                RuleSets.Tuned(),
+                _catalog);
+            var reviver = simulation.Get("Medic");
+            var enemy = simulation.Get("Enemy");
+            simulation.ApplyDamage(enemy, simulation.Get("Ally"), TestCombatants.EffectivelyUnlimited);
+            SimulationClock.RunUntil(simulation, () => reviver.Casting != null, 10, "revive cast started");
+            SimulationClock.RunUntil(simulation, simulation.Now + 2.0);
+            var damageBefore = enemy.Stats.DamageTakenToHp;
+
+            simulation.ApplyDamage(enemy, reviver, 10);
+            SimulationClock.RunUntil(simulation, simulation.Now + 0.9);
+
+            reviver.Stats.InterruptedCasts.Should().Be(1);
+            enemy.Stats.DamageTakenToHp.Should().BeGreaterThan(damageBefore,
+                "the reviver swings while it reacts, not only once the canceled cast would have ended");
+        }
+
+        [Test]
         public void CurrentRules_InPve_DamageDoesNotInterruptTheRevive()
         {
             var (simulation, medic, ally, enemy) = SpawnAndKillAlly(RuleSets.Current(), isPvp: false);

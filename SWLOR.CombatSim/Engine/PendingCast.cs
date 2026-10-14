@@ -10,7 +10,10 @@ namespace SWLOR.CombatSim.Engine
         public AbilityInfo Ability { get; init; }
         public AbilityEffect Effect { get; init; }
         public Combatant Target { get; init; }
-        public double ImpactAt { get; init; }
+        public double ImpactAt { get; set; }
+
+        /// <summary>Paid for and on recast, waiting out the ability's impact delay.</summary>
+        public bool Activated { get; set; }
         public bool InterruptedByDamage { get; init; }
         public int FpCost { get; init; }
         public int StmCost { get; init; }

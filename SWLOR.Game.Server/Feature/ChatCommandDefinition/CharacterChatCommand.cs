@@ -738,16 +738,15 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                 .Action((user, target, location, args) =>
                 {
                     // A DM possessing a creature types as the creature, but their windows are cached under the DM avatar
-                    // and can be shown on either.
+                    // and can be shown on the creature, the avatar, or a creature they possessed earlier.
                     var owner = DMPresence.GetDM(user);
-                    var shownOn = owner == user ? new[] { user } : new[] { user, owner };
 
                     // Close all open windows for the player
                     foreach (GuiWindowType type in Enum.GetValues(typeof(GuiWindowType)))
                     {
                         // The DM toolbar stands in for the hidden native taskbar and has a fixed position, so it stays as it is.
                         if (type == GuiWindowType.Invalid || type == GuiWindowType.DMToolbar) continue;
-                        foreach (var uiTarget in shownOn)
+                        foreach (var uiTarget in DMPresence.GetShownOn(user, type))
                         {
                             if (Gui.IsWindowOpen(uiTarget, type))
                             {

@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using NWN.Native.API;
 using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.LogService;
@@ -153,12 +154,22 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>
-        /// Returns the objects a DM window can be shown on: the DM avatar, and the creature it was last opened on
-        /// through <see cref="ToggleWindow"/>.
+        /// Returns every valid object a window can be shown on for whoever is acting: the actor itself and, for a DM,
+        /// the DM avatar and the creature the window was last opened on through <see cref="ToggleWindow"/>.
         /// </summary>
-        /// <param name="dm">The DM avatar.</param>
+        /// <param name="actor">A player, a DM avatar, or the creature a DM possesses.</param>
         /// <param name="type">The window.</param>
-        public static IEnumerable<uint> GetWindowTargets(uint dm, GuiWindowType type)
+        public static IEnumerable<uint> GetShownOn(uint actor, GuiWindowType type)
+        {
+            var dm = GetDM(actor);
+            var targets = GetIsDM(dm)
+                ? GetWindowTargets(dm, type).Append(actor)
+                : new[] { actor };
+            return targets.Distinct().Where(target => GetIsObjectValid(target));
+        }
+
+        // The DM avatar, and the object a window was last opened on through ToggleWindow.
+        private static IEnumerable<uint> GetWindowTargets(uint dm, GuiWindowType type)
         {
             yield return dm;
             if (_windowTargets.TryGetValue((GetObjectUUID(dm), type), out var previous) && previous != dm)

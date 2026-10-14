@@ -3,7 +3,6 @@ using System.Linq;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.GuiService.Component;
 using SWLOR.Game.Server.Service.LogService;
@@ -106,28 +105,13 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         public bool SelfQuickCastEnabled
         {
             get => Get<bool>();
-            set { Set(value); RefreshQuickCastAvailability(); }
+            set => Set(value);
         }
         public bool EnemyQuickCastEnabled
         {
             get => Get<bool>();
-            set { Set(value); RefreshQuickCastAvailability(); }
+            set => Set(value);
         }
-        public int SelectedSelfCastFeat
-        {
-            get => Get<int>();
-            set { Set(value); RefreshQuickCastAvailability(); }
-        }
-        public int SelectedEnemyCastFeat
-        {
-            get => Get<int>();
-            set { Set(value); RefreshQuickCastAvailability(); }
-        }
-        public GuiBindingList<GuiComboEntry> SelfCastAbilities { get => Get<GuiBindingList<GuiComboEntry>>(); set => Set(value); }
-        public GuiBindingList<GuiComboEntry> EnemyCastAbilities { get => Get<GuiBindingList<GuiComboEntry>>(); set => Set(value); }
-        public bool CanSelfQuickCast { get => Get<bool>(); private set => Set(value); }
-        public bool CanEnemyQuickCast { get => Get<bool>(); private set => Set(value); }
-        public string TargetingFeedback { get => Get<string>(); private set => Set(value); }
 
         public int CurrentRed
         {
@@ -210,61 +194,16 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             WatchOnClient(model => model.SelectedColor);
             WatchOnClient(model => model.SelfQuickCastEnabled);
             WatchOnClient(model => model.EnemyQuickCastEnabled);
-            WatchOnClient(model => model.SelectedSelfCastFeat);
-            WatchOnClient(model => model.SelectedEnemyCastFeat);
         }
 
         private void LoadTargetingView()
         {
-            SelfCastAbilities = BuildQuickCastOptions(QuickCastTargetType.Self);
-            EnemyCastAbilities = BuildQuickCastOptions(QuickCastTargetType.CurrentEnemy);
-            SelectedSelfCastFeat = SelfCastAbilities[0].Value;
-            SelectedEnemyCastFeat = EnemyCastAbilities[0].Value;
-            SelfQuickCastEnabled = QuickCast.IsEnabled(Player, QuickCastTargetType.Self);
-            EnemyQuickCastEnabled = QuickCast.IsEnabled(Player, QuickCastTargetType.CurrentEnemy);
-            TargetingFeedback = "Save enables these buttons for this login. No chat commands or quickbar changes are needed.";
-        }
+            var playerId = GetObjectUUID(Player);
+            var dbPlayer = DB.Get<Player>(playerId);
 
-        private GuiBindingList<GuiComboEntry> BuildQuickCastOptions(QuickCastTargetType type)
-        {
-            var options = new GuiBindingList<GuiComboEntry>();
-            foreach (var (feat, name) in QuickCast.GetAvailableAbilities(Player, type))
-                options.Add(new GuiComboEntry(name, (int)feat));
-            if (options.Count == 0)
-                options.Add(new GuiComboEntry("No eligible abilities", -1));
-            return options;
+            SelfQuickCastEnabled = dbPlayer.Settings.SelfQuickCastEnabled;
+            EnemyQuickCastEnabled = dbPlayer.Settings.EnemyQuickCastEnabled;
         }
-
-        private void RefreshQuickCastAvailability()
-        {
-            CanSelfQuickCast = SelfQuickCastEnabled && QuickCast.IsEnabled(Player, QuickCastTargetType.Self) &&
-                               SelfCastAbilities?.Any(entry => entry.Value >= 0 && entry.Value == SelectedSelfCastFeat) == true;
-            CanEnemyQuickCast = EnemyQuickCastEnabled && QuickCast.IsEnabled(Player, QuickCastTargetType.CurrentEnemy) &&
-                                EnemyCastAbilities?.Any(entry => entry.Value >= 0 && entry.Value == SelectedEnemyCastFeat) == true;
-        }
-
-        private void CastSelectedAbility(QuickCastTargetType type)
-        {
-            var self = type == QuickCastTargetType.Self;
-            if (!(self ? CanSelfQuickCast : CanEnemyQuickCast))
-            {
-                TargetingFeedback = "Enable this mode, choose an eligible ability, and click Save first.";
-                return;
-            }
-            var feat = self ? SelectedSelfCastFeat : SelectedEnemyCastFeat;
-            // NUI events run on the module; ability delays and effects need the same
-            // creature context as native feat activation.
-            AssignCommand(Player, () =>
-            {
-                if (QuickCast.TryCast(Player, type, feat.ToString(), out var error))
-                    TargetingFeedback = "Ability started.";
-                else
-                    TargetingFeedback = string.IsNullOrWhiteSpace(error) ? "Ability could not be activated. See your combat log." : error;
-            });
-        }
-
-        public Action OnSelfQuickCast() => () => CastSelectedAbility(QuickCastTargetType.Self);
-        public Action OnEnemyQuickCast() => () => CastSelectedAbility(QuickCastTargetType.CurrentEnemy);
 
         private void LoadGeneralView()
         {
@@ -400,13 +339,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             OnPropertyChanged(nameof(SecondaryTabToggleValue));
             OnPropertyChanged(nameof(SelfQuickCastEnabled));
             OnPropertyChanged(nameof(EnemyQuickCastEnabled));
-            OnPropertyChanged(nameof(SelectedSelfCastFeat));
-            OnPropertyChanged(nameof(SelectedEnemyCastFeat));
-            OnPropertyChanged(nameof(SelfCastAbilities));
-            OnPropertyChanged(nameof(EnemyCastAbilities));
-            OnPropertyChanged(nameof(CanSelfQuickCast));
-            OnPropertyChanged(nameof(CanEnemyQuickCast));
-            OnPropertyChanged(nameof(TargetingFeedback));
 
             // Republish list bindings so any newly inserted list can populate its rows without
             // reloading persisted values over unsaved changes.
@@ -447,6 +379,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             dbPlayer.Settings.PortraitVitals = PortraitVitals;
             dbPlayer.Settings.DisplayCommsOutOfRangeWarnings = DisplayCommsOutOfRangeWarnings;
             dbPlayer.Settings.DisplayCooldownFloatingText = DisplayCooldownFloatingText;
+            dbPlayer.Settings.SelfQuickCastEnabled = SelfQuickCastEnabled;
+            dbPlayer.Settings.EnemyQuickCastEnabled = EnemyQuickCastEnabled;
             if (!GetIsDM(Player) && !GetIsDMPossessed(Player))
             {
                 dbPlayer.Settings.ShowDescriptorsForNamedPlayers = ShowDescriptorsForNamedPlayers;
@@ -476,10 +410,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             }
 
             DB.Set(dbPlayer);
-            QuickCast.SetEnabled(Player, QuickCastTargetType.Self, SelfQuickCastEnabled);
-            QuickCast.SetEnabled(Player, QuickCastTargetType.CurrentEnemy, EnemyQuickCastEnabled);
-            RefreshQuickCastAvailability();
-            TargetingFeedback = "Targeting settings applied for this login. Both modes reset to off when you log out.";
+            QuickCast.ApplyPreferences(Player);
             Log.Write(LogGroup.Server, $"Settings saved for player {playerId}.");
 
             // Apply the vitals display preference immediately (portrait overlay vs. docked window).

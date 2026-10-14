@@ -4,11 +4,6 @@ using NUnit.Framework;
 using System.Reflection;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Feature.GuiDefinition.ViewModel;
-using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.AbilityService;
-using SWLOR.Game.Server.Service.GuiService;
-using SWLOR.Game.Server.Service.GuiService.Component;
-using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.Game.Server.Tests.Feature;
 
@@ -110,63 +105,76 @@ public class SettingsWindowTests
     }
 
     [Test]
-    public void Targeting_OffersSeparateSettingsControlsAndDirectCastButtons()
+    public void Targeting_OffersOnlyTwoGlobalPreferencesWithShortTooltips()
     {
         var (definitionSource, viewModelSource) = LoadSettingsSources();
         var targetingPartial = ExtractSection(definitionSource,
             ".DefinePartialView(SettingsViewModel.TargetingPartial", "window.AddStandardLayout");
         definitionSource.Should().Contain(".AddOption(\"Targeting\")");
-        targetingPartial.Should().Contain("Both modes start off each login. Click Save to apply changes.");
         targetingPartial.Should().Contain(".BindIsChecked(model => model.SelfQuickCastEnabled)");
         targetingPartial.Should().Contain(".BindIsChecked(model => model.EnemyQuickCastEnabled)");
-        targetingPartial.Should().Contain(".BindOptions(model => model.SelfCastAbilities)");
-        targetingPartial.Should().Contain(".BindOptions(model => model.EnemyCastAbilities)");
-        targetingPartial.Should().Contain(".BindSelectedIndex(model => model.SelectedSelfCastFeat)");
-        targetingPartial.Should().Contain(".BindSelectedIndex(model => model.SelectedEnemyCastFeat)");
-        targetingPartial.Should().Contain(".BindIsEnabled(model => model.CanSelfQuickCast)");
-        targetingPartial.Should().Contain(".BindIsEnabled(model => model.CanEnemyQuickCast)");
-        targetingPartial.Should().Contain(".BindOnClicked(model => model.OnSelfQuickCast())");
-        targetingPartial.Should().Contain(".BindOnClicked(model => model.OnEnemyQuickCast())");
-        targetingPartial.Should().Contain(".BindText(model => model.TargetingFeedback)");
+        targetingPartial.Should().Contain("Automatically targets you for all eligible support abilities. Off by default.");
+        targetingPartial.Should().Contain("Uses the enemy you are attacking for all eligible hostile casts. Off by default.");
+        targetingPartial.Should().NotContain(".AddText(");
+        targetingPartial.Should().NotContain(".AddTextEdit(");
+        targetingPartial.Should().NotContain(".AddComboBox(");
+        targetingPartial.Should().NotContain(".AddButton(");
+        targetingPartial.Split("row.AddCheckBox()", StringSplitOptions.None).Should().HaveCount(3);
 
         var initialize = ExtractMethod(viewModelSource, "protected override void Initialize", "private void LoadTargetingView");
-        foreach (var property in new[] { "SelfQuickCastEnabled", "EnemyQuickCastEnabled", "SelectedSelfCastFeat", "SelectedEnemyCastFeat" })
+        foreach (var property in new[] { "SelfQuickCastEnabled", "EnemyQuickCastEnabled" })
             initialize.IndexOf($"WatchOnClient(model => model.{property});", StringComparison.Ordinal)
                 .Should().BeGreaterThan(initialize.IndexOf("LoadTargetingView();", StringComparison.Ordinal));
     }
 
     [Test]
-    public void Targeting_DraftChangesStayOffUntilApplied_AndSaveAndCancelHaveSeparateEffects()
+    public void Targeting_NewAndLegacySettingsDefaultOff()
     {
-        const uint player = 0x7ffffffc;
-        QuickCast.ResetSession(player);
-        try
+        var defaults = new PlayerSettings();
+        defaults.SelfQuickCastEnabled.Should().BeFalse();
+        defaults.EnemyQuickCastEnabled.Should().BeFalse();
+
+        var legacy = JsonConvert.DeserializeObject<PlayerSettings>("{\"DisplayAchievementNotification\":true}");
+        legacy.Should().NotBeNull();
+        legacy!.SelfQuickCastEnabled.Should().BeFalse();
+        legacy.EnemyQuickCastEnabled.Should().BeFalse();
+    }
+
+    [TestCase(false, false)]
+    [TestCase(true, false)]
+    [TestCase(false, true)]
+    [TestCase(true, true)]
+    public void Targeting_PreferencesPersistIndependentlyAcrossSerializationCycles(bool self, bool enemy)
+    {
+        var settings = new PlayerSettings { SelfQuickCastEnabled = self, EnemyQuickCastEnabled = enemy };
+        for (var cycle = 0; cycle < 3; cycle++)
         {
-            var model = CreateTargetingModel(player);
-            model.SelfQuickCastEnabled.Should().BeFalse();
-            model.EnemyQuickCastEnabled.Should().BeFalse();
-            model.CanSelfQuickCast.Should().BeFalse();
-            model.CanEnemyQuickCast.Should().BeFalse();
-
-            model.SelfQuickCastEnabled = true;
-            model.EnemyQuickCastEnabled = true;
-            QuickCast.IsEnabled(player, QuickCastTargetType.Self).Should().BeFalse();
-            QuickCast.IsEnabled(player, QuickCastTargetType.CurrentEnemy).Should().BeFalse();
-            model.CanSelfQuickCast.Should().BeFalse();
-            model.CanEnemyQuickCast.Should().BeFalse();
-            model.OnSelfQuickCast()();
-            model.TargetingFeedback.Should().Contain("click Save first");
+            settings = JsonConvert.DeserializeObject<PlayerSettings>(JsonConvert.SerializeObject(settings))!;
+            settings.Should().NotBeNull();
+            settings.SelfQuickCastEnabled.Should().Be(self);
+            settings.EnemyQuickCastEnabled.Should().Be(enemy);
         }
-        finally { QuickCast.ResetSession(player); }
+    }
 
+    [Test]
+    public void Targeting_LoadsSavedPreferences_AndSaveAppliesThemAfterPersistence()
+    {
         var (_, source) = LoadSettingsSources();
-        var load = ExtractMethod(source, "private void LoadTargetingView", "private GuiBindingList<GuiComboEntry> BuildQuickCastOptions");
-        load.Should().Contain("SelfQuickCastEnabled = QuickCast.IsEnabled(Player, QuickCastTargetType.Self);");
-        load.Should().Contain("EnemyQuickCastEnabled = QuickCast.IsEnabled(Player, QuickCastTargetType.CurrentEnemy);");
+        var load = ExtractMethod(source, "private void LoadTargetingView", "private void LoadGeneralView");
+        load.Should().Contain("SelfQuickCastEnabled = dbPlayer.Settings.SelfQuickCastEnabled;");
+        load.Should().Contain("EnemyQuickCastEnabled = dbPlayer.Settings.EnemyQuickCastEnabled;");
+        load.Should().NotContain("QuickCast.");
+
         var save = ExtractMethod(source, "public Action OnSave()", "public Action OnCancel()");
-        save.Should().Contain("QuickCast.SetEnabled(Player, QuickCastTargetType.Self, SelfQuickCastEnabled);");
-        save.Should().Contain("QuickCast.SetEnabled(Player, QuickCastTargetType.CurrentEnemy, EnemyQuickCastEnabled);");
-        save.Should().Contain("RefreshQuickCastAvailability();");
+        var persist = save.IndexOf("DB.Set(dbPlayer);", StringComparison.Ordinal);
+        foreach (var property in new[] { "SelfQuickCastEnabled", "EnemyQuickCastEnabled" })
+        {
+            var assignment = save.IndexOf($"dbPlayer.Settings.{property} = {property};", StringComparison.Ordinal);
+            assignment.Should().BeGreaterThanOrEqualTo(0);
+            persist.Should().BeGreaterThan(assignment);
+        }
+        save.IndexOf("QuickCast.ApplyPreferences(Player);", StringComparison.Ordinal).Should().BeGreaterThan(persist);
+
         var cancel = ExtractMethod(source, "public Action OnCancel()", "public Action OnClickChangeDescription()");
         cancel.Should().Contain("Gui.TogglePlayerWindow(Player, GuiWindowType.Settings);");
         cancel.Should().NotContain("QuickCast.");
@@ -174,61 +182,21 @@ public class SettingsWindowTests
     }
 
     [Test]
-    public void Targeting_AppliedModesRequireEligibleSelections_AndDraftDisablingDoesNotChangeSessionOptIn()
+    public void TargetingPartial_RepublishesCheckboxesWithoutReloadingDrafts()
     {
-        const uint player = 0x7ffffffb;
-        QuickCast.ResetSession(player);
-        try
+        var model = new SettingsViewModel { SelfQuickCastEnabled = true, EnemyQuickCastEnabled = false };
+        var published = new List<string>();
+        model.PropertyChanged += (_, args) => published.Add(args.PropertyName!);
+
+        typeof(SettingsViewModel).GetMethod("RefreshPartialViewBindings", BindingFlags.Instance | BindingFlags.NonPublic)!
+            .Invoke(model, null);
+
+        published.Should().Contain(new[]
         {
-            var model = CreateTargetingModel(player);
-            QuickCast.SetEnabled(player, QuickCastTargetType.Self, true);
-            model.SelfQuickCastEnabled = true;
-            model.EnemyQuickCastEnabled = true;
-            model.CanSelfQuickCast.Should().BeTrue();
-            model.CanEnemyQuickCast.Should().BeFalse("the enemy mode has not been applied");
-
-            model.SelectedSelfCastFeat = -1;
-            model.CanSelfQuickCast.Should().BeFalse();
-            model.SelectedSelfCastFeat = (int)FeatType.Benevolence2;
-            model.CanSelfQuickCast.Should().BeFalse("an ID outside the offered abilities cannot enable casting");
-            model.SelectedSelfCastFeat = (int)FeatType.Benevolence1;
-            model.CanSelfQuickCast.Should().BeTrue();
-            model.SelfQuickCastEnabled = false;
-            model.CanSelfQuickCast.Should().BeFalse();
-            QuickCast.IsEnabled(player, QuickCastTargetType.Self).Should().BeTrue("draft edits are not applied until Save");
-        }
-        finally { QuickCast.ResetSession(player); }
-    }
-
-    [Test]
-    public void TargetingPartial_RepublishesOptionsAvailabilityAndFeedbackWithoutReloadingDrafts()
-    {
-        const uint player = 0x7ffffffa;
-        QuickCast.ResetSession(player);
-        try
-        {
-            var model = CreateTargetingModel(player);
-            model.SelfQuickCastEnabled = true;
-            var options = model.SelfCastAbilities;
-            var published = new List<string>();
-            model.PropertyChanged += (_, args) => published.Add(args.PropertyName!);
-
-            typeof(SettingsViewModel).GetMethod("RefreshPartialViewBindings", BindingFlags.Instance | BindingFlags.NonPublic)!
-                .Invoke(model, null);
-
-            published.Should().Contain(new[]
-            {
-                nameof(SettingsViewModel.SelfQuickCastEnabled), nameof(SettingsViewModel.EnemyQuickCastEnabled),
-                nameof(SettingsViewModel.SelectedSelfCastFeat), nameof(SettingsViewModel.SelectedEnemyCastFeat),
-                nameof(SettingsViewModel.SelfCastAbilities), nameof(SettingsViewModel.EnemyCastAbilities),
-                nameof(SettingsViewModel.CanSelfQuickCast), nameof(SettingsViewModel.CanEnemyQuickCast),
-                nameof(SettingsViewModel.TargetingFeedback)
-            });
-            model.SelfCastAbilities.Should().BeSameAs(options);
-            model.SelfQuickCastEnabled.Should().BeTrue();
-            QuickCast.IsEnabled(player, QuickCastTargetType.Self).Should().BeFalse();
-        }
-        finally { QuickCast.ResetSession(player); }
+            nameof(SettingsViewModel.SelfQuickCastEnabled), nameof(SettingsViewModel.EnemyQuickCastEnabled)
+        });
+        model.SelfQuickCastEnabled.Should().BeTrue();
+        model.EnemyQuickCastEnabled.Should().BeFalse();
     }
 
     [Test]
@@ -315,24 +283,6 @@ public class SettingsWindowTests
         start.Should().BeGreaterThanOrEqualTo(0);
         end.Should().BeGreaterThan(start);
         return source[start..end];
-    }
-
-    private static SettingsViewModel CreateTargetingModel(uint player)
-    {
-        var model = new SettingsViewModel();
-        typeof(GuiViewModelBase<SettingsViewModel, GuiPayloadBase>)
-            .GetProperty("Player", BindingFlags.Instance | BindingFlags.NonPublic)!.SetValue(model, player);
-        model.SelfCastAbilities = new GuiBindingList<GuiComboEntry>
-        {
-            new("Benevolence I", (int)FeatType.Benevolence1)
-        };
-        model.EnemyCastAbilities = new GuiBindingList<GuiComboEntry>
-        {
-            new("Force Drain I", (int)FeatType.ForceDrain1)
-        };
-        model.SelectedSelfCastFeat = (int)FeatType.Benevolence1;
-        model.SelectedEnemyCastFeat = (int)FeatType.ForceDrain1;
-        return model;
     }
 
     private static string ExtractMethod(string source, string startMarker, string endMarker)

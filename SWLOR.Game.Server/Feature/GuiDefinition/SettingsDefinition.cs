@@ -16,7 +16,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                 .SetIsResizable(true)
                 .SetIsCollapsible(true)
                 .SetIsClosable(true)
-                .SetInitialGeometry(0, 0, 400f, 600f)
+                .SetInitialGeometry(0, 0, 400f, 450f)
                 .SetTitle("Settings")
 
                 .DefinePartialView(SettingsViewModel.GeneralPartial, view =>
@@ -252,58 +252,29 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                 {
                     col.AddRow(row =>
                     {
-                        row.AddText()
-                            .SetText("Optional cursor-free casts. Both modes start off each login. Click Save to apply changes.")
-                            .SetHeight(56f);
-                    });
-                    col.AddRow(row =>
-                    {
+                        row.SetHeight(30f);
+                        row.AddSpacer()
+                            .SetWidth(28f);
+
                         row.AddCheckBox()
-                            .SetText("Enable Self-Cast")
-                            .SetTooltip("Allows eligible support abilities to target yourself from this window for this login.")
+                            .SetText("Self-Cast Support Abilities")
+                            .SetTooltip("Automatically targets you for all eligible support abilities. Off by default.")
+                            .SetWidth(230f)
                             .BindIsChecked(model => model.SelfQuickCastEnabled);
                     });
+
                     col.AddRow(row =>
                     {
-                        row.AddComboBox()
-                            .BindOptions(model => model.SelfCastAbilities)
-                            .BindSelectedIndex(model => model.SelectedSelfCastFeat)
-                            .SetWidth(218f)
-                            .SetHeight(32f);
-                        row.AddButton()
-                            .SetText("Cast on Self")
-                            .SetWidth(114f)
-                            .SetHeight(32f)
-                            .BindIsEnabled(model => model.CanSelfQuickCast)
-                            .BindOnClicked(model => model.OnSelfQuickCast());
-                    });
-                    col.AddRow(row =>
-                    {
+                        row.SetHeight(30f);
+                        row.AddSpacer()
+                            .SetWidth(28f);
+
                         row.AddCheckBox()
-                            .SetText("Enable Current-Enemy Cast")
-                            .SetTooltip("Allows eligible hostile casts to target the living enemy you are actively attacking, for this login.")
+                            .SetText("Cast on Current Enemy")
+                            .SetTooltip("Uses the enemy you are attacking for all eligible hostile casts. Off by default.")
+                            .SetWidth(230f)
                             .BindIsChecked(model => model.EnemyQuickCastEnabled);
                     });
-                    col.AddRow(row =>
-                    {
-                        row.AddComboBox()
-                            .BindOptions(model => model.EnemyCastAbilities)
-                            .BindSelectedIndex(model => model.SelectedEnemyCastFeat)
-                            .SetWidth(218f)
-                            .SetHeight(32f);
-                        row.AddButton()
-                            .SetText("Cast on Enemy")
-                            .SetWidth(114f)
-                            .SetHeight(32f)
-                            .BindIsEnabled(model => model.CanEnemyQuickCast)
-                            .BindOnClicked(model => model.OnEnemyQuickCast());
-                    });
-                    col.AddRow(row => row.AddText()
-                        .SetText("Attack an enemy first for Current-Enemy Cast. Normal ability buttons keep manual targeting. Aimed areas are excluded.")
-                        .SetHeight(72f));
-                    col.AddRow(row => row.AddText()
-                        .BindText(model => model.TargetingFeedback)
-                        .SetHeight(56f));
                 }));
 
             window.AddStandardLayout(layout =>

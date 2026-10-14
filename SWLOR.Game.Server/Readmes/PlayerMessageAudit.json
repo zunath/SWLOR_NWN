@@ -3305,6 +3305,13 @@
   },
   {
     "File": "SWLOR.Game.Server/Feature/UsePerkFeat.cs",
+    "Line": 332,
+    "Member": "UseFeat",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(activator, error)"
+  },
+  {
+    "File": "SWLOR.Game.Server/Feature/UsePerkFeat.cs",
     "Line": 387,
     "Member": "TryUseAbility",
     "Delivery": "Retained",

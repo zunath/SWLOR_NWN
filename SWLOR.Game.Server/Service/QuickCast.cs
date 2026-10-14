@@ -1,115 +1,166 @@
 using System.Collections.Generic;
-using System.Linq;
 using NWNXLib = NWN.Native.API.NWNXLib;
 using SWLOR.Game.Server.Core;
+using SWLOR.Game.Server.Core.NWNX.Enum;
+using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Feature;
 using SWLOR.Game.Server.Native;
 using SWLOR.Game.Server.Service.AbilityService;
+using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.Game.Server.Service;
 
-/// <summary>
-/// Optional Settings-window casts bypass the client's feat cursor. Both modes must be
-/// enabled each login; native feat buttons retain their normal target selection.
-/// </summary>
+/// <summary>Persisted targeting preferences apply to all eligible native ability buttons.</summary>
 public static class QuickCast
 {
-    private static readonly Dictionary<uint, HashSet<QuickCastTargetType>> _enabledModes = new();
+    private static readonly HashSet<uint> _applying = new();
 
-    public static bool IsEnabled(uint player, QuickCastTargetType targetType) =>
-        _enabledModes.TryGetValue(player, out var modes) && modes.Contains(targetType);
+    public static FeatType GetOriginalFeat(FeatType feat) => QuickCastFeatMap.GetOriginal(feat);
 
-    public static void SetEnabled(uint player, QuickCastTargetType targetType, bool enabled)
+    private static PlayerSettings GetSettings(uint player)
     {
-        if (enabled)
-        {
-            if (!_enabledModes.TryGetValue(player, out var modes))
-                _enabledModes[player] = modes = new HashSet<QuickCastTargetType>();
-            modes.Add(targetType);
-        }
-        else if (_enabledModes.TryGetValue(player, out var modes))
-        {
-            modes.Remove(targetType);
-            if (modes.Count == 0)
-                _enabledModes.Remove(player);
-        }
+        if (!GetIsObjectValid(player) || !GetIsPC(player) || GetIsDM(player) || GetIsDMPossessed(player))
+            return null;
+        var id = GetObjectUUID(player);
+        return string.IsNullOrWhiteSpace(id) ? null : DB.Get<Player>(id)?.Settings;
     }
 
-    public static IEnumerable<(FeatType Feat, string Name)> GetAvailableAbilities(uint player, QuickCastTargetType targetType) =>
-        Ability.GetAllAbilityDetails()
-            .Where(entry => QuickCastPolicy.IsEligible(entry.Value, targetType) && CreaturePlugin.GetKnowsFeat(player, entry.Key))
-            .OrderBy(entry => entry.Value.Name)
-            .Select(entry => (entry.Key, entry.Value.Name));
-
-    private static bool TryResolveAbility(uint player, QuickCastTargetType targetType, string nameOrId, out FeatType feat, out string error)
+    public static bool IsEnabled(PlayerSettings settings, QuickCastTargetType type) => type switch
     {
-        feat = FeatType.Invalid;
-        if (!GetIsPC(player) || GetIsDMPossessed(player))
-        {
-            error = "Quick casting is only available for your player character.";
-            return false;
-        }
+        QuickCastTargetType.Self => settings?.SelfQuickCastEnabled == true,
+        QuickCastTargetType.CurrentEnemy => settings?.EnemyQuickCastEnabled == true,
+        _ => false
+    };
 
-        if (!IsEnabled(player, targetType))
-        {
-            error = "This quick-cast mode is off. Enable it under Settings > Targeting and click Save for this login.";
-            return false;
-        }
+    public static bool IsEnabled(uint player, QuickCastTargetType type) => IsEnabled(GetSettings(player), type);
 
-        if (!QuickCastPolicy.TryFindAbility(Ability.GetAllAbilityDetails(), nameOrId, targetType,
-                candidate => CreaturePlugin.GetKnowsFeat(player, candidate), out feat))
-        {
-            error = "Choose a known, eligible single-target ability under Settings > Targeting. Reopen Settings to refresh your abilities.";
+    private static bool UsesAutomaticTarget(FeatType original, PlayerSettings settings)
+    {
+        if (settings == null || !Ability.IsFeatRegistered(original))
             return false;
-        }
-
-        error = string.Empty;
-        return true;
+        var ability = Ability.GetAbilityDetail(original);
+        return IsEnabled(settings, QuickCastTargetType.Self) && QuickCastPolicy.IsEligible(ability, QuickCastTargetType.Self) ||
+               IsEnabled(settings, QuickCastTargetType.CurrentEnemy) && QuickCastPolicy.IsEligible(ability, QuickCastTargetType.CurrentEnemy);
     }
 
-    public static bool TryCast(uint player, QuickCastTargetType targetType, string nameOrId, out string error)
+    public static FeatType GetDisplayedFeat(uint player, FeatType feat)
     {
-        if (!TryResolveAbility(player, targetType, nameOrId, out var feat, out error))
-            return false;
+        var original = GetOriginalFeat(feat);
+        return QuickCastFeatMap.TryGetAlias(original, out var alias) && UsesAutomaticTarget(original, GetSettings(player))
+            ? alias : original;
+    }
 
-        // NUI buttons skip the native feat action that normally prevents controlled
-        // creatures from acting. Include hidden native types such as knockdown.
+    public static bool KnowsFeat(uint creature, FeatType feat)
+    {
+        var original = GetOriginalFeat(feat);
+        return CreaturePlugin.GetKnowsFeat(creature, original) ||
+               QuickCastFeatMap.TryGetAlias(original, out var alias) && CreaturePlugin.GetKnowsFeat(creature, alias);
+    }
+
+    public static void RemoveFeat(uint creature, FeatType feat)
+    {
+        var original = GetOriginalFeat(feat);
+        CreaturePlugin.RemoveFeat(creature, original);
+        if (QuickCastFeatMap.TryGetAlias(original, out var alias))
+            CreaturePlugin.RemoveFeat(creature, alias);
+    }
+
+    public static void ApplyPreferences(uint player)
+    {
+        var settings = GetSettings(player);
+        if (settings == null || !_applying.Add(player))
+            return;
+        try
+        {
+            foreach (var (alias, original) in QuickCastFeatMap.Originals)
+            {
+                var hasOriginal = CreaturePlugin.GetKnowsFeat(player, original);
+                var hasAlias = CreaturePlugin.GetKnowsFeat(player, alias);
+                if (!hasOriginal && !hasAlias)
+                    continue;
+                var automatic = UsesAutomaticTarget(original, settings);
+                var desired = automatic ? alias : original;
+                var other = automatic ? original : alias;
+                if (!(automatic ? hasAlias : hasOriginal))
+                    CreaturePlugin.AddFeat(player, desired);
+                if (automatic ? hasOriginal : hasAlias)
+                    CreaturePlugin.RemoveFeat(player, other);
+            }
+
+            // Saved layouts and newly dragged feats may still carry either representation.
+            // Only ability IDs change; labels, other shortcuts and slot positions are preserved.
+            for (var index = 0; index < 36; index++)
+            {
+                var slot = PlayerPlugin.GetQuickBarSlot(player, index);
+                if (slot.ObjectType != QuickBarSlotType.Feat)
+                    continue;
+                var current = (FeatType)slot.INTParam1;
+                var original = GetOriginalFeat(current);
+                if (!QuickCastFeatMap.TryGetAlias(original, out var alias))
+                    continue;
+                var desired = KnowsFeat(player, original) && UsesAutomaticTarget(original, settings) ? alias : original;
+                if (current == desired)
+                    continue;
+                slot.INTParam1 = (int)desired;
+                PlayerPlugin.SetQuickBarSlot(player, index, slot);
+            }
+        }
+        finally { _applying.Remove(player); }
+    }
+
+    [NWNEventHandler(ScriptName.OnModuleEnter)]
+    public static void ApplyOnEnter() => ApplyPreferences(GetEnteringObject());
+
+    [NWNEventHandler(ScriptName.OnQuickbarSetButtonAfter)]
+    public static void ApplyOnQuickbarEdit() => ApplyPreferences(OBJECT_SELF);
+
+    public static bool TryCast(uint player, FeatType alias, out string error)
+    {
+        var settings = GetSettings(player);
+        if (settings == null || !QuickCastFeatMap.IsAlias(alias))
+        {
+            error = "Automatic targeting is only available for your player character's abilities.";
+            return false;
+        }
+        var feat = GetOriginalFeat(alias);
+        if (!Ability.IsFeatRegistered(feat) || !KnowsFeat(player, feat))
+        {
+            error = "You do not know this ability.";
+            return false;
+        }
+        var ability = Ability.GetAbilityDetail(feat);
+        var type = ability.IsHostileAbility ? QuickCastTargetType.CurrentEnemy : QuickCastTargetType.Self;
+        if (!IsEnabled(settings, type) || !QuickCastPolicy.IsEligible(ability, type))
+        {
+            error = "Automatic targeting is disabled for this ability. Check Settings > Targeting.";
+            return false;
+        }
+
         var creature = NWNXLib.g_pAppManager.m_pServerExoApp.GetGameObject(player).AsNWSCreature();
         foreach (var effect in creature.m_appliedEffects)
         {
             if (!QuickCastPolicy.BlocksCasting((EffectTypeScript)effect.GetScriptEffectType(1)))
                 continue;
-            error = "You cannot quick cast while incapacitated.";
+            error = "You cannot use an ability while incapacitated.";
             return false;
         }
 
         var target = player;
-        if (targetType == QuickCastTargetType.CurrentEnemy)
+        if (type == QuickCastTargetType.CurrentEnemy)
         {
             target = GetAttackTarget(player);
-            if (!GetIsObjectValid(target) || target == player || GetIsDead(target) ||
-                GetCurrentHitPoints(target) <= 0 || GetArea(target) != GetArea(player) ||
-                !GetIsReactionTypeHostile(target, player) ||
+            if (!GetIsObjectValid(target) || target == player || GetIsDead(target) || GetCurrentHitPoints(target) <= 0 ||
+                GetArea(target) != GetArea(player) || !GetIsReactionTypeHostile(target, player) ||
                 !WeaponAttackAnimation.HasQueuedAttack(
                     NWNXLib.g_pAppManager.m_pServerExoApp.GetGameObject(player).AsNWSObject(), target))
             {
-                error = "You need a living current attack target in this area. Attack an enemy first, or use the normal feat button to choose a target.";
+                error = "Attack a living enemy first to use current-enemy targeting.";
                 return false;
             }
         }
-
-        // This is the same activation/impact validation and resource/recast pipeline used
-        // by feat clicks. The button does not grant feats or bypass ability requirements.
+        error = string.Empty;
         return UsePerkFeat.TryUseAbility(player, target, feat, GetLocation(target));
     }
-
-    public static void ResetSession(uint player) => _enabledModes.Remove(player);
-
-    [NWNEventHandler(ScriptName.OnModuleEnter)]
-    public static void ResetOnEnter() => ResetSession(GetEnteringObject());
-
-    [NWNEventHandler(ScriptName.OnModuleExit)]
-    public static void ResetOnExit() => ResetSession(GetExitingObject());
 }

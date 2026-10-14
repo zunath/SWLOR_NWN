@@ -189,7 +189,8 @@ namespace SWLOR.CombatSim.Engine
                             HeartbeatCount = _random.Next(HeartbeatsPerRegenCycle),
                             // The game also carries a stamina remainder from 0 to 4 points across heartbeats.
                             StmRegenCarry = _random.Next(HeartbeatsPerRegenCycle) / (double)HeartbeatsPerRegenCycle,
-                            NextAttackAt = _random.NextDouble() * 2.0,
+                            // The first swing falls anywhere within one attack interval.
+                            NextAttackAt = _random.NextDouble() * AttackInterval(spec),
                             NextActionAt = _random.NextDouble()
                         };
                         _combatants.Add(combatant);
@@ -295,7 +296,8 @@ namespace SWLOR.CombatSim.Engine
 
                 if (combatant.IsStarved)
                 {
-                    combatant.Stats.StarvedSeconds += step;
+                    // The last step can reach past the fight's end; only the time inside it counts.
+                    combatant.Stats.StarvedSeconds += Math.Min(step, Math.Max(0, _scenario.DurationSeconds - _now));
                     combatant.Stats.FirstStarvedAt ??= _now;
                 }
             }
@@ -888,6 +890,9 @@ namespace SWLOR.CombatSim.Engine
                     PayHitPoints(attacker, hitPointCost);
             }
         }
+
+        private static double AttackInterval(CombatantSpec spec) =>
+            spec.AutoAttack is { AttacksPerSecond: > 0 } attack ? 1.0 / attack.AttacksPerSecond : 2.0;
 
         private void ExpireQueuedWeaponAbility(Combatant combatant)
         {

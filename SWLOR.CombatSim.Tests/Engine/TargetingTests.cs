@@ -264,6 +264,25 @@ namespace SWLOR.CombatSim.Tests.Engine
         }
 
         [Test]
+        public void TheFirstSwing_FallsWithinTheAttackersOwnInterval()
+        {
+            // At 0.06 attacks a second the interval is about 17 seconds, so few runs swing in the first 2.
+            var earlySwings = Enumerable.Range(1, 20).Count(seed =>
+            {
+                var simulation = new Simulation(
+                    TestScenarios.TwoTeams(false, new[] { TestCombatants.Striker("Slow", 0.06f) }, new[] { TestCombatants.Dummy("Enemy", true) }),
+                    RuleSets.Current(),
+                    _catalog,
+                    seed);
+                simulation.Spawn();
+                SimulationClock.RunUntil(simulation, 2);
+                return simulation.Get("Enemy").Stats.DamageTakenToHp > 0;
+            });
+
+            earlySwings.Should().BeLessThan(10);
+        }
+
+        [Test]
         public void LowestAlly_CountsTemporaryHp()
         {
             var simulation = TestScenarios.Spawn(

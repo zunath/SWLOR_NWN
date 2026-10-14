@@ -87,6 +87,22 @@ namespace SWLOR.CombatSim.Tests.Engine
         }
 
         [Test]
+        public void StarvedTime_NeverExceedsTheFight_WhenTheLastStepRunsPastItsEnd()
+        {
+            var lightning = TestCombatants.Use("ForceLightning3", AbilityTarget.Enemy);
+            lightning.Damage = new DamageSpec { Min = 1f, Max = 1f, HitChance = 1f };
+            var caster = TestCombatants.Medic("Caster", lightning);
+            caster.MaxFp = 1;
+            caster.ReactionSeconds = 10f;
+            var scenario = TestScenarios.TwoTeams(false, new[] { caster }, new[] { TestCombatants.Dummy("Enemy", true) }, durationSeconds: 1f);
+            scenario.TimeStepSeconds = 10f;
+
+            var result = new Simulation(scenario, RuleSets.Current(), _catalog, 1).Run();
+
+            result.Combatants.Single(c => c.Name == "Caster").Stats.StarvedSeconds.Should().BeLessThanOrEqualTo(1.0);
+        }
+
+        [Test]
         public void MinIntervalSeconds_IsNotRaisedAsStarvation()
         {
             var (simulation, caster, _) = SpawnCaster(Rock(20f));

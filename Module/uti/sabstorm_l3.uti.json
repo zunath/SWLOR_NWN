@@ -25,16 +25,15 @@
     "value": 0
   },
   "DescIdentified": {
-    "id": 56620,
     "type": "cexolocstring",
     "value": {
-      "0": ""
+      "0": "This cowl's fabric is darkened along its exposed edges and cleaner where its folds overlap. Its simple fastenings have been replaced several times, while the more deliberate stitching has endured."
     }
   },
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": ""
+      "0": "This cowl's fabric is darkened along its exposed edges and cleaner where its folds overlap. Its simple fastenings have been replaced several times, while the more deliberate stitching has endured."
     }
   },
   "Identified": {

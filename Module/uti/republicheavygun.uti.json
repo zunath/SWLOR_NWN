@@ -110,11 +110,15 @@
   },
   "DescIdentified": {
     "type": "cexolocstring",
-    "value": {}
+    "value": {
+      "0": "Substantial panels and a broad load-bearing fit distinguish this Republic gunner's armor. The less visible fittings are arranged around long service beside heavy equipment, where an awkward strap soon stops being a small annoyance."
+    }
   },
   "Description": {
     "type": "cexolocstring",
-    "value": {}
+    "value": {
+      "0": "Substantial panels and a broad load-bearing fit distinguish this Republic gunner's armor. The less visible fittings are arranged around long service beside heavy equipment, where an awkward strap soon stops being a small annoyance."
+    }
   },
   "Identified": {
     "type": "byte",

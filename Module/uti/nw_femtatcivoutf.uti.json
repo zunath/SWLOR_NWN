@@ -110,12 +110,14 @@
   },
   "DescIdentified": {
     "type": "cexolocstring",
-    "value": {}
+    "value": {
+      "0": "Light, loosely layered clothing suited to Tatooine's heat and abrasive dust. The easy cut leaves room to move while giving its wearer something to pull close when the wind changes its mind."
+    }
   },
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": ""
+      "0": "Light, loosely layered clothing suited to Tatooine's heat and abrasive dust. The easy cut leaves room to move while giving its wearer something to pull close when the wind changes its mind."
     }
   },
   "Identified": {

@@ -110,11 +110,15 @@
   },
   "DescIdentified": {
     "type": "cexolocstring",
-    "value": {}
+    "value": {
+      "0": "Grey cloth keeps this travelling outfit inconspicuous beneath a starport's harsh lights. Reinforced pockets leave room for the things a prudent passenger would rather keep close than trust to checked cargo."
+    }
   },
   "Description": {
     "type": "cexolocstring",
-    "value": {}
+    "value": {
+      "0": "Grey cloth keeps this travelling outfit inconspicuous beneath a starport's harsh lights. Reinforced pockets leave room for the things a prudent passenger would rather keep close than trust to checked cargo."
+    }
   },
   "Identified": {
     "type": "byte",

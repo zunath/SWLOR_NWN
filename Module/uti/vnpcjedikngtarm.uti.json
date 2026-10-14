@@ -110,12 +110,14 @@
   },
   "DescIdentified": {
     "type": "cexolocstring",
-    "value": {}
+    "value": {
+      "0": "This Jedi knight's armor balances practical platework with restrained outer layers. Its fit suggests equipment meant to travel with its wearer, rather than wait safely in the Temple until a formal occasion demands it."
+    }
   },
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": ""
+      "0": "This Jedi knight's armor balances practical platework with restrained outer layers. Its fit suggests equipment meant to travel with its wearer, rather than wait safely in the Temple until a formal occasion demands it."
     }
   },
   "Identified": {

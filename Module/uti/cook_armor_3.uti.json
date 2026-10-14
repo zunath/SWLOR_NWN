@@ -110,11 +110,15 @@
   },
   "DescIdentified": {
     "type": "cexolocstring",
-    "value": {}
+    "value": {
+      "0": "The smooth outer panels of this silk tunic have been fitted for a chef who works in view of their guests. Careful tailoring keeps an elegant appearance from becoming an obstacle at a busy counter."
+    }
   },
   "Description": {
     "type": "cexolocstring",
-    "value": {}
+    "value": {
+      "0": "The smooth outer panels of this silk tunic have been fitted for a chef who works in view of their guests. Careful tailoring keeps an elegant appearance from becoming an obstacle at a busy counter."
+    }
   },
   "Identified": {
     "type": "byte",

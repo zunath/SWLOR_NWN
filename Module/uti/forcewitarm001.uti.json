@@ -110,12 +110,14 @@
   },
   "DescIdentified": {
     "type": "cexolocstring",
-    "value": {}
+    "value": {
+      "0": "These apprentice robes have been patched until the repaired sections rival the original cloth. The simple cut remains recognizable beneath the wear, outlasting whatever ambitions first brought their owner to the training floor."
+    }
   },
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": ""
+      "0": "These apprentice robes have been patched until the repaired sections rival the original cloth. The simple cut remains recognizable beneath the wear, outlasting whatever ambitions first brought their owner to the training floor."
     }
   },
   "Identified": {

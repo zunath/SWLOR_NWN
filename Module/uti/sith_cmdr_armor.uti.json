@@ -110,12 +110,14 @@
   },
   "DescIdentified": {
     "type": "cexolocstring",
-    "value": {}
+    "value": {
+      "0": "The severe outline of this Sith command armor is interrupted by orderly service fittings. It is designed to make authority visible, while leaving its wearer equipped for the consequences of exercising it."
+    }
   },
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": ""
+      "0": "The severe outline of this Sith command armor is interrupted by orderly service fittings. It is designed to make authority visible, while leaving its wearer equipped for the consequences of exercising it."
     }
   },
   "Identified": {

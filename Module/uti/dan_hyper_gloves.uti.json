@@ -26,11 +26,15 @@
   },
   "DescIdentified": {
     "type": "cexolocstring",
-    "value": {}
+    "value": {
+      "0": "These Dantari gloves are fastened with hide ties instead of buckles. Each knot has been worked to lie flat, the kind of small refinement learned by wearing something rather than drawing it on a workbench."
+    }
   },
   "Description": {
     "type": "cexolocstring",
-    "value": {}
+    "value": {
+      "0": "These Dantari gloves are fastened with hide ties instead of buckles. Each knot has been worked to lie flat, the kind of small refinement learned by wearing something rather than drawing it on a workbench."
+    }
   },
   "Identified": {
     "type": "byte",

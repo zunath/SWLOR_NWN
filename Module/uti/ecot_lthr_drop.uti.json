@@ -110,11 +110,15 @@
   },
   "DescIdentified": {
     "type": "cexolocstring",
-    "value": {}
+    "value": {
+      "0": "Rough leather and patched cloth give this outfit a deliberately unpolished appearance. Its wearer would find little sympathy for an immaculate corporate uniform, and apparently dressed to make the feeling mutual."
+    }
   },
   "Description": {
     "type": "cexolocstring",
-    "value": {}
+    "value": {
+      "0": "Rough leather and patched cloth give this outfit a deliberately unpolished appearance. Its wearer would find little sympathy for an immaculate corporate uniform, and apparently dressed to make the feeling mutual."
+    }
   },
   "Identified": {
     "type": "byte",

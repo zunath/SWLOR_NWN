@@ -110,12 +110,14 @@
   },
   "DescIdentified": {
     "type": "cexolocstring",
-    "value": {}
+    "value": {
+      "0": "This finely worked tunic keeps a craftsman's practical cut while giving its seams an almost immaculate finish. The result would survive inspection at a formal presentation without looking out of place beside an open droid chassis."
+    }
   },
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": ""
+      "0": "This finely worked tunic keeps a craftsman's practical cut while giving its seams an almost immaculate finish. The result would survive inspection at a formal presentation without looking out of place beside an open droid chassis."
     }
   },
   "Identified": {

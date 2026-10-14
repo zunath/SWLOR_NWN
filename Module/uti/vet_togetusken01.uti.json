@@ -110,11 +110,15 @@
   },
   "DescIdentified": {
     "type": "cexolocstring",
-    "value": {}
+    "value": {
+      "0": "Wrapped layers keep these Tusken garments close against the desert wind. Their practical bindings and sun-worn cloth belong to a way of life that treats shelter from the sand as a daily necessity, not a special precaution."
+    }
   },
   "Description": {
     "type": "cexolocstring",
-    "value": {}
+    "value": {
+      "0": "Wrapped layers keep these Tusken garments close against the desert wind. Their practical bindings and sun-worn cloth belong to a way of life that treats shelter from the sand as a daily necessity, not a special precaution."
+    }
   },
   "Identified": {
     "type": "byte",

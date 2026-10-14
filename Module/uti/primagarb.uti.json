@@ -110,11 +110,15 @@
   },
   "DescIdentified": {
     "type": "cexolocstring",
-    "value": {}
+    "value": {
+      "0": "Prima's garbs have carefully placed folds and a lining softened by use. A closer look finds practical seams beneath the presentation, the modest necessities that let a personal style survive an ordinary day."
+    }
   },
   "Description": {
     "type": "cexolocstring",
-    "value": {}
+    "value": {
+      "0": "Prima's garbs have carefully placed folds and a lining softened by use. A closer look finds practical seams beneath the presentation, the modest necessities that let a personal style survive an ordinary day."
+    }
   },
   "Identified": {
     "type": "byte",

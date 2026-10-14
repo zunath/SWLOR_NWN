@@ -110,11 +110,15 @@
   },
   "DescIdentified": {
     "type": "cexolocstring",
-    "value": {}
+    "value": {
+      "0": "The flowing panels of this stage outfit have been balanced around a close-fitting foundation. It is made to catch the light during a turn without asking the dancer to keep track of every loose fold."
+    }
   },
   "Description": {
     "type": "cexolocstring",
-    "value": {}
+    "value": {
+      "0": "The flowing panels of this stage outfit have been balanced around a close-fitting foundation. It is made to catch the light during a turn without asking the dancer to keep track of every loose fold."
+    }
   },
   "Identified": {
     "type": "byte",

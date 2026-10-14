@@ -22,7 +22,6 @@ STAT_CONFIGURED_ICON_CLASS_PATTERN = re.compile(
 )
 
 EXPLICIT_RECAST_SHORT_NAMES = {
-    "Shadowflow Stance": "Shado. Stance",
     "Pathogen Strike": "Path. Strike",
     "Volatile Compound": "Vol. Compound",
     "Assassin's Stance": "Assn. Stance",
@@ -295,6 +294,7 @@ PERK_BASE_ID_ALIASES = {
     ("Twin Pistol", "Momentum"): "TwinPistolMomentum",
     ("Twin Pistol", "Follow Through"): "TwinPistolFollowThrough",
     ("Twin Pistol", "Second Wind"): "TwinPistolSecondWind",
+    ("Vibroknife", "Shadowflow"): "ShadowflowStance",
     ("Katar", "Steel Shoulder"): "TwinGuardStance",
     ("Katar", "Tag In"): "TwinIntercept",
     ("Lightsaber", "Force Link"): "SaberForceLink",
@@ -1848,7 +1848,7 @@ def exact_weapon_stance_stat_entries(row, base):
         add_stat(stats, "AttackPercentAdjustment", f"-{parse_percent(r'(?:Reduces Attack|Attack is reduced) by (\d+)%', description)}")
         return list(stats.items())
 
-    if base == "Shadowflow Stance":
+    if base == "Shadowflow":
         add_stat(stats, "AutoAttackHamstringSkillType", "(int)SkillType.Invalid")
         add_stat(stats, "AutoAttackHamstringDurationSeconds", parse_duration(description) or 18)
         add_stat(stats, "DefensePercentAdjustment", f"-{parse_percent(r'(?:Defense is reduced|Defense is reduced by|reduces Defense) by (\d+)%', description)}")

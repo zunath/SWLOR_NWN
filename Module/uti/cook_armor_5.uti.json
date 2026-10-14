@@ -110,11 +110,15 @@
   },
   "DescIdentified": {
     "type": "cexolocstring",
-    "value": {}
+    "value": {
+      "0": "Subtle color and close-set seams give this chef's tunic a reserved elegance. The workmanship would be at home in an expensive dining room, though its practical pockets remember the kitchen."
+    }
   },
   "Description": {
     "type": "cexolocstring",
-    "value": {}
+    "value": {
+      "0": "Subtle color and close-set seams give this chef's tunic a reserved elegance. The workmanship would be at home in an expensive dining room, though its practical pockets remember the kitchen."
+    }
   },
   "Identified": {
     "type": "byte",

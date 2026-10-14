@@ -314,8 +314,8 @@ public static class TwinPistolEquipmentEngineTests
         for (var property = GetFirstItemProperty(item); GetIsItemPropertyValid(property); property = GetNextItemProperty(item))
         {
             if (mirroredOnly && !TwinPistolEquipment.IsMirroredProperty(GetItemPropertyType(property))) continue;
-            // Saved GFF item-property subtypes are WORDs; native -1 and reloaded 65535 are the same sentinel.
-            properties.Add($"{(int)GetItemPropertyType(property)}:{unchecked((ushort)GetItemPropertySubType(property))}:{GetItemPropertyCostTableValue(property)}");
+            // GFF Subtype and CostValue are WORDs; native -1 and reloaded 65535 are the same sentinel.
+            properties.Add($"{(int)GetItemPropertyType(property)}:{unchecked((ushort)GetItemPropertySubType(property))}:{unchecked((ushort)GetItemPropertyCostTableValue(property))}");
         }
         return string.Join(";", properties.OrderBy(property => property));
     }

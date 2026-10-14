@@ -72308,11 +72308,11 @@
                     "__struct_id": 108,
                     "AddCost": {
                       "type": "dword",
-                      "value": 28
+                      "value": 56
                     },
                     "BaseItem": {
                       "type": "int",
-                      "value": 542
+                      "value": 61
                     },
                     "Charges": {
                       "type": "byte",
@@ -72320,7 +72320,7 @@
                     },
                     "Cost": {
                       "type": "dword",
-                      "value": 29
+                      "value": 58
                     },
                     "Cursed": {
                       "type": "byte",
@@ -72329,7 +72329,7 @@
                     "DescIdentified": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": "Pairs with an eligible main-hand pistol to use Twin Pistol ranks. Inactive alone. Supports DMG and Accuracy enhancements, including typed DMG; native and creature-wide bonus enhancements are incompatible."
+                        "0": "One item equips both Twin Pistols. Equipping this pair automatically equips its temporary off-hand gun. Removing either gun unequips the pair and destroys the temporary gun. Both guns use this item's weapon profile. Weapon profile enhancements apply to both guns; equipment bonuses apply once."
                       }
                     },
                     "Description": {
@@ -72347,7 +72347,7 @@
                     "LocalizedName": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": "Basic Companion Pistol"
+                        "0": "Basic Twin Pistols"
                       }
                     },
                     "ModelPart1": {
@@ -72394,6 +72394,37 @@
                           "PropertyName": {
                             "type": "word",
                             "value": 93
+                          },
+                          "Subtype": {
+                            "type": "word",
+                            "value": 0
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "ChanceAppear": {
+                            "type": "byte",
+                            "value": 100
+                          },
+                          "CostTable": {
+                            "type": "byte",
+                            "value": 14
+                          },
+                          "CostValue": {
+                            "type": "word",
+                            "value": 1
+                          },
+                          "Param1": {
+                            "type": "byte",
+                            "value": 255
+                          },
+                          "Param1Value": {
+                            "type": "byte",
+                            "value": 0
+                          },
+                          "PropertyName": {
+                            "type": "word",
+                            "value": 61
                           },
                           "Subtype": {
                             "type": "word",
@@ -72482,11 +72513,11 @@
                     },
                     "Tag": {
                       "type": "cexostring",
-                      "value": "b_companion"
+                      "value": "b_twinpistol"
                     },
                     "TemplateResRef": {
                       "type": "resref",
-                      "value": "b_companion"
+                      "value": "b_twinpistol"
                     },
                     "xModelPart1": {
                       "type": "word",
@@ -72519,6 +72550,26 @@
                     "ZPosition": {
                       "type": "float",
                       "value": -1.0
+                    },
+                    "VarTable": {
+                      "type": "list",
+                      "value": [
+                        {
+                          "__struct_id": 0,
+                          "Name": {
+                            "type": "cexostring",
+                            "value": "TWIN_PISTOL_PAIR"
+                          },
+                          "Type": {
+                            "type": "dword",
+                            "value": 1
+                          },
+                          "Value": {
+                            "type": "int",
+                            "value": 1
+                          }
+                        }
+                      ]
                     }
                   }
                 ]

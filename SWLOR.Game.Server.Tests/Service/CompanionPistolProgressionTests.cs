@@ -154,6 +154,58 @@ public class CompanionPistolProgressionTests
     }
 
     [Test]
+    public void PlacedStarterStores_SellOneOwnedPairMatchingTheBlueprintWithoutIndependentCompanions()
+    {
+        var root = Root();
+        var expectedStores = new Dictionary<string, (int Infinite, int X, int Y, int SinglePistols)>(StringComparer.OrdinalIgnoreCase);
+        foreach (var file in Directory.EnumerateFiles(Path.Combine(root, "Module", "utm"), "*.utm.json"))
+        {
+            var text = File.ReadAllText(file);
+            if (!text.Contains("\"b_twinpistol\"")) continue;
+            using var blueprint = JsonDocument.Parse(text);
+            var stock = StoreItems(blueprint.RootElement).ToArray();
+            var pair = stock.Single(item => WrappedString(item, "InventoryRes") == "b_twinpistol");
+            expectedStores[Path.GetFileName(file).Replace(".utm.json", "")] = (
+                Int(pair, "Infinite"), Int(pair, "Repos_PosX"), Int(pair, "Repos_Posy"),
+                stock.Count(item => WrappedString(item, "InventoryRes") == "b_pistol"));
+        }
+        expectedStores.Should().NotBeEmpty();
+        using var ownedPair = ReadItem("b_twinpistol");
+        var checkedStores = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+        foreach (var file in Directory.EnumerateFiles(Path.Combine(root, "Module", "git"), "*.git.json"))
+        {
+            var text = File.ReadAllText(file);
+            if (!expectedStores.Keys.Any(resref => text.Contains('"' + resref + '"', StringComparison.OrdinalIgnoreCase))) continue;
+            using var area = JsonDocument.Parse(text);
+            if (!area.RootElement.TryGetProperty("StoreList", out var storeList)) continue;
+            foreach (var store in storeList.GetProperty("value").EnumerateArray())
+            {
+                var resref = WrappedString(store, "ResRef");
+                if (!expectedStores.TryGetValue(resref, out var expected)) continue;
+                checkedStores.Add(resref);
+                var stock = StoreItems(store).ToArray();
+                stock.Should().NotContain(item => OptionalBaseItem(item) == (int)BaseItem.CompanionPistol,
+                    $"{Path.GetFileName(file)} must not sell an independently owned companion");
+                var pairs = stock.Where(item => WrappedString(item, "TemplateResRef") == "b_twinpistol").ToArray();
+                pairs.Should().ContainSingle($"{Path.GetFileName(file)} must match its starter store blueprint");
+                var pair = pairs.Single();
+                HasLocal(pair, "TWIN_PISTOL_PAIR").Should().BeTrue();
+                HasLocal(pair, "TWIN_PISTOL_SPARE").Should().BeFalse();
+                (Int(pair, "Infinite"), Int(pair, "Repos_PosX"), Int(pair, "Repos_Posy"))
+                    .Should().Be((expected.Infinite, expected.X, expected.Y));
+                foreach (var field in new[] { "BaseItem", "Cost", "AddCost", "StackSize", "LocalizedName",
+                             "DescIdentified", "PropertiesList", "VarTable", "Tag", "TemplateResRef",
+                             "ModelPart1", "ModelPart2", "ModelPart3", "xModelPart1", "xModelPart2", "xModelPart3" })
+                    JsonElement.DeepEquals(pair.GetProperty(field), ownedPair.RootElement.GetProperty(field))
+                        .Should().BeTrue($"{Path.GetFileName(file)} must retain the owned pair's {field}");
+                stock.Count(item => WrappedString(item, "TemplateResRef") == "b_pistol")
+                    .Should().Be(expected.SinglePistols, "the single-pistol starter remains available");
+            }
+        }
+        checkedStores.Should().BeEquivalentTo(expectedStores.Keys);
+    }
+
+    [Test]
     public void TemporaryTemplate_HasNoValueOrProfileUntilRuntimeCreatesItsLinkedCopy()
     {
         using var template = ReadItem("twp_companion");
@@ -172,6 +224,18 @@ public class CompanionPistolProgressionTests
             .Select(p => (Int(p, "Subtype"), Int(p, "CostValue"), Int(p, "Param1Value")));
 
     private static IEnumerable<JsonElement> Properties(JsonElement item) => item.GetProperty("PropertiesList").GetProperty("value").EnumerateArray();
+    private static IEnumerable<JsonElement> StoreItems(JsonElement store)
+    {
+        foreach (var panel in store.GetProperty("StoreList").GetProperty("value").EnumerateArray())
+        {
+            if (!panel.TryGetProperty("ItemList", out var items)) continue;
+            foreach (var item in items.GetProperty("value").EnumerateArray()) yield return item;
+        }
+    }
+    private static string WrappedString(JsonElement item, string field) => item.TryGetProperty(field, out var value)
+        ? value.GetProperty("value").GetString() ?? string.Empty : string.Empty;
+    private static int OptionalBaseItem(JsonElement item) => item.TryGetProperty("BaseItem", out var value)
+        ? value.GetProperty("value").GetInt32() : -1;
     private static bool HasLocal(JsonElement item, string name) => item.TryGetProperty("VarTable", out var variables) &&
         variables.GetProperty("value").EnumerateArray().Any(variable =>
             variable.GetProperty("Name").GetProperty("value").GetString() == name &&

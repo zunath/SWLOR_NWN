@@ -17,6 +17,27 @@ namespace SWLOR.Game.Server.EngineTests.Definitions;
 
 public static class TwinPistolEquipmentEngineTests
 {
+    [EngineTest("Twin Pistol placed stores sell owned pairs and no independent companion guns", Category = "TwinPistolEquipment", TimeoutSeconds = 30f)]
+    public static async Task PlacedStoreOwnership(EngineTestContext ctx)
+    {
+        var observer = ctx.SpawnCreature("civilian");
+        var pairs = 0;
+        await ctx.ExecuteInCreatureContextAsync(observer, () =>
+        {
+            for (var area = GetFirstArea(); GetIsObjectValid(area); area = GetNextArea())
+            for (var store = GetFirstObjectInArea(area, ObjectType.Store); GetIsObjectValid(store);
+                 store = GetNextObjectInArea(area, ObjectType.Store))
+            for (var item = GetFirstItemInInventory(store); GetIsObjectValid(item); item = GetNextItemInInventory(store))
+            {
+                ctx.Assert(GetBaseItemType(item) != BaseItem.CompanionPistol,
+                    $"Placed store {GetResRef(store)} must not sell the retired independent off-hand gun {GetResRef(item)}");
+                if (TwinPistolEquipment.IsPairItem(item)) pairs++;
+            }
+        });
+        ctx.Assert(pairs >= 14, $"All fourteen authored starter placements contain owned Twin Pistols (found {pairs})");
+        ctx.SetResultDetail($"Verified {pairs} native placed-store owned pairs and no independent companion stock.");
+    }
+
     [EngineTest("Twin Pistol equips one owned item and creates a linked temporary spare", Category = "TwinPistolEquipment", TimeoutSeconds = 30f)]
     public static async Task SingleOwnedItem(EngineTestContext ctx)
     {

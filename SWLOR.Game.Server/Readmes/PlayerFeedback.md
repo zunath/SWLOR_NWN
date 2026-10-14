@@ -33,7 +33,6 @@ settings are cached at startup. Gameplay and server audit logs are unaffected.
 | Weapon ability base | Supplemental flanking/idle/behind damage adjustments and conditional critical-rate calculation popups. | Ability outcomes, final damage, status extension, and consumed setup messages. |
 | `Combat` | High Noon critical-damage percentage, automatic attack-cycle critical-rate percentage, and Overwatch accuracy arithmetic. | Actual attack results/damage and the Overwatch activation popup. |
 | `Combat` | Duplicate overhead versions of Guard, Critical Ward, Pinning Fire, and First Strike messages. | The corresponding combat log message, including mitigation amounts and First Strike readiness/stacks/recharge details. |
-| Speeder dismount | Duplicate overhead dismount popup. | The existing dismount log message. |
 | Explicitly silent queued-ability cleanup | Debug confirmation of internal queue cleanup. | Requested expiry/cancellation announcements remain enabled. |
 
 STM/FP restoration reports the actual positive gain after caps and FP modifiers,

@@ -3,6 +3,7 @@ using System.Linq;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Feature.GuiDefinition.RefreshEvent;
 using SWLOR.Game.Server.Feature.StatusEffectDefinition;
+using SWLOR.Game.Server.Native;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.FrameProfilerService;
@@ -353,7 +354,7 @@ namespace SWLOR.Game.Server.Service
             // Wait until native removal settles, then only clear statuses without a timer.
             DelayCommand(0f, () =>
             {
-                if (!HasEffectByTag(player, tag))
+                if (!AppliedEffects.MayHaveTag(player, tag) || !HasEffectByTag(player, tag))
                     RemoveStatusEffectById(player, tag, true, false);
             });
         }
@@ -878,8 +879,7 @@ namespace SWLOR.Game.Server.Service
             ResistanceType resistanceType)
         {
             active.RestartDuration(durationTicks, durationSeconds, tickAnchor);
-            RemoveNativeStatusEffect(creature, active.Id);
-            ApplyTrackedNWNEffect(creature, active, active.DurationTicks, false);
+            ReplaceNativeStatusEffect(creature, active, active.DurationTicks, false);
 
             Combat.ApplyStatusAppliedTargetStaminaDrain(source, creature, active.Categories);
             if ((active.Categories & StatusEffectCategory.Debuff) != 0 &&
@@ -1235,9 +1235,22 @@ namespace SWLOR.Game.Server.Service
 
         private static void ApplyTrackedNWNEffect(uint creature, IStatusEffect statusEffect, int durationTicks, bool isPermanent)
         {
-            if (HasEffectByTag(creature, statusEffect.Id))
+            if (AppliedEffects.MayHaveTag(creature, statusEffect.Id) && HasEffectByTag(creature, statusEffect.Id))
                 return;
 
+            ApplyNativeStatusEffect(creature, statusEffect, durationTicks, isPermanent);
+        }
+
+        // RemoveEffectByTag hides every effect it finds with the tag, so the presence check that
+        // ApplyTrackedNWNEffect makes would always fail here.
+        private static void ReplaceNativeStatusEffect(uint creature, IStatusEffect statusEffect, int durationTicks, bool isPermanent)
+        {
+            RemoveNativeStatusEffect(creature, statusEffect.Id);
+            ApplyNativeStatusEffect(creature, statusEffect, durationTicks, isPermanent);
+        }
+
+        private static void ApplyNativeStatusEffect(uint creature, IStatusEffect statusEffect, int durationTicks, bool isPermanent)
+        {
             var effect = BuildNativeStatusEffect(statusEffect);
 
             if (isPermanent || durationTicks < 0)
@@ -1372,8 +1385,7 @@ namespace SWLOR.Game.Server.Service
                     continue;
 
                 statusEffect.SetDurationSeconds(statusEffect.GetRemainingDurationSeconds(DateTime.UtcNow) + durationSeconds);
-                RemoveNativeStatusEffect(creature, statusEffect.Id);
-                ApplyTrackedNWNEffect(creature, statusEffect, statusEffect.DurationTicks, statusEffect.DurationTicks < 0);
+                ReplaceNativeStatusEffect(creature, statusEffect, statusEffect.DurationTicks, statusEffect.DurationTicks < 0);
                 extended = true;
             }
 
@@ -1432,8 +1444,7 @@ namespace SWLOR.Game.Server.Service
                 adjustedSeconds = Math.Min(adjustedSeconds + Math.Max(0, ticks - originalTicks) * Math.Max(1f, statusEffect.Frequency),
                     ticks * Math.Max(1f, statusEffect.Frequency));
                 statusEffect.SetDurationSeconds(Math.Max(statusEffect.GetRemainingDurationSeconds(DateTime.UtcNow), adjustedSeconds));
-                RemoveNativeStatusEffect(creature, statusEffect.Id);
-                ApplyTrackedNWNEffect(creature, statusEffect, statusEffect.DurationTicks, statusEffect.DurationTicks < 0);
+                ReplaceNativeStatusEffect(creature, statusEffect, statusEffect.DurationTicks, statusEffect.DurationTicks < 0);
                 refreshed = true;
             }
 

@@ -43,6 +43,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .HasRecastDelay(RecastGroup.GuardianWard, 12f)
                 .SkillType(SkillType.Force)
                 .IsSingleTargetAbility()
+                .AllowsSelfQuickCast()
                 .HasMaxRange(15f)
                 .RequiresTarget()
                 .HasCustomValidation((activator, target, _, _) =>
@@ -67,6 +68,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .HasRecastDelay(RecastGroup.GuardianWard, 12f)
                 .SkillType(SkillType.Force)
                 .IsSingleTargetAbility()
+                .AllowsSelfQuickCast()
                 .HasMaxRange(15f)
                 .RequiresTarget()
                 .HasCustomValidation((activator, target, _, _) =>
@@ -91,6 +93,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .HasRecastDelay(RecastGroup.GuardianWard, 12f)
                 .SkillType(SkillType.Force)
                 .IsSingleTargetAbility()
+                .AllowsSelfQuickCast()
                 .HasMaxRange(15f)
                 .RequiresTarget()
                 .HasCustomValidation((activator, target, _, _) =>
@@ -115,6 +118,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .HasRecastDelay(RecastGroup.GuardianWard, 12f)
                 .SkillType(SkillType.Force)
                 .IsSingleTargetAbility()
+                .AllowsSelfQuickCast()
                 .HasMaxRange(15f)
                 .RequiresTarget()
                 .HasCustomValidation((activator, target, _, _) =>

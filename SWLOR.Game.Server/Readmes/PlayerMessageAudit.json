@@ -763,6 +763,76 @@
     "Call": "SendMessageToPC(user, $\"{targetName} stats: \\n\" +\n                                $\"Armor: {targetStatus.Hull} Max: {targetStatus.MaxHull} \\n\" +\n                                $\"Shields: {targetStatus.Shield} Max: {targetStatus.MaxShield} \\n\" +\n                                $\"Capacitor: {targetStatus.Capacitor} Max: {targetStatus.MaxCapacitor} \\n\" +\n                                $\"Shield Regen: {targetStatus.ShieldRechargeRate} \\n\" +\n                                $\"EM Damage Bonus: {targetStatus.EMDamage} \\n\" +\n                                $\"Thermal Damage Bonus: {targetStatus.ThermalDamage} \\n\" +\n                                $\"Explosive Damage Bonus: {targetStatus.ExplosiveDamage} \\n\" +\n                                $\"Accuracy: {targetStatus.Accuracy} \\n\" +\n                                $\"Evasion: {targetStatus.Evasion} \\n\" +\n                                $\"Thermal Defense: {targetStatus.ThermalDefense} \\n\" +\n                                $\"EM Defense: {targetStatus.EMDefense} \\n\" +\n                                $\"Explosive Defense: {targetStatus.ExplosiveDefense} \\n\" +\n                                $\"Skill Level: {level}\")"
   },
   {
+    "File": "SWLOR.Game.Server/Feature/ChatCommandDefinition/QuickCastChatCommand.cs",
+    "Line": 25,
+    "Member": "BuildChatCommands",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(user, \"Usage: /castbind <empty slot 1–36> <self|enemy> <exact ability name or ID>. /castunbind <slot> releases the shortcut during this login.\")"
+  },
+  {
+    "File": "SWLOR.Game.Server/Feature/ChatCommandDefinition/QuickCastChatCommand.cs",
+    "Line": 30,
+    "Member": "BuildChatCommands",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(user, error)"
+  },
+  {
+    "File": "SWLOR.Game.Server/Feature/ChatCommandDefinition/QuickCastChatCommand.cs",
+    "Line": 32,
+    "Member": "BuildChatCommands",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(user, $\"Quick-cast command bound to slot {slot}. Use /castunbind {slot} to release the shortcut during this login.\")"
+  },
+  {
+    "File": "SWLOR.Game.Server/Feature/ChatCommandDefinition/QuickCastChatCommand.cs",
+    "Line": 41,
+    "Member": "BuildChatCommands",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(user, \"Usage: /castunbind <slot 1–36>.\")"
+  },
+  {
+    "File": "SWLOR.Game.Server/Feature/ChatCommandDefinition/QuickCastChatCommand.cs",
+    "Line": 45,
+    "Member": "BuildChatCommands",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(user, error)"
+  },
+  {
+    "File": "SWLOR.Game.Server/Feature/ChatCommandDefinition/QuickCastChatCommand.cs",
+    "Line": 47,
+    "Member": "BuildChatCommands",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(user, \"Binding released. The slot is cleared if you have not replaced the quick-cast command yourself.\")"
+  },
+  {
+    "File": "SWLOR.Game.Server/Feature/ChatCommandDefinition/QuickCastChatCommand.cs",
+    "Line": 66,
+    "Member": "AddCastCommand",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(user, $\"/{command} is {(enabled ? \"on\" : \"off\")} for this login. Native feat buttons retain manual targeting. Use /{command} list for eligible abilities.\")"
+  },
+  {
+    "File": "SWLOR.Game.Server/Feature/ChatCommandDefinition/QuickCastChatCommand.cs",
+    "Line": 72,
+    "Member": "AddCastCommand",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(user, abilities.Length == 0\n                        ? \"You have no eligible abilities for this quick-cast mode.\"\n                        : string.Join(\"\\n\", abilities))"
+  },
+  {
+    "File": "SWLOR.Game.Server/Feature/ChatCommandDefinition/QuickCastChatCommand.cs",
+    "Line": 79,
+    "Member": "AddCastCommand",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(user, $\"/{command} is {(QuickCast.IsEnabled(user, targetType) ? \"on\" : \"off\")}. Use /{command} on|off|list|<exact ability name or ID>. Modes start off each login. Use /castbind <empty slot> <self|enemy> <ability> for a hotkey, or the normal feat button for manual targeting.\")"
+  },
+  {
+    "File": "SWLOR.Game.Server/Feature/ChatCommandDefinition/QuickCastChatCommand.cs",
+    "Line": 83,
+    "Member": "AddCastCommand",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(user, error)"
+  },
+  {
     "File": "SWLOR.Game.Server/Feature/ChatCommandDefinition/RenameChatCommand.cs",
     "Line": 29,
     "Member": "BuildChatCommands",
@@ -5125,77 +5195,77 @@
   },
   {
     "File": "SWLOR.Game.Server/Service/Space.cs",
-    "Line": 1287,
+    "Line": 1299,
     "Member": "ActivateShipModule",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(activator, \"Unable to use that module.\")"
   },
   {
     "File": "SWLOR.Game.Server/Service/Space.cs",
-    "Line": 1303,
+    "Line": 1315,
     "Member": "ActivateShipModule",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(activator, $\"Your ship does not have enough capacitor to use that module. (Required: {requiredCapacitor})\")"
   },
   {
     "File": "SWLOR.Game.Server/Service/Space.cs",
-    "Line": 1311,
+    "Line": 1323,
     "Member": "ActivateShipModule",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(activator, \"That module is not ready.\")"
   },
   {
     "File": "SWLOR.Game.Server/Service/Space.cs",
-    "Line": 1327,
+    "Line": 1339,
     "Member": "ActivateShipModule",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(activator, \"This module cannot be used on that target type.\")"
   },
   {
     "File": "SWLOR.Game.Server/Service/Space.cs",
-    "Line": 1334,
+    "Line": 1346,
     "Member": "ActivateShipModule",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(activator, \"Invalid target.\")"
   },
   {
     "File": "SWLOR.Game.Server/Service/Space.cs",
-    "Line": 1342,
+    "Line": 1354,
     "Member": "ActivateShipModule",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(activator, $\"Target is too far away. Maximum distance: {maxDistance} meters.\")"
   },
   {
     "File": "SWLOR.Game.Server/Service/Space.cs",
-    "Line": 1360,
+    "Line": 1372,
     "Member": "ActivateShipModule",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(activator, result)"
   },
   {
     "File": "SWLOR.Game.Server/Service/Space.cs",
-    "Line": 2089,
+    "Line": 2101,
     "Member": "ApplyDeath",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature(ColorToken.Red(\"The ship has exploded!\"), player, false)"
   },
   {
     "File": "SWLOR.Game.Server/Service/Space.cs",
-    "Line": 2277,
+    "Line": 2289,
     "Member": "NotifyShipDamage",
     "Delivery": "Retained",
     "Call": "Messaging.SendMessageNearbyToPlayers(attacker, buildMessage, ShipDamageMessageRange)"
   },
   {
     "File": "SWLOR.Game.Server/Service/Space.cs",
-    "Line": 2283,
+    "Line": 2295,
     "Member": "NotifyShipDamage",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(target, buildMessage(target))"
   },
   {
     "File": "SWLOR.Game.Server/Service/Space.cs",
-    "Line": 2495,
+    "Line": 2507,
     "Member": "PreventSpaceStealth",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(creature, ColorToken.Red($\"You cannot enter stealth mode in space.\"))"

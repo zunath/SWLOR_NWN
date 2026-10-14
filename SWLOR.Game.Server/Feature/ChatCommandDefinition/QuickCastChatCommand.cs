@@ -15,7 +15,7 @@ public sealed class QuickCastChatCommand : IChatCommandListDefinition
         AddCastCommand(builder, QuickCastTargetType.Self);
         AddCastCommand(builder, QuickCastTargetType.CurrentEnemy);
         builder.Create("castbind")
-            .Description("Optional quick-cast hotkey: /castbind <empty slot 1–36> <self|enemy> <exact ability name or ID>. Enable that mode first. Native feat buttons keep manual targeting.")
+            .Description("Optional quick-cast hotkey: /castbind <empty slot 1–36> <self|enemy> <exact ability name or ID>. Enable that mode first. Space travel clears these temporary shortcuts. Native feat buttons keep manual targeting.")
             .Permissions(AuthorizationLevel.All)
             .Action((user, target, location, args) =>
             {
@@ -29,7 +29,7 @@ public sealed class QuickCastChatCommand : IChatCommandListDefinition
                 if (!QuickCast.TryBind(user, slot, targetType, string.Join(" ", args.Skip(2)), out var error))
                     SendMessageToPC(user, error);
                 else
-                    SendMessageToPC(user, $"Quick-cast command bound to slot {slot}. Use /castunbind {slot} to release the shortcut during this login.");
+                    SendMessageToPC(user, $"Quick-cast command bound to slot {slot}. Space travel clears this temporary shortcut. Use /castunbind {slot} to release it during this login.");
             });
         builder.Create("castunbind")
             .Description("Release a quickbar slot assigned by /castbind during this login: /castunbind <slot 1–36>.")

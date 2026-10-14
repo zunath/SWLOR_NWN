@@ -781,7 +781,7 @@
     "Line": 32,
     "Member": "BuildChatCommands",
     "Delivery": "Retained",
-    "Call": "SendMessageToPC(user, $\"Quick-cast command bound to slot {slot}. Use /castunbind {slot} to release the shortcut during this login.\")"
+    "Call": "SendMessageToPC(user, $\"Quick-cast command bound to slot {slot}. Space travel clears this temporary shortcut. Use /castunbind {slot} to release it during this login.\")"
   },
   {
     "File": "SWLOR.Game.Server/Feature/ChatCommandDefinition/QuickCastChatCommand.cs",

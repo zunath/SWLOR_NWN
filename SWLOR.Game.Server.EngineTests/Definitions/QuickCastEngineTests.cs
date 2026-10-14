@@ -1,7 +1,9 @@
 using System.Threading.Tasks;
 using System.Collections.Generic;
+using Newtonsoft.Json;
 using NWN.Native.API;
 using Ability = SWLOR.Game.Server.Service.Ability;
+using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Core.NWNX.Enum;
 using SWLOR.Game.Server.EngineTests.Framework;
 using SWLOR.Game.Server.Service.AbilityService;
@@ -90,7 +92,12 @@ public static class QuickCastEngineTests
     }
 
     [EngineTest("Character exports omit quick-cast bindings through repeated saves and fresh logins", Category = "QuickCast", TimeoutSeconds = 60f)]
-    public static async Task CharacterExportBindings(EngineTestContext ctx)
+    public static Task CharacterExportBindings(EngineTestContext ctx) => VerifySavedBindings(ctx, characterExport: true);
+
+    [EngineTest("Stored quickbar snapshots omit quick-cast bindings through repeated saves and fresh logins", Category = "QuickCast", TimeoutSeconds = 60f)]
+    public static Task QuickbarSnapshotBindings(EngineTestContext ctx) => VerifySavedBindings(ctx, characterExport: false);
+
+    private static async Task VerifySavedBindings(EngineTestContext ctx, bool characterExport)
     {
         using var original = await PlayerAbilityFixture.CreateAsync(ctx);
         using var firstLogin = await PlayerAbilityFixture.CreateAsync(ctx, 3f);
@@ -119,7 +126,7 @@ public static class QuickCastEngineTests
                 PlayerPlugin.SetQuickBarSlot(source.Creature, 1, PlayerQuickBarSlot.UseSkill(0));
                 PlayerPlugin.SetQuickBarSlot(source.Creature, 2, PlayerQuickBarSlot.Command("Manual", command));
                 await ctx.WaitFrameAsync();
-                ReloadSavedQuickbar(ctx, source.Creature, receiver.Creature, () =>
+                ReloadSavedQuickbar(ctx, source.Creature, receiver.Creature, characterExport, () =>
                 {
                     ctx.Assert(QuickCast.IsBoundCommand(PlayerPlugin.GetQuickBarSlot(source.Creature, 0), command),
                         "export restores the live first-slot command");
@@ -131,9 +138,9 @@ public static class QuickCastEngineTests
                     QuickCast.ResetSession(source.Creature);
                 });
                 ctx.AssertEqual(QuickBarSlotType.Empty, PlayerPlugin.GetQuickBarSlot(receiver.Creature, 0).ObjectType,
-                    "the pre-unbind BIC contains no temporary first-slot command");
+                    "the pre-unbind snapshot contains no temporary first-slot command");
                 ctx.AssertEqual(QuickBarSlotType.Empty, PlayerPlugin.GetQuickBarSlot(receiver.Creature, 35).ObjectType,
-                    "the pre-rebind BIC contains no temporary last-slot command");
+                    "the pre-rebind snapshot contains no temporary last-slot command");
                 ctx.Assert(!QuickCast.IsEnabled(receiver.Creature, QuickCastTargetType.Self),
                     "a fresh player identity has no process-local opt-in");
                 QuickCast.ResetSession(receiver.Creature);
@@ -151,7 +158,7 @@ public static class QuickCastEngineTests
 
             PlayerPlugin.SetQuickBarSlot(legacy.Creature, 0, PlayerQuickBarSlot.UseFeat(FeatType.Benevolence1));
             PlayerPlugin.SetQuickBarSlot(legacy.Creature, 1, PlayerQuickBarSlot.Command("Manual", command));
-            ReloadSavedQuickbar(ctx, legacy.Creature, secondLogin.Creature);
+            ReloadSavedQuickbar(ctx, legacy.Creature, secondLogin.Creature, characterExport);
             QuickCast.ResetSession(secondLogin.Creature);
             ctx.AssertEqual(QuickBarSlotType.Feat, PlayerPlugin.GetQuickBarSlot(secondLogin.Creature, 0).ObjectType,
                 "an ordinary legacy feat shortcut is preserved");
@@ -163,11 +170,24 @@ public static class QuickCastEngineTests
             foreach (var fixture in fixtures)
                 QuickCast.ResetSession(fixture.Creature);
         }
-        ctx.SetResultDetail("Two native BIC export/reload cycles with fresh player identities. Saved snapshots exclude temporary bindings even after subsequent unbind/rebind/reset; live commands are restored after saving, and manual edits and unowned commands survive.");
+        ctx.SetResultDetail($"Two {(characterExport ? "native BIC" : "Redis quickbar snapshot")} save/reload cycles with fresh player identities. Saved snapshots exclude temporary bindings even after subsequent unbind/rebind/reset; live commands are restored after saving, and manual edits and unowned commands survive.");
     }
 
-    private static void ReloadSavedQuickbar(EngineTestContext ctx, uint source, uint receiver, Action afterExport = null)
+    private static void ReloadSavedQuickbar(
+        EngineTestContext ctx, uint source, uint receiver, bool characterExport, Action afterExport = null)
     {
+        if (!characterExport)
+        {
+            var playerId = GetObjectUUID(source);
+            var player = DB.Get<Player>(playerId);
+            player.SerializedHotBar = CreaturePlugin.SerializeQuickbar(source);
+            DB.Set(player);
+            afterExport?.Invoke();
+            var saved = JsonConvert.DeserializeObject<Player>(DB.GetRawJson<Player>(playerId));
+            ctx.Assert(CreaturePlugin.DeserializeQuickbar(receiver, saved.SerializedHotBar),
+                "load the independently persisted quickbar snapshot through the normal space API");
+            return;
+        }
         using var file = new CResGFF();
         using var root = new CResStruct();
         using var fileType = new CExoString("BIC ");

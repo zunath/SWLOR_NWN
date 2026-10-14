@@ -15,7 +15,7 @@ namespace SWLOR.Game.Server.Feature
             MeleeTechnique.RegisterProfile(SkillType.Unarmed, new MeleeTechniqueProfile
             {
                 HasValidEquipment = EquipmentPredicates.HasUnarmedGrip,
-                EquipmentError = "Equip a Power Glove with an empty off hand or another Power Glove.",
+                EquipmentError = "Equip a Power Glove and leave your off hand available.",
                 SetupMarkerFactory = stage => stage == MeleeTechniqueStage.Finish
                     ? new FinishStatusEffect() : new OpeningStatusEffect(),
                 OpeningFinisherWindowFactory = (evasion, movement) => new SlipAwayStatusEffect(evasion, movement),

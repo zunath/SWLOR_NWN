@@ -8,6 +8,7 @@ using SWLOR.Game.Server.Service.LogService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.SkillService;
+using InventorySlot = SWLOR.NWN.API.NWScript.Enum.InventorySlot;
 
 namespace SWLOR.Game.Server.Native
 {
@@ -114,6 +115,17 @@ namespace SWLOR.Game.Server.Native
 
                     Combat.ClearAttackSwingDebt(pCreature.m_idSelf);
 
+                    pCreature.ChangeAttackTarget(pNode, OBJECT_INVALID);
+                    return ACTION_FAILED;
+                }
+
+                if (!WeaponAttackEligibility.IsAllowed(pCreature.m_idSelf,
+                        GetItemInSlot(InventorySlot.RightHand, pCreature.m_idSelf), WeaponAttackPhase.Start))
+                {
+                    _creatureAttackDelays.Remove(pCreature.m_idSelf);
+                    _rangedRepositionDirections.Remove(pCreature.m_idSelf);
+                    Combat.ClearAttackSwingDebt(pCreature.m_idSelf);
+                    WeaponAttackCycle.CancelPendingHand(pCreature.m_idSelf);
                     pCreature.ChangeAttackTarget(pNode, OBJECT_INVALID);
                     return ACTION_FAILED;
                 }

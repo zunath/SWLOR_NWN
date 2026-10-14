@@ -10,8 +10,9 @@ namespace SWLOR.Game.Server.Service.PerkService
         public static bool HasSingleWeapon(uint creature)
         {
             var weapon = GetItemInSlot(InventorySlot.RightHand, creature);
+            var offHand = GetItemInSlot(InventorySlot.LeftHand, creature);
             return GetIsObjectValid(weapon) && WeaponDamage.IsSingleWeaponType(GetBaseItemType(weapon)) &&
-                   !GetIsObjectValid(GetItemInSlot(InventorySlot.LeftHand, creature));
+                   (!GetIsObjectValid(offHand) || PowerGloveEquipment.IsActivePair(creature));
         }
 
         public static bool HasMainHandLightsaber(uint creature)
@@ -50,18 +51,14 @@ namespace SWLOR.Game.Server.Service.PerkService
             return HasItemInSlot(creature, InventorySlot.RightHand, Item.KatarBaseItemTypes);
         }
 
-        /// <summary>Power Gloves in the main hand with an empty hand or a second Power Glove.</summary>
+        /// <summary>One owned Power Glove with its linked cosmetic companion.</summary>
         public static bool HasUnarmedGrip(uint creature)
         {
-            var mainHand = GetItemInSlot(InventorySlot.RightHand, creature);
-            var offHand = GetItemInSlot(InventorySlot.LeftHand, creature);
-            return HasUnarmedGrip(
-                GetIsObjectValid(mainHand) ? GetBaseItemType(mainHand) : null,
-                GetIsObjectValid(offHand) ? GetBaseItemType(offHand) : null);
+            return PowerGloveEquipment.IsActivePair(creature);
         }
 
         public static bool HasUnarmedGrip(BaseItem? mainHand, BaseItem? offHand) =>
-            mainHand == BaseItem.PowerGlove && (offHand == null || offHand == BaseItem.PowerGlove);
+            mainHand == BaseItem.PowerGlove && offHand == BaseItem.CompanionPowerGlove;
 
         public static bool HasDualWieldKatar(uint creature)
         {

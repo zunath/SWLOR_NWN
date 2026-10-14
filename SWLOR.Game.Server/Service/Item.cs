@@ -981,6 +981,7 @@ namespace SWLOR.Game.Server.Service
         private static readonly HashSet<BaseItem> EconomyRestrictedBaseItems = new()
         {
             BaseItem.Invalid,
+            BaseItem.CompanionPowerGlove,
             BaseItem.CreatureSlashWeapon,
             BaseItem.CreaturePierceWeapon,
             BaseItem.CreatureBludgeonWeapon,

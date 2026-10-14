@@ -19,13 +19,13 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
 {
     public static class PowerGloveAppearanceEngineTests
     {
-        [EngineTest("The production appearance editor names and applies every Power Glove model in both hands", Category = "PowerGloveAppearance", TimeoutSeconds = 35f)]
+        [EngineTest("One owned Power Glove applies every production appearance choice to both hands", Category = "PowerGloveAppearance", TimeoutSeconds = 35f)]
         public static async Task AllModelsUseProductionPicker(EngineTestContext ctx)
         {
             using var player = await PlayerAbilityFixture.CreateAsync(ctx);
             player.Update(record => record.Skills[SkillType.Unarmed].Rank = 50);
-            var main = await ctx.EquipItemAsync(player.Creature, "t_pglove", InventorySlot.RightHand);
-            var off = await ctx.EquipItemAsync(player.Creature, "t_pglove", InventorySlot.LeftHand);
+            var main = await PowerGlovePairEngineTests.EquipMain(ctx, player.Creature);
+            var off = await PowerGlovePairEngineTests.WaitForPair(ctx, player.Creature, main);
             var template = Gui.GetWindowTemplate(GuiWindowType.AppearanceEditor);
             var playerWindow = template.CreatePlayerWindowAction();
             var editor = (AppearanceEditorViewModel)playerWindow.ViewModel;
@@ -48,7 +48,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 ctx.Assert(playerWindow.WindowToken > 0, "the actual production NUI window opens");
                 foreach (var (slot, itemType, item) in new[]
                 {
-                    (InventorySlot.RightHand, 3, main), (InventorySlot.LeftHand, 4, off)
+                    (InventorySlot.RightHand, 3, main), (InventorySlot.LeftHand, 4, main)
                 })
                 {
                     await ctx.ExecuteInCreatureContextAsync(player.Creature, () =>
@@ -73,7 +73,10 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                             ctx.AssertEqual(index, editor.SelectedPartIndex, "public picker navigation selects the expected model");
                             ctx.AssertEqual(index + 1, GetItemAppearance(item, ItemAppearanceType.WeaponModel, (int)AppearanceWeapon.Middle), labels[index] + " model");
                             ctx.AssertEqual(1, GetItemAppearance(item, ItemAppearanceType.WeaponColor, (int)AppearanceWeapon.Middle), labels[index] + " color family");
-                            ctx.AssertEqual(item, GetItemInSlot(slot, player.Creature), labels[index] + " preserves the original equipped item");
+                            ctx.AssertEqual(main, GetItemInSlot(InventorySlot.RightHand, player.Creature), labels[index] + " preserves the one real equipped item");
+                            ctx.AssertEqual(off, GetItemInSlot(InventorySlot.LeftHand, player.Creature), labels[index] + " retains its generated companion");
+                            ctx.AssertEqual(index + 1, GetItemAppearance(off, ItemAppearanceType.WeaponModel, (int)AppearanceWeapon.Middle), labels[index] + " updates the other hand from the one real item");
+                            ctx.AssertEqual(1, GetItemAppearance(off, ItemAppearanceType.WeaponColor, (int)AppearanceWeapon.Middle), labels[index] + " mirrors the color family");
                             ctx.AssertEqual(BaseItem.PowerGlove, GetBaseItemType(item), labels[index] + " remains the same weapon class");
                             ctx.AssertEqual(weight, GetWeight(item), labels[index] + " preserves weapon weight");
                             ctx.AssertEqual(damage, WeaponDamage.GetEffectiveDMG(player.Creature, item), labels[index] + " preserves weapon damage");
@@ -87,13 +90,17 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                         Capture(slot.ToString());
                         editor.OnPreviousPart()();
                         ctx.AssertEqual(5, GetItemAppearance(item, ItemAppearanceType.WeaponModel, (int)AppearanceWeapon.Middle), "the invisible option can return to a visible Power Fist through public navigation");
+                        ctx.AssertEqual(5, GetItemAppearance(off, ItemAppearanceType.WeaponModel, (int)AppearanceWeapon.Middle), "returning to a visible appearance restores both hands");
                         editor.OnNextPart()();
+                        PowerGlovePairEngineTests.AssertOwnedItems(ctx, player.Creature, main, 1);
+                        for (var index = 0; index < labels.Length - 1; index++)
+                            editor.OnPreviousPart()();
                     });
                 }
                 var directory = ApplicationSettings.Get().EngineTestResultsDirectory;
                 Directory.CreateDirectory(directory);
                 File.WriteAllText(Path.Combine(directory, "power-glove-appearance-native-states.json"), snapshots.ToString(Formatting.Indented));
-                ctx.SetResultDetail("All six named choices, including Bare Fists (Invisible), applied through the production editor in both hands with item identity, blank outer models, weight and damage preserved. Actual native NUI window and bindings exported for isolated offline client rendering; no mouse-event transport was simulated.");
+                ctx.SetResultDetail("All six named choices, including Bare Fists (Invisible), applied through the production editor to one real glove and its generated companion. Original item identity, blank outer models, weight and damage are preserved. Actual native NUI window and bindings exported for isolated offline client rendering; no mouse-event transport was simulated.");
             }
             finally
             {

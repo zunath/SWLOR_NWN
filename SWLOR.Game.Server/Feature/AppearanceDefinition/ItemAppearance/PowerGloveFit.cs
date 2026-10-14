@@ -1,5 +1,6 @@
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap;
+using SWLOR.Game.Server.Service;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Creature;
@@ -96,6 +97,9 @@ public static class PowerGloveFit
         if (!IsPowerGlove(right) && !IsPowerGlove(left))
             return;
 
+        // The off-hand carrier follows the owned item's cosmetics in place, preserving combat setup.
+        PowerGloveEquipment.RefreshAppearance(creature);
+
         var rightModel = GetHandModel(creature, CreaturePart.RightHand, "r");
         var leftModel = GetHandModel(creature, CreaturePart.LeftHand, "l");
         Fit(right, rightModel, leftModel);
@@ -137,7 +141,9 @@ public static class PowerGloveFit
             PowerGloveHandFitCatalog.GetScale(leftModel, appearance));
 
     private static bool IsPowerGlove(uint item) => GetIsObjectValid(item) &&
-        GetObjectType(item) == ObjectType.Item && GetBaseItemType(item) == BaseItem.PowerGlove;
+        GetObjectType(item) == ObjectType.Item && (GetBaseItemType(item) == BaseItem.PowerGlove ||
+            PowerGloveEquipment.IsGeneratedCompanion(item) && PowerGloveEquipment.IsLinkedPair(
+                GetItemPossessor(item), GetLocalObject(item, PowerGloveEquipment.MainWeaponVariable), item));
 
     private static void Release(uint item)
     {

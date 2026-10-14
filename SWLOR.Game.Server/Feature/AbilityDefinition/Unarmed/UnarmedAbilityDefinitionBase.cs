@@ -71,6 +71,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Unarmed
 
         private static string ValidateGrip(uint creature) => EquipmentPredicates.HasUnarmedGrip(creature)
             ? string.Empty
-            : "Equip a Power Glove in your main hand with an empty off hand or another Power Glove.";
+            : "Equip a Power Glove and leave your off hand available.";
     }
 }

@@ -95,6 +95,15 @@ namespace SWLOR.Game.Server.Native
                     weapon = GetFallbackAttackWeapon(attacker);
                 }
 
+                // A restricted melee item never falls back to natural damage or triggers procs.
+                // Ranged attacks already in flight are unaffected by equipment changes here.
+                if (pAttackData.m_bRangedAttack == 0 && !WeaponAttackEligibility.IsAllowed(
+                        attacker.m_idSelf, weapon?.m_idSelf ?? OBJECT_INVALID, WeaponAttackPhase.Resolve))
+                {
+                    ProfilerPlugin.PopPerfScope();
+                    return 0;
+                }
+
                 LogAttackInfo(attacker, defender, attackType, weapon);
 
                 // Extract weapon damage properties and get ability stats

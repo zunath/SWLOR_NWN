@@ -132,6 +132,7 @@ namespace SWLOR.NWN.API.NWScript.Enum.Item
         MiscellaneousThinStackable = 538,
 
         PowerGlove = 541,
+        CompanionPowerGlove = 543,
 
     }
 }

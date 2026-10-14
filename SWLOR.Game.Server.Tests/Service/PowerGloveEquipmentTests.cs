@@ -1,8 +1,10 @@
 using System.Reflection;
+using System.Text.Json;
 using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Extension;
+using SWLOR.Game.Server.Feature;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
@@ -48,6 +50,68 @@ public class PowerGloveEquipmentTests
     }
 
     [Test]
+    public void CosmeticCompanionHasNoIndependentWeaponOrShieldProfile()
+    {
+        Item.WeaponBaseItemTypes.Should().NotContain(BaseItem.CompanionPowerGlove);
+        Item.PowerGloveBaseItemTypes.Should().NotContain(BaseItem.CompanionPowerGlove);
+        Item.OneHandedMeleeItemTypes.Should().NotContain(BaseItem.CompanionPowerGlove);
+        Item.ShieldBaseItemTypes.Should().NotContain(BaseItem.CompanionPowerGlove);
+        Item.IsAttackWeaponType(BaseItem.CompanionPowerGlove).Should().BeFalse();
+        Item.IsDoubleWeaponType(BaseItem.CompanionPowerGlove).Should().BeFalse();
+        Skill.GetSkillTypeByBaseItem(BaseItem.CompanionPowerGlove).Should().Be(SkillType.Invalid);
+    }
+
+    [TestCase(BaseItem.PowerGlove, InventorySlot.RightHand, null, null, false, true)]
+    [TestCase(BaseItem.PowerGlove, InventorySlot.LeftHand, null, null, false, false)]
+    [TestCase(BaseItem.PowerGlove, InventorySlot.RightHand, null, BaseItem.Dagger, false, false)]
+    [TestCase(BaseItem.PowerGlove, InventorySlot.RightHand, null, BaseItem.PowerGlove, false, false)]
+    [TestCase(BaseItem.CompanionPowerGlove, InventorySlot.LeftHand, BaseItem.PowerGlove, null, true, true)]
+    [TestCase(BaseItem.CompanionPowerGlove, InventorySlot.LeftHand, BaseItem.PowerGlove, null, false, false)]
+    [TestCase(BaseItem.CompanionPowerGlove, InventorySlot.RightHand, null, null, true, false)]
+    [TestCase(BaseItem.Dagger, InventorySlot.LeftHand, BaseItem.PowerGlove, null, false, false)]
+    [TestCase(BaseItem.SmallShield, InventorySlot.LeftHand, BaseItem.PowerGlove, null, false, false)]
+    [TestCase(BaseItem.Dagger, InventorySlot.RightHand, null, null, false, true)]
+    public void PairEquipPolicyReservesOneOwnedMainAndAnAuthorizedCosmeticHand(
+        BaseItem item, InventorySlot slot, BaseItem? main, BaseItem? off, bool authorized, bool allowed) =>
+        string.IsNullOrEmpty(EquipmentRestrictions.GetPowerGloveEquipmentError(item, slot, main, off, authorized))
+            .Should().Be(allowed);
+
+    [Test]
+    public void PairEquipPolicyPreservesExistingRestrictionErrors() =>
+        EquipmentRestrictions.GetPowerGloveEquipmentError(BaseItem.PowerGlove, InventorySlot.RightHand,
+            null, null, false, "Existing restriction").Should().Be("Existing restriction");
+
+    [Test]
+    public void CompanionNativeDataHasNoDamageArmorValueWeightOrProperties()
+    {
+        var root = RepositoryRoot();
+        var lines = File.ReadAllLines(Path.Combine(root, "SWLOR_Haks/sw_2da/baseitems.2da"));
+        var header = lines.First(line => line.TrimStart().StartsWith("Name ", StringComparison.Ordinal))
+            .Split((char[])null, StringSplitOptions.RemoveEmptyEntries);
+        var fields = lines.Select(line => line.Split((char[])null, StringSplitOptions.RemoveEmptyEntries))
+            .Single(row => row.Length > 0 && row[0] == ((int)BaseItem.CompanionPowerGlove).ToString());
+        var data = header.Select((column, index) => (column, value: fields[index + 1]))
+            .ToDictionary(pair => pair.column, pair => pair.value);
+        foreach (var column in new[] { "WeaponType", "BaseAC", "BaseCost", "TenthLBS" })
+            data[column].Should().Be("0", $"the cosmetic hand must have no native {column} contribution");
+        foreach (var column in new[] { "NumDice", "DieToRoll", "CritThreat", "CritHitMult" })
+            data[column].Should().Be("****", $"the cosmetic hand must use the native nonweapon default for {column}");
+        Convert.ToInt32(data["EquipableSlots"], 16).Should().Be(0x20, "only the cosmetic left hand is equipable");
+        data["ModelType"].Should().Be("2");
+        data["ItemClass"].Should().BeEquivalentTo("WPG");
+
+        using var document = JsonDocument.Parse(File.ReadAllText(Path.Combine(root, "Module/uti/pg_companion.uti.json")));
+        var item = document.RootElement;
+        item.GetProperty("BaseItem").GetProperty("value").GetInt32().Should().Be((int)BaseItem.CompanionPowerGlove);
+        item.GetProperty("PropertiesList").GetProperty("value").GetArrayLength().Should().Be(0);
+        foreach (var field in new[] { "Cost", "AddCost" })
+            item.GetProperty(field).GetProperty("value").GetInt32().Should().Be(0);
+        var noEconomy = item.GetProperty("VarTable").GetProperty("value").EnumerateArray()
+            .Single(variable => variable.GetProperty("Name").GetProperty("value").GetString() == Item.NoEconomyVariable);
+        noEconomy.GetProperty("Value").GetProperty("value").GetInt32().Should().Be(1);
+    }
+
+    [Test]
     public void UnarmedIsAWeaponSkillForStandardAndForceSensitiveCharacters()
     {
         var skill = SkillType.Unarmed.GetAttribute<SkillType, SkillAttribute>();
@@ -59,18 +123,29 @@ public class PowerGloveEquipmentTests
         skill.IsAvailableToCharacterType(CharacterType.ForceSensitive).Should().BeTrue();
     }
 
-    [TestCase(BaseItem.PowerGlove, null, true)]
-    [TestCase(BaseItem.PowerGlove, BaseItem.PowerGlove, true)]
+    [TestCase(BaseItem.PowerGlove, null, false)]
+    [TestCase(BaseItem.PowerGlove, BaseItem.CompanionPowerGlove, true)]
+    [TestCase(BaseItem.PowerGlove, BaseItem.PowerGlove, false)]
     [TestCase(BaseItem.PowerGlove, BaseItem.Katar, false)]
     [TestCase(BaseItem.PowerGlove, BaseItem.Dagger, false)]
     [TestCase(BaseItem.PowerGlove, BaseItem.SmallShield, false)]
     [TestCase(BaseItem.PowerGlove, BaseItem.Invalid, false)]
     [TestCase(BaseItem.Katar, BaseItem.PowerGlove, false)]
+    [TestCase(BaseItem.CompanionPowerGlove, BaseItem.PowerGlove, false)]
+    [TestCase(BaseItem.CompanionPowerGlove, null, false)]
+    [TestCase(null, BaseItem.CompanionPowerGlove, false)]
     [TestCase(BaseItem.Gloves, null, false)]
     [TestCase(BaseItem.Bracer, null, false)]
     [TestCase(BaseItem.Invalid, null, false)]
     [TestCase(null, BaseItem.PowerGlove, false)]
     [TestCase(null, null, false)]
-    public void FullTechniqueGripRequiresOnlyRealPowerGloves(BaseItem? mainHand, BaseItem? offHand, bool expected) =>
+    public void FullTechniqueGripUsesOneRealGloveAndItsCosmeticHand(BaseItem? mainHand, BaseItem? offHand, bool expected) =>
         EquipmentPredicates.HasUnarmedGrip(mainHand, offHand).Should().Be(expected);
+
+    private static string RepositoryRoot()
+    {
+        for (var directory = new DirectoryInfo(TestContext.CurrentContext.TestDirectory); directory != null; directory = directory.Parent)
+            if (File.Exists(Path.Combine(directory.FullName, "SWLOR.Game.Server.sln"))) return directory.FullName;
+        throw new DirectoryNotFoundException("Could not locate the SWLOR repository.");
+    }
 }

@@ -22,8 +22,8 @@ public static class PowerGloveFitEngineTests
     public static async Task EquipmentAndAppearanceLifecycle(EngineTestContext ctx)
     {
         var wearer = await CreateWearer(ctx);
-        var right = await ctx.EquipItemAsync(wearer, "t_pglove", InventorySlot.RightHand);
-        var left = await ctx.EquipItemAsync(wearer, "t_pglove", InventorySlot.LeftHand);
+        var right = await PowerGlovePairEngineTests.EquipMain(ctx, wearer);
+        var left = await PowerGlovePairEngineTests.WaitForPair(ctx, wearer, right);
         var armor = GetItemInSlot(InventorySlot.Chest, wearer);
         await ctx.ExecuteInCreatureContextAsync(wearer, () =>
         {
@@ -66,7 +66,6 @@ public static class PowerGloveFitEngineTests
             foreach (var appearance in new[] { 101, 102, 104, 105 })
             {
                 ChangeGlove(wearer, right, appearance);
-                ChangeGlove(wearer, left, appearance);
                 var expected = Expected("pmo0_handr201", "pmo0_handl201", appearance);
                 ctx.Assert(expected > 1f, "Cathar hands enlarge every compact shell");
                 var savedAppearance = ReadAppearance(right);
@@ -74,6 +73,7 @@ public static class PowerGloveFitEngineTests
                     TintMapService.ApplyCurrentColors(wearer);
                 AssertPair(ctx, right, left, expected, "Repeated cosmetic refresh");
                 ctx.Assert(savedAppearance.SequenceEqual(ReadAppearance(right)), "Fitting never rewrites weapon appearance IDs");
+                ctx.Assert(savedAppearance.SequenceEqual(ReadAppearance(left)), "The one selected model supplies both fitted visuals");
                 ctx.AssertEqual(BaseItem.PowerGlove, GetBaseItemType(right), "Fitting retains the Power Glove base item");
                 AssertIndependentTransforms(ctx, right);
             }
@@ -81,32 +81,30 @@ public static class PowerGloveFitEngineTests
             foreach (var appearance in new[] { 106, 103 })
             {
                 ChangeGlove(wearer, right, appearance);
-                AssertFit(ctx, right, 1f, "Invisible and Blastknuckle selections release the fit immediately");
+                AssertPair(ctx, right, left, 1f, "Invisible and Blastknuckle selections release both fits immediately");
+                ctx.Assert(ReadAppearance(right).SequenceEqual(ReadAppearance(left)), "Both hands use the one selected appearance");
                 AssertIndependentTransforms(ctx, right);
             }
             ChangeGlove(wearer, right, 101);
-            ChangeGlove(wearer, left, 101);
 
             // The normal equipment validator rejects a move into an occupied hand.
             ctx.Assert(!CreaturePlugin.RunEquip(wearer, left, InventorySlot.RightHand), "The occupied-slot equip is rejected");
             ctx.AssertEqual(right, GetItemInSlot(InventorySlot.RightHand, wearer), "Rejected equip preserves the main hand");
             ctx.AssertEqual(left, GetItemInSlot(InventorySlot.LeftHand, wearer), "Rejected equip preserves the off hand");
             AssertPair(ctx, right, left, Expected("pmo0_handr201", "pmo0_handl201", 101), "Rejected equip preserves fit");
-
-            Unequip(ctx, wearer, right, "The main glove unequips");
-            AssertFit(ctx, right, 1f, "Unequip releases the fitted scale synchronously");
-            Unequip(ctx, wearer, left, "The offhand glove unequips");
-            AssertFit(ctx, left, 1f, "Offhand unequip releases the fitted scale synchronously");
-            ctx.Assert(CreaturePlugin.RunEquip(wearer, left, InventorySlot.RightHand), "The old offhand moves to the main hand");
-            ctx.Assert(CreaturePlugin.RunEquip(wearer, right, InventorySlot.LeftHand), "The old main hand moves to the offhand");
-            ctx.AssertEqual(left, GetItemInSlot(InventorySlot.RightHand, wearer), "Swap installs the old offhand in the main slot");
-            ctx.AssertEqual(right, GetItemInSlot(InventorySlot.LeftHand, wearer), "Swap installs the old main hand in the offhand slot");
-            AssertPair(ctx, right, left, Expected("pmo0_handr201", "pmo0_handl201", 101), "Both swapped attachments fit equally");
         });
 
+        await ctx.ExecuteInCreatureContextAsync(wearer, () => ActionUnequipItem(left));
+        await PowerGlovePairEngineTests.WaitForRemovedPair(ctx, wearer, right, left);
+        AssertFit(ctx, right, 1f, "Removing the cosmetic hand releases the real inventory glove's fit");
+        await PowerGlovePairEngineTests.EquipExisting(ctx, wearer, right, InventorySlot.RightHand);
+        left = await PowerGlovePairEngineTests.WaitForPair(ctx, wearer, right);
+        AssertPair(ctx, right, left, Expected("pmo0_handr201", "pmo0_handl201", 101), "A regenerated companion fits the same real glove");
+        await ctx.ExecuteInCreatureContextAsync(wearer, () => ActionUnequipItem(right));
+        await PowerGlovePairEngineTests.WaitForRemovedPair(ctx, wearer, right, left);
+        AssertFit(ctx, right, 1f, "Removing the main hand releases its fitted scale");
         await ctx.ExecuteInCreatureContextAsync(wearer, () =>
         {
-            Unequip(ctx, wearer, right, "The swapped glove can be removed");
             SetDroppableFlag(right, true);
             ClearAllActions();
             ActionPutDownItem(right);
@@ -124,32 +122,37 @@ public static class PowerGloveFitEngineTests
         {
             ctx.AssertEqual(sword, GetItemInSlot(InventorySlot.RightHand, wearer), "The replacement weapon occupies the main hand");
             ctx.AssertEqual(OBJECT_INVALID, GetItemInSlot(InventorySlot.LeftHand, wearer), "The dropped glove has not re-equipped itself");
-            ctx.AssertEqual(wearer, GetItemPossessor(left), "The removed main-hand glove remains in its owner's inventory");
-            AssertFit(ctx, left, 1f, "Replacing a glove leaves no fit on the displaced inventory item");
+            ctx.AssertEqual(wearer, GetItemPossessor(right), "The original glove remains in its owner's inventory");
+            AssertFit(ctx, right, 1f, "Replacing a glove leaves no fit on the inventory item");
             SetObjectVisualTransform(sword, ObjectVisualTransform.Scale, 1.37f, nScope: FitScope);
-            ctx.Assert(CreaturePlugin.RunEquip(wearer, right, InventorySlot.LeftHand), "A glove can refit beside a different weapon");
-            ctx.AssertEqual(right, GetItemInSlot(InventorySlot.LeftHand, wearer), "The reacquired glove occupies the offhand slot");
-            ctx.AssertEqual(sword, GetItemInSlot(InventorySlot.RightHand, wearer), "Refitting the glove preserves the other weapon's slot");
+            ctx.Assert(!CreaturePlugin.RunEquip(wearer, right, InventorySlot.LeftHand), "The real glove cannot become a separate offhand weapon");
+            ctx.AssertEqual(OBJECT_INVALID, GetItemInSlot(InventorySlot.LeftHand, wearer), "Rejected glove equip leaves the offhand empty");
+            ctx.AssertEqual(sword, GetItemInSlot(InventorySlot.RightHand, wearer), "Rejected glove equip preserves the other weapon's slot");
             TintMapService.ApplyCurrentColors(wearer);
             AssertFit(ctx, sword, 1.37f, "Non-Power Glove equipment transforms are untouched");
-            AssertFit(ctx, right, Expected("pmo0_handr201", "pmo0_handl201", 101), "Reacquired glove fits the current wearer");
             AssertIndependentTransforms(ctx, right);
         });
-        ctx.SetResultDetail("Native equipment events, body-edit script, armor/weapon refresh, invisible/Blastknuckle reset, denied equip, hand swaps, drop/acquire and repeated refresh preserve ownership, authored appearance IDs and independent transform channels. Client pixels require separate visual verification.");
+        await ctx.ExecuteInCreatureContextAsync(wearer, () => ActionUnequipItem(sword));
+        await ctx.WaitUntilAsync(() => GetItemInSlot(InventorySlot.RightHand, wearer) != sword, 5f, "the replacement weapon to leave the hand");
+        await PowerGlovePairEngineTests.EquipExisting(ctx, wearer, right, InventorySlot.RightHand);
+        left = await PowerGlovePairEngineTests.WaitForPair(ctx, wearer, right);
+        AssertPair(ctx, right, left, Expected("pmo0_handr201", "pmo0_handl201", 101), "Reacquired real glove fits both hands");
+        AssertFit(ctx, sword, 1.37f, "Swapping back preserves the other weapon's independent transform");
+        PowerGlovePairEngineTests.AssertOwnedItems(ctx, wearer, right, 1);
+        ctx.SetResultDetail("One real glove supplies both hands through native equipment events, body/armor/weapon edits, invisible reset, either-hand removal, rejected independent offhand equip, replacement and drop/acquire. Repeated refresh preserves authored appearance IDs and independent transform channels. Client pixels require separate visual verification.");
     }
 
-    [EngineTest("Power Glove fit survives two equipment save reload cycles with nested inventory", Category = "PowerGloveFit", TimeoutSeconds = 90f)]
+    [EngineTest("One owned Power Glove retains paired fit through two save reload cycles with nested inventory", Category = "PowerGloveFit", TimeoutSeconds = 90f)]
     public static async Task SaveReloadDoesNotCompoundOrChangeOwnership(EngineTestContext ctx)
     {
         var wearer = await CreateWearer(ctx);
-        var right = await ctx.EquipItemAsync(wearer, "t_pglove", InventorySlot.RightHand);
-        var left = await ctx.EquipItemAsync(wearer, "t_pglove", InventorySlot.LeftHand);
+        var right = await PowerGlovePairEngineTests.EquipMain(ctx, wearer);
+        var left = await PowerGlovePairEngineTests.WaitForPair(ctx, wearer, right);
         var bag = await CreateItem(ctx, wearer, "bag_sm", wearer);
         var stored = await CreateItem(ctx, wearer, "t_pglove", bag);
         await ctx.ExecuteInCreatureContextAsync(wearer, () =>
         {
             SetLocalString(right, RoleVariable, "right");
-            SetLocalString(left, RoleVariable, "left");
             SetLocalString(stored, RoleVariable, "stored");
             SetBody(wearer, AppearanceType.Cathar, 201, 201);
             ExecuteScript(ScriptName.OnAppearanceEdit, wearer);
@@ -160,40 +163,36 @@ public static class PowerGloveFitEngineTests
             var label = $"Save/reload cycle {cycle + 1}";
             var items = GloveInventory(wearer);
             right = items.Single(item => GetLocalString(item, RoleVariable) == "right");
-            left = items.Single(item => GetLocalString(item, RoleVariable) == "left");
             stored = items.Single(item => GetLocalString(item, RoleVariable) == "stored");
             var appearance = cycle == 0 ? 104 : 105;
             var data = string.Empty;
-            var previousItems = InventoryItems(wearer);
             var ownerIdentity = string.Empty;
             var bagIdentity = string.Empty;
-            Dictionary<string, (string Identity, int Quantity, int[] Appearance)> saved = null;
+            var companionIdentity = string.Empty;
+            Dictionary<string, (string Identity, int Quantity, int[] Appearance, string Properties)> saved = null;
+            left = await PowerGlovePairEngineTests.WaitForPair(ctx, wearer, right);
+            await ctx.ExecuteInCreatureContextAsync(wearer, () => ActionUnequipItem(cycle == 0 ? right : left));
+            await PowerGlovePairEngineTests.WaitForRemovedPair(ctx, wearer, right, left);
+            AssertFit(ctx, right, 1f, label + " normalizes the removed real glove");
+            await PowerGlovePairEngineTests.EquipExisting(ctx, wearer, right, InventorySlot.RightHand);
+            left = await PowerGlovePairEngineTests.WaitForPair(ctx, wearer, right);
+            var previousItems = InventoryItems(wearer);
             await ctx.ExecuteInCreatureContextAsync(wearer, () =>
             {
                 ctx.AssertEqual(right, GetItemInSlot(InventorySlot.RightHand, wearer), label + " begins with the original main glove");
-                ctx.AssertEqual(left, GetItemInSlot(InventorySlot.LeftHand, wearer), label + " begins with the original offhand glove");
-                Unequip(ctx, wearer, right, label + " removes the main glove");
-                AssertFit(ctx, right, 1f, label + " normalizes the removed main glove");
-                ctx.Log($"{label} after main-hand removal: {EquipmentState(wearer, right)}");
-                // Empty both hands before rebuilding the pair. The native unequip may
-                // change the remaining weapon's slot, and the validator rejects occupied slots.
-                Unequip(ctx, wearer, left, label + " removes the other glove");
-                AssertFit(ctx, left, 1f, label + " normalizes the removed offhand glove");
-                ctx.AssertEqual(OBJECT_INVALID, GetItemInSlot(InventorySlot.RightHand, wearer), label + " empties the main hand");
-                ctx.AssertEqual(OBJECT_INVALID, GetItemInSlot(InventorySlot.LeftHand, wearer), label + " empties the offhand");
-                Equip(ctx, wearer, right, InventorySlot.RightHand, label + " restores the original main glove");
-                Equip(ctx, wearer, left, InventorySlot.LeftHand, label + " restores the original offhand glove");
-                ctx.AssertEqual(right, GetItemInSlot(InventorySlot.RightHand, wearer), label + " preserves the main hand after restoring the offhand");
+                ctx.Assert(PowerGloveEquipment.IsLinkedPair(wearer, right, left), label + " uses a generated companion");
+                AddItemProperty(DurationType.Permanent, ItemPropertyCustom(ItemPropertyType.Accuracy, -1, 7 + cycle), right);
                 ChangeGlove(wearer, right, appearance);
-                ChangeGlove(wearer, left, appearance);
                 AssertPair(ctx, right, left, Expected("pmo0_handr201", "pmo0_handl201", appearance), label + " fitted equipment before saving");
+                ctx.Assert(ReadAppearance(right).SequenceEqual(ReadAppearance(left)), label + " mirrors the real glove's appearance");
                 // Model a stale native transform in a saved bag, without introducing a persistent marker.
                 SetObjectVisualTransform(stored, ObjectVisualTransform.Scale, 1.45f, nScope: FitScope);
                 saved = items.ToDictionary(item => GetLocalString(item, RoleVariable),
-                    item => (GetObjectUUID(item), GetItemStackSize(item), ReadAppearance(item)));
-                ctx.AssertEqual(3, saved.Count, label + " contains exactly the three original glove roles");
+                    item => (GetObjectUUID(item), GetItemStackSize(item), ReadAppearance(item), PowerGlovePairEngineTests.Properties(item)));
+                ctx.AssertEqual(2, saved.Count, label + " contains exactly the equipped real glove and the nested spare");
                 ownerIdentity = GetObjectUUID(wearer);
                 bagIdentity = GetObjectUUID(GetItemPossessor(stored, true));
+                companionIdentity = GetObjectUUID(left);
                 data = ObjectPlugin.Serialize(wearer);
                 // Release every saved UUID, including nested items, before the same archive reloads.
                 // Destruction of a creature alone is not evidence that its children have gone.
@@ -217,11 +216,22 @@ public static class PowerGloveFitEngineTests
             await ctx.ExecuteInCreatureContextAsync(wearer, () =>
             {
                 // Use the exact spawn/login normalization path after loading the native object.
+                PowerGloveEquipment.RestorePair(wearer);
                 PowerGloveFit.OnSpawn();
                 TintMapService.ApplyCurrentColors(wearer);
+            });
+            right = GloveInventory(wearer).Single(item => GetLocalString(item, RoleVariable) == "right");
+            left = await PowerGlovePairEngineTests.WaitForPair(ctx, wearer, right);
+            await ctx.ExecuteInCreatureContextAsync(wearer, () =>
+            {
                 ctx.AssertEqual(ownerIdentity, GetObjectUUID(wearer), label + " preserves the owner identity");
                 var restored = GloveInventory(wearer);
-                ctx.AssertEqual(3, restored.Count, label + " retains exactly three Power Gloves including the bag item");
+                ctx.AssertEqual(2, restored.Count, label + " retains exactly two real Power Gloves including the bag item");
+                ctx.AssertEqual(1, InventoryItems(wearer).Count(PowerGloveEquipment.IsGeneratedCompanion), label + " retains exactly one temporary cosmetic hand");
+                ctx.Assert(companionIdentity != GetObjectUUID(left), label + " regenerates the cosmetic hand instead of retaining a saved economy object");
+                ctx.Assert(!GetIsObjectValid(GetObjectByUUID(companionIdentity)), label + " leaves no archived companion behind");
+                ctx.Assert(!Item.IsEconomyRestricted(right), label + " keeps the real glove available to the economy");
+                ctx.Assert(Item.IsEconomyRestricted(left), label + " excludes the cosmetic companion from the economy");
                 ctx.AssertEqual(saved.Values.Sum(value => value.Quantity), restored.Sum(GetItemStackSize), label + " preserves all stack quantities");
                 foreach (var item in restored)
                 {
@@ -230,6 +240,7 @@ public static class PowerGloveFitEngineTests
                     ctx.AssertEqual(expected.Identity, GetObjectUUID(item), label + " preserves each item identity");
                     ctx.AssertEqual(expected.Quantity, GetItemStackSize(item), label + " preserves each item's quantity");
                     ctx.Assert(expected.Appearance.SequenceEqual(ReadAppearance(item)), label + " preserves every weapon appearance field");
+                    ctx.AssertEqual(expected.Properties, PowerGlovePairEngineTests.Properties(item), label + " preserves all real item upgrades");
                     if (role == "stored")
                     {
                         var ownerBag = GetItemPossessor(item, true);
@@ -240,16 +251,17 @@ public static class PowerGloveFitEngineTests
                     }
                     else
                     {
-                        var slot = role == "right" ? InventorySlot.RightHand : InventorySlot.LeftHand;
                         ctx.AssertEqual(wearer, GetItemPossessor(item), label + " creature owns the equipped glove");
-                        ctx.AssertEqual(item, GetItemInSlot(slot, wearer), label + " retains the original hand assignment");
-                        AssertFit(ctx, item, Expected("pmo0_handr201", "pmo0_handl201", appearance), label + " recomputes absolute fit without compounding");
+                        ctx.AssertEqual(item, GetItemInSlot(InventorySlot.RightHand, wearer), label + " retains the original main-hand assignment");
+                        AssertPair(ctx, item, left, Expected("pmo0_handr201", "pmo0_handl201", appearance), label + " recomputes both fits without compounding");
+                        ctx.Assert(ReadAppearance(item).SequenceEqual(ReadAppearance(left)), label + " restores matching visual choices");
+                        ctx.Assert(!GetIsItemPropertyValid(GetFirstItemProperty(left)), label + " never copies upgrades to the cosmetic hand");
                     }
                 }
-                ctx.Log(label + " verified all three glove identities, ownership, quantities, appearances and fit");
+                ctx.Log(label + " verified the two real glove identities, ownership, quantities, upgrades, appearances and one paired cosmetic fit");
             });
         }
-        ctx.SetResultDetail("Two native owner/item export-import cycles followed actual unequip, re-equip and cosmetic edits. Both equipped gloves and one nested glove retain IDs, ownership, slots, model/color fields, counts and quantities; loader normalization resets stored scale and reapplies absolute wearer fit.");
+        ctx.SetResultDetail("Two native owner/item export-import cycles follow either-hand removal, re-equip, upgrades and cosmetic edits. One equipped real glove and one nested spare retain IDs, ownership, slots, upgrades, model/color fields, counts and quantities. Each reload normalizes stored scale and supplies exactly one cosmetic companion with matching absolute fit and no item properties.");
     }
 
     private static async Task<uint> CreateWearer(EngineTestContext ctx)
@@ -300,33 +312,6 @@ public static class PowerGloveFitEngineTests
         EquippedItemAppearance.Set(item, ItemAppearanceType.WeaponModel, (int)AppearanceWeapon.Middle, appearance % 100);
         EquippedItemAppearance.Refresh(creature, item);
     }
-
-    private static void Unequip(EngineTestContext ctx, uint creature, uint item, string label)
-    {
-        var quantity = GetItemStackSize(item);
-        var reportedSuccess = CreaturePlugin.RunUnequip(creature, item);
-        var right = GetItemInSlot(InventorySlot.RightHand, creature);
-        var left = GetItemInSlot(InventorySlot.LeftHand, creature);
-        var owner = GetItemPossessor(item, true);
-        // Verify the native result, as the existing equipment tests do, rather than
-        // assuming the wrapper's equality-to-one return mapping describes slot state.
-        ctx.Assert(right != item && left != item && owner == creature,
-            $"{label}: returned {reportedSuccess}, item {item:X8}, right {right:X8}, left {left:X8}, owner {owner:X8}");
-        ctx.AssertEqual(quantity, GetItemStackSize(item), label + " preserves its quantity");
-    }
-
-    private static void Equip(EngineTestContext ctx, uint creature, uint item, InventorySlot slot, string label)
-    {
-        var before = EquipmentState(creature, item);
-        var reportedSuccess = CreaturePlugin.RunEquip(creature, item, slot);
-        ctx.Assert(GetItemInSlot(slot, creature) == item && GetItemPossessor(item, true) == creature,
-            $"{label}: returned {reportedSuccess}; before {before}; after {EquipmentState(creature, item)}");
-    }
-
-    private static string EquipmentState(uint creature, uint item) =>
-        $"item {item:X8}, right {GetItemInSlot(InventorySlot.RightHand, creature):X8}, " +
-        $"left {GetItemInSlot(InventorySlot.LeftHand, creature):X8}, owner {GetItemPossessor(item, true):X8}, " +
-        $"CanEquip '{SWLOR.Game.Server.Service.Item.CanEquip(creature, item)}'";
 
     private static int[] ReadAppearance(uint item) => new[] { ItemAppearanceType.WeaponModel, ItemAppearanceType.WeaponColor }
         .SelectMany(type => new[] { AppearanceWeapon.Bottom, AppearanceWeapon.Middle, AppearanceWeapon.Top }

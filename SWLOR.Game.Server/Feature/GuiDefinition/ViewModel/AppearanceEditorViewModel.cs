@@ -1758,7 +1758,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             }
             else if (SelectedItemTypeIndex == 4) // 4 = Weapon (Off Hand)
             {
-                return GetItemInSlot(InventorySlot.LeftHand, _target);
+                return PowerGloveEquipment.ResolveAppearanceOwner(_target,
+                    GetItemInSlot(InventorySlot.LeftHand, _target));
             }
 
             return OBJECT_INVALID;
@@ -2203,7 +2204,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     slot = InventorySlot.RightHand;
                     break;
                 case 4: // 4 = Weapon (Off Hand)
-                    slot = InventorySlot.LeftHand;
+                    var offHand = GetItemInSlot(InventorySlot.LeftHand, _target);
+                    slot = PowerGloveEquipment.ResolveAppearanceOwner(_target, offHand) != offHand
+                        ? InventorySlot.RightHand : InventorySlot.LeftHand;
                     break;
             }
 

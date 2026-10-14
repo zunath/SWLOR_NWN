@@ -597,8 +597,9 @@ namespace SWLOR.Game.Server.Service
                 }
             }
 
-            // If player's current HP is higher than max, deal the difference in damage to bring them back down to their new maximum.
-            var currentHP = GetCurrentHitPoints(player);
+            // If player's current HP is higher than max, bring it back down to their new maximum. The native
+            // getter includes temporary HP, so compare base HP only or a shield would heal the player.
+            var currentHP = ObjectPlugin.GetCurrentHitPoints(player);
             var maxHP = GetMaxHitPoints(player);
             if (currentHP > maxHP)
             {
@@ -2642,7 +2643,8 @@ namespace SWLOR.Game.Server.Service
         public static void SetNPCMaxHitPoints(uint creature, int desiredMaxHitPoints, bool restoreToFull = false)
         {
             desiredMaxHitPoints = System.Math.Clamp(desiredMaxHitPoints, 1, MaximumNPCHitPoints);
-            var originalCurrentHitPoints = GetCurrentHitPoints(creature);
+            // Base HP only: the native getter includes temporary HP, which must not become base HP.
+            var originalCurrentHitPoints = ObjectPlugin.GetCurrentHitPoints(creature);
 
             // Probe with the final budget, observe the engine-derived adjustment, then
             // compensate the base value. Repeating also handles NWN's one-HP-per-level

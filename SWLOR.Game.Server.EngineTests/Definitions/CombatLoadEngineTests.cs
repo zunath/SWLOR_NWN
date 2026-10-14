@@ -188,6 +188,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             var successes = new Dictionary<(FeatType Feat, bool Player), int>();
             var denials = new Dictionary<string, int>();
             var attempts = 0;
+            var busySkips = 0;
             var peakEmbattled = 0;
             string firstDeath = null;
 
@@ -199,6 +200,14 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 for (var slot = 0; slot < CastersPerTick; slot++)
                 {
                     var index = (tick * CastersPerTick + slot) % casters.Count;
+                    // A caster still casting keeps its place in the rotation, so a long cast never
+                    // makes the next ability's turn fail with "You are busy".
+                    if (Activity.IsBusy(casters[index]))
+                    {
+                        busySkips++;
+                        continue;
+                    }
+
                     var entry = Rotation[rotationIndex[index]++ % Rotation.Length];
                     if (TryCast(casters[index], entry.Feat, entry.Target, successes, denials))
                         attempts++;
@@ -222,7 +231,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             var casts = successes.Values.Sum();
             var castsByAbility = successes.GroupBy(pair => pair.Key.Feat).ToDictionary(group => group.Key, group => group.Sum(pair => pair.Value));
             var detail =
-                $"NPCs {npcsA}+{npcsB}, players {playersA}+{playersB}; casts {casts}/{attempts}; peak Embattled {peakEmbattled}/{casters.Count}; attacking at end {fighting}; " +
+                $"NPCs {npcsA}+{npcsB}, players {playersA}+{playersB}; casts {casts}/{attempts} (busy turns skipped {busySkips}); peak Embattled {peakEmbattled}/{casters.Count}; attacking at end {fighting}; " +
                 $"NPCs dead at end {npcs.Count(npc => GetIsDead(npc))}; {firstDeath ?? "no NPC died"}; " +
                 $"first caster Embattled stat {Stat.GetStatAdjustment(sample, StatType.EmbattledStackDefensePercent)}; " +
                 $"top denials: {string.Join(", ", denials.OrderByDescending(pair => pair.Value).Take(8).Select(pair => $"{pair.Key} x{pair.Value}"))}; " +

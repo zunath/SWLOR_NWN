@@ -256,6 +256,17 @@ namespace SWLOR.CombatSim.Tests.Engine
             act.Should().Throw<InvalidDataException>().WithMessage("*Medic*ReactionSeconds*time step*");
         }
 
+        [TestCase(21f)]
+        [TestCase(1e20f)]
+        public void Spawn_RejectsAnAttackRateTooFastToAdvanceTheClock(float attacksPerSecond)
+        {
+            var striker = TestCombatants.Striker("Striker", attacksPerSecond);
+
+            var act = () => new Simulation(Scenario(striker), RuleSets.Current(), _catalog, 1).Spawn();
+
+            act.Should().Throw<InvalidDataException>().WithMessage("*Striker*AttacksPerSecond*");
+        }
+
         [TestCase(float.PositiveInfinity)]
         [TestCase(float.NaN)]
         public void Spawn_RejectsAReactionTimeThatIsNotFinite(float seconds)

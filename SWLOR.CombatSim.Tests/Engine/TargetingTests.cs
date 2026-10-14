@@ -212,6 +212,8 @@ namespace SWLOR.CombatSim.Tests.Engine
             simulation.Get("Add").Hp.Should().BeLessThan(FullHp, "only the add could be hit before the boss arrived");
             simulation.Get("Boss").Hp.Should().Be(FullHp);
 
+            // Swings due before the boss joins at 5 seconds may still land on the add.
+            SimulationClock.RunUntil(simulation, 5.1);
             var addHp = simulation.Get("Add").Hp;
             SimulationClock.RunUntil(simulation, 12);
 

@@ -52,13 +52,7 @@ static int Run(string[] args)
     var runs = IntOption(options, "--runs", 200, 1);
     var seed = IntOption(options, "--seed", 1, int.MinValue);
 
-    var ruleSets = new List<RuleSet>();
-    var names = options.TryGetValue("--rules", out var ruleNames)
-        ? ruleNames.SelectMany(n => n.Split(',', StringSplitOptions.RemoveEmptyEntries))
-        : options.ContainsKey("--rules-file") ? Enumerable.Empty<string>() : RuleSets.Names;
-    ruleSets.AddRange(names.Select(RuleSets.Get));
-    if (options.TryGetValue("--rules-file", out var files))
-        ruleSets.AddRange(files.Select(RuleSets.Load));
+    var ruleSets = RuleSetSelection.Resolve(options);
 
     var catalog = AbilityCatalog.Load();
     var summaries = ruleSets.Select(rules => BatchRunner.Run(scenario, rules, catalog, runs, seed)).ToList();

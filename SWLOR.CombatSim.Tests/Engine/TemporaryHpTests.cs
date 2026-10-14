@@ -39,6 +39,27 @@ namespace SWLOR.CombatSim.Tests.Engine
             medic.Stats.AbilitiesUsed.Should().BeGreaterThan(3, "the medic kept casting shields after the cap was full");
         }
 
+        [Test]
+        public void NaturalRegeneration_StartsAtAnyPointOfItsCycle()
+        {
+            // Heartbeats come every 6 seconds and HP returns every fifth; a fresh cycle would wait 24 seconds or more.
+            var earlyRegeneration = Enumerable.Range(1, 20).Count(seed =>
+            {
+                var wounded = new CombatantSpec { Name = "Wounded", MaxHp = 1000, HpRegenPer30Seconds = 30f };
+                var simulation = new Simulation(
+                    TestScenarios.TwoTeams(false, new[] { wounded }, new[] { TestCombatants.Dummy("Enemy", true) }),
+                    RuleSets.Current(),
+                    _catalog,
+                    seed);
+                simulation.Spawn();
+                simulation.Get("Wounded").Hp = 500;
+                SimulationClock.RunUntil(simulation, 18);
+                return simulation.Get("Wounded").Stats.HealingReceived > 0;
+            });
+
+            earlyRegeneration.Should().BeGreaterThan(0, "a player joins partway through the game's regeneration cycle");
+        }
+
         [TestCase(0, true)]
         [TestCase(200, false)]
         public void NaturalRegeneration_WaitsWhileTemporaryHpFillsTheHealthBar(int shield, bool expectHealing)

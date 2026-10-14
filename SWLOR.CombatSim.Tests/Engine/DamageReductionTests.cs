@@ -92,6 +92,16 @@ namespace SWLOR.CombatSim.Tests.Engine
         }
 
         [Test]
+        public void AFullReduction_StillLetsOnePointOfALandedHitThrough()
+        {
+            var simulation = Spawn(TestCombatants.Use("PainSuppressant2", AbilityTarget.NamedAlly, targetName: "Ally", minIntervalSeconds: 600));
+            var ally = simulation.Get("Ally");
+            ally.DamageReductions["All"] = new DamageReductionInstance { Percent = 100, Scope = DamageReductionScope.All, ExpiresAt = 600 };
+
+            DamageTaken(simulation, ally, DamageType.Physical).Should().Be(1, "the game keeps at least 1 damage after its percentage modifiers");
+        }
+
+        [Test]
         public void TypedReductions_MultiplyWithTheSummedAllDamageCut()
         {
             var simulation = Spawn(TestCombatants.Use("PainSuppressant2", AbilityTarget.NamedAlly, targetName: "Ally", minIntervalSeconds: 600));

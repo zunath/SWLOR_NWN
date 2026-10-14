@@ -24,6 +24,9 @@ namespace SWLOR.CombatSim.Engine
         private const float ConvergenceHitChanceBonus = 0.05f;
         private const double ReviveHealDelaySeconds = 0.1;
         private const double QueuedWeaponAbilitySeconds = 30.0;
+
+        /// <summary>Well above any real attack rate, and small enough for each swing to move the clock.</summary>
+        public const float MaximumAttacksPerSecond = 20f;
         private const int CoordinatedSampleSize = 3;
 
         /// <summary>Perk stats the simulator models; listed perks contribute only these.</summary>
@@ -133,8 +136,10 @@ namespace SWLOR.CombatSim.Engine
                     var attack = spec.AutoAttack;
                     if (attack != null)
                     {
-                        if (!float.IsFinite(attack.AttacksPerSecond) || attack.AttacksPerSecond < 0)
-                            throw new InvalidDataException($"'{spec.Name}' needs an autoattack AttacksPerSecond of at least 0.");
+                        if (!float.IsFinite(attack.AttacksPerSecond) || attack.AttacksPerSecond < 0 ||
+                            attack.AttacksPerSecond > MaximumAttacksPerSecond)
+                            throw new InvalidDataException(
+                                $"'{spec.Name}' needs an autoattack AttacksPerSecond from 0 to {MaximumAttacksPerSecond}.");
                         if (attack.AttacksPerSecond > 0)
                             RequireValidDamage($"'{spec.Name}' autoattack", attack.Damage);
                     }
@@ -166,6 +171,8 @@ namespace SWLOR.CombatSim.Engine
                         var combatant = new Combatant(name, teamIndex, spec, perkStats)
                         {
                             NextHeartbeatAt = _random.NextDouble() * HeartbeatSeconds,
+                            // Players arrive partway through the game's five-heartbeat regeneration cycle.
+                            HeartbeatCount = _random.Next(HeartbeatsPerRegenCycle),
                             NextAttackAt = _random.NextDouble() * 2.0,
                             NextActionAt = _random.NextDouble()
                         };
@@ -1021,6 +1028,8 @@ namespace SWLOR.CombatSim.Engine
             amount *= 1 - Math.Min(100.0, ungrouped.Where(r => r.Scope == DamageReductionScope.All).Sum(r => (double)r.Percent)) / 100.0;
             foreach (var reduction in ungrouped.Where(r => r.Scope != DamageReductionScope.All))
                 amount *= 1 - reduction.Percent / 100.0;
+            // The game keeps at least 1 damage after its percentage modifiers (Combat.ApplyDamageTakenModifiers).
+            amount = Math.Max(1, amount);
 
             var landed = 0.0;
             foreach (var pool in target.TemporaryHp.OrderBy(p => p.ExpiresAt))

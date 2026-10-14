@@ -107,8 +107,17 @@ public class ShipItemIconTests
         BitConverter.ToUInt16(bytes, 14).Should().Be((ushort)size, path);
         bytes[16].Should().Be(32, path);
         bytes[17].Should().Be(8, "opaque bottom-left TGA layout must match classic NWN");
-        for (var pixel = 18 + bytes[0] + 3; pixel < 18 + bytes[0] + size * size * 4; pixel += 4)
-            bytes[pixel].Should().Be(255, path);
+        if (size == 64)
+        {
+            var offset = 18 + bytes[0];
+            for (var y = 0; y < size; y++)
+            for (var x = 0; x < size; x++)
+                if (Math.Min(Math.Min(x, y), Math.Min(size - 1 - x, size - 1 - y)) < 6)
+                    bytes[offset + (y * size + x) * 4 + 3].Should().Be(0, "inventory borders must be transparent");
+        }
+        else
+            for (var pixel = 18 + bytes[0] + 3; pixel < 18 + bytes[0] + size * size * 4; pixel += 4)
+                bytes[pixel].Should().Be(255, path);
     }
 
     private static List<Dictionary<string, string>> ReadCsv(string name)

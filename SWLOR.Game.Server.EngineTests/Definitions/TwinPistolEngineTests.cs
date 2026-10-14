@@ -259,7 +259,10 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                             TemporaryStatModifier.Add(actor, StatType.AttackDelayReductionPercent, 35, 30f, "TWIN_AMMO_HASTE");
                             var haste = Stat.GetStatAdjustment(actor, StatType.AttackDelayReductionPercent);
                             ctx.AssertEqual(35, haste, "The real PC hasted control has the intended global speed adjustment");
-                            var delay = Enumerable.Range(1, 600).First(cost =>
+                            var delay = Enumerable.Range(1, 600)
+                                .Where(cost => int.TryParse(Get2DAString("iprp_delay", "Name", cost), out var name) && name > 0 &&
+                                               int.TryParse(Get2DAString("iprp_delay", "Label", cost), out var label) && label > 0)
+                                .First(cost =>
                             {
                                 var effective = Combat.CalculateEffectiveAttackDelay(Combat.CalculateAttackDelayMilliseconds(cost * 10, cost * 10,
                                     haste, Combat.CalculateOffhandAttackDelayReduction(actor)));

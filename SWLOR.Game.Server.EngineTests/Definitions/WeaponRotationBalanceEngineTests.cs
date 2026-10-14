@@ -21,6 +21,7 @@ using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Item;
 using NumericsVector3 = System.Numerics.Vector3;
+using NWNXLib = NWN.Native.API.NWNXLib;
 
 namespace SWLOR.Game.Server.EngineTests.Definitions;
 
@@ -29,6 +30,8 @@ public static class WeaponRotationBalanceEngineTests
     private const int TargetMaximumHP = 30000;
     private const int TargetDefense = 94;
     private const int TargetEvasion = 134;
+    private const int ItemDelayUnits = 250;
+    private const int ItemDelayPropertyCost = 25;
     private static uint _actor = OBJECT_INVALID;
     private static uint _target = OBJECT_INVALID;
     private static int _attributedDamage;
@@ -160,6 +163,7 @@ public static class WeaponRotationBalanceEngineTests
             ctx.AssertEqual(pistol ? 36 : 22, WeaponDamage.GetEffectiveDMG(actor, main), "Single Weapon and Doublehand apply once, while paired guns retain their own DMG");
             ctx.AssertEqual(61, Stat.GetMaxStamina(actor), "The real player pool is 10 base +39 Might +12 reference gear");
             ctx.AssertEqual(pistol ? 0 : 30, Combat.CalculateOffhandAttackDelayReduction(actor), "Armor specialization matches the equipped setup");
+            AssertWeaponTiming(ctx, actor, main, companion, pistol);
             var origin = GetPosition(actor);
             var placed = false;
             for (var direction = 0; direction < 16 && !placed; direction++)
@@ -204,6 +208,7 @@ public static class WeaponRotationBalanceEngineTests
         await ctx.WaitUntilAsync(() => pistol ? StatusEffect.HasStatusEffect<GamblerStanceStatusEffect>(actor) :
             crossfire ? StatusEffect.HasStatusEffect<CrossfireStanceStatusEffect>(actor) :
             StatusEffect.HasStatusEffect<AkimboStanceStatusEffect>(actor), 6f, "the stance's normal activation");
+        await ctx.ExecuteInCreatureContextAsync(actor, () => AssertWeaponTiming(ctx, actor, main, companion, pistol));
 
         var capstone = pistol ? FeatType.DeadMansHand1 : crossfire ? FeatType.FinalSalvo : FeatType.TwinSuns;
         var coreFeats = pistol ? new[] { FeatType.DoubleShot3, FeatType.QuickDraw4, FeatType.FanTheHammer2 } :
@@ -217,6 +222,8 @@ public static class WeaponRotationBalanceEngineTests
         var naturalTicks = 0;
         var naturalRestored = 0;
         var nextNatural = 6d;
+        var nextAttackResumeCheck = 0d;
+        var controllerAttackResumes = 0;
         var windows = new Queue<int>(new[] { 6, 12, 120 });
         var startingHP = GetCurrentHitPoints(target);
         Combat.SetAutoAttackHitResolutionOverride(null);
@@ -264,7 +271,10 @@ public static class WeaponRotationBalanceEngineTests
                     {
                         build = category.ToString(), handling = handling.ToString(), investmentSP = price, seed = 20261013,
                         armorTrait = armor.Type.ToString(), skillRank = 50, attributeScores = 26,
-                        itemDamage = 22, itemDelay = 250, equippedAttackWeapons = pistol ? 1 : 2,
+                        itemDamage = 22, itemDelay = ItemDelayUnits, itemDelayUnit = "custom delay units",
+                        itemDelayPropertyCost = ItemDelayPropertyCost, equippedAttackWeapons = pistol ? 1 : 2,
+                        rawAttackDelayMilliseconds = Combat.CalculateAttackDelay(actor),
+                        effectiveAttackDelayMilliseconds = Combat.CalculateEffectiveAttackDelay(Combat.CalculateAttackDelay(actor)),
                         capstone = capstone.ToString(), acceptedCapstoneCasts = casts[capstone],
                         requestedSeconds = requested, observedSeconds = clock.Elapsed.TotalSeconds,
                         sourceAttack = Stat.GetAttack(actor, AbilityType.Perception, pistol ? SkillType.Pistol : SkillType.TwinPistol),
@@ -277,6 +287,7 @@ public static class WeaponRotationBalanceEngineTests
                         dps = _attributedDamage / clock.Elapsed.TotalSeconds,
                         stamina = Stat.GetCurrentStamina(actor), maximumStamina = Stat.GetMaxStamina(actor),
                         naturalTicks, naturalRestored, ordinaryHits = _ordinaryHits,
+                        controllerAttackResumes,
                         acceptedCasts = casts.ToDictionary(pair => pair.Key.ToString(), pair => pair.Value),
                         denials = new Dictionary<string, int>(denials),
                         momentum = StatusEffect.GetStatusEffect<MomentumStatusEffect>(actor)?.Charges ?? 0,
@@ -311,6 +322,23 @@ public static class WeaponRotationBalanceEngineTests
                         }
                     });
                 }
+                if (Activity.IsBusy(actor) || WeaponRepositioning.IsMoving(actor))
+                {
+                    // Let the normal post-cast/movement resume callback settle first.
+                    nextAttackResumeCheck = clock.Elapsed.TotalSeconds + .25d;
+                }
+                else if (clock.Elapsed.TotalSeconds >= nextAttackResumeCheck)
+                {
+                    await ctx.ExecuteInCreatureContextAsync(actor, () =>
+                    {
+                        var native = NWNXLib.g_pAppManager.m_pServerExoApp.GetGameObject(actor).AsNWSObject();
+                        if (!WeaponAttackAnimation.HasQueuedAttack(native, target))
+                        {
+                            ActionAttack(target);
+                            controllerAttackResumes++;
+                        }
+                    });
+                }
                 await ctx.DelaySecondsAsync(.1f);
             }
             ctx.Assert(_attributedDamage > 0 && _ordinaryHits > 0 && casts.Values.Sum() > 0, "Real ordinary attacks and paid ability activations produced measurable results");
@@ -319,7 +347,7 @@ public static class WeaponRotationBalanceEngineTests
             ctx.AssertEqual(_attributedDamage, startingHP - GetCurrentHitPoints(target), "No bystander damage or target healing contaminated the observation");
             ctx.SetResultDetail(JsonSerializer.Serialize(new
             {
-                method = "One fixed seed with native real-player attacks and actual feats against a stationary 30000-HP NPC with measured defense 94 and evasion 134; no forced hits. Equal 69-SP builds own their capstone mastery; paired variants buy exactly one selected handling trait. Capstone enters the fixed rotation at 8s and thereafter follows actual readiness, cooldown and finite stamina. Production NaturalRegeneration runs every 6s with native heartbeat suppressed. The NPC has no regeneration or incoming pressure; this does not measure High Noon uptime or player-target PvP. Actions retry when ready; ability and movement interruption remain real.",
+                method = "One fixed seed with native real-player attacks and actual feats against a stationary 30000-HP NPC with measured defense 94 and evasion 134; no forced hits. Equal 69-SP builds own their capstone mastery; paired variants buy exactly one selected handling trait. Capstone enters the fixed rotation at 8s and thereafter follows actual readiness, cooldown and finite stamina. Production NaturalRegeneration runs every 6s with native heartbeat suppressed. The NPC has no regeneration or incoming pressure; this does not measure High Noon uptime or player-target PvP. Actions retry when ready; ability and movement interruption remain real. The controller resumes ordinary attacks after casts/movement settle only when no native attack queue to the target remains, and records those inputs.",
                 observations = snapshots
             }));
         }
@@ -367,7 +395,30 @@ public static class WeaponRotationBalanceEngineTests
                 properties.Add(property);
         foreach (var property in properties) RemoveItemProperty(weapon, property);
         AddItemProperty(DurationType.Permanent, ItemPropertyCustom(ItemPropertyType.DMG, -1, 22), weapon);
-        AddItemProperty(DurationType.Permanent, ItemPropertyCustom(ItemPropertyType.Delay, -1, 250), weapon);
+        AddItemProperty(DurationType.Permanent, ItemPropertyCustom(ItemPropertyType.Delay, -1, ItemDelayPropertyCost), weapon);
+    }
+
+    private static void AssertWeaponTiming(EngineTestContext ctx, uint actor, uint main, uint companion, bool pistol)
+    {
+        foreach (var weapon in new[] { main, companion }.Where(GetIsObjectValid))
+        {
+            var propertyCost = 0;
+            for (var property = GetFirstItemProperty(weapon); GetIsItemPropertyValid(property); property = GetNextItemProperty(weapon))
+                if (GetItemPropertyType(property) == ItemPropertyType.Delay)
+                    propertyCost += GetItemPropertyCostTableValue(property);
+            ctx.AssertEqual(ItemDelayPropertyCost, propertyCost, "Each equipped weapon has native Delay property cost 25");
+            ctx.AssertEqual(ItemDelayUnits, propertyCost * 10, "Each equipped weapon has 250 custom delay units after production cost-index conversion");
+        }
+        var expectedRawDelay = Combat.CalculateAttackDelayMilliseconds(ItemDelayUnits, pistol ? 0 : ItemDelayUnits,
+            Combat.CalculateAttackDelayReduction(actor), Combat.CalculateOffhandAttackDelayReduction(actor));
+        var actualRawDelay = Combat.CalculateAttackDelay(actor);
+        ctx.AssertEqual(expectedRawDelay, actualRawDelay, "Equipped native delay matches the intended weapon and current Haste budgets");
+        var effectiveDelay = Combat.CalculateEffectiveAttackDelay(actualRawDelay);
+        ctx.AssertEqual(Combat.CalculateEffectiveAttackDelay(expectedRawDelay), effectiveDelay,
+            "The engine cycle uses the intended effective attack delay before timing begins");
+        ctx.Log($"Verified weapon timing: propertyCost={ItemDelayPropertyCost}, itemDelayUnits={ItemDelayUnits}, " +
+                $"rawMilliseconds={actualRawDelay}, effectiveMilliseconds={effectiveDelay}, haste={Combat.CalculateAttackDelayReduction(actor)}, " +
+                $"offhandReduction={Combat.CalculateOffhandAttackDelayReduction(actor)}");
     }
 
     private static Location RushDestination(uint actor, uint target)

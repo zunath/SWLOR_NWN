@@ -162,7 +162,12 @@ namespace SWLOR.Game.Server.Feature
             return InterruptAbilityActivation(activator, null);
         }
 
-        private static bool InterruptAbilityActivation(uint activator, string expectedActivationId)
+        public static string GetActiveAbilityActivationId(uint activator) =>
+            _activeAbilityActivations.TryGetValue(activator, out var activation) &&
+            GetLocalInt(activator, activation.ActivationId) == (int)ActivationStatus.Started
+                ? activation.ActivationId : string.Empty;
+
+        public static bool InterruptAbilityActivation(uint activator, string expectedActivationId)
         {
             if (!_activeAbilityActivations.TryGetValue(activator, out var activation) ||
                 !string.IsNullOrWhiteSpace(expectedActivationId) &&

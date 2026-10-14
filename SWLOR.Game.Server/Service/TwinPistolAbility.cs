@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Native;
 using SWLOR.Game.Server.Feature;
-using SWLOR.Game.Server.Service.ActivityService;
 using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.Game.Server.Service.StatService;
@@ -17,13 +16,14 @@ namespace SWLOR.Game.Server.Service
     /// <summary>One paid activation and result across captured weapon impacts.</summary>
     public static class TwinPistolAbility
     {
-        private sealed record Activation(uint Area, NumericsVector3 Origin, Location Destination,
+        private sealed record Activation(string ActivationId, uint Area, NumericsVector3 Origin, Location Destination,
             uint MainHand, uint OffHand, WeaponShotProfile[] Weapons, uint[] Targets, uint ResumeTarget,
             TwinPistolAbilitySpec Spec, PairedRangedAbilityTraitsSnapshot Traits);
         private static readonly Dictionary<uint, Activation> Activations = new();
 
-        public static bool HasActiveActivation(uint actor) => Activations.ContainsKey(actor) &&
-            Activity.GetBusyType(actor) == ActivityStatusType.AbilityActivation;
+        public static bool HasActiveActivation(uint actor) => Activations.TryGetValue(actor, out var activation) &&
+            !string.IsNullOrWhiteSpace(activation.ActivationId) &&
+            UsePerkFeat.GetActiveAbilityActivationId(actor) == activation.ActivationId;
 
         public static uint[] GetEligibleWeapons(uint actor) => new[]
             {
@@ -51,12 +51,14 @@ namespace SWLOR.Game.Server.Service
         public static bool Begin(uint actor, uint target, Location targetLocation, TwinPistolAbilitySpec spec)
         {
             if (!string.IsNullOrEmpty(Validate(actor, target, targetLocation, spec))) return false;
+            var activationId = UsePerkFeat.GetActiveAbilityActivationId(actor);
+            if (string.IsNullOrWhiteSpace(activationId)) return false;
             var origin = GetPosition(actor);
             var destination = GetDestination(actor, target, targetLocation, spec);
             var targets = spec.Movement == TwinPistolMovementType.FreeDestination
                 ? CaptureLineTargets(actor, origin, GetPositionFromLocation(destination), spec)
                 : new[] { target };
-            Activations[actor] = new Activation(GetArea(actor), origin, destination,
+            Activations[actor] = new Activation(activationId, GetArea(actor), origin, destination,
                 GetItemInSlot(InventorySlot.RightHand, actor), GetItemInSlot(InventorySlot.LeftHand, actor),
                 GetEligibleWeapons(actor).Select(weapon =>
                     WeaponShotProfile.Capture(actor, weapon, SkillType.TwinPistol, AbilityType.Perception)).ToArray(),
@@ -102,7 +104,8 @@ namespace SWLOR.Game.Server.Service
 
         public static void Cancel(uint actor)
         {
-            Activations.Remove(actor);
+            if (Activations.Remove(actor, out var activation) && !string.IsNullOrWhiteSpace(activation.ActivationId))
+                UsePerkFeat.InterruptAbilityActivation(actor, activation.ActivationId);
             WeaponRepositioning.Cancel(actor);
         }
 

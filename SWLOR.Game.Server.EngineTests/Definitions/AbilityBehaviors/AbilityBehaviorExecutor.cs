@@ -719,39 +719,51 @@ namespace SWLOR.Game.Server.EngineTests.Definitions.AbilityBehaviors
             uint target,
             Location activationLocation)
         {
-            // Restore both pools so the second attempt can only fail because the shared
-            // recast is still active, not because the first activation consumed a resource.
+            // Full resources isolate the movement lockout and the longer shared recast.
             ctx.SetResources(caster, ResourcePool, ResourcePool);
 
             var attempted = false;
             var used = false;
             var denial = string.Empty;
             Exception error = null;
-            AssignCommand(caster, () =>
+            async Task RetryAsync()
             {
-                attempted = true;
-                try
+                attempted = false;
+                used = false;
+                denial = string.Empty;
+                error = null;
+                AssignCommand(caster, () =>
                 {
-                    used = UsePerkFeat.TryUseAbility(caster, target, behaviorCase.Feat, activationLocation);
-                    if (!used)
-                        denial = Ability.GetLastActivationDenialReason();
-                }
-                catch (Exception ex)
-                {
-                    error = ex;
-                }
-            });
+                    attempted = true;
+                    try
+                    {
+                        used = UsePerkFeat.TryUseAbility(caster, target, behaviorCase.Feat, activationLocation);
+                        if (!used)
+                            denial = Ability.GetLastActivationDenialReason();
+                    }
+                    catch (Exception ex) { error = ex; }
+                });
 
-            var deadline = DateTime.UtcNow.AddSeconds(2);
-            while (!attempted && DateTime.UtcNow < deadline)
-            {
-                await NwTask.Delay(TimeSpan.FromMilliseconds(100), ctx.CancellationToken);
-                ctx.CancellationToken.ThrowIfCancellationRequested();
+                var deadline = DateTime.UtcNow.AddSeconds(2);
+                while (!attempted && DateTime.UtcNow < deadline)
+                {
+                    await NwTask.Delay(TimeSpan.FromMilliseconds(100), ctx.CancellationToken);
+                    ctx.CancellationToken.ThrowIfCancellationRequested();
+                }
+                ctx.Assert(attempted, $"the immediate {behaviorCase.Feat} retry command never executed");
+                if (error != null)
+                    ctx.Fail($"immediate {behaviorCase.Feat} retry threw {error.GetType().Name}: {error.Message}");
             }
 
-            ctx.Assert(attempted, $"the immediate {behaviorCase.Feat} retry command never executed");
-            if (error != null)
-                ctx.Fail($"immediate {behaviorCase.Feat} retry threw {error.GetType().Name}: {error.Message}");
+            await RetryAsync();
+            if (behaviorCase.SearchForSafeMovementLane && denial.Contains("Wait two seconds between movement abilities.", StringComparison.Ordinal))
+            {
+                ctx.Assert(!used, "The immediate retry respects the shared movement lockout");
+                ctx.Log($"{behaviorCase.Feat} immediate retry verified the two-second movement lockout");
+                await ctx.DelaySecondsAsync(2.05f);
+                activationLocation = await PrepareMovementLaneAsync(ctx, behaviorCase, ability, caster, target);
+                await RetryAsync();
+            }
 
             ctx.Assert(!used, $"{behaviorCase.Feat} was accepted while its shared recast was active");
             ctx.Assert(

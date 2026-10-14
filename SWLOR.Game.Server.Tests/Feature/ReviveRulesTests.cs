@@ -27,4 +27,24 @@ public class ReviveRulesTests
     {
         ReviveRules.IsWithinMidFightLockout(Now.AddSeconds(-secondsAgo), Now).Should().BeFalse();
     }
+
+    [Test]
+    public void NoPlayerKill_StartsNoPartyDamageWait()
+    {
+        ReviveRules.IsWithinPartyDamageWindow(null, Now).Should().BeFalse();
+    }
+
+    [TestCase(0)]
+    [TestCase(14)]
+    public void PlayerKillWithinFifteenSeconds_CountsAsRecentPartyDamage(int secondsAgo)
+    {
+        ReviveRules.IsWithinPartyDamageWindow(Now.AddSeconds(-secondsAgo), Now).Should().BeTrue();
+    }
+
+    [TestCase(15)]
+    [TestCase(60)]
+    public void PlayerKillFifteenSecondsAgoOrMore_NoLongerCounts(int secondsAgo)
+    {
+        ReviveRules.IsWithinPartyDamageWindow(Now.AddSeconds(-secondsAgo), Now).Should().BeFalse();
+    }
 }

@@ -55,6 +55,8 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 var attacker = ctx.SpawnCreature("nw_rat001", -3f);
                 AssignCommand(attacker, () => ApplyEffectToObject(DurationType.Instant, EffectDamage(1), caster));
                 await ctx.WaitUntilAsync(() => Combat.HasRecentDamageTaken(caster, 1f), 3f, "the caster to register damage");
+                // Only the one scripted hit may count, so the attacker can't keep the window open.
+                DestroyObject(attacker);
 
                 var (activated, denial) = await TryReviveAsync(ctx, caster, body);
                 ctx.Assert(!activated, "the revive is refused right after party damage");
@@ -63,6 +65,32 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 await ctx.DelaySecondsAsync(ReviveRules.PartyDamageWindowSeconds + 0.5f);
                 (activated, denial) = await TryReviveAsync(ctx, caster, body);
                 ctx.Assert(activated, $"the revive works after 15 seconds without damage: {denial}");
+                await ctx.WaitUntilAsync(() => !GetIsDead(body), 8f, "the body to be revived");
+            }
+            finally
+            {
+                ReleaseBody(body);
+            }
+        }
+
+        [EngineTest("After a player kill, Resuscitation waits 15 seconds even when nobody else was hit", Category = "Revive", TimeoutSeconds = 50f)]
+        public static async Task PlayerKillAloneStartsThePartyDamageWait(EngineTestContext ctx)
+        {
+            using var player = await PlayerAbilityFixture.CreateAsync(ctx, 4f);
+            var (caster, body) = await PrepareReviveAsync(ctx);
+            try
+            {
+                ctx.Assert(!GetIsReactionTypeHostile(player.Creature, caster), "the player is not hostile to the caster");
+                ReviveRules.RecordPlayerDeath(body, player.Creature);
+                ctx.Assert(!Combat.HasRecentDamageTaken(caster, ReviveRules.PartyDamageWindowSeconds), "nobody in the party was hit");
+
+                var (activated, denial) = await TryReviveAsync(ctx, caster, body);
+                ctx.Assert(!activated, "the revive is refused right after the kill");
+                ctx.AssertEqual(ReviveRules.PartyRecentlyDamagedMessage, denial, "denial reason");
+
+                await ctx.DelaySecondsAsync(ReviveRules.PartyDamageWindowSeconds + 0.5f);
+                (activated, denial) = await TryReviveAsync(ctx, caster, body);
+                ctx.Assert(activated, $"the revive works 15 seconds after the kill: {denial}");
                 await ctx.WaitUntilAsync(() => !GetIsDead(body), 8f, "the body to be revived");
             }
             finally

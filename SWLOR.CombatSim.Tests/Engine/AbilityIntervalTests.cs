@@ -93,13 +93,12 @@ namespace SWLOR.CombatSim.Tests.Engine
             lightning.Damage = new DamageSpec { Min = 1f, Max = 1f, HitChance = 1f };
             var caster = TestCombatants.Medic("Caster", lightning);
             caster.MaxFp = 1;
-            caster.ReactionSeconds = 10f;
-            var scenario = TestScenarios.TwoTeams(false, new[] { caster }, new[] { TestCombatants.Dummy("Enemy", true) }, durationSeconds: 1f);
-            scenario.TimeStepSeconds = 10f;
+            caster.ReactionSeconds = 0.1f;
+            var scenario = TestScenarios.TwoTeams(false, new[] { caster }, new[] { TestCombatants.Dummy("Enemy", true) }, durationSeconds: 0.05f);
 
             var result = new Simulation(scenario, RuleSets.Current(), _catalog, 1).Run();
 
-            result.Combatants.Single(c => c.Name == "Caster").Stats.StarvedSeconds.Should().BeLessThanOrEqualTo(1.0);
+            result.Combatants.Single(c => c.Name == "Caster").Stats.StarvedSeconds.Should().BeLessThanOrEqualTo(0.05 + 1e-9);
         }
 
         [Test]
@@ -109,12 +108,11 @@ namespace SWLOR.CombatSim.Tests.Engine
             lightning.Damage = new DamageSpec { Min = 1f, Max = 1f, HitChance = 1f };
             var caster = TestCombatants.Medic("Caster", lightning);
             caster.MaxFp = 1;
-            caster.ReactionSeconds = 10f;
+            caster.ReactionSeconds = 0.1f;
             caster.AutoAttack = new AutoAttackSpec { AttacksPerSecond = 1f, Damage = new DamageSpec { Min = 100f, Max = 100f, HitChance = 1f } };
             var enemy = TestCombatants.Dummy("Enemy", true);
             enemy.MaxHp = 1;
             var scenario = TestScenarios.TwoTeams(false, new[] { caster }, new[] { enemy }, durationSeconds: 60f);
-            scenario.TimeStepSeconds = 10f;
 
             var result = new Simulation(scenario, RuleSets.Current(), _catalog, 1).Run();
 

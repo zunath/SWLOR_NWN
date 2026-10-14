@@ -26,7 +26,9 @@ namespace SWLOR.CombatSim.Tests.Engine
         [TestCase(float.PositiveInfinity)]
         [TestCase(float.Epsilon)]
         [TestCase(0.0001f)]
-        public void Run_RejectsATimeStepThatWouldNeverEnd(float step)
+        [TestCase(0.11f)]
+        [TestCase(10f)]
+        public void Run_RejectsATimeStepOutsideTheSimulationsResolution(float step)
         {
             var scenario = Scenario(TestCombatants.Dummy("Player"));
             scenario.TimeStepSeconds = step;
@@ -250,9 +252,9 @@ namespace SWLOR.CombatSim.Tests.Engine
         public void Spawn_RejectsATimeStepLongerThanAnAbilityUsersReactionTime()
         {
             var medic = TestCombatants.Medic("Medic", TestCombatants.Use("Benevolence1", AbilityTarget.Self));
-            medic.ReactionSeconds = 0.5f;
+            medic.ReactionSeconds = 0.05f;
             var scenario = Scenario(medic);
-            scenario.TimeStepSeconds = 1f;
+            scenario.TimeStepSeconds = 0.1f;
 
             var act = () => new Simulation(scenario, RuleSets.Current(), _catalog, 1).Spawn();
 
@@ -496,12 +498,12 @@ namespace SWLOR.CombatSim.Tests.Engine
         }
 
         [Test]
-        public void Spawn_AllowsALongTimeStepForCombatantsWithoutAbilities()
+        public void Spawn_AllowsATimeStepLongerThanTheReactionTime_ForCombatantsWithoutAbilities()
         {
             var striker = TestCombatants.Striker("Striker");
-            striker.ReactionSeconds = 0.5f;
+            striker.ReactionSeconds = 0.05f;
             var scenario = Scenario(striker);
-            scenario.TimeStepSeconds = 3f;
+            scenario.TimeStepSeconds = 0.1f;
 
             var act = () => new Simulation(scenario, RuleSets.Current(), _catalog, 1).Spawn();
 

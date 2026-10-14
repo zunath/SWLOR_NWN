@@ -36,15 +36,15 @@ namespace SWLOR.CombatSim.Tests.Engine
         [Test]
         public void Run_ProcessesEventsDueBeforeTheDuration_WhenTheLastStepIsPartial()
         {
-            var striker = TestCombatants.Striker("Striker", attacksPerSecond: 2f);
-            var scenario = TestScenarios.TwoTeams(false, new[] { striker }, new[] { TestCombatants.Dummy("Enemy", true) }, durationSeconds: 1f);
-            scenario.TimeStepSeconds = 10f;
+            // The first swing is due within its 0.05-second interval, so always before the fight's end.
+            var striker = TestCombatants.Striker("Striker", attacksPerSecond: 20f);
+            var scenario = TestScenarios.TwoTeams(false, new[] { striker }, new[] { TestCombatants.Dummy("Enemy", true) }, durationSeconds: 0.05f);
 
             var result = new Simulation(scenario, RuleSets.Current(), _catalog, 1).Run();
 
-            result.EndedAt.Should().Be(1.0);
+            result.EndedAt.Should().BeApproximately(0.05, 1e-6);
             result.Combatants.Single(c => c.Name == "Enemy").Stats.DamageTakenToHp.Should().BeGreaterThan(0,
-                "a swing due within the one-second fight lands even though the step is ten seconds");
+                "a swing due within the fight lands even though the fight is shorter than one step");
         }
 
         [Test]

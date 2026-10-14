@@ -61,6 +61,20 @@ namespace SWLOR.CombatSim.Report
             return events;
         }
 
+        /// <summary>Priority-list entries one run can check: while nothing can be cast, a combatant checks its whole list every step.</summary>
+        public static double PriorityChecksPerRun(ScenarioSpec scenario)
+        {
+            var duration = (double)scenario.DurationSeconds;
+            var step = (double)scenario.TimeStepSeconds;
+            if (!double.IsFinite(duration) || duration <= 0 || !double.IsFinite(step) || step <= 0 || scenario.Teams == null)
+                return 0;
+
+            return scenario.Teams
+                .SelectMany(team => team?.Members ?? new List<CombatantSpec>())
+                .Where(member => member != null)
+                .Sum(member => Math.Max(1, member.Count) * (double)(member.Abilities?.Count ?? 0) * (duration / step));
+        }
+
         // Each zone cast keeps its own pulse schedule until its last tick, and every step looks at every live one.
         private static double ZoneScansPerRun(AbilityUseSpec use, double duration, double step, double secondsBetweenUses)
         {

@@ -159,6 +159,20 @@ namespace SWLOR.CombatSim.Tests.Report
         }
 
         [Test]
+        public void Run_RejectsMorePriorityListChecksThanABatchCanFinishPromptly()
+        {
+            // Thousands of entries that never fire are each checked on every step.
+            var hoarder = TestCombatants.Medic("Hoarder");
+            for (var entry = 0; entry < 5000; entry++)
+                hoarder.Abilities.Add(TestCombatants.Use("Benevolence1", AbilityTarget.Self, belowHpPercent: 0, minIntervalSeconds: 600));
+            var scenario = TestScenarios.TwoTeams(false, new[] { hoarder }, new[] { TestCombatants.Dummy("Enemy", true) });
+
+            var act = () => BatchRunner.Run(scenario, RuleSets.Current(), _catalog, 200, seed: 1);
+
+            act.Should().Throw<ArgumentException>().WithMessage("*priority-list checks*");
+        }
+
+        [Test]
         public void Run_RejectsMorePartyShieldApplicationsThanABatchCanFinishPromptly()
         {
             // 200 shouters each shielding all 200 allies every second for a day: about 3.5 billion applications.

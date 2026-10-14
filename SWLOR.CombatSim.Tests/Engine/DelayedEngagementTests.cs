@@ -173,12 +173,13 @@ namespace SWLOR.CombatSim.Tests.Engine
             var striker = TestCombatants.Striker("Striker", attacksPerSecond: 20f, damage: 1f);
             var enemy = TestCombatants.Dummy("Enemy", true);
             enemy.JoinAtSeconds = 9.9f;
-            var scenario = TestScenarios.TwoTeams(false, new[] { striker }, new[] { enemy }, durationSeconds: 10f);
-            scenario.TimeStepSeconds = 10f;
+            var simulation = TestScenarios.Spawn(
+                TestScenarios.TwoTeams(false, new[] { striker }, new[] { enemy }), RuleSets.Current(), _catalog);
 
-            var result = new Simulation(scenario, RuleSets.Current(), _catalog, 1).Run();
+            // Scenarios step at most 0.1s; driving one coarse step directly exercises the catch-up.
+            SimulationClock.RunUntil(simulation, 10.5, stepSeconds: 10.0);
 
-            result.Combatants.Single(c => c.Name == "Enemy").Stats.DamageTakenToHp.Should().BeLessThanOrEqualTo(5,
+            simulation.Get("Enemy").Stats.DamageTakenToHp.Should().BeLessThanOrEqualTo(5,
                 "only the tenth of a second after the enemy arrived is caught up, about two swings");
         }
 
@@ -254,12 +255,12 @@ namespace SWLOR.CombatSim.Tests.Engine
         {
             var striker = TestCombatants.Striker("Striker", attacksPerSecond: 20f, damage: 1f);
             striker.JoinAtSeconds = 9.9f;
-            var scenario = TestScenarios.TwoTeams(false, new[] { striker }, new[] { TestCombatants.Dummy("Enemy", true) }, durationSeconds: 10f);
-            scenario.TimeStepSeconds = 10f;
+            var simulation = TestScenarios.Spawn(
+                TestScenarios.TwoTeams(false, new[] { striker }, new[] { TestCombatants.Dummy("Enemy", true) }), RuleSets.Current(), _catalog);
 
-            var result = new Simulation(scenario, RuleSets.Current(), _catalog, 1).Run();
+            SimulationClock.RunUntil(simulation, 10.5, stepSeconds: 10.0);
 
-            result.Combatants.Single(c => c.Name == "Enemy").Stats.DamageTakenToHp.Should().BeLessThanOrEqualTo(5,
+            simulation.Get("Enemy").Stats.DamageTakenToHp.Should().BeLessThanOrEqualTo(5,
                 "only the tenth of a second after joining is caught up, about two swings");
         }
 

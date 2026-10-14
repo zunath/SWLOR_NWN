@@ -31,6 +31,12 @@ namespace SWLOR.CombatSim.Engine
 
         public const float MinimumTimeStepSeconds = 0.001f;
 
+        /// <summary>
+        /// Each step's events resolve against the state at the step's end, so the step bounds how far any event lands
+        /// from its true time; the shipped scenarios all use this resolution.
+        /// </summary>
+        public const float MaximumTimeStepSeconds = 0.1f;
+
         public const int MaximumMaxHp = 10_000_000;
 
         /// <summary>One day of simulated fighting.</summary>
@@ -124,8 +130,10 @@ namespace SWLOR.CombatSim.Engine
         public void Spawn()
         {
             // Bounds keep every step moving the clock, so a run always ends.
-            if (!(_scenario.TimeStepSeconds >= MinimumTimeStepSeconds) || !float.IsFinite(_scenario.TimeStepSeconds))
-                throw new InvalidDataException($"The scenario's TimeStepSeconds must be a finite number of at least {MinimumTimeStepSeconds}.");
+            if (!(_scenario.TimeStepSeconds >= MinimumTimeStepSeconds) || !(_scenario.TimeStepSeconds <= MaximumTimeStepSeconds))
+                throw new InvalidDataException(
+                    $"The scenario's TimeStepSeconds must be from {MinimumTimeStepSeconds} to {MaximumTimeStepSeconds}; " +
+                    "each step's events resolve against the state at its end, so a longer step would misplace them.");
             if (!(_scenario.DurationSeconds > 0) || !(_scenario.DurationSeconds <= MaximumDurationSeconds))
                 throw new InvalidDataException($"The scenario's DurationSeconds must be greater than zero and at most {MaximumDurationSeconds}.");
 

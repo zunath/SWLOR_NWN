@@ -363,14 +363,14 @@ public class PlayerNameRecognitionTests
 
         var nameOverrideMethod = ExtractMethod(source, "private static void ApplyNameOverride(uint observer, uint target)");
         nameOverrideMethod.Should().Contain("UnknownNamePrefix");
-        nameOverrideMethod.Should().Contain("UnknownNameSuffix");
+        nameOverrideMethod.Should().Contain("GetNameOverrideSuffix(target, isUnknown)");
         nameOverrideMethod.Should().Contain("RenamePlugin.SetPCNameOverride(target, displayName, prefix, suffix, PlayerNameOverrideType.Default, observer);");
         nameOverrideMethod.Should().NotContain("SetCreatureNameOverride");
 
         var applyPlayerMethod = ExtractMethod(source, "private static void ApplyNameOverridesForPlayer(uint player)");
         applyPlayerMethod.Should().Contain("var ownDisplayName = ShouldShowOwnDescriptor(player)");
         applyPlayerMethod.Should().Contain("BuildDisplayNameWithDescriptor(GetName(player), unknownDisplayName)");
-        applyPlayerMethod.Should().Contain("RenamePlugin.SetPCNameOverride(player, ownDisplayName, string.Empty, string.Empty, PlayerNameOverrideType.Default, player);");
+        applyPlayerMethod.Should().Contain("RenamePlugin.SetPCNameOverride(player, ownDisplayName, string.Empty, GetNameOverrideSuffix(player), PlayerNameOverrideType.Default, player);");
 
         var resolveDisplayMethod = ExtractMethod(source, "private static string ResolveDisplayName(uint observer, uint target, out bool isUnknown)");
         resolveDisplayMethod.Should().Contain("ShouldShowDescriptorForNamedPlayers(observer)");

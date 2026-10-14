@@ -1022,12 +1022,12 @@ namespace SWLOR.Game.Server.Service
                 if (grantedFeatSet.Contains(feat))
                     continue;
 
-                CreaturePlugin.RemoveFeat(creature, feat);
+                QuickCast.RemoveFeat(creature, feat);
             }
 
             foreach (var feat in grantedFeats)
             {
-                if (CreaturePlugin.GetKnowsFeat(creature, feat))
+                if (QuickCast.KnowsFeat(creature, feat))
                     continue;
 
                 if (addByLevel)
@@ -1039,6 +1039,8 @@ namespace SWLOR.Game.Server.Service
                     CreaturePlugin.AddFeat(creature, feat);
                 }
             }
+
+            QuickCast.ApplyPreferences(creature);
         }
 
         /// <summary>
@@ -1389,7 +1391,7 @@ namespace SWLOR.Game.Server.Service
 
                     foreach (var feat in perkLevel.GrantedFeats)
                     {
-                        CreaturePlugin.RemoveFeat(player, feat);
+                        QuickCast.RemoveFeat(player, feat);
                     }
 
                     Log.Write(LogGroup.PerkRefund, $"AUTOMATIC DECAY REFUND - {playerId} - Refunded Date {DateTime.UtcNow} - Level {perkLevel} - PerkID {perkType}");

@@ -39,6 +39,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .HasRecastDelay(RecastGroup.Capstone, CapstoneAbility.RecastDelaySeconds)
                 .SkillType(SkillType.Force)
                 .IsSingleTargetAbility()
+                .AllowsSelfQuickCast()
                 .HasMaxRange(15f)
                 .RequiresTarget()
                 .HasCustomValidation((activator, target, _, _) =>

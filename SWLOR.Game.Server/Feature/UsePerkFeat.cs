@@ -336,6 +336,13 @@ namespace SWLOR.Game.Server.Feature
             var targetLocation = Location(targetArea, targetPosition, 0.0f);
 
             var feat = (FeatType)Convert.ToInt32(EventsPlugin.GetEventData("FEAT_ID"));
+            if (QuickCastFeatMap.IsAlias(feat))
+            {
+                EventsPlugin.SkipEvent();
+                if (!QuickCast.TryCast(activator, feat, out var error) && !string.IsNullOrWhiteSpace(error))
+                    SendMessageToPC(activator, error);
+                return;
+            }
             TryUseAbility(activator, target, feat, targetLocation, true);
         }
 

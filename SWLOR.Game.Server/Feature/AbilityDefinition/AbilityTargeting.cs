@@ -46,7 +46,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
 
             foreach (var (feat, targeting) in _targetingByFeat)
             {
-                var hasFeat = CreaturePlugin.GetKnowsFeat(creature, feat);
+                var hasFeat = QuickCast.KnowsFeat(creature, feat);
                 var sizeX = targeting.ResolveSizeX(creature, hasFeat);
                 var sizeY = targeting.ResolveSizeY();
                 ValidateResolvedTargeting(feat, targeting, sizeX, sizeY);

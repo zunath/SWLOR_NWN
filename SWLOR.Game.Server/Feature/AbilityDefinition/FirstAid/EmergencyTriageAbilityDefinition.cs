@@ -41,6 +41,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
                 .HasRecastDelay(RecastGroup.EmergencyTriage, 24f)
                 .SkillType(SkillType.FirstAid)
                 .IsSingleTargetAbility()
+                .AllowsSelfQuickCast()
                 .IsHealingAbility()
                 .HasMaxRange(RangeMeters)
                 .RequiresTarget()

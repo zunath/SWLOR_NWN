@@ -40,6 +40,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
                 .HasRecastDelay(RecastGroup.Infusion, 24f)
                 .SkillType(SkillType.FirstAid)
                 .IsSingleTargetAbility()
+                .AllowsSelfQuickCast()
                 .IsHealingAbility()
                 .RequiresTarget()
                 .HasCustomValidation((activator, target, _, _) =>
@@ -65,6 +66,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
                 .HasRecastDelay(RecastGroup.Infusion, 24f)
                 .SkillType(SkillType.FirstAid)
                 .IsSingleTargetAbility()
+                .AllowsSelfQuickCast()
                 .IsHealingAbility()
                 .RequiresTarget()
                 .HasCustomValidation((activator, target, _, _) =>

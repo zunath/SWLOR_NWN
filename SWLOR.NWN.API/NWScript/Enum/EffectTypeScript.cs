@@ -96,5 +96,7 @@ namespace SWLOR.NWN.API.NWScript.Enum
         CutsceneImmobilize = 84,
         RunScript = 85,
         Icon = 86,
+        CutsceneDominated = 92,
+        Knockdown = 98,
     }
 }

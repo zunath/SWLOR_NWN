@@ -38,6 +38,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster
                 .HasRecastDelay(RecastGroup.Innervate, 12f)
                 .SkillType(SkillType.BeastMastery)
                 .IsSingleTargetAbility()
+                .AllowsSelfQuickCast()
                 .IsHealingAbility()
                 .RequiresTarget()
                 .HasCustomValidation((activator, target, _, _) =>
@@ -59,6 +60,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster
                 .HasRecastDelay(RecastGroup.Innervate, 12f)
                 .SkillType(SkillType.BeastMastery)
                 .IsSingleTargetAbility()
+                .AllowsSelfQuickCast()
                 .IsHealingAbility()
                 .RequiresTarget()
                 .HasCustomValidation((activator, target, _, _) =>
@@ -80,6 +82,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster
                 .HasRecastDelay(RecastGroup.Innervate, 12f)
                 .SkillType(SkillType.BeastMastery)
                 .IsSingleTargetAbility()
+                .AllowsSelfQuickCast()
                 .IsHealingAbility()
                 .RequiresTarget()
                 .HasCustomValidation((activator, target, _, _) =>

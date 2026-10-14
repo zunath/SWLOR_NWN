@@ -47,13 +47,19 @@ public static class WeaponRotationBalanceEngineTests
     [EngineTest("Controlled Pistol critical rotation records actual damage and finite player stamina", Category = "WeaponRotationBalance", TimeoutSeconds = 160f)]
     public static Task Pistol(EngineTestContext ctx) => Run(ctx, PerkCategoryType.PistolGunslinger);
 
-    [EngineTest("Controlled Barrage paired rotation records actual damage and finite player stamina", Category = "WeaponRotationBalance", TimeoutSeconds = 160f)]
-    public static Task Barrage(EngineTestContext ctx) => Run(ctx, PerkCategoryType.TwinPistolBarrage);
+    [EngineTest("Controlled Barrage Matched Rhythm rotation records damage and finite stamina at 69 SP", Category = "WeaponRotationBalance", TimeoutSeconds = 160f)]
+    public static Task BarrageMatched(EngineTestContext ctx) => Run(ctx, PerkCategoryType.TwinPistolBarrage, PerkType.MatchedRhythm);
 
-    [EngineTest("Controlled Crossfire paired rotation records actual damage and finite player stamina", Category = "WeaponRotationBalance", TimeoutSeconds = 160f)]
-    public static Task Crossfire(EngineTestContext ctx) => Run(ctx, PerkCategoryType.TwinPistolCrossfire);
+    [EngineTest("Controlled Barrage Paired Handling rotation records damage and finite stamina at 69 SP", Category = "WeaponRotationBalance", TimeoutSeconds = 160f)]
+    public static Task BarrageHandling(EngineTestContext ctx) => Run(ctx, PerkCategoryType.TwinPistolBarrage, PerkType.PairedHandling);
 
-    private static async Task Run(EngineTestContext ctx, PerkCategoryType category)
+    [EngineTest("Controlled Crossfire Paired Handling rotation records damage and finite stamina at 69 SP", Category = "WeaponRotationBalance", TimeoutSeconds = 160f)]
+    public static Task CrossfireHandling(EngineTestContext ctx) => Run(ctx, PerkCategoryType.TwinPistolCrossfire, PerkType.PairedHandling);
+
+    [EngineTest("Controlled Crossfire Matched Rhythm rotation records damage and finite stamina at 69 SP", Category = "WeaponRotationBalance", TimeoutSeconds = 160f)]
+    public static Task CrossfireMatched(EngineTestContext ctx) => Run(ctx, PerkCategoryType.TwinPistolCrossfire, PerkType.MatchedRhythm);
+
+    private static async Task Run(EngineTestContext ctx, PerkCategoryType category, PerkType handling = PerkType.Invalid)
     {
         using var pvp = new ArenaPvPSetting(ctx.Arena);
         using var player = await PlayerAbilityFixture.CreateAsync(ctx);
@@ -63,10 +69,16 @@ public static class WeaponRotationBalanceEngineTests
         var pistol = category == PerkCategoryType.PistolGunslinger;
         var crossfire = category == PerkCategoryType.TwinPistolCrossfire;
         var line = Perk.GetAllPerks().Values.Where(perk => perk.Category == category).ToArray();
+        if (!pistol)
+        {
+            ctx.Assert(handling is PerkType.MatchedRhythm or PerkType.PairedHandling, "The paired build selects one legal handling purchase");
+            line = line.Where(perk => perk.Type is not (PerkType.MatchedRhythm or PerkType.PairedHandling))
+                .Append(Perk.GetPerkDetails(handling)).ToArray();
+        }
         var armor = Perk.GetPerkDetails(pistol ? PerkType.Doublehand : PerkType.DualWield);
         var price = line.SelectMany(perk => perk.PerkLevels.Values).Sum(level => level.Price) +
                     armor.PerkLevels.Values.Sum(level => level.Price);
-        ctx.AssertEqual(69, price, "Each complete line and its appropriate Armor trait have equal investment");
+        ctx.AssertEqual(69, price, "Every complete line with its selected handling purchase and Armor trait has equal investment");
 
         player.Update(record =>
         {
@@ -80,6 +92,15 @@ public static class WeaponRotationBalanceEngineTests
                     record.Quests[requirement.QuestId] = new PlayerQuest { TimesCompleted = 1, DateLastCompleted = DateTime.UtcNow };
             }
         });
+        if (!pistol)
+        {
+            var excluded = handling == PerkType.MatchedRhythm ? PerkType.PairedHandling : PerkType.MatchedRhythm;
+            ctx.AssertEqual(3, Perk.GetPerkLevel(actor, handling), "The selected handling purchase has its actual maximum rank");
+            ctx.AssertEqual(0, Perk.GetPerkLevel(actor, excluded), "The mutually exclusive handling purchase is absent");
+            foreach (var requirement in Perk.GetPerkDetails(handling).PerkLevels.Values.SelectMany(level => level.Requirements)
+                         .OfType<PerkRequirementCannotHavePerk>())
+                ctx.Assert(string.IsNullOrEmpty(requirement.CheckRequirements(actor)), "The build satisfies actual handling purchase exclusivity");
+        }
         defender.Update(ConfigureRecord);
         foreach (var requirement in line.SelectMany(perk => perk.PerkLevels.Values)
                      .SelectMany(level => level.Requirements).OfType<PerkRequirementQuest>())
@@ -158,10 +179,12 @@ public static class WeaponRotationBalanceEngineTests
             crossfire ? StatusEffect.HasStatusEffect<CrossfireStanceStatusEffect>(actor) :
             StatusEffect.HasStatusEffect<AkimboStanceStatusEffect>(actor), 6f, "the stance's normal activation");
 
-        var feats = pistol ? new[] { FeatType.DoubleShot3, FeatType.QuickDraw4, FeatType.FanTheHammer2 } :
+        var capstone = pistol ? FeatType.DeadMansHand1 : crossfire ? FeatType.FinalSalvo : FeatType.TwinSuns;
+        var coreFeats = pistol ? new[] { FeatType.DoubleShot3, FeatType.QuickDraw4, FeatType.FanTheHammer2 } :
             crossfire ? new[] { FeatType.BlasterSlide4, FeatType.PistolRush2, FeatType.GrappleShot3 } :
             new[] { FeatType.FocusedBurst3, FeatType.PairedVolley4, FeatType.ControlledBurst2 };
-        var next = feats.Select((_, index) => (double)(crossfire ? index * 2 : index)).ToArray();
+        var feats = coreFeats.Append(capstone).ToArray();
+        var next = coreFeats.Select((_, index) => (double)(crossfire ? index * 2 : index)).Append(8d).ToArray();
         var casts = feats.ToDictionary(feat => feat, _ => 0);
         var denials = new Dictionary<string, int>();
         var snapshots = new List<object>();
@@ -211,7 +234,10 @@ public static class WeaponRotationBalanceEngineTests
                     var requested = windows.Dequeue();
                     var observation = new
                     {
-                        build = category.ToString(), investmentSP = price, seed = 20261013,
+                        build = category.ToString(), handling = handling.ToString(), investmentSP = price, seed = 20261013,
+                        armorTrait = armor.Type.ToString(), skillRank = 50, attributeScores = 26,
+                        itemDamage = 22, itemDelay = 250, equippedAttackWeapons = pistol ? 1 : 2,
+                        capstone = capstone.ToString(), acceptedCapstoneCasts = casts[capstone],
                         requestedSeconds = requested, observedSeconds = clock.Elapsed.TotalSeconds,
                         sourceAttack = Stat.GetAttack(actor, AbilityType.Perception, pistol ? SkillType.Pistol : SkillType.TwinPistol),
                         targetDefense = Stat.GetDefense(target, CombatDamageType.Physical, AbilityType.Vitality),
@@ -262,7 +288,7 @@ public static class WeaponRotationBalanceEngineTests
             ctx.AssertEqual(_attributedDamage, startingHP - GetCurrentHitPoints(target), "No bystander damage or target healing contaminated the observation");
             ctx.SetResultDetail(JsonSerializer.Serialize(new
             {
-                method = "Fixed-seed native player attacks and actual feats; no forced hits. Full 69-SP builds with mastery ownership. Production NaturalRegeneration invoked every six seconds with native heartbeat suppressed. Target stationary, no incoming pressure or capstone use. Actions retry when ready; ability and movement interruption remain real.",
+                method = "One fixed seed with native player attacks and actual feats; no forced hits. Equal 69-SP builds own their capstone mastery; paired variants buy exactly one selected handling trait. Capstone enters the fixed rotation at 8s and thereafter follows actual readiness, cooldown and finite stamina. Production NaturalRegeneration runs every 6s with native heartbeat suppressed. Stationary high-HP target and no incoming pressure; this does not measure High Noon uptime. Actions retry when ready; ability and movement interruption remain real.",
                 observations = snapshots
             }));
         }

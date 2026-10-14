@@ -4,6 +4,7 @@ using System.Linq;
 using NWN.Native.API;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Extension;
+using SWLOR.Game.Server.Feature.AbilityDefinition;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.LogService;
@@ -597,13 +598,16 @@ namespace SWLOR.Game.Server.Service
                 }
             }
 
-            // If player's current HP is higher than max, deal the difference in damage to bring them back down to their new maximum.
-            var currentHP = GetCurrentHitPoints(player);
+            // If player's current HP is higher than max, bring it back down to their new maximum. The native
+            // getter includes temporary HP, so compare base HP only or a shield would heal the player.
+            var currentHP = ObjectPlugin.GetCurrentHitPoints(player);
             var maxHP = GetMaxHitPoints(player);
             if (currentHP > maxHP)
             {
                 SetCurrentHitPoints(player, maxHP);
             }
+
+            TemporaryHitPointEffects.ScheduleLimitCheck(player);
         }
 
         /// <summary>
@@ -716,6 +720,8 @@ namespace SWLOR.Game.Server.Service
             if (ability == AbilityType.Invalid) return;
 
             CreaturePlugin.SetRawAbilityScore(player, ability, GetPlayerAttributeScore(entity, ability));
+            if (ability == AbilityType.Vitality)
+                TemporaryHitPointEffects.ScheduleLimitCheck(player);
         }
 
         private static int GetPlayerAttributeScore(Player entity, AbilityType ability)
@@ -2658,7 +2664,8 @@ namespace SWLOR.Game.Server.Service
         public static void SetNPCMaxHitPoints(uint creature, int desiredMaxHitPoints, bool restoreToFull = false)
         {
             desiredMaxHitPoints = System.Math.Clamp(desiredMaxHitPoints, 1, MaximumNPCHitPoints);
-            var originalCurrentHitPoints = GetCurrentHitPoints(creature);
+            // Base HP only: the native getter includes temporary HP, which must not become base HP.
+            var originalCurrentHitPoints = ObjectPlugin.GetCurrentHitPoints(creature);
 
             // Probe with the final budget, observe the engine-derived adjustment, then
             // compensate the base value. Repeating also handles NWN's one-HP-per-level
@@ -2696,6 +2703,8 @@ namespace SWLOR.Game.Server.Service
                     creature,
                     System.Math.Min(originalCurrentHitPoints, alignedMaxHitPoints));
             }
+
+            TemporaryHitPointEffects.ScheduleLimitCheck(creature);
         }
 
         /// <summary>

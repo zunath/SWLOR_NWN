@@ -737,25 +737,36 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                 .Permissions(AuthorizationLevel.All)
                 .Action((user, target, location, args) =>
                 {
+                    // A DM possessing a creature types as the creature, but their windows are cached under the DM avatar
+                    // and can be shown on either.
+                    var owner = DMPresence.GetDM(user);
+                    var shownOn = owner == user ? new[] { user } : new[] { user, owner };
+
                     // Close all open windows for the player
                     foreach (GuiWindowType type in Enum.GetValues(typeof(GuiWindowType)))
                     {
                         // The DM toolbar stands in for the hidden native taskbar and has a fixed position, so it stays as it is.
                         if (type == GuiWindowType.Invalid || type == GuiWindowType.DMToolbar) continue;
-                        if (Gui.IsWindowOpen(user, type))
+                        foreach (var uiTarget in shownOn)
                         {
-                            Gui.TogglePlayerWindow(user, type);
+                            if (Gui.IsWindowOpen(uiTarget, type))
+                            {
+                                Gui.TogglePlayerWindow(owner, type, uiTarget: uiTarget);
+                            }
                         }
                     }
 
-                    var playerId = GetObjectUUID(user);
+                    var playerId = GetObjectUUID(owner);
                     var dbPlayer = DB.Get<Player>(playerId);
 
-                    // Clear all stored window geometries
-                    dbPlayer.WindowGeometries.Clear();
+                    if (dbPlayer != null)
+                    {
+                        // Clear all stored window geometries
+                        dbPlayer.WindowGeometries.Clear();
 
-                    // Save the player data
-                    DB.Set(dbPlayer);
+                        // Save the player data
+                        DB.Set(dbPlayer);
+                    }
 
                     // Update all player window instances with default geometries
                     // This ensures that when windows are reopened, they use default positions
@@ -766,7 +777,7 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
 
                         try
                         {
-                            var playerWindow = Gui.GetPlayerWindow(user, type);
+                            var playerWindow = Gui.GetPlayerWindow(owner, type);
                             var template = Gui.GetWindowTemplate(type);
                             playerWindow.ViewModel.Geometry = template.InitialGeometry;
                         }

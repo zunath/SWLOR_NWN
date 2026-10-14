@@ -218,6 +218,12 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
         [EngineTest("DM creator lists palette categories, shows details and creates objects", Category = "DMToolbar", TimeoutSeconds = 180f)]
         public static async Task CreatorListsAndCreatesBlueprints(EngineTestContext ctx)
         {
+            // Custom palettes are read while the module loads, so no DM's click waits on hundreds of template reads.
+            var loadedPalettes = (System.Collections.IDictionary)typeof(DMBlueprintCatalog)
+                .GetField("_palettes", BindingFlags.Static | BindingFlags.NonPublic)!.GetValue(null)!;
+            ctx.Assert(Enum.GetValues<DMBlueprintCategory>().All(category => loadedPalettes.Contains((category, DMBlueprintSource.Custom))),
+                "every custom palette is loaded before a DM opens the Creator");
+
             using var dm = await PlayerAbilityFixture.CreateAsync(ctx);
             using var windows = RegisterWindows(ctx, dm);
             await ctx.ExecuteInCreatureContextAsync(dm.Creature, () =>

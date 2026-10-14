@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.NWNX.Enum;
 using SWLOR.Game.Server.Feature;
 using SWLOR.Game.Server.Service.DMToolService;
@@ -26,6 +27,19 @@ namespace SWLOR.Game.Server.Service
         private const float SquareHeight = 0.025f;
 
         private static readonly Dictionary<(DMBlueprintCategory, DMBlueprintSource), DMPalette> _palettes = new();
+
+        /// <summary>
+        /// Reads the custom palettes while the module loads. Listing the blueprints no palette holds reads each
+        /// one's template for its name, hundreds for items, which would stall the server inside a DM's click.
+        /// </summary>
+        [NWNEventHandler(ScriptName.OnModuleCacheAfter)]
+        public static void LoadCustomPalettes()
+        {
+            var stopwatch = System.Diagnostics.Stopwatch.StartNew();
+            foreach (var category in Enum.GetValues<DMBlueprintCategory>())
+                GetPalette(category, DMBlueprintSource.Custom);
+            Log.Write(LogGroup.DM, $"Loaded the DM creator's custom palettes in {stopwatch.ElapsedMilliseconds} ms.");
+        }
 
         /// <summary>
         /// Returns a palette, reading it the first time it is asked for.

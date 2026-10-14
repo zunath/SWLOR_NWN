@@ -815,6 +815,10 @@ namespace SWLOR.Game.Server.Feature
                         {
                             if (!IsDelayedImpactTargetValid(activator, target, targetLocation, ability))
                             {
+                                if (CombatRecorder.IsRecording)
+                                    CombatRecorder.RecordAbilityInterrupted(activator, ability, GetCurrentHitPoints(activator) <= 0
+                                        ? CombatRecordInterruptCause.Died
+                                        : CombatRecordInterruptCause.Other);
                                 ClearAbilityActivationIdleSnapshots(activator);
                                 CancelActivation(false);
                                 Combat.CompleteAbilityStaminaCostContext(activator, ability);

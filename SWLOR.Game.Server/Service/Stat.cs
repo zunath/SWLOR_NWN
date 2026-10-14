@@ -2296,6 +2296,8 @@ namespace SWLOR.Game.Server.Service
         {
             if (CalculateEffectiveHealingAmount(amount, ObjectPlugin.GetCurrentHitPoints(creature), GetMaxHitPoints(creature)) <= 0)
                 return;
+            // The heal these react to is applied right after them.
+            using var recorderReaction = CombatRecorder.BeginHealingReaction(creature);
             ApplyHealingReceivedStaminaRestore(creature);
             ApplyHealingReceivedAttackBoost(creature);
         }

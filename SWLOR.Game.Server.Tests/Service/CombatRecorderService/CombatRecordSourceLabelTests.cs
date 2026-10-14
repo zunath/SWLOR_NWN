@@ -17,6 +17,7 @@ public class CombatRecordSourceLabelTests
     [TestCase(CombatRecordSourceKind.Item, "Med Kit", 0, "Item: Med Kit")]
     [TestCase(CombatRecordSourceKind.StatTrigger, null, (int)StatType.HealingReceivedStaminaRestore, "Stat trigger: HealingReceivedStaminaRestore")]
     [TestCase(CombatRecordSourceKind.Trap, null, 0, "Trap")]
+    [TestCase(CombatRecordSourceKind.Setup, null, 0, "Setup")]
     [TestCase(CombatRecordSourceKind.Unattributed, null, 0, "Unattributed")]
     public void Format_NamesEachSourceKind(CombatRecordSourceKind kind, string name, int code, string expected)
     {

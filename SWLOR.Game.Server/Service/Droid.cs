@@ -825,6 +825,7 @@ namespace SWLOR.Game.Server.Service
                 DelayCommand(0.1f, () => DeleteLocalBool(droid, DroidIsSpawning));
                 DelayCommand(4f, () =>
                 {
+                    using var recorderAttribution = CombatRecorder.BeginSetupAttribution(droid);
                     ApplyEffectToObject(DurationType.Instant, EffectHeal(GetMaxHitPoints(droid)), droid);
                 });
             });

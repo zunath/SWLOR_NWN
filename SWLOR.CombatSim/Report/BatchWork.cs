@@ -61,6 +61,21 @@ namespace SWLOR.CombatSim.Report
             return events;
         }
 
+        /// <summary>
+        /// Combatant pairs one run can compare: target choices and party picks look over everyone, and every combatant can
+        /// make one each step.
+        /// </summary>
+        public static double PairChecksPerRun(ScenarioSpec scenario)
+        {
+            var duration = (double)scenario.DurationSeconds;
+            var step = (double)scenario.TimeStepSeconds;
+            if (!double.IsFinite(duration) || duration <= 0 || !double.IsFinite(step) || step <= 0 || scenario.Teams == null)
+                return 0;
+
+            var everyone = scenario.Teams.Sum(team => team?.Members?.Sum(member => (double)Math.Max(1, member?.Count ?? 1)) ?? 0);
+            return duration / step * everyone * everyone;
+        }
+
         /// <summary>Priority-list entries one run can check: while nothing can be cast, a combatant checks its whole list every step.</summary>
         public static double PriorityChecksPerRun(ScenarioSpec scenario)
         {

@@ -970,12 +970,22 @@ namespace SWLOR.CombatSim.Engine
             if (attack == null || attack.AttacksPerSecond <= 0 || attacker.Casting != null)
                 return;
 
+            // Nothing is due this step, so there is no need to look for enemies.
+            if (_now < attacker.NextAttackAt)
+                return;
+
             // Attacks due during this step are all made; ones missed before it (not yet engaged, or with nobody
             // there to hit) are not made up.
             var enemiesSince = Enemies(attacker).Select(enemy => enemy.AvailableSince).DefaultIfEmpty(double.PositiveInfinity).Min();
             if (double.IsPositiveInfinity(enemiesSince))
             {
-                attacker.NextAttackAt = Math.Max(attacker.NextAttackAt, _now);
+                // Wait for the next enemy due to join rather than looking again every step.
+                var nextArrival = _combatants
+                    .Where(c => c.TeamIndex != attacker.TeamIndex && !c.IsDead && c.Spec.JoinAtSeconds > _now)
+                    .Select(c => (double)c.Spec.JoinAtSeconds)
+                    .DefaultIfEmpty(_now)
+                    .Min();
+                attacker.NextAttackAt = Math.Max(attacker.NextAttackAt, nextArrival);
                 return;
             }
 

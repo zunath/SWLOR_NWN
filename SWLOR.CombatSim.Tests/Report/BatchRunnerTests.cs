@@ -159,6 +159,21 @@ namespace SWLOR.CombatSim.Tests.Report
         }
 
         [Test]
+        public void Run_RejectsMoreCombatantPairChecksThanABatchCanFinishPromptly()
+        {
+            // Two huge sides that barely swing still compare each other every step.
+            var left = TestCombatants.Striker("Left", attacksPerSecond: 0.001f, damage: 1f);
+            left.Count = 200;
+            var right = TestCombatants.Striker("Right", attacksPerSecond: 0.001f, damage: 1f);
+            right.Count = 200;
+            var scenario = TestScenarios.TwoTeams(false, new[] { left }, new[] { right });
+
+            var act = () => BatchRunner.Run(scenario, RuleSets.Current(), _catalog, 200, seed: 1);
+
+            act.Should().Throw<ArgumentException>().WithMessage("*combatant-pair checks*");
+        }
+
+        [Test]
         public void Run_RejectsMorePriorityListChecksThanABatchCanFinishPromptly()
         {
             // Thousands of entries that never fire are each checked on every step.

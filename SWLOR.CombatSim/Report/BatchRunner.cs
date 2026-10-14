@@ -25,6 +25,9 @@ namespace SWLOR.CombatSim.Report
         /// <summary>Priority-list entries checked across the batch; each check is cheap, so the bound is larger.</summary>
         public const long MaximumPriorityChecks = 5_000_000_000;
 
+        /// <summary>Combatant pairs compared across the batch, which grows with the square of the fight's size.</summary>
+        public const long MaximumPairChecks = 5_000_000_000;
+
         public static BatchSummary Run(ScenarioSpec scenario, RuleSet rules, AbilityCatalog catalog, int runs, int seed)
         {
             var combatantsPerRun = scenario.Teams.Sum(team => team?.Members?.Sum(member => (long)Math.Max(1, member?.Count ?? 1)) ?? 0);
@@ -45,6 +48,12 @@ namespace SWLOR.CombatSim.Report
                     $"{runs} runs of up to {eventsPerRun:0} simulated events each (hit rolls, heal and shield applications, " +
                     $"recurring ticks) is more than {MaximumEvents}; use fewer runs, a shorter duration, or fewer combatants, " +
                     "uses, hits or targets.");
+
+            var pairsPerRun = BatchWork.PairChecksPerRun(scenario);
+            if (runs * pairsPerRun > MaximumPairChecks)
+                throw new ArgumentException(
+                    $"{runs} runs of up to {pairsPerRun:0} combatant-pair checks each is more than {MaximumPairChecks}; " +
+                    "use fewer runs, a shorter duration or fewer combatants.");
 
             var checksPerRun = BatchWork.PriorityChecksPerRun(scenario);
             if (runs * checksPerRun > MaximumPriorityChecks)

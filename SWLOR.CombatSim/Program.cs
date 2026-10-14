@@ -69,11 +69,11 @@ static int Run(string[] args)
     var report = MarkdownReport.Build(scenario, summaries, options.ContainsKey("--detail"));
 
     if (options.TryGetValue("--json", out var json))
-        File.WriteAllText(json[0], JsonConvert.SerializeObject(summaries, Formatting.Indented));
+        OutputFile.WriteAllText(json[0], JsonConvert.SerializeObject(summaries, Formatting.Indented));
 
     if (options.TryGetValue("--out", out var output))
     {
-        File.WriteAllText(output[0], report);
+        OutputFile.WriteAllText(output[0], report);
         Console.WriteLine($"Wrote {output[0]}");
     }
     else

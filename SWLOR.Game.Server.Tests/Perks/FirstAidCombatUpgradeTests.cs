@@ -169,6 +169,7 @@ public class FirstAidCombatUpgradeTests
         resuscitation.Should().Contain(
             "DelayCommand(0.1f, () =>\n" +
             "            {\n" +
+            "                using var recorderScope = CombatRecorder.BeginAbilityFeatAttribution(activator, FeatType.Resuscitation2);\n" +
             "                AbilityEffectScaling.ApplyActivatedScaledHeal(activator, target, 20);",
             "the rank-II heal must run after EffectResurrection settles or the engine silently discards it");
 

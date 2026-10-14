@@ -159,6 +159,25 @@ namespace SWLOR.CombatSim.Tests.Report
         }
 
         [Test]
+        public void Run_CountsEachCombatantsFirstUse_EvenWithALongRecast()
+        {
+            // Every caster's first Epicenter lands within its reaction time, whatever the 90-second recast.
+            var burst = TestCombatants.Use("Epicenter1", AbilityTarget.Self);
+            burst.Damage = new DamageSpec { Min = 1f, Max = 1f, Hits = 1000, Area = true };
+            var casters = TestCombatants.Medic("Casters", burst);
+            casters.Count = 200;
+            casters.ReactionSeconds = 0.001f;
+            var crowd = TestCombatants.Dummy("Crowd", true);
+            crowd.Count = 200;
+            var scenario = TestScenarios.TwoTeams(false, new[] { casters }, new[] { crowd }, durationSeconds: 0.001f);
+            scenario.TimeStepSeconds = 0.001f;
+
+            var act = () => BatchRunner.Run(scenario, RuleSets.Current(), _catalog, 100, seed: 1);
+
+            act.Should().Throw<ArgumentException>().WithMessage("*simulated events*");
+        }
+
+        [Test]
         public void Run_RejectsMoreCombatantPairChecksThanABatchCanFinishPromptly()
         {
             // Two huge sides that barely swing still compare each other every step.

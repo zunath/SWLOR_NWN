@@ -42,7 +42,8 @@ namespace SWLOR.CombatSim.Report
 
                     var attack = member.AutoAttack;
                     if (attack != null && float.IsFinite(attack.AttacksPerSecond) && attack.AttacksPerSecond > 0)
-                        events += count * attack.AttacksPerSecond * duration * RollsPerUse(attack.Damage, enemies);
+                        // The first swing falls within the first interval, so a run makes one more than the rate alone.
+                        events += count * (1 + attack.AttacksPerSecond * duration) * RollsPerUse(attack.Damage, enemies);
 
                     foreach (var use in member.Abilities ?? new List<AbilityUseSpec>())
                     {
@@ -51,8 +52,9 @@ namespace SWLOR.CombatSim.Report
 
                         var secondsBetweenUses = SecondsBetweenUses(member, use, step, rules, catalog);
                         var perUse = RollsPerUse(use.Damage, enemies) + ApplicationsPerUse(use, allies);
+                        // Every combatant can make its first use within its reaction time, before any recast applies.
                         if (perUse > 0)
-                            events += count * duration / secondsBetweenUses * perUse;
+                            events += count * (1 + duration / secondsBetweenUses) * perUse;
                         events += count * ZoneScansPerRun(use, duration, step, secondsBetweenUses);
                     }
                 }

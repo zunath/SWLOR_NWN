@@ -45,12 +45,39 @@ namespace SWLOR.CombatSim.Cli
             return options;
         }
 
-        /// <summary>Whether two paths name the same file once resolved, ignoring case where the file system does.</summary>
+        /// <summary>
+        /// Whether two paths name the same file once symbolic links and junctions anywhere in them are followed, ignoring
+        /// case where the file system does. A hard link needs no check: outputs are moved into place (<see cref="OutputFile"/>).
+        /// </summary>
         public static bool AreSameFile(string first, string second) =>
             string.Equals(
-                Path.GetFullPath(first),
-                Path.GetFullPath(second),
+                ResolveLinks(first),
+                ResolveLinks(second),
                 OperatingSystem.IsWindows() || OperatingSystem.IsMacOS() ? StringComparison.OrdinalIgnoreCase : StringComparison.Ordinal);
+
+        private static string ResolveLinks(string path)
+        {
+            var fullPath = Path.GetFullPath(path);
+            var root = Path.GetPathRoot(fullPath) ?? string.Empty;
+            var resolved = root;
+            foreach (var part in fullPath[root.Length..].Split(
+                         new[] { Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar }, StringSplitOptions.RemoveEmptyEntries))
+            {
+                resolved = Path.Combine(resolved, part);
+                FileSystemInfo entry = Directory.Exists(resolved) ? new DirectoryInfo(resolved) : new FileInfo(resolved);
+                try
+                {
+                    if (entry.LinkTarget != null && entry.ResolveLinkTarget(returnFinalTarget: true) is { } target)
+                        resolved = Path.GetFullPath(target.FullName);
+                }
+                catch (IOException)
+                {
+                    // A link that cannot be followed is compared by its own name.
+                }
+            }
+
+            return resolved;
+        }
 
         /// <summary>
         /// Why an output would overwrite one of the inputs or another output, or null when every output is its own file.

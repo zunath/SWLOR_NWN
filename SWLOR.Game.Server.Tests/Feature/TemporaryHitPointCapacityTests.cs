@@ -53,10 +53,12 @@ public class TemporaryHitPointCapacityTests
             "the native effect must be created in one place so every grant passes the clamp");
         source.Should().Contain("return GetCapacity(hitPoints, GetEngineTemporaryHitPoints(target));",
             "capacity must count pools the engine still holds after removal");
-        source.Should().Contain("var immediateAmount = Math.Min(grantedAmount, capacity);");
+        source.Should().Contain("immediateRoom + GetPendingRemoval(target) - GetLocalInt(target, DeferredTotalVariable)",
+            "room reserved for deferred grants must not be granted twice");
+        source.Should().Contain("var immediateAmount = Math.Min(grantedAmount, immediateRoom);");
         source.Should().Contain("ApplyPoolEffect(target, effectTag, immediateAmount, durationSeconds);");
-        source.Should().Contain("var topUpAmount = Math.Min(deferredAmount, GetCapacity(target));");
-        source.Should().Contain("ApplyPoolEffect(target, effectTag, topUpAmount, durationSeconds - PendingRemovalDelaySeconds);");
+        source.Should().Contain("var appliedAmount = Math.Min(amount, GetCapacity(target));");
+        source.Should().Contain("ApplyPoolEffect(target, EffectTagPrefix + effectKey, appliedAmount, durationSeconds);");
     }
 
     private static DirectoryInfo FindRepositoryRoot()

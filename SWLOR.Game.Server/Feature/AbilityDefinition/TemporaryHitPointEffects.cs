@@ -13,6 +13,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
         private const string OwnerVariableSuffix = "_OWNER";
         private const string SourceVariableSuffix = "_SOURCE";
         private const string GenerationVariableSuffix = "_GENERATION";
+        private const string DeferredVariableSuffix = "_DEFERRED";
+        private const string DeferredTotalVariable = EffectTagPrefix + "DEFERRED_TOTAL";
         private const float PendingRemovalDelaySeconds = 0.1f;
 
         /// <summary>
@@ -94,9 +96,10 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
         // Temporary HP pools from different abilities stack, but an ability never stacks with
         // itself: each grant is tagged with its ability's key and the most recent cast replaces
         // any prior pool carrying the same key, regardless of caster.
-        public static void ApplyFlat(uint target, string effectKey, int amount, float durationSeconds)
+        /// <returns>The amount granted, which is smaller than requested at the engine's HP limit.</returns>
+        public static int ApplyFlat(uint target, string effectKey, int amount, float durationSeconds)
         {
-            ApplyFlatFromSource(OBJECT_INVALID, target, effectKey, amount, durationSeconds);
+            return ApplyFlatFromSource(OBJECT_INVALID, target, effectKey, amount, durationSeconds);
         }
 
         /// <summary>
@@ -104,17 +107,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
         /// ownership is only considered active while the matching native temporary-HP effect
         /// still exists, so consuming the pool immediately invalidates source-dependent riders.
         /// </summary>
-        public static void ApplyFlatFromSource(
-            uint source,
-            uint target,
-            string effectKey,
-            int amount,
-            float durationSeconds)
-        {
-            ApplySourcedPool(source, target, effectKey, amount, durationSeconds);
-        }
-
-        private static int ApplySourcedPool(
+        /// <returns>The amount granted, which is smaller than requested at the engine's HP limit.</returns>
+        public static int ApplyFlatFromSource(
             uint source,
             uint target,
             string effectKey,
@@ -157,8 +151,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
 
         /// <summary>
         /// Replaces the keyed pool, clamped so the engine's reported HP cannot overflow. Room
-        /// held by pools removed this frame, including the one being replaced, is granted in a
-        /// follow-up effect with the same tag once the engine releases it.
+        /// held by pools removed this frame, including the one being replaced, is reserved and
+        /// granted in a follow-up effect with the same tag once the engine releases it.
         /// </summary>
         private static int ApplyFlatInternal(uint target, string effectKey, int amount, float durationSeconds)
         {
@@ -166,13 +160,13 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
             var generation = AdvanceGeneration(target, effectKey);
             RemoveEffectByTag(target, effectTag);
 
-            var capacity = GetCapacity(target);
-            var pendingRemoval = GetEngineTemporaryHitPoints(target) - GetRemaining(target);
-            var grantedAmount = Math.Min(amount, capacity + pendingRemoval);
+            var immediateRoom = GetCapacity(target);
+            var releasedRoom = immediateRoom + GetPendingRemoval(target) - GetLocalInt(target, DeferredTotalVariable);
+            var grantedAmount = Math.Min(amount, releasedRoom);
             if (grantedAmount <= 0)
                 return 0;
 
-            var immediateAmount = Math.Min(grantedAmount, capacity);
+            var immediateAmount = Math.Min(grantedAmount, immediateRoom);
             if (immediateAmount > 0)
                 ApplyPoolEffect(target, effectTag, immediateAmount, durationSeconds);
 
@@ -183,16 +177,60 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
             if (durationSeconds <= PendingRemovalDelaySeconds)
                 return immediateAmount;
 
-            AssignCommand(GetModule(), () => DelayCommand(PendingRemovalDelaySeconds, () =>
-            {
-                if (!GetIsObjectValid(target) || GetLocalInt(target, GetGenerationVariable(effectKey)) != generation)
-                    return;
-
-                var topUpAmount = Math.Min(deferredAmount, GetCapacity(target));
-                if (topUpAmount > 0)
-                    ApplyPoolEffect(target, effectTag, topUpAmount, durationSeconds - PendingRemovalDelaySeconds);
-            }));
+            ScheduleDeferredGrant(target, effectKey, generation, deferredAmount, durationSeconds - PendingRemovalDelaySeconds);
             return grantedAmount;
+        }
+
+        // Reserved room is excluded from every later grant until the deferred effect lands, so
+        // grants made while it waits cannot claim the same released pool.
+        private static void ScheduleDeferredGrant(uint target, string effectKey, int generation, int amount, float durationSeconds)
+        {
+            SetLocalInt(target, GetDeferredVariable(effectKey), amount);
+            SetLocalInt(target, DeferredTotalVariable, GetLocalInt(target, DeferredTotalVariable) + amount);
+            AssignCommand(GetModule(), () => DelayCommand(PendingRemovalDelaySeconds, () =>
+                ApplyDeferredGrant(target, effectKey, generation, amount, durationSeconds)));
+        }
+
+        private static void ApplyDeferredGrant(uint target, string effectKey, int generation, int amount, float durationSeconds)
+        {
+            // A later application or removal of this key already released the reservation.
+            if (!GetIsObjectValid(target) || GetLocalInt(target, GetGenerationVariable(effectKey)) != generation)
+                return;
+
+            ReleaseDeferredGrant(target, effectKey);
+            var appliedAmount = Math.Min(amount, GetCapacity(target));
+            if (appliedAmount > 0)
+                ApplyPoolEffect(target, EffectTagPrefix + effectKey, appliedAmount, durationSeconds);
+
+            var remainingAmount = amount - appliedAmount;
+            if (remainingAmount > 0 && GetPendingRemoval(target) > 0 && durationSeconds > PendingRemovalDelaySeconds)
+            {
+                ScheduleDeferredGrant(target, effectKey, generation, remainingAmount, durationSeconds - PendingRemovalDelaySeconds);
+                return;
+            }
+
+            // A pool that never landed must not keep its source, owner or barrier visual.
+            if (GetRemaining(target, effectKey) <= 0)
+                Remove(target, effectKey);
+        }
+
+        private static void ReleaseDeferredGrant(uint target, string effectKey)
+        {
+            var amount = GetLocalInt(target, GetDeferredVariable(effectKey));
+            if (amount <= 0)
+                return;
+
+            DeleteLocalInt(target, GetDeferredVariable(effectKey));
+            var total = GetLocalInt(target, DeferredTotalVariable) - amount;
+            if (total > 0)
+                SetLocalInt(target, DeferredTotalVariable, total);
+            else
+                DeleteLocalInt(target, DeferredTotalVariable);
+        }
+
+        private static int GetPendingRemoval(uint target)
+        {
+            return GetEngineTemporaryHitPoints(target) - GetRemaining(target);
         }
 
         private static void ApplyPoolEffect(uint target, string effectTag, int amount, float durationSeconds)
@@ -204,9 +242,10 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                 durationSeconds);
         }
 
-        // Invalidates any deferred grant still waiting for the previous application of this key.
+        // Cancels and releases any deferred grant still waiting for the previous application of this key.
         private static int AdvanceGeneration(uint target, string effectKey)
         {
+            ReleaseDeferredGrant(target, effectKey);
             var generation = GetLocalInt(target, GetGenerationVariable(effectKey)) + 1;
             SetLocalInt(target, GetGenerationVariable(effectKey), generation);
             return generation;
@@ -219,7 +258,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
             float durationSeconds,
             VisualEffect barrierVisualEffect = VisualEffect.Vfx_Dur_Aura_Pulse_Cyan_Blue)
         {
-            var grantedAmount = ApplySourcedPool(OBJECT_INVALID, target, effectKey, amount, durationSeconds);
+            var grantedAmount = ApplyFlat(target, effectKey, amount, durationSeconds);
 
             // The barrier visual is scoped by the same key as the HP pool: recasting the same
             // ability refreshes its own glow, while other abilities' barrier visuals persist
@@ -288,6 +327,11 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
         private static string GetGenerationVariable(string effectKey)
         {
             return EffectTagPrefix + effectKey + GenerationVariableSuffix;
+        }
+
+        private static string GetDeferredVariable(string effectKey)
+        {
+            return EffectTagPrefix + effectKey + DeferredVariableSuffix;
         }
 
         private static void ValidateEffectKey(string effectKey)

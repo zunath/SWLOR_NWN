@@ -138,6 +138,44 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             ctx.Assert(!GetIsDead(npc), "The NPC must stay alive throughout.");
         }
 
+        [EngineTest("Temporary HP grants waiting on a removed pool share its room without claiming it twice", Category = LimitCategory, TimeoutSeconds = 30f)]
+        public static async Task DeferredGrantsReserveReleasedRoom(EngineTestContext ctx)
+        {
+            var arena = await QuietArena.CreateAsync(ctx);
+            var npc = await SpawnNPCAsync(ctx, arena, "nw_rat001", MaximumNPCHitPoints, immortal: false);
+            const string thirdKey = "HIT_POINT_LIMIT_THIRD";
+
+            TemporaryHitPointEffects.ApplyFlat(npc, FirstKey, Headroom, 60f);
+            await ctx.WaitFrameAsync();
+
+            TemporaryHitPointEffects.Remove(npc, FirstKey);
+            ctx.AssertEqual(2000, TemporaryHitPointEffects.ApplyFlat(npc, SecondKey, 2000, 60f), "first grant waiting on the removed pool");
+            ctx.AssertEqual(Headroom - 2000, TemporaryHitPointEffects.ApplyFlat(npc, thirdKey, 5000, 60f), "second grant takes only the unreserved room");
+            ctx.AssertEqual(0, TemporaryHitPointEffects.ApplyFlat(npc, FirstKey, 5000, 60f), "a third grant finds no room left");
+            ctx.AssertEqual(Limit, GetCurrentHitPoints(npc), "reported HP in the removal frame");
+
+            await ctx.WaitFrameAsync();
+            ctx.AssertEqual(0, TemporaryHitPointEffects.ApplyFlat(npc, FirstKey, 5000, 60f), "a grant in the next frame cannot claim reserved room");
+
+            await ctx.WaitUntilAsync(() =>
+                    TemporaryHitPointEffects.GetRemaining(npc, SecondKey) == 2000 &&
+                    TemporaryHitPointEffects.GetRemaining(npc, thirdKey) == Headroom - 2000,
+                3f, "both waiting grants to land in full");
+            ctx.AssertEqual(0, TemporaryHitPointEffects.GetRemaining(npc, FirstKey), "the refused grants");
+            ctx.AssertEqual(Limit, GetCurrentHitPoints(npc), "reported HP after the waiting grants land");
+
+            // Replacing a key releases its reservation for the replacement itself.
+            TemporaryHitPointEffects.Remove(npc, SecondKey);
+            TemporaryHitPointEffects.Remove(npc, thirdKey);
+            ctx.AssertEqual(Headroom, TemporaryHitPointEffects.ApplyFlat(npc, SecondKey, 5000, 60f), "a grant waiting on both removed pools");
+            ctx.AssertEqual(Headroom, TemporaryHitPointEffects.ApplyFlat(npc, SecondKey, 5000, 60f), "its replacement reclaims the same room");
+            await ctx.WaitUntilAsync(() => TemporaryHitPointEffects.GetRemaining(npc, SecondKey) == Headroom,
+                3f, "the replacement to land in full");
+            await ctx.DelaySecondsAsync(0.5f);
+            ctx.AssertEqual(Headroom, TemporaryHitPointEffects.GetRemaining(npc), "pools after the cancelled first grant");
+            ctx.Assert(!GetIsDead(npc), "The NPC must stay alive throughout.");
+        }
+
         [EngineTest("Guardian Ward IV on a 30,000 HP NPC stops at the HP limit and leaves it alive", Category = LimitCategory, TimeoutSeconds = 45f)]
         public static async Task GuardianWardOnMaximumHitPointNPCLeavesItAlive(EngineTestContext ctx)
         {

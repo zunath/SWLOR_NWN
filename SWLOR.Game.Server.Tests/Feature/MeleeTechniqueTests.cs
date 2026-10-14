@@ -227,4 +227,33 @@ public class MeleeTechniqueTests
         haste.ActivationType.Should().Be(StatusEffectActivationType.Passive);
         new RetaliationStatusEffect().ActivationType.Should().Be(StatusEffectActivationType.Passive);
     }
+
+    [Test]
+    public void SharedTechniqueServiceHasNoContentEquipmentOrStatusDependencies()
+    {
+        var directory = new DirectoryInfo(TestContext.CurrentContext.TestDirectory);
+        while (directory != null && !File.Exists(Path.Combine(directory.FullName, "SWLOR.Game.Server.sln")))
+            directory = directory.Parent;
+        directory.Should().NotBeNull();
+        var source = File.ReadAllText(Path.Combine(directory!.FullName,
+            "SWLOR.Game.Server", "Service", "MeleeTechnique.cs"));
+        foreach (var dependency in new[]
+        {
+            "EquipmentPredicates", "PowerGlove", "Power Glove", "SkillType.Unarmed",
+            "Feature.StatusEffectDefinition", "OpeningStatusEffect", "FinishStatusEffect",
+            "SlipAwayStatusEffect", "PressForwardStatusEffect", "PaybackStatusEffect", "RetaliationStatusEffect"
+        })
+            source.Should().NotContain(dependency, "equipment and presentation belong to the registered content profile");
+    }
+
+    [Test]
+    public void IncompleteProfilesFailClosed()
+    {
+        new MeleeTechniqueProfile().IsValid.Should().BeFalse();
+        new MeleeTechniqueProfile
+        {
+            HasValidEquipment = _ => true,
+            EquipmentError = "Equip the required weapon."
+        }.IsValid.Should().BeFalse("equipment eligibility alone cannot replace the required presentation factories");
+    }
 }

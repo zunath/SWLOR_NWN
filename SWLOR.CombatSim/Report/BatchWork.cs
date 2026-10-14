@@ -49,14 +49,27 @@ namespace SWLOR.CombatSim.Report
                         if (use == null)
                             continue;
 
+                        var secondsBetweenUses = SecondsBetweenUses(member, use, step, rules, catalog);
                         var perUse = RollsPerUse(use.Damage, enemies) + ApplicationsPerUse(use, allies);
                         if (perUse > 0)
-                            events += count * duration / SecondsBetweenUses(member, use, step, rules, catalog) * perUse;
+                            events += count * duration / secondsBetweenUses * perUse;
+                        events += count * ZoneScansPerRun(use, duration, step, secondsBetweenUses);
                     }
                 }
             }
 
             return events;
+        }
+
+        // Each zone cast keeps its own pulse schedule until its last tick, and every step looks at every live one.
+        private static double ZoneScansPerRun(AbilityUseSpec use, double duration, double step, double secondsBetweenUses)
+        {
+            if (!Enum.TryParse<FeatType>(use.Feat, out var feat) || !EffectCatalog.TryGet(feat, out var effect) ||
+                effect.Kind != EffectKind.PartyHealOverTime || effect.TickSeconds <= 0)
+                return 0;
+
+            var lifetime = Math.Min(duration, Math.Max(1, effect.Ticks) * (double)effect.TickSeconds);
+            return duration / step * Math.Max(1, lifetime / secondsBetweenUses);
         }
 
         // A party heal or shield reaches every ally up to MaxTargets, and a zone does so on each of its pulses.

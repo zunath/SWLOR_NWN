@@ -146,6 +146,28 @@ namespace SWLOR.CombatSim.Tests.Engine
         }
 
         [Test]
+        public void ALateJoinersFirstSwing_FallsAnywhereInItsFirstIntervalAfterJoining()
+        {
+            var firstSwings = new List<double>();
+            for (var seed = 1; seed <= 8; seed++)
+            {
+                var striker = TestCombatants.Striker("Striker", attacksPerSecond: 0.1f, damage: 1f);
+                striker.JoinAtSeconds = 60f;
+                var simulation = TestScenarios.Spawn(
+                    TestScenarios.TwoTeams(false, new[] { striker }, new[] { TestCombatants.Dummy("Enemy", true) }, durationSeconds: 200f),
+                    RuleSets.Current(),
+                    _catalog,
+                    seed);
+                var enemy = simulation.Get("Enemy");
+                SimulationClock.RunUntil(simulation, () => enemy.Stats.DamageTakenToHp > 0, 90, "the first swing");
+                firstSwings.Add(simulation.Now);
+            }
+
+            firstSwings.Should().OnlyContain(at => at >= 60 && at <= 70.2, "within one ten-second interval of joining");
+            firstSwings.Max().Should().BeGreaterThan(61, "the first swing is not pinned to the join time");
+        }
+
+        [Test]
         public void ALateJoiner_DoesNotCatchUpSwingsFromBeforeItJoined()
         {
             var striker = TestCombatants.Striker("Striker", attacksPerSecond: 20f, damage: 1f);

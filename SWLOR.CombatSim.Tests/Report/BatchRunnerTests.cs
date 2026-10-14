@@ -143,6 +143,22 @@ namespace SWLOR.CombatSim.Tests.Report
         }
 
         [Test]
+        public void Run_CountsTheStepsSpentScanningOverlappingZones()
+        {
+            // A zone cast every millisecond keeps thousands of pulse schedules alive, and each step looks at all of them.
+            var medic = TestCombatants.Medic("Medic", TestCombatants.Use("ForceSanctuary1", AbilityTarget.Self));
+            medic.ReactionSeconds = 0.001f;
+            var scenario = TestScenarios.TwoTeams(false, new[] { medic }, new[] { TestCombatants.Dummy("Enemy", true) }, durationSeconds: 2.9f);
+            scenario.TimeStepSeconds = 0.001f;
+            var rules = RuleSets.Current();
+            rules.RecastOverrides["ForceSanctuary"] = 0f;
+
+            var act = () => BatchRunner.Run(scenario, rules, _catalog, 1000, seed: 1);
+
+            act.Should().Throw<ArgumentException>().WithMessage("*simulated events*");
+        }
+
+        [Test]
         public void Run_RejectsMorePartyShieldApplicationsThanABatchCanFinishPromptly()
         {
             // 200 shouters each shielding all 200 allies every second for a day: about 3.5 billion applications.

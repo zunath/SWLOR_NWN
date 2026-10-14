@@ -194,9 +194,9 @@ namespace SWLOR.CombatSim.Engine
                             HeartbeatCount = _random.Next(HeartbeatsPerRegenCycle),
                             // The game also carries a stamina remainder from 0 to 4 points across heartbeats.
                             StmRegenCarry = _random.Next(HeartbeatsPerRegenCycle) / (double)HeartbeatsPerRegenCycle,
-                            // The first swing falls anywhere within one attack interval.
-                            NextAttackAt = _random.NextDouble() * AttackInterval(spec),
-                            NextActionAt = _random.NextDouble()
+                            // The first swing and decision fall anywhere within their first interval after joining.
+                            NextAttackAt = spec.JoinAtSeconds + _random.NextDouble() * AttackInterval(spec),
+                            NextActionAt = spec.JoinAtSeconds + _random.NextDouble()
                         };
                         _combatants.Add(combatant);
                     }

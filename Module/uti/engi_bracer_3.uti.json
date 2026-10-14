@@ -26,11 +26,15 @@
   },
   "DescIdentified": {
     "type": "cexolocstring",
-    "value": {}
+    "value": {
+      "0": "This mechanic's bracer keeps loose sleeves clear of moving parts. Its outer surface has room to accumulate the small scuffs that any honest piece of workshop equipment eventually earns."
+    }
   },
   "Description": {
     "type": "cexolocstring",
-    "value": {}
+    "value": {
+      "0": "This mechanic's bracer keeps loose sleeves clear of moving parts. Its outer surface has room to accumulate the small scuffs that any honest piece of workshop equipment eventually earns."
+    }
   },
   "Identified": {
     "type": "byte",

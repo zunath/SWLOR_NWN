@@ -458,12 +458,14 @@
               },
               "DescIdentified": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "The clean lines of this Sith officer's armor are interrupted only by disciplined service fittings. Its severe finish makes the wearer look like someone who expects a report, even before anyone has been asked to provide one."
+                }
               },
               "Description": {
                 "type": "cexolocstring",
                 "value": {
-                  "0": ""
+                  "0": "The clean lines of this Sith officer's armor are interrupted only by disciplined service fittings. Its severe finish makes the wearer look like someone who expects a report, even before anyone has been asked to provide one."
                 }
               },
               "Identified": {
@@ -2620,12 +2622,14 @@
               },
               "DescIdentified": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "This Sith warrior's armor emphasizes an uncompromising outline and closely set plates. Its fittings have been adjusted around a fighter's stance rather than a comfortable place in a reviewing line."
+                }
               },
               "Description": {
                 "type": "cexolocstring",
                 "value": {
-                  "0": ""
+                  "0": "This Sith warrior's armor emphasizes an uncompromising outline and closely set plates. Its fittings have been adjusted around a fighter's stance rather than a comfortable place in a reviewing line."
                 }
               },
               "Identified": {
@@ -4692,12 +4696,14 @@
               },
               "DescIdentified": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "This Sith inquisitor's armor has a composed, deliberate outline and impeccably placed fittings. Its finish invites inspection with the confidence of equipment more accustomed to making others uncomfortable."
+                }
               },
               "Description": {
                 "type": "cexolocstring",
                 "value": {
-                  "0": ""
+                  "0": "This Sith inquisitor's armor has a composed, deliberate outline and impeccably placed fittings. Its finish invites inspection with the confidence of equipment more accustomed to making others uncomfortable."
                 }
               },
               "Identified": {
@@ -6984,12 +6990,14 @@
               },
               "DescIdentified": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "This Sith warrior's armor emphasizes an uncompromising outline and closely set plates. Its fittings have been adjusted around a fighter's stance rather than a comfortable place in a reviewing line."
+                }
               },
               "Description": {
                 "type": "cexolocstring",
                 "value": {
-                  "0": ""
+                  "0": "This Sith warrior's armor emphasizes an uncompromising outline and closely set plates. Its fittings have been adjusted around a fighter's stance rather than a comfortable place in a reviewing line."
                 }
               },
               "Identified": {
@@ -9193,12 +9201,14 @@
               },
               "DescIdentified": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "This Sith warrior's armor emphasizes an uncompromising outline and closely set plates. Its fittings have been adjusted around a fighter's stance rather than a comfortable place in a reviewing line."
+                }
               },
               "Description": {
                 "type": "cexolocstring",
                 "value": {
-                  "0": ""
+                  "0": "This Sith warrior's armor emphasizes an uncompromising outline and closely set plates. Its fittings have been adjusted around a fighter's stance rather than a comfortable place in a reviewing line."
                 }
               },
               "Identified": {
@@ -11274,11 +11284,15 @@
               },
               "DescIdentified": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "A long formal dress whose interest lies in the arrangement of its panels and bindings. The folds settle into an orderly line, giving even the simple act of crossing a room something of a practiced entrance."
+                }
               },
               "Description": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "A long formal dress whose interest lies in the arrangement of its panels and bindings. The folds settle into an orderly line, giving even the simple act of crossing a room something of a practiced entrance."
+                }
               },
               "Identified": {
                 "type": "byte",
@@ -12285,11 +12299,15 @@
               },
               "DescIdentified": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "Black coveralls give these working clothes an orderly appearance even after a hard shift. The concealed lining is more revealing, carrying the wear of tools and hurried repairs that the dark outside keeps discreet."
+                }
               },
               "Description": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "Black coveralls give these working clothes an orderly appearance even after a hard shift. The concealed lining is more revealing, carrying the wear of tools and hurried repairs that the dark outside keeps discreet."
+                }
               },
               "Identified": {
                 "type": "byte",
@@ -13289,11 +13307,15 @@
               },
               "DescIdentified": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "Black coveralls give these working clothes an orderly appearance even after a hard shift. The concealed lining is more revealing, carrying the wear of tools and hurried repairs that the dark outside keeps discreet."
+                }
               },
               "Description": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "Black coveralls give these working clothes an orderly appearance even after a hard shift. The concealed lining is more revealing, carrying the wear of tools and hurried repairs that the dark outside keeps discreet."
+                }
               },
               "Identified": {
                 "type": "byte",
@@ -15725,11 +15747,15 @@
               },
               "DescIdentified": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "A long formal dress whose interest lies in the arrangement of its panels and bindings. The folds settle into an orderly line, giving even the simple act of crossing a room something of a practiced entrance."
+                }
               },
               "Description": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "A long formal dress whose interest lies in the arrangement of its panels and bindings. The folds settle into an orderly line, giving even the simple act of crossing a room something of a practiced entrance."
+                }
               },
               "Identified": {
                 "type": "byte",
@@ -16738,12 +16764,14 @@
               },
               "DescIdentified": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "This Sith inquisitor's armor has a composed, deliberate outline and impeccably placed fittings. Its finish invites inspection with the confidence of equipment more accustomed to making others uncomfortable."
+                }
               },
               "Description": {
                 "type": "cexolocstring",
                 "value": {
-                  "0": ""
+                  "0": "This Sith inquisitor's armor has a composed, deliberate outline and impeccably placed fittings. Its finish invites inspection with the confidence of equipment more accustomed to making others uncomfortable."
                 }
               },
               "Identified": {
@@ -18776,12 +18804,14 @@
               },
               "DescIdentified": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "Closely fitted plates and a meticulous finish set this Sith elite armor apart from more ordinary issue. Even the hidden mounts have been dressed cleanly, an exactness its wearer will presumably be expected to match."
+                }
               },
               "Description": {
                 "type": "cexolocstring",
                 "value": {
-                  "0": ""
+                  "0": "Closely fitted plates and a meticulous finish set this Sith elite armor apart from more ordinary issue. Even the hidden mounts have been dressed cleanly, an exactness its wearer will presumably be expected to match."
                 }
               },
               "Identified": {
@@ -21239,12 +21269,14 @@
               },
               "DescIdentified": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "Closely fitted plates and a meticulous finish set this Sith elite armor apart from more ordinary issue. Even the hidden mounts have been dressed cleanly, an exactness its wearer will presumably be expected to match."
+                }
               },
               "Description": {
                 "type": "cexolocstring",
                 "value": {
-                  "0": ""
+                  "0": "Closely fitted plates and a meticulous finish set this Sith elite armor apart from more ordinary issue. Even the hidden mounts have been dressed cleanly, an exactness its wearer will presumably be expected to match."
                 }
               },
               "Identified": {
@@ -23702,12 +23734,14 @@
               },
               "DescIdentified": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "A Sith trooper's armor, severe panels fitted over practical service layers. Its standardized appearance makes the wearer part of a recognizable military presence before any individual face or voice can matter."
+                }
               },
               "Description": {
                 "type": "cexolocstring",
                 "value": {
-                  "0": ""
+                  "0": "A Sith trooper's armor, severe panels fitted over practical service layers. Its standardized appearance makes the wearer part of a recognizable military presence before any individual face or voice can matter."
                 }
               },
               "Identified": {
@@ -25223,12 +25257,14 @@
               },
               "DescIdentified": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "A Sith trooper's armor, severe panels fitted over practical service layers. Its standardized appearance makes the wearer part of a recognizable military presence before any individual face or voice can matter."
+                }
               },
               "Description": {
                 "type": "cexolocstring",
                 "value": {
-                  "0": ""
+                  "0": "A Sith trooper's armor, severe panels fitted over practical service layers. Its standardized appearance makes the wearer part of a recognizable military presence before any individual face or voice can matter."
                 }
               },
               "Identified": {
@@ -26634,12 +26670,14 @@
               },
               "DescIdentified": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "This Sith warrior's armor emphasizes an uncompromising outline and closely set plates. Its fittings have been adjusted around a fighter's stance rather than a comfortable place in a reviewing line."
+                }
               },
               "Description": {
                 "type": "cexolocstring",
                 "value": {
-                  "0": ""
+                  "0": "This Sith warrior's armor emphasizes an uncompromising outline and closely set plates. Its fittings have been adjusted around a fighter's stance rather than a comfortable place in a reviewing line."
                 }
               },
               "Identified": {
@@ -28472,12 +28510,14 @@
               },
               "DescIdentified": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "A Sith trooper's armor, severe panels fitted over practical service layers. Its standardized appearance makes the wearer part of a recognizable military presence before any individual face or voice can matter."
+                }
               },
               "Description": {
                 "type": "cexolocstring",
                 "value": {
-                  "0": ""
+                  "0": "A Sith trooper's armor, severe panels fitted over practical service layers. Its standardized appearance makes the wearer part of a recognizable military presence before any individual face or voice can matter."
                 }
               },
               "Identified": {
@@ -29993,12 +30033,14 @@
               },
               "DescIdentified": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "A Sith trooper's armor, severe panels fitted over practical service layers. Its standardized appearance makes the wearer part of a recognizable military presence before any individual face or voice can matter."
+                }
               },
               "Description": {
                 "type": "cexolocstring",
                 "value": {
-                  "0": ""
+                  "0": "A Sith trooper's armor, severe panels fitted over practical service layers. Its standardized appearance makes the wearer part of a recognizable military presence before any individual face or voice can matter."
                 }
               },
               "Identified": {
@@ -31395,11 +31437,15 @@
               },
               "DescIdentified": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "Grey cloth gives this captain's outfit an unshowy authority. Small repairs around its cuffs suggest a wearer who has had reason to help with the ship rather than merely issue orders from a comfortable chair."
+                }
               },
               "Description": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "Grey cloth gives this captain's outfit an unshowy authority. Small repairs around its cuffs suggest a wearer who has had reason to help with the ship rather than merely issue orders from a comfortable chair."
+                }
               },
               "Identified": {
                 "type": "byte",
@@ -32511,11 +32557,15 @@
               },
               "DescIdentified": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "Dark cloth falls in substantial, uncomplicated folds from the shoulders of this robe. Its lining is carefully bound, allowing a quiet garment to keep its shape through considerably less quiet company."
+                }
               },
               "Description": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "Dark cloth falls in substantial, uncomplicated folds from the shoulders of this robe. Its lining is carefully bound, allowing a quiet garment to keep its shape through considerably less quiet company."
+                }
               },
               "Identified": {
                 "type": "byte",
@@ -33746,12 +33796,14 @@
               },
               "DescIdentified": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "A Sith trooper's armor, severe panels fitted over practical service layers. Its standardized appearance makes the wearer part of a recognizable military presence before any individual face or voice can matter."
+                }
               },
               "Description": {
                 "type": "cexolocstring",
                 "value": {
-                  "0": ""
+                  "0": "A Sith trooper's armor, severe panels fitted over practical service layers. Its standardized appearance makes the wearer part of a recognizable military presence before any individual face or voice can matter."
                 }
               },
               "Identified": {
@@ -35148,12 +35200,14 @@
               },
               "DescIdentified": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "A severe arrangement of layered plates gives this Sith warrior's armor its hard outline. Its wearer has kept the useful fittings clean while allowing the exposed surfaces to retain an account of rougher work."
+                }
               },
               "Description": {
                 "type": "cexolocstring",
                 "value": {
-                  "0": ""
+                  "0": "A severe arrangement of layered plates gives this Sith warrior's armor its hard outline. Its wearer has kept the useful fittings clean while allowing the exposed surfaces to retain an account of rougher work."
                 }
               },
               "Identified": {
@@ -195180,11 +195234,15 @@
                     },
                     "DescIdentified": {
                       "type": "cexolocstring",
-                      "value": {}
+                      "value": {
+                        "0": "A plainly made work bracer, carefully fastened so that it does not interfere with the wrist. It has the earnest finish of an apprentice learning that useful equipment need not look complicated."
+                      }
                     },
                     "Description": {
                       "type": "cexolocstring",
-                      "value": {}
+                      "value": {
+                        "0": "A plainly made work bracer, carefully fastened so that it does not interfere with the wrist. It has the earnest finish of an apprentice learning that useful equipment need not look complicated."
+                      }
                     },
                     "Identified": {
                       "type": "byte",
@@ -196031,11 +196089,15 @@
                     },
                     "DescIdentified": {
                       "type": "cexolocstring",
-                      "value": {}
+                      "value": {
+                        "0": "A straightforward workshop tunic with seams that show the maker's careful first decisions. A few extra stitches reinforce the pockets, where tools have a habit of teaching an apprentice what a pattern book omitted."
+                      }
                     },
                     "Description": {
                       "type": "cexolocstring",
-                      "value": {}
+                      "value": {
+                        "0": "A straightforward workshop tunic with seams that show the maker's careful first decisions. A few extra stitches reinforce the pockets, where tools have a habit of teaching an apprentice what a pattern book omitted."
+                      }
                     },
                     "Identified": {
                       "type": "byte",
@@ -196344,7 +196406,6 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 56605,
                       "type": "cexolocstring",
                       "value": {
                         "0": ""
@@ -196760,7 +196821,6 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 66560,
                       "type": "cexolocstring",
                       "value": {
                         "0": ""
@@ -197238,7 +197298,6 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 13336,
                       "type": "cexolocstring",
                       "value": {
                         "0": ""
@@ -197543,13 +197602,13 @@
                     "DescIdentified": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": ""
+                        "0": "The access covers of this engineering droid shell are arranged for a technician who expects to open them often rather than admire them shut. The straightforward assembly retains the small tool marks of a build made to earn its keep."
                       }
                     },
                     "Description": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": ""
+                        "0": "The access covers of this engineering droid shell are arranged for a technician who expects to open them often rather than admire them shut. The straightforward assembly retains the small tool marks of a build made to earn its keep."
                       }
                     },
                     "Identified": {
@@ -198241,7 +198300,6 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 56640,
                       "type": "cexolocstring",
                       "value": {
                         "0": ""
@@ -198446,7 +198504,6 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 48931,
                       "type": "cexolocstring",
                       "value": {
                         "0": ""
@@ -198659,7 +198716,6 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 64105,
                       "type": "cexolocstring",
                       "value": {
                         "0": ""
@@ -201636,11 +201692,15 @@
                     },
                     "DescIdentified": {
                       "type": "cexolocstring",
-                      "value": {}
+                      "value": {
+                        "0": "Tough fabric and an uncomplicated closure make this bracer easy to keep in service. The inside is smoother than the outside, giving a worker one small comfort during a long shift."
+                      }
                     },
                     "Description": {
                       "type": "cexolocstring",
-                      "value": {}
+                      "value": {
+                        "0": "Tough fabric and an uncomplicated closure make this bracer easy to keep in service. The inside is smoother than the outside, giving a worker one small comfort during a long shift."
+                      }
                     },
                     "Identified": {
                       "type": "byte",
@@ -202487,11 +202547,15 @@
                     },
                     "DescIdentified": {
                       "type": "cexolocstring",
-                      "value": {}
+                      "value": {
+                        "0": "A worker's outfit with broad pockets and stout seams around the shoulders. It has been cut for the part of a shift spent carrying, lifting, and reaching rather than the moment somebody takes attendance."
+                      }
                     },
                     "Description": {
                       "type": "cexolocstring",
-                      "value": {}
+                      "value": {
+                        "0": "A worker's outfit with broad pockets and stout seams around the shoulders. It has been cut for the part of a shift spent carrying, lifting, and reaching rather than the moment somebody takes attendance."
+                      }
                     },
                     "Identified": {
                       "type": "byte",
@@ -202760,11 +202824,15 @@
                     },
                     "DescIdentified": {
                       "type": "cexolocstring",
-                      "value": {}
+                      "value": {
+                        "0": "This work tunic has broad pockets and fastenings easy to manage with tired hands. Its modest finish suits the technician who would rather have another useful tool than another unnecessary ornament."
+                      }
                     },
                     "Description": {
                       "type": "cexolocstring",
-                      "value": {}
+                      "value": {
+                        "0": "This work tunic has broad pockets and fastenings easy to manage with tired hands. Its modest finish suits the technician who would rather have another useful tool than another unnecessary ornament."
+                      }
                     },
                     "Identified": {
                       "type": "byte",
@@ -203073,7 +203141,6 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 56605,
                       "type": "cexolocstring",
                       "value": {
                         "0": ""
@@ -203489,7 +203556,6 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 66560,
                       "type": "cexolocstring",
                       "value": {
                         "0": ""
@@ -203967,7 +204033,6 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 13336,
                       "type": "cexolocstring",
                       "value": {
                         "0": ""
@@ -204272,13 +204337,13 @@
                     "DescIdentified": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": ""
+                        "0": "The access covers of this engineering droid shell are arranged for a technician who expects to open them often rather than admire them shut. Neatly finished seats and consistent fastenings show a pattern refined beyond its earliest workshop version."
                       }
                     },
                     "Description": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": ""
+                        "0": "The access covers of this engineering droid shell are arranged for a technician who expects to open them often rather than admire them shut. Neatly finished seats and consistent fastenings show a pattern refined beyond its earliest workshop version."
                       }
                     },
                     "Identified": {
@@ -204970,7 +205035,6 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 56640,
                       "type": "cexolocstring",
                       "value": {
                         "0": ""
@@ -205175,7 +205239,6 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 48931,
                       "type": "cexolocstring",
                       "value": {
                         "0": ""
@@ -205388,7 +205451,6 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 64105,
                       "type": "cexolocstring",
                       "value": {
                         "0": ""
@@ -208628,11 +208690,15 @@
                     },
                     "DescIdentified": {
                       "type": "cexolocstring",
-                      "value": {}
+                      "value": {
+                        "0": "This mechanic's bracer keeps loose sleeves clear of moving parts. Its outer surface has room to accumulate the small scuffs that any honest piece of workshop equipment eventually earns."
+                      }
                     },
                     "Description": {
                       "type": "cexolocstring",
-                      "value": {}
+                      "value": {
+                        "0": "This mechanic's bracer keeps loose sleeves clear of moving parts. Its outer surface has room to accumulate the small scuffs that any honest piece of workshop equipment eventually earns."
+                      }
                     },
                     "Identified": {
                       "type": "byte",
@@ -209479,11 +209545,15 @@
                     },
                     "DescIdentified": {
                       "type": "cexolocstring",
-                      "value": {}
+                      "value": {
+                        "0": "The pockets of this mechanic's tunic have been arranged within easy reach of both hands. Sturdy stitching follows their lower edges, anticipating the weight of whatever the next repair requires."
+                      }
                     },
                     "Description": {
                       "type": "cexolocstring",
-                      "value": {}
+                      "value": {
+                        "0": "The pockets of this mechanic's tunic have been arranged within easy reach of both hands. Sturdy stitching follows their lower edges, anticipating the weight of whatever the next repair requires."
+                      }
                     },
                     "Identified": {
                       "type": "byte",
@@ -209792,7 +209862,6 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 56605,
                       "type": "cexolocstring",
                       "value": {
                         "0": ""
@@ -210239,7 +210308,6 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 66560,
                       "type": "cexolocstring",
                       "value": {
                         "0": ""
@@ -210717,7 +210785,6 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 13336,
                       "type": "cexolocstring",
                       "value": {
                         "0": ""
@@ -211022,13 +211089,13 @@
                     "DescIdentified": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": ""
+                        "0": "The access covers of this engineering droid shell are arranged for a technician who expects to open them often rather than admire them shut. The service covers fit with the assurance of a design that has already taught its maker which details matter."
                       }
                     },
                     "Description": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": ""
+                        "0": "The access covers of this engineering droid shell are arranged for a technician who expects to open them often rather than admire them shut. The service covers fit with the assurance of a design that has already taught its maker which details matter."
                       }
                     },
                     "Identified": {
@@ -211751,7 +211818,6 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 56640,
                       "type": "cexolocstring",
                       "value": {
                         "0": ""
@@ -211987,7 +212053,6 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 48931,
                       "type": "cexolocstring",
                       "value": {
                         "0": ""
@@ -212200,7 +212265,6 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 64105,
                       "type": "cexolocstring",
                       "value": {
                         "0": ""
@@ -218302,11 +218366,15 @@
                     },
                     "DescIdentified": {
                       "type": "cexolocstring",
-                      "value": {}
+                      "value": {
+                        "0": "Patient stitching follows the edge of this workshop bracer. Its construction suggests a maker who returned to every seam until the work felt right, even where no buyer would think to look."
+                      }
                     },
                     "Description": {
                       "type": "cexolocstring",
-                      "value": {}
+                      "value": {
+                        "0": "Patient stitching follows the edge of this workshop bracer. Its construction suggests a maker who returned to every seam until the work felt right, even where no buyer would think to look."
+                      }
                     },
                     "Identified": {
                       "type": "byte",
@@ -219184,11 +219252,15 @@
                     },
                     "DescIdentified": {
                       "type": "cexolocstring",
-                      "value": {}
+                      "value": {
+                        "0": "A workshop tunic whose restrained finish conceals unusually patient sewing. It reflects the kind of devotion found in doing a difficult job properly even when no customer will see the inside."
+                      }
                     },
                     "Description": {
                       "type": "cexolocstring",
-                      "value": {}
+                      "value": {
+                        "0": "A workshop tunic whose restrained finish conceals unusually patient sewing. It reflects the kind of devotion found in doing a difficult job properly even when no customer will see the inside."
+                      }
                     },
                     "Identified": {
                       "type": "byte",
@@ -219497,7 +219569,6 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 56605,
                       "type": "cexolocstring",
                       "value": {
                         "0": ""
@@ -219944,7 +220015,6 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 66560,
                       "type": "cexolocstring",
                       "value": {
                         "0": ""
@@ -220422,7 +220492,6 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 13336,
                       "type": "cexolocstring",
                       "value": {
                         "0": ""
@@ -220758,13 +220827,13 @@
                     "DescIdentified": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": ""
+                        "0": "The access covers of this engineering droid shell are arranged for a technician who expects to open them often rather than admire them shut. The inner fittings are as carefully dressed as the visible panels, evidence of workmanship no customer should have to discover through a fault."
                       }
                     },
                     "Description": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": ""
+                        "0": "The access covers of this engineering droid shell are arranged for a technician who expects to open them often rather than admire them shut. The inner fittings are as carefully dressed as the visible panels, evidence of workmanship no customer should have to discover through a fault."
                       }
                     },
                     "Identified": {
@@ -221487,7 +221556,6 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 56640,
                       "type": "cexolocstring",
                       "value": {
                         "0": ""
@@ -221723,7 +221791,6 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 48931,
                       "type": "cexolocstring",
                       "value": {
                         "0": ""
@@ -221936,7 +222003,6 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 64105,
                       "type": "cexolocstring",
                       "value": {
                         "0": ""
@@ -225176,11 +225242,15 @@
                     },
                     "DescIdentified": {
                       "type": "cexolocstring",
-                      "value": {}
+                      "value": {
+                        "0": "The seams of this bracer are dressed so closely that the fastening almost disappears into its outline. Its refined finish offers a craftsman a rare piece of work they need not immediately improve upon."
+                      }
                     },
                     "Description": {
                       "type": "cexolocstring",
-                      "value": {}
+                      "value": {
+                        "0": "The seams of this bracer are dressed so closely that the fastening almost disappears into its outline. Its refined finish offers a craftsman a rare piece of work they need not immediately improve upon."
+                      }
                     },
                     "Identified": {
                       "type": "byte",
@@ -226182,12 +226252,14 @@
                     },
                     "DescIdentified": {
                       "type": "cexolocstring",
-                      "value": {}
+                      "value": {
+                        "0": "This finely worked tunic keeps a craftsman's practical cut while giving its seams an almost immaculate finish. The result would survive inspection at a formal presentation without looking out of place beside an open droid chassis."
+                      }
                     },
                     "Description": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": ""
+                        "0": "This finely worked tunic keeps a craftsman's practical cut while giving its seams an almost immaculate finish. The result would survive inspection at a formal presentation without looking out of place beside an open droid chassis."
                       }
                     },
                     "Identified": {
@@ -226497,7 +226569,6 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 56605,
                       "type": "cexolocstring",
                       "value": {
                         "0": ""
@@ -226975,7 +227046,6 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 66560,
                       "type": "cexolocstring",
                       "value": {
                         "0": ""
@@ -227515,7 +227585,6 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 13336,
                       "type": "cexolocstring",
                       "value": {
                         "0": ""
@@ -227882,13 +227951,13 @@
                     "DescIdentified": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": ""
+                        "0": "The access covers of this engineering droid shell are arranged for a technician who expects to open them often rather than admire them shut. Every accessible edge has been patiently finished, bringing even routine maintenance to the standard of the completed shell."
                       }
                     },
                     "Description": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": ""
+                        "0": "The access covers of this engineering droid shell are arranged for a technician who expects to open them often rather than admire them shut. Every accessible edge has been patiently finished, bringing even routine maintenance to the standard of the completed shell."
                       }
                     },
                     "Identified": {
@@ -228704,7 +228773,6 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 56640,
                       "type": "cexolocstring",
                       "value": {
                         "0": ""
@@ -228971,7 +229039,6 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 48931,
                       "type": "cexolocstring",
                       "value": {
                         "0": ""
@@ -229246,7 +229313,6 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 64105,
                       "type": "cexolocstring",
                       "value": {
                         "0": ""
@@ -235317,11 +235383,15 @@
                     },
                     "DescIdentified": {
                       "type": "cexolocstring",
-                      "value": {}
+                      "value": {
+                        "0": "Several close layers of cloth make this unassuming bracer more substantial than it appears. Its stitched edges are easy to maintain, the practical beginning of a fabricator's wardrobe."
+                      }
                     },
                     "Description": {
                       "type": "cexolocstring",
-                      "value": {}
+                      "value": {
+                        "0": "Several close layers of cloth make this unassuming bracer more substantial than it appears. Its stitched edges are easy to maintain, the practical beginning of a fabricator's wardrobe."
+                      }
                     },
                     "Identified": {
                       "type": "byte",
@@ -236168,11 +236238,15 @@
                     },
                     "DescIdentified": {
                       "type": "cexolocstring",
-                      "value": {}
+                      "value": {
+                        "0": "A plain cloth tunic made with the steady economy of a working tailor. The weave is easy to follow, leaving little doubt about where a future repair will need to begin."
+                      }
                     },
                     "Description": {
                       "type": "cexolocstring",
-                      "value": {}
+                      "value": {
+                        "0": "A plain cloth tunic made with the steady economy of a working tailor. The weave is easy to follow, leaving little doubt about where a future repair will need to begin."
+                      }
                     },
                     "Identified": {
                       "type": "byte",
@@ -236481,7 +236555,6 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 56605,
                       "type": "cexolocstring",
                       "value": {
                         "0": ""
@@ -236897,7 +236970,6 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 66560,
                       "type": "cexolocstring",
                       "value": {
                         "0": ""
@@ -237375,7 +237447,6 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 13336,
                       "type": "cexolocstring",
                       "value": {
                         "0": ""
@@ -237680,13 +237751,13 @@
                     "DescIdentified": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": ""
+                        "0": "A fabricator droid shell whose tidy joints and accessible fittings reflect the patient assembly work it will accompany. The straightforward assembly retains the small tool marks of a build made to earn its keep."
                       }
                     },
                     "Description": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": ""
+                        "0": "A fabricator droid shell whose tidy joints and accessible fittings reflect the patient assembly work it will accompany. The straightforward assembly retains the small tool marks of a build made to earn its keep."
                       }
                     },
                     "Identified": {
@@ -238378,7 +238449,6 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 56640,
                       "type": "cexolocstring",
                       "value": {
                         "0": ""
@@ -238583,7 +238653,6 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 48931,
                       "type": "cexolocstring",
                       "value": {
                         "0": ""
@@ -238796,7 +238865,6 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 64105,
                       "type": "cexolocstring",
                       "value": {
                         "0": ""
@@ -239562,11 +239630,15 @@
                     },
                     "DescIdentified": {
                       "type": "cexolocstring",
-                      "value": {}
+                      "value": {
+                        "0": "The natural grain of linen gives this work bracer a modest texture. Its cleanly bound edges keep the fibers orderly around a wrist that is unlikely to remain idle for long."
+                      }
                     },
                     "Description": {
                       "type": "cexolocstring",
-                      "value": {}
+                      "value": {
+                        "0": "The natural grain of linen gives this work bracer a modest texture. Its cleanly bound edges keep the fibers orderly around a wrist that is unlikely to remain idle for long."
+                      }
                     },
                     "Identified": {
                       "type": "byte",
@@ -240413,11 +240485,15 @@
                     },
                     "DescIdentified": {
                       "type": "cexolocstring",
-                      "value": {}
+                      "value": {
+                        "0": "The linen of this tunic has a pleasing, irregular grain. Its practical cut gives the fabric room to settle with use, trading a stiff new appearance for the comfort of something worn often."
+                      }
                     },
                     "Description": {
                       "type": "cexolocstring",
-                      "value": {}
+                      "value": {
+                        "0": "The linen of this tunic has a pleasing, irregular grain. Its practical cut gives the fabric room to settle with use, trading a stiff new appearance for the comfort of something worn often."
+                      }
                     },
                     "Identified": {
                       "type": "byte",
@@ -240726,7 +240802,6 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 56605,
                       "type": "cexolocstring",
                       "value": {
                         "0": ""
@@ -241142,7 +241217,6 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 66560,
                       "type": "cexolocstring",
                       "value": {
                         "0": ""
@@ -241620,7 +241694,6 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 13336,
                       "type": "cexolocstring",
                       "value": {
                         "0": ""
@@ -241925,13 +241998,13 @@
                     "DescIdentified": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": ""
+                        "0": "A fabricator droid shell whose tidy joints and accessible fittings reflect the patient assembly work it will accompany. Neatly finished seats and consistent fastenings show a pattern refined beyond its earliest workshop version."
                       }
                     },
                     "Description": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": ""
+                        "0": "A fabricator droid shell whose tidy joints and accessible fittings reflect the patient assembly work it will accompany. Neatly finished seats and consistent fastenings show a pattern refined beyond its earliest workshop version."
                       }
                     },
                     "Identified": {
@@ -242623,7 +242696,6 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 56640,
                       "type": "cexolocstring",
                       "value": {
                         "0": ""
@@ -242828,7 +242900,6 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 48931,
                       "type": "cexolocstring",
                       "value": {
                         "0": ""
@@ -243242,7 +243313,6 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 64105,
                       "type": "cexolocstring",
                       "value": {
                         "0": ""
@@ -243869,11 +243939,15 @@
                     },
                     "DescIdentified": {
                       "type": "cexolocstring",
-                      "value": {}
+                      "value": {
+                        "0": "This bracer uses the placement of its seams as its principal decoration. It is a small example of a designer finding something worth admiring in a piece meant for daily work."
+                      }
                     },
                     "Description": {
                       "type": "cexolocstring",
-                      "value": {}
+                      "value": {
+                        "0": "This bracer uses the placement of its seams as its principal decoration. It is a small example of a designer finding something worth admiring in a piece meant for daily work."
+                      }
                     },
                     "Identified": {
                       "type": "byte",
@@ -244720,11 +244794,15 @@
                     },
                     "DescIdentified": {
                       "type": "cexolocstring",
-                      "value": {}
+                      "value": {
+                        "0": "Carefully placed seams give this tunic its distinctive outline without depending on lavish decoration. Its designer seems to have understood that an interesting silhouette still needs to remain wearable."
+                      }
                     },
                     "Description": {
                       "type": "cexolocstring",
-                      "value": {}
+                      "value": {
+                        "0": "Carefully placed seams give this tunic its distinctive outline without depending on lavish decoration. Its designer seems to have understood that an interesting silhouette still needs to remain wearable."
+                      }
                     },
                     "Identified": {
                       "type": "byte",
@@ -245033,7 +245111,6 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 56605,
                       "type": "cexolocstring",
                       "value": {
                         "0": ""
@@ -245480,7 +245557,6 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 66560,
                       "type": "cexolocstring",
                       "value": {
                         "0": ""
@@ -245958,7 +246034,6 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 13336,
                       "type": "cexolocstring",
                       "value": {
                         "0": ""
@@ -246263,13 +246338,13 @@
                     "DescIdentified": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": ""
+                        "0": "A fabricator droid shell whose tidy joints and accessible fittings reflect the patient assembly work it will accompany. The service covers fit with the assurance of a design that has already taught its maker which details matter."
                       }
                     },
                     "Description": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": ""
+                        "0": "A fabricator droid shell whose tidy joints and accessible fittings reflect the patient assembly work it will accompany. The service covers fit with the assurance of a design that has already taught its maker which details matter."
                       }
                     },
                     "Identified": {
@@ -246992,7 +247067,6 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 56640,
                       "type": "cexolocstring",
                       "value": {
                         "0": ""
@@ -247228,7 +247302,6 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 48931,
                       "type": "cexolocstring",
                       "value": {
                         "0": ""
@@ -247642,7 +247715,6 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 64105,
                       "type": "cexolocstring",
                       "value": {
                         "0": ""
@@ -248269,11 +248341,15 @@
                     },
                     "DescIdentified": {
                       "type": "cexolocstring",
-                      "value": {}
+                      "value": {
+                        "0": "Light cloth and a softly bound inner edge make this bracer comfortable against the wrist. Its relaxed finish suggests a brief patch of shade in the middle of a demanding working day."
+                      }
                     },
                     "Description": {
                       "type": "cexolocstring",
-                      "value": {}
+                      "value": {
+                        "0": "Light cloth and a softly bound inner edge make this bracer comfortable against the wrist. Its relaxed finish suggests a brief patch of shade in the middle of a demanding working day."
+                      }
                     },
                     "Identified": {
                       "type": "byte",
@@ -249151,11 +249227,15 @@
                     },
                     "DescIdentified": {
                       "type": "cexolocstring",
-                      "value": {}
+                      "value": {
+                        "0": "The light, easy folds of this tunic recall shade reached after a long walk in the heat. Its tailoring leaves room to move without allowing the cloth to collect in an untidy burden."
+                      }
                     },
                     "Description": {
                       "type": "cexolocstring",
-                      "value": {}
+                      "value": {
+                        "0": "The light, easy folds of this tunic recall shade reached after a long walk in the heat. Its tailoring leaves room to move without allowing the cloth to collect in an untidy burden."
+                      }
                     },
                     "Identified": {
                       "type": "byte",
@@ -249464,7 +249544,6 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 56605,
                       "type": "cexolocstring",
                       "value": {
                         "0": ""
@@ -249911,7 +249990,6 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 66560,
                       "type": "cexolocstring",
                       "value": {
                         "0": ""
@@ -250389,7 +250467,6 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 13336,
                       "type": "cexolocstring",
                       "value": {
                         "0": ""
@@ -250725,13 +250802,13 @@
                     "DescIdentified": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": ""
+                        "0": "A fabricator droid shell whose tidy joints and accessible fittings reflect the patient assembly work it will accompany. The inner fittings are as carefully dressed as the visible panels, evidence of workmanship no customer should have to discover through a fault."
                       }
                     },
                     "Description": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": ""
+                        "0": "A fabricator droid shell whose tidy joints and accessible fittings reflect the patient assembly work it will accompany. The inner fittings are as carefully dressed as the visible panels, evidence of workmanship no customer should have to discover through a fault."
                       }
                     },
                     "Identified": {
@@ -251454,7 +251531,6 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 56640,
                       "type": "cexolocstring",
                       "value": {
                         "0": ""
@@ -251690,7 +251766,6 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 48931,
                       "type": "cexolocstring",
                       "value": {
                         "0": ""
@@ -252104,7 +252179,6 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 64105,
                       "type": "cexolocstring",
                       "value": {
                         "0": ""
@@ -252762,11 +252836,15 @@
                     },
                     "DescIdentified": {
                       "type": "cexolocstring",
-                      "value": {}
+                      "value": {
+                        "0": "A narrow floral border follows this bracer's outer edge, kept well clear of the fastening. It lends a personal touch to practical equipment without asking the wearer to treat it delicately."
+                      }
                     },
                     "Description": {
                       "type": "cexolocstring",
-                      "value": {}
+                      "value": {
+                        "0": "A narrow floral border follows this bracer's outer edge, kept well clear of the fastening. It lends a personal touch to practical equipment without asking the wearer to treat it delicately."
+                      }
                     },
                     "Identified": {
                       "type": "byte",
@@ -253768,11 +253846,15 @@
                     },
                     "DescIdentified": {
                       "type": "cexolocstring",
-                      "value": {}
+                      "value": {
+                        "0": "A delicate border follows this tunic's folds, lending a floral suggestion without turning the garment into a costume. The restrained pattern rewards a closer look rather than demanding one."
+                      }
                     },
                     "Description": {
                       "type": "cexolocstring",
-                      "value": {}
+                      "value": {
+                        "0": "A delicate border follows this tunic's folds, lending a floral suggestion without turning the garment into a costume. The restrained pattern rewards a closer look rather than demanding one."
+                      }
                     },
                     "Identified": {
                       "type": "byte",
@@ -254081,7 +254163,6 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 56605,
                       "type": "cexolocstring",
                       "value": {
                         "0": ""
@@ -254559,7 +254640,6 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 66560,
                       "type": "cexolocstring",
                       "value": {
                         "0": ""
@@ -254809,7 +254889,6 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 13336,
                       "type": "cexolocstring",
                       "value": {
                         "0": ""
@@ -255466,13 +255545,13 @@
                     "DescIdentified": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": ""
+                        "0": "A fabricator droid shell whose tidy joints and accessible fittings reflect the patient assembly work it will accompany. Every accessible edge has been patiently finished, bringing even routine maintenance to the standard of the completed shell."
                       }
                     },
                     "Description": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": ""
+                        "0": "A fabricator droid shell whose tidy joints and accessible fittings reflect the patient assembly work it will accompany. Every accessible edge has been patiently finished, bringing even routine maintenance to the standard of the completed shell."
                       }
                     },
                     "Identified": {
@@ -256288,7 +256367,6 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 56640,
                       "type": "cexolocstring",
                       "value": {
                         "0": ""
@@ -256555,7 +256633,6 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 48931,
                       "type": "cexolocstring",
                       "value": {
                         "0": ""
@@ -257031,7 +257108,6 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 64105,
                       "type": "cexolocstring",
                       "value": {
                         "0": ""

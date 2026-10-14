@@ -25,16 +25,15 @@
     "value": 0
   },
   "DescIdentified": {
-    "id": 56620,
     "type": "cexolocstring",
     "value": {
-      "0": ""
+      "0": "These gauntlets show wear on the outer wrists where repeated guards have rubbed away their finish. Whoever fitted them expected a hand to spend as much time turned aside as reaching forward."
     }
   },
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": ""
+      "0": "These gauntlets show wear on the outer wrists where repeated guards have rubbed away their finish. Whoever fitted them expected a hand to spend as much time turned aside as reaching forward."
     }
   },
   "Identified": {

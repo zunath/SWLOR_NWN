@@ -25,16 +25,15 @@
     "value": 0
   },
   "DescIdentified": {
-    "id": 56620,
     "type": "cexolocstring",
     "value": {
-      "0": ""
+      "0": "These gloves are unusually quiet when their fingers flex, with loose edges tucked beneath the cuffs. Their maker favored the small comforts of stillness over any striking ornament."
     }
   },
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": ""
+      "0": "These gloves are unusually quiet when their fingers flex, with loose edges tucked beneath the cuffs. Their maker favored the small comforts of stillness over any striking ornament."
     }
   },
   "Identified": {

@@ -436,12 +436,14 @@
               },
               "DescIdentified": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "A Sith trooper's armor, severe panels fitted over practical service layers. Its standardized appearance makes the wearer part of a recognizable military presence before any individual face or voice can matter."
+                }
               },
               "Description": {
                 "type": "cexolocstring",
                 "value": {
-                  "0": ""
+                  "0": "A Sith trooper's armor, severe panels fitted over practical service layers. Its standardized appearance makes the wearer part of a recognizable military presence before any individual face or voice can matter."
                 }
               },
               "Identified": {
@@ -2159,12 +2161,14 @@
               },
               "DescIdentified": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "A Sith trooper's armor, severe panels fitted over practical service layers. Its standardized appearance makes the wearer part of a recognizable military presence before any individual face or voice can matter."
+                }
               },
               "Description": {
                 "type": "cexolocstring",
                 "value": {
-                  "0": ""
+                  "0": "A Sith trooper's armor, severe panels fitted over practical service layers. Its standardized appearance makes the wearer part of a recognizable military presence before any individual face or voice can matter."
                 }
               },
               "Identified": {
@@ -3882,12 +3886,14 @@
               },
               "DescIdentified": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "A Sith trooper's armor, severe panels fitted over practical service layers. Its standardized appearance makes the wearer part of a recognizable military presence before any individual face or voice can matter."
+                }
               },
               "Description": {
                 "type": "cexolocstring",
                 "value": {
-                  "0": ""
+                  "0": "A Sith trooper's armor, severe panels fitted over practical service layers. Its standardized appearance makes the wearer part of a recognizable military presence before any individual face or voice can matter."
                 }
               },
               "Identified": {
@@ -5605,12 +5611,14 @@
               },
               "DescIdentified": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "A Sith trooper's armor, severe panels fitted over practical service layers. Its standardized appearance makes the wearer part of a recognizable military presence before any individual face or voice can matter."
+                }
               },
               "Description": {
                 "type": "cexolocstring",
                 "value": {
-                  "0": ""
+                  "0": "A Sith trooper's armor, severe panels fitted over practical service layers. Its standardized appearance makes the wearer part of a recognizable military presence before any individual face or voice can matter."
                 }
               },
               "Identified": {
@@ -7328,12 +7336,14 @@
               },
               "DescIdentified": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "A Sith trooper's armor, severe panels fitted over practical service layers. Its standardized appearance makes the wearer part of a recognizable military presence before any individual face or voice can matter."
+                }
               },
               "Description": {
                 "type": "cexolocstring",
                 "value": {
-                  "0": ""
+                  "0": "A Sith trooper's armor, severe panels fitted over practical service layers. Its standardized appearance makes the wearer part of a recognizable military presence before any individual face or voice can matter."
                 }
               },
               "Identified": {
@@ -9051,12 +9061,14 @@
               },
               "DescIdentified": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "A Sith trooper's armor, severe panels fitted over practical service layers. Its standardized appearance makes the wearer part of a recognizable military presence before any individual face or voice can matter."
+                }
               },
               "Description": {
                 "type": "cexolocstring",
                 "value": {
-                  "0": ""
+                  "0": "A Sith trooper's armor, severe panels fitted over practical service layers. Its standardized appearance makes the wearer part of a recognizable military presence before any individual face or voice can matter."
                 }
               },
               "Identified": {

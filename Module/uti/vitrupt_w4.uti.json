@@ -25,16 +25,15 @@
     "value": 0
   },
   "DescIdentified": {
-    "id": 56620,
     "type": "cexolocstring",
     "value": {
-      "0": ""
+      "0": "These gloves have been mended more than once along the outer wrists. Their blunt, practical construction belongs to work where pockets are emptied and questions are expected to receive immediate answers."
     }
   },
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": ""
+      "0": "These gloves have been mended more than once along the outer wrists. Their blunt, practical construction belongs to work where pockets are emptied and questions are expected to receive immediate answers."
     }
   },
   "Identified": {

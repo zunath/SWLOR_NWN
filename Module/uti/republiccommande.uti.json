@@ -110,11 +110,15 @@
   },
   "DescIdentified": {
     "type": "cexolocstring",
-    "value": {}
+    "value": {
+      "0": "A Republic commander's uniform, its formal cut sharpened by the placement of insignia and equipment fittings. It presents the person expected to decide where everyone else will stand when the orders become difficult."
+    }
   },
   "Description": {
     "type": "cexolocstring",
-    "value": {}
+    "value": {
+      "0": "A Republic commander's uniform, its formal cut sharpened by the placement of insignia and equipment fittings. It presents the person expected to decide where everyone else will stand when the orders become difficult."
+    }
   },
   "Identified": {
     "type": "byte",

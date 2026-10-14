@@ -247,11 +247,15 @@
               },
               "DescIdentified": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "Plain service panels give this janitor droid's shell an unassuming appearance. Its accessible fastenings are a more useful distinction, leaving the next maintenance crew fewer reasons to complain about the cleanup machine."
+                }
               },
               "Description": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "Plain service panels give this janitor droid's shell an unassuming appearance. Its accessible fastenings are a more useful distinction, leaving the next maintenance crew fewer reasons to complain about the cleanup machine."
+                }
               },
               "Identified": {
                 "type": "byte",
@@ -1803,12 +1807,14 @@
               },
               "DescIdentified": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "This Republic soldier's armor follows a practical service pattern with readily maintained fittings. Its modest wear belongs to duties that continue long after the formal inspection has moved on."
+                }
               },
               "Description": {
                 "type": "cexolocstring",
                 "value": {
-                  "0": ""
+                  "0": "This Republic soldier's armor follows a practical service pattern with readily maintained fittings. Its modest wear belongs to duties that continue long after the formal inspection has moved on."
                 }
               },
               "Identified": {

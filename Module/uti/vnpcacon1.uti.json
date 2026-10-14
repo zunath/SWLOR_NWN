@@ -110,12 +110,14 @@
   },
   "DescIdentified": {
     "type": "cexolocstring",
-    "value": {}
+    "value": {
+      "0": "This Sith conscript armor is the ordinary face of a military system with little interest in the person beneath it. Its practical fittings have been adjusted by many hands, each temporarily responsible for making the issue fit."
+    }
   },
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": ""
+      "0": "This Sith conscript armor is the ordinary face of a military system with little interest in the person beneath it. Its practical fittings have been adjusted by many hands, each temporarily responsible for making the issue fit."
     }
   },
   "Identified": {

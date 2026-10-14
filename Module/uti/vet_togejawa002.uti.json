@@ -110,11 +110,15 @@
   },
   "DescIdentified": {
     "type": "cexolocstring",
-    "value": {}
+    "value": {
+      "0": "Dark, closely bound layers alter the familiar shape of Jawa robes into something more furtive. Their ties have been tucked out of the way, as if a loose thread might give away an otherwise satisfactory entrance."
+    }
   },
   "Description": {
     "type": "cexolocstring",
-    "value": {}
+    "value": {
+      "0": "Dark, closely bound layers alter the familiar shape of Jawa robes into something more furtive. Their ties have been tucked out of the way, as if a loose thread might give away an otherwise satisfactory entrance."
+    }
   },
   "Identified": {
     "type": "byte",

@@ -652,6 +652,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             }
 
             ApplyBladeLight(item, lightColor, lightBrightness);
+            var lightRange = lightBrightness == LightBrightness.Dim ? "Dim (5m)" : "Normal (15m)";
+            var description = GetDescription(item);
+            SetDescription(item, $"{description}\n\nLight Color: {lightColor}\nLight Range: {lightRange}");
 
             Currency.TakeCurrency(Player, CurrencyType.KyberToken, 1);
             SendMessageToPC(Player, $"You spend a Kyber Token constructing your {GetName(item)}. Total Kyber Tokens: {Currency.GetCurrency(Player, CurrencyType.KyberToken)}");

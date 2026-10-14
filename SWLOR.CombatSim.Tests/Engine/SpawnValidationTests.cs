@@ -160,6 +160,56 @@ namespace SWLOR.CombatSim.Tests.Engine
                 },
                 new[] { TestCombatants.Dummy("Enemy", true) });
 
+        [TestCase("Bos")]
+        [TestCase("Striker")]
+        public void Spawn_RejectsAHitChanceForANameThatIsNotAnOpponent(string name)
+        {
+            var striker = TestCombatants.Striker("Striker");
+            striker.AutoAttack.Damage.HitChanceVs = new Dictionary<string, float> { [name] = 0.5f };
+            var scenario = TestScenarios.TwoTeams(false, new[] { striker }, new[] { TestCombatants.Dummy("Boss", true) });
+
+            var act = () => new Simulation(scenario, RuleSets.Current(), _catalog, 1).Spawn();
+
+            act.Should().Throw<InvalidDataException>().WithMessage("*HitChanceVs*");
+        }
+
+        [Test]
+        public void Spawn_AcceptsAHitChanceForANumberedOpponent()
+        {
+            var striker = TestCombatants.Striker("Striker");
+            striker.AutoAttack.Damage.HitChanceVs = new Dictionary<string, float> { ["Boss 2"] = 0.5f };
+            var bosses = TestCombatants.Dummy("Boss", true);
+            bosses.Count = 2;
+            var scenario = TestScenarios.TwoTeams(false, new[] { striker }, new[] { bosses });
+
+            var act = () => new Simulation(scenario, RuleSets.Current(), _catalog, 1).Spawn();
+
+            act.Should().NotThrow();
+        }
+
+        [TestCase("members")]
+        [TestCase("member")]
+        [TestCase("abilities")]
+        [TestCase("ability")]
+        [TestCase("perks")]
+        public void Spawn_RejectsAMissingList_InsteadOfFailingOnANullReference(string gap)
+        {
+            var scenario = Scenario(TestCombatants.Dummy("Player"));
+            var member = scenario.Teams[0].Members[0];
+            switch (gap)
+            {
+                case "members": scenario.Teams[0].Members = null; break;
+                case "member": scenario.Teams[0].Members.Add(null); break;
+                case "abilities": member.Abilities = null; break;
+                case "ability": member.Abilities.Add(null); break;
+                case "perks": member.Perks = null; break;
+            }
+
+            var act = () => new Simulation(scenario, RuleSets.Current(), _catalog, 1).Spawn();
+
+            act.Should().Throw<InvalidDataException>();
+        }
+
         [TestCase(0)]
         [TestCase(-2)]
         public void Spawn_RejectsACountBelowOne(int count)

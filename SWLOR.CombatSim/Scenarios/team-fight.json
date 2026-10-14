@@ -1822,7 +1822,8 @@
                   "Light healer": 0.9
                 },
                 "type": "Force",
-                "targets": 2
+                "targets": 2,
+                "extraTargetDamagePercent": 50
               }
             },
             {
@@ -1954,7 +1955,8 @@
                   "Dark Force glass cannon": 0.74
                 },
                 "type": "Force",
-                "targets": 4
+                "targets": 4,
+                "extraTargetDamagePercent": 50
               }
             },
             {

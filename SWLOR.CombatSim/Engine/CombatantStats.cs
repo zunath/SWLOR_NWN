@@ -20,5 +20,8 @@ namespace SWLOR.CombatSim.Engine
         public int AbilitiesUsed { get; set; }
         public int InterruptedCasts { get; set; }
         public int BlockedRevives { get; set; }
+
+        /// <summary>HP paid for abilities' HP costs, not counted as damage taken.</summary>
+        public double HitPointsSpent { get; set; }
     }
 }

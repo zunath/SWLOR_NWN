@@ -1,6 +1,7 @@
 using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.CombatSim.Data;
+using SWLOR.CombatSim.Effects;
 using SWLOR.CombatSim.Engine;
 using SWLOR.CombatSim.Rules;
 using SWLOR.CombatSim.Scenario;
@@ -33,6 +34,44 @@ namespace SWLOR.CombatSim.Tests.Engine
 
             SimulationClock.RunUntil(simulation, simulation.Now + 31);
             DamageTaken(simulation, ally, DamageType.Physical).Should().BeApproximately(Hit, 1e-6, "the reduction ends with the effect");
+        }
+
+        [Test]
+        public void PainSuppressantRanks_StackLikeTheGamesSummedDamageTakenStat()
+        {
+            var ally = new CombatantSpec { Name = "Ally", MaxHp = TestCombatants.EffectivelyUnlimited };
+            var simulation = TestScenarios.Spawn(
+                TestScenarios.TwoTeams(
+                    false,
+                    new[]
+                    {
+                        TestCombatants.Medic("Medic", TestCombatants.Use("PainSuppressant1", AbilityTarget.NamedAlly, targetName: "Ally", minIntervalSeconds: 600)),
+                        TestCombatants.Medic("Second Medic", TestCombatants.Use("PainSuppressant2", AbilityTarget.NamedAlly, targetName: "Ally", minIntervalSeconds: 600)),
+                        ally
+                    },
+                    new[] { TestCombatants.Dummy("Enemy", true) }),
+                RuleSets.Current(),
+                _catalog);
+            var target = simulation.Get("Ally");
+            SimulationClock.RunUntil(
+                simulation,
+                () => simulation.Get("Medic").Stats.AbilitiesUsed == 1 && simulation.Get("Second Medic").Stats.AbilitiesUsed == 1,
+                10,
+                "both ranks cast");
+
+            DamageTaken(simulation, target, DamageType.Physical).Should().BeApproximately(75, 1e-6, "10% and 15% add up to 25%");
+        }
+
+        [Test]
+        public void TypedReductions_MultiplyWithTheSummedAllDamageCut()
+        {
+            var simulation = Spawn(TestCombatants.Use("PainSuppressant2", AbilityTarget.NamedAlly, targetName: "Ally", minIntervalSeconds: 600));
+            var ally = simulation.Get("Ally");
+            ally.DamageReductions["All"] = new DamageReductionInstance { Percent = 20, Scope = DamageReductionScope.All, ExpiresAt = 600 };
+            ally.DamageReductions["Force"] = new DamageReductionInstance { Percent = 50, Scope = DamageReductionScope.ForceOnly, ExpiresAt = 600 };
+
+            DamageTaken(simulation, ally, DamageType.Force).Should().BeApproximately(40, 1e-6);
+            DamageTaken(simulation, ally, DamageType.Physical).Should().BeApproximately(80, 1e-6);
         }
 
         [TestCase(30, 0, 75)]

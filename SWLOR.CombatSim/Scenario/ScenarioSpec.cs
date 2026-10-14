@@ -22,7 +22,7 @@ namespace SWLOR.CombatSim.Scenario
                 // Unknown names fail, so a misspelled setting can't silently keep its default.
                 scenario = JsonConvert.DeserializeObject<ScenarioSpec>(File.ReadAllText(path), new JsonSerializerSettings { MissingMemberHandling = MissingMemberHandling.Error });
             }
-            catch (JsonSerializationException ex)
+            catch (JsonException ex)
             {
                 throw new InvalidDataException($"Scenario '{path}': {ex.Message}", ex);
             }

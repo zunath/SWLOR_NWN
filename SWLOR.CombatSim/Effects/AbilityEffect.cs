@@ -49,6 +49,12 @@ namespace SWLOR.CombatSim.Effects
         /// <summary>How long the reduction lasts; 0 means the effect's own duration.</summary>
         public float DamageReductionSeconds { get; init; }
 
+        /// <summary>
+        /// The reduction's own identity when it differs from <see cref="Key"/>: the game's ranks of one ability can be
+        /// separate statuses that stay active together. Null means <see cref="Key"/>.
+        /// </summary>
+        public string DamageReductionKey { get; init; }
+
         public bool IsInstantHeal => Kind == EffectKind.DirectHeal;
     }
 }

@@ -23,7 +23,7 @@ namespace SWLOR.CombatSim.Rules
                 // Unknown names fail, so a misspelled setting can't silently keep its default.
                 rules = JsonConvert.DeserializeObject<RuleSet>(File.ReadAllText(path), new JsonSerializerSettings { MissingMemberHandling = MissingMemberHandling.Error });
             }
-            catch (JsonSerializationException ex)
+            catch (JsonException ex)
             {
                 throw new InvalidDataException($"Rule set file '{path}': {ex.Message}", ex);
             }
@@ -66,6 +66,8 @@ namespace SWLOR.CombatSim.Rules
             HarmonyInstantHealsOnly = true,
             HarmonyCooldownSeconds = 6f,
             FpCostMultiplier = 1.2f,
+            RefuseHitPointCostsAtOneHitPoint = true,
+            ScaleHitPointSpendRestoreToHitPointsLost = true,
             Revives = ReviveRule.BlockedInPvpLimitedInPve
         };
 

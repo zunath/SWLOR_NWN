@@ -54,8 +54,8 @@ namespace SWLOR.CombatSim.Effects
             [FeatType.GuardianWard3] = GuardianWard(12),
             [FeatType.GuardianWard4] = GuardianWard(15),
 
-            [FeatType.PainSuppressant1] = PainSuppressant(10, 10),
-            [FeatType.PainSuppressant2] = PainSuppressant(15, 15),
+            [FeatType.PainSuppressant1] = PainSuppressant(10, 10, "PainSuppressant1"),
+            [FeatType.PainSuppressant2] = PainSuppressant(15, 15, "PainSuppressant2"),
 
             [FeatType.DeflectorShield1] = Shield(6, 35, ScalingStat.None, "DeflectorShield", 45f),
             [FeatType.DeflectorShield2] = Shield(9, 65, ScalingStat.None, "DeflectorShield", 45f),
@@ -112,12 +112,15 @@ namespace SWLOR.CombatSim.Effects
             UsesCombatReadiness = true, Key = key, DurationSeconds = duration
         };
 
-        /// <summary>Temporary HP plus a 30-second cut to all damage taken.</summary>
-        private static AbilityEffect PainSuppressant(float percent, float damageReduction) => new()
+        /// <summary>
+        /// Temporary HP plus a 30-second cut to all damage taken. The ranks share the shield but are separate
+        /// statuses in the game, so their cuts stay active together.
+        /// </summary>
+        private static AbilityEffect PainSuppressant(float percent, float damageReduction, string rankKey) => new()
         {
             Kind = EffectKind.TemporaryHp, Percent = percent, Scaling = ScalingStat.Willpower,
             UsesCombatReadiness = true, Key = "PainSuppressant", DurationSeconds = 30f,
-            DamageReductionPercent = damageReduction
+            DamageReductionPercent = damageReduction, DamageReductionKey = rankKey
         };
 
         /// <summary>Temporary HP; a target at or below 35% HP also takes less physical and Force damage.</summary>

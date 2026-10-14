@@ -28,6 +28,12 @@ namespace SWLOR.CombatSim.Rules
         public float FpCostMultiplier { get; set; } = 1f;
         public float StmCostMultiplier { get; set; } = 1f;
 
+        /// <summary>HP-cost abilities are refused at 1 HP instead of landing without paying.</summary>
+        public bool RefuseHitPointCostsAtOneHitPoint { get; set; }
+
+        /// <summary>Bloodlust's stamina restore shrinks with the HP actually lost, instead of paying in full.</summary>
+        public bool ScaleHitPointSpendRestoreToHitPointsLost { get; set; }
+
         public ReviveRule Revives { get; set; } = ReviveRule.Unrestricted;
         public float PveReviveLockoutSeconds { get; set; } = 300f;
         public float PvpReviveDamageWindowSeconds { get; set; } = 15f;

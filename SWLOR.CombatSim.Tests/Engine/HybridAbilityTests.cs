@@ -114,6 +114,29 @@ namespace SWLOR.CombatSim.Tests.Engine
         }
 
         [Test]
+        public void ExtraTargets_TakeTheirShareOfTheDamage_AndTheChosenTargetTheFullHit()
+        {
+            var lightning = TestCombatants.Use("ForceLightning3", AbilityTarget.Enemy, minIntervalSeconds: 600);
+            lightning.Damage = new DamageSpec { Min = WaveDamage, Max = WaveDamage, HitChance = 1f, Targets = 3, ExtraTargetDamagePercent = 50f };
+            var simulation = TestScenarios.Spawn(
+                TestScenarios.TwoTeams(
+                    false,
+                    new[] { TestCombatants.Medic("Medic", lightning) },
+                    Enumerable.Range(1, 3).Select(i => TestCombatants.Dummy($"Enemy {i}", true))),
+                RuleSets.Current(),
+                _catalog);
+            var medic = simulation.Get("Medic");
+            SimulationClock.RunUntil(simulation, () => medic.Casting != null || medic.Stats.AbilitiesUsed == 1, 10, "Force Lightning started");
+            var chosen = medic.Casting?.Target ?? medic.AttackTarget;
+
+            CastOnce(simulation);
+
+            chosen.Stats.DamageTakenToHp.Should().Be(WaveDamage);
+            simulation.Combatants.Where(c => c.TeamIndex == 1 && c != chosen).Select(c => c.Stats.DamageTakenToHp)
+                .Should().Equal(WaveDamage / 2, WaveDamage / 2);
+        }
+
+        [Test]
         public void DamageFromASelfTargetedUse_LandsOnAnEnemy()
         {
             var burst = TestCombatants.Use("ForceBurst1", AbilityTarget.Self, minIntervalSeconds: 600);

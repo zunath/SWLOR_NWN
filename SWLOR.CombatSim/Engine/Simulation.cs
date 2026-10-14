@@ -34,7 +34,11 @@ namespace SWLOR.CombatSim.Engine
             StatType.HealingReceivedStaminaRestore,
             StatType.HealingReceivedStaminaRestoreChance,
             StatType.HealingReceivedStaminaRestoreChanceMaximum,
-            StatType.HealingReceivedStaminaRestoreChanceScalingAbility
+            StatType.HealingReceivedStaminaRestoreChanceScalingAbility,
+            StatType.HeavyVibrobladeOffenseHitPointSpendStaminaRestoreBasePercent,
+            StatType.HeavyVibrobladeOffenseHitPointSpendStaminaRestoreCooldownSeconds,
+            StatType.HeavyVibrobladeOffenseHitPointSpendStaminaRestoreScalingAbility,
+            StatType.HeavyVibrobladeOffenseHitPointSpendStaminaRestoreMaximumPercent
         };
 
         private readonly ScenarioSpec _scenario;
@@ -98,9 +102,21 @@ namespace SWLOR.CombatSim.Engine
 
             for (var teamIndex = 0; teamIndex < _scenario.Teams.Count; teamIndex++)
             {
+                // Hand-edited JSON can null out any list; name the gap instead of failing on a null reference.
+                var team = _scenario.Teams[teamIndex];
+                if (team?.Members == null || team.Members.Any(member => member == null))
+                    throw new InvalidDataException($"Team {teamIndex + 1} needs a list of members without empty entries.");
+                foreach (var member in team.Members)
+                {
+                    if (member.Abilities == null || member.Abilities.Any(use => use == null))
+                        throw new InvalidDataException($"'{member.Name}' needs a list of Abilities without empty entries; use [] for none.");
+                    if (member.Perks == null)
+                        throw new InvalidDataException($"'{member.Name}' needs a list of Perks; use [] for none.");
+                }
+
                 var names = new HashSet<string>();
-                if (_scenario.Teams[teamIndex].RetargetSeconds < 0)
-                    throw new InvalidDataException($"Team '{_scenario.Teams[teamIndex].Name}' has a negative RetargetSeconds.");
+                if (!(team.RetargetSeconds >= 0) || !float.IsFinite(team.RetargetSeconds))
+                    throw new InvalidDataException($"Team '{team.Name}' needs a finite RetargetSeconds of at least 0.");
                 if (!Enum.IsDefined(_scenario.Teams[teamIndex].TargetPolicy))
                     throw new InvalidDataException(
                         $"Team '{_scenario.Teams[teamIndex].Name}' has an unknown TargetPolicy; use one of {string.Join(", ", Enum.GetNames<TargetPolicy>())}.");
@@ -152,6 +168,29 @@ namespace SWLOR.CombatSim.Engine
             for (var teamIndex = 0; teamIndex < _scenario.Teams.Count; teamIndex++)
                 RequireFocusTarget(teamIndex);
             RequireNamedAllies();
+            RequireKnownHitChanceTargets();
+        }
+
+        // A per-target hit chance that names nobody would silently fall back to the default.
+        private void RequireKnownHitChanceTargets()
+        {
+            foreach (var combatant in _combatants)
+            {
+                var profiles = combatant.Spec.Abilities.Select(use => (Owner: use.Feat, use.Damage)).ToList();
+                if (combatant.Spec.AutoAttack != null)
+                    profiles.Add(("autoattack", combatant.Spec.AutoAttack.Damage));
+
+                foreach (var (owner, damage) in profiles.Where(profile => profile.Damage?.HitChanceVs != null))
+                {
+                    foreach (var name in damage.HitChanceVs.Keys)
+                    {
+                        if (!_combatants.Any(c => c.TeamIndex != combatant.TeamIndex && c.Name == name))
+                            throw new InvalidDataException(
+                                $"'{combatant.Name}' {owner} has a HitChanceVs entry for '{name}', which is not an opposing combatant; " +
+                                "copies of a combatant with a Count are named '<name> 1', '<name> 2' and so on.");
+                    }
+                }
+            }
         }
 
         // A named ally may join the fight late, but it has to be a combatant on the caster's team.
@@ -416,6 +455,11 @@ namespace SWLOR.CombatSim.Engine
                 if (use.MinIntervalSeconds > 0 && caster.LastUsedAt.TryGetValue(use.Feat, out var lastUsedAt) && _now < lastUsedAt + use.MinIntervalSeconds)
                     continue;
 
+                if (_rules.RefuseHitPointCostsAtOneHitPoint &&
+                    HitPointCostCatalog.TryGet(info.Feat, out _) &&
+                    caster.Hp + caster.TemporaryHpTotal <= 1)
+                    continue;
+
                 var target = ResolveTarget(caster, use, effect);
                 if (target == null || !ConditionHolds(caster, use, effect, target))
                     continue;
@@ -514,6 +558,8 @@ namespace SWLOR.CombatSim.Engine
             caster.Stats.AbilitiesUsed++;
             caster.RecastReadyAt[cast.Ability.RecastGroup] = _now + _rules.GetRecastSeconds(cast.Ability);
             caster.LastUsedAt[cast.Use.Feat] = _now;
+            if (HitPointCostCatalog.TryGet(cast.Ability.Feat, out var hitPointCost))
+                PayHitPoints(caster, hitPointCost);
 
             // Convergence's accuracy comes from an earlier trigger; the cast that triggers it resolves first.
             var isForce = cast.Ability.SkillType == SkillType.Force;
@@ -525,8 +571,9 @@ namespace SWLOR.CombatSim.Engine
             {
                 // Damage lands on enemies even when the use targets the caster or an ally (self-centered areas).
                 var victim = target != null && target.TeamIndex != caster.TeamIndex ? target : EnsureAttackTarget(caster);
+                DamageHealingCatalog.TryGet(cast.Ability.Feat, out var damageHealing);
                 if (victim != null || cast.Use.Damage.Area)
-                    ApplyDamageProfile(caster, victim, cast.Use.Damage, hitBonus);
+                    ApplyDamageProfile(caster, victim, cast.Use.Damage, hitBonus, damageHealing);
             }
 
             if (effect == null)
@@ -740,7 +787,8 @@ namespace SWLOR.CombatSim.Engine
 
         private static bool HitsSeveralEnemies(DamageSpec damage) => damage != null && (damage.Area || damage.Targets > 1);
 
-        private void ApplyDamageProfile(Combatant attacker, Combatant target, DamageSpec damage, float hitBonus)
+        private void ApplyDamageProfile(
+            Combatant attacker, Combatant target, DamageSpec damage, float hitBonus, DamageHealing damageHealing = null)
         {
             var targets = damage.Area ? Enemies(attacker).ToList() : new List<Combatant> { target };
             if (!damage.Area && damage.Targets > 1)
@@ -751,29 +799,111 @@ namespace SWLOR.CombatSim.Engine
                     .OrderBy(_ => _random.Next())
                     .Take(damage.Targets - 1));
             }
-            foreach (var victim in targets)
+            var healingLeft = damageHealing == null
+                ? 0.0
+                : attacker.Spec.MaxHp * DamageHealing.MaximumMaxHpPercentPerCast / 100.0;
+            for (var index = 0; index < targets.Count; index++)
             {
+                var victim = targets[index];
+                // In the Targets form the first victim is the chosen one; the rest take the extra-target share.
+                var multiplier = !damage.Area && index > 0 ? damage.ExtraTargetDamagePercent / 100.0 : 1.0;
                 for (var hit = 0; hit < damage.Hits; hit++)
-                    RollAndApply(attacker, victim, damage, hitBonus);
+                {
+                    var victimWasLow = victim.HpPercentWithTemporaryHp <= 50f;
+                    var dealt = RollAndApply(attacker, victim, damage, hitBonus, multiplier);
+                    if (damageHealing != null && dealt > 0 && healingLeft > 0)
+                        healingLeft -= HealFromDamage(attacker, dealt, victimWasLow ? damageHealing.LowHpPercent : damageHealing.Percent, healingLeft);
+                }
             }
         }
 
-        private void RollAndApply(Combatant attacker, Combatant target, DamageSpec damage, float hitBonus = 0f)
+        /// <summary>
+        /// The game's damage-derived healing: a share of the damage dealt, adjusted by the caster's healing received,
+        /// never more than the damage or what is left of the cast's cap. Returns the HP requested.
+        /// </summary>
+        private double HealFromDamage(Combatant caster, double dealt, float percent, double healingLeft)
+        {
+            double requested = HealingMath.AddPercent((int)(dealt * percent / 100.0), caster.HealingReceivedPercent);
+            requested = Math.Min(Math.Min(requested, dealt), healingLeft);
+            var amount = (int)requested;
+            if (amount <= 0)
+                return 0;
+
+            ApplyHealing(caster, caster, amount, HealKind.DamageDerived, receivedAlreadyApplied: true);
+            return amount;
+        }
+
+        /// <summary>
+        /// Pays an ability's HP cost the way the game's SacrificeHitPoints does: temporary HP first, never below 1 HP.
+        /// The live rules let it land unpaid at 1 HP; Bloodlust's stamina restore follows the payment.
+        /// </summary>
+        private void PayHitPoints(Combatant caster, HitPointCost cost)
+        {
+            var currentHp = caster.Hp + caster.TemporaryHpTotal;
+            if (currentHp <= 1)
+                return;
+
+            var fullCost = caster.Spec.MaxHp * cost.GetPercent(caster.Spec.Might) / 100.0;
+            var payment = Math.Min(currentHp - 1, fullCost);
+            var remaining = payment;
+            foreach (var pool in caster.TemporaryHp.OrderBy(p => p.ExpiresAt))
+            {
+                var absorbed = Math.Min(pool.Amount, remaining);
+                pool.Amount -= absorbed;
+                remaining -= absorbed;
+                if (remaining <= 0)
+                    break;
+            }
+
+            caster.TemporaryHp.RemoveAll(p => p.Amount <= 0);
+            caster.Hp -= remaining;
+            caster.Stats.HitPointsSpent += remaining;
+            RestoreStaminaOnHitPointSpend(caster, remaining, fullCost);
+        }
+
+        /// <summary>Bloodlust's stamina restore, driven by the same stats as the game's.</summary>
+        private void RestoreStaminaOnHitPointSpend(Combatant caster, double hitPointsLost, double fullCost)
+        {
+            var percent = caster.GetStat(StatType.HeavyVibrobladeOffenseHitPointSpendStaminaRestoreBasePercent);
+            if (percent <= 0 || _now < caster.HitPointSpendRestoreReadyAt)
+                return;
+            if (_rules.ScaleHitPointSpendRestoreToHitPointsLost && hitPointsLost <= 0)
+                return;
+
+            caster.HitPointSpendRestoreReadyAt =
+                _now + caster.GetStat(StatType.HeavyVibrobladeOffenseHitPointSpendStaminaRestoreCooldownSeconds);
+            var scalingAbility = (AbilityType)(caster.GetStat(StatType.HeavyVibrobladeOffenseHitPointSpendStaminaRestoreScalingAbility) - 1);
+            if (Enum.IsDefined(scalingAbility) && scalingAbility != AbilityType.Invalid)
+                percent += Math.Max(0, AbilityScore(caster, scalingAbility));
+            var maximum = caster.GetStat(StatType.HeavyVibrobladeOffenseHitPointSpendStaminaRestoreMaximumPercent);
+            if (maximum > 0)
+                percent = Math.Min(maximum, percent);
+
+            var stamina = caster.Spec.MaxStm * percent / 100.0;
+            // Wave 1 scales the restore by the share of the cost actually lost, at least 1.
+            if (_rules.ScaleHitPointSpendRestoreToHitPointsLost && hitPointsLost < fullCost)
+                stamina = Math.Max(1, Math.Ceiling(stamina * hitPointsLost / fullCost));
+            RestoreStamina(caster, (int)stamina, true);
+        }
+
+        /// <returns>Damage that landed, on temporary HP or HP.</returns>
+        private double RollAndApply(Combatant attacker, Combatant target, DamageSpec damage, float hitBonus = 0f, double multiplier = 1.0)
         {
             if (target.IsDead || _random.NextDouble() >= Math.Min(1f, damage.GetHitChance(target.Name) + hitBonus))
-                return;
+                return 0;
 
             var amount = damage.Min + _random.NextDouble() * Math.Max(0, damage.Max - damage.Min);
             if (damage.CritChance > 0 && _random.NextDouble() < damage.CritChance)
                 amount *= damage.CritMultiplier;
 
-            ApplyDamage(attacker, target, amount, damage.Type);
+            return ApplyDamage(attacker, target, amount * multiplier, damage.Type);
         }
 
-        public void ApplyDamage(Combatant attacker, Combatant target, double amount, DamageType type = DamageType.Physical)
+        /// <returns>Damage that landed, on temporary HP or HP.</returns>
+        public double ApplyDamage(Combatant attacker, Combatant target, double amount, DamageType type = DamageType.Physical)
         {
             if (target.IsDead || amount <= 0)
-                return;
+                return 0;
 
             if (IsPlayerVersusPlayer(attacker, target))
             {
@@ -783,12 +913,13 @@ namespace SWLOR.CombatSim.Engine
             }
 
             amount *= 1 - target.Spec.DamageReductionPercent / 100f;
-            foreach (var reduction in target.DamageReductions.Values)
-            {
-                if (reduction.ExpiresAt > _now && reduction.Applies(type))
-                    amount *= 1 - reduction.Percent / 100.0;
-            }
+            // Cuts to all damage share the game's one summed damage-taken stat; typed cuts apply on their own.
+            var active = target.DamageReductions.Values.Where(r => r.ExpiresAt > _now && r.Applies(type)).ToList();
+            amount *= 1 - Math.Min(100.0, active.Where(r => r.Scope == DamageReductionScope.All).Sum(r => (double)r.Percent)) / 100.0;
+            foreach (var reduction in active.Where(r => r.Scope != DamageReductionScope.All))
+                amount *= 1 - reduction.Percent / 100.0;
 
+            var landed = 0.0;
             foreach (var pool in target.TemporaryHp.OrderBy(p => p.ExpiresAt))
             {
                 if (amount <= 0)
@@ -797,6 +928,7 @@ namespace SWLOR.CombatSim.Engine
                 var absorbed = Math.Min(pool.Amount, amount);
                 pool.Amount -= absorbed;
                 amount -= absorbed;
+                landed += absorbed;
                 target.Stats.DamageAbsorbedByTemporaryHp += absorbed;
                 attacker.Stats.DamageDealt += absorbed;
             }
@@ -808,6 +940,7 @@ namespace SWLOR.CombatSim.Engine
             {
                 var dealt = Math.Min(amount, target.Hp);
                 target.Hp -= amount;
+                landed += dealt;
                 target.Stats.DamageTakenToHp += dealt;
                 attacker.Stats.DamageDealt += dealt;
             }
@@ -821,14 +954,16 @@ namespace SWLOR.CombatSim.Engine
 
             if (target.Hp <= 0)
                 Die(target, attacker);
+            return landed;
         }
 
-        public void ApplyHealing(Combatant source, Combatant target, int amount, HealKind kind)
+        /// <param name="receivedAlreadyApplied">The amount already carries the target's healing received, as damage-derived heals do.</param>
+        public void ApplyHealing(Combatant source, Combatant target, int amount, HealKind kind, bool receivedAlreadyApplied = false)
         {
             if (target.IsDead || amount <= 0)
                 return;
 
-            double adjusted = kind == HealKind.NaturalRegeneration
+            double adjusted = kind == HealKind.NaturalRegeneration || receivedAlreadyApplied
                 ? amount
                 : HealingMath.AddPercent(amount, target.HealingReceivedPercent);
 
@@ -896,7 +1031,7 @@ namespace SWLOR.CombatSim.Engine
                 ? HealingMath.SocialScaledPercent(effect.DamageReductionPercent, effect.DamageReductionMaximumPercent, source.Spec.Social)
                 : effect.DamageReductionPercent;
             var seconds = effect.DamageReductionSeconds > 0 ? effect.DamageReductionSeconds : effect.DurationSeconds;
-            target.DamageReductions[effect.Key] = new DamageReductionInstance
+            target.DamageReductions[effect.DamageReductionKey ?? effect.Key] = new DamageReductionInstance
             {
                 Percent = percent,
                 Scope = effect.DamageReductionScope,

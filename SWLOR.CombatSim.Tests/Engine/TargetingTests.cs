@@ -249,11 +249,13 @@ namespace SWLOR.CombatSim.Tests.Engine
             act.Should().NotThrow();
         }
 
-        [Test]
-        public void Spawn_RejectsANegativeRetargetTime()
+        [TestCase(-1f)]
+        [TestCase(float.NaN)]
+        [TestCase(float.PositiveInfinity)]
+        public void Spawn_RejectsARetargetTimeThatIsNegativeOrNotFinite(float seconds)
         {
             var scenario = TestScenarios.TwoTeams(false, new[] { TestCombatants.Striker("Striker") }, new[] { TestCombatants.Dummy("Enemy", true) });
-            scenario.Teams[0].RetargetSeconds = -1f;
+            scenario.Teams[0].RetargetSeconds = seconds;
             var simulation = new Simulation(scenario, RuleSets.Current(), _catalog, 1);
 
             var act = () => simulation.Spawn();

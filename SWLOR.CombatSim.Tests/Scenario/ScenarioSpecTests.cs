@@ -120,6 +120,17 @@ namespace SWLOR.CombatSim.Tests.Scenario
             act.Should().Throw<InvalidDataException>().WithMessage("*at least two teams*");
         }
 
+        [TestCase("""{ "name": "Broken", "teams": [ }""")]
+        [TestCase("""{ "name": "Broken",, "teams": [] }""")]
+        public void Load_NamesTheFileForMalformedJson(string json)
+        {
+            var path = WriteScenario(json);
+
+            var act = () => ScenarioSpec.Load(path);
+
+            act.Should().Throw<InvalidDataException>().WithMessage("*scenario.json*");
+        }
+
         [Test]
         public void Load_WithNoTeams_Throws()
         {

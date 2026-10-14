@@ -66,6 +66,8 @@ namespace SWLOR.CombatSim.Tests.Rules
         [TestCase("{ \"recastOverrides\": null }")]
         [TestCase("{ \"pvpHealingRamp\": null }")]
         [TestCase("{ \"pvpDamageBackstop\": [ null ] }")]
+        [TestCase("{ \"fpCostMultiplier\": }")]
+        [TestCase("{ \"fpCostMultiplier\": 1.2,, }")]
         public void Load_RejectsAFileThatWouldFailMidRun_NamingTheFile(string json)
         {
             var path = WriteRules("broken.json", json);
@@ -169,6 +171,8 @@ namespace SWLOR.CombatSim.Tests.Rules
             rules.StmCostMultiplier.Should().Be(1f);
             rules.CostSkillThreshold.Should().Be(28);
             rules.Revives.Should().Be(ReviveRule.BlockedInPvpLimitedInPve);
+            rules.RefuseHitPointCostsAtOneHitPoint.Should().BeTrue();
+            rules.ScaleHitPointSpendRestoreToHitPointsLost.Should().BeTrue();
         }
 
         [Test]

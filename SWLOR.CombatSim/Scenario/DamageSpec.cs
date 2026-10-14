@@ -27,6 +27,9 @@ namespace SWLOR.CombatSim.Scenario
         /// </summary>
         public int Targets { get; set; } = 1;
 
+        /// <summary>Damage percent for each of <see cref="Targets"/> after the chosen one, such as Force Lightning's half-damage arcs.</summary>
+        public float ExtraTargetDamagePercent { get; set; } = 100f;
+
         /// <summary>Decides which damage reductions apply; weapon and autoattack damage is physical.</summary>
         public DamageType Type { get; set; } = DamageType.Physical;
 
@@ -61,6 +64,8 @@ namespace SWLOR.CombatSim.Scenario
                 problems.Add("Hits must be at least 1");
             if (Targets < 1)
                 problems.Add("Targets must be at least 1");
+            if (!float.IsFinite(ExtraTargetDamagePercent) || ExtraTargetDamagePercent < 0f)
+                problems.Add("ExtraTargetDamagePercent must be a number of at least 0");
             if (!Enum.IsDefined(Type))
                 problems.Add($"Type must be one of {string.Join(", ", Enum.GetNames<DamageType>())}");
 

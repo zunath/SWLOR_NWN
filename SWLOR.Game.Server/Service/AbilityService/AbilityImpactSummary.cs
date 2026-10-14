@@ -1,4 +1,5 @@
 using SWLOR.Game.Server.Service.SkillService;
+using SWLOR.Game.Server.Service.CombatService;
 
 namespace SWLOR.Game.Server.Service.AbilityService
 {
@@ -10,6 +11,8 @@ namespace SWLOR.Game.Server.Service.AbilityService
         public bool IsSingleTargetAbility { get; set; }
         public int ImpactedTargetCount { get; set; }
         public int CriticalHitCount { get; set; }
+        public int? TriggeringWeaponDamage { get; internal set; }
+        public CombatDamageType? TriggeringWeaponDamageType { get; internal set; }
 
         /// <summary>
         /// Total damage this impact queued against its targets. Distinguishes "the impact

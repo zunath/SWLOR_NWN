@@ -109,7 +109,9 @@ namespace SWLOR.Game.Server.Service
             bool countsAsAttackAttempt = true,
             IReadOnlyList<TelegraphGeometry> activationAreaTelegraphs = null,
             AbilityImpactSequence sequence = null,
-            uint triggeringWeapon = OBJECT_INVALID)
+            uint triggeringWeapon = OBJECT_INVALID,
+            int? triggeringWeaponDamage = null,
+            CombatDamageType? triggeringWeaponDamageType = null)
         {
             if (!GetIsObjectValid(activator) || ability == null)
                 return;
@@ -118,11 +120,11 @@ namespace SWLOR.Game.Server.Service
                 countsAsAttackAttempt: countsAsAttackAttempt,
                 activationAreaTelegraphs: activationAreaTelegraphs, sequence: sequence);
             var trackedImpact = GetTrackedAbilityImpact(activator);
-            trackedImpact.TriggeringWeaponDamage = GetIsObjectValid(triggeringWeapon)
+            trackedImpact.TriggeringWeaponDamage = triggeringWeaponDamage ?? (GetIsObjectValid(triggeringWeapon)
                 ? WeaponDamage.GetEffectiveDMG(activator, triggeringWeapon)
-                : trackedImpact.TriggeringWeaponDamage;
-            if (GetIsObjectValid(triggeringWeapon))
-                trackedImpact.TriggeringWeaponDamageType = WeaponDamage.GetDamageType(triggeringWeapon);
+                : trackedImpact.TriggeringWeaponDamage);
+            if (triggeringWeaponDamageType.HasValue || GetIsObjectValid(triggeringWeapon))
+                trackedImpact.TriggeringWeaponDamageType = triggeringWeaponDamageType ?? WeaponDamage.GetDamageType(triggeringWeapon);
             trackedImpact.ResolveDamageBonuses = () =>
             {
                 var abilitySkillType = Combat.GetAbilitySkillType(activator, ability);
@@ -869,8 +871,11 @@ namespace SWLOR.Game.Server.Service
         [NWNEventHandler(ScriptName.OnItemHit)]
         public static void AddLeadershipCombatPoint()
         {
-            var player = OBJECT_SELF;
-            var target = GetSpellTargetObject();
+            RecordLeadershipWeaponHit(OBJECT_SELF, GetSpellTargetObject());
+        }
+
+        public static void RecordLeadershipWeaponHit(uint player, uint target)
+        {
             if (!GetIsPC(player) || GetIsDM(player) || !GetIsObjectValid(player))
                 return;
 
@@ -2521,6 +2526,8 @@ namespace SWLOR.Game.Server.Service
             CombatDamageType damageType,
             TrackedAbilityImpact trackedImpact)
         {
+            if (WeaponImpactProfile.Get(activator) is { } explicitProfile)
+                return explicitProfile.Weapon.DamageType;
             var usesQueuedNaturalWeapon = UsesQueuedNaturalWeapon(trackedImpact, skillType);
             if (damageType != CombatDamageType.Physical ||
                 !Combat.IncludesCombatImpactWeaponDamage(skillType, usesQueuedNaturalWeapon))
@@ -2926,7 +2933,8 @@ namespace SWLOR.Game.Server.Service
             var perkType = trackedImpact?.Ability?.EffectiveLevelPerkType ?? PerkType.Invalid;
             var idleBonuses = Combat.GetIdleSkillAbilityBonuses(activator, skillType);
             var damage = baseDamage +
-                Combat.GetCombatImpactWeaponDamage(activator, skillType, usesQueuedNaturalWeapon, triggeringWeaponDamage: trackedImpact?.TriggeringWeaponDamage) +
+                (WeaponImpactProfile.Get(activator)?.Weapon.Damage ??
+                    Combat.GetCombatImpactWeaponDamage(activator, skillType, usesQueuedNaturalWeapon, triggeringWeaponDamage: trackedImpact?.TriggeringWeaponDamage)) +
                 Combat.GetAbilityDamageBonus(activator, skillType) +
                 Combat.GetAbilityDamageFlatAdjustment(activator, perkType, skillType) +
                 Combat.GetCostlyAbilityDamageBonus(activator, trackedImpact?.Ability, skillType) +
@@ -3026,7 +3034,8 @@ namespace SWLOR.Game.Server.Service
                     activator,
                     target,
                     trackedImpact?.Ability?.Name);
-                Combat.ApplyCriticalHitEffects(
+                if (WeaponImpactProfile.Get(activator)?.Activation.TryCriticalNotification() != false)
+                    Combat.ApplyCriticalHitEffects(
                     activator,
                     target,
                     calculatedDamage,
@@ -3586,8 +3595,16 @@ namespace SWLOR.Game.Server.Service
 
             public AbilityDetail Ability { get; }
             public AbilityImpactVisualEffects VisualEffects { get; }
-            public int? TriggeringWeaponDamage { get; set; }
-            public CombatDamageType? TriggeringWeaponDamageType { get; set; }
+            public int? TriggeringWeaponDamage
+            {
+                get => Summary.TriggeringWeaponDamage;
+                set => Summary.TriggeringWeaponDamage = value;
+            }
+            public CombatDamageType? TriggeringWeaponDamageType
+            {
+                get => Summary.TriggeringWeaponDamageType;
+                set => Summary.TriggeringWeaponDamageType = value;
+            }
             // Delayed shapes share the original tracker until a rider actually needs cast state.
             public TrackedAbilityImpact SequenceOwner { get; set; }
             public AbilityImpactSequence Sequence => _sequence ??= SequenceOwner?.Sequence ?? new AbilityImpactSequence();

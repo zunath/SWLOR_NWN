@@ -96,7 +96,7 @@ namespace SWLOR.Game.Server.Feature
             // The unequip event doesn't fire if an item is being swapped out.
             // If there's an item in the slot, run the stat removals first.
             var existingItemInSlot = GetItemInSlot(slot, creature);
-            if (GetIsObjectValid(existingItemInSlot))
+            if (GetIsObjectValid(existingItemInSlot) && GetBaseItemType(existingItemInSlot) != BaseItem.CompanionPistol)
             {
                 for (var ip = GetFirstItemProperty(existingItemInSlot); GetIsItemPropertyValid(ip); ip = GetNextItemProperty(existingItemInSlot))
                 {
@@ -106,6 +106,8 @@ namespace SWLOR.Game.Server.Feature
                 }
             }
 
+            // Simulated weapon properties are read from a validated hand profile, never persisted as global stats.
+            if (GetBaseItemType(item) == BaseItem.CompanionPistol) return;
             for (var ip = GetFirstItemProperty(item); GetIsItemPropertyValid(ip); ip = GetNextItemProperty(item))
             {
                 var type = GetItemPropertyType(ip);
@@ -125,6 +127,7 @@ namespace SWLOR.Game.Server.Feature
 
             var item = StringToObject(EventsPlugin.GetEventData("ITEM"));
 
+            if (GetBaseItemType(item) == BaseItem.CompanionPistol) return;
             for (var ip = GetFirstItemProperty(item); GetIsItemPropertyValid(ip); ip = GetNextItemProperty(item))
             {
                 var type = GetItemPropertyType(ip);

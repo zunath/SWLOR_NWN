@@ -739,6 +739,27 @@ namespace SWLOR.Game.Server.Service.PerkService
 
         Doublehand = 803,
 
-        // IDs 650 and 804+ are free.
+        PairedVolley = 804,
+        AlternatingFire = 805,
+        MatchedRhythm = 806,
+        FocusedBurst = 807,
+        BalancedGrip = 808,
+        ControlledBurst = 809,
+        AkimboStance = 810,
+        ConvergingFire = 811,
+        CoolUnderFire = 812,
+        TwinSuns = 813,
+        BlasterSlide = 814,
+        TwinPistolMomentum = 815,
+        PairedHandling = 816,
+        GrappleShot = 817,
+        ChangingAngles = 818,
+        PistolRush = 819,
+        CrossfireStance = 820,
+        TwinPistolFollowThrough = 821,
+        TwinPistolSecondWind = 822,
+        FinalSalvo = 823,
+
+        // IDs 650 and 824+ are free.
     }
 }

@@ -76,6 +76,7 @@ WEAPON_TABS = {
     "Katar",
     "Staff",
     "Pistol",
+    "Twin Pistol",
     "Rifle",
     "Throwing",
 }
@@ -88,6 +89,9 @@ BESPOKE_WEAPON_TABS = {
     # reflection) that this description-driven generator cannot express. Do not
     # regenerate it here or the hand-written mechanics are lost.
     "Lightsaber",
+    # Paired gun profiles, movement, Momentum and activation-level accounting are
+    # authored explicitly; description parsing cannot reproduce those contracts.
+    "Twin Pistol",
 }
 
 GENERATED_WEAPON_TABS = WEAPON_TABS - BESPOKE_WEAPON_TABS
@@ -108,6 +112,7 @@ SKILL_BY_TAB = {
     "Katar": "Katar",
     "Staff": "Staff",
     "Pistol": "Pistol",
+    "Twin Pistol": "TwinPistol",
     "Rifle": "Rifle",
     "Throwing": "Throwing",
 }
@@ -134,6 +139,8 @@ CATEGORY_BY_STYLE = {
     ("Staff", "Sentinel"): "StaffSentinel",
     ("Pistol", "Gambler"): "PistolGunslinger",
     ("Pistol", "Skirmisher"): "PistolSkirmisher",
+    ("Twin Pistol", "Barrage"): "TwinPistolBarrage",
+    ("Twin Pistol", "Crossfire"): "TwinPistolCrossfire",
     ("Rifle", "Marksman"): "RifleMarksman",
     ("Rifle", "Suppression"): "RiflePacification",
     ("Throwing", "Ordnance"): "ThrowingBombardier",
@@ -151,6 +158,7 @@ PERK_DEFINITION_BY_TAB = {
     "Katar": "KatarPerkDefinition",
     "Staff": "StaffPerkDefinition",
     "Pistol": "PistolPerkDefinition",
+    "Twin Pistol": "TwinPistolPerkDefinition",
     "Rifle": "RiflePerkDefinition",
     "Throwing": "ThrowingPerkDefinition",
 }
@@ -172,6 +180,8 @@ CAPSTONE_QUEST_REQUIREMENTS = {
     ("Staff", "Worldbreaker"): ("StaffCapstoneQuestDefinition", "WorldbreakerMasteryQuestId"),
     ("Pistol", "Last Word"): ("PistolCapstoneQuestDefinition", "LastWordMasteryQuestId"),
     ("Pistol", "Dead Man's Hand"): ("PistolCapstoneQuestDefinition", "DeadMansHandMasteryQuestId"),
+    ("Twin Pistol", "Twin Suns"): ("TwinPistolCapstoneQuestDefinition", "TwinSunsMasteryQuestId"),
+    ("Twin Pistol", "Final Salvo"): ("TwinPistolCapstoneQuestDefinition", "FinalSalvoMasteryQuestId"),
     ("Rifle", "Kill Box"): ("RifleCapstoneQuestDefinition", "KillBoxMasteryQuestId"),
     ("Rifle", "One Shot"): ("RifleCapstoneQuestDefinition", "OneShotMasteryQuestId"),
     ("Throwing", "Rain of Steel"): ("ThrowingCapstoneQuestDefinition", "RainOfSteelMasteryQuestId"),
@@ -189,6 +199,7 @@ ABILITY_FOLDER_BY_TAB = {
     "Katar": "Katar",
     "Staff": "Staff",
     "Pistol": "Pistol",
+    "Twin Pistol": "TwinPistol",
     "Rifle": "Rifle",
     "Throwing": "Throwing",
 }
@@ -260,7 +271,7 @@ EXPLICIT_ICON_RESREFS = {
     "VolatileCompound2": "ife_volcomp2",
 }
 
-RANGED_COMBAT_IMPACT_SKILLS = {"Pistol", "Rifle", "Throwing"}
+RANGED_COMBAT_IMPACT_SKILLS = {"Pistol", "TwinPistol", "Rifle", "Throwing"}
 
 # Scripted impacts use individual motions independently of their damage calculation.
 # Queued ranged attacks retain native firing; queued melee uses the swing binding.
@@ -281,6 +292,9 @@ def authored_animation_builder_lines(skill, row, hostile):
 
 
 PERK_BASE_ID_ALIASES = {
+    ("Twin Pistol", "Momentum"): "TwinPistolMomentum",
+    ("Twin Pistol", "Follow Through"): "TwinPistolFollowThrough",
+    ("Twin Pistol", "Second Wind"): "TwinPistolSecondWind",
     ("Katar", "Steel Shoulder"): "TwinGuardStance",
     ("Katar", "Tag In"): "TwinIntercept",
     ("Lightsaber", "Force Link"): "SaberForceLink",
@@ -288,6 +302,7 @@ PERK_BASE_ID_ALIASES = {
 
 IMPACT_ANIMATION_BY_SKILL = {
     "Pistol": "PointPistol",
+    "TwinPistol": "DoubleShot",
     "Rifle": "PointPistol",
     "Throwing": "ThrowGrenade",
 }
@@ -299,6 +314,7 @@ IMPACT_ANIMATION_BY_PERK_BASE = {
 
 MAX_RANGE_BY_SKILL = {
     "Pistol": 25.0,
+    "TwinPistol": 25.0,
     "Rifle": 30.0,
     "Throwing": 20.0,
 }

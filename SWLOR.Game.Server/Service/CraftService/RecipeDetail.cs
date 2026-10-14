@@ -1,5 +1,7 @@
 using System.Collections.Generic;
+using System.Linq;
 using SWLOR.Game.Server.Service.SkillService;
+using SWLOR.NWN.API.NWScript.Enum.Item;
 
 namespace SWLOR.Game.Server.Service.CraftService
 {
@@ -19,6 +21,11 @@ namespace SWLOR.Game.Server.Service.CraftService
         public float ResearchCostModifier { get; set; }
         public bool IsItemIntendedForCrafting { get; set; }
         public List<string> EffectLines { get; set; }
+        public IReadOnlyCollection<EnhancementSubType> AllowedEnhancements { get; set; }
+        public IReadOnlyCollection<ItemPropertyType> AllowedOutputProperties { get; set; }
+
+        public bool AllowsEnhancement(EnhancementSubType type) => AllowedEnhancements == null || AllowedEnhancements.Contains(type);
+        public bool AllowsOutputProperty(ItemPropertyType type) => AllowedOutputProperties == null || AllowedOutputProperties.Contains(type);
 
         public RecipeDetail()
         {

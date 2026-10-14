@@ -496,6 +496,17 @@ namespace SWLOR.Game.Server.Service.SkillService
             false,
             false)]
         Arkanian = 50,
+
+        [Skill(SkillCategoryType.Combat,
+            "Twin Pistol",
+            50,
+            true,
+            "Ability to fight with a pistol and a companion pistol.",
+            true,
+            false,
+            false,
+            CombatPointCategoryType.Weapon)]
+        TwinPistol = 51,
     }
 
     public class SkillAttribute : Attribute

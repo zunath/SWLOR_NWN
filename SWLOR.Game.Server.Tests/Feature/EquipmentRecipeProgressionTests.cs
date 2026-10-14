@@ -24,7 +24,10 @@ public class EquipmentRecipeProgressionTests
     {
         var intermediate = Recipes.Values.Where(IsIntermediateEquipment).ToList();
 
-        intermediate.Count(recipe => recipe.Skill == SkillType.Smithery).Should().Be(156);
+        intermediate.Count(recipe => recipe.Skill == SkillType.Smithery).Should().Be(160);
+        intermediate.Where(recipe => recipe.Category == RecipeCategoryType.CompanionPistol)
+            .Select(recipe => recipe.Level).Should().BeEquivalentTo(new[] { 11, 21, 31, 41 },
+                "companion pistols fill the same four crafting progression gaps in their own weapon category");
         intermediate.Count(recipe => recipe.Skill == SkillType.Engineering).Should().Be(64);
     }
 

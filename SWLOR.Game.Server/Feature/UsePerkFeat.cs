@@ -10,6 +10,7 @@ using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.ActivityService;
 using SWLOR.Game.Server.Service.AnimationService;
 using SWLOR.Game.Server.Service.CompanionControlService;
+using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.LogService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
@@ -55,6 +56,8 @@ namespace SWLOR.Game.Server.Feature
             public int AttackIndex { get; init; }
             public uint Weapon { get; init; }
             public uint Projectile { get; init; } = OBJECT_INVALID;
+            public int? TriggeringWeaponDamage { get; init; }
+            public CombatDamageType? TriggeringWeaponDamageType { get; init; }
             public bool IsCurrentAttack { get; set; } = true;
         }
         private static readonly Dictionary<uint, QueuedWeaponAttackReservation> _queuedWeaponAttacks = new();
@@ -110,7 +113,7 @@ namespace SWLOR.Game.Server.Feature
         private static void ResumeAttack(uint activator, uint target, bool clearActions = true)
         {
             if (!GetIsObjectValid(activator) ||
-                GetCurrentHitPoints(activator) <= 0)
+                GetCurrentHitPoints(activator) <= 0 || WeaponRepositioning.IsMoving(activator))
             {
                 return;
             }
@@ -279,6 +282,10 @@ namespace SWLOR.Game.Server.Feature
                 ResumeAttack(activator, target, clearActions);
             });
         }
+
+        /// <summary>A completed relocation resumes its captured attack without clearing a newer player action.</summary>
+        public static void ResumeAttackAfterReposition(uint activator, uint target) =>
+            ResumeAttackAfterDelay(activator, target, .1f, clearActions: false);
 
         /// <summary>
         /// Breaks stealth and invisibility effects if the ability is configured to do so.
@@ -1006,11 +1013,17 @@ namespace SWLOR.Game.Server.Feature
         // Only the first landed roll may replace its auto-attack with the queued ability.
         public static void ReserveQueuedWeaponAbilityAttack(uint activator, int attackIndex, uint weapon)
         {
+            // Cross-trained abilities retain the real main-hand launcher even when
+            // the companion supplies the first landed roll. Freeze it before flight.
+            var paired = TwinPistolEquipment.IsActivePair(activator);
+            var damageWeapon = paired ? GetItemInSlot(InventorySlot.RightHand, activator) : weapon;
             _queuedWeaponAttacks.TryAdd(activator, new QueuedWeaponAttackReservation
             {
                 AttackIndex = attackIndex,
                 Weapon = weapon,
-                Projectile = GetAttackProjectile(activator, weapon)
+                Projectile = GetAttackProjectile(activator, weapon),
+                TriggeringWeaponDamage = paired ? WeaponDamage.GetEffectiveDMG(activator, damageWeapon) : null,
+                TriggeringWeaponDamageType = paired ? WeaponDamage.GetDamageType(damageWeapon) : null,
             });
         }
 
@@ -1293,12 +1306,15 @@ namespace SWLOR.Game.Server.Feature
         [NWNEventHandler(ScriptName.OnItemHit)]
         public static void ProcessQueuedWeaponAbility()
         {
-            var activator = OBJECT_SELF;
+            ResolveQueuedWeaponAbilityHit(OBJECT_SELF, GetSpellTargetObject(), GetSpellCastItem());
+        }
+
+        /// <summary>Shared native/scripted weapon-hit entry point; the reserved launcher owns the ability.</summary>
+        public static void ResolveQueuedWeaponAbilityHit(uint activator, uint target, uint item)
+        {
             if (!GetIsObjectValid(activator)) return;
 
-            var target = GetSpellTargetObject();
             var targetLocation = GetLocation(target);
-            var item = GetSpellCastItem();
 
             if (_queuedWeaponAttacks.TryGetValue(activator, out var reservation))
             {
@@ -1327,7 +1343,9 @@ namespace SWLOR.Game.Server.Feature
             var impactEnded = false;
             try
             {
-                Ability.BeginAbilityImpact(activator, abilityDetail, triggeringWeapon: item);
+                Ability.BeginAbilityImpact(activator, abilityDetail, triggeringWeapon: item,
+                    triggeringWeaponDamage: reservation?.TriggeringWeaponDamage,
+                    triggeringWeaponDamageType: reservation?.TriggeringWeaponDamageType);
                 abilityDetail.ImpactAction?.Invoke(activator, target, activeAbilityEffectivePerkLevel, targetLocation);
                 var summary = Ability.EndAbilityImpact(activator);
                 impactEnded = true;

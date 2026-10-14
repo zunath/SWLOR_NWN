@@ -3458,5 +3458,16 @@ namespace SWLOR.Game.Server.Service.CraftService
         SongDiscStormtroopers = 6275,
         SongDiscThemeLando = 6276,
         SongDiscLandoCalrissian = 6277,
+        BasicCompanionPistol = 6278,
+        FieldCompanionPistol = 6279,
+        TitanCompanionPistol = 6280,
+        SithCompanionPistol = 6281,
+        VeteranCompanionPistol = 6282,
+        DeltaCompanionPistol = 6283,
+        PrimeCompanionPistol = 6284,
+        ProtoCompanionPistol = 6285,
+        AscendantCompanionPistol = 6286,
+        OphidianCompanionPistol = 6287,
+        ChiroCompanionPistol = 6288,
     }
 }

@@ -99,14 +99,35 @@ public class CharacterSheetCombatUpgradeTests
         viewModel.Should().Contain("public int ForceAccuracy");
         viewModel.Should().Contain("WeaponAccuracy = Stat.GetAccuracy(_target, mainHand, accuracyStatOverride, SkillType.Invalid);");
         viewModel.Should().Contain("public string OffHandAccuracy");
-        viewModel.Should().Contain("OffHandAccuracy = GetIsObjectValid(offhandAttackWeapon) && Item.IsAttackWeaponType(GetBaseItemType(offhandAttackWeapon))");
-        viewModel.Replace("\r\n", "\n").Should().Contain("? Stat.GetAccuracy(_target, offhandAttackWeapon, AbilityType.Invalid, SkillType.Invalid).ToString()\n                : \"-\";", "an empty off-hand or shield must display a dash");
+        viewModel.Should().Contain("var hasOffhandAttack = GetIsObjectValid(offhandAttackWeapon) && Item.IsAttackWeaponType(GetBaseItemType(offhandAttackWeapon))");
+        viewModel.Should().Contain("OffHandAccuracy = hasOffhandAttack ? offhandAccuracy.ToString() : \"-\";", "an empty off-hand, inactive companion or shield must display a dash");
         viewModel.Should().Contain("ignoreWeaponAccuracyStatOverride: true");
         definition.Should().Contain("\"TYPE\", 90f, \"Resistance family.\"");
         definition.Should().Contain("model => model.ResistanceNames");
         definition.Should().Contain("model => model.ResistanceScores");
         definition.Should().Contain("model => model.ResistanceDamageTaken");
         definition.Should().Contain("model => model.ResistanceStatusDurations");
+    }
+
+    [Test]
+    public void CrossSkillPreview_ReadsEachHandsOrdinaryProfileWithoutConsumingCombatState()
+    {
+        var source = File.ReadAllText(Path.Combine(FindRepositoryRoot().FullName, "SWLOR.Game.Server", "Feature",
+            "GuiDefinition", "ViewModel", "CharacterSheetViewModel.cs"));
+        var refresh = ExtractMethod(source, "private void RefreshEquipmentStats()");
+        refresh.Should().Contain("PairedRangedTraits.GetOrdinaryAccuracy(_target, companion: false)");
+        refresh.Should().Contain("PairedRangedTraits.GetOrdinaryAccuracy(_target, companion: true)");
+        refresh.Should().Contain("GetEquipmentDamageAbility(_target, item)");
+        refresh.Should().Contain("PairedRangedTraits.GetOrdinaryDamagePercentAdjustment(_target, GetAttackTarget(_target))");
+        refresh.Should().Contain("Combat.ApplyOrdinaryAttackDamageMultiplier(_target, min)");
+        refresh.Should().Contain("Combat.ApplyOrdinaryAttackDamageMultiplier(_target, max)");
+        refresh.Should().Contain("StatType.OrdinaryAttackDamagePercentAdjustment");
+        refresh.Should().NotContain("if (skill == SkillType.TwinPistol)\n                {", "ordinary trait bonuses must apply across weapon skills");
+        refresh.Should().NotContain("CaptureOrdinary", "opening the sheet cannot capture or commit an attack");
+        refresh.Should().NotContain("RecordOrdinary");
+        refresh.Should().NotContain("Consume");
+        ExtractMethod(source, "private static AbilityType GetEquipmentDamageAbility(")
+            .Should().Contain("ItemPropertyType.DamageStat");
     }
 
     [Test]

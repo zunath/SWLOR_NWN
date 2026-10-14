@@ -806,7 +806,7 @@ namespace SWLOR.Game.Server.Service
             for (var index = 0; index < NumberOfInventorySlots; index++)
             {
                 var item = GetItemInSlot((InventorySlot)index, creature);
-                if (!GetIsObjectValid(item))
+                if (!GetIsObjectValid(item) || GetBaseItemType(item) == BaseItem.CompanionPistol)
                     continue;
 
                 for (var ip = GetFirstItemProperty(item); GetIsItemPropertyValid(ip); ip = GetNextItemProperty(item))
@@ -1094,7 +1094,8 @@ namespace SWLOR.Game.Server.Service
             return ApplyPostAttackStatusModifiers(creature, attack, skillType);
         }
 
-        public static int GetAttackNative(CNWSCreature creature, BaseItem itemType, AbilityType statOverride = AbilityType.Invalid, bool useForceAttack = false)
+        public static int GetAttackNative(CNWSCreature creature, BaseItem itemType, AbilityType statOverride = AbilityType.Invalid,
+            bool useForceAttack = false, SkillType skillOverride = SkillType.Invalid)
         {
             var attackBonus = 0;
             var skillLevel = 0;
@@ -1102,7 +1103,12 @@ namespace SWLOR.Game.Server.Service
                 ? statOverride
                 : Combat.GetWeaponDamageAbilityType(creature.m_idSelf, itemType);
             var stat = GetStatValueNative(creature, statType);
-            var skillType = Skill.GetSkillTypeByBaseItem(itemType);
+            var skillType = skillOverride != SkillType.Invalid ? skillOverride :
+                TwinPistolEquipment.IsActivePair(creature.m_idSelf)
+                    ? TwinPistolEquipment.ResolveSkill(itemType,
+                        GetBaseItemType(GetItemInSlot(InventorySlot.RightHand, creature.m_idSelf)),
+                        GetBaseItemType(GetItemInSlot(InventorySlot.LeftHand, creature.m_idSelf)))
+                    : Skill.GetSkillTypeByBaseItem(itemType);
 
             // Force-typed attacks (e.g. Imbuement Stance retyping a weapon swing to Force) use the
             // wearer's Force Attack in place of physical Attack so the attack side matches the Force
@@ -1386,7 +1392,7 @@ namespace SWLOR.Game.Server.Service
                 Combat.GetWeaponAccuracyAbilityType(creature, baseItemType) :
                 statOverride;
             var stat = statType == AbilityType.Invalid ? 0 : GetAbilityScore(creature, statType);
-            var skillType = skillOverride == SkillType.Invalid ? Skill.GetSkillTypeByBaseItem(baseItemType) : skillOverride;
+            var skillType = skillOverride == SkillType.Invalid ? Skill.GetWeaponSkill(creature, weapon) : skillOverride;
             var skillLevel = 0;
 
 
@@ -1475,7 +1481,8 @@ namespace SWLOR.Game.Server.Service
                 : statOverride == AbilityType.Invalid
                     ? Combat.GetWeaponAccuracyAbilityType(creature.m_idSelf, baseItemType)
                     : statOverride;
-            var skillType = skillOverride != SkillType.Invalid ? skillOverride : Skill.GetSkillTypeByBaseItem(baseItemType);
+            var skillType = skillOverride != SkillType.Invalid ? skillOverride :
+                weapon == null ? SkillType.Invalid : Skill.GetWeaponSkill(creature.m_idSelf, weapon.m_idSelf);
             var stat = GetStatValueNative(creature, statType);
             var skillLevel = 0;
 
@@ -2017,7 +2024,7 @@ namespace SWLOR.Game.Server.Service
         {
             var item = creature.m_pInventory.GetItemInSlot((uint)slot);
             return item != null &&
-                   Skill.GetSkillTypeByBaseItem((BaseItem)item.m_nBaseItem) != SkillType.Invalid;
+                   Skill.GetWeaponSkill(creature.m_idSelf, item.m_idSelf) != SkillType.Invalid;
         }
 
         private static bool HasWeaponEquippedForWeaponDeflection(uint creature)
@@ -2030,7 +2037,7 @@ namespace SWLOR.Game.Server.Service
         {
             var item = GetItemInSlot(slot, creature);
             return GetIsObjectValid(item) &&
-                   Skill.GetSkillTypeByBaseItem(GetBaseItemType(item)) != SkillType.Invalid;
+                   Skill.GetWeaponSkill(creature, item) != SkillType.Invalid;
         }
 
         private static SkillType GetMainHandSkillTypeNative(CNWSCreature creature)
@@ -2039,7 +2046,7 @@ namespace SWLOR.Game.Server.Service
             if (rightHandItem == null)
                 return SkillType.Invalid;
 
-            return Skill.GetSkillTypeByBaseItem((BaseItem)rightHandItem.m_nBaseItem);
+            return Skill.GetWeaponSkill(creature.m_idSelf, rightHandItem.m_idSelf);
         }
 
         private static SkillType GetSkillTypeFromStat(int value)

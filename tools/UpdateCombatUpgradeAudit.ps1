@@ -941,7 +941,7 @@ foreach ($row in $manifest) {
     $cooldownSeconds = Convert-CooldownToSeconds $row.CooldownTime
     $hasDetectedRecast = $abilityFile -and (
         $abilityFile.Content -match "HasRecastDelay" -or
-        $abilityFile.Content -match "Configure(?:Hostile|SupportStatus|Cleanse|Heal|Revive)\("
+        $abilityFile.Content -match "Configure(?:Hostile|SupportStatus|Cleanse|Heal|Revive|PairAttack|PairStance)\("
     )
     if ($isActiveType -and $null -ne $cooldownSeconds -and $abilityFile -and !$hasDetectedRecast) {
         Add-AuditRow -Rows $auditRows -AuditType "MissingAbilityRecast" -BibleRow $row -File $abilityFile.File -Details "Expected cooldown: $($row.CooldownTime)"

@@ -479,6 +479,20 @@ namespace SWLOR.NWN.API.NWScript.Enum
         BloodFrenzyStatusEffect = 476,
         SoulAscensionBurstStatusEffect = 477,
         ChallengeEnmityStatusEffect = 478,
+        AkimboStanceStatusEffect = 479,
+        CrossfireStanceStatusEffect = 480,
+        MomentumStatusEffect1 = 481,
+        MomentumStatusEffect2 = 482,
+        MomentumStatusEffect3 = 483,
+        ChangingAnglesStatusEffect = 484,
+        ConvergingFireStatusEffect = 485,
+        CoolUnderFireStatusEffect = 486,
+        TwinSunsStatusEffect = 487,
+        OrdinaryAttackHasteStatusEffect1 = 488,
+        OrdinaryAttackHasteStatusEffect2 = 489,
+        OrdinaryAttackHasteStatusEffect3 = 490,
+        OrdinaryAttackHasteStatusEffect4 = 491,
+        OrdinaryAttackHasteStatusEffect5 = 492,
         // End custom status effect icons
     }
 }

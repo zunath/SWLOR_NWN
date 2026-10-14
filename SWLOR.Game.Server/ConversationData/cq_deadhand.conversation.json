@@ -224,7 +224,12 @@
         }
       ],
       "OnEnterActions": [],
-      "Choices": []
+      "Choices": [
+        {
+          "ChoiceId": "twin-open",
+          "Conditions": []
+        }
+      ]
     },
     "entry-00001": {
       "Id": "entry-00001",
@@ -245,7 +250,12 @@
         }
       ],
       "OnEnterActions": [],
-      "Choices": []
+      "Choices": [
+        {
+          "ChoiceId": "twin-open",
+          "Conditions": []
+        }
+      ]
     },
     "entry-00002": {
       "Id": "entry-00002",
@@ -285,6 +295,10 @@
         },
         {
           "ChoiceId": "reply-00005",
+          "Conditions": []
+        },
+        {
+          "ChoiceId": "twin-open",
           "Conditions": []
         }
       ]
@@ -407,7 +421,12 @@
         }
       ],
       "OnEnterActions": [],
-      "Choices": []
+      "Choices": [
+        {
+          "ChoiceId": "twin-open",
+          "Conditions": []
+        }
+      ]
     },
     "entry-00008": {
       "Id": "entry-00008",
@@ -431,6 +450,10 @@
       "Choices": [
         {
           "ChoiceId": "reply-00006",
+          "Conditions": []
+        },
+        {
+          "ChoiceId": "twin-open",
           "Conditions": []
         }
       ]
@@ -494,6 +517,10 @@
         },
         {
           "ChoiceId": "reply-00012",
+          "Conditions": []
+        },
+        {
+          "ChoiceId": "twin-open",
           "Conditions": []
         }
       ]
@@ -616,7 +643,12 @@
         }
       ],
       "OnEnterActions": [],
-      "Choices": []
+      "Choices": [
+        {
+          "ChoiceId": "twin-open",
+          "Conditions": []
+        }
+      ]
     },
     "entry-00016": {
       "Id": "entry-00016",
@@ -640,6 +672,10 @@
       "Choices": [
         {
           "ChoiceId": "reply-00013",
+          "Conditions": []
+        },
+        {
+          "ChoiceId": "twin-open",
           "Conditions": []
         }
       ]
@@ -703,6 +739,10 @@
         },
         {
           "ChoiceId": "reply-00019",
+          "Conditions": []
+        },
+        {
+          "ChoiceId": "twin-open",
           "Conditions": []
         }
       ]
@@ -825,7 +865,12 @@
         }
       ],
       "OnEnterActions": [],
-      "Choices": []
+      "Choices": [
+        {
+          "ChoiceId": "twin-open",
+          "Conditions": []
+        }
+      ]
     },
     "entry-00024": {
       "Id": "entry-00024",
@@ -849,6 +894,10 @@
       "Choices": [
         {
           "ChoiceId": "reply-00020",
+          "Conditions": []
+        },
+        {
+          "ChoiceId": "twin-open",
           "Conditions": []
         }
       ]
@@ -912,6 +961,10 @@
         },
         {
           "ChoiceId": "reply-00026",
+          "Conditions": []
+        },
+        {
+          "ChoiceId": "twin-open",
           "Conditions": []
         }
       ]
@@ -1034,7 +1087,12 @@
         }
       ],
       "OnEnterActions": [],
-      "Choices": []
+      "Choices": [
+        {
+          "ChoiceId": "twin-open",
+          "Conditions": []
+        }
+      ]
     },
     "entry-00032": {
       "Id": "entry-00032",
@@ -1058,6 +1116,10 @@
       "Choices": [
         {
           "ChoiceId": "reply-00027",
+          "Conditions": []
+        },
+        {
+          "ChoiceId": "twin-open",
           "Conditions": []
         }
       ]
@@ -1121,6 +1183,10 @@
         },
         {
           "ChoiceId": "reply-00033",
+          "Conditions": []
+        },
+        {
+          "ChoiceId": "twin-open",
           "Conditions": []
         }
       ]
@@ -1243,7 +1309,12 @@
         }
       ],
       "OnEnterActions": [],
-      "Choices": []
+      "Choices": [
+        {
+          "ChoiceId": "twin-open",
+          "Conditions": []
+        }
+      ]
     },
     "entry-00040": {
       "Id": "entry-00040",
@@ -1268,6 +1339,10 @@
         {
           "ChoiceId": "reply-00034",
           "Conditions": []
+        },
+        {
+          "ChoiceId": "twin-open",
+          "Conditions": []
         }
       ]
     },
@@ -1291,6 +1366,288 @@
       ],
       "OnEnterActions": [],
       "Choices": []
+    },
+    "twin-offer": {
+      "Id": "twin-offer",
+      "SpeakerName": "",
+      "SpeakerTag": "",
+      "PortraitResref": "",
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Text": [
+        {
+          "Text": "Two guns and nowhere to stand. Now that's an interesting hand. Want to learn how to leave yourself one last open lane? Here's a canyon range key. Against the range enemies, land Blaster Slide after moving at least two meters, then land Pistol Rush after another two meters. Land Grapple Shot spending at least two Momentum before eighteen seconds pass. You can reverse the first two moves. Empty dashes don't buy you anything.",
+          "Style": 0,
+          "Color": null
+        }
+      ],
+      "OnEnterActions": [],
+      "Choices": [
+        {
+          "ChoiceId": "twin-accept",
+          "Conditions": []
+        },
+        {
+          "ChoiceId": "twin-why",
+          "Conditions": []
+        },
+        {
+          "ChoiceId": "twin-advice",
+          "Conditions": []
+        },
+        {
+          "ChoiceId": "twin-directions",
+          "Conditions": []
+        },
+        {
+          "ChoiceId": "twin-leave",
+          "Conditions": []
+        }
+      ]
+    },
+    "twin-why": {
+      "Id": "twin-why",
+      "SpeakerName": "",
+      "SpeakerTag": "",
+      "PortraitResref": "",
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Text": [
+        {
+          "Text": "People watch the guns. I watch the exits. Slide makes room, Rush changes the table, Grapple cashes in. Final Salvo is knowing when you've moved enough and it's time to finish.",
+          "Style": 0,
+          "Color": null
+        }
+      ],
+      "OnEnterActions": [],
+      "Choices": [
+        {
+          "ChoiceId": "twin-accept",
+          "Conditions": []
+        },
+        {
+          "ChoiceId": "twin-advice",
+          "Conditions": []
+        },
+        {
+          "ChoiceId": "twin-directions",
+          "Conditions": []
+        },
+        {
+          "ChoiceId": "twin-leave",
+          "Conditions": []
+        }
+      ]
+    },
+    "twin-advice": {
+      "Id": "twin-advice",
+      "SpeakerName": "",
+      "SpeakerTag": "",
+      "PortraitResref": "",
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Text": [
+        {
+          "Text": "You'll need Blaster Slide, Pistol Rush, Grapple Shot and Momentum. Each movement builder must actually move you at least two meters and land a hit. Second Wind can help in a fight, but it can't replace either part of this trial.",
+          "Style": 0,
+          "Color": null
+        }
+      ],
+      "OnEnterActions": [],
+      "Choices": [
+        {
+          "ChoiceId": "twin-open",
+          "Conditions": []
+        },
+        {
+          "ChoiceId": "twin-leave",
+          "Conditions": []
+        }
+      ]
+    },
+    "twin-directions": {
+      "Id": "twin-directions",
+      "SpeakerName": "",
+      "SpeakerTag": "",
+      "PortraitResref": "",
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Text": [
+        {
+          "Text": "The Canyon Range is behind the sealed cliff door in the Rocky Pass, just south of the trail from Anchorhead's Southern Entrance. Use the key. Pick an open lane; a wall isn't an invitation.",
+          "Style": 0,
+          "Color": null
+        }
+      ],
+      "OnEnterActions": [],
+      "Choices": [
+        {
+          "ChoiceId": "twin-open",
+          "Conditions": []
+        },
+        {
+          "ChoiceId": "twin-leave",
+          "Conditions": []
+        }
+      ]
+    },
+    "twin-accepted": {
+      "Id": "twin-accepted",
+      "SpeakerName": "",
+      "SpeakerTag": "",
+      "PortraitResref": "",
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Text": [
+        {
+          "Text": "Take the key. Make two good moves, then spend what they earned. I'll read the route trace when you get back.",
+          "Style": 0,
+          "Color": null
+        }
+      ],
+      "OnEnterActions": [],
+      "Choices": [
+        {
+          "ChoiceId": "twin-leave",
+          "Conditions": []
+        }
+      ]
+    },
+    "twin-reminder": {
+      "Id": "twin-reminder",
+      "SpeakerName": "",
+      "SpeakerTag": "",
+      "PortraitResref": "",
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Text": [
+        {
+          "Text": "No completed route trace yet. Land the moving Slide and Rush, then a Grapple Shot spending at least two Momentum, all within eighteen seconds.",
+          "Style": 0,
+          "Color": null
+        }
+      ],
+      "OnEnterActions": [],
+      "Choices": [
+        {
+          "ChoiceId": "twin-advice",
+          "Conditions": []
+        },
+        {
+          "ChoiceId": "twin-directions",
+          "Conditions": []
+        },
+        {
+          "ChoiceId": "twin-leave",
+          "Conditions": []
+        }
+      ]
+    },
+    "twin-ready": {
+      "Id": "twin-ready",
+      "SpeakerName": "",
+      "SpeakerTag": "",
+      "PortraitResref": "",
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Text": [
+        {
+          "Text": "Two clean moves and a paid-in-full finish. That's a route worth keeping. Shall we settle?",
+          "Style": 0,
+          "Color": null
+        }
+      ],
+      "OnEnterActions": [],
+      "Choices": [
+        {
+          "ChoiceId": "twin-turn-in",
+          "Conditions": []
+        },
+        {
+          "ChoiceId": "twin-leave",
+          "Conditions": []
+        }
+      ]
+    },
+    "twin-completed": {
+      "Id": "twin-completed",
+      "SpeakerName": "",
+      "SpeakerTag": "",
+      "PortraitResref": "",
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Text": [
+        {
+          "Text": "You can study Final Salvo now. It still costs training points. One good lesson doesn't make the practice free.",
+          "Style": 0,
+          "Color": null
+        }
+      ],
+      "OnEnterActions": [],
+      "Choices": [
+        {
+          "ChoiceId": "twin-leave",
+          "Conditions": []
+        }
+      ]
+    },
+    "twin-locked": {
+      "Id": "twin-locked",
+      "SpeakerName": "",
+      "SpeakerTag": "",
+      "PortraitResref": "",
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Text": [
+        {
+          "Text": "Rank fifty in Twin Pistol is the buy-in. Until then, keep learning what both guns can do.",
+          "Style": 0,
+          "Color": null
+        }
+      ],
+      "OnEnterActions": [],
+      "Choices": [
+        {
+          "ChoiceId": "twin-leave",
+          "Conditions": []
+        }
+      ]
     }
   },
   "Choices": {
@@ -2142,6 +2499,225 @@
         }
       ],
       "EndsConversation": false,
+      "IsAutomatic": false
+    },
+    "twin-open": {
+      "Id": "twin-open",
+      "Text": {
+        "Text": "What can you teach me about Twin Pistol?",
+        "Style": 4,
+        "Color": null
+      },
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Actions": [],
+      "Next": [
+        {
+          "TargetNodeId": "twin-completed",
+          "Conditions": [
+            {
+              "Key": "condition-completed-quest",
+              "Arguments": [
+                "final_salvo_mastery"
+              ],
+              "IsNegated": false
+            }
+          ]
+        },
+        {
+          "TargetNodeId": "twin-ready",
+          "Conditions": [
+            {
+              "Key": "condition-on-quest-state",
+              "Arguments": [
+                "final_salvo_mastery",
+                "2"
+              ],
+              "IsNegated": false
+            }
+          ]
+        },
+        {
+          "TargetNodeId": "twin-reminder",
+          "Conditions": [
+            {
+              "Key": "condition-has-quest",
+              "Arguments": [
+                "final_salvo_mastery"
+              ],
+              "IsNegated": false
+            }
+          ]
+        },
+        {
+          "TargetNodeId": "twin-offer",
+          "Conditions": [
+            {
+              "Key": "condition-can-accept-quest",
+              "Arguments": [
+                "final_salvo_mastery"
+              ],
+              "IsNegated": false
+            }
+          ]
+        },
+        {
+          "TargetNodeId": "twin-locked",
+          "Conditions": []
+        }
+      ],
+      "EndsConversation": false,
+      "IsAutomatic": false
+    },
+    "twin-accept": {
+      "Id": "twin-accept",
+      "Text": {
+        "Text": "Deal me an open lane.",
+        "Style": 4,
+        "Color": null
+      },
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Actions": [
+        {
+          "Key": "action-accept-quest",
+          "Arguments": [
+            "final_salvo_mastery"
+          ]
+        }
+      ],
+      "Next": [
+        {
+          "TargetNodeId": "twin-accepted",
+          "Conditions": []
+        }
+      ],
+      "EndsConversation": false,
+      "IsAutomatic": false
+    },
+    "twin-why": {
+      "Id": "twin-why",
+      "Text": {
+        "Text": "Why move before the finish?",
+        "Style": 4,
+        "Color": null
+      },
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Actions": [],
+      "Next": [
+        {
+          "TargetNodeId": "twin-why",
+          "Conditions": []
+        }
+      ],
+      "EndsConversation": false,
+      "IsAutomatic": false
+    },
+    "twin-advice": {
+      "Id": "twin-advice",
+      "Text": {
+        "Text": "What makes a clean attempt?",
+        "Style": 4,
+        "Color": null
+      },
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Actions": [],
+      "Next": [
+        {
+          "TargetNodeId": "twin-advice",
+          "Conditions": []
+        }
+      ],
+      "EndsConversation": false,
+      "IsAutomatic": false
+    },
+    "twin-directions": {
+      "Id": "twin-directions",
+      "Text": {
+        "Text": "Where is the range?",
+        "Style": 4,
+        "Color": null
+      },
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Actions": [],
+      "Next": [
+        {
+          "TargetNodeId": "twin-directions",
+          "Conditions": []
+        }
+      ],
+      "EndsConversation": false,
+      "IsAutomatic": false
+    },
+    "twin-turn-in": {
+      "Id": "twin-turn-in",
+      "Text": {
+        "Text": "Two moves. One finish.",
+        "Style": 4,
+        "Color": null
+      },
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Actions": [
+        {
+          "Key": "action-advance-quest",
+          "Arguments": [
+            "final_salvo_mastery"
+          ]
+        }
+      ],
+      "Next": [
+        {
+          "TargetNodeId": "twin-completed",
+          "Conditions": []
+        }
+      ],
+      "EndsConversation": false,
+      "IsAutomatic": false
+    },
+    "twin-leave": {
+      "Id": "twin-leave",
+      "Text": {
+        "Text": "I'll keep practicing.",
+        "Style": 4,
+        "Color": null
+      },
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Actions": [],
+      "Next": [],
+      "EndsConversation": true,
       "IsAutomatic": false
     }
   },

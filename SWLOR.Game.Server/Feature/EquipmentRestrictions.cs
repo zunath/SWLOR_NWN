@@ -36,7 +36,7 @@ namespace SWLOR.Game.Server.Feature
                 (GetIsPC(creature) || Droid.IsDroid(creature)) &&
                 !GetIsDM(creature) &&
                 !GetIsDMPossessed(creature);
-            var canUseItem = Item.CanEquip(creature, item);
+            var canUseItem = Item.CanEquip(creature, item, slot);
             var isRingSwappingPositions = IsRingSwappingPositions(creature, item, slot);
 
             if (isRestrictedActor)
@@ -84,7 +84,7 @@ namespace SWLOR.Game.Server.Feature
         /// <summary>
         /// Validates pistol hand placement independently of the engine's ranged weapon rules.
         /// Pistols are one-handed so that a shield can occupy the left hand, but players may
-        /// not place a pistol in that hand or pair one with any non-shield item.
+        /// not place a normal pistol in that hand. The companion is a separate, simulated profile.
         /// </summary>
         public static string GetPistolEquipmentError(
             BaseItem itemType,
@@ -96,8 +96,16 @@ namespace SWLOR.Game.Server.Feature
             if (itemType == BaseItem.OffHandPistol)
                 return "Legacy off-hand pistols cannot be equipped.";
 
+            var pairError = TwinPistolEquipment.GetPairCompatibilityError(
+                slot == InventorySlot.RightHand ? itemType : rightHandType,
+                slot == InventorySlot.LeftHand ? itemType : leftHandType);
+            if ((slot is InventorySlot.RightHand or InventorySlot.LeftHand) && !string.IsNullOrEmpty(pairError)) return pairError;
+
             if (!string.IsNullOrWhiteSpace(existingError))
                 return existingError;
+
+            if (itemType == BaseItem.CompanionPistol)
+                return slot == InventorySlot.LeftHand ? string.Empty : "Companion pistols may only be equipped in the left hand.";
 
             var isPistol = Item.PistolBaseItemTypes.Contains(itemType);
 
@@ -106,17 +114,19 @@ namespace SWLOR.Game.Server.Feature
 
             if (isPistol &&
                 leftHandType.HasValue &&
+                leftHandType != BaseItem.CompanionPistol &&
                 !Item.ShieldBaseItemTypes.Contains(leftHandType.Value))
             {
-                return "Pistols may only be paired with a shield in the left hand.";
+                return "Pistols may only be paired with a shield or companion pistol in the left hand.";
             }
 
             if (slot == InventorySlot.LeftHand &&
                 rightHandType.HasValue &&
                 Item.PistolBaseItemTypes.Contains(rightHandType.Value) &&
+                itemType != BaseItem.CompanionPistol &&
                 !Item.ShieldBaseItemTypes.Contains(itemType))
             {
-                return "Pistols may only be paired with a shield in the left hand.";
+                return "Pistols may only be paired with a shield or companion pistol in the left hand.";
             }
 
             return string.Empty;
@@ -176,6 +186,7 @@ namespace SWLOR.Game.Server.Feature
             else if (Item.ShieldBaseItemTypes.Contains(itemType) ||
                      Item.OneHandedMeleeItemTypes.Contains(itemType) ||
                      Item.ThrowingWeaponBaseItemTypes.Contains(itemType) ||
+                     itemType == BaseItem.CompanionPistol ||
                      Item.PistolBaseItemTypes.Contains(itemType))
             {
                 if (Item.TwoHandedMeleeItemTypes.Contains(rightHandType) ||

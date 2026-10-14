@@ -3071,6 +3071,25 @@
                 "type": "word",
                 "value": 28
               }
+            },
+            {
+              "__struct_id": 72,
+              "Infinite": {
+                "type": "byte",
+                "value": 1
+              },
+              "InventoryRes": {
+                "type": "resref",
+                "value": "b_companion"
+              },
+              "Repos_PosX": {
+                "type": "word",
+                "value": 0
+              },
+              "Repos_Posy": {
+                "type": "word",
+                "value": 31
+              }
             }
           ]
         }

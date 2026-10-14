@@ -2,6 +2,7 @@ using System;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.LogService;
+using SWLOR.Game.Server.Service.AnimationService;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Item;
 using InventorySlot = SWLOR.NWN.API.NWScript.Enum.InventorySlot;
@@ -16,6 +17,7 @@ namespace SWLOR.Game.Server.Feature
     public static class PistolAnimationRemap
     {
         private const string PistolAnimationRemapActiveVariable = "PISTOL_ANIM_REMAP_ACTIVE";
+        private const string PairedPistolAnimationRemapActiveVariable = "PAIRED_PISTOL_ANIM_REMAP_ACTIVE";
         private const string ExplicitThrowSuspendCountVariable = "PISTOL_ANIM_THROW_SUSPEND_COUNT";
         private const string AnimationCallbackGenerationVariable = "PISTOL_ANIM_CALLBACK_GENERATION";
         private const float MinimumExplicitThrowRestoreDelaySeconds = 1.1f;
@@ -76,6 +78,13 @@ namespace SWLOR.Game.Server.Feature
         public static void OnWeaponProjectileCreated()
         {
             var attacker = OBJECT_SELF;
+            if (GetIsObjectValid(attacker) &&
+                GetLocalBool(attacker, PairedPistolAnimationRemapActiveVariable) &&
+                TwinPistolEquipment.IsActivePair(attacker))
+            {
+                AssignCommand(attacker, () => PlaySound(PistolShotSound));
+                return;
+            }
             if (!GetIsObjectValid(attacker) ||
                 !ShouldPlayRemappedPistolShotSound(
                     GetLocalBool(attacker, PistolAnimationRemapActiveVariable),
@@ -236,6 +245,22 @@ namespace SWLOR.Game.Server.Feature
 
             var shouldUseFormerAnimation = ShouldUseFormerPistolAttackAnimation(creature);
             var isRemapActive = GetLocalBool(creature, PistolAnimationRemapActiveVariable);
+            var isPairedRemapActive = GetLocalBool(creature, PairedPistolAnimationRemapActiveVariable);
+            if (TwinPistolEquipment.IsActivePair(creature))
+            {
+                Native.PairedRangedPresentation.Prepare(creature);
+                if (forceApply || !isPairedRemapActive)
+                    ReplaceObjectAnimation(creature, SlingAttackAnimation, AuthoredAnimation.TwinPistolCycle.Name);
+                DeleteLocalBool(creature, PistolAnimationRemapActiveVariable);
+                SetLocalBool(creature, PairedPistolAnimationRemapActiveVariable, true);
+                return;
+            }
+            Native.PairedRangedPresentation.Release(creature);
+            if (isPairedRemapActive)
+            {
+                ReplaceObjectAnimation(creature, SlingAttackAnimation);
+                DeleteLocalBool(creature, PairedPistolAnimationRemapActiveVariable);
+            }
 
             if (shouldUseFormerAnimation && (forceApply || !isRemapActive))
             {
@@ -291,7 +316,8 @@ namespace SWLOR.Game.Server.Feature
         private static bool SuspendForExplicitThrow(uint creature, Animation animation)
         {
             var isRemapActive = GetIsObjectValid(creature) &&
-                                GetLocalBool(creature, PistolAnimationRemapActiveVariable);
+                                (GetLocalBool(creature, PistolAnimationRemapActiveVariable) ||
+                                 GetLocalBool(creature, PairedPistolAnimationRemapActiveVariable));
             if (!ShouldSuspendForExplicitThrow(animation, isRemapActive))
                 return false;
 
@@ -322,6 +348,12 @@ namespace SWLOR.Game.Server.Feature
                 }
 
                 DeleteLocalInt(creature, ExplicitThrowSuspendCountVariable);
+                if (GetLocalBool(creature, PairedPistolAnimationRemapActiveVariable) &&
+                    TwinPistolEquipment.IsActivePair(creature))
+                {
+                    ReplaceObjectAnimation(creature, SlingAttackAnimation, AuthoredAnimation.TwinPistolCycle.Name);
+                    return;
+                }
                 if (GetLocalBool(creature, PistolAnimationRemapActiveVariable) &&
                     ShouldUseFormerPistolAttackAnimation(creature))
                 {

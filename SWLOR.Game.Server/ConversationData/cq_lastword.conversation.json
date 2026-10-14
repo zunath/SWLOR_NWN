@@ -224,7 +224,12 @@
         }
       ],
       "OnEnterActions": [],
-      "Choices": []
+      "Choices": [
+        {
+          "ChoiceId": "twin-open",
+          "Conditions": []
+        }
+      ]
     },
     "entry-00001": {
       "Id": "entry-00001",
@@ -245,7 +250,12 @@
         }
       ],
       "OnEnterActions": [],
-      "Choices": []
+      "Choices": [
+        {
+          "ChoiceId": "twin-open",
+          "Conditions": []
+        }
+      ]
     },
     "entry-00002": {
       "Id": "entry-00002",
@@ -285,6 +295,10 @@
         },
         {
           "ChoiceId": "reply-00005",
+          "Conditions": []
+        },
+        {
+          "ChoiceId": "twin-open",
           "Conditions": []
         }
       ]
@@ -407,7 +421,12 @@
         }
       ],
       "OnEnterActions": [],
-      "Choices": []
+      "Choices": [
+        {
+          "ChoiceId": "twin-open",
+          "Conditions": []
+        }
+      ]
     },
     "entry-00008": {
       "Id": "entry-00008",
@@ -431,6 +450,10 @@
       "Choices": [
         {
           "ChoiceId": "reply-00006",
+          "Conditions": []
+        },
+        {
+          "ChoiceId": "twin-open",
           "Conditions": []
         }
       ]
@@ -494,6 +517,10 @@
         },
         {
           "ChoiceId": "reply-00012",
+          "Conditions": []
+        },
+        {
+          "ChoiceId": "twin-open",
           "Conditions": []
         }
       ]
@@ -616,7 +643,12 @@
         }
       ],
       "OnEnterActions": [],
-      "Choices": []
+      "Choices": [
+        {
+          "ChoiceId": "twin-open",
+          "Conditions": []
+        }
+      ]
     },
     "entry-00016": {
       "Id": "entry-00016",
@@ -640,6 +672,10 @@
       "Choices": [
         {
           "ChoiceId": "reply-00013",
+          "Conditions": []
+        },
+        {
+          "ChoiceId": "twin-open",
           "Conditions": []
         }
       ]
@@ -703,6 +739,10 @@
         },
         {
           "ChoiceId": "reply-00019",
+          "Conditions": []
+        },
+        {
+          "ChoiceId": "twin-open",
           "Conditions": []
         }
       ]
@@ -825,7 +865,12 @@
         }
       ],
       "OnEnterActions": [],
-      "Choices": []
+      "Choices": [
+        {
+          "ChoiceId": "twin-open",
+          "Conditions": []
+        }
+      ]
     },
     "entry-00024": {
       "Id": "entry-00024",
@@ -849,6 +894,10 @@
       "Choices": [
         {
           "ChoiceId": "reply-00020",
+          "Conditions": []
+        },
+        {
+          "ChoiceId": "twin-open",
           "Conditions": []
         }
       ]
@@ -912,6 +961,10 @@
         },
         {
           "ChoiceId": "reply-00026",
+          "Conditions": []
+        },
+        {
+          "ChoiceId": "twin-open",
           "Conditions": []
         }
       ]
@@ -1034,7 +1087,12 @@
         }
       ],
       "OnEnterActions": [],
-      "Choices": []
+      "Choices": [
+        {
+          "ChoiceId": "twin-open",
+          "Conditions": []
+        }
+      ]
     },
     "entry-00032": {
       "Id": "entry-00032",
@@ -1058,6 +1116,10 @@
       "Choices": [
         {
           "ChoiceId": "reply-00027",
+          "Conditions": []
+        },
+        {
+          "ChoiceId": "twin-open",
           "Conditions": []
         }
       ]
@@ -1121,6 +1183,10 @@
         },
         {
           "ChoiceId": "reply-00033",
+          "Conditions": []
+        },
+        {
+          "ChoiceId": "twin-open",
           "Conditions": []
         }
       ]
@@ -1243,7 +1309,12 @@
         }
       ],
       "OnEnterActions": [],
-      "Choices": []
+      "Choices": [
+        {
+          "ChoiceId": "twin-open",
+          "Conditions": []
+        }
+      ]
     },
     "entry-00040": {
       "Id": "entry-00040",
@@ -1268,6 +1339,10 @@
         {
           "ChoiceId": "reply-00034",
           "Conditions": []
+        },
+        {
+          "ChoiceId": "twin-open",
+          "Conditions": []
         }
       ]
     },
@@ -1291,6 +1366,288 @@
       ],
       "OnEnterActions": [],
       "Choices": []
+    },
+    "twin-offer": {
+      "Id": "twin-offer",
+      "SpeakerName": "",
+      "SpeakerTag": "",
+      "PortraitResref": "",
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Text": [
+        {
+          "Text": "Two pistols? Most people just make twice the noise. Show me that each hand can hold its own rhythm, and we'll talk about Twin Suns. Take this canyon range key. At the Anchorhead Canyon Range, keep both guns on one hostile range enemy: twelve ordinary hits within thirty seconds, at least six from each gun. Abilities don't count. Change enemies or swap a gun and you start again.",
+          "Style": 0,
+          "Color": null
+        }
+      ],
+      "OnEnterActions": [],
+      "Choices": [
+        {
+          "ChoiceId": "twin-accept",
+          "Conditions": []
+        },
+        {
+          "ChoiceId": "twin-why",
+          "Conditions": []
+        },
+        {
+          "ChoiceId": "twin-advice",
+          "Conditions": []
+        },
+        {
+          "ChoiceId": "twin-directions",
+          "Conditions": []
+        },
+        {
+          "ChoiceId": "twin-leave",
+          "Conditions": []
+        }
+      ]
+    },
+    "twin-why": {
+      "Id": "twin-why",
+      "SpeakerName": "",
+      "SpeakerTag": "",
+      "PortraitResref": "",
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Text": [
+        {
+          "Text": "One steady horizon. That's the trick. Your strong hand can't drag the other along, and a fancy burst won't hide a weak rhythm. Keep both working when the target shoots back.",
+          "Style": 0,
+          "Color": null
+        }
+      ],
+      "OnEnterActions": [],
+      "Choices": [
+        {
+          "ChoiceId": "twin-accept",
+          "Conditions": []
+        },
+        {
+          "ChoiceId": "twin-advice",
+          "Conditions": []
+        },
+        {
+          "ChoiceId": "twin-directions",
+          "Conditions": []
+        },
+        {
+          "ChoiceId": "twin-leave",
+          "Conditions": []
+        }
+      ]
+    },
+    "twin-advice": {
+      "Id": "twin-advice",
+      "SpeakerName": "",
+      "SpeakerTag": "",
+      "PortraitResref": "",
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Text": [
+        {
+          "Text": "Choose a range enemy that can survive the exercise. Ordinary shots from both guns must land; misses use time but don't erase your hits. Stay on that enemy, and keep the pair equipped.",
+          "Style": 0,
+          "Color": null
+        }
+      ],
+      "OnEnterActions": [],
+      "Choices": [
+        {
+          "ChoiceId": "twin-open",
+          "Conditions": []
+        },
+        {
+          "ChoiceId": "twin-leave",
+          "Conditions": []
+        }
+      ]
+    },
+    "twin-directions": {
+      "Id": "twin-directions",
+      "SpeakerName": "",
+      "SpeakerTag": "",
+      "PortraitResref": "",
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Text": [
+        {
+          "Text": "From Anchorhead's Southern Entrance, take the west trail into the Rocky Pass. The sealed cliff door just south of the trail leads into the Canyon Range. The key opens it.",
+          "Style": 0,
+          "Color": null
+        }
+      ],
+      "OnEnterActions": [],
+      "Choices": [
+        {
+          "ChoiceId": "twin-open",
+          "Conditions": []
+        },
+        {
+          "ChoiceId": "twin-leave",
+          "Conditions": []
+        }
+      ]
+    },
+    "twin-accepted": {
+      "Id": "twin-accepted",
+      "SpeakerName": "",
+      "SpeakerTag": "",
+      "PortraitResref": "",
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Text": [
+        {
+          "Text": "Key's yours. Two hands, one enemy. Bring me a clean firing trace.",
+          "Style": 0,
+          "Color": null
+        }
+      ],
+      "OnEnterActions": [],
+      "Choices": [
+        {
+          "ChoiceId": "twin-leave",
+          "Conditions": []
+        }
+      ]
+    },
+    "twin-reminder": {
+      "Id": "twin-reminder",
+      "SpeakerName": "",
+      "SpeakerTag": "",
+      "PortraitResref": "",
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Text": [
+        {
+          "Text": "The range recorder hasn't caught a clean sequence yet. Twelve ordinary hits, six from each gun, on one range enemy within thirty seconds.",
+          "Style": 0,
+          "Color": null
+        }
+      ],
+      "OnEnterActions": [],
+      "Choices": [
+        {
+          "ChoiceId": "twin-advice",
+          "Conditions": []
+        },
+        {
+          "ChoiceId": "twin-directions",
+          "Conditions": []
+        },
+        {
+          "ChoiceId": "twin-leave",
+          "Conditions": []
+        }
+      ]
+    },
+    "twin-ready": {
+      "Id": "twin-ready",
+      "SpeakerName": "",
+      "SpeakerTag": "",
+      "PortraitResref": "",
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Text": [
+        {
+          "Text": "That's a clean trace. Neither hand hid behind the other. Ready to put your name to it?",
+          "Style": 0,
+          "Color": null
+        }
+      ],
+      "OnEnterActions": [],
+      "Choices": [
+        {
+          "ChoiceId": "twin-turn-in",
+          "Conditions": []
+        },
+        {
+          "ChoiceId": "twin-leave",
+          "Conditions": []
+        }
+      ]
+    },
+    "twin-completed": {
+      "Id": "twin-completed",
+      "SpeakerName": "",
+      "SpeakerTag": "",
+      "PortraitResref": "",
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Text": [
+        {
+          "Text": "Twin Suns is yours to learn. Spend the training points when you're ready; approval alone won't pull the triggers for you.",
+          "Style": 0,
+          "Color": null
+        }
+      ],
+      "OnEnterActions": [],
+      "Choices": [
+        {
+          "ChoiceId": "twin-leave",
+          "Conditions": []
+        }
+      ]
+    },
+    "twin-locked": {
+      "Id": "twin-locked",
+      "SpeakerName": "",
+      "SpeakerTag": "",
+      "PortraitResref": "",
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Text": [
+        {
+          "Text": "Learn the pair first. Reach rank fifty in Twin Pistol, then I'll test whether both hands answer.",
+          "Style": 0,
+          "Color": null
+        }
+      ],
+      "OnEnterActions": [],
+      "Choices": [
+        {
+          "ChoiceId": "twin-leave",
+          "Conditions": []
+        }
+      ]
     }
   },
   "Choices": {
@@ -2142,6 +2499,225 @@
         }
       ],
       "EndsConversation": false,
+      "IsAutomatic": false
+    },
+    "twin-open": {
+      "Id": "twin-open",
+      "Text": {
+        "Text": "What can you teach me about Twin Pistol?",
+        "Style": 4,
+        "Color": null
+      },
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Actions": [],
+      "Next": [
+        {
+          "TargetNodeId": "twin-completed",
+          "Conditions": [
+            {
+              "Key": "condition-completed-quest",
+              "Arguments": [
+                "twin_suns_mastery"
+              ],
+              "IsNegated": false
+            }
+          ]
+        },
+        {
+          "TargetNodeId": "twin-ready",
+          "Conditions": [
+            {
+              "Key": "condition-on-quest-state",
+              "Arguments": [
+                "twin_suns_mastery",
+                "2"
+              ],
+              "IsNegated": false
+            }
+          ]
+        },
+        {
+          "TargetNodeId": "twin-reminder",
+          "Conditions": [
+            {
+              "Key": "condition-has-quest",
+              "Arguments": [
+                "twin_suns_mastery"
+              ],
+              "IsNegated": false
+            }
+          ]
+        },
+        {
+          "TargetNodeId": "twin-offer",
+          "Conditions": [
+            {
+              "Key": "condition-can-accept-quest",
+              "Arguments": [
+                "twin_suns_mastery"
+              ],
+              "IsNegated": false
+            }
+          ]
+        },
+        {
+          "TargetNodeId": "twin-locked",
+          "Conditions": []
+        }
+      ],
+      "EndsConversation": false,
+      "IsAutomatic": false
+    },
+    "twin-accept": {
+      "Id": "twin-accept",
+      "Text": {
+        "Text": "I'll hold the rhythm.",
+        "Style": 4,
+        "Color": null
+      },
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Actions": [
+        {
+          "Key": "action-accept-quest",
+          "Arguments": [
+            "twin_suns_mastery"
+          ]
+        }
+      ],
+      "Next": [
+        {
+          "TargetNodeId": "twin-accepted",
+          "Conditions": []
+        }
+      ],
+      "EndsConversation": false,
+      "IsAutomatic": false
+    },
+    "twin-why": {
+      "Id": "twin-why",
+      "Text": {
+        "Text": "Why ordinary shots?",
+        "Style": 4,
+        "Color": null
+      },
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Actions": [],
+      "Next": [
+        {
+          "TargetNodeId": "twin-why",
+          "Conditions": []
+        }
+      ],
+      "EndsConversation": false,
+      "IsAutomatic": false
+    },
+    "twin-advice": {
+      "Id": "twin-advice",
+      "Text": {
+        "Text": "What makes a clean attempt?",
+        "Style": 4,
+        "Color": null
+      },
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Actions": [],
+      "Next": [
+        {
+          "TargetNodeId": "twin-advice",
+          "Conditions": []
+        }
+      ],
+      "EndsConversation": false,
+      "IsAutomatic": false
+    },
+    "twin-directions": {
+      "Id": "twin-directions",
+      "Text": {
+        "Text": "Where is the range?",
+        "Style": 4,
+        "Color": null
+      },
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Actions": [],
+      "Next": [
+        {
+          "TargetNodeId": "twin-directions",
+          "Conditions": []
+        }
+      ],
+      "EndsConversation": false,
+      "IsAutomatic": false
+    },
+    "twin-turn-in": {
+      "Id": "twin-turn-in",
+      "Text": {
+        "Text": "Both guns held the same horizon.",
+        "Style": 4,
+        "Color": null
+      },
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Actions": [
+        {
+          "Key": "action-advance-quest",
+          "Arguments": [
+            "twin_suns_mastery"
+          ]
+        }
+      ],
+      "Next": [
+        {
+          "TargetNodeId": "twin-completed",
+          "Conditions": []
+        }
+      ],
+      "EndsConversation": false,
+      "IsAutomatic": false
+    },
+    "twin-leave": {
+      "Id": "twin-leave",
+      "Text": {
+        "Text": "I'll keep practicing.",
+        "Style": 4,
+        "Color": null
+      },
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Actions": [],
+      "Next": [],
+      "EndsConversation": true,
       "IsAutomatic": false
     }
   },

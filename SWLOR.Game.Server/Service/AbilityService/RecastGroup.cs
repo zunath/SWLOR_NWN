@@ -909,6 +909,15 @@ namespace SWLOR.Game.Server.Service.AbilityService
         [RecastGroup("Low Slot 10", "Low Slot 10", true)]
         ShipModule20 = 573,
 
+        [RecastGroup("Twin Volley", "Twin Volley", true)]
+        TwinVolley = 574,
+
+        [RecastGroup("Akimbo Stance", "Akimbo Stance", true)]
+        AkimboStance = 575,
+
+        [RecastGroup("Crossfire Stance", "Crossfire St.", true)]
+        CrossfireStance = 576,
+
     }
 
     public class RecastGroupAttribute : Attribute

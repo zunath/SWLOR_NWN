@@ -1,5 +1,10 @@
 # In-engine visual verification
 
+This is the single shared procedure for every AI agent, including Codex/GPT and
+Claude. Read it before any NWN client visual verification. The root `AGENTS.md`
+requires this workflow; Codex reads that file directly and `CLAUDE.md` imports it.
+Keep the procedure here rather than maintaining agent-specific copies.
+
 Visual changes require inspection in the actual Neverwinter Nights: Enhanced
 Edition client **running in the background through the isolated private-desktop
 workflow** before handoff. Never bring the client to the foreground, take user
@@ -10,6 +15,29 @@ and the relevant appearances or states of other visual changes. Include the
 screenshots in the user report and describe the validation in the pull request.
 Static previews, coordinate audits, builds, and automated tests supplement this
 evidence; they do not prove the final in-game appearance.
+
+## Hard rules for every agent
+
+1. **Use only the repository launcher:** `python tools/VerifyNwnVisuals.py`, backed
+   by `tools/nwn_visual_check/`. Do not launch `nwmain.exe` directly, write your
+   own launcher or AppContainer/desktop implementation, or copy helpers from
+   another repository. If the launcher fails, report the concrete error and
+   affected items as unverified. There is no visible fallback.
+2. **No focus or real input.** Never call `SetForegroundWindow`, `SetCursorPos`,
+   or send real mouse/keyboard events. Never switch desktops or show the client
+   window. The launcher owns an undisplayed private desktop. Its capture helper
+   posts messages only to the owned HWND; these do not enter the user's input
+   queue. Script camera and movement checks in the fixture's NWScript probe.
+3. **Silence belongs to the isolated profile.** The launcher zeroes all four
+   volume channels and disables splash/intro movies, which can play audio even
+   at zero volume. Never change the user's normal `settings.tml`, Windows mixer,
+   or audio devices. If sound is heard, stop the owned run and fix its profile.
+4. **Own only your process.** Record the launcher's client PID and confirm it
+   exits on success or failure. Never terminate `nwmain.exe` by name; another
+   agent or the user may have a separate client running.
+5. **Keep generated files outside the repository.** Put fixture sources, HAK
+   copies, evidence, and reports in a task-owned temporary directory such as
+   `C:\Temp\review\`. Keep evidence after cleanup and leave `git status` clean.
 
 ## Standard background client workflow
 
@@ -25,6 +53,7 @@ and Pillow:
 
 ```powershell
 python -m pip install -r tools/nwn_visual_check/requirements.txt
+python -B tools/VerifyNwnVisuals.py --help
 ```
 
 The client is discovered in the usual Steam/GOG locations. Set `NWN_CLIENT` or pass
@@ -45,6 +74,9 @@ python tools/VerifyNwnVisuals.py `
   --capture "VISUAL_CLOSE_READY=close" --capture "VISUAL_OVERVIEW_READY=overview" `
   --complete-marker VISUAL_REVIEW_COMPLETE --timeout 120
 ```
+
+`--output` must be a new directory for each run, including recaptures. The client
+timeout must be greater than zero and at most 600 seconds.
 
 Use `--sources C:\Temp\review\module-src` instead of `--module` to build a flat
 directory containing `module.ifo.json`, ARE/GIT/GFF JSON, NSS and binary resources.
@@ -105,9 +137,11 @@ Remove-Item Env:SWLOR_NATIVE_ISOLATION_TESTS
 
 1. Record the source commit, changed subjects, area resrefs, tags, authored XYZ
    and facing, and SHA-256 hashes of the source files being inspected.
-2. For placement checks, convert the actual `Module/are` and `Module/git`
-   resources, retaining area geometry and all placed objects. Preserve the
-   subject's authored position, facing, appearance, and equipment. An empty
+2. Make a flat fixture source folder containing `module.ifo.json`, the affected
+   area's actual `Module/are` and `Module/git` resources (plus GIC when needed),
+   required blueprints, and the probe `.nss` script. Retain area geometry and all
+   placed objects. Preserve the subject's authored position, facing, appearance,
+   and equipment. An empty
    test room cannot validate world placement.
 3. Build or copy the HAKs named by `Module/ifo/module.ifo.json` into the isolated
    profile, with the matching custom TLK. Use current assets, not an unrelated
@@ -118,9 +152,12 @@ Remove-Item Env:SWLOR_NATIVE_ISOLATION_TESTS
    copies and document them. Never alter collision or move scenery to make a
    placement appear valid. A feature needing server behavior requires a
    suitable server check as well; an offline fixture cannot prove that behavior.
-5. Compile a temporary review script and pack a temporary module. Script camera
-   positions and named log markers so each captured frame maps to a specific
-   subject. Keep this instrumentation outside production content.
+5. Set the temporary module's OnClientEnter (or an equivalent hook) to the probe
+   script. Without NWNX, C# server logic does not run; an unhooked probe will not
+   produce capture markers. Compile the probe and pack a temporary module, or
+   let `--sources` do that. Script camera positions and named log markers so each
+   captured frame maps to a specific subject. Keep this instrumentation outside
+   production content.
 
 Read source JSON using its actual encoding. Most module JSON is UTF-8; the
 module IFO used in this check required its legacy encoding. Do not silently
@@ -130,9 +167,11 @@ rewrite production JSON through a serializer merely to build a fixture.
 
 Use a task-owned, key-free `-userdirectory` profile and an unused embedded
 server port. Do not reuse the user's normal profile, credentials, or running
-client. Launch through the repository `nwn_visual_check.offline_client.run` helper with an
-explicit timeout, `on_start` to record the PID, and `until` to detect completion.
-The helper must retain its private-desktop and zero-capability isolation.
+client. The `VerifyNwnVisuals.py` launcher handles this through the repository's
+`nwn_visual_check.offline_client.run` helper, with an explicit timeout, `on_start`
+to record the PID, and `until` to detect completion. These are runtime internals,
+not instructions to write a separate launcher. Keep the existing private-desktop
+and zero-capability isolation.
 Track only the process created by this task; never terminate clients by name.
 
 Sound must be disabled for the background client instance. The user is
@@ -145,7 +184,9 @@ at zero volume. Mute only the task-owned profile; never change the user's normal
 `settings.tml`, Windows volume mixer, or audio devices. If the client is heard
 during a run, stop it and fix the profile before relaunching.
 
-Use these client settings in the isolated `settings.tml`:
+The launcher creates the isolated `settings.tml` with the following sound,
+movie, window, and focus settings. The optional keyholing setting shown here can
+help a fixture's camera; disclose it when used. Do not edit the user's profile:
 
 ```toml
 [sound.effects]
@@ -189,6 +230,13 @@ at ten seconds and emitted that marker at thirteen seconds. These delays are
 examples, not proof of readiness: inspect the images for loading screens,
 stale frames, wrong camera angles, and occlusion. Adjust and recapture failures.
 
+Emit each unique marker as the entire `WriteTimestampedLogEntry` payload, for
+example `WriteTimestampedLogEntry("VISUAL_CLOSE_READY")`. Hold the settled view
+for a few seconds after its marker before setting the next camera. Never emit
+two capture markers back-to-back. End the probe with
+`WriteTimestampedLogEntry("VISUAL_REVIEW_COMPLETE")` after the final view has been
+held. Use the same marker strings in the launcher arguments.
+
 Log the subject's actual `GetPosition` and `GetFacing` at capture time. Compare
 them with the authored data: the engine can move a creature away from blocked
 coordinates. An engine-adjusted spawn is not verification of the requested
@@ -199,6 +247,24 @@ NPC or object. Preserve original native PNGs at their capture resolution.
 Contact sheets may resize copies, but must link to the originals. Camera
 keyholing can cut away foreground scenery; disclose it and use an overview
 that makes the surrounding layout clear. Do not edit away clipping or obstacles.
+
+## Known client traps and live-server limits
+
+- Offline `+TestNewModule` runs need no CD key. Use the launcher's key-free
+  profile and never copy the user's credentials.
+- Do not resize the client window. A DPI-unaware resize at 150% scaling caused
+  black captures. Keep the launcher's native 1280x720 capture size.
+- Do not capture during area loads or transitions or in a tight loop; both have
+  frozen the client. Capture only at settled probe markers.
+- Do not manually delete AppContainer profiles or ACLs to fix cleanup. Use the
+  runtime's ownership-checked recovery described above and report unresolved
+  cleanup errors.
+- A logged-in client with C# running on a live NWNX server is a separate workflow.
+  Do not attempt that client workflow unless asked. It needs the user to click
+  Play at character selection; do not inject real input or change desktop/focus
+  rules to bypass that step. Server-side integration tests are documented in
+  [EngineTesting.md](EngineTesting.md). Offline captures do not establish live
+  server or NUI behavior.
 
 ## Verify public access separately
 

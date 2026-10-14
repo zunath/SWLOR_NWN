@@ -5,6 +5,7 @@ using SWLOR.CombatSim.Engine;
 using SWLOR.CombatSim.Rules;
 using SWLOR.CombatSim.Scenario;
 using SWLOR.CombatSim.Tests.Support;
+using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.CombatSim.Tests.Engine
@@ -26,6 +27,27 @@ namespace SWLOR.CombatSim.Tests.Engine
         public void Catalog_ReadsForceLeapsImpactDelay()
         {
             _catalog.Get(FeatType.ForceLeap1).ImpactDelaySeconds.Should().BeGreaterThan(0f);
+        }
+
+        [Test]
+        public void ADelayedForceImpact_OpensConvergenceWhenItLands()
+        {
+            var leap = TestCombatants.Use("ForceLeap1", AbilityTarget.Enemy, minIntervalSeconds: 600);
+            leap.Damage = new DamageSpec { Min = LeapDamage, Max = LeapDamage, HitChance = 1f };
+            var leaper = TestCombatants.Medic("Leaper", leap);
+            leaper.Perks = new List<string> { nameof(PerkType.ForceConvergence) };
+            var simulation = TestScenarios.Spawn(
+                TestScenarios.TwoTeams(false, new[] { leaper }, new[] { TestCombatants.Dummy("Enemy", true) }),
+                RuleSets.Current(),
+                _catalog);
+            var caster = simulation.Get("Leaper");
+            var delay = _catalog.Get(FeatType.ForceLeap1).ImpactDelaySeconds;
+
+            SimulationClock.RunUntil(simulation, () => caster.Stats.AbilitiesUsed == 1, 10, "Force Leap activated");
+            caster.ConvergenceAccuracyUntil.Should().BeLessThan(0, "Convergence opens with the impact, not the payment");
+
+            SimulationClock.RunUntil(simulation, () => caster.Casting == null, delay + 1, "Force Leap landed");
+            caster.ConvergenceAccuracyUntil.Should().BeGreaterThan(0, "the landed leap opens Convergence");
         }
 
         [Test]

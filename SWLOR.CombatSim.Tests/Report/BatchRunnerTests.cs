@@ -126,7 +126,20 @@ namespace SWLOR.CombatSim.Tests.Report
 
             var act = () => BatchRunner.Run(scenario, RuleSets.Current(), _catalog, 1, seed: 1);
 
-            act.Should().Throw<ArgumentException>().WithMessage("*hit rolls and heal or shield applications*");
+            act.Should().Throw<ArgumentException>().WithMessage("*simulated events*");
+        }
+
+        [Test]
+        public void Run_CountsRecurringTicksThatACoarseTimeStepCatchesUp()
+        {
+            // One step a run, but each step catches up a day of heartbeats for both combatants.
+            var scenario = TestScenarios.TwoTeams(false, new[] { TestCombatants.Dummy("Player") }, new[] { TestCombatants.Dummy("Enemy", true) },
+                durationSeconds: 86_400f);
+            scenario.TimeStepSeconds = 86_400f;
+
+            var act = () => BatchRunner.Run(scenario, RuleSets.Current(), _catalog, BatchRunner.MaximumRuns, seed: 1);
+
+            act.Should().Throw<ArgumentException>().WithMessage("*simulated events*");
         }
 
         [Test]
@@ -144,7 +157,7 @@ namespace SWLOR.CombatSim.Tests.Report
 
             var act = () => BatchRunner.Run(scenario, rules, _catalog, 1, seed: 1);
 
-            act.Should().Throw<ArgumentException>().WithMessage("*heal or shield applications*");
+            act.Should().Throw<ArgumentException>().WithMessage("*simulated events*");
         }
 
         // 200 strikers whose every swing hits all 200 enemies 1,000 times: about 1.6 billion rolls a second.

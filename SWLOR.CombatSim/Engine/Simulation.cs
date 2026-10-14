@@ -15,10 +15,10 @@ namespace SWLOR.CombatSim.Engine
     /// </summary>
     public sealed class Simulation
     {
-        private const double HeartbeatSeconds = 6.0;
+        internal const double HeartbeatSeconds = 6.0;
         private const int HeartbeatsPerRegenCycle = 5;
         private const float ConvergencePercentPerTick = 4f;
-        private const double ConvergenceTickSeconds = 2.0;
+        internal const double ConvergenceTickSeconds = 2.0;
         private const double ConvergenceCooldownSeconds = 45.0;
         private const double ConvergenceAccuracySeconds = 30.0;
         private const float ConvergenceHitChanceBonus = 0.05f;
@@ -658,8 +658,7 @@ namespace SWLOR.CombatSim.Engine
                     return;
             }
 
-            // Convergence's accuracy comes from an earlier trigger; the cast that triggers it resolves first,
-            // though a delayed impact lands after it.
+            // Convergence's accuracy comes from an earlier trigger; the cast that triggers it rolls first.
             var hitBonus = ConvergenceHitBonus(caster, cast.Ability);
             if (!cast.Activated)
             {
@@ -684,10 +683,6 @@ namespace SWLOR.CombatSim.Engine
                 caster.RecastReadyAt[cast.Ability.RecastGroup] = _now + _rules.GetRecastSeconds(cast.Ability);
                 caster.LastUsedAt[cast.Use.Feat] = _now;
 
-                // The game checks the ability's declared FP requirement, not the adjusted amount charged.
-                if (cast.Ability.FP > 0 && cast.Ability.SkillType == SkillType.Force)
-                    TriggerConvergence(caster);
-
                 // A delayed impact is paid for and on recast now; the caster stays busy until it lands.
                 if (cast.Ability.ImpactDelaySeconds > 0)
                 {
@@ -699,6 +694,11 @@ namespace SWLOR.CombatSim.Engine
                 }
             }
 
+            // The game opens Convergence with the impact's activated effects, after its attack roll, and checks the
+            // ability's declared FP requirement, not the adjusted amount charged. A delayed impact whose target is gone
+            // is cancelled before then.
+            if (cast.Ability.FP > 0 && cast.Ability.SkillType == SkillType.Force && !(cast.Activated && targetLost))
+                TriggerConvergence(caster);
             if (targetLost)
                 return;
 

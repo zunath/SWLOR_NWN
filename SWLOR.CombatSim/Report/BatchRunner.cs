@@ -19,8 +19,8 @@ namespace SWLOR.CombatSim.Report
         /// <summary>Runs times steps per run times combatants per run, which keeps a batch to minutes.</summary>
         public const long MaximumCombatantSteps = 500_000_000;
 
-        /// <summary>Hit rolls and heal or shield applications across the batch, counting every target each one reaches.</summary>
-        public const long MaximumImpacts = 500_000_000;
+        /// <summary>Simulated events across the batch: hit rolls, heal and shield applications and recurring ticks.</summary>
+        public const long MaximumEvents = 500_000_000;
 
         public static BatchSummary Run(ScenarioSpec scenario, RuleSet rules, AbilityCatalog catalog, int runs, int seed)
         {
@@ -36,11 +36,12 @@ namespace SWLOR.CombatSim.Report
                     $"{runs} runs of {stepsPerRun} steps with {combatantsPerRun} combatants is more than {MaximumCombatantSteps} " +
                     "combatant-steps; use fewer runs, a shorter duration or a longer time step.");
 
-            var impactsPerRun = BatchWork.ImpactsPerRun(scenario, rules, catalog);
-            if (runs * impactsPerRun > MaximumImpacts)
+            var eventsPerRun = BatchWork.EventsPerRun(scenario, rules, catalog);
+            if (runs * eventsPerRun > MaximumEvents)
                 throw new ArgumentException(
-                    $"{runs} runs of up to {impactsPerRun:0} hit rolls and heal or shield applications each is more than " +
-                    $"{MaximumImpacts}; use fewer runs, a shorter duration, or fewer uses, hits or targets.");
+                    $"{runs} runs of up to {eventsPerRun:0} simulated events each (hit rolls, heal and shield applications, " +
+                    $"recurring ticks) is more than {MaximumEvents}; use fewer runs, a shorter duration, or fewer combatants, " +
+                    "uses, hits or targets.");
 
             var summary = new BatchSummary { RuleSetName = rules.Name, Runs = runs };
             var perCombatant = new Dictionary<(int TeamIndex, string Name), CombatantAccumulator>();

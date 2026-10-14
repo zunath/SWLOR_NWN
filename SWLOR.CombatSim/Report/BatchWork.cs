@@ -1,5 +1,6 @@
 using SWLOR.CombatSim.Data;
 using SWLOR.CombatSim.Effects;
+using SWLOR.CombatSim.Engine;
 using SWLOR.CombatSim.Rules;
 using SWLOR.CombatSim.Scenario;
 using SWLOR.NWN.API.NWScript.Enum;
@@ -13,10 +14,10 @@ namespace SWLOR.CombatSim.Report
     internal static class BatchWork
     {
         /// <summary>
-        /// Every hit roll and every heal or shield application one run can make: each hit on each target an attack or
-        /// ability reaches, and each ally a heal, shield or zone pulse reaches.
+        /// Every event one run can process, however coarse its time step: each hit on each target an attack or ability
+        /// reaches, each ally a heal, shield or zone pulse reaches, and each combatant's heartbeat and Convergence tick.
         /// </summary>
-        public static double ImpactsPerRun(ScenarioSpec scenario, RuleSet rules, AbilityCatalog catalog)
+        public static double EventsPerRun(ScenarioSpec scenario, RuleSet rules, AbilityCatalog catalog)
         {
             var duration = (double)scenario.DurationSeconds;
             var step = (double)scenario.TimeStepSeconds;
@@ -25,7 +26,7 @@ namespace SWLOR.CombatSim.Report
 
             var teamSizes = scenario.Teams.Select(team => team?.Members?.Sum(member => (double)Math.Max(1, member?.Count ?? 1)) ?? 0).ToList();
             var everyone = teamSizes.Sum();
-            double impacts = 0;
+            double events = 0;
             for (var teamIndex = 0; teamIndex < scenario.Teams.Count; teamIndex++)
             {
                 var allies = teamSizes[teamIndex];
@@ -36,9 +37,12 @@ namespace SWLOR.CombatSim.Report
                         continue;
 
                     var count = Math.Max(1, member.Count);
+                    // Recurring events catch up inside one step, so they count by the duration, not the steps.
+                    events += count * duration * (1 / Simulation.HeartbeatSeconds + 1 / Simulation.ConvergenceTickSeconds);
+
                     var attack = member.AutoAttack;
                     if (attack != null && float.IsFinite(attack.AttacksPerSecond) && attack.AttacksPerSecond > 0)
-                        impacts += count * attack.AttacksPerSecond * duration * RollsPerUse(attack.Damage, enemies);
+                        events += count * attack.AttacksPerSecond * duration * RollsPerUse(attack.Damage, enemies);
 
                     foreach (var use in member.Abilities ?? new List<AbilityUseSpec>())
                     {
@@ -47,12 +51,12 @@ namespace SWLOR.CombatSim.Report
 
                         var perUse = RollsPerUse(use.Damage, enemies) + ApplicationsPerUse(use, allies);
                         if (perUse > 0)
-                            impacts += count * duration / SecondsBetweenUses(member, use, step, rules, catalog) * perUse;
+                            events += count * duration / SecondsBetweenUses(member, use, step, rules, catalog) * perUse;
                     }
                 }
             }
 
-            return impacts;
+            return events;
         }
 
         // A party heal or shield reaches every ally up to MaxTargets, and a zone does so on each of its pulses.

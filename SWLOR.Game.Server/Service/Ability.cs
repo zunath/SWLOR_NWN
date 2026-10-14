@@ -259,10 +259,12 @@ namespace SWLOR.Game.Server.Service
         /// Retains the originating ability and cast sequence for recurring impacts without
         /// consuming another activation's pending bonuses or replacing its impact tracker.
         /// </summary>
-        public static Action CaptureRepeatedAbilityImpact(uint activator, Action impactAction, int baseDamage = 0)
+        public static Action CaptureRepeatedAbilityImpact(
+            uint activator, Action impactAction, int baseDamage = 0, bool requiresLivingActivator = true)
         {
             ArgumentNullException.ThrowIfNull(impactAction);
-            var applyImpact = CaptureRepeatedAbilityImpact<Action>(activator, action => action(), baseDamage);
+            var applyImpact = CaptureRepeatedAbilityImpact<Action>(
+                activator, action => action(), baseDamage, requiresLivingActivator);
             return () => applyImpact(impactAction);
         }
 
@@ -270,7 +272,8 @@ namespace SWLOR.Game.Server.Service
         /// Captures one cast's recurring impact context while allowing each delayed impact
         /// to retain its own target or payload. Bonuses are consumed only when an impact lands.
         /// </summary>
-        public static Action<T> CaptureRepeatedAbilityImpact<T>(uint activator, Action<T> impactAction, int baseDamage = 0)
+        public static Action<T> CaptureRepeatedAbilityImpact<T>(
+            uint activator, Action<T> impactAction, int baseDamage = 0, bool requiresLivingActivator = true)
         {
             ArgumentNullException.ThrowIfNull(impactAction);
             // Scheduled damage belongs to this cast. Resolve its armed bonuses now so
@@ -284,7 +287,7 @@ namespace SWLOR.Game.Server.Service
             var sequence = originatingImpact.Sequence;
             return payload =>
             {
-                if (!GetIsObjectValid(activator) || GetCurrentHitPoints(activator) <= 0)
+                if (!GetIsObjectValid(activator) || requiresLivingActivator && GetCurrentHitPoints(activator) <= 0)
                     return;
 
                 var previousImpact = GetTrackedAbilityImpact(activator);

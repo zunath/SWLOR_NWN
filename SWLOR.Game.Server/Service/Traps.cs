@@ -22,7 +22,7 @@ namespace SWLOR.Game.Server.Service
     /// <summary>
     /// Tracks player-placed traps: per-owner capacity, minimum spacing between any two live traps,
     /// an arming delay, a proximity trigger, and a lifetime cap. Trap strength is snapshotted from
-    /// the owner's stats at placement time.
+    /// the owner's Trap Bonus at placement time; active traps retain their originating cast context.
     /// </summary>
     public static class Traps
     {
@@ -114,7 +114,10 @@ namespace SWLOR.Game.Server.Service
             }
 
             RegisterTrap(record, ownerTraps);
-            ScheduleArming(record, snapshotDamage, damageType, statusEffect, statusDurationSeconds, triggerVisualEffect);
+            var trigger = Ability.CaptureRepeatedAbilityImpact(owner, () => ApplyTrapImpact(
+                record, snapshotDamage, damageType, statusEffect, statusDurationSeconds, triggerVisualEffect),
+                snapshotDamage, requiresLivingActivator: false);
+            ScheduleArming(record, trigger);
 
             return true;
         }
@@ -161,11 +164,11 @@ namespace SWLOR.Game.Server.Service
 
             ScheduleArming(
                 record,
-                snapshotDamage,
+                () => ApplyTrapImpact(record, snapshotDamage,
                 CombatDamageType.Physical,
                 typeof(BleedStatusEffect),
                 KitTrapStatusDurationSeconds,
-                VisualEffect.Vfx_Com_Blood_Spark_Medium);
+                VisualEffect.Vfx_Com_Blood_Spark_Medium));
 
             return true;
         }
@@ -210,22 +213,14 @@ namespace SWLOR.Game.Server.Service
         // Trapcraft III/IV shorten the time before a placed trap goes live.
         private static void ScheduleArming(
             TrapRecord record,
-            int damage,
-            CombatDamageType damageType,
-            Type statusEffect,
-            int statusDurationSeconds,
-            VisualEffect triggerVisualEffect)
+            Action trigger)
         {
             var placementSpeed = Math.Clamp(Stat.GetStatAdjustment(record.Owner, StatType.TrapPlacementSpeedPercent), 0, 90);
             var armingDelay = ArmingDelaySeconds * (100 - placementSpeed) / 100f;
 
             DelayCommand(armingDelay, () => RunProximityChecks(
                 record,
-                damage,
-                damageType,
-                statusEffect,
-                statusDurationSeconds,
-                triggerVisualEffect,
+                trigger,
                 LifetimeSeconds - armingDelay));
         }
 
@@ -261,11 +256,7 @@ namespace SWLOR.Game.Server.Service
 
         private static void RunProximityChecks(
             TrapRecord record,
-            int damage,
-            CombatDamageType damageType,
-            Type statusEffect,
-            int statusDurationSeconds,
-            VisualEffect triggerVisualEffect,
+            Action trigger,
             float remainingSeconds)
         {
             if (!record.IsLive)
@@ -298,30 +289,38 @@ namespace SWLOR.Game.Server.Service
                         : TrapTriggerXP;
                     Skill.GiveSkillXP(record.Owner, SkillType.Espionage, xp, false, false);
                 }
-                CombatAreaPulses.ApplyCombatPulse(
-                    record.Owner,
-                    record.Location,
-                    SkillType.Espionage,
-                    damage,
-                    BlastRadiusMeters,
-                    statusEffect,
-                    statusDurationSeconds,
-                    damageType,
-                    targetVisualEffect: record.SuccessfulImpactVisualEffect != VisualEffect.None
-                        ? record.SuccessfulImpactVisualEffect
-                        : triggerVisualEffect,
-                    areaVisualEffect: VisualEffect.Vfx_Fnf_Smoke_Puff);
+                trigger();
                 return;
             }
 
             DelayCommand(ProximityCheckIntervalSeconds, () => RunProximityChecks(
                 record,
+                trigger,
+                remainingSeconds - ProximityCheckIntervalSeconds));
+        }
+
+        private static void ApplyTrapImpact(
+            TrapRecord record,
+            int damage,
+            CombatDamageType damageType,
+            Type statusEffect,
+            int statusDurationSeconds,
+            VisualEffect triggerVisualEffect)
+        {
+            CombatAreaPulses.ApplyCombatPulse(
+                record.Owner,
+                record.Location,
+                SkillType.Espionage,
                 damage,
-                damageType,
+                BlastRadiusMeters,
                 statusEffect,
                 statusDurationSeconds,
-                triggerVisualEffect,
-                remainingSeconds - ProximityCheckIntervalSeconds));
+                damageType,
+                targetVisualEffect: record.SuccessfulImpactVisualEffect != VisualEffect.None
+                    ? record.SuccessfulImpactVisualEffect
+                    : triggerVisualEffect,
+                areaVisualEffect: VisualEffect.Vfx_Fnf_Smoke_Puff,
+                combatImpactDamageAbility: AbilityType.Perception);
         }
 
         /// <summary>

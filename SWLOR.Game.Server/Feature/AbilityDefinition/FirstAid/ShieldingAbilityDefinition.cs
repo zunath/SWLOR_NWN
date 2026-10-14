@@ -43,6 +43,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
                 .HasRecastDelay(RecastGroup.Shielding, 18f)
                 .SkillType(SkillType.FirstAid)
                 .IsSingleTargetAbility()
+                .AllowsSelfQuickCast()
                 .RequiresTarget()
                 .HasCustomValidation((activator, target, _, _) =>
                     AbilityTargeting.ValidateFriendlyTarget(activator, target))
@@ -67,6 +68,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
                 .HasRecastDelay(RecastGroup.Shielding, 18f)
                 .SkillType(SkillType.FirstAid)
                 .IsSingleTargetAbility()
+                .AllowsSelfQuickCast()
                 .RequiresTarget()
                 .HasCustomValidation((activator, target, _, _) =>
                     AbilityTargeting.ValidateFriendlyTarget(activator, target))
@@ -91,6 +93,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
                 .HasRecastDelay(RecastGroup.Shielding, 18f)
                 .SkillType(SkillType.FirstAid)
                 .IsSingleTargetAbility()
+                .AllowsSelfQuickCast()
                 .RequiresTarget()
                 .HasCustomValidation((activator, target, _, _) =>
                     AbilityTargeting.ValidateFriendlyTarget(activator, target))

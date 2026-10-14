@@ -70,6 +70,9 @@ public class GuiPaginationTests
 
     [TestCase("AchievementsDefinition.cs")]
     [TestCase("CreatureManagerDefinition.cs")]
+    [TestCase("DMChooserDefinition.cs")]
+    [TestCase("DMCreatorDefinition.cs")]
+    [TestCase("DMPlayerSearchDefinition.cs")]
     [TestCase("DMToolsDefinition.cs")]
     [TestCase("KeyItemsDefinition.cs")]
     [TestCase("ManageStructuresDefinition.cs")]

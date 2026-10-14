@@ -27,9 +27,10 @@ public class PlayerNameRecognitionTests
         disabledExamine.Should().Contain("ShowExamineWindow(GetLastGuiEventPlayer(), GetLastGuiEventObject())");
         disabledExamine.Should().NotContain("Gui.TogglePlayerWindow");
         examine.Should().Contain("if (!GetIsDM(dm) && !GetIsDMPossessed(dm))");
-        examine.Should().Contain("Gui.TogglePlayerWindow");
+        // DMPresence keeps the window under the DM avatar while a possessing DM examines as the creature.
+        examine.Should().Contain("DMPresence.ToggleWindow(dm, GuiWindowType.DMPlayerExamine, payload);");
         examine.IndexOf("return;", StringComparison.Ordinal).Should()
-            .BeLessThan(examine.IndexOf("Gui.TogglePlayerWindow", StringComparison.Ordinal));
+            .BeLessThan(examine.IndexOf("DMPresence.ToggleWindow", StringComparison.Ordinal));
         initialize.Should().Contain("_target = initialPayload.Target;");
         initialize.Should().Contain("LoadTargetDetails();");
         details.Should().Contain("Descriptor = GetIsPC(_target) && !GetIsDM(_target) ? Disguise.GetDisplayDescriptor(_target) : \"N/A\";");
@@ -362,14 +363,14 @@ public class PlayerNameRecognitionTests
 
         var nameOverrideMethod = ExtractMethod(source, "private static void ApplyNameOverride(uint observer, uint target)");
         nameOverrideMethod.Should().Contain("UnknownNamePrefix");
-        nameOverrideMethod.Should().Contain("UnknownNameSuffix");
+        nameOverrideMethod.Should().Contain("GetNameOverrideSuffix(target, isUnknown)");
         nameOverrideMethod.Should().Contain("RenamePlugin.SetPCNameOverride(target, displayName, prefix, suffix, PlayerNameOverrideType.Default, observer);");
         nameOverrideMethod.Should().NotContain("SetCreatureNameOverride");
 
         var applyPlayerMethod = ExtractMethod(source, "private static void ApplyNameOverridesForPlayer(uint player)");
         applyPlayerMethod.Should().Contain("var ownDisplayName = ShouldShowOwnDescriptor(player)");
         applyPlayerMethod.Should().Contain("BuildDisplayNameWithDescriptor(GetName(player), unknownDisplayName)");
-        applyPlayerMethod.Should().Contain("RenamePlugin.SetPCNameOverride(player, ownDisplayName, string.Empty, string.Empty, PlayerNameOverrideType.Default, player);");
+        applyPlayerMethod.Should().Contain("RenamePlugin.SetPCNameOverride(player, ownDisplayName, string.Empty, GetNameOverrideSuffix(player), PlayerNameOverrideType.Default, player);");
 
         var resolveDisplayMethod = ExtractMethod(source, "private static string ResolveDisplayName(uint observer, uint target, out bool isUnknown)");
         resolveDisplayMethod.Should().Contain("ShouldShowDescriptorForNamedPlayers(observer)");

@@ -44,6 +44,57 @@ namespace SWLOR.Game.Server.Service.DBService
             return "(" + string.Join(" ", terms) + ")";
         }
 
+        /// <summary>
+        /// Splits text into words the way the index splits a stored value, so searches over records that are
+        /// not in the index (such as online players) can match the same way as <see cref="Build"/>.
+        /// </summary>
+        /// <param name="text">A stored value or the text the player or DM typed.</param>
+        public static IReadOnlyList<string> GetWords(string text)
+        {
+            return SplitWords(DB.EscapeTokens(text ?? string.Empty));
+        }
+
+        /// <summary>
+        /// Returns whether <see cref="Build"/> can query any word of the search. Without one, such as only
+        /// punctuation or a lone escaped symbol like "\@", there is nothing to match against the index.
+        /// </summary>
+        /// <param name="search">The text the player or DM typed.</param>
+        public static bool HasQueryableWords(string search)
+        {
+            return GetWords(search).Any(IsQueryableWord);
+        }
+
+        /// <summary>
+        /// Returns whether <see cref="Build"/> keeps a word from <see cref="GetWords"/>. A word it drops, such as "\@",
+        /// has no query of its own and matches everything.
+        /// </summary>
+        /// <param name="word">One word of the search.</param>
+        public static bool IsQueryableWord(string word)
+        {
+            return BuildTerm(word) != null;
+        }
+
+        /// <summary>
+        /// Returns whether a search word from <see cref="GetWords"/> matches a stored word the way the query from
+        /// <see cref="Build"/> does: the start of the word, or the whole word when the search word is one character.
+        /// </summary>
+        /// <param name="searchWord">One word of the search.</param>
+        /// <param name="storedWord">One word of a stored value.</param>
+        public static bool MatchesWord(string searchWord, string storedWord)
+        {
+            var backslash = FirstUnqueryableBackslash(searchWord);
+            if (backslash >= 0)
+            {
+                // Build matches only up to the backslash, and drops the word when that part is too short.
+                var prefix = searchWord[..(backslash + 1)];
+                return !CanPrefix(prefix) || storedWord.StartsWith(prefix, StringComparison.OrdinalIgnoreCase);
+            }
+
+            return CanPrefix(searchWord)
+                ? storedWord.StartsWith(searchWord, StringComparison.OrdinalIgnoreCase)
+                : string.Equals(storedWord, searchWord, StringComparison.OrdinalIgnoreCase);
+        }
+
         // Mirrors the index tokenizer: a separator right after a backslash does not split, and inside a word
         // an unpaired backslash makes the next character literal while control characters are dropped.
         private static List<string> SplitWords(string indexedText)

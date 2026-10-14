@@ -772,8 +772,18 @@ namespace SWLOR.Game.Server.Service
 
             var objectData = EventsPlugin.GetEventData("OBJECT");
             var spawn = Convert.ToUInt32(objectData, 16); // Not sure why this is in hex.
-            AdjustScripts(spawn);
-            AdjustStats(spawn);
+            PrepareDMSpawnedCreature(spawn);
+        }
+
+        /// <summary>
+        /// Attaches the scripts and stat adjustments every DM-spawned creature receives.
+        /// Used by the native DM creator event and the NUI DM creator.
+        /// </summary>
+        /// <param name="creature">The creature a DM spawned.</param>
+        public static void PrepareDMSpawnedCreature(uint creature)
+        {
+            AdjustScripts(creature);
+            AdjustStats(creature);
         }
 
         /// <summary>

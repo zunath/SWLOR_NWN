@@ -126,7 +126,25 @@ namespace SWLOR.CombatSim.Tests.Report
 
             var act = () => BatchRunner.Run(scenario, RuleSets.Current(), _catalog, 1, seed: 1);
 
-            act.Should().Throw<ArgumentException>().WithMessage("*damage rolls*");
+            act.Should().Throw<ArgumentException>().WithMessage("*hit rolls and heal or shield applications*");
+        }
+
+        [Test]
+        public void Run_RejectsMorePartyShieldApplicationsThanABatchCanFinishPromptly()
+        {
+            // 200 shouters each shielding all 200 allies every second for a day: about 3.5 billion applications.
+            var shouters = TestCombatants.Medic("Shouters", TestCombatants.Use("CleanseOrder2", AbilityTarget.Self));
+            shouters.Count = 200;
+            var crowd = TestCombatants.Dummy("Crowd", true);
+            crowd.Count = 200;
+            var scenario = TestScenarios.TwoTeams(false, new[] { shouters }, new[] { crowd }, durationSeconds: 86_400f);
+            scenario.TimeStepSeconds = 1f;
+            var rules = RuleSets.Current();
+            rules.RecastOverrides["CleanseOrder"] = 0f;
+
+            var act = () => BatchRunner.Run(scenario, rules, _catalog, 1, seed: 1);
+
+            act.Should().Throw<ArgumentException>().WithMessage("*heal or shield applications*");
         }
 
         // 200 strikers whose every swing hits all 200 enemies 1,000 times: about 1.6 billion rolls a second.

@@ -1,4 +1,5 @@
 using SWLOR.CombatSim.Data;
+using SWLOR.CombatSim.Effects;
 using SWLOR.CombatSim.Rules;
 using SWLOR.CombatSim.Scenario;
 using SWLOR.NWN.API.NWScript.Enum;
@@ -11,8 +12,11 @@ namespace SWLOR.CombatSim.Report
     /// </summary>
     internal static class BatchWork
     {
-        /// <summary>Every hit roll an attack or ability can make in one run, with each hit on each target counted.</summary>
-        public static double DamageRollsPerRun(ScenarioSpec scenario, RuleSet rules, AbilityCatalog catalog)
+        /// <summary>
+        /// Every hit roll and every heal or shield application one run can make: each hit on each target an attack or
+        /// ability reaches, and each ally a heal, shield or zone pulse reaches.
+        /// </summary>
+        public static double ImpactsPerRun(ScenarioSpec scenario, RuleSet rules, AbilityCatalog catalog)
         {
             var duration = (double)scenario.DurationSeconds;
             var step = (double)scenario.TimeStepSeconds;
@@ -21,10 +25,11 @@ namespace SWLOR.CombatSim.Report
 
             var teamSizes = scenario.Teams.Select(team => team?.Members?.Sum(member => (double)Math.Max(1, member?.Count ?? 1)) ?? 0).ToList();
             var everyone = teamSizes.Sum();
-            double rolls = 0;
+            double impacts = 0;
             for (var teamIndex = 0; teamIndex < scenario.Teams.Count; teamIndex++)
             {
-                var enemies = everyone - teamSizes[teamIndex];
+                var allies = teamSizes[teamIndex];
+                var enemies = everyone - allies;
                 foreach (var member in scenario.Teams[teamIndex]?.Members ?? new List<CombatantSpec>())
                 {
                     if (member == null)
@@ -33,17 +38,37 @@ namespace SWLOR.CombatSim.Report
                     var count = Math.Max(1, member.Count);
                     var attack = member.AutoAttack;
                     if (attack != null && float.IsFinite(attack.AttacksPerSecond) && attack.AttacksPerSecond > 0)
-                        rolls += count * attack.AttacksPerSecond * duration * RollsPerUse(attack.Damage, enemies);
+                        impacts += count * attack.AttacksPerSecond * duration * RollsPerUse(attack.Damage, enemies);
 
                     foreach (var use in member.Abilities ?? new List<AbilityUseSpec>())
                     {
-                        if (use?.Damage != null)
-                            rolls += count * duration / SecondsBetweenUses(member, use, step, rules, catalog) * RollsPerUse(use.Damage, enemies);
+                        if (use == null)
+                            continue;
+
+                        var perUse = RollsPerUse(use.Damage, enemies) + ApplicationsPerUse(use, allies);
+                        if (perUse > 0)
+                            impacts += count * duration / SecondsBetweenUses(member, use, step, rules, catalog) * perUse;
                     }
                 }
             }
 
-            return rolls;
+            return impacts;
+        }
+
+        // A party heal or shield reaches every ally up to MaxTargets, and a zone does so on each of its pulses.
+        private static double ApplicationsPerUse(AbilityUseSpec use, double allies)
+        {
+            if (!Enum.TryParse<FeatType>(use.Feat, out var feat) || !EffectCatalog.TryGet(feat, out var effect))
+                return 0;
+
+            var reach = use.MaxTargets.HasValue ? Math.Min(Math.Max(1, use.MaxTargets.Value), allies) : allies;
+            return effect.Kind switch
+            {
+                EffectKind.PartyTemporaryHp => reach,
+                EffectKind.PartyHealOverTime => reach * Math.Max(1, effect.Ticks),
+                EffectKind.HealOverTime => Math.Max(1, effect.Ticks),
+                _ => 1
+            };
         }
 
         private static double RollsPerUse(DamageSpec damage, double enemies)

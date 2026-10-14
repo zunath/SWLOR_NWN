@@ -19,8 +19,8 @@ namespace SWLOR.CombatSim.Report
         /// <summary>Runs times steps per run times combatants per run, which keeps a batch to minutes.</summary>
         public const long MaximumCombatantSteps = 500_000_000;
 
-        /// <summary>Hit rolls across the batch, counting every hit on every target an attack or ability reaches.</summary>
-        public const long MaximumDamageRolls = 500_000_000;
+        /// <summary>Hit rolls and heal or shield applications across the batch, counting every target each one reaches.</summary>
+        public const long MaximumImpacts = 500_000_000;
 
         public static BatchSummary Run(ScenarioSpec scenario, RuleSet rules, AbilityCatalog catalog, int runs, int seed)
         {
@@ -36,11 +36,11 @@ namespace SWLOR.CombatSim.Report
                     $"{runs} runs of {stepsPerRun} steps with {combatantsPerRun} combatants is more than {MaximumCombatantSteps} " +
                     "combatant-steps; use fewer runs, a shorter duration or a longer time step.");
 
-            var rollsPerRun = BatchWork.DamageRollsPerRun(scenario, rules, catalog);
-            if (runs * rollsPerRun > MaximumDamageRolls)
+            var impactsPerRun = BatchWork.ImpactsPerRun(scenario, rules, catalog);
+            if (runs * impactsPerRun > MaximumImpacts)
                 throw new ArgumentException(
-                    $"{runs} runs of up to {rollsPerRun:0} damage rolls each is more than {MaximumDamageRolls} damage rolls; " +
-                    "use fewer runs, a shorter duration, or fewer attacks, hits or targets.");
+                    $"{runs} runs of up to {impactsPerRun:0} hit rolls and heal or shield applications each is more than " +
+                    $"{MaximumImpacts}; use fewer runs, a shorter duration, or fewer uses, hits or targets.");
 
             var summary = new BatchSummary { RuleSetName = rules.Name, Runs = runs };
             var perCombatant = new Dictionary<(int TeamIndex, string Name), CombatantAccumulator>();
@@ -48,7 +48,6 @@ namespace SWLOR.CombatSim.Report
             for (var run = 0; run < runs; run++)
             {
                 var result = new Simulation(scenario, rules, catalog, seed + run).Run();
-                var minutes = Math.Max(result.EndedAt, 1) / 60.0;
 
                 summary.FightEndTimes.Add(result.EndedAt);
                 if (result.FirstDeathAt.HasValue)
@@ -79,7 +78,7 @@ namespace SWLOR.CombatSim.Report
                     if (!perCombatant.TryGetValue(key, out var accumulator))
                         perCombatant[key] = accumulator = new CombatantAccumulator(combatant.Name, combatant.TeamIndex);
                     // Resource rates count only the time a combatant was in the fight.
-                    accumulator.Add(combatant.Stats, Math.Max(result.EndedAt - combatant.Spec.JoinAtSeconds, 1) / 60.0);
+                    accumulator.Add(combatant.Stats, Math.Max(result.EndedAt - combatant.Spec.JoinAtSeconds, 0) / 60.0);
                 }
             }
 

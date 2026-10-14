@@ -20,7 +20,9 @@ namespace SWLOR.CombatSim.Report
             _teamIndex = teamIndex;
         }
 
-        /// <param name="minutesInFight">Time from the combatant's join to the run's end, for its resource rates.</param>
+        /// <param name="minutesInFight">
+        /// Time from the combatant's join to the run's end, for its resource rates; at zero it never acted, so it spent nothing.
+        /// </param>
         public void Add(CombatantStats stats, double minutesInFight)
         {
             _runs++;
@@ -32,8 +34,11 @@ namespace SWLOR.CombatSim.Report
             _damageTakenToHp += stats.DamageTakenToHp;
             _hitPointsSpent += stats.HitPointsSpent;
             _absorbed += stats.DamageAbsorbedByTemporaryHp;
-            _fpPerMinute += stats.FpSpent / minutesInFight;
-            _stmPerMinute += stats.StmSpent / minutesInFight;
+            if (minutesInFight > 0)
+            {
+                _fpPerMinute += stats.FpSpent / minutesInFight;
+                _stmPerMinute += stats.StmSpent / minutesInFight;
+            }
             _fpRefunded += stats.FpRefunded;
             _stmRefunded += stats.StmRefunded;
             _starvedSeconds += stats.StarvedSeconds;

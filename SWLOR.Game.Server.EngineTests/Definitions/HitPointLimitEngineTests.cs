@@ -1,6 +1,7 @@
 using System.Threading.Tasks;
 using SWLOR.Game.Server.EngineTests.Framework;
 using SWLOR.Game.Server.Feature.AbilityDefinition;
+using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 
@@ -221,6 +222,56 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 5f, "the heal to restore the NPC to its new maximum");
             ctx.AssertEqual(Limit, GetCurrentHitPoints(npc), "reported HP after healing to the new maximum");
             ctx.Assert(!GetIsDead(npc), "The NPC must stay alive after healing to the new maximum.");
+        }
+
+        [EngineTest("A sourced temporary HP pool waiting for room still counts as active for its riders", Category = LimitCategory, TimeoutSeconds = 30f)]
+        public static async Task DeferredSourcedPoolStaysActive(EngineTestContext ctx)
+        {
+            var arena = await QuietArena.CreateAsync(ctx);
+            var npc = await SpawnNPCAsync(ctx, arena, "nw_rat001", MaximumNPCHitPoints, immortal: false);
+            var caster = arena.Spawn("nw_rat001", 3f, 0f);
+            await ctx.WaitFrameAsync();
+
+            TemporaryHitPointEffects.ApplyFlatFromSource(caster, npc, TemporaryHitPointEffectKey.GuardianWard, Headroom, 60f);
+            await ctx.WaitFrameAsync();
+            ctx.AssertEqual(Headroom, TemporaryHitPointEffects.ApplyFlatFromSource(caster, npc, TemporaryHitPointEffectKey.GuardianWard, 5000, 60f),
+                "the recast waiting on the replaced pool");
+            ctx.AssertEqual(0, TemporaryHitPointEffects.GetRemaining(npc, TemporaryHitPointEffectKey.GuardianWard), "the pool before it lands");
+            ctx.Assert(TemporaryHitPointEffects.IsActivePoolFromSource(npc, TemporaryHitPointEffectKey.GuardianWard, caster),
+                "A pool waiting for room must still count as active for its source's riders.");
+
+            await ctx.WaitUntilAsync(() => TemporaryHitPointEffects.GetRemaining(npc, TemporaryHitPointEffectKey.GuardianWard) == Headroom,
+                3f, "the recast pool to land");
+            ctx.Assert(TemporaryHitPointEffects.IsActivePoolFromSource(npc, TemporaryHitPointEffectKey.GuardianWard, caster),
+                "The landed pool must count as active for its source.");
+        }
+
+        [EngineTest("Guardian's Resolve stops healing for shield the HP limit trimmed away", Category = LimitCategory, TimeoutSeconds = 30f)]
+        public static async Task GuardiansResolveFollowsTrimmedPool(EngineTestContext ctx)
+        {
+            var arena = await QuietArena.CreateAsync(ctx);
+            var npc = await SpawnNPCAsync(ctx, arena, "nw_rat001", 25000, immortal: false);
+            var attacker = arena.Spawn("nw_rat001", 3f, 0f);
+            await ctx.WaitFrameAsync();
+
+            var shield = TemporaryHitPointEffects.ApplyFlat(npc, TemporaryHitPointEffectKey.GuardiansResolve, Limit - 25000, 60f);
+            ctx.AssertEqual(Limit - 25000, shield, "Guardian's Resolve pool");
+            StatusEffect.ApplyStatusEffect(npc, npc, new GuardiansResolveStatusEffect(shield), 60f);
+
+            Stat.SetNPCMaxHitPoints(npc, MaximumNPCHitPoints);
+            await ctx.WaitUntilAsync(() => TemporaryHitPointEffects.GetRemaining(npc, TemporaryHitPointEffectKey.GuardiansResolve) == Headroom,
+                3f, "the pool to be trimmed under the raised maximum");
+
+            AssignCommand(npc, () => ApplyEffectToObject(DurationType.Instant, EffectDamage(Headroom + 233), npc));
+            await ctx.WaitUntilAsync(() => TemporaryHitPointEffects.GetRemaining(npc, TemporaryHitPointEffectKey.GuardiansResolve) == 0,
+                3f, "damage to exhaust the trimmed pool");
+            var baseHitPoints = ObjectPlugin.GetCurrentHitPoints(npc);
+
+            StatusEffect.NotifyDamageStatusEffects(attacker, npc, 1000, CombatDamageType.Physical);
+            await ctx.WaitFrameAsync();
+            ctx.AssertEqual(baseHitPoints, ObjectPlugin.GetCurrentHitPoints(npc), "base HP after a hit with no shield left");
+            ctx.Assert(!StatusEffect.HasStatusEffect<GuardiansResolveStatusEffect>(npc),
+                "Guardian's Resolve must end once its trimmed pool is gone.");
         }
 
         [EngineTest("Guardian Ward IV on a 30,000 HP NPC stops at the HP limit and leaves it alive", Category = LimitCategory, TimeoutSeconds = 45f)]

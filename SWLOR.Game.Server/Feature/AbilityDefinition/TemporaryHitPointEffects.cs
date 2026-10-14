@@ -52,6 +52,14 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
         }
 
         /// <summary>
+        /// Returns the keyed pool plus any part of it still waiting for the engine to release room.
+        /// </summary>
+        public static int GetRemainingIncludingPending(uint target, string effectKey)
+        {
+            return GetRemaining(target, effectKey) + GetLocalInt(target, GetDeferredVariable(effectKey));
+        }
+
+        /// <summary>
         /// Returns how much more temporary HP the target can hold before the engine's reported
         /// HP overflows. Measured from maximum HP, not current HP, so healing while a pool is
         /// active cannot push the total past the limit.
@@ -357,10 +365,13 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
             if (!GetIsObjectValid(source) || GetLocalObject(target, GetSourceVariable(effectKey)) != source)
                 return false;
 
+            // A pool still waiting for the engine to release room counts as active, so riders
+            // tied to it survive until it lands.
             var effectTag = EffectTagPrefix + effectKey;
+            var pendingTag = GetPendingTag(effectKey);
             for (var effect = GetFirstEffect(target); GetIsEffectValid(effect); effect = GetNextEffect(target))
             {
-                if (GetEffectTag(effect) == effectTag)
+                if (GetEffectTag(effect) == effectTag || GetEffectTag(effect) == pendingTag)
                     return true;
             }
 

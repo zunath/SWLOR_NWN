@@ -7919,7 +7919,7 @@ namespace SWLOR.Game.Server.Service
             // The pool can be smaller than requested at the engine's HP limit.
             var shieldAmount = TemporaryHitPointEffects.ApplyFlat(
                 activator,
-                "GUARDIANS_RESOLVE",
+                TemporaryHitPointEffectKey.GuardiansResolve,
                 GameMath.PercentOf(GetMaxHitPoints(activator), shieldPercent),
                 duration);
             if (shieldAmount <= 0)

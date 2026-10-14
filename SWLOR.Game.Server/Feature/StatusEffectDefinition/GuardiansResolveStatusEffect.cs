@@ -1,3 +1,4 @@
+using SWLOR.Game.Server.Feature.AbilityDefinition;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.StatusEffectService;
@@ -23,7 +24,18 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
 
         protected override void OnDamageTaken(uint defender, uint attacker, int damage, CombatDamageType damageType)
         {
-            if (damage <= 0 || _remainingShield <= 0)
+            // The pool can shrink without damage, e.g. when a raised maximum HP trims it to the
+            // engine's HP limit, so never track more shield than still exists.
+            _remainingShield = Math.Min(
+                _remainingShield,
+                TemporaryHitPointEffects.GetRemainingIncludingPending(defender, TemporaryHitPointEffectKey.GuardiansResolve));
+            if (_remainingShield <= 0)
+            {
+                StatusEffect.RemoveStatusEffect(defender, GetType(), Source);
+                return;
+            }
+
+            if (damage <= 0)
                 return;
 
             var absorbed = Math.Min(_remainingShield, damage);

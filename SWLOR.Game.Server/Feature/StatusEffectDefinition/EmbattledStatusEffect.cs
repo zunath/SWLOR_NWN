@@ -58,9 +58,10 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
         }
 
         /// <summary>
-        /// Records a pressuring attacker against the defender and (re)applies Embattled with the
-        /// updated stack count. Does nothing unless the defender owns the Surrounded, Not Outmatched trait,
-        /// as declared by the per-stack Defense stat.
+        /// Records a pressuring attacker against the defender and applies Embattled with the updated
+        /// stack count, or restarts the pressure window when the stacks are unchanged. Does nothing
+        /// unless the defender owns the Surrounded, Not Outmatched trait, as declared by the per-stack
+        /// Defense stat.
         /// </summary>
         public static void Refresh(uint defender, uint attacker)
         {
@@ -81,17 +82,33 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
 
             var stackCount = TrackAndCount(defender, attacker, maxStacks);
             var mobility = highStackThreshold > 0 && stackCount >= highStackThreshold ? highStackMobility : 0;
+            var defense = stackCount * perStackDefense;
+            var forceDefense = stackCount * perStackForceDefense;
+
+            // Unchanged stacks only restart the window, without another application message.
+            if (StatusEffect.GetStatusEffect(defender, typeof(EmbattledStatusEffect), defender) is EmbattledStatusEffect current &&
+                !current.IsFlaggedForRemoval &&
+                current.HasValues(stackCount, defense, forceDefense, mobility) &&
+                StatusEffect.RefreshStatusEffectDuration(defender, typeof(EmbattledStatusEffect), defender, PressureWindowSeconds))
+            {
+                return;
+            }
 
             StatusEffect.RemoveStatusEffect(defender, typeof(EmbattledStatusEffect), false);
             StatusEffect.ApplyStatusEffect(
                 defender,
                 defender,
-                new EmbattledStatusEffect(
-                    stackCount,
-                    stackCount * perStackDefense,
-                    stackCount * perStackForceDefense,
-                    mobility),
+                new EmbattledStatusEffect(stackCount, defense, forceDefense, mobility),
                 PressureWindowSeconds);
+        }
+
+        // Compares the live stats, not the constructor values, so a consumed stat is restored by a fresh application.
+        private bool HasValues(int stacks, int defense, int forceDefense, int mobility)
+        {
+            return _stacks == stacks &&
+                   StatGroup.Stats.GetValueOrDefault(StatType.PhysicalDefensePercentAdjustment) == defense &&
+                   StatGroup.Stats.GetValueOrDefault(StatType.ForceDefensePercentAdjustment) == forceDefense &&
+                   StatGroup.Stats.GetValueOrDefault(StatType.MobilityResistance) == mobility;
         }
 
         /// <summary>

@@ -110,7 +110,6 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                             if (GetItemPropertyType(property) == ItemPropertyType.UnlimitedAmmunition)
                                 RemoveItemProperty(main, property);
                         CreaturePlugin.RunUnequip(actor, main);
-                        if (canonical) ItemPlugin.SetBaseItemType(main, BaseItem.Sling);
                     });
                     await ctx.WaitFrameAsync();
                     var ammunition = quantity > 0 ? await ctx.EquipItemAsync(actor, "blaster_bullets", InventorySlot.Bullets) : OBJECT_INVALID;
@@ -118,6 +117,11 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                     {
                         if (GetIsObjectValid(ammunition)) SetItemStackSize(ammunition, quantity);
                         CreaturePlugin.RunEquip(actor, main, InventorySlot.RightHand);
+                        // Equip normalization intentionally canonicalizes player pistol resrefs.
+                        // Set the raw native fixture only after that boundary to test both paths.
+                        ItemPlugin.SetBaseItemType(main, canonical ? BaseItem.Sling : BaseItem.Pistol);
+                        ctx.AssertEqual(canonical ? BaseItem.Sling : BaseItem.Pistol, GetBaseItemType(main),
+                            "The finite fixture exercises its requested native launcher ID");
                         var native = NWNXLib.g_pAppManager.m_pServerExoApp.GetGameObject(actor).AsNWSCreature();
                         ctx.AssertEqual(0, native.m_bMagicalBulletsEquipped, "Finite fixture has no generated unlimited bullets");
                         if (hasted)

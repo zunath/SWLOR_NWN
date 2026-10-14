@@ -263,8 +263,7 @@ namespace SWLOR.Game.Server.Native
             effectiveCritical = critical;
             totalDamage = 0;
 
-            if (targetObject.m_nObjectType == (int)ObjectType.Creature &&
-                UsePerkFeat.HasQueuedWeaponAbility(attacker.m_idSelf, skillType, attacker.m_pcCombatRound.m_nCurrentAttack))
+            if (UsePerkFeat.HasQueuedWeaponAbility(attacker.m_idSelf, skillType, attacker.m_pcCombatRound.m_nCurrentAttack))
             {
                 Combat.ConsumeSuppressedAutoAttackDamageBonuses(attacker.m_idSelf, skillType);
                 return physicalDamage;

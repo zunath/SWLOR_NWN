@@ -178,14 +178,14 @@ Represent ordinary attacks, activated impacts, queued replacements, and secondar
 
 ### Current equipment baseline
 
-The baseline below uses current `Combat` and `WeaponDamage` formulas at equal Attack/Defense 100, equal damage attributes 26, a fixed 10% critical chance, StandardCriticalRating 2, DMG 22 and Delay 250 per item. It excludes misses, mitigation, other item bonuses, and perk-line bonuses. A single weapon rounds its adjusted item DMG up once; the damage formula rounds its final range endpoints down.
+The baseline below uses current `Combat` and `WeaponDamage` formulas at equal Attack/Defense 100, equal damage attributes 26, a fixed 10% critical chance, StandardCriticalRating 2, DMG 22 and Delay 250 per item. It excludes misses, mitigation, other item bonuses, and perk-line bonuses. A single weapon rounds its adjusted item DMG up once; the damage formula rounds its final range endpoints down. Damage casts a random float between those endpoints to an integer, so the upper integer endpoint is effectively excluded when endpoints differ.
 
 | Equipment | Item DMG per shot | Cycle interval | Mean damage per second |
 |---|---:|---:|---:|
-| Single pistol with natural +20% | 27 | 2.416s | 9.62 |
-| Single pistol with Doublehand III, +60% total | 36 | 2.416s | 13.04 |
-| Pair without Dual Wield | 22 each | 4.833s for two shots | 7.90 |
-| Pair with Dual Wield III | 22 each | 3.583s for two shots | 10.66 |
+| Single pistol with natural +20% | 27 | 2.416s | 9.42 |
+| Single pistol with Doublehand III, +60% total | 36 | 2.416s | 12.83 |
+| Pair without Dual Wield | 22 each | 4.833s for two shots | 7.70 |
+| Pair with Dual Wield III | 22 each | 3.583s for two shots | 10.38 |
 
 These are arithmetic baselines, not full-build measurements. They show why granting a free full-power companion hit at single-pistol cadence is inappropriate and why the slower paired cycle needs specialist damage bonuses. They do not establish full-build balance.
 
@@ -197,7 +197,9 @@ Run hybrids at equal total SP and skill-rank investment. A character buying both
 
 ### Revised balance validation required
 
-Earlier DPS tables and `tools/AnalyzeTwinPistolBalance.mjs` model the superseded duplicate-damage handling perks and older Paired Volley costs/powers. They are historical reference, not validation of this revision. Do not present the old 103% result or the former 129-SP hybrid as current evidence.
+Earlier DPS tables model the superseded duplicate-damage handling perks and older Paired Volley costs/powers. Do not present the old 103% result or the former 129-SP hybrid as current evidence. `tools/AnalyzeTwinPistolBalance.mjs` now models the current mutually exclusive handling choices, updated Volley, and ramp startup using 64 mixed-seed ordinary-hit samples, alongside expected activated damage and finite STM. It applies integer per-hit damage adjustments, clears Alternating Fire progress during its cooldown, and opens Crossfire with Slide, Rush, then Grapple. Quick Draw receives no repeated new-target critical bonus against the continuously damaged reference target.
+
+Its representative 120s case produces 21.72 DPS for the 69-SP Pistol reference, 23.93 for 69-SP Barrage, and 19.36 for 69-SP Crossfire. These are estimates from fixed rotations without cast/travel interruption, native swing batching, per-hit enhancements, capstones or engine execution. STM refunds and Momentum use fractional expectations, rotations retain a four-STM reserve, and Pistol trigger uptime is approximated; these do not reproduce individual fights. Barrage is about 110% of that reference and reaches 136% in the Haste/hit/ability-critical sweep; those outliers remain open validation work. Crossfire's omitted incoming-pressure and accuracy benefits also need matched engine comparisons. The model does not establish release balance. The handling comparison and marginal single/paired weapon tradeoffs are included in its JSON output; marginal ratios do not represent complete saber/rifle builds.
 
 Rerun matched-investment comparisons for both handling choices with 6s/12s openings and 120s sustained encounters. Include real paired pistols, single/two-handed weapons, saber/rifle cross-skills, external Haste, the global Haste cap, per-hit effects, available STM, paid activated attacks and movement interruption. Test weapon swaps without resetting stance penalties, counters or proc cooldowns. All legal combined-line purchases top out at 110 SP, or 119 including optional Armor Dual Wield; standalone lines remain 60 SP each.
 
@@ -321,7 +323,7 @@ The starting mechanics and baseline calculations are based on commit `62364f27c`
 
 - [Dual wield combat](DualWieldCombat.md) and [weapon loadout balance tests](../../SWLOR.Game.Server.Tests/Service/WeaponLoadoutBalanceTests.cs).
 - [Pistol perks](../Feature/PerkDefinition/PistolPerkDefinition.cs) and [Armor traits](../Feature/PerkDefinition/ArmorPerkDefinition.cs).
-- [Historical budget analysis script, requiring revision](../../tools/AnalyzeTwinPistolBalance.mjs), [Pistol ability definitions](../Feature/AbilityDefinition/Pistol), [combat formulas](../Service/Combat.cs), and [weapon damage](../Service/CombatService/WeaponDamage.cs).
+- [Resource budget analysis script](../../tools/AnalyzeTwinPistolBalance.mjs), [Pistol ability definitions](../Feature/AbilityDefinition/Pistol), [combat formulas](../Service/Combat.cs), and [weapon damage](../Service/CombatService/WeaponDamage.cs).
 - [Equipment restrictions](../Feature/EquipmentRestrictions.cs), [pistol compatibility](../Feature/PistolBaseItemCompatibility.cs), and [pistol animation remap](../Feature/PistolAnimationRemap.cs).
 - [Ability targeting](AbilityTargeting.md), [Design Bible workbook rules](DesignBibleWorkbookRules.md), [economy restrictions](EconomyRestrictedItems.md), [icon standards](IconStandards.md), [VFX selection](VisualEffectSelection.md), and [player identity](PlayerIdentity.md).
 - [Engine testing](EngineTesting.md) and [in-engine visual verification](InEngineVisualVerification.md).

@@ -265,7 +265,11 @@ namespace SWLOR.Game.Server.Service
             }
             if (existing != null && existing.Name == desired.Name && existing.Icon == desired.Icon)
             {
-                existing.SetDurationSeconds(seconds);
+                if (Math.Abs(existing.GetRemainingDurationSeconds(DateTime.UtcNow) - seconds) > .01f)
+                {
+                    existing.SetDurationSeconds(seconds);
+                    StatusEffect.RefreshStatusEffectDuration(actor, typeof(T), actor, seconds);
+                }
                 return;
             }
             StatusEffect.RemoveStatusEffect<T>(actor);

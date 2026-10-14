@@ -92,16 +92,19 @@ namespace SWLOR.CombatSim.Engine
 
         public void Spawn()
         {
-            if (!(_scenario.TimeStepSeconds > 0))
-                throw new InvalidDataException("The scenario's TimeStepSeconds must be greater than zero.");
-            if (!(_scenario.DurationSeconds > 0))
-                throw new InvalidDataException("The scenario's DurationSeconds must be greater than zero.");
+            if (!(_scenario.TimeStepSeconds > 0) || !float.IsFinite(_scenario.TimeStepSeconds))
+                throw new InvalidDataException("The scenario's TimeStepSeconds must be a finite number greater than zero.");
+            if (!(_scenario.DurationSeconds > 0) || !float.IsFinite(_scenario.DurationSeconds))
+                throw new InvalidDataException("The scenario's DurationSeconds must be a finite number greater than zero.");
 
             for (var teamIndex = 0; teamIndex < _scenario.Teams.Count; teamIndex++)
             {
                 var names = new HashSet<string>();
                 if (_scenario.Teams[teamIndex].RetargetSeconds < 0)
                     throw new InvalidDataException($"Team '{_scenario.Teams[teamIndex].Name}' has a negative RetargetSeconds.");
+                if (!Enum.IsDefined(_scenario.Teams[teamIndex].TargetPolicy))
+                    throw new InvalidDataException(
+                        $"Team '{_scenario.Teams[teamIndex].Name}' has an unknown TargetPolicy; use one of {string.Join(", ", Enum.GetNames<TargetPolicy>())}.");
 
                 foreach (var spec in _scenario.Teams[teamIndex].Members)
                 {
@@ -486,7 +489,8 @@ namespace SWLOR.CombatSim.Engine
                     var heal = HealingMath.DirectHeal(
                         effect,
                         target.Spec.MaxHp,
-                        target.HpPercent,
+                        // The game's low-HP check reads current HP, which counts temporary HP.
+                        target.HpPercentWithTemporaryHp,
                         target == caster,
                         caster.Spec.Willpower,
                         caster.Spec.ForceAffinity,
@@ -687,6 +691,14 @@ namespace SWLOR.CombatSim.Engine
         private void ApplyDamageProfile(Combatant attacker, Combatant target, DamageSpec damage, float hitBonus)
         {
             var targets = damage.Area ? Enemies(attacker).ToList() : new List<Combatant> { target };
+            if (!damage.Area && damage.Targets > 1)
+            {
+                // The rest of the area's victims are distinct enemies, never the same one twice.
+                targets.AddRange(Enemies(attacker)
+                    .Where(enemy => enemy != target)
+                    .OrderBy(_ => _random.Next())
+                    .Take(damage.Targets - 1));
+            }
             foreach (var victim in targets)
             {
                 for (var hit = 0; hit < damage.Hits; hit++)

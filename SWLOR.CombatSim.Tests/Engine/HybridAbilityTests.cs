@@ -91,6 +91,27 @@ namespace SWLOR.CombatSim.Tests.Engine
             other.Stats.DamageTakenToHp.Should().Be(WaveDamage, "an area cast needs no particular enemy alive");
         }
 
+        [TestCase(3, 3)]
+        [TestCase(2, 2)]
+        public void AreaRecipients_AreDistinctEnemies_EachHitOnce(int enemies, int expectedVictims)
+        {
+            var burst = TestCombatants.Use("ForceBurst1", AbilityTarget.Enemy, minIntervalSeconds: 600);
+            burst.Damage = new DamageSpec { Min = WaveDamage, Max = WaveDamage, HitChance = 1f, Targets = 3 };
+            var simulation = TestScenarios.Spawn(
+                TestScenarios.TwoTeams(
+                    false,
+                    new[] { TestCombatants.Medic("Medic", burst) },
+                    Enumerable.Range(1, enemies).Select(i => TestCombatants.Dummy($"Enemy {i}", true))),
+                RuleSets.Current(),
+                _catalog);
+
+            CastOnce(simulation);
+
+            var damaged = simulation.Combatants.Where(c => c.Stats.DamageTakenToHp > 0).ToList();
+            damaged.Should().HaveCount(expectedVictims);
+            damaged.Should().OnlyContain(c => c.Stats.DamageTakenToHp == WaveDamage, "no enemy takes a second share of the area");
+        }
+
         [Test]
         public void Spawn_RejectsADamageProfileOnASingleTargetHeal()
         {

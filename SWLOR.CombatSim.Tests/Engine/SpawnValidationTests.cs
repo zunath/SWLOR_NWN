@@ -23,6 +23,7 @@ namespace SWLOR.CombatSim.Tests.Engine
         [TestCase(0f)]
         [TestCase(-0.1f)]
         [TestCase(float.NaN)]
+        [TestCase(float.PositiveInfinity)]
         public void Run_RejectsATimeStepThatWouldNeverEnd(float step)
         {
             var scenario = Scenario(TestCombatants.Dummy("Player"));
@@ -35,6 +36,7 @@ namespace SWLOR.CombatSim.Tests.Engine
 
         [TestCase(0f)]
         [TestCase(-5f)]
+        [TestCase(float.PositiveInfinity)]
         public void Run_RejectsANonPositiveDuration(float duration)
         {
             var scenario = Scenario(TestCombatants.Dummy("Player"));
@@ -113,6 +115,17 @@ namespace SWLOR.CombatSim.Tests.Engine
             var act = () => new Simulation(Scenario(TestCombatants.Medic("Medic", strike)), RuleSets.Current(), _catalog, 1).Spawn();
 
             act.Should().Throw<InvalidDataException>().WithMessage("*ShatteringStrike1*damage profile*");
+        }
+
+        [Test]
+        public void Spawn_RejectsAnUnknownTargetPolicy()
+        {
+            var scenario = Scenario(TestCombatants.Dummy("Player"));
+            scenario.Teams[0].TargetPolicy = (TargetPolicy)99;
+
+            var act = () => new Simulation(scenario, RuleSets.Current(), _catalog, 1).Spawn();
+
+            act.Should().Throw<InvalidDataException>().WithMessage("*TargetPolicy*");
         }
 
         [TestCase(0)]

@@ -21,6 +21,12 @@ namespace SWLOR.CombatSim.Scenario
         /// <summary>Hits every living enemy instead of one target.</summary>
         public bool Area { get; set; }
 
+        /// <summary>
+        /// Distinct enemies one use reaches: the chosen target plus random others, each taking <see cref="Hits"/> rolls.
+        /// Stands in for an area that catches a few enemies; ignored when <see cref="Area"/> is set.
+        /// </summary>
+        public int Targets { get; set; } = 1;
+
         /// <summary>Decides which damage reductions apply; weapon and autoattack damage is physical.</summary>
         public DamageType Type { get; set; } = DamageType.Physical;
 
@@ -53,6 +59,8 @@ namespace SWLOR.CombatSim.Scenario
                 problems.Add("CritMultiplier must be a number of at least 1");
             if (Hits < 1)
                 problems.Add("Hits must be at least 1");
+            if (Targets < 1)
+                problems.Add("Targets must be at least 1");
             if (!Enum.IsDefined(Type))
                 problems.Add($"Type must be one of {string.Join(", ", Enum.GetNames<DamageType>())}");
 

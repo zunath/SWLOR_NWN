@@ -631,12 +631,12 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>
-        /// Records a cast or channel stopped before it completed. Damage names the creature that
-        /// dealt it; otherwise, unless the caster moved, the innermost scope of another creature
-        /// (its ability or effect) is what stopped it.
+        /// Records a cast or channel stopped before it completed. A damage interruption names the
+        /// creature that dealt the damage; an <see cref="CombatRecordInterruptCause.Other"/> stop made
+        /// inside another creature's scope is that creature's crowd control.
         /// </summary>
         public static void RecordAbilityInterrupted(
-            uint activator, AbilityDetail ability, CombatRecordInterruptCause cause, uint damagedBy)
+            uint activator, AbilityDetail ability, CombatRecordInterruptCause cause, uint damagedBy = OBJECT_INVALID)
         {
             if (ability == null || !IsInRecordedArea(activator))
                 return;
@@ -647,7 +647,7 @@ namespace SWLOR.Game.Server.Service
                 if (GetIsObjectValid(damagedBy) && damagedBy != activator)
                     interrupter = ResolveOwnAttribution(damagedBy);
             }
-            else if (cause != CombatRecordInterruptCause.Moved &&
+            else if (cause == CombatRecordInterruptCause.Other &&
                      _attributionDepth > 0 &&
                      _attributions[_attributionDepth - 1].Actor != activator)
             {

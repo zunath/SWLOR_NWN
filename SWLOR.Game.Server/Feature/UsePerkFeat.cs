@@ -717,6 +717,8 @@ namespace SWLOR.Game.Server.Feature
                 var activatorIsAlive = GetCurrentHitPoints(activator) > 0;
                 if (!activatorIsAlive)
                 {
+                    if (CombatRecorder.IsRecording)
+                        CombatRecorder.RecordAbilityInterrupted(activator, ability, CombatRecordInterruptCause.Died);
                     if (AbilityAnimationBinding.ActivationClip(ability, GetIsPC(activator)) != null)
                         NamedAnimation.Stop(activator);
                     ClearAbilityActivationIdleSnapshots(activator);
@@ -737,6 +739,8 @@ namespace SWLOR.Game.Server.Feature
                     CompanionControl.IsRegisteredCompanion(activator) &&
                     !CompanionControl.IsHostileAbilityTargetAuthorized(activator, ability, target))
                 {
+                    if (CombatRecorder.IsRecording)
+                        CombatRecorder.RecordAbilityInterrupted(activator, ability, CombatRecordInterruptCause.Other);
                     ClearAbilityActivationIdleSnapshots(activator);
                     CancelActivation(true);
                     return;

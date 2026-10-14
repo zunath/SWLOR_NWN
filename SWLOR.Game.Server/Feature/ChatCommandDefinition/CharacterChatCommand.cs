@@ -543,7 +543,7 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
         private void Afk()
         {
             _builder.Create("afk")
-                .Description("Toggles a purple [AFK] indicator on your displayed name. Use /afk again when you return.")
+                .Description("Toggles a purple [AFK] indicator on your displayed name. Moving or using /afk again removes it.")
                 .Permissions(AuthorizationLevel.All)
                 .Validate((user, args) => !GetIsPC(user) || GetIsDM(user)
                     ? "This command can only be used on player characters."
@@ -552,7 +552,7 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                 {
                     var isAfk = PlayerName.ToggleAfk(user);
                     SendMessageToPC(user, isAfk
-                        ? ColorToken.Purple("You are now AFK. Use /afk again when you return.")
+                        ? ColorToken.Purple("You are now AFK. Move or use /afk again when you return.")
                         : "You are no longer AFK.");
                 });
         }

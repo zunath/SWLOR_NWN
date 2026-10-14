@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using System.Numerics;
 using System.Text;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.NWNX.Enum;
@@ -15,7 +16,8 @@ namespace SWLOR.Game.Server.Service
         public const string UnknownName = PlayerDescriptor.DefaultUnknownDisplayName;
         private static readonly Dictionary<string, PlayerKnownName> KnownNamesByObserverId = new();
         private static readonly Dictionary<string, bool> ShowDescriptorsForNamedPlayersByObserverId = new();
-        private static readonly HashSet<uint> AfkPlayers = new();
+        private static readonly Dictionary<uint, (uint Area, Vector3 Position)> AfkPlayers = new();
+        private static IDisposable _afkMovementCheck;
         private static readonly string UnknownNamePrefix = ColorToken.TokenStart(127, 127, 127);
         private static readonly string UnknownNameSuffix = ColorToken.TokenEnd();
 
@@ -33,7 +35,7 @@ namespace SWLOR.Game.Server.Service
             if (!GetIsPC(player))
                 return;
 
-            AfkPlayers.Remove(player);
+            RemoveAfk(player);
             PlayerDescriptor.EnsureUnknownDisplayName(player);
 
             if (GetIsDM(player))
@@ -50,21 +52,57 @@ namespace SWLOR.Game.Server.Service
         [NWNEventHandler(ScriptName.OnModuleExit)]
         public static void ClearAfkOnExit()
         {
-            AfkPlayers.Remove(GetExitingObject());
+            RemoveAfk(GetExitingObject());
         }
 
-        public static bool IsAfk(uint player) => AfkPlayers.Contains(player);
+        public static bool IsAfk(uint player) => AfkPlayers.ContainsKey(player);
 
         public static bool ToggleAfk(uint player)
         {
             if (!GetIsObjectValid(player) || !GetIsPC(player) || GetIsDM(player))
                 return false;
 
-            if (!AfkPlayers.Add(player))
-                AfkPlayers.Remove(player);
+            if (!RemoveAfk(player))
+            {
+                AfkPlayers[player] = (GetArea(player), GetPosition(player));
+                _afkMovementCheck ??= Scheduler.ScheduleRepeating(CheckAfkMovement, TimeSpan.FromSeconds(1));
+            }
 
             RefreshNameOverridesForPlayer(player);
             return IsAfk(player);
+        }
+
+        private static bool RemoveAfk(uint player)
+        {
+            if (!AfkPlayers.Remove(player))
+                return false;
+
+            if (AfkPlayers.Count == 0)
+            {
+                _afkMovementCheck?.Dispose();
+                _afkMovementCheck = null;
+            }
+
+            return true;
+        }
+
+        private static void CheckAfkMovement()
+        {
+            foreach (var (player, start) in AfkPlayers.ToArray())
+            {
+                if (!GetIsObjectValid(player))
+                {
+                    RemoveAfk(player);
+                    continue;
+                }
+
+                if (GetArea(player) == start.Area && GetPosition(player) == start.Position)
+                    continue;
+
+                RemoveAfk(player);
+                RefreshNameOverridesForPlayer(player);
+                SendMessageToPC(player, "You are no longer AFK.");
+            }
         }
 
         // Keep status outside the name used for identity resolution and tell targeting.

@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Numerics;
 using System.Text.Json;
 using System.Threading.Tasks;
 using SWLOR.Game.Server.EngineTests.Framework;
@@ -127,6 +128,84 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 var actual = RenamePlugin.GetPCNameOverride(target.Creature, viewer ?? observer.Creature);
                 ctx.AssertEqual(expected, actual, label);
                 snapshots.Add(new { Label = label, Name = actual });
+            }
+        }
+        [EngineTest("AFK clears after movement without changing private names or disguises", Category = "PlayerName", TimeoutSeconds = 45f)]
+        public static async Task AfkClearsAfterMovement(EngineTestContext ctx)
+        {
+            using var observer = await PlayerAbilityFixture.CreateAsync(ctx);
+            using var target = await PlayerAbilityFixture.CreateAsync(ctx, 3f);
+            using var stationary = await PlayerAbilityFixture.CreateAsync(ctx, -3f);
+            var command = new CharacterChatCommand().BuildChatCommands()["afk"];
+            PlayerDisguise disguise = null;
+            try
+            {
+                PlayerDescriptor.SetUnknownDisplayName(target.Creature, "A quiet traveler");
+                PlayerName.SetKnownName(observer.Creature, target.Creature, "Vessa Tal");
+                await ToggleAsync(target.Creature);
+                await ToggleAsync(stationary.Creature);
+                await ctx.DelaySecondsAsync(1.25f);
+                ctx.Assert(PlayerName.IsAfk(target.Creature), "standing still keeps AFK across the scheduled check");
+                await ctx.ExecuteInCreatureContextAsync(target.Creature, () => SetFacing(90f));
+                await ctx.DelaySecondsAsync(1.25f);
+                ctx.Assert(PlayerName.IsAfk(target.Creature), "turning in place does not clear AFK");
+
+                ObjectPlugin.SetPosition(target.Creature, GetPosition(target.Creature) + new Vector3(1f, 0f, 0f));
+                await AssertMovementClearsAsync();
+                ctx.Assert(PlayerName.IsAfk(stationary.Creature), "another stationary AFK player is unaffected");
+                ctx.Assert(PlayerName.TryGetKnownName(observer.Creature, target.Creature, out var knownName), "private label retained after movement");
+                ctx.AssertEqual("Vessa Tal", knownName, "movement does not rename the identity");
+
+                await ToggleAsync(target.Creature);
+                await ctx.DelaySecondsAsync(1.25f);
+                ctx.Assert(PlayerName.IsAfk(target.Creature), "re-enabling AFK captures the new position");
+                await ToggleAsync(target.Creature);
+                await ToggleAsync(target.Creature);
+                await ctx.DelaySecondsAsync(1.25f);
+                ctx.Assert(PlayerName.IsAfk(target.Creature), "rapid off/on keeps the current AFK session");
+                await ctx.ExecuteInCreatureContextAsync(target.Creature, () =>
+                {
+                    disguise = Disguise.CreateDisguise(target.Creature);
+                    ctx.Assert(disguise != null, "create disguise");
+                    disguise.Descriptor = "A hooded courier";
+                    DB.Set(disguise);
+                    ctx.AssertEqual(string.Empty, Disguise.Activate(target.Creature, disguise.Id).ErrorMessage, "activate disguise");
+                });
+                PlayerName.SetKnownName(observer.Creature, target.Creature, "Masked Courier");
+                ObjectPlugin.SetPosition(target.Creature, GetPosition(target.Creature) + new Vector3(0f, 1f, 0f));
+                await AssertMovementClearsAsync();
+                ctx.AssertEqual(Disguise.BuildIdentityKey(disguise.Id), Disguise.GetIdentityKey(target.Creature), "movement keeps the disguise identity");
+                ctx.Assert(PlayerName.TryGetKnownName(observer.Creature, target.Creature, out knownName), "disguise label retained after movement");
+                ctx.AssertEqual("Masked Courier", knownName, "movement does not rename the disguise");
+
+                await ToggleAsync(stationary.Creature);
+                await ToggleAsync(target.Creature);
+                await ctx.DelaySecondsAsync(1.25f);
+                ctx.Assert(PlayerName.IsAfk(target.Creature), "checking restarts after the last AFK session ends");
+                ObjectPlugin.SetPosition(target.Creature, GetPosition(target.Creature) + new Vector3(1f, 0f, 0f));
+                await AssertMovementClearsAsync();
+            }
+            finally
+            {
+                foreach (var player in new[] { target.Creature, stationary.Creature })
+                    if (PlayerName.IsAfk(player))
+                        PlayerName.ToggleAfk(player);
+                if (disguise != null)
+                    DB.Delete<PlayerDisguise>(disguise.Id);
+                foreach (var names in DB.Search(new DBQuery<PlayerKnownName>()
+                             .AddFieldSearch(nameof(PlayerKnownName.ObserverPlayerId), observer.Id, false)
+                             .AddPaging(50, 0)).ToList())
+                    DB.Delete<PlayerKnownName>(names.Id);
+            }
+
+            Task ToggleAsync(uint player) => ctx.ExecuteInCreatureContextAsync(player, () =>
+                command.DoAction(player, OBJECT_INVALID, null));
+
+            async Task AssertMovementClearsAsync()
+            {
+                await ctx.WaitUntilAsync(() => !PlayerName.IsAfk(target.Creature), 3f, "movement to clear AFK through the real scheduler");
+                ctx.AssertEqual(PlayerName.GetDisplayName(observer.Creature, target.Creature),
+                    RenamePlugin.GetPCNameOverride(target.Creature, observer.Creature), "native name override has no AFK suffix after moving");
             }
         }
     }

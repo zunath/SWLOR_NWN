@@ -48,15 +48,31 @@ public class SpeederTailRemovalTests
             File.Exists(Path.Combine(FindRoot(), "SWLOR_Haks", "sw_cr_creature", model + ".mdl"))
                 .Should().BeFalse();
 
-        Directory.EnumerateFiles(Path.Combine(FindRoot(), "SWLOR_Haks", "sw_pt_robe"), "*.mdl")
-            .Select(Path.GetFileName)
-            .Should().NotContain(name => Regex.IsMatch(name!, @"^p[fm][a-z]22_robe\d{3}\.mdl$",
-                RegexOptions.IgnoreCase));
+    }
 
-        var tintMappings = ReadTable("tintmap");
-        for (var index = 0; index < tintMappings.RowCount; index++)
-            (tintMappings.GetValue(index, "MODEL") ?? string.Empty).Should()
-                .NotMatchRegex(@"^p[fm][a-z]22_robe\d{3}$");
+    [TestCase("pfh22_robe007")]
+    [TestCase("pmh22_robe187")]
+    [TestCase("pmh22_robe254")]
+    public void LargeBodyRobeModelsRemainAvailable(string model)
+    {
+        var root = Path.Combine(FindRoot(), "SWLOR_Haks");
+        File.Exists(Path.Combine(root, "sw_pt_robe", model + ".mdl")).Should().BeTrue(
+            "the phenotype-2 robe lookup uses the double-2 prefix, independently of riding phenotype 22");
+
+        Directory.EnumerateFiles(Path.Combine(root, "sw_pt_robe"), "*.mdl")
+            .Count(path => Regex.IsMatch(Path.GetFileName(path), @"^p[fm][a-z]22_robe\d{3}\.mdl$",
+                RegexOptions.IgnoreCase))
+            .Should().BeGreaterThanOrEqualTo(1241, "the existing large-body robe catalog must remain intact");
+    }
+
+    [TestCase("pfh22_robe007")]
+    [TestCase("pmh22_robe187")]
+    public void LargeBodyRobesKeepTheirTintMappings(string model)
+    {
+        var table = ReadTable("tintmap");
+        Enumerable.Range(0, table.RowCount)
+            .Select(row => table.GetValue(row, "MODEL"))
+            .Should().Contain(model);
     }
 
     [TestCase(1058, "sw_plc_mdrn", "plc_swpbike1", "sw_plc", "plc_swoop.dds")]

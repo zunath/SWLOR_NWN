@@ -176,6 +176,53 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             ctx.Assert(!GetIsDead(npc), "The NPC must stay alive throughout.");
         }
 
+        [EngineTest("Stripping a target's effects cancels a temporary HP grant still waiting for room", Category = LimitCategory, TimeoutSeconds = 30f)]
+        public static async Task EffectPurgeCancelsDeferredGrant(EngineTestContext ctx)
+        {
+            var arena = await QuietArena.CreateAsync(ctx);
+            var npc = await SpawnNPCAsync(ctx, arena, "nw_rat001", MaximumNPCHitPoints, immortal: false);
+
+            TemporaryHitPointEffects.ApplyFlat(npc, FirstKey, Headroom, 60f);
+            await ctx.WaitFrameAsync();
+            ctx.AssertEqual(Headroom, TemporaryHitPointEffects.ApplyFlat(npc, FirstKey, 5000, 60f), "the replacement waiting on the old pool");
+
+            // The same purge Space.EnterSpaceMode runs on ground effects.
+            for (var effect = GetFirstEffect(npc); GetIsEffectValid(effect); effect = GetNextEffect(npc))
+                RemoveEffect(npc, effect);
+
+            await ctx.DelaySecondsAsync(1f);
+            ctx.AssertEqual(0, TemporaryHitPointEffects.GetRemaining(npc), "pools after the purge");
+            ctx.AssertEqual(MaximumNPCHitPoints, GetCurrentHitPoints(npc), "reported HP after the purge");
+            ctx.AssertEqual(Headroom, TemporaryHitPointEffects.ApplyFlat(npc, SecondKey, 5000, 60f), "a new grant after the purge");
+            ctx.AssertEqual(Headroom, TemporaryHitPointEffects.GetRemaining(npc, SecondKey), "the cancelled grant left no reserved room behind");
+        }
+
+        [EngineTest("Raising an NPC's maximum HP trims temporary HP back under the limit", Category = LimitCategory, TimeoutSeconds = 30f)]
+        public static async Task MaximumHitPointIncreaseTrimsPools(EngineTestContext ctx)
+        {
+            var arena = await QuietArena.CreateAsync(ctx);
+            var npc = await SpawnNPCAsync(ctx, arena, "nw_rat001", 25000, immortal: false);
+
+            TemporaryHitPointEffects.ApplyFlat(npc, FirstKey, 4000, 60f);
+            TemporaryHitPointEffects.ApplyFlat(npc, SecondKey, 3767, 60f);
+            ctx.AssertEqual(Limit, GetCurrentHitPoints(npc), "reported HP before the maximum rises");
+
+            Stat.SetNPCMaxHitPoints(npc, MaximumNPCHitPoints);
+            ctx.AssertEqual(MaximumNPCHitPoints, GetMaxHitPoints(npc), "raised HP budget");
+            ctx.Assert(GetCurrentHitPoints(npc) > 0 && !GetIsDead(npc), "Raising the maximum must not read the NPC as dead.");
+
+            // The newest pool is dropped first, then the older one is trimmed to the remaining room.
+            await ctx.WaitUntilAsync(() => TemporaryHitPointEffects.GetRemaining(npc, FirstKey) == Headroom,
+                3f, "the older pool to be trimmed to the room under the new maximum");
+            ctx.AssertEqual(0, TemporaryHitPointEffects.GetRemaining(npc, SecondKey), "the newest pool");
+
+            ApplyEffectToObject(DurationType.Instant, EffectHeal(5000), npc);
+            await ctx.WaitUntilAsync(() => ObjectPlugin.GetCurrentHitPoints(npc) == MaximumNPCHitPoints,
+                5f, "the heal to restore the NPC to its new maximum");
+            ctx.AssertEqual(Limit, GetCurrentHitPoints(npc), "reported HP after healing to the new maximum");
+            ctx.Assert(!GetIsDead(npc), "The NPC must stay alive after healing to the new maximum.");
+        }
+
         [EngineTest("Guardian Ward IV on a 30,000 HP NPC stops at the HP limit and leaves it alive", Category = LimitCategory, TimeoutSeconds = 45f)]
         public static async Task GuardianWardOnMaximumHitPointNPCLeavesItAlive(EngineTestContext ctx)
         {

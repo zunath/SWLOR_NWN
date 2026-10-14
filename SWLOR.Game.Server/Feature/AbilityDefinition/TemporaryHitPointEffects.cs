@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using SWLOR.Game.Server.Service;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
@@ -14,6 +15,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
         private const string SourceVariableSuffix = "_SOURCE";
         private const string GenerationVariableSuffix = "_GENERATION";
         private const string DeferredVariableSuffix = "_DEFERRED";
+        private const string PendingTagSuffix = "_PENDING";
         private const string DeferredTotalVariable = EffectTagPrefix + "DEFERRED_TOTAL";
         private const float PendingRemovalDelaySeconds = 0.1f;
 
@@ -56,8 +58,12 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
         /// </summary>
         public static int GetCapacity(uint target)
         {
-            var hitPoints = Math.Max(GetMaxHitPoints(target), ObjectPlugin.GetCurrentHitPoints(target));
-            return GetCapacity(hitPoints, GetEngineTemporaryHitPoints(target));
+            return GetCapacity(GetLimitingHitPoints(target), GetEngineTemporaryHitPoints(target));
+        }
+
+        private static int GetLimitingHitPoints(uint target)
+        {
+            return Math.Max(GetMaxHitPoints(target), ObjectPlugin.GetCurrentHitPoints(target));
         }
 
         public static int GetCapacity(int hitPoints, int remainingTemporaryHitPoints)
@@ -160,8 +166,11 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
             var generation = AdvanceGeneration(target, effectKey);
             RemoveEffectByTag(target, effectTag);
 
-            var immediateRoom = GetCapacity(target);
-            var releasedRoom = immediateRoom + GetPendingRemoval(target) - GetLocalInt(target, DeferredTotalVariable);
+            // Immediate room counts pools the engine has not released yet; released room is what
+            // remains once it does, less room already reserved for other deferred grants.
+            var hitPoints = GetLimitingHitPoints(target);
+            var immediateRoom = GetCapacity(hitPoints, GetEngineTemporaryHitPoints(target));
+            var releasedRoom = GetCapacity(hitPoints, GetRemaining(target) + GetLocalInt(target, DeferredTotalVariable));
             var grantedAmount = Math.Min(amount, releasedRoom);
             if (grantedAmount <= 0)
                 return 0;
@@ -182,11 +191,17 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
         }
 
         // Reserved room is excluded from every later grant until the deferred effect lands, so
-        // grants made while it waits cannot claim the same released pool.
+        // grants made while it waits cannot claim the same released pool. The pending marker is
+        // an inert effect, so anything that strips the target's effects also cancels the grant.
         private static void ScheduleDeferredGrant(uint target, string effectKey, int generation, int amount, float durationSeconds)
         {
             SetLocalInt(target, GetDeferredVariable(effectKey), amount);
             SetLocalInt(target, DeferredTotalVariable, GetLocalInt(target, DeferredTotalVariable) + amount);
+            ApplyEffectToObject(
+                DurationType.Temporary,
+                TagEffect(EffectRunScript(), GetPendingTag(effectKey)),
+                target,
+                durationSeconds + PendingRemovalDelaySeconds);
             AssignCommand(GetModule(), () => DelayCommand(PendingRemovalDelaySeconds, () =>
                 ApplyDeferredGrant(target, effectKey, generation, amount, durationSeconds)));
         }
@@ -198,6 +213,15 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                 return;
 
             ReleaseDeferredGrant(target, effectKey);
+            var pendingTag = GetPendingTag(effectKey);
+            if (!HasEffectWithTag(target, pendingTag))
+            {
+                if (GetRemaining(target, effectKey) <= 0)
+                    Remove(target, effectKey);
+                return;
+            }
+
+            RemoveEffectByTag(target, pendingTag);
             var appliedAmount = Math.Min(amount, GetCapacity(target));
             if (appliedAmount > 0)
                 ApplyPoolEffect(target, EffectTagPrefix + effectKey, appliedAmount, durationSeconds);
@@ -246,9 +270,51 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
         private static int AdvanceGeneration(uint target, string effectKey)
         {
             ReleaseDeferredGrant(target, effectKey);
+            RemoveEffectByTag(target, GetPendingTag(effectKey));
             var generation = GetLocalInt(target, GetGenerationVariable(effectKey)) + 1;
             SetLocalInt(target, GetGenerationVariable(effectKey), generation);
             return generation;
+        }
+
+        /// <summary>
+        /// Re-applies pools through the clamp after the target's maximum HP rises, so healing
+        /// toward the new maximum cannot push the reported total past the engine limit.
+        /// </summary>
+        public static void EnforceLimit(uint target)
+        {
+            var hitPoints = GetLimitingHitPoints(target);
+            if (hitPoints + GetRemaining(target) <= MaximumReportedHitPoints)
+                return;
+
+            var pools = new List<(string EffectKey, int Amount, int DurationSeconds)>();
+            for (var effect = GetFirstEffect(target); GetIsEffectValid(effect); effect = GetNextEffect(target))
+            {
+                var effectTag = GetEffectTag(effect);
+                if (GetEffectType(effect) != EffectTypeScript.TemporaryHitpoints ||
+                    GetEffectDurationType(effect) != (int)DurationType.Temporary ||
+                    !effectTag.StartsWith(EffectTagPrefix, StringComparison.Ordinal))
+                    continue;
+
+                var effectKey = effectTag.Substring(EffectTagPrefix.Length);
+                var index = pools.FindIndex(pool => pool.EffectKey == effectKey);
+                var amount = Math.Max(0, GetEffectInteger(effect, 0));
+                var duration = GetEffectDurationRemaining(effect);
+                if (index < 0)
+                    pools.Add((effectKey, amount, duration));
+                else
+                    pools[index] = (effectKey, pools[index].Amount + amount, Math.Max(pools[index].DurationSeconds, duration));
+            }
+
+            // Trim the most recently granted pools first.
+            for (var index = pools.Count - 1; index >= 0; index--)
+            {
+                if (hitPoints + GetRemaining(target) <= MaximumReportedHitPoints)
+                    return;
+
+                var (effectKey, amount, durationSeconds) = pools[index];
+                if (ApplyFlatInternal(target, effectKey, amount, durationSeconds) <= 0)
+                    Remove(target, effectKey);
+            }
         }
 
         public static void ApplyFlatWithBarrierVisual(
@@ -332,6 +398,22 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
         private static string GetDeferredVariable(string effectKey)
         {
             return EffectTagPrefix + effectKey + DeferredVariableSuffix;
+        }
+
+        private static string GetPendingTag(string effectKey)
+        {
+            return EffectTagPrefix + effectKey + PendingTagSuffix;
+        }
+
+        private static bool HasEffectWithTag(uint target, string effectTag)
+        {
+            for (var effect = GetFirstEffect(target); GetIsEffectValid(effect); effect = GetNextEffect(target))
+            {
+                if (GetEffectTag(effect) == effectTag)
+                    return true;
+            }
+
+            return false;
         }
 
         private static void ValidateEffectKey(string effectKey)

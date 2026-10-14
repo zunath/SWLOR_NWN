@@ -90,7 +90,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
             ValidateEffectKey(effectKey);
             DeleteLocalString(target, GetOwnerVariable(effectKey));
             DeleteLocalObject(target, GetSourceVariable(effectKey));
-            var granted = ApplyFlatInternal(target, effectKey, amount, durationSeconds);
+            var granted = ApplyFlatInternal(target, effectKey, amount, durationSeconds, source);
 
             if (granted > 0 && GetIsObjectValid(source))
                 SetLocalObject(target, GetSourceVariable(effectKey), source);
@@ -123,11 +123,13 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
             return granted;
         }
 
-        private static int ApplyFlatInternal(uint target, string effectKey, int amount, float durationSeconds)
+        private static int ApplyFlatInternal(uint target, string effectKey, int amount, float durationSeconds, uint source = OBJECT_INVALID)
         {
             var effectTag = EffectTagPrefix + effectKey;
             // The pool being replaced doesn't count against its own room under the cap.
             var otherPoolsRemaining = GetRemaining(target) - GetRemaining(target, effectTag);
+            if (CombatRecorder.IsRecording)
+                CombatRecorder.RecordTemporaryHitPointPoolRemoving(target);
             RemoveEffectByTag(target, effectTag);
 
             var granted = CalculateGrantedAmount(amount, GetMaximumTotal(target), otherPoolsRemaining);
@@ -139,7 +141,21 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                 TagEffect(EffectTemporaryHitpoints(granted), effectTag),
                 target,
                 durationSeconds);
+
+            if (CombatRecorder.IsRecording)
+                CombatRecorder.RecordTemporaryHitPointsGranted(source, target, effectKey, granted, durationSeconds);
             return granted;
+        }
+
+        /// <summary>
+        /// Returns the ability key of a temporary-HP effect tag, or the tag itself when it was
+        /// not applied through this class.
+        /// </summary>
+        public static string GetEffectKey(string effectTag)
+        {
+            return effectTag != null && effectTag.StartsWith(EffectTagPrefix, StringComparison.Ordinal)
+                ? effectTag.Substring(EffectTagPrefix.Length)
+                : effectTag;
         }
 
         public static int ApplyFlatWithBarrierVisual(
@@ -236,6 +252,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
             DeleteLocalObject(target, GetSourceVariable(effectKey));
 
             var effectTag = EffectTagPrefix + effectKey;
+            if (CombatRecorder.IsRecording)
+                CombatRecorder.RecordTemporaryHitPointPoolRemoving(target);
             RemoveEffectByTag(target, effectTag);
             RemoveEffectByTag(target, effectTag + BarrierVisualEffectTagSuffix);
         }

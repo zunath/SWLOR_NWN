@@ -6,6 +6,7 @@ using SWLOR.Game.Server.Core.NWNX.Enum;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Feature.AbilityDefinition;
 using SWLOR.Game.Server.Feature.StatusEffectDefinition;
+using SWLOR.Game.Server.Service.CombatRecorderService;
 using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.DBService;
 using SWLOR.Game.Server.Service.PerkService;
@@ -62,6 +63,7 @@ namespace SWLOR.Game.Server.Service
             public bool IsConcealed { get; init; }
             public VisualEffect SuccessfulImpactVisualEffect { get; init; }
             public HashSet<uint> DetectedBy { get; } = new();
+            public CombatRecordAttribution PlacedBy { get; init; }
         }
 
         private static readonly Dictionary<uint, List<TrapRecord>> _trapsByOwner = new();
@@ -99,7 +101,8 @@ namespace SWLOR.Game.Server.Service
             {
                 Owner = owner,
                 Location = location,
-                SuccessfulImpactVisualEffect = Ability.GetSuccessfulImpactVisualEffect(owner)
+                SuccessfulImpactVisualEffect = Ability.GetSuccessfulImpactVisualEffect(owner),
+                PlacedBy = CombatRecorder.CaptureScope()
             };
             record.Marker = DeviceAbilityEffects.CreateTemporaryFieldEngineerMarker(
                 location,
@@ -141,7 +144,8 @@ namespace SWLOR.Game.Server.Service
                 Owner = owner,
                 Location = location,
                 Tier = tier,
-                IsConcealed = true
+                IsConcealed = true,
+                PlacedBy = CombatRecorder.CaptureScope()
             };
             record.Marker = CreateObject(ObjectType.Placeable, ConcealedTrapResref, location, false, ConcealedTrapResref);
             if (!GetIsObjectValid(record.Marker))
@@ -298,6 +302,7 @@ namespace SWLOR.Game.Server.Service
                         : TrapTriggerXP;
                     Skill.GiveSkillXP(record.Owner, SkillType.Espionage, xp, false, false);
                 }
+                using var recorderAttribution = CombatRecorder.BeginTrapAttribution(record.Owner, record.PlacedBy);
                 CombatAreaPulses.ApplyCombatPulse(
                     record.Owner,
                     record.Location,
@@ -453,6 +458,7 @@ namespace SWLOR.Game.Server.Service
 
             AssignCommand(record.Owner, () =>
             {
+                using var recorderAttribution = CombatRecorder.BeginTrapAttribution(record.Owner, record.PlacedBy);
                 ApplyEffectToObject(
                     DurationType.Instant,
                     EffectDamage(damage, DamageType.Piercing),

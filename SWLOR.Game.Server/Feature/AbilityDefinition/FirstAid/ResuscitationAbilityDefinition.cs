@@ -92,6 +92,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
             ReviveRules.RecordResuscitation(activator, target);
             var playResurrectionVisual = Ability.CaptureSuccessfulImpactVisualEffect(activator);
             ApplyEffectToObject(DurationType.Instant, EffectResurrection(), target);
+            if (CombatRecorder.IsRecording)
+                CombatRecorder.RecordResurrection(target);
             FirstAidTreatmentAdjustments.ApplyTraumaMedicRiders(activator, target);
             DelayCommand(0.1f, () =>
             {
@@ -111,11 +113,14 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
             ReviveRules.RecordResuscitation(activator, target);
             var playResurrectionVisual = Ability.CaptureSuccessfulImpactVisualEffect(activator);
             ApplyEffectToObject(DurationType.Instant, EffectResurrection(), target);
+            if (CombatRecorder.IsRecording)
+                CombatRecorder.RecordResurrection(target);
             FirstAidTreatmentAdjustments.ApplyTraumaMedicRiders(activator, target);
             // Resurrection is not settled until after the current engine command finishes.
             // Healing in the same tick is silently discarded because the target is still dead.
             DelayCommand(0.1f, () =>
             {
+                using var recorderScope = CombatRecorder.BeginAbilityFeatAttribution(activator, FeatType.Resuscitation2);
                 AbilityEffectScaling.ApplyActivatedScaledHeal(activator, target, 20);
                 Ability.ReapplyAuraEffectsForCreature(target);
                 if (GetIsObjectValid(target) && !GetIsDead(target) && GetCurrentHitPoints(target) > 0)

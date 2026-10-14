@@ -2,6 +2,7 @@ using SWLOR.Game.Server.Service.StatusEffectService;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Service.ActivityService;
+using SWLOR.Game.Server.Service.CombatRecorderService;
 using SWLOR.Game.Server.Service.StatService;
 using SWLOR.NWN.API.NWScript.Enum;
 
@@ -72,6 +73,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
                 staminaAmount += restRegen * 2;
             }
 
+            using var recorderAttribution = CombatRecorder.BeginAttribution(creature, CombatRecordSourceKind.Rest);
             ApplyEffectToObject(DurationType.Instant, EffectHeal(hpAmount), creature);
             Stat.RestoreStamina(creature, staminaAmount, sendFeedback: false);
             Stat.RestoreFP(creature, fpAmount, sendFeedback: false);

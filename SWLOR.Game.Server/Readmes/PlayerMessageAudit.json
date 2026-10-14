@@ -385,6 +385,13 @@
     "Call": "SendMessageToPC(user, ColorToken.Green(\"All window positions and sizes have been reset to their default values.\"))"
   },
   {
+    "File": "SWLOR.Game.Server/Feature/ChatCommandDefinition/CombatRecorderChatCommand.cs",
+    "Line": 45,
+    "Member": "BuildChatCommands",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(user, message)"
+  },
+  {
     "File": "SWLOR.Game.Server/Feature/ChatCommandDefinition/DebuggingChatCommand.cs",
     "Line": 77,
     "Member": "MoveDoor",

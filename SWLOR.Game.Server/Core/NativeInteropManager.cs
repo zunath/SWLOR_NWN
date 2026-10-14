@@ -19,6 +19,8 @@ namespace SWLOR.Game.Server.Core
         [UnmanagedCallersOnly]
         private static void OnMainLoop(ulong frame)
         {
+            ServerFrame.Current = frame;
+            var entered = ManagedEntryDepth.Enter();
             try
             {
                 ServerManager.MainLoop.ProcessMainLoop(frame);
@@ -27,11 +29,16 @@ namespace SWLOR.Game.Server.Core
             {
                 Log.Write(LogGroup.Error, $"MainLoop exception: {e}", true);
             }
+            finally
+            {
+                ManagedEntryDepth.Exit(entered);
+            }
         }
 
         [UnmanagedCallersOnly]
         private static int OnRunScript(IntPtr scriptPtr, uint oidSelf)
         {
+            var entered = ManagedEntryDepth.Enter();
             try
             {
                 var scriptName = scriptPtr.ReadNullTerminatedString();
@@ -42,11 +49,16 @@ namespace SWLOR.Game.Server.Core
                 Log.Write(LogGroup.Error, $"RunScript exception: {e}", true);
                 return -1;
             }
+            finally
+            {
+                ManagedEntryDepth.Exit(entered);
+            }
         }
 
         [UnmanagedCallersOnly]
         private static void OnSignal(IntPtr signalPtr)
         {
+            var entered = ManagedEntryDepth.Enter();
             try
             {
                 var signal = signalPtr.ReadNullTerminatedString();
@@ -56,11 +68,16 @@ namespace SWLOR.Game.Server.Core
             {
                 Log.Write(LogGroup.Error, $"Signal processing exception: {e}", true);
             }
+            finally
+            {
+                ManagedEntryDepth.Exit(entered);
+            }
         }
 
         [UnmanagedCallersOnly]
         private static void OnClosure(ulong eid, uint oidSelf)
         {
+            var entered = ManagedEntryDepth.Enter();
             try
             {
                 ServerManager.Bootstrapper.ClosureManager.OnClosure(eid, oidSelf);
@@ -68,6 +85,10 @@ namespace SWLOR.Game.Server.Core
             catch (Exception e)
             {
                 Log.Write(LogGroup.Error, $"Closure processing exception: {e}", true);
+            }
+            finally
+            {
+                ManagedEntryDepth.Exit(entered);
             }
         }
 

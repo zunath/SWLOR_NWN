@@ -21,6 +21,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.HeavyVibroblade
 
             StatusEffect.RemoveStatusEffect(activator, type, false);
             SendMessageToPC(activator, $"{StatusEffect.GetStatusEffectName(type)} deactivated.");
+            if (CombatRecorder.IsRecording)
+                CombatRecorder.NoteToggleDeactivated(activator);
             return false;
         }
 
@@ -84,6 +86,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.HeavyVibroblade
             var hitPointsSpent = Combat.CalculateHitPointsSpentThroughTemporaryHitPoints(
                 payment,
                 TemporaryHitPointEffects.GetRemaining(activator));
+            if (CombatRecorder.IsRecording)
+                CombatRecorder.ExpectHitPointCost(activator, payment);
             AssignCommand(activator, () =>
             {
                 ApplyEffectToObject(DurationType.Instant, EffectDamage(payment), activator);

@@ -83,6 +83,10 @@ namespace SWLOR.Game.Server.Service.StatusEffectService
                     SetDurationSeconds(durationSeconds);
             }
             Source = source;
+            if (CombatRecorder.IsRecording)
+                CombatRecorder.RecordStatusApplied(source, creature, this, GetRemainingDurationSeconds(DateTime.UtcNow), _isPermanent, false);
+
+            using var recorderAttribution = CombatRecorder.BeginStatusEffectAttribution(source, creature, this);
             Apply(creature, durationTicks);
         }
 
@@ -143,7 +147,11 @@ namespace SWLOR.Game.Server.Service.StatusEffectService
         protected virtual void Remove(uint creature) { }
         public void RemoveEffect(uint creature, bool isReplacement = false)
         {
+            if (CombatRecorder.IsRecording)
+                CombatRecorder.RecordStatusRemoved(creature, this, isReplacement);
+
             IsBeingReplaced = isReplacement;
+            using var recorderAttribution = CombatRecorder.BeginStatusEffectAttribution(Source, creature, this);
             try
             {
                 Remove(creature);
@@ -197,6 +205,7 @@ namespace SWLOR.Game.Server.Service.StatusEffectService
                 SecondsSinceNaturalExpiration = 0f;
             }
 
+            using var recorderAttribution = CombatRecorder.BeginStatusEffectAttribution(Source, creature, this);
             Tick(creature);
         }
 
@@ -234,6 +243,7 @@ namespace SWLOR.Game.Server.Service.StatusEffectService
         protected virtual void OnHit(uint creature, uint target, int damage) { }
         public void OnHitEffect(uint creature, uint target, int damage)
         {
+            using var recorderAttribution = CombatRecorder.BeginStatusEffectAttribution(Source, creature, this);
             OnHit(creature, target, damage);
         }
 
@@ -257,6 +267,7 @@ namespace SWLOR.Game.Server.Service.StatusEffectService
             CombatDamageType damageType,
             CombatDamageDeliveryType deliveryType = CombatDamageDeliveryType.Direct)
         {
+            using var recorderAttribution = CombatRecorder.BeginStatusEffectAttribution(Source, attacker, this);
             OnDamageDealt(attacker, defender, damage, damageType, deliveryType);
         }
 
@@ -280,6 +291,7 @@ namespace SWLOR.Game.Server.Service.StatusEffectService
             CombatDamageType damageType,
             CombatDamageDeliveryType deliveryType = CombatDamageDeliveryType.Direct)
         {
+            using var recorderAttribution = CombatRecorder.BeginStatusEffectAttribution(Source, defender, this);
             OnDamageTaken(defender, attacker, damage, damageType, deliveryType);
         }
 

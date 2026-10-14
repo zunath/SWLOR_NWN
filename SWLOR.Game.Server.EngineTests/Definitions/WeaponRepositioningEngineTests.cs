@@ -18,8 +18,8 @@ public static class WeaponRepositioningEngineTests
     {
         var actor = ctx.SpawnCreature("civilian");
         var target = ctx.SpawnCreature("civilian", 5f);
-        await ctx.EquipItemAsync(actor, "b_pistol", InventorySlot.RightHand);
-        var companion = await ctx.EquipItemAsync(actor, "tp_comp_proto", InventorySlot.LeftHand);
+        var main = await ctx.EquipItemAsync(actor, "b_twinpistol", InventorySlot.RightHand);
+        var companion = await TwinPistolEquipmentEngineTests.WaitForPair(ctx, actor, main);
         await ctx.DelaySecondsAsync(1f);
         Location destination = null;
         var groundAnchor = OBJECT_INVALID;

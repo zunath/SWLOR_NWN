@@ -424,8 +424,8 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 record.Perks[PerkType.Headshot] = 1;
             });
             var target = ctx.SpawnCreature("nw_rat001", 1f);
-            var main = await ctx.EquipItemAsync(actor, "b_pistol", InventorySlot.RightHand);
-            var companion = await ctx.EquipItemAsync(actor, "tp_comp_proto", InventorySlot.LeftHand);
+            var main = await ctx.EquipItemAsync(actor, "b_twinpistol", InventorySlot.RightHand);
+            var companion = await TwinPistolEquipmentEngineTests.WaitForPair(ctx, actor, main);
             try
             {
                 await ctx.ExecuteInCreatureContextAsync(actor, () =>
@@ -785,7 +785,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             {
                 await ctx.ExecuteInCreatureContextAsync(actor, () =>
                 {
-                    main = CreateItemOnObject("b_pistol", actor);
+                    main = CreateItemOnObject("b_twinpistol", actor);
                     ctx.Assert(GetIsObjectValid(main), "The finite fixture owns its main pistol before first equip");
                     var unlimited = new List<ItemProperty>();
                     for (var ip = GetFirstItemProperty(main); GetIsItemPropertyValid(ip); ip = GetNextItemProperty(main))
@@ -804,8 +804,8 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 await ctx.WaitUntilAsync(() => GetItemInSlot(InventorySlot.RightHand, actor) == main, 5f,
                     "the finite pistol to equip without ever generating unlimited ammunition");
             }
-            else main = await ctx.EquipItemAsync(actor, "b_pistol", InventorySlot.RightHand);
-            var companion = await ctx.EquipItemAsync(actor, "tp_comp_proto", InventorySlot.LeftHand);
+            else main = await ctx.EquipItemAsync(actor, "b_twinpistol", InventorySlot.RightHand);
+            var companion = await TwinPistolEquipmentEngineTests.WaitForPair(ctx, actor, main);
             await ctx.ExecuteInCreatureContextAsync(actor, () =>
             {
                 ReplaceWeaponProperty(main, ItemPropertyType.DMG, ItemPropertyCustom(ItemPropertyType.DMG, -1, 10));

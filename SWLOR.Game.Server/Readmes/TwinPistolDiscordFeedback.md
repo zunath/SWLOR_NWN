@@ -6,7 +6,7 @@ Each section below is one Discord message under 2,000 characters. Effects show c
 
 **Twin Pistol proposal — updated for cross-skilling**
 
-A separate 0-50 weapon skill within the normal 400-rank cap; no Pistol prerequisite. Twin Pistol weapon auto-attacks/training use a real main-hand pistol and simulated companion, each with its own damage, accuracy, upgrades and appearance. Both weapons contribute to attack delay.
+A separate 0-50 weapon skill within the normal 400-rank cap; no Pistol prerequisite. Twin Pistols are one owned item. Equipping it automatically equips a temporary off-hand gun. Removing either gun unequips the pair and destroys the temporary gun. Both guns share the item's weapon profile and upgrades; equipment bonuses apply once. Both guns contribute to attack delay and roll hits separately.
 
 **Barrage:** sustained pressure and stamina management.
 **Crossfire:** reposition, earn Momentum, then spend it on a stronger attack.

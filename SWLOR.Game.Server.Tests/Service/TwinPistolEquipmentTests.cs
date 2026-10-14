@@ -15,6 +15,33 @@ public class TwinPistolEquipmentTests
     [OneTimeSetUp]
     public void LoadMappings() => Skill.LoadMappings();
 
+    [TestCase(BaseItem.Pistol, true, true)]
+    [TestCase(BaseItem.Sling, true, true)]
+    [TestCase(BaseItem.Pistol, false, false)]
+    [TestCase(BaseItem.LegacyPistol, true, false)]
+    [TestCase(BaseItem.CompanionPistol, true, false)]
+    [TestCase(BaseItem.Rifle, true, false)]
+    public void OwnedPair_RequiresItsExplicitMarkerAndCanonicalPistol(BaseItem type, bool marked, bool expected) =>
+        TwinPistolEquipment.IsPairItem(type, marked).Should().Be(expected);
+
+    [TestCase(ItemPropertyType.DMG, true)]
+    [TestCase(ItemPropertyType.Delay, true)]
+    [TestCase(ItemPropertyType.Accuracy, true)]
+    [TestCase(ItemPropertyType.DamageStat, true)]
+    [TestCase(ItemPropertyType.AccuracyStat, true)]
+    [TestCase(ItemPropertyType.WeaponDamageType, true)]
+    [TestCase(ItemPropertyType.HPBonus, false)]
+    [TestCase(ItemPropertyType.Stamina, false)]
+    [TestCase(ItemPropertyType.Attack, false)]
+    [TestCase(ItemPropertyType.WeaponEnhancement, false)]
+    [TestCase(ItemPropertyType.EnhancementLevel, false)]
+    [TestCase(ItemPropertyType.Blueprint, false)]
+    [TestCase(ItemPropertyType.RequiresSkill, false)]
+    [TestCase(ItemPropertyType.OnHitCastSpell, false)]
+    [TestCase(ItemPropertyType.UnlimitedAmmunition, false)]
+    public void GeneratedHand_OnlyMirrorsWeaponProfileAndNeverSlotsOrEquipmentBonuses(ItemPropertyType type, bool expected) =>
+        TwinPistolEquipment.IsMirroredProperty(type).Should().Be(expected);
+
     [TestCase(BaseItem.Pistol, BaseItem.CompanionPistol, true)]
     [TestCase(BaseItem.Sling, BaseItem.CompanionPistol, true)]
     [TestCase(BaseItem.LegacyPistol, BaseItem.CompanionPistol, false)]

@@ -6,7 +6,7 @@ using SWLOR.NWN.API.NWScript.Enum.Item;
 
 namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition;
 
-/// <summary>Companions use the matching pistol's materials, research, prices and enhancement-slot budget.</summary>
+/// <summary>Retains retired companion recipe identities without allowing independent companion crafting.</summary>
 public sealed class CompanionPistolRecipes : IRecipeListDefinition
 {
     public Dictionary<RecipeType, RecipeDetail> BuildRecipes()
@@ -34,7 +34,7 @@ public sealed class CompanionPistolRecipes : IRecipeListDefinition
             {
                 Skill = source.Skill, Category = RecipeCategoryType.CompanionPistol, Resref = resref,
                 Quantity = source.Quantity, Level = source.Level, PracticeRankLimit = source.PracticeRankLimit,
-                IsActive = source.IsActive, EnhancementType = source.EnhancementType,
+                IsActive = false, EnhancementType = source.EnhancementType,
                 EnhancementSlots = source.EnhancementSlots, ResearchCostModifier = source.ResearchCostModifier,
                 IsItemIntendedForCrafting = source.IsItemIntendedForCrafting,
                 Components = new Dictionary<string, int>(source.Components),

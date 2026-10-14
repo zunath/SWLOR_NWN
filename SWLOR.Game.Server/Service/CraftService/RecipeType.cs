@@ -3469,5 +3469,16 @@ namespace SWLOR.Game.Server.Service.CraftService
         AscendantCompanionPistol = 6286,
         OphidianCompanionPistol = 6287,
         ChiroCompanionPistol = 6288,
+        BasicTwinPistol = 6289,
+        FieldTwinPistol = 6290,
+        TitanTwinPistol = 6291,
+        SithTwinPistol = 6292,
+        VeteranTwinPistol = 6293,
+        DeltaTwinPistol = 6294,
+        PrimeTwinPistol = 6295,
+        ProtoTwinPistol = 6296,
+        AscendantTwinPistol = 6297,
+        OphidianTwinPistol = 6298,
+        ChiroTwinPistol = 6299,
     }
 }

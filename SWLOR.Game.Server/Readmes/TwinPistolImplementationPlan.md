@@ -2,7 +2,7 @@
 
 ## Design
 
-Twin Pistol is a separate combat skill for fighting with a normal main-hand pistol and a simulated companion pistol in the left hand. **Barrage** rewards rapid sustained pressure on one enemy. **Crossfire** uses deliberate repositioning to build Momentum for stronger attacks and a stationary finisher. It accepts lower uninterrupted damage in exchange for movement. Single Pistol keeps its harder individual hits, critical-hit specialization, passive mobility/control choices, and shield option.
+Twin Pistol is a separate combat skill for fighting with one owned Twin Pistols item. Equipping it automatically equips a temporary simulated companion pistol in the left hand. Removing either gun unequips the owned pair and destroys the companion. **Barrage** rewards rapid sustained pressure on one enemy. **Crossfire** uses deliberate repositioning to build Momentum for stronger attacks and a stationary finisher. It accepts lower uninterrupted damage in exchange for movement. Single Pistol keeps its harder individual hits, critical-hit specialization, passive mobility/control choices, and shield option.
 
 Twin Pistol has ranks 0 through 50, contributes to the existing 400-rank skill cap, and uses the Weapon combat-point category. It does not require Pistol ranks. Barrage and Crossfire each contain ten perks with eighteen purchasable ranks costing 60 SP. The handling perks are mutually exclusive purchases at every rank, so the maximum legal investment across both lines is 110 SP (119 SP with optional Armor Dual Wield). There is no shared perk line or shared purchase. Armor's existing Dual Wield ranks remain optional and cost another 9 SP. There are 20 distinct perks and 36 purchasable ranks across the full skill.
 
@@ -11,6 +11,8 @@ The skill name is **Twin Pistol** throughout player-facing text. Akimbo Stance b
 The approved design is implemented on the feature branch and has not been deployed. The cross-skill revision, handling choice and Paired Volley changes supersede the earlier balance results. The companion [Discord feedback draft](TwinPistolDiscordFeedback.md) presents the same values for discussion; the validation record below distinguishes implemented behavior from release balance.
 
 ## Implementation validation
+
+The single-item equipment contract supersedes the earlier independently owned companion design. The earlier validation below is historical evidence for unchanged attack/perk behavior; equipment ownership, automatic equip/cleanup and repeated save/reload require coverage of the revised pair lifecycle.
 
 The server build passes with deployment disabled. The initial full unit run passed 5,005 of 5,082 tests. Feature integration failures were repaired and verified with targeted reruns: 223 integration checks, 92 related equipment/animation/Force/gathering/store checks, 112 casting/stamina regressions, 11 guide/icon checks and 32 Bible/recipe/ability/stamina checks. These historical filters overlap; they are not a combined unique-test count. After the final numerical tuning, all 69 focused perk/state/stamina/cross-skill/Bible/targeting checks passed. The full suite has not been repeated. Eight failures still reproduce in unchanged content or tests: old apartment jukebox/placeable data, helmet assignments, double-weapon expectations, a droid serialization source assertion, Concussive Toss target-budget parsing and old `sw_openarc` walkmesh use-node names. Those failures are outside this feature. No baseline execution is claimed; the affected source/data were compared with the base branch.
 
@@ -22,25 +24,25 @@ Real NWN client captures show paired ready/hit/miss presentation, representative
 
 ### Training from rank zero
 
-Provide an obtainable rank-zero main-hand pistol and companion pistol so ordinary attacks can train Twin Pistol before its first ability unlocks at rank 2. There is no skill-rank-2 equip gate and no mandatory training perk. Use the existing basic pistol budget for the starter pair, then mirror existing pistol tiers, damage types, delays, upgrade limits, and crafting progression.
+Provide an obtainable rank-zero Basic Twin Pistols item so ordinary attacks can train Twin Pistol before its first ability unlocks at rank 2. There is no skill-rank-2 equip gate and no mandatory training perk. Mirror the existing pistol tiers, per-gun damage types, delays, upgrade-slot limits, and crafting progression.
 
-Add companion recipes to the appropriate existing crafting progression and expose the starter through an existing starter or training vendor. Inspect current sources before choosing the vendor and recipe requirements. Do not distribute obsolete off-hand pistols or make an otherwise unobtainable test item searchable in the economy.
+Add pair recipes to Smithery and expose Basic Twin Pistols through the seven existing general merchants that carry Basic Pistols. One crafted item represents both guns, so its materials and base price are twice the matching pistol's. Crafting level, unlock requirements, research modifier and one enhancement-slot budget match that pistol. Retain independent companion recipe identities but deactivate them and hide their category. Remove their store stock and mark their blueprints, along with the internal temporary companion template, NO_ECONOMY.
 
-Each gun remains a separately owned item with its own damage, accuracy, delay, upgrades, and appearance. A companion costs a comparable amount to a pistol of the same tier. The second item and its enhancement capacity are included in balance comparisons.
+Only the main-hand pair item is owned, crafted, upgraded, sold or traded. It stores the shared damage, accuracy, delay, damage type and upgrades, along with the owner's appearance. The generated companion copies supported weapon-profile properties from that owner and retains its verified companion carrier appearance (parts 11/201/11); pistol and companion model prefixes differ, so arbitrary appearance IDs are not copied. Native and creature-wide equipment bonuses remain on the owner and apply once. The companion has no independent enhancement capacity or value.
 
 ### Requirements and equip order
 
-A normal pistol retains its Pistol requirement in its stored item properties. A valid Twin Pistol pair interprets only that main-hand pistol's weapon-skill requirement against Twin Pistol at the same rank. Its other restrictions still apply. Companion items explicitly require Twin Pistol at their tier's rank.
+A Twin Pistols item has the persistent TWIN_PISTOL_PAIR=1 marker and directly requires Twin Pistol at the matching pistol tier's rank. Other restrictions still apply. Ordinary pistols retain their Pistol requirements and never create a companion. The internal twp_companion template has TWIN_PISTOL_SPARE=1 and NO_ECONOMY=1; it is generated and linked to the owned pair only while equipped.
 
 Validation must use the prospective equipment arrangement, not just the arrangement before an equip event:
 
-- A companion may be equipped first as an inactive item. It cannot attack, grant equipment bonuses, or qualify for weapon defenses until paired with an eligible pistol. This allows a character with Twin Pistol ranks and no Pistol ranks to equip the main hand afterward.
-- Equipping the main hand then validates both weapons against Twin Pistol. An ordinary pistol with a shield or empty left hand continues to require Pistol.
-- Removing or replacing the companion cancels pending shots and revalidates the main hand against Pistol. If the character cannot use it, unequip it safely into their inventory. Do not leave a usable high-tier pistol behind.
-- Removing the main hand makes the companion inactive. A rifle, melee weapon, shield, or second companion never activates it.
-- Login, respawn, item transfer, equipment restoration, and failed equip attempts run the same validation. No temporary reinterpretation is saved into the item's properties or base-item ID.
+- Equipping the owned pair in the right hand automatically creates and equips exactly one linked temporary companion in the left hand. It works with Twin Pistol ranks and Pistol rank zero.
+- Removing either hand cancels unlaunched shots, unequips the owned pair and destroys the temporary companion. The owner remains a single inventory item; no spare is retained in inventory, dropped, sold or transferred. Existing occupied-hand replacement rules remain: remove the pair before equipping another weapon or shield.
+- A shield or another off-hand item cannot coexist with an active pair. Failed companion creation/equip safely rolls back the whole pair rather than leaving a usable single gun.
+- An unlinked companion, retired independent companion, ordinary pistol, rifle or melee weapon cannot activate a pair.
+- Login and equipment restoration discard saved temporary companions and reconstruct only a valid equipped pair. Item loss and failed generation clean up the pair. Save/reload preserves the owner without duplicate or orphan spares.
 
-The inactive companion must not leak native equipped bonuses. Prefer authored properties whose effects are read from a validated weapon profile; suppress or reject unsupported native properties. If the engine cannot safely support this equip sequence, solve the pair-equip operation before content production rather than adding a hidden Pistol prerequisite.
+The temporary companion must not leak native equipped bonuses. Copy only supported properties read from a validated weapon profile; native and creature-wide effects remain on the owner. Pair linkage must be validated before either gun can attack or supply equipment benefits. Do not add a hidden Pistol prerequisite.
 
 ### Skill selection
 
@@ -64,7 +66,7 @@ Resolve each shot from its own captured weapon profile and independently determi
 
 The attack resolver must use the same rules as other ranged auto-attacks: concealment and other avoidance, valid targets, ranged deflection, Guard at the damage stage, defenses, immunity/resistance/reduction, and damage-triggered effects. Apply each adjustment once. Do not implement the companion as a hostile ability that bypasses auto-attack defenses or as an unqualified damage copy of the main-hand result.
 
-Both shots use the normal pistol auto-attack range and line-of-fire rules. Main-hand and companion may have different damage types and accuracy. A companion does not copy the main hand's enhancements or inherit its successful hit result.
+Both shots use the normal pistol auto-attack range and line-of-fire rules. They share the owned pair's weapon profile and enhancements, but independently roll hits, criticals and deflection. A companion never inherits the main hand's successful hit result.
 
 Any equipped companion disables Single Weapon and Doublehand, just as any occupied off hand does today. Existing weapon deflection remains subject to its normal rules; Shield Deflection is unavailable without a real shield. Inactive companions provide no weapon defenses.
 
@@ -199,7 +201,7 @@ These are arithmetic baselines, not full-build measurements. They show why grant
 
 ### Comparable builds
 
-Compare Twin Pistol 50 with either full 60-SP line plus Dual Wield III against Pistol 50 with its full 60-SP critical line plus Doublehand III: 69 SP each, equal Armor investment, attributes, equipment tier, and external buffs. Include the pistol/shield defensive alternative and existing Skirmisher, Rifle, and melee paired-weapon builds. Test equal-tier gear first, then repeat at equal acquisition/upgrade cost because the pair provides another item and enhancement capacity.
+Compare Twin Pistol 50 with either full 60-SP line plus Dual Wield III against Pistol 50 with its full 60-SP critical line plus Doublehand III: 69 SP each, equal Armor investment, attributes, equipment tier, and external buffs. Include the pistol/shield defensive alternative and existing Skirmisher, Rifle, and melee paired-weapon builds. Test equal-tier gear first, then repeat at equal acquisition/upgrade cost. The pair costs two pistols' materials but owns one enhancement-slot budget whose profile upgrades feed both guns.
 
 Run hybrids at equal total SP and skill-rank investment. A character buying both Pistol and Twin Pistol lines is not comparable to a 69-SP single-line build. Include generic ranged/critical effects, Armor traits, buffs from allies, weapon enhancements, suppression, healing-on-hit, and limited haste/no-delay effects. Do not assume Pistol-specific traits apply merely because the models are pistols.
 
@@ -318,7 +320,7 @@ The Twin Pistol Bible sheet and workbook layout/audit registration contain all 3
 
 Generate the perk definitions and one class/file per distinct active ability. Add all needed feat, spell, effect-icon, skill/item-property labels, status effects, and stat definitions. Choose available IDs from the current source data. New custom TLK entries use the first gaps; custom references use the required offset. Recast labels must fit the existing 14-character limit.
 
-Create tiered companion blueprints, crafting recipes, starter acquisition, upgrades, icons, and appearance registrations. Retired off-hand pistols remain unchanged and disabled. No conversion of existing Pistol weapons or broad character-build migration is needed. Add the mastery quest and its dialogue after the mechanics work.
+Create tiered owned-pair blueprints, one internal temporary companion template, crafting recipes and starter acquisition. Pair upgrades are stored once on the owner; the temporary carrier retains its verified appearance. Retired off-hand pistols remain unchanged and disabled; independent companion recipes are inactive and their items are excluded from the economy. No conversion of existing Pistol weapons or broad character-build migration is needed. Add the mastery quest and its dialogue after the mechanics work.
 
 Choose VFX from the repository's effect-selection reference. Author paired attack and ability clips compatible with both weapons, interruption, and supported character models. Regenerate cooldown icons and run the gameplay icon audit. Player-facing combat feedback and UI must use PlayerName when displaying characters.
 
@@ -341,7 +343,7 @@ Deploy the matching C# server build, rebuilt HAK/TLK resources, and repacked mod
 | `Feature/AbilityDefinition/WeaponActiveAbilityDefinitionBase.cs`, perk/ability/status definitions | Hand-specific ability profiles, traits, activation summaries and shared recasts |
 | Character sheet, equipment examination, skills/perks UI, player guide | Twin Pistol rank, both weapons' values, requirements, costs, and shared cooldown descriptions |
 | `tools/GenerateWeaponArchetypeImplementation.py`, Bible and audit/layout inputs | New source sheet, reproducible generated output and balance data |
-| `Module/uti`, recipes, starter acquisition, quests and `ConversationData` | Obtainable companions and mastery progression |
+| `Module/uti`, recipes, starter acquisition, quests and `ConversationData` | Obtainable owned pairs, internal temporary companion and mastery progression |
 | `SWLOR_Haks` and `SWLOR.NWN.API` enums | New base item, skill labels, feats/spells/TLK, icons, models and animations |
 
 Paths in this table are relative to `SWLOR.Game.Server` unless they explicitly name another repository directory. Add new types in matching domain folders. This map identifies integration boundaries; it does not authorize unrelated refactoring.
@@ -365,7 +367,7 @@ Add a Twin Pistol engine filter for normal and hasted attacks, both independent 
 
 Run existing `DualWield`, `PistolPresentation`, and `SingleWeapon` engine coverage. Verify empty-offhand pistols, pistol/shield, and ordinary melee pairs remain correct. Check weapon swaps before the companion launches and after a projectile launches, target changes, area transitions, death, and disconnect cleanup.
 
-Equip, attack, upgrade/change state, save, and reload through normal gameplay at least twice. Assert ownership, stable item identities, rank requirements, equipment state, ammo quantities, and absence of duplicate items. Include a Twin Pistol character with Pistol rank zero. Any later migration must start with legacy fixtures and run the actual conversion first.
+Equip, attack, upgrade/change state, save, and reload through normal gameplay at least twice. Assert one owned pair, stable owner identity, rank requirements, equipment state and ammo quantities. Verify automatic companion equip; removal of either hand unequips the owner and destroys the spare; replacement, failed equip, death, disconnect and repeated reload never duplicate or orphan a spare. Include a Twin Pistol character with Pistol rank zero. Any later migration must start with legacy fixtures and run the actual conversion first.
 
 Player-controlled combat droids need an explicit companion-equipment compatibility check before release. If the item is supported for droids, include skill/module and AI-slot behavior and run `DroidInventory` lifecycle coverage; if their current equipment system cannot support it, reject the companion clearly until that integration is complete rather than allowing a partially functional item.
 

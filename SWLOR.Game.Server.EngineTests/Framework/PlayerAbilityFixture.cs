@@ -9,6 +9,7 @@ using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using Skill = SWLOR.Game.Server.Service.Skill;
+using InventorySlot = SWLOR.NWN.API.NWScript.Enum.InventorySlot;
 
 namespace SWLOR.Game.Server.EngineTests.Framework
 {
@@ -139,7 +140,7 @@ namespace SWLOR.Game.Server.EngineTests.Framework
             }
         }
 
-        private static unsafe uint LoadPlayerCreature(EngineTestContext context, uint template)
+        private static unsafe uint LoadPlayerCreature(EngineTestContext context, uint template, bool serverSave = false)
         {
             var server = NWNXLib.g_pAppManager.m_pServerExoApp;
             var native = server.GetGameObject(template).AsNWSCreature();
@@ -148,11 +149,30 @@ namespace SWLOR.Game.Server.EngineTests.Framework
             using var fileType = new CExoString("BIC ");
             using var format = new CExoString("V2.0");
             context.Assert(file.CreateGFFFile(root, fileType, format) != 0, "create the native player export");
-            context.Assert(native.SaveCreature(file, root, 0, 0, 1, 0) != 0, "export the player fixture template");
+            // SaveServerCharacter calls SaveCreature with exportingChar=false/saveOIDs=true.
+            // Local character exports strip item locals and cannot represent a server save.
+            context.Assert((serverSave
+                    ? native.SaveCreature(file, root, 0, 0, 0, 1)
+                    : native.SaveCreature(file, root, 0, 0, 1, 0)) != 0,
+                serverSave ? "save the player through native server character serialization" : "export the player fixture template");
+            if (serverSave)
+            {
+                foreach (var listName in new[] { "ItemList", "Equip_ItemList" })
+                {
+                    using var list = new CResList();
+                    fixed (byte* label = Encoding.ASCII.GetBytes(listName + "\0"))
+                        context.Log($"Native character export {listName}: " +
+                            (file.GetList(list, root, label) != 0 ? file.GetListCount(list) : 0));
+                }
+            }
             fixed (byte* label = Encoding.ASCII.GetBytes("IsPC\0"))
                 file.WriteFieldBYTE(root, 1, label);
             using var player = new WorldPlayerCreature();
             context.Assert(player.LoadCreature(file, root, 0, 0, 0, 0) != 0, "load the creature with native PC inventory semantics");
+            if (serverSave)
+                context.Log($"Native reload right={GetItemInSlot(InventorySlot.RightHand, player.m_idSelf):X} " +
+                    $"left={GetItemInSlot(InventorySlot.LeftHand, player.m_idSelf):X} " +
+                    $"inventory={GetFirstItemInInventory(player.m_idSelf):X}");
             // LoadCreature restores the template's area ID, which makes AddToArea skip the area's
             // object list. The engine corrupts that list's heap block when such a creature moves.
             player.SetArea(null);
@@ -189,6 +209,42 @@ namespace SWLOR.Game.Server.EngineTests.Framework
             var record = DB.Get<Player>(Id);
             update(record);
             DB.Set(record);
+        }
+
+        /// <summary>
+        /// Saves current carried/equipped items with native server character save flags and reloads
+        /// with PC inventory semantics. This does not simulate server-vault client login.
+        /// </summary>
+        internal async Task<PlayerAbilityFixture> SaveAndReloadAsync(EngineTestContext context, Action<uint> beforeUnload = null)
+        {
+            if (_disposed) throw new ObjectDisposedException(nameof(PlayerAbilityFixture));
+            var record = DB.Get<Player>(Id);
+            var restored = OBJECT_INVALID;
+            await context.ExecuteInCreatureContextAsync(Creature, () =>
+                restored = LoadPlayerCreature(context, Creature, true));
+            context.Track(restored);
+            var fixture = new PlayerAbilityFixture(restored);
+            try
+            {
+                if (beforeUnload != null)
+                    await context.ExecuteInCreatureContextAsync(Creature, () => beforeUnload(Creature));
+                Dispose();
+                await context.ExecuteInCreatureContextAsync(Creature, () =>
+                    EnterArena(context, restored, Creature));
+                context.Assert(IsListedInArena(context, restored), "reloaded fixture is in the native arena object list");
+                fixture.InstallIdentity(null);
+                record.Id = fixture.Id;
+                DB.Set(record);
+                context.SuppressNPCNaturalRegen(restored);
+                DestroyObject(Creature);
+                await context.WaitFrameAsync();
+                return fixture;
+            }
+            catch
+            {
+                fixture.Dispose();
+                throw;
+            }
         }
 
         /// <summary>

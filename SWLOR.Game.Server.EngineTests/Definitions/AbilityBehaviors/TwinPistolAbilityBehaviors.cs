@@ -97,8 +97,7 @@ public sealed class TwinPistolAbilityBehaviors : IAbilityBehaviorSource
     {
         Feat = feat,
         Target = AbilityTargetKind.HostileCreature,
-        EquipMainHandResref = "b_pistol",
-        EquipOffHandResref = "tp_comp_proto",
+        EquipMainHandResref = "b_twinpistol",
         ExpectsTargetDamage = true,
         ExpectsSTMCost = true,
         ExpectsRecast = true,

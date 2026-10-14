@@ -1,10 +1,11 @@
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using SWLOR.Game.Server.EngineTests.Framework;
-using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.Entity;
+using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
-using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Item;
@@ -13,194 +14,308 @@ namespace SWLOR.Game.Server.EngineTests.Definitions;
 
 public static class TwinPistolEquipmentEngineTests
 {
-    [EngineTest("Twin Pistol losing a companion preserves an ineligible main pistol with a full inventory", Category = "TwinPistolEquipment", TimeoutSeconds = 35f)]
-    public static async Task CompanionRemovalWithFullInventory(EngineTestContext ctx)
+    [EngineTest("Twin Pistol equips one owned item and creates a linked temporary spare", Category = "TwinPistolEquipment", TimeoutSeconds = 30f)]
+    public static async Task SingleOwnedItem(EngineTestContext ctx)
     {
         using var player = await PlayerAbilityFixture.CreateAsync(ctx);
+        player.Update(record =>
+        {
+            record.Skills[SkillType.TwinPistol].Rank = 0;
+            record.Skills[SkillType.Pistol].Rank = 0;
+        });
         var actor = player.Creature;
+        var main = await ctx.EquipItemAsync(actor, "b_twinpistol", InventorySlot.RightHand);
+        var spare = await WaitForPair(ctx, actor, main);
+        ctx.Assert(TwinPistolEquipment.IsPairItem(main), "The obtained item is the owned Twin Pistol pair");
+        ctx.Assert(TwinPistolEquipment.IsGeneratedCompanion(spare), "Only the off-hand item is generated");
+        ctx.Assert(TwinPistolEquipment.IsLinkedPair(actor, main, spare), "The generated spare belongs to this exact main and actor");
+        ctx.AssertEqual(SkillType.TwinPistol, Skill.GetWeaponSkill(actor, main), "The owned item uses Twin Pistol without Pistol investment");
+        ctx.AssertEqual(SkillType.TwinPistol, Skill.GetWeaponSkill(actor, spare), "The simulated weapon uses the same skill");
+        ctx.Assert(!GetDroppableFlag(spare), "The temporary gun is not death loot");
+        ctx.Assert(GetPlotFlag(spare), "The temporary gun has the native plot flag used to restrict inventory removal");
+        for (var property = GetFirstItemProperty(spare); GetIsItemPropertyValid(property); property = GetNextItemProperty(spare))
+            ctx.Assert(TwinPistolEquipment.IsMirroredProperty(GetItemPropertyType(property)),
+                "The temporary gun contains only the real item's attack profile, with no independent enhancement slots or global bonuses");
+        ctx.Assert(!EquipmentPredicates.HasSingleWeapon(actor), "A pair does not grant Single Weapon");
+        ctx.Assert(Combat.HasEquippedWeaponForAbility(actor), "The linked pair is ready for weapon abilities");
+        AssertOwnedItems(ctx, actor, main, 1);
+
+        for (var repeat = 0; repeat < 3; repeat++)
+            await ctx.ExecuteInCreatureContextAsync(actor, () => TwinPistolEquipment.EnsurePair(actor));
+        ctx.AssertEqual(spare, GetItemInSlot(InventorySlot.LeftHand, actor), "Repeated reconciliation keeps the current spare");
+        AssertOwnedItems(ctx, actor, main, 1);
+    }
+
+    [EngineTest("Twin Pistol unequipping either hand returns the whole pair and destroys the spare", Category = "TwinPistolEquipment", TimeoutSeconds = 45f)]
+    public static async Task EitherHandRemoval(EngineTestContext ctx)
+    {
+        using var player = await PlayerAbilityFixture.CreateAsync(ctx);
+        // Pistol investment must not let the real Twin Pistol item remain half-equipped.
         player.Update(record =>
         {
             record.Skills[SkillType.TwinPistol].Rank = 25;
-            record.Skills[SkillType.Pistol].Rank = 0;
+            record.Skills[SkillType.Pistol].Rank = 50;
         });
-        var companion = await ctx.EquipItemAsync(actor, "fld_companion", InventorySlot.LeftHand);
-        var main = await ctx.EquipItemAsync(actor, "fld_pistol", InventorySlot.RightHand);
-        var repository = global::NWN.Native.API.NWNXLib.g_pAppManager.m_pServerExoApp.GetGameObject(actor).AsNWSCreature().m_pcItemRepository;
-        var width = repository.m_nWidth;
-        var height = repository.m_nHeight;
-        var boundary = repository.m_nBoundary;
-        var scalable = repository.m_bScalable;
-        var bag = OBJECT_INVALID;
-        try
+        var actor = player.Creature;
+        var main = await ctx.EquipItemAsync(actor, "b_twinpistol", InventorySlot.RightHand);
+        var properties = Properties(main);
+        for (var cycle = 0; cycle < 4; cycle++)
         {
+            var spare = await WaitForPair(ctx, actor, main);
+            var requested = cycle % 2 == 0 ? main : spare;
             await ctx.ExecuteInCreatureContextAsync(actor, () =>
             {
-                bag = CreateItemOnObject("bag_b", actor);
-                ctx.Track(bag);
-                ctx.AssertEqual(actor, GetItemPossessor(bag), "The recovery container belongs to the player");
-                repository.m_nWidth = 2;
-                repository.m_nHeight = 3;
-                repository.m_nBoundary = 6;
-                repository.m_bScalable = 0;
-                var probe = CreateObject(ObjectType.Item, "b_pistol", GetLocation(actor));
-                ctx.Track(probe);
-                ctx.Assert(!ItemPlugin.MoveTo(probe, actor, true), "The main inventory cannot accept another pistol");
-                DestroyObject(probe);
-                ctx.Assert(ItemPlugin.MoveTo(companion, bag, true), "The original companion is stored in the owned bag");
+                ClearAllActions();
+                ActionUnequipItem(requested);
             });
-            await ctx.WaitUntilAsync(() => GetItemInSlot(InventorySlot.RightHand, actor) != main, 5f,
-                "the now-ineligible main pistol to leave its equipment slot safely");
-            await ctx.DelaySecondsAsync(.3f);
-            ctx.AssertEqual(actor, GetItemPossessor(main), "Full inventory revalidation retains the original main pistol's owner");
-            ctx.AssertEqual(actor, GetItemPossessor(companion), "Companion removal retains the original companion's owner");
-            ctx.AssertEqual(bag, GetItemPossessor(main, true), "The ineligible main pistol uses existing owned storage");
-            ctx.AssertEqual(bag, GetItemPossessor(companion, true), "The removed companion remains in its chosen container");
-            ctx.AssertEqual(1, GetItemStackSize(main), "Revalidation preserves one original main pistol");
-            ctx.AssertEqual(1, GetItemStackSize(companion), "Revalidation preserves one original companion");
-            ctx.Assert(!TwinPistolEquipment.IsActivePair(actor), "A stored companion cannot leave the ordinary paired context active");
-            ctx.Assert(!string.IsNullOrEmpty(Item.CanEquip(actor, main, InventorySlot.RightHand)), "The unqualified lone pistol cannot bypass its Pistol skill requirement");
-            ctx.Assert(!Combat.HasEquippedWeaponForAbility(actor), "The invalidated arrangement cannot deliver weapon attacks");
-            ctx.AssertEqual(2, Item.GetInventoryItemCount(bag), "Safe revalidation creates no copied weapon or extra item");
-        }
-        finally
-        {
-            repository.m_nWidth = width;
-            repository.m_nHeight = height;
-            repository.m_nBoundary = boundary;
-            repository.m_bScalable = scalable;
+            await WaitForRemovedPair(ctx, actor, main, spare);
+            ctx.AssertEqual(properties, Properties(main), "Removing either hand preserves all owned item properties");
+            AssertOwnedItems(ctx, actor, main, 0);
+            if (cycle < 3) await EquipExisting(ctx, actor, main, InventorySlot.RightHand);
         }
     }
 
-    [EngineTest("Twin Pistol rejects combat droids and incompatible legacy native launchers clearly", Category = "TwinPistolEquipment", TimeoutSeconds = 30f)]
-    public static async Task UnsupportedEquipmentContexts(EngineTestContext ctx)
-    {
-        var droid = ctx.SpawnCreature(Droid.DroidResref);
-        var actor = ctx.SpawnCreature("civilian", 3f);
-        await ctx.WaitFrameAsync();
-        await ctx.ExecuteInCreatureContextAsync(droid, () =>
-        {
-            var companion = CreateItemOnObject("b_companion", droid);
-            ctx.Assert(GetIsObjectValid(companion), "The obtainable starter companion is available");
-            ctx.AssertEqual("Combat droids cannot equip companion pistols.", Item.CanEquip(droid, companion, InventorySlot.LeftHand),
-                "Unsupported combat droid integration fails before equipping or granting bonuses");
-            ctx.Assert(!TwinPistolEquipment.IsActivePair(droid), "An unsupported droid cannot activate ordinary paired attacks");
-        });
-        var legacy = await ctx.EquipItemAsync(actor, "blast_jawa_d", InventorySlot.RightHand);
-        await ctx.ExecuteInCreatureContextAsync(actor, () =>
-        {
-            var companion = CreateItemOnObject("b_companion", actor);
-            ctx.AssertEqual(BaseItem.LegacyPistol, GetBaseItemType(legacy), "The fixture uses the unchanged legacy native launcher");
-            ctx.AssertEqual("Legacy pistols cannot be paired with a companion pistol.", Item.CanEquip(actor, companion, InventorySlot.LeftHand),
-                "The incompatible native ammunition path is excluded only from the new paired context");
-            ctx.AssertEqual(legacy, GetItemInSlot(InventorySlot.RightHand, actor), "Rejection preserves the existing standalone legacy weapon");
-        });
-    }
-
-    [EngineTest("Twin Pistol upgraded companion archives preserve ownership and equipment over repeated reloads", Category = "TwinPistolEquipment", TimeoutSeconds = 75f)]
-    public static async Task CompanionArchives(EngineTestContext ctx)
+    [EngineTest("Twin Pistol whole-pair removal applies equipment stat deltas exactly once", Category = "TwinPistolEquipment", TimeoutSeconds = 45f)]
+    public static async Task WholePairStatDeltas(EngineTestContext ctx)
     {
         using var player = await PlayerAbilityFixture.CreateAsync(ctx);
         player.Update(record => record.Skills[SkillType.TwinPistol].Rank = 25);
-        var companion = await ctx.EquipItemAsync(player.Creature, "fld_companion", InventorySlot.LeftHand);
-        var main = await ctx.EquipItemAsync(player.Creature, "fld_pistol", InventorySlot.RightHand);
-        var identity = Guid.NewGuid().ToString();
-        var originalDamage = Item.GetDMG(companion);
-        await ctx.ExecuteInCreatureContextAsync(player.Creature, () =>
+        var actor = player.Creature;
+        var main = await CreateCarriedItem(ctx, actor, "b_twinpistol");
+        await ctx.ExecuteInCreatureContextAsync(actor, () =>
         {
-            SetLocalString(companion, "TWIN_ARCHIVE_ID", identity);
-            AddItemProperty(DurationType.Permanent, ItemPropertyCustom(ItemPropertyType.Accuracy, -1, 7), companion);
-            AddItemProperty(DurationType.Permanent, ItemPropertyCustom(ItemPropertyType.WeaponDamageType, (int)CombatDamageType.Fire), companion);
+            AddItemProperty(DurationType.Permanent, ItemPropertyCustom(ItemPropertyType.HPBonus, -1, 7), main);
+            AddItemProperty(DurationType.Permanent, ItemPropertyCustom(ItemPropertyType.Stamina, -1, 9), main);
         });
-        for (var cycle = 0; cycle < 2; cycle++)
+        var baseline = DB.Get<Player>(player.Id);
+        var hp = baseline.MaxHP;
+        var stamina = baseline.MaxStamina;
+        for (var cycle = 0; cycle < 4; cycle++)
         {
-            var archive = string.Empty;
-            await ctx.ExecuteInCreatureContextAsync(player.Creature, () =>
-            {
-                ClearAllActions();
-                CreaturePlugin.RunUnequip(player.Creature, main);
-                CreaturePlugin.RunUnequip(player.Creature, companion);
-                archive = ObjectPlugin.Serialize(companion);
-                DestroyObject(companion);
-            });
-            await ctx.WaitUntilAsync(() => !GetIsObjectValid(companion), 5f, "the original companion to leave the engine before reload");
-            await ctx.ExecuteInCreatureContextAsync(player.Creature, () =>
-            {
-                companion = ObjectPlugin.Deserialize(archive);
-                ctx.Track(companion);
-                ctx.Assert(ObjectPlugin.AcquireItem(player.Creature, companion), "Reloaded companion returns to its owner");
-            });
-            await ctx.WaitFrameAsync();
-            await ctx.ExecuteInCreatureContextAsync(player.Creature, () => ActionEquipItem(companion, InventorySlot.LeftHand));
-            await ctx.WaitUntilAsync(() => GetItemInSlot(InventorySlot.LeftHand, player.Creature) == companion, 5f, "reloaded companion to equip first");
-            await ctx.ExecuteInCreatureContextAsync(player.Creature, () => ActionEquipItem(main, InventorySlot.RightHand));
-            await ctx.WaitUntilAsync(() => GetItemInSlot(InventorySlot.RightHand, player.Creature) == main, 5f, "main pistol to complete the restored pair");
-            ctx.Assert(TwinPistolEquipment.IsActivePair(player.Creature), "A reloaded upgraded companion remains a valid pair");
-            ctx.AssertEqual(player.Creature, GetItemPossessor(companion), "Ownership remains stable");
-            ctx.AssertEqual(identity, GetLocalString(companion, "TWIN_ARCHIVE_ID"), "Archived item identity remains stable");
-            ctx.AssertEqual(1, GetItemStackSize(companion), "A weapon reload cannot duplicate its quantity");
-            ctx.AssertEqual(originalDamage, Item.GetDMG(companion), "Reload does not alter weapon damage");
-            var profiles = new System.Collections.Generic.List<(ItemPropertyType Type, int Subtype, int Cost)>();
-            for (var ip = GetFirstItemProperty(companion); GetIsItemPropertyValid(ip); ip = GetNextItemProperty(companion))
-                profiles.Add((GetItemPropertyType(ip), GetItemPropertySubType(ip), GetItemPropertyCostTableValue(ip)));
-            ctx.Assert(profiles.Any(p => p.Type == ItemPropertyType.Accuracy && p.Cost == 7), "The Accuracy upgrade survives reload");
-            ctx.Assert(profiles.Any(p => p.Type == ItemPropertyType.WeaponDamageType && p.Subtype == (int)CombatDamageType.Fire), "The typed-damage upgrade survives reload");
-            // Native inventory iteration excludes equipped items; count the union by object ID.
-            var owned = new System.Collections.Generic.HashSet<uint> { companion };
-            for (var item = GetFirstItemInInventory(player.Creature); GetIsObjectValid(item); item = GetNextItemInInventory(player.Creature))
-                if (GetBaseItemType(item) == BaseItem.CompanionPistol) owned.Add(item);
-            ctx.AssertEqual(1, owned.Count, "Repeated reload leaves one owned companion across equipped and carried items");
+            await EquipExisting(ctx, actor, main, InventorySlot.RightHand);
+            var spare = await WaitForPair(ctx, actor, main);
+            var equipped = DB.Get<Player>(player.Id);
+            ctx.AssertEqual(hp + 7, equipped.MaxHP, "The real item's HP bonus is added exactly once");
+            ctx.AssertEqual(stamina + 9, equipped.MaxStamina, "The real item's Stamina bonus is added exactly once");
+            await ctx.ExecuteInCreatureContextAsync(actor, () => ActionUnequipItem(cycle % 2 == 0 ? spare : main));
+            await WaitForRemovedPair(ctx, actor, main, spare);
+            var removed = DB.Get<Player>(player.Id);
+            ctx.AssertEqual(hp, removed.MaxHP, "Either-hand removal subtracts the real item's HP bonus exactly once");
+            ctx.AssertEqual(stamina, removed.MaxStamina, "Either-hand removal subtracts the real item's Stamina bonus exactly once");
         }
     }
 
-    [EngineTest("Twin Pistol companion-first equip uses Twin ranks and revalidates the lone pistol", Category = "TwinPistolEquipment", TimeoutSeconds = 45f)]
-    public static async Task CompanionFirstAndRemoval(EngineTestContext ctx)
+    [EngineTest("Twin Pistol replacement attempts preserve both hands until the pair is removed", Category = "TwinPistolEquipment", TimeoutSeconds = 55f)]
+    public static async Task ReplacementAndRapidSwaps(EngineTestContext ctx)
     {
         using var player = await PlayerAbilityFixture.CreateAsync(ctx);
         player.Update(record =>
         {
-            record.Skills[SkillType.TwinPistol].Rank = 25;
-            record.Skills[SkillType.Pistol].Rank = 0;
+            foreach (var skill in record.Skills.Values) skill.Rank = 50;
         });
-        var companion = await ctx.EquipItemAsync(player.Creature, "tp_comp_proto", InventorySlot.LeftHand);
-        ctx.Assert(!TwinPistolEquipment.IsActivePair(player.Creature), "A companion equipped first is inactive");
-        ctx.AssertEqual(SkillType.Invalid, Skill.GetWeaponSkill(player.Creature, companion), "Inactive companions provide no attacking skill");
-        ctx.Assert(!EquipmentPredicates.HasDualWield(player.Creature), "An inactive companion grants no weapon defense predicate");
-        ctx.AssertEqual(OBJECT_INVALID, EquipmentPredicates.GetOffhandAttackWeapon(player.Creature), "The carrier is never a native melee offhand");
-        ctx.Assert(!Combat.HasEquippedWeaponForAbility(player.Creature), "An inactive companion cannot satisfy a generic equipped-weapon requirement");
-        ctx.Assert(!Combat.CanItemTriggerWeaponAbility(companion, SkillType.Pistol), "An inactive carrier cannot deliver Pistol abilities");
-        ctx.Assert(!Combat.CanItemTriggerWeaponAbility(companion, SkillType.Rifle), "An inactive carrier cannot deliver Rifle abilities");
-
-        var main = await ctx.EquipItemAsync(player.Creature, "fld_pistol", InventorySlot.RightHand);
-        ctx.Assert(TwinPistolEquipment.IsActivePair(player.Creature), "A Twin-only character can complete a tiered pair");
-        ctx.AssertEqual(SkillType.TwinPistol, Skill.GetWeaponSkill(player.Creature, main), "The main hand resolves to Twin Pistol");
-        ctx.AssertEqual(SkillType.TwinPistol, Skill.GetWeaponSkill(player.Creature, companion), "The simulated hand resolves to the same skill");
-        ctx.AssertEqual(SkillType.Pistol, Skill.GetWeaponSkill(player.Creature, main, SkillType.Pistol), "A cross-trained Pistol ability retains its captured identity");
-        ctx.Assert(!EquipmentPredicates.HasSingleWeapon(player.Creature), "An occupied companion hand disables Single Weapon");
-        ctx.Assert(Combat.HasEquippedWeaponForAbility(player.Creature), "A validated pair satisfies generic equipped-weapon requirements");
-        ctx.Assert(Combat.CanItemTriggerWeaponAbility(companion, SkillType.Pistol), "An active companion can deliver a captured cross-trained Pistol ability");
-        ctx.Assert(Combat.CanItemTriggerWeaponAbility(companion, SkillType.Rifle), "An active companion can deliver a captured generic queued Rifle ability");
-
-        await ctx.ExecuteInCreatureContextAsync(player.Creature, () =>
+        var actor = player.Creature;
+        var first = await ctx.EquipItemAsync(actor, "b_twinpistol", InventorySlot.RightHand);
+        var spare = await WaitForPair(ctx, actor, first);
+        var second = await CreateCarriedItem(ctx, actor, "b_twinpistol");
+        var shield = await CreateCarriedItem(ctx, actor, "bm_shield");
+        foreach (var (replacement, slot) in new[] { (second, InventorySlot.RightHand), (shield, InventorySlot.LeftHand) })
         {
-            var storedRequirement = SkillType.Invalid;
-            for (var ip = GetFirstItemProperty(main); GetIsItemPropertyValid(ip); ip = GetNextItemProperty(main))
-                if (GetItemPropertyType(ip) == ItemPropertyType.RequiresSkill) storedRequirement = (SkillType)GetItemPropertySubType(ip);
-            ctx.AssertEqual(SkillType.Pistol, storedRequirement, "Prospective equip never rewrites the stored pistol requirement");
-        });
-
-        for (var cycle = 0; cycle < 2; cycle++)
-        {
-            await ctx.ExecuteInCreatureContextAsync(player.Creature, () => CreaturePlugin.RunUnequip(player.Creature, companion));
-            await ctx.WaitUntilAsync(() => GetItemInSlot(InventorySlot.RightHand, player.Creature) != main, 5f,
-                "main hand to return to inventory after losing its Twin Pistol eligibility");
-            ctx.AssertEqual(player.Creature, GetItemPossessor(main), "Revalidation preserves the owned main-hand item");
-            ctx.AssertEqual(player.Creature, GetItemPossessor(companion), "Revalidation preserves the owned companion");
-            ctx.AssertEqual(0, Skill.GetCreatureSkillRank(player.Creature, SkillType.Pistol), "No hidden Pistol investment is granted");
-            await ctx.ExecuteInCreatureContextAsync(player.Creature, () => ActionEquipItem(companion, InventorySlot.LeftHand));
-            await ctx.WaitUntilAsync(() => GetItemInSlot(InventorySlot.LeftHand, player.Creature) == companion, 5f, "same companion to re-equip");
-            await ctx.ExecuteInCreatureContextAsync(player.Creature, () => ActionEquipItem(main, InventorySlot.RightHand));
-            await ctx.WaitUntilAsync(() => GetItemInSlot(InventorySlot.RightHand, player.Creature) == main, 5f, "same main-hand pistol to re-equip");
-            ctx.Assert(TwinPistolEquipment.IsActivePair(player.Creature), "The same two owned items restore the pair after repeated transitions");
+            await ctx.ExecuteInCreatureContextAsync(actor, () => ActionEquipItem(replacement, slot));
+            await ctx.DelaySecondsAsync(.5f);
+            ctx.AssertEqual(first, GetItemInSlot(InventorySlot.RightHand, actor), "The existing no-swap rule preserves the real main");
+            ctx.AssertEqual(spare, GetItemInSlot(InventorySlot.LeftHand, actor), "A rejected replacement preserves the linked spare");
+            ctx.Assert(TwinPistolEquipment.IsActivePair(actor), "Rejected replacements leave a usable complete pair");
         }
+        await ctx.ExecuteInCreatureContextAsync(actor, () => ActionUnequipItem(spare));
+        await WaitForRemovedPair(ctx, actor, first, spare);
+        await EquipExisting(ctx, actor, shield, InventorySlot.LeftHand);
+        ctx.Assert(!TwinPistolEquipment.IsActivePair(actor), "A later shield replacement has no leftover paired context");
+        await ctx.ExecuteInCreatureContextAsync(actor, () => ActionEquipItem(second, InventorySlot.RightHand));
+        await ctx.DelaySecondsAsync(.5f);
+        ctx.AssertEqual(shield, GetItemInSlot(InventorySlot.LeftHand, actor), "Equipping a pair cannot silently discard an owned shield");
+        ctx.Assert(!GetIsObjectValid(GetItemInSlot(InventorySlot.RightHand, actor)), "An occupied off hand prevents pair equip");
+        await ctx.ExecuteInCreatureContextAsync(actor, () => ActionUnequipItem(shield));
+        await ctx.WaitUntilAsync(() => GetItemInSlot(InventorySlot.LeftHand, actor) != shield, 5f, "the shield to leave the hand");
+
+        foreach (var main in new[] { first, second, first, second })
+        {
+            await EquipExisting(ctx, actor, main, InventorySlot.RightHand);
+            spare = await WaitForPair(ctx, actor, main);
+            ctx.AssertEqual(1, OwnedItems(actor).Count(TwinPistolEquipment.IsGeneratedCompanion), "Each rapid equip leaves exactly one temporary gun");
+            await ctx.ExecuteInCreatureContextAsync(actor, () => ActionUnequipItem(spare));
+            await WaitForRemovedPair(ctx, actor, main, spare);
+            ctx.AssertEqual(0, OwnedItems(actor).Count(TwinPistolEquipment.IsGeneratedCompanion), "Each rapid removal destroys the temporary gun");
+        }
+        ctx.AssertEqual(2, OwnedItems(actor).Count(TwinPistolEquipment.IsPairItem), "Transitions retain exactly the two originally acquired real items");
+    }
+
+    [EngineTest("Twin Pistol drop and transfer attempts cannot turn the temporary spare into an owned item", Category = "TwinPistolEquipment", TimeoutSeconds = 35f)]
+    public static async Task TemporarySpareCannotEscape(EngineTestContext ctx)
+    {
+        using var player = await PlayerAbilityFixture.CreateAsync(ctx);
+        player.Update(record => record.Skills[SkillType.TwinPistol].Rank = 25);
+        var actor = player.Creature;
+        var main = await ctx.EquipItemAsync(actor, "b_twinpistol", InventorySlot.RightHand);
+        var spare = await WaitForPair(ctx, actor, main);
+        var recipient = ctx.SpawnCreature("civilian", 5f);
+        await ctx.ExecuteInCreatureContextAsync(actor, () => ActionPutDownItem(spare));
+        await ctx.DelaySecondsAsync(.5f);
+        ctx.Assert(!GetIsObjectValid(spare) || GetItemPossessor(spare) == actor, "Native drop cannot leave a collectible spare on the ground");
+        if (!GetIsObjectValid(spare))
+        {
+            await WaitForRemovedPair(ctx, actor, main, spare);
+            await EquipExisting(ctx, actor, main, InventorySlot.RightHand);
+            spare = await WaitForPair(ctx, actor, main);
+        }
+        await ctx.ExecuteInCreatureContextAsync(actor, () => ItemPlugin.MoveTo(spare, recipient, true));
+        await ctx.WaitUntilAsync(() => !GetIsObjectValid(spare), 5f, "a forced transfer to destroy the temporary spare");
+        await ctx.WaitUntilAsync(() => GetItemInSlot(InventorySlot.RightHand, actor) != main, 5f, "losing the spare to return the real item");
+        ctx.AssertEqual(actor, GetItemPossessor(main), "A spare transfer preserves the real item's owner");
+        ctx.Assert(!OwnedItems(recipient).Any(TwinPistolEquipment.IsGeneratedCompanion), "The recipient retains no temporary gun");
+        AssertOwnedItems(ctx, actor, main, 0);
+    }
+
+    [EngineTest("Twin Pistol native character saves restore one upgraded owned pair over repeated reloads", Category = "TwinPistolEquipment", TimeoutSeconds = 95f)]
+    public static async Task CharacterArchives(EngineTestContext ctx)
+    {
+        var player = await PlayerAbilityFixture.CreateAsync(ctx);
+        try
+        {
+            player.Update(record => record.Skills[SkillType.TwinPistol].Rank = 25);
+            var main = await ctx.EquipItemAsync(player.Creature, "b_twinpistol", InventorySlot.RightHand);
+            var identity = Guid.NewGuid().ToString();
+            await ctx.ExecuteInCreatureContextAsync(player.Creature, () => SetLocalString(main, "TWIN_ARCHIVE_ID", identity));
+            for (var cycle = 0; cycle < 2; cycle++)
+            {
+                var actor = player.Creature;
+                await ctx.ExecuteInCreatureContextAsync(actor, () =>
+                {
+                    AddItemProperty(DurationType.Permanent, ItemPropertyCustom(ItemPropertyType.Accuracy, -1, 7 + cycle), main);
+                    if (cycle == 0)
+                        AddItemProperty(DurationType.Permanent, ItemPropertyCustom(ItemPropertyType.WeaponDamageType, (int)CombatDamageType.Fire), main);
+                });
+                var properties = Properties(main);
+                var oldSpare = await WaitForPair(ctx, actor, main);
+                player = await player.SaveAndReloadAsync(ctx, TwinPistolEquipment.ReleaseCompanions);
+                actor = player.Creature;
+                await ctx.ExecuteInCreatureContextAsync(actor, () => TwinPistolEquipment.RestorePair(actor));
+                main = FindArchivedPair(ctx, actor, identity);
+                var spare = await WaitForPair(ctx, actor, main);
+                ctx.AssertEqual(identity, GetLocalString(main, "TWIN_ARCHIVE_ID"), "Native character export retains the real item's identity");
+                ctx.AssertEqual(properties, Properties(main), "Native character export retains every real item upgrade");
+                ctx.AssertEqual(Item.GetDMG(main), Item.GetDMG(spare), "The restored spare mirrors the real weapon damage profile");
+                ctx.AssertEqual(Properties(main, true), Properties(spare, true), "The regenerated spare mirrors all saved attack-profile upgrades");
+                await ctx.WaitUntilAsync(() => !GetIsObjectValid(oldSpare), 5f, "logout cleanup to destroy the old world's temporary gun");
+                AssertOwnedItems(ctx, actor, main, 1);
+
+                await ctx.ExecuteInCreatureContextAsync(actor, () => ActionUnequipItem(cycle == 0 ? main : spare));
+                await WaitForRemovedPair(ctx, actor, main, spare);
+                player = await player.SaveAndReloadAsync(ctx, TwinPistolEquipment.ReleaseCompanions);
+                actor = player.Creature;
+                await ctx.ExecuteInCreatureContextAsync(actor, () => TwinPistolEquipment.RestorePair(actor));
+                main = FindArchivedPair(ctx, actor, identity);
+                ctx.AssertEqual(properties, Properties(main), "Carried-state save/reload retains all real item upgrades");
+                ctx.Assert(!GetIsObjectValid(GetItemInSlot(InventorySlot.RightHand, actor)), "A carried pair is not automatically equipped on reload");
+                AssertOwnedItems(ctx, actor, main, 0);
+                await EquipExisting(ctx, actor, main, InventorySlot.RightHand);
+                await WaitForPair(ctx, actor, main);
+            }
+            ctx.SetResultDetail("Two upgraded equipped/carried cycles; four native SaveCreature/LoadCreature PC reloads. Connected client/server-vault login and barter UI are not simulated.");
+        }
+        finally { player.Dispose(); }
+    }
+
+    internal static async Task<uint> WaitForPair(EngineTestContext ctx, uint actor, uint main)
+    {
+        await ctx.WaitUntilAsync(() => TwinPistolEquipment.IsActivePair(actor), 6f, "the owned item to create and equip its temporary spare");
+        var spare = GetItemInSlot(InventorySlot.LeftHand, actor);
+        ctx.AssertEqual(main, GetItemInSlot(InventorySlot.RightHand, actor), "The original real item remains equipped");
+        ctx.Assert(TwinPistolEquipment.IsLinkedPair(actor, main, spare), "The temporary gun is linked to the real item");
+        return spare;
+    }
+
+    private static uint FindArchivedPair(EngineTestContext ctx, uint actor, string identity)
+    {
+        var items = OwnedItems(actor);
+        var summary = string.Join(", ", items.Select(item =>
+            $"{item:X}:{GetResRef(item)}:type={(int)GetBaseItemType(item)}:" +
+            $"pair={GetLocalInt(item, TwinPistolEquipment.PairVariable)}:archive={GetLocalString(item, "TWIN_ARCHIVE_ID")}"));
+        ctx.Log($"Restored owned items for {actor:X}: {summary}");
+        var originals = items.Where(item => GetLocalString(item, "TWIN_ARCHIVE_ID") == identity).ToArray();
+        ctx.AssertEqual(1, originals.Length, $"Native character reload retains exactly the original real item; observed={summary}");
+        ctx.Assert(TwinPistolEquipment.IsPairItem(originals[0]), "The original real item's pair marker survives native character export");
+        return originals[0];
+    }
+
+    internal static async Task WaitForRemovedPair(EngineTestContext ctx, uint actor, uint main, uint spare)
+    {
+        await ctx.WaitUntilAsync(() => GetItemInSlot(InventorySlot.RightHand, actor) != main && !GetIsObjectValid(spare),
+            6f, "the whole pair to unequip and its temporary gun to be destroyed");
+        ctx.Assert(!GetIsObjectValid(GetItemInSlot(InventorySlot.LeftHand, actor)), "The temporary hand is empty after removing the pair");
+        ctx.AssertEqual(actor, GetItemPossessor(main), "The original real item stays owned");
+        ctx.AssertEqual(1, GetItemStackSize(main), "The real pair remains one item");
+        ctx.Assert(!TwinPistolEquipment.IsActivePair(actor), "Unequipped items cannot retain the paired attack context");
+    }
+
+    internal static async Task<uint> CreateCarriedItem(EngineTestContext ctx, uint actor, string resref)
+    {
+        var item = OBJECT_INVALID;
+        await ctx.ExecuteInCreatureContextAsync(actor, () => item = CreateItemOnObject(resref, actor));
+        await ctx.WaitUntilAsync(() => GetIsObjectValid(item) && GetItemPossessor(item) == actor, 5f, $"owned item {resref} to enter inventory");
+        await ctx.WaitFrameAsync();
+        return item;
+    }
+
+    internal static async Task EquipExisting(EngineTestContext ctx, uint actor, uint item, InventorySlot slot)
+    {
+        await ctx.ExecuteInCreatureContextAsync(actor, () =>
+        {
+            ClearAllActions();
+            ActionEquipItem(item, slot);
+        });
+        await ctx.WaitUntilAsync(() => GetItemInSlot(slot, actor) == item, 6f, "the requested real item to equip");
+    }
+
+    internal static HashSet<uint> OwnedItems(uint actor)
+    {
+        var items = new HashSet<uint>();
+        AddInventory(actor);
+        foreach (var slot in Enum.GetValues<InventorySlot>())
+        {
+            if (slot == InventorySlot.Invalid) continue;
+            var item = GetItemInSlot(slot, actor);
+            if (GetIsObjectValid(item)) items.Add(item);
+        }
+        return items;
+
+        void AddInventory(uint container)
+        {
+            for (var item = GetFirstItemInInventory(container); GetIsObjectValid(item); item = GetNextItemInInventory(container))
+            {
+                if (!items.Add(item)) continue;
+                if (GetHasInventory(item)) AddInventory(item);
+            }
+        }
+    }
+
+    internal static void AssertOwnedItems(EngineTestContext ctx, uint actor, uint main, int temporaryCount)
+    {
+        var items = OwnedItems(actor);
+        ctx.AssertEqual(1, items.Count(TwinPistolEquipment.IsPairItem), "Exactly one originally acquired Twin Pistol item is owned");
+        ctx.AssertEqual(temporaryCount, items.Count(TwinPistolEquipment.IsGeneratedCompanion), "Only the equipped temporary spare may exist");
+        ctx.Assert(items.Contains(main), "The exact real item remains equipped or in owned storage");
+        ctx.AssertEqual(actor, GetItemPossessor(main), "The real item belongs to the expected player");
+        ctx.AssertEqual(1, GetItemStackSize(main), "The real item is never duplicated into a stack");
+    }
+
+    internal static string Properties(uint item, bool mirroredOnly = false)
+    {
+        var properties = new List<string>();
+        for (var property = GetFirstItemProperty(item); GetIsItemPropertyValid(property); property = GetNextItemProperty(item))
+        {
+            if (mirroredOnly && !TwinPistolEquipment.IsMirroredProperty(GetItemPropertyType(property))) continue;
+            properties.Add($"{(int)GetItemPropertyType(property)}:{GetItemPropertySubType(property)}:{GetItemPropertyCostTableValue(property)}");
+        }
+        return string.Join(";", properties.OrderBy(property => property));
     }
 }

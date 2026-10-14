@@ -50,8 +50,8 @@ public static class TwinPistolMasteryEngineTests
                 record.Perks[PerkType.PistolRush] = 1;
                 record.Perks[PerkType.GrappleShot] = 1;
             });
-            var main = await trial.EquipItemAsync(actor, "b_pistol", InventorySlot.RightHand);
-            var companion = await trial.EquipItemAsync(actor, "tp_comp_proto", InventorySlot.LeftHand);
+            var main = await trial.EquipItemAsync(actor, "b_twinpistol", InventorySlot.RightHand);
+            var companion = await TwinPistolEquipmentEngineTests.WaitForPair(trial, actor, main);
             var target = trial.SpawnCreature("nw_rat001", 2f);
             var jek = trial.SpawnCreature("cq_lastword", -2f);
             var pavo = trial.SpawnCreature("cq_deadhand", -3f);

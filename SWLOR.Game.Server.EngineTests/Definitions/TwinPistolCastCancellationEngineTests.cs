@@ -127,8 +127,8 @@ public static class TwinPistolCastCancellationEngineTests
             foreach (var requirement in Perk.GetPerkDetails(perk).PerkLevels.Values.SelectMany(level => level.Requirements).OfType<PerkRequirementQuest>())
                 record.Quests[requirement.QuestId] = new PlayerQuest { TimesCompleted = 1 };
         });
-        var main = await ctx.EquipItemAsync(actor, "b_pistol", InventorySlot.RightHand);
-        var companion = await ctx.EquipItemAsync(actor, "tp_comp_proto", InventorySlot.LeftHand);
+        var main = await ctx.EquipItemAsync(actor, "b_twinpistol", InventorySlot.RightHand);
+        var companion = await TwinPistolEquipmentEngineTests.WaitForPair(ctx, actor, main);
         var target = ctx.SpawnCreature("nw_rat001", 2f);
         await ctx.DelaySecondsAsync(1f);
         var replacement = OBJECT_INVALID;

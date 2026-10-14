@@ -17,6 +17,9 @@ public static class TwinPistolEquipmentValidation
 
     public static string GetUnusableEquipmentError(uint creature)
     {
+        if (TwinPistolEquipment.IsPairItem(GetItemInSlot(InventorySlot.RightHand, creature)) &&
+            !TwinPistolEquipment.IsActivePair(creature))
+            return "Twin Pistols require their generated off-hand pistol. Unequip and re-equip the pair.";
         if (!FailedReturns.TryGetValue(creature, out var failure)) return string.Empty;
         if (!GetIsObjectValid(creature) || GetIsDead(creature) ||
             GetItemInSlot(failure.Slot, creature) != failure.Item ||
@@ -62,6 +65,8 @@ public static class TwinPistolEquipmentValidation
         var companion = GetIsObjectValid(off) && GetBaseItemType(off) == BaseItem.CompanionPistol;
         var companionError = companion
             ? Droid.IsDroid(creature) ? "Combat droids cannot equip companion pistols."
+                : !TwinPistolEquipment.IsLinkedPair(creature, main, off)
+                    ? "The off-hand pistol is created automatically by equipping a Twin Pistols item."
                 : TwinPistolEquipment.GetCompanionPropertyError(off)
             : string.Empty;
         if (companion && string.IsNullOrEmpty(companionError))

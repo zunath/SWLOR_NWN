@@ -55,7 +55,7 @@ public class CompanionPistolProgressionTests
     }
 
     [Test]
-    public void CompanionRecipes_PreserveMaterialsAndSlotBudgetsWithOnlyProfileEnhancements()
+    public void RetiredCompanionRecipes_PreserveIdentifiersAndBudgetsButCannotBeCrafted()
     {
         var mains = new WeaponRecipes().BuildRecipes();
         var companions = new CompanionPistolRecipes().BuildRecipes();
@@ -65,6 +65,7 @@ public class CompanionPistolProgressionTests
             var source = mains[mainRecipe];
             var result = companions[companionRecipe];
             result.Resref.Should().Be(companion);
+            result.IsActive.Should().BeFalse();
             result.Skill.Should().Be(SkillType.Smithery);
             result.Category.Should().Be(RecipeCategoryType.CompanionPistol);
             (result.Level, result.EnhancementType, result.EnhancementSlots, result.ResearchCostModifier,
@@ -81,15 +82,89 @@ public class CompanionPistolProgressionTests
     }
 
     [Test]
-    public void EveryCompanion_IsRecognizedAsObtainableAndStarterStoresCarryIt()
+    public void EveryPair_OwnsTheWeaponProfileAndRequiresTwinRanksDirectly()
+    {
+        foreach (var (mainResref, _, _, _) in Tiers)
+        {
+            using var main = ReadItem(mainResref);
+            using var pair = ReadItem(mainResref.Replace("_pistol", "_twinpistol"));
+            var item = pair.RootElement;
+            Int(item, "BaseItem").Should().Be((int)BaseItem.Sling);
+            HasLocal(item, "TWIN_PISTOL_PAIR").Should().BeTrue();
+            HasLocal(item, "TWIN_PISTOL_SPARE").Should().BeFalse();
+            HasLocal(item, "NO_ECONOMY").Should().BeFalse();
+            foreach (var field in new[] { "Cost", "AddCost" })
+                Int(item, field).Should().Be(Int(main.RootElement, field) * 2);
+            foreach (var field in new[] { "ModelPart1", "ModelPart2", "ModelPart3", "StackSize" })
+                Int(item, field).Should().Be(Int(main.RootElement, field));
+            foreach (var propertyType in new[] { ItemPropertyType.DMG, ItemPropertyType.Delay,
+                         ItemPropertyType.Accuracy, ItemPropertyType.DamageStat, ItemPropertyType.AccuracyStat,
+                         ItemPropertyType.WeaponDamageType })
+                Profiles(item, propertyType).Should().BeEquivalentTo(Profiles(main.RootElement, propertyType));
+            var requirement = Properties(item).Single(p => Int(p, "PropertyName") == (int)ItemPropertyType.RequiresSkill);
+            Int(requirement, "Subtype").Should().Be((int)SkillType.TwinPistol);
+            Int(requirement, "CostValue").Should().Be(Int(Properties(main.RootElement)
+                .Single(p => Int(p, "PropertyName") == (int)ItemPropertyType.RequiresSkill), "CostValue"));
+        }
+    }
+
+    [Test]
+    public void PairRecipes_ProduceOneOwnedItemWithOneSlotBudgetAndBothGunsMaterials()
+    {
+        var mains = new WeaponRecipes().BuildRecipes();
+        var pairs = new TwinPistolRecipes().BuildRecipes();
+        pairs.Should().HaveCount(Tiers.Length);
+        foreach (var (main, _, mainRecipe, _) in Tiers)
+        {
+            var pairRecipe = Enum.Parse<RecipeType>(mainRecipe.ToString().Replace("Pistol", "TwinPistol"));
+            var source = mains[mainRecipe];
+            var pair = pairs[pairRecipe];
+            pair.Resref.Should().Be(main.Replace("_pistol", "_twinpistol"));
+            pair.Category.Should().Be(RecipeCategoryType.TwinPistol);
+            pair.Quantity.Should().Be(1);
+            (pair.Skill, pair.Level, pair.EnhancementType, pair.EnhancementSlots,
+                pair.ResearchCostModifier, pair.PracticeRankLimit, pair.IsActive)
+                .Should().Be((source.Skill, source.Level, source.EnhancementType, source.EnhancementSlots,
+                    source.ResearchCostModifier, source.PracticeRankLimit, source.IsActive));
+            pair.Components.Should().BeEquivalentTo(source.Components.ToDictionary(p => p.Key, p => p.Value * 2));
+            pair.Requirements.Should().BeEquivalentTo(source.Requirements);
+            pair.AllowedEnhancements.Should().BeNull("the owner retains the regular pistol enhancement choices");
+            pair.AllowedOutputProperties.Should().BeNull("native equipment bonuses live only on the owner");
+        }
+    }
+
+    [Test]
+    public void PairItems_AreObtainableWhileIndependentCompanionsHaveNoPlayerSource()
     {
         var root = Root();
         var obtainable = EconomyObtainabilityCoverageTests.ReadObtainableResrefs(root);
-        obtainable.Should().Contain(Tiers.Select(t => t.Companion));
-        var starterStores = Directory.EnumerateFiles(Path.Combine(root, "Module", "utm"), "*.utm.json")
-            .Where(file => File.ReadAllText(file).Contains("\"b_pistol\""));
+        obtainable.Should().Contain(Tiers.Select(t => t.Main.Replace("_pistol", "_twinpistol")));
+        var stores = Directory.EnumerateFiles(Path.Combine(root, "Module", "utm"), "*.utm.json")
+            .Select(file => (Path: file, Text: File.ReadAllText(file))).ToArray();
+        var starterStores = stores.Where(store => store.Text.Contains("\"b_pistol\""));
+        starterStores.Should().HaveCount(7);
         foreach (var store in starterStores)
-            File.ReadAllText(store).Should().Contain("\"b_companion\"", Path.GetFileName(store));
+            store.Text.Should().Contain("\"b_twinpistol\"", Path.GetFileName(store.Path));
+        foreach (var (_, companion, _, _) in Tiers)
+        {
+            using var item = ReadItem(companion);
+            HasLocal(item.RootElement, "NO_ECONOMY").Should().BeTrue();
+            stores.Should().NotContain(store => store.Text.Contains('"' + companion + '"'));
+        }
+    }
+
+    [Test]
+    public void TemporaryTemplate_HasNoValueOrProfileUntilRuntimeCreatesItsLinkedCopy()
+    {
+        using var template = ReadItem("twp_companion");
+        var item = template.RootElement;
+        Int(item, "BaseItem").Should().Be((int)BaseItem.CompanionPistol);
+        HasLocal(item, "TWIN_PISTOL_SPARE").Should().BeTrue();
+        HasLocal(item, "NO_ECONOMY").Should().BeTrue();
+        HasLocal(item, "TWIN_PISTOL_PAIR").Should().BeFalse();
+        Properties(item).Should().BeEmpty();
+        Int(item, "Cost").Should().Be(0);
+        Int(item, "AddCost").Should().Be(0);
     }
 
     private static IEnumerable<(int Subtype, int CostValue, int Param1Value)> Profiles(JsonElement item, ItemPropertyType type) =>
@@ -97,6 +172,10 @@ public class CompanionPistolProgressionTests
             .Select(p => (Int(p, "Subtype"), Int(p, "CostValue"), Int(p, "Param1Value")));
 
     private static IEnumerable<JsonElement> Properties(JsonElement item) => item.GetProperty("PropertiesList").GetProperty("value").EnumerateArray();
+    private static bool HasLocal(JsonElement item, string name) => item.TryGetProperty("VarTable", out var variables) &&
+        variables.GetProperty("value").EnumerateArray().Any(variable =>
+            variable.GetProperty("Name").GetProperty("value").GetString() == name &&
+            Int(variable, "Type") == 1 && Int(variable, "Value") == 1);
     private static int Int(JsonElement item, string field) => item.GetProperty(field).GetProperty("value").GetInt32();
     private static JsonDocument ReadItem(string resref) => JsonDocument.Parse(File.ReadAllText(Path.Combine(Root(), "Module", "uti", resref + ".uti.json")));
     private static string Root()

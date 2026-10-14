@@ -241,8 +241,8 @@ public static class WeaponRotationBalanceEngineTests
             ctx.Assert(GetIsReactionTypeHostile(target, actor), "The durable NPC is hostile to the real player attacker");
         });
 
-        var main = await ctx.EquipItemAsync(actor, "b_pistol", InventorySlot.RightHand);
-        var companion = pistol ? OBJECT_INVALID : await ctx.EquipItemAsync(actor, "tp_comp_proto", InventorySlot.LeftHand);
+        var main = await ctx.EquipItemAsync(actor, pistol ? "b_pistol" : "b_twinpistol", InventorySlot.RightHand);
+        var companion = pistol ? OBJECT_INVALID : await TwinPistolEquipmentEngineTests.WaitForPair(ctx, actor, main);
         await ctx.ExecuteInCreatureContextAsync(actor, () =>
         {
             foreach (var weapon in new[] { main, companion }.Where(GetIsObjectValid))

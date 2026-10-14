@@ -243,7 +243,7 @@ public static class TwinPistolCrossSkillEngineTests
             ("b_longsword", null, 1), ("b_longsword", "b_longsword", 2),
             ("b_staff", null, 1), ("b_rifle", null, 1),
             ("saber_train_1", null, 1), ("saber_train_1", "saber_train_1", 2),
-            ("trn_saberstaff_1", null, 1), ("b_pistol", "tp_comp_proto", 2),
+            ("trn_saberstaff_1", null, 1), ("b_twinpistol", null, 2),
         };
         Combat.SetAbilityHitResolutionOverride(true);
         Combat.SetAutoAttackHitResolutionOverride(false);
@@ -305,8 +305,8 @@ public static class TwinPistolCrossSkillEngineTests
             record.Perks[PerkType.AkimboStance] = 1;
             record.Perks[PerkType.CrossfireStance] = 1;
         });
-        var main = await ctx.EquipItemAsync(actor, "b_pistol", InventorySlot.RightHand);
-        var companion = await ctx.EquipItemAsync(actor, "tp_comp_proto", InventorySlot.LeftHand);
+        var main = await ctx.EquipItemAsync(actor, "b_twinpistol", InventorySlot.RightHand);
+        var companion = await TwinPistolEquipmentEngineTests.WaitForPair(ctx, actor, main);
         var target = ctx.SpawnCreature("nw_rat001", 2f);
         var saber = OBJECT_INVALID;
         var rifle = OBJECT_INVALID;

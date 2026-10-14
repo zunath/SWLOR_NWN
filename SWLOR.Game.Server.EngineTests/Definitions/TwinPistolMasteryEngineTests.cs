@@ -115,11 +115,11 @@ public static class TwinPistolMasteryEngineTests
             {
                 ctx.Assert(Quest.AcceptQuest(actor, pavo, "final_salvo_mastery"), "The movement trial is accepted independently");
                 CreaturePlugin.RunUnequip(actor, companion);
-                CreaturePlugin.RunUnequip(actor, main);
                 CreaturePlugin.AddFeat(actor, FeatType.BlasterSlide1);
                 CreaturePlugin.AddFeat(actor, FeatType.PistolRush1);
                 CreaturePlugin.AddFeat(actor, FeatType.GrappleShot1);
             });
+            await TwinPistolEquipmentEngineTests.WaitForRemovedPair(trial, actor, main, companion);
             var routeWeapon = await trial.EquipItemAsync(actor, "b_longsword", InventorySlot.RightHand);
             ctx.Assert(!TwinPistolEquipment.IsActivePair(actor), "The movement mastery supports a cross-trained single weapon");
             Combat.SetAutoAttackHitResolutionOverride(false);
@@ -176,7 +176,8 @@ public static class TwinPistolMasteryEngineTests
                 ctx.Assert(restored.KeyItems.ContainsKey(KeyItemType.TwinSunsCanyonFiringTrace) &&
                            restored.KeyItems.ContainsKey(KeyItemType.FinalSalvoCanyonRouteTrace), "Both independently earned proofs survive repeated persistence cycles");
                 ctx.AssertEqual(actor, GetItemPossessor(main), "Saving quest proof preserves the owned main gun");
-                ctx.AssertEqual(actor, GetItemPossessor(companion), "Saving quest proof preserves the owned companion");
+                ctx.Assert(!GetIsObjectValid(companion), "Saving quest proof cannot restore the destroyed temporary gun");
+                TwinPistolEquipmentEngineTests.AssertOwnedItems(ctx, actor, main, 0);
                 ctx.AssertEqual(actor, GetItemPossessor(routeWeapon), "Saving quest proof preserves the cross-trained route weapon");
                 ctx.AssertEqual(routeWeapon, GetItemInSlot(InventorySlot.RightHand, actor), "The cross-trained route weapon stays equipped across proof reloads");
             }

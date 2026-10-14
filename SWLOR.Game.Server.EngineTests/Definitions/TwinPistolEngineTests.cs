@@ -211,6 +211,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 var target = pair.Target;
                 var main = pair.Main;
                 var companion = pair.Companion;
+                var removedCompanion = companion;
                 var hastedDelayCost = 0;
                 try
                 {
@@ -222,6 +223,8 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                         CreaturePlugin.RunUnequip(actor, main);
                     });
                     await ctx.WaitFrameAsync();
+                    await ctx.WaitUntilAsync(() => !GetIsObjectValid(removedCompanion), 3f,
+                        "the setup's unequipped pair to destroy its previous temporary gun");
                     await ctx.ExecuteInCreatureContextAsync(actor, () =>
                     {
                         if (GetIsObjectValid(ammunition))
@@ -245,6 +248,14 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                             }
                         }
                         ctx.Assert(CreaturePlugin.RunEquip(actor, main, InventorySlot.RightHand), "The finite main equips beside its real ammunition");
+                        // Re-equipping the one owned item regenerates its disposable hand.
+                        companion = TwinPistolEquipment.GetCompanionWeapon(actor);
+                        ctx.Assert(GetIsObjectValid(companion) && companion != removedCompanion &&
+                            TwinPistolEquipment.IsLinkedPair(actor, main, companion),
+                            "Finite ammunition setup uses the newly generated linked companion");
+                        ReplaceWeaponProperty(companion, ItemPropertyType.DMG, ItemPropertyCustom(ItemPropertyType.DMG, -1, 30));
+                        ReplaceWeaponProperty(companion, ItemPropertyType.WeaponDamageType,
+                            ItemPropertyCustom(ItemPropertyType.WeaponDamageType, (int)CombatDamageType.Ice));
                         ctx.AssertEqual(BaseItem.Sling, GetBaseItemType(main), "Ordinary paired attacks use the canonical native launcher after compatibility conversion");
                         var native = NWNXLib.g_pAppManager.m_pServerExoApp.GetGameObject(actor).AsNWSCreature();
                         ctx.Assert(GetIsPC(actor) && native.m_bPlayerCharacter != 0, "Native player ammunition consumption is exercised");

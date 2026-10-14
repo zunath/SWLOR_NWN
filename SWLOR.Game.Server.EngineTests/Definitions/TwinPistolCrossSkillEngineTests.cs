@@ -365,7 +365,7 @@ public static class TwinPistolCrossSkillEngineTests
                 ctx.AssertEqual(movementBaseline + 10, Stat.GetStatAdjustment(actor, StatType.MovementSpeedPercentAdjustment), "Crossfire grants global movement speed");
                 ctx.AssertEqual(80, Combat.ApplyOrdinaryAttackDamageMultiplier(actor, 100), "Crossfire pays its global ordinary damage cost");
                 CreaturePlugin.RunUnequip(actor, rifle);
-                CreaturePlugin.RunEquip(actor, companion, InventorySlot.LeftHand);
+                ctx.Assert(!GetIsObjectValid(companion), "The earlier generated gun was destroyed with the pair");
                 CreaturePlugin.RunEquip(actor, main, InventorySlot.RightHand);
                 ctx.Assert(TwinPistolEquipment.IsActivePair(actor), "The original owned pair can be restored");
                 ctx.Assert(StatusEffect.GetStatusEffect<CrossfireStanceStatusEffect>(actor) != null, "Restoring the pair preserves the active cross-trained stance");

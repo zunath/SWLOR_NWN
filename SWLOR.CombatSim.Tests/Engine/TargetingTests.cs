@@ -237,6 +237,18 @@ namespace SWLOR.CombatSim.Tests.Engine
         }
 
         [Test]
+        public void Spawn_RejectsAFocusTargetThatIsOnlyTheStartOfAnotherName()
+        {
+            var scenario = TestScenarios.TwoTeams(false, new[] { TestCombatants.Striker("Striker") }, new[] { TestCombatants.Dummy("Boss Guard", true) });
+            scenario.Teams[0].TargetPolicy = TargetPolicy.Focus;
+            scenario.Teams[0].FocusTarget = "Boss";
+
+            var act = () => new Simulation(scenario, RuleSets.Current(), _catalog, 1).Spawn();
+
+            act.Should().Throw<InvalidDataException>().WithMessage("*FocusTarget*");
+        }
+
+        [Test]
         public void Spawn_AcceptsAFocusTargetThatMatchesNumberedCopies()
         {
             var bosses = TestCombatants.Dummy("Boss", true);

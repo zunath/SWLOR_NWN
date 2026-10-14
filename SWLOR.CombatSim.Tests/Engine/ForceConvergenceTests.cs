@@ -146,6 +146,32 @@ namespace SWLOR.CombatSim.Tests.Engine
             caster.ConvergenceAccuracyUntil.Should().BeLessThan(simulation.Now);
         }
 
+        [Test]
+        public void AZeroFpCostMultiplier_StillTriggersConvergence_FromTheDeclaredRequirement()
+        {
+            var rules = RuleSets.Tuned();
+            rules.FpCostMultiplier = 0f;
+            var lightning = TestCombatants.Use("ForceLightning3", AbilityTarget.Enemy, minIntervalSeconds: 600);
+            lightning.Damage = new DamageSpec { Min = 1f, Max = 1f, HitChance = 1f };
+            var caster = new CombatantSpec
+            {
+                Name = "Caster",
+                MaxHp = 1000,
+                MaxFp = MaxFp,
+                MaxStm = 100,
+                Perks = new List<string> { nameof(PerkType.ForceConvergence) },
+                Abilities = new List<AbilityUseSpec> { lightning }
+            };
+            var simulation = TestScenarios.Spawn(
+                TestScenarios.TwoTeams(false, new[] { caster }, new[] { TestCombatants.Dummy("Enemy", true) }), rules, _catalog);
+            var spawned = simulation.Get("Caster");
+
+            SimulationClock.RunUntil(simulation, () => spawned.Stats.AbilitiesUsed == 1, 10, "Force Lightning cast");
+
+            spawned.Stats.FpSpent.Should().Be(0, "the multiplier made the cast free");
+            spawned.ConvergenceUntil.Should().BeGreaterThan(simulation.Now, "the ability still declares an FP requirement");
+        }
+
         private (Simulation Simulation, Combatant Caster) SpawnAttacker(AbilityUseSpec use, bool withPerk)
         {
             var caster = new CombatantSpec

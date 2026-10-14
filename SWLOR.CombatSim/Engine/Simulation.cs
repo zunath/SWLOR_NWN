@@ -27,6 +27,9 @@ namespace SWLOR.CombatSim.Engine
 
         /// <summary>Well above any real attack rate, and small enough for each swing to move the clock.</summary>
         public const float MaximumAttacksPerSecond = 20f;
+
+        /// <summary>Copies one combatant entry may spawn; far beyond any fight on the server.</summary>
+        public const int MaximumCount = 200;
         private const int CoordinatedSampleSize = 3;
 
         /// <summary>Perk stats the simulator models; listed perks contribute only these.</summary>
@@ -159,8 +162,8 @@ namespace SWLOR.CombatSim.Engine
                             $"'{spec.Name}' has a ReactionSeconds of {spec.ReactionSeconds}, below the {_scenario.TimeStepSeconds}s time step; " +
                             "use a TimeStepSeconds no longer than every ability user's ReactionSeconds.");
 
-                    if (spec.Count < 1)
-                        throw new InvalidDataException($"'{spec.Name}' needs a Count of at least 1.");
+                    if (spec.Count < 1 || spec.Count > MaximumCount)
+                        throw new InvalidDataException($"'{spec.Name}' needs a Count from 1 to {MaximumCount}.");
 
                     var perkStats = _catalog.Perks.GetStats(spec.Perks, PerkStatsRead);
                     for (var copy = 1; copy <= spec.Count; copy++)
@@ -433,10 +436,12 @@ namespace SWLOR.CombatSim.Engine
                     // and a revived caster's zone resumes.
                     if (!caster.IsDead || pulse.Effect.ContinuesAfterCasterDeath)
                     {
-                        if (pulse.RefreshesDamageReduction)
-                            RefreshPartyDamageReduction(caster, pulse.Effect, pulse.MaxTargets);
-                        else
-                            PulseParty(caster, pulse.Effect, pulse.MaxTargets, HealKind.OverTime);
+                        // A pulse picks its allies once. A zone with a damage cut refreshes it on them ahead of the
+                        // heal, except on the last pulse: the status refreshes at 0, 3 ... 27 seconds and heals land at 3 ... 30.
+                        var allies = PartyTargets(caster, pulse.MaxTargets).ToList();
+                        if (pulse.Effect.DamageReductionPercent > 0 && pulse.TicksLeft > 1)
+                            RefreshPartyDamageReduction(caster, pulse.Effect, allies);
+                        PulseParty(caster, pulse.Effect, allies, HealKind.OverTime);
                     }
                     pulse.TicksLeft--;
                     pulse.NextTickAt += pulse.Effect.TickSeconds;
@@ -447,9 +452,9 @@ namespace SWLOR.CombatSim.Engine
             }
         }
 
-        private void PulseParty(Combatant caster, AbilityEffect effect, int? maxTargets, HealKind kind)
+        private void PulseParty(Combatant caster, AbilityEffect effect, IEnumerable<Combatant> allies, HealKind kind)
         {
-            foreach (var ally in PartyTargets(caster, maxTargets))
+            foreach (var ally in allies)
             {
                 var amount = HealingMath.PartyPulse(
                     effect,
@@ -463,9 +468,9 @@ namespace SWLOR.CombatSim.Engine
             }
         }
 
-        private void RefreshPartyDamageReduction(Combatant caster, AbilityEffect effect, int? maxTargets)
+        private void RefreshPartyDamageReduction(Combatant caster, AbilityEffect effect, IEnumerable<Combatant> allies)
         {
-            foreach (var ally in PartyTargets(caster, maxTargets))
+            foreach (var ally in allies)
                 ApplyDamageReduction(caster, ally, effect, ally.HpPercentWithTemporaryHp);
         }
 
@@ -611,7 +616,8 @@ namespace SWLOR.CombatSim.Engine
 
             // Convergence's accuracy comes from an earlier trigger; the cast that triggers it resolves first.
             var hitBonus = ConvergenceHitBonus(caster, cast.Ability);
-            if (cast.FpCost > 0 && cast.Ability.SkillType == SkillType.Force)
+            // The game checks the ability's declared FP requirement, not the adjusted amount charged.
+            if (cast.Ability.FP > 0 && cast.Ability.SkillType == SkillType.Force)
                 TriggerConvergence(caster);
             if (targetLost)
                 return;
@@ -677,7 +683,7 @@ namespace SWLOR.CombatSim.Engine
                     if (effect.TickSeconds <= 0)
                     {
                         // An immediate pulse (Purifying Wave) is an instant ability heal.
-                        PulseParty(caster, effect, cast.Use.MaxTargets, HealKind.InstantAbility);
+                        PulseParty(caster, effect, PartyTargets(caster, cast.Use.MaxTargets).ToList(), HealKind.InstantAbility);
                         break;
                     }
 
@@ -690,19 +696,9 @@ namespace SWLOR.CombatSim.Engine
                         NextTickAt = _now + effect.TickSeconds
                     });
 
-                    // The zone's status refreshes at once and then every pulse, ahead of the heals (0, 3 ... 27 seconds).
+                    // The zone's status lands at once; each pulse refreshes it (see ProcessPartyPulses).
                     if (effect.DamageReductionPercent > 0)
-                    {
-                        RefreshPartyDamageReduction(caster, effect, cast.Use.MaxTargets);
-                        caster.PartyPulses.Add(new PartyPulseInstance
-                        {
-                            Effect = effect,
-                            MaxTargets = cast.Use.MaxTargets,
-                            RefreshesDamageReduction = true,
-                            TicksLeft = effect.Ticks - 1,
-                            NextTickAt = _now + effect.TickSeconds
-                        });
-                    }
+                        RefreshPartyDamageReduction(caster, effect, PartyTargets(caster, cast.Use.MaxTargets).ToList());
                     break;
 
                 case EffectKind.TemporaryHp:
@@ -1018,14 +1014,14 @@ namespace SWLOR.CombatSim.Engine
                 amount *= 1 + RuleSet.GetStepPercent(_rules.PvpDamageBackstop, PvpSeconds(target)) / 100f;
             }
 
-            amount *= 1 - target.Spec.DamageReductionPercent / 100f;
-            // A family of overlapping cuts (Leadership's) keeps only its strongest; ungrouped cuts to all damage
-            // share the game's one summed damage-taken stat; other typed cuts apply on their own.
+            // A family of overlapping cuts (Leadership's) keeps only its strongest; the combatant's own cut and
+            // ungrouped cuts to all damage share the game's one summed damage-taken stat; other typed cuts apply on their own.
             var active = target.DamageReductions.Values.Where(r => r.ExpiresAt > _now && r.Applies(type)).ToList();
             foreach (var family in active.Where(r => r.Group != null).GroupBy(r => r.Group))
                 amount *= 1 - family.Max(r => r.Percent) / 100.0;
             var ungrouped = active.Where(r => r.Group == null).ToList();
-            amount *= 1 - Math.Min(100.0, ungrouped.Where(r => r.Scope == DamageReductionScope.All).Sum(r => (double)r.Percent)) / 100.0;
+            var genericCut = target.Spec.DamageReductionPercent + ungrouped.Where(r => r.Scope == DamageReductionScope.All).Sum(r => (double)r.Percent);
+            amount *= 1 - Math.Min(100.0, genericCut) / 100.0;
             foreach (var reduction in ungrouped.Where(r => r.Scope != DamageReductionScope.All))
                 amount *= 1 - reduction.Percent / 100.0;
             // The game keeps at least 1 damage after its percentage modifiers (Combat.ApplyDamageTakenModifiers).
@@ -1294,9 +1290,10 @@ namespace SWLOR.CombatSim.Engine
             return target;
         }
 
+        // An exact name, or the base name of a combatant entry with a Count (its copies are numbered).
         private static bool IsFocusTarget(Combatant combatant, TeamSpec team) =>
             !string.IsNullOrEmpty(team.FocusTarget)
-            && (combatant.Name == team.FocusTarget || combatant.Name.StartsWith(team.FocusTarget + " "));
+            && (combatant.Name == team.FocusTarget || (combatant.Spec.Count > 1 && combatant.Spec.Name == team.FocusTarget));
 
         private static Combatant FindFocusTarget(IEnumerable<Combatant> enemies, TeamSpec team) =>
             enemies.FirstOrDefault(e => IsFocusTarget(e, team));

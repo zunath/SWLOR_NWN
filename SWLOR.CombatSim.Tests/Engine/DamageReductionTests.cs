@@ -92,6 +92,52 @@ namespace SWLOR.CombatSim.Tests.Engine
         }
 
         [Test]
+        public void TheCombatantsOwnCut_AddsToTimedAllDamageCuts()
+        {
+            var use = TestCombatants.Use("PainSuppressant2", AbilityTarget.NamedAlly, targetName: "Ally", minIntervalSeconds: 600);
+            var ally = new CombatantSpec { Name = "Ally", MaxHp = TestCombatants.EffectivelyUnlimited, DamageReductionPercent = 20f };
+            var simulation = TestScenarios.Spawn(
+                TestScenarios.TwoTeams(false, new[] { TestCombatants.Medic("Medic", use), ally }, new[] { TestCombatants.Dummy("Enemy", true) }),
+                RuleSets.Current(),
+                _catalog);
+            CastOnce(simulation);
+
+            DamageTaken(simulation, simulation.Get("Ally"), DamageType.Physical).Should().BeApproximately(65, 1e-6,
+                "20% and Pain Suppressant II's 15% are one summed 35% cut");
+        }
+
+        [Test]
+        public void ForceSanctuary_RefreshesItsCutOnTheAlliesEachPulseHeals()
+        {
+            var sanctuary = TestCombatants.Use("ForceSanctuary1", AbilityTarget.Self, maxTargets: 1, minIntervalSeconds: 600);
+            var simulation = TestScenarios.Spawn(
+                TestScenarios.TwoTeams(
+                    false,
+                    new[]
+                    {
+                        TestCombatants.Medic("Medic", sanctuary),
+                        new CombatantSpec { Name = "Lower", MaxHp = 1000 },
+                        new CombatantSpec { Name = "Higher", MaxHp = 1000 }
+                    },
+                    new[] { TestCombatants.Dummy("Enemy", true) }),
+                RuleSets.Current(),
+                _catalog);
+            var lower = simulation.Get("Lower");
+            lower.Hp = 300;
+            simulation.Get("Higher").Hp = 310;
+            var medic = simulation.Get("Medic");
+            SimulationClock.RunUntil(simulation, () => medic.GetZone("ForceSanctuary") != null, 10, "the zone placed");
+            var placedAt = simulation.Now;
+
+            // The first pulse heals the lower ally past the other one; its cut must be refreshed on that same ally.
+            SimulationClock.RunUntil(simulation, placedAt + 3.5);
+
+            lower.Stats.HealingReceived.Should().BeGreaterThan(0);
+            lower.DamageReductions["ForceSanctuary"].ExpiresAt.Should().BeGreaterThan(simulation.Now + 2,
+                "the pulse that healed it also refreshed its Force damage cut");
+        }
+
+        [Test]
         public void AFullReduction_StillLetsOnePointOfALandedHitThrough()
         {
             var simulation = Spawn(TestCombatants.Use("PainSuppressant2", AbilityTarget.NamedAlly, targetName: "Ally", minIntervalSeconds: 600));

@@ -43,9 +43,13 @@ namespace SWLOR.CombatSim.Data
         public Dictionary<StatType, int> GetStats(IEnumerable<string> perks, IReadOnlyCollection<StatType> stats)
         {
             var totals = new Dictionary<StatType, int>();
+            var owned = new HashSet<PerkType>();
             foreach (var entry in perks ?? Enumerable.Empty<string>())
             {
                 var (perk, level) = Parse(entry);
+                // A character owns each perk once, at one level.
+                if (!owned.Add(perk.Type))
+                    throw new InvalidDataException($"Perk '{perk.Type}' is listed more than once.");
                 foreach (var bonus in perk.StatBonuses.Concat(level.StatBonuses).Where(b => stats.Contains(b.Stat)))
                 {
                     int value;

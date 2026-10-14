@@ -256,6 +256,28 @@ namespace SWLOR.CombatSim.Tests.Engine
             act.Should().Throw<InvalidDataException>().WithMessage("*Medic*ReactionSeconds*time step*");
         }
 
+        [Test]
+        public void Spawn_RejectsAPerkListedTwice()
+        {
+            var player = TestCombatants.Dummy("Player");
+            player.Perks = new List<string> { "DefensiveHarmony", "DefensiveHarmony" };
+
+            var act = () => new Simulation(Scenario(player), RuleSets.Current(), _catalog, 1).Spawn();
+
+            act.Should().Throw<InvalidDataException>().WithMessage("*DefensiveHarmony*more than once*");
+        }
+
+        [Test]
+        public void Spawn_RejectsACountTooLargeToSpawn()
+        {
+            var crowd = TestCombatants.Dummy("Crowd");
+            crowd.Count = int.MaxValue;
+
+            var act = () => new Simulation(Scenario(crowd), RuleSets.Current(), _catalog, 1).Spawn();
+
+            act.Should().Throw<InvalidDataException>().WithMessage("*Crowd*Count*");
+        }
+
         [TestCase(21f)]
         [TestCase(1e20f)]
         public void Spawn_RejectsAnAttackRateTooFastToAdvanceTheClock(float attacksPerSecond)

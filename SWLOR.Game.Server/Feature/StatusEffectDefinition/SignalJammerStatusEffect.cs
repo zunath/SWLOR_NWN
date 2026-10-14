@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+using System.Linq;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.StatService;
@@ -45,12 +47,14 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
             StatusEffect.RemoveStatusEffect(creature, typeof(Hasten1StatusEffect), false);
             StatusEffect.RemoveStatusEffect(creature, typeof(Hasten2StatusEffect), false);
 
-            var currentPenalty = StatGroup.Stats.TryGetValue(StatType.AttackDelayReductionPercent, out var penalty)
-                ? penalty
-                : 0;
-            var hasteFromOtherSources = Stat.GetStatAdjustment(creature, StatType.AttackDelayReductionPercent) - currentPenalty;
-            var suppression = hasteFromOtherSources > 0 ? -hasteFromOtherSources : 0;
-            StatusEffect.SetStatusEffectStat(creature, this, StatType.AttackDelayReductionPercent, suppression);
+            // Cancel only Haste; attack-speed penalties from other effects keep slowing the target.
+            var statusEffectHaste = StatusEffect.GetCreatureStatusEffects(creature).GetAllEffects()
+                .Where(effect => !ReferenceEquals(effect, this))
+                .Sum(effect => Math.Max(0, effect.StatGroup.Stats.GetValueOrDefault(StatType.AttackDelayReductionPercent)));
+            var otherSourceHaste = Stat.GetStatAdjustment(creature, StatType.AttackDelayReductionPercent) -
+                                   StatusEffect.GetStatAdjustment(creature, StatType.AttackDelayReductionPercent);
+            var haste = statusEffectHaste + Math.Max(0, otherSourceHaste);
+            StatusEffect.SetStatusEffectStat(creature, this, StatType.AttackDelayReductionPercent, -haste);
         }
     }
 }

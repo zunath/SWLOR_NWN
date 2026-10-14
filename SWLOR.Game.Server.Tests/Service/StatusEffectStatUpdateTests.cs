@@ -15,9 +15,11 @@ public class StatusEffectStatUpdateTests
         var tracker = new CreatureStatusEffect();
         tracker.Add(effect);
 
-        tracker.SetStat(effect, StatType.ForceDamageTakenPercentAdjustment, 5);
+        tracker.SetStat(effect, StatType.ForceDamageTakenPercentAdjustment, 5).Should().BeTrue();
         tracker.StatGroup.Stats[StatType.ForceDamageTakenPercentAdjustment].Should().Be(5);
         tracker.StatGroup.Stats[StatType.EvasionPercentAdjustment].Should().Be(-5);
+        tracker.SetStat(effect, StatType.ForceDamageTakenPercentAdjustment, 5).Should().BeFalse(
+            "an unchanged value needs no stat refresh");
 
         tracker.SetStat(effect, StatType.ForceDamageTakenPercentAdjustment, 0);
         tracker.StatGroup.Stats[StatType.ForceDamageTakenPercentAdjustment].Should().Be(0);
@@ -58,7 +60,7 @@ public class StatusEffectStatUpdateTests
         var effect = new UnstablePressureStatusEffect();
         var tracker = new CreatureStatusEffect();
 
-        tracker.SetStat(effect, StatType.ForceDamageTakenPercentAdjustment, 5);
+        tracker.SetStat(effect, StatType.ForceDamageTakenPercentAdjustment, 5).Should().BeFalse();
 
         effect.StatGroup.Stats[StatType.ForceDamageTakenPercentAdjustment].Should().Be(5);
         tracker.StatGroup.Stats[StatType.ForceDamageTakenPercentAdjustment].Should().Be(0);

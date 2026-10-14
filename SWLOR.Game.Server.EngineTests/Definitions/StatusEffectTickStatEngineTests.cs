@@ -81,6 +81,14 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             var suppressedTotal = Stat.GetStatAdjustment(npc, stat);
             observations.Add($"20% haste added: effect={suppressedEffect} total={suppressedTotal}");
 
+            ctx.Assert(StatusEffect.ApplyStatusEffect<SpotterStanceStatusEffect>(npc, npc, 30f),
+                "Spotter Stance must apply");
+            await ctx.DelaySecondsAsync(SettleSeconds);
+            var slowedEffect = effect.StatGroup.Stats[stat];
+            var slowedTotal = Stat.GetStatAdjustment(npc, stat);
+            observations.Add($"Spotter Stance -10% added: effect={slowedEffect} total={slowedTotal}");
+            StatusEffect.RemoveStatusEffect<SpotterStanceStatusEffect>(npc);
+
             TemporaryStatModifier.Consume(npc, stat, HasteGroup);
             await ctx.DelaySecondsAsync(SettleSeconds);
             var clearedEffect = effect.StatGroup.Stats[stat];
@@ -98,9 +106,10 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             var detail = string.Join("; ", observations);
             ctx.SetResultDetail(detail);
             ctx.Assert(suppressedEffect == -20 && suppressedTotal == 0 &&
+                       slowedEffect == -20 && slowedTotal == -10 &&
                        clearedEffect == 0 && clearedTotal == 0 &&
                        removedTotal == 20 && removedStatusTotal == 0,
-                $"the jammer must cancel exactly the outside haste and leave no residue on removal ({detail})");
+                $"the jammer must cancel exactly the outside haste, keep slows, and leave no residue on removal ({detail})");
         }
 
         /// <summary>

@@ -582,6 +582,8 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
 
                 ctx.AssertEqual(0, DMPlayerDirectory.Search(", . *", DMPlayerSearchScope.All, out _).Count,
                     "a search of only punctuation matches nobody, online or offline");
+                ctx.AssertEqual(0, DMPlayerDirectory.Search("\\@", DMPlayerSearchScope.All, out _).Count,
+                    "a search whose only word cannot be queried matches nobody, online or offline");
 
                 var crossField = DMPlayerDirectory.Search("Bulkprobe uniqbulk", DMPlayerSearchScope.Offline, out var crossFieldTruncated);
                 ctx.Assert(crossField.Any(result => result.Name == "Bulkprobe Target") && !crossFieldTruncated,

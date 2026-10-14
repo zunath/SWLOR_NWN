@@ -128,7 +128,8 @@ namespace SWLOR.Game.Server.Service
         /// <param name="actor">A DM avatar or the creature they possess.</param>
         /// <param name="type">The window to toggle.</param>
         /// <param name="payload">An optional payload for the window.</param>
-        public static void ToggleWindow(uint actor, GuiWindowType type, GuiPayloadBase payload = null)
+        /// <param name="tetherObject">An optional object the window closes away from, as in <see cref="Gui.TogglePlayerWindow"/>.</param>
+        public static void ToggleWindow(uint actor, GuiWindowType type, GuiPayloadBase payload = null, uint tetherObject = OBJECT_INVALID)
         {
             var dm = GetDM(actor);
             var controlled = GetControlledCreature(dm);
@@ -146,13 +147,18 @@ namespace SWLOR.Game.Server.Service
             }
 
             if (!moved || !Gui.IsWindowOpen(controlled, type))
-                Gui.TogglePlayerWindow(dm, type, payload, uiTarget: controlled);
+                Gui.TogglePlayerWindow(dm, type, payload, tetherObject, controlled);
 
             _windowTargets[(GetObjectUUID(dm), type)] = controlled;
         }
 
-        // The DM avatar, and the object a window was last opened on through ToggleWindow.
-        private static IEnumerable<uint> GetWindowTargets(uint dm, GuiWindowType type)
+        /// <summary>
+        /// Returns the objects a DM window can be shown on: the DM avatar, and the creature it was last opened on
+        /// through <see cref="ToggleWindow"/>.
+        /// </summary>
+        /// <param name="dm">The DM avatar.</param>
+        /// <param name="type">The window.</param>
+        public static IEnumerable<uint> GetWindowTargets(uint dm, GuiWindowType type)
         {
             yield return dm;
             if (_windowTargets.TryGetValue((GetObjectUUID(dm), type), out var previous) && previous != dm)

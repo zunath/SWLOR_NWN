@@ -44,8 +44,8 @@ namespace SWLOR.Game.Server.Service
             var offlineTruncated = false;
             isTruncated = false;
 
-            // Text that is only punctuation has no searchable words, so it matches nobody, online or offline.
-            if (terms.Count > 0 && PartialMatchSearchText.GetWords(search).Count == 0)
+            // Text with no queryable words, such as only punctuation, matches nobody, online or offline.
+            if (terms.Count > 0 && !PartialMatchSearchText.HasQueryableWords(search))
                 return results;
 
             foreach (var player in GetOnlinePlayers())

@@ -569,19 +569,23 @@ namespace SWLOR.Game.Server.Service
             if (!GetIsPC(player))
                 return;
 
-            // Windows shown on a creature a DM possesses are cached under the DM. Windows the DM opened before
-            // possessing it stay on the avatar, so close those too.
+            // Windows shown on a creature a DM possesses are cached under the DM. A DM's window can also still be on
+            // the avatar or on a creature they possessed earlier, so close those too.
             var owner = GetIsDMPossessed(player) ? GetMaster(player) : player;
+            var isDM = GetIsDM(owner);
             foreach (var (type, template) in _windowTemplates)
             {
                 if (template.KeepsOpenOnAreaChange)
                     continue;
 
-                if (IsWindowOpen(player, type))
-                    TogglePlayerWindow(owner, type, uiTarget: player);
-
-                if (owner != player && IsWindowOpen(owner, type))
-                    TogglePlayerWindow(owner, type);
+                var targets = isDM
+                    ? DMPresence.GetWindowTargets(owner, type).Append(player).Distinct()
+                    : new[] { player };
+                foreach (var target in targets)
+                {
+                    if (GetIsObjectValid(target) && IsWindowOpen(target, type))
+                        TogglePlayerWindow(owner, type, uiTarget: target);
+                }
             }
         }
 

@@ -55,6 +55,16 @@ namespace SWLOR.Game.Server.Service.DBService
         }
 
         /// <summary>
+        /// Returns whether <see cref="Build"/> can query any word of the search. Without one, such as only
+        /// punctuation or a lone escaped symbol like "\@", there is nothing to match against the index.
+        /// </summary>
+        /// <param name="search">The text the player or DM typed.</param>
+        public static bool HasQueryableWords(string search)
+        {
+            return GetWords(search).Any(word => BuildTerm(word) != null);
+        }
+
+        /// <summary>
         /// Returns whether a search word from <see cref="GetWords"/> matches a stored word the way the query from
         /// <see cref="Build"/> does: the start of the word, or the whole word when the search word is one character.
         /// </summary>

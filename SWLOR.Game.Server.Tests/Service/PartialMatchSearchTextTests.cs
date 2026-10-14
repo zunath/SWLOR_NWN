@@ -48,6 +48,17 @@ public class PartialMatchSearchTextTests
         PartialMatchSearchText.GetWords(text).Should().BeEmpty();
     }
 
+    [TestCase("zyn", true)]
+    [TestCase("a", true)]
+    [TestCase("\\@ zyn", true)]
+    [TestCase(", . *", false)]
+    [TestCase("\\@", false)]
+    [TestCase("\\@ \\!", false)]
+    public void HasQueryableWordsIsFalseWhenBuildCanQueryNoWord(string search, bool expected)
+    {
+        PartialMatchSearchText.HasQueryableWords(search).Should().Be(expected);
+    }
+
     [TestCase("zyn", "Zyndari", true)]
     [TestCase("ZYNDARI", "zyndari", true)]
     [TestCase("ynd", "Zyndari", false)]

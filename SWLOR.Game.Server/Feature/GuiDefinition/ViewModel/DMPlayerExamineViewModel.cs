@@ -48,8 +48,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             // The NWNX examine hook cannot skip the native data packet. Close its panel
             // after that packet, then route subsequent attempts through the disabled-panel event.
             SetGuiPanelDisabled(dm, GuiPanel.ExamineCreature, true, target);
-            Gui.ClosePlayerWindow(dm, GuiWindowType.DMPlayerExamine);
-            Gui.TogglePlayerWindow(dm, GuiWindowType.DMPlayerExamine, payload);
+            // A possessing DM examines as the creature; DMPresence opens the window on it under the DM avatar.
+            DMPresence.CloseWindow(dm, GuiWindowType.DMPlayerExamine);
+            DMPresence.ToggleWindow(dm, GuiWindowType.DMPlayerExamine, payload);
         }
 
         private string _playerId;

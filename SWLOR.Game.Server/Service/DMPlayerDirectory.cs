@@ -270,7 +270,7 @@ namespace SWLOR.Game.Server.Service
         {
             var disguiseDescriptor = Disguise.GetActiveDisguise(dbPlayer)?.Descriptor;
             return string.IsNullOrWhiteSpace(disguiseDescriptor)
-                ? PlayerDescriptor.GetUnknownDisplayNameByPlayerId(dbPlayer.Id)
+                ? PlayerDescriptor.GetUnknownDisplayName(dbPlayer)
                 : disguiseDescriptor;
         }
     }

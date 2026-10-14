@@ -569,7 +569,8 @@ namespace SWLOR.Game.Server.Service
             if (!GetIsPC(player))
                 return;
 
-            // Windows shown on a creature a DM possesses are cached under the DM.
+            // Windows shown on a creature a DM possesses are cached under the DM. Windows the DM opened before
+            // possessing it stay on the avatar, so close those too.
             var owner = GetIsDMPossessed(player) ? GetMaster(player) : player;
             foreach (var (type, template) in _windowTemplates)
             {
@@ -578,6 +579,9 @@ namespace SWLOR.Game.Server.Service
 
                 if (IsWindowOpen(player, type))
                     TogglePlayerWindow(owner, type, uiTarget: player);
+
+                if (owner != player && IsWindowOpen(owner, type))
+                    TogglePlayerWindow(owner, type);
             }
         }
 

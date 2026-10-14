@@ -320,6 +320,7 @@ namespace SWLOR.Game.Server.Service
                     if (percentHeal > 0)
                     {
                         var healHP = (int)(GetMaxHitPoints(beast) * (percentHeal * 0.01f));
+                        using var recorderAttribution = CombatRecorder.BeginSetupAttribution(beast);
                         ApplyEffectToObject(DurationType.Instant, EffectHeal(healHP), beast);
                     }
 

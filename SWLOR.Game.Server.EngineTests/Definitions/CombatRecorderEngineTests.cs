@@ -80,6 +80,11 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                     10f,
                     "Force Lightning I to damage the target");
 
+                // Healing received restores stamina; that restore is written after its heal.
+                TemporaryStatModifier.Add(target, StatType.HealingReceivedStaminaRestore, 5, 120f);
+                TemporaryStatModifier.Add(target, StatType.HealingReceivedStaminaRestoreChance, 100, 120f);
+                Stat.ReduceStamina(target, 50);
+
                 var hitPointsBeforeHeal = GetCurrentHitPoints(target);
                 await UseAbilityAsync(ctx, healer, target, FeatType.Benevolence1);
                 await ctx.WaitUntilAsync(
@@ -109,6 +114,13 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 AssignCommand(healer, () => ApplyEffectToObject(DurationType.Instant, EffectDamage(9999), doomed));
                 await ctx.WaitUntilAsync(() => GetIsDead(doomed) || !GetIsObjectValid(doomed), 5f, "the doomed caster to die");
                 await ctx.DelaySecondsAsync(1.5f);
+
+                // A companion's setup heal is not combat healing.
+                await ctx.ExecuteInCreatureContextAsync(healer, () =>
+                {
+                    using var setup = CombatRecorder.BeginSetupAttribution(target);
+                    ApplyEffectToObject(DurationType.Instant, EffectHeal(10), target);
+                });
 
                 // At least one snapshot cycle while everyone is registered.
                 await ctx.DelaySecondsAsync(1.5f);
@@ -147,6 +159,14 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             ctx.AssertEqual("Benevolence I", interruption.GetProperty("interrupted_by_name").GetString(), "what interrupted the cast");
             ctx.AssertEqual(1, summary.GetParticipant(attackerId).AbilityDenials["Force Lightning I"].Values.Sum(), "summary refusals");
             ctx.AssertEqual(1, summary.GetParticipant(attackerId).AbilityInterruptions["Benevolence I"]["crowd_control"], "summary interruptions");
+            ctx.AssertEqual(1, events.Count(e => Type(e) == "heal" && e.GetProperty("target").GetInt32() == targetId),
+                "only the Benevolence heal is recorded on the target; the setup heal is not");
+            var healIndex = events.FindIndex(e => Type(e) == "heal" && e.GetProperty("target").GetInt32() == targetId);
+            var staminaIndex = events.FindIndex(e => Type(e) == "resource" &&
+                                                     e.GetProperty("creature").GetInt32() == targetId &&
+                                                     e.GetProperty("reason_name").GetString() == nameof(StatType.HealingReceivedStaminaRestore));
+            ctx.Assert(staminaIndex > healIndex && healIndex >= 0,
+                $"the healing-received stamina restore (event {staminaIndex}) must follow its heal (event {healIndex})");
             var doomedId = ParticipantId(ctx, events, "Recorder Doomed");
             ctx.Assert(events.Any(e => Type(e) == "ability_interrupted" &&
                                        e.GetProperty("caster").GetInt32() == doomedId &&

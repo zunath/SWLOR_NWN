@@ -44,6 +44,10 @@ namespace SWLOR.Game.Server.Service
         private static readonly List<CombatRecordWriter> _unfinishedWriters = new();
         private static readonly Dictionary<uint, ulong> _deathFrames = new();
         private static uint _toggleDeactivatedBy = OBJECT_INVALID;
+        private static readonly List<CombatRecordEvent> _awaitingHeal = new();
+        private static uint _awaitingHealTarget = OBJECT_INVALID;
+        private static ulong _awaitingHealFrame;
+        private static bool _isInHealingReaction;
         private static ulong _toggleDeactivatedFrame;
         private static int _heldInsertIndex = -1;
         private static long _heldTimestampMs;
@@ -116,6 +120,8 @@ namespace SWLOR.Game.Server.Service
             _heldEvents.Clear();
             _heldInsertIndex = -1;
             _deathFrames.Clear();
+            _awaitingHeal.Clear();
+            _isInHealingReaction = false;
 
             var directory = CombatRecordFileNames.GetDirectory(ApplicationSettings.Get().LogDirectory);
             var baseName = CombatRecordFileNames.BuildBaseName(_startedUtc, _label);
@@ -154,6 +160,8 @@ namespace SWLOR.Game.Server.Service
             }
 
             _damageApplications.Clear();
+            _isInHealingReaction = false;
+            ReleaseAwaitingHeal();
             WriteHeldEvents();
             Enqueue(CombatRecordEvent.RecordingStopped(reason, _eventsEnqueued + 1));
             IsRecording = false;
@@ -298,6 +306,54 @@ namespace SWLOR.Game.Server.Service
             return placedBy.Actor != 0
                 ? BeginAttribution(placedBy)
                 : PushAttribution(owner, CombatRecordSourceKind.Trap, null, 0, 0);
+        }
+
+        /// <summary>
+        /// Marks a companion's setup heal (its deploy health correction), which is not combat
+        /// healing and is not recorded.
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static CombatRecordAttributionScope BeginSetupAttribution(uint creature)
+        {
+            return IsRecording ? PushAttribution(creature, CombatRecordSourceKind.Setup, null, 0, 0) : default;
+        }
+
+        /// <summary>
+        /// Starts the reactions to a heal on <paramref name="creature"/> that is applied right after
+        /// them (a stamina restore on healing received). Their events are written after that heal.
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static CombatRecordHealingReactionScope BeginHealingReaction(uint creature)
+        {
+            return IsRecording ? StartHealingReaction(creature) : default;
+        }
+
+        private static CombatRecordHealingReactionScope StartHealingReaction(uint creature)
+        {
+            ReleaseAwaitingHeal();
+            _awaitingHealTarget = creature;
+            _awaitingHealFrame = ServerFrame.Current;
+            _isInHealingReaction = true;
+            return new CombatRecordHealingReactionScope(true);
+        }
+
+        internal static void EndHealingReaction()
+        {
+            _isInHealingReaction = false;
+        }
+
+        /// <summary>
+        /// Writes reaction events still waiting for their heal, in case it was never applied.
+        /// </summary>
+        private static void ReleaseAwaitingHeal()
+        {
+            if (_awaitingHeal.Count == 0)
+                return;
+
+            var awaiting = _awaitingHeal.ToArray();
+            _awaitingHeal.Clear();
+            foreach (var recordEvent in awaiting)
+                Enqueue(recordEvent);
         }
 
         /// <summary>
@@ -456,6 +512,18 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         private static void Enqueue(CombatRecordEvent recordEvent)
         {
+            if (_isInHealingReaction)
+            {
+                recordEvent.Frame = ServerFrame.Current;
+                recordEvent.TimestampMs = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
+                _awaitingHeal.Add(recordEvent);
+                return;
+            }
+
+            // A heal that never came: its reactions are written once that frame has passed.
+            if (_awaitingHeal.Count > 0 && _awaitingHealFrame != ServerFrame.Current)
+                ReleaseAwaitingHeal();
+
             recordEvent.Frame = ServerFrame.Current;
             if (_heldInsertIndex >= 0)
             {
@@ -1121,9 +1189,15 @@ namespace SWLOR.Game.Server.Service
                 KeepHitPointsLeftByHit(application, hitPointsBefore);
 
             if (!IsRecorded(target, creator))
+            {
+                ReleaseAwaitingHealFor(target);
                 return;
+            }
 
             var attribution = ResolveAttribution(creator);
+            if (attribution.Kind == CombatRecordSourceKind.Setup)
+                return;
+
             Enqueue(CombatRecordEvent.Healing(
                 GetParticipantId(attribution.Actor),
                 GetParticipantId(target),
@@ -1134,6 +1208,14 @@ namespace SWLOR.Game.Server.Service
                 hitPointsBefore,
                 hitPointsAfter,
                 maxHitPoints));
+
+            ReleaseAwaitingHealFor(target);
+        }
+
+        private static void ReleaseAwaitingHealFor(uint target)
+        {
+            if (_awaitingHeal.Count > 0 && _awaitingHealTarget == target)
+                ReleaseAwaitingHeal();
         }
 
         /// <summary>

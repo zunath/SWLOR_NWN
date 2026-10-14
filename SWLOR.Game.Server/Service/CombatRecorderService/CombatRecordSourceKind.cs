@@ -20,6 +20,9 @@ namespace SWLOR.Game.Server.Service.CombatRecorderService
         Respawn = 12,
         Subdual = 13,
         DungeonMaster = 14,
-        Trap = 15
+        Trap = 15,
+
+        /// <summary>Companion setup (deploy health correction); its heals are not recorded.</summary>
+        Setup = 16
     }
 }

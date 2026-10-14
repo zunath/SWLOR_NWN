@@ -512,7 +512,8 @@ namespace SWLOR.CombatSim.Engine
                     {
                         // A pulse picks its allies once. A zone with a damage cut refreshes it on them ahead of the
                         // heal, except on the last pulse: the status refreshes at 0, 3 ... 27 seconds and heals land at 3 ... 30.
-                        var allies = PartyTargets(caster, pulse.MaxTargets).ToList();
+                        // A pulse caught up from earlier in the step reaches only allies who were there by then.
+                        var allies = PartyTargets(caster, pulse.MaxTargets, pulse.NextTickAt).ToList();
                         if (pulse.Effect.DamageReductionPercent > 0 && pulse.TicksLeft > 1)
                             RefreshPartyDamageReduction(caster, pulse.Effect, allies);
                         PulseParty(caster, pulse.Effect, allies, HealKind.OverTime);
@@ -958,8 +959,10 @@ namespace SWLOR.CombatSim.Engine
                 Math.Max(Math.Max(_now - step, attacker.Spec.JoinAtSeconds), enemiesSince));
             while (_now >= attacker.NextAttackAt)
             {
+                var swingAt = attacker.NextAttackAt;
                 attacker.NextAttackAt += 1.0 / attack.AttacksPerSecond;
-                var target = EnsureAttackTarget(attacker);
+                // A swing caught up from earlier in the step reaches only enemies who were there by then.
+                var target = EnsureAttackTarget(attacker, swingAt);
                 if (target == null)
                     return;
 
@@ -967,7 +970,7 @@ namespace SWLOR.CombatSim.Engine
                 var queued = attacker.QueuedWeaponAbility;
                 if (queued == null)
                 {
-                    ApplyDamageProfile(attacker, target, attack.Damage, 0f);
+                    ApplyDamageProfile(attacker, target, attack.Damage, 0f, at: swingAt);
                     continue;
                 }
 
@@ -978,7 +981,7 @@ namespace SWLOR.CombatSim.Engine
                     continue;
 
                 DamageHealingCatalog.TryGet(queued.Ability.Feat, out var damageHealing);
-                ApplyDamageProfile(attacker, target, queued.Use.Damage, 0f, damageHealing, alwaysHits: true);
+                ApplyDamageProfile(attacker, target, queued.Use.Damage, 0f, damageHealing, alwaysHits: true, at: swingAt);
 
                 attacker.QueuedWeaponAbility = null;
                 if (HitPointCostCatalog.TryGet(queued.Ability.Feat, out var hitPointCost))
@@ -1003,13 +1006,15 @@ namespace SWLOR.CombatSim.Engine
 
         /// <returns>Whether a hit landed on the chosen target, or on anyone for an area.</returns>
         private bool ApplyDamageProfile(
-            Combatant attacker, Combatant target, DamageSpec damage, float hitBonus, DamageHealing damageHealing = null, bool alwaysHits = false)
+            Combatant attacker, Combatant target, DamageSpec damage, float hitBonus, DamageHealing damageHealing = null,
+            bool alwaysHits = false, double? at = null)
         {
-            var targets = damage.Area ? Enemies(attacker).ToList() : new List<Combatant> { target };
+            var reachable = EnemiesAt(attacker, at ?? _now).ToList();
+            var targets = damage.Area ? reachable : new List<Combatant> { target };
             if (!damage.Area && damage.Targets > 1)
             {
                 // The rest of the area's victims are distinct enemies, never the same one twice.
-                targets.AddRange(Enemies(attacker)
+                targets.AddRange(reachable
                     .Where(enemy => enemy != target)
                     .OrderBy(_ => _random.Next())
                     .Take(damage.Targets - 1));
@@ -1364,16 +1369,18 @@ namespace SWLOR.CombatSim.Engine
                 _sharedTargets.Remove(teamIndex);
         }
 
-        private Combatant EnsureAttackTarget(Combatant attacker)
+        /// <param name="at">A moment within the current step; only enemies who were there by then can be picked.</param>
+        private Combatant EnsureAttackTarget(Combatant attacker, double? at = null)
         {
+            var when = at ?? _now;
             var team = _scenario.Teams[attacker.TeamIndex];
             if (team.TargetPolicy == TargetPolicy.Coordinated)
-                return EnsureSharedTarget(attacker, team);
+                return EnsureSharedTarget(attacker, team, when);
 
-            if (KeepsCurrentTarget(attacker, team))
+            if (KeepsCurrentTarget(attacker, team, when))
                 return attacker.AttackTarget;
 
-            var enemies = Enemies(attacker).ToList();
+            var enemies = EnemiesAt(attacker, when).ToList();
             if (enemies.Count == 0)
                 return null;
 
@@ -1390,10 +1397,10 @@ namespace SWLOR.CombatSim.Engine
             return target;
         }
 
-        private bool KeepsCurrentTarget(Combatant attacker, TeamSpec team)
+        private bool KeepsCurrentTarget(Combatant attacker, TeamSpec team, double when)
         {
             var current = attacker.AttackTarget;
-            if (current is not { IsDead: false })
+            if (current is not { IsDead: false } || current.AvailableSince > when)
                 return false;
 
             if (team.RetargetSeconds > 0 && _now - attacker.AttackTargetPickedAt >= team.RetargetSeconds)
@@ -1402,17 +1409,18 @@ namespace SWLOR.CombatSim.Engine
             // A focus target that joins the fight after the attacker settled on someone else takes over.
             return team.TargetPolicy != TargetPolicy.Focus
                    || IsFocusTarget(current, team)
-                   || FindFocusTarget(Enemies(attacker), team) == null;
+                   || FindFocusTarget(EnemiesAt(attacker, when), team) == null;
         }
 
-        private Combatant EnsureSharedTarget(Combatant attacker, TeamSpec team)
+        private Combatant EnsureSharedTarget(Combatant attacker, TeamSpec team, double when)
         {
             if (_sharedTargets.TryGetValue(attacker.TeamIndex, out var shared)
                 && !shared.Target.IsDead
+                && shared.Target.AvailableSince <= when
                 && !(team.RetargetSeconds > 0 && _now - shared.PickedAt >= team.RetargetSeconds))
                 return shared.Target;
 
-            var enemies = Enemies(attacker).ToList();
+            var enemies = EnemiesAt(attacker, when).ToList();
             if (enemies.Count == 0)
                 return null;
 
@@ -1444,9 +1452,10 @@ namespace SWLOR.CombatSim.Engine
                 .Select(entry => entry.Combatant)
                 .ToList();
 
-        private IEnumerable<Combatant> PartyTargets(Combatant caster, int? maxTargets)
+        private IEnumerable<Combatant> PartyTargets(Combatant caster, int? maxTargets, double? at = null)
         {
-            var allies = Allies(caster).ToList();
+            var when = at ?? _now;
+            var allies = Allies(caster).Where(ally => ally.AvailableSince <= when).ToList();
             return maxTargets.HasValue && maxTargets.Value < allies.Count ? PickLowestHp(allies, maxTargets.Value) : allies;
         }
 
@@ -1457,6 +1466,9 @@ namespace SWLOR.CombatSim.Engine
 
         private IEnumerable<Combatant> Enemies(Combatant combatant) =>
             _combatants.Where(c => IsEngaged(c) && c.TeamIndex != combatant.TeamIndex);
+
+        private IEnumerable<Combatant> EnemiesAt(Combatant combatant, double at) =>
+            Enemies(combatant).Where(enemy => enemy.AvailableSince <= at);
 
         private bool IsPlayerVersusPlayer(Combatant attacker, Combatant target) =>
             _scenario.IsPvp && !attacker.Spec.IsNpc && !target.Spec.IsNpc;

@@ -19,6 +19,26 @@ namespace SWLOR.CombatSim.Tests.Cli
             CommandLineOptions.AreSameFile(first, second).Should().Be(same);
         }
 
+        [TestCase("scenario.json", "report.md", "*--out*scenario*")]
+        [TestCase("report.md", "rules.json", "*--json*rules file*")]
+        [TestCase("report.md", "report.md", "*--json and --out*")]
+        public void FindOutputCollision_NamesAnOutputThatWouldOverwriteAnInputOrTheOtherOutput(string outPath, string jsonPath, string expected)
+        {
+            var outputs = new List<(string, string)> { ("--json", jsonPath), ("--out", outPath) };
+            var inputs = new List<(string, string)> { ("scenario", "scenario.json"), ("rules file", "./rules.json") };
+
+            CommandLineOptions.FindOutputCollision(outputs, inputs).Should().Match(expected);
+        }
+
+        [Test]
+        public void FindOutputCollision_AcceptsOutputsThatAreTheirOwnFiles()
+        {
+            var outputs = new List<(string, string)> { ("--json", "results.json"), ("--out", "report.md") };
+            var inputs = new List<(string, string)> { ("scenario", "scenario.json") };
+
+            CommandLineOptions.FindOutputCollision(outputs, inputs).Should().BeNull();
+        }
+
         [TestCase("0")]
         [TestCase("100001")]
         [TestCase("2147483647")]

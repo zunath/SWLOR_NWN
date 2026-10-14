@@ -52,6 +52,31 @@ namespace SWLOR.CombatSim.Cli
                 Path.GetFullPath(second),
                 OperatingSystem.IsWindows() || OperatingSystem.IsMacOS() ? StringComparison.OrdinalIgnoreCase : StringComparison.Ordinal);
 
+        /// <summary>
+        /// Why an output would overwrite one of the inputs or another output, or null when every output is its own file.
+        /// </summary>
+        public static string FindOutputCollision(
+            IReadOnlyList<(string Option, string Path)> outputs, IReadOnlyList<(string Name, string Path)> inputs)
+        {
+            for (var index = 0; index < outputs.Count; index++)
+            {
+                var output = outputs[index];
+                foreach (var input in inputs)
+                {
+                    if (AreSameFile(output.Path, input.Path))
+                        return $"{output.Option} would overwrite the {input.Name} {input.Path}.";
+                }
+
+                for (var other = index + 1; other < outputs.Count; other++)
+                {
+                    if (AreSameFile(output.Path, outputs[other].Path))
+                        return $"{output.Option} and {outputs[other].Option} name the same file, so one would overwrite the other.";
+                }
+            }
+
+            return null;
+        }
+
         /// <summary>A whole-number option from <see cref="Parse"/>'s result, or the default when it was not given.</summary>
         public static int GetInt(
             IReadOnlyDictionary<string, List<string>> options, string name, int defaultValue, int minimum, int maximum = int.MaxValue)

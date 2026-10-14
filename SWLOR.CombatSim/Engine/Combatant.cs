@@ -67,7 +67,7 @@ namespace SWLOR.CombatSim.Engine
 
         public double LastDamageTakenAt { get; set; } = double.NegativeInfinity;
 
-        /// <summary>When it last became something to hit: when it joined, or its latest revive.</summary>
+        /// <summary>When it last entered the fight, to be hit or healed: when it joined, or its latest revive.</summary>
         public double AvailableSince { get; set; }
         public double PvpCombatStartedAt { get; set; } = double.NegativeInfinity;
         public double LastPvpActivityAt { get; set; } = double.NegativeInfinity;

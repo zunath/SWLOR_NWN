@@ -183,6 +183,49 @@ namespace SWLOR.CombatSim.Tests.Engine
         }
 
         [Test]
+        public void CaughtUpSwings_GoToEnemiesThatWereThereAtTheTime()
+        {
+            var striker = TestCombatants.Striker("Striker", attacksPerSecond: 20f, damage: 1f);
+            var late = TestCombatants.Dummy("Late", true);
+            late.JoinAtSeconds = 9.9f;
+            var scenario = TestScenarios.TwoTeams(false, new[] { striker }, new[] { TestCombatants.Dummy("Early", true), late });
+            scenario.Teams[0].TargetPolicy = TargetPolicy.Focus;
+            scenario.Teams[0].FocusTarget = "Late";
+            var simulation = TestScenarios.Spawn(scenario, RuleSets.Current(), _catalog);
+
+            SimulationClock.RunUntil(simulation, 10.5, stepSeconds: 10.0);
+
+            simulation.Get("Late").Stats.DamageTakenToHp.Should().BeLessThanOrEqualTo(5,
+                "only swings from 9.9s on can reach the focus target that joined then");
+            simulation.Get("Early").Stats.DamageTakenToHp.Should().BeGreaterThan(150, "earlier swings stay on the enemy who was there");
+        }
+
+        [Test]
+        public void ACaughtUpZonePulse_ReachesOnlyAlliesWhoHadJoinedByThen()
+        {
+            var sanctuary = TestCombatants.Use("ForceSanctuary1", AbilityTarget.Self, minIntervalSeconds: 600);
+            var medic = TestCombatants.Medic("Medic", sanctuary);
+            var late = new CombatantSpec { Name = "Late", MaxHp = 1000, JoinAtSeconds = 12f };
+            var simulation = TestScenarios.Spawn(
+                TestScenarios.TwoTeams(false, new[] { medic, late }, new[] { TestCombatants.Dummy("Enemy", true) }),
+                RuleSets.Current(),
+                _catalog);
+            var caster = simulation.Get("Medic");
+            var lateAlly = simulation.Get("Late");
+            caster.Hp = 100;
+            lateAlly.Hp = 100;
+            SimulationClock.RunUntil(simulation, () => caster.Stats.AbilitiesUsed == 1, 5, "Force Sanctuary placed");
+            caster.Hp = 100;
+
+            // One coarse step catches up every pulse due before it, including those from before the ally joined.
+            SimulationClock.RunUntil(simulation, simulation.Now + 20.5, stepSeconds: 20.0);
+
+            lateAlly.Stats.HealingReceived.Should().BeGreaterThan(0, "pulses after it joined reach it");
+            lateAlly.Stats.HealingReceived.Should().BeLessThan(caster.Stats.HealingReceived,
+                "pulses from before it joined do not");
+        }
+
+        [Test]
         public void AFirstDecision_FallsAnywhereWithinTheReactionTime()
         {
             var firstCasts = new List<double>();

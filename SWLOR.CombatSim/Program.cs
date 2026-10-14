@@ -48,9 +48,15 @@ static int Run(string[] args)
         new[] { "--rules", "--rules-file", "--runs", "--seed", "--out", "--json" },
         new[] { "--detail" },
         new[] { "--rules", "--rules-file" });
-    if (options.TryGetValue("--json", out var jsonPath) && options.TryGetValue("--out", out var outPath) &&
-        CommandLineOptions.AreSameFile(jsonPath[0], outPath[0]))
-        return Fail("--json and --out name the same file, so the report would overwrite the raw results.");
+    var outputs = new[] { "--json", "--out" }
+        .Where(options.ContainsKey)
+        .Select(option => (option, options[option][0]))
+        .ToList();
+    var inputs = new List<(string, string)> { ("scenario", args[0]) };
+    inputs.AddRange(options.GetValueOrDefault("--rules-file", new List<string>()).Select(path => ("rules file", path)));
+    var collision = CommandLineOptions.FindOutputCollision(outputs, inputs);
+    if (collision != null)
+        return Fail(collision);
 
     var scenario = ScenarioSpec.Load(args[0]);
     var runs = CommandLineOptions.GetInt(options, "--runs", 200, 1, BatchRunner.MaximumRuns);

@@ -594,19 +594,18 @@ public class PropertyOnDemandLoadingTests
         var commandBody = ExtractMethod(adminChatSource, "private void PropertyDiagnosticsCommand()");
         commandBody.Should().Contain("_builder.Create(\"propertydiagnostics\")");
         commandBody.Should().Contain(".Permissions(AuthorizationLevel.Admin)");
-        commandBody.Should().Contain("var player = user;");
-        commandBody.Should().Contain("if (GetIsDMPossessed(player))");
-        commandBody.Should().Contain("uiTarget = player;");
-        commandBody.Should().Contain("player = GetMaster(player);");
+        // A possessing DM is logged as their avatar, and DMPresence shows the window on the possessed creature.
+        commandBody.Should().Contain("var dm = DMPresence.GetDM(user);");
         commandBody.Should().Contain("Log.WriteStructured(");
         commandBody.Should().Contain("LogGroup.Property");
         commandBody.Should().Contain("Property diagnostics toggled:");
-        commandBody.Should().Contain("GetName(player)");
-        commandBody.Should().Contain("GetObjectUUID(player)");
+        commandBody.Should().Contain("GetName(dm)");
+        commandBody.Should().Contain("GetObjectUUID(dm)");
         commandBody.IndexOf("Log.WriteStructured(", StringComparison.Ordinal)
-            .Should().BeLessThan(commandBody.IndexOf("Gui.TogglePlayerWindow(", StringComparison.Ordinal));
-        commandBody.Should().Contain("GuiWindowType.PropertyDiagnostics,");
-        commandBody.Should().Contain("uiTarget);");
+            .Should().BeLessThan(commandBody.IndexOf("DMPresence.ToggleWindow(", StringComparison.Ordinal));
+        // The same path as the DM toolbar's Admin Tools button, so the two never open separate copies.
+        commandBody.Should().Contain("DMPresence.ToggleWindow(user, GuiWindowType.PropertyDiagnostics);");
+        commandBody.Should().NotContain("Gui.TogglePlayerWindow(");
         staffDefinitionSource.Should().NotContain("OnClickPropertyDiagnostics");
         staffViewModelSource.Should().NotContain("GuiWindowType.PropertyDiagnostics");
     }

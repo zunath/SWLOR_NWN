@@ -15,6 +15,34 @@ SPEC.loader.exec_module(GENERATOR)
 
 
 class GeneratedWeaponTargetingTests(unittest.TestCase):
+    def test_shadowflow_rename_preserves_identity_and_timed_effects(self):
+        row = next(row for row in GENERATOR.read_manifest()
+                   if row["PerkName"] == "Shadowflow")
+        _, feats = GENERATOR.parse_enum_values(ROOT / "SWLOR.NWN.API/NWScript/Enum/FeatType.cs")
+        targeting = GENERATOR.read_spell_targeting()
+        status_types = GENERATOR.known_status_effect_types()
+        self.assertEqual("ShadowflowStance1", GENERATOR.active_feat_name(row, feats))
+        self.assertEqual("ShadowflowStance", GENERATOR.perk_base_id(row["Tab"], row["PerkName"]))
+        self.assertEqual("Shadowflow", GENERATOR.short_recast_name(row["PerkName"]))
+        stats = dict(GENERATOR.exact_weapon_stance_stat_entries(row, row["PerkName"]))
+        self.assertEqual("18", stats["AutoAttackHamstringDurationSeconds"])
+        self.assertEqual("-20", stats["DefensePercentAdjustment"])
+        with tempfile.TemporaryDirectory() as folder:
+            output_root = Path(folder)
+            (output_root / "SWLOR.Game.Server/Feature/StatusEffectDefinition").mkdir(parents=True)
+            with (patch.object(GENERATOR, "ROOT", output_root),
+                  patch.object(GENERATOR, "read_spell_targeting", return_value=targeting),
+                  patch.object(GENERATOR, "known_status_effect_types", return_value=status_types)):
+                GENERATOR.generate_ability_definitions([row], feats, {})
+                GENERATOR.generate_stance_status_effects([row])
+            for root in (output_root, ROOT):
+                ability = (root / "SWLOR.Game.Server/Feature/AbilityDefinition/Vibroknife/ShadowflowAbilityDefinition.cs").read_text()
+                self.assertIn('.Name("Shadowflow")', ability)
+                self.assertRegex(ability, r"SkillType\.Vibroknife,\s+8,\s+18,\s+typeof\(ShadowflowStatusEffect\)")
+                status = (root / "SWLOR.Game.Server/Feature/StatusEffectDefinition/ShadowflowStatusEffect.cs").read_text()
+                self.assertIn('Name => "Shadowflow"', status)
+                self.assertIn("AutoAttackHamstringDurationSeconds] = 18", status)
+
     def test_regeneration_preserves_weapon_independent_attack_triggers(self):
         expected = {
             "Propagation": "SourceStatusAutoAttackCycleSkillType",
@@ -31,7 +59,7 @@ class GeneratedWeaponTargetingTests(unittest.TestCase):
             with self.subTest(perk=name):
                 stats = dict(GENERATOR.description_stat_entries(rows[name], name))
                 self.assertEqual("(int)SkillType.Invalid", stats[stat])
-        shadow = dict(GENERATOR.exact_weapon_stance_stat_entries(rows["Shadowflow Stance"], "Shadowflow Stance"))
+        shadow = dict(GENERATOR.exact_weapon_stance_stat_entries(rows["Shadowflow"], "Shadowflow"))
         self.assertEqual("(int)SkillType.Invalid", shadow["AutoAttackHamstringSkillType"])
         last_word = dict(GENERATOR.profile_property_lines(rows["Last Word"], 1, None))
         self.assertEqual("(int)SkillType.Invalid", last_word["TemporaryAvoidedAttackNextAutoAttackNoDelaySkillType"])

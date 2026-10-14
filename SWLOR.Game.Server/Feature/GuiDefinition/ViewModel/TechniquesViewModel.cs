@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Feature.GuiDefinition.Payload;
+using SWLOR.Game.Server.Feature.GuiDefinition.RefreshEvent;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.GuiService;
@@ -11,9 +12,27 @@ using PlayerEntity = SWLOR.Game.Server.Entity.Player;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 {
-    public class TechniquesViewModel : GuiViewModelBase<TechniquesViewModel, TechniquesPayload>
+    public class TechniquesViewModel : GuiViewModelBase<TechniquesViewModel, TechniquesPayload>,
+        IGuiRefreshable<TechniqueChangedRefreshEvent>
     {
         private const string NoSelectionText = "Select a technique to view its details.";
+        private List<FeatType> _draft;
+        private List<FeatType> _savedSnapshot;
+        private List<string> _loadoutIds = new();
+        private string _selectedLoadoutId;
+        private bool _settingSelection;
+
+        public GuiBindingList<GuiComboEntry> LoadoutOptions { get => Get<GuiBindingList<GuiComboEntry>>(); set => Set(value); }
+        public int SelectedLoadoutIndex { get => Get<int>(); set => Set(value); }
+        public string ActiveLoadoutText { get => Get<string>(); set => Set(value); }
+        public string PreviewTitle { get => Get<string>(); set => Set(value); }
+        public string BuildsText { get => Get<string>(); set => Set(value); }
+        public bool CanSaveAs { get => Get<bool>(); set => Set(value); }
+        public bool CanRevert { get => Get<bool>(); set => Set(value); }
+        public string StatusText { get => Get<string>(); set => Set(value); }
+        public GuiColor StatusColor { get => Get<GuiColor>(); set => Set(value); }
+        private bool IsDirty => !MimicryLoadouts.Matches(_draft, _savedSnapshot);
+        private PlayerEntity Record => DB.Get<PlayerEntity>(GetObjectUUID(Player));
 
         private List<FeatType> _unequippedFeats;
         private List<FeatType> _equippedFeats;
@@ -139,6 +158,17 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             SelectedCategoryId = 0;
             SelectedSortOrderId = 0;
 
+            var record = Record;
+            if (MimicryLoadouts.EnsureStartingBuild(record))
+                DB.Set(record);
+            if (_draft == null || !record.MimicryLoadouts.Any(x => x.Id == _selectedLoadoutId))
+            {
+                LoadDraft(record.ActiveMimicryLoadoutId.Length > 0 ? record.ActiveMimicryLoadoutId : record.MimicryLoadouts[0].Id);
+                // Apply can persist an equipped set without overwriting its saved preset.
+                // A new window must show that set while retaining the preset for Save/Revert.
+                _draft = record.EquippedTechniques.ToList();
+            }
+            RefreshLoadouts();
             LoadLists();
 
             // Re-filter/sort the Learned list whenever the player changes the search box,
@@ -146,10 +176,21 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             WatchOnClient(model => model.SearchText);
             WatchOnClient(model => model.SelectedCategoryId);
             WatchOnClient(model => model.SelectedSortOrderId);
+            WatchOnClient(model => model.SelectedLoadoutIndex);
         }
 
         protected override void OnClientPropertyUpdated(string propertyName)
         {
+            if (propertyName == nameof(SelectedLoadoutIndex) && !_settingSelection)
+            {
+                var index = SelectedLoadoutIndex;
+                if (index < 0 || index >= _loadoutIds.Count || _loadoutIds[index] == _selectedLoadoutId)
+                    return;
+                var next = _loadoutIds[index];
+                SetSelection(_loadoutIds.IndexOf(_selectedLoadoutId));
+                ConfirmDraftChange(() => { LoadDraft(next); RefreshLoadouts(); LoadLists(); });
+                return;
+            }
             if (propertyName == nameof(SearchText) ||
                 propertyName == nameof(SelectedCategoryId) ||
                 propertyName == nameof(SelectedSortOrderId))
@@ -165,7 +206,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var playerId = GetObjectUUID(Player);
             var dbPlayer = DB.Get<PlayerEntity>(playerId);
             var learnedFeats = Mimicry.GetLearnedTechniques(dbPlayer);
-            var equippedFeats = Mimicry.GetEquippedTechniques(dbPlayer);
+            var equippedFeats = _draft.Select(feat => (Feat: feat, Detail: Mimicry.GetTechniqueDetail(feat))).ToList();
 
             var unequippedNames = new GuiBindingList<string>();
             var unequippedSelections = new GuiBindingList<bool>();
@@ -184,7 +225,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             // Requirement state, computed once, drives the per-row color (mirrors the Perk window's
             // grey = locked / amber = met-but-can't-afford / green = actionable convention).
             var skillRank = dbPlayer.Skills.TryGetValue(SkillType.Mimicry, out var mimicrySkill) ? mimicrySkill.Rank : 0;
-            var usedSlots = Mimicry.GetUsedSlots(dbPlayer);
+            var usedSlots = _draft.Sum(feat => Mimicry.GetTechniqueDetail(feat)?.MimicrySlotCost ?? 0);
             var maxSlots = Mimicry.GetMaxSlots(dbPlayer);
 
             // The Learned list honors the search box, category dropdown, and sort dropdown.
@@ -214,9 +255,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             foreach (var (feat, detail) in equippedFeats)
             {
                 _equippedFeats.Add(feat);
-                equippedNames.Add(BuildRowText(detail));
+                equippedNames.Add(detail == null ? "Unavailable technique (remove to apply)" : BuildRowText(detail));
                 equippedSelections.Add(false);
-                equippedColors.Add(EquippedColor);
+                equippedColors.Add(detail == null || skillRank < detail.MimicrySkillRequirement ? LockedColor : EquippedColor);
                 equippedIcons.Add(Mimicry.GetTechniqueIcon(feat));
             }
 
@@ -230,6 +271,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             EquippedIcons = equippedIcons;
 
             RefreshSlots(dbPlayer);
+            RefreshStatus(dbPlayer);
         }
 
         // Perk-window color convention, reused for consistency.
@@ -237,6 +279,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         private static readonly GuiColor NoRoomColor = new(230, 180, 70);     // met, but no free slots
         private static readonly GuiColor EquippableColor = new(60, 200, 90);  // ready to equip
         private static readonly GuiColor EquippedColor = new(90, 170, 230);   // currently equipped / active
+        private static readonly GuiColor ErrorColor = new(230, 90, 80);       // preview cannot be applied
 
         // Category ids match the dropdown option values in TechniquesDefinition:
         // 1 Single-Target, 2 Area, 3 Stance, 4 Support, 5 Passive Trait. Trait/stance/support are
@@ -264,17 +307,17 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         private static string BuildRowText(AbilityDetail detail)
         {
             var slotLabel = detail.MimicrySlotCost == 1 ? "slot" : "slots";
-            return $"{detail.Name} (Rank {detail.MimicrySkillRequirement} / {detail.MimicrySlotCost} {slotLabel})";
+            return $"{detail.Name} ({detail.MimicrySlotCost} {slotLabel}, Rank {detail.MimicrySkillRequirement})";
         }
 
         private void RefreshSlots(PlayerEntity dbPlayer)
         {
-            var used = Mimicry.GetUsedSlots(dbPlayer);
+            var used = _draft.Sum(feat => Mimicry.GetTechniqueDetail(feat)?.MimicrySlotCost ?? 0);
             var max = Mimicry.GetMaxSlots(dbPlayer);
 
             SlotsText = $"Slots: {used} / {max}";
-            SlotsColor = used >= max ? GuiColor.Red : GuiColor.White;
-            SlotsProgress = max > 0 ? (float)used / max : 0f;
+            SlotsColor = used > max ? GuiColor.Red : EquippedColor;
+            SlotsProgress = max > 0 ? Math.Clamp((float)used / max, 0f, 1f) : 0f;
         }
 
         private void ClearSelections()
@@ -291,6 +334,11 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         private void ShowDetails(FeatType feat)
         {
             var detail = Mimicry.GetTechniqueDetail(feat);
+            if (detail == null)
+            {
+                SelectedDetails = "This saved technique is unavailable. Remove it from the preview before applying.";
+                return;
+            }
 
             var text = $"{detail.Name}\n\n";
 
@@ -387,11 +435,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             var feat = _unequippedFeats[_selectedUnequippedIndex];
 
-            // EquipTechnique validates and reports failures to the player itself.
-            if (Mimicry.EquipTechnique(Player, feat))
-            {
-                LoadLists();
-            }
+            _draft.Add(feat);
+            LoadLists();
         };
 
         public Action OnClickUnequip() => () =>
@@ -401,9 +446,164 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             var feat = _equippedFeats[_selectedEquippedIndex];
 
-            Mimicry.UnequipTechnique(Player, feat);
-
+            _draft.Remove(feat);
             LoadLists();
         };
+
+        private void LoadDraft(string id)
+        {
+            var loadout = Record.MimicryLoadouts.FirstOrDefault(x => x.Id == id) ?? Record.MimicryLoadouts[0];
+            _selectedLoadoutId = loadout.Id;
+            _draft = loadout.Techniques.ToList();
+            _savedSnapshot = loadout.Techniques.ToList();
+        }
+
+        private void SetSelection(int index)
+        {
+            _settingSelection = true;
+            SelectedLoadoutIndex = index;
+            _settingSelection = false;
+        }
+
+        private void RefreshLoadouts()
+        {
+            var record = Record;
+            var options = new GuiBindingList<GuiComboEntry>();
+            _loadoutIds = record.MimicryLoadouts.Select(x => x.Id).ToList();
+            for (var index = 0; index < record.MimicryLoadouts.Count; index++)
+                options.Add(new GuiComboEntry(record.MimicryLoadouts[index].Name, index));
+            LoadoutOptions = options;
+            SetSelection(_loadoutIds.IndexOf(_selectedLoadoutId));
+            BuildsText = record.MimicryLoadouts.Count < MimicryLoadouts.MaxLoadouts
+                ? $"Save the preview as a new build ({record.MimicryLoadouts.Count} / {MimicryLoadouts.MaxLoadouts} saved)."
+                : $"All {MimicryLoadouts.MaxLoadouts} build slots are used. Delete one with Manage first.";
+            CanSaveAs = record.MimicryLoadouts.Count < MimicryLoadouts.MaxLoadouts;
+        }
+
+        private void RefreshStatus(PlayerEntity record)
+        {
+            var selected = record.MimicryLoadouts.First(x => x.Id == _selectedLoadoutId);
+            var active = record.MimicryLoadouts.FirstOrDefault(x => x.Id == record.ActiveMimicryLoadoutId);
+            ActiveLoadoutText = active == null ? "Equipped: Custom build" :
+                $"Equipped: {active.Name}" + (MimicryLoadouts.Matches(active.Techniques, record.EquippedTechniques) ? "" : " (Modified)");
+            PreviewTitle = $"Preview: {selected.Name}" + (IsDirty ? " (unsaved)" : "");
+            CanRevert = IsDirty;
+            if (!Mimicry.ValidateLoadout(record, _draft, out var error))
+            {
+                StatusText = error;
+                StatusColor = ErrorColor;
+                return;
+            }
+
+            var isEquipped = MimicryLoadouts.Matches(_draft, record.EquippedTechniques);
+            StatusColor = isEquipped && !IsDirty ? GuiColor.White : NoRoomColor;
+            if (isEquipped)
+                StatusText = IsDirty ? "Equipped, but not saved. Save keeps it in this build." : "This build is equipped.";
+            else
+                StatusText = IsDirty ? "Unsaved preview. Apply Build to equip it; Save to keep it." : "Apply Build to equip this preview.";
+        }
+
+        private void ShowError(string error)
+        {
+            StatusText = error;
+            StatusColor = ErrorColor;
+        }
+
+        private bool SaveDraft(string id, string name)
+        {
+            var record = Record;
+            if (!MimicryLoadouts.Save(record, id, name, _draft, out var saved, out var error))
+            {
+                ShowError(error);
+                return false;
+            }
+            if (MimicryLoadouts.Matches(_draft, record.EquippedTechniques))
+                Mimicry.CaptureLoadoutHotbar(Player, saved);
+            DB.Set(record);
+            _selectedLoadoutId = saved.Id;
+            _savedSnapshot = _draft.ToList();
+            RefreshLoadouts();
+            LoadLists();
+            return true;
+        }
+
+        public Action OnClickSave() => () => SaveDraft(_selectedLoadoutId,
+            Record.MimicryLoadouts.First(x => x.Id == _selectedLoadoutId).Name);
+
+        public Action OnClickSaveAs() => () => ShowInputModal(
+            $"Save build as (up to {MimicryLoadouts.MaxNameLength} characters):", string.Empty,
+            () => SaveDraft(null, ModalInputText), confirmText: "Save");
+
+        public Action OnClickManage() => () => ShowModal("Manage the selected saved build:",
+            () => ShowInputModal("Rename build:", Record.MimicryLoadouts.First(x => x.Id == _selectedLoadoutId).Name,
+                () =>
+                {
+                    var record = Record;
+                    if (!MimicryLoadouts.Rename(record, _selectedLoadoutId, ModalInputText, out var error))
+                    {
+                        ShowError(error);
+                        return;
+                    }
+                    DB.Set(record);
+                    RefreshLoadouts();
+                    LoadLists();
+                }, confirmText: "Rename"),
+            () => ShowModal("Delete this saved build? Equipped techniques stay equipped.", () =>
+            {
+                var record = Record;
+                if (!MimicryLoadouts.Delete(record, _selectedLoadoutId, out var error))
+                {
+                    ShowError(error);
+                    return;
+                }
+                DB.Set(record);
+                LoadDraft(record.MimicryLoadouts[0].Id);
+                RefreshLoadouts();
+                LoadLists();
+            }, confirmText: "Delete", cancelText: "Cancel"), "Rename", "Delete...");
+
+        private void ConfirmDraftChange(Action proceed)
+        {
+            if (!IsDirty)
+            {
+                proceed();
+                return;
+            }
+            ShowModal("Save your changes before switching builds?", () =>
+            {
+                if (SaveDraft(_selectedLoadoutId, Record.MimicryLoadouts.First(x => x.Id == _selectedLoadoutId).Name))
+                    proceed();
+            }, () => ShowModal("Discard your unsaved changes?", proceed,
+                confirmText: "Discard", cancelText: "Keep editing"), "Save", "More...");
+        }
+
+        public Action OnClickRevert() => () => ShowModal("Revert the preview to the saved build?", () =>
+        {
+            LoadDraft(_selectedLoadoutId);
+            LoadLists();
+        }, confirmText: "Revert", cancelText: "Cancel");
+
+        public Action OnClickApply() => () =>
+        {
+            if (!Mimicry.ApplyLoadout(Player, _selectedLoadoutId, _draft, out var error))
+                ShowError(error);
+            else
+                LoadLists();
+        };
+
+        public void Refresh(TechniqueChangedRefreshEvent payload)
+        {
+            if (_draft != null)
+                LoadLists();
+        }
+
+        protected override void OnMainViewRestored()
+        {
+            // The client can drop input binds while the modal replaces their widgets.
+            SearchText = SearchText;
+            SelectedCategoryId = SelectedCategoryId;
+            SelectedSortOrderId = SelectedSortOrderId;
+            SetSelection(_loadoutIds.IndexOf(_selectedLoadoutId));
+        }
     }
 }

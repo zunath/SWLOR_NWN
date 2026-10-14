@@ -539,6 +539,13 @@ zones and area attacks, and every combatant has the Embattled trait. The result 
 counters from `FrameProfiler` (DB calls, broadcasts, status effect changes, stat lookups, telegraph
 uniforms, top handlers and status effects by time).
 
+Before measuring, every combatant joins a party of five: NPCs as henchmen, players through the Party
+service's invitation-accept event, since a headless player has no client to accept. Players then get
+the aura area that module entry normally applies, and a stack of each consumable the rotation uses.
+The test checks that a party buff and a party aura reach another player. A run fails if any NPC dies, or
+if players (or NPCs, in the NPC-only scenario) never succeed at some rotation ability, because either
+would quietly shrink the workload.
+
 Read the numbers with these limits in mind:
 
 - The idle server sleeps between frames, so p50 mostly measures that sleep. Compare tails, slow-frame
@@ -550,6 +557,8 @@ Read the numbers with these limits in mind:
   cost nothing here. Measure those paths with real clients and `SWLOR_FRAME_PROFILER_ENABLED=true`.
 - Combat rolls are seeded, but AI timing still varies between runs; repeat a run before trusting a
   small difference.
+- The driver waits on wall-clock time, so when frames run long it issues fewer casts. Compare casts
+  completed alongside frame times; a saturated server reports close to 1000 managed ms per second.
 
 ## CI
 

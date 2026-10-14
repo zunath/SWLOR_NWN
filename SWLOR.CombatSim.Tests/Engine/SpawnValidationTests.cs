@@ -365,6 +365,8 @@ namespace SWLOR.CombatSim.Tests.Engine
             act.Should().Throw<InvalidDataException>().WithMessage("*Player*MaxHp*");
         }
 
+        [TestCase("hpRegenHuge")]
+        [TestCase("stmRegenHuge")]
         [TestCase("hpRegenFraction")]
         [TestCase("fpRegenFraction")]
         [TestCase("readinessAboveCap")]
@@ -386,6 +388,8 @@ namespace SWLOR.CombatSim.Tests.Engine
             var player = TestCombatants.Dummy("Player");
             switch (field)
             {
+                case "hpRegenHuge": player.HpRegenPer30Seconds = 1e20f; break;
+                case "stmRegenHuge": player.StmRegenPer30Seconds = 2e6f; break;
                 case "hpRegenFraction": player.HpRegenPer30Seconds = 0.5f; break;
                 case "fpRegenFraction": player.FpRegenPer30Seconds = 1.5f; break;
                 case "readinessAboveCap": player.CombatReadinessPercent = 16f; break;

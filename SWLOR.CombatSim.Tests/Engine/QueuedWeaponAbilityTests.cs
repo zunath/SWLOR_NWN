@@ -23,6 +23,22 @@ namespace SWLOR.CombatSim.Tests.Engine
             _catalog = AbilityCatalog.Load();
         }
 
+        [TestCase(true)]
+        [TestCase(false)]
+        public void Spawn_RejectsAQueuedAbilityWithNoAutoattackToCarryIt(bool hasAutoattack)
+        {
+            var strike = TestCombatants.Use("FortressStrike3", AbilityTarget.Enemy);
+            strike.Damage = new DamageSpec { Min = StrikeDamage, Max = StrikeDamage };
+            var fighter = TestCombatants.Medic("Fighter", strike);
+            if (hasAutoattack)
+                fighter.AutoAttack = new AutoAttackSpec { AttacksPerSecond = 0f, Damage = new DamageSpec { Min = 1f, Max = 1f } };
+            var scenario = TestScenarios.TwoTeams(false, new[] { fighter }, new[] { TestCombatants.Dummy("Enemy", true) });
+
+            var act = () => new Simulation(scenario, RuleSets.Current(), _catalog, 1).Spawn();
+
+            act.Should().Throw<InvalidDataException>().WithMessage("*FortressStrike3*autoattack*");
+        }
+
         [Test]
         public void FortressStrike_IsAQueuedWeaponAbilityInTheGameData()
         {

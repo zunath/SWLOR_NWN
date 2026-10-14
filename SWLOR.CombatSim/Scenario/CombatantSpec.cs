@@ -46,6 +46,8 @@ namespace SWLOR.CombatSim.Scenario
 
         public const float MaximumPercentBonus = 1000f;
 
+        public const float MaximumRegenPer30Seconds = 1_000_000f;
+
         /// <summary>The game's Stat.MaximumCombatReadinessPercent.</summary>
         public const float MaximumCombatReadinessPercent = 15f;
 
@@ -77,6 +79,17 @@ namespace SWLOR.CombatSim.Scenario
             WholeNumber(nameof(HpRegenPer30Seconds), HpRegenPer30Seconds);
             WholeNumber(nameof(FpRegenPer30Seconds), FpRegenPer30Seconds);
             AtLeastZero(nameof(StmRegenPer30Seconds), StmRegenPer30Seconds);
+            // Regeneration beyond any pool is meaningless and would not fit the whole-number amounts it becomes.
+            foreach (var (name, value) in new[]
+                     {
+                         (nameof(HpRegenPer30Seconds), HpRegenPer30Seconds),
+                         (nameof(FpRegenPer30Seconds), FpRegenPer30Seconds),
+                         (nameof(StmRegenPer30Seconds), StmRegenPer30Seconds)
+                     })
+            {
+                if (value > MaximumRegenPer30Seconds)
+                    problems.Add($"{name} must be at most {MaximumRegenPer30Seconds}");
+            }
             AtLeastZero(nameof(MaxFp), MaxFp);
             AtLeastZero(nameof(MaxStm), MaxStm);
             if (!float.IsFinite(CombatReadinessPercent) || CombatReadinessPercent < 0f || CombatReadinessPercent > MaximumCombatReadinessPercent)

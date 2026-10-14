@@ -88,13 +88,17 @@ namespace SWLOR.CombatSim.Engine
             var step = _scenario.TimeStepSeconds;
             int? winner = null;
 
-            for (_now = 0; _now < _scenario.DurationSeconds; _now += step)
+            _now = 0;
+            while (true)
             {
                 Step(step);
 
                 winner = GetLastTeamStanding();
-                if (winner != null)
+                if (winner != null || _now >= _scenario.DurationSeconds)
                     break;
+
+                // The last step lands on the duration itself, so events due before it are still processed.
+                _now = Math.Min(_now + step, _scenario.DurationSeconds);
             }
 
             return new SimulationResult
@@ -197,7 +201,13 @@ namespace SWLOR.CombatSim.Engine
                     }
 
                     foreach (var use in spec.Abilities)
+                    {
                         ResolveUse(use);
+                        // Only a landed autoattack can carry a queued weapon ability.
+                        if (_resolvedUses[use].Info.IsQueuedWeapon && spec.AutoAttack is not { AttacksPerSecond: > 0 })
+                            throw new InvalidDataException(
+                                $"'{spec.Name}' queues the weapon ability '{use.Feat}' but has no autoattack to carry it.");
+                    }
                 }
             }
 

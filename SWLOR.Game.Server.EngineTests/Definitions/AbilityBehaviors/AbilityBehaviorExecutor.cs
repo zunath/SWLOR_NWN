@@ -5,6 +5,7 @@ using SWLOR.Game.Server.Core.Async;
 using SWLOR.Game.Server.Feature.AbilityDefinition;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
+using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.EngineTests.Framework;
 using SWLOR.Game.Server.Service.StatService;
 using SWLOR.NWN.API.NWNX;
@@ -649,7 +650,8 @@ namespace SWLOR.Game.Server.EngineTests.Definitions.AbilityBehaviors
 
                 if (behaviorCase.VerifiesImmediateRecastRejection)
                 {
-                    await AssertImmediateRecastRejectionAsync(ctx, behaviorCase, ability, caster, target, activationLocation);
+                    await AssertImmediateRecastRejectionAsync(ctx, behaviorCase, ability, caster, target,
+                        activationLocation, casterPositionBefore);
                 }
             }
             finally
@@ -717,7 +719,8 @@ namespace SWLOR.Game.Server.EngineTests.Definitions.AbilityBehaviors
             AbilityDetail ability,
             uint caster,
             uint target,
-            Location activationLocation)
+            Location activationLocation,
+            System.Numerics.Vector3 initialCasterPosition)
         {
             // Full resources isolate the movement lockout and the longer shared recast.
             ctx.SetResources(caster, ResourcePool, ResourcePool);
@@ -761,6 +764,15 @@ namespace SWLOR.Game.Server.EngineTests.Definitions.AbilityBehaviors
                 ctx.Assert(!used, "The immediate retry respects the shared movement lockout");
                 ctx.Log($"{behaviorCase.Feat} immediate retry verified the two-second movement lockout");
                 await ctx.DelaySecondsAsync(2.05f);
+                ctx.Assert(!WeaponRepositioning.IsMoving(caster), "The first movement is complete before the cooldown-only fixture reset");
+                await ctx.ExecuteInCreatureContextAsync(caster, () =>
+                {
+                    ClearAllActions();
+                    ObjectPlugin.SetPosition(caster, initialCasterPosition);
+                });
+                await ctx.WaitFrameAsync();
+                ctx.Assert(System.Numerics.Vector3.Distance(initialCasterPosition, GetPosition(caster)) < .05f,
+                    "The cooldown-only retry starts at the original validated fixture position");
                 activationLocation = await PrepareMovementLaneAsync(ctx, behaviorCase, ability, caster, target);
                 await RetryAsync();
             }

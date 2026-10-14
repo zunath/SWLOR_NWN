@@ -12,9 +12,9 @@ The approved design is implemented on the feature branch and has not been deploy
 
 ## Implementation validation
 
-The server build passes with deployment disabled. Focused integration checks pass (223 tests), as do the related equipment, animation, Force conversion, gathering and store regressions (92 tests). The full unit run exposed eight remaining failures in unchanged content or tests: old apartment jukebox/placeable data, helmet assignments, double-weapon expectations, a droid serialization source assertion, Concussive Toss target-budget parsing and old `sw_openarc` walkmesh use-node names. Those failures were reproduced with the final assemblies and are outside this feature. No baseline execution is claimed; the affected source/data were compared with the base branch.
+The server build passes with deployment disabled. The initial full unit run passed 5,005 of 5,082 tests. Feature integration failures were repaired and verified with targeted reruns: 223 integration checks, 92 related equipment/animation/Force/gathering/store checks, 112 casting/stamina regressions, 11 guide/icon checks and 32 final Bible/recipe/ability/stamina checks. These filters overlap; they are not a combined unique-test count. The full suite has not been repeated. Eight failures still reproduce in unchanged content or tests: old apartment jukebox/placeable data, helmet assignments, double-weapon expectations, a droid serialization source assertion, Concussive Toss target-budget parsing and old `sw_openarc` walkmesh use-node names. Those failures are outside this feature. No baseline execution is claimed; the affected source/data were compared with the base branch.
 
-Native engine checks have verified cross-skill saber/rifle damage penalties and Haste, ten weapon loadouts, queued ability replacement, equipment recovery when inventory is full, movement/root/collision rules, actual Canyon Range mastery objectives and repeated save/reload. The existing DualWield, SingleWeapon and PistolPresentation cases passed. Launched finite-ammo shots retain their original damage and ammunition through stop, ammunition swaps and weapon swaps. The final all-rank movement-ability and hasted-ammo fixtures are being completed; invalid benchmark runs are excluded from balance evidence.
+All 22 active ability ranks passed native behavior coverage, including actual movement, immediate movement lockout and longer recast rejection. Other native engine checks verified cross-skill saber/rifle damage penalties and Haste, ten weapon loadouts, queued ability replacement, equipment recovery when inventory is full, movement/root/collision rules, actual Canyon Range mastery objectives and repeated save/reload. The existing DualWield, SingleWeapon and PistolPresentation cases passed. Canonical and converted legacy pistols passed real-player finite ammunition cases at 0/1/2 rounds and hasted 2/4/5 rounds. Launched shots retain their original damage and ammunition through stop, ammunition swaps and weapon swaps. Both capstone weapon-swap cancellations and a stale-capture/unrelated-cast control passed. Invalid earlier benchmark runs are excluded from balance evidence.
 
 Real NWN client captures show paired ready/hit/miss presentation, representative bodies and robes, neutral cross-skill gestures, status icons and both mastery-record icons. The six HAK integrity guards and full gameplay icon audit (1,867 entries) pass. Verification used silent owned clients on an isolated private desktop; every owned client was stopped and its isolated profile removed. A second connected observer has not verified dynamic muzzle-anchor replication, and the throughput comparison does not certify every cross-skill build or PvP encounter. Keep both PRs in draft until these remaining release checks are addressed.
 
@@ -203,7 +203,23 @@ Compare Twin Pistol 50 with either full 60-SP line plus Dual Wield III against P
 
 Run hybrids at equal total SP and skill-rank investment. A character buying both Pistol and Twin Pistol lines is not comparable to a 69-SP single-line build. Include generic ranged/critical effects, Armor traits, buffs from allies, weapon enhancements, suppression, healing-on-hit, and limited haste/no-delay effects. Do not assume Pistol-specific traits apply merely because the models are pistols.
 
-### Revised balance validation required
+### Native rotation observations
+
+Five equal 69-SP builds ran against the same stationary 30,000-HP NPC with measured DEF 94 and EVA 134. Attackers had rank 50, attributes 26, DMG 22 and 250 delay units per weapon. Single Pistol bought Doublehand III; paired builds bought Dual Wield III and exactly one handling trait. Actual feats, finite 61-STM pools, production regeneration every six seconds, native ordinary rolls and purchased capstones were used. Damage attribution equaled target HP loss in every completed measurement.
+
+| Build | Handling | Damage near 6s | Damage near 12s | 120s DPS | Final STM |
+|---|---|---:|---:|---:|---:|
+| Pistol Gunslinger | Doublehand | 408 | 551 | 23.00 | 11 |
+| Barrage | Matched Rhythm | 418 | 622 | 28.34 | 8 |
+| Barrage | Paired Handling | 435 | 590 | 30.67 | 8 |
+| Crossfire | Matched Rhythm | 175 | 418 | 20.60 | 30 |
+| Crossfire | Paired Handling | 369 | 547 | 22.44 | 30 |
+
+These are one seeded encounter per build, not a statistical balance certification. Snapshots occurred at 6.29-6.61s, 12.30-12.49s and 120.43-120.80s. Barrage measured 123-133% of the Pistol reference, outside the 95-105% sustained release target. Its largest observed opening also exceeds the proposed 10% burst allowance. The approved values remain implemented, but balance tuning and repeated representative comparisons are required before release.
+
+Crossfire completed Slide, Rush, Grapple and both paid finishers, but its controller accumulated 47-48 blocked Slide attempts and 42-43 unavailable Rush lanes. Its measured damage includes arena geometry and controller decisions; it is not an unobstructed rotation ceiling or a measure of movement's survival benefit. Target positions were not logged, so the records do not establish same-floor geometry throughout. The NPC remained above 70% HP, making High Noon's target-health condition eligible throughout. Incoming damage, Second Wind opportunities, Cool Under Fire, allied buffs, per-hit enhancements, equal acquisition cost, PvP and multiple seeds remain outside this comparison.
+
+### Model estimates and remaining balance validation
 
 Earlier DPS tables model the superseded duplicate-damage handling perks and older Paired Volley costs/powers. Do not present the old 103% result or the former 129-SP hybrid as current evidence. `tools/AnalyzeTwinPistolBalance.mjs` now models the current mutually exclusive handling choices, updated Volley, and ramp startup using 64 mixed-seed ordinary-hit samples, alongside expected activated damage and finite STM. It applies integer per-hit damage adjustments, clears Alternating Fire progress during its cooldown, and opens Crossfire with Slide, Rush, then Grapple. Quick Draw receives no repeated new-target critical bonus against the continuously damaged reference target.
 
@@ -211,7 +227,7 @@ Its representative 120s case produces 21.72 DPS for the 69-SP Pistol reference, 
 
 Rerun matched-investment comparisons for both handling choices with 6s/12s openings and 120s sustained encounters. Include real paired pistols, single/two-handed weapons, saber/rifle cross-skills, external Haste, the global Haste cap, per-hit effects, available STM, paid activated attacks and movement interruption. Test weapon swaps without resetting stance penalties, counters or proc cooldowns. All legal combined-line purchases top out at 110 SP, or 119 including optional Armor Dual Wield; standalone lines remain 60 SP each.
 
-At maximum rank Volley is D+26/10 STM/18s and Focused is D+34/10 STM/24s. Keep the frequency-versus-efficiency distinction through actual resource-constrained rotations, rather than treating ability power alone as a balance comparison. Matched Rhythm's 3/6/8% Haste remains provisional until those comparisons pass. Retain the release targets below; do not claim universal balance or measured engine results.
+At maximum rank Volley is D+26/10 STM/18s and Focused is D+34/10 STM/24s. Keep the frequency-versus-efficiency distinction through resource-constrained rotations, rather than treating ability power alone as a balance comparison. Matched Rhythm remains implemented at the approved 3/6/8% Haste. Retain the release targets below; the native observations above do not yet meet them.
 
 ### Existing-ability interactions
 

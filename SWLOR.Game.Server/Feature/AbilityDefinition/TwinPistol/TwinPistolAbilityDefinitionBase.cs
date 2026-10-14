@@ -53,6 +53,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwinPistol
                 .SkillType(SkillType.TwinPistol)
                 .CombatImpactDamageAbility(AbilityType.Perception)
                 .HasRecastDelay(recastGroup, 30f)
+                .RequirementStamina(0)
                 .UsesImmediateAuthoredAnimation()
                 .UsesAnimation(Animation.CastOutAnimation)
                 .DisplaysVisualEffectOnSuccessfulImpact(VisualEffect.Vfx_Imp_Haste);

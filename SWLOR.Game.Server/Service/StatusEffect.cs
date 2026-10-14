@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Core;
+using SWLOR.Game.Server.Feature.AbilityDefinition;
 using SWLOR.Game.Server.Feature.GuiDefinition.RefreshEvent;
 using SWLOR.Game.Server.Feature.StatusEffectDefinition;
 using SWLOR.Game.Server.Service.AbilityService;
@@ -1057,11 +1058,21 @@ namespace SWLOR.Game.Server.Service
             if (isPermanent || durationTicks < 0)
             {
                 ApplyEffectToObject(DurationType.Permanent, effect, creature);
-                return;
+            }
+            else
+            {
+                var durationSeconds = GetStatusEffectDurationSeconds(statusEffect, durationTicks);
+                ApplyEffectToObject(DurationType.Temporary, effect, creature, durationSeconds);
             }
 
-            var durationSeconds = GetStatusEffectDurationSeconds(statusEffect, durationTicks);
-            ApplyEffectToObject(DurationType.Temporary, effect, creature, durationSeconds);
+            ScheduleTemporaryHitPointLimitCheckForVitality(creature, statusEffect);
+        }
+
+        // Native Vitality effects change maximum HP outside the HP budget setters.
+        private static void ScheduleTemporaryHitPointLimitCheckForVitality(uint creature, IStatusEffect statusEffect)
+        {
+            if (statusEffect.StatGroup.Abilities.TryGetValue(AbilityType.Vitality, out var vitality) && vitality != 0)
+                TemporaryHitPointEffects.ScheduleLimitCheck(creature);
         }
 
         private static Effect BuildNativeStatusEffect(IStatusEffect statusEffect)
@@ -1808,6 +1819,8 @@ namespace SWLOR.Game.Server.Service
             {
                 DelayCommand(0.1f, () => Stat.ApplyCreatureMovementRate(creature));
             }
+
+            ScheduleTemporaryHitPointLimitCheckForVitality(creature, statusEffect);
 
             if (!isReplacement)
             {

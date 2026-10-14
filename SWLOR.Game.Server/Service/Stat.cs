@@ -4,6 +4,7 @@ using System.Linq;
 using NWN.Native.API;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Extension;
+using SWLOR.Game.Server.Feature.AbilityDefinition;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.LogService;
@@ -605,6 +606,8 @@ namespace SWLOR.Game.Server.Service
             {
                 SetCurrentHitPoints(player, maxHP);
             }
+
+            TemporaryHitPointEffects.ScheduleLimitCheck(player);
         }
 
         /// <summary>
@@ -717,6 +720,8 @@ namespace SWLOR.Game.Server.Service
             if (ability == AbilityType.Invalid) return;
 
             CreaturePlugin.SetRawAbilityScore(player, ability, GetPlayerAttributeScore(entity, ability));
+            if (ability == AbilityType.Vitality)
+                TemporaryHitPointEffects.ScheduleLimitCheck(player);
         }
 
         private static int GetPlayerAttributeScore(Player entity, AbilityType ability)
@@ -2698,6 +2703,8 @@ namespace SWLOR.Game.Server.Service
                     creature,
                     System.Math.Min(originalCurrentHitPoints, alignedMaxHitPoints));
             }
+
+            TemporaryHitPointEffects.ScheduleLimitCheck(creature);
         }
 
         /// <summary>

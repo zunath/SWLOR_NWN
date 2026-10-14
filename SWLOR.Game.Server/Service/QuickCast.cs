@@ -20,6 +20,11 @@ public static class QuickCast
     private static readonly Dictionary<uint, HashSet<QuickCastTargetType>> _enabledModes = new();
     private static readonly Dictionary<uint, Dictionary<int, (QuickBarSlot Original, string Command)>> _bindings = new();
 
+    public static (int Slot, string Command)[] GetBoundCommandsForExport(uint player) =>
+        _bindings.TryGetValue(player, out var bindings)
+            ? bindings.Select(entry => (entry.Key, entry.Value.Command)).ToArray()
+            : Array.Empty<(int, string)>();
+
     public static string CommandName(QuickCastTargetType targetType) =>
         targetType == QuickCastTargetType.Self ? "castself" : "castenemy";
 
@@ -78,6 +83,17 @@ public static class QuickCast
     {
         if (!TryResolveAbility(player, targetType, nameOrId, out var feat, out error))
             return false;
+
+        // Chat commands skip the native feat action that normally prevents controlled
+        // creatures from acting. Include hidden native types such as knockdown.
+        var creature = NWNXLib.g_pAppManager.m_pServerExoApp.GetGameObject(player).AsNWSCreature();
+        foreach (var effect in creature.m_appliedEffects)
+        {
+            if (!QuickCastPolicy.BlocksCasting((EffectTypeScript)effect.GetScriptEffectType(1)))
+                continue;
+            error = "You cannot quick cast while incapacitated.";
+            return false;
+        }
 
         var target = player;
         if (targetType == QuickCastTargetType.CurrentEnemy)

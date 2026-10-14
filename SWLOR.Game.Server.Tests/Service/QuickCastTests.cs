@@ -39,6 +39,28 @@ public class QuickCastTests
         finally { QuickCast.ResetSession(player); }
     }
 
+    [TestCase(EffectTypeScript.Paralyze)]
+    [TestCase(EffectTypeScript.CutsceneParalyze)]
+    [TestCase(EffectTypeScript.Dazed)]
+    [TestCase(EffectTypeScript.Stunned)]
+    [TestCase(EffectTypeScript.Sleep)]
+    [TestCase(EffectTypeScript.Petrify)]
+    [TestCase(EffectTypeScript.Knockdown)]
+    [TestCase(EffectTypeScript.Confused)]
+    [TestCase(EffectTypeScript.Frightened)]
+    [TestCase(EffectTypeScript.Dominated)]
+    [TestCase(EffectTypeScript.CutsceneDominated)]
+    [TestCase(EffectTypeScript.Turned)]
+    public void NativeActionControl_BlocksQuickCasting(EffectTypeScript effectType) =>
+        QuickCastPolicy.BlocksCasting(effectType).Should().BeTrue();
+
+    [TestCase(EffectTypeScript.CutsceneImmobilize)]
+    [TestCase(EffectTypeScript.Entangle)]
+    [TestCase(EffectTypeScript.MovementSpeedDecrease)]
+    [TestCase(EffectTypeScript.Blindness)]
+    public void EffectsThatAllowStationaryAbilities_DoNotBlockQuickCasting(EffectTypeScript effectType) =>
+        QuickCastPolicy.BlocksCasting(effectType).Should().BeFalse();
+
     [Test]
     public void SelfCast_RequiresExplicitDefinitionOptIn()
     {

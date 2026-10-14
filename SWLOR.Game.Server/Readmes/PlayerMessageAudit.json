@@ -1533,20 +1533,6 @@
     "Call": "SendMessageToPC(Player, ColorToken.Green($\"Blueprint Bonus applied: {bonusName} +{bonus.Amount}\"))"
   },
   {
-    "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/CreatureManagerViewModel.cs",
-    "Line": 100,
-    "Member": "OnSelectCreature",
-    "Delivery": "Retained",
-    "Call": "SendMessageToPC(Player, \"Please click on a location to spawn \" + CreatureNames[SelectedCreatureIndex])"
-  },
-  {
-    "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/CreatureManagerViewModel.cs",
-    "Line": 114,
-    "Member": "OnCreateCreature",
-    "Delivery": "Retained",
-    "Call": "SendMessageToPC(Player, \"Please click on a location to spawn \" + CreatureNames[SelectedCreatureIndex])"
-  },
-  {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/DiceViewModel.cs",
     "Line": 123,
     "Member": "DoDiceRoll",
@@ -1643,6 +1629,83 @@
     "Member": "OnClickConfirm",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature($\"XP cannot be distributed while dead.\", Player, false)"
+  },
+  {
+    "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/DMChooserViewModel.cs",
+    "Line": 384,
+    "Member": "GetLiveSelection",
+    "Delivery": "Retained",
+    "Call": "DMPresence.SendMessage(Player, \"That object no longer exists.\")"
+  },
+  {
+    "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/DMChooserViewModel.cs",
+    "Line": 446,
+    "Member": "OnClickBringHere",
+    "Delivery": "Retained",
+    "Call": "DMPresence.SendMessage(Player, error)"
+  },
+  {
+    "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/DMChooserViewModel.cs",
+    "Line": 469,
+    "Member": "OnClickDestroy",
+    "Delivery": "Retained",
+    "Call": "DMPresence.SendMessage(Player, \"That object no longer exists.\")"
+  },
+  {
+    "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/DMChooserViewModel.cs",
+    "Line": 473,
+    "Member": "OnClickDestroy",
+    "Delivery": "Retained",
+    "Call": "DMPresence.SendMessage(Player, \"A DM is possessing that creature.\")"
+  },
+  {
+    "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/DMCreatorViewModel.cs",
+    "Line": 316,
+    "Member": "ReportCreated",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(DMPresence.GetControlledCreature(Player), GetIsObjectValid(created)\n                ? $\"Created {blueprint.Name} ({blueprint.Resref}).\"\n                : $\"Could not create {blueprint.Name} ({blueprint.Resref}).\")"
+  },
+  {
+    "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/DMPlayerSearchViewModel.cs",
+    "Line": 265,
+    "Member": "GetSelectedOnlinePlayer",
+    "Delivery": "Retained",
+    "Call": "DMPresence.SendMessage(Player, $\"{result.Name} is no longer online.\")"
+  },
+  {
+    "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/DMPlayerSearchViewModel.cs",
+    "Line": 314,
+    "Member": "OnClickJumpTo",
+    "Delivery": "Retained",
+    "Call": "DMPresence.SendMessage(Player, $\"{result.Name} is offline. Jumping to their last saved location.\")"
+  },
+  {
+    "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/DMPlayerSearchViewModel.cs",
+    "Line": 319,
+    "Member": "OnClickJumpTo",
+    "Delivery": "Retained",
+    "Call": "DMPresence.SendMessage(Player, $\"{result.Name} has no saved location in an area that still exists.\")"
+  },
+  {
+    "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/DMPlayerSearchViewModel.cs",
+    "Line": 335,
+    "Member": "OnClickJumpHere",
+    "Delivery": "Retained",
+    "Call": "DMPresence.SendMessage(Player, error)"
+  },
+  {
+    "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/DMPlayerSearchViewModel.cs",
+    "Line": 368,
+    "Member": "OnClickSendMessage",
+    "Delivery": "Retained",
+    "Call": "ChatPlugin.SendMessage(ChatChannel.DMTell, message, DMPresence.GetDM(Player), target)"
+  },
+  {
+    "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/DMPlayerSearchViewModel.cs",
+    "Line": 369,
+    "Member": "OnClickSendMessage",
+    "Delivery": "Retained",
+    "Call": "DMPresence.SendMessage(Player, $\"To {result.Name}: {message}\")"
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/DroidAIViewModel.cs",
@@ -3911,6 +3974,13 @@
     "Member": "ApplyPenalties",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, $\"{newDebt} XP added to your debt. (Total: {dbPlayer.XPDebt} XP)\")"
+  },
+  {
+    "File": "SWLOR.Game.Server/Service/DMPresence.cs",
+    "Line": 217,
+    "Member": "SendMessage",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(GetControlledCreature(actor), message)"
   },
   {
     "File": "SWLOR.Game.Server/Service/Droid.cs",

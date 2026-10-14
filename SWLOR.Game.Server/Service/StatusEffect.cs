@@ -644,6 +644,13 @@ namespace SWLOR.Game.Server.Service
                 }
             }
 
+            if (!isPermanent && replacedStatusEffectType == null &&
+                TryRefreshInPlace(statusEffect, source, creature, durationTicks, durationTicksWithoutResistance,
+                    Math.Min(durationSeconds, durationTicks * frequency), resistanceType))
+            {
+                return true;
+            }
+
             if (replacedStatusEffectType != null)
                 RemoveStatusEffect(replacedStatusEffectType, creature, OBJECT_INVALID, false, true, true);
 
@@ -735,6 +742,79 @@ namespace SWLOR.Game.Server.Service
 
                     return applicationMessage;
                 });
+            }
+
+            return true;
+        }
+
+        /// <summary>
+        /// Restarts an opted-in effect's duration when the same source and ability apply it again with the
+        /// same result. Duration, tick schedule, native effect and application triggers match a fresh
+        /// application; the remove/add cycle and the repeated application message are skipped.
+        /// </summary>
+        private static bool TryRefreshInPlace(
+            IStatusEffect statusEffect,
+            uint source,
+            uint creature,
+            int durationTicks,
+            int durationTicksWithoutResistance,
+            float durationSeconds,
+            ResistanceType resistanceType)
+        {
+            if (statusEffect.StackingType is not (StatusEffectStackType.Disabled or StatusEffectStackType.StackFromMultipleSources) ||
+                !_creatureEffects.TryGetValue(creature, out var creatureEffects))
+            {
+                return false;
+            }
+
+            // A fresh application replaces every instance of a non-stacking type, so only a lone instance qualifies.
+            var type = statusEffect.GetType();
+            var candidates = creatureEffects.GetAllEffects()
+                .Where(effect => effect.GetType() == type &&
+                                 (statusEffect.StackingType == StatusEffectStackType.Disabled || effect.Source == source))
+                .ToList();
+            if (candidates.Count != 1)
+                return false;
+
+            var active = candidates[0];
+            var originatingAbility = statusEffect.OriginatingAbility ?? Ability.GetActiveAbilityImpactSummary(source)?.Ability;
+            if (active.Source != source ||
+                active.IsFlaggedForRemoval ||
+                active.DurationTicks < 0 ||
+                active.AppliedResistanceType != resistanceType ||
+                active.OriginatingAbility != originatingAbility ||
+                statusEffect.StatGroup.Stats.Any(stat =>
+                    stat.Value != 0 && active.StatGroup.Stats.GetValueOrDefault(stat.Key) != stat.Value) ||
+                !statusEffect.CanRefreshInPlace(active))
+            {
+                return false;
+            }
+
+            RemoveOtherCommandStatuses(creature, type, source);
+            foreach (var lessPowerful in statusEffect.LessPowerfulEffectTypes)
+            {
+                RemoveStatusEffect(lessPowerful, creature, OBJECT_INVALID, false, true, true);
+            }
+
+            var tickAnchor = GetRefreshTickAnchor(statusEffect, creatureEffects.GetAllEffects(), source);
+            active.RestartDuration(durationTicks, durationSeconds, tickAnchor);
+            RemoveNativeStatusEffect(creature, active.Id);
+            ApplyTrackedNWNEffect(creature, active, active.DurationTicks, false);
+
+            Combat.ApplyStatusAppliedTargetStaminaDrain(source, creature, active.Categories);
+            if ((active.Categories & StatusEffectCategory.Debuff) != 0 &&
+                source != creature && GetIsReactionTypeHostile(creature, source))
+            {
+                Combat.ApplyHostileAbilityPartyBuff(source, Ability.GetActiveAbilityImpactSummary(source)?.Ability, 0, true);
+            }
+            PublishStatusEffectReceivedRefresh(creature);
+
+            var durationResistanceMessage = BuildDurationResistanceMessage(
+                resistanceType, active.Name, durationTicksWithoutResistance, durationTicks, active.Frequency);
+            if (!string.IsNullOrWhiteSpace(durationResistanceMessage) &&
+                (GetIsPC(source) || GetIsDM(source)))
+            {
+                SendMessageToPC(source, durationResistanceMessage);
             }
 
             return true;

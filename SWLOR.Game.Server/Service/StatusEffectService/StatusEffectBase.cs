@@ -54,6 +54,8 @@ namespace SWLOR.Game.Server.Service.StatusEffectService
 
         public virtual string CanApply(uint creature) { return string.Empty; }
 
+        public virtual bool CanRefreshInPlace(IStatusEffect active) => false;
+
         public bool HasCleanseType(StatusEffectCleanseType cleanseType)
         {
             return (CleanseTypes & cleanseType) == cleanseType;
@@ -72,18 +74,28 @@ namespace SWLOR.Game.Server.Service.StatusEffectService
 
         public void ApplyEffect(uint source, uint creature, int durationTicks, float durationSeconds = 0f, DateTime? tickAnchor = null)
         {
+            RestartDuration(durationTicks, durationSeconds, tickAnchor);
+            Source = source;
+            Apply(creature, durationTicks);
+        }
+
+        /// <summary>
+        /// Starts the duration and tick schedule over exactly as a fresh application does, without
+        /// running Apply.
+        /// </summary>
+        public void RestartDuration(int durationTicks, float durationSeconds = 0f, DateTime? tickAnchor = null)
+        {
             _isPermanent = durationTicks < 0;
 
             _lastRun = tickAnchor ?? DateTime.UtcNow;
             _durationTicks = durationTicks;
+            _durationAdjustmentSeconds = 0f;
             if (!_isPermanent && durationSeconds > 0f)
             {
                 _durationAdjustmentSeconds = durationSeconds - durationTicks * Math.Max(1f, Frequency);
                 if (tickAnchor.HasValue)
                     SetDurationSeconds(durationSeconds);
             }
-            Source = source;
-            Apply(creature, durationTicks);
         }
 
         /// <summary>Updates a reconnected creature's handle without changing the granting ability.</summary>

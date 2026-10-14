@@ -47,6 +47,15 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             ctx.Assert(ReferenceEquals(applied, StatusEffect.GetStatusEffect<EmbattledStatusEffect>(defender)),
                 "Embattled outlasts the first hit's window");
 
+            // A fresh application expires on the tick at 6 s; the restarted window must too.
+            await ctx.DelaySecondsAsync(1f);
+            ctx.Assert(StatusEffect.HasStatusEffect<EmbattledStatusEffect>(defender), "Embattled lasts the full restarted window");
+            await ctx.WaitUntilAsync(() => !StatusEffect.HasStatusEffect<EmbattledStatusEffect>(defender), 1.3f,
+                "Embattled to expire 6 s after the last hit");
+
+            EmbattledStatusEffect.Refresh(defender, first);
+            applied = StatusEffect.GetStatusEffect<EmbattledStatusEffect>(defender);
+            ctx.AssertEqual(1, applied.Stacks, "a new hit starts a fresh one-stack Embattled");
             EmbattledStatusEffect.Refresh(defender, second);
             var stacked = StatusEffect.GetStatusEffect<EmbattledStatusEffect>(defender);
             ctx.AssertEqual(2, stacked.Stacks, "a second attacker adds a stack");

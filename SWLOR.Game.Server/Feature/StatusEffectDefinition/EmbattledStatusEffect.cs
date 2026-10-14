@@ -82,33 +82,31 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
 
             var stackCount = TrackAndCount(defender, attacker, maxStacks);
             var mobility = highStackThreshold > 0 && stackCount >= highStackThreshold ? highStackMobility : 0;
-            var defense = stackCount * perStackDefense;
-            var forceDefense = stackCount * perStackForceDefense;
+            var updated = new EmbattledStatusEffect(
+                stackCount,
+                stackCount * perStackDefense,
+                stackCount * perStackForceDefense,
+                mobility);
 
-            // Unchanged stacks only restart the window, without another application message.
-            if (StatusEffect.GetStatusEffect(defender, typeof(EmbattledStatusEffect), defender) is EmbattledStatusEffect current &&
-                !current.IsFlaggedForRemoval &&
-                current.HasValues(stackCount, defense, forceDefense, mobility) &&
-                StatusEffect.RefreshStatusEffectDuration(defender, typeof(EmbattledStatusEffect), defender, PressureWindowSeconds))
+            // Unchanged stacks restart the window in place, without another application message.
+            if (StatusEffect.GetStatusEffect(defender, typeof(EmbattledStatusEffect), defender) is not EmbattledStatusEffect current ||
+                current.IsFlaggedForRemoval ||
+                !updated.CanRefreshInPlace(current))
             {
-                return;
+                StatusEffect.RemoveStatusEffect(defender, typeof(EmbattledStatusEffect), false);
             }
 
-            StatusEffect.RemoveStatusEffect(defender, typeof(EmbattledStatusEffect), false);
-            StatusEffect.ApplyStatusEffect(
-                defender,
-                defender,
-                new EmbattledStatusEffect(stackCount, defense, forceDefense, mobility),
-                PressureWindowSeconds);
+            StatusEffect.ApplyStatusEffect(defender, defender, updated, PressureWindowSeconds);
         }
 
-        // Compares the live stats, not the constructor values, so a consumed stat is restored by a fresh application.
-        private bool HasValues(int stacks, int defense, int forceDefense, int mobility)
+        // Compares the active effect's live stats, so a consumed stat is restored by a fresh application.
+        public override bool CanRefreshInPlace(IStatusEffect active)
         {
-            return _stacks == stacks &&
-                   StatGroup.Stats.GetValueOrDefault(StatType.PhysicalDefensePercentAdjustment) == defense &&
-                   StatGroup.Stats.GetValueOrDefault(StatType.ForceDefensePercentAdjustment) == forceDefense &&
-                   StatGroup.Stats.GetValueOrDefault(StatType.MobilityResistance) == mobility;
+            return active is EmbattledStatusEffect current &&
+                   current._stacks == _stacks &&
+                   current.StatGroup.Stats.GetValueOrDefault(StatType.PhysicalDefensePercentAdjustment) == _defensePercent &&
+                   current.StatGroup.Stats.GetValueOrDefault(StatType.ForceDefensePercentAdjustment) == _forceDefensePercent &&
+                   current.StatGroup.Stats.GetValueOrDefault(StatType.MobilityResistance) == _mobilityResistance;
         }
 
         /// <summary>

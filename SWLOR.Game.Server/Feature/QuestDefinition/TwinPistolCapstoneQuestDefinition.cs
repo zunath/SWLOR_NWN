@@ -44,7 +44,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
                 .RemoveKeyItemOnAbandon(KeyItemType.TwinSunsCanyonFiringTrace)
                 .RemoveKeyItemOnComplete(KeyItemType.TwinSunsCanyonFiringTrace)
                 .AddState()
-                .SetStateJournalText("Jek Talin gave you access to the Anchorhead Canyon Range on Tatooine. Enter through the sealed door in the Rocky Pass, south of Anchorhead's Southern Entrance. Against one hostile range enemy, land twelve ordinary Twin Pistol shots within 30 seconds, including at least six shots from each gun. Switching enemies or equipment resets the attempt. Activated abilities do not count.")
+                .SetStateJournalText("Jek Talin gave you access to the Anchorhead Canyon Range on Tatooine. Enter through the sealed door in the Rocky Pass, south of Anchorhead's Southern Entrance. Against one hostile range enemy, land twelve Twin Pistol weapon auto-attacks within 30 seconds, including at least six shots from each gun. Switching enemies or equipment resets the attempt. Activated abilities do not count.")
                 .AddState()
                 .SetStateJournalText("Your paired firing trace is complete. Report to Jek Talin by the west trail at Anchorhead - Southern Entrance. His approval lets you purchase Twin Suns for 6 SP; it does not grant the perk automatically.")
                 .OnCompleteAction((player, _) => Achievement.GiveAchievement(player, AchievementType.TwinSuns));

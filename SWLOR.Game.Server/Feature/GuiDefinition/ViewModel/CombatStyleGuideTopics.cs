@@ -158,9 +158,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 Topic("Twin Pistol", "Choose Twin Pistol for sustained fire on one enemy or attacks that reposition you to build Momentum.",
                     new[]
                     {
-                        Style("Twin Pistol - Barrage", "Barrage rewards landed ordinary attacks on one enemy. Akimbo Stance ramps Haste while reducing all ordinary weapon damage by 15 percent. Twin Suns strengthens your next six ordinary attack attempts."),
-                        Style("Twin Pistol - Crossfire", "Crossfire uses Blaster Slide and Pistol Rush to build up to three Momentum, then spends it with Grapple Shot or Final Salvo. Crossfire Stance adds Haste and Movement Speed while reducing all ordinary weapon damage by 10 percent."),
-                        Style("Equipment and Cross-skilling", "Ordinary Twin Pistol attacks and training require a main-hand pistol with a companion pistol. Purchased perks also work with other eligible weapons. Matched Rhythm grants Haste; Paired Handling grants ordinary weapon damage. You cannot purchase both.")
+                        Style("Twin Pistol - Barrage", "Barrage rewards weapon auto-attack hits on one enemy. Akimbo Stance ramps Haste while reducing all weapon auto-attack damage by 30 percent. Twin Suns strengthens your next six weapon auto-attack attempts."),
+                        Style("Twin Pistol - Crossfire", "Crossfire uses Blaster Slide and Pistol Rush to build up to three Momentum, then spends it with Grapple Shot or Final Salvo. Crossfire Stance adds Haste and Movement Speed while reducing all weapon auto-attack damage by 20 percent."),
+                        Style("Equipment and Cross-skilling", "Twin Pistol weapon auto-attacks and training require a main-hand pistol with a companion pistol. Purchased perks also work with other eligible weapons. Matched Rhythm grants Haste; Paired Handling grants weapon auto-attack damage. You cannot purchase both.")
                     },
                     "Perks", "Combat Basics", "Pistol Combat Styles", "Rifle Combat Styles"),
 

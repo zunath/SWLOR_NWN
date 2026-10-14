@@ -6,7 +6,7 @@ Each section below is one Discord message under 2,000 characters. Effects show c
 
 **Twin Pistol proposal — updated for cross-skilling**
 
-A separate 0-50 weapon skill within the normal 400-rank cap; no Pistol prerequisite. Ordinary Twin Pistol attacks/training use a real main-hand pistol and simulated companion, each with its own damage, accuracy, upgrades and appearance. Both weapons contribute to attack delay.
+A separate 0-50 weapon skill within the normal 400-rank cap; no Pistol prerequisite. Twin Pistol weapon auto-attacks/training use a real main-hand pistol and simulated companion, each with its own damage, accuracy, upgrades and appearance. Both weapons contribute to attack delay.
 
 **Barrage:** sustained pressure and stamina management.
 **Crossfire:** reposition, earn Momentum, then spend it on a stronger attack.
@@ -16,7 +16,7 @@ All perk ranks support cross-skilling. Active attacks produce one impact per eli
 Each standalone line: 10 perks, 18 ranks, 60 SP. Handling perks are mutually exclusive purchases at every rank:
 ```text
 Matched Rhythm I/II/III | +3/6/8% Haste with any weapon
-Paired Handling I/II/III| +5/8/10% ordinary weapon damage
+Paired Handling I/II/III| +5/8/10% weapon auto-attack damage
 Both: rank 8/22/45; SP 2/4/4 per purchase
 ```
 Maximum legal combined investment: 110 SP; optional Armor Dual Wield adds 9. Neither handling choice blocks later unrelated perks.
@@ -32,7 +32,7 @@ Perk / unlocks / total SP | Maximum-rank effect
 Paired Volley            | One enemy, each weapon D+16.
 2/12/28/40; 12 SP         | STM/CD: 10 / 18s.
 
-Alternating Fire         | Every 3 ordinary landed weapon hits:
+Alternating Fire         | Every 3 weapon auto-attack hits:
 5; 2 SP                  | restore 1 STM, at most once per 6s.
 
 Matched Rhythm           | +8% Haste with any weapon.
@@ -50,7 +50,7 @@ Controlled Burst         | One enemy, each weapon floor(.75D)+13.
 ```
 Volley ranks: D+4/8/12/16, costing 3/5/8/10 STM. Focused ranks: D+8/16/24, costing 4/8/10 STM. Volley attacks more frequently; Focused gives more damage per cast and per STM. Separate cooldown groups.
 
-Matched Rhythm changes ordinary attack speed, not ability cooldowns, and respects the global Haste cap.
+Matched Rhythm changes weapon auto-attack speed, not ability cooldowns, and respects the global Haste cap.
 
 ## Message 3 of 5
 
@@ -58,15 +58,15 @@ Matched Rhythm changes ordinary attack speed, not ability cooldowns, and respect
 ```text
 Perk / unlock / SP | Maximum-rank effect
 -------------------+---------------------------------------------
-Akimbo Stance      | Any weapon: +10% Haste. Ordinary hostile
+Akimbo Stance      | Any weapon: +10% Haste. Hostile weapon auto-attack
 20; 4 SP           | hits on one foe add +2% per stack, max 5
                    | (+20% from stance); one stack per 2s.
                    | Clear on target change or 6s without a hit.
-                   | ALL ordinary weapon damage x0.70.
+                   | ALL weapon auto-attack damage x0.70.
                    | STM/CD: 0 / 30s.
 
-Converging Fire    | After 3 ordinary weapon hits on one foe:
-25; 4 SP           | +5% ordinary damage to it for 6s.
+Converging Fire    | After 3 weapon auto-attack hits on one foe:
+25; 4 SP           | +5% weapon auto-attack damage to it for 6s.
                    | Hits refresh; target changes clear.
 
 Cool Under Fire   | Direct hostile damage: next Twin-skill
@@ -74,11 +74,11 @@ Cool Under Fire   | Direct hostile damage: next Twin-skill
                    | lasts 10s; 10s trigger cooldown.
 
 Twin Suns         | One enemy, each weapon D+20. Next 6
-50 + mastery; 6 SP | ordinary attacks with any weapon gain
-                   | +25% damage, expiring after 12s.
+50 + mastery; 6 SP | weapon auto-attack attempts with any
+                   | weapon gain +25% damage for up to 12s.
                    | Misses use charges. STM/CD: 15 / 90s.
 ```
-Stance damage penalties apply after additive ordinary-damage bonuses and before mitigation. Activated damage is unchanged. Weapon swaps preserve stance, stacks, buffs and trigger cooldowns. Other Haste sources are additional, subject to the global cap. Stances remain exclusive.
+Stance damage penalties apply after additive weapon auto-attack damage bonuses and before mitigation. Activated damage is unchanged. Weapon swaps preserve stance, stacks, buffs and trigger cooldowns. Other Haste sources are additional, subject to the global cap. Stances remain exclusive.
 
 ## Message 4 of 5
 
@@ -92,9 +92,9 @@ Blaster Slide          | Retreat 4m, then each weapon D+16 at
 
 Momentum               | Slide/Rush moving 2m+ and landing a
 5; 2 SP                | hostile hit: +1 charge, max 3, 12s.
-                       | Each: +2 ordinary ACC with any weapon.
+                       | Each: +2 weapon auto-attack ACC with any weapon.
 
-Paired Handling        | +10% ordinary weapon damage.
+Paired Handling        | +10% weapon auto-attack damage.
 8/22/45; 10 SP         | Cannot purchase Matched Rhythm.
 
 Grapple Shot           | Close up to 6m, stop 1.5m from foe.
@@ -119,7 +119,7 @@ Slide/Rush earn at most one Momentum per cast. Empty-space Rush is allowed but e
 Perk / unlock / SP | Maximum-rank effect
 -------------------+---------------------------------------------
 Crossfire Stance   | Any weapon: +10% Haste, +10% movement,
-20; 4 SP           | 18s Momentum. ALL ordinary damage x0.80.
+20; 4 SP           | 18s Momentum. ALL weapon auto-attack damage x0.80.
                    | Activated damage unchanged. STM/CD: 0 / 30s.
 
 Follow Through    | Grapple/Final landing any hit restores

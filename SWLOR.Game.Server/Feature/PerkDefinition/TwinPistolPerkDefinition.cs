@@ -76,7 +76,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.AlternatingFireTrait)
-                .Description("Every three landed ordinary weapon attacks restore 1 STM, at most once every 6 seconds. Misses do not reset the counter. Works with any weapon.")
+                .Description("Every three landed weapon auto-attacks restore 1 STM, at most once every 6 seconds. Misses do not reset the counter. Works with any weapon.")
                 .IncreasesStat(StatType.PairedRangedOrdinaryHitRestoreCount, 3)
                 .IncreasesStat(StatType.PairedRangedOrdinaryHitStaminaRestore, 1)
                 .IncreasesStat(StatType.PairedRangedOrdinaryHitRestoreCooldownSeconds, 6)
@@ -179,7 +179,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.AkimboStance)
-                .Description("With any weapon: +10% Haste. Landed ordinary attacks on the same enemy add +2% per stack, max five (+20% stance total), one stack per 2s. Target change or 6s without a landed ordinary hit clears stacks. ALL ordinary weapon attacks deal 30% less damage.")
+                .Description("With any weapon: +10% Haste. Landed weapon auto-attacks on the same enemy add +2% per stack, max five (+20% stance total), one stack per 2s. Target change or 6s without a weapon auto-attack hit clears stacks. ALL weapon auto-attacks deal 30% less damage.")
                 .Price(4)
                 .RequirementSkill(SkillType.TwinPistol, 20);
         }
@@ -191,7 +191,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.ConvergingFireTrait)
-                .Description("After three landed ordinary weapon attacks on one enemy, gain +5% ordinary weapon damage against it for 6 seconds. Further landed ordinary hits refresh it; changing targets clears it. Works with any weapon.")
+                .Description("After three landed weapon auto-attacks on one enemy, gain +5% weapon auto-attack damage against it for 6 seconds. Further weapon auto-attack hits refresh it; changing targets clears it. Works with any weapon.")
                 .IncreasesStat(StatType.PairedRangedRepeatedTargetRequiredHits, 3)
                 .IncreasesStat(StatType.PairedRangedRepeatedTargetDamagePercent, 5)
                 .IncreasesStat(StatType.PairedRangedRepeatedTargetDurationSeconds, 6)
@@ -221,7 +221,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.TwinSuns)
-                .Description("Attack one enemy with each equipped attack weapon for weapon DMG + 20 per impact. Your next six ordinary weapon attacks gain +25% damage for up to 12 seconds. Misses and deflections consume charges. Works with any weapon.")
+                .Description("Attack one enemy with each equipped attack weapon for weapon DMG + 20 per impact. Your next six weapon auto-attack attempts gain +25% damage for up to 12 seconds. Misses and deflections consume charges. Works with any weapon.")
                 .Price(6)
                 .RequirementSkill(SkillType.TwinPistol, 50)
                 .RequirementQuest(TwinPistolCapstoneQuestDefinition.TwinSunsMasteryQuestId);
@@ -267,7 +267,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.TwinPistolMomentumTrait)
-                .Description("Slide or Rush moving you at least 2m and landing any hostile hit grants 1 Momentum, max 3. Lasts 12 seconds. Each charge gives +2 ACC to ordinary attacks with any weapon. Grapple Shot and Final Salvo spend all charges.")
+                .Description("Slide or Rush moving you at least 2m and landing any hostile hit grants 1 Momentum, max 3. Lasts 12 seconds. Each charge gives +2 ACC to weapon auto-attacks with any weapon. Grapple Shot and Final Salvo spend all charges.")
                 .IncreasesStat(StatType.PairedRangedMomentumMaximum, 3)
                 .IncreasesStat(StatType.PairedRangedMomentumDurationSeconds, 12)
                 .IncreasesStat(StatType.PairedRangedMomentumAccuracyPerCharge, 2)
@@ -283,14 +283,14 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .AddPerkLevel()
                 .RequirementCannotHavePerk(PerkType.MatchedRhythm)
                 .GrantsFeat(FeatType.PairedHandlingTrait)
-                .Description("Ordinary weapon attacks deal +5% damage with any weapon. Cannot be purchased with Matched Rhythm.")
+                .Description("Weapon auto-attacks deal +5% damage with any weapon. Cannot be purchased with Matched Rhythm.")
                 .IncreasesStat(StatType.PairedRangedOrdinaryDamagePercentAdjustment, 5)
                 .Price(2)
                 .RequirementSkill(SkillType.TwinPistol, 8)
 
                 .AddPerkLevel()
                 .RequirementCannotHavePerk(PerkType.MatchedRhythm)
-                .Description("Ordinary weapon attacks deal +8% damage with any weapon. Cannot be purchased with Matched Rhythm.")
+                .Description("Weapon auto-attacks deal +8% damage with any weapon. Cannot be purchased with Matched Rhythm.")
                 .IncreasesStat(StatType.PairedRangedOrdinaryDamagePercentAdjustment, 8)
                 .Price(4)
                 .RequirementSkill(SkillType.TwinPistol, 22)
@@ -298,7 +298,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .RequirementCannotHavePerk(PerkType.MatchedRhythm)
-                .Description("Ordinary weapon attacks deal +10% damage with any weapon. Cannot be purchased with Matched Rhythm.")
+                .Description("Weapon auto-attacks deal +10% damage with any weapon. Cannot be purchased with Matched Rhythm.")
                 .IncreasesStat(StatType.PairedRangedOrdinaryDamagePercentAdjustment, 10)
                 .Price(4)
                 .RequirementSkill(SkillType.TwinPistol, 45)
@@ -372,7 +372,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.CrossfireStance)
-                .Description("With any weapon: +10% Haste, +10% Movement Speed and 18-second Momentum. ALL ordinary weapon attacks deal 20% less damage. Activated ability damage is unchanged.")
+                .Description("With any weapon: +10% Haste, +10% Movement Speed and 18-second Momentum. ALL weapon auto-attacks deal 20% less damage. Activated ability damage is unchanged.")
                 .Price(4)
                 .RequirementSkill(SkillType.TwinPistol, 20);
         }

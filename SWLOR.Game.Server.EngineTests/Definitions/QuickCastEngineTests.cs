@@ -97,6 +97,36 @@ public static class QuickCastEngineTests
     [EngineTest("Stored quickbar snapshots omit quick-cast bindings through repeated saves and fresh logins", Category = "QuickCast", TimeoutSeconds = 60f)]
     public static Task QuickbarSnapshotBindings(EngineTestContext ctx) => VerifySavedBindings(ctx, characterExport: false);
 
+    [EngineTest("Loading another quickbar releases ownership of matching commands in the new layout", Category = "QuickCast", TimeoutSeconds = 40f)]
+    public static async Task QuickbarLayoutOwnership(EngineTestContext ctx)
+    {
+        using var player = await PlayerAbilityFixture.CreateAsync(ctx);
+        using var shipLayout = await PlayerAbilityFixture.CreateAsync(ctx, 3f);
+        using var nextLogin = await PlayerAbilityFixture.CreateAsync(ctx, 6f);
+        var command = $"/castself {(int)FeatType.Benevolence1}";
+        CreaturePlugin.AddFeat(player.Creature, FeatType.Benevolence1);
+        QuickCast.SetEnabled(player.Creature, QuickCastTargetType.Self, true);
+        try
+        {
+            PlayerPlugin.SetQuickBarSlot(player.Creature, 0, PlayerQuickBarSlot.Empty(QuickBarSlotType.Empty));
+            ctx.Assert(QuickCast.TryBind(player.Creature, 1, QuickCastTargetType.Self, "Benevolence I", out _),
+                "the original ground layout owns its first-slot binding");
+            PlayerPlugin.SetQuickBarSlot(shipLayout.Creature, 0, PlayerQuickBarSlot.Command("Ship shortcut", command));
+            var savedShipLayout = CreaturePlugin.SerializeQuickbar(shipLayout.Creature);
+            ctx.Assert(CreaturePlugin.DeserializeQuickbar(player.Creature, savedShipLayout), "load a separate ship layout");
+            ctx.AssertEqual(0, QuickCast.GetBoundCommandsForExport(player.Creature).Length,
+                "the new layout does not inherit ground binding ownership");
+            ctx.Assert(QuickCast.IsEnabled(player.Creature, QuickCastTargetType.Self), "layout loading preserves opt-in modes");
+            ctx.Assert(!QuickCast.TryUnbind(player.Creature, 1, out _), "the separate shortcut cannot be unbound as the old binding");
+            var saved = CreaturePlugin.SerializeQuickbar(player.Creature);
+            ctx.Assert(CreaturePlugin.DeserializeQuickbar(nextLogin.Creature, saved), "reload the separately saved ship layout");
+            var restored = PlayerPlugin.GetQuickBarSlot(nextLogin.Creature, 0);
+            ctx.Assert(QuickCast.IsBoundCommand(restored, command), "the identical command in a different layout is preserved");
+            ctx.AssertEqual("Ship shortcut", restored.CommandLabel, "the separate layout's shortcut label is preserved");
+        }
+        finally { QuickCast.ResetSession(player.Creature); }
+    }
+
     private static async Task VerifySavedBindings(EngineTestContext ctx, bool characterExport)
     {
         using var original = await PlayerAbilityFixture.CreateAsync(ctx);

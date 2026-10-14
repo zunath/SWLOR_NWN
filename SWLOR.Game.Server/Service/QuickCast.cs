@@ -20,6 +20,8 @@ public static class QuickCast
     private static readonly Dictionary<uint, HashSet<QuickCastTargetType>> _enabledModes = new();
     private static readonly Dictionary<uint, Dictionary<int, (QuickBarSlot Original, string Command)>> _bindings = new();
 
+    public static void ForgetBindings(uint player) => _bindings.Remove(player);
+
     public static (int Slot, string Command)[] GetBoundCommandsForExport(uint player) =>
         _bindings.TryGetValue(player, out var bindings)
             ? bindings.Select(entry => (entry.Key, entry.Value.Command)).ToArray()

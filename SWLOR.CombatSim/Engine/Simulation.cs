@@ -870,17 +870,25 @@ namespace SWLOR.CombatSim.Engine
                 case ReviveRule.BlockedInPvpLimitedInPve:
                     // The game's ReviveRules. Without positions, every living enemy in the fight counts as within 20m.
                     // A hostile player blocks; after a player kill the party must also go the window without taking
-                    // damage from anyone, the killing blow included; a player revived mid-fight is then locked out.
+                    // damage from anyone, killing blows included; a player revived mid-fight is then locked out.
                     if (Enemies(caster).Any(enemy => _scenario.IsPvp && !enemy.Spec.IsNpc))
                         return false;
-                    if (target.KilledByPlayer &&
-                        (_now - target.LastDamageTakenAt < _rules.PvpReviveDamageWindowSeconds ||
-                         Allies(caster).Any(a => _now - a.LastDamageTakenAt <= _rules.PvpReviveDamageWindowSeconds)))
+                    if (target.KilledByPlayer && _combatants.Any(c =>
+                            c.TeamIndex == caster.TeamIndex && _now >= c.Spec.JoinAtSeconds && WasHitWithinReviveWindow(c)))
                         return false;
                     return _now >= target.ReviveLockedUntil;
                 default:
                     return true;
             }
+        }
+
+        // The dead (the body too) count from their killing blow; the living from their last hit, as the game does.
+        private bool WasHitWithinReviveWindow(Combatant member)
+        {
+            var sinceHit = _now - member.LastDamageTakenAt;
+            return member.IsDead
+                ? sinceHit < _rules.PvpReviveDamageWindowSeconds
+                : sinceHit <= _rules.PvpReviveDamageWindowSeconds;
         }
 
         private void Revive(Combatant caster, Combatant target, AbilityEffect effect)

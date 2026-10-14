@@ -150,6 +150,31 @@ namespace SWLOR.CombatSim.Tests.Engine
         }
 
         [Test]
+        public void Tuned_PvpRevivesWaitFifteenSecondsAfterAnyPartyMembersDeath()
+        {
+            var medic = TestCombatants.Medic("Medic", TestCombatants.Use("Resuscitation2", AbilityTarget.DeadAlly));
+            var simulation = TestScenarios.Spawn(
+                TestScenarios.TwoTeams(
+                    true,
+                    new[] { medic, new CombatantSpec { Name = "First", MaxHp = 1000 }, new CombatantSpec { Name = "Second", MaxHp = 1000 } },
+                    new[] { TestCombatants.Dummy("Enemy") }),
+                RuleSets.Tuned(),
+                _catalog);
+            var enemy = simulation.Get("Enemy");
+            simulation.ApplyDamage(enemy, simulation.Get("First"), TestCombatants.EffectivelyUnlimited);
+            SimulationClock.RunUntil(simulation, 10);
+            simulation.ApplyDamage(enemy, simulation.Get("Second"), TestCombatants.EffectivelyUnlimited);
+            var secondDiedAt = simulation.Now;
+            simulation.ApplyDamage(simulation.Get("Medic"), enemy, TestCombatants.EffectivelyUnlimited * 2.0);
+
+            // The first body's own window has passed, but the second death still holds every revive.
+            SimulationClock.RunUntil(simulation, secondDiedAt + PvpPartyDamageWindowSeconds - 1);
+            simulation.Get("Medic").Casting.Should().BeNull("a party member died less than 15 seconds ago");
+
+            SimulationClock.RunUntil(simulation, () => simulation.Get("Medic").Stats.AbilitiesUsed > 0, 60, "a revive after the window");
+        }
+
+        [Test]
         public void Tuned_InPve_TheFirstReviveTakesTheFourSecondCast()
         {
             var (simulation, medic, ally, _) = SpawnAndKillAlly(RuleSets.Tuned(), isPvp: false);

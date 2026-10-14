@@ -26,7 +26,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 .AddTab(1, IdentityPartial)
                 .AddTab(2, ChatPartial)
                 .AddTab(3, TargetingPartial);
-        private readonly GuiToggleGroupSync _tabToggles = new(0, 1, 2, 3);
+        private readonly GuiToggleGroupSync _tabToggles = new(0, 1);
+        private readonly GuiToggleGroupSync _secondaryTabToggles = new(2, 3);
 
         private const int NumberOfSystemColors = 2; // OOC, Emotes
 
@@ -95,6 +96,11 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         {
             get => Get<int>();
             set { Set(value); _tabToggles.HandleClientChange(value, SelectTab); }
+        }
+        public int SecondaryTabToggleValue
+        {
+            get => Get<int>();
+            set { Set(value); _secondaryTabToggles.HandleClientChange(value, SelectTab); }
         }
 
         public bool SelfQuickCastEnabled
@@ -178,6 +184,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             SelectedColor = new GuiColor(0, 0, 0);
             SelectedTabId = 0;
             _tabToggles.SyncTo(0, value => TabToggleValue = value);
+            _secondaryTabToggles.SyncTo(0, value => SecondaryTabToggleValue = value);
             CurrentRed = 0;
             CurrentGreen = 0;
             CurrentBlue = 0;
@@ -190,6 +197,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             Tabs.Select(this, SettingsView, SelectedTabId, onAfterApply: RefreshPartialViewBindings);
 
             WatchOnClient(model => model.TabToggleValue);
+            WatchOnClient(model => model.SecondaryTabToggleValue);
             WatchOnClient(model => model.DisplayAchievementNotification);
             WatchOnClient(model => model.SubdualMode);
             WatchOnClient(model => model.DisplayServerResetReminders);
@@ -367,6 +375,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             SelectedTabId = tabId;
             _tabToggles.SyncTo(tabId, value => TabToggleValue = value);
+            _secondaryTabToggles.SyncTo(tabId, value => SecondaryTabToggleValue = value);
             Tabs.Select(this, SettingsView, tabId, onAfterApply: RefreshPartialViewBindings);
         }
 
@@ -388,6 +397,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             OnPropertyChanged(nameof(CurrentGreen));
             OnPropertyChanged(nameof(CurrentBlue));
             OnPropertyChanged(nameof(TabToggleValue));
+            OnPropertyChanged(nameof(SecondaryTabToggleValue));
             OnPropertyChanged(nameof(SelfQuickCastEnabled));
             OnPropertyChanged(nameof(EnemyQuickCastEnabled));
             OnPropertyChanged(nameof(SelectedSelfCastFeat));

@@ -308,16 +308,24 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
 
             window.AddStandardLayout(layout =>
             {
-                layout.SetTabPanelHeight(90f);
+                layout.SetTabPanelHeight(122f);
                 layout.AddTabRow(row =>
                 {
                     row.SetHeight(28f);
                     row.AddToggles()
                         .AddOption("General")
                         .AddOption("Identity")
+                        .BindSelectedValue(model => model.TabToggleValue)
+                        .SetWidth(344f)
+                        .SetHeight(28f);
+                });
+                layout.AddTabRow(row =>
+                {
+                    row.SetHeight(28f);
+                    row.AddToggles()
                         .AddOption("Chat")
                         .AddOption("Targeting")
-                        .BindSelectedValue(model => model.TabToggleValue)
+                        .BindSelectedValue(model => model.SecondaryTabToggleValue)
                         .SetWidth(344f)
                         .SetHeight(28f);
                 });

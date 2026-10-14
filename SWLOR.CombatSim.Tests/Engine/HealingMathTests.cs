@@ -184,10 +184,19 @@ namespace SWLOR.CombatSim.Tests.Engine
         [Test]
         public void HealOverTimeTick_UsesTheAffinityCapturedWhenCast()
         {
-            // Renewal III: 30% over 10 ticks = 30; +25% Willpower = 38; x1.25 captured affinity = 47.5, which rounds to 48.
+            // Renewal III: 30% x1.25 captured affinity over 10 ticks = 3.75% = 38; +25% Willpower = 48.
             var tick = HealingMath.HealOverTimeTick(Effect(FeatType.Renewal3), TargetMaxHp, MaxScalingWillpower, 1.25f, 0f);
 
             tick.Should().Be(48);
+        }
+
+        [Test]
+        public void HealOverTimeTick_AppliesAffinityToThePercentBeforeRoundingAndWillpower()
+        {
+            // Renewal I: 10% x1.25 over 10 ticks = 1.25% = 13; +25% Willpower = 17. Scaling first would give 16.
+            var tick = HealingMath.HealOverTimeTick(Effect(FeatType.Renewal1), TargetMaxHp, MaxScalingWillpower, 1.25f, 0f);
+
+            tick.Should().Be(17);
         }
 
         [Test]

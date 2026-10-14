@@ -23,6 +23,7 @@ namespace SWLOR.CombatSim.Engine
         private const double ConvergenceAccuracySeconds = 30.0;
         private const float ConvergenceHitChanceBonus = 0.05f;
         private const double ReviveHealDelaySeconds = 0.1;
+        private const double QueuedWeaponAbilitySeconds = 30.0;
         private const int CoordinatedSampleSize = 3;
 
         /// <summary>Perk stats the simulator models; listed perks contribute only these.</summary>
@@ -139,6 +140,9 @@ namespace SWLOR.CombatSim.Engine
                     // reaction time would skip decisions and make results depend on the step size.
                     if (!(spec.MaxHp > 0))
                         throw new InvalidDataException($"'{spec.Name}' needs a MaxHp greater than 0.");
+                    var specProblems = spec.GetProblems();
+                    if (specProblems.Count > 0)
+                        throw new InvalidDataException($"'{spec.Name}': {string.Join("; ", specProblems)}.");
 
                     if (spec.Abilities.Count > 0 && !float.IsFinite(spec.ReactionSeconds))
                         throw new InvalidDataException($"'{spec.Name}' needs a finite ReactionSeconds.");
@@ -361,7 +365,8 @@ namespace SWLOR.CombatSim.Engine
                     continue;
 
                 RestoreFp(combatant, Math.Floor(combatant.Spec.FpRegenPer30Seconds), false);
-                if (combatant.Spec.HpRegenPer30Seconds > 0)
+                // The game's tick needs current HP, which counts temporary HP, below max HP.
+                if (combatant.Spec.HpRegenPer30Seconds > 0 && combatant.Hp + combatant.TemporaryHpTotal < combatant.Spec.MaxHp)
                     ApplyHealing(null, combatant, (int)combatant.Spec.HpRegenPer30Seconds, HealKind.NaturalRegeneration);
             }
         }
@@ -463,6 +468,7 @@ namespace SWLOR.CombatSim.Engine
 
         private void Decide(Combatant caster)
         {
+            ExpireQueuedWeaponAbility(caster);
             if (caster.Casting != null || _now < caster.NextActionAt)
                 return;
 
@@ -474,6 +480,10 @@ namespace SWLOR.CombatSim.Engine
                     continue;
 
                 if (use.MinIntervalSeconds > 0 && caster.LastUsedAt.TryGetValue(use.Feat, out var lastUsedAt) && _now < lastUsedAt + use.MinIntervalSeconds)
+                    continue;
+
+                // Queueing another weapon ability would replace the one waiting for a hit.
+                if (info.IsQueuedWeapon && caster.QueuedWeaponAbility != null)
                     continue;
 
                 if (_rules.RefuseHitPointCostsAtOneHitPoint &&
@@ -525,8 +535,7 @@ namespace SWLOR.CombatSim.Engine
                 Target = target,
                 ImpactAt = _now + info.CastSeconds,
                 InterruptedByDamage = effect?.Kind == EffectKind.Revive
-                                      && _rules.Revives == ReviveRule.BlockedInPvpLimitedInPve
-                                      && !_scenario.IsPvp,
+                                      && _rules.Revives == ReviveRule.BlockedInPvpLimitedInPve,
                 FpCost = fp,
                 StmCost = stm
             };
@@ -579,14 +588,26 @@ namespace SWLOR.CombatSim.Engine
             caster.Stats.AbilitiesUsed++;
             caster.RecastReadyAt[cast.Ability.RecastGroup] = _now + _rules.GetRecastSeconds(cast.Ability);
             caster.LastUsedAt[cast.Use.Feat] = _now;
-            if (HitPointCostCatalog.TryGet(cast.Ability.Feat, out var hitPointCost))
-                PayHitPoints(caster, hitPointCost);
 
             // Convergence's accuracy comes from an earlier trigger; the cast that triggers it resolves first.
-            var isForce = cast.Ability.SkillType == SkillType.Force;
-            var hitBonus = isForce && _now < caster.ConvergenceAccuracyUntil ? ConvergenceHitChanceBonus : 0f;
-            if (cast.FpCost > 0 && isForce)
+            var hitBonus = ConvergenceHitBonus(caster, cast.Ability);
+            if (cast.FpCost > 0 && cast.Ability.SkillType == SkillType.Force)
                 TriggerConvergence(caster);
+
+            if (cast.Ability.IsQueuedWeapon && cast.Use.Damage != null)
+            {
+                // The game holds a paid weapon ability for the next landed attack, for up to 30 seconds.
+                caster.QueuedWeaponAbility = new QueuedWeaponAbility
+                {
+                    Use = cast.Use,
+                    Ability = cast.Ability,
+                    ExpiresAt = _now + QueuedWeaponAbilitySeconds
+                };
+                return;
+            }
+
+            if (HitPointCostCatalog.TryGet(cast.Ability.Feat, out var hitPointCost))
+                PayHitPoints(caster, hitPointCost);
 
             if (cast.Use.Damage != null)
             {
@@ -747,12 +768,15 @@ namespace SWLOR.CombatSim.Engine
         {
             switch (_rules.Revives)
             {
-                case ReviveRule.BlockedInPvpLimitedInPve when _scenario.IsPvp:
-                    // Without positions, every living enemy that has joined the fight counts as within 20m.
-                    var enemiesAlive = Enemies(caster).Any();
-                    var partyRecentlyHit = Allies(caster).Any(a => _now - a.LastDamageTakenAt <= _rules.PvpReviveDamageWindowSeconds);
-                    return !enemiesAlive && !partyRecentlyHit;
                 case ReviveRule.BlockedInPvpLimitedInPve:
+                    // The game's ReviveRules. Without positions, every living enemy in the fight counts as within 20m.
+                    // A hostile player blocks; after a player kill the party must also go the window without taking
+                    // damage from anyone; a player revived mid-fight is then locked out.
+                    if (Enemies(caster).Any(enemy => _scenario.IsPvp && !enemy.Spec.IsNpc))
+                        return false;
+                    if (target.KilledByPlayer &&
+                        Allies(caster).Any(a => _now - a.LastDamageTakenAt <= _rules.PvpReviveDamageWindowSeconds))
+                        return false;
                     return _now >= target.ReviveLockedUntil;
                 default:
                     return true;
@@ -767,7 +791,8 @@ namespace SWLOR.CombatSim.Engine
             target.Stats.RevivesReceived++;
             _revives++;
 
-            if (_rules.Revives == ReviveRule.BlockedInPvpLimitedInPve && !_scenario.IsPvp)
+            // A player revived while a fight is still on (a living enemy remains) starts the mid-fight lockout.
+            if (_rules.Revives == ReviveRule.BlockedInPvpLimitedInPve && !target.Spec.IsNpc && Enemies(caster).Any())
                 target.ReviveLockedUntil = _now + _rules.PveReviveLockoutSeconds;
 
             if (effect.Percent <= 0)
@@ -802,13 +827,38 @@ namespace SWLOR.CombatSim.Engine
                 if (target == null)
                     return;
 
-                ApplyDamageProfile(attacker, target, attack.Damage, 0f);
+                ExpireQueuedWeaponAbility(attacker);
+                var queued = attacker.QueuedWeaponAbility;
+                if (queued == null)
+                {
+                    ApplyDamageProfile(attacker, target, attack.Damage, 0f);
+                    continue;
+                }
+
+                // The queued ability's profile stands in for this swing; a miss keeps it waiting for the next one.
+                DamageHealingCatalog.TryGet(queued.Ability.Feat, out var damageHealing);
+                if (!ApplyDamageProfile(attacker, target, queued.Use.Damage, ConvergenceHitBonus(attacker, queued.Ability), damageHealing))
+                    continue;
+
+                attacker.QueuedWeaponAbility = null;
+                if (HitPointCostCatalog.TryGet(queued.Ability.Feat, out var hitPointCost))
+                    PayHitPoints(attacker, hitPointCost);
             }
         }
 
+        private void ExpireQueuedWeaponAbility(Combatant combatant)
+        {
+            if (combatant.QueuedWeaponAbility != null && _now >= combatant.QueuedWeaponAbility.ExpiresAt)
+                combatant.QueuedWeaponAbility = null;
+        }
+
+        private float ConvergenceHitBonus(Combatant caster, AbilityInfo ability) =>
+            ability.SkillType == SkillType.Force && _now < caster.ConvergenceAccuracyUntil ? ConvergenceHitChanceBonus : 0f;
+
         private static bool HitsSeveralEnemies(DamageSpec damage) => damage != null && (damage.Area || damage.Targets > 1);
 
-        private void ApplyDamageProfile(
+        /// <returns>Whether a hit landed on the chosen target, or on anyone for an area.</returns>
+        private bool ApplyDamageProfile(
             Combatant attacker, Combatant target, DamageSpec damage, float hitBonus, DamageHealing damageHealing = null)
         {
             var targets = damage.Area ? Enemies(attacker).ToList() : new List<Combatant> { target };
@@ -823,6 +873,7 @@ namespace SWLOR.CombatSim.Engine
             var healingLeft = damageHealing == null
                 ? 0.0
                 : attacker.Spec.MaxHp * DamageHealing.MaximumMaxHpPercentPerCast / 100.0;
+            var landed = false;
             for (var index = 0; index < targets.Count; index++)
             {
                 var victim = targets[index];
@@ -830,22 +881,27 @@ namespace SWLOR.CombatSim.Engine
                 var multiplier = !damage.Area && index > 0 ? damage.ExtraTargetDamagePercent / 100.0 : 1.0;
                 for (var hit = 0; hit < damage.Hits; hit++)
                 {
-                    var victimWasLow = victim.HpPercentWithTemporaryHp <= 50f;
-                    var dealt = RollAndApply(attacker, victim, damage, hitBonus, multiplier);
+                    var (hitLanded, dealt) = RollAndApply(attacker, victim, damage, hitBonus, multiplier);
+                    if (hitLanded && (damage.Area || index == 0))
+                        landed = true;
+                    // The game picks the low-HP rate after the hit, from the victim's HP it left.
                     if (damageHealing != null && dealt > 0 && healingLeft > 0)
-                        healingLeft -= HealFromDamage(attacker, dealt, victimWasLow ? damageHealing.LowHpPercent : damageHealing.Percent, healingLeft);
+                        healingLeft -= HealFromDamage(attacker, dealt,
+                            victim.HpPercentWithTemporaryHp <= 50f ? damageHealing.LowHpPercent : damageHealing.Percent, healingLeft);
                 }
             }
+
+            return landed;
         }
 
         /// <summary>
         /// The game's damage-derived healing: a share of the damage dealt, adjusted by the caster's healing received,
-        /// never more than the damage or what is left of the cast's cap. Returns the HP requested.
+        /// never more than half the hit or what is left of the cast's cap. Returns the HP requested.
         /// </summary>
         private double HealFromDamage(Combatant caster, double dealt, float percent, double healingLeft)
         {
             double requested = HealingMath.AddPercent((int)(dealt * percent / 100.0), caster.HealingReceivedPercent);
-            requested = Math.Min(Math.Min(requested, dealt), healingLeft);
+            requested = Math.Min(Math.Min(requested, Math.Floor(dealt * DamageHealing.MaximumDamagePercentPerHit / 100.0)), healingLeft);
             var amount = (int)requested;
             if (amount <= 0)
                 return 0;
@@ -907,17 +963,18 @@ namespace SWLOR.CombatSim.Engine
             RestoreStamina(caster, (int)stamina, true);
         }
 
-        /// <returns>Damage that landed, on temporary HP or HP.</returns>
-        private double RollAndApply(Combatant attacker, Combatant target, DamageSpec damage, float hitBonus = 0f, double multiplier = 1.0)
+        /// <returns>Whether the roll hit, and the damage that landed on temporary HP or HP.</returns>
+        private (bool Hit, double Dealt) RollAndApply(
+            Combatant attacker, Combatant target, DamageSpec damage, float hitBonus = 0f, double multiplier = 1.0)
         {
             if (target.IsDead || _random.NextDouble() >= Math.Min(1f, damage.GetHitChance(target.Name) + hitBonus))
-                return 0;
+                return (false, 0);
 
             var amount = damage.Min + _random.NextDouble() * Math.Max(0, damage.Max - damage.Min);
             if (damage.CritChance > 0 && _random.NextDouble() < damage.CritChance)
                 amount *= damage.CritMultiplier;
 
-            return ApplyDamage(attacker, target, amount * multiplier, damage.Type);
+            return (true, ApplyDamage(attacker, target, amount * multiplier, damage.Type));
         }
 
         /// <returns>Damage that landed, on temporary HP or HP.</returns>
@@ -1129,6 +1186,8 @@ namespace SWLOR.CombatSim.Engine
             target.DiedAt = _now;
             target.Hp = 0;
             target.Casting = null;
+            target.QueuedWeaponAbility = null;
+            target.KilledByPlayer = killer != null && IsPlayerVersusPlayer(killer, target);
             target.TemporaryHp.Clear();
             target.DamageReductions.Clear();
             target.HealsOverTime.Clear();

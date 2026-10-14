@@ -39,6 +39,23 @@ namespace SWLOR.CombatSim.Tests.Engine
             medic.Stats.AbilitiesUsed.Should().BeGreaterThan(3, "the medic kept casting shields after the cap was full");
         }
 
+        [TestCase(0, true)]
+        [TestCase(200, false)]
+        public void NaturalRegeneration_WaitsWhileTemporaryHpFillsTheHealthBar(int shield, bool expectHealing)
+        {
+            var wounded = new CombatantSpec { Name = "Wounded", MaxHp = 1000, HpRegenPer30Seconds = 30f };
+            var simulation = Spawn(RuleSets.Current(), new[] { wounded });
+            var combatant = simulation.Get("Wounded");
+            combatant.Hp = 900;
+            if (shield > 0)
+                combatant.TemporaryHp.Add(new TemporaryHpPool { Key = "Shield", Amount = shield, ExpiresAt = 600 });
+
+            SimulationClock.RunUntil(simulation, 40);
+
+            (combatant.Stats.HealingReceived > 0).Should().Be(expectHealing,
+                "the game's tick needs current HP, which counts temporary HP, below max HP");
+        }
+
         [Test]
         public void Tuned_CapUsesTheRecipientsMaxHp()
         {

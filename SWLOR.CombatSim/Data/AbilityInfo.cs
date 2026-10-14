@@ -18,6 +18,9 @@ namespace SWLOR.CombatSim.Data
         public float RecastSeconds { get; init; }
         public float CastSeconds { get; init; }
 
+        /// <summary>A weapon ability: paid when queued, it lands on the caster's next landed attack.</summary>
+        public bool IsQueuedWeapon { get; init; }
+
         /// <summary>What the game computes at runtime and the simulator could not read (for example "recast"); null when timings were read.</summary>
         public string UnreadableTiming { get; init; }
 

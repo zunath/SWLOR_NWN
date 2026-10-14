@@ -9,6 +9,9 @@ namespace SWLOR.CombatSim.Effects
         /// <summary>The game's Combat.MaximumActivatedDamageHealingMaxHPPercent.</summary>
         public const float MaximumMaxHpPercentPerCast = 15f;
 
+        /// <summary>The game's Combat.MaximumDamageDerivedHealingPercentPerHit.</summary>
+        public const float MaximumDamagePercentPerHit = 50f;
+
         public float Percent { get; init; }
         public float LowHpPercent { get; init; }
     }

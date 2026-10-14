@@ -280,6 +280,32 @@ namespace SWLOR.CombatSim.Tests.Engine
             act.Should().Throw<InvalidDataException>().WithMessage("*Player*MaxHp*");
         }
 
+        [TestCase("hpRegen")]
+        [TestCase("fpRegen")]
+        [TestCase("stmRegen")]
+        [TestCase("maxFp")]
+        [TestCase("readiness")]
+        [TestCase("healingReceived")]
+        [TestCase("damageReduction")]
+        public void Spawn_RejectsACombatantValueOutsideItsRange(string field)
+        {
+            var player = TestCombatants.Dummy("Player");
+            switch (field)
+            {
+                case "hpRegen": player.HpRegenPer30Seconds = -1f; break;
+                case "fpRegen": player.FpRegenPer30Seconds = float.NaN; break;
+                case "stmRegen": player.StmRegenPer30Seconds = float.PositiveInfinity; break;
+                case "maxFp": player.MaxFp = -10; break;
+                case "readiness": player.CombatReadinessPercent = float.NaN; break;
+                case "healingReceived": player.HealingReceivedPercent = float.NegativeInfinity; break;
+                case "damageReduction": player.DamageReductionPercent = 150f; break;
+            }
+
+            var act = () => new Simulation(Scenario(player), RuleSets.Current(), _catalog, 1).Spawn();
+
+            act.Should().Throw<InvalidDataException>().WithMessage("*Player*");
+        }
+
         [TestCase("Benevolence1", AbilityTarget.Enemy)]
         [TestCase("GuardianWard1", AbilityTarget.Enemy)]
         [TestCase("Renewal1", AbilityTarget.Enemy)]

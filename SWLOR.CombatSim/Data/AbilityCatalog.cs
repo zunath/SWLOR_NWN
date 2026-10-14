@@ -87,6 +87,7 @@ namespace SWLOR.CombatSim.Data
                 STM = detail.Requirements.OfType<AbilityRequirementStamina>().Sum(r => r.RequiredSTM),
                 RecastSeconds = recast ?? 0f,
                 CastSeconds = cast ?? 0f,
+                IsQueuedWeapon = detail.ActivationType == AbilityActivationType.Weapon,
                 UnreadableTiming = unreadable.Length > 0 ? unreadable : null,
                 SkillType = detail.SkillType,
                 IsHostile = detail.IsHostileAbility,

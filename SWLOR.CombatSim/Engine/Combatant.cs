@@ -59,6 +59,10 @@ namespace SWLOR.CombatSim.Engine
         public double ConvergenceAccuracyUntil { get; set; } = -1;
         public double HarmonyReadyAt { get; set; }
         public double HitPointSpendRestoreReadyAt { get; set; }
+        public QueuedWeaponAbility QueuedWeaponAbility { get; set; }
+
+        /// <summary>The last death came from a player in a PvP fight, which holds revives for the party's damage window.</summary>
+        public bool KilledByPlayer { get; set; }
         public double NextBlockedReviveCountAt { get; set; }
 
         public double LastDamageTakenAt { get; set; } = double.NegativeInfinity;

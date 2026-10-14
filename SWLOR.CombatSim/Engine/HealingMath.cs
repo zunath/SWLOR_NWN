@@ -73,7 +73,8 @@ namespace SWLOR.CombatSim.Engine
         }
 
         /// <summary>
-        /// One tick of a heal over time. Affinity is captured when cast; ticks never get Combat Readiness.
+        /// One tick of a heal over time. Affinity is captured when cast and, as in the game, scales the effect's
+        /// percent before each tick rounds it and adds Willpower; ticks never get Combat Readiness.
         /// </summary>
         public static int HealOverTimeTick(
             AbilityEffect effect,
@@ -82,9 +83,8 @@ namespace SWLOR.CombatSim.Engine
             float affinityMultiplierAtCast,
             float outgoingHealingPercent)
         {
-            var amount = PercentOfMaxHp(targetMaxHp, effect.Percent / Math.Max(1, effect.Ticks));
+            var amount = PercentOfMaxHp(targetMaxHp, effect.Percent * affinityMultiplierAtCast / Math.Max(1, effect.Ticks));
             amount = ScaleByStat(amount, casterStat);
-            amount = (int)Math.Round(amount * affinityMultiplierAtCast);
             return AddPercent(amount, outgoingHealingPercent);
         }
 

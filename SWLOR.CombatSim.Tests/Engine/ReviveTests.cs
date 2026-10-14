@@ -238,6 +238,26 @@ namespace SWLOR.CombatSim.Tests.Engine
             caster.Stats.BlockedRevives.Should().BeGreaterThan(0);
         }
 
+        [Test]
+        public void TunedPvp_AnNpcEnemyDoesNotBlockRevives_AndAnNpcKillHasNoDamageWindow()
+        {
+            var medic = TestCombatants.Medic("Medic", TestCombatants.Use("Resuscitation2", AbilityTarget.DeadAlly));
+            var ally = new CombatantSpec { Name = "Ally", MaxHp = 1000 };
+            var simulation = TestScenarios.Spawn(
+                TestScenarios.TwoTeams(true, new[] { medic, ally }, new[] { TestCombatants.Dummy("Creature", isNpc: true) }),
+                RuleSets.Tuned(),
+                _catalog);
+            var creature = simulation.Get("Creature");
+            var revived = simulation.Get("Ally");
+            simulation.ApplyDamage(creature, revived, TestCombatants.EffectivelyUnlimited);
+            simulation.ApplyDamage(creature, simulation.Get("Medic"), 1);
+
+            SimulationClock.RunUntil(simulation, () => !revived.IsDead, 10, "the ally revived while the NPC still stands");
+
+            creature.IsDead.Should().BeFalse();
+            revived.ReviveLockedUntil.Should().BeGreaterThan(simulation.Now, "a player revived mid-fight starts the 5-minute lockout");
+        }
+
         private (Simulation Simulation, Combatant Medic, Combatant Ally, Combatant Enemy) SpawnAndKillAlly(RuleSet rules, bool isPvp)
         {
             var medic = TestCombatants.Medic("Medic", TestCombatants.Use("Resuscitation2", AbilityTarget.DeadAlly));

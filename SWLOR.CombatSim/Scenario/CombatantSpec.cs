@@ -43,5 +43,36 @@ namespace SWLOR.CombatSim.Scenario
 
         public AutoAttackSpec AutoAttack { get; set; }
         public List<AbilityUseSpec> Abilities { get; set; } = new();
+
+        /// <summary>Numbers outside their documented range; empty when the combatant is usable.</summary>
+        public List<string> GetProblems()
+        {
+            var problems = new List<string>();
+
+            void AtLeastZero(string name, float value)
+            {
+                if (!float.IsFinite(value) || value < 0f)
+                    problems.Add($"{name} must be a number of at least 0");
+            }
+
+            void Number(string name, float value)
+            {
+                if (!float.IsFinite(value))
+                    problems.Add($"{name} must be a number");
+            }
+
+            AtLeastZero(nameof(HpRegenPer30Seconds), HpRegenPer30Seconds);
+            AtLeastZero(nameof(FpRegenPer30Seconds), FpRegenPer30Seconds);
+            AtLeastZero(nameof(StmRegenPer30Seconds), StmRegenPer30Seconds);
+            AtLeastZero(nameof(MaxFp), MaxFp);
+            AtLeastZero(nameof(MaxStm), MaxStm);
+            AtLeastZero(nameof(CombatReadinessPercent), CombatReadinessPercent);
+            Number(nameof(OutgoingHealingPercent), OutgoingHealingPercent);
+            Number(nameof(HealingReceivedPercent), HealingReceivedPercent);
+            if (!float.IsFinite(DamageReductionPercent) || DamageReductionPercent < 0f || DamageReductionPercent > 100f)
+                problems.Add($"{nameof(DamageReductionPercent)} must be from 0 to 100");
+
+            return problems;
+        }
     }
 }

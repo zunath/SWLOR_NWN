@@ -34,11 +34,10 @@ namespace SWLOR.Game.Server.Feature
             if (!GetIsDM(dm))
                 return;
 
-            // Windows opened while possessing are shown on the creature; ones opened before are on the avatar.
+            // The Chooser can be shown on the creature, on the avatar, or on a creature the DM possessed earlier.
             var controlled = DMPresence.GetControlledCreature(dm);
-            Gui.PublishRefreshEvent(dm, new DMAreaChangedRefreshEvent(), controlled);
-            if (controlled != dm)
-                Gui.PublishRefreshEvent(dm, new DMAreaChangedRefreshEvent());
+            foreach (var target in DMPresence.GetShownOn(controlled, GuiWindowType.DMChooser))
+                Gui.PublishRefreshEvent(dm, new DMAreaChangedRefreshEvent(), target);
         }
 
         /// <summary>

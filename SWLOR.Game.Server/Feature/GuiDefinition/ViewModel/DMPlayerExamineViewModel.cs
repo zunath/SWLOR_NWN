@@ -597,14 +597,16 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             if (_noteIds.Count > MaxNotes)
                 return;
 
+            // While possessing, the window is shown on the creature; the note belongs to the DM.
+            var dm = DMPresence.GetDM(Player);
             var dbNote = new PlayerNote
             {
                 PlayerId = _playerId,
                 Name = "New Note",
                 Text = string.Empty,
                 IsDMNote = true,
-                DMCreatorCDKey = GetPCPublicCDKey(Player),
-                DMCreatorName = GetName(Player)
+                DMCreatorCDKey = GetPCPublicCDKey(dm),
+                DMCreatorName = GetName(dm)
             };
 
             DB.Set(dbNote);

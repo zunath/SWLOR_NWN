@@ -24,5 +24,14 @@ namespace SWLOR.CombatSim.Tests.Engine
         {
             DamageMath.ApplyGenericCut(damage, cut).Should().Be(expected);
         }
+
+        [Test]
+        public void ApplyGenericCut_HoldsTheCombinedCapAcrossAnEarlierStatusCut()
+        {
+            // 1,000 Force damage: Force Sanctuary's 5% leaves 950, and a 95% generic cut may only bring the total to 15%.
+            var afterStatus = DamageMath.ApplyPercentCut(1000, 5);
+
+            DamageMath.ApplyGenericCut(afterStatus, 95, DamageMath.CutMultiplier(5)).Should().Be(150);
+        }
     }
 }

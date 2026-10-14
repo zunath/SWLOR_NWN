@@ -30,6 +30,8 @@ namespace SWLOR.CombatSim.Engine
 
         public const float MinimumTimeStepSeconds = 0.001f;
 
+        public const int MaximumMaxHp = 10_000_000;
+
         /// <summary>One day of simulated fighting.</summary>
         public const float MaximumDurationSeconds = 86_400f;
 
@@ -155,8 +157,9 @@ namespace SWLOR.CombatSim.Engine
 
                     // Each step makes at most one decision per combatant, so a step longer than the
                     // reaction time would skip decisions and make results depend on the step size.
-                    if (!(spec.MaxHp > 0))
-                        throw new InvalidDataException($"'{spec.Name}' needs a MaxHp greater than 0.");
+                    // The upper bound keeps every healing formula's whole-number result representable.
+                    if (!(spec.MaxHp > 0) || spec.MaxHp > MaximumMaxHp)
+                        throw new InvalidDataException($"'{spec.Name}' needs a MaxHp from 1 to {MaximumMaxHp}.");
                     var specProblems = spec.GetProblems();
                     if (specProblems.Count > 0)
                         throw new InvalidDataException($"'{spec.Name}': {string.Join("; ", specProblems)}.");
@@ -1043,10 +1046,15 @@ namespace SWLOR.CombatSim.Engine
             foreach (var family in active.Where(r => r.Group != null).GroupBy(r => r.Group))
                 amount = DamageMath.ApplyPercentCut(amount, family.Max(r => r.Percent));
             var ungrouped = active.Where(r => r.Group == null).ToList();
-            var genericCut = target.Spec.DamageReductionPercent + ungrouped.Where(r => r.Scope == DamageReductionScope.All).Sum(r => (double)r.Percent);
-            amount = DamageMath.ApplyGenericCut(amount, genericCut);
+            // Typed status cuts land first; the generic stage then holds the game's combined cap across both.
+            var statusMultiplier = 1.0;
             foreach (var reduction in ungrouped.Where(r => r.Scope != DamageReductionScope.All))
+            {
                 amount = DamageMath.ApplyPercentCut(amount, reduction.Percent);
+                statusMultiplier *= DamageMath.CutMultiplier(reduction.Percent);
+            }
+            var genericCut = target.Spec.DamageReductionPercent + ungrouped.Where(r => r.Scope == DamageReductionScope.All).Sum(r => (double)r.Percent);
+            amount = DamageMath.ApplyGenericCut(amount, genericCut, statusMultiplier);
 
             var landed = 0.0;
             foreach (var pool in target.TemporaryHp.OrderBy(p => p.ExpiresAt))

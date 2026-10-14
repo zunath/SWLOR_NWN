@@ -354,6 +354,7 @@ namespace SWLOR.CombatSim.Tests.Engine
 
         [TestCase(0)]
         [TestCase(-5)]
+        [TestCase(int.MaxValue)]
         public void Spawn_RejectsAMaxHpThatIsNotPositive(int maxHp)
         {
             var player = TestCombatants.Dummy("Player");

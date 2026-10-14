@@ -11,6 +11,25 @@ namespace SWLOR.CombatSim.Tests.Cli
         private static readonly string[] RunFlags = { "--detail" };
         private static readonly string[] RunRepeatable = { "--rules", "--rules-file" };
 
+        [TestCase("0")]
+        [TestCase("100001")]
+        [TestCase("2147483647")]
+        [TestCase("ten")]
+        public void GetInt_RejectsValuesOutsideTheRange(string value)
+        {
+            var options = new Dictionary<string, List<string>> { ["--runs"] = new() { value } };
+
+            var act = () => CommandLineOptions.GetInt(options, "--runs", 200, 1, 100_000);
+
+            act.Should().Throw<ArgumentException>().WithMessage("*--runs*1*100000*");
+        }
+
+        [Test]
+        public void GetInt_ReturnsTheDefaultWhenNotGiven()
+        {
+            CommandLineOptions.GetInt(new Dictionary<string, List<string>>(), "--runs", 200, 1, 100_000).Should().Be(200);
+        }
+
         [Test]
         public void Parse_RejectsAnOptionTheCommandDoesNotTake()
         {

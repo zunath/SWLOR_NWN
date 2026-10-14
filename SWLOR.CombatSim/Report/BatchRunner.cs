@@ -10,6 +10,9 @@ namespace SWLOR.CombatSim.Report
     /// </summary>
     public static class BatchRunner
     {
+        /// <summary>Every run's results are kept for the report, so the count stays practical.</summary>
+        public const int MaximumRuns = 100_000;
+
         public static BatchSummary Run(ScenarioSpec scenario, RuleSet rules, AbilityCatalog catalog, int runs, int seed)
         {
             var summary = new BatchSummary { RuleSetName = rules.Name, Runs = runs };

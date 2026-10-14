@@ -49,8 +49,8 @@ static int Run(string[] args)
         new[] { "--detail" },
         new[] { "--rules", "--rules-file" });
     var scenario = ScenarioSpec.Load(args[0]);
-    var runs = IntOption(options, "--runs", 200, 1);
-    var seed = IntOption(options, "--seed", 1, int.MinValue);
+    var runs = CommandLineOptions.GetInt(options, "--runs", 200, 1, BatchRunner.MaximumRuns);
+    var seed = CommandLineOptions.GetInt(options, "--seed", 1, int.MinValue);
 
     var ruleSets = RuleSetSelection.Resolve(options);
 
@@ -98,19 +98,6 @@ static int DumpAbilities(string[] args)
     File.WriteAllLines(output, lines);
     Console.WriteLine($"Wrote {catalog.Abilities.Count} abilities to {output} ({catalog.LoadErrors.Count} definitions or timings could not be read outside the engine).");
     return 0;
-}
-
-static int IntOption(Dictionary<string, List<string>> options, string name, int defaultValue, int minimum)
-{
-    if (!options.TryGetValue(name, out var values))
-        return defaultValue;
-
-    if (values.Count != 1 || !int.TryParse(values[0], NumberStyles.Integer, CultureInfo.InvariantCulture, out var value) || value < minimum)
-        throw new ArgumentException(minimum > int.MinValue
-            ? $"{name} needs a whole number of at least {minimum}."
-            : $"{name} needs a whole number.");
-
-    return value;
 }
 
 static string Csv(string value) => value.Contains(',') ? $"\"{value}\"" : value;

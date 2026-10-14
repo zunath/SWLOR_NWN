@@ -44,5 +44,26 @@ namespace SWLOR.CombatSim.Cli
 
             return options;
         }
+
+        /// <summary>A whole-number option from <see cref="Parse"/>'s result, or the default when it was not given.</summary>
+        public static int GetInt(
+            IReadOnlyDictionary<string, List<string>> options, string name, int defaultValue, int minimum, int maximum = int.MaxValue)
+        {
+            if (!options.TryGetValue(name, out var values))
+                return defaultValue;
+
+            if (values.Count != 1 ||
+                !int.TryParse(values[0], System.Globalization.NumberStyles.Integer, System.Globalization.CultureInfo.InvariantCulture, out var value) ||
+                value < minimum || value > maximum)
+            {
+                throw new ArgumentException(minimum == int.MinValue
+                    ? $"{name} needs a whole number."
+                    : maximum == int.MaxValue
+                        ? $"{name} needs a whole number of at least {minimum}."
+                        : $"{name} needs a whole number from {minimum} to {maximum}.");
+            }
+
+            return value;
+        }
     }
 }

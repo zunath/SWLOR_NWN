@@ -433,8 +433,11 @@ namespace SWLOR.Game.Server.Service
             _jsonAcrossFrames.Remove(key);
             var indexKey = SearchIndexDefinition.KeyPrefix(keyPrefix) + entity.Id;
             var indexData = BuildIndexData(type, entity);
-            _searchClientsByType[type].ReplaceDocument(indexKey, indexData);
-            _multiplexer.GetDatabase().JsonSet(key, data);
+            // Both commands go out on the same connection in this order, so the main thread waits for one round trip instead of two.
+            var indexWrite = _searchClientsByType[type].ReplaceDocumentAsync(indexKey, indexData);
+            var jsonWrite = _multiplexer.GetDatabase().JsonSetAsync(key, data);
+            indexWrite.GetAwaiter().GetResult();
+            jsonWrite.GetAwaiter().GetResult();
             _cachedEntities[entity.Id] = entity;
             if (_jsonCachedTypes.Contains(type))
                 RememberJson(key, data);

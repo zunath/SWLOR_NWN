@@ -7916,8 +7916,16 @@ namespace SWLOR.Game.Server.Service
             if (shieldPercent <= 0 || duration <= 0 || !TryUseStatTrigger(activator, StatType.HeavyVibrobladeDefenseGuardiansResolveShieldPercent, cooldown))
                 return;
 
-            var shieldAmount = GameMath.PercentOf(GetMaxHitPoints(activator), shieldPercent);
-            TemporaryHitPointEffects.ApplyFlat(activator, "GUARDIANS_RESOLVE", shieldAmount, duration);
+            TemporaryHitPointEffects.ApplyFlat(
+                activator,
+                "GUARDIANS_RESOLVE",
+                GameMath.PercentOf(GetMaxHitPoints(activator), shieldPercent),
+                duration);
+            // The pool can be smaller than requested at the engine's HP limit.
+            var shieldAmount = TemporaryHitPointEffects.GetRemaining(activator, "GUARDIANS_RESOLVE");
+            if (shieldAmount <= 0)
+                return;
+
             StatusEffect.ApplyStatusEffect(activator, activator, new GuardiansResolveStatusEffect(shieldAmount), duration);
         }
 

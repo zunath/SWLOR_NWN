@@ -256,6 +256,19 @@ namespace SWLOR.CombatSim.Tests.Engine
             act.Should().Throw<InvalidDataException>().WithMessage("*Medic*ReactionSeconds*time step*");
         }
 
+        [TestCase("ForceSanctuary1")]
+        [TestCase("GroupDeflector1")]
+        public void Spawn_RejectsADamageProfileOnAFriendlyZoneOrShield(string feat)
+        {
+            var use = TestCombatants.Use(feat, AbilityTarget.Self);
+            use.Damage = new DamageSpec { Min = 10f, Max = 10f };
+            var medic = TestCombatants.Medic("Medic", use);
+
+            var act = () => new Simulation(Scenario(medic), RuleSets.Current(), _catalog, 1).Spawn();
+
+            act.Should().Throw<InvalidDataException>().WithMessage($"*{feat}*not a hostile ability*");
+        }
+
         [Test]
         public void Spawn_RejectsAPerkListedTwice()
         {

@@ -37,6 +37,13 @@ namespace SWLOR.CombatSim.Tests.Scenario
         }
 
         [Test]
+        public void GetProblems_RejectsHitsBeyondTheBound()
+        {
+            new DamageSpec { Min = 1f, Max = 1f, Hits = DamageSpec.MaximumHits + 1 }.GetProblems().Should().ContainSingle(p => p.Contains("Hits"));
+            new DamageSpec { Min = 1f, Max = 1f, Hits = DamageSpec.MaximumHits }.GetProblems().Should().BeEmpty();
+        }
+
+        [Test]
         public void Defaults_AlwaysHitOnceWithoutCrits()
         {
             var damage = new DamageSpec();

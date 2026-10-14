@@ -5,6 +5,8 @@ namespace SWLOR.CombatSim.Scenario
     /// </summary>
     public sealed class DamageSpec
     {
+        public const int MaximumHits = 1000;
+
         public float Min { get; set; }
         public float Max { get; set; }
 
@@ -60,8 +62,8 @@ namespace SWLOR.CombatSim.Scenario
             Chance(nameof(CritChance), CritChance);
             if (!float.IsFinite(CritMultiplier) || CritMultiplier < 1f)
                 problems.Add("CritMultiplier must be a number of at least 1");
-            if (Hits < 1)
-                problems.Add("Hits must be at least 1");
+            if (Hits < 1 || Hits > MaximumHits)
+                problems.Add($"Hits must be from 1 to {MaximumHits}");
             if (Targets < 1)
                 problems.Add("Targets must be at least 1");
             if (!float.IsFinite(ExtraTargetDamagePercent) || ExtraTargetDamagePercent < 0f)

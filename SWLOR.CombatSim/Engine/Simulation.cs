@@ -176,6 +176,8 @@ namespace SWLOR.CombatSim.Engine
                             NextHeartbeatAt = _random.NextDouble() * HeartbeatSeconds,
                             // Players arrive partway through the game's five-heartbeat regeneration cycle.
                             HeartbeatCount = _random.Next(HeartbeatsPerRegenCycle),
+                            // The game also carries a stamina remainder from 0 to 4 points across heartbeats.
+                            StmRegenCarry = _random.Next(HeartbeatsPerRegenCycle) / (double)HeartbeatsPerRegenCycle,
                             NextAttackAt = _random.NextDouble() * 2.0,
                             NextActionAt = _random.NextDouble()
                         };
@@ -304,6 +306,10 @@ namespace SWLOR.CombatSim.Engine
             // A damage profile picks an enemy target, so only party-wide effects can resolve alongside it.
             if (effect != null && use.Damage != null && !IsPartyEffect(effect))
                 throw new InvalidDataException($"'{use.Feat}' has a damage profile and a single-target effect; only party heals and shields can be paired with damage.");
+
+            // A friendly zone or shield cannot also hurt enemies; hostile hybrids such as Purifying Wave can.
+            if (effect != null && use.Damage != null && !info.IsHostile)
+                throw new InvalidDataException($"'{use.Feat}' is not a hostile ability, so its modeled effect cannot carry a damage profile.");
 
             if (!Enum.IsDefined(use.Target))
                 throw new InvalidDataException($"'{use.Feat}' has an unknown Target; use one of {string.Join(", ", Enum.GetNames<AbilityTarget>())}.");
@@ -1014,18 +1020,18 @@ namespace SWLOR.CombatSim.Engine
                 amount *= 1 + RuleSet.GetStepPercent(_rules.PvpDamageBackstop, PvpSeconds(target)) / 100f;
             }
 
-            // A family of overlapping cuts (Leadership's) keeps only its strongest; the combatant's own cut and
-            // ungrouped cuts to all damage share the game's one summed damage-taken stat; other typed cuts apply on their own.
+            // The game's damage is whole points, and each percentage stage rounds as its code does. A family of
+            // overlapping cuts (Leadership's) keeps only its strongest; the combatant's own cut and ungrouped cuts to
+            // all damage share the game's one summed damage-taken stat; other typed cuts apply on their own.
+            amount = Math.Max(1, Math.Round(amount));
             var active = target.DamageReductions.Values.Where(r => r.ExpiresAt > _now && r.Applies(type)).ToList();
             foreach (var family in active.Where(r => r.Group != null).GroupBy(r => r.Group))
-                amount *= 1 - family.Max(r => r.Percent) / 100.0;
+                amount = DamageMath.ApplyPercentCut(amount, family.Max(r => r.Percent));
             var ungrouped = active.Where(r => r.Group == null).ToList();
             var genericCut = target.Spec.DamageReductionPercent + ungrouped.Where(r => r.Scope == DamageReductionScope.All).Sum(r => (double)r.Percent);
-            amount *= 1 - Math.Min(100.0, genericCut) / 100.0;
+            amount = DamageMath.ApplyGenericCut(amount, genericCut);
             foreach (var reduction in ungrouped.Where(r => r.Scope != DamageReductionScope.All))
-                amount *= 1 - reduction.Percent / 100.0;
-            // The game keeps at least 1 damage after its percentage modifiers (Combat.ApplyDamageTakenModifiers).
-            amount = Math.Max(1, amount);
+                amount = DamageMath.ApplyPercentCut(amount, reduction.Percent);
 
             var landed = 0.0;
             foreach (var pool in target.TemporaryHp.OrderBy(p => p.ExpiresAt))

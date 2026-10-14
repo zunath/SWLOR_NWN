@@ -9,6 +9,18 @@ namespace SWLOR.Game.Server.Tests.Feature;
 public class PlayerNameChatCommandTests
 {
     [Test]
+    public void AfkCommand_IsAvailableToAllPlayerAccountsWithoutTargeting()
+    {
+        var command = new AfkChatCommand().BuildChatCommands()["afk"];
+
+        command.Authorization.Should().Be(AuthorizationLevel.All);
+        command.RequiresTarget.Should().BeFalse();
+        command.AllowsLocationTarget.Should().BeFalse();
+        command.DoAction.Should().NotBeNull();
+        command.ValidateArguments.Should().NotBeNull();
+    }
+
+    [Test]
     public void NameCommands_AreAvailableToStaffAuthorizedPlayerAccounts()
     {
         var commands = new CharacterChatCommand().BuildChatCommands();

@@ -130,14 +130,14 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
         }
 
         // The death pipeline marks the body non-destroyable, which would leave it behind after cleanup.
-        private static void ReleaseBody(uint body)
+        internal static void ReleaseBody(uint body)
         {
             if (GetIsObjectValid(body))
                 AssignCommand(body, () => SetIsDestroyable(true, false, false));
         }
 
         // The death pipeline also leaves an untracked corpse placeable beside the body.
-        private static void DestroyCorpsePlaceable(uint body)
+        internal static void DestroyCorpsePlaceable(uint body)
         {
             for (var nth = 1; ; nth++)
             {

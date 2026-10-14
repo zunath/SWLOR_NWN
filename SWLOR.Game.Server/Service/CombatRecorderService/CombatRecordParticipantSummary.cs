@@ -33,6 +33,9 @@ namespace SWLOR.Game.Server.Service.CombatRecorderService
         /// <summary>Temporary HP this participant granted that later absorbed damage.</summary>
         public Dictionary<string, CombatRecordAmountTotals> TemporaryHitPointsGrantedAbsorbed { get; } = new();
 
+        /// <summary>Temporary HP cut from this participant's pools to fit the cap, keyed by the pool's granting source.</summary>
+        public Dictionary<string, CombatRecordAmountTotals> TemporaryHitPointsTrimmed { get; } = new();
+
         public Dictionary<string, CombatRecordAmountTotals> FPSpent { get; } = new();
         public Dictionary<string, CombatRecordAmountTotals> FPRegained { get; } = new();
         public Dictionary<string, CombatRecordAmountTotals> StaminaSpent { get; } = new();

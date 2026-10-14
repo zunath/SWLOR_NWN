@@ -73,6 +73,10 @@ namespace SWLOR.Game.Server.Service.CombatRecorderService
                         Add(GetParticipant(e.ActorId).TemporaryHitPointsGranted, label, e.Value0);
                     Add(GetParticipant(e.TargetId).TemporaryHitPointsReceived, label, e.Value0);
                     break;
+                case CombatRecordEventType.TemporaryHitPointsTrimmed:
+                    Add(GetParticipant(e.TargetId).TemporaryHitPointsTrimmed,
+                        CombatRecordSourceLabel.Format(e.SourceKind, e.SourceName, e.SourceCode), e.Value0);
+                    break;
                 case CombatRecordEventType.Resource:
                     AddResource(e);
                     break;

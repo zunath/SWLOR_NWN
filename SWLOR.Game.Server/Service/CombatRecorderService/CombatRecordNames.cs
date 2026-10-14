@@ -36,6 +36,7 @@ namespace SWLOR.Game.Server.Service.CombatRecorderService
                 CombatRecordEventType.Snapshot => "snapshot",
                 CombatRecordEventType.AbilityDenied => "ability_denied",
                 CombatRecordEventType.AbilityInterrupted => "ability_interrupted",
+                CombatRecordEventType.TemporaryHitPointsTrimmed => "temp_hp_trim",
                 _ => "unknown"
             };
         }

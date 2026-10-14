@@ -131,6 +131,15 @@ namespace SWLOR.Game.Server.Service.CombatRecorderService
                     writer.WriteString("granted_kind", CombatRecordNames.GetSourceKindName(e.SourceKind));
                     WriteNullableString(writer, "granted_name", CombatRecordNames.GetSourceName(e.SourceKind, e.SourceName, e.SourceCode));
                     break;
+                case CombatRecordEventType.TemporaryHitPointsTrimmed:
+                    WriteParticipant(writer, "target", e.TargetId);
+                    writer.WriteString("effect_key", e.Text);
+                    writer.WriteNumber("trimmed", e.Value0);
+                    writer.WriteNumber("remaining", e.Value2);
+                    WriteParticipant(writer, "granted_by", e.Value1);
+                    writer.WriteString("granted_kind", CombatRecordNames.GetSourceKindName(e.SourceKind));
+                    WriteNullableString(writer, "granted_name", CombatRecordNames.GetSourceName(e.SourceKind, e.SourceName, e.SourceCode));
+                    break;
                 case CombatRecordEventType.Healing:
                     WriteParticipant(writer, "source", e.ActorId);
                     WriteParticipant(writer, "target", e.TargetId);

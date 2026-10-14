@@ -110,6 +110,19 @@ public class CombatRecordSummaryBuilderTests
     }
 
     [Test]
+    public void TemporaryHitPointTrims_AreTotaledOnThePoolOwnerByGrantingSource()
+    {
+        Add(CombatRecordEvent.TemporaryHitPointsGranted(Healer, Defender, CombatRecordSourceKind.Ability, "Force Barrier I", 0, "FORCE_BARRIER", 25, 30000));
+        Add(CombatRecordEvent.TemporaryHitPointsTrimmed(Defender, "FORCE_BARRIER", 10, 15, Healer, CombatRecordSourceKind.Ability, "Force Barrier I"));
+        Add(CombatRecordEvent.TemporaryHitPointsTrimmed(Defender, "FORCE_BARRIER", 15, 0, Healer, CombatRecordSourceKind.Ability, "Force Barrier I"));
+
+        var defender = Build().GetParticipant(Defender);
+
+        defender.TemporaryHitPointsTrimmed["Force Barrier I"].Count.Should().Be(2);
+        defender.TemporaryHitPointsTrimmed["Force Barrier I"].Amount.Should().Be(25);
+    }
+
+    [Test]
     public void StatTriggeredShieldAbsorbs_AreTotaledUnderTheirStat()
     {
         const int lowHPShield = (int)StatType.LowHPTemporaryHPPercent;
@@ -187,12 +200,14 @@ public class CombatRecordSummaryBuilderTests
         Add(CombatRecordEvent.AbilityDenied(Healer, Defender, "Resuscitation I", 0, 1, tooClose, true));
         Add(CombatRecordEvent.AbilityInterrupted(Healer, "Resuscitation I", 0, 1, CombatRecordInterruptCause.Moved, 0, CombatRecordSourceKind.Unattributed, null, 0));
         Add(CombatRecordEvent.AbilityInterrupted(Healer, "Resuscitation I", 0, 1, CombatRecordInterruptCause.CrowdControl, Attacker, CombatRecordSourceKind.Ability, "Pounce I", 0));
+        Add(CombatRecordEvent.AbilityInterrupted(Healer, "Resuscitation I", 0, 1, CombatRecordInterruptCause.Damage, Attacker, CombatRecordSourceKind.Autoattack, null, 0));
 
         var healer = Build().GetParticipant(Healer);
 
         healer.AbilityDenials["Resuscitation I"][tooClose].Should().Be(2);
         healer.AbilityInterruptions["Resuscitation I"]["moved"].Should().Be(1);
         healer.AbilityInterruptions["Resuscitation I"]["crowd_control"].Should().Be(1);
+        healer.AbilityInterruptions["Resuscitation I"]["damage"].Should().Be(1);
     }
 
     [Test]
@@ -253,7 +268,7 @@ public class CombatRecordSummaryBuilderTests
 
         var healer = participants.Single(participant => participant.GetProperty("id").GetInt32() == Healer);
         healer.GetProperty("healing_done").GetProperty("total_effective").GetInt64().Should().Be(12);
-        foreach (var property in new[] { "fp_spent", "fp_regained", "stm_spent", "stm_regained", "temp_hp_granted", "temp_hp_absorbed", "deaths", "revives_received", "seconds_in_combat" })
+        foreach (var property in new[] { "fp_spent", "fp_regained", "stm_spent", "stm_regained", "temp_hp_granted", "temp_hp_absorbed", "temp_hp_trimmed", "deaths", "revives_received", "seconds_in_combat" })
         {
             healer.TryGetProperty(property, out _).Should().BeTrue($"the summary must report {property}");
         }

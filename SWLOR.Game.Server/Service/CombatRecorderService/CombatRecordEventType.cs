@@ -23,6 +23,7 @@ namespace SWLOR.Game.Server.Service.CombatRecorderService
         Subdual = 18,
         Snapshot = 19,
         AbilityDenied = 20,
-        AbilityInterrupted = 21
+        AbilityInterrupted = 21,
+        TemporaryHitPointsTrimmed = 22
     }
 }

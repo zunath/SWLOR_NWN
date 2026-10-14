@@ -36,7 +36,8 @@ public class CombatRecordSerializerTests
             CombatRecordEvent.Subdual(2, 1),
             CombatRecordEvent.Snapshot(1, 90, 120, 5, 40, 50, 30, 60, true, false),
             CombatRecordEvent.AbilityDenied(1, 2, "Resuscitation I", (int)FeatType.Resuscitation1, 1, "A hostile player is too close.", false),
-            CombatRecordEvent.AbilityInterrupted(1, "Resuscitation I", (int)FeatType.Resuscitation1, 1, CombatRecordInterruptCause.Moved, 0, CombatRecordSourceKind.Unattributed, null, 0)
+            CombatRecordEvent.AbilityInterrupted(1, "Resuscitation I", (int)FeatType.Resuscitation1, 1, CombatRecordInterruptCause.Moved, 0, CombatRecordSourceKind.Unattributed, null, 0),
+            CombatRecordEvent.TemporaryHitPointsTrimmed(2, "FORCE_BARRIER", 15, 10, 3, CombatRecordSourceKind.Ability, "Force Barrier I")
         };
 
         events.Select(e => e.Type).Should().OnlyHaveUniqueItems()
@@ -155,12 +156,34 @@ public class CombatRecordSerializerTests
             1, "Resuscitation I", (int)FeatType.Resuscitation1, 1, CombatRecordInterruptCause.Moved,
             0, CombatRecordSourceKind.Unattributed, null, 0));
 
+        var damage = Parse(CombatRecordEvent.AbilityInterrupted(
+            1, "Resuscitation I", (int)FeatType.Resuscitation1, 1, CombatRecordInterruptCause.Damage,
+            4, CombatRecordSourceKind.Autoattack, null, (int)SkillType.Vibroblade));
+
         crowdControl.GetProperty("cause").GetString().Should().Be("crowd_control");
+        damage.GetProperty("cause").GetString().Should().Be("damage");
+        damage.GetProperty("interrupted_by").GetInt32().Should().Be(4);
+        damage.GetProperty("interrupted_by_kind").GetString().Should().Be("autoattack");
         crowdControl.GetProperty("interrupted_by").GetInt32().Should().Be(3);
         crowdControl.GetProperty("interrupted_by_kind").GetString().Should().Be("ability");
         crowdControl.GetProperty("interrupted_by_name").GetString().Should().Be("Pounce I");
         moved.GetProperty("cause").GetString().Should().Be("moved");
         moved.TryGetProperty("interrupted_by_kind", out _).Should().BeFalse();
+    }
+
+    [Test]
+    public void TemporaryHitPointsTrimmed_ReportsTheCutAndWhoGrantedThePool()
+    {
+        var json = Parse(CombatRecordEvent.TemporaryHitPointsTrimmed(
+            2, "FORCE_BARRIER", 15, 10, 3, CombatRecordSourceKind.Ability, "Force Barrier I"));
+
+        json.GetProperty("target").GetInt32().Should().Be(2);
+        json.GetProperty("effect_key").GetString().Should().Be("FORCE_BARRIER");
+        json.GetProperty("trimmed").GetInt32().Should().Be(15);
+        json.GetProperty("remaining").GetInt32().Should().Be(10);
+        json.GetProperty("granted_by").GetInt32().Should().Be(3);
+        json.GetProperty("granted_kind").GetString().Should().Be("ability");
+        json.GetProperty("granted_name").GetString().Should().Be("Force Barrier I");
     }
 
     [Test]

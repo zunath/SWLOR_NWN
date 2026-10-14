@@ -1154,6 +1154,26 @@ namespace SWLOR.Game.Server.Service
             _damageApplications[index] = application;
         }
 
+        /// <summary>
+        /// Records a pool cut back to fit the temporary HP cap, credited to whoever granted it.
+        /// </summary>
+        public static void RecordTemporaryHitPointsTrimmed(uint target, string effectKey, int trimmed, int remaining)
+        {
+            if (trimmed <= 0 || !IsInRecordedArea(target))
+                return;
+
+            var hasGrant = _temporaryHitPointGrants.TryGetValue((target, effectKey), out var grant);
+            Enqueue(CombatRecordEvent.TemporaryHitPointsTrimmed(
+                GetParticipantId(target),
+                effectKey,
+                trimmed,
+                remaining,
+                hasGrant ? grant.SourceId : 0,
+                hasGrant ? grant.Attribution.Kind : CombatRecordSourceKind.Unattributed,
+                hasGrant ? grant.Attribution.Name : null,
+                hasGrant ? grant.Attribution.Code : 0));
+        }
+
         public static void RecordTemporaryHitPointsGranted(uint source, uint target, string effectKey, int amount, float durationSeconds)
         {
             if (!IsRecorded(target, source))

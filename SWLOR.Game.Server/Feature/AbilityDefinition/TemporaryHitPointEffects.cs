@@ -212,12 +212,16 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                     continue;
 
                 var effectKey = pool.Tag.Substring(EffectTagPrefix.Length);
+                if (CombatRecorder.IsRecording)
+                    CombatRecorder.RecordTemporaryHitPointsTrimmed(target, effectKey, pool.Amount - kept[index], kept[index]);
                 if (kept[index] <= 0)
                 {
                     Remove(target, effectKey);
                 }
                 else
                 {
+                    if (CombatRecorder.IsRecording)
+                        CombatRecorder.RecordTemporaryHitPointPoolRemoving(target);
                     RemoveEffect(target, pool.Effect);
                     ApplyEffectToObject(
                         DurationType.Temporary,

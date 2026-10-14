@@ -7,6 +7,7 @@ using SWLOR.Game.Server.EngineTests.Framework;
 using SWLOR.Game.Server.Feature.AbilityDefinition;
 using SWLOR.Game.Server.Service.CombatRecorderService;
 using SWLOR.Game.Server.Service.CombatService;
+using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.Game.Server.Service.StatService;
 using SWLOR.NWN.API.NWNX;
@@ -644,6 +645,115 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             ctx.Assert(mistHeals.All(e => e.GetProperty("source_kind").GetString() == "ability" &&
                                           e.GetProperty("source_name").GetString() == "Kolto Mist I"),
                 "pulses of a mist cast before the recording must still be credited to Kolto Mist I");
+
+            AssertParticipantsDeclaredFirst(ctx, events);
+            File.Delete(writer.EventsPath);
+            File.Delete(writer.SummaryPath);
+        }
+
+        /// <summary>
+        /// Temporary HP grants are recorded at the amount the cap lets through and a grant the cap
+        /// refuses records nothing. Pools cut back when maximum HP drops record the trim against
+        /// their granter, not as absorbed damage. Damage that breaks a Resuscitation cast is
+        /// recorded as a damage interruption by the creature that dealt it.
+        /// </summary>
+        [EngineTest("Combat recorder logs capped shields, cap trims and damage interruptions", Category = "CombatRecorder", TimeoutSeconds = 60f)]
+        public static async Task RecordsTemporaryHitPointCapAndDamageInterruptions(EngineTestContext ctx)
+        {
+            ctx.Assert(!CombatRecorder.IsRecording, "no combat recording may be running before the test");
+
+            var arena = await QuietArena.CreateAsync(ctx);
+            var shielded = arena.Spawn(CreatureResref, 0f, 0f);
+            var granter = arena.Spawn(CreatureResref, -6f, 0f);
+            var medic = arena.Spawn(CreatureResref, 6f, 0f);
+            var body = arena.Spawn(CreatureResref, 7f, 0f);
+            var attacker = arena.Spawn(CreatureResref, 10f, 180f);
+            await ctx.DelaySecondsAsync(1f);
+
+            Prepare(ctx, shielded, "Recorder Capped", 1000);
+            Prepare(ctx, granter, "Recorder Granter", 1000);
+            Prepare(ctx, attacker, "Recorder Interrupter", 1000);
+            SetName(medic, "Recorder Reviver");
+            ctx.SuppressNPCNaturalRegen(medic);
+            SetPlotFlag(medic, false);
+            ctx.SetNPCResources(medic, 9999, 9999);
+            Stat.SetNPCMaxHitPoints(medic, 1000, true);
+            ctx.SetNPCPerkLevel(medic, PerkType.Resuscitation, 1);
+            CreaturePlugin.AddFeat(medic, FeatType.Resuscitation1);
+            SetName(body, "Recorder Body");
+            SetPlotFlag(body, false);
+            ApplyEffectToObject(DurationType.Instant, EffectDeath(), body);
+            await ctx.WaitUntilAsync(() => GetIsDead(body), 5f, "the body to die");
+            await ctx.WaitFrameAsync();
+            ReviveRulesEngineTests.DestroyCorpsePlaceable(body);
+
+            CombatRecordWriter writer;
+            try
+            {
+                ctx.Assert(CombatRecorder.Start(arena.Area, "engine test cap", out var startMessage), startMessage);
+                writer = CombatRecorder.LastWriter;
+
+                ctx.AssertEqual(300, TemporaryHitPointEffects.ApplyFlatFromSource(granter, shielded, "RECORDER_CAP_FIRST", 300, 60f),
+                    "the first pool fits under the cap");
+                ctx.AssertEqual(200, TemporaryHitPointEffects.ApplyFlatFromSource(granter, shielded, "RECORDER_CAP_SECOND", 400, 120f),
+                    "the second pool tops up to the cap");
+                ctx.AssertEqual(0, TemporaryHitPointEffects.ApplyFlatFromSource(granter, shielded, "RECORDER_CAP_REFUSED", 50, 60f),
+                    "a full cap grants nothing");
+                // The cap drops to 300, so the pool ending soonest loses 200.
+                Stat.SetNPCMaxHitPoints(shielded, 600);
+                ctx.AssertEqual(300, TemporaryHitPointEffects.GetRemaining(shielded), "pools shrink to the new cap");
+
+                var started = false;
+                var denial = string.Empty;
+                await ctx.ExecuteInCreatureContextAsync(medic, () =>
+                {
+                    started = UsePerkFeat.TryUseAbility(medic, body, FeatType.Resuscitation1, GetLocation(body));
+                    denial = Ability.GetLastActivationDenialReason();
+                });
+                ctx.Assert(started, $"the revive cast starts: {denial}");
+                await ctx.DelaySecondsAsync(1f);
+                AssignCommand(attacker, () => ApplyEffectToObject(DurationType.Instant, EffectDamage(1), medic));
+                await ctx.WaitUntilAsync(() => !Activity.IsBusy(medic), 3f, "damage to interrupt the revive cast");
+                await ctx.DelaySecondsAsync(1.5f);
+            }
+            finally
+            {
+                if (CombatRecorder.IsRecording)
+                    CombatRecorder.Stop("engine test", out _);
+                ReviveRulesEngineTests.ReleaseBody(body);
+            }
+
+            await ctx.WaitUntilAsync(() => writer.Completion.IsCompleted, 10f, "the recording writer to finish its files");
+            ctx.Assert(writer.Error == null, $"the recording writer failed: {writer.Error}");
+            var summary = writer.Completion.Result;
+            var events = File.ReadAllLines(writer.EventsPath).Select(ParseLine).ToList();
+
+            var shieldedId = ParticipantId(ctx, events, "Recorder Capped");
+            var granterId = ParticipantId(ctx, events, "Recorder Granter");
+            var medicId = ParticipantId(ctx, events, "Recorder Reviver");
+            var attackerId = ParticipantId(ctx, events, "Recorder Interrupter");
+
+            var grants = events.Where(e => Type(e) == "temp_hp_grant" && e.GetProperty("target").GetInt32() == shieldedId)
+                .ToDictionary(e => e.GetProperty("effect_key").GetString(), e => e.GetProperty("amount").GetInt32());
+            ctx.AssertEqual(300, grants.GetValueOrDefault("RECORDER_CAP_FIRST"), "the first grant's recorded amount");
+            ctx.AssertEqual(200, grants.GetValueOrDefault("RECORDER_CAP_SECOND"), "a capped grant records what it granted");
+            ctx.Assert(!grants.ContainsKey("RECORDER_CAP_REFUSED"), "a grant the cap refuses records nothing");
+
+            var trim = events.Single(e => Type(e) == "temp_hp_trim" && e.GetProperty("target").GetInt32() == shieldedId);
+            ctx.AssertEqual("RECORDER_CAP_FIRST", trim.GetProperty("effect_key").GetString(), "the pool ending soonest is trimmed");
+            ctx.AssertEqual(200, trim.GetProperty("trimmed").GetInt32(), "the trimmed amount");
+            ctx.AssertEqual(100, trim.GetProperty("remaining").GetInt32(), "what the trimmed pool keeps");
+            ctx.AssertEqual(granterId, trim.GetProperty("granted_by").GetInt32(), "the trimmed pool's granter");
+            ctx.Assert(!events.Any(e => Type(e) == "temp_hp_absorb" && e.GetProperty("target").GetInt32() == shieldedId),
+                "a trim is not absorbed damage");
+            ctx.AssertEqual(200L, summary.GetParticipant(shieldedId).TemporaryHitPointsTrimmed.Values.Sum(total => total.Amount),
+                "summary trims");
+
+            var interruption = events.Single(e => Type(e) == "ability_interrupted" && e.GetProperty("caster").GetInt32() == medicId);
+            ctx.AssertEqual("Resuscitation I", interruption.GetProperty("ability").GetString(), "the interrupted ability");
+            ctx.AssertEqual("damage", interruption.GetProperty("cause").GetString(), "the interruption cause");
+            ctx.AssertEqual(attackerId, interruption.GetProperty("interrupted_by").GetInt32(), "who interrupted the cast");
+            ctx.AssertEqual(1, summary.GetParticipant(medicId).AbilityInterruptions["Resuscitation I"]["damage"], "summary interruptions");
 
             AssertParticipantsDeclaredFirst(ctx, events);
             File.Delete(writer.EventsPath);

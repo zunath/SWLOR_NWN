@@ -67,6 +67,7 @@ namespace SWLOR.Game.Server.Service.CombatRecorderService
             WriteAmounts(writer, "temp_hp_received", participant.TemporaryHitPointsReceived);
             WriteAmounts(writer, "temp_hp_absorbed", participant.TemporaryHitPointsAbsorbed);
             WriteAmounts(writer, "temp_hp_granted_absorbed", participant.TemporaryHitPointsGrantedAbsorbed);
+            WriteAmounts(writer, "temp_hp_trimmed", participant.TemporaryHitPointsTrimmed);
             WriteAmounts(writer, "fp_spent", participant.FPSpent);
             WriteAmounts(writer, "fp_regained", participant.FPRegained);
             WriteAmounts(writer, "stm_spent", participant.StaminaSpent);

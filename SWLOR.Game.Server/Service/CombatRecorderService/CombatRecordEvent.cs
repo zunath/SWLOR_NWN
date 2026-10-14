@@ -264,6 +264,28 @@ namespace SWLOR.Game.Server.Service.CombatRecorderService
             };
         }
 
+        /// <summary>
+        /// A pool cut back because the owner's temporary HP no longer fits under the cap, such as
+        /// after maximum HP drops. <paramref name="remaining"/> is what the pool keeps (0 when removed).
+        /// </summary>
+        public static CombatRecordEvent TemporaryHitPointsTrimmed(
+            int ownerId, string effectKey, int trimmed, int remaining,
+            int grantedById, CombatRecordSourceKind grantedKind, string grantedName, int grantedCode = 0)
+        {
+            return new CombatRecordEvent
+            {
+                Type = CombatRecordEventType.TemporaryHitPointsTrimmed,
+                TargetId = ownerId,
+                Text = effectKey,
+                Value0 = trimmed,
+                Value1 = grantedById,
+                Value2 = remaining,
+                SourceKind = grantedKind,
+                SourceName = grantedName,
+                SourceCode = grantedCode
+            };
+        }
+
         public static CombatRecordEvent TemporaryHitPointsGranted(
             int sourceId, int targetId, CombatRecordSourceKind kind, string sourceName, int sourceCode,
             string effectKey, int amount, int durationMs)

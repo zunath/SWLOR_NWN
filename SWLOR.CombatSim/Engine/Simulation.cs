@@ -870,11 +870,12 @@ namespace SWLOR.CombatSim.Engine
                 case ReviveRule.BlockedInPvpLimitedInPve:
                     // The game's ReviveRules. Without positions, every living enemy in the fight counts as within 20m.
                     // A hostile player blocks; after a player kill the party must also go the window without taking
-                    // damage from anyone; a player revived mid-fight is then locked out.
+                    // damage from anyone, the killing blow included; a player revived mid-fight is then locked out.
                     if (Enemies(caster).Any(enemy => _scenario.IsPvp && !enemy.Spec.IsNpc))
                         return false;
                     if (target.KilledByPlayer &&
-                        Allies(caster).Any(a => _now - a.LastDamageTakenAt <= _rules.PvpReviveDamageWindowSeconds))
+                        (_now - target.LastDamageTakenAt < _rules.PvpReviveDamageWindowSeconds ||
+                         Allies(caster).Any(a => _now - a.LastDamageTakenAt <= _rules.PvpReviveDamageWindowSeconds)))
                         return false;
                     return _now >= target.ReviveLockedUntil;
                 default:

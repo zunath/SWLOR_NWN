@@ -134,6 +134,22 @@ namespace SWLOR.CombatSim.Tests.Engine
         }
 
         [Test]
+        public void Tuned_PvpRevivesWaitFifteenSecondsAfterThePlayerKill_EvenWithNobodyElseHit()
+        {
+            var (simulation, medic, ally, enemy) = SpawnAndKillAlly(RuleSets.Tuned(), isPvp: true);
+            var killedAt = simulation.Now;
+            simulation.ApplyDamage(medic, enemy, TestCombatants.EffectivelyUnlimited * 2.0);
+            enemy.IsDead.Should().BeTrue("the killer is gone at once, so only the kill itself can hold the revive");
+
+            SimulationClock.RunUntil(simulation, killedAt + PvpPartyDamageWindowSeconds - 1);
+            ally.IsDead.Should().BeTrue();
+            medic.Casting.Should().BeNull("the killing blow starts the damage window");
+
+            SimulationClock.RunUntil(simulation, () => !ally.IsDead, 60, "ally revived after the window passed");
+            ally.Stats.RevivesReceived.Should().Be(1);
+        }
+
+        [Test]
         public void Tuned_InPve_TheFirstReviveTakesTheFourSecondCast()
         {
             var (simulation, medic, ally, _) = SpawnAndKillAlly(RuleSets.Tuned(), isPvp: false);
@@ -249,12 +265,13 @@ namespace SWLOR.CombatSim.Tests.Engine
             var medic = TestCombatants.Medic("Medic", TestCombatants.Use("Resuscitation2", AbilityTarget.DeadAlly));
             var ally = new CombatantSpec { Name = "Ally", MaxHp = 1000 };
             var enemy = TestCombatants.Dummy("Enemy");
-            enemy.JoinAtSeconds = 2f;
+            // The player kill holds revives for the damage window, so the enemy joins just after it.
+            enemy.JoinAtSeconds = (float)PvpPartyDamageWindowSeconds + 2f;
             var simulation = TestScenarios.Spawn(TestScenarios.TwoTeams(true, new[] { medic, ally }, new[] { enemy }), RuleSets.Tuned(), _catalog);
             simulation.ApplyDamage(simulation.Get("Enemy"), simulation.Get("Ally"), TestCombatants.EffectivelyUnlimited);
             var caster = simulation.Get("Medic");
 
-            SimulationClock.RunUntil(simulation, () => caster.Casting != null, 2, "the revive cast to start before the enemy joins");
+            SimulationClock.RunUntil(simulation, () => caster.Casting != null, enemy.JoinAtSeconds, "the revive cast to start before the enemy joins");
             SimulationClock.RunUntil(simulation, simulation.Now + ResuscitationCastSeconds + 1);
 
             simulation.Get("Ally").IsDead.Should().BeTrue("the PvP gate is checked again when the cast lands");

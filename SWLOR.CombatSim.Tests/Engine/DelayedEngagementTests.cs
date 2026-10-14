@@ -124,9 +124,12 @@ namespace SWLOR.CombatSim.Tests.Engine
             simulation.ApplyDamage(simulation.Get("Enemy"), simulation.Get("Ally"), 5000);
             simulation.Get("Ally").IsDead.Should().BeTrue();
 
-            SimulationClock.RunUntil(simulation, () => !simulation.Get("Ally").IsDead, 30, "ally revived");
+            // The player kill itself holds revives for the party damage window; after that only enemies could.
+            SimulationClock.RunUntil(simulation, RuleSets.Tuned().PvpReviveDamageWindowSeconds + 1);
+            var blockedByTheKill = simulation.Get("Medic").Stats.BlockedRevives;
+            SimulationClock.RunUntil(simulation, () => !simulation.Get("Ally").IsDead, 40, "ally revived");
 
-            simulation.Get("Medic").Stats.BlockedRevives.Should().Be(0);
+            simulation.Get("Medic").Stats.BlockedRevives.Should().Be(blockedByTheKill, "an enemy that has not joined blocks nothing");
         }
 
         [Test]

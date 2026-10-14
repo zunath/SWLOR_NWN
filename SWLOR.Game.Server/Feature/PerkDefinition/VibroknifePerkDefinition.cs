@@ -33,7 +33,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
             CripplingSlice();
             VenaticRecovery();
             Backstab();
-            ShadowflowStance();
+            Shadowflow();
             CheapShot();
             Hobbled();
             EscapeArtist();
@@ -378,10 +378,10 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .RequirementSkill(SkillType.Vibroknife, 32);
         }
 
-        private void ShadowflowStance()
+        private void Shadowflow()
         {
             _builder.Create(PerkCategoryType.VibroknifeSaboteur, PerkType.ShadowflowStance)
-                .Name("Shadowflow Stance")
+                .Name("Shadowflow")
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.ShadowflowStance1)

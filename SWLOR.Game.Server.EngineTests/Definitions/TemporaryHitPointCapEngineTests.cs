@@ -42,7 +42,8 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             ctx.AssertEqual(500, TemporaryHitPointEffects.GetRemaining(target), "pools fill the cap");
 
             Stat.SetNPCMaxHitPoints(target, 600);
-            ctx.AssertEqual(300, TemporaryHitPointEffects.GetRemaining(target), "pools shrink to the new cap");
+            // The cap is enforced by the limit check that runs once the change settles.
+            await ctx.WaitUntilAsync(() => TemporaryHitPointEffects.GetRemaining(target) == 300, 2f, "pools to shrink to the new cap");
             ctx.Assert(!TemporaryHitPointEffects.IsActivePoolFromSource(target, "TRIM_SHORT", target), "the pool ending soonest is trimmed first");
             ctx.Assert(TemporaryHitPointEffects.IsActivePoolFromSource(target, "TRIM_LONG", target), "the longer pool keeps its source");
 
@@ -62,8 +63,10 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
 
             StatusEffect.ApplyStatusEffect(target, target, typeof(DiseaseVitalityPenaltyStatusEffect), 30f);
             ctx.Assert(GetMaxHitPoints(target) < 1000, $"the penalty lowers max HP (now {GetMaxHitPoints(target)})");
-            ctx.AssertEqual(TemporaryHitPointEffects.GetMaximumTotal(target), TemporaryHitPointEffects.GetRemaining(target),
-                "the pool is trimmed to the lowered cap as the penalty lands");
+            await ctx.WaitUntilAsync(
+                () => TemporaryHitPointEffects.GetRemaining(target) == TemporaryHitPointEffects.GetMaximumTotal(target),
+                2f,
+                "the pool to be trimmed to the lowered cap once the penalty lands");
         }
 
         [EngineTest("A status effect tracking a trimmed pool is told about the trim", Category = "StatusEffect", TimeoutSeconds = 20f)]
@@ -74,12 +77,14 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             Stat.SetNPCMaxHitPoints(target, 1000, true);
             TemporaryHitPointEffects.ApplyFlat(target, "TRIM_OTHER", 200, 60f);
             TemporaryHitPointEffects.ApplyFlat(target, TemporaryHitPointEffectKey.GuardiansResolve, 300, 20f);
-            StatusEffect.ApplyStatusEffect(target, target, new GuardiansResolveStatusEffect(300), 20f);
+            StatusEffect.ApplyStatusEffect(target, target, new GuardiansResolveStatusEffect(300,
+                TemporaryHitPointEffects.GetGrantGeneration(target, TemporaryHitPointEffectKey.GuardiansResolve)), 20f);
             await ctx.WaitUntilAsync(() => StatusEffect.HasStatusEffect<GuardiansResolveStatusEffect>(target),
                 5f, "Guardian's Resolve to apply");
 
             Stat.SetNPCMaxHitPoints(target, 400);
-            ctx.AssertEqual(200, TemporaryHitPointEffects.GetRemaining(target), "the Guardian's Resolve pool ends soonest and is trimmed away");
+            await ctx.WaitUntilAsync(() => TemporaryHitPointEffects.GetRemaining(target) == 200, 2f,
+                "the Guardian's Resolve pool, which ends soonest, to be trimmed away");
             ctx.Assert(!StatusEffect.HasStatusEffect<GuardiansResolveStatusEffect>(target),
                 "Guardian's Resolve ends with its pool instead of healing for shield it no longer has");
         }

@@ -237,7 +237,8 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 ctx.Assert(CombatRecorder.Start(arena.Area, "engine test deferred", out var startMessage), startMessage);
                 writer = CombatRecorder.LastWriter;
 
-                ctx.Assert(StatusEffect.ApplyStatusEffect(guarded, guarded, new GuardiansResolveStatusEffect(1000), 60f),
+                ctx.Assert(StatusEffect.ApplyStatusEffect(guarded, guarded, new GuardiansResolveStatusEffect(1000,
+                        TemporaryHitPointEffects.GetGrantGeneration(guarded, TemporaryHitPointEffectKey.GuardiansResolve)), 60f),
                     "Guardian's Resolve applies to the guarded creature");
                 ctx.Assert(StatusEffect.ApplyStatusEffect(attacker, burned, new BurnStatusEffect(1), 30f),
                     "Burn applies to the burned creature");
@@ -742,7 +743,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                     "a full cap grants nothing");
                 // The cap drops to 300, so the pool ending soonest loses 200.
                 Stat.SetNPCMaxHitPoints(shielded, 600);
-                ctx.AssertEqual(300, TemporaryHitPointEffects.GetRemaining(shielded), "pools shrink to the new cap");
+                await ctx.WaitUntilAsync(() => TemporaryHitPointEffects.GetRemaining(shielded) == 300, 2f, "pools to shrink to the new cap");
 
                 var started = false;
                 var denial = string.Empty;

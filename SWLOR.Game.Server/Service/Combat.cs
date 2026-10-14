@@ -7954,11 +7954,19 @@ namespace SWLOR.Game.Server.Service
             if (shieldPercent <= 0 || duration <= 0 || !TryUseStatTrigger(activator, StatType.HeavyVibrobladeDefenseGuardiansResolveShieldPercent, cooldown))
                 return;
 
-            var shieldAmount = GameMath.PercentOf(GetMaxHitPoints(activator), shieldPercent);
-            using var recorderAttribution = CombatRecorder.BeginStatTriggerAttribution(activator, StatType.HeavyVibrobladeDefenseGuardiansResolveShieldPercent);
-            var grantedShield = TemporaryHitPointEffects.ApplyFlat(activator, TemporaryHitPointEffectKey.GuardiansResolve, shieldAmount, duration);
-            if (grantedShield > 0)
-                StatusEffect.ApplyStatusEffect(activator, activator, new GuardiansResolveStatusEffect(grantedShield), duration);
+            // The pool can be smaller than requested under the temporary HP cap or at the engine's HP limit.
+            using var recorderAttribution = CombatRecorder.BeginStatTriggerAttribution(
+                activator, StatType.HeavyVibrobladeDefenseGuardiansResolveShieldPercent);
+            var shieldAmount = TemporaryHitPointEffects.ApplyFlat(
+                activator,
+                TemporaryHitPointEffectKey.GuardiansResolve,
+                GameMath.PercentOf(GetMaxHitPoints(activator), shieldPercent),
+                duration);
+            if (shieldAmount <= 0)
+                return;
+
+            var poolGeneration = TemporaryHitPointEffects.GetGrantGeneration(activator, TemporaryHitPointEffectKey.GuardiansResolve);
+            StatusEffect.ApplyStatusEffect(activator, activator, new GuardiansResolveStatusEffect(shieldAmount, poolGeneration), duration);
         }
 
         private static void ApplyHeavyVibrobladeActivatedEffects(

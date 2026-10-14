@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Core;
+using SWLOR.Game.Server.Feature.AbilityDefinition;
 using SWLOR.Game.Server.Feature.GuiDefinition.RefreshEvent;
 using SWLOR.Game.Server.Feature.StatusEffectDefinition;
 using SWLOR.Game.Server.Service.AbilityService;
@@ -1055,13 +1056,23 @@ namespace SWLOR.Game.Server.Service
             var effect = BuildNativeStatusEffect(statusEffect);
 
             if (isPermanent || durationTicks < 0)
+            {
                 ApplyEffectToObject(DurationType.Permanent, effect, creature);
+            }
             else
-                ApplyEffectToObject(DurationType.Temporary, effect, creature, GetStatusEffectDurationSeconds(statusEffect, durationTicks));
+            {
+                var durationSeconds = GetStatusEffectDurationSeconds(statusEffect, durationTicks);
+                ApplyEffectToObject(DurationType.Temporary, effect, creature, durationSeconds);
+            }
 
-            // A Vitality penalty lowers maximum HP, which can leave temporary HP above its cap.
-            if (statusEffect.StatGroup.Abilities.Any(ability => ability.Key == AbilityType.Vitality && ability.Value < 0))
-                Feature.AbilityDefinition.TemporaryHitPointEffects.EnforceMaximumTotal(creature);
+            ScheduleTemporaryHitPointLimitCheckForVitality(creature, statusEffect);
+        }
+
+        // Native Vitality effects change maximum HP outside the HP budget setters.
+        private static void ScheduleTemporaryHitPointLimitCheckForVitality(uint creature, IStatusEffect statusEffect)
+        {
+            if (statusEffect.StatGroup.Abilities.TryGetValue(AbilityType.Vitality, out var vitality) && vitality != 0)
+                TemporaryHitPointEffects.ScheduleLimitCheck(creature);
         }
 
         private static Effect BuildNativeStatusEffect(IStatusEffect statusEffect)
@@ -1812,6 +1823,8 @@ namespace SWLOR.Game.Server.Service
             {
                 DelayCommand(0.1f, () => Stat.ApplyCreatureMovementRate(creature));
             }
+
+            ScheduleTemporaryHitPointLimitCheckForVitality(creature, statusEffect);
 
             if (!isReplacement)
             {

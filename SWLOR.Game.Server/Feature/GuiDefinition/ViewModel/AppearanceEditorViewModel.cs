@@ -1717,7 +1717,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             PartCategorySelected[SelectedPartCategoryIndex] = true;
         }
 
-        private (GuiBindingList<string>, GuiBindingList<bool>) GetPartLists(int[] partIds)
+        private (GuiBindingList<string>, GuiBindingList<bool>) GetPartLists(int[] partIds, Func<int, string> getPartName = null)
         {
             var partNames = new GuiBindingList<string>();
             var partSelected = new GuiBindingList<bool>();
@@ -1728,7 +1728,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             {
                 var partIndex = partId;
 
-                partNames.Add($"Part #{partId}");
+                partNames.Add(getPartName?.Invoke(partId) ?? $"Part #{partId}");
                 partSelected.Add(false);
                 partIdToIndex[partIndex] = index;
                 index++;
@@ -2025,7 +2025,19 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             if (selectedPartId <= -1)
                 return;
 
-            var (partNames, partSelected) = GetPartLists(partIds);
+            Func<int, string> getPartName = null;
+            if (SelectedItemTypeIndex is 3 or 4)
+            {
+                var part = SelectedPartCategoryIndex switch
+                {
+                    0 => AppearanceWeapon.Top,
+                    1 => AppearanceWeapon.Middle,
+                    2 => AppearanceWeapon.Bottom,
+                    _ => AppearanceWeapon.Invalid
+                };
+                getPartName = partId => _weaponAppearances[type].GetPartName(part, partId);
+            }
+            var (partNames, partSelected) = GetPartLists(partIds, getPartName);
 
             PartOptions = partNames;
             PartSelected = partSelected;

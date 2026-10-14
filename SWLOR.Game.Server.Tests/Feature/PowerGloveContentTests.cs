@@ -129,6 +129,12 @@ public class PowerGloveContentTests
         appearances.TopParts.Should().Equal(101);
         appearances.MiddleParts.Should().Equal(101, 102, 103, 104, 105, 106);
         appearances.BottomParts.Should().Equal(101);
+        appearances.MiddleParts.Select(partId => appearances.GetPartName(AppearanceWeapon.Middle, partId))
+            .Should().Equal("Power Glove", "Vibroknuckler", "Blastknuckle", "Shock Glove", "Power Fist", "Bare Fists (Invisible)");
+        appearances.GetPartName(AppearanceWeapon.Top, 101).Should().Be("Part #101");
+        appearances.GetPartName(AppearanceWeapon.Bottom, 101).Should().Be("Part #101");
+        new KatarAppearanceDefinition().GetPartName(AppearanceWeapon.Middle, 101).Should().Be("Part #101",
+            "weapon catalogs without authored names retain their existing numeric picker labels");
     }
 
     [Test]

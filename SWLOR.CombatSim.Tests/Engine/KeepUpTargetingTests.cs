@@ -2,6 +2,7 @@ using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.CombatSim.Data;
 using SWLOR.CombatSim.Effects;
+using SWLOR.CombatSim.Engine;
 using SWLOR.CombatSim.Rules;
 using SWLOR.CombatSim.Scenario;
 using SWLOR.CombatSim.Tests.Support;
@@ -46,6 +47,30 @@ namespace SWLOR.CombatSim.Tests.Engine
             simulation.Get("Lowest").HealsOverTime.Should().ContainKey(effect.Key);
             simulation.Get("Next").HealsOverTime.Should().ContainKey(effect.Key,
                 "the lowest ally is already covered, so the next lowest gets the second cast");
+        }
+
+        [TestCase(true, false, 1)]
+        [TestCase(false, true, 0)]
+        public void NamedAllyKeepUp_ForAPartyShield_ChecksTheNamedAlly(bool casterCovered, bool allyCovered, int expectedCasts)
+        {
+            var deflector = TestCombatants.Use("GroupDeflector1", AbilityTarget.NamedAlly, keepUp: true, targetName: "Ward");
+            var simulation = TestScenarios.Spawn(
+                TestScenarios.TwoTeams(
+                    false,
+                    new[] { TestCombatants.Medic("Medic", deflector), new CombatantSpec { Name = "Ward", MaxHp = 1000 } },
+                    new[] { TestCombatants.Dummy("Enemy", true) }),
+                RuleSets.Current(),
+                _catalog);
+            EffectCatalog.TryGet(FeatType.GroupDeflector1, out var effect).Should().BeTrue();
+            var medic = simulation.Get("Medic");
+            if (casterCovered)
+                medic.TemporaryHp.Add(new TemporaryHpPool { Key = effect.Key, Amount = 50, ExpiresAt = 1000 });
+            if (allyCovered)
+                simulation.Get("Ward").TemporaryHp.Add(new TemporaryHpPool { Key = effect.Key, Amount = 50, ExpiresAt = 1000 });
+
+            SimulationClock.RunUntil(simulation, 5);
+
+            medic.Stats.AbilitiesUsed.Should().Be(expectedCasts, "upkeep follows the named ally's shield, not the caster's");
         }
     }
 }

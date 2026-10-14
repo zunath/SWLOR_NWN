@@ -430,6 +430,7 @@ namespace SWLOR.CombatSim.Tests.Engine
         [TestCase("readiness")]
         [TestCase("healingReceived")]
         [TestCase("outgoingBelowMinusHundred")]
+        [TestCase("outgoingNegative")]
         [TestCase("receivedBelowMinusHundred")]
         [TestCase("damageReduction")]
         [TestCase("affinityHigh")]
@@ -453,6 +454,7 @@ namespace SWLOR.CombatSim.Tests.Engine
                 case "readiness": player.CombatReadinessPercent = float.NaN; break;
                 case "healingReceived": player.HealingReceivedPercent = float.NegativeInfinity; break;
                 case "outgoingBelowMinusHundred": player.OutgoingHealingPercent = -150f; break;
+                case "outgoingNegative": player.OutgoingHealingPercent = -50f; break;
                 case "receivedBelowMinusHundred": player.HealingReceivedPercent = -101f; break;
                 case "damageReduction": player.DamageReductionPercent = 150f; break;
                 case "affinityHigh": player.ForceAffinity = 11; break;

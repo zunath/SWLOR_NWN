@@ -103,7 +103,8 @@ namespace SWLOR.CombatSim.Scenario
             AtLeastZero(nameof(MaxStm), MaxStm);
             if (!float.IsFinite(CombatReadinessPercent) || CombatReadinessPercent < 0f || CombatReadinessPercent > MaximumCombatReadinessPercent)
                 problems.Add($"{nameof(CombatReadinessPercent)} must be from 0 to {MaximumCombatReadinessPercent}");
-            Percent(nameof(OutgoingHealingPercent), OutgoingHealingPercent, -100f);
+            // The game's outgoing healing stat only adds healing; a negative value would silently do nothing.
+            Percent(nameof(OutgoingHealingPercent), OutgoingHealingPercent, 0f);
             Percent(nameof(HealingReceivedPercent), HealingReceivedPercent, -100f);
             if (ForceAffinity < -10 || ForceAffinity > 10)
                 problems.Add($"{nameof(ForceAffinity)} must be from -10 to 10");

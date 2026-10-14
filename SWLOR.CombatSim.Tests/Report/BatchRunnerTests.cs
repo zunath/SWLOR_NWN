@@ -118,6 +118,28 @@ namespace SWLOR.CombatSim.Tests.Report
         }
 
         [Test]
+        public void Run_RejectsMoreDamageRollsThanABatchCanFinishPromptly()
+        {
+            var crowd = Horde("Crowd");
+            var foes = Horde("Foes");
+            var scenario = TestScenarios.TwoTeams(false, new[] { crowd }, new[] { foes }, durationSeconds: 1f);
+
+            var act = () => BatchRunner.Run(scenario, RuleSets.Current(), _catalog, 1, seed: 1);
+
+            act.Should().Throw<ArgumentException>().WithMessage("*damage rolls*");
+        }
+
+        // 200 strikers whose every swing hits all 200 enemies 1,000 times: about 1.6 billion rolls a second.
+        private static CombatantSpec Horde(string name)
+        {
+            var horde = TestCombatants.Striker(name, attacksPerSecond: 20f, damage: 1f);
+            horde.Count = 200;
+            horde.AutoAttack.Damage.Hits = 1000;
+            horde.AutoAttack.Damage.Area = true;
+            return horde;
+        }
+
+        [Test]
         public void Run_RejectsMoreCombatantRunsThanItCanSummarise()
         {
             var crowd = TestCombatants.Dummy("Crowd");

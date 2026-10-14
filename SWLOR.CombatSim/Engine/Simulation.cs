@@ -22,6 +22,7 @@ namespace SWLOR.CombatSim.Engine
         private const double ConvergenceCooldownSeconds = 45.0;
         private const double ConvergenceAccuracySeconds = 30.0;
         private const float ConvergenceHitChanceBonus = 0.05f;
+        private const double ResumeAttackDelaySeconds = 0.1;
         private const double ReviveHealDelaySeconds = 0.1;
         private const double QueuedWeaponAbilitySeconds = 30.0;
 
@@ -620,6 +621,10 @@ namespace SWLOR.CombatSim.Engine
             };
 
             caster.NextActionAt = _now + info.CastSeconds + info.ImpactDelaySeconds + caster.Spec.ReactionSeconds;
+            // The game stops the attack for an ability and resumes it 0.1s after the impact; a queued weapon ability
+            // rides the swings instead.
+            if (!info.IsQueuedWeapon)
+                caster.NextAttackAt = Math.Max(caster.NextAttackAt, _now + info.CastSeconds + info.ImpactDelaySeconds + ResumeAttackDelaySeconds);
             if (info.CastSeconds <= 0)
             {
                 Resolve(caster, cast);
@@ -853,7 +858,7 @@ namespace SWLOR.CombatSim.Engine
                 EffectKind.HealOverTime => !target.HealsOverTime.ContainsKey(effect.Key),
                 EffectKind.PartyHealOverTime => caster.GetZone(effect.Key) == null,
                 EffectKind.TemporaryHp => target.TemporaryHp.All(p => p.Key != effect.Key),
-                EffectKind.PartyTemporaryHp => caster.TemporaryHp.All(p => p.Key != effect.Key),
+                EffectKind.PartyTemporaryHp => target.TemporaryHp.All(p => p.Key != effect.Key),
                 _ => true
             };
         }
@@ -1062,7 +1067,7 @@ namespace SWLOR.CombatSim.Engine
 
             // GameMath.PercentOf rounds the restore up, to at least 1.
             double stamina = Math.Max(1, (int)Math.Ceiling(caster.Spec.MaxStm * (percent / 100f)));
-            // Wave 1 scales the restore by the share of the cost actually lost, at least 1.
+            // The tuned rules scale the restore by the share of the cost actually lost, at least 1.
             if (_rules.ScaleHitPointSpendRestoreToHitPointsLost && hitPointsLost < fullCost)
                 stamina = Math.Max(1, Math.Ceiling(stamina * hitPointsLost / fullCost));
             RestoreStamina(caster, (int)stamina, true);

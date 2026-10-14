@@ -19,6 +19,9 @@ namespace SWLOR.CombatSim.Report
         /// <summary>Runs times steps per run times combatants per run, which keeps a batch to minutes.</summary>
         public const long MaximumCombatantSteps = 500_000_000;
 
+        /// <summary>Hit rolls across the batch, counting every hit on every target an attack or ability reaches.</summary>
+        public const long MaximumDamageRolls = 500_000_000;
+
         public static BatchSummary Run(ScenarioSpec scenario, RuleSet rules, AbilityCatalog catalog, int runs, int seed)
         {
             var combatantsPerRun = scenario.Teams.Sum(team => team?.Members?.Sum(member => (long)Math.Max(1, member?.Count ?? 1)) ?? 0);
@@ -32,6 +35,12 @@ namespace SWLOR.CombatSim.Report
                 throw new ArgumentException(
                     $"{runs} runs of {stepsPerRun} steps with {combatantsPerRun} combatants is more than {MaximumCombatantSteps} " +
                     "combatant-steps; use fewer runs, a shorter duration or a longer time step.");
+
+            var rollsPerRun = BatchWork.DamageRollsPerRun(scenario, rules, catalog);
+            if (runs * rollsPerRun > MaximumDamageRolls)
+                throw new ArgumentException(
+                    $"{runs} runs of up to {rollsPerRun:0} damage rolls each is more than {MaximumDamageRolls} damage rolls; " +
+                    "use fewer runs, a shorter duration, or fewer attacks, hits or targets.");
 
             var summary = new BatchSummary { RuleSetName = rules.Name, Runs = runs };
             var perCombatant = new Dictionary<(int TeamIndex, string Name), CombatantAccumulator>();

@@ -1,7 +1,9 @@
 using System.Threading.Tasks;
 using SWLOR.Game.Server.EngineTests.Framework;
 using SWLOR.Game.Server.Feature.AbilityDefinition;
+using SWLOR.Game.Server.Feature.AbilityDefinition.Force;
 using SWLOR.Game.Server.Service.CombatService;
+using SWLOR.Game.Server.Service.StatService;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 
@@ -244,6 +246,31 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 3f, "the recast pool to land");
             ctx.Assert(TemporaryHitPointEffects.IsActivePoolFromSource(npc, TemporaryHitPointEffectKey.GuardianWard, caster),
                 "The landed pool must count as active for its source.");
+        }
+
+        [EngineTest("Guardian Ward's Reflective Barrier needs a granted pool", Category = LimitCategory, TimeoutSeconds = 30f)]
+        public static async Task ReflectiveBarrierNeedsGrantedPool(EngineTestContext ctx)
+        {
+            var arena = await QuietArena.CreateAsync(ctx);
+            var npc = await SpawnNPCAsync(ctx, arena, "nw_rat001", MaximumNPCHitPoints, immortal: false);
+            var caster = arena.Spawn("nw_rat001", 3f, 0f);
+            await ctx.WaitFrameAsync();
+            TemporaryStatModifier.Add(caster, StatType.LightGuardianTemporaryHPReflectiveBarrier, 1, 60f);
+
+            TemporaryHitPointEffects.ApplyFlat(npc, FirstKey, Headroom, 60f);
+            ctx.AssertEqual(0, TemporaryHitPointEffects.ApplyFlatFromSource(caster, npc, TemporaryHitPointEffectKey.GuardianWard, 4000, 30f),
+                "a Ward grant with no room left");
+            LightGuardianPowerSupport.ApplyTemporaryHPPowerRiders(caster, npc, 30f);
+            ctx.Assert(!StatusEffect.HasStatusEffect<ReflectiveBarrier1StatusEffect>(npc),
+                "Reflective Barrier must not apply when the Ward granted nothing.");
+
+            TemporaryHitPointEffects.Remove(npc, FirstKey);
+            await ctx.WaitFrameAsync();
+            ctx.AssertEqual(1000, TemporaryHitPointEffects.ApplyFlatFromSource(caster, npc, TemporaryHitPointEffectKey.GuardianWard, 1000, 30f),
+                "a Ward grant with room");
+            LightGuardianPowerSupport.ApplyTemporaryHPPowerRiders(caster, npc, 30f);
+            ctx.Assert(StatusEffect.HasStatusEffect<ReflectiveBarrier1StatusEffect>(npc),
+                "Reflective Barrier must apply with a granted Ward pool.");
         }
 
         [EngineTest("Guardian's Resolve stops healing for shield the HP limit trimmed away", Category = LimitCategory, TimeoutSeconds = 30f)]

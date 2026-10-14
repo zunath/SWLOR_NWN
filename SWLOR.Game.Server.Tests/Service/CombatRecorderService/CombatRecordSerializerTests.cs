@@ -160,6 +160,10 @@ public class CombatRecordSerializerTests
         crowdControl.GetProperty("interrupted_by_kind").GetString().Should().Be("ability");
         crowdControl.GetProperty("interrupted_by_name").GetString().Should().Be("Pounce I");
         moved.GetProperty("cause").GetString().Should().Be("moved");
+        Parse(CombatRecordEvent.AbilityInterrupted(
+                1, "Resuscitation I", (int)FeatType.Resuscitation1, 1, CombatRecordInterruptCause.Died,
+                0, CombatRecordSourceKind.Unattributed, null, 0))
+            .GetProperty("cause").GetString().Should().Be("died");
         moved.TryGetProperty("interrupted_by_kind", out _).Should().BeFalse();
     }
 

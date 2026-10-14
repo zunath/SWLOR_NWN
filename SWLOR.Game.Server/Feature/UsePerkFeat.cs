@@ -9,6 +9,7 @@ using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.ActivityService;
 using SWLOR.Game.Server.Service.AnimationService;
+using SWLOR.Game.Server.Service.CombatRecorderService;
 using SWLOR.Game.Server.Service.CompanionControlService;
 using SWLOR.Game.Server.Service.LogService;
 using SWLOR.Game.Server.Service.PerkService;
@@ -170,7 +171,8 @@ namespace SWLOR.Game.Server.Feature
             }
 
             if (CombatRecorder.IsRecording)
-                CombatRecorder.RecordAbilityInterrupted(activator, activation.Ability, moved);
+                CombatRecorder.RecordAbilityInterrupted(
+                    activator, activation.Ability, moved ? CombatRecordInterruptCause.Moved : CombatRecordInterruptCause.Other);
 
             Log.WriteStructured(
                 LogGroup.Server,
@@ -709,6 +711,8 @@ namespace SWLOR.Game.Server.Feature
                 var activatorIsAlive = GetCurrentHitPoints(activator) > 0;
                 if (!activatorIsAlive)
                 {
+                    if (CombatRecorder.IsRecording)
+                        CombatRecorder.RecordAbilityInterrupted(activator, ability, CombatRecordInterruptCause.Died);
                     if (AbilityAnimationBinding.ActivationClip(ability, GetIsPC(activator)) != null)
                         NamedAnimation.Stop(activator);
                     ClearAbilityActivationIdleSnapshots(activator);
@@ -729,6 +733,8 @@ namespace SWLOR.Game.Server.Feature
                     CompanionControl.IsRegisteredCompanion(activator) &&
                     !CompanionControl.IsHostileAbilityTargetAuthorized(activator, ability, target))
                 {
+                    if (CombatRecorder.IsRecording)
+                        CombatRecorder.RecordAbilityInterrupted(activator, ability, CombatRecordInterruptCause.Other);
                     ClearAbilityActivationIdleSnapshots(activator);
                     CancelActivation(true);
                     return;

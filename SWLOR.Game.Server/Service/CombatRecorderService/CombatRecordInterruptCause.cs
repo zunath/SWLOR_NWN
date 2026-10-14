@@ -9,6 +9,9 @@ namespace SWLOR.Game.Server.Service.CombatRecorderService
         Moved = 1,
 
         /// <summary>Another creature's ability or effect stopped the cast.</summary>
-        CrowdControl = 2
+        CrowdControl = 2,
+
+        /// <summary>The caster died before the cast completed.</summary>
+        Died = 3
     }
 }

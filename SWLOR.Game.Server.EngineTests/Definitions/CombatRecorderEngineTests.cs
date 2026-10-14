@@ -36,9 +36,11 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             var target = arena.Spawn(CreatureResref, 0f, 0f);
             var attacker = arena.Spawn(CreatureResref, 3f, 180f);
             var healer = arena.Spawn(CreatureResref, -9f, 0f);
+            var doomed = arena.Spawn(CreatureResref, -12f, 90f);
             await ctx.DelaySecondsAsync(1f);
 
             SetName(target, "Recorder Target");
+            SetName(doomed, "Recorder Doomed");
             SetName(attacker, "Recorder Attacker");
             SetName(healer, "Recorder Healer");
             foreach (var creature in new[] { target, attacker, healer })
@@ -49,6 +51,10 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             }
             CreaturePlugin.AddFeat(attacker, FeatType.ForceLightning1);
             CreaturePlugin.AddFeat(healer, FeatType.Benevolence1);
+            ctx.SuppressNPCNaturalRegen(doomed);
+            SetPlotFlag(doomed, false);
+            ctx.SetNPCResources(doomed, ResourcePool, ResourcePool);
+            CreaturePlugin.AddFeat(doomed, FeatType.Benevolence1);
             Stat.SetNPCMaxHitPoints(target, 1000, true);
             ObjectPlugin.SetCurrentHitPoints(target, 500);
             ApplyEffectToObject(DurationType.Temporary, EffectCutsceneParalyze(), target, 120f);
@@ -97,6 +103,12 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 });
                 ctx.Assert(interrupted, "the attacker's Benevolence cast is interrupted");
 
+                // A caster killed mid-cast never completes it.
+                await UseAbilityAsync(ctx, doomed, doomed, FeatType.Benevolence1);
+                AssignCommand(healer, () => ApplyEffectToObject(DurationType.Instant, EffectDamage(9999), doomed));
+                await ctx.WaitUntilAsync(() => GetIsDead(doomed) || !GetIsObjectValid(doomed), 5f, "the doomed caster to die");
+                await ctx.DelaySecondsAsync(1.5f);
+
                 // At least one snapshot cycle while everyone is registered.
                 await ctx.DelaySecondsAsync(1.5f);
             }
@@ -134,6 +146,12 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             ctx.AssertEqual("Benevolence I", interruption.GetProperty("interrupted_by_name").GetString(), "what interrupted the cast");
             ctx.AssertEqual(1, summary.GetParticipant(attackerId).AbilityDenials["Force Lightning I"].Values.Sum(), "summary refusals");
             ctx.AssertEqual(1, summary.GetParticipant(attackerId).AbilityInterruptions["Benevolence I"]["crowd_control"], "summary interruptions");
+            var doomedId = ParticipantId(ctx, events, "Recorder Doomed");
+            ctx.Assert(events.Any(e => Type(e) == "ability_interrupted" &&
+                                       e.GetProperty("caster").GetInt32() == doomedId &&
+                                       e.GetProperty("ability").GetString() == "Benevolence I" &&
+                                       e.GetProperty("cause").GetString() == "died"),
+                "a cast stopped by its caster's death must be recorded as interrupted");
 
             ctx.Assert(events.Any(e => Type(e) == "status_apply" && e.GetProperty("target").GetInt32() == targetId &&
                                        e.GetProperty("effect").GetString() == "Shock" &&

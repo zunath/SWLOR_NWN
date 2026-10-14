@@ -631,17 +631,16 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>
-        /// Records a cast or channel stopped before it completed. Unless the caster moved, the
-        /// innermost scope of another creature (its ability or effect) is what stopped it.
+        /// Records a cast or channel stopped before it completed. An <see cref="CombatRecordInterruptCause.Other"/>
+        /// stop made inside another creature's scope is that creature's crowd control.
         /// </summary>
-        public static void RecordAbilityInterrupted(uint activator, AbilityDetail ability, bool moved)
+        public static void RecordAbilityInterrupted(uint activator, AbilityDetail ability, CombatRecordInterruptCause cause)
         {
             if (ability == null || !IsInRecordedArea(activator))
                 return;
 
-            var cause = moved ? CombatRecordInterruptCause.Moved : CombatRecordInterruptCause.Other;
             var interrupter = default(CombatRecordAttribution);
-            if (!moved && _attributionDepth > 0 && _attributions[_attributionDepth - 1].Actor != activator)
+            if (cause == CombatRecordInterruptCause.Other && _attributionDepth > 0 && _attributions[_attributionDepth - 1].Actor != activator)
             {
                 interrupter = _attributions[_attributionDepth - 1];
                 cause = CombatRecordInterruptCause.CrowdControl;

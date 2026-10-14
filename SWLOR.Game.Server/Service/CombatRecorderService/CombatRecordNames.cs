@@ -46,6 +46,7 @@ namespace SWLOR.Game.Server.Service.CombatRecorderService
             {
                 CombatRecordInterruptCause.Moved => "moved",
                 CombatRecordInterruptCause.CrowdControl => "crowd_control",
+                CombatRecordInterruptCause.Died => "died",
                 _ => "other"
             };
         }

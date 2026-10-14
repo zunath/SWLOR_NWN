@@ -48,7 +48,7 @@ namespace SWLOR.Game.Server.Service
         public const int MaximumNPCDetection = 50;
         public const float MinimumMovementSpeedMultiplier = 0f;
         public const float MaximumMovementSpeedMultiplier = 1.5f;
-        public const string WalkToggleVariable = "WALK_TOGGLE";
+        private const string WalkToggleVariable = "WALK_TOGGLE";
         private const float DeflectionEvasionBoostDurationSeconds = 30f;
         private const float DeflectionEnmityBoostDurationSeconds = 30f;
         private const float DeflectionDefenseBoostDurationSeconds = 30f;
@@ -653,6 +653,17 @@ namespace SWLOR.Game.Server.Service
                 entity.Stamina = 0;
         }
 
+        public static bool IsWalkModeEnabled(uint creature) => GetLocalInt(creature, WalkToggleVariable) == 1;
+
+        public static bool ToggleWalkMode(uint player)
+        {
+            var isWalking = !IsWalkModeEnabled(player);
+            PlayerPlugin.SetAlwaysWalk(player, isWalking);
+            SetLocalInt(player, WalkToggleVariable, isWalking ? 1 : 0);
+            ApplyCreatureMovementRate(player);
+            return isWalking;
+        }
+
         public static void ApplyCreatureMovementRate(uint creature)
         {
             if (!GetIsObjectValid(creature) || GetObjectType(creature) != ObjectType.Creature)
@@ -695,7 +706,7 @@ namespace SWLOR.Game.Server.Service
                 }
             }
 
-            var maximumMovementRate = GetLocalInt(creature, WalkToggleVariable) == 1
+            var maximumMovementRate = IsWalkModeEnabled(creature)
                 ? 1.0f
                 : MaximumMovementSpeedMultiplier;
             return Math.Clamp(movementRate, MinimumMovementSpeedMultiplier, maximumMovementRate);

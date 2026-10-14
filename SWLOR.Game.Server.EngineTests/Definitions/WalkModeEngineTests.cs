@@ -28,14 +28,14 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 for (var cycle = 0; cycle < 2; cycle++)
                 {
                     await ToggleAsync();
-                    ctx.AssertEqual(1, GetLocalInt(player, Stat.WalkToggleVariable), "walk enabled");
+                    ctx.Assert(Stat.IsWalkModeEnabled(player), "walk enabled");
                     AssertSpeed(1.0f, "walk uses normal walking speed");
                     ctx.Assert(GetActionMode(player, ActionMode.Detect), "walk does not disable detect mode");
 
                     Stat.ApplyCreatureMovementRate(player);
                     AssertSpeed(1.0f, "stat refresh preserves normal walking speed");
                     await ToggleAsync();
-                    ctx.AssertEqual(0, GetLocalInt(player, Stat.WalkToggleVariable), "walk disabled");
+                    ctx.Assert(!Stat.IsWalkModeEnabled(player), "walk disabled");
                     AssertSpeed(1.25f, "disabling walk immediately restores the movement bonus");
                 }
 
@@ -66,8 +66,8 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             }
             finally
             {
-                PlayerPlugin.SetAlwaysWalk(player, false);
-                DeleteLocalInt(player, Stat.WalkToggleVariable);
+                if (Stat.IsWalkModeEnabled(player))
+                    Stat.ToggleWalkMode(player);
                 SetActionMode(player, ActionMode.Detect, false);
                 TemporaryStatModifier.Clear(player);
                 Stat.ApplyCreatureMovementRate(player);

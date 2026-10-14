@@ -476,18 +476,9 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                 .Permissions(AuthorizationLevel.All)
                 .Action((user, _, _, _) =>
                 {
-                    var wasWalking = GetLocalInt(user, Stat.WalkToggleVariable) == 1;
-                    PlayerPlugin.SetAlwaysWalk(user, !wasWalking);
-                    SetLocalInt(user, Stat.WalkToggleVariable, wasWalking ? 0 : 1);
-                    Stat.ApplyCreatureMovementRate(user);
-
-                    if (wasWalking)
-                    {
-                        SendMessageToPC(user, $"Walk mode {ColorToken.Red("disabled")}.");
-                    } else
-                    {
-                        SendMessageToPC(user, $"Walk mode {ColorToken.Green("enabled")}.");
-                    }
+                    var isWalking = Stat.ToggleWalkMode(user);
+                    var status = isWalking ? ColorToken.Green("enabled") : ColorToken.Red("disabled");
+                    SendMessageToPC(user, $"Walk mode {status}.");
                 });
         }
 

@@ -93,7 +93,7 @@
             },
             {
               "feat": "Flash1",
-              "target": "Enemy",
+              "target": "Self",
               "minIntervalSeconds": 130.0,
               "damage": {
                 "min": 0,
@@ -113,7 +113,7 @@
             },
             {
               "feat": "Epicenter1",
-              "target": "Enemy",
+              "target": "Self",
               "minIntervalSeconds": 85.5,
               "damage": {
                 "min": 25.67,
@@ -136,7 +136,7 @@
             },
             {
               "feat": "PurifyingWave1",
-              "target": "Enemy",
+              "target": "Self",
               "minIntervalSeconds": 78.9,
               "damage": {
                 "min": 14.5,
@@ -378,7 +378,7 @@
             },
             {
               "feat": "PointBlankBurst2",
-              "target": "Enemy",
+              "target": "Self",
               "minIntervalSeconds": 129.8,
               "damage": {
                 "min": 29,
@@ -593,7 +593,7 @@
             },
             {
               "feat": "SweepingGuard1",
-              "target": "Enemy",
+              "target": "Self",
               "minIntervalSeconds": 43.5,
               "damage": {
                 "min": 22.31,
@@ -636,7 +636,7 @@
             },
             {
               "feat": "Flash1",
-              "target": "Enemy",
+              "target": "Self",
               "minIntervalSeconds": 42.8,
               "damage": {
                 "min": 0,
@@ -667,7 +667,7 @@
             },
             {
               "feat": "CoveringStrike3",
-              "target": "Enemy",
+              "target": "Self",
               "minIntervalSeconds": 28.5,
               "damage": {
                 "min": 42.39,
@@ -689,7 +689,7 @@
             },
             {
               "feat": "SavageCleave3",
-              "target": "Enemy",
+              "target": "Self",
               "minIntervalSeconds": 22.8,
               "damage": {
                 "min": 35.7,
@@ -786,7 +786,7 @@
             },
             {
               "feat": "SunderingSweep3",
-              "target": "Enemy",
+              "target": "Self",
               "minIntervalSeconds": 210.7,
               "damage": {
                 "min": 44.62,
@@ -998,7 +998,7 @@
             },
             {
               "feat": "PurifyingWave1",
-              "target": "Enemy",
+              "target": "Self",
               "minIntervalSeconds": 73.0,
               "damage": {
                 "min": 45.74,
@@ -1209,7 +1209,7 @@
             },
             {
               "feat": "Flash1",
-              "target": "Enemy",
+              "target": "Self",
               "minIntervalSeconds": 156.4,
               "damage": {
                 "min": 0,
@@ -1218,7 +1218,7 @@
             },
             {
               "feat": "SunderingSweep1",
-              "target": "Enemy",
+              "target": "Self",
               "minIntervalSeconds": 87.1,
               "damage": {
                 "min": 15.62,
@@ -1426,7 +1426,7 @@
             },
             {
               "feat": "SunderingSweep3",
-              "target": "Enemy",
+              "target": "Self",
               "minIntervalSeconds": 130.2,
               "damage": {
                 "min": 21.19,
@@ -1673,7 +1673,7 @@
             },
             {
               "feat": "SunderingSweep3",
-              "target": "Enemy",
+              "target": "Self",
               "minIntervalSeconds": 73.0,
               "damage": {
                 "min": 10.04,
@@ -1738,7 +1738,7 @@
             },
             {
               "feat": "NightmareField1",
-              "target": "Enemy",
+              "target": "Self",
               "minIntervalSeconds": 47.9,
               "damage": {
                 "min": 1.13,
@@ -2005,7 +2005,7 @@
             },
             {
               "feat": "SunderingSweep3",
-              "target": "Enemy",
+              "target": "Self",
               "minIntervalSeconds": 92.1,
               "damage": {
                 "min": 28.81,
@@ -2069,7 +2069,7 @@
             },
             {
               "feat": "NightmareField1",
-              "target": "Enemy",
+              "target": "Self",
               "minIntervalSeconds": 77.9,
               "damage": {
                 "min": 7.47,
@@ -2379,7 +2379,7 @@
             },
             {
               "feat": "PurifyingWave1",
-              "target": "Enemy",
+              "target": "Self",
               "minIntervalSeconds": 129.8,
               "damage": {
                 "min": 21.34,
@@ -2721,7 +2721,7 @@
             },
             {
               "feat": "SonicBurst3",
-              "target": "Enemy",
+              "target": "Self",
               "minIntervalSeconds": 17.1,
               "damage": {
                 "min": 16,
@@ -2996,7 +2996,7 @@
             },
             {
               "feat": "SunderingSweep3",
-              "target": "Enemy",
+              "target": "Self",
               "minIntervalSeconds": 211.2,
               "damage": {
                 "min": 16,
@@ -3209,7 +3209,7 @@
             },
             {
               "feat": "CoveringStrike3",
-              "target": "Enemy",
+              "target": "Self",
               "minIntervalSeconds": 173.7,
               "damage": {
                 "min": 6.4,
@@ -3283,7 +3283,7 @@
             },
             {
               "feat": "PurifyingWave1",
-              "target": "Enemy",
+              "target": "Self",
               "minIntervalSeconds": 172.0,
               "damage": {
                 "min": 26.68,
@@ -3552,7 +3552,7 @@
             },
             {
               "feat": "SavageRoar",
-              "target": "Enemy",
+              "target": "Self",
               "minIntervalSeconds": 142.2,
               "damage": {
                 "min": 0,
@@ -3574,7 +3574,7 @@
             },
             {
               "feat": "TailSweep",
-              "target": "Enemy",
+              "target": "Self",
               "minIntervalSeconds": 135.9,
               "damage": {
                 "min": 7.47,

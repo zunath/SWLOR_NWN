@@ -249,10 +249,16 @@ namespace SWLOR.CombatSim.Engine
                 {
                     foreach (var name in damage.HitChanceVs.Keys)
                     {
-                        if (!_combatants.Any(c => c.TeamIndex != combatant.TeamIndex && c.Name == name))
+                        var matches = _combatants.Count(c => c.TeamIndex != combatant.TeamIndex && c.Name == name);
+                        if (matches == 0)
                             throw new InvalidDataException(
                                 $"'{combatant.Name}' {owner} has a HitChanceVs entry for '{name}', which is not an opposing combatant; " +
                                 "copies of a combatant with a Count are named '<name> 1', '<name> 2' and so on.");
+                        // Opposing teams may share a name, but an override must say which combatant it means.
+                        if (matches > 1)
+                            throw new InvalidDataException(
+                                $"'{combatant.Name}' {owner} has a HitChanceVs entry for '{name}', which names a combatant on more " +
+                                "than one opposing team; rename one of them.");
                     }
                 }
             }
@@ -282,8 +288,12 @@ namespace SWLOR.CombatSim.Engine
 
             if (string.IsNullOrWhiteSpace(team.FocusTarget))
                 throw new InvalidDataException($"Team '{team.Name}' uses the Focus TargetPolicy but names no FocusTarget.");
-            if (!_combatants.Any(c => c.TeamIndex != teamIndex && IsFocusTarget(c, team)))
+            var targetTeams = _combatants.Where(c => c.TeamIndex != teamIndex && IsFocusTarget(c, team)).Select(c => c.TeamIndex).Distinct().Count();
+            if (targetTeams == 0)
                 throw new InvalidDataException($"Team '{team.Name}' has a FocusTarget of '{team.FocusTarget}', which names no opposing combatant.");
+            if (targetTeams > 1)
+                throw new InvalidDataException(
+                    $"Team '{team.Name}' has a FocusTarget of '{team.FocusTarget}', which names combatants on more than one opposing team; rename one of them.");
         }
 
         public void Step(double step)
@@ -409,7 +419,13 @@ namespace SWLOR.CombatSim.Engine
                 throw new InvalidDataException(
                     $"'{use.Feat}' is a friendly zone or party effect, so its Target must be Self, LowestAlly or NamedAlly.");
 
-            // A hostile cast the game aims at a creature or spot needs an enemy; a self-centered one may be gated on the caster.
+            // A self-centered hostile cast (TARGETSELF in the game, as Purifying Wave and Sundering Sweep) is cast on the
+            // caster whatever it hits, so its conditions read the caster; a queued weapon ability rides the next swing instead.
+            if (info.IsHostile && (use.Damage != null || effect != null) && !info.IsAimed && !info.IsQueuedWeapon &&
+                use.Target != AbilityTarget.Self)
+                throw new InvalidDataException($"'{use.Feat}' is a self-centered hostile cast, so its Target must be Self.");
+
+            // A hostile cast the game aims at a creature or spot needs an enemy.
             if (info.IsHostile && effect == null && use.Damage != null &&
                 (use.Target is AbilityTarget.LowestAlly or AbilityTarget.NamedAlly || use.Target == AbilityTarget.Self && info.IsAimed))
                 throw new InvalidDataException(

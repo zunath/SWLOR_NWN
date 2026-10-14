@@ -38,7 +38,7 @@
           "abilities": [
             {
               "feat": "Epicenter1",
-              "target": "Enemy",
+              "target": "Self",
               "damage": {
                 "min": 21,
                 "max": 56,
@@ -187,7 +187,7 @@
             },
             {
               "feat": "CoveringStrike3",
-              "target": "Enemy",
+              "target": "Self",
               "damage": {
                 "min": 66,
                 "max": 174,
@@ -196,7 +196,7 @@
             },
             {
               "feat": "SweepingGuard1",
-              "target": "Enemy",
+              "target": "Self",
               "damage": {
                 "min": 24,
                 "max": 64,
@@ -205,7 +205,7 @@
             },
             {
               "feat": "SavageCleave3",
-              "target": "Enemy",
+              "target": "Self",
               "damage": {
                 "min": 46,
                 "max": 122,
@@ -313,7 +313,7 @@
           "abilities": [
             {
               "feat": "PurifyingWave1",
-              "target": "Enemy",
+              "target": "Self",
               "damage": {
                 "min": 50,
                 "max": 132,
@@ -590,7 +590,7 @@
           "abilities": [
             {
               "feat": "SunderingSweep3",
-              "target": "Enemy",
+              "target": "Self",
               "damage": {
                 "min": 37,
                 "max": 99,
@@ -749,7 +749,7 @@
           "abilities": [
             {
               "feat": "Epicenter1",
-              "target": "Enemy",
+              "target": "Self",
               "damage": {
                 "min": 28,
                 "max": 75,
@@ -768,7 +768,7 @@
             },
             {
               "feat": "SunderingSweep3",
-              "target": "Enemy",
+              "target": "Self",
               "damage": {
                 "min": 16,
                 "max": 42,

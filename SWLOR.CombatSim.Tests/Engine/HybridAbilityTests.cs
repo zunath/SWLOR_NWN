@@ -51,7 +51,7 @@ namespace SWLOR.CombatSim.Tests.Engine
         }
 
         [Test]
-        public void PurifyingWave_StillHealsAndHitsAnotherEnemy_WhenItsTargetDiesMidCast()
+        public void PurifyingWave_StillHealsAndHitsAnEnemyLeft_WhenAnEnemyDiesMidCast()
         {
             var simulation = SpawnWave(maxTargets: null, new[] { "Wounded" }, "First", "Second");
             var medic = simulation.Get("Medic");
@@ -59,9 +59,9 @@ namespace SWLOR.CombatSim.Tests.Engine
             wounded.Hp = AllyMaxHp / 2;
 
             SimulationClock.RunUntil(simulation, () => medic.Casting != null, 10, "Purifying Wave started");
-            var targeted = medic.Casting.Target;
-            var other = simulation.Get(targeted.Name == "First" ? "Second" : "First");
-            simulation.ApplyDamage(wounded, targeted, TestCombatants.EffectivelyUnlimited * 2.0);
+            var fallen = simulation.Get("First");
+            var other = simulation.Get("Second");
+            simulation.ApplyDamage(wounded, fallen, TestCombatants.EffectivelyUnlimited * 2.0);
             CastOnce(simulation);
 
             wounded.Hp.Should().Be(AllyMaxHp / 2 + ExpectedWaveHeal(), "the wave is centered on the caster, not the enemy");
@@ -224,7 +224,7 @@ namespace SWLOR.CombatSim.Tests.Engine
 
         private Simulation SpawnWave(int? maxTargets, string[] allies, params string[] enemies)
         {
-            var wave = TestCombatants.Use("PurifyingWave1", AbilityTarget.Enemy, maxTargets: maxTargets);
+            var wave = TestCombatants.Use("PurifyingWave1", AbilityTarget.Self, maxTargets: maxTargets);
             wave.Damage = new DamageSpec { Min = WaveDamage, Max = WaveDamage, HitChance = 1f };
 
             var members = new List<CombatantSpec> { TestCombatants.Medic("Medic", wave) };

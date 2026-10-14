@@ -77,6 +77,42 @@ namespace SWLOR.CombatSim.Tests.Engine
         }
 
         [Test]
+        public void Spawn_RejectsAHitChanceOverrideThatNamesCombatantsOnTwoOpposingTeams()
+        {
+            var striker = TestCombatants.Striker("Striker");
+            striker.AutoAttack.Damage.HitChanceVs = new Dictionary<string, float> { ["Tank"] = 0.5f };
+            var scenario = ThreeTeams(striker, TestCombatants.Dummy("Tank", true), TestCombatants.Dummy("Tank", true));
+
+            var act = () => new Simulation(scenario, RuleSets.Current(), _catalog, 1).Spawn();
+
+            act.Should().Throw<InvalidDataException>().WithMessage("*Striker*HitChanceVs*Tank*more than one opposing team*");
+        }
+
+        [Test]
+        public void Spawn_RejectsAFocusTargetThatNamesCombatantsOnTwoOpposingTeams()
+        {
+            var scenario = ThreeTeams(TestCombatants.Striker("Striker"), TestCombatants.Dummy("Tank", true), TestCombatants.Dummy("Tank", true));
+            scenario.Teams[0].TargetPolicy = TargetPolicy.Focus;
+            scenario.Teams[0].FocusTarget = "Tank";
+
+            var act = () => new Simulation(scenario, RuleSets.Current(), _catalog, 1).Spawn();
+
+            act.Should().Throw<InvalidDataException>().WithMessage("*FocusTarget*Tank*more than one opposing team*");
+        }
+
+        private static ScenarioSpec ThreeTeams(CombatantSpec first, CombatantSpec second, CombatantSpec third) =>
+            new()
+            {
+                Name = "three teams",
+                Teams = new List<TeamSpec>
+                {
+                    new() { Name = "One", Members = new List<CombatantSpec> { first } },
+                    new() { Name = "Two", Members = new List<CombatantSpec> { second } },
+                    new() { Name = "Three", Members = new List<CombatantSpec> { third } }
+                }
+            };
+
+        [Test]
         public void Spawn_AllowsTheSameNameOnOpposingTeams()
         {
             var scenario = TestScenarios.TwoTeams(false, new[] { TestCombatants.Dummy("Fighter") }, new[] { TestCombatants.Dummy("Fighter") });

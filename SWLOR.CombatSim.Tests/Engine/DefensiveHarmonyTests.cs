@@ -128,7 +128,7 @@ namespace SWLOR.CombatSim.Tests.Engine
         [Test]
         public void Tuned_PurifyingWaveCountsAsAnInstantHeal()
         {
-            var wave = TestCombatants.Use("PurifyingWave1", AbilityTarget.Enemy);
+            var wave = TestCombatants.Use("PurifyingWave1", AbilityTarget.Self);
             wave.Damage = new DamageSpec { Min = 1, Max = 1 };
             var tank = new CombatantSpec
             {

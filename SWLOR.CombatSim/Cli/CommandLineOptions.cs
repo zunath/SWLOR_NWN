@@ -45,6 +45,13 @@ namespace SWLOR.CombatSim.Cli
             return options;
         }
 
+        /// <summary>Whether two paths name the same file once resolved, ignoring case where the file system does.</summary>
+        public static bool AreSameFile(string first, string second) =>
+            string.Equals(
+                Path.GetFullPath(first),
+                Path.GetFullPath(second),
+                OperatingSystem.IsWindows() || OperatingSystem.IsMacOS() ? StringComparison.OrdinalIgnoreCase : StringComparison.Ordinal);
+
         /// <summary>A whole-number option from <see cref="Parse"/>'s result, or the default when it was not given.</summary>
         public static int GetInt(
             IReadOnlyDictionary<string, List<string>> options, string name, int defaultValue, int minimum, int maximum = int.MaxValue)

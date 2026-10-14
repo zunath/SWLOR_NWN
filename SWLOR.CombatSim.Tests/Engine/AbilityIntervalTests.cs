@@ -103,6 +103,27 @@ namespace SWLOR.CombatSim.Tests.Engine
         }
 
         [Test]
+        public void StarvedTime_NeverExceedsTheFight_WhenTheFightIsDecidedMidStep()
+        {
+            var lightning = TestCombatants.Use("ForceLightning3", AbilityTarget.Enemy);
+            lightning.Damage = new DamageSpec { Min = 1f, Max = 1f, HitChance = 1f };
+            var caster = TestCombatants.Medic("Caster", lightning);
+            caster.MaxFp = 1;
+            caster.ReactionSeconds = 10f;
+            caster.AutoAttack = new AutoAttackSpec { AttacksPerSecond = 1f, Damage = new DamageSpec { Min = 100f, Max = 100f, HitChance = 1f } };
+            var enemy = TestCombatants.Dummy("Enemy", true);
+            enemy.MaxHp = 1;
+            var scenario = TestScenarios.TwoTeams(false, new[] { caster }, new[] { enemy }, durationSeconds: 60f);
+            scenario.TimeStepSeconds = 10f;
+
+            var result = new Simulation(scenario, RuleSets.Current(), _catalog, 1).Run();
+
+            result.WinningTeam.Should().Be(0);
+            result.Combatants.Single(c => c.Name == "Caster").Stats.StarvedSeconds.Should().BeLessThanOrEqualTo(result.EndedAt,
+                "nothing is starved after the step that decides the fight");
+        }
+
+        [Test]
         public void MinIntervalSeconds_IsNotRaisedAsStarvation()
         {
             var (simulation, caster, _) = SpawnCaster(Rock(20f));

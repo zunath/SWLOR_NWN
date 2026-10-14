@@ -11,6 +11,14 @@ namespace SWLOR.CombatSim.Tests.Cli
         private static readonly string[] RunFlags = { "--detail" };
         private static readonly string[] RunRepeatable = { "--rules", "--rules-file" };
 
+        [TestCase("report.md", "report.md", true)]
+        [TestCase("report.md", "./sub/../report.md", true)]
+        [TestCase("report.md", "results.json", false)]
+        public void AreSameFile_ComparesResolvedPaths(string first, string second, bool same)
+        {
+            CommandLineOptions.AreSameFile(first, second).Should().Be(same);
+        }
+
         [TestCase("0")]
         [TestCase("100001")]
         [TestCase("2147483647")]

@@ -162,6 +162,33 @@ namespace SWLOR.CombatSim.Tests.Engine
         }
 
         [Test]
+        public void ASpreadCastWhosePrimaryFell_HitsOnlyTheOthersAtTheirShare()
+        {
+            var burst = TestCombatants.Use("ForceBurst1", AbilityTarget.Enemy, minIntervalSeconds: 600);
+            burst.Damage = new DamageSpec { Min = 100f, Max = 100f, HitChance = 1f, Targets = 3, ExtraTargetDamagePercent = 50f };
+            var simulation = TestScenarios.Spawn(
+                TestScenarios.TwoTeams(
+                    false,
+                    new[] { TestCombatants.Medic("Medic", burst) },
+                    new[] { TestCombatants.Dummy("One", true), TestCombatants.Dummy("Two", true), TestCombatants.Dummy("Three", true) }),
+                RuleSets.Current(),
+                _catalog);
+            var medic = simulation.Get("Medic");
+            SimulationClock.RunUntil(simulation, () => medic.Casting != null, 10, "the cast started");
+            var primary = medic.Casting.Target;
+            simulation.ApplyDamage(medic, primary, TestCombatants.EffectivelyUnlimited * 2.0);
+            primary.IsDead.Should().BeTrue();
+            var primaryDamage = primary.Stats.DamageTakenToHp;
+
+            SimulationClock.RunUntil(simulation, () => medic.Stats.AbilitiesUsed == 1, 10, "the cast landed");
+
+            primary.Stats.DamageTakenToHp.Should().Be(primaryDamage, "the fallen primary takes nothing more");
+            simulation.Combatants.Where(c => c.TeamIndex == primary.TeamIndex && c != primary)
+                .Select(c => c.Stats.DamageTakenToHp)
+                .Should().AllBeEquivalentTo(50.0, "no survivor is promoted to the full primary hit");
+        }
+
+        [Test]
         public void DamageFromASelfTargetedUse_LandsOnAnEnemy()
         {
             var burst = TestCombatants.Use("SpinningWhirl1", AbilityTarget.Self, minIntervalSeconds: 600);

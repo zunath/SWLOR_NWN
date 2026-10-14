@@ -168,6 +168,45 @@ namespace SWLOR.CombatSim.Tests.Engine
         }
 
         [Test]
+        public void Swings_AreNotMadeUpFromBeforeAnyEnemyArrived()
+        {
+            var striker = TestCombatants.Striker("Striker", attacksPerSecond: 20f, damage: 1f);
+            var enemy = TestCombatants.Dummy("Enemy", true);
+            enemy.JoinAtSeconds = 9.9f;
+            var scenario = TestScenarios.TwoTeams(false, new[] { striker }, new[] { enemy }, durationSeconds: 10f);
+            scenario.TimeStepSeconds = 10f;
+
+            var result = new Simulation(scenario, RuleSets.Current(), _catalog, 1).Run();
+
+            result.Combatants.Single(c => c.Name == "Enemy").Stats.DamageTakenToHp.Should().BeLessThanOrEqualTo(5,
+                "only the tenth of a second after the enemy arrived is caught up, about two swings");
+        }
+
+        [Test]
+        public void AFirstDecision_FallsAnywhereWithinTheReactionTime()
+        {
+            var firstCasts = new List<double>();
+            for (var seed = 1; seed <= 8; seed++)
+            {
+                var rock = TestCombatants.Use("ThrowRock3", AbilityTarget.Enemy, minIntervalSeconds: 600);
+                rock.Damage = new DamageSpec { Min = 1f, Max = 1f, HitChance = 1f };
+                var thrower = TestCombatants.Medic("Thrower", rock);
+                thrower.ReactionSeconds = 6f;
+                var simulation = TestScenarios.Spawn(
+                    TestScenarios.TwoTeams(false, new[] { thrower }, new[] { TestCombatants.Dummy("Enemy", true) }),
+                    RuleSets.Current(),
+                    _catalog,
+                    seed);
+                var caster = simulation.Get("Thrower");
+                SimulationClock.RunUntil(simulation, () => caster.Stats.AbilitiesUsed > 0 || caster.Casting != null, 10, "the first cast");
+                firstCasts.Add(simulation.Now);
+            }
+
+            firstCasts.Should().OnlyContain(at => at <= 6.2, "within one six-second reaction time");
+            firstCasts.Max().Should().BeGreaterThan(1.5, "the first decision is spread over the reaction time, not the first second");
+        }
+
+        [Test]
         public void ALateJoiner_DoesNotCatchUpSwingsFromBeforeItJoined()
         {
             var striker = TestCombatants.Striker("Striker", attacksPerSecond: 20f, damage: 1f);

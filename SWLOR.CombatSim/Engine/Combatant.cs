@@ -66,6 +66,9 @@ namespace SWLOR.CombatSim.Engine
         public double NextBlockedReviveCountAt { get; set; }
 
         public double LastDamageTakenAt { get; set; } = double.NegativeInfinity;
+
+        /// <summary>When it last became something to hit: when it joined, or its latest revive.</summary>
+        public double AvailableSince { get; set; }
         public double PvpCombatStartedAt { get; set; } = double.NegativeInfinity;
         public double LastPvpActivityAt { get; set; } = double.NegativeInfinity;
         public double ReviveLockedUntil { get; set; }

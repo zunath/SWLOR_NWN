@@ -65,6 +65,7 @@ namespace SWLOR.CombatSim.Engine
         private readonly Dictionary<AbilityUseSpec, (AbilityInfo Info, AbilityEffect Effect)> _resolvedUses = new();
         private readonly Dictionary<int, SharedTarget> _sharedTargets = new();
         private readonly List<PendingHeal> _pendingHeals = new();
+        private readonly List<(Combatant Combatant, double Seconds)> _starvationThisStep = new();
         private int _revives;
         private double _now;
 
@@ -95,7 +96,15 @@ namespace SWLOR.CombatSim.Engine
                 Step(step);
 
                 winner = GetLastTeamStanding();
-                if (winner != null || _now >= _scenario.DurationSeconds)
+                if (winner != null)
+                {
+                    // The fight ends at this step, so the starved interval charged after it never happened.
+                    foreach (var (combatant, seconds) in _starvationThisStep)
+                        combatant.Stats.StarvedSeconds -= seconds;
+                    break;
+                }
+
+                if (_now >= _scenario.DurationSeconds)
                     break;
 
                 // The last step lands on the duration itself, so events due before it are still processed.
@@ -196,7 +205,8 @@ namespace SWLOR.CombatSim.Engine
                             StmRegenCarry = _random.Next(HeartbeatsPerRegenCycle) / (double)HeartbeatsPerRegenCycle,
                             // The first swing and decision fall anywhere within their first interval after joining.
                             NextAttackAt = spec.JoinAtSeconds + _random.NextDouble() * AttackInterval(spec),
-                            NextActionAt = spec.JoinAtSeconds + _random.NextDouble()
+                            NextActionAt = spec.JoinAtSeconds + _random.NextDouble() * ReactionInterval(spec),
+                            AvailableSince = spec.JoinAtSeconds
                         };
                         _combatants.Add(combatant);
                     }
@@ -270,6 +280,7 @@ namespace SWLOR.CombatSim.Engine
 
         public void Step(double step)
         {
+            _starvationThisStep.Clear();
             foreach (var heal in _pendingHeals.Where(heal => _now >= heal.At).ToList())
             {
                 _pendingHeals.Remove(heal);
@@ -314,7 +325,9 @@ namespace SWLOR.CombatSim.Engine
                 if (combatant.IsStarved)
                 {
                     // The last step can reach past the fight's end; only the time inside it counts.
-                    combatant.Stats.StarvedSeconds += Math.Min(step, Math.Max(0, _scenario.DurationSeconds - _now));
+                    var starved = Math.Min(step, Math.Max(0, _scenario.DurationSeconds - _now));
+                    combatant.Stats.StarvedSeconds += starved;
+                    _starvationThisStep.Add((combatant, starved));
                     combatant.Stats.FirstStarvedAt ??= _now;
                 }
             }
@@ -642,14 +655,19 @@ namespace SWLOR.CombatSim.Engine
             var targetLost = false;
             if (isRevive ? !target.IsDead : target.IsDead)
             {
-                // Area damage (also when spread over several targets) and party heals or shields centered on the
-                // caster (Purifying Wave) need no living target: they still land, and their damage goes to enemies
-                // still in the fight.
-                var needsNoTarget = effect == null ? HitsSeveralEnemies(cast.Use.Damage) : IsPartyEffect(effect);
+                // Area damage and party heals or shields centered on the caster (Purifying Wave) need no living
+                // target: they still land, and their damage goes to enemies still in the fight. A cast spread over
+                // several targets (Force Lightning's arcs) still resolves at the fallen one, so only the others take
+                // their share.
+                var needsNoTarget = effect == null ? cast.Use.Damage?.Area == true : IsPartyEffect(effect);
                 if (isRevive)
                     return;
                 if (needsNoTarget)
                     target = EnsureAttackTarget(caster);
+                else if (effect == null && cast.Use.Damage is { Targets: > 1 })
+                {
+                    // The fallen primary stays the cast's target.
+                }
                 else if (effect == null && cast.Use.Damage != null)
                     // The game completes a hostile cast at a body: it is paid for and goes on recast, but hits nothing.
                     targetLost = true;
@@ -894,8 +912,9 @@ namespace SWLOR.CombatSim.Engine
         {
             target.IsDead = false;
             target.Hp = 1;
-            // Swings scheduled while dead are not made up.
+            // Swings scheduled while dead are not made up, and enemies can hit it again from now.
             target.NextAttackAt = Math.Max(target.NextAttackAt, _now);
+            target.AvailableSince = _now;
             target.Stats.RevivesReceived++;
             _revives++;
 
@@ -926,8 +945,17 @@ namespace SWLOR.CombatSim.Engine
             if (attack == null || attack.AttacksPerSecond <= 0 || attacker.Casting != null)
                 return;
 
-            // Attacks due during this step are all made; ones missed before it (not yet engaged) are not made up.
-            attacker.NextAttackAt = Math.Max(attacker.NextAttackAt, Math.Max(_now - step, attacker.Spec.JoinAtSeconds));
+            // Attacks due during this step are all made; ones missed before it (not yet engaged, or with nobody
+            // there to hit) are not made up.
+            var enemiesSince = Enemies(attacker).Select(enemy => enemy.AvailableSince).DefaultIfEmpty(double.PositiveInfinity).Min();
+            if (double.IsPositiveInfinity(enemiesSince))
+            {
+                attacker.NextAttackAt = Math.Max(attacker.NextAttackAt, _now);
+                return;
+            }
+
+            attacker.NextAttackAt = Math.Max(attacker.NextAttackAt,
+                Math.Max(Math.Max(_now - step, attacker.Spec.JoinAtSeconds), enemiesSince));
             while (_now >= attacker.NextAttackAt)
             {
                 attacker.NextAttackAt += 1.0 / attack.AttacksPerSecond;
@@ -958,6 +986,9 @@ namespace SWLOR.CombatSim.Engine
             }
         }
 
+        private static double ReactionInterval(CombatantSpec spec) =>
+            float.IsFinite(spec.ReactionSeconds) && spec.ReactionSeconds > 0 ? spec.ReactionSeconds : 1.0;
+
         private static double AttackInterval(CombatantSpec spec) =>
             spec.AutoAttack is { AttacksPerSecond: > 0 } attack ? 1.0 / attack.AttacksPerSecond : 2.0;
 
@@ -969,8 +1000,6 @@ namespace SWLOR.CombatSim.Engine
 
         private float ConvergenceHitBonus(Combatant caster, AbilityInfo ability) =>
             ability.SkillType == SkillType.Force && _now < caster.ConvergenceAccuracyUntil ? ConvergenceHitChanceBonus : 0f;
-
-        private static bool HitsSeveralEnemies(DamageSpec damage) => damage != null && (damage.Area || damage.Targets > 1);
 
         /// <returns>Whether a hit landed on the chosen target, or on anyone for an area.</returns>
         private bool ApplyDamageProfile(
@@ -992,6 +1021,8 @@ namespace SWLOR.CombatSim.Engine
             for (var index = 0; index < targets.Count; index++)
             {
                 var victim = targets[index];
+                if (victim.IsDead)
+                    continue;
                 // In the Targets form the first victim is the chosen one; the rest take the extra-target share.
                 var multiplier = !damage.Area && index > 0 ? damage.ExtraTargetDamagePercent / 100.0 : 1.0;
                 for (var hit = 0; hit < damage.Hits; hit++)

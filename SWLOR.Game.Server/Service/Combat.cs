@@ -11474,11 +11474,8 @@ namespace SWLOR.Game.Server.Service
             bool requireMatchingSkill = false,
             int? triggeringWeaponDamage = null)
         {
-            if (!IsWeaponSkillType(skillType) &&
-                !(usesQueuedNaturalWeapon && skillType == SkillType.BeastMastery))
-            {
+            if (!IncludesCombatImpactWeaponDamage(skillType, usesQueuedNaturalWeapon))
                 return 0;
-            }
 
             if (triggeringWeaponDamage.HasValue)
                 return triggeringWeaponDamage.Value;
@@ -11487,6 +11484,25 @@ namespace SWLOR.Game.Server.Service
             return GetIsObjectValid(weapon)
                 ? WeaponDamage.GetEffectiveDMG(activator, weapon)
                 : 0;
+        }
+
+        /// <summary>
+        /// Whether an ability impact adds weapon DMG. The weapon's damage type applies exactly when its DMG does.
+        /// </summary>
+        public static bool IncludesCombatImpactWeaponDamage(SkillType skillType, bool usesQueuedNaturalWeapon)
+        {
+            return IsWeaponSkillType(skillType) ||
+                   usesQueuedNaturalWeapon && skillType == SkillType.BeastMastery;
+        }
+
+        public static CombatDamageType GetCombatImpactWeaponDamageType(
+            uint activator,
+            SkillType skillType,
+            bool usesQueuedNaturalWeapon = false)
+        {
+            return IncludesCombatImpactWeaponDamage(skillType, usesQueuedNaturalWeapon)
+                ? WeaponDamage.GetDamageType(GetCombatImpactWeapon(activator, skillType, usesQueuedNaturalWeapon))
+                : CombatDamageType.Physical;
         }
 
         private static uint GetCombatImpactWeapon(

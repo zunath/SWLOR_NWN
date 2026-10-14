@@ -26,11 +26,15 @@
   },
   "DescIdentified": {
     "type": "cexolocstring",
-    "value": {}
+    "value": {
+      "0": "Purple petals lend this rose a richer, less conventional appearance. The stem has been prepared with the same care as a more ordinary bloom, leaving the giver's intentions to be worked out separately."
+    }
   },
   "Description": {
     "type": "cexolocstring",
-    "value": {}
+    "value": {
+      "0": "Purple petals lend this rose a richer, less conventional appearance. The stem has been prepared with the same care as a more ordinary bloom, leaving the giver's intentions to be worked out separately."
+    }
   },
   "Identified": {
     "type": "byte",

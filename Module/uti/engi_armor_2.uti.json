@@ -110,11 +110,15 @@
   },
   "DescIdentified": {
     "type": "cexolocstring",
-    "value": {}
+    "value": {
+      "0": "This work tunic has broad pockets and fastenings easy to manage with tired hands. Its modest finish suits the technician who would rather have another useful tool than another unnecessary ornament."
+    }
   },
   "Description": {
     "type": "cexolocstring",
-    "value": {}
+    "value": {
+      "0": "This work tunic has broad pockets and fastenings easy to manage with tired hands. Its modest finish suits the technician who would rather have another useful tool than another unnecessary ornament."
+    }
   },
   "Identified": {
     "type": "byte",

@@ -62,13 +62,13 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "Jek Talin gave you the Anchorhead Canyon Range Key. On Tatooine, enter the Anchorhead Canyon Range through the sealed door in the south cliff of the Rocky Pass, beside the trail to the Southern Pass. Defeat six Last Word adepts and claim the Last Word Canyon Range Tally.")
+                    "Jek Talin gave you the Anchorhead Canyon Range Key. On Tatooine, enter the Anchorhead Canyon Range through the sealed door in the Rocky Pass, a short walk south of where the trail from Anchorhead's Southern Entrance comes in. Defeat six Last Word adepts and claim the Last Word Canyon Range Tally.")
                 .AddKillObjective(NPCGroupType.Tatooine_LastWord_Adept, 6)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneLastWordCanyonRangeTally)
 
                 .AddState()
                 .SetStateJournalText(
-                    "You claimed the Last Word Canyon Range Tally. Deliver it to Jek Talin at Mos Esper - Smesk's Palace on Tatooine.")
+                    "You claimed the Last Word Canyon Range Tally. Deliver it to Jek Talin, by the west trail at Anchorhead - Southern Entrance on Tatooine.")
                 .AddXPReward(15000)
                 .AddGoldReward(7500);
         }
@@ -89,7 +89,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "You recovered the Last Word Sightline Calibrator. Return it to Jek Talin at Mos Esper - Smesk's Palace on Tatooine.")
+                    "You recovered the Last Word Sightline Calibrator. Return it to Jek Talin, by the west trail at Anchorhead - Southern Entrance on Tatooine.")
                 .AddXPReward(17500)
                 .AddGoldReward(9000);
         }
@@ -110,7 +110,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "You took the Last Word Shattered Range Crest from the warden. Bring it to Jek Talin at Mos Esper - Smesk's Palace on Tatooine.")
+                    "You took the Last Word Shattered Range Crest from the warden. Bring it to Jek Talin, by the west trail at Anchorhead - Southern Entrance on Tatooine.")
                 .AddXPReward(20000)
                 .AddGoldReward(10500);
         }
@@ -131,7 +131,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "You secured the Last Word Marshal's Challenge Chit. Return it to Jek Talin at Mos Esper - Smesk's Palace on Tatooine.")
+                    "You secured the Last Word Marshal's Challenge Chit. Return it to Jek Talin, by the west trail at Anchorhead - Southern Entrance on Tatooine.")
                 .AddXPReward(22500)
                 .AddGoldReward(12000);
         }
@@ -149,7 +149,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Last Word master is defeated. Report to Jek Talin at Mos Esper - Smesk's Palace on Tatooine.")
+                    "The Last Word master is defeated. Report to Jek Talin, by the west trail at Anchorhead - Southern Entrance on Tatooine.")
                 .AddXPReward(30000)
                 .AddGoldReward(18000)
                 .OnCompleteAction((player, sourceObject) =>
@@ -175,13 +175,13 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "Pavo Orrel gave you the Anchorhead Canyon Range Key. On Tatooine, enter the Anchorhead Canyon Range through the sealed door in the south cliff of the Rocky Pass, beside the trail to the Southern Pass. Defeat six Dead Man's Hand adepts and claim the Dead Man's Hand Canyon Range Tally.")
+                    "Pavo Orrel gave you the Anchorhead Canyon Range Key. On Tatooine, enter the Anchorhead Canyon Range through the sealed door in the Rocky Pass, a short walk south of where the trail from Anchorhead's Southern Entrance comes in. Defeat six Dead Man's Hand adepts and claim the Dead Man's Hand Canyon Range Tally.")
                 .AddKillObjective(NPCGroupType.Tatooine_DeadMansHand_Adept, 6)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneDeadMansHandCanyonRangeTally)
 
                 .AddState()
                 .SetStateJournalText(
-                    "You claimed the Dead Man's Hand Canyon Range Tally. Deliver it to Pavo Orrel in Smesk's Entryway on Tatooine.")
+                    "You claimed the Dead Man's Hand Canyon Range Tally. Deliver it to Pavo Orrel in the cantina at Anchorhead - Junix's Joint on Tatooine.")
                 .AddXPReward(15000)
                 .AddGoldReward(7500);
         }
@@ -202,7 +202,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "You recovered the Dead Man's Hand Sightline Calibrator. Return it to Pavo Orrel in Smesk's Entryway on Tatooine.")
+                    "You recovered the Dead Man's Hand Sightline Calibrator. Return it to Pavo Orrel in the cantina at Anchorhead - Junix's Joint on Tatooine.")
                 .AddXPReward(17500)
                 .AddGoldReward(9000);
         }
@@ -223,7 +223,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "You took the Dead Man's Hand Shattered Range Crest from the warden. Bring it to Pavo Orrel in Smesk's Entryway on Tatooine.")
+                    "You took the Dead Man's Hand Shattered Range Crest from the warden. Bring it to Pavo Orrel in the cantina at Anchorhead - Junix's Joint on Tatooine.")
                 .AddXPReward(20000)
                 .AddGoldReward(10500);
         }
@@ -244,7 +244,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "You secured the Dead Man's Hand Marshal's Challenge Chit. Return it to Pavo Orrel in Smesk's Entryway on Tatooine.")
+                    "You secured the Dead Man's Hand Marshal's Challenge Chit. Return it to Pavo Orrel in the cantina at Anchorhead - Junix's Joint on Tatooine.")
                 .AddXPReward(22500)
                 .AddGoldReward(12000);
         }
@@ -262,7 +262,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Dead Man's Hand master is defeated. Report to Pavo Orrel in Smesk's Entryway on Tatooine.")
+                    "The Dead Man's Hand master is defeated. Report to Pavo Orrel in the cantina at Anchorhead - Junix's Joint on Tatooine.")
                 .AddXPReward(30000)
                 .AddGoldReward(18000)
                 .OnCompleteAction((player, sourceObject) =>

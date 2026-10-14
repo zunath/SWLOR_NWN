@@ -341,11 +341,15 @@
               },
               "DescIdentified": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "A hunter's armor with the fit of equipment bought for serious work rather than a convenient costume. Its service fittings sit within easy reach, a useful consideration when a contract pays more promptly than a replacement can arrive."
+                }
               },
               "Description": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "A hunter's armor with the fit of equipment bought for serious work rather than a convenient costume. Its service fittings sit within easy reach, a useful consideration when a contract pays more promptly than a replacement can arrive."
+                }
               },
               "Identified": {
                 "type": "byte",
@@ -1775,11 +1779,15 @@
               },
               "DescIdentified": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "Brightly arranged panels give these clothes a deliberately memorable outline. Their owner seems less concerned about disappearing into a crowd than about giving the crowd something worth remembering."
+                }
               },
               "Description": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "Brightly arranged panels give these clothes a deliberately memorable outline. Their owner seems less concerned about disappearing into a crowd than about giving the crowd something worth remembering."
+                }
               },
               "Identified": {
                 "type": "byte",
@@ -2793,11 +2801,15 @@
               },
               "DescIdentified": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "Light panels have been fitted over a secure foundation in this dance outfit. The audience sees movement and color, while the performer gets the less celebrated reassurance of seams that stay where they belong."
+                }
               },
               "Description": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "Light panels have been fitted over a secure foundation in this dance outfit. The audience sees movement and color, while the performer gets the less celebrated reassurance of seams that stay where they belong."
+                }
               },
               "Identified": {
                 "type": "byte",
@@ -3812,11 +3824,15 @@
               },
               "DescIdentified": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "Light layers and securely worked seams make this dancer's outfit more practical than it first appears. Under performance lights, the careful construction disappears and leaves the audience to follow the movement."
+                }
               },
               "Description": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "Light layers and securely worked seams make this dancer's outfit more practical than it first appears. Under performance lights, the careful construction disappears and leaves the audience to follow the movement."
+                }
               },
               "Identified": {
                 "type": "byte",
@@ -4830,11 +4846,15 @@
               },
               "DescIdentified": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "Light panels have been fitted over a secure foundation in this dance outfit. The audience sees movement and color, while the performer gets the less celebrated reassurance of seams that stay where they belong."
+                }
               },
               "Description": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "Light panels have been fitted over a secure foundation in this dance outfit. The audience sees movement and color, while the performer gets the less celebrated reassurance of seams that stay where they belong."
+                }
               },
               "Identified": {
                 "type": "byte",
@@ -5849,11 +5869,15 @@
               },
               "DescIdentified": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "Light panels have been fitted over a secure foundation in this dance outfit. The audience sees movement and color, while the performer gets the less celebrated reassurance of seams that stay where they belong."
+                }
               },
               "Description": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "Light panels have been fitted over a secure foundation in this dance outfit. The audience sees movement and color, while the performer gets the less celebrated reassurance of seams that stay where they belong."
+                }
               },
               "Identified": {
                 "type": "byte",
@@ -6868,11 +6892,15 @@
               },
               "DescIdentified": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "Light panels have been fitted over a secure foundation in this dance outfit. The audience sees movement and color, while the performer gets the less celebrated reassurance of seams that stay where they belong."
+                }
               },
               "Description": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "Light panels have been fitted over a secure foundation in this dance outfit. The audience sees movement and color, while the performer gets the less celebrated reassurance of seams that stay where they belong."
+                }
               },
               "Identified": {
                 "type": "byte",
@@ -7888,11 +7916,15 @@
               },
               "DescIdentified": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "Everyday civilian clothes with sensible pockets and easily replaced fastenings. They would pass unnoticed in a market or a port concourse, leaving their owner free to attract attention for entirely personal reasons."
+                }
               },
               "Description": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "Everyday civilian clothes with sensible pockets and easily replaced fastenings. They would pass unnoticed in a market or a port concourse, leaving their owner free to attract attention for entirely personal reasons."
+                }
               },
               "Identified": {
                 "type": "byte",
@@ -8917,11 +8949,15 @@
               },
               "DescIdentified": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "This skyracer suit has closely secured cuffs and a collar made to sit neatly beneath the rest of a pilot's equipment. Its streamlined appearance keeps loose fabric from becoming another thing to consider at a difficult moment."
+                }
               },
               "Description": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "This skyracer suit has closely secured cuffs and a collar made to sit neatly beneath the rest of a pilot's equipment. Its streamlined appearance keeps loose fabric from becoming another thing to consider at a difficult moment."
+                }
               },
               "Identified": {
                 "type": "byte",
@@ -9975,11 +10011,15 @@
               },
               "DescIdentified": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "This skyracer suit has closely secured cuffs and a collar made to sit neatly beneath the rest of a pilot's equipment. Its streamlined appearance keeps loose fabric from becoming another thing to consider at a difficult moment."
+                }
               },
               "Description": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "This skyracer suit has closely secured cuffs and a collar made to sit neatly beneath the rest of a pilot's equipment. Its streamlined appearance keeps loose fabric from becoming another thing to consider at a difficult moment."
+                }
               },
               "Identified": {
                 "type": "byte",
@@ -11008,11 +11048,15 @@
               },
               "DescIdentified": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "This skyracer suit has closely secured cuffs and a collar made to sit neatly beneath the rest of a pilot's equipment. Its streamlined appearance keeps loose fabric from becoming another thing to consider at a difficult moment."
+                }
               },
               "Description": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "This skyracer suit has closely secured cuffs and a collar made to sit neatly beneath the rest of a pilot's equipment. Its streamlined appearance keeps loose fabric from becoming another thing to consider at a difficult moment."
+                }
               },
               "Identified": {
                 "type": "byte",
@@ -12037,11 +12081,15 @@
               },
               "DescIdentified": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "This skyracer suit has closely secured cuffs and a collar made to sit neatly beneath the rest of a pilot's equipment. Its streamlined appearance keeps loose fabric from becoming another thing to consider at a difficult moment."
+                }
               },
               "Description": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "This skyracer suit has closely secured cuffs and a collar made to sit neatly beneath the rest of a pilot's equipment. Its streamlined appearance keeps loose fabric from becoming another thing to consider at a difficult moment."
+                }
               },
               "Identified": {
                 "type": "byte",
@@ -13095,11 +13143,14 @@
               },
               "DescIdentified": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "The bindings of this light Trandoshan armor have been fitted around a broader frame than standard human issue allows. Its outer panels remain modest, leaving the wearer room to move without abandoning a familiar armored silhouette."
+                }
               },
               "Description": {
                 "type": "cexolocstring",
                 "value": {
+                  "0": "The bindings of this light Trandoshan armor have been fitted around a broader frame than standard human issue allows. Its outer panels remain modest, leaving the wearer room to move without abandoning a familiar armored silhouette.",
                   "2": ""
                 }
               },
@@ -14751,11 +14802,15 @@
               },
               "DescIdentified": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "Small studs follow the stronger sections of this leather armor. Its uncomplicated construction has survived the fashion that first sold it, leaving an honest piece of equipment ready for another owner's adjustments."
+                }
               },
               "Description": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "Small studs follow the stronger sections of this leather armor. Its uncomplicated construction has survived the fashion that first sold it, leaving an honest piece of equipment ready for another owner's adjustments."
+                }
               },
               "Identified": {
                 "type": "byte",
@@ -16310,11 +16365,15 @@
               },
               "DescIdentified": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "Small studs follow the stronger sections of this leather armor. Its uncomplicated construction has survived the fashion that first sold it, leaving an honest piece of equipment ready for another owner's adjustments."
+                }
               },
               "Description": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "Small studs follow the stronger sections of this leather armor. Its uncomplicated construction has survived the fashion that first sold it, leaving an honest piece of equipment ready for another owner's adjustments."
+                }
               },
               "Identified": {
                 "type": "byte",
@@ -17961,11 +18020,15 @@
               },
               "DescIdentified": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "A bounty hunter's working outfit with concealed closures and space for a few useful necessities. It looks respectable enough to meet a client and worn enough to suggest the meeting is only the beginning of the job."
+                }
               },
               "Description": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "A bounty hunter's working outfit with concealed closures and space for a few useful necessities. It looks respectable enough to meet a client and worn enough to suggest the meeting is only the beginning of the job."
+                }
               },
               "Identified": {
                 "type": "byte",
@@ -19541,11 +19604,15 @@
               },
               "DescIdentified": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "Small studs follow the stronger sections of this leather armor. Its uncomplicated construction has survived the fashion that first sold it, leaving an honest piece of equipment ready for another owner's adjustments."
+                }
               },
               "Description": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "Small studs follow the stronger sections of this leather armor. Its uncomplicated construction has survived the fashion that first sold it, leaving an honest piece of equipment ready for another owner's adjustments."
+                }
               },
               "Identified": {
                 "type": "byte",
@@ -21194,11 +21261,15 @@
               },
               "DescIdentified": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "Sand-colored cloth gives these robes the worn, muted look of a long desert journey. Their inner ties remain easy to reach beneath the outer folds, where Tatooine dust is less able to make a nuisance of itself."
+                }
               },
               "Description": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "Sand-colored cloth gives these robes the worn, muted look of a long desert journey. Their inner ties remain easy to reach beneath the outer folds, where Tatooine dust is less able to make a nuisance of itself."
+                }
               },
               "Identified": {
                 "type": "byte",
@@ -21708,11 +21779,15 @@
               },
               "DescIdentified": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "These rags have been repaired with scraps that no longer resemble their original fabric. They are the kind of possession that survives a hurried departure because it was already being worn when everything else had to be left behind."
+                }
               },
               "Description": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "These rags have been repaired with scraps that no longer resemble their original fabric. They are the kind of possession that survives a hurried departure because it was already being worn when everything else had to be left behind."
+                }
               },
               "Identified": {
                 "type": "byte",
@@ -21978,11 +22053,15 @@
               },
               "DescIdentified": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "A military outfit with severe outer lines and practical fittings beneath them. Its standardized appearance lets a commander count bodies before learning names, a familiar economy in an institution built around orders."
+                }
               },
               "Description": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "A military outfit with severe outer lines and practical fittings beneath them. Its standardized appearance lets a commander count bodies before learning names, a familiar economy in an institution built around orders."
+                }
               },
               "Identified": {
                 "type": "byte",
@@ -22247,11 +22326,15 @@
               },
               "DescIdentified": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "Grey cloth and a sober cut make this outfit seem almost too respectable for a gaming room. At a sabacc table, looking like the least interesting person present can be its own small advantage."
+                }
               },
               "Description": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "Grey cloth and a sober cut make this outfit seem almost too respectable for a gaming room. At a sabacc table, looking like the least interesting person present can be its own small advantage."
+                }
               },
               "Identified": {
                 "type": "byte",
@@ -22516,11 +22599,15 @@
               },
               "DescIdentified": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "Light grey cloth and uncomplicated layers keep this outfit easy to wear through a long passage. The strongest stitching is inside the pockets, where a traveller tends to keep the things that cannot be replaced at the next port."
+                }
               },
               "Description": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "Light grey cloth and uncomplicated layers keep this outfit easy to wear through a long passage. The strongest stitching is inside the pockets, where a traveller tends to keep the things that cannot be replaced at the next port."
+                }
               },
               "Identified": {
                 "type": "byte",
@@ -22785,11 +22872,15 @@
               },
               "DescIdentified": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "Grey cloth and a sober cut make this outfit seem almost too respectable for a gaming room. At a sabacc table, looking like the least interesting person present can be its own small advantage."
+                }
               },
               "Description": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "Grey cloth and a sober cut make this outfit seem almost too respectable for a gaming room. At a sabacc table, looking like the least interesting person present can be its own small advantage."
+                }
               },
               "Identified": {
                 "type": "byte",
@@ -30349,7 +30440,7 @@
         },
         "OnUsed": {
           "type": "resref",
-          "value": "dt_sit_on_chair"
+          "value": "x0_o2_use_chair"
         },
         "OnUserDefined": {
           "type": "resref",
@@ -30577,7 +30668,7 @@
         },
         "OnUsed": {
           "type": "resref",
-          "value": "dt_sit_on_chair"
+          "value": "x0_o2_use_chair"
         },
         "OnUserDefined": {
           "type": "resref",
@@ -30805,7 +30896,7 @@
         },
         "OnUsed": {
           "type": "resref",
-          "value": "dt_sit_on_chair"
+          "value": "x0_o2_use_chair"
         },
         "OnUserDefined": {
           "type": "resref",
@@ -31488,7 +31579,7 @@
         },
         "OnUsed": {
           "type": "resref",
-          "value": "dt_sit_on_chair"
+          "value": "x0_o2_use_chair"
         },
         "OnUserDefined": {
           "type": "resref",
@@ -31716,7 +31807,7 @@
         },
         "OnUsed": {
           "type": "resref",
-          "value": "dt_sit_on_chair"
+          "value": "x0_o2_use_chair"
         },
         "OnUserDefined": {
           "type": "resref",
@@ -31944,7 +32035,7 @@
         },
         "OnUsed": {
           "type": "resref",
-          "value": "dt_sit_on_chair"
+          "value": "x0_o2_use_chair"
         },
         "OnUserDefined": {
           "type": "resref",
@@ -32172,7 +32263,7 @@
         },
         "OnUsed": {
           "type": "resref",
-          "value": "dt_sit_on_chair"
+          "value": "x0_o2_use_chair"
         },
         "OnUserDefined": {
           "type": "resref",
@@ -32627,7 +32718,7 @@
         },
         "OnUsed": {
           "type": "resref",
-          "value": "dt_sit_on_chair"
+          "value": "x0_o2_use_chair"
         },
         "OnUserDefined": {
           "type": "resref",
@@ -32855,7 +32946,7 @@
         },
         "OnUsed": {
           "type": "resref",
-          "value": "dt_sit_on_chair"
+          "value": "x0_o2_use_chair"
         },
         "OnUserDefined": {
           "type": "resref",
@@ -33083,7 +33174,7 @@
         },
         "OnUsed": {
           "type": "resref",
-          "value": "dt_sit_on_chair"
+          "value": "x0_o2_use_chair"
         },
         "OnUserDefined": {
           "type": "resref",
@@ -33311,7 +33402,7 @@
         },
         "OnUsed": {
           "type": "resref",
-          "value": "dt_sit_on_chair"
+          "value": "x0_o2_use_chair"
         },
         "OnUserDefined": {
           "type": "resref",
@@ -38317,7 +38408,7 @@
         },
         "OnUsed": {
           "type": "resref",
-          "value": "dt_sit_on_chair"
+          "value": "x0_o2_use_chair"
         },
         "OnUserDefined": {
           "type": "resref",
@@ -38544,7 +38635,7 @@
         },
         "OnUsed": {
           "type": "resref",
-          "value": "dt_sit_on_chair"
+          "value": "x0_o2_use_chair"
         },
         "OnUserDefined": {
           "type": "resref",
@@ -38771,7 +38862,7 @@
         },
         "OnUsed": {
           "type": "resref",
-          "value": "dt_sit_on_chair"
+          "value": "x0_o2_use_chair"
         },
         "OnUserDefined": {
           "type": "resref",
@@ -38998,7 +39089,7 @@
         },
         "OnUsed": {
           "type": "resref",
-          "value": "dt_sit_on_chair"
+          "value": "x0_o2_use_chair"
         },
         "OnUserDefined": {
           "type": "resref",
@@ -39225,7 +39316,7 @@
         },
         "OnUsed": {
           "type": "resref",
-          "value": "dt_sit_on_chair"
+          "value": "x0_o2_use_chair"
         },
         "OnUserDefined": {
           "type": "resref",
@@ -39452,7 +39543,7 @@
         },
         "OnUsed": {
           "type": "resref",
-          "value": "dt_sit_on_chair"
+          "value": "x0_o2_use_chair"
         },
         "OnUserDefined": {
           "type": "resref",
@@ -39679,7 +39770,7 @@
         },
         "OnUsed": {
           "type": "resref",
-          "value": "dt_sit_on_chair"
+          "value": "x0_o2_use_chair"
         },
         "OnUserDefined": {
           "type": "resref",
@@ -39906,7 +39997,7 @@
         },
         "OnUsed": {
           "type": "resref",
-          "value": "dt_sit_on_chair"
+          "value": "x0_o2_use_chair"
         },
         "OnUserDefined": {
           "type": "resref",
@@ -40133,7 +40224,7 @@
         },
         "OnUsed": {
           "type": "resref",
-          "value": "dt_sit_on_chair"
+          "value": "x0_o2_use_chair"
         },
         "OnUserDefined": {
           "type": "resref",
@@ -40360,7 +40451,7 @@
         },
         "OnUsed": {
           "type": "resref",
-          "value": "dt_sit_on_chair"
+          "value": "x0_o2_use_chair"
         },
         "OnUserDefined": {
           "type": "resref",
@@ -40588,7 +40679,7 @@
         },
         "OnUsed": {
           "type": "resref",
-          "value": "dt_sit_on_chair"
+          "value": "x0_o2_use_chair"
         },
         "OnUserDefined": {
           "type": "resref",
@@ -40816,7 +40907,7 @@
         },
         "OnUsed": {
           "type": "resref",
-          "value": "dt_sit_on_chair"
+          "value": "x0_o2_use_chair"
         },
         "OnUserDefined": {
           "type": "resref",

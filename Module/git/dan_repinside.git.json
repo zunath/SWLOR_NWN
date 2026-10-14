@@ -339,11 +339,15 @@
               },
               "DescIdentified": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "Black coveralls give these working clothes an orderly appearance even after a hard shift. The concealed lining is more revealing, carrying the wear of tools and hurried repairs that the dark outside keeps discreet."
+                }
               },
               "Description": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "Black coveralls give these working clothes an orderly appearance even after a hard shift. The concealed lining is more revealing, carrying the wear of tools and hurried repairs that the dark outside keeps discreet."
+                }
               },
               "Identified": {
                 "type": "byte",
@@ -1926,12 +1930,14 @@
               },
               "DescIdentified": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "This Republic office uniform is neater at the collar than at the cuffs. Its quiet wear belongs to datapads, requisitions, and the machinery of an army that continues working after the gunfire moves elsewhere."
+                }
               },
               "Description": {
                 "type": "cexolocstring",
                 "value": {
-                  "0": ""
+                  "0": "This Republic office uniform is neater at the collar than at the cuffs. Its quiet wear belongs to datapads, requisitions, and the machinery of an army that continues working after the gunfire moves elsewhere."
                 }
               },
               "Identified": {
@@ -3196,11 +3202,15 @@
               },
               "DescIdentified": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "A regulation Republic officer's uniform with a clean collar and restrained service fittings. Its orderly appearance asks the wearer to look certain even before the next report has reached their datapad."
+                }
               },
               "Description": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "A regulation Republic officer's uniform with a clean collar and restrained service fittings. Its orderly appearance asks the wearer to look certain even before the next report has reached their datapad."
+                }
               },
               "Identified": {
                 "type": "byte",
@@ -4619,12 +4629,14 @@
               },
               "DescIdentified": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "White fabric gives this Republic uniform a crisp, unmistakable appearance. A close inspection reveals the stubborn little marks of service that survive even the most determined efforts at regulation presentation."
+                }
               },
               "Description": {
                 "type": "cexolocstring",
                 "value": {
-                  "0": ""
+                  "0": "White fabric gives this Republic uniform a crisp, unmistakable appearance. A close inspection reveals the stubborn little marks of service that survive even the most determined efforts at regulation presentation."
                 }
               },
               "Identified": {
@@ -48907,7 +48919,7 @@
         },
         "OnUsed": {
           "type": "resref",
-          "value": ""
+          "value": "jukebox_used"
         },
         "OnUserDefined": {
           "type": "resref",
@@ -48919,7 +48931,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "PortraitId": {
           "type": "word",
@@ -48931,7 +48943,7 @@
         },
         "Static": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Tag": {
           "type": "cexostring",
@@ -48971,7 +48983,7 @@
         },
         "Useable": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "Will": {
           "type": "byte",

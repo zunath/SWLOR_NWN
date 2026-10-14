@@ -16,7 +16,7 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.IncubationBeastDefinition
             _builder.Create(BeastType.CharHound)
                 .Name("Char Hound")
                 .Appearance(AppearanceType.DogHellHound)
-                .AppearanceScale(1f)
+                .AppearanceScale(0.8f)
                 .SoundSetId(52)
                 .PortraitId(234)
                 .CombatStats(AbilityType.Vitality, AbilityType.Might)

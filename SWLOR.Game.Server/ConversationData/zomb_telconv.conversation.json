@@ -3,29 +3,12 @@
   "Title": "zomb_telconv",
   "EntryPoints": [
     {
-      "TargetNodeId": "entry-00010",
+      "TargetNodeId": "entry-00004",
       "Conditions": [
         {
-          "Key": "condition-local-number",
+          "Key": "condition-on-quest-state",
           "Arguments": [
-            "player",
-            "SWLOR_ABANDONED_STATION_QUEST",
-            ">=",
-            "3"
-          ],
-          "IsNegated": false
-        }
-      ]
-    },
-    {
-      "TargetNodeId": "entry-00007",
-      "Conditions": [
-        {
-          "Key": "condition-local-number",
-          "Arguments": [
-            "player",
-            "SWLOR_ABANDONED_STATION_QUEST",
-            "=",
+            "put_them_to_rest",
             "2"
           ],
           "IsNegated": false
@@ -33,30 +16,12 @@
       ]
     },
     {
-      "TargetNodeId": "entry-00005",
+      "TargetNodeId": "entry-00003",
       "Conditions": [
         {
-          "Key": "condition-local-number",
+          "Key": "condition-has-quest",
           "Arguments": [
-            "player",
-            "SWLOR_ABANDONED_STATION_QUEST",
-            "=",
-            "1"
-          ],
-          "IsNegated": false
-        }
-      ]
-    },
-    {
-      "TargetNodeId": "entry-00001",
-      "Conditions": [
-        {
-          "Key": "condition-local-number",
-          "Arguments": [
-            "player",
-            "SWLOR_ABANDONED_STATION_QUEST",
-            "=",
-            "0"
+            "put_them_to_rest"
           ],
           "IsNegated": false
         }
@@ -81,13 +46,26 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "[He briefly looks up from his datapad to acknowledge you before returning his gaze to it.] \"I'm busy right now. Come back later.\"",
+          "Text": "[He glances up from his datapad.] \"You look like someone who does not scare easily. A few weeks back I picked up a distress beacon in orbit over Viscara. It is coming from a research station that should have been empty for years.\"",
           "Style": 0,
           "Color": null
         }
       ],
       "OnEnterActions": [],
-      "Choices": []
+      "Choices": [
+        {
+          "ChoiceId": "reply-00000",
+          "Conditions": []
+        },
+        {
+          "ChoiceId": "reply-00001",
+          "Conditions": []
+        },
+        {
+          "ChoiceId": "reply-00002",
+          "Conditions": []
+        }
+      ]
     },
     "entry-00001": {
       "Id": "entry-00001",
@@ -102,7 +80,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "[The man appears a little distracted on his datapad as he acknowledges you.] \"Yes? Is there something I can do for you?\"",
+          "Text": "\"Enough to wish I had not looked. The station was running trials on bringing the dead back, and the logs I pulled stop halfway through a sentence. Whatever they did woke something older, too. The survivors started turning into rakghouls, the way the old Sith plague does it.\"",
           "Style": 0,
           "Color": null
         }
@@ -114,7 +92,11 @@
           "Conditions": []
         },
         {
-          "ChoiceId": "reply-00000",
+          "ChoiceId": "reply-00003",
+          "Conditions": []
+        },
+        {
+          "ChoiceId": "reply-00002",
           "Conditions": []
         }
       ]
@@ -132,7 +114,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "[He looks over at you now, as if sizing you up. He then nods a couple times to himself.] \"I suppose I do, though I have very little information about what you might get yourself into. Likewise, I warn that it may very well not be work for just one person.\"",
+          "Text": "\"Not on any shuttle line, that's for sure. You will need someone with a ship. From Viscara orbit the station still answers dock requests as the Abandoned Station. And if your ride leaves without you, the docking bay has escape pods. They are all set to come back to the Veles starport.\"",
           "Style": 0,
           "Color": null
         }
@@ -162,7 +144,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "[He nods once at that before looking back to his datapad.] \"I recently picked up a faint distress beacon coming from somewhere in open space. It's nearby, but I can't really get out there, myself. I can set you and your group up with a shuttle to get there, though, if you're interested in checking it out. Depending on what you find, there will be a nice reward in it for you, as well.\"",
+          "Text": "\"Still going back up there? Twenty of them. Find a pilot, and watch the dark corners.\"",
           "Style": 0,
           "Color": null
         }
@@ -170,11 +152,11 @@
       "OnEnterActions": [],
       "Choices": [
         {
-          "ChoiceId": "reply-00005",
+          "ChoiceId": "reply-00008",
           "Conditions": []
         },
         {
-          "ChoiceId": "reply-00004",
+          "ChoiceId": "reply-00005",
           "Conditions": []
         }
       ]
@@ -192,7 +174,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "\"Alright then. Just remember to gather up a group to go with you. Who knows what's out there, after all?\" [He taps a few things on his datapad before nodding.] \"Once you've done that, let me know when you want to head out.\"",
+          "Text": "[He sets the datapad down as you approach.] \"You made it back. Tell me.\"",
           "Style": 0,
           "Color": null
         }
@@ -218,7 +200,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "[He looks over to you from his datapad and nods.] \"So are you ready to head out there, yet?\"",
+          "Text": "\"Twenty of them. Put them down for good, then come find me here. I cannot pay much, but I will not forget it.\"",
           "Style": 0,
           "Color": null
         }
@@ -226,11 +208,7 @@
       "OnEnterActions": [],
       "Choices": [
         {
-          "ChoiceId": "reply-00008",
-          "Conditions": []
-        },
-        {
-          "ChoiceId": "reply-00007",
+          "ChoiceId": "reply-00004",
           "Conditions": []
         }
       ]
@@ -248,7 +226,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "((WARNING: ONCE YOU ENTER THE DUNGEON, YOU WILL NOT BE ABLE TO LEAVE UNTIL YOU FINISH IT OR DIE AND RESPAWN. IT IS ALSO BUILT FOR A GROUP, SO IT IS VERY STRONGLY ADVISED TO NOT GO ALONE. DO YOU STILL WISH TO GO?))",
+          "Text": "\"Not on any shuttle line, that's for sure. You will need someone with a ship. From Viscara orbit the station still answers dock requests as the Abandoned Station. And if your ride leaves without you, the docking bay has escape pods. They are all set to come back to the Veles starport.\"",
           "Style": 0,
           "Color": null
         }
@@ -256,11 +234,7 @@
       "OnEnterActions": [],
       "Choices": [
         {
-          "ChoiceId": "reply-00010",
-          "Conditions": []
-        },
-        {
-          "ChoiceId": "reply-00009",
+          "ChoiceId": "reply-00005",
           "Conditions": []
         }
       ]
@@ -278,7 +252,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "[He looks up from his datapad as you approach, offering you a nod in acknowledgement.] \"So you're back. Took a bit longer than I expected, but at least you're in one piece. What did you find out there?\"",
+          "Text": "[He listens without interrupting, then nods slowly.] \"Then it is done, for now. That station keeps making more of them. If you go back, I will pay again.\"",
           "Style": 0,
           "Color": null
         }
@@ -286,119 +260,7 @@
       "OnEnterActions": [],
       "Choices": [
         {
-          "ChoiceId": "reply-00011",
-          "Conditions": []
-        }
-      ]
-    },
-    "entry-00008": {
-      "Id": "entry-00008",
-      "SpeakerName": "",
-      "SpeakerTag": "",
-      "PortraitResref": "",
-      "SoundResref": "",
-      "Animation": 0,
-      "AnimationLoops": true,
-      "Delay": 4294967295,
-      "Comment": "",
-      "JournalQuest": "",
-      "Text": [
-        {
-          "Text": "[He just stares at you with an exasperated expression for a long moment, as if processing what he just heard.] \"You're saying it was a research station where they were experimenting with something that brings the dead back as-...\" [He quickly shakes his head as if trying to disbelieve everything being said.] \"Sounds horrific... if you're telling the truth, at least. I suppose it's best that I'm too busy to take a look, myself, though. But either way, thanks for looking into it.\" [He hands over your reward.]",
-          "Style": 0,
-          "Color": null
-        }
-      ],
-      "OnEnterActions": [],
-      "Choices": [
-        {
-          "ChoiceId": "reply-00012",
-          "Conditions": []
-        }
-      ]
-    },
-    "entry-00009": {
-      "Id": "entry-00009",
-      "SpeakerName": "",
-      "SpeakerTag": "",
-      "PortraitResref": "",
-      "SoundResref": "",
-      "Animation": 0,
-      "AnimationLoops": true,
-      "Delay": 4294967295,
-      "Comment": "",
-      "JournalQuest": "",
-      "Text": [
-        {
-          "Text": "[He sighs heavily at that.] \"Given what you said, I'm not sure WHY you'd want to go back there, but if it helps to learn more about the place, then I suppose it couldn't hurt to lend you that shuttle again. For now, I've got work to do.\" [He returns his attention to the datapad and starts tapping away.]",
-          "Style": 0,
-          "Color": null
-        }
-      ],
-      "OnEnterActions": [],
-      "Choices": [
-        {
-          "ChoiceId": "reply-00013",
-          "Conditions": []
-        }
-      ]
-    },
-    "entry-00010": {
-      "Id": "entry-00010",
-      "SpeakerName": "",
-      "SpeakerTag": "",
-      "PortraitResref": "",
-      "SoundResref": "",
-      "Animation": 0,
-      "AnimationLoops": true,
-      "Delay": 4294967295,
-      "Comment": "",
-      "JournalQuest": "",
-      "Text": [
-        {
-          "Text": "[He looks over at you for a moment to acknowledge you.] \"Hey again. Some really terrible stuff you found in there. I'm afraid there's not really anything I can say about it. If you want to return to that hellhole, though, I can offer you the shuttle again. Do you want to head out?\"",
-          "Style": 0,
-          "Color": null
-        }
-      ],
-      "OnEnterActions": [],
-      "Choices": [
-        {
-          "ChoiceId": "reply-00015",
-          "Conditions": []
-        },
-        {
-          "ChoiceId": "reply-00014",
-          "Conditions": []
-        }
-      ]
-    },
-    "entry-00011": {
-      "Id": "entry-00011",
-      "SpeakerName": "",
-      "SpeakerTag": "",
-      "PortraitResref": "",
-      "SoundResref": "",
-      "Animation": 0,
-      "AnimationLoops": true,
-      "Delay": 4294967295,
-      "Comment": "",
-      "JournalQuest": "",
-      "Text": [
-        {
-          "Text": "((WARNING: ONCE YOU ENTER THE DUNGEON, YOU WILL NOT BE ABLE TO LEAVE UNTIL YOU FINISH IT OR DIE AND RESPAWN. IT IS ALSO BUILT FOR A GROUP, SO IT IS VERY STRONGLY ADVISED TO NOT GO ALONE. DO YOU STILL WISH TO GO?))",
-          "Style": 0,
-          "Color": null
-        }
-      ],
-      "OnEnterActions": [],
-      "Choices": [
-        {
-          "ChoiceId": "reply-00010",
-          "Conditions": []
-        },
-        {
-          "ChoiceId": "reply-00009",
+          "ChoiceId": "reply-00007",
           "Conditions": []
         }
       ]
@@ -408,7 +270,7 @@
     "reply-00000": {
       "Id": "reply-00000",
       "Text": {
-        "Text": "\"Nothing. Sorry for bothering you.\"",
+        "Text": "\"What do you know about the station?\"",
         "Style": 4,
         "Color": null
       },
@@ -419,14 +281,19 @@
       "Comment": "",
       "JournalQuest": "",
       "Actions": [],
-      "Next": [],
-      "EndsConversation": true,
+      "Next": [
+        {
+          "TargetNodeId": "entry-00001",
+          "Conditions": []
+        }
+      ],
+      "EndsConversation": false,
       "IsAutomatic": false
     },
     "reply-00001": {
       "Id": "reply-00001",
       "Text": {
-        "Text": "\"Hello. I was actually looking for work if you have it?\"",
+        "Text": "\"How would I even get out there?\"",
         "Style": 4,
         "Color": null
       },
@@ -449,7 +316,7 @@
     "reply-00002": {
       "Id": "reply-00002",
       "Text": {
-        "Text": "\"Nevermind. Sorry for bothering you.\"",
+        "Text": "\"Not interested.\"",
         "Style": 4,
         "Color": null
       },
@@ -467,7 +334,7 @@
     "reply-00003": {
       "Id": "reply-00003",
       "Text": {
-        "Text": "\"I'll keep that in mind. Tell me more.\"",
+        "Text": "\"I will deal with them.\"",
         "Style": 4,
         "Color": null
       },
@@ -477,10 +344,17 @@
       "Delay": 4294967295,
       "Comment": "",
       "JournalQuest": "",
-      "Actions": [],
+      "Actions": [
+        {
+          "Key": "action-accept-quest",
+          "Arguments": [
+            "put_them_to_rest"
+          ]
+        }
+      ],
       "Next": [
         {
-          "TargetNodeId": "entry-00003",
+          "TargetNodeId": "entry-00005",
           "Conditions": []
         }
       ],
@@ -490,7 +364,7 @@
     "reply-00004": {
       "Id": "reply-00004",
       "Text": {
-        "Text": "\"Sorry, not interested, after all.\"",
+        "Text": "\"I will find a pilot.\"",
         "Style": 4,
         "Color": null
       },
@@ -508,39 +382,7 @@
     "reply-00005": {
       "Id": "reply-00005",
       "Text": {
-        "Text": "\"I'm interested. Just point me in the right direction.\"",
-        "Style": 4,
-        "Color": null
-      },
-      "SoundResref": "",
-      "Animation": 0,
-      "AnimationLoops": true,
-      "Delay": 4294967295,
-      "Comment": "",
-      "JournalQuest": "",
-      "Actions": [
-        {
-          "Key": "action-set-local-number",
-          "Arguments": [
-            "player",
-            "SWLOR_ABANDONED_STATION_QUEST",
-            "1"
-          ]
-        }
-      ],
-      "Next": [
-        {
-          "TargetNodeId": "entry-00004",
-          "Conditions": []
-        }
-      ],
-      "EndsConversation": false,
-      "IsAutomatic": false
-    },
-    "reply-00006": {
-      "Id": "reply-00006",
-      "Text": {
-        "Text": "\"Alright. I'll be back, then.\"",
+        "Text": "\"I am working on it.\"",
         "Style": 4,
         "Color": null
       },
@@ -555,10 +397,40 @@
       "EndsConversation": true,
       "IsAutomatic": false
     },
+    "reply-00006": {
+      "Id": "reply-00006",
+      "Text": {
+        "Text": "\"Twenty of them will not rise again.\"",
+        "Style": 4,
+        "Color": null
+      },
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Actions": [
+        {
+          "Key": "action-advance-quest",
+          "Arguments": [
+            "put_them_to_rest"
+          ]
+        }
+      ],
+      "Next": [
+        {
+          "TargetNodeId": "entry-00007",
+          "Conditions": []
+        }
+      ],
+      "EndsConversation": false,
+      "IsAutomatic": false
+    },
     "reply-00007": {
       "Id": "reply-00007",
       "Text": {
-        "Text": "\"I'm not ready yet.\"",
+        "Text": "\"Understood.\"",
         "Style": 4,
         "Color": null
       },
@@ -576,7 +448,7 @@
     "reply-00008": {
       "Id": "reply-00008",
       "Text": {
-        "Text": "\"I'm ready.\"",
+        "Text": "\"Remind me how to get there.\"",
         "Style": 4,
         "Color": null
       },
@@ -595,183 +467,12 @@
       ],
       "EndsConversation": false,
       "IsAutomatic": false
-    },
-    "reply-00009": {
-      "Id": "reply-00009",
-      "Text": {
-        "Text": "Nevermind",
-        "Style": 4,
-        "Color": null
-      },
-      "SoundResref": "",
-      "Animation": 0,
-      "AnimationLoops": true,
-      "Delay": 4294967295,
-      "Comment": "",
-      "JournalQuest": "",
-      "Actions": [],
-      "Next": [],
-      "EndsConversation": true,
-      "IsAutomatic": false
-    },
-    "reply-00010": {
-      "Id": "reply-00010",
-      "Text": {
-        "Text": "Let's go!",
-        "Style": 4,
-        "Color": null
-      },
-      "SoundResref": "",
-      "Animation": 0,
-      "AnimationLoops": true,
-      "Delay": 4294967295,
-      "Comment": "",
-      "JournalQuest": "",
-      "Actions": [
-        {
-          "Key": "action-teleport",
-          "Arguments": [
-            "ABAN_STATION_LANDING"
-          ]
-        }
-      ],
-      "Next": [],
-      "EndsConversation": true,
-      "IsAutomatic": false
-    },
-    "reply-00011": {
-      "Id": "reply-00011",
-      "Text": {
-        "Text": "[You explain the situation and your findings.]",
-        "Style": 4,
-        "Color": null
-      },
-      "SoundResref": "",
-      "Animation": 0,
-      "AnimationLoops": true,
-      "Delay": 4294967295,
-      "Comment": "",
-      "JournalQuest": "",
-      "Actions": [
-        {
-          "Key": "action-set-local-number",
-          "Arguments": [
-            "player",
-            "SWLOR_ABANDONED_STATION_QUEST",
-            "3"
-          ]
-        }
-      ],
-      "Next": [
-        {
-          "TargetNodeId": "entry-00008",
-          "Conditions": []
-        }
-      ],
-      "EndsConversation": false,
-      "IsAutomatic": false
-    },
-    "reply-00012": {
-      "Id": "reply-00012",
-      "Text": {
-        "Text": "\"Thanks for that. Though, if I'm looking to return there for any reason in the future-...?\"",
-        "Style": 4,
-        "Color": null
-      },
-      "SoundResref": "",
-      "Animation": 0,
-      "AnimationLoops": true,
-      "Delay": 4294967295,
-      "Comment": "",
-      "JournalQuest": "",
-      "Actions": [],
-      "Next": [
-        {
-          "TargetNodeId": "entry-00009",
-          "Conditions": []
-        }
-      ],
-      "EndsConversation": false,
-      "IsAutomatic": false
-    },
-    "reply-00013": {
-      "Id": "reply-00013",
-      "Text": {
-        "Text": "[You nod your head and leave.]",
-        "Style": 4,
-        "Color": null
-      },
-      "SoundResref": "",
-      "Animation": 0,
-      "AnimationLoops": true,
-      "Delay": 4294967295,
-      "Comment": "",
-      "JournalQuest": "",
-      "Actions": [],
-      "Next": [],
-      "EndsConversation": true,
-      "IsAutomatic": false
-    },
-    "reply-00014": {
-      "Id": "reply-00014",
-      "Text": {
-        "Text": "\"On second thought, maybe later.\"",
-        "Style": 4,
-        "Color": null
-      },
-      "SoundResref": "",
-      "Animation": 0,
-      "AnimationLoops": true,
-      "Delay": 4294967295,
-      "Comment": "",
-      "JournalQuest": "",
-      "Actions": [],
-      "Next": [],
-      "EndsConversation": true,
-      "IsAutomatic": false
-    },
-    "reply-00015": {
-      "Id": "reply-00015",
-      "Text": {
-        "Text": "\"I can take care of myself. Let's go!\"",
-        "Style": 4,
-        "Color": null
-      },
-      "SoundResref": "",
-      "Animation": 0,
-      "AnimationLoops": true,
-      "Delay": 4294967295,
-      "Comment": "",
-      "JournalQuest": "",
-      "Actions": [],
-      "Next": [
-        {
-          "TargetNodeId": "entry-00011",
-          "Conditions": []
-        }
-      ],
-      "EndsConversation": false,
-      "IsAutomatic": false
     }
   },
   "DefaultNpcDelay": 0,
   "DefaultPlayerDelay": 0,
   "PreventZoomIn": false,
   "OnStartActions": [],
-  "OnEndActions": [
-    {
-      "Key": "system.execute-owner-script",
-      "Arguments": [
-        "nw_walk_wp"
-      ]
-    }
-  ],
-  "OnAbortActions": [
-    {
-      "Key": "system.execute-owner-script",
-      "Arguments": [
-        "nw_walk_wp"
-      ]
-    }
-  ]
+  "OnEndActions": [],
+  "OnAbortActions": []
 }

@@ -14,17 +14,30 @@ public class PlayerNameRecognitionTests
         var root = FindRepositoryRoot();
         var source = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Feature",
             "GuiDefinition", "ViewModel", "DMPlayerExamineViewModel.cs"));
-        var examine = ExtractMethod(source, "public static void ExaminePlayer()");
+        var examine = ExtractMethod(source, "public static void ShowExamineWindow(uint dm, uint target)");
+        var nativeExamine = ExtractMethod(source, "public static void ExaminePlayer()");
+        var disabledExamine = ExtractMethod(source, "public static void ExamineDisabledPlayerPanel()");
         var initialize = ExtractMethod(source, "protected override void Initialize(DMPlayerExaminePayload initialPayload)");
         var details = ExtractMethod(source, "private void LoadTargetDetails()");
+        var definition = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Feature",
+            "GuiDefinition", "DMPlayerExamineDefinition.cs"));
 
+        nativeExamine.Should().Contain("ShowExamineWindow(OBJECT_SELF, StringToObject(EventsPlugin.GetEventData(\"EXAMINEE_OBJECT_ID\")))");
+        nativeExamine.Should().NotContain("Gui.TogglePlayerWindow");
+        disabledExamine.Should().Contain("ShowExamineWindow(GetLastGuiEventPlayer(), GetLastGuiEventObject())");
+        disabledExamine.Should().NotContain("Gui.TogglePlayerWindow");
         examine.Should().Contain("if (!GetIsDM(dm) && !GetIsDMPossessed(dm))");
+        examine.Should().Contain("Gui.TogglePlayerWindow");
         examine.IndexOf("return;", StringComparison.Ordinal).Should()
             .BeLessThan(examine.IndexOf("Gui.TogglePlayerWindow", StringComparison.Ordinal));
-        initialize.Should().Contain("_accountName = GetPCPlayerName(initialPayload.Target);");
-        initialize.Should().Contain("Disguise.GetDisplayDescriptor(initialPayload.Target)");
-        details.Should().Contain("AccountName = $\"Account: {_accountName}\";");
-        details.Should().Contain("Descriptor = $\"Descriptor: {_descriptor}\";");
+        initialize.Should().Contain("_target = initialPayload.Target;");
+        initialize.Should().Contain("LoadTargetDetails();");
+        details.Should().Contain("Descriptor = GetIsPC(_target) && !GetIsDM(_target) ? Disguise.GetDisplayDescriptor(_target) : \"N/A\";");
+        details.Should().Contain("TrueName = GetName(_target);");
+        details.Should().Contain("AccountName = GetPCPlayerName(_target);");
+        definition.Should().Contain("AddDetailRow(col, \"Descriptor\", model => model.Descriptor);");
+        definition.Should().Contain("AddDetailRow(col, \"True name\", model => model.TrueName);");
+        definition.Should().Contain("AddDetailRow(col, \"Account\", model => model.AccountName);");
     }
 
     [Test]
@@ -240,7 +253,7 @@ public class PlayerNameRecognitionTests
     }
 
     [Test]
-    public void KnownNameStorage_RejectsDuplicateAliasesPerObserver()
+    public void KnownNameStorage_RejectsAliasesUsedByAnotherOnlineCharacter()
     {
         var root = FindRepositoryRoot();
         var source = File.ReadAllText(Path.Combine(
@@ -253,10 +266,17 @@ public class PlayerNameRecognitionTests
         var uniquenessMethod = ExtractMethod(source, "private static string ValidateKnownNameIsUnique(");
 
         setMethod.Should().Contain("ValidateKnownNameAssignment(observer, target, name);");
-        assignmentValidationMethod.Should().Contain("return ValidateKnownNameIsUnique(dbKnownNames, targetId, sanitizedName);");
-        uniquenessMethod.Should().Contain("entry.Key != targetId");
+        assignmentValidationMethod.Should().Contain("return ValidateKnownNameIsUnique(observer, target, sanitizedName);");
+        uniquenessMethod.Should().Contain("GetFirstPC()");
+        uniquenessMethod.Should().Contain("player == target");
+        uniquenessMethod.Should().Contain("TryGetKnownName(observer, player, out var knownName)");
         uniquenessMethod.Should().Contain("StringComparison.OrdinalIgnoreCase");
-        uniquenessMethod.Should().Contain("You already use that name for another character.");
+        uniquenessMethod.Should().Contain("You already use that name for another character who is online.");
+
+        // Stored labels for offline or disguised identities must not block a name, and the rule must
+        // not depend on whether a label belongs to a disguise.
+        uniquenessMethod.Should().NotContain("KnownNames");
+        uniquenessMethod.Should().NotContain("IsDisguiseIdentityKey");
     }
 
     [Test]

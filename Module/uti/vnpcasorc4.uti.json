@@ -110,12 +110,14 @@
   },
   "DescIdentified": {
     "type": "cexolocstring",
-    "value": {}
+    "value": {
+      "0": "This Sith lord's armor occupies space with a deliberate, formal severity. The workmanship is just as exacting beneath its outer plates, where impressive presentation has to answer to the less patient demands of being worn."
+    }
   },
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": ""
+      "0": "This Sith lord's armor occupies space with a deliberate, formal severity. The workmanship is just as exacting beneath its outer plates, where impressive presentation has to answer to the less patient demands of being worn."
     }
   },
   "Identified": {

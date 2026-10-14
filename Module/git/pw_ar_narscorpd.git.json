@@ -502,11 +502,15 @@
               },
               "DescIdentified": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "Dust collects around the simple plates of this militia armor. Its inexpensive fittings tell the familiar Tatooine story of people expected to stand a watch without the supply train of a proper army."
+                }
               },
               "Description": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "Dust collects around the simple plates of this militia armor. Its inexpensive fittings tell the familiar Tatooine story of people expected to stand a watch without the supply train of a proper army."
+                }
               },
               "Identified": {
                 "type": "byte",
@@ -2140,11 +2144,15 @@
               },
               "DescIdentified": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "Dust collects around the simple plates of this militia armor. Its inexpensive fittings tell the familiar Tatooine story of people expected to stand a watch without the supply train of a proper army."
+                }
               },
               "Description": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "Dust collects around the simple plates of this militia armor. Its inexpensive fittings tell the familiar Tatooine story of people expected to stand a watch without the supply train of a proper army."
+                }
               },
               "Identified": {
                 "type": "byte",
@@ -3778,11 +3786,15 @@
               },
               "DescIdentified": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "Dust collects around the simple plates of this militia armor. Its inexpensive fittings tell the familiar Tatooine story of people expected to stand a watch without the supply train of a proper army."
+                }
               },
               "Description": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "Dust collects around the simple plates of this militia armor. Its inexpensive fittings tell the familiar Tatooine story of people expected to stand a watch without the supply train of a proper army."
+                }
               },
               "Identified": {
                 "type": "byte",
@@ -5212,11 +5224,15 @@
               },
               "DescIdentified": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "Dust collects around the simple plates of this militia armor. Its inexpensive fittings tell the familiar Tatooine story of people expected to stand a watch without the supply train of a proper army."
+                }
               },
               "Description": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "Dust collects around the simple plates of this militia armor. Its inexpensive fittings tell the familiar Tatooine story of people expected to stand a watch without the supply train of a proper army."
+                }
               },
               "Identified": {
                 "type": "byte",
@@ -6667,11 +6683,15 @@
               },
               "DescIdentified": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "A corporate militia outfit with utilitarian seams and the disciplined outline Czerka likes to put between its property and everyone else. The fabric makes no distinction between guarding a warehouse and enforcing the company's idea of order."
+                }
               },
               "Description": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "A corporate militia outfit with utilitarian seams and the disciplined outline Czerka likes to put between its property and everyone else. The fabric makes no distinction between guarding a warehouse and enforcing the company's idea of order."
+                }
               },
               "Identified": {
                 "type": "byte",
@@ -9870,11 +9890,15 @@
               },
               "DescIdentified": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "Dust collects around the simple plates of this militia armor. Its inexpensive fittings tell the familiar Tatooine story of people expected to stand a watch without the supply train of a proper army."
+                }
               },
               "Description": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "Dust collects around the simple plates of this militia armor. Its inexpensive fittings tell the familiar Tatooine story of people expected to stand a watch without the supply train of a proper army."
+                }
               },
               "Identified": {
                 "type": "byte",
@@ -11523,12 +11547,14 @@
               },
               "DescIdentified": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "A colonist's practical outfit, made for the days between arrival and the comfortable life promised in a recruitment notice. In Veles, clothes like these belong as readily to an established worker as to someone still looking for their first room."
+                }
               },
               "Description": {
                 "type": "cexolocstring",
                 "value": {
-                  "0": ""
+                  "0": "A colonist's practical outfit, made for the days between arrival and the comfortable life promised in a recruitment notice. In Veles, clothes like these belong as readily to an established worker as to someone still looking for their first room."
                 }
               },
               "Identified": {
@@ -12531,12 +12557,14 @@
               },
               "DescIdentified": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "A hired tough's outfit with a serviceable collar and pockets that have seen better treatment than the sleeves. On an Exchange errand, looking expensive can be less useful than looking willing."
+                }
               },
               "Description": {
                 "type": "cexolocstring",
                 "value": {
-                  "0": ""
+                  "0": "A hired tough's outfit with a serviceable collar and pockets that have seen better treatment than the sleeves. On an Exchange errand, looking expensive can be less useful than looking willing."
                 }
               },
               "Identified": {
@@ -13738,12 +13766,14 @@
               },
               "DescIdentified": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "A colonist's practical outfit, made for the days between arrival and the comfortable life promised in a recruitment notice. In Veles, clothes like these belong as readily to an established worker as to someone still looking for their first room."
+                }
               },
               "Description": {
                 "type": "cexolocstring",
                 "value": {
-                  "0": ""
+                  "0": "A colonist's practical outfit, made for the days between arrival and the comfortable life promised in a recruitment notice. In Veles, clothes like these belong as readily to an established worker as to someone still looking for their first room."
                 }
               },
               "Identified": {
@@ -14753,12 +14783,14 @@
               },
               "DescIdentified": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "A colonist's practical outfit, made for the days between arrival and the comfortable life promised in a recruitment notice. In Veles, clothes like these belong as readily to an established worker as to someone still looking for their first room."
+                }
               },
               "Description": {
                 "type": "cexolocstring",
                 "value": {
-                  "0": ""
+                  "0": "A colonist's practical outfit, made for the days between arrival and the comfortable life promised in a recruitment notice. In Veles, clothes like these belong as readily to an established worker as to someone still looking for their first room."
                 }
               },
               "Identified": {
@@ -15961,11 +15993,15 @@
               },
               "DescIdentified": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "A corporate militia outfit with utilitarian seams and the disciplined outline Czerka likes to put between its property and everyone else. The fabric makes no distinction between guarding a warehouse and enforcing the company's idea of order."
+                }
               },
               "Description": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "A corporate militia outfit with utilitarian seams and the disciplined outline Czerka likes to put between its property and everyone else. The fabric makes no distinction between guarding a warehouse and enforcing the company's idea of order."
+                }
               },
               "Identified": {
                 "type": "byte",
@@ -16965,11 +17001,15 @@
               },
               "DescIdentified": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "A corporate militia outfit with utilitarian seams and the disciplined outline Czerka likes to put between its property and everyone else. The fabric makes no distinction between guarding a warehouse and enforcing the company's idea of order."
+                }
               },
               "Description": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "A corporate militia outfit with utilitarian seams and the disciplined outline Czerka likes to put between its property and everyone else. The fabric makes no distinction between guarding a warehouse and enforcing the company's idea of order."
+                }
               },
               "Identified": {
                 "type": "byte",
@@ -17969,11 +18009,15 @@
               },
               "DescIdentified": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "A corporate militia outfit with utilitarian seams and the disciplined outline Czerka likes to put between its property and everyone else. The fabric makes no distinction between guarding a warehouse and enforcing the company's idea of order."
+                }
               },
               "Description": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "A corporate militia outfit with utilitarian seams and the disciplined outline Czerka likes to put between its property and everyone else. The fabric makes no distinction between guarding a warehouse and enforcing the company's idea of order."
+                }
               },
               "Identified": {
                 "type": "byte",
@@ -19981,11 +20025,15 @@
               },
               "DescIdentified": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "A corporate militia outfit with utilitarian seams and the disciplined outline Czerka likes to put between its property and everyone else. The fabric makes no distinction between guarding a warehouse and enforcing the company's idea of order."
+                }
               },
               "Description": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "A corporate militia outfit with utilitarian seams and the disciplined outline Czerka likes to put between its property and everyone else. The fabric makes no distinction between guarding a warehouse and enforcing the company's idea of order."
+                }
               },
               "Identified": {
                 "type": "byte",
@@ -20985,11 +21033,15 @@
               },
               "DescIdentified": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "A corporate militia outfit with utilitarian seams and the disciplined outline Czerka likes to put between its property and everyone else. The fabric makes no distinction between guarding a warehouse and enforcing the company's idea of order."
+                }
               },
               "Description": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "A corporate militia outfit with utilitarian seams and the disciplined outline Czerka likes to put between its property and everyone else. The fabric makes no distinction between guarding a warehouse and enforcing the company's idea of order."
+                }
               },
               "Identified": {
                 "type": "byte",
@@ -22997,11 +23049,15 @@
               },
               "DescIdentified": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "This musician's outfit catches the light without leaving much cloth free to interfere with the performance. Its pockets and fastening ties remain practical, familiar necessities concealed beneath the part an audience pays to see."
+                }
               },
               "Description": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "This musician's outfit catches the light without leaving much cloth free to interfere with the performance. Its pockets and fastening ties remain practical, familiar necessities concealed beneath the part an audience pays to see."
+                }
               },
               "Identified": {
                 "type": "byte",
@@ -25011,12 +25067,14 @@
               },
               "DescIdentified": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "A hired tough's outfit with a serviceable collar and pockets that have seen better treatment than the sleeves. On an Exchange errand, looking expensive can be less useful than looking willing."
+                }
               },
               "Description": {
                 "type": "cexolocstring",
                 "value": {
-                  "0": ""
+                  "0": "A hired tough's outfit with a serviceable collar and pockets that have seen better treatment than the sleeves. On an Exchange errand, looking expensive can be less useful than looking willing."
                 }
               },
               "Identified": {
@@ -26207,12 +26265,14 @@
               },
               "DescIdentified": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "A hired tough's outfit with a serviceable collar and pockets that have seen better treatment than the sleeves. On an Exchange errand, looking expensive can be less useful than looking willing."
+                }
               },
               "Description": {
                 "type": "cexolocstring",
                 "value": {
-                  "0": ""
+                  "0": "A hired tough's outfit with a serviceable collar and pockets that have seen better treatment than the sleeves. On an Exchange errand, looking expensive can be less useful than looking willing."
                 }
               },
               "Identified": {
@@ -27403,12 +27463,14 @@
               },
               "DescIdentified": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "A colonist's practical outfit, made for the days between arrival and the comfortable life promised in a recruitment notice. In Veles, clothes like these belong as readily to an established worker as to someone still looking for their first room."
+                }
               },
               "Description": {
                 "type": "cexolocstring",
                 "value": {
-                  "0": ""
+                  "0": "A colonist's practical outfit, made for the days between arrival and the comfortable life promised in a recruitment notice. In Veles, clothes like these belong as readily to an established worker as to someone still looking for their first room."
                 }
               },
               "Identified": {
@@ -28411,12 +28473,14 @@
               },
               "DescIdentified": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "A colonist's practical outfit, made for the days between arrival and the comfortable life promised in a recruitment notice. In Veles, clothes like these belong as readily to an established worker as to someone still looking for their first room."
+                }
               },
               "Description": {
                 "type": "cexolocstring",
                 "value": {
-                  "0": ""
+                  "0": "A colonist's practical outfit, made for the days between arrival and the comfortable life promised in a recruitment notice. In Veles, clothes like these belong as readily to an established worker as to someone still looking for their first room."
                 }
               },
               "Identified": {
@@ -35107,37 +35171,6 @@
                       "type": "word",
                       "value": 0
                     }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "ChanceAppear": {
-                      "type": "byte",
-                      "value": 100
-                    },
-                    "CostTable": {
-                      "type": "byte",
-                      "value": 0
-                    },
-                    "CostValue": {
-                      "type": "word",
-                      "value": 0
-                    },
-                    "Param1": {
-                      "type": "byte",
-                      "value": 255
-                    },
-                    "Param1Value": {
-                      "type": "byte",
-                      "value": 0
-                    },
-                    "PropertyName": {
-                      "type": "word",
-                      "value": 134
-                    },
-                    "Subtype": {
-                      "type": "word",
-                      "value": 1
-                    }
                   }
                 ]
               },
@@ -36532,37 +36565,6 @@
                     "Subtype": {
                       "type": "word",
                       "value": 0
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "ChanceAppear": {
-                      "type": "byte",
-                      "value": 100
-                    },
-                    "CostTable": {
-                      "type": "byte",
-                      "value": 0
-                    },
-                    "CostValue": {
-                      "type": "word",
-                      "value": 0
-                    },
-                    "Param1": {
-                      "type": "byte",
-                      "value": 255
-                    },
-                    "Param1Value": {
-                      "type": "byte",
-                      "value": 0
-                    },
-                    "PropertyName": {
-                      "type": "word",
-                      "value": 134
-                    },
-                    "Subtype": {
-                      "type": "word",
-                      "value": 1
                     }
                   }
                 ]
@@ -38660,11 +38662,15 @@
               },
               "DescIdentified": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "Dust collects around the simple plates of this militia armor. Its inexpensive fittings tell the familiar Tatooine story of people expected to stand a watch without the supply train of a proper army."
+                }
               },
               "Description": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "Dust collects around the simple plates of this militia armor. Its inexpensive fittings tell the familiar Tatooine story of people expected to stand a watch without the supply train of a proper army."
+                }
               },
               "Identified": {
                 "type": "byte",
@@ -40298,11 +40304,15 @@
               },
               "DescIdentified": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "Dust collects around the simple plates of this militia armor. Its inexpensive fittings tell the familiar Tatooine story of people expected to stand a watch without the supply train of a proper army."
+                }
               },
               "Description": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "Dust collects around the simple plates of this militia armor. Its inexpensive fittings tell the familiar Tatooine story of people expected to stand a watch without the supply train of a proper army."
+                }
               },
               "Identified": {
                 "type": "byte",
@@ -41936,11 +41946,15 @@
               },
               "DescIdentified": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "Dust collects around the simple plates of this militia armor. Its inexpensive fittings tell the familiar Tatooine story of people expected to stand a watch without the supply train of a proper army."
+                }
               },
               "Description": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "Dust collects around the simple plates of this militia armor. Its inexpensive fittings tell the familiar Tatooine story of people expected to stand a watch without the supply train of a proper army."
+                }
               },
               "Identified": {
                 "type": "byte",
@@ -43574,11 +43588,15 @@
               },
               "DescIdentified": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "Dust collects around the simple plates of this militia armor. Its inexpensive fittings tell the familiar Tatooine story of people expected to stand a watch without the supply train of a proper army."
+                }
               },
               "Description": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "Dust collects around the simple plates of this militia armor. Its inexpensive fittings tell the familiar Tatooine story of people expected to stand a watch without the supply train of a proper army."
+                }
               },
               "Identified": {
                 "type": "byte",
@@ -47051,12 +47069,14 @@
               },
               "DescIdentified": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "A colonist's practical outfit, made for the days between arrival and the comfortable life promised in a recruitment notice. In Veles, clothes like these belong as readily to an established worker as to someone still looking for their first room."
+                }
               },
               "Description": {
                 "type": "cexolocstring",
                 "value": {
-                  "0": ""
+                  "0": "A colonist's practical outfit, made for the days between arrival and the comfortable life promised in a recruitment notice. In Veles, clothes like these belong as readily to an established worker as to someone still looking for their first room."
                 }
               },
               "Identified": {
@@ -48059,12 +48079,14 @@
               },
               "DescIdentified": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "A colonist's practical outfit, made for the days between arrival and the comfortable life promised in a recruitment notice. In Veles, clothes like these belong as readily to an established worker as to someone still looking for their first room."
+                }
               },
               "Description": {
                 "type": "cexolocstring",
                 "value": {
-                  "0": ""
+                  "0": "A colonist's practical outfit, made for the days between arrival and the comfortable life promised in a recruitment notice. In Veles, clothes like these belong as readily to an established worker as to someone still looking for their first room."
                 }
               },
               "Identified": {
@@ -49067,12 +49089,14 @@
               },
               "DescIdentified": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "A colonist's practical outfit, made for the days between arrival and the comfortable life promised in a recruitment notice. In Veles, clothes like these belong as readily to an established worker as to someone still looking for their first room."
+                }
               },
               "Description": {
                 "type": "cexolocstring",
                 "value": {
-                  "0": ""
+                  "0": "A colonist's practical outfit, made for the days between arrival and the comfortable life promised in a recruitment notice. In Veles, clothes like these belong as readily to an established worker as to someone still looking for their first room."
                 }
               },
               "Identified": {
@@ -50086,12 +50110,14 @@
               },
               "DescIdentified": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "A colonist's practical outfit, made for the days between arrival and the comfortable life promised in a recruitment notice. In Veles, clothes like these belong as readily to an established worker as to someone still looking for their first room."
+                }
               },
               "Description": {
                 "type": "cexolocstring",
                 "value": {
-                  "0": ""
+                  "0": "A colonist's practical outfit, made for the days between arrival and the comfortable life promised in a recruitment notice. In Veles, clothes like these belong as readily to an established worker as to someone still looking for their first room."
                 }
               },
               "Identified": {
@@ -51112,12 +51138,14 @@
               },
               "DescIdentified": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "A colonist's practical outfit, made for the days between arrival and the comfortable life promised in a recruitment notice. In Veles, clothes like these belong as readily to an established worker as to someone still looking for their first room."
+                }
               },
               "Description": {
                 "type": "cexolocstring",
                 "value": {
-                  "0": ""
+                  "0": "A colonist's practical outfit, made for the days between arrival and the comfortable life promised in a recruitment notice. In Veles, clothes like these belong as readily to an established worker as to someone still looking for their first room."
                 }
               },
               "Identified": {

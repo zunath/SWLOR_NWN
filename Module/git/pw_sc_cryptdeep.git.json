@@ -46643,7 +46643,7 @@
         },
         "Value": {
           "type": "int",
-          "value": 32
+          "value": 4
         }
       },
       {
@@ -46688,7 +46688,7 @@
         },
         "Value": {
           "type": "int",
-          "value": 56
+          "value": 60
         }
       }
     ]
@@ -46908,7 +46908,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Korriban Sith Crypt Depths - Crypt Breach Captain Spawn"
+            "0": "Mon Cala Sith Crypt Depths - Crypt Breach Captain Spawn"
           }
         },
         "MapNote": {
@@ -46971,7 +46971,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Korriban Sith Crypt Depths - Vitae Reaver Enforcer Spawn"
+            "0": "Mon Cala Sith Crypt Depths - Vitae Reaver Enforcer Spawn"
           }
         },
         "MapNote": {
@@ -47034,7 +47034,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Korriban Sith Crypt Depths - Umbral Raider Captain Spawn"
+            "0": "Mon Cala Sith Crypt Depths - Umbral Raider Captain Spawn"
           }
         },
         "MapNote": {
@@ -47097,7 +47097,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Korriban Sith Crypt Depths - General Capstone Spawn"
+            "0": "Mon Cala Sith Crypt Depths - General Capstone Spawn"
           }
         },
         "MapNote": {
@@ -47160,7 +47160,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Korriban Sith Crypt Depths - General Capstone Spawn"
+            "0": "Mon Cala Sith Crypt Depths - General Capstone Spawn"
           }
         },
         "MapNote": {
@@ -47223,7 +47223,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Korriban Sith Crypt Depths - General Capstone Spawn"
+            "0": "Mon Cala Sith Crypt Depths - General Capstone Spawn"
           }
         },
         "MapNote": {
@@ -47286,7 +47286,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Korriban Sith Crypt Depths - General Capstone Spawn"
+            "0": "Mon Cala Sith Crypt Depths - General Capstone Spawn"
           }
         },
         "MapNote": {
@@ -47349,7 +47349,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Korriban Sith Crypt Depths - General Capstone Spawn"
+            "0": "Mon Cala Sith Crypt Depths - General Capstone Spawn"
           }
         },
         "MapNote": {
@@ -47412,7 +47412,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Korriban Sith Crypt Depths - General Capstone Spawn"
+            "0": "Mon Cala Sith Crypt Depths - General Capstone Spawn"
           }
         },
         "MapNote": {
@@ -47475,7 +47475,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Korriban Sith Crypt Depths - General Capstone Spawn"
+            "0": "Mon Cala Sith Crypt Depths - General Capstone Spawn"
           }
         },
         "MapNote": {
@@ -47538,7 +47538,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Korriban Sith Crypt Depths - General Capstone Spawn"
+            "0": "Mon Cala Sith Crypt Depths - General Capstone Spawn"
           }
         },
         "MapNote": {
@@ -47601,7 +47601,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Korriban Sith Crypt Depths - General Capstone Spawn"
+            "0": "Mon Cala Sith Crypt Depths - General Capstone Spawn"
           }
         },
         "MapNote": {
@@ -47664,7 +47664,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Korriban Sith Crypt Depths - General Capstone Spawn"
+            "0": "Mon Cala Sith Crypt Depths - General Capstone Spawn"
           }
         },
         "MapNote": {
@@ -47727,7 +47727,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Korriban Sith Crypt Depths - General Capstone Spawn"
+            "0": "Mon Cala Sith Crypt Depths - General Capstone Spawn"
           }
         },
         "MapNote": {
@@ -47790,7 +47790,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Korriban Sith Crypt Depths - General Capstone Spawn"
+            "0": "Mon Cala Sith Crypt Depths - General Capstone Spawn"
           }
         },
         "MapNote": {
@@ -47853,7 +47853,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Korriban Sith Crypt Depths - General Capstone Spawn"
+            "0": "Mon Cala Sith Crypt Depths - General Capstone Spawn"
           }
         },
         "MapNote": {
@@ -47916,7 +47916,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Korriban Sith Crypt Depths - General Capstone Spawn"
+            "0": "Mon Cala Sith Crypt Depths - General Capstone Spawn"
           }
         },
         "MapNote": {
@@ -47979,7 +47979,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Korriban Sith Crypt Depths - General Capstone Spawn"
+            "0": "Mon Cala Sith Crypt Depths - General Capstone Spawn"
           }
         },
         "MapNote": {
@@ -48042,7 +48042,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Korriban Sith Crypt Depths - General Capstone Spawn"
+            "0": "Mon Cala Sith Crypt Depths - General Capstone Spawn"
           }
         },
         "MapNote": {
@@ -48105,7 +48105,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Korriban Sith Crypt Depths - General Capstone Spawn"
+            "0": "Mon Cala Sith Crypt Depths - General Capstone Spawn"
           }
         },
         "MapNote": {
@@ -48168,7 +48168,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Korriban Sith Crypt Depths - General Capstone Spawn"
+            "0": "Mon Cala Sith Crypt Depths - General Capstone Spawn"
           }
         },
         "MapNote": {
@@ -48231,7 +48231,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Korriban Sith Crypt Depths - General Capstone Spawn"
+            "0": "Mon Cala Sith Crypt Depths - General Capstone Spawn"
           }
         },
         "MapNote": {
@@ -48294,7 +48294,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Korriban Sith Crypt Depths - General Capstone Spawn"
+            "0": "Mon Cala Sith Crypt Depths - General Capstone Spawn"
           }
         },
         "MapNote": {
@@ -48357,7 +48357,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Korriban - Sith Crypt Depths - Rare Elite Spawn"
+            "0": "Mon Cala - Sith Crypt Depths - Rare Elite Spawn"
           }
         },
         "MapNote": {

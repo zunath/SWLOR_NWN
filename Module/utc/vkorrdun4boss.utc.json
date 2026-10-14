@@ -873,6 +873,21 @@
           "type": "cexostring",
           "value": "KORRIBAN_MASTER_RESOURCE,100,1"
         }
+      },
+      {
+        "__struct_id": 0,
+        "Name": {
+          "type": "cexostring",
+          "value": "LOOT_TABLE_10"
+        },
+        "Type": {
+          "type": "dword",
+          "value": 3
+        },
+        "Value": {
+          "type": "cexostring",
+          "value": "MUSIC_DISCS_BOSS,5,1"
+        }
       }
     ]
   },

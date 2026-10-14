@@ -25,16 +25,15 @@
     "value": 0
   },
   "DescIdentified": {
-    "id": 56620,
     "type": "cexolocstring",
     "value": {
-      "0": ""
+      "0": "These gloves have few distinguishing marks and no loose cuffs to catch on a latch. Their maker seems to have considered being remembered an unnecessary defect in a useful piece of equipment."
     }
   },
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": ""
+      "0": "These gloves have few distinguishing marks and no loose cuffs to catch on a latch. Their maker seems to have considered being remembered an unnecessary defect in a useful piece of equipment."
     }
   },
   "Identified": {

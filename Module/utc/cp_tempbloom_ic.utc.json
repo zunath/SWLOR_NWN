@@ -2,7 +2,7 @@
   "__data_type": "UTC ",
   "Appearance_Head": {
     "type": "byte",
-    "value": 103
+    "value": 61
   },
   "Appearance_Type": {
     "type": "word",
@@ -10,7 +10,7 @@
   },
   "ArmorPart_RFoot": {
     "type": "byte",
-    "value": 248
+    "value": 1
   },
   "BodyBag": {
     "type": "byte",
@@ -18,71 +18,71 @@
   },
   "BodyPart_Belt": {
     "type": "byte",
-    "value": 106
+    "value": 0
   },
   "BodyPart_LBicep": {
     "type": "byte",
-    "value": 246
+    "value": 1
   },
   "BodyPart_LFArm": {
     "type": "byte",
-    "value": 19
+    "value": 1
   },
   "BodyPart_LFoot": {
     "type": "byte",
-    "value": 248
+    "value": 1
   },
   "BodyPart_LHand": {
     "type": "byte",
-    "value": 198
+    "value": 1
   },
   "BodyPart_LShin": {
     "type": "byte",
-    "value": 241
+    "value": 1
   },
   "BodyPart_LShoul": {
     "type": "byte",
-    "value": 7
+    "value": 0
   },
   "BodyPart_LThigh": {
     "type": "byte",
-    "value": 246
+    "value": 1
   },
   "BodyPart_Neck": {
     "type": "byte",
-    "value": 109
+    "value": 1
   },
   "BodyPart_Pelvis": {
     "type": "byte",
-    "value": 237
+    "value": 1
   },
   "BodyPart_RBicep": {
     "type": "byte",
-    "value": 246
+    "value": 1
   },
   "BodyPart_RFArm": {
     "type": "byte",
-    "value": 19
+    "value": 1
   },
   "BodyPart_RHand": {
     "type": "byte",
-    "value": 198
+    "value": 1
   },
   "BodyPart_RShin": {
     "type": "byte",
-    "value": 241
+    "value": 1
   },
   "BodyPart_RShoul": {
     "type": "byte",
-    "value": 7
+    "value": 0
   },
   "BodyPart_RThigh": {
     "type": "byte",
-    "value": 246
+    "value": 1
   },
   "BodyPart_Torso": {
     "type": "byte",
-    "value": 249
+    "value": 1
   },
   "Cha": {
     "type": "byte",
@@ -110,11 +110,11 @@
   },
   "Color_Hair": {
     "type": "byte",
-    "value": 63
+    "value": 23
   },
   "Color_Skin": {
     "type": "byte",
-    "value": 117
+    "value": 4
   },
   "Color_Tattoo1": {
     "type": "byte",
@@ -126,7 +126,7 @@
   },
   "Comment": {
     "type": "cexostring",
-    "value": "Capstone quest creature for Tempest Bloom in Smuggler's Moon Fight Club Backrooms."
+    "value": "Tempest Bloom inner circle member in Smuggler's Moon - Fight Club Backrooms."
   },
   "Con": {
     "type": "byte",
@@ -155,7 +155,7 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "A level 50 capstone quest enemy for Tempest Bloom in Smuggler's Moon Fight Club Backrooms."
+      "0": "A Zabrak of the promoter's inner circle, once one of Iven Brask's best students, now paid to fight and to teach the Tempest Bloom to the amateurs of the Fight Club Backrooms. He wields a twin blade and keeps the others close."
     }
   },
   "Dex": {
@@ -169,6 +169,13 @@
   "Equip_ItemList": {
     "type": "list",
     "value": [
+      {
+        "__struct_id": 2,
+        "EquippedRes": {
+          "type": "resref",
+          "value": "criminal003"
+        }
+      },
       {
         "__struct_id": 16,
         "EquippedRes": {
@@ -352,6 +359,20 @@
           "type": "word",
           "value": 2727
         }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
+          "value": 44
+        }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
+          "value": 45
+        }
       }
     ]
   },
@@ -437,11 +458,11 @@
   },
   "PortraitId": {
     "type": "word",
-    "value": 129
+    "value": 3653
   },
   "Race": {
     "type": "byte",
-    "value": 15
+    "value": 154
   },
   "refbonus": {
     "type": "short",

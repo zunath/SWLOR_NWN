@@ -34,7 +34,7 @@
   },
   "Comment": {
     "type": "cexostring",
-    "value": "Capstone quest creature for Force-Bonded Beast in Dathomir Grotto Apex Den."
+    "value": "Force-Bonded Beast master in Dathomir - Sealed Apex Den."
   },
   "Con": {
     "type": "byte",
@@ -63,7 +63,7 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "A level 50 capstone quest enemy for Force-Bonded Beast in Dathomir Grotto Apex Den."
+      "0": "The eldest wraid in the den, huge and scarred, with a stillness that has nothing of choice in it. He was the first beast the handlers ever forced the old binding rite upon, and that bond still holds with no one left on the other end."
     }
   },
   "Dex": {

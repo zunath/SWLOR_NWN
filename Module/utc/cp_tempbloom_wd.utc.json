@@ -2,15 +2,15 @@
   "__data_type": "UTC ",
   "Appearance_Head": {
     "type": "byte",
-    "value": 244
+    "value": 64
   },
   "Appearance_Type": {
     "type": "word",
-    "value": 10180
+    "value": 6
   },
   "ArmorPart_RFoot": {
     "type": "byte",
-    "value": 160
+    "value": 1
   },
   "BodyBag": {
     "type": "byte",
@@ -30,15 +30,15 @@
   },
   "BodyPart_LFoot": {
     "type": "byte",
-    "value": 160
+    "value": 1
   },
   "BodyPart_LHand": {
     "type": "byte",
-    "value": 63
+    "value": 1
   },
   "BodyPart_LShin": {
     "type": "byte",
-    "value": 243
+    "value": 1
   },
   "BodyPart_LShoul": {
     "type": "byte",
@@ -46,15 +46,15 @@
   },
   "BodyPart_LThigh": {
     "type": "byte",
-    "value": 241
+    "value": 1
   },
   "BodyPart_Neck": {
     "type": "byte",
-    "value": 107
+    "value": 1
   },
   "BodyPart_Pelvis": {
     "type": "byte",
-    "value": 237
+    "value": 1
   },
   "BodyPart_RBicep": {
     "type": "byte",
@@ -66,11 +66,11 @@
   },
   "BodyPart_RHand": {
     "type": "byte",
-    "value": 63
+    "value": 1
   },
   "BodyPart_RShin": {
     "type": "byte",
-    "value": 243
+    "value": 1
   },
   "BodyPart_RShoul": {
     "type": "byte",
@@ -78,11 +78,11 @@
   },
   "BodyPart_RThigh": {
     "type": "byte",
-    "value": 241
+    "value": 1
   },
   "BodyPart_Torso": {
     "type": "byte",
-    "value": 54
+    "value": 1
   },
   "Cha": {
     "type": "byte",
@@ -110,11 +110,11 @@
   },
   "Color_Hair": {
     "type": "byte",
-    "value": 1
+    "value": 7
   },
   "Color_Skin": {
     "type": "byte",
-    "value": 138
+    "value": 0
   },
   "Color_Tattoo1": {
     "type": "byte",
@@ -126,7 +126,7 @@
   },
   "Comment": {
     "type": "cexostring",
-    "value": "Capstone quest creature for Tempest Bloom in Smuggler's Moon Fight Club Backrooms."
+    "value": "Tempest Bloom warden in Smuggler's Moon - Fight Club Backrooms."
   },
   "Con": {
     "type": "byte",
@@ -142,7 +142,7 @@
   },
   "CurrentHitPoints": {
     "type": "short",
-    "value": 4611
+    "value": 5425
   },
   "DecayTime": {
     "type": "dword",
@@ -155,7 +155,7 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "A level 50 capstone quest enemy for Tempest Bloom in Smuggler's Moon Fight Club Backrooms."
+      "0": "A human in a brown captain's coat, a pit champion of fourteen seasons without a loss who now keeps the deep door of the backrooms. The pit sigil he wears cracked down the middle the night his own trainer died on his twin blade."
     }
   },
   "Dex": {
@@ -169,6 +169,13 @@
   "Equip_ItemList": {
     "type": "list",
     "value": [
+      {
+        "__struct_id": 2,
+        "EquippedRes": {
+          "type": "resref",
+          "value": "shipcaptainbrwm"
+        }
+      },
       {
         "__struct_id": 16,
         "EquippedRes": {
@@ -366,6 +373,20 @@
           "type": "word",
           "value": 2726
         }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
+          "value": 44
+        }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
+          "value": 45
+        }
       }
     ]
   },
@@ -389,7 +410,7 @@
   },
   "HitPoints": {
     "type": "short",
-    "value": 4503
+    "value": 5317
   },
   "Int": {
     "type": "byte",
@@ -423,7 +444,7 @@
   },
   "MaxHitPoints": {
     "type": "short",
-    "value": 4611
+    "value": 5425
   },
   "NaturalAC": {
     "type": "byte",
@@ -451,11 +472,11 @@
   },
   "PortraitId": {
     "type": "word",
-    "value": 4446
+    "value": 4115
   },
   "Race": {
     "type": "byte",
-    "value": 15
+    "value": 6
   },
   "refbonus": {
     "type": "short",
@@ -716,7 +737,7 @@
   },
   "SoundSetFile": {
     "type": "word",
-    "value": 448
+    "value": 413
   },
   "SpecAbilityList": {
     "type": "list",

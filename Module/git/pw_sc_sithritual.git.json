@@ -8182,7 +8182,7 @@
         },
         "Value": {
           "type": "int",
-          "value": 32
+          "value": 4
         }
       },
       {
@@ -8404,7 +8404,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Korriban Sith Crypt Depths - Crypt Expedition Leader Spawn"
+            "0": "Mon Cala Sith Crypt Depths - Crypt Expedition Leader Spawn"
           }
         },
         "MapNote": {
@@ -8475,7 +8475,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Korriban Sith Crypt Depths - Vitae Reaver Chief Spawn"
+            "0": "Mon Cala Sith Crypt Depths - Vitae Reaver Chief Spawn"
           }
         },
         "MapNote": {
@@ -8546,7 +8546,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Korriban Sith Crypt Depths - Umbral Raider Commander Spawn"
+            "0": "Mon Cala Sith Crypt Depths - Umbral Raider Commander Spawn"
           }
         },
         "MapNote": {

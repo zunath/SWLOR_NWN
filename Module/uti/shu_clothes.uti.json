@@ -110,11 +110,15 @@
   },
   "DescIdentified": {
     "type": "cexolocstring",
-    "value": {}
+    "value": {
+      "0": "Shu's outfit has a comfortable fit around its older fastenings. A few discreet replacement seams preserve the shape its owner knows, improving the garment without asking it to become a different one."
+    }
   },
   "Description": {
     "type": "cexolocstring",
-    "value": {}
+    "value": {
+      "0": "Shu's outfit has a comfortable fit around its older fastenings. A few discreet replacement seams preserve the shape its owner knows, improving the garment without asking it to become a different one."
+    }
   },
   "Identified": {
     "type": "byte",

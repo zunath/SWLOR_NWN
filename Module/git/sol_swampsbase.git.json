@@ -5548,12 +5548,14 @@
               },
               "DescIdentified": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "Artemis' robes have a composed, almost gentle drape that becomes more exacting under close inspection. The seams and bindings are maintained to the same severe standard, allowing softness of cloth without carelessness of presentation."
+                }
               },
               "Description": {
                 "type": "cexolocstring",
                 "value": {
-                  "0": ""
+                  "0": "Artemis' robes have a composed, almost gentle drape that becomes more exacting under close inspection. The seams and bindings are maintained to the same severe standard, allowing softness of cloth without carelessness of presentation."
                 }
               },
               "Identified": {
@@ -7318,37 +7320,6 @@
                     },
                     "CostTable": {
                       "type": "byte",
-                      "value": 0
-                    },
-                    "CostValue": {
-                      "type": "word",
-                      "value": 0
-                    },
-                    "Param1": {
-                      "type": "byte",
-                      "value": 255
-                    },
-                    "Param1Value": {
-                      "type": "byte",
-                      "value": 0
-                    },
-                    "PropertyName": {
-                      "type": "word",
-                      "value": 134
-                    },
-                    "Subtype": {
-                      "type": "word",
-                      "value": 1
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "ChanceAppear": {
-                      "type": "byte",
-                      "value": 100
-                    },
-                    "CostTable": {
-                      "type": "byte",
                       "value": 34
                     },
                     "CostValue": {
@@ -8741,37 +8712,6 @@
                     "Subtype": {
                       "type": "word",
                       "value": 0
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "ChanceAppear": {
-                      "type": "byte",
-                      "value": 100
-                    },
-                    "CostTable": {
-                      "type": "byte",
-                      "value": 0
-                    },
-                    "CostValue": {
-                      "type": "word",
-                      "value": 0
-                    },
-                    "Param1": {
-                      "type": "byte",
-                      "value": 255
-                    },
-                    "Param1Value": {
-                      "type": "byte",
-                      "value": 0
-                    },
-                    "PropertyName": {
-                      "type": "word",
-                      "value": 134
-                    },
-                    "Subtype": {
-                      "type": "word",
-                      "value": 1
                     }
                   },
                   {
@@ -10193,12 +10133,14 @@
               },
               "DescIdentified": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "Artemis' robes have a composed, almost gentle drape that becomes more exacting under close inspection. The seams and bindings are maintained to the same severe standard, allowing softness of cloth without carelessness of presentation."
+                }
               },
               "Description": {
                 "type": "cexolocstring",
                 "value": {
-                  "0": ""
+                  "0": "Artemis' robes have a composed, almost gentle drape that becomes more exacting under close inspection. The seams and bindings are maintained to the same severe standard, allowing softness of cloth without carelessness of presentation."
                 }
               },
               "Identified": {
@@ -76988,7 +76930,7 @@
         },
         "OnUsed": {
           "type": "resref",
-          "value": "x0_o2_use_chair"
+          "value": ""
         },
         "OnUserDefined": {
           "type": "resref",
@@ -77213,7 +77155,7 @@
         },
         "OnUsed": {
           "type": "resref",
-          "value": "x0_o2_use_chair"
+          "value": ""
         },
         "OnUserDefined": {
           "type": "resref",
@@ -77438,7 +77380,7 @@
         },
         "OnUsed": {
           "type": "resref",
-          "value": "x0_o2_use_chair"
+          "value": ""
         },
         "OnUserDefined": {
           "type": "resref",

@@ -39,10 +39,10 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
                     {
                         if (remainingBait > 0)
                         {
+                            // Set the remaining count before acquiring: AcquireItem merges into existing stacks.
                             var bait = ObjectPlugin.Deserialize(existingBait);
-                            ObjectPlugin.AcquireItem(user, bait);
-
                             SetItemStackSize(bait, remainingBait);
+                            ObjectPlugin.AcquireItem(user, bait);
                             SendMessageToPC(user, $"Unloaded bait.");
                         }
 

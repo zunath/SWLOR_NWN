@@ -19,12 +19,24 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
     {
         private const int MaxNotes = 50;
 
-        [NWNEventHandler(ScriptName.OnExamineObjectBefore)]
+        [NWNEventHandler(ScriptName.OnExamineObjectAfter)]
         public static void ExaminePlayer()
         {
-            var dm = OBJECT_SELF;
-            var target = StringToObject(EventsPlugin.GetEventData("EXAMINEE_OBJECT_ID"));
+            ShowExamineWindow(OBJECT_SELF, StringToObject(EventsPlugin.GetEventData("EXAMINEE_OBJECT_ID")));
+        }
 
+        [NWNEventHandler(ScriptName.OnModuleGuiEvent)]
+        public static void ExamineDisabledPlayerPanel()
+        {
+            if (GetLastGuiEventType() != GuiEventType.DisabledPanelAttemptOpen ||
+                (GuiPanel)GetLastGuiEventInteger() != GuiPanel.ExamineCreature)
+                return;
+
+            ShowExamineWindow(GetLastGuiEventPlayer(), GetLastGuiEventObject());
+        }
+
+        public static void ShowExamineWindow(uint dm, uint target)
+        {
             if (!GetIsDM(dm) && !GetIsDMPossessed(dm))
                 return;
 
@@ -33,7 +45,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             var payload = new DMPlayerExaminePayload(target);
 
-            EventsPlugin.SkipEvent();
+            // The NWNX examine hook cannot skip the native data packet. Close its panel
+            // after that packet, then route subsequent attempts through the disabled-panel event.
+            SetGuiPanelDisabled(dm, GuiPanel.ExamineCreature, true, target);
             Gui.ClosePlayerWindow(dm, GuiWindowType.DMPlayerExamine);
             Gui.TogglePlayerWindow(dm, GuiWindowType.DMPlayerExamine, payload);
         }
@@ -44,6 +58,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         public const string PartialView = "PARTIAL";
         public const string DetailView = "DETAIL_VIEW";
+        public const string DescriptionElement = "dm_examine_description";
         public const string SkillsView = "SKILLS_VIEW";
         public const string PerksView = "PERKS_VIEW";
         public const string EffectsView = "EFFECTS_VIEW";
@@ -371,6 +386,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         {
             Name = UtilPlugin.StripColors(PlayerName.GetDisplayName(Player, _target));
             Description = GetDescription(_target);
+            SetGroupLayout(DescriptionElement,
+                ExamineItemText.BuildLayout<DMPlayerExamineViewModel>(Description, 96f, 480f));
             PortraitResref = GetPortraitResRef(_target) + "l";
             CharacterType = GetClassByPosition(1, _target) == ClassType.ForceSensitive
                 ? "Force Sensitive" : "Standard";

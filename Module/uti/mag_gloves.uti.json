@@ -25,16 +25,15 @@
     "value": 0
   },
   "DescIdentified": {
-    "id": 56620,
     "type": "cexolocstring",
     "value": {
-      "0": ""
+      "0": "Subtle markings have been worked into the cuffs of these gloves. There is no obvious beginning to the pattern, and a patient observer could spend rather too long looking for one."
     }
   },
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": ""
+      "0": "Subtle markings have been worked into the cuffs of these gloves. There is no obvious beginning to the pattern, and a patient observer could spend rather too long looking for one."
     }
   },
   "Identified": {

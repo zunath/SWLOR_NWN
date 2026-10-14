@@ -27,6 +27,46 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
     {
         private sealed record ArmorSnapshot(uint Item, int[] Models, int[] Colors, int[] Markers, int[] Projections);
 
+        [EngineTest("Cloak RGB edits persist across editor reopening and native palette reset", Category = "CloakRGB", TimeoutSeconds = 30f)]
+        public static async Task CloakRgbPersistenceAndPaletteReset(EngineTestContext ctx)
+        {
+            var civilian = await SpawnCivilianAsync(ctx);
+            var cloak = await ctx.EquipItemAsync(civilian, "advent_cloak", InventorySlot.Cloak);
+            await RunAssignedAsync(ctx, civilian, () =>
+            {
+                EquippedItemAppearance.Set(cloak, ItemAppearanceType.SimpleModel, -1, 175);
+                EquippedItemAppearance.Refresh(civilian, cloak);
+                TintMapService.ApplyCurrentColors(civilian);
+                var selection = TintMapModelResolver.GetCurrentSelections(civilian)
+                    .Single(value => value.Material.Resref == CloakTintRenderer.MaterialResref);
+                ctx.AssertEqual("cloak_062", selection.ModelResref, "Cloak registry follows TEXTURE, independently of MODEL 4");
+                var editor = BindWithoutClient(civilian);
+                editor.OnSelectEquipment()();
+                editor.SelectedItemTypeIndex = 2;
+                editor.SelectedColorCategoryIndex = (int)AppearanceArmorColor.Cloth1;
+                InvokePrivate(editor, "LoadTintMapEditor");
+                ctx.Assert(editor.IsCustomTintEditable, "Cloak Cloth1 enables RGB");
+                var color = new TintMapColor(17, 83, 209);
+                ApplyWatchedValue(editor, nameof(editor.SelectedTintColor), new GuiColor(color.Red, color.Green, color.Blue));
+                TintMapEngineTests.AssertNativeRgb(ctx, civilian, CloakTintRenderer.MaterialResref, TintMapLayerType.Cloth1, color);
+                editor = BindWithoutClient(civilian);
+                editor.OnSelectEquipment()();
+                editor.SelectedItemTypeIndex = 2;
+                editor.SelectedColorCategoryIndex = (int)AppearanceArmorColor.Cloth1;
+                InvokePrivate(editor, "LoadTintMapEditor");
+                AssertTintInput(ctx, editor, color, "Reopened cloak RGB");
+                editor.OnClickColorPalette(77)();
+                ctx.AssertEqual(0, GetLocalInt(cloak, TintMapVariable.GetItemGlobalColorStateName(TintMapLayerType.Cloth1)),
+                    "Native palette selection clears the cloak RGB override");
+                ctx.AssertEqual(77, GetItemAppearance(cloak, ItemAppearanceType.ArmorColor, (int)AppearanceArmorColor.Cloth1),
+                    "Native cloak palette is retained for the inventory icon");
+                ctx.AssertEqual(cloak, GetItemInSlot(InventorySlot.Cloak, civilian), "RGB does not replace or unequip the cloak");
+            });
+            await ctx.DelaySecondsAsync(1f);
+            await RunAssignedAsync(ctx, civilian, () =>
+                TintMapService.ApplyCurrentColors(civilian));
+        }
+
         [EngineTest("Body customization updates exposed hands and biceps while preserving clothing", Category = "BodyCustomization", TimeoutSeconds = 30f)]
         public static async Task ExposedBodyPartsFollowEditorSelections(EngineTestContext ctx)
         {

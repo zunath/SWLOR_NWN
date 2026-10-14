@@ -6335,11 +6335,15 @@
                     },
                     "DescIdentified": {
                       "type": "cexolocstring",
-                      "value": {}
+                      "value": {
+                        "0": "A leather tunic with uncomplicated fastenings and a lining easy to reach for repairs. It is the sort of modest purchase that can follow a traveller through several fortunes without ever becoming the reason for one."
+                      }
                     },
                     "Description": {
                       "type": "cexolocstring",
-                      "value": {}
+                      "value": {
+                        "0": "A leather tunic with uncomplicated fastenings and a lining easy to reach for repairs. It is the sort of modest purchase that can follow a traveller through several fortunes without ever becoming the reason for one."
+                      }
                     },
                     "Identified": {
                       "type": "byte",
@@ -6627,12 +6631,14 @@
                     },
                     "DescIdentified": {
                       "type": "cexolocstring",
-                      "value": {}
+                      "value": {
+                        "0": "Plain robes with close-set inner bindings and little overt decoration. Their modest appearance gives a Force student's first practice fewer distractions than the grander garments sometimes advertised beside them."
+                      }
                     },
                     "Description": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": ""
+                        "0": "Plain robes with close-set inner bindings and little overt decoration. Their modest appearance gives a Force student's first practice fewer distractions than the grander garments sometimes advertised beside them."
                       }
                     },
                     "Identified": {
@@ -6836,13 +6842,16 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 67475,
                       "type": "cexolocstring",
-                      "value": {}
+                      "value": {
+                        "0": "Reinforced sections give this power glove a practical, slightly mechanical outline. Its fastenings remain easy to reach, prepared for the small adjustments that separate equipment owned from equipment comfortably used."
+                      }
                     },
                     "Description": {
                       "type": "cexolocstring",
-                      "value": {}
+                      "value": {
+                        "0": "Reinforced sections give this power glove a practical, slightly mechanical outline. Its fastenings remain easy to reach, prepared for the small adjustments that separate equipment owned from equipment comfortably used."
+                      }
                     },
                     "Identified": {
                       "type": "byte",
@@ -7087,11 +7096,15 @@
                     },
                     "DescIdentified": {
                       "type": "cexolocstring",
-                      "value": {}
+                      "value": {
+                        "0": "The plain surfaces of this breastplate show the smith's work without much attempt to dress it as ceremony. Its straightforward fittings promise only a properly fitted piece of equipment, leaving larger ambitions to the wearer."
+                      }
                     },
                     "Description": {
                       "type": "cexolocstring",
-                      "value": {}
+                      "value": {
+                        "0": "The plain surfaces of this breastplate show the smith's work without much attempt to dress it as ceremony. Its straightforward fittings promise only a properly fitted piece of equipment, leaving larger ambitions to the wearer."
+                      }
                     },
                     "Identified": {
                       "type": "byte",
@@ -11488,11 +11501,15 @@
                     },
                     "DescIdentified": {
                       "type": "cexolocstring",
-                      "value": {}
+                      "value": {
+                        "0": "A compact kama with an inward-curving blade and an unadorned grip. Its simple construction leaves the eye with nowhere to settle except the sharp part, an economical sort of introduction."
+                      }
                     },
                     "Description": {
                       "type": "cexolocstring",
-                      "value": {}
+                      "value": {
+                        "0": "A compact kama with an inward-curving blade and an unadorned grip. Its simple construction leaves the eye with nowhere to settle except the sharp part, an economical sort of introduction."
+                      }
                     },
                     "Identified": {
                       "type": "byte",
@@ -12702,7 +12719,6 @@
                       "value": {}
                     },
                     "Description": {
-                      "id": 110846,
                       "type": "cexolocstring",
                       "value": {}
                     },

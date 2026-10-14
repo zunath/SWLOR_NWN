@@ -341,12 +341,14 @@
               },
               "DescIdentified": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "Muted green panels break up the outline of this working outfit. A hunter could wear it among brush or in a crowded port without looking as though they had dressed exclusively for either place."
+                }
               },
               "Description": {
                 "type": "cexolocstring",
                 "value": {
-                  "0": ""
+                  "0": "Muted green panels break up the outline of this working outfit. A hunter could wear it among brush or in a crowded port without looking as though they had dressed exclusively for either place."
                 }
               },
               "Identified": {
@@ -741,12 +743,14 @@
               },
               "DescIdentified": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "A carefully understated smuggler's outfit with very little to catch the eye at a checkpoint. The strongest seams are tucked inside, preserving the exterior's convincing air of being nothing worth examining."
+                }
               },
               "Description": {
                 "type": "cexolocstring",
                 "value": {
-                  "0": ""
+                  "0": "A carefully understated smuggler's outfit with very little to catch the eye at a checkpoint. The strongest seams are tucked inside, preserving the exterior's convincing air of being nothing worth examining."
                 }
               },
               "Identified": {
@@ -1013,12 +1017,14 @@
               },
               "DescIdentified": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "This portside outfit has discreet fastenings and a collar that can be worn several ways. Its flexibility suits a smuggler who would rather change their appearance than explain why the last dockmaster remembers them."
+                }
               },
               "Description": {
                 "type": "cexolocstring",
                 "value": {
-                  "0": ""
+                  "0": "This portside outfit has discreet fastenings and a collar that can be worn several ways. Its flexibility suits a smuggler who would rather change their appearance than explain why the last dockmaster remembers them."
                 }
               },
               "Identified": {
@@ -1285,12 +1291,14 @@
               },
               "DescIdentified": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "A smuggler's outfit cut to pass through a busy port without explaining too much about its owner. The lining has more careful stitching than the outside, particularly around places that an impatient searcher might overlook."
+                }
               },
               "Description": {
                 "type": "cexolocstring",
                 "value": {
-                  "0": ""
+                  "0": "A smuggler's outfit cut to pass through a busy port without explaining too much about its owner. The lining has more careful stitching than the outside, particularly around places that an impatient searcher might overlook."
                 }
               },
               "Identified": {
@@ -1557,12 +1565,14 @@
               },
               "DescIdentified": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "Light, loosely layered clothing suited to Tatooine's heat and abrasive dust. The easy cut leaves room to move while giving its wearer something to pull close when the wind changes its mind."
+                }
               },
               "Description": {
                 "type": "cexolocstring",
                 "value": {
-                  "0": ""
+                  "0": "Light, loosely layered clothing suited to Tatooine's heat and abrasive dust. The easy cut leaves room to move while giving its wearer something to pull close when the wind changes its mind."
                 }
               },
               "Identified": {
@@ -1828,12 +1838,14 @@
               },
               "DescIdentified": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "Reika's leathers have been kept supple through use, with older seams dressed neatly around newer repairs. They favor a ready stance over a formal one, even when nobody has yet given a reason to move."
+                }
               },
               "Description": {
                 "type": "cexolocstring",
                 "value": {
-                  "0": ""
+                  "0": "Reika's leathers have been kept supple through use, with older seams dressed neatly around newer repairs. They favor a ready stance over a formal one, even when nobody has yet given a reason to move."
                 }
               },
               "Identified": {
@@ -3270,11 +3282,15 @@
               },
               "DescIdentified": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "A corporate militia outfit with utilitarian seams and the disciplined outline Czerka likes to put between its property and everyone else. The fabric makes no distinction between guarding a warehouse and enforcing the company's idea of order."
+                }
               },
               "Description": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "A corporate militia outfit with utilitarian seams and the disciplined outline Czerka likes to put between its property and everyone else. The fabric makes no distinction between guarding a warehouse and enforcing the company's idea of order."
+                }
               },
               "Identified": {
                 "type": "byte",
@@ -4160,11 +4176,15 @@
               },
               "DescIdentified": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "Black coveralls give these working clothes an orderly appearance even after a hard shift. The concealed lining is more revealing, carrying the wear of tools and hurried repairs that the dark outside keeps discreet."
+                }
               },
               "Description": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "Black coveralls give these working clothes an orderly appearance even after a hard shift. The concealed lining is more revealing, carrying the wear of tools and hurried repairs that the dark outside keeps discreet."
+                }
               },
               "Identified": {
                 "type": "byte",
@@ -5166,11 +5186,15 @@
               },
               "DescIdentified": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "Black coveralls give these working clothes an orderly appearance even after a hard shift. The concealed lining is more revealing, carrying the wear of tools and hurried repairs that the dark outside keeps discreet."
+                }
               },
               "Description": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "Black coveralls give these working clothes an orderly appearance even after a hard shift. The concealed lining is more revealing, carrying the wear of tools and hurried repairs that the dark outside keeps discreet."
+                }
               },
               "Identified": {
                 "type": "byte",
@@ -6755,11 +6779,15 @@
               },
               "DescIdentified": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "Black coveralls give these working clothes an orderly appearance even after a hard shift. The concealed lining is more revealing, carrying the wear of tools and hurried repairs that the dark outside keeps discreet."
+                }
               },
               "Description": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "Black coveralls give these working clothes an orderly appearance even after a hard shift. The concealed lining is more revealing, carrying the wear of tools and hurried repairs that the dark outside keeps discreet."
+                }
               },
               "Identified": {
                 "type": "byte",

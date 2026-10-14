@@ -110,12 +110,14 @@
   },
   "DescIdentified": {
     "type": "cexolocstring",
-    "value": {}
+    "value": {
+      "0": "Neph's clothes look comfortably broken in around the shoulders and cuffs. Their lining carries more recent repairs, allowing an outfit with a familiar appearance to keep a few newer advantages to itself."
+    }
   },
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": ""
+      "0": "Neph's clothes look comfortably broken in around the shoulders and cuffs. Their lining carries more recent repairs, allowing an outfit with a familiar appearance to keep a few newer advantages to itself."
     }
   },
   "Identified": {

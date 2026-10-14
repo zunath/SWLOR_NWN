@@ -110,12 +110,14 @@
   },
   "DescIdentified": {
     "type": "cexolocstring",
-    "value": {}
+    "value": {
+      "0": "Katar's armor has been refitted along its load-bearing straps. Old mounting marks remain beside the newer work, recording a series of choices made for the person inside rather than the observer outside."
+    }
   },
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": ""
+      "0": "Katar's armor has been refitted along its load-bearing straps. Old mounting marks remain beside the newer work, recording a series of choices made for the person inside rather than the observer outside."
     }
   },
   "Identified": {

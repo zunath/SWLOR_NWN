@@ -50297,7 +50297,7 @@
         },
         "Value": {
           "type": "int",
-          "value": 32
+          "value": 2
         }
       },
       {
@@ -50342,7 +50342,7 @@
         },
         "Value": {
           "type": "int",
-          "value": 57
+          "value": 36
         }
       }
     ]
@@ -50562,7 +50562,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Korriban Forge Caverns - Absolute Defense Warden Spawn"
+            "0": "Tatooine Forge Caverns - Absolute Defense Warden Spawn"
           }
         },
         "MapNote": {
@@ -50625,7 +50625,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Korriban Forge Caverns - Soul Ascension Warden Spawn"
+            "0": "Tatooine Forge Caverns - Soul Ascension Warden Spawn"
           }
         },
         "MapNote": {
@@ -50688,7 +50688,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Korriban Forge Caverns - Forcebane Warden Spawn"
+            "0": "Tatooine Forge Caverns - Forcebane Warden Spawn"
           }
         },
         "MapNote": {
@@ -50751,7 +50751,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Korriban Forge Caverns - General Capstone Spawn"
+            "0": "Tatooine Forge Caverns - General Capstone Spawn"
           }
         },
         "MapNote": {
@@ -50814,7 +50814,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Korriban Forge Caverns - General Capstone Spawn"
+            "0": "Tatooine Forge Caverns - General Capstone Spawn"
           }
         },
         "MapNote": {
@@ -50877,7 +50877,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Korriban Forge Caverns - General Capstone Spawn"
+            "0": "Tatooine Forge Caverns - General Capstone Spawn"
           }
         },
         "MapNote": {
@@ -50940,7 +50940,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Korriban Forge Caverns - General Capstone Spawn"
+            "0": "Tatooine Forge Caverns - General Capstone Spawn"
           }
         },
         "MapNote": {
@@ -51003,7 +51003,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Korriban Forge Caverns - General Capstone Spawn"
+            "0": "Tatooine Forge Caverns - General Capstone Spawn"
           }
         },
         "MapNote": {
@@ -51066,7 +51066,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Korriban Forge Caverns - General Capstone Spawn"
+            "0": "Tatooine Forge Caverns - General Capstone Spawn"
           }
         },
         "MapNote": {
@@ -51129,7 +51129,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Korriban Forge Caverns - General Capstone Spawn"
+            "0": "Tatooine Forge Caverns - General Capstone Spawn"
           }
         },
         "MapNote": {
@@ -51192,7 +51192,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Korriban Forge Caverns - General Capstone Spawn"
+            "0": "Tatooine Forge Caverns - General Capstone Spawn"
           }
         },
         "MapNote": {
@@ -51255,7 +51255,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Korriban Forge Caverns - General Capstone Spawn"
+            "0": "Tatooine Forge Caverns - General Capstone Spawn"
           }
         },
         "MapNote": {
@@ -51318,7 +51318,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Korriban Forge Caverns - General Capstone Spawn"
+            "0": "Tatooine Forge Caverns - General Capstone Spawn"
           }
         },
         "MapNote": {
@@ -51381,7 +51381,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Korriban Forge Caverns - General Capstone Spawn"
+            "0": "Tatooine Forge Caverns - General Capstone Spawn"
           }
         },
         "MapNote": {
@@ -51444,7 +51444,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Korriban Forge Caverns - General Capstone Spawn"
+            "0": "Tatooine Forge Caverns - General Capstone Spawn"
           }
         },
         "MapNote": {
@@ -51507,7 +51507,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Korriban Forge Caverns - General Capstone Spawn"
+            "0": "Tatooine Forge Caverns - General Capstone Spawn"
           }
         },
         "MapNote": {
@@ -51570,7 +51570,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Korriban Forge Caverns - General Capstone Spawn"
+            "0": "Tatooine Forge Caverns - General Capstone Spawn"
           }
         },
         "MapNote": {
@@ -51633,7 +51633,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Korriban Forge Caverns - General Capstone Spawn"
+            "0": "Tatooine Forge Caverns - General Capstone Spawn"
           }
         },
         "MapNote": {
@@ -51696,7 +51696,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Korriban Forge Caverns - General Capstone Spawn"
+            "0": "Tatooine Forge Caverns - General Capstone Spawn"
           }
         },
         "MapNote": {
@@ -51759,7 +51759,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Korriban Forge Caverns - General Capstone Spawn"
+            "0": "Tatooine Forge Caverns - General Capstone Spawn"
           }
         },
         "MapNote": {
@@ -51822,7 +51822,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Korriban Forge Caverns - General Capstone Spawn"
+            "0": "Tatooine Forge Caverns - General Capstone Spawn"
           }
         },
         "MapNote": {
@@ -51885,7 +51885,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Korriban Forge Caverns - General Capstone Spawn"
+            "0": "Tatooine Forge Caverns - General Capstone Spawn"
           }
         },
         "MapNote": {
@@ -51948,7 +51948,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Korriban Forge Caverns - General Capstone Spawn"
+            "0": "Tatooine Forge Caverns - General Capstone Spawn"
           }
         },
         "MapNote": {
@@ -52011,7 +52011,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Korriban - Forge Caverns - Rare Elite Spawn"
+            "0": "Tatooine - Forge Caverns - Rare Elite Spawn"
           }
         },
         "MapNote": {

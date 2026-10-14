@@ -110,12 +110,14 @@
   },
   "DescIdentified": {
     "type": "cexolocstring",
-    "value": {}
+    "value": {
+      "0": "Verrac's robe carries most of its wear below the line of the belt. The upper folds remain carefully arranged, preserving a composed first impression above the less orderly evidence of daily use."
+    }
   },
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": ""
+      "0": "Verrac's robe carries most of its wear below the line of the belt. The upper folds remain carefully arranged, preserving a composed first impression above the less orderly evidence of daily use."
     }
   },
   "Identified": {

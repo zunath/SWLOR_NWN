@@ -1,14 +1,14 @@
 # Quest content validation
 
-The quest audit loads every concrete `IQuestListDefinition` and the embedded authored conversation graphs. It currently covers **1,051 quests**: **269 story/access quests** and **782 guild tasks**. Native DLG importer fixtures are historical test inputs, not gameplay content.
+The quest audit loads every concrete `IQuestListDefinition` and the embedded authored conversation graphs. It currently covers **1,055 quests**: **271 story/access quests** and **784 guild tasks**. Native DLG importer fixtures are historical test inputs, not gameplay content.
 
 ## Automated coverage
 
 - Unique quest IDs, contiguous journal states, nonempty journal text, valid prerequisite references, and acyclic prerequisite chains.
-- All 1,495 conversation quest actions and conditions reference registered quests and valid states.
-- Placed conversation offers and resumable routes for 559 story states, including collection hand-ins and placed scripted interactions. The route audit evaluates the target quest's saved state exactly; unrelated quest, key, and skill conditions remain symbolic.
+- All 1,503 conversation quest actions and conditions reference registered quests and valid states.
+- Placed conversation offers and resumable routes for 563 story states, including collection hand-ins and placed scripted interactions. The route audit evaluates the target quest's saved state exactly; unrelated quest, key, and skill conditions remain symbolic.
 - All 836 collection objectives have item blueprints and acquisition sources. Player-produced objectives also require recipe outputs.
-- All 281 kill objectives have matching enemy groups in placed creatures, active area/waypoint spawn tables, or quest encounter activators.
+- All 285 kill objectives have matching enemy groups in placed creatures, active area/waypoint spawn tables, or quest encounter activators.
 - Guild tasks use objective and state structures supported by the guild board.
 - All 39 capstone conversations accept and finish their five quests, acknowledge access keys in-world, and name the giver in the journal.
 - Every kill-then-collect quest grants its proof separately to one or three credited players, without granting extra proof on acceptance, hand-in, or completion.

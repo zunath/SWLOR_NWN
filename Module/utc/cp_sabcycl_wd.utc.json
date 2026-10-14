@@ -126,7 +126,7 @@
   },
   "Comment": {
     "type": "cexostring",
-    "value": "A malfunctioning training construct in the sealed Dantooine Jedi Enclave Trial Halls. Its combat routines no longer obey the safety shutdown. Disable its chassis so the enclave can repair the training network."
+    "value": "Saber Cyclone warden in Hutlar - Jedi Trial Halls."
   },
   "Con": {
     "type": "byte",
@@ -142,7 +142,7 @@
   },
   "CurrentHitPoints": {
     "type": "short",
-    "value": 4611
+    "value": 5425
   },
   "DecayTime": {
     "type": "dword",
@@ -155,7 +155,7 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "A malfunctioning training construct in the sealed Dantooine Jedi Enclave Trial Halls. Its combat routines no longer obey the safety shutdown. Disable its chassis so the enclave can repair the training network."
+      "0": "A tall, narrow gate droid with a long blade, guarding the approach to the Saber Trial Chamber. Its shutdown channel is broken, and it meets anyone who comes near with the same whirling attack."
     }
   },
   "Dex": {
@@ -389,7 +389,7 @@
   },
   "HitPoints": {
     "type": "short",
-    "value": 4503
+    "value": 5317
   },
   "Int": {
     "type": "byte",
@@ -423,7 +423,7 @@
   },
   "MaxHitPoints": {
     "type": "short",
-    "value": 4611
+    "value": 5425
   },
   "NaturalAC": {
     "type": "byte",

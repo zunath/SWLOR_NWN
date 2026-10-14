@@ -32,6 +32,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
             JoiningTheRepublic();
             MedicalEquipmentForShelby();
             SpiceOneSmallFavour();
+            PutThemToRest();
 
             return _builder.Build();
         }
@@ -549,6 +550,22 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
                 .AddGoldReward(37500)
                 .AddXPReward(25000)
                 .AddItemReward("recipe_fabswoop1", 1);
+        }
+
+        private void PutThemToRest()
+        {
+            _builder.Create("put_them_to_rest", "Put Them to Rest")
+                .IsRepeatable()
+
+                .AddState()
+                .SetStateJournalText("Telford Brelnak traced a distress beacon to an abandoned research station in orbit around Viscara. Its crew was brought back from the dead, and a rakghoul plague spread through the rest. Find a pilot to take you there, then put twenty of its horrors down for good.")
+                .AddKillObjective(NPCGroupType.AbandonedStation_Horror, 20)
+
+                .AddState()
+                .SetStateJournalText("Return to Telford Brelnak at the Veles starport on Viscara.")
+
+                .AddGoldReward(400)
+                .AddXPReward(950);
         }
     }
 }

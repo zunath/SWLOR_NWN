@@ -2,15 +2,15 @@
   "__data_type": "UTC ",
   "Appearance_Head": {
     "type": "byte",
-    "value": 100
+    "value": 60
   },
   "Appearance_Type": {
     "type": "word",
-    "value": 10006
+    "value": 10095
   },
   "ArmorPart_RFoot": {
     "type": "byte",
-    "value": 10
+    "value": 1
   },
   "BodyBag": {
     "type": "byte",
@@ -18,7 +18,7 @@
   },
   "BodyPart_Belt": {
     "type": "byte",
-    "value": 154
+    "value": 0
   },
   "BodyPart_LBicep": {
     "type": "byte",
@@ -26,27 +26,27 @@
   },
   "BodyPart_LFArm": {
     "type": "byte",
-    "value": 198
+    "value": 1
   },
   "BodyPart_LFoot": {
     "type": "byte",
-    "value": 10
+    "value": 1
   },
   "BodyPart_LHand": {
     "type": "byte",
-    "value": 101
+    "value": 1
   },
   "BodyPart_LShin": {
     "type": "byte",
-    "value": 10
+    "value": 1
   },
   "BodyPart_LShoul": {
     "type": "byte",
-    "value": 25
+    "value": 0
   },
   "BodyPart_LThigh": {
     "type": "byte",
-    "value": 12
+    "value": 1
   },
   "BodyPart_Neck": {
     "type": "byte",
@@ -54,7 +54,7 @@
   },
   "BodyPart_Pelvis": {
     "type": "byte",
-    "value": 10
+    "value": 1
   },
   "BodyPart_RBicep": {
     "type": "byte",
@@ -62,27 +62,27 @@
   },
   "BodyPart_RFArm": {
     "type": "byte",
-    "value": 198
+    "value": 1
   },
   "BodyPart_RHand": {
     "type": "byte",
-    "value": 101
+    "value": 1
   },
   "BodyPart_RShin": {
     "type": "byte",
-    "value": 10
+    "value": 1
   },
   "BodyPart_RShoul": {
     "type": "byte",
-    "value": 25
+    "value": 0
   },
   "BodyPart_RThigh": {
     "type": "byte",
-    "value": 12
+    "value": 1
   },
   "BodyPart_Torso": {
     "type": "byte",
-    "value": 53
+    "value": 1
   },
   "Cha": {
     "type": "byte",
@@ -110,11 +110,11 @@
   },
   "Color_Hair": {
     "type": "byte",
-    "value": 31
+    "value": 1
   },
   "Color_Skin": {
     "type": "byte",
-    "value": 105
+    "value": 80
   },
   "Color_Tattoo1": {
     "type": "byte",
@@ -126,7 +126,7 @@
   },
   "Comment": {
     "type": "cexostring",
-    "value": "Capstone quest creature for One Shot in Czerka Arms Test Range."
+    "value": "One Shot inner circle in Smuggler's Moon - Czerka Weapons Testing Facility."
   },
   "Con": {
     "type": "byte",
@@ -155,7 +155,7 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "A level 50 capstone quest enemy for One Shot in Czerka Arms Test Range."
+      "0": "A Rodian in a thug's patched jacket, blaster rifle held short for close rooms. One of the four veterans who taught the range crew to spray, he clears the sealed deep lanes in a tight wheel with the others as they strip the range of optics, charge cells, and old target logs."
     }
   },
   "Dex": {
@@ -169,6 +169,13 @@
   "Equip_ItemList": {
     "type": "list",
     "value": [
+      {
+        "__struct_id": 2,
+        "EquippedRes": {
+          "type": "resref",
+          "value": "exchangethug002"
+        }
+      },
       {
         "__struct_id": 16,
         "EquippedRes": {
@@ -437,11 +444,11 @@
   },
   "PortraitId": {
     "type": "word",
-    "value": 2286
+    "value": 4378
   },
   "Race": {
     "type": "byte",
-    "value": 15
+    "value": 165
   },
   "refbonus": {
     "type": "short",
@@ -702,7 +709,7 @@
   },
   "SoundSetFile": {
     "type": "word",
-    "value": 448
+    "value": 921
   },
   "SpecAbilityList": {
     "type": "list",

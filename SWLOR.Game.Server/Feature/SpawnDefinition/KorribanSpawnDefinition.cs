@@ -19,8 +19,8 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
             SithTemples();
             FrogBoss();
             KorribanFortress();
-            KorribanForgeCaverns();
-            KorribanSithCryptDepths();
+            TatooineForgeCaverns();
+            MonCalaSithCryptDepths();
 
             KorforgeRareElites();
             KorcryptRareElites();
@@ -265,7 +265,7 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
                 .RespawnDelay(120);
         }
 
-        private void KorribanForgeCaverns()
+        private void TatooineForgeCaverns()
         {
             _builder.Create("CAPSTONE_KORRIBAN_FORGE_CAVERNS", "Korriban Forge Caverns - General Capstone")
                 .AddSpawn(ObjectType.Creature, "cp_absdef_ad")
@@ -314,7 +314,7 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
                 .ReturnsHome();
         }
 
-        private void KorribanSithCryptDepths()
+        private void MonCalaSithCryptDepths()
         {
             _builder.Create("CAPSTONE_KORRIBAN_SITH_CRYPT_DEPTHS", "Korriban Sith Crypt Depths - General Capstone")
                 .AddSpawn(ObjectType.Creature, "cp_lightstand_ad")

@@ -20,15 +20,41 @@ namespace SWLOR.Toolset.Tests.Items
                 File.WriteAllBytes(Path.Combine(scratch, "pmh0_bicepr002.mdl"), Array.Empty<byte>());
                 File.WriteAllBytes(Path.Combine(scratch, "pmh0_bicepl_bad.mdl"), Array.Empty<byte>());
                 File.WriteAllBytes(Path.Combine(scratch, "helm_309.mdl"), Array.Empty<byte>());
+                File.WriteAllText(Path.Combine(scratch, "pmh0_bicepl271.lod"), "pfh0_bicepl270\n");
+                File.WriteAllText(Path.Combine(scratch, "pmh0_bicepl272.lod"), "missing\n");
 
                 var resources = new ResourceIndex(
                     baseLayer: null,
                     hakLayersInOrder: new[] { new ResourceIndex.HakLayer("fixture", scratch) });
                 var catalog = new ArmorPartCatalog(resources);
 
-                catalog.Numbers("bicepl").Should().Equal(1, 270);
+                catalog.Numbers("bicepl").Should().Equal(1, 270, 271);
                 catalog.Numbers("bicepr").Should().Equal(2);
                 catalog.NumbersForModelPrefix("helm_").Should().Equal(309);
+            }
+            finally
+            {
+                Directory.Delete(scratch, recursive: true);
+            }
+        }
+
+        [Test]
+        public async Task CatalogRebuildsAfterResourcesReload()
+        {
+            var scratch = Path.Combine(Path.GetTempPath(), "swlor-armor-parts-" + Guid.NewGuid().ToString("N"));
+            Directory.CreateDirectory(scratch);
+            try
+            {
+                File.WriteAllBytes(Path.Combine(scratch, "pmh0_bicepl001.mdl"), Array.Empty<byte>());
+                var layers = new[] { new ResourceIndex.HakLayer("fixture", scratch) };
+                var resources = new ResourceIndex(baseLayer: null, hakLayersInOrder: layers);
+                var catalog = new ArmorPartCatalog(resources);
+                catalog.Numbers("bicepl").Should().Equal(1);
+
+                File.WriteAllBytes(Path.Combine(scratch, "pmh0_bicepl003.mdl"), Array.Empty<byte>());
+                await resources.ReloadHakLayersAsync(layers);
+
+                catalog.Numbers("bicepl").Should().Equal(1, 3);
             }
             finally
             {

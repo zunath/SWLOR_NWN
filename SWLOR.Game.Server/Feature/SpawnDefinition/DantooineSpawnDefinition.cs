@@ -21,8 +21,8 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
             DantooineCanyon();
             DantooineWorldBoss();
             DantooineSouthPlains();
-            DantooineJediEnclaveTrialHalls();
-            DantooineMedicalSublevel();
+            HutlarJediTrialHalls();
+            MonCalaMedicalSublevel();
 
             DanenclaveRareElites();
             DanmedRareElites();
@@ -190,7 +190,7 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
 
         }
 
-        private void DantooineJediEnclaveTrialHalls()
+        private void HutlarJediTrialHalls()
         {
             _builder.Create("CAPSTONE_DANTOOINE_JEDI_ENCLAVE_TRIAL_HALLS", "Dantooine Jedi Enclave Trial Halls - General Capstone")
                 .AddSpawn(ObjectType.Creature, "cp_sabstorm_ad")
@@ -239,7 +239,7 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
                 .ReturnsHome();
         }
 
-        private void DantooineMedicalSublevel()
+        private void MonCalaMedicalSublevel()
         {
             _builder.Create("CAPSTONE_DANTOOINE_MEDICAL_SUBLEVEL", "Dantooine Medical Sublevel - General Capstone")
                 .AddSpawn(ObjectType.Creature, "cp_emcocktail_ad")

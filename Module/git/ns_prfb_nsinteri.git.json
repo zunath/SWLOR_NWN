@@ -231401,7 +231401,7 @@
         },
         "OnUsed": {
           "type": "resref",
-          "value": "x0_o2_use_chair"
+          "value": ""
         },
         "OnUserDefined": {
           "type": "resref",

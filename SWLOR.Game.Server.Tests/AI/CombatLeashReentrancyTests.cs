@@ -29,6 +29,10 @@ public class CombatLeashReentrancyTests
             {
                 public static void ClearState(uint creature) { }
             }
+            public static class ScriptName
+            {
+                public const string OnCreatureLeashStarted = "crea_leash_start";
+            }
             public static class Leash
             {
                 private const string LeashEvadeActiveVariable = "active";
@@ -40,7 +44,7 @@ public class CombatLeashReentrancyTests
             public static class World
             {
                 public static Action<uint> OnCleanup;
-                public static int Cleanups, Heals, EnmityClears, Returns, Attacks;
+                public static int Cleanups, Heals, EnmityClears, Returns, Attacks, LeashStartedEvents;
                 public static bool LeashRequired = true;
                 private static readonly Dictionary<(uint, string), bool> Flags = new();
                 private static readonly Dictionary<uint, bool> Plot = new();
@@ -59,6 +63,10 @@ public class CombatLeashReentrancyTests
                 public static void ApplyLeashEvadeMovementRate(uint creature) { }
                 public static void DelayCommand(float delay, Action callback) { }
                 public static void ContinueLeashEvadeReturn(uint creature, Location home) => Returns++;
+                public static void ExecuteScript(string script, uint creature)
+                {
+                    if (script == ScriptName.OnCreatureLeashStarted) LeashStartedEvents++;
+                }
                 public static void RemoveEnemySourcedStatusEffects(uint creature)
                 {
                     // Bound the reproduction so missing guards fail instead of overflowing the test runner.
@@ -68,7 +76,7 @@ public class CombatLeashReentrancyTests
                 public static void Reset()
                 {
                     OnCleanup = null;
-                    Cleanups = Heals = EnmityClears = Returns = Attacks = 0;
+                    Cleanups = Heals = EnmityClears = Returns = Attacks = LeashStartedEvents = 0;
                     LeashRequired = true;
                     Flags.Clear(); Plot.Clear();
                 }
@@ -107,6 +115,7 @@ public class CombatLeashReentrancyTests
         GetField<int>("Heals").Should().Be(1);
         GetField<int>("EnmityClears").Should().Be(1);
         GetField<int>("Returns").Should().Be(1);
+        GetField<int>("LeashStartedEvents").Should().Be(1);
         GetField<int>("Attacks").Should().Be(0);
     }
 

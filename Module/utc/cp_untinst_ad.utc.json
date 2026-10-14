@@ -34,7 +34,7 @@
   },
   "Comment": {
     "type": "cexostring",
-    "value": "Capstone quest creature for Untouchable Instinct in Dathomir Grotto Apex Den."
+    "value": "Untouchable Instinct adept in Dathomir - Grotto Apex Den."
   },
   "Con": {
     "type": "byte",
@@ -63,7 +63,7 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "A level 50 capstone quest enemy for Untouchable Instinct in Dathomir Grotto Apex Den."
+      "0": "A young crystal spider, its glittering legs never quite still, skittering in a noisy cluster with its nestmates. Handlers bred its kind in the Grotto Apex Den to strike from cover; the handlers are gone, but the spiders remain."
     }
   },
   "Dex": {

@@ -110,12 +110,14 @@
   },
   "DescIdentified": {
     "type": "cexolocstring",
-    "value": {}
+    "value": {
+      "0": "A long coat with pockets that lie more carefully against its lining than their number would suggest. It fits comfortably into the company of a spice dealer, where being seen with wealth and being seen carrying it are different concerns."
+    }
   },
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": ""
+      "0": "A long coat with pockets that lie more carefully against its lining than their number would suggest. It fits comfortably into the company of a spice dealer, where being seen with wealth and being seen carrying it are different concerns."
     }
   },
   "Identified": {

@@ -260,7 +260,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Target: the Republic Engineering Bunker on Viscara. An engineering cell has turned its fire-control hardware to unsanctioned live testing, six adepts confirmed. Route: land at the Veles starport, take the south gate into the Wildlands, then head west through the Crossroads West to Outpost Hope. The bunker door is beside the elevator on the Combat Deck. Neutralize the six, recover the Killzone Beacon Republic Bunker Docket, and report back here. Briefing's already running; catch up.",
+          "Text": "Target: the Republic Engineering Bunker on Viscara, abandoned in the swamps and since overrun. An engineering cell has turned its old fire-control hardware to unsanctioned live testing, six adepts confirmed. Route: Veles starport, south gate into the Wildlands, south to the Lake, then west through the Eastern Swamplands into the Western. The bunker sits half-sunk just west of where you come in, door facing south. Neutralize the six, recover the Killzone Beacon Republic Bunker Docket, and report back here.",
           "Style": 0,
           "Color": null
         }
@@ -353,7 +353,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "That docket is the Republic's own filing on bunker fire-control assets. If it's in that cell's hands, someone with clearance handed it to them, and I need a name before I need a court-martial.",
+          "Text": "That docket is the Republic's own filing on the bunker's fire-control assets, and it should have left with the last crew when the bunker was abandoned. If it's in that cell's hands, someone with clearance handed it to them, and I need a name before I need a court-martial.",
           "Style": 0,
           "Color": null
         }
@@ -405,7 +405,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Objective unchanged: six adepts, one docket, Viscara Republic Engineering Bunker. Combat Deck of Outpost Hope, beside the elevator. Report when both are in hand.",
+          "Text": "Objective unchanged: six adepts, one docket, Viscara Republic Engineering Bunker. Western Swamplands, a short walk west of the Eastern crossing, sealed door facing south. Report when both are in hand.",
           "Style": 0,
           "Color": null
         }
@@ -1163,7 +1163,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Outpost Hope itself, if his projections hold. He's not testing anymore. He's rehearsing a strike against people who believe that base is safe.",
+          "Text": "Veles, if his projections hold. It's the nearest settlement to that swamp. He's not testing anymore. He's rehearsing a strike against people who don't even know that bunker is occupied.",
           "Style": 0,
           "Color": null
         }
@@ -1189,7 +1189,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "From me, originally. I taught it to engineering cadets at Outpost Hope, back when I still thought doctrine couldn't be misused by someone who understood it well enough. I was wrong. I've stopped pretending otherwise.",
+          "Text": "From me, originally. I taught it to engineering cadets inside that bunker, back when it was still staffed and I still thought doctrine couldn't be misused by someone who understood it well enough. I was wrong. I've stopped pretending otherwise.",
           "Style": 0,
           "Color": null
         }
@@ -1309,7 +1309,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Public briefing point: Corporate District, Smuggler's Moon. The contract concerns unsanctioned weapons testing, not Republic recruitment. I need qualified operators regardless of allegiance, and they gather here. The objective is the Republic Engineering Bunker inside Outpost Hope on Viscara: ship out, land at the Veles starport, and follow the route in the briefing. Report back to this briefing point.",
+          "Text": "Public briefing point: Corporate District, Smuggler's Moon. The contract concerns unsanctioned weapons testing, not Republic recruitment. I need qualified operators regardless of allegiance, and they gather here. The objective is the Republic Engineering Bunker on Viscara, abandoned in the Swamplands and part of no working base now; nobody's flag flies over it. Land at the Veles starport and follow the route in the briefing. Report back to this briefing point.",
           "Style": 0,
           "Color": null
         }

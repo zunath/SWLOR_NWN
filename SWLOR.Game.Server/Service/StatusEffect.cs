@@ -1398,6 +1398,13 @@ namespace SWLOR.Game.Server.Service
             GetCreatureStatusEffects(creature).ConsumeStat(statType);
         }
 
+        /// <summary>Sets a stat an effect recalculates while active, keeping the creature's stat total in step.</summary>
+        public static void SetStatusEffectStat(uint creature, IStatusEffect statusEffect, StatType statType, int value)
+        {
+            if (GetCreatureStatusEffects(creature).SetStat(statusEffect, statType, value))
+                Gui.PublishCharacterSheetRefreshEvent(creature, new StatAdjustmentRefreshEvent());
+        }
+
         public static void RemoveStatusEffectsWithStat(
             uint creature,
             StatType statType,

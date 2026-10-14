@@ -26,12 +26,15 @@ namespace SWLOR.Game.Server.EngineTests.Definitions;
 
 public static class WeaponRotationBalanceEngineTests
 {
+    private const int TargetMaximumHP = 30000;
+    private const int TargetDefense = 94;
+    private const int TargetEvasion = 134;
     private static uint _actor = OBJECT_INVALID;
     private static uint _target = OBJECT_INVALID;
     private static int _attributedDamage;
     private static int _ordinaryHits;
 
-    [NWNEventHandler(ScriptName.OnPlayerDamaged)]
+    [NWNEventHandler(ScriptName.OnCreatureDamagedAfter)]
     public static void ObserveDamage()
     {
         if (OBJECT_SELF == _target && GetLastDamager(_target) == _actor)
@@ -61,11 +64,10 @@ public static class WeaponRotationBalanceEngineTests
 
     private static async Task Run(EngineTestContext ctx, PerkCategoryType category, PerkType handling = PerkType.Invalid)
     {
-        using var pvp = new ArenaPvPSetting(ctx.Arena);
         using var player = await PlayerAbilityFixture.CreateAsync(ctx);
-        using var defender = await PlayerAbilityFixture.CreateAsync(ctx, 2f);
         var actor = player.Creature;
-        var target = defender.Creature;
+        var target = ctx.SpawnCreature("nw_rat001", 2f);
+        await ctx.DelaySecondsAsync(1f);
         var pistol = category == PerkCategoryType.PistolGunslinger;
         var crossfire = category == PerkCategoryType.TwinPistolCrossfire;
         var line = Perk.GetAllPerks().Values.Where(perk => perk.Category == category).ToArray();
@@ -101,7 +103,6 @@ public static class WeaponRotationBalanceEngineTests
                          .OfType<PerkRequirementCannotHavePerk>())
                 ctx.Assert(string.IsNullOrEmpty(requirement.CheckRequirements(actor)), "The build satisfies actual handling purchase exclusivity");
         }
-        defender.Update(ConfigureRecord);
         foreach (var requirement in line.SelectMany(perk => perk.PerkLevels.Values)
                      .SelectMany(level => level.Requirements).OfType<PerkRequirementQuest>())
             ctx.Assert(string.IsNullOrEmpty(requirement.CheckRequirements(actor)), "The complete build owns its actual mastery unlock");
@@ -123,19 +124,31 @@ public static class WeaponRotationBalanceEngineTests
             SetEventScript(target, EventScript.Creature_OnHeartbeat, "");
             SetEventScript(target, EventScript.Creature_OnNotice, "");
             SetEventScript(target, EventScript.Creature_OnMeleeAttacked, "");
-            SetEventScript(target, EventScript.Creature_OnDamaged, ScriptName.OnPlayerDamaged);
+            SetEventScript(target, EventScript.Creature_OnEndCombatRound, "");
+            SetEventScript(target, EventScript.Creature_OnSpellCastAt, "");
+            SetEventScript(target, EventScript.Creature_OnDamaged, ScriptName.OnCreatureDamagedAfter);
             ClearAllActions();
             SetPlotFlag(target, false);
-            ctx.Assert(!GetPlotFlag(target), "The benchmark defender does not inherit the civilian template's plot immunity");
+            ctx.Assert(!GetIsPC(target) && !GetPlotFlag(target), "The benchmark target is a damageable NPC, not a player HP override");
             foreach (var ability in Enum.GetValues<AbilityType>().Where(value => value != AbilityType.Invalid))
                 CreaturePlugin.SetRawAbilityScore(target, ability, 26);
-            ObjectPlugin.SetMaxHitPoints(target, 30000);
-            ApplyEffectToObject(DurationType.Instant, EffectHeal(30000), target);
+            ctx.SuppressNPCNaturalRegen(target);
+            // Apply the final NPC HP budget only after its spawn initialization and Vitality settle.
+            Stat.SetNPCMaxHitPoints(target, TargetMaximumHP, true);
+            ctx.AssertEqual(TargetMaximumHP, GetMaxHitPoints(target), "The NPC has its actual native maximum HP budget");
+            ctx.AssertEqual(TargetMaximumHP, GetCurrentHitPoints(target), "The NPC begins at its actual native maximum HP");
+            // Preserve the former player defender's measured defense and evasion budgets.
+            TemporaryStatModifier.Add(target, StatType.PhysicalDefense,
+                TargetDefense - Stat.GetDefense(target, CombatDamageType.Physical, AbilityType.Vitality), 180f, "rotation-defense");
+            TemporaryStatModifier.Add(target, StatType.Evasion,
+                TargetEvasion - Stat.GetEvasion(target, SkillType.Invalid), 180f, "rotation-evasion");
+            ctx.AssertEqual(TargetDefense, Stat.GetDefense(target, CombatDamageType.Physical, AbilityType.Vitality), "The NPC preserves the reference defense budget");
+            ctx.AssertEqual(TargetEvasion, Stat.GetEvasion(target, SkillType.Invalid), "The NPC preserves the reference evasion budget");
             ApplyEffectToObject(DurationType.Temporary, EffectCutsceneImmobilize(), target, 180f);
+            SetAILevel(target, AILevel.VeryLow);
             SetCommandable(false, target);
-            SetPCDislike(actor, target);
-            SetPCDislike(target, actor);
-            ctx.Assert(GetIsReactionTypeHostile(target, actor), "The two private player fixtures are hostile in their controlled PvP arena");
+            ctx.MakeHostile(target);
+            ctx.Assert(GetIsReactionTypeHostile(target, actor), "The durable NPC is hostile to the real player attacker");
         });
 
         var main = await ctx.EquipItemAsync(actor, "b_pistol", InventorySlot.RightHand);
@@ -163,15 +176,28 @@ public static class WeaponRotationBalanceEngineTests
             ctx.Assert(placed, "The common starting position has line of fire and a legal retreat lane");
         });
         await ctx.WaitFrameAsync();
-        var healthyHP = GetCurrentHitPoints(target);
-        await ctx.ExecuteInCreatureContextAsync(actor, () =>
-            ApplyEffectToObject(DurationType.Instant, EffectDamage(1), target));
-        await ctx.WaitUntilAsync(() => GetCurrentHitPoints(target) < healthyHP, 3f,
-            "the defender's damageability check before any timed measurements");
-        await ctx.ExecuteInCreatureContextAsync(actor, () =>
-            ApplyEffectToObject(DurationType.Instant, EffectHeal(30000), target));
-        await ctx.WaitUntilAsync(() => GetCurrentHitPoints(target) == healthyHP, 3f,
-            "the defender to return to its full baseline after the damageability check");
+        _actor = actor;
+        _target = target;
+        _attributedDamage = 0;
+        try
+        {
+            ctx.Assert(GetMaxHitPoints(target) >= TargetMaximumHP && GetCurrentHitPoints(target) >= TargetMaximumHP,
+                "The durable NPC retains its verified native HP before the attribution smoke check");
+            await ctx.ExecuteInCreatureContextAsync(actor, () =>
+                ApplyEffectToObject(DurationType.Instant, EffectDamage(1), target));
+            await ctx.WaitUntilAsync(() => GetCurrentHitPoints(target) == TargetMaximumHP - 1 && _attributedDamage == 1,
+                3f, "one real player-attributed NPC damage event before any timed measurements");
+            await ctx.ExecuteInCreatureContextAsync(actor, () =>
+                ApplyEffectToObject(DurationType.Instant, EffectHeal(TargetMaximumHP), target));
+            await ctx.WaitUntilAsync(() => GetCurrentHitPoints(target) == TargetMaximumHP, 3f,
+                "the NPC to return to its verified native HP budget after the attribution smoke check");
+        }
+        finally
+        {
+            _actor = OBJECT_INVALID;
+            _target = OBJECT_INVALID;
+            _attributedDamage = 0;
+        }
         var stance = pistol ? FeatType.GamblerStance1 : crossfire ? FeatType.CrossfireStance : FeatType.AkimboStance;
         await ctx.ExecuteInCreatureContextAsync(actor, () =>
             ctx.Assert(UsePerkFeat.TryUseAbility(actor, actor, stance, GetLocation(actor)), "The purchased stance activates through its real feat"));
@@ -232,6 +258,8 @@ public static class WeaponRotationBalanceEngineTests
                 if (elapsed >= windows.Peek())
                 {
                     var requested = windows.Dequeue();
+                    ctx.Assert(!GetIsDead(target) && GetCurrentHitPoints(target) > 0, "The durable NPC remains alive for the complete observation window");
+                    ctx.Assert(_attributedDamage > 0, "Real player-attributed damage is present by the first six-second observation");
                     var observation = new
                     {
                         build = category.ToString(), handling = handling.ToString(), investmentSP = price, seed = 20261013,
@@ -243,6 +271,8 @@ public static class WeaponRotationBalanceEngineTests
                         targetDefense = Stat.GetDefense(target, CombatDamageType.Physical, AbilityType.Vitality),
                         sourceAccuracy = Stat.GetAccuracy(actor, main, AbilityType.Agility, pistol ? SkillType.Pistol : SkillType.TwinPistol),
                         targetEvasion = Stat.GetEvasion(target, SkillType.Invalid),
+                        targetKind = "NPC", targetBlueprint = GetResRef(target),
+                        targetMaximumHP = GetMaxHitPoints(target), targetCurrentHP = GetCurrentHitPoints(target),
                         hpDamage = startingHP - GetCurrentHitPoints(target), attributedDamage = _attributedDamage,
                         dps = _attributedDamage / clock.Elapsed.TotalSeconds,
                         stamina = Stat.GetCurrentStamina(actor), maximumStamina = Stat.GetMaxStamina(actor),
@@ -284,11 +314,12 @@ public static class WeaponRotationBalanceEngineTests
                 await ctx.DelaySecondsAsync(.1f);
             }
             ctx.Assert(_attributedDamage > 0 && _ordinaryHits > 0 && casts.Values.Sum() > 0, "Real ordinary attacks and paid ability activations produced measurable results");
+            ctx.Assert(casts[capstone] > 0, "The purchased capstone actually entered the paid rotation");
             ctx.AssertEqual(20, naturalTicks, "All twenty controlled six-second production heartbeat budgets ran");
             ctx.AssertEqual(_attributedDamage, startingHP - GetCurrentHitPoints(target), "No bystander damage or target healing contaminated the observation");
             ctx.SetResultDetail(JsonSerializer.Serialize(new
             {
-                method = "One fixed seed with native player attacks and actual feats; no forced hits. Equal 69-SP builds own their capstone mastery; paired variants buy exactly one selected handling trait. Capstone enters the fixed rotation at 8s and thereafter follows actual readiness, cooldown and finite stamina. Production NaturalRegeneration runs every 6s with native heartbeat suppressed. Stationary high-HP target and no incoming pressure; this does not measure High Noon uptime. Actions retry when ready; ability and movement interruption remain real.",
+                method = "One fixed seed with native real-player attacks and actual feats against a stationary 30000-HP NPC with measured defense 94 and evasion 134; no forced hits. Equal 69-SP builds own their capstone mastery; paired variants buy exactly one selected handling trait. Capstone enters the fixed rotation at 8s and thereafter follows actual readiness, cooldown and finite stamina. Production NaturalRegeneration runs every 6s with native heartbeat suppressed. The NPC has no regeneration or incoming pressure; this does not measure High Noon uptime or player-target PvP. Actions retry when ready; ability and movement interruption remain real.",
                 observations = snapshots
             }));
         }
@@ -301,7 +332,11 @@ public static class WeaponRotationBalanceEngineTests
             TwinPistolAbility.Cancel(actor);
             UsePerkFeat.ClearQueuedAbility(actor);
             SetLocalInt(actor, Stat.SuppressNaturalRegenVariable, 1);
-            SetCommandable(true, target);
+            if (GetIsObjectValid(target))
+            {
+                TemporaryStatModifier.Clear(target);
+                SetCommandable(true, target);
+            }
             Combat.SetAutoAttackHitResolutionOverride(null);
             Combat.SetAbilityHitResolutionOverride(null);
         }
@@ -322,8 +357,6 @@ public static class WeaponRotationBalanceEngineTests
         record.MaxStamina = 22;
         record.Stamina = 61;
         record.STMRegen = 5;
-        record.MaxHP = 30000;
-        record.HP = 30000;
     }
 
     private static void ConfigureWeapon(uint weapon)
@@ -344,7 +377,7 @@ public static class WeaponRotationBalanceEngineTests
         toward.Z = 0;
         if (toward.LengthSquared() < .01f) return null;
         toward = NumericsVector3.Normalize(toward);
-        foreach (var length in new[] { 6f, 5f, 4f, 3f })
+        foreach (var length in new[] { 5.9f, 5f, 4f, 3f })
         foreach (var angle in new[] { .3f, -.3f, .4f, -.4f })
         {
             var direction = new NumericsVector3(toward.X * MathF.Cos(angle) - toward.Y * MathF.Sin(angle),
@@ -358,16 +391,4 @@ public static class WeaponRotationBalanceEngineTests
         return null;
     }
 
-    private sealed class ArenaPvPSetting : IDisposable
-    {
-        private readonly uint _area;
-        private readonly PvPSetting _original;
-        public ArenaPvPSetting(uint area)
-        {
-            _area = area;
-            _original = AreaPlugin.GetPVPSetting(area);
-            AreaPlugin.SetPVPSetting(area, PvPSetting.FullPvP);
-        }
-        public void Dispose() => AreaPlugin.SetPVPSetting(_area, _original);
-    }
 }

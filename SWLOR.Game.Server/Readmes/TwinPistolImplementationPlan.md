@@ -8,7 +8,15 @@ Twin Pistol has ranks 0 through 50, contributes to the existing 400-rank skill c
 
 The skill name is **Twin Pistol** throughout player-facing text. Akimbo Stance belongs to Barrage; Crossfire Stance belongs to Crossfire. Add new identifiers and resource rows; do not reuse retired skill, perk, base-item, or TLK definitions.
 
-This is a revised proposal for feedback, not shipped functionality. Implementation and validation are in progress. The cross-skill revision, handling choice and Paired Volley changes supersede the earlier balance results; new matched-investment calculations and engine validation are required before release. The companion [Discord feedback draft](TwinPistolDiscordFeedback.md) presents the same values for discussion.
+The approved design is implemented on the feature branch and has not been deployed. The cross-skill revision, handling choice and Paired Volley changes supersede the earlier balance results. The companion [Discord feedback draft](TwinPistolDiscordFeedback.md) presents the same values for discussion; the validation record below distinguishes implemented behavior from release balance.
+
+## Implementation validation
+
+The server build passes with deployment disabled. Focused integration checks pass (223 tests), as do the related equipment, animation, Force conversion, gathering and store regressions (92 tests). The full unit run exposed eight remaining failures in unchanged content or tests: old apartment jukebox/placeable data, helmet assignments, double-weapon expectations, a droid serialization source assertion, Concussive Toss target-budget parsing and old `sw_openarc` walkmesh use-node names. Those failures were reproduced with the final assemblies and are outside this feature. No baseline execution is claimed; the affected source/data were compared with the base branch.
+
+Native engine checks have verified cross-skill saber/rifle damage penalties and Haste, ten weapon loadouts, queued ability replacement, equipment recovery when inventory is full, movement/root/collision rules, actual Canyon Range mastery objectives and repeated save/reload. The existing DualWield, SingleWeapon and PistolPresentation cases passed. Launched finite-ammo shots retain their original damage and ammunition through stop, ammunition swaps and weapon swaps. The final all-rank movement-ability and hasted-ammo fixtures are being completed; invalid benchmark runs are excluded from balance evidence.
+
+Real NWN client captures show paired ready/hit/miss presentation, representative bodies and robes, neutral cross-skill gestures, status icons and both mastery-record icons. The six HAK integrity guards and full gameplay icon audit (1,867 entries) pass. Verification used silent owned clients on an isolated private desktop; every owned client was stopped and its isolated profile removed. A second connected observer has not verified dynamic muzzle-anchor replication, and the throughput comparison does not certify every cross-skill build or PvP encounter. Keep both PRs in draft until these remaining release checks are addressed.
 
 ## Skill and equipment progression
 

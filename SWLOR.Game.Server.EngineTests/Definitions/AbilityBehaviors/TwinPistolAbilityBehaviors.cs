@@ -55,7 +55,7 @@ public sealed class TwinPistolAbilityBehaviors : IAbilityBehaviorSource
             var rush = MovementAttack(feat);
             rush.TargetDistanceMeters = 2.5f;
             // The enemy stays within the four-meter firing corridor, off the travel path.
-            rush.GroundTargetOffsetMeters = new System.Numerics.Vector2(5f, 3f);
+            rush.GroundTargetOffsetMeters = new System.Numerics.Vector2(4.2f, 2f);
             rush.MinimumActivatorTravelDistanceAfterImpact = 4f;
             rush.MaximumActivatorDistanceToGroundTargetAfterImpact = .75f;
             rush.SetupNPCPerkLevels[PerkType.TwinPistolMomentum] = 1;
@@ -109,6 +109,7 @@ public sealed class TwinPistolAbilityBehaviors : IAbilityBehaviorSource
     {
         var attack = Attack(feat);
         attack.TargetIsStationary = true;
+        attack.SearchForSafeMovementLane = true;
         return attack;
     }
 }

@@ -211,6 +211,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 var target = pair.Target;
                 var main = pair.Main;
                 var companion = pair.Companion;
+                var hastedDelayCost = 0;
                 try
                 {
                     await ctx.ExecuteInCreatureContextAsync(actor, () =>
@@ -265,18 +266,37 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                                 return Combat.CalculateAttackSwingDelay(effective) == Combat.BaseAttackDelayMilliseconds &&
                                        Combat.CalculateAttacksPerSwing(effective, 0, out _) == (quantity <= 2 ? 2 : 1);
                             });
+                            hastedDelayCost = delay;
                             ReplaceWeaponProperty(main, ItemPropertyType.Delay, ItemPropertyCustom(ItemPropertyType.Delay, -1, delay));
                             ReplaceWeaponProperty(companion, ItemPropertyType.Delay, ItemPropertyCustom(ItemPropertyType.Delay, -1, delay));
+                        }
+                    });
+                    if (hasted)
+                    {
+                        await ctx.WaitFrameAsync();
+                        ctx.Log($"Finite haste native settlement: activePair={TwinPistolEquipment.IsActivePair(actor)}, " +
+                            $"main={main:X}/equipped={GetItemInSlot(InventorySlot.RightHand, actor):X}, " +
+                            $"companion={companion:X}/equipped={GetItemInSlot(InventorySlot.LeftHand, actor):X}, " +
+                            $"requestedCost={hastedDelayCost}, mainCost={GetDelayPropertyCost(main)}, companionCost={GetDelayPropertyCost(companion)}, " +
+                            $"rawDelay={Combat.CalculateAttackDelay(actor)}");
+                        await ctx.WaitUntilAsync(() => GetDelayPropertyCost(main) == hastedDelayCost &&
+                            GetDelayPropertyCost(companion) == hastedDelayCost && TwinPistolEquipment.IsActivePair(actor) &&
+                            GetItemInSlot(InventorySlot.RightHand, actor) == main && GetItemInSlot(InventorySlot.LeftHand, actor) == companion,
+                            3f, "both real equipped native Delay properties to settle before measuring the hasted budget");
+                        await ctx.ExecuteInCreatureContextAsync(actor, () =>
+                        {
                             var effectiveDelay = Combat.CalculateEffectiveAttackDelay(Combat.CalculateAttackDelay(actor));
-                            ctx.Log($"Finite haste setup: pc={GetIsPC(actor)}, quantity={quantity}, delayCost={delay}, haste={haste}, " +
+                            ctx.Log($"Finite haste setup: pc={GetIsPC(actor)}, quantity={quantity}, delayCost={hastedDelayCost}, " +
+                                $"haste={Stat.GetStatAdjustment(actor, StatType.AttackDelayReductionPercent)}, activePair={TwinPistolEquipment.IsActivePair(actor)}, " +
+                                $"mainCost={GetDelayPropertyCost(main)}, companionCost={GetDelayPropertyCost(companion)}, rawDelay={Combat.CalculateAttackDelay(actor)}, " +
                                 $"offhandReduction={Combat.CalculateOffhandAttackDelayReduction(actor)}, effectiveMs={effectiveDelay}, " +
                                 $"swingMs={Combat.CalculateAttackSwingDelay(effectiveDelay)}");
                             ctx.AssertEqual(quantity <= 2 ? 4 : 2, Combat.CalculateAttacksPerSwing(effectiveDelay, 0, out _) * 2,
                                 "The hasted batch has its requested logical-shot budget before finite ammunition limits");
                             ctx.AssertEqual(Combat.BaseAttackDelayMilliseconds, Combat.CalculateAttackSwingDelay(effectiveDelay),
                                 "Hasted finite tests use the production native swing floor");
-                        }
-                    });
+                        });
+                    }
                     if (quantity == 0)
                         await ctx.WaitUntilAsync(() => !GetIsObjectValid(ammunition), 5f, "the zero-ammunition fixture to remove its temporary equip prerequisite");
                     Observe(actor);
@@ -799,6 +819,15 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 ctx.Assert(TwinPistolEquipment.IsActivePair(actor), "Rank-zero fixture activates the new paired skill");
             });
             return (actor, target, main, companion);
+        }
+
+        private static int GetDelayPropertyCost(uint weapon)
+        {
+            var cost = 0;
+            for (var property = GetFirstItemProperty(weapon); GetIsItemPropertyValid(property); property = GetNextItemProperty(weapon))
+                if (GetItemPropertyType(property) == ItemPropertyType.Delay)
+                    cost += GetItemPropertyCostTableValue(property);
+            return cost;
         }
 
         private static void ReplaceWeaponProperty(uint weapon, ItemPropertyType type, ItemProperty replacement)

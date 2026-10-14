@@ -168,6 +168,9 @@ namespace SWLOR.Game.Server.EngineTests.Definitions.AbilityBehaviors
         /// <summary>Immobilizes the dummy so movement assertions use a stationary reference.</summary>
         public bool TargetIsStationary { get; set; }
 
+        /// <summary>Selects a clear lane using the ability's real validation in the caster's context.</summary>
+        public bool SearchForSafeMovementLane { get; set; }
+
         /// <summary>
         /// Perk levels seeded onto the caster before activation, for abilities whose impact
         /// scales off or requires OTHER perks (e.g. Leadership orders that emit the aura the

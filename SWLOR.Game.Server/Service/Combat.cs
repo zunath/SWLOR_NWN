@@ -5211,7 +5211,8 @@ namespace SWLOR.Game.Server.Service
             uint defender,
             CombatDamageType damageType,
             ref int physicalDamage,
-            int targetStatusDamagePercentAdjustment = 0)
+            int targetStatusDamagePercentAdjustment = 0,
+            Action<Action> convertedDamageScheduler = null)
         {
             if (physicalDamage <= 0 || !damageType.IsPhysicalDamageType())
                 return 0;
@@ -5231,7 +5232,7 @@ namespace SWLOR.Game.Server.Service
             // Force portion to the next frame so it lands as a clean, separate damage instance off the attack's
             // stack; the physical carve above stays synchronous so the physical hit is correctly reduced.
             var recorderAttribution = CombatRecorder.CaptureAttackAttribution(attacker);
-            DelayCommand(0.0f, () =>
+            void ApplyConvertedDamage()
             {
                 using var recorderScope = CombatRecorder.BeginAttribution(recorderAttribution);
                 if (GetIsObjectValid(attacker) && GetIsObjectValid(defender))
@@ -5243,7 +5244,11 @@ namespace SWLOR.Game.Server.Service
                         typedLeadershipReductionAlreadyApplied: false,
                         targetStatusDamagePercentAdjustment: targetStatusDamagePercentAdjustment,
                         outgoingModifiersAlreadyApplied: true);
-            });
+            }
+            // Projectile callers retain the entire converted hit, including its reactions and
+            // attribution, until arrival. Native swings and ability impacts keep next-frame dispatch.
+            if (convertedDamageScheduler != null) convertedDamageScheduler(ApplyConvertedDamage);
+            else DelayCommand(0.0f, ApplyConvertedDamage);
             return forcePortion;
         }
 

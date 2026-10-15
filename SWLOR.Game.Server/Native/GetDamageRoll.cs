@@ -65,7 +65,8 @@ namespace SWLOR.Game.Server.Native
         }
 
         internal static int ResolveWeaponDamage(void* thisPtr, void* pTarget, int bOffHand,
-            int bCritical, int bSneakAttack = 0, int bDeathAttack = 0, int bForceMax = 0)
+            int bCritical, int bSneakAttack = 0, int bDeathAttack = 0, int bForceMax = 0,
+            Action<Action> convertedDamageScheduler = null)
         {
             return ServerManager.Executor.ExecuteInScriptContext(() =>
             {
@@ -168,7 +169,7 @@ namespace SWLOR.Game.Server.Native
                     attackerAttack, attackerStat, critical, weaponDeltaCap, attackType, damageFlags, bOffHand, defender, weaponSkillType,
                     isLandedAttack,
                     out totalDamage,
-                    out var effectiveCritical);
+                    out var effectiveCritical, convertedDamageScheduler);
 
                 if (shot != null)
                 {
@@ -260,7 +261,7 @@ namespace SWLOR.Game.Server.Native
             WeaponDamageProfile damageProfile, void* pAttackData, int attackerAttack,
             int attackerStat, int critical, int weaponDeltaCap, uint attackType, uint damageFlags,
             int bOffHand, CNWSObject targetObject, SkillType skillType, bool isLandedAttack,
-            out int totalDamage, out int effectiveCritical)
+            out int totalDamage, out int effectiveCritical, Action<Action> convertedDamageScheduler)
         {
             var physicalDamage = 0;
             effectiveCritical = critical;
@@ -274,7 +275,7 @@ namespace SWLOR.Game.Server.Native
 
             var damage = CalculateTargetSpecificDamage(pTarget, attacker, damageProfile,
                 attackerAttack, attackerStat, critical, weaponDeltaCap, attackType, damageFlags, bOffHand, skillType,
-                isLandedAttack, out effectiveCritical);
+                isLandedAttack, out effectiveCritical, convertedDamageScheduler);
 
             if (targetObject.m_nObjectType != (int)ObjectType.Creature)
             {
@@ -517,7 +518,7 @@ namespace SWLOR.Game.Server.Native
         private static int CalculateTargetSpecificDamage(void* pTarget, CNWSCreature attacker,
             WeaponDamageProfile damageProfile, int attackerAttack,
             int attackerStat, int critical, int weaponDeltaCap, uint attackType, uint damageFlags, int bOffHand, SkillType skillType,
-            bool isLandedAttack, out int effectiveCritical)
+            bool isLandedAttack, out int effectiveCritical, Action<Action> convertedDamageScheduler)
         {
             effectiveCritical = critical;
             var targetObject = CNWSObject.FromPointer(pTarget);
@@ -527,7 +528,7 @@ namespace SWLOR.Game.Server.Native
                 case (int)ObjectType.Creature:
                     return CalculateCreatureDamage(pTarget, attacker, damageProfile, attackerAttack,
                         attackerStat, critical, weaponDeltaCap, attackType, damageFlags, bOffHand, skillType,
-                        isLandedAttack, out effectiveCritical);
+                        isLandedAttack, out effectiveCritical, convertedDamageScheduler);
 
                 case (int)ObjectType.Placeable:
                     var plc = CNWSPlaceable.FromPointer(pTarget);
@@ -547,7 +548,7 @@ namespace SWLOR.Game.Server.Native
         private static int CalculateCreatureDamage(void* pTarget, CNWSCreature attacker, WeaponDamageProfile damageProfile,
             int attackerAttack, int attackerStat, int critical, int weaponDeltaCap,
             uint attackType, uint damageFlags, int bOffHand, SkillType skillType,
-            bool isLandedAttack, out int effectiveCritical)
+            bool isLandedAttack, out int effectiveCritical, Action<Action> convertedDamageScheduler)
         {
             effectiveCritical = critical;
             var target = CNWSCreature.FromPointer(pTarget);
@@ -642,7 +643,7 @@ namespace SWLOR.Game.Server.Native
             // instance (mitigated by Force resistance, shown as Force) before physical resistance.
             if (isLandedAttack)
             {
-                Combat.ApplyIncomingPhysicalToForceConversion(attacker.m_idSelf, target.m_idSelf, damageType, ref damage, targetStatusDamageAdjustment);
+                Combat.ApplyIncomingPhysicalToForceConversion(attacker.m_idSelf, target.m_idSelf, damageType, ref damage, targetStatusDamageAdjustment, convertedDamageScheduler);
             }
 
             // Conversion must split first so each portion receives only its own typed Leadership channel.

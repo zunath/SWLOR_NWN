@@ -20,7 +20,16 @@ public static class OrdinaryAttackCombatLifecycle
     [NWNEventHandler(ScriptName.OnModuleDeath)]
     public static void OnDeath() => OrdinaryAttackTraits.Clear(GetLastPlayerDied());
     [NWNEventHandler(ScriptName.OnModuleDying)]
-    public static void OnDying() => OrdinaryAttackTraits.Clear(GetLastPlayerDying());
+    public static void OnDying()
+    {
+        var actor = GetLastPlayerDying();
+        // Fatal-damage protection can restore the player before dying handlers finish.
+        DelayCommand(0f, () =>
+        {
+            if (GetIsObjectValid(actor) && (GetIsDead(actor) || GetCurrentHitPoints(actor) <= 0))
+                OrdinaryAttackTraits.Clear(actor);
+        });
+    }
     [NWNEventHandler(ScriptName.OnCreatureDeathAfter)]
     public static void OnCreatureDeath() => OrdinaryAttackTraits.Clear(OBJECT_SELF);
     [NWNEventHandler(ScriptName.OnModuleExit)]

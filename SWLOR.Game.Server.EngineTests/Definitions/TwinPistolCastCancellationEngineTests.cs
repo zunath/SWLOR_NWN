@@ -34,7 +34,7 @@ public static class TwinPistolCastCancellationEngineTests
     [EngineTest("Final Salvo native death cancels its unpaid cast and records exactly one Died interruption", Category = "TwinPistolCancellation", TimeoutSeconds = 45f)]
     public static Task FinalSalvoDeath(EngineTestContext ctx) => DeathDuringCast(ctx, FeatType.FinalSalvo, PerkType.FinalSalvo);
 
-    [EngineTest("A native fatal-damage save cancels the Twin cast without recording a death", Category = "TwinPistolCancellation", TimeoutSeconds = 45f)]
+    [EngineTest("A native fatal-damage save preserves earned Haste and cancels the Twin cast without recording a death", Category = "TwinPistolCancellation", TimeoutSeconds = 45f)]
     public static Task FinalSalvoFatalSave(EngineTestContext ctx) => DeathDuringCast(ctx, FeatType.FinalSalvo, PerkType.FinalSalvo, fatalSave: true);
 
     private static async Task DeathDuringCast(EngineTestContext ctx, FeatType feat, PerkType perk, bool fatalSave = false)
@@ -49,12 +49,20 @@ public static class TwinPistolCastCancellationEngineTests
         try
         {
             var (target, _, _, _) = await Prepare(ctx, player, perk);
+            await ctx.ExecuteInCreatureContextAsync(actor, () => ActionAttack(target));
+            await ctx.WaitUntilAsync(() => GetIsInCombat(actor) && GetAttackTarget(actor) == target,
+                8f, "the real ordinary attack to establish combat before the native death/dying event");
             var health = GetCurrentHitPoints(target);
             var stamina = Stat.GetCurrentStamina(actor);
+            var haste = 0;
             await ctx.ExecuteInCreatureContextAsync(actor, () =>
             {
                 SetPlotFlag(actor, false);
                 SetImmortal(actor, false);
+                SeedExistingTraits(actor, target);
+                haste = Stat.GetStatAdjustment(actor, StatType.AttackDelayReductionPercent);
+                ctx.AssertEqual(1, StatusEffect.GetStatusEffect<OrdinaryAttackHasteStatusEffect>(actor)?.Stacks ?? 0,
+                    "An earned Akimbo Haste stack exists before the native event");
                 if (fatalSave)
                 {
                     TemporaryStatModifier.Add(actor, StatType.FatalDamageTemporaryHPPercent, 20, 30f);
@@ -83,11 +91,45 @@ public static class TwinPistolCastCancellationEngineTests
             ctx.Assert(!TwinPistolAbility.HasActiveActivation(actor), "The native event releases the captured Twin activation");
             ctx.AssertEqual(string.Empty, UsePerkFeat.GetActiveAbilityActivationId(actor),
                 "The native event removes the exact shared activation");
+            await ctx.ExecuteInCreatureContextAsync(actor, () =>
+            {
+                if (fatalSave)
+                {
+                    ctx.Assert(StatusEffect.GetStatusEffect<AkimboStanceStatusEffect>(actor) != null,
+                        "Fatal-damage protection preserves the active Akimbo stance");
+                    ctx.AssertEqual(1, StatusEffect.GetStatusEffect<OrdinaryAttackHasteStatusEffect>(actor)?.Stacks ?? 0,
+                        "The living fatal-save survivor keeps its earned ordinary Haste stack");
+                    ctx.AssertEqual(haste, Stat.GetStatAdjustment(actor, StatType.AttackDelayReductionPercent),
+                        "The living fatal-save survivor keeps its stance and earned Haste");
+                    OrdinaryAttackTraits.RecordHit(actor, target, long.MaxValue - 10);
+                    ctx.AssertEqual(1, StatusEffect.GetStatusEffect<OrdinaryAttackHasteStatusEffect>(actor)?.Stacks ?? 0,
+                        "Fatal-damage protection does not reset the two-second ramp grant cooldown");
+                    ActionAttack(target);
+                }
+                else
+                    ctx.AssertEqual(0, StatusEffect.GetStatusEffect<OrdinaryAttackHasteStatusEffect>(actor)?.Stacks ?? 0,
+                        "An actual native death clears the earned ordinary Haste stacks");
+            });
             await ctx.DelaySecondsAsync(2.2f);
             ctx.AssertEqual(stamina, Stat.GetCurrentStamina(actor), "The canceled cast never pays stamina");
             ctx.Assert(!Recast.IsOnRecastDelay(actor, ability.RecastGroup).Item1, "The canceled cast starts no capstone recast");
             ctx.Assert(Ability.GetLastCompletedAbilityImpactSummary(actor) == null, "The canceled cast never resolves an impact");
             ctx.AssertEqual(health, GetCurrentHitPoints(target), "The canceled cast never damages its selected target");
+            if (fatalSave)
+            {
+                ctx.Assert(GetIsInCombat(actor), "The survivor remains in combat so ordinary out-of-combat cleanup does not apply");
+                ctx.AssertEqual(1, StatusEffect.GetStatusEffect<OrdinaryAttackHasteStatusEffect>(actor)?.Stacks ?? 0,
+                    "Deferred dying cleanup and the canceled cast deadline preserve the living survivor's stack");
+                await ctx.ExecuteInCreatureContextAsync(actor, () =>
+                {
+                    OrdinaryAttackTraits.RecordHit(actor, target, long.MaxValue - 11);
+                    ctx.AssertEqual(2, StatusEffect.GetStatusEffect<OrdinaryAttackHasteStatusEffect>(actor)?.Stacks ?? 0,
+                        "The preserved ramp grants its next stack after the original cooldown elapses");
+                });
+            }
+            else
+                ctx.AssertEqual(0, StatusEffect.GetStatusEffect<OrdinaryAttackHasteStatusEffect>(actor)?.Stacks ?? 0,
+                    "The dead caster's stacks remain cleared after the original cast deadline");
         }
         finally
         {

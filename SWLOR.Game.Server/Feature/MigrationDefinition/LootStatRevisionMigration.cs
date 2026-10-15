@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Newtonsoft.Json;
@@ -14,7 +15,8 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition;
 /// <summary>
 /// Moves loot created before the loot stat revision onto the revised blueprint values. Each revised
 /// property shifts by the blueprint difference, so crafted enhancements merged into it are kept.
-/// Revised blueprints carry the revision local, which also marks every migrated item.
+/// Revised blueprints carry the revision local, which also marks every migrated item. Droids are covered
+/// both as saved controller data and as summoned creatures, whose items are saved back onto the controller.
 /// </summary>
 public static class LootStatRevisionMigration
 {
@@ -26,11 +28,17 @@ public static class LootStatRevisionMigration
     public static void OnAcquire()
     {
         var owner = GetModuleItemAcquiredBy();
+        var item = GetModuleItemAcquired();
         if (GetIsPC(owner) && !GetIsDM(owner))
-            MigrateObject(GetModuleItemAcquired());
+            MigrateObject(item);
+        else if (Droid.IsDroid(owner) && MigrateObject(item))
+            Droid.SaveItemSnapshot(owner);
     }
 
-    /// <summary>Revises a player's equipped and carried items, an item, or a container and its contents.</summary>
+    /// <summary>
+    /// Revises a player's equipped and carried items and their summoned droid, a summoned droid,
+    /// an item, or a container and its contents.
+    /// </summary>
     public static bool MigrateObject(uint obj)
     {
         if (!GetIsObjectValid(obj))
@@ -40,11 +48,14 @@ public static class LootStatRevisionMigration
         var objectType = GetObjectType(obj);
         if (objectType == ObjectType.Creature)
         {
+            if (Droid.IsDroid(obj))
+                return MigrateSummonedDroid(obj);
             // Stored DM creatures and live NPCs keep their authored gear.
             if (!GetIsPC(obj) || GetIsDM(obj))
                 return false;
             for (var slot = 0; slot < NumberOfInventorySlots; slot++)
                 changed |= MigrateObject(GetItemInSlot((InventorySlot)slot, obj));
+            changed |= MigrateSummonedDroid(Droid.GetDroid(obj));
         }
         else if (objectType == ObjectType.Item)
         {
@@ -89,9 +100,10 @@ public static class LootStatRevisionMigration
             GetLocalInt(item, RevisionVariable) >= CurrentRevision)
             return false;
 
-        // An equipped item's stats are already counted on its wearer. Remove them first and add
-        // the revised values back afterwards, as an unequip and re-equip would.
-        var wearer = GetPlayerWearer(item);
+        // An equipped item's stats are already counted on its wearer (a player's record or a droid's
+        // skin). Remove them first and add the revised values back afterwards, as an unequip and
+        // re-equip would.
+        var wearer = GetWearer(item);
         if (GetIsObjectValid(wearer))
             EquipmentStats.ApplyItemStats(wearer, item, false);
 
@@ -137,10 +149,11 @@ public static class LootStatRevisionMigration
         }
     }
 
-    private static uint GetPlayerWearer(uint item)
+    private static uint GetWearer(uint item)
     {
         var possessor = GetItemPossessor(item);
-        if (!GetIsPC(possessor) || GetIsDM(possessor) || GetIsDMPossessed(possessor))
+        var isPlayer = GetIsPC(possessor) && !GetIsDM(possessor) && !GetIsDMPossessed(possessor);
+        if (!isPlayer && !Droid.IsDroid(possessor))
             return OBJECT_INVALID;
         for (var slot = 0; slot < NumberOfInventorySlots; slot++)
             if (GetItemInSlot((InventorySlot)slot, possessor) == item)
@@ -148,19 +161,61 @@ public static class LootStatRevisionMigration
         return OBJECT_INVALID;
     }
 
-    private static bool MigrateConstructedDroid(uint item)
+    /// <summary>
+    /// Revises a summoned droid's equipped and carried items, then saves them onto its controller.
+    /// The droid's next snapshot rebuilds the controller's item lists from what it holds, so the
+    /// live items must be revised rather than only the saved copies.
+    /// </summary>
+    private static bool MigrateSummonedDroid(uint droid)
     {
-        var original = GetLocalString(item, ConstructedDroidVariable);
-        if (string.IsNullOrWhiteSpace(original))
+        if (!GetIsObjectValid(droid) || !Droid.IsDroid(droid))
             return false;
-        var droid = JsonConvert.DeserializeObject<ConstructedDroid>(original);
-        if (droid == null)
-            return false;
-        var changed = MigrateDictionary(droid.EquippedItems);
-        changed |= MigrateDictionary(droid.Inventory);
+
+        var changed = false;
+        for (var slot = 0; slot < NumberOfInventorySlots; slot++)
+            changed |= MigrateItem(GetItemInSlot((InventorySlot)slot, droid));
+        for (var item = GetFirstItemInInventory(droid); GetIsObjectValid(item); item = GetNextItemInInventory(droid))
+            changed |= MigrateObject(item);
         if (changed)
-            SetLocalString(item, ConstructedDroidVariable, JsonConvert.SerializeObject(droid));
+            Droid.SaveItemSnapshot(droid);
         return changed;
+    }
+
+    private static bool MigrateConstructedDroid(uint controller)
+    {
+        if (string.IsNullOrWhiteSpace(GetLocalString(controller, ConstructedDroidVariable)))
+            return false;
+
+        // A summoned droid owns the live copies of the controller's items.
+        var changed = MigrateSummonedDroid(GetSummonedDroid(controller));
+        var droid = JsonConvert.DeserializeObject<ConstructedDroid>(GetLocalString(controller, ConstructedDroidVariable));
+        if (droid == null)
+            return changed;
+
+        var savedChanged = MigrateField(droid.SerializedCPU, value => droid.SerializedCPU = value);
+        savedChanged |= MigrateField(droid.SerializedHead, value => droid.SerializedHead = value);
+        savedChanged |= MigrateField(droid.SerializedBody, value => droid.SerializedBody = value);
+        savedChanged |= MigrateField(droid.SerializedArms, value => droid.SerializedArms = value);
+        savedChanged |= MigrateField(droid.SerializedLegs, value => droid.SerializedLegs = value);
+        savedChanged |= MigrateDictionary(droid.EquippedItems);
+        savedChanged |= MigrateDictionary(droid.Inventory);
+        if (savedChanged)
+            SetLocalString(controller, ConstructedDroidVariable, JsonConvert.SerializeObject(droid));
+        return changed || savedChanged;
+    }
+
+    private static uint GetSummonedDroid(uint controller)
+    {
+        var droid = Droid.GetDroid(GetItemPossessor(controller));
+        return GetIsObjectValid(droid) && Droid.GetControllerItem(droid) == controller ? droid : OBJECT_INVALID;
+    }
+
+    private static bool MigrateField(string data, Action<string> setData)
+    {
+        if (!MigrateSerializedObject(data, out var migrated))
+            return false;
+        setData(migrated);
+        return true;
     }
 
     private static bool MigrateDictionary<TKey>(Dictionary<TKey, string> items)

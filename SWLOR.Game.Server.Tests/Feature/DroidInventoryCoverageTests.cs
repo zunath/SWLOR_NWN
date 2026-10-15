@@ -10,6 +10,9 @@ public class DroidInventoryCoverageTests
 {
     [TestCase(nameof(DroidInventoryEngineTests.LegacyInventoryIdentity))]
     [TestCase(nameof(DroidInventoryEngineTests.EquipmentRoundTrip))]
+    [TestCase(nameof(DroidInventoryEngineTests.LootRevisionSavedController))]
+    [TestCase(nameof(DroidInventoryEngineTests.LootRevisionSummonedDroid))]
+    [TestCase(nameof(DroidInventoryEngineTests.LootRevisionPlayerDroid))]
     public void EquipmentPersistenceScenariosKeepBothDiscoveryLabels(string scenario)
     {
         var attribute = typeof(DroidInventoryEngineTests)

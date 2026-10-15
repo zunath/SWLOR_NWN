@@ -21,18 +21,18 @@ namespace SWLOR.Game.Server.EngineTests.Definitions;
 public static partial class MigrationEngineTests
 {
     private const string LootCategory = "LootStatRevisionMigration";
-    private const string RevisedGloves = "triagewardencr";
-    private const string RevisedPistol = "slw_lastwitness";
+    internal const string RevisedGloves = "triagewardencr";
+    internal const string RevisedPistol = "slw_lastwitness";
     private const string RevisedGreatsword = "absdef_l1";
 
     // A crafted Attack enhancement and a Defense enhancement merged into the gloves' own properties.
-    private static readonly Dictionary<(ItemPropertyType, int), int> GloveEnhancements = new()
+    internal static readonly Dictionary<(ItemPropertyType, int), int> GloveEnhancements = new()
     {
         [(ItemPropertyType.Attack, 0)] = 5,
         [(ItemPropertyType.Defense, (int)CombatDamageType.Physical)] = 4,
     };
 
-    private static readonly Dictionary<(ItemPropertyType, int), int> NoEnhancements = new();
+    internal static readonly Dictionary<(ItemPropertyType, int), int> NoEnhancements = new();
 
     [EngineTest("Player loot stat migration revises equipped, carried and nested loot and keeps the wearer's totals", Category = LootCategory, TimeoutSeconds = 60f)]
     public static async Task PlayerLootStatRevision(EngineTestContext ctx)
@@ -249,7 +249,7 @@ public static partial class MigrationEngineTests
         });
     }
 
-    private static void StampLegacyLoot(uint item, Dictionary<(ItemPropertyType, int), int> enhancements)
+    internal static void StampLegacyLoot(uint item, Dictionary<(ItemPropertyType, int), int> enhancements)
     {
         // Rebuild the item as it shipped before the revision, with any crafted enhancement merged in.
         foreach (var change in LootStatRevisionCatalog.Changes[GetResRef(item)])
@@ -262,7 +262,7 @@ public static partial class MigrationEngineTests
         DeleteLocalInt(item, LootStatRevisionMigration.RevisionVariable);
     }
 
-    private static void AssertRevisedLoot(EngineTestContext ctx, uint item, Dictionary<(ItemPropertyType, int), int> enhancements)
+    internal static void AssertRevisedLoot(EngineTestContext ctx, uint item, Dictionary<(ItemPropertyType, int), int> enhancements)
     {
         var resref = GetResRef(item);
         foreach (var change in LootStatRevisionCatalog.Changes[resref])
@@ -274,7 +274,7 @@ public static partial class MigrationEngineTests
             $"{resref} is marked as revised");
     }
 
-    private static int LegacyValue(string resref, ItemPropertyType type, int subtype, Dictionary<(ItemPropertyType, int), int> enhancements)
+    internal static int LegacyValue(string resref, ItemPropertyType type, int subtype, Dictionary<(ItemPropertyType, int), int> enhancements)
         => LootStatRevisionCatalog.Changes[resref].Single(x => x.Type == type && x.Subtype == subtype).Previous +
            enhancements.GetValueOrDefault((type, subtype));
 
@@ -299,7 +299,7 @@ public static partial class MigrationEngineTests
             Invoke("MigrationObject", "RemoveProperty", item, ip);
     }
 
-    private static void RemoveRequirement(uint item)
+    internal static void RemoveRequirement(uint item)
     {
         // The fixture has no skill ranks; the revision under test doesn't depend on the requirement.
         RemoveMatching(item, ItemPropertyType.RequiresSkill, 0);

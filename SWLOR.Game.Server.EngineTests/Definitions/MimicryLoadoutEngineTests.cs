@@ -6,6 +6,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using SWLOR.Game.Server.EngineTests.Framework;
 using SWLOR.Game.Server.Entity;
+using SWLOR.Game.Server.Feature.GuiDefinition.Payload;
 using SWLOR.Game.Server.Feature.GuiDefinition.ViewModel;
 using SWLOR.Game.Server.Feature.MigrationDefinition.PlayerMigration;
 using SWLOR.Game.Server.Feature.MigrationDefinition.ServerMigration;
@@ -125,6 +126,67 @@ public static class MimicryLoadoutEngineTests
         await ctx.WaitFrameAsync();
         AssertSet(ctx, new[] { Rush, Trait }, DB.Get<Player>(fixture.Id).MimicryLoadouts.Single(x => x.Id == saved.Id).Techniques, "Save updates the selected preset after reopening");
         ctx.SetResultDetail("Production view-model Save As/Save/Apply handlers, Redis persistence, native feat and cached/fresh reopen checked. Client input/rendering excluded.");
+    }
+
+    [EngineTest("Manage renames or deletes the selected build in the toolbar, and Cancel leaves it unchanged", Category = "MimicryLoadouts", TimeoutSeconds = 30f)]
+    public static async Task ManageBuild(EngineTestContext ctx)
+    {
+        using var fixture = await PlayerAbilityFixture.CreateAsync(ctx);
+        var (first, _) = Prepare(fixture);
+        Apply(ctx, fixture.Creature, first, Rush, Trait);
+        var model = new TechniquesViewModel();
+        Bind(model, fixture.Creature);
+        AssertBar(ctx, model, TechniquesViewModel.BuildBarPartial, "the window opens on the build bar");
+
+        model.OnClickManage()();
+        AssertBar(ctx, model, TechniquesViewModel.ManageBarPartial, "Manage swaps in the manage bar");
+        ctx.AssertEqual("First", model.BuildNameText, "the name field starts with the selected build's name");
+        model.BuildNameText = "Discarded";
+        model.OnClickCancelManage()();
+        AssertBar(ctx, model, TechniquesViewModel.BuildBarPartial, "Cancel returns to the build bar");
+        await ctx.WaitFrameAsync();
+        ctx.AssertEqual("First", ReadPersisted(first, fixture.Id).Name, "Cancel keeps the saved name");
+
+        model.OnClickManage()();
+        model.BuildNameText = "second";
+        model.OnClickRenameBuild()();
+        AssertBar(ctx, model, TechniquesViewModel.ManageBarPartial, "a rejected name keeps the manage bar open");
+        ctx.Assert(model.ManageText.Contains("already uses"), "the manage bar explains a duplicate name");
+        model.BuildNameText = "  ";
+        model.OnClickRenameBuild()();
+        ctx.AssertEqual($"Use 1-{MimicryLoadouts.MaxNameLength} characters, no line breaks.", model.ManageText, "the manage bar explains an empty name");
+        model.BuildNameText = "Tank kit";
+        model.OnClickRenameBuild()();
+        await ctx.WaitFrameAsync();
+        AssertBar(ctx, model, TechniquesViewModel.BuildBarPartial, "Rename returns to the build bar");
+        ctx.AssertEqual("Tank kit", ReadPersisted(first, fixture.Id).Name, "Rename persists the new name");
+        ctx.Assert(model.LoadoutOptions.Any(x => x.Label == "Tank kit"), "the dropdown lists the new name");
+
+        model.OnClickManage()();
+        model.OnClickDeleteBuild()();
+        AssertBar(ctx, model, TechniquesViewModel.DeleteBarPartial, "Delete asks for confirmation in the toolbar");
+        model.OnClickCancelManage()();
+        AssertBar(ctx, model, TechniquesViewModel.BuildBarPartial, "Cancel closes the delete confirmation");
+        await ctx.WaitFrameAsync();
+        ctx.Assert(ReadPersisted(fixture.Id).MimicryLoadouts.Any(x => x.Id == first), "Cancel keeps the build");
+
+        model.OnClickManage()();
+        model.OnClickDeleteBuild()();
+        model.OnClickConfirmDeleteBuild()();
+        await ctx.WaitFrameAsync();
+        AssertBar(ctx, model, TechniquesViewModel.BuildBarPartial, "a confirmed delete returns to the build bar");
+        var record = ReadPersisted(fixture.Id);
+        ctx.Assert(record.MimicryLoadouts.All(x => x.Id != first), "Delete removes the build");
+        AssertSet(ctx, new[] { Rush, Trait }, record.EquippedTechniques, "Delete keeps the equipped techniques");
+
+        model.OnClickManage()();
+        model.OnClickDeleteBuild()();
+        model.OnClickConfirmDeleteBuild()();
+        model.OnClickManage()();
+        ctx.Assert(!model.CanDeleteBuild, "the last saved build cannot be deleted");
+        model.OnClickCancelManage()();
+        AssertBar(ctx, model, TechniquesViewModel.BuildBarPartial, "Cancel closes the manage bar");
+        ctx.SetResultDetail("Production view-model Manage handlers: in-window bar swaps, Cancel from both steps, rejected and accepted rename, confirmed delete, last-build guard, and Redis persistence. Client rendering excluded.");
     }
 
     [EngineTest("Technique build changes preserve native quickbar layouts and unrelated shortcuts", Category = "MimicryLoadouts", TimeoutSeconds = 30f)]
@@ -259,6 +321,20 @@ public static class MimicryLoadoutEngineTests
     // Reads Redis directly; DB.Get returns the cached instance that DB.Set stored.
     private static Player ReadPersisted(string id)
         => JsonConvert.DeserializeObject<Player>(DB.GetRawJson<Player>(id));
+
+    private static MimicryLoadout ReadPersisted(string loadoutId, string playerId)
+        => ReadPersisted(playerId).MimicryLoadouts.Single(x => x.Id == loadoutId);
+
+    // Manage must swap only the build bar; the window root stays on the main view instead of a modal.
+    private static void AssertBar(EngineTestContext ctx, TechniquesViewModel model, string expected, string message)
+    {
+        var baseType = typeof(GuiViewModelBase<TechniquesViewModel, TechniquesPayload>);
+        var root = (string)baseType.GetField("_rootPartial", BindingFlags.Instance | BindingFlags.NonPublic).GetValue(model);
+        var groups = (Dictionary<string, string>)baseType.GetField("_groupLayouts", BindingFlags.Instance | BindingFlags.NonPublic).GetValue(model);
+        var layouts = Gui.GetWindowTemplate(GuiWindowType.Techniques).PartialViewLayouts;
+        ctx.AssertEqual("%%WINDOW_MAIN%%", root, $"{message}: the main view stays on screen");
+        ctx.AssertEqual(layouts[expected], groups[TechniquesViewModel.BuildBarElement], message);
+    }
 
     private static void Apply(EngineTestContext ctx, uint player, string id, params FeatType[] feats)
         => ctx.Assert(Mimicry.ApplyLoadout(player, id, feats, out var error), $"apply succeeds: {error}");

@@ -1141,7 +1141,7 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                     var url = _appSettings.DMShoutWebhookUrl;
 
                     for (var onlinePlayer = GetFirstPC(); GetIsObjectValid(onlinePlayer); onlinePlayer = GetNextPC())
-                        ChatPlugin.SendMessage(ChatChannel.DMShout, message, user, onlinePlayer);
+                        ChatPlugin.SendMessage(ChatChannel.DMShout, message, user, DMPresence.GetControlledCreature(onlinePlayer));
 
                     var authorName = $"{GetName(user)} ({GetPCPlayerName(user)}) [{GetPCPublicCDKey(user)}]";
                     if (!string.IsNullOrWhiteSpace(url))

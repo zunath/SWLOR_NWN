@@ -307,7 +307,7 @@ public class DevicesFieldSupportAndAssaultGadgetsTests
         var sonicBurst = File.ReadAllText(
             (root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "Devices" / "SonicBurstAbilityDefinition.cs").FullName);
         sonicBurst.Should().Contain("InterruptActivation(hitTarget);");
-        sonicBurst.Should().Contain("AssignCommand(target, () => ClearAllActions());");
+        sonicBurst.Should().Contain("ActionInterruption.ClearActions(target);");
 
         var flamethrower = File.ReadAllText(
             (root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "Devices" / "FlamethrowerAbilityDefinition.cs").FullName);

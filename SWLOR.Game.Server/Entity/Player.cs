@@ -20,6 +20,7 @@ using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.Game.Server.Entity
 {
+    [JsonCachedAcrossFrames]
     public class Player: EntityBase
     {
         public const int DefaultOutfitSlotLimit = 25;

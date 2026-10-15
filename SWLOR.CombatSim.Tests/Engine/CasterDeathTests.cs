@@ -46,7 +46,7 @@ namespace SWLOR.CombatSim.Tests.Engine
                         new CombatantSpec { Name = "Wounded", MaxHp = 1000 }
                     },
                     new[] { TestCombatants.Dummy("Enemy", true) }),
-                RuleSets.Current(),
+                RuleSets.PreTuning(),
                 _catalog);
             var medic = simulation.Get("Medic");
             var wounded = simulation.Get("Wounded");
@@ -69,7 +69,7 @@ namespace SWLOR.CombatSim.Tests.Engine
         [Test]
         public void KoltoMist_RecastBeforeItsZoneEnds_KeepsBothZonesPulsing()
         {
-            var rules = RuleSets.Current();
+            var rules = RuleSets.PreTuning();
             rules.RecastOverrides["KoltoMist"] = 3f;
             var simulation = TestScenarios.Spawn(
                 TestScenarios.TwoTeams(
@@ -98,7 +98,7 @@ namespace SWLOR.CombatSim.Tests.Engine
                     false,
                     new[] { TestCombatants.Medic("Medic", TestCombatants.Use(feat, AbilityTarget.Self)), new CombatantSpec { Name = "Wounded", MaxHp = 1000 } },
                     new[] { TestCombatants.Dummy("Enemy", true) }),
-                RuleSets.Current(),
+                RuleSets.PreTuning(),
                 _catalog);
             var medic = simulation.Get("Medic");
             var wounded = simulation.Get("Wounded");

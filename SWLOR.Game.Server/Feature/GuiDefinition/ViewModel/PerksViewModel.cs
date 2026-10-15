@@ -779,10 +779,16 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var magnitudeAdjustment = (int)Math.Round(
                 (Perk.GetForceAffinityMagnitudeMultiplier(Player, detail.Type) - 1f) * 100f,
                 MidpointRounding.AwayFromZero);
+            var restorativeAdjustment = (int)Math.Round(
+                (Perk.GetForceAffinityRestorativeMagnitudeMultiplier(Player, detail.Type) - 1f) * 100f,
+                MidpointRounding.AwayFromZero);
             var hitChanceAdjustment = Perk.GetForceAffinityHitChanceAdjustment(Player, detail.Type);
+            var restorativeNote = restorativeAdjustment != magnitudeAdjustment
+                ? $" ({FormatSignedPercent(restorativeAdjustment)} for heals and shields)"
+                : string.Empty;
 
             return $"\n{alignment}-ALIGNED FORCE POWER\n" +
-                   $"At {FormatForceAffinity(affinity)}: {FormatSignedPercent(magnitudeAdjustment)} magnitude, " +
+                   $"At {FormatForceAffinity(affinity)}: {FormatSignedPercent(magnitudeAdjustment)} magnitude{restorativeNote}, " +
                    $"{FormatSignedPercent(hitChanceAdjustment)} hit chance.\n" +
                    $"Owning any rank contributes {contribution}; additional ranks do not add more affinity.";
         }

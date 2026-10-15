@@ -129,7 +129,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .ForceAffinity(ForceAffinityType.Light)
 
                 .AddPerkLevel()
-                .Description("Releases a 5m wave of focused light, dealing 22 force DMG plus WIL scaling to enemies and removing one minor negative effect (Bleed, Poison, or Hobble) from allies within 5m.")
+                .Description("Releases a 5m wave of focused light, dealing 22 force DMG plus WIL scaling to enemies. Allies within 5m heal for 8% of maximum HP plus WIL scaling and lose one minor negative effect (Bleed, Poison, or Hobble).")
                 .Price(4)
                 .RequirementSkill(SkillType.Force, 35)
                 .RequirementCharacterType(CharacterType.ForceSensitive)

@@ -57,6 +57,8 @@ namespace SWLOR.Game.Server.Service
         private static bool _perkFeatCacheLoaded;
         private const int ForceAffinityMinimum = -10;
         private const int ForceAffinityMaximum = 10;
+        // Heals, shields and regeneration gain at most +25% from affinity; damage and accuracy keep the full range.
+        private const float ForceAffinityRestorativeMaximumMultiplier = 1.25f;
 
         private class StatBonusGroup
         {
@@ -625,12 +627,24 @@ namespace SWLOR.Game.Server.Service
                 : 0;
         }
 
+        public static float GetForceAffinityRestorativeMagnitudeMultiplier(uint creature, PerkType perkType)
+        {
+            return Math.Min(GetForceAffinityMagnitudeMultiplier(creature, perkType), ForceAffinityRestorativeMaximumMultiplier);
+        }
+
         public static int ApplyForceAffinityMagnitude(uint creature, PerkType perkType, int amount)
         {
-            if (amount <= 0)
-                return amount;
+            return amount <= 0 ? amount : ApplyMagnitudeMultiplier(amount, GetForceAffinityMagnitudeMultiplier(creature, perkType));
+        }
 
-            var multiplier = GetForceAffinityMagnitudeMultiplier(creature, perkType);
+        /// <summary>Applies affinity to a heal, shield or regeneration amount, which gains at most +25%.</summary>
+        public static int ApplyForceAffinityRestorativeMagnitude(uint creature, PerkType perkType, int amount)
+        {
+            return amount <= 0 ? amount : ApplyMagnitudeMultiplier(amount, GetForceAffinityRestorativeMagnitudeMultiplier(creature, perkType));
+        }
+
+        private static int ApplyMagnitudeMultiplier(int amount, float multiplier)
+        {
             if (Math.Abs(multiplier - 1f) < 0.001f)
                 return amount;
 

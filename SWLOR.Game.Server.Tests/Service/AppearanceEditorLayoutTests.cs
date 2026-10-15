@@ -489,6 +489,24 @@ public class AppearanceEditorLayoutTests
     }
 
     [Test]
+    public void SettingsKeepScaleButtonsAvailableWithoutPlayerPreferenceControls()
+    {
+        var settings = _partials[AppearanceEditorViewModel.SettingsPartial];
+        foreach (var widget in Walk(settings).Where(widget =>
+                     widget is GuiCheckBox<AppearanceEditorViewModel> || widget.Id == "ae_settings_save"))
+            PathTo(settings, widget).Should().Contain(ancestor =>
+                ReadProperty<string>(ancestor, "IsVisibleBindName") == nameof(AppearanceEditorViewModel.IsPlayerSettingsVisible));
+
+        foreach (var id in new[] { "ae_height_increase", "ae_height_decrease", "ae_head_increase", "ae_head_decrease" })
+        {
+            var button = Walk(settings).Single(widget => widget.Id == id);
+            PathTo(settings, button).Should().NotContain(ancestor =>
+                ReadProperty<string>(ancestor, "IsVisibleBindName") == nameof(AppearanceEditorViewModel.IsPlayerSettingsVisible));
+        }
+        _window.LayoutFindings.Should().BeEmpty();
+    }
+
+    [Test]
     public void NavigationAndMainContentHaveNoFixedWidthAncestor()
     {
         var main = _partials["%%WINDOW_MAIN%%"];

@@ -11,7 +11,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
 {
     public static class PlayerHealingBudgetEngineTests
     {
-        [EngineTest("Player Med Kit healing uses finite stamina and consumes medical supplies", Category = "PlayerHealing", TimeoutSeconds = 30f)]
+        [EngineTest("Player Med Kit healing uses finite stamina and consumes medical supplies", Category = "PlayerHealing", TimeoutSeconds = 40f)]
         public static async Task MedKitBudget(EngineTestContext ctx)
         {
             using var fixture = await PlayerAbilityFixture.CreateAsync(ctx);
@@ -58,7 +58,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             ctx.AssertEqual(0, Stat.GetCurrentStamina(player), "one rank-IV heal consumes the eight-STM budget");
             await ctx.WaitUntilAsync(() => !GetIsObjectValid(supplies), 3f, "the medical supply to be consumed");
             ctx.Assert(!Ability.CanUseAbility(player, target, FeatType.MedKit4, 4, GetLocation(target)), "healing cannot be spammed during recast");
-            await ctx.DelaySecondsAsync(7f);
+            await ctx.DelaySecondsAsync(11f);
             ctx.Assert(!Ability.CanUseAbility(player, target, FeatType.MedKit4, 4, GetLocation(target)), "an exhausted medic cannot heal after recast");
             ctx.SetResources(player, 100, 8);
             ctx.Assert(!Ability.CanUseAbility(player, target, FeatType.MedKit4, 4, GetLocation(target)), "restoring stamina does not replace the consumed supply");

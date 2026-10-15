@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.Service.StatusEffectService;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
@@ -28,6 +30,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
         /// </summary>
         public const int MaximumReportedHitPoints = short.MaxValue;
 
+        /// <summary>All temporary HP sources together are capped at this percent of max HP.</summary>
+        public const int MaximumTotalPercentOfMaxHP = 50;
+
         public static int GetRemaining(uint target)
         {
             var total = 0;
@@ -52,6 +57,24 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
             }
 
             return total;
+        }
+
+        public static int GetMaximumTotal(uint target)
+        {
+            return CalculateMaximumTotal(GetMaxHitPoints(target));
+        }
+
+        public static int CalculateMaximumTotal(int maxHitPoints)
+        {
+            return maxHitPoints <= 0 ? 0 : GameMath.PercentOf(maxHitPoints, MaximumTotalPercentOfMaxHP);
+        }
+
+        /// <summary>
+        /// How much of a requested pool fits under the cap, given the temporary HP already held from other sources.
+        /// </summary>
+        public static int CalculateGrantedAmount(int requestedAmount, int maximumTotal, int otherPoolsRemaining)
+        {
+            return Math.Max(0, Math.Min(requestedAmount, maximumTotal - Math.Max(0, otherPoolsRemaining)));
         }
 
         /// <summary>
@@ -123,7 +146,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
             return Math.Max(engineTotal, GetRemaining(target));
         }
 
-        public static void ApplyFlatPlusPercent(
+        public static int ApplyFlatPlusPercent(
             uint target,
             string effectKey,
             int flatAmount,
@@ -131,13 +154,13 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
             float durationSeconds)
         {
             var amount = Math.Max(1, flatAmount + GameMath.PercentOf(GetMaxHitPoints(target), percent));
-            ApplyFlat(target, effectKey, amount, durationSeconds);
+            return ApplyFlat(target, effectKey, amount, durationSeconds);
         }
 
         // Temporary HP pools from different abilities stack, but an ability never stacks with
         // itself: each grant is tagged with its ability's key and the most recent cast replaces
         // any prior pool carrying the same key, regardless of caster.
-        /// <returns>The amount granted, which is smaller than requested at the engine's HP limit.</returns>
+        /// <returns>The amount granted, which is smaller than requested under the cap or at the engine's HP limit.</returns>
         public static int ApplyFlat(uint target, string effectKey, int amount, float durationSeconds)
         {
             return ApplyFlatFromSource(OBJECT_INVALID, target, effectKey, amount, durationSeconds);
@@ -148,7 +171,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
         /// ownership is only considered active while the matching native temporary-HP effect
         /// still exists, so consuming the pool immediately invalidates source-dependent riders.
         /// </summary>
-        /// <returns>The amount granted, which is smaller than requested at the engine's HP limit.</returns>
+        /// <returns>The amount granted, which is smaller than requested under the cap or at the engine's HP limit.</returns>
         public static int ApplyFlatFromSource(
             uint source,
             uint target,
@@ -159,7 +182,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
             ValidateEffectKey(effectKey);
             DeleteLocalString(target, GetOwnerVariable(effectKey));
             DeleteLocalObject(target, GetSourceVariable(effectKey));
-            var grantedAmount = ApplyFlatInternal(target, effectKey, amount, durationSeconds);
+            var grantedAmount = ApplyFlatInternal(target, effectKey, amount, durationSeconds, source);
 
             if (grantedAmount > 0 && GetIsObjectValid(source))
                 SetLocalObject(target, GetSourceVariable(effectKey), source);
@@ -172,7 +195,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
         /// A later application of the same key replaces both the native pool and its owner,
         /// allowing an older status marker to expire without deleting the newer pool.
         /// </summary>
-        public static void ApplyFlatOwned(
+        public static int ApplyFlatOwned(
             uint target,
             string effectKey,
             int amount,
@@ -188,17 +211,24 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                 SetLocalString(target, GetOwnerVariable(effectKey), ownerId);
             else
                 DeleteLocalString(target, GetOwnerVariable(effectKey));
+
+            return grantedAmount;
         }
 
         /// <summary>
-        /// Replaces the keyed pool, clamped so the engine's reported HP cannot overflow. Room
-        /// held by pools removed this frame, including the one being replaced, is reserved and
-        /// granted in a follow-up effect with the same tag once the engine releases it.
+        /// Replaces the keyed pool, clamped under the total cap and so the engine's reported HP
+        /// cannot overflow. Room held by pools removed this frame, including the one being
+        /// replaced, is reserved and granted in a follow-up effect with the same tag once the
+        /// engine releases it.
         /// </summary>
-        private static int ApplyFlatInternal(uint target, string effectKey, int amount, float durationSeconds)
+        /// <param name="recordGrant">False when a pool is re-applied smaller rather than granted anew.</param>
+        private static int ApplyFlatInternal(
+            uint target, string effectKey, int amount, float durationSeconds, uint source = OBJECT_INVALID, bool recordGrant = true)
         {
             var effectTag = EffectTagPrefix + effectKey;
             var generation = AdvanceGeneration(target, effectKey);
+            if (CombatRecorder.IsRecording)
+                CombatRecorder.RecordTemporaryHitPointPoolRemoving(target);
             RemoveEffectByTag(target, effectTag);
 
             // Immediate room counts pools the engine has not released yet; released room is what
@@ -206,7 +236,11 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
             var hitPoints = GetLimitingHitPoints(target);
             var immediateRoom = GetCapacity(hitPoints, GetEngineTemporaryHitPoints(target));
             var releasedRoom = GetCapacity(hitPoints, GetRemaining(target) + GetLocalInt(target, DeferredTotalVariable));
-            var grantedAmount = Math.Min(amount, releasedRoom);
+            // Every source shares the total cap. The pool being replaced is already gone, and
+            // reserved deferred grants still count against it.
+            var capRoom = CalculateGrantedAmount(
+                amount, GetMaximumTotal(target), GetRemaining(target) + GetLocalInt(target, DeferredTotalVariable));
+            var grantedAmount = Math.Min(capRoom, releasedRoom);
             if (grantedAmount <= 0)
             {
                 DeleteLocalInt(target, GetGrantedVariable(effectKey));
@@ -225,6 +259,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
             }
 
             SetLocalInt(target, GetGrantedVariable(effectKey), grantedAmount);
+            if (recordGrant && CombatRecorder.IsRecording)
+                CombatRecorder.RecordTemporaryHitPointsGranted(source, target, effectKey, grantedAmount, durationSeconds);
             if (deferredAmount <= 0)
                 return grantedAmount;
 
@@ -260,11 +296,30 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
             if (HasEffectWithTag(target, pendingTag))
             {
                 RemoveEffectByTag(target, pendingTag);
-                var appliedAmount = Math.Min(amount, GetCapacity(target));
+                // The cap can fall while the grant waits, such as when a Vitality buff wears off, so it is
+                // checked again here and the part it no longer allows is dropped instead of waiting.
+                var allowedAmount = CalculateGrantedAmount(
+                    amount, GetMaximumTotal(target), GetRemaining(target) + GetLocalInt(target, DeferredTotalVariable));
+                var appliedAmount = Math.Min(allowedAmount, GetCapacity(target));
                 if (appliedAmount > 0)
                     ApplyPoolEffect(target, EffectTagPrefix + effectKey, appliedAmount, durationSeconds);
 
-                remainingAmount = amount - appliedAmount;
+                remainingAmount = allowedAmount - appliedAmount;
+                if (allowedAmount < amount)
+                {
+                    var kept = GetRemaining(target, effectKey) + remainingAmount;
+                    SetLocalInt(target, GetGrantedVariable(effectKey),
+                        Math.Max(0, GetLocalInt(target, GetGrantedVariable(effectKey)) - (amount - allowedAmount)));
+                    if (CombatRecorder.IsRecording)
+                        CombatRecorder.RecordTemporaryHitPointsTrimmed(target, effectKey, amount - allowedAmount, kept);
+                    NotifyPoolTrimmed(target, effectKey, kept);
+                    if (kept <= 0)
+                    {
+                        Remove(target, effectKey);
+                        return;
+                    }
+                }
+
                 if (remainingAmount > 0 && GetPendingRemoval(target) > 0 && durationSeconds > PendingRemovalDelaySeconds)
                 {
                     ScheduleDeferredGrant(target, effectKey, generation, remainingAmount, durationSeconds - PendingRemovalDelaySeconds);
@@ -336,9 +391,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
         }
 
         /// <summary>
-        /// Schedules <see cref="EnforceLimit"/> after a change that can raise maximum HP, such as
-        /// an HP budget or a native Vitality effect. The check runs once the change has settled and
-        /// never iterates effects synchronously, so it is safe inside effect removal callbacks.
+        /// Schedules <see cref="EnforceLimit"/> after a change to maximum HP, such as an HP budget
+        /// or a native Vitality effect. The check runs once the change has settled and never
+        /// iterates effects synchronously, so it is safe inside effect removal callbacks.
         /// </summary>
         public static void ScheduleLimitCheck(uint target)
         {
@@ -353,15 +408,93 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
         }
 
         /// <summary>
-        /// Re-applies pools through the clamp after the target's maximum HP rises, so healing
-        /// toward the new maximum cannot push the reported total past the engine limit.
+        /// Trims pools back under the total cap after maximum HP drops, and re-applies them through
+        /// the clamp after it rises, so healing toward the new maximum cannot push the reported
+        /// total past the engine limit.
         /// </summary>
         private static void EnforceLimit(uint target)
         {
+            EnforceMaximumTotal(target);
+
             var hitPoints = GetLimitingHitPoints(target);
             if (hitPoints + GetRemaining(target) <= MaximumReportedHitPoints)
                 return;
 
+            var pools = GetKeyedPools(target);
+
+            // Trim the most recently granted pools first.
+            for (var index = pools.Count - 1; index >= 0; index--)
+            {
+                if (hitPoints + GetRemaining(target) <= MaximumReportedHitPoints)
+                    return;
+
+                var (effectKey, amount, durationSeconds) = pools[index];
+                var kept = ApplyFlatInternal(target, effectKey, amount, durationSeconds, recordGrant: false);
+                if (kept < amount && CombatRecorder.IsRecording)
+                    CombatRecorder.RecordTemporaryHitPointsTrimmed(target, effectKey, amount - kept, kept);
+                if (kept <= 0)
+                    Remove(target, effectKey);
+            }
+        }
+
+        /// <summary>
+        /// Trims pools back under the cap after maximum HP drops, such as when food wears off or a Vitality
+        /// penalty lands, taking first from the pools that end soonest.
+        /// </summary>
+        public static void EnforceMaximumTotal(uint target)
+        {
+            var excess = GetRemaining(target) - GetMaximumTotal(target);
+            if (excess <= 0)
+                return;
+
+            var pools = GetKeyedPools(target).OrderBy(pool => pool.DurationSeconds).ToList();
+            var kept = CalculateTrimmedAmounts(pools.Select(pool => pool.Amount).ToList(), excess);
+            for (var index = 0; index < pools.Count; index++)
+            {
+                var (effectKey, amount, durationSeconds) = pools[index];
+                if (kept[index] == amount)
+                    continue;
+
+                if (CombatRecorder.IsRecording)
+                    CombatRecorder.RecordTemporaryHitPointsTrimmed(target, effectKey, amount - kept[index], kept[index]);
+                if (kept[index] <= 0)
+                    Remove(target, effectKey);
+                else
+                    ApplyFlatInternal(target, effectKey, kept[index], Math.Max(1, durationSeconds), recordGrant: false);
+
+                NotifyPoolTrimmed(target, effectKey, kept[index]);
+            }
+        }
+
+        // Status effects that track a pool, such as Guardian's Resolve, follow it down when it is trimmed.
+        private static void NotifyPoolTrimmed(uint target, string effectKey, int kept)
+        {
+            var trackers = StatusEffect.GetCreatureStatusEffects(target)
+                .GetAllEffects()
+                .OfType<ITemporaryHitPointPoolStatusEffect>()
+                .Where(tracker => tracker.TemporaryHitPointPoolKey == effectKey)
+                .ToList();
+            foreach (var tracker in trackers)
+                tracker.OnTemporaryHitPointPoolTrimmed(target, kept);
+        }
+
+        /// <summary>What each pool keeps after <paramref name="excess"/> is taken from the pools in order.</summary>
+        public static List<int> CalculateTrimmedAmounts(IReadOnlyList<int> amounts, int excess)
+        {
+            var kept = new List<int>(amounts.Count);
+            foreach (var amount in amounts)
+            {
+                var cut = Math.Clamp(excess, 0, Math.Max(0, amount));
+                kept.Add(amount - cut);
+                excess -= cut;
+            }
+
+            return kept;
+        }
+
+        // The keyed pools on the target, one entry per key with its total and longest remaining duration.
+        private static List<(string EffectKey, int Amount, int DurationSeconds)> GetKeyedPools(uint target)
+        {
             var pools = new List<(string EffectKey, int Amount, int DurationSeconds)>();
             for (var effect = GetFirstEffect(target); GetIsEffectValid(effect); effect = GetNextEffect(target))
             {
@@ -381,19 +514,21 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                     pools[index] = (effectKey, pools[index].Amount + amount, Math.Max(pools[index].DurationSeconds, duration));
             }
 
-            // Trim the most recently granted pools first.
-            for (var index = pools.Count - 1; index >= 0; index--)
-            {
-                if (hitPoints + GetRemaining(target) <= MaximumReportedHitPoints)
-                    return;
-
-                var (effectKey, amount, durationSeconds) = pools[index];
-                if (ApplyFlatInternal(target, effectKey, amount, durationSeconds) <= 0)
-                    Remove(target, effectKey);
-            }
+            return pools;
         }
 
-        public static void ApplyFlatWithBarrierVisual(
+        /// <summary>
+        /// Returns the ability key of a temporary-HP effect tag, or the tag itself when it was
+        /// not applied through this class.
+        /// </summary>
+        public static string GetEffectKey(string effectTag)
+        {
+            return effectTag != null && effectTag.StartsWith(EffectTagPrefix, StringComparison.Ordinal)
+                ? effectTag.Substring(EffectTagPrefix.Length)
+                : effectTag;
+        }
+
+        public static int ApplyFlatWithBarrierVisual(
             uint target,
             string effectKey,
             int amount,
@@ -409,10 +544,11 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
             RemoveEffectByTag(target, visualEffectTag);
 
             if (grantedAmount <= 0 || durationSeconds <= 0f || barrierVisualEffect == VisualEffect.None)
-                return;
+                return grantedAmount;
 
             var visualEffect = TagEffect(EffectVisualEffect(barrierVisualEffect), visualEffectTag);
             ApplyEffectToObject(DurationType.Temporary, visualEffect, target, durationSeconds);
+            return grantedAmount;
         }
 
         public static void Remove(uint target, string effectKey)
@@ -424,6 +560,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
             AdvanceGeneration(target, effectKey);
 
             var effectTag = EffectTagPrefix + effectKey;
+            if (CombatRecorder.IsRecording)
+                CombatRecorder.RecordTemporaryHitPointPoolRemoving(target);
             RemoveEffectByTag(target, effectTag);
             RemoveEffectByTag(target, effectTag + BarrierVisualEffectTagSuffix);
         }

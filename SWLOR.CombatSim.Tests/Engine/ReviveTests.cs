@@ -23,7 +23,7 @@ namespace SWLOR.CombatSim.Tests.Engine
                     false,
                     new[] { medic, new CombatantSpec { Name = "Revived", MaxHp = 1000 }, new CombatantSpec { Name = "Fresh", MaxHp = 1000 } },
                     new[] { TestCombatants.Dummy("Enemy", true) }),
-                RuleSets.Tuned(),
+                RuleSets.Current(),
                 _catalog);
             var enemy = simulation.Get("Enemy");
             var revived = simulation.Get("Revived");
@@ -53,9 +53,9 @@ namespace SWLOR.CombatSim.Tests.Engine
         }
 
         [Test]
-        public void CurrentRules_AMedicRevivesADeadAllyMidFightInPvp()
+        public void PreTuning_AMedicRevivesADeadAllyMidFightInPvp()
         {
-            var (simulation, medic, ally, enemy) = SpawnAndKillAlly(RuleSets.Current(), isPvp: true);
+            var (simulation, medic, ally, enemy) = SpawnAndKillAlly(RuleSets.PreTuning(), isPvp: true);
 
             SimulationClock.RunUntil(simulation, () => !ally.IsDead, 15, "ally revived");
 
@@ -68,9 +68,9 @@ namespace SWLOR.CombatSim.Tests.Engine
         }
 
         [Test]
-        public void Tuned_RevivesAreBlockedInPvpWhileAnEnemyIsAlive()
+        public void Current_RevivesAreBlockedInPvpWhileAnEnemyIsAlive()
         {
-            var (simulation, medic, ally, _) = SpawnAndKillAlly(RuleSets.Tuned(), isPvp: true);
+            var (simulation, medic, ally, _) = SpawnAndKillAlly(RuleSets.Current(), isPvp: true);
 
             SimulationClock.RunUntil(simulation, 60);
 
@@ -83,9 +83,9 @@ namespace SWLOR.CombatSim.Tests.Engine
 
         [TestCase(0.1)]
         [TestCase(0.05)]
-        public void Tuned_BlockedReviveAttempts_AreCountedOncePerReactionWindow_WhateverTheTimeStep(double step)
+        public void Current_BlockedReviveAttempts_AreCountedOncePerReactionWindow_WhateverTheTimeStep(double step)
         {
-            var (simulation, medic, _, _) = SpawnAndKillAlly(RuleSets.Tuned(), isPvp: true);
+            var (simulation, medic, _, _) = SpawnAndKillAlly(RuleSets.Current(), isPvp: true);
 
             SimulationClock.RunUntil(simulation, 60, step);
 
@@ -104,9 +104,9 @@ namespace SWLOR.CombatSim.Tests.Engine
         }
 
         [Test]
-        public void Tuned_PvpRevivesWorkOnceNoEnemyIsLeft()
+        public void Current_PvpRevivesWorkOnceNoEnemyIsLeft()
         {
-            var (simulation, medic, ally, enemy) = SpawnAndKillAlly(RuleSets.Tuned(), isPvp: true);
+            var (simulation, medic, ally, enemy) = SpawnAndKillAlly(RuleSets.Current(), isPvp: true);
             SimulationClock.RunUntil(simulation, 20);
             ally.IsDead.Should().BeTrue();
 
@@ -118,9 +118,9 @@ namespace SWLOR.CombatSim.Tests.Engine
         }
 
         [Test]
-        public void Tuned_PvpRevivesWaitUntilTheLivingPartyHasNotBeenHitForFifteenSeconds()
+        public void Current_PvpRevivesWaitUntilTheLivingPartyHasNotBeenHitForFifteenSeconds()
         {
-            var (simulation, medic, ally, enemy) = SpawnAndKillAlly(RuleSets.Tuned(), isPvp: true);
+            var (simulation, medic, ally, enemy) = SpawnAndKillAlly(RuleSets.Current(), isPvp: true);
             simulation.ApplyDamage(enemy, medic, 10);
             simulation.ApplyDamage(medic, enemy, TestCombatants.EffectivelyUnlimited * 2.0);
             var lastHitAt = simulation.Now;
@@ -134,9 +134,9 @@ namespace SWLOR.CombatSim.Tests.Engine
         }
 
         [Test]
-        public void Tuned_PvpRevivesWaitFifteenSecondsAfterThePlayerKill_EvenWithNobodyElseHit()
+        public void Current_PvpRevivesWaitFifteenSecondsAfterThePlayerKill_EvenWithNobodyElseHit()
         {
-            var (simulation, medic, ally, enemy) = SpawnAndKillAlly(RuleSets.Tuned(), isPvp: true);
+            var (simulation, medic, ally, enemy) = SpawnAndKillAlly(RuleSets.Current(), isPvp: true);
             var killedAt = simulation.Now;
             simulation.ApplyDamage(medic, enemy, TestCombatants.EffectivelyUnlimited * 2.0);
             enemy.IsDead.Should().BeTrue("the killer is gone at once, so only the kill itself can hold the revive");
@@ -150,7 +150,7 @@ namespace SWLOR.CombatSim.Tests.Engine
         }
 
         [Test]
-        public void Tuned_PvpRevivesWaitFifteenSecondsAfterAnyPartyMembersDeath()
+        public void Current_PvpRevivesWaitFifteenSecondsAfterAnyPartyMembersDeath()
         {
             var medic = TestCombatants.Medic("Medic", TestCombatants.Use("Resuscitation2", AbilityTarget.DeadAlly));
             var simulation = TestScenarios.Spawn(
@@ -158,7 +158,7 @@ namespace SWLOR.CombatSim.Tests.Engine
                     true,
                     new[] { medic, new CombatantSpec { Name = "First", MaxHp = 1000 }, new CombatantSpec { Name = "Second", MaxHp = 1000 } },
                     new[] { TestCombatants.Dummy("Enemy") }),
-                RuleSets.Tuned(),
+                RuleSets.Current(),
                 _catalog);
             var enemy = simulation.Get("Enemy");
             simulation.ApplyDamage(enemy, simulation.Get("First"), TestCombatants.EffectivelyUnlimited);
@@ -187,7 +187,7 @@ namespace SWLOR.CombatSim.Tests.Engine
             var simulation = TestScenarios.Spawn(
                 TestScenarios.TwoTeams(false, new[] { medic, TestCombatants.Striker("Fighter", attacksPerSecond: 20f, damage: 1f) },
                     new[] { TestCombatants.Dummy("Enemy", true) }),
-                RuleSets.Current(),
+                RuleSets.PreTuning(),
                 _catalog,
                 seed);
             var fighter = simulation.Get("Fighter");
@@ -200,9 +200,9 @@ namespace SWLOR.CombatSim.Tests.Engine
         }
 
         [Test]
-        public void Tuned_InPve_TheFirstReviveTakesTheFourSecondCast()
+        public void Current_InPve_TheFirstReviveTakesTheFourSecondCast()
         {
-            var (simulation, medic, ally, _) = SpawnAndKillAlly(RuleSets.Tuned(), isPvp: false);
+            var (simulation, medic, ally, _) = SpawnAndKillAlly(RuleSets.Current(), isPvp: false);
             SimulationClock.RunUntil(simulation, () => medic.Casting != null, 10, "revive cast started");
             var castStartedAt = simulation.Now;
 
@@ -213,9 +213,9 @@ namespace SWLOR.CombatSim.Tests.Engine
         }
 
         [Test]
-        public void Tuned_InPve_ASecondReviveOfTheSameTargetWithinFiveMinutesIsBlocked()
+        public void Current_InPve_ASecondReviveOfTheSameTargetWithinFiveMinutesIsBlocked()
         {
-            var (simulation, medic, ally, enemy) = SpawnAndKillAlly(RuleSets.Tuned(), isPvp: false);
+            var (simulation, medic, ally, enemy) = SpawnAndKillAlly(RuleSets.Current(), isPvp: false);
             SimulationClock.RunUntil(simulation, () => !ally.IsDead, 20, "first revive");
             var revivedAt = simulation.Now;
 
@@ -235,9 +235,9 @@ namespace SWLOR.CombatSim.Tests.Engine
         }
 
         [Test]
-        public void CurrentRules_InPve_ASecondReviveOfTheSameTargetIsAllowedAfterTheRecast()
+        public void PreTuning_InPve_ASecondReviveOfTheSameTargetIsAllowedAfterTheRecast()
         {
-            var (simulation, medic, ally, enemy) = SpawnAndKillAlly(RuleSets.Current(), isPvp: false);
+            var (simulation, medic, ally, enemy) = SpawnAndKillAlly(RuleSets.PreTuning(), isPvp: false);
             SimulationClock.RunUntil(simulation, () => !ally.IsDead, 20, "first revive");
             var revivedAt = simulation.Now;
 
@@ -250,9 +250,9 @@ namespace SWLOR.CombatSim.Tests.Engine
         }
 
         [Test]
-        public void Tuned_InPve_DamageDuringTheCastInterruptsItAndCostsNothing()
+        public void Current_InPve_DamageDuringTheCastInterruptsItAndCostsNothing()
         {
-            var rules = RuleSets.Tuned();
+            var rules = RuleSets.Current();
             var (simulation, medic, ally, enemy) = SpawnAndKillAlly(rules, isPvp: false);
             SimulationClock.RunUntil(simulation, () => medic.Casting != null, 10, "revive cast started");
 
@@ -271,13 +271,13 @@ namespace SWLOR.CombatSim.Tests.Engine
         }
 
         [Test]
-        public void Tuned_InPve_AnInterruptedReviverResumesItsAttack()
+        public void Current_InPve_AnInterruptedReviverResumesItsAttack()
         {
             var medic = TestCombatants.Medic("Medic", TestCombatants.Use("Resuscitation2", AbilityTarget.DeadAlly));
             medic.AutoAttack = new AutoAttackSpec { AttacksPerSecond = 2f, Damage = new DamageSpec { Min = 1f, Max = 1f, HitChance = 1f } };
             var simulation = TestScenarios.Spawn(
                 TestScenarios.TwoTeams(false, new[] { medic, new CombatantSpec { Name = "Ally", MaxHp = 1000 } }, new[] { TestCombatants.Dummy("Enemy", true) }),
-                RuleSets.Tuned(),
+                RuleSets.Current(),
                 _catalog);
             var reviver = simulation.Get("Medic");
             var enemy = simulation.Get("Enemy");
@@ -295,9 +295,9 @@ namespace SWLOR.CombatSim.Tests.Engine
         }
 
         [Test]
-        public void CurrentRules_InPve_DamageDoesNotInterruptTheRevive()
+        public void PreTuning_InPve_DamageDoesNotInterruptTheRevive()
         {
-            var (simulation, medic, ally, enemy) = SpawnAndKillAlly(RuleSets.Current(), isPvp: false);
+            var (simulation, medic, ally, enemy) = SpawnAndKillAlly(RuleSets.PreTuning(), isPvp: false);
             SimulationClock.RunUntil(simulation, () => medic.Casting != null, 10, "revive cast started");
 
             SimulationClock.RunUntil(simulation, simulation.Now + 2.0);
@@ -317,7 +317,7 @@ namespace SWLOR.CombatSim.Tests.Engine
             var enemy = TestCombatants.Dummy("Enemy");
             // The player kill holds revives for the damage window, so the enemy joins just after it.
             enemy.JoinAtSeconds = (float)PvpPartyDamageWindowSeconds + 2f;
-            var simulation = TestScenarios.Spawn(TestScenarios.TwoTeams(true, new[] { medic, ally }, new[] { enemy }), RuleSets.Tuned(), _catalog);
+            var simulation = TestScenarios.Spawn(TestScenarios.TwoTeams(true, new[] { medic, ally }, new[] { enemy }), RuleSets.Current(), _catalog);
             simulation.ApplyDamage(simulation.Get("Enemy"), simulation.Get("Ally"), TestCombatants.EffectivelyUnlimited);
             var caster = simulation.Get("Medic");
 
@@ -338,7 +338,7 @@ namespace SWLOR.CombatSim.Tests.Engine
             };
             var simulation = TestScenarios.Spawn(
                 TestScenarios.TwoTeams(false, new[] { fallen, new CombatantSpec { Name = "Ally", MaxHp = 1000 } }, new[] { TestCombatants.Dummy("Enemy", true) }),
-                RuleSets.Current(),
+                RuleSets.PreTuning(),
                 _catalog);
             var player = simulation.Get("Fallen");
             player.Fp = 50;
@@ -361,7 +361,7 @@ namespace SWLOR.CombatSim.Tests.Engine
             var fallen = new CombatantSpec { Name = "Fallen", IsNpc = true, MaxHp = 1000, HpRegenPer30Seconds = 100 };
             var simulation = TestScenarios.Spawn(
                 TestScenarios.TwoTeams(false, new[] { medic, fallen }, new[] { TestCombatants.Dummy("Enemy") }),
-                RuleSets.Current(),
+                RuleSets.PreTuning(),
                 _catalog);
             var npc = simulation.Get("Fallen");
             simulation.ApplyDamage(simulation.Get("Enemy"), npc, TestCombatants.EffectivelyUnlimited);
@@ -380,7 +380,7 @@ namespace SWLOR.CombatSim.Tests.Engine
             var ally = new CombatantSpec { Name = "Ally", MaxHp = 1000 };
             var simulation = TestScenarios.Spawn(
                 TestScenarios.TwoTeams(true, new[] { medic, ally }, new[] { TestCombatants.Dummy("Creature", isNpc: true) }),
-                RuleSets.Tuned(),
+                RuleSets.Current(),
                 _catalog);
             var creature = simulation.Get("Creature");
             var revived = simulation.Get("Ally");

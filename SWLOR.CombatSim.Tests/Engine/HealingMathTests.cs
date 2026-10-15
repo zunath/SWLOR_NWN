@@ -9,8 +9,8 @@ namespace SWLOR.CombatSim.Tests.Engine
     [TestFixture]
     public class HealingMathTests
     {
-        private const float CurrentAffinityCap = 1.5f;
-        private const float TunedAffinityCap = 1.25f;
+        private const float PreTuningAffinityCap = 1.5f;
+        private const float CurrentAffinityCap = 1.25f;
         private const int LightAffinity = 10;
         private const int MaxScalingWillpower = 26;
         private const int BaselineWillpower = 10;
@@ -61,44 +61,44 @@ namespace SWLOR.CombatSim.Tests.Engine
         {
             // 2% of 1000 at baseline Willpower; the game's zone pulse heals through ApplyScaledHeal, which adds outgoing healing.
             HealingMath.PartyPulse(Effect(FeatType.ForceSanctuary1), TargetMaxHp, BaselineWillpower, LightAffinity,
-                CurrentAffinityCap, outgoingHealingPercent, 0f).Should().Be(expected);
+                PreTuningAffinityCap, outgoingHealingPercent, 0f).Should().Be(expected);
         }
 
         [Test]
-        public void BenevolenceIII_OnAlly_UnderCurrentAffinityCap_HealsThreeHundredTwentyNine()
+        public void BenevolenceIII_OnAlly_UnderPreTuningAffinityCap_HealsThreeHundredTwentyNine()
         {
             // 14% x 1.25 = 175, +25% Willpower = 219, x1.5 Light affinity = 328.5. The game rounds half away from zero
             // (Perk.ApplyForceAffinityMagnitude), so the heal is 329.
             var heal = HealingMath.DirectHeal(Effect(FeatType.Benevolence3), TargetMaxHp, 100f, false,
-                MaxScalingWillpower, LightAffinity, CurrentAffinityCap, 0f, 0f);
+                MaxScalingWillpower, LightAffinity, PreTuningAffinityCap, 0f, 0f);
 
             heal.Should().Be(329);
         }
 
         [Test]
-        public void BenevolenceIII_OnAlly_UnderTunedAffinityCap_HealsTwoHundredSeventyFour()
+        public void BenevolenceIII_OnAlly_UnderCurrentAffinityCap_HealsTwoHundredSeventyFour()
         {
             var heal = HealingMath.DirectHeal(Effect(FeatType.Benevolence3), TargetMaxHp, 100f, false,
-                MaxScalingWillpower, LightAffinity, TunedAffinityCap, 0f, 0f);
+                MaxScalingWillpower, LightAffinity, CurrentAffinityCap, 0f, 0f);
 
             heal.Should().Be(274);
         }
 
         [Test]
-        public void BenevolenceIII_OnSelf_UnderCurrentAffinityCap_HealsTwoHundredSixtyThree()
+        public void BenevolenceIII_OnSelf_UnderPreTuningAffinityCap_HealsTwoHundredSixtyThree()
         {
             // 14% = 140, +25% Willpower = 175, x1.5 Light affinity = 262.5 rounded away from zero.
             var heal = HealingMath.DirectHeal(Effect(FeatType.Benevolence3), TargetMaxHp, 100f, true,
-                MaxScalingWillpower, LightAffinity, CurrentAffinityCap, 0f, 0f);
+                MaxScalingWillpower, LightAffinity, PreTuningAffinityCap, 0f, 0f);
 
             heal.Should().Be(263);
         }
 
         [Test]
-        public void BenevolenceIII_OnSelf_UnderTunedAffinityCap_HealsTwoHundredNineteen()
+        public void BenevolenceIII_OnSelf_UnderCurrentAffinityCap_HealsTwoHundredNineteen()
         {
             var heal = HealingMath.DirectHeal(Effect(FeatType.Benevolence3), TargetMaxHp, 100f, true,
-                MaxScalingWillpower, LightAffinity, TunedAffinityCap, 0f, 0f);
+                MaxScalingWillpower, LightAffinity, CurrentAffinityCap, 0f, 0f);
 
             heal.Should().Be(219);
         }
@@ -107,9 +107,9 @@ namespace SWLOR.CombatSim.Tests.Engine
         public void BenevolenceIII_WithoutAffinity_IgnoresTheAffinityCap()
         {
             var underCurrentCap = HealingMath.DirectHeal(Effect(FeatType.Benevolence3), TargetMaxHp, 100f, false,
-                MaxScalingWillpower, 0, CurrentAffinityCap, 0f, 0f);
+                MaxScalingWillpower, 0, PreTuningAffinityCap, 0f, 0f);
             var underTunedCap = HealingMath.DirectHeal(Effect(FeatType.Benevolence3), TargetMaxHp, 100f, false,
-                MaxScalingWillpower, 0, TunedAffinityCap, 0f, 0f);
+                MaxScalingWillpower, 0, CurrentAffinityCap, 0f, 0f);
 
             underCurrentCap.Should().Be(219);
             underTunedCap.Should().Be(219);
@@ -119,7 +119,7 @@ namespace SWLOR.CombatSim.Tests.Engine
         public void MedKitIV_AtMaxWillpower_HealsThreeHundred()
         {
             var heal = HealingMath.DirectHeal(Effect(FeatType.MedKit4), TargetMaxHp, 100f, false,
-                MaxScalingWillpower, 0, CurrentAffinityCap, 0f, 0f);
+                MaxScalingWillpower, 0, PreTuningAffinityCap, 0f, 0f);
 
             heal.Should().Be(300);
         }
@@ -128,7 +128,7 @@ namespace SWLOR.CombatSim.Tests.Engine
         public void MedKitIV_WithTenPercentOutgoingHealing_HealsThreeHundredThirty()
         {
             var heal = HealingMath.DirectHeal(Effect(FeatType.MedKit4), TargetMaxHp, 100f, false,
-                MaxScalingWillpower, 0, CurrentAffinityCap, 10f, 0f);
+                MaxScalingWillpower, 0, PreTuningAffinityCap, 10f, 0f);
 
             heal.Should().Be(330);
         }
@@ -137,7 +137,7 @@ namespace SWLOR.CombatSim.Tests.Engine
         public void MedKitIV_AtBaselineWillpower_GetsNoStatBonus()
         {
             var heal = HealingMath.DirectHeal(Effect(FeatType.MedKit4), TargetMaxHp, 100f, false,
-                BaselineWillpower, 0, CurrentAffinityCap, 0f, 0f);
+                BaselineWillpower, 0, PreTuningAffinityCap, 0f, 0f);
 
             heal.Should().Be(240);
         }
@@ -146,7 +146,7 @@ namespace SWLOR.CombatSim.Tests.Engine
         public void MedKitIV_IgnoresForceAffinity()
         {
             var heal = HealingMath.DirectHeal(Effect(FeatType.MedKit4), TargetMaxHp, 100f, false,
-                MaxScalingWillpower, LightAffinity, CurrentAffinityCap, 0f, 0f);
+                MaxScalingWillpower, LightAffinity, PreTuningAffinityCap, 0f, 0f);
 
             heal.Should().Be(300);
         }
@@ -155,7 +155,7 @@ namespace SWLOR.CombatSim.Tests.Engine
         public void MedKitIV_WithCombatReadiness_AddsThePercentRoundedUp()
         {
             var heal = HealingMath.DirectHeal(Effect(FeatType.MedKit4), TargetMaxHp, 100f, false,
-                MaxScalingWillpower, 0, CurrentAffinityCap, 0f, 20f);
+                MaxScalingWillpower, 0, PreTuningAffinityCap, 0f, 20f);
 
             heal.Should().Be(360);
         }
@@ -165,8 +165,8 @@ namespace SWLOR.CombatSim.Tests.Engine
         {
             var triage = Effect(FeatType.EmergencyTriage1);
 
-            var healthy = HealingMath.DirectHeal(triage, TargetMaxHp, 50f, false, BaselineWillpower, 0, CurrentAffinityCap, 0f, 0f);
-            var wounded = HealingMath.DirectHeal(triage, TargetMaxHp, 35f, false, BaselineWillpower, 0, CurrentAffinityCap, 0f, 0f);
+            var healthy = HealingMath.DirectHeal(triage, TargetMaxHp, 50f, false, BaselineWillpower, 0, PreTuningAffinityCap, 0f, 0f);
+            var wounded = HealingMath.DirectHeal(triage, TargetMaxHp, 35f, false, BaselineWillpower, 0, PreTuningAffinityCap, 0f, 0f);
 
             healthy.Should().Be(180);
             wounded.Should().Be(360);
@@ -218,7 +218,7 @@ namespace SWLOR.CombatSim.Tests.Engine
         [Test]
         public void PartyPulse_KoltoMistIsOnePercentPerTickScaledByWillpower()
         {
-            var pulse = HealingMath.PartyPulse(Effect(FeatType.KoltoMist1), TargetMaxHp, MaxScalingWillpower, 0, CurrentAffinityCap, 0f, 0f);
+            var pulse = HealingMath.PartyPulse(Effect(FeatType.KoltoMist1), TargetMaxHp, MaxScalingWillpower, 0, PreTuningAffinityCap, 0f, 0f);
 
             pulse.Should().Be(13);
         }
@@ -228,8 +228,8 @@ namespace SWLOR.CombatSim.Tests.Engine
         {
             var shield = Effect(FeatType.DeflectorShield3);
 
-            HealingMath.TemporaryHp(shield, TargetMaxHp, MaxScalingWillpower, 10, LightAffinity, CurrentAffinityCap, 0f).Should().Be(220);
-            HealingMath.TemporaryHp(shield, TargetMaxHp, MaxScalingWillpower, 10, LightAffinity, CurrentAffinityCap, 10f).Should().Be(242);
+            HealingMath.TemporaryHp(shield, TargetMaxHp, MaxScalingWillpower, 10, LightAffinity, PreTuningAffinityCap, 0f).Should().Be(220);
+            HealingMath.TemporaryHp(shield, TargetMaxHp, MaxScalingWillpower, 10, LightAffinity, PreTuningAffinityCap, 10f).Should().Be(242);
         }
 
         [Test]
@@ -238,8 +238,8 @@ namespace SWLOR.CombatSim.Tests.Engine
             // 15% = 150, +25% Willpower = 188.
             var ward = Effect(FeatType.GuardianWard4);
 
-            HealingMath.TemporaryHp(ward, TargetMaxHp, MaxScalingWillpower, 10, LightAffinity, CurrentAffinityCap, 0f).Should().Be(282);
-            HealingMath.TemporaryHp(ward, TargetMaxHp, MaxScalingWillpower, 10, LightAffinity, TunedAffinityCap, 0f).Should().Be(235);
+            HealingMath.TemporaryHp(ward, TargetMaxHp, MaxScalingWillpower, 10, LightAffinity, PreTuningAffinityCap, 0f).Should().Be(282);
+            HealingMath.TemporaryHp(ward, TargetMaxHp, MaxScalingWillpower, 10, LightAffinity, CurrentAffinityCap, 0f).Should().Be(235);
         }
 
         [TestCase(10, 200)]
@@ -248,7 +248,7 @@ namespace SWLOR.CombatSim.Tests.Engine
         {
             var shout = Effect(FeatType.RousingShout3);
 
-            HealingMath.TemporaryHp(shout, TargetMaxHp, BaselineWillpower, social, 0, CurrentAffinityCap, 0f).Should().Be(expected);
+            HealingMath.TemporaryHp(shout, TargetMaxHp, BaselineWillpower, social, 0, PreTuningAffinityCap, 0f).Should().Be(expected);
         }
 
         [TestCase(10, 10f)]

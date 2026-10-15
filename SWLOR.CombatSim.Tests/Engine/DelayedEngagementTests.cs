@@ -120,12 +120,12 @@ namespace SWLOR.CombatSim.Tests.Engine
             var ally = new CombatantSpec { Name = "Ally", MaxHp = 1000 };
             var enemy = TestCombatants.Dummy("Enemy");
             enemy.JoinAtSeconds = 100f;
-            var simulation = Spawn(new[] { medic, ally }, new[] { enemy }, isPvp: true, RuleSets.Tuned());
+            var simulation = Spawn(new[] { medic, ally }, new[] { enemy }, isPvp: true, RuleSets.Current());
             simulation.ApplyDamage(simulation.Get("Enemy"), simulation.Get("Ally"), 5000);
             simulation.Get("Ally").IsDead.Should().BeTrue();
 
             // The player kill itself holds revives for the party damage window; after that only enemies could.
-            SimulationClock.RunUntil(simulation, RuleSets.Tuned().PvpReviveDamageWindowSeconds + 1);
+            SimulationClock.RunUntil(simulation, RuleSets.Current().PvpReviveDamageWindowSeconds + 1);
             var blockedByTheKill = simulation.Get("Medic").Stats.BlockedRevives;
             SimulationClock.RunUntil(simulation, () => !simulation.Get("Ally").IsDead, 40, "ally revived");
 
@@ -139,7 +139,7 @@ namespace SWLOR.CombatSim.Tests.Engine
             latecomer.JoinAtSeconds = 100f;
             var scenario = TestScenarios.TwoTeams(false, new[] { TestCombatants.Striker("Early") }, new[] { latecomer }, durationSeconds: 30f);
 
-            var result = new Simulation(scenario, RuleSets.Current(), _catalog, 1).Run();
+            var result = new Simulation(scenario, RuleSets.PreTuning(), _catalog, 1).Run();
 
             result.WinningTeam.Should().BeNull();
             result.EndedAt.Should().BeApproximately(30.0, 1e-6);
@@ -155,7 +155,7 @@ namespace SWLOR.CombatSim.Tests.Engine
                 striker.JoinAtSeconds = 60f;
                 var simulation = TestScenarios.Spawn(
                     TestScenarios.TwoTeams(false, new[] { striker }, new[] { TestCombatants.Dummy("Enemy", true) }, durationSeconds: 200f),
-                    RuleSets.Current(),
+                    RuleSets.PreTuning(),
                     _catalog,
                     seed);
                 var enemy = simulation.Get("Enemy");
@@ -174,7 +174,7 @@ namespace SWLOR.CombatSim.Tests.Engine
             var enemy = TestCombatants.Dummy("Enemy", true);
             enemy.JoinAtSeconds = 9.9f;
             var simulation = TestScenarios.Spawn(
-                TestScenarios.TwoTeams(false, new[] { striker }, new[] { enemy }), RuleSets.Current(), _catalog);
+                TestScenarios.TwoTeams(false, new[] { striker }, new[] { enemy }), RuleSets.PreTuning(), _catalog);
 
             // Scenarios step at most 0.1s; driving one coarse step directly exercises the catch-up.
             SimulationClock.RunUntil(simulation, 10.5, stepSeconds: 10.0);
@@ -192,7 +192,7 @@ namespace SWLOR.CombatSim.Tests.Engine
             var scenario = TestScenarios.TwoTeams(false, new[] { striker }, new[] { TestCombatants.Dummy("Early", true), late });
             scenario.Teams[0].TargetPolicy = TargetPolicy.Focus;
             scenario.Teams[0].FocusTarget = "Late";
-            var simulation = TestScenarios.Spawn(scenario, RuleSets.Current(), _catalog);
+            var simulation = TestScenarios.Spawn(scenario, RuleSets.PreTuning(), _catalog);
 
             SimulationClock.RunUntil(simulation, 10.5, stepSeconds: 10.0);
 
@@ -209,7 +209,7 @@ namespace SWLOR.CombatSim.Tests.Engine
             var late = new CombatantSpec { Name = "Late", MaxHp = 1000, JoinAtSeconds = 12f };
             var simulation = TestScenarios.Spawn(
                 TestScenarios.TwoTeams(false, new[] { medic, late }, new[] { TestCombatants.Dummy("Enemy", true) }),
-                RuleSets.Current(),
+                RuleSets.PreTuning(),
                 _catalog);
             var caster = simulation.Get("Medic");
             var lateAlly = simulation.Get("Late");
@@ -238,7 +238,7 @@ namespace SWLOR.CombatSim.Tests.Engine
                 thrower.ReactionSeconds = 6f;
                 var simulation = TestScenarios.Spawn(
                     TestScenarios.TwoTeams(false, new[] { thrower }, new[] { TestCombatants.Dummy("Enemy", true) }),
-                    RuleSets.Current(),
+                    RuleSets.PreTuning(),
                     _catalog,
                     seed);
                 var caster = simulation.Get("Thrower");
@@ -256,7 +256,7 @@ namespace SWLOR.CombatSim.Tests.Engine
             var striker = TestCombatants.Striker("Striker", attacksPerSecond: 20f, damage: 1f);
             striker.JoinAtSeconds = 9.9f;
             var simulation = TestScenarios.Spawn(
-                TestScenarios.TwoTeams(false, new[] { striker }, new[] { TestCombatants.Dummy("Enemy", true) }), RuleSets.Current(), _catalog);
+                TestScenarios.TwoTeams(false, new[] { striker }, new[] { TestCombatants.Dummy("Enemy", true) }), RuleSets.PreTuning(), _catalog);
 
             SimulationClock.RunUntil(simulation, 10.5, stepSeconds: 10.0);
 
@@ -272,7 +272,7 @@ namespace SWLOR.CombatSim.Tests.Engine
             var early = TestCombatants.Striker("Early");
             early.JoinAtSeconds = joinAt;
             var simulation = new Simulation(
-                TestScenarios.TwoTeams(false, new[] { early }, new[] { TestCombatants.Dummy("Enemy", true) }), RuleSets.Current(), _catalog, 1);
+                TestScenarios.TwoTeams(false, new[] { early }, new[] { TestCombatants.Dummy("Enemy", true) }), RuleSets.PreTuning(), _catalog, 1);
 
             var act = () => simulation.Spawn();
 
@@ -280,6 +280,6 @@ namespace SWLOR.CombatSim.Tests.Engine
         }
 
         private Simulation Spawn(IEnumerable<CombatantSpec> first, IEnumerable<CombatantSpec> second, bool isPvp = false, RuleSet rules = null) =>
-            TestScenarios.Spawn(TestScenarios.TwoTeams(isPvp, first, second), rules ?? RuleSets.Current(), _catalog);
+            TestScenarios.Spawn(TestScenarios.TwoTeams(isPvp, first, second), rules ?? RuleSets.PreTuning(), _catalog);
     }
 }

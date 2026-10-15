@@ -137,7 +137,12 @@ public static class HeadgearSlotMigration
     /// <summary>Changes only saved slot/type/model fields; UUIDs and every unrelated GFF payload stay intact.</summary>
     public static bool MigrateSerializedObject(string original, out string migrated)
     {
-        migrated = string.IsNullOrWhiteSpace(original) ? original : StoredObjectData.RepairHeadgearSlots(original);
+        migrated = original;
+        // As with loot stat revision, saved NPC creatures retain authored gear.
+        // Player BIC equipment must be repaired on login, with its DB record
+        // loaded, so native unequip can remove the counted contribution once.
+        if (string.IsNullOrWhiteSpace(original) || StoredObjectData.IsCreatureData(original)) return false;
+        migrated = StoredObjectData.RepairHeadgearSlots(original);
         return migrated != original;
     }
 

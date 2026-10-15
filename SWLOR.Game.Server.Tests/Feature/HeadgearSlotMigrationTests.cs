@@ -75,16 +75,14 @@ public class HeadgearSlotMigrationTests
     }
 
     [Test]
-    public void ArchivesStowChestVisorAndPreserveHelmetNestedInventoryAndCreatureState()
+    public void ArchivesPreserveNestedInventoryIdentitiesAndUnrelatedState()
     {
-        var visor = Visor(1u << (int)InventorySlot.Chest);
-        var helmet = Node(1u << (int)InventorySlot.Head, Scalar(5, "BaseItem", (int)BaseItem.Helmet), Text("UUID", "existing-helmet"));
+        var visor = Visor();
         var bag = Node(0, Scalar(5, "BaseItem", (int)BaseItem.MiscSmall), List("ItemList", Visor()));
         var original = Encode(Node(0, Scalar(2, "Appearance_Type", 65535), Text("UnknownState", "keep"),
-            List("Equip_ItemList", visor, helmet), List("ItemList", bag)), "BIC ");
+            List("ItemList", bag, visor)));
         HeadgearSlotMigration.MigrateSerializedObject(original, out var migrated).Should().BeTrue();
         var after = Read(migrated);
-        Children(after, "Equip_ItemList").Should().ContainSingle().Which.Type.Should().Be(1u << (int)InventorySlot.Head);
         Children(after, "ItemList").Should().HaveCount(2);
         var stowed = Children(after, "ItemList").Single(x => x.Fields.Any(f => f.Label == "TemplateResRef"));
         Value(stowed, "BaseItem").Should().Be((int)BaseItem.Helmet);
@@ -94,6 +92,15 @@ public class HeadgearSlotMigrationTests
         Value(after, "Appearance_Type").Should().Be((ushort)65535);
         Value(after, "UnknownState").Should().Be("keep");
         HeadgearSlotMigration.MigrateSerializedObject(migrated, out _).Should().BeFalse();
+    }
+
+    [TestCase("BIC ")]
+    [TestCase("UTC ")]
+    public void SavedCreaturesWaitForLivePlayerMigrationSoDatabaseStatsCannotBecomeStale(string fileType)
+    {
+        var original = Encode(Node(0, List("Equip_ItemList", Visor(1u << (int)InventorySlot.Chest))), fileType);
+        HeadgearSlotMigration.MigrateSerializedObject(original, out var migrated).Should().BeFalse();
+        migrated.Should().Be(original, "PC gear needs its loaded DB record and native unequip; authored NPC gear is outside player migration scope");
     }
 
     [TestCase("Chest", false)]

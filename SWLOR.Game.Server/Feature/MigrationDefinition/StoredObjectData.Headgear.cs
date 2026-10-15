@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Item;
 
 namespace SWLOR.Game.Server.Feature.MigrationDefinition;
@@ -54,25 +53,9 @@ internal sealed partial class StoredObjectData
                     value.Data = StringData(migrated);
                     changed = true;
                 }
-            foreach (var list in node.Fields.Where(IsInventoryList).ToArray())
-            foreach (var item in list.Children.ToArray())
-            {
-                var moveChest = list.Name == "Equip_ItemList" && item.Type == 1u << (int)InventorySlot.Chest && IsLegacyHeadgear(item);
+            foreach (var list in node.Fields.Where(IsInventoryList))
+            foreach (var item in list.Children)
                 changed |= Migrate(item);
-                if (!moveChest) continue;
-                // Stow archived equipment instead of restoring a Helmet to the
-                // chest slot. Native loading will place it in the repository.
-                list.Children.Remove(item);
-                var inventory = node.Fields.SingleOrDefault(x => x.Name == "ItemList" && x.Type == 15);
-                if (inventory == null)
-                {
-                    inventory = MakeField(15, "ItemList", children: new List<Node>());
-                    node.Fields.Add(inventory);
-                }
-                item.Type = 0;
-                item.Fields.RemoveAll(x => x.Name.StartsWith("Repos_", StringComparison.OrdinalIgnoreCase));
-                inventory.Children.Add(item);
-            }
             return changed;
         }
         return Migrate(document._root) ? document.Serialize() : data;

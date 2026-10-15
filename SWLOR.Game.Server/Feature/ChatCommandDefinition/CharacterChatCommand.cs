@@ -472,22 +472,13 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
         private void AlwaysWalk()
         {
             _builder.Create("alwayswalk", "walk")
-                .Description("Toggles forced walking when moving your character.")
+                .Description("Toggles forced walking at normal walking speed.")
                 .Permissions(AuthorizationLevel.All)
                 .Action((user, _, _, _) =>
                 {
-                    var wasWalking = GetLocalInt(user, "WALK_TOGGLE") == 1;
-                    PlayerPlugin.SetAlwaysWalk(user, !wasWalking);
-
-                    if (wasWalking)
-                    {
-                        SetLocalInt(user, "WALK_TOGGLE", 0);
-                        SendMessageToPC(user, $"Walk mode {ColorToken.Red("disabled")}.");
-                    } else
-                    {
-                        SetLocalInt(user, "WALK_TOGGLE", 1);
-                        SendMessageToPC(user, $"Walk mode {ColorToken.Green("enabled")}.");
-                    }
+                    var isWalking = Stat.ToggleWalkMode(user);
+                    var status = isWalking ? ColorToken.Green("enabled") : ColorToken.Red("disabled");
+                    SendMessageToPC(user, $"Walk mode {status}.");
                 });
         }
 

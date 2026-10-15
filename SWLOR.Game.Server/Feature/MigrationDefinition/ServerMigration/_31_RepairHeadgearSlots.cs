@@ -6,12 +6,13 @@ using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.DBService;
 using SWLOR.Game.Server.Service.LogService;
 using SWLOR.Game.Server.Service.MigrationService;
+using SWLOR.Game.Server.Service.PlayerMarketService;
 using SWLOR.Game.Server.Service.QuestContractService;
 using SWLOR.Game.Server.Service.SpaceService;
 
 namespace SWLOR.Game.Server.Feature.MigrationDefinition.ServerMigration;
 
-/// <summary>Repairs legacy headgear in banks, markets, properties, research, outfits, ships and contracts.</summary>
+/// <summary>Repairs legacy headgear in banks, markets, properties, research, ships and contracts.</summary>
 public sealed class _31_RepairHeadgearSlots : IServerMigration
 {
     public int Version => 31;
@@ -24,17 +25,23 @@ public sealed class _31_RepairHeadgearSlots : IServerMigration
             ServerMigrationProgress.CountRecords<MarketItem>(),
             ServerMigrationProgress.CountRecords<WorldProperty>(),
             ServerMigrationProgress.CountRecords<ResearchJob>(),
-            ServerMigrationProgress.CountRecords<PlayerOutfit>(),
             ServerMigrationProgress.CountRecords<WorldPropertyCategory>(),
             ServerMigrationProgress.CountRecords<PlayerShip>(),
             ServerMigrationProgress.CountRecords<QuestContract>(),
             ServerMigrationProgress.CountRecords<QuestContractDelivery>());
         var changed = 0;
         changed += MigrateEntities<InventoryItem>(progress, x => x.Data, (x, value) => x.Data = value);
-        changed += MigrateEntities<MarketItem>(progress, x => x.Data, (x, value) => x.Data = value);
+        changed += MigrateRecords<MarketItem>(progress, item =>
+        {
+            var rootWasHeadgear = StoredObjectData.IsLegacyHeadgearRoot(item.Data);
+            if (!MigrateField(item.Data, value => item.Data = value)) return false;
+            if (rootWasHeadgear) item.Category = MarketCategoryType.Helmet;
+            return true;
+        });
         changed += MigrateEntities<WorldProperty>(progress, x => x.SerializedItem, (x, value) => x.SerializedItem = value);
         changed += MigrateEntities<ResearchJob>(progress, x => x.SerializedItem, (x, value) => x.SerializedItem = value);
-        changed += MigrateEntities<PlayerOutfit>(progress, x => x.Data, (x, value) => x.Data = value);
+        // PlayerOutfit.Data is a cosmetic chest template, not owned equipment.
+        // ApplyOutfit requires Armor even when it was saved from legacy headgear.
         changed += MigrateRecords<WorldPropertyCategory>(progress, category =>
         {
             var categoryChanged = false;

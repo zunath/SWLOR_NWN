@@ -7,6 +7,8 @@ using SWLOR.Game.Server.EngineTests.Framework;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Feature.MigrationDefinition;
 using SWLOR.Game.Server.Feature.MigrationDefinition.ServerMigration;
+using SWLOR.Game.Server.Service.DBService;
+using SWLOR.Game.Server.Service.PlayerMarketService;
 using SWLOR.Game.Server.Service.QuestContractService;
 using SWLOR.Game.Server.Service.SpaceService;
 using SWLOR.NWN.API.NWNX;
@@ -22,14 +24,24 @@ public static partial class MigrationEngineTests
         var owner = ctx.SpawnCreature("civilian");
         await ctx.WaitFrameAsync();
         var item = await CreateItemAsync(ctx, owner, "ruptorvanecr", owner);
+        var bag = await CreateItemAsync(ctx, owner, "bag_sm", owner);
+        var nested = await CreateItemAsync(ctx, owner, "thermlancercr", bag);
         string saved = null;
+        string correctHelmet = null;
+        string savedBag = null;
+        string ordinaryArmor = null;
         await ctx.ExecuteInCreatureContextAsync(owner, () =>
         {
+            correctHelmet = ObjectPlugin.Serialize(item);
             StampLegacyVisor(item);
             saved = ObjectPlugin.Serialize(item);
+            StampLegacyVisor(nested);
+            savedBag = ObjectPlugin.Serialize(bag);
+            ordinaryArmor = ObjectPlugin.Serialize(GetItemInSlot(SWLOR.NWN.API.NWScript.Enum.InventorySlot.Chest, owner));
             DestroyObject(item);
+            DestroyObject(bag);
         });
-        await ctx.WaitUntilAsync(() => !GetIsObjectValid(item), 5f, "the archived fixture to release its native identity");
+        await ctx.WaitUntilAsync(() => !GetIsObjectValid(item) && !GetIsObjectValid(bag), 5f, "the archived fixtures to release their native identities");
         await ctx.ExecuteInCreatureContextAsync(owner, () =>
         {
             var checks = new List<Action>();
@@ -37,12 +49,21 @@ public static partial class MigrationEngineTests
             void Add<T>(T record, Func<T, IEnumerable<string>> payloads) where T : EntityBase
             {
                 var before = StorageMetadata(JObject.FromObject(record));
+                if (record is MarketItem) before[nameof(MarketItem.Category)] = (int)MarketCategoryType.Helmet;
                 DB.Set(record);
                 cleanups.Add(() => DB.Delete<T>(record.Id));
                 checks.Add(() =>
                 {
                     var current = DB.Get<T>(record.Id);
                     ctx.Assert(JToken.DeepEquals(before, StorageMetadata(JObject.FromObject(current))), $"{typeof(T).Name} ownership, quantities and metadata survive");
+                    if (current is MarketItem market)
+                    {
+                        var matches = DB.Search(new DBQuery<MarketItem>()
+                            .AddFieldSearch(nameof(MarketItem.PlayerId), market.PlayerId, false)
+                            .AddFieldSearch(nameof(MarketItem.Category), new[] { (int)MarketCategoryType.Helmet })
+                            .AddPaging(100, 0));
+                        ctx.Assert(matches.Any(x => x.Id == market.Id), "Converted listing is included by the market's helmet category filter");
+                    }
                     foreach (var data in payloads(current))
                     {
                         ctx.Assert(!HeadgearSlotMigration.MigrateSerializedObject(data, out _), $"{typeof(T).Name} payload is stable on retry");
@@ -61,10 +82,28 @@ public static partial class MigrationEngineTests
             {
                 for (var index = 0; index < 55; index++)
                     Add(new InventoryItem { Data = saved, PlayerId = "stored-owner", StorageId = "GLOBAL_BANK", Quantity = 1, Name = "Custom bank label" }, x => new[] { x.Data });
-                Add(new MarketItem { Data = saved, PlayerId = "stored-owner", Price = 123, Quantity = 1, Name = "Custom market label" }, x => new[] { x.Data });
+                Add(new MarketItem { Data = saved, PlayerId = "stored-owner", Price = 123, Quantity = 1, Name = "Custom market label", Category = MarketCategoryType.Armor }, x => new[] { x.Data });
+                foreach (var (data, category, shouldChange) in new[]
+                {
+                    (correctHelmet, MarketCategoryType.Helmet, false),
+                    (ordinaryArmor, MarketCategoryType.Armor, false),
+                    (savedBag, MarketCategoryType.Miscellaneous, true),
+                })
+                {
+                    var listing = new MarketItem { Data = data, PlayerId = "market-controls", Price = 321, Quantity = 1, Name = "Category control", Category = category };
+                    var metadata = StorageMetadata(JObject.FromObject(listing));
+                    DB.Set(listing);
+                    cleanups.Add(() => DB.Delete<MarketItem>(listing.Id));
+                    checks.Add(() =>
+                    {
+                        var current = DB.Get<MarketItem>(listing.Id);
+                        ctx.Assert(JToken.DeepEquals(metadata, StorageMetadata(JObject.FromObject(current))), "Nested-only conversion and unrelated listings retain their category and metadata");
+                        ctx.AssertEqual(shouldChange, data != current.Data, "Only the bag's nested legacy headgear changes in control listings");
+                        ctx.Assert(!HeadgearSlotMigration.MigrateSerializedObject(current.Data, out _), "All control listings are stable on retry");
+                    });
+                }
                 Add(new WorldProperty { SerializedItem = saved, CustomName = "Custom property" }, x => new[] { x.SerializedItem });
                 Add(new ResearchJob { SerializedItem = saved, PlayerId = "stored-owner", Level = 50 }, x => new[] { x.SerializedItem });
-                Add(new PlayerOutfit { Data = saved, PlayerId = "stored-owner", Name = "Custom outfit" }, x => new[] { x.Data });
                 Add(new WorldPropertyCategory { Items = { ["saved-copy"] = new WorldPropertyItem { Data = saved, Name = "Custom storage label", Quantity = 1 } } }, x => x.Items.Values.Select(y => y.Data));
                 var ship = new PlayerShip { OwnerPlayerId = "stored-owner", SerializedItem = saved, Status = new ShipStatus() };
                 foreach (var modules in new[] { ship.Status.HighPowerModules, ship.Status.LowPowerModules, ship.Status.ConfigurationModules })

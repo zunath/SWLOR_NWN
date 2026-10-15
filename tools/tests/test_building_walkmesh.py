@@ -465,6 +465,22 @@ class VelesCantinaRoofWalkmeshTests(unittest.TestCase):
                                            self.local(instance, (x, y-2, z)),
                                            self.local(instance, (x, y, z))))
 
+    def test_street_roof_arrival_clears_the_raised_roof_structure(self):
+        landing = next(p for p in self.area["WaypointList"]["value"]
+                       if p["Tag"]["value"] == "viscara_cantinaroofexit")
+        start = tuple(landing[axis + "Position"]["value"] for axis in "XYZ")
+        end = (62, 65, 15.2)
+        for dx, dy in ((0, 0), (.35, 0), (-.35, 0), (0, .35), (0, -.35)):
+            a = (start[0] + dx, start[1] + dy, start[2])
+            b = (end[0] + dx, end[1] + dy, end[2])
+            for step in range(21):
+                self.assert_clear(tuple(a[d] + (b[d] - a[d]) * step / 20 for d in range(3)))
+            for name, instance, vertices, faces in self.buildings:
+                with self.subTest(model=name, offset=(dx, dy)):
+                    local_a, local_b = self.local(instance, a), self.local(instance, b)
+                    self.assertFalse(intersections(vertices, faces, local_a, local_b))
+                    self.assertFalse(intersections(vertices, faces, local_b, local_a))
+
 
 if __name__ == "__main__":
     unittest.main()

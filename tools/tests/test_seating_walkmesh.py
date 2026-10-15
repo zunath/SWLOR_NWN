@@ -10,6 +10,34 @@ from test_building_walkmesh import ROOT, intersections, read_mesh, roof_height_a
 class SeatingWalkmeshTests(unittest.TestCase):
     models = {"daf_sw068": "daf_sw068.pwk", "aswtor_125": "ASWTOR_125.pwk"}
 
+    def test_roof_chair_targets_keep_sitting_without_extra_collision(self):
+        objects = json.loads((ROOT / "Module/git/veles_exterior.git.json").read_text())["Placeable List"]["value"]
+        seats = [p for p in objects if 67 < p["X"]["value"] < 71
+                 and 70 < p["Y"]["value"] < 80 and p["Z"]["value"] > 15
+                 and p["OnUsed"]["value"] == "x0_o2_use_chair"]
+        self.assertEqual(len(seats), 6)
+        for seat in seats:
+            with self.subTest(position=(seat["X"]["value"], seat["Y"]["value"])):
+                self.assertEqual(seat["Appearance"]["value"], 157, "Use the native marker without a blocking mesh")
+                self.assertEqual(seat["Static"]["value"], 0)
+                self.assertEqual(seat["Useable"]["value"], 1)
+
+    def test_roof_entries_approach_the_front_of_both_couches(self):
+        area = json.loads((ROOT / "Module/git/veles_exterior.git.json").read_text())
+        couches = [p for p in area["Placeable List"]["value"]
+                   if p["Appearance"]["value"] == 32026 and p["Z"]["value"] > 15]
+        self.assertEqual(len(couches), 2)
+        for tag in ("Exit_Veles_CantinaRoof_Ka", "viscara_cantinaroofexit"):
+            entry = next(p for p in area["WaypointList"]["value"] if p["Tag"]["value"] == tag)
+            for couch in couches:
+                dx = entry["XPosition"]["value"] - couch["X"]["value"]
+                dy = entry["YPosition"]["value"] - couch["Y"]["value"]
+                angle = couch["Bearing"]["value"]
+                local_y = -dx * math.sin(angle) + dy * math.cos(angle)
+                with self.subTest(entry=tag, couch=(couch["X"]["value"], couch["Y"]["value"])):
+                    # A rear approach can stop at the couch before OnUsed runs.
+                    self.assertLess(local_y, -1, "Public arrivals must approach the open cushion side")
+
     def test_fountain_and_shelter_seat_use_points_are_reachable(self):
         objects = json.loads((ROOT / "Module/git/veles_exterior.git.json").read_text())["Placeable List"]["value"]
         seats = [p for p in objects if p["Appearance"]["value"] == 1604]
@@ -61,7 +89,8 @@ class SeatingWalkmeshTests(unittest.TestCase):
         counts = dict.fromkeys(self.models, 0)
         for area in ("veles_exterior", "veles_sheriff"):
             objects = json.loads((ROOT / f"Module/git/{area}.git.json").read_text())["Placeable List"]["value"]
-            seats = [p for p in objects if p["Appearance"]["value"] == 1604]
+            seats = [p for p in objects if p["Appearance"]["value"] == 1604
+                     or (p["Appearance"]["value"] == 157 and p["OnUsed"]["value"] == "x0_o2_use_chair")]
             for prop in objects:
                 model = rows[prop["Appearance"]["value"]]["ModelName"].lower()
                 if model not in self.models:
@@ -76,8 +105,10 @@ class SeatingWalkmeshTests(unittest.TestCase):
                         continue
                     x, y = c * dx + s * dy, -s * dx + c * dy
                     angle = seat["Bearing"]["value"] - bearing
-                    ux = x + math.cos(angle) * use_x - math.sin(angle) * use_y
-                    uy = y + math.sin(angle) * use_x + math.cos(angle) * use_y
+                    # Base-game PLC_U02 has a use point but no blocking mesh.
+                    offset_x, offset_y = (0.0, -.37) if seat["Appearance"]["value"] == 157 else (use_x, use_y)
+                    ux = x + math.cos(angle) * offset_x - math.sin(angle) * offset_y
+                    uy = y + math.sin(angle) * offset_x + math.cos(angle) * offset_y
                     distance = math.hypot(ux - x, uy - y)
                     start_x = x + (ux - x) / distance * 2
                     start_y = y + (uy - y) / distance * 2

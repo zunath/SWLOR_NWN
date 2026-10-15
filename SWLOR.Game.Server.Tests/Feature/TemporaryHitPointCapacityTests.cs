@@ -58,7 +58,8 @@ public class TemporaryHitPointCapacityTests
             "room reserved for deferred grants must not be granted twice");
         source.Should().Contain("var immediateAmount = Math.Min(grantedAmount, immediateRoom);");
         source.Should().Contain("ApplyPoolEffect(target, effectTag, immediateAmount, durationSeconds);");
-        source.Should().Contain("var appliedAmount = Math.Min(amount, GetCapacity(target));");
+        source.Should().Contain("var appliedAmount = Math.Min(allowedAmount, GetCapacity(target));",
+            "a deferred grant takes what the cap still allows, clamped to the engine's room when it lands");
         source.Should().Contain("ApplyPoolEffect(target, EffectTagPrefix + effectKey, appliedAmount, durationSeconds);");
     }
 

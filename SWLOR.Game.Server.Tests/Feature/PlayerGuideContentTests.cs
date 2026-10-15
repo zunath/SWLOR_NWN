@@ -251,7 +251,8 @@ public class PlayerGuideContentTests
         text.Should().Contain("At +10 Light, Light powers gain +5% hit chance and Dark powers suffer -5%");
         text.Should().Contain("Universal Force powers");
         text.Should().Contain("Force Affinity does not change effect duration");
-        text.Should().Contain("At +6 Light, a Light power uses 130% magnitude and gains +3% hit chance");
+        text.Should().Contain("At +6 Light, a Light damage power uses 130% magnitude, a Light heal or shield uses 125%, and Light powers gain +3% hit chance");
+        text.Should().Contain("Healing, shields, and regeneration stop at 125 percent");
     }
 
     [Test]

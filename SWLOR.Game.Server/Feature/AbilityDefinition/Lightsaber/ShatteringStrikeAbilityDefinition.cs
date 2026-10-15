@@ -61,7 +61,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Lightsaber
                 typeof(SunderStatusEffect),
                 null,
                 6,
-                8,
+                10,
                 0.0f,
                 false,
                 true,

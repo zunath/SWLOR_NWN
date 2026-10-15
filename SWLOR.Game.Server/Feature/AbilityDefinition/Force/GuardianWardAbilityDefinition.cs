@@ -101,7 +101,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .HasImpactAction(GuardianWard3ImpactAction)
                 .IsCastedAbility()
                 .BreaksStealth()
-                .RequirementFP(4);
+                .RequirementFP(5);
         }
 
         private static void GuardianWard4(AbilityBuilder builder)
@@ -126,7 +126,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .HasImpactAction(GuardianWard4ImpactAction)
                 .IsCastedAbility()
                 .BreaksStealth()
-                .RequirementFP(6);
+                .RequirementFP(7);
         }
 
         private static void GuardianWard1ImpactAction(uint activator, uint target, int level, Location targetLocation)

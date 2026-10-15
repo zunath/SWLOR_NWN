@@ -159,7 +159,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster
 
         private static void InterruptTargetActivation(uint target)
         {
-            AssignCommand(target, () => ClearAllActions());
+            ActionInterruption.ClearActions(target);
             UsePerkFeat.InterruptAbilityActivation(target);
         }
 

@@ -980,6 +980,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
             {
                 col.AddRow(row =>
                 {
+                    row.BindIsVisible(model => model.IsPlayerSettingsVisible);
                     row.AddSpacer();
                     row.AddCheckBox()
                         .SetText("Show Helmet")
@@ -989,6 +990,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                 });
                 col.AddRow(row =>
                 {
+                    row.BindIsVisible(model => model.IsPlayerSettingsVisible);
                     row.AddSpacer();
                     row.AddCheckBox()
                         .SetText("Show Cloak")
@@ -1048,6 +1050,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                         .SetHeight(32f)
                         .BindOnClicked(model => model.OnClickSaveSettings());
                     row.AddSpacer();
+                    row.BindIsVisible(model => model.IsPlayerSettingsVisible);
                 });
             });
         }

@@ -79,7 +79,7 @@ namespace SWLOR.CombatSim.Tests.Engine
                     false,
                     new[] { TestCombatants.Medic("Medic", burst) },
                     new[] { TestCombatants.Dummy("First", true), TestCombatants.Dummy("Second", true) }),
-                RuleSets.Current(),
+                RuleSets.PreTuning(),
                 _catalog);
             var medic = simulation.Get("Medic");
 
@@ -103,7 +103,7 @@ namespace SWLOR.CombatSim.Tests.Engine
                     false,
                     new[] { TestCombatants.Medic("Medic", burst) },
                     Enumerable.Range(1, enemies).Select(i => TestCombatants.Dummy($"Enemy {i}", true))),
-                RuleSets.Current(),
+                RuleSets.PreTuning(),
                 _catalog);
 
             CastOnce(simulation);
@@ -123,7 +123,7 @@ namespace SWLOR.CombatSim.Tests.Engine
                     false,
                     new[] { TestCombatants.Medic("Medic", lightning) },
                     Enumerable.Range(1, 3).Select(i => TestCombatants.Dummy($"Enemy {i}", true))),
-                RuleSets.Current(),
+                RuleSets.PreTuning(),
                 _catalog);
             var medic = simulation.Get("Medic");
             SimulationClock.RunUntil(simulation, () => medic.Casting != null || medic.Stats.AbilitiesUsed == 1, 10, "Force Lightning started");
@@ -146,7 +146,7 @@ namespace SWLOR.CombatSim.Tests.Engine
                     false,
                     new[] { TestCombatants.Medic("Medic", lightning) },
                     new[] { TestCombatants.Dummy("First", true), TestCombatants.Dummy("Second", true) }),
-                RuleSets.Current(),
+                RuleSets.PreTuning(),
                 _catalog);
             var medic = simulation.Get("Medic");
             SimulationClock.RunUntil(simulation, () => medic.Casting != null, 10, "Force Lightning started");
@@ -171,7 +171,7 @@ namespace SWLOR.CombatSim.Tests.Engine
                     false,
                     new[] { TestCombatants.Medic("Medic", burst) },
                     new[] { TestCombatants.Dummy("One", true), TestCombatants.Dummy("Two", true), TestCombatants.Dummy("Three", true) }),
-                RuleSets.Current(),
+                RuleSets.PreTuning(),
                 _catalog);
             var medic = simulation.Get("Medic");
             SimulationClock.RunUntil(simulation, () => medic.Casting != null, 10, "the cast started");
@@ -198,7 +198,7 @@ namespace SWLOR.CombatSim.Tests.Engine
                     false,
                     new[] { TestCombatants.Medic("Medic", burst) },
                     new[] { TestCombatants.Dummy("Enemy", true) }),
-                RuleSets.Current(),
+                RuleSets.PreTuning(),
                 _catalog);
 
             CastOnce(simulation);
@@ -214,7 +214,7 @@ namespace SWLOR.CombatSim.Tests.Engine
             use.Damage = new DamageSpec { Min = 1f, Max = 1f };
             var scenario = TestScenarios.TwoTeams(false, new[] { TestCombatants.Medic("Medic", use) }, new[] { TestCombatants.Dummy("Enemy", true) });
 
-            var act = () => new Simulation(scenario, RuleSets.Current(), _catalog, 1).Spawn();
+            var act = () => new Simulation(scenario, RuleSets.PreTuning(), _catalog, 1).Spawn();
 
             act.Should().Throw<InvalidDataException>().WithMessage("*Benevolence1*single-target effect*");
         }
@@ -231,7 +231,7 @@ namespace SWLOR.CombatSim.Tests.Engine
             members.AddRange(allies.Select(name => new CombatantSpec { Name = name, MaxHp = AllyMaxHp }));
             return TestScenarios.Spawn(
                 TestScenarios.TwoTeams(false, members, enemies.Select(name => TestCombatants.Dummy(name, true))),
-                RuleSets.Current(),
+                RuleSets.PreTuning(),
                 _catalog);
         }
 
@@ -245,7 +245,7 @@ namespace SWLOR.CombatSim.Tests.Engine
         private static int ExpectedWaveHeal()
         {
             EffectCatalog.TryGet(FeatType.PurifyingWave1, out var effect).Should().BeTrue();
-            return HealingMath.PartyPulse(effect, AllyMaxHp, 26, 10, RuleSets.Current().ForceAffinityHealingCap, 0f, 0f);
+            return HealingMath.PartyPulse(effect, AllyMaxHp, 26, 10, RuleSets.PreTuning().ForceAffinityHealingCap, 0f, 0f);
         }
     }
 }

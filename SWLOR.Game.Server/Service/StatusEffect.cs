@@ -881,6 +881,8 @@ namespace SWLOR.Game.Server.Service
         {
             active.RestartDuration(durationTicks, durationSeconds, tickAnchor);
             ReplaceNativeStatusEffect(creature, active, active.DurationTicks, false);
+            if (CombatRecorder.IsRecording)
+                CombatRecorder.RecordStatusApplied(source, creature, active, active.GetRemainingDurationSeconds(DateTime.UtcNow), false, true);
 
             Combat.ApplyStatusAppliedTargetStaminaDrain(source, creature, active.Categories);
             if ((active.Categories & StatusEffectCategory.Debuff) != 0 &&
@@ -1398,6 +1400,8 @@ namespace SWLOR.Game.Server.Service
                 statusEffect.SetDurationSeconds(statusEffect.GetRemainingDurationSeconds(DateTime.UtcNow) + durationSeconds);
                 ReplaceNativeStatusEffect(creature, statusEffect, statusEffect.DurationTicks, statusEffect.DurationTicks < 0);
                 extended = true;
+                if (CombatRecorder.IsRecording)
+                    CombatRecorder.RecordStatusApplied(source, creature, statusEffect, statusEffect.GetRemainingDurationSeconds(DateTime.UtcNow), false, true);
             }
 
             return extended;
@@ -1457,6 +1461,8 @@ namespace SWLOR.Game.Server.Service
                 statusEffect.SetDurationSeconds(Math.Max(statusEffect.GetRemainingDurationSeconds(DateTime.UtcNow), adjustedSeconds));
                 ReplaceNativeStatusEffect(creature, statusEffect, statusEffect.DurationTicks, statusEffect.DurationTicks < 0);
                 refreshed = true;
+                if (CombatRecorder.IsRecording)
+                    CombatRecorder.RecordStatusApplied(source, creature, statusEffect, statusEffect.GetRemainingDurationSeconds(DateTime.UtcNow), false, true);
             }
 
             return refreshed;

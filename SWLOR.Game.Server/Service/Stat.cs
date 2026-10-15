@@ -6,6 +6,7 @@ using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Extension;
 using SWLOR.Game.Server.Feature.AbilityDefinition;
 using SWLOR.Game.Server.Service.AbilityService;
+using SWLOR.Game.Server.Service.CombatRecorderService;
 using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.FrameProfilerService;
 using SWLOR.Game.Server.Service.LogService;
@@ -376,6 +377,9 @@ namespace SWLOR.Game.Server.Service
                 SetLocalInt(creature, "FP", fp);
             }
 
+            if (CombatRecorder.IsRecording)
+                CombatRecorder.RecordResourceChange(creature, CombatRecordResource.FP, restored, GetCurrentFP(creature, dbPlayer));
+
             ExecuteScript("pc_fp_adjusted", creature);
             if (restored > 0)
                 Combat.ApplyFPRestoredEffects(creature);
@@ -396,6 +400,9 @@ namespace SWLOR.Game.Server.Service
         public static void ReduceFP(uint creature, int reduceBy, Player dbPlayer = null)
         {
             if (reduceBy <= 0) return;
+
+            if (CombatRecorder.IsRecording)
+                CombatRecorder.RecordResourceReduction(creature, CombatRecordResource.FP, reduceBy, GetCurrentFP(creature, dbPlayer));
 
             if (GetIsPC(creature) && !GetIsDM(creature) && !GetIsDMPossessed(creature))
             {
@@ -467,6 +474,9 @@ namespace SWLOR.Game.Server.Service
                 SetLocalInt(creature, "STAMINA", fp);
             }
 
+            if (CombatRecorder.IsRecording)
+                CombatRecorder.RecordResourceChange(creature, CombatRecordResource.Stamina, restored, GetCurrentStamina(creature, dbPlayer));
+
             ExecuteScript("pc_stm_adjusted", creature);
             if (restored > 0)
                 Combat.ApplyStaminaRestoredEffects(creature);
@@ -487,6 +497,9 @@ namespace SWLOR.Game.Server.Service
         public static void ReduceStamina(uint creature, int reduceBy, Player dbPlayer = null)
         {
             if (reduceBy <= 0) return;
+
+            if (CombatRecorder.IsRecording)
+                CombatRecorder.RecordResourceReduction(creature, CombatRecordResource.Stamina, reduceBy, GetCurrentStamina(creature, dbPlayer));
 
             if (GetIsPC(creature) && !GetIsDM(creature) && !GetIsDMPossessed(creature))
             {
@@ -1950,18 +1963,21 @@ namespace SWLOR.Game.Server.Service
             if (staminaRestore > 0 &&
                 Combat.TryUseStatTrigger(creatureId, staminaRestoreStat, staminaRestoreCooldown))
             {
+                using var recorderAttribution = CombatRecorder.BeginStatTriggerAttribution(creatureId, staminaRestoreStat);
                 RestoreStamina(creatureId, staminaRestore);
             }
 
             if (fpRestore > 0 &&
                 Combat.TryUseStatTrigger(creatureId, fpRestoreStat, fpRestoreCooldown))
             {
+                using var recorderAttribution = CombatRecorder.BeginStatTriggerAttribution(creatureId, fpRestoreStat);
                 RestoreFP(creatureId, fpRestore);
             }
 
             if (staminaRestorePercent > 0)
             {
                 var amount = GameMath.PercentOf(GetMaxStamina(creatureId), staminaRestorePercent);
+                using var recorderAttribution = CombatRecorder.BeginStatTriggerAttribution(creatureId, StatType.DeflectionStaminaRestorePercent);
                 RestoreStamina(creatureId, amount);
             }
 
@@ -2348,7 +2364,8 @@ namespace SWLOR.Game.Server.Service
             return amount + (int)Math.Ceiling(amount * (adjustment / 100f));
         }
 
-        public static int ApplyHealingReceivedAdjustment(uint creature, int amount, bool applyReceivedEffects = true)
+        /// <param name="isInstantAbilityHeal">True for a heal an ability lands when it resolves. Only these can restore Stamina through the healing-received trigger.</param>
+        public static int ApplyHealingReceivedAdjustment(uint creature, int amount, bool applyReceivedEffects = true, bool isInstantAbilityHeal = false)
         {
             if (amount <= 0)
                 return amount;
@@ -2357,7 +2374,7 @@ namespace SWLOR.Game.Server.Service
             var adjustedAmount = Math.Max(1, ApplyPercentAdjustment(amount, adjustment));
 
             if (applyReceivedEffects)
-                ApplyHealingReceivedEffects(creature, adjustedAmount);
+                ApplyHealingReceivedEffects(creature, adjustedAmount, isInstantAbilityHeal);
 
             return adjustedAmount;
         }
@@ -2367,11 +2384,15 @@ namespace SWLOR.Game.Server.Service
             return currentHP <= 0 ? 0 : Math.Clamp(amount, 0, Math.Max(0, maxHP - currentHP));
         }
 
-        public static void ApplyHealingReceivedEffects(uint creature, int amount)
+        /// <param name="isInstantAbilityHeal">Heals over time, lifesteal, drains and regeneration pass false and never restore Stamina.</param>
+        public static void ApplyHealingReceivedEffects(uint creature, int amount, bool isInstantAbilityHeal = false)
         {
             if (CalculateEffectiveHealingAmount(amount, ObjectPlugin.GetCurrentHitPoints(creature), GetMaxHitPoints(creature)) <= 0)
                 return;
-            ApplyHealingReceivedStaminaRestore(creature);
+            // The heal these react to is applied right after them.
+            using var recorderReaction = CombatRecorder.BeginHealingReaction(creature);
+            if (isInstantAbilityHeal)
+                ApplyHealingReceivedStaminaRestore(creature);
             ApplyHealingReceivedAttackBoost(creature);
         }
 
@@ -2389,10 +2410,15 @@ namespace SWLOR.Game.Server.Service
                 chance = Math.Min(maximumChance, chance + Math.Max(0, GetAbilityScore(creature, scalingAbility)));
             }
 
-            if (Random.D100(1) <= chance)
-            {
-                RestoreStamina(creature, stamina);
-            }
+            if (Random.D100(1) > chance)
+                return;
+
+            var cooldownSeconds = GetStatAdjustment(creature, StatType.HealingReceivedStaminaRestoreCooldownSeconds);
+            if (!Combat.TryUseStatTrigger(creature, StatType.HealingReceivedStaminaRestore, cooldownSeconds))
+                return;
+
+            using var recorderAttribution = CombatRecorder.BeginStatTriggerAttribution(creature, StatType.HealingReceivedStaminaRestore);
+            RestoreStamina(creature, stamina);
         }
 
         private static void ApplyHealingReceivedAttackBoost(uint creature)
@@ -2840,6 +2866,7 @@ namespace SWLOR.Game.Server.Service
             if (GetLocalInt(self, SuppressNaturalRegenVariable) != 0)
                 return;
 
+            using var recorderAttribution = CombatRecorder.BeginAttribution(self, CombatRecordSourceKind.Regeneration);
             var maxFP = GetMaxFP(self);
             var maxSTM = GetMaxStamina(self);
             var previousFP = GetLocalInt(self, "FP");
@@ -2863,6 +2890,11 @@ namespace SWLOR.Game.Server.Service
 
             SetLocalInt(self, "FP", fp);
             SetLocalInt(self, "STAMINA", stm);
+            if (CombatRecorder.IsRecording)
+            {
+                CombatRecorder.RecordResourceChange(self, CombatRecordResource.FP, fp - previousFP, fp);
+                CombatRecorder.RecordResourceChange(self, CombatRecordResource.Stamina, stm - previousSTM, stm);
+            }
 
             if (fp != previousFP)
                 ExecuteScript("pc_fp_adjusted", self);

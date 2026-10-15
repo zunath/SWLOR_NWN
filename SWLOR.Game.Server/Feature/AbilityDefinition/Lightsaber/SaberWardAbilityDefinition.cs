@@ -19,8 +19,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Lightsaber
 
             Build(builder, FeatType.SaberWard1, "Saber Ward I", 1, 8, 3, 2, 15, 3, 4);
             Build(builder, FeatType.SaberWard2, "Saber Ward II", 2, 18, 5, 3, 20, 4, 5);
-            Build(builder, FeatType.SaberWard3, "Saber Ward III", 3, 28, 8, 4, 25, 5, 7);
-            Build(builder, FeatType.SaberWard4, "Saber Ward IV", 4, 38, 12, 5, 30, 6, 9);
+            Build(builder, FeatType.SaberWard3, "Saber Ward III", 3, 28, 8, 5, 25, 5, 7);
+            Build(builder, FeatType.SaberWard4, "Saber Ward IV", 4, 38, 12, 6, 30, 6, 9);
 
             return builder.Build();
         }

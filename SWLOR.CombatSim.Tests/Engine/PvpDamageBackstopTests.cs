@@ -74,8 +74,8 @@ namespace SWLOR.CombatSim.Tests.Engine
             fight.DamageAt(420).Should().BeApproximately(100, Tolerance);
         }
 
+        [TestCase("pre-tuning")]
         [TestCase("current")]
-        [TestCase("tuned")]
         public void RuleSetsWithoutPvpRules_HaveNoBackstop(string ruleSetName)
         {
             var fight = new PvpFight(_catalog, RuleSets.Get(ruleSetName));

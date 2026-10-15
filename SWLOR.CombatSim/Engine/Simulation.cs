@@ -1100,7 +1100,7 @@ namespace SWLOR.CombatSim.Engine
 
         /// <summary>
         /// Pays an ability's HP cost the way the game's SacrificeHitPoints does: temporary HP first, never below 1 HP.
-        /// The live rules let it land unpaid at 1 HP; Bloodlust's stamina restore follows the payment.
+        /// Before the tuning it landed unpaid at 1 HP; Bloodlust's stamina restore follows the payment.
         /// </summary>
         private void PayHitPoints(Combatant caster, HitPointCost cost)
         {
@@ -1147,7 +1147,7 @@ namespace SWLOR.CombatSim.Engine
 
             // GameMath.PercentOf rounds the restore up, to at least 1.
             double stamina = Math.Max(1, (int)Math.Ceiling(caster.Spec.MaxStm * (percent / 100f)));
-            // The tuned rules scale the restore by the share of the cost actually lost, at least 1.
+            // The current rules scale the restore by the share of the cost actually lost, at least 1.
             if (_rules.ScaleHitPointSpendRestoreToHitPointsLost && hitPointsLost < fullCost)
                 stamina = Math.Max(1, Math.Ceiling(stamina * hitPointsLost / fullCost));
             RestoreStamina(caster, (int)stamina, true);

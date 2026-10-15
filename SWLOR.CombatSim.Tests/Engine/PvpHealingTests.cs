@@ -111,8 +111,8 @@ namespace SWLOR.CombatSim.Tests.Engine
             fight.HealAt(300).Should().BeApproximately(RawHeal, Tolerance);
         }
 
+        [TestCase("pre-tuning")]
         [TestCase("current")]
-        [TestCase("tuned")]
         public void RuleSetsWithoutPvpRules_DoNotReducePvpHealing(string ruleSetName)
         {
             var fight = new PvpFight(_catalog, RuleSets.Get(ruleSetName));

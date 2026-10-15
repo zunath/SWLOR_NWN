@@ -206,7 +206,7 @@ namespace SWLOR.CombatSim.Tests.Engine
             var scenario = TestScenarios.TwoTeams(false, attackers, enemies);
             scenario.Teams[0].TargetPolicy = TargetPolicy.Focus;
             scenario.Teams[0].FocusTarget = "Boss";
-            var simulation = TestScenarios.Spawn(scenario, RuleSets.Current(), _catalog);
+            var simulation = TestScenarios.Spawn(scenario, RuleSets.PreTuning(), _catalog);
 
             SimulationClock.RunUntil(simulation, 4.9);
             simulation.Get("Add").Hp.Should().BeLessThan(FullHp, "only the add could be hit before the boss arrived");
@@ -229,7 +229,7 @@ namespace SWLOR.CombatSim.Tests.Engine
             var scenario = TestScenarios.TwoTeams(false, new[] { TestCombatants.Striker("Striker") }, new[] { TestCombatants.Dummy("Boss", true) });
             scenario.Teams[0].TargetPolicy = TargetPolicy.Focus;
             scenario.Teams[0].FocusTarget = focusTarget;
-            var simulation = new Simulation(scenario, RuleSets.Current(), _catalog, 1);
+            var simulation = new Simulation(scenario, RuleSets.PreTuning(), _catalog, 1);
 
             var act = () => simulation.Spawn();
 
@@ -243,7 +243,7 @@ namespace SWLOR.CombatSim.Tests.Engine
             scenario.Teams[0].TargetPolicy = TargetPolicy.Focus;
             scenario.Teams[0].FocusTarget = "Boss";
 
-            var act = () => new Simulation(scenario, RuleSets.Current(), _catalog, 1).Spawn();
+            var act = () => new Simulation(scenario, RuleSets.PreTuning(), _catalog, 1).Spawn();
 
             act.Should().Throw<InvalidDataException>().WithMessage("*FocusTarget*");
         }
@@ -256,7 +256,7 @@ namespace SWLOR.CombatSim.Tests.Engine
             var scenario = TestScenarios.TwoTeams(false, new[] { TestCombatants.Striker("Striker") }, new[] { bosses });
             scenario.Teams[0].TargetPolicy = TargetPolicy.Focus;
             scenario.Teams[0].FocusTarget = "Boss";
-            var simulation = new Simulation(scenario, RuleSets.Current(), _catalog, 1);
+            var simulation = new Simulation(scenario, RuleSets.PreTuning(), _catalog, 1);
 
             var act = () => simulation.Spawn();
 
@@ -271,7 +271,7 @@ namespace SWLOR.CombatSim.Tests.Engine
             {
                 var simulation = new Simulation(
                     TestScenarios.TwoTeams(false, new[] { TestCombatants.Striker("Slow", 0.06f) }, new[] { TestCombatants.Dummy("Enemy", true) }),
-                    RuleSets.Current(),
+                    RuleSets.PreTuning(),
                     _catalog,
                     seed);
                 simulation.Spawn();
@@ -295,7 +295,7 @@ namespace SWLOR.CombatSim.Tests.Engine
                         new CombatantSpec { Name = "Exposed", MaxHp = 1000 }
                     },
                     new[] { TestCombatants.Dummy("Enemy", true) }),
-                RuleSets.Current(),
+                RuleSets.PreTuning(),
                 _catalog);
             var shielded = simulation.Get("Shielded");
             shielded.Hp = 300;
@@ -314,7 +314,7 @@ namespace SWLOR.CombatSim.Tests.Engine
             var medic = TestCombatants.Medic("Medic", TestCombatants.Use("Benevolence1", AbilityTarget.Self, belowHpPercent: 50f));
             var simulation = TestScenarios.Spawn(
                 TestScenarios.TwoTeams(false, new[] { medic }, new[] { TestCombatants.Dummy("Enemy", true) }),
-                RuleSets.Current(),
+                RuleSets.PreTuning(),
                 _catalog);
             var combatant = simulation.Get("Medic");
             combatant.Hp = 400;
@@ -348,7 +348,7 @@ namespace SWLOR.CombatSim.Tests.Engine
         {
             var scenario = TestScenarios.TwoTeams(false, new[] { TestCombatants.Striker("Striker") }, new[] { TestCombatants.Dummy("Enemy", true) });
             scenario.Teams[0].RetargetSeconds = seconds;
-            var simulation = new Simulation(scenario, RuleSets.Current(), _catalog, 1);
+            var simulation = new Simulation(scenario, RuleSets.PreTuning(), _catalog, 1);
 
             var act = () => simulation.Spawn();
 
@@ -362,7 +362,7 @@ namespace SWLOR.CombatSim.Tests.Engine
             var scenario = TestScenarios.TwoTeams(false, first, second);
             scenario.Teams[0].TargetPolicy = policy;
             scenario.Teams[0].RetargetSeconds = retargetSeconds;
-            return TestScenarios.Spawn(scenario, RuleSets.Current(), _catalog, seed);
+            return TestScenarios.Spawn(scenario, RuleSets.PreTuning(), _catalog, seed);
         }
 
         private static List<Combatant> Damaged(Simulation simulation) =>

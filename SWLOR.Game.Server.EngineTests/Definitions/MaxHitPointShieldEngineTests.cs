@@ -19,8 +19,10 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
         private const string ShieldCategory = "MaxHitPointShield";
         private const string ShieldKey = "MAX_HP_SHIELD_TEST";
         private const int PlayerRecordHitPoints = 1000;
-        private const int PlayerMissingHitPoints = 500;
-        private const int PlayerShieldHitPoints = 600;
+        // The shield outweighs the missing HP, so reported HP passes maximum HP, yet stays under the
+        // 50% temporary HP cap through every maximum HP change below.
+        private const int PlayerMissingHitPoints = 400;
+        private const int PlayerShieldHitPoints = 500;
         private const int BeltHitPoints = 95;
 
         [EngineTest("Adjusting a shielded player's maximum HP keeps base HP and the shield", Category = ShieldCategory, TimeoutSeconds = 60f)]
@@ -69,8 +71,9 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             await ctx.DelaySecondsAsync(1f);
             ctx.SuppressNPCNaturalRegen(npc);
             var maximum = GetMaxHitPoints(npc);
-            var wounded = maximum / 2;
-            var shield = maximum;
+            // Half of maximum HP is the whole temporary HP cap; a lighter wound lets it pass maximum HP.
+            var wounded = maximum * 3 / 4;
+            var shield = maximum / 2;
             ObjectPlugin.SetCurrentHitPoints(npc, wounded);
             TemporaryHitPointEffects.ApplyFlat(npc, ShieldKey, shield, 600f);
             ctx.Assert(GetCurrentHitPoints(npc) > maximum, "The shield must push reported HP above maximum HP.");

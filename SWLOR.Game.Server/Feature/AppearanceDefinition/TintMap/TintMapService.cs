@@ -118,12 +118,22 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
             QueueRefresh(GetPCItemLastUnequippedBy());
         }
 
-        [NWNEventHandler(ScriptName.OnSWLORItemEquipValidBefore)]
-        [NWNEventHandler(ScriptName.OnItemUnequipBefore)]
+        [NWNEventHandler(ScriptName.OnItemUnequipAfter)]
+        public static void OnAppearanceItemUnequipped()
+        {
+            var item = StringToObject(EventsPlugin.GetEventData("ITEM"));
+            if (GetIsObjectValid(item) && GetItemInSlot(InventorySlot.Head, OBJECT_SELF) != item)
+                HelmetModelRenderer.Release(item);
+        }
+
+        [NWNEventHandler(ScriptName.OnItemEquipValidateAfter)]
+        [NWNEventHandler(ScriptName.OnItemUnequipAfter)]
         public static void OnAppearanceEquipmentChanged()
         {
             var creature = OBJECT_SELF;
-            if (!Droid.IsDroid(creature) && !GetIsDMPossessed(creature))
+            // Module equipment events cover players. Native events also cover ordinary NPCs,
+            // including inventory changes made by a DM without possessing the wearer.
+            if (GetIsPC(creature) && !GetIsDMPossessed(creature))
                 return;
 
             QueueRefreshAndEditor(creature, GetMaster(creature));

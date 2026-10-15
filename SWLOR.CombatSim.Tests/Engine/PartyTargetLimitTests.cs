@@ -135,7 +135,7 @@ namespace SWLOR.CombatSim.Tests.Engine
                 false,
                 new[] { TestCombatants.Medic("Medic", TestCombatants.Use(feat, AbilityTarget.Self, maxTargets: maxTargets)) },
                 new[] { TestCombatants.Dummy("Enemy", true) });
-            var simulation = new Simulation(scenario, RuleSets.Current(), _catalog, 1);
+            var simulation = new Simulation(scenario, RuleSets.PreTuning(), _catalog, 1);
 
             var act = () => simulation.Spawn();
 
@@ -148,7 +148,7 @@ namespace SWLOR.CombatSim.Tests.Engine
             var use = TestCombatants.Use("QuickDraw4", AbilityTarget.Enemy, maxTargets: 3);
             use.Damage = new DamageSpec { Min = 1f, Max = 1f };
             var scenario = TestScenarios.TwoTeams(false, new[] { TestCombatants.Medic("Medic", use) }, new[] { TestCombatants.Dummy("Enemy", true) });
-            var simulation = new Simulation(scenario, RuleSets.Current(), _catalog, 1);
+            var simulation = new Simulation(scenario, RuleSets.PreTuning(), _catalog, 1);
 
             var act = () => simulation.Spawn();
 
@@ -166,7 +166,7 @@ namespace SWLOR.CombatSim.Tests.Engine
             members.AddRange(allies.Select(name => new CombatantSpec { Name = name, MaxHp = 1000 }));
             return TestScenarios.Spawn(
                 TestScenarios.TwoTeams(false, members, new[] { TestCombatants.Dummy("Enemy", true) }),
-                RuleSets.Current(),
+                RuleSets.PreTuning(),
                 _catalog,
                 seed);
         }

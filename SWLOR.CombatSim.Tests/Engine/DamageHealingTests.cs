@@ -114,7 +114,7 @@ namespace SWLOR.CombatSim.Tests.Engine
             caster.HealingReceivedPercent = healingReceivedPercent;
             var simulation = TestScenarios.Spawn(
                 TestScenarios.TwoTeams(false, new[] { caster }, new[] { new CombatantSpec { Name = "Enemy", MaxHp = EnemyMaxHp, IsNpc = true } }),
-                RuleSets.Current(),
+                RuleSets.PreTuning(),
                 _catalog);
             simulation.Get("Caster").Hp = casterMaxHp / 2.0;
             return simulation;

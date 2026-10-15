@@ -38,7 +38,7 @@ namespace SWLOR.CombatSim.Tests.Engine
             leaper.Perks = new List<string> { nameof(PerkType.ForceConvergence) };
             var simulation = TestScenarios.Spawn(
                 TestScenarios.TwoTeams(false, new[] { leaper }, new[] { TestCombatants.Dummy("Enemy", true) }),
-                RuleSets.Current(),
+                RuleSets.PreTuning(),
                 _catalog);
             var caster = simulation.Get("Leaper");
             var delay = _catalog.Get(FeatType.ForceLeap1).ImpactDelaySeconds;
@@ -59,7 +59,7 @@ namespace SWLOR.CombatSim.Tests.Engine
             leaper.AutoAttack = new AutoAttackSpec { AttacksPerSecond = 4f, Damage = new DamageSpec { Min = 1f, Max = 1f, HitChance = 1f } };
             var simulation = TestScenarios.Spawn(
                 TestScenarios.TwoTeams(false, new[] { leaper }, new[] { TestCombatants.Dummy("Enemy", true) }),
-                RuleSets.Current(),
+                RuleSets.PreTuning(),
                 _catalog);
             var caster = simulation.Get("Leaper");
             var enemy = simulation.Get("Enemy");

@@ -31,6 +31,7 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
                 .AddItem("elec_good", 10)
                 .AddItem("fiberp_flawed", 10)
                 .AddItem("fiberp_good", 5)
+                .AddItem("quar_seal", 6)
                 .AddGold(45, 20);
 
             // Restricted Level and Director's Chambers, levels 25-30.
@@ -39,6 +40,7 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
                 .AddItem("fiberp_good", 10)
                 .AddItem("lth_good", 10)
                 .AddItem("elec_flawed", 5)
+                .AddItem("quar_seal", 8)
                 .AddGold(60, 20);
 
             _builder.Create("STATION_RARES")
@@ -125,6 +127,21 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
                 .IsRare()
                 .AddItem("rancorbone_gswd", 1, 1, true)
                 .AddItem("rancorhide_cloak", 1, 1, true);
+
+            // Blueprints for the crew lines' crafted accessories; each recipe also needs a Quarantine Seal from the floors.
+            _builder.Create("STATION_DIRECTOR_RECIPES")
+                .AddItem("bp_cntcloak", 1)
+                .AddItem("bp_cntbelt", 1)
+                .AddItem("bp_cntring", 1)
+                .AddItem("bp_cntneck", 1)
+                .AddItem("bp_gantcloak", 1)
+                .AddItem("bp_gantbelt", 1)
+                .AddItem("bp_gantring", 1)
+                .AddItem("bp_gantneck", 1)
+                .AddItem("bp_biocloak", 1)
+                .AddItem("bp_biobelt", 1)
+                .AddItem("bp_bioring", 1)
+                .AddItem("bp_bioneck", 1);
         }
 
         private void NamedRares()

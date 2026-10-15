@@ -203,6 +203,108 @@ public class AbandonedStationRewardTests
         }
     }
 
+    [Test]
+    public void StationItems_UseTheBaseItemTheirNameDescribes()
+    {
+        var loot = new AbandonedStationLootTableDefinition().BuildLootTables();
+        var gear = loot.Values.SelectMany(table => table.Select(item => item.Resref))
+            .Concat(NamedRares.Select(rare => rare.Crafted))
+            .Concat(CrewAccessories.Select(accessory => accessory.Gear))
+            .Where(resref => !SharedMaterials.Contains(resref))
+            .ToHashSet();
+        gear.Should().BeEquivalentTo(ExpectedBaseItems.Keys, "every station drop and crafted piece needs an expected base item");
+
+        foreach (var (resref, expected) in ExpectedBaseItems)
+            ((BaseItem)Value(Load("uti", resref), "BaseItem").GetInt32()).Should().Be(expected, resref);
+    }
+
+    [Test]
+    public void CrewAccessories_AreCraftedFromDirectorBlueprintsAndAQuarantineSeal()
+    {
+        var recipes = typeof(IRecipeListDefinition).Assembly.GetTypes()
+            .Where(type => typeof(IRecipeListDefinition).IsAssignableFrom(type) && !type.IsInterface && !type.IsAbstract)
+            .SelectMany(type => ((IRecipeListDefinition)Activator.CreateInstance(type)!).BuildRecipes())
+            .ToDictionary(pair => pair.Key, pair => pair.Value);
+        var loot = new AbandonedStationLootTableDefinition().BuildLootTables();
+
+        loot["STATION_DIRECTOR_RECIPES"].Select(i => i.Resref).Should().BeEquivalentTo(CrewAccessories.Select(a => a.Blueprint));
+        loot["STATION_DIRECTOR_RECIPES"].Should().OnlyContain(i => i.Weight == 1 && i.MaxQuantity == 1);
+        LootLocals(Load("utc", "abs_zdirector")).Should().Contain("STATION_DIRECTOR_RECIPES,100,1",
+            "the director always drops one blueprint, like the Foundry Overseer");
+        loot["STATION_MAIN"].Should().Contain(i => i.Resref == "quar_seal");
+        loot["STATION_RESTRICTED"].Should().Contain(i => i.Resref == "quar_seal");
+
+        foreach (var (recipeType, gear, standard, blueprint) in CrewAccessories)
+        {
+            var recipe = recipes[recipeType];
+            var reference = recipes[standard];
+            recipe.Resref.Should().Be(gear);
+            recipe.Skill.Should().Be(SkillType.Smithery);
+            recipe.Category.Should().Be(reference.Category, gear);
+            recipe.Level.Should().Be(reference.Level, gear);
+            recipe.EnhancementType.Should().Be(reference.EnhancementType, gear);
+            recipe.EnhancementSlots.Should().Be(reference.EnhancementSlots, gear);
+            recipe.Requirements.Should().ContainSingle(r => r is RecipeUnlockRequirement, $"{gear} is learned from a blueprint");
+            recipe.Components.Should().BeEquivalentTo(new Dictionary<string, int>(reference.Components) { ["quar_seal"] = 1 }, gear);
+            Value(Load("uti", gear), "BaseItem").GetInt32().Should().Be(Value(Load("uti", reference.Resref), "BaseItem").GetInt32(), gear);
+
+            var book = Load("uti", blueprint);
+            Text(book, "Tag").Should().Be("RECIPE");
+            Value(book, "VarTable").EnumerateArray().Single(v => Text(v, "Name") == "RECIPES")
+                .GetProperty("Value").GetProperty("value").GetString().Should().Be(((int)recipeType).ToString(), blueprint);
+        }
+    }
+
+    private static readonly string[] SharedMaterials =
+        { "citrine", "elec_flawed", "elec_good", "fiberp_flawed", "fiberp_good", "lth_good", "lockbox_t3", "nw_it_gold001" };
+
+    private static readonly Dictionary<string, BaseItem> ExpectedBaseItems = new()
+    {
+        ["cnt_helmet"] = BaseItem.Helmet, ["cnt_armor"] = BaseItem.Armor, ["cnt_bracer"] = BaseItem.Bracer,
+        ["cnt_leggings"] = BaseItem.Boots, ["cnt_shield"] = BaseItem.LargeShield,
+        ["cnt_longsword"] = BaseItem.Longsword, ["cnt_knife"] = BaseItem.Dagger, ["cnt_gswd"] = BaseItem.GreatSword,
+        ["cnt_spear"] = BaseItem.ShortSpear, ["cnt_twinblade"] = BaseItem.TwoBladedSword, ["cnt_katar"] = BaseItem.Katar,
+        ["cnt_staff"] = BaseItem.QuarterStaff, ["cnt_pistol"] = BaseItem.Sling, ["cnt_rifle"] = BaseItem.Rifle,
+        ["cnt_shuriken"] = BaseItem.Shuriken,
+        ["gantry_cap"] = BaseItem.Helmet, ["gantry_tunic"] = BaseItem.Armor, ["gantry_gloves"] = BaseItem.Gloves,
+        ["gantry_boots"] = BaseItem.Boots,
+        ["biolab_cap"] = BaseItem.Helmet, ["biolab_tunic"] = BaseItem.Armor, ["biolab_gloves"] = BaseItem.Gloves,
+        ["biolab_boots"] = BaseItem.Boots,
+        ["cnt_cloak"] = BaseItem.Cloak, ["cnt_belt"] = BaseItem.Belt, ["cnt_ring"] = BaseItem.Ring, ["cnt_neck"] = BaseItem.Amulet,
+        ["gantry_cloak"] = BaseItem.Cloak, ["gantry_belt"] = BaseItem.Belt, ["gantry_ring"] = BaseItem.Ring, ["gantry_neck"] = BaseItem.Amulet,
+        ["biolab_cloak"] = BaseItem.Cloak, ["biolab_belt"] = BaseItem.Belt, ["biolab_ring"] = BaseItem.Ring, ["biolab_neck"] = BaseItem.Amulet,
+        ["director_coat"] = BaseItem.Armor, ["director_signet"] = BaseItem.Ring,
+        ["rancorbone_gswd"] = BaseItem.GreatSword, ["rancorhide_cloak"] = BaseItem.Cloak,
+        ["riotvisor_helm"] = BaseItem.Helmet, ["lockdown_bracer"] = BaseItem.Bracer,
+        ["quarantine_mask"] = BaseItem.Helmet, ["isolation_shroud"] = BaseItem.Cloak,
+        ["breachseal_belt"] = BaseItem.Belt, ["serumcell_neck"] = BaseItem.Amulet,
+        ["bp_breachbelt"] = BaseItem.MiscMedium, ["bp_serumneck"] = BaseItem.MiscMedium,
+        ["bp_cntcloak"] = BaseItem.MiscMedium, ["bp_cntbelt"] = BaseItem.MiscMedium, ["bp_cntring"] = BaseItem.MiscMedium,
+        ["bp_cntneck"] = BaseItem.MiscMedium, ["bp_gantcloak"] = BaseItem.MiscMedium, ["bp_gantbelt"] = BaseItem.MiscMedium,
+        ["bp_gantring"] = BaseItem.MiscMedium, ["bp_gantneck"] = BaseItem.MiscMedium, ["bp_biocloak"] = BaseItem.MiscMedium,
+        ["bp_biobelt"] = BaseItem.MiscMedium, ["bp_bioring"] = BaseItem.MiscMedium, ["bp_bioneck"] = BaseItem.MiscMedium,
+        ["override_spike"] = BaseItem.MiscellaneousSmallStackable, ["plague_culture"] = BaseItem.MiscellaneousSmallStackable,
+        ["quar_seal"] = BaseItem.MiscellaneousSmallStackable,
+        ["map_277"] = (BaseItem)307,
+    };
+
+    // Crafted accessory recipe -> crafted item, the level-25 crafted recipe it mirrors, and its blueprint book.
+    private static readonly (RecipeType Recipe, string Gear, RecipeType Standard, string Blueprint)[] CrewAccessories =
+    {
+        (RecipeType.ContainmentCloak, "cnt_cloak", RecipeType.SentinelCloak, "bp_cntcloak"),
+        (RecipeType.ContainmentBelt, "cnt_belt", RecipeType.SentinelBelt, "bp_cntbelt"),
+        (RecipeType.ContainmentRing, "cnt_ring", RecipeType.SentinelRing, "bp_cntring"),
+        (RecipeType.ContainmentNecklace, "cnt_neck", RecipeType.SentinelNecklace, "bp_cntneck"),
+        (RecipeType.GantryCloak, "gantry_cloak", RecipeType.MaverickCloak, "bp_gantcloak"),
+        (RecipeType.GantryBelt, "gantry_belt", RecipeType.MaverickBelt, "bp_gantbelt"),
+        (RecipeType.GantryRing, "gantry_ring", RecipeType.MaverickRing, "bp_gantring"),
+        (RecipeType.GantryNecklace, "gantry_neck", RecipeType.MaverickNecklace, "bp_gantneck"),
+        (RecipeType.BiolabCloak, "biolab_cloak", RecipeType.ArcanistCloak, "bp_biocloak"),
+        (RecipeType.BiolabBelt, "biolab_belt", RecipeType.ArcanistBelt, "bp_biobelt"),
+        (RecipeType.BiolabRing, "biolab_ring", RecipeType.ArcanistRing, "bp_bioring"),
+        (RecipeType.BiolabNecklace, "biolab_neck", RecipeType.ArcanistNecklace, "bp_bioneck"),
+    };
+
     private static readonly string[] ContainmentArmor = { "cnt_helmet", "cnt_armor", "cnt_bracer", "cnt_leggings", "cnt_shield" };
     private static readonly string[] GantryArmor = { "gantry_cap", "gantry_tunic", "gantry_gloves", "gantry_boots" };
     private static readonly string[] BiolabArmor = { "biolab_cap", "biolab_tunic", "biolab_gloves", "biolab_boots" };
@@ -266,6 +368,18 @@ public class AbandonedStationRewardTests
         ("biolab_tunic", "prm_chn_tunic", 25, 1, 1, 1),
         ("biolab_gloves", "prm_chn_gloves", 25, 1, 1, 1),
         ("biolab_boots", "prm_chn_boots", 25, 1, 1, 1),
+        ("cnt_cloak", "prm_bul_cloak", 25, 1, 1, 1),
+        ("cnt_belt", "prm_bul_belt", 25, 1, 1, 1),
+        ("cnt_ring", "prm_bul_ring", 25, 1, 1, 1),
+        ("cnt_neck", "prm_bul_neck", 25, 1, 1, 1),
+        ("gantry_cloak", "prm_skm_cloak", 25, 1, 1, 1),
+        ("gantry_belt", "prm_skm_belt", 25, 1, 1, 1),
+        ("gantry_ring", "prm_skm_ring", 25, 1, 1, 1),
+        ("gantry_neck", "prm_skm_neck", 25, 1, 1, 1),
+        ("biolab_cloak", "prm_chn_cloak", 25, 1, 1, 1),
+        ("biolab_belt", "prm_chn_belt", 25, 1, 1, 1),
+        ("biolab_ring", "prm_chn_ring", 25, 1, 1, 1),
+        ("biolab_neck", "prm_chn_neck", 25, 1, 1, 1),
         ("director_coat", "gr_tunic", 30, 1.05, 1.25, 2),
         ("director_signet", "gr_ring", 30, 1.05, 1.25, 2),
         ("rancorhide_cloak", "ar_cloak", 30, 1.05, 1.25, 2),

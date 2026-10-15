@@ -245550,7 +245550,7 @@
         },
         "Conversation": {
           "type": "resref",
-          "value": ""
+          "value": "aban_escape_pod"
         },
         "CurrentHP": {
           "type": "short",
@@ -245668,7 +245668,7 @@
         },
         "OnUsed": {
           "type": "resref",
-          "value": "teleport"
+          "value": "dialog_start"
         },
         "OnUserDefined": {
           "type": "resref",
@@ -253398,7 +253398,7 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "STARSHIP_DOCKPOINT"
+          "value": "ABANDONED_STATION_DOCK_LANDING"
         },
         "TemplateResRef": {
           "type": "resref",
@@ -253837,7 +253837,7 @@
         },
         "XPosition": {
           "type": "float",
-          "value": 114.72
+          "value": 115.0
         },
         "YOrientation": {
           "type": "float",
@@ -253845,7 +253845,7 @@
         },
         "YPosition": {
           "type": "float",
-          "value": 25.0
+          "value": 23.5
         },
         "ZPosition": {
           "type": "float",

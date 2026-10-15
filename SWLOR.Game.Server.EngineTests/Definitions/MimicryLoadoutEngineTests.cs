@@ -44,7 +44,7 @@ public static class MimicryLoadoutEngineTests
         CreaturePlugin.AddFeat(player, Rush);
         PlayerPlugin.SetQuickBarSlot(player, 17, PlayerQuickBarSlot.UseFeat(Rush));
 
-        var migration = new _29_CreateDefaultMimicryLoadouts();
+        var migration = new _27_UpdatePlayerRecords();
         migration.Migrate();
         var record = ReadPersisted(fixture.Id);
         var migrated = record.MimicryLoadouts.Single();

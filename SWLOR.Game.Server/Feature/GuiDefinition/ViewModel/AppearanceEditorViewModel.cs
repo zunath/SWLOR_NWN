@@ -296,6 +296,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             set => Set(value);
         }
 
+        public bool IsPlayerSettingsVisible
+        {
+            get => Get<bool>();
+            set => Set(value);
+        }
+
         public string ColorSheetResref
         {
             get => Get<string>();
@@ -946,11 +952,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             LoadBodyParts();
             RefreshTintMapAvailability();
             LoadTintMapEditor();
-            ShowHelmet = true;
-            ShowCloak = true;
-            LoadSettings();
+            InitializeSettings();
             ColorTargetText = string.Empty;
-            IsSettingsVisible = GetIsPC(_target) && !GetIsDM(_target) && !GetIsDMPossessed(_target);
             LoadItemTypeEditor();
 
             WatchOnClient(model => model.EditorTabToggleValue);
@@ -964,16 +967,20 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             WatchOnClient(model => model.CustomTintGreen);
             WatchOnClient(model => model.CustomTintBlue);
             _tintControlBindingsWatched = true;
+        }
 
-            if (GetIsPC(_target) && !GetIsDM(_target) && !GetIsDMPossessed(_target))
+        private void InitializeSettings()
+        {
+            IsPlayerSettingsVisible = GetIsPC(_target) && !GetIsDM(_target) && !GetIsDMPossessed(_target);
+            IsSettingsVisible = IsPlayerSettingsVisible || GetIsDM(Player) || GetIsDMPossessed(Player);
+            ShowHelmet = true;
+            ShowCloak = true;
+            LoadSettings();
+
+            if (IsPlayerSettingsVisible)
             {
-                IsSettingsVisible = true;
                 WatchOnClient(model => model.ShowHelmet);
                 WatchOnClient(model => model.ShowCloak);
-            }
-            else
-            {
-                IsSettingsVisible = false;
             }
         }
 
@@ -1870,7 +1877,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         private void LoadSettings()
         {
-            if (GetIsDM(_target) || GetIsDMPossessed(_target))
+            if (!GetIsPC(_target) || GetIsDM(_target) || GetIsDMPossessed(_target))
                 return;
 
             var playerId = GetObjectUUID(_target);
@@ -2634,6 +2641,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         public Action OnClickSaveSettings() => () =>
         {
+            if (!GetIsPC(_target) || GetIsDM(_target) || GetIsDMPossessed(_target))
+                return;
+
             var playerId = GetObjectUUID(_target);
             var dbPlayer = DB.Get<Player>(playerId);
 

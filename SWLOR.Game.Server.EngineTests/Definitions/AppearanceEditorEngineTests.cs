@@ -128,6 +128,16 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 DB.Set(new Player(playerId) { AppearanceScale = 0.92f, HeadAppearanceScale = 1.08f });
                 try
                 {
+                    // Settings load/save and cancellation are PC-only. Attach the synthetic
+                    // client before exercising any of those paths on this disposable fixture.
+                    native.m_bPlayerCharacter = 1;
+                    client = new global::NWN.Native.API.CNWSPlayer(0x7fff0000u);
+                    client.SetGameObject(global::NWN.Native.API.NWNXLib.g_pAppManager.m_pServerExoApp
+                        .GetGameObject(civilian).AsNWSObject());
+                    client.m_oidPCObject = civilian;
+                    global::NWN.Native.API.NWNXLib.g_pAppManager.m_pServerExoApp.GetPlayerList().Add(client);
+                    ctx.Assert(GetIsPC(civilian), "Fixture exercises the PC settings paths");
+
                     SetObjectVisualTransform(civilian, ObjectVisualTransform.Scale, 0.92f);
                     SetObjectVisualTransform(civilian, ObjectVisualTransform.Scale, 1.08f,
                         nScope: ObjectVisualTransformDataScopeType.CreatureHead);
@@ -148,17 +158,8 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                     ctx.Assert(Math.Abs(DB.Get<Player>(playerId).HeadAppearanceScale - 1.05f) < 0.0001f,
                         "Save persists head preview");
 
-                    // The close handler is PC-only. Mark only this disposable fixture as a
-                    // player and attach a synthetic client during its synchronous call.
                     editor.OnDecreaseHeadScale()();
                     SetObjectVisualTransform(civilian, ObjectVisualTransform.Scale, 1.1f);
-                    native.m_bPlayerCharacter = 1;
-                    client = new global::NWN.Native.API.CNWSPlayer(0x7fff0000u);
-                    client.SetGameObject(global::NWN.Native.API.NWNXLib.g_pAppManager.m_pServerExoApp
-                        .GetGameObject(civilian).AsNWSObject());
-                    client.m_oidPCObject = civilian;
-                    global::NWN.Native.API.NWNXLib.g_pAppManager.m_pServerExoApp.GetPlayerList().Add(client);
-                    ctx.Assert(GetIsPC(civilian), "Fixture exercises the PC cancellation path");
                     editor.OnCloseWindow()();
                     AssertScale(ctx, civilian, 0.92f, 1.05f, "Cancel restores both saved scales");
 
@@ -182,6 +183,28 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                     DB.Delete<Player>(playerId);
                 }
             });
+        }
+
+        [EngineTest("NPC scale edits remain on the creature without player settings", Category = "AppearanceEditor", TimeoutSeconds = 30f)]
+        public static async Task NpcScaleEditsDoNotCreatePlayerSettings(EngineTestContext ctx)
+        {
+            var civilian = await SpawnCivilianAsync(ctx);
+            await RunAssignedAsync(ctx, civilian, () =>
+            {
+                var id = GetObjectUUID(civilian);
+                ctx.Assert(!DB.Exists<Player>(id), "NPC starts without a player record");
+                SetObjectVisualTransform(civilian, ObjectVisualTransform.Scale, 1f);
+                HelmetModelRenderer.SetHeadScale(civilian, 1f);
+                var editor = BindWithoutClient(civilian);
+                ctx.Assert(!editor.IsPlayerSettingsVisible, "NPC has no player preference controls");
+                editor.OnIncreaseHeadScale()();
+                editor.OnDecreaseAppearanceScale()();
+                editor.OnClickSaveSettings()();
+                editor.OnCloseWindow()();
+                AssertScale(ctx, civilian, 0.99f, 1.01f, "NPC close retains direct scale edits");
+                ctx.Assert(!DB.Exists<Player>(id), "NPC load, Save and close do not create player data");
+            });
+            ctx.SetResultDetail("Real NPC scale handlers and close/Save paths; no DM client is attached. DM tab access is covered by the recording settings tests.");
         }
 
         private static void AssertScale(EngineTestContext ctx, uint target, float body, float head, string stage)

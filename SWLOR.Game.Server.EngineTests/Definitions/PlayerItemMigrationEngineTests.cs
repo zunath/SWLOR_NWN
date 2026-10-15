@@ -114,9 +114,11 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
         {
             var owner = ctx.SpawnCreature("nw_rat001");
             await ctx.WaitFrameAsync();
-            var item = await CreateItemAsync(ctx, owner, "valcl4", owner);
+            // Only DM-built sabers are recalibrated; NPC-only blueprints such as valcl4 keep their authored stats.
+            var item = await CreateItemAsync(ctx, owner, "b_longsword", owner);
             await ctx.ExecuteInCreatureContextAsync(owner, () =>
             {
+                ItemPlugin.SetBaseItemType(item, BaseItem.Lightsaber);
                 ClearProperties(item);
                 AddItemProperty(DurationType.Permanent, ItemPropertyCustom(ItemPropertyType.DMG, (int)CombatDamageType.Physical, 20), item);
                 AddLegacyProperty(item, ItemPropertyType.UseLimitationPerk, 18, 33, 5);
@@ -125,6 +127,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             string expected = null;
             await ctx.ExecuteInCreatureContextAsync(owner, () =>
             {
+                ctx.Assert((bool)Invoke("LegacySaberMigration", "IsLegacySaber", item), "The fixture is a DM-built legacy saber");
                 Invoke("EquipmentRequirementMigration", "MigrateObject", owner);
                 Invoke("SerializedItemResistanceMigration", "MigrateObject", owner);
                 Invoke("SerializedItemWeaponDamageTypeMigration", "MigrateObject", owner);

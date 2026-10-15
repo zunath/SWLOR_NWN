@@ -1,6 +1,7 @@
 using System.Threading.Tasks;
 using SWLOR.Game.Server.EngineTests.Framework;
 using SWLOR.Game.Server.Feature.AbilityDefinition;
+using SWLOR.Game.Server.Service.StatusEffectService;
 using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.Game.Server.EngineTests.Definitions
@@ -67,6 +68,31 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 () => TemporaryHitPointEffects.GetRemaining(target) == TemporaryHitPointEffects.GetMaximumTotal(target),
                 2f,
                 "the pool to be trimmed to the lowered cap once the penalty lands");
+        }
+
+        [EngineTest("A Vitality buff wearing off trims temporary HP back under the cap", Category = "StatusEffect", TimeoutSeconds = 30f)]
+        public static async Task VitalityBuffExpiryTrimsPools(EngineTestContext ctx)
+        {
+            var target = ctx.SpawnCreature("nw_bandit001");
+            await ctx.WaitFrameAsync();
+            Stat.SetNPCMaxHitPoints(target, 1000, true);
+
+            // Food with Vitality and no flat HP: its own Remove does nothing, so the trim has to come from the status removal.
+            StatusEffect.ApplyStatusEffect(target, target, new FoodStatusEffect(new FoodEffectData { Vitality = 10 }), 3f);
+            await ctx.WaitUntilAsync(() => GetMaxHitPoints(target) > 1000, 2f, "the Vitality food to raise max HP");
+            var raisedMaximum = GetMaxHitPoints(target);
+            var raisedCap = TemporaryHitPointEffects.GetMaximumTotal(target);
+            TemporaryHitPointEffects.ApplyFlat(target, "TRIM_VITALITY_EXPIRY", raisedCap, 60f);
+            ctx.AssertEqual(raisedCap, TemporaryHitPointEffects.GetRemaining(target), "the pool fills the raised cap");
+
+            await ctx.WaitUntilAsync(() => !StatusEffect.HasStatusEffect<FoodStatusEffect>(target), 6f, "the food to wear off");
+            ctx.Assert(GetMaxHitPoints(target) < raisedMaximum, $"max HP drops when the food wears off (now {GetMaxHitPoints(target)})");
+            // Well inside the 6-second heartbeat that would otherwise catch it.
+            await ctx.WaitUntilAsync(
+                () => TemporaryHitPointEffects.GetRemaining(target) == TemporaryHitPointEffects.GetMaximumTotal(target),
+                1f,
+                "the pool to be trimmed to the lowered cap once the buff wears off");
+            ctx.Assert(TemporaryHitPointEffects.GetRemaining(target) < raisedCap, "the trim removed temporary HP");
         }
 
         [EngineTest("A status effect tracking a trimmed pool is told about the trim", Category = "StatusEffect", TimeoutSeconds = 20f)]

@@ -271,9 +271,13 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             ResultNames = names;
             ResultInfo = info;
             ResultSelections = selections;
+            // A tooltip keeps a NUI dropdown from opening, so the summary explains Custom and Standard instead.
+            var palette = (DMBlueprintSource)SelectedSource == DMBlueprintSource.Standard
+                ? "the base game's palette"
+                : "the module's palette";
             ResultSummary = _results.Count == 0
-                ? "No matches."
-                : $"{_results.Count} blueprint{(_results.Count == 1 ? string.Empty : "s")}.";
+                ? $"No matches in {palette}."
+                : $"{_results.Count} blueprint{(_results.Count == 1 ? string.Empty : "s")} in {palette}.";
 
             SelectResult(-1);
         }

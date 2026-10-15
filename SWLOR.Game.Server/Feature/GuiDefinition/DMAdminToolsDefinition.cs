@@ -51,8 +51,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                                 model => model.OnClickManageStaff());
                             AddButton(content, "Manage Bans", "Add or remove banned players",
                                 model => model.OnClickManageBans());
-                            AddButton(content, "Property Diagnostics", "Property loading diagnostics",
-                                model => model.OnClickPropertyDiagnostics());
                         });
                     })
                         .SetWidth(ContentPanelWidth);

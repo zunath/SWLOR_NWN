@@ -131,6 +131,22 @@ namespace SWLOR.Game.Server.Feature
             }
         }
 
+        /// <summary>
+        /// Adds or removes one amount of a stat for an equipped item, as a property of that size would on equip or unequip.
+        /// </summary>
+        /// <param name="creature">The wearer</param>
+        /// <param name="item">The equipped item the amount belongs to</param>
+        /// <param name="type">The stat's item property type</param>
+        /// <param name="subtype">The property subtype, such as the Defense damage type</param>
+        /// <param name="amount">The amount to add or remove</param>
+        /// <param name="isAdding">If true, the amount is added, if false it's removed</param>
+        public static void ApplyStatAmount(uint creature, uint item, ItemPropertyType type, int subtype, int amount, bool isAdding)
+        {
+            if (amount <= 0 || !_statChangeActions.TryGetValue(type, out var action))
+                return;
+            action(creature, item, ItemPropertyCustom(type, subtype, amount), isAdding);
+        }
+
         [NWNEventHandler(ScriptName.OnItemEquipValidateAfter)]
         [NWNEventHandler(ScriptName.OnItemUnequipAfter)]
         public static void RefreshCombatReadinessAfterEquipmentChange()

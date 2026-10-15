@@ -144,6 +144,58 @@ public static partial class MigrationEngineTests
         });
     }
 
+    [EngineTest("Player loot stat migration keeps current HP and stamina when equipped pools are revised", Category = LootCategory, TimeoutSeconds = 60f)]
+    public static async Task PlayerLootStatRevisionKeepsPools(EngineTestContext ctx)
+    {
+        const string chestResref = "absdef_w2";
+        const string beltResref = "apexbite_w2";
+        using var fixture = await PlayerAbilityFixture.CreateAsync(ctx);
+        var player = fixture.Creature;
+        var chest = await CreateItemAsync(ctx, player, chestResref, player);
+        var belt = await CreateItemAsync(ctx, player, beltResref, player);
+        await ctx.ExecuteInCreatureContextAsync(player, () =>
+        {
+            foreach (var item in new[] { chest, belt })
+            {
+                StampLegacyLoot(item, NoEnhancements);
+                RemoveRequirement(item);
+            }
+        });
+        await EquipAsync(ctx, player, chest, InventorySlot.Chest);
+        await EquipAsync(ctx, player, belt, InventorySlot.Belt);
+
+        var maxHP = 0;
+        var recordMaxHP = 0;
+        var maxStamina = 0;
+        await ctx.ExecuteInCreatureContextAsync(player, () =>
+        {
+            // Native max HP is capped by the fixture's few levels; the player record keeps the full total.
+            maxHP = GetMaxHitPoints(player);
+            recordMaxHP = DB.Get<Player>(GetObjectUUID(player)).MaxHP;
+            SetCurrentHitPoints(player, maxHP);
+            maxStamina = Stat.GetMaxStamina(player);
+            fixture.Update(record => record.Stamina = maxStamina);
+        });
+        await ctx.WaitFrameAsync();
+
+        await ctx.ExecuteInCreatureContextAsync(player, () =>
+        {
+            new _22_ReviseLootStats().Migrate(player);
+            AssertRevisedLoot(ctx, chest, NoEnhancements);
+            AssertRevisedLoot(ctx, belt, NoEnhancements);
+            var hpDifference = PoolDifference(chestResref, ItemPropertyType.HPBonus) + PoolDifference(beltResref, ItemPropertyType.HPBonus);
+            var staminaDifference = PoolDifference(beltResref, ItemPropertyType.Stamina);
+            ctx.AssertEqual(recordMaxHP + hpDifference, DB.Get<Player>(GetObjectUUID(player)).MaxHP, "Max HP moves by exactly the revised HP");
+            ctx.AssertEqual(maxHP, ObjectPlugin.GetCurrentHitPoints(player), "Raising max HP keeps the player's current HP");
+            ctx.AssertEqual(maxStamina + staminaDifference, Stat.GetMaxStamina(player), "Max STM moves by exactly the revised STM");
+            ctx.AssertEqual(System.Math.Min(maxStamina, maxStamina + staminaDifference), DB.Get<Player>(GetObjectUUID(player)).Stamina,
+                "Current STM is clamped only by the revised drop, not by the old item's whole bonus");
+        });
+    }
+
+    private static int PoolDifference(string resref, ItemPropertyType type) =>
+        LootStatRevisionCatalog.Changes[resref].Where(x => x.Type == type).Sum(x => x.Current - x.Previous);
+
     [EngineTest("Loot stat migration leaves revised blueprints and unrelated items unchanged", Category = LootCategory)]
     public static async Task UnrelatedLootStatRevision(EngineTestContext ctx)
     {
@@ -307,6 +359,11 @@ public static partial class MigrationEngineTests
 
     private static async Task EquipAsync(EngineTestContext ctx, uint creature, uint item, InventorySlot slot)
     {
+        // The equip validator cancels swaps, so an occupied slot (such as starting clothes) is emptied first.
+        var existing = GetItemInSlot(slot, creature);
+        if (GetIsObjectValid(existing) && existing != item)
+            await UnequipAsync(ctx, creature, existing);
+
         AssignCommand(creature, () =>
         {
             ClearAllActions();

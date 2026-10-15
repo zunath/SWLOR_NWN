@@ -101,25 +101,25 @@ public static class LootStatRevisionMigration
             return false;
 
         // An equipped item's stats are already counted on its wearer (a player's record or a droid's
-        // skin). Remove them first and add the revised values back afterwards, as an unequip and
-        // re-equip would.
+        // skin). Apply only each stat's difference there: removing every old stat first would clamp
+        // current HP, FP and STM to a temporarily lower maximum.
         var wearer = GetWearer(item);
-        if (GetIsObjectValid(wearer))
-            EquipmentStats.ApplyItemStats(wearer, item, false);
-
         foreach (var change in changes)
-            ApplyChange(item, change);
+        {
+            var difference = ApplyChange(item, change);
+            if (difference != 0 && GetIsObjectValid(wearer))
+                EquipmentStats.ApplyStatAmount(wearer, item, change.Type, PropertySubtype(change),
+                    Math.Abs(difference), difference > 0);
+        }
         SetLocalInt(item, RevisionVariable, CurrentRevision);
 
         if (GetIsObjectValid(wearer))
-        {
-            EquipmentStats.ApplyItemStats(wearer, item, true);
             Stat.RefreshCombatReadinessEquipment(wearer);
-        }
         return true;
     }
 
-    private static void ApplyChange(uint item, LootStatChange change)
+    /// <summary>Shifts one property by the blueprint difference and returns how much the item's total changed.</summary>
+    private static int ApplyChange(uint item, LootStatChange change)
     {
         // Collect first: removing a property mid-iteration skips the next one.
         var matches = new List<ItemProperty>();
@@ -138,16 +138,17 @@ public static class LootStatRevisionMigration
         if (revised < 0)
             revised = 0;
         if (revised == total && matches.Count <= 1)
-            return;
+            return 0;
 
         foreach (var ip in matches)
             MigrationObject.RemoveProperty(item, ip);
         if (revised > 0)
-        {
-            var subtype = change.Type == ItemPropertyType.Defense ? change.Subtype : -1;
-            MigrationObject.AddProperty(item, ItemPropertyCustom(change.Type, subtype, revised), AddItemPropertyPolicy.IgnoreExisting);
-        }
+            MigrationObject.AddProperty(item, ItemPropertyCustom(change.Type, PropertySubtype(change), revised), AddItemPropertyPolicy.IgnoreExisting);
+        return revised - total;
     }
+
+    private static int PropertySubtype(LootStatChange change) =>
+        change.Type == ItemPropertyType.Defense ? change.Subtype : -1;
 
     private static uint GetWearer(uint item)
     {

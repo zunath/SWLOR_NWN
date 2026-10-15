@@ -33,8 +33,8 @@ public class LootStatRevisionTests
         [BaseItem.Boots] = 49, [BaseItem.LargeShield] = 32,
     };
 
-    // Weapon DMG by base item and required level: the highest crafted, store or loot value from before the
-    // Combat Upgrade at each level.
+    // Weapon DMG by base item and required level: the highest crafted, store or loot value of the
+    // established gear at each level, before the level-45 loot tier existed.
     private static readonly Dictionary<int, SortedDictionary<int, int>> WeaponDamageCurves = new()
     {
         [(int)BaseItem.Longsword] = Curve(6, 7, 11, 11, 15, 15, 18, 19, 23, 24),

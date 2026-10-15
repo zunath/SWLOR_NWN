@@ -42,7 +42,7 @@ namespace SWLOR.CombatSim.Tests.Engine
 
             UseAbilities(simulation, caster, 1);
 
-            caster.Stats.FpRefunded.Should().Be(4, "35% of 12 STM, rounded down");
+            caster.Stats.FpRefunded.Should().Be(2, "20% of 12 STM, rounded down");
         }
 
         [Test]
@@ -53,7 +53,7 @@ namespace SWLOR.CombatSim.Tests.Engine
 
             UseAbilities(simulation, caster, 1);
 
-            caster.Stats.StmRefunded.Should().Be(3, "35% of 10 FP, rounded down");
+            caster.Stats.StmRefunded.Should().Be(2, "20% of 10 FP");
         }
 
         [Test]
@@ -89,7 +89,7 @@ namespace SWLOR.CombatSim.Tests.Engine
             UseAbilities(simulation, caster, 2);
 
             caster.Statuses.Should().ContainKey("ConduitStanceStatusEffect");
-            caster.Stats.FpRefunded.Should().Be(7, "35% + 25% of 12 STM, rounded down");
+            caster.Stats.FpRefunded.Should().Be(7, "20% + 40% of 12 STM, rounded down");
         }
 
         [Test]

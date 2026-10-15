@@ -315,8 +315,8 @@ public class CrossSkillPerkInteractionSafetyTests
                 totals[bonus.Stat] += bonus.Calculate(0);
         }
 
-        totals[StatType.AbilityStaminaCostFPRestorePercent].Should().Be(35);
-        totals[StatType.AbilityFPCostStaminaRestorePercent].Should().Be(35);
+        totals[StatType.AbilityStaminaCostFPRestorePercent].Should().Be(20);
+        totals[StatType.AbilityFPCostStaminaRestorePercent].Should().Be(20);
         totals.Values.Should().OnlyContain(
             value => value > 0 && value < 100,
             "a paid ability may cross-convert part of its cost, but cannot restore its entire cost or create a self-feeding resource cycle");
@@ -358,12 +358,12 @@ public class CrossSkillPerkInteractionSafetyTests
         activeEffects.StatGroup.Stats[StatType.HighFPAndStaminaAbilityDamageBonusThresholdPercent]
             .Should().Be(60, "removing the stricter effect must reveal the remaining threshold");
 
-        CalculateCrossResourceRestore(1, 35).Should().Be(0,
+        CalculateCrossResourceRestore(1, 20).Should().Be(0,
             "small costs must not be rounded up into guaranteed restoration");
-        CalculateCrossResourceRestore(3, 35).Should().Be(1);
+        CalculateCrossResourceRestore(5, 20).Should().Be(1);
         CalculateCrossResourceRestore(4, 60).Should().Be(2,
             "Conduit Training plus Conduit Stance should remain useful without restoring the full cost");
-        CalculateCrossResourceRestore(4, 85).Should().Be(3,
+        CalculateCrossResourceRestore(4, 70).Should().Be(2,
             "Conduit Training plus Infinite Conduit should still consume net resources");
         CalculateCrossResourceRestore(20, 110).Should().Be(19,
             "Training, Stance, and Infinite Conduit together must remain below full cost restoration");

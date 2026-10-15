@@ -136,7 +136,8 @@ public static class PowerGloveFit
 
     private static string ResolveHandModel(string race, Gender gender, int phenotype, string side, int naturalPart, int armorPart)
     {
-        var part = armorPart > 0 ? armorPart : naturalPart;
+        // Native bare-hand armor styles 0, 1 and 2 display the wearer's natural hand.
+        var part = armorPart > 2 ? armorPart : naturalPart;
         if (string.IsNullOrWhiteSpace(race) || race.Length != 1 || part <= 0)
             return string.Empty;
         return $"p{(gender == Gender.Female ? 'f' : 'm')}{race.ToLowerInvariant()}{phenotype}_hand{side}{part:D3}";

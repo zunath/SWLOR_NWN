@@ -48,12 +48,17 @@ public static class PowerGloveFitEngineTests
             EquippedItemAppearance.Set(armor, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.RightHand, 1);
             EquippedItemAppearance.Set(armor, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.LeftHand, 1);
             EquippedItemAppearance.Refresh(wearer, armor);
-            AssertPair(ctx, right, left, 1f, "Armor overrides both natural hands");
+            AssertPair(ctx, right, left, naturalFit, "Bare-hand armor style one retains both natural hands");
+            EquippedItemAppearance.Set(armor, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.RightHand, 45);
+            EquippedItemAppearance.Set(armor, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.LeftHand, 45);
+            EquippedItemAppearance.Refresh(wearer, armor);
+            AssertPair(ctx, right, left, Expected("pmh0_handr045", "pmh0_handl045", 101),
+                "An explicit armor hand model overrides both natural hands");
             EquippedItemAppearance.Set(armor, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.RightHand, 2);
             EquippedItemAppearance.Set(armor, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.LeftHand, 0);
             EquippedItemAppearance.Refresh(wearer, armor);
-            AssertPair(ctx, right, left, Expected("pmh0_handr002", "pmh0_handl201", 101),
-                "Zero armor hand falls back to the natural hand");
+            AssertPair(ctx, right, left, Expected("pmh0_handr001", "pmh0_handl201", 101),
+                "Armor hand styles zero and two both expose the natural hand");
 
             SetBody(wearer, AppearanceType.Human, 1, 1);
             SetGender(wearer, Gender.Female);
@@ -170,7 +175,7 @@ public static class PowerGloveFitEngineTests
             SetBody(wearer, AppearanceType.Cathar, 201, 201);
             ExecuteScript(ScriptName.OnAppearanceEdit, wearer);
 
-            foreach (var appearance in new[] { 110, 112, 113, 116, 118, 121 })
+            foreach (var appearance in new[] { 110, 112, 113, 116, 118, 119, 120, 121 })
             {
                 var label = $"Grip {appearance}";
                 ChangeGlove(wearer, right, appearance);
@@ -197,7 +202,7 @@ public static class PowerGloveFitEngineTests
                 AssertGripPair(ctx, right, left, authored, "pmo0_handr201", "pmo0_handl201", appearance,
                     label + " preserves an authored edit while fitted");
 
-                foreach (var releasedAppearance in new[] { 106, 101, 119 })
+                foreach (var releasedAppearance in new[] { 106, 101, 117 })
                 {
                     ChangeGlove(wearer, right, releasedAppearance);
                     AssertGripPair(ctx, right, left, authored, "pmo0_handr201", "pmo0_handl201", releasedAppearance,
@@ -264,7 +269,7 @@ public static class PowerGloveFitEngineTests
                 "Late relocation normalization preserves the currently equipped pair");
             PowerGlovePairEngineTests.AssertOwnedItems(ctx, wearer, right, 1);
         });
-        ctx.SetResultDetail("All six corrected grips retain distinct right/left measured offsets and an authored translation through nested cosmetic refresh, live edits, invisible/legacy/other-model resets, body edits, native offhand removal and re-equip. Explicit native hand250 in either slot restores both authored scales/translations until both measured hands return. Current-slot normalization preserves a re-equipped pair after a late relocation notification. This case verifies native transform state; client pixels require separate verification.");
+        ctx.SetResultDetail("All eight corrected grips retain distinct right/left measured offsets and an authored translation through nested cosmetic refresh, live edits, invisible/legacy/other-model resets, body edits, native offhand removal and re-equip. Explicit native hand250 in either slot restores both authored scales/translations until both measured hands return. Current-slot normalization preserves a re-equipped pair after a late relocation notification. This case verifies native transform state; client pixels require separate verification.");
     }
 
     [EngineTest("One owned Power Glove retains paired fit through two save reload cycles with nested inventory", Category = "PowerGloveFit", TimeoutSeconds = 90f)]

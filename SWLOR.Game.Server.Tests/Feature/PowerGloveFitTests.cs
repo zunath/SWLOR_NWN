@@ -11,9 +11,15 @@ namespace SWLOR.Game.Server.Tests.Feature;
 public class PowerGloveFitTests
 {
     [TestCase("H", Gender.Male, 0, "r", 201, 0, "pmh0_handr201")]
-    [TestCase("h", Gender.Female, 0, "l", 201, 1, "pfh0_handl001")]
+    [TestCase("h", Gender.Female, 0, "l", 201, 1, "pfh0_handl201")]
+    [TestCase("o", Gender.Male, 0, "r", 201, 1, "pmo0_handr201")]
     [TestCase("o", Gender.Female, 0, "r", 201, 0, "pfo0_handr201")]
-    [TestCase("e", Gender.Both, 2, "l", 208, 2, "pme2_handl002")]
+    [TestCase("e", Gender.Both, 2, "l", 208, 2, "pme2_handl208")]
+    [TestCase("h", Gender.Male, 0, "r", 1, 2, "pmh0_handr001")]
+    [TestCase("h", Gender.Male, 0, "l", 2, 2, "pmh0_handl002")]
+    [TestCase("o", Gender.Male, 0, "r", 201, 2, "pmo0_handr201")]
+    [TestCase("h", Gender.Male, 0, "r", 1, 4, "pmh0_handr004")]
+    [TestCase("h", Gender.Male, 0, "l", 1, 6, "pmh0_handl006")]
     [TestCase("d", Gender.Male, 0, "l", 209, -1, "pmd0_handl209")]
     [TestCase("****", Gender.Male, 0, "r", 1, 1, "")]
     [TestCase("", Gender.Male, 0, "r", 1, 1, "")]
@@ -80,8 +86,8 @@ public class PowerGloveFitTests
     [TestCase(116, 1.00f, 1.00f, 1.00f)]
     [TestCase(117, 1.22f, 1.26f, 1.68f)]
     [TestCase(118, 1.00f, 1.00f, 1.00f)]
-    [TestCase(119, 1.08f, 1.10f, 1.92f)]
-    [TestCase(120, 1.10f, 1.08f, 1.64f)]
+    [TestCase(119, 1.10f, 1.10f, 1.00f)]
+    [TestCase(120, 1.10f, 1.10f, 1.00f)]
     [TestCase(121, 1.00f, 1.00f, 1.00f)]
     public void OpenFramesUseTheirOwnMeasuredClearanceOnBothHands(
         int appearance, float right, float left, float fallback)
@@ -131,20 +137,22 @@ public class PowerGloveFitTests
         AssertVector(Invoke<FitVector>("RebaseTranslation", current, previous, FitVector.Zero), authored);
     }
 
-    [TestCase(110, 1.16f, -.015f)]
-    [TestCase(112, 1.20f, -.025f)]
-    [TestCase(113, 1.36f, -.015f)]
-    [TestCase(116, 1.36f, -.025f)]
-    [TestCase(118, 1.00f, -.015f)]
-    [TestCase(121, 1.48f, -.025f)]
+    [TestCase(110, 1.16f, 0f, -.015f)]
+    [TestCase(112, 1.20f, 0f, -.025f)]
+    [TestCase(113, 1.36f, 0f, -.015f)]
+    [TestCase(116, 1.36f, 0f, -.025f)]
+    [TestCase(118, 1.00f, 0f, -.015f)]
+    [TestCase(119, 1.40f, -.001267151f, -.0100633f)]
+    [TestCase(120, 1.24f, 0f, -.020f)]
+    [TestCase(121, 1.48f, 0f, -.025f)]
     public void CorrectedGripsHaveIndependentHandOffsetsAndCompensateForTheSharedScale(
-        int appearance, float catharScale, float authoredDepth)
+        int appearance, float catharScale, float authoredX, float authoredDepth)
     {
         foreach (var side in new[] { "r", "l" })
         {
             AssertVector(GripTranslation($"pmh0_hand{side}001", appearance, 1f), FitVector.Zero);
             AssertVector(GripTranslation($"pmh0_hand{side}001", appearance, 1.5f),
-                -.5f * new FitVector(0f, .035f, authoredDepth));
+                -.5f * new FitVector(authoredX, .035f, authoredDepth));
             AssertVector(GripTranslation($"pmo0_hand{side}201".ToUpperInvariant(), appearance, catharScale),
                 GripTranslation($"pmo0_hand{side}201", appearance, catharScale));
         }
@@ -171,8 +179,6 @@ public class PowerGloveFitTests
     [TestCase(114)]
     [TestCase(115)]
     [TestCase(117)]
-    [TestCase(119)]
-    [TestCase(120)]
     public void OtherAppearancesNeverAcquireGripTranslation(int appearance)
     {
         AssertVector(GripTranslation("pmo0_handr201", appearance, 1.92f), FitVector.Zero);
@@ -184,6 +190,8 @@ public class PowerGloveFitTests
     [TestCase(113)]
     [TestCase(116)]
     [TestCase(118)]
+    [TestCase(119)]
+    [TestCase(120)]
     [TestCase(121)]
     public void EitherUnmeasuredHandReleasesTheEntireCorrectedPair(int appearance)
     {
@@ -208,8 +216,6 @@ public class PowerGloveFitTests
     [TestCase(114)]
     [TestCase(115)]
     [TestCase(117)]
-    [TestCase(119)]
-    [TestCase(120)]
     public void UnmeasuredHandDoesNotChangeOtherAppearancesExistingScalePolicy(int appearance)
     {
         Invoke<bool>("CanFitPair", "pmo0_handr201", "unknown", appearance).Should().BeTrue();

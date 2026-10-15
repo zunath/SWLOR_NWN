@@ -6,6 +6,7 @@ using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.NWNX.Enum;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Service.DBService;
+using SWLOR.Game.Server.Service.FrameProfilerService;
 using SWLOR.NWN.API.NWNX;
 
 namespace SWLOR.Game.Server.Service
@@ -14,7 +15,9 @@ namespace SWLOR.Game.Server.Service
     {
         public const int MaxKnownNameLength = 64;
         public const string UnknownName = PlayerDescriptor.DefaultUnknownDisplayName;
+        // Known names change only through DB writes, so entries last until a PlayerKnownName write or logout.
         private static readonly Dictionary<string, PlayerKnownName> KnownNamesByObserverId = new();
+        private static long _knownNamesWriteVersion;
         private static readonly Dictionary<string, bool> ShowDescriptorsForNamedPlayersByObserverId = new();
         private static readonly Dictionary<uint, (uint Area, Vector3 Position)> AfkPlayers = new();
         private static IDisposable _afkMovementCheck;
@@ -23,8 +26,15 @@ namespace SWLOR.Game.Server.Service
 
         static PlayerName()
         {
-            ServerManager.OnScriptContextEnd += KnownNamesByObserverId.Clear;
             ServerManager.OnScriptContextEnd += ShowDescriptorsForNamedPlayersByObserverId.Clear;
+        }
+
+        [NWNEventHandler(ScriptName.OnModuleExit)]
+        public static void ReleaseKnownNamesOnExit()
+        {
+            var observerId = GetObjectUUID(GetExitingObject());
+            if (!string.IsNullOrWhiteSpace(observerId))
+                KnownNamesByObserverId.Remove(observerId);
         }
 
         [NWNEventHandler(ScriptName.OnModuleEnter)]
@@ -563,9 +573,17 @@ namespace SWLOR.Game.Server.Service
 
         private static PlayerKnownName FindKnownNames(string observerId)
         {
+            var writeVersion = DB.GetWriteVersion<PlayerKnownName>();
+            if (writeVersion != _knownNamesWriteVersion)
+            {
+                KnownNamesByObserverId.Clear();
+                _knownNamesWriteVersion = writeVersion;
+            }
+
             if (KnownNamesByObserverId.TryGetValue(observerId, out var dbKnownNames))
                 return dbKnownNames;
 
+            FrameProfiler.Count(FrameMetric.PlayerNameLookup);
             dbKnownNames = DB.Search(new DBQuery<PlayerKnownName>()
                     .AddFieldSearch(nameof(PlayerKnownName.ObserverPlayerId), observerId, false))
                 .FirstOrDefault();

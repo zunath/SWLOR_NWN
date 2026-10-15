@@ -655,12 +655,12 @@ public class GeneratedWeaponPerkBehaviorTests
         nativeAttackSource[beginSwing..endSwing].Should().Contain("try");
         nativeAttackSource[resolveAttack..endSwing].Should().Contain("finally");
         statusEffectSource.Should().Contain(
-            "statusEffect is not ILimitedAttackDelayReductionStatusEffect");
+            "statusEffect is ILimitedAttackDelayReductionStatusEffect");
         statusEffectSource.Should().Contain(
-            "statusEffect is not ILimitedAttackNoDelayStatusEffect");
+            "statusEffect is ILimitedAttackNoDelayStatusEffect");
         statusEffectSource.Should().Contain("_nativeAttackSwingDepth.Remove(attacker);");
         statusEffectSource.Should().Contain(
-            "deferredEffects.Add(() => ApplyStatusEffectInternal(",
+            "deferredEffects.Add(() => ApplyAndProfileStatusEffect(",
             "a speed effect granted by a precomputed roll must become active only after the swing ends");
     }
 

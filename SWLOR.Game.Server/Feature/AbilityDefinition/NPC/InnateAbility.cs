@@ -161,7 +161,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.NPC
         {
             return (_, target) =>
             {
-                AssignCommand(target, () => ClearAllActions());
+                ActionInterruption.ClearActions(target);
                 UsePerkFeat.InterruptAbilityActivation(target);
             };
         }

@@ -37,7 +37,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
             var amount = AbilityEffectScaling.CalculateScaledPercentOfMaxHP(source, target, percent, scalingAbility, multiplier);
             amount = Stat.ApplyOutgoingAbilityHealingAdjustment(source, amount);
             amount = Ability.ApplyCombatReadinessToActivatedAbilityMagnitude(source, amount);
-            amount = Stat.ApplyHealingReceivedAdjustment(target, amount);
+            amount = Stat.ApplyHealingReceivedAdjustment(target, amount, isInstantAbilityHeal: true);
 
             var hitPointsBeforeHealing = GetCurrentHitPoints(target);
             ApplyEffectToObject(DurationType.Instant, EffectHeal(amount), target);

@@ -6192,6 +6192,12 @@ namespace SWLOR.Game.Server.Service.StatService
         [StatType(StatTypeCategory.BeneficialWhenPositive)]
         DamageEnmityPercentAdjustment = 1098,
 
+        /// <summary>
+        /// Seconds before the healing-received Stamina trigger can restore Stamina again.
+        /// </summary>
+        [StatType(StatTypeCategory.NonBeneficial)]
+        HealingReceivedStaminaRestoreCooldownSeconds = 1099,
+
         /// <summary>Exclusive ordinary damage bonus; the strongest paired-ranged handling contribution applies.</summary>
         [StatType(StatTypeCategory.BeneficialWhenPositive, StatTypeAggregation.Maximum)]
         PairedRangedOrdinaryDamagePercentAdjustment = 1131,

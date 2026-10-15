@@ -9,6 +9,7 @@ using SWLOR.Game.Server.Feature.AbilityDefinition;
 using SWLOR.Game.Server.Feature.StatusEffectDefinition;
 using SWLOR.Game.Server.Service.ActivityService;
 using SWLOR.Game.Server.Service.AbilityService;
+using SWLOR.Game.Server.Service.CombatRecorderService;
 using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.LogService;
 using SWLOR.Game.Server.Service.PerkService;
@@ -662,6 +663,8 @@ namespace SWLOR.Game.Server.Service
 
             ApplyLowHPTemporaryHPBeforeFatalDamage(defender, damage);
             RefreshDamageDerivedHealingTargetHP(attacker, defender);
+            if (CombatRecorder.IsRecording)
+                CombatRecorder.ExpectDeferredDamage(attacker, defender, damage, deliveryType);
             return damage;
         }
 
@@ -899,7 +902,18 @@ namespace SWLOR.Game.Server.Service
                 return;
 
             var reflectedDamage = GameMath.PercentOf(damage, adjustment);
+            using var recorderAttribution = CombatRecorder.BeginStatTriggerAttribution(defender, GetDamageReflectionStat(damageType));
             ApplyTriggeredDamage(defender, attacker, reflectedDamage, damageType);
+        }
+
+        private static StatType GetDamageReflectionStat(CombatDamageType damageType)
+        {
+            return damageType switch
+            {
+                CombatDamageType.Force => StatType.ForceDamageReflectionPercentAdjustment,
+                CombatDamageType.Physical => StatType.PhysicalDamageReflectionPercentAdjustment,
+                _ => StatType.ElementalDamageReflectionPercentAdjustment
+            };
         }
 
         private static void ApplyForceDamageTakenEffects(uint defender)
@@ -975,10 +989,15 @@ namespace SWLOR.Game.Server.Service
             StatusEffect.RemoveStatusEffectsWithStat(defender, StatType.FatalDamageTemporaryHPPercent, false);
 
             if (restoreToOneHP && currentHP <= 0)
+            {
+                if (CombatRecorder.IsRecording)
+                    CombatRecorder.KeepLethalHitPoints(defender);
                 SetCurrentHitPoints(defender, 1);
+            }
 
             if (GetIsObjectValid(temporaryHPSource))
             {
+                using var recorderAttribution = CombatRecorder.BeginStatTriggerAttribution(temporaryHPSource, StatType.FatalDamageTemporaryHPPercent);
                 TemporaryHitPointEffects.ApplyFlatFromSource(
                     temporaryHPSource,
                     defender,
@@ -988,6 +1007,7 @@ namespace SWLOR.Game.Server.Service
             }
             else
             {
+                using var recorderAttribution = CombatRecorder.BeginStatTriggerAttribution(defender, StatType.FatalDamageTemporaryHPPercent);
                 TemporaryHitPointEffects.ApplyFlat(
                     defender,
                     TemporaryHitPointEffectKey.FatalDamageSave,
@@ -1239,21 +1259,21 @@ namespace SWLOR.Game.Server.Service
             var guaranteedStaminaRestore = Stat.GetStatAdjustment(attacker, StatType.AutoAttackHitStaminaRestore);
             if (guaranteedStaminaRestore > 0)
             {
-                RestoreAbilityHitStamina(attacker, guaranteedStaminaRestore);
+                RestoreAbilityHitStaminaFromStat(attacker, StatType.AutoAttackHitStaminaRestore, guaranteedStaminaRestore);
             }
 
             var staminaRestoreChance = Stat.GetStatAdjustment(attacker, StatType.AutoAttackStaminaRestoreChance);
             var staminaRestore = Stat.GetStatAdjustment(attacker, StatType.AutoAttackStaminaRestore);
             if (staminaRestoreChance > 0 && staminaRestore > 0 && Random.D100(1) <= staminaRestoreChance)
             {
-                RestoreAbilityHitStamina(attacker, staminaRestore);
+                RestoreAbilityHitStaminaFromStat(attacker, StatType.AutoAttackStaminaRestore, staminaRestore);
             }
 
             var fpRestore = Stat.GetStatAdjustment(attacker, StatType.AutoAttackFPRestore);
             var fpRestoreCooldown = Stat.GetStatAdjustment(attacker, StatType.AutoAttackFPRestoreCooldownSeconds);
             if (fpRestore > 0 && TryUseStatTrigger(attacker, StatType.AutoAttackFPRestore, fpRestoreCooldown))
             {
-                Stat.RestoreFP(attacker, fpRestore);
+                RestoreFPFromStat(attacker, StatType.AutoAttackFPRestore, fpRestore);
             }
 
             var skillFpRestore = Stat.GetStatAdjustment(attacker, StatType.SkillAutoAttackFPRestore);
@@ -1262,7 +1282,7 @@ namespace SWLOR.Game.Server.Service
                 StatType.SkillAutoAttackFPRestoreSkillType));
             if (skillFpRestore > 0 && SkillTypeMatches(skillType, skillFpRestoreSkillType))
             {
-                Stat.RestoreFP(attacker, skillFpRestore);
+                RestoreFPFromStat(attacker, StatType.SkillAutoAttackFPRestore, skillFpRestore);
             }
 
             ApplyAutoAttackMasterResourceRestore(attacker);
@@ -1316,14 +1336,14 @@ namespace SWLOR.Game.Server.Service
             var staminaRestore = Stat.GetStatAdjustment(attacker, StatType.AutoAttackMasterStaminaRestore);
             if (staminaRestoreChance > 0 && staminaRestore > 0 && Random.D100(1) <= staminaRestoreChance)
             {
-                Stat.RestoreStamina(master, staminaRestore);
+                RestoreStaminaFromStat(master, StatType.AutoAttackMasterStaminaRestore, staminaRestore);
             }
 
             var fpRestoreChance = Stat.GetStatAdjustment(attacker, StatType.AutoAttackMasterFPRestoreChance);
             var fpRestore = Stat.GetStatAdjustment(attacker, StatType.AutoAttackMasterFPRestore);
             if (fpRestoreChance > 0 && fpRestore > 0 && Random.D100(1) <= fpRestoreChance)
             {
-                Stat.RestoreFP(master, fpRestore);
+                RestoreFPFromStat(master, StatType.AutoAttackMasterFPRestore, fpRestore);
             }
         }
 
@@ -1340,7 +1360,7 @@ namespace SWLOR.Game.Server.Service
             if (!TryUseStatTrigger(attacker, StatType.FirstCombatAttackStaminaRestore, cooldownSeconds))
                 return;
 
-            RestoreAbilityHitStamina(attacker, staminaRestore);
+            RestoreAbilityHitStaminaFromStat(attacker, StatType.FirstCombatAttackStaminaRestore, staminaRestore);
         }
 
         private static void ApplyAutoAttackHamstringEffect(
@@ -1480,6 +1500,7 @@ namespace SWLOR.Game.Server.Service
             if (!GetIsObjectValid(target))
                 return;
 
+            using var recorderAttribution = CombatRecorder.BeginStatTriggerAttribution(attacker, StatType.AutoAttackCycleDamage);
             ApplyTriggeredDamage(
                 attacker,
                 target,
@@ -1529,6 +1550,7 @@ namespace SWLOR.Game.Server.Service
             }
 
             _sourceStatusAutoAttackCycleCounts[key] = 0;
+            using var recorderAttribution = CombatRecorder.BeginStatTriggerAttribution(attacker, StatType.SourceStatusAutoAttackCycleDamage);
             ApplyTriggeredDamage(attacker, defender, damage, damageType, skillType);
         }
 
@@ -1568,6 +1590,7 @@ namespace SWLOR.Game.Server.Service
                     if (!GetIsObjectValid(attacker))
                         return;
 
+                    using var recorderAttribution = CombatRecorder.BeginStatTriggerAttribution(attacker, StatType.AutoAttackSplashDamage);
                     ApplyEffectAtLocation(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Fnf_Smoke_Puff), origin);
                     if (GetIsObjectValid(defender) && !GetIsDead(defender))
                         ApplyTriggeredDamage(attacker, defender, damage, CombatDamageType.Physical, skillType);
@@ -1838,7 +1861,7 @@ namespace SWLOR.Game.Server.Service
             if (!TryUseStatTrigger(attacker, restoreStat, cooldown))
                 return;
 
-            RestoreAbilityHitStamina(attacker, staminaRestore);
+            RestoreAbilityHitStaminaFromStat(attacker, restoreStat, staminaRestore);
         }
 
         private static void ApplyDamageDealtForceErosionEffect(
@@ -1945,7 +1968,7 @@ namespace SWLOR.Game.Server.Service
             var staminaCooldown = Stat.GetStatAdjustment(attacker, StatType.SideAttackStaminaRestoreCooldownSeconds);
             if (staminaRestore > 0 && TryUseStatTrigger(attacker, StatType.SideAttackStaminaRestore, staminaCooldown))
             {
-                RestoreAbilityHitStamina(attacker, staminaRestore);
+                RestoreAbilityHitStaminaFromStat(attacker, StatType.SideAttackStaminaRestore, staminaRestore);
             }
 
             var delayReduction = Stat.GetStatAdjustment(attacker, StatType.SideAttackDelayReductionPercent);
@@ -1976,7 +1999,7 @@ namespace SWLOR.Game.Server.Service
                 return;
             }
 
-            RestoreAbilityHitStamina(attacker, staminaRestore);
+            RestoreAbilityHitStaminaFromStat(attacker, StatType.DamageDealtStaminaRestore, staminaRestore);
         }
 
         private static void ApplyDamageDealtAttackDelayReduction(uint attacker, SkillType skillType)
@@ -2142,7 +2165,7 @@ namespace SWLOR.Game.Server.Service
                 SkillTypeMatches(skillType, staminaRestoreSkillType) &&
                 TryUseStatTrigger(attacker, StatType.CriticalStaminaRestore, staminaRestoreCooldown))
             {
-                RestoreAbilityHitStamina(attacker, staminaRestore);
+                RestoreAbilityHitStaminaFromStat(attacker, StatType.CriticalStaminaRestore, staminaRestore);
             }
 
             ApplyCriticalNextAbilityDamageBonus(attacker, skillType);
@@ -2156,27 +2179,27 @@ namespace SWLOR.Game.Server.Service
             var poisonedTargetStaminaRestore = Stat.GetStatAdjustment(attacker, StatType.CriticalPoisonedTargetStaminaRestore);
             if (poisonedTargetStaminaRestore > 0 && StatusEffect.HasStatusEffect(defender, typeof(PoisonStatusEffect)))
             {
-                RestoreAbilityHitStamina(attacker, poisonedTargetStaminaRestore);
+                RestoreAbilityHitStaminaFromStat(attacker, StatType.CriticalPoisonedTargetStaminaRestore, poisonedTargetStaminaRestore);
             }
 
             var markedTargetStaminaRestore = Stat.GetStatAdjustment(attacker, StatType.CriticalMarkedTargetStaminaRestore);
             if (markedTargetStaminaRestore > 0 && StatusEffect.HasStatusEffect(defender, typeof(MarkingTossStatusEffect), attacker))
             {
-                RestoreAbilityHitStamina(attacker, markedTargetStaminaRestore);
+                RestoreAbilityHitStaminaFromStat(attacker, StatType.CriticalMarkedTargetStaminaRestore, markedTargetStaminaRestore);
             }
 
             var targetFPLossPercent = Stat.GetStatAdjustment(attacker, StatType.CriticalTargetFPLossPercentOfDamage);
             if (targetFPLossPercent > 0)
             {
                 var fpLoss = GameMath.PercentOf(damage, targetFPLossPercent);
-                Stat.ReduceFP(defender, fpLoss);
+                ReduceFPFromStat(defender, StatType.CriticalTargetFPLossPercentOfDamage, fpLoss);
             }
 
             var targetStaminaLossPercent = Stat.GetStatAdjustment(attacker, StatType.CriticalTargetStaminaLossPercentOfDamage);
             if (targetStaminaLossPercent > 0)
             {
                 var staminaLoss = GameMath.PercentOf(damage, targetStaminaLossPercent);
-                Stat.ReduceStamina(defender, staminaLoss);
+                ReduceStaminaFromStat(defender, StatType.CriticalTargetStaminaLossPercentOfDamage, staminaLoss);
             }
 
             var hpRestorePercent = Stat.GetStatAdjustment(attacker, StatType.CriticalHPPercentOfDamageRestore);
@@ -2375,7 +2398,7 @@ namespace SWLOR.Game.Server.Service
             if (count >= requiredCount)
             {
                 _criticalHitSequenceStates.Remove(attacker);
-                RestoreAbilityHitStamina(attacker, staminaRestore);
+                RestoreAbilityHitStaminaFromStat(attacker, StatType.CriticalHitSequenceStaminaRestore, staminaRestore);
                 return;
             }
 
@@ -2492,7 +2515,7 @@ namespace SWLOR.Game.Server.Service
 
             if (Random.D100(1) <= chance)
             {
-                RestoreAbilityHitStamina(attacker, staminaRestore);
+                RestoreAbilityHitStaminaFromStat(attacker, StatType.CriticalSideAttackStaminaRestore, staminaRestore);
             }
         }
 
@@ -2560,7 +2583,12 @@ namespace SWLOR.Game.Server.Service
 
         public static void ApplyDamageTakenEffects(uint defender, uint attacker, int damage)
         {
-            if (!GetIsObjectValid(defender) || GetIsDead(defender) || damage <= 0)
+            if (!GetIsObjectValid(defender) || damage <= 0)
+                return;
+
+            // A lethal hit interrupts too: subdual can stand the caster back up before the cast would finish.
+            Feature.UsePerkFeat.InterruptActivationOnDamage(defender, attacker);
+            if (GetIsDead(defender))
                 return;
 
             var attackPercent = Stat.GetStatAdjustment(defender, StatType.DamageTakenAttackPercentAdjustment);
@@ -2701,6 +2729,8 @@ namespace SWLOR.Game.Server.Service
             if (!GetIsObjectValid(creature) || GetIsDead(creature))
                 return;
 
+            using var recorderAttribution = CombatRecorder.BeginAttribution(creature, CombatRecordSourceKind.OnKill);
+
             if (GetIsObjectValid(defeated))
             {
                 ApplyPoisonedDefeatedEnemySpread(defeated, creature);
@@ -2808,7 +2838,7 @@ namespace SWLOR.Game.Server.Service
                 return;
             }
 
-            Stat.RestoreFP(creature, 2);
+            RestoreFPFromStat(creature, StatType.CruelMomentum, 2);
             StatusEffect.ApplyStatusEffect(creature, creature, typeof(CruelMomentumStatusEffect), 30f);
         }
 
@@ -3026,6 +3056,7 @@ namespace SWLOR.Game.Server.Service
 
             state.HealingApplied += amount;
             Stat.ApplyHealingReceivedEffects(creature, amount);
+            using var recorderAttribution = CombatRecorder.BeginRiderAttribution(creature, CombatRecordSourceKind.Lifesteal);
             ApplyEffectToObject(DurationType.Instant, EffectHeal(amount), creature);
             return amount;
         }
@@ -3159,6 +3190,7 @@ namespace SWLOR.Game.Server.Service
                 return;
 
             var temporaryHP = GameMath.PercentOf(GetMaxHitPoints(defender), temporaryHPPercent);
+            using var recorderAttribution = CombatRecorder.BeginStatTriggerAttribution(defender, StatType.LowHPTemporaryHPPercent);
             TemporaryHitPointEffects.ApplyFlat(defender, "LOW_HP_SHIELD", temporaryHP, duration);
         }
 
@@ -3188,6 +3220,7 @@ namespace SWLOR.Game.Server.Service
                 return;
 
             var temporaryHP = GameMath.PercentOf(maxHP, temporaryHPPercent);
+            using var recorderAttribution = CombatRecorder.BeginStatTriggerAttribution(defender, StatType.LowHPTemporaryHPPercent);
             TemporaryHitPointEffects.ApplyFlat(defender, "LOW_HP_SHIELD", temporaryHP, duration);
         }
 
@@ -3206,6 +3239,7 @@ namespace SWLOR.Game.Server.Service
                 return;
 
             var temporaryHP = GameMath.PercentOf(GetMaxHitPoints(defender), temporaryHPPercent);
+            using var recorderAttribution = CombatRecorder.BeginStatTriggerAttribution(defender, StatType.LowHPNoSaveTemporaryHPPercent);
             TemporaryHitPointEffects.ApplyFlat(defender, "LOW_HP_SHIELD_NO_SAVE", temporaryHP, duration);
         }
 
@@ -3687,7 +3721,7 @@ namespace SWLOR.Game.Server.Service
                 Random.D100(1) <= chance &&
                 TryUseStatTrigger(creature, StatType.AvoidedAttackStaminaRestore, staminaRestoreCooldown))
             {
-                Stat.RestoreStamina(creature, staminaRestore);
+                RestoreStaminaFromStat(creature, StatType.AvoidedAttackStaminaRestore, staminaRestore);
             }
 
             var singleChance = Stat.GetStatAdjustment(creature, StatType.AvoidedAttackSingleStaminaRestoreChance);
@@ -3695,7 +3729,7 @@ namespace SWLOR.Game.Server.Service
             if (singleChance > 0 && singleStaminaRestore > 0 && Random.D100(1) <= singleChance)
             {
                 StatusEffect.ConsumeStatusEffectStat(creature, StatType.AvoidedAttackSingleStaminaRestore);
-                Stat.RestoreStamina(creature, singleStaminaRestore);
+                RestoreStaminaFromStat(creature, StatType.AvoidedAttackSingleStaminaRestore, singleStaminaRestore);
             }
 
             ApplyAvoidedAttackAbilityUsedRangedDeflectionRefresh(creature);
@@ -3775,7 +3809,7 @@ namespace SWLOR.Game.Server.Service
             var staminaRestore = Stat.GetStatAdjustment(defender, StatType.MeleeDamageTakenStaminaRestore);
             if (staminaRestore > 0)
             {
-                Stat.RestoreStamina(defender, staminaRestore);
+                RestoreStaminaFromStat(defender, StatType.MeleeDamageTakenStaminaRestore, staminaRestore);
             }
 
             var evasion = Stat.GetStatAdjustment(defender, StatType.MeleeDamageTakenEvasionPercentAdjustment);
@@ -3808,6 +3842,7 @@ namespace SWLOR.Game.Server.Service
                     source: defender);
             }
 
+            using var recorderAttribution = CombatRecorder.BeginStatTriggerAttribution(defender, StatType.MeleeDamageTakenPoisonDamage);
             var appliedDamage = ApplyTriggeredDamage(defender, attacker, damage, CombatDamageType.Poison);
             if (appliedDamage <= 0)
                 return;
@@ -3938,7 +3973,7 @@ namespace SWLOR.Game.Server.Service
             if (staminaRestore > 0 &&
                 TryUseStatTrigger(defender, StatType.GuardStaminaRestore, cooldown))
             {
-                Stat.RestoreStamina(defender, staminaRestore);
+                RestoreStaminaFromStat(defender, StatType.GuardStaminaRestore, staminaRestore);
             }
         }
 
@@ -3957,11 +3992,14 @@ namespace SWLOR.Game.Server.Service
                     attacker,
                     retaliationDMG,
                     skillType);
+                using var retaliationAttribution = CombatRecorder.BeginStatTriggerAttribution(defender, StatType.GuardRetaliationDMG);
                 ApplyTriggeredDamage(defender, attacker, retaliationDamage, CombatDamageType.Physical, skillType);
             }
 
             if (pulseDMG <= 0)
                 return;
+
+            using var pulseAttribution = CombatRecorder.BeginStatTriggerAttribution(defender, StatType.GuardedHitPulseDMG);
 
             var radius = Stat.GetStatAdjustment(defender, StatType.GuardedHitPulseRadiusMeters);
             if (radius <= 0)
@@ -4816,7 +4854,8 @@ namespace SWLOR.Game.Server.Service
             int damage,
             bool isAbilityDamage)
         {
-            if (damage <= 0 || !GetIsObjectValid(attacker) || !GetIsObjectValid(defender) || attacker == defender)
+            // Ability hits neither build nor break the auto-attack chain; only auto-attacks count.
+            if (damage <= 0 || isAbilityDamage || !GetIsObjectValid(attacker) || !GetIsObjectValid(defender) || attacker == defender)
                 return damage;
 
             var bonusPerHit = Stat.GetStatAdjustment(attacker, StatType.MeleeRepeatedTargetDamageBonusPerHit);
@@ -4824,8 +4863,7 @@ namespace SWLOR.Game.Server.Service
             var statusEffectIcon = GetEffectIconTypeFromStat(Stat.GetStatAdjustment(
                 attacker,
                 StatType.MeleeRepeatedTargetDamageStatusEffectIcon));
-            if (isAbilityDamage ||
-                !IsWeaponSkillType(skillType) ||
+            if (!IsWeaponSkillType(skillType) ||
                 bonusPerHit <= 0 ||
                 maxBonus <= 0)
             {
@@ -5192,8 +5230,10 @@ namespace SWLOR.Game.Server.Service
             // runaway reflect cascades and mis-targeted reflects with effects such as Blazing Spikes. Defer the
             // Force portion to the next frame so it lands as a clean, separate damage instance off the attack's
             // stack; the physical carve above stays synchronous so the physical hit is correctly reduced.
+            var recorderAttribution = CombatRecorder.CaptureAttackAttribution(attacker);
             DelayCommand(0.0f, () =>
             {
+                using var recorderScope = CombatRecorder.BeginAttribution(recorderAttribution);
                 if (GetIsObjectValid(attacker) && GetIsObjectValid(defender))
                     ApplyTriggeredDamage(
                         attacker,
@@ -5478,7 +5518,7 @@ namespace SWLOR.Game.Server.Service
                     Stat.GetStatTypeDeflectionSource(StatType.AreaAbilityUsedAttackDeflection));
 
             var restore = Stat.GetStatAdjustment(activator, StatType.AreaAbilityUsedFPRestore);
-            if (restore > 0 && Stat.RestoreFP(activator, restore) > 0)
+            if (restore > 0 && RestoreFPFromStat(activator, StatType.AreaAbilityUsedFPRestore, restore) > 0)
                 ApplyAbilityRestoredFPEffects(activator);
         }
 
@@ -5934,7 +5974,7 @@ namespace SWLOR.Game.Server.Service
                 !costState.StaminaRestoreApplied &&
                 SkillTypeMatchesOrGlobal(skillType, staminaRestoreSkillType))
             {
-                RestoreAbilityHitStamina(activator, ability, staminaRestore);
+                RestoreAbilityHitStaminaFromStat(activator, StatType.CostlyAbilityHitStaminaRestore, staminaRestore, ability);
                 costState.StaminaRestoreApplied = true;
             }
 
@@ -6034,7 +6074,7 @@ namespace SWLOR.Game.Server.Service
             }
 
             _sameTargetHostileAbilityHitCounts[key] = 0;
-            RestoreAbilityHitStamina(activator, ability, staminaRestore);
+            RestoreAbilityHitStaminaFromStat(activator, StatType.SameTargetHostileAbilityStaminaRestore, staminaRestore, ability);
         }
 
         private static void ApplyHostileAbilityHitNextAutoAttackNoDelay(
@@ -6196,11 +6236,11 @@ namespace SWLOR.Game.Server.Service
 
             var fpDrain = Stat.GetStatAdjustment(activator, StatType.AbilityResourceDrainFoggyMindFP);
             if (fpDrain > 0)
-                Stat.ReduceFP(target, fpDrain);
+                ReduceFPFromStat(target, StatType.AbilityResourceDrainFoggyMindFP, fpDrain);
 
             var staminaDrain = Stat.GetStatAdjustment(activator, StatType.AbilityResourceDrainFoggyMindStamina);
             if (staminaDrain > 0)
-                Stat.ReduceStamina(target, staminaDrain);
+                ReduceStaminaFromStat(target, StatType.AbilityResourceDrainFoggyMindStamina, staminaDrain);
         }
 
         private static IReadOnlyList<StatAdjustmentSource> GetAreaAbilityPulseSources(
@@ -7229,7 +7269,7 @@ namespace SWLOR.Game.Server.Service
 
             if (stacks >= maxStacks)
             {
-                RestoreAbilityHitStamina(attacker, 2);
+                RestoreAbilityHitStaminaFromStat(attacker, StatType.KatarToxicRushMaximumStacks, 2);
             }
         }
 
@@ -7311,7 +7351,7 @@ namespace SWLOR.Game.Server.Service
 
             if (Stat.GetStatAdjustment(activator, StatType.RiflePacificationOverwatch) > 0)
             {
-                AssignCommand(target, () => ClearAllActions());
+                ActionInterruption.ClearActions(target);
                 StatusEffect.ApplyStatusEffect(activator, target, new FoggyMindStatusEffect(2), 30f, ResistanceType.Mind);
             }
 
@@ -7501,7 +7541,7 @@ namespace SWLOR.Game.Server.Service
                 return;
             }
 
-            Stat.ReduceStamina(target, sapRank);
+            ReduceStaminaFromStat(target, StatType.VibroknifeSaboteurSapVitalityRank, sapRank);
         }
 
         private static bool AbilityAppliedAnyStatus(Type primaryStatusEffect, IEnumerable<Type> additionalStatusEffects, params Type[] matches)
@@ -7610,7 +7650,7 @@ namespace SWLOR.Game.Server.Service
 
             var staminaRestore = Stat.GetStatAdjustment(activator, StatType.StatusAppliedSelfStaminaRestore);
             if (staminaRestore > 0)
-                RestoreAbilityHitStamina(activator, staminaRestore);
+                RestoreAbilityHitStaminaFromStat(activator, StatType.StatusAppliedSelfStaminaRestore, staminaRestore);
         }
 
         private static void ApplyStatusAppliedTargetEffects(uint activator, uint target)
@@ -7700,6 +7740,7 @@ namespace SWLOR.Game.Server.Service
             }
 
             var staminaBefore = Stat.GetCurrentStamina(target);
+            using var recorderAttribution = CombatRecorder.BeginStatTriggerAttribution(target, StatType.StatusAppliedTargetStaminaDrain);
             Stat.ReduceStamina(target, staminaDrain);
             var staminaDrained = Math.Max(0, staminaBefore - Stat.GetCurrentStamina(target));
             FloatingTextStringOnCreature(
@@ -7929,6 +7970,7 @@ namespace SWLOR.Game.Server.Service
             if (!TryUseStatTrigger(defender, StatType.RangedDeflectionReflectionPercent, DeflectingReturnCooldownSeconds))
                 return 0;
 
+            using var recorderAttribution = CombatRecorder.BeginStatTriggerAttribution(defender, StatType.RangedDeflectionReflectionPercent);
             var appliedDamage = ApplyTriggeredDamage(defender, attacker, reflected, CombatDamageType.Force);
             if (appliedDamage <= 0)
                 return 0;
@@ -7959,9 +8001,19 @@ namespace SWLOR.Game.Server.Service
             if (shieldPercent <= 0 || duration <= 0 || !TryUseStatTrigger(activator, StatType.HeavyVibrobladeDefenseGuardiansResolveShieldPercent, cooldown))
                 return;
 
-            var shieldAmount = GameMath.PercentOf(GetMaxHitPoints(activator), shieldPercent);
-            TemporaryHitPointEffects.ApplyFlat(activator, "GUARDIANS_RESOLVE", shieldAmount, duration);
-            StatusEffect.ApplyStatusEffect(activator, activator, new GuardiansResolveStatusEffect(shieldAmount), duration);
+            // The pool can be smaller than requested under the temporary HP cap or at the engine's HP limit.
+            using var recorderAttribution = CombatRecorder.BeginStatTriggerAttribution(
+                activator, StatType.HeavyVibrobladeDefenseGuardiansResolveShieldPercent);
+            var shieldAmount = TemporaryHitPointEffects.ApplyFlat(
+                activator,
+                TemporaryHitPointEffectKey.GuardiansResolve,
+                GameMath.PercentOf(GetMaxHitPoints(activator), shieldPercent),
+                duration);
+            if (shieldAmount <= 0)
+                return;
+
+            var poolGeneration = TemporaryHitPointEffects.GetGrantGeneration(activator, TemporaryHitPointEffectKey.GuardiansResolve);
+            StatusEffect.ApplyStatusEffect(activator, activator, new GuardiansResolveStatusEffect(shieldAmount, poolGeneration), duration);
         }
 
         private static void ApplyHeavyVibrobladeActivatedEffects(
@@ -8013,12 +8065,12 @@ namespace SWLOR.Game.Server.Service
             if (staminaRestore <= 0 || !TryUseStatTrigger(activator, StatType.BeastBalancedAbilityStaminaRestore, cooldown))
                 return;
 
-            Stat.RestoreStamina(activator, staminaRestore);
+            RestoreStaminaFromStat(activator, StatType.BeastBalancedAbilityStaminaRestore, staminaRestore);
 
             var master = GetMaster(activator);
             if (GetIsObjectValid(master))
             {
-                Stat.RestoreStamina(master, staminaRestore);
+                RestoreStaminaFromStat(master, StatType.BeastBalancedAbilityStaminaRestore, staminaRestore);
             }
         }
 
@@ -8132,7 +8184,8 @@ namespace SWLOR.Game.Server.Service
                 percent = Math.Min(percent, maximumPercent);
             }
 
-            Stat.RestoreStamina(activator, GameMath.PercentOf(maximumStamina, percent));
+            RestoreStaminaFromStat(activator, StatType.LightsaberOffenseSecondWindStaminaRestoreBasePercent,
+                GameMath.PercentOf(maximumStamina, percent));
         }
 
         private static void ApplyLightsaberDefenseActivatedEffects(uint activator)
@@ -8286,8 +8339,13 @@ namespace SWLOR.Game.Server.Service
             }
         }
 
-        public static void ApplyHitPointSpendAbilityEffects(uint activator, int hitPointsSpent = 0)
+        /// <param name="hitPointsSpent">HP actually paid. Nothing triggers when no HP was paid.</param>
+        /// <param name="hitPointCost">Full HP cost before the payment was clipped at 1 HP; 0 when it was paid in full.</param>
+        public static void ApplyHitPointSpendAbilityEffects(uint activator, int hitPointsSpent, int hitPointCost = 0)
         {
+            if (hitPointsSpent <= 0)
+                return;
+
             var window = Math.Max(1, Stat.GetStatAdjustment(
                 activator,
                 StatType.HeavyVibrobladeOffenseHitPointSpendWindowSeconds));
@@ -8307,7 +8365,7 @@ namespace SWLOR.Game.Server.Service
                     StatType.HeavyVibrobladeOffenseHitPointSpendWindowSeconds);
             }
 
-            ApplyHitPointSpendStaminaRestore(activator);
+            ApplyHitPointSpendStaminaRestore(activator, hitPointsSpent, hitPointCost);
             ApplyHitPointSpendTemporaryHitPoints(activator, hitPointsSpent);
         }
 
@@ -8322,10 +8380,11 @@ namespace SWLOR.Game.Server.Service
                 return;
 
             var temporaryHP = GameMath.PercentOf(hitPointsSpent, percent);
+            using var recorderAttribution = CombatRecorder.BeginStatTriggerAttribution(activator, StatType.HitPointSpendTemporaryHPPercentOfSpentHP);
             TemporaryHitPointEffects.ApplyFlat(activator, "HIT_POINT_SPEND", temporaryHP, duration);
         }
 
-        private static void ApplyHitPointSpendStaminaRestore(uint activator)
+        private static void ApplyHitPointSpendStaminaRestore(uint activator, int hitPointsSpent, int hitPointCost)
         {
             var basePercent = Stat.GetStatAdjustment(activator, StatType.HeavyVibrobladeOffenseHitPointSpendStaminaRestoreBasePercent);
             if (basePercent <= 0)
@@ -8350,8 +8409,31 @@ namespace SWLOR.Game.Server.Service
                 percent = Math.Min(maximum, percent);
             }
 
-            var stamina = GameMath.PercentOf(Stat.GetMaxStamina(activator), percent);
-            Stat.RestoreStamina(activator, stamina);
+            RestoreStaminaFromStat(
+                activator,
+                StatType.HeavyVibrobladeOffenseHitPointSpendStaminaRestoreBasePercent,
+                CalculateHitPointSpendStaminaRestore(Stat.GetMaxStamina(activator), percent, hitPointsSpent, hitPointCost));
+        }
+
+        /// <summary>HP an HP-cost payment really takes once temporary HP has absorbed its share.</summary>
+        public static int CalculateHitPointsSpentThroughTemporaryHitPoints(int payment, int temporaryHitPoints)
+        {
+            return Math.Max(0, payment - Math.Max(0, temporaryHitPoints));
+        }
+
+        /// <summary>
+        /// Stamina restored after spending HP: the percent of max Stamina, scaled down when the HP payment was clipped short of its full cost.
+        /// </summary>
+        public static int CalculateHitPointSpendStaminaRestore(int maxStamina, int percent, int hitPointsSpent, int hitPointCost)
+        {
+            if (hitPointsSpent <= 0 || maxStamina <= 0 || percent <= 0)
+                return 0;
+
+            var stamina = GameMath.PercentOf(maxStamina, percent);
+            if (hitPointCost <= hitPointsSpent)
+                return stamina;
+
+            return Math.Max(1, (int)Math.Ceiling(stamina * (hitPointsSpent / (double)hitPointCost)));
         }
 
         private static void ApplyForceFPCostActivatedEffects(uint activator, AbilityDetail ability)
@@ -9005,7 +9087,7 @@ namespace SWLOR.Game.Server.Service
                 return;
             }
 
-            Stat.RestoreFP(attacker, fpRestore);
+            RestoreFPFromStat(attacker, StatType.AutoAttackSunderedTargetFPRestore, fpRestore);
         }
 
         private static int GetPhysicalAndForceAbilityHitChanceAdjustment(uint attacker, SkillType skillType)
@@ -9038,7 +9120,7 @@ namespace SWLOR.Game.Server.Service
 
             if (staminaRestore > 0)
             {
-                Stat.RestoreStamina(defender, staminaRestore);
+                RestoreStaminaFromStat(defender, StatType.ForceAbilityEvadedStaminaRestore, staminaRestore);
             }
         }
 
@@ -10154,6 +10236,44 @@ namespace SWLOR.Game.Server.Service
                 StatType.NonCriticalRangedAbilityStaminaCostFlatAdjustment));
         }
 
+        // Stat-driven FP/STM riders go through these so combat recordings credit the StatType
+        // that granted them instead of whatever ability or nothing happens to be running.
+        private static int RestoreFPFromStat(uint creature, StatType trigger, int amount)
+        {
+            using var recorderAttribution = CombatRecorder.BeginStatTriggerAttribution(creature, trigger);
+            return Stat.RestoreFP(creature, amount);
+        }
+
+        private static int RestoreStaminaFromStat(uint creature, StatType trigger, int amount)
+        {
+            using var recorderAttribution = CombatRecorder.BeginStatTriggerAttribution(creature, trigger);
+            return Stat.RestoreStamina(creature, amount);
+        }
+
+        private static void ReduceFPFromStat(uint creature, StatType trigger, int amount)
+        {
+            using var recorderAttribution = CombatRecorder.BeginStatTriggerAttribution(creature, trigger);
+            Stat.ReduceFP(creature, amount);
+        }
+
+        private static void ReduceStaminaFromStat(uint creature, StatType trigger, int amount)
+        {
+            using var recorderAttribution = CombatRecorder.BeginStatTriggerAttribution(creature, trigger);
+            Stat.ReduceStamina(creature, amount);
+        }
+
+        private static int RestoreAbilityHitStaminaFromStat(uint creature, StatType trigger, int requested)
+        {
+            using var recorderAttribution = CombatRecorder.BeginStatTriggerAttribution(creature, trigger);
+            return RestoreAbilityHitStamina(creature, requested);
+        }
+
+        private static int RestoreAbilityHitStaminaFromStat(uint creature, StatType trigger, int requested, AbilityDetail ability)
+        {
+            using var recorderAttribution = CombatRecorder.BeginStatTriggerAttribution(creature, trigger);
+            return RestoreAbilityHitStamina(creature, ability, requested);
+        }
+
         public static int RefundCriticalRangedAbilityStaminaCost(uint creature, AbilityDetail ability)
         {
             if (!TryGetAbilityStaminaCostState(creature, ability, out var state) ||
@@ -10164,6 +10284,8 @@ namespace SWLOR.Game.Server.Service
 
             var amount = state.NonCriticalRangedAbilityStaminaCost;
             state.NonCriticalRangedAbilityStaminaCost = 0;
+            using var recorderAttribution = CombatRecorder.BeginStatTriggerAttribution(
+                creature, StatType.NonCriticalRangedAbilityStaminaCostFlatAdjustment);
             return Stat.RestoreStamina(creature, amount);
         }
 
@@ -10188,7 +10310,7 @@ namespace SWLOR.Game.Server.Service
             if (amount <= 0)
                 return;
 
-            if (Stat.RestoreFP(creature, amount) > 0)
+            if (RestoreFPFromStat(creature, StatType.AbilityStaminaCostFPRestorePercent, amount) > 0)
                 ApplyAbilityRestoredFPEffects(creature);
         }
 
@@ -10325,7 +10447,7 @@ namespace SWLOR.Game.Server.Service
 
             var amount = CalculateResourceRestoreFromCost(fpCost, restorePercent);
             if (amount > 0)
-                Stat.RestoreStamina(creature, amount);
+                RestoreStaminaFromStat(creature, StatType.AbilityFPCostStaminaRestorePercent, amount);
         }
 
         private static int CalculateResourceRestoreFromCost(int cost, int percent)
@@ -10809,13 +10931,13 @@ namespace SWLOR.Game.Server.Service
             var staminaRestore = Stat.GetStatAdjustment(activator, StatType.HostileAbilityStaminaRestore);
 
             var restoredFP = fpRestore > 0
-                ? Stat.RestoreFP(activator, fpRestore)
+                ? RestoreFPFromStat(activator, StatType.HostileAbilityFPRestore, fpRestore)
                 : 0;
             if (restoredFP > 0)
                 ApplyAbilityRestoredFPEffects(activator);
 
             var restoredStamina = staminaRestore > 0
-                ? Stat.RestoreStamina(activator, staminaRestore)
+                ? RestoreStaminaFromStat(activator, StatType.HostileAbilityStaminaRestore, staminaRestore)
                 : 0;
 
             if (restoredFP > 0 && restoredStamina > 0)
@@ -11162,6 +11284,8 @@ namespace SWLOR.Game.Server.Service
             if (fpRestore <= 0 || !TryUseStatTrigger(activator, StatType.AbilityGrantedAttackDeflectionFPRestore, cooldown))
                 return;
 
+            using var recorderAttribution = CombatRecorder.BeginStatTriggerAttribution(
+                activator, StatType.AbilityGrantedAttackDeflectionFPRestore);
             if (Stat.RestoreFP(activator, fpRestore) > 0)
                 ApplyAbilityRestoredFPEffects(activator);
         }
@@ -11175,7 +11299,7 @@ namespace SWLOR.Game.Server.Service
             var staminaRestore = Stat.GetStatAdjustment(activator, StatType.ThrowingAreaAbilityMinTargetsStaminaRestore);
             if (staminaThreshold > 0 && staminaRestore > 0 && summary.ImpactedTargetCount >= staminaThreshold)
             {
-                RestoreAbilityHitStamina(activator, summary.Ability, staminaRestore);
+                RestoreAbilityHitStaminaFromStat(activator, StatType.ThrowingAreaAbilityMinTargetsStaminaRestore, staminaRestore, summary.Ability);
             }
 
             var attackPerTarget = Stat.GetStatAdjustment(activator, StatType.ThrowingAreaAbilityAttackPercentPerTarget);
@@ -11201,13 +11325,13 @@ namespace SWLOR.Game.Server.Service
                 TryUseStatTrigger(activator, StatType.AreaAbilityFPRestore, restoreCooldown))
             {
                 var restoredFP = fpRestore > 0
-                    ? Stat.RestoreFP(activator, fpRestore)
+                    ? RestoreFPFromStat(activator, StatType.AreaAbilityFPRestore, fpRestore)
                     : 0;
                 if (restoredFP > 0)
                     ApplyAbilityRestoredFPEffects(activator);
 
                 var restoredStamina = staminaRestore > 0
-                    ? RestoreAbilityHitStamina(activator, summary.Ability, staminaRestore)
+                    ? RestoreAbilityHitStaminaFromStat(activator, StatType.AreaAbilityStaminaRestore, staminaRestore, summary.Ability)
                     : 0;
 
                 if (restoredFP > 0 && restoredStamina > 0)
@@ -11262,7 +11386,7 @@ namespace SWLOR.Game.Server.Service
                 staminaRestore > 0 &&
                 summary.ImpactedTargetCount >= minimumTargets)
             {
-                RestoreAbilityHitStamina(activator, summary.Ability, staminaRestore);
+                RestoreAbilityHitStaminaFromStat(activator, StatType.SpearDamageCripplingDefenseStaminaRestore, staminaRestore, summary.Ability);
             }
         }
 
@@ -11277,7 +11401,8 @@ namespace SWLOR.Game.Server.Service
                 var perTarget = source[StatType.AreaHitStaminaRestorePerTarget];
                 var maximum = source[StatType.AreaHitStaminaRestoreMaximum];
                 if (perTarget > 0 && maximum > 0)
-                    RestoreAbilityHitStamina(activator, summary.Ability, Math.Min(maximum, perTarget * summary.ImpactedTargetCount));
+                    RestoreAbilityHitStaminaFromStat(activator, StatType.AreaHitStaminaRestorePerTarget,
+                        Math.Min(maximum, perTarget * summary.ImpactedTargetCount), summary.Ability);
             }
         }
 

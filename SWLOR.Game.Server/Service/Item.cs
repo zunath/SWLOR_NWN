@@ -422,7 +422,8 @@ namespace SWLOR.Game.Server.Service
                         return;
                     }
 
-                    itemDetail.ApplyAction(user, item, target, targetLocation, propertyIndex);
+                    using (CombatRecorder.BeginItemAttribution(user, item))
+                        itemDetail.ApplyAction(user, item, target, targetLocation, propertyIndex);
 
                     if (itemDetail.RecastGroup != null && itemDetail.RecastCooldown != null)
                     {
@@ -433,6 +434,8 @@ namespace SWLOR.Game.Server.Service
                     var reducesItemCharge = itemDetail.ReducesItemChargeAction?.Invoke(user, item, target, targetLocation, propertyIndex) ?? false;
                     if (reducesItemCharge)
                     {
+                        if (CombatRecorder.IsRecording)
+                            CombatRecorder.RecordItemChargeUsed(user, item);
                         var charges = GetItemCharges(item) - 1;
 
                         if (charges <= 0)
@@ -1380,6 +1383,9 @@ namespace SWLOR.Game.Server.Service
             // Stack size cannot be smaller than the amount we're reducing by.
             if (stackSize < reduceBy)
                 return false;
+
+            if (CombatRecorder.IsRecording)
+                CombatRecorder.RecordItemStackReduced(item, amount);
 
             var remaining = stackSize - reduceBy;
             if (remaining <= 0)

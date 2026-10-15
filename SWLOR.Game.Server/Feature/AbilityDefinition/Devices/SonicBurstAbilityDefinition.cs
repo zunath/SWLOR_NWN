@@ -201,7 +201,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
 
         private static void InterruptActivation(uint target)
         {
-            AssignCommand(target, () => ClearAllActions());
+            ActionInterruption.ClearActions(target);
         }
 
     }

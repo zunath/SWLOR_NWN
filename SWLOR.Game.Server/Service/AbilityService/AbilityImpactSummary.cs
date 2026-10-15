@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.Game.Server.Service.CombatService;
 
@@ -21,6 +22,11 @@ namespace SWLOR.Game.Server.Service.AbilityService
         /// queued weapon ability's damage separately from the consuming weapon swing.
         /// </summary>
         public int AttributedDamage { get; set; }
+
+        /// <summary>
+        /// The creatures this impact visited.
+        /// </summary>
+        public IReadOnlyCollection<uint> ImpactedTargets { get; set; } = Array.Empty<uint>();
 
         public AbilityImpactSummary()
         {

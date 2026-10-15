@@ -205,7 +205,8 @@ namespace SWLOR.Game.Server.Feature
                     Stat.SetNPCMaxHitPoints(creature, maxHP);
                 }
 
-                if (GetCurrentHitPoints(creature) > GetMaxHitPoints(creature))
+                // Base HP only: the native getter includes temporary HP, which must not heal the NPC.
+                if (ObjectPlugin.GetCurrentHitPoints(creature) > GetMaxHitPoints(creature))
                 {
                     SetCurrentHitPoints(creature, GetMaxHitPoints(creature));
                 }

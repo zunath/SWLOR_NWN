@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Service;
@@ -16,6 +17,16 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         public const string GeneralPartial = "GENERAL_VIEW";
         public const string IdentityPartial = "IDENTITY_VIEW";
         public const string ChatPartial = "CHAT_VIEW";
+        public const string TargetingPartial = "TARGETING_VIEW";
+
+        private static readonly GuiTabGroup<SettingsViewModel, GuiPayloadBase> Tabs =
+            new GuiTabGroup<SettingsViewModel, GuiPayloadBase>()
+                .AddTab(0, GeneralPartial)
+                .AddTab(1, IdentityPartial)
+                .AddTab(2, ChatPartial)
+                .AddTab(3, TargetingPartial);
+        private readonly GuiToggleGroupSync _tabToggles = new(0, 1);
+        private readonly GuiToggleGroupSync _secondaryTabToggles = new(2, 3);
 
         private const int NumberOfSystemColors = 2; // OOC, Emotes
 
@@ -79,19 +90,24 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             set => Set(value);
         }
 
-        public bool IsGeneralSelected
+        public int SelectedTabId { get => Get<int>(); private set => Set(value); }
+        public int TabToggleValue
+        {
+            get => Get<int>();
+            set { Set(value); _tabToggles.HandleClientChange(value, SelectTab); }
+        }
+        public int SecondaryTabToggleValue
+        {
+            get => Get<int>();
+            set { Set(value); _secondaryTabToggles.HandleClientChange(value, SelectTab); }
+        }
+
+        public bool SelfQuickCastEnabled
         {
             get => Get<bool>();
             set => Set(value);
         }
-
-        public bool IsIdentitySelected
-        {
-            get => Get<bool>();
-            set => Set(value);
-        }
-
-        public bool IsChatSelected
+        public bool EnemyQuickCastEnabled
         {
             get => Get<bool>();
             set => Set(value);
@@ -148,11 +164,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         protected override void Initialize(GuiPayloadBase initialPayload)
         {
+            EnsureUsableWindowGeometry();
             SelectedIndex = -1;
             SelectedColor = new GuiColor(0, 0, 0);
-            IsGeneralSelected = true;
-            IsIdentitySelected = false;
-            IsChatSelected = false;
+            SelectedTabId = 0;
+            _tabToggles.SyncTo(0, value => TabToggleValue = value);
+            _secondaryTabToggles.SyncTo(0, value => SecondaryTabToggleValue = value);
             CurrentRed = 0;
             CurrentGreen = 0;
             CurrentBlue = 0;
@@ -160,9 +177,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             LoadGeneralView();
             LoadIdentityView();
             LoadChatView();
+            LoadTargetingView();
 
-            SwapNestedPartialView(SettingsView, GeneralPartial, onAfterApply: RefreshPartialViewBindings);
+            Tabs.Select(this, SettingsView, SelectedTabId, onAfterApply: RefreshPartialViewBindings);
 
+            WatchOnClient(model => model.TabToggleValue);
+            WatchOnClient(model => model.SecondaryTabToggleValue);
             WatchOnClient(model => model.DisplayAchievementNotification);
             WatchOnClient(model => model.SubdualMode);
             WatchOnClient(model => model.DisplayServerResetReminders);
@@ -173,6 +193,49 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             WatchOnClient(model => model.DisplayCommsOutOfRangeWarnings);
             WatchOnClient(model => model.DisplayCooldownFloatingText);
             WatchOnClient(model => model.SelectedColor);
+            WatchOnClient(model => model.SelfQuickCastEnabled);
+            WatchOnClient(model => model.EnemyQuickCastEnabled);
+
+            // Reapply after both the root and initial tab redraw nudges complete.
+            DelayCommand(0.0f, () => EnsureUsableWindowGeometry());
+        }
+
+        protected override void OnClientPropertyUpdated(string propertyName)
+        {
+            if (propertyName != nameof(Geometry) || !EnsureUsableWindowGeometry() || WindowToken <= 0)
+                return;
+
+            // A client resize can commit after its watch callback. Republish on the next tick.
+            DelayCommand(0.0f, () =>
+            {
+                if (Gui.IsWindowOpen(Player, WindowType))
+                    OnPropertyChanged(nameof(Geometry));
+            });
+        }
+
+        private bool EnsureUsableWindowGeometry()
+        {
+            var current = Geometry;
+            if (current == null ||
+                current.Width >= SettingsDefinition.MinimumWindowWidth &&
+                current.Height >= SettingsDefinition.MinimumWindowHeight)
+                return false;
+
+            Geometry = new GuiRectangle(
+                current.X,
+                current.Y,
+                Math.Max(current.Width, SettingsDefinition.MinimumWindowWidth),
+                Math.Max(current.Height, SettingsDefinition.MinimumWindowHeight));
+            return true;
+        }
+
+        private void LoadTargetingView()
+        {
+            var playerId = GetObjectUUID(Player);
+            var dbPlayer = DB.Get<Player>(playerId);
+
+            SelfQuickCastEnabled = dbPlayer.Settings.SelfQuickCastEnabled;
+            EnemyQuickCastEnabled = dbPlayer.Settings.EnemyQuickCastEnabled;
         }
 
         private void LoadGeneralView()
@@ -276,13 +339,16 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             ChatColorToggles = chatToggles;
         }
 
-        private void ChangeSettingsView(string partialName)
+        private void SelectTab(int tabId)
         {
             // Capture the client's current position before the partial-view redraw workaround
             // temporarily changes the window geometry.
             UpdatePropertyFromClient(nameof(Geometry));
 
-            SwapNestedPartialView(SettingsView, partialName, onAfterApply: RefreshPartialViewBindings);
+            SelectedTabId = tabId;
+            _tabToggles.SyncTo(tabId, value => TabToggleValue = value);
+            _secondaryTabToggles.SyncTo(tabId, value => SecondaryTabToggleValue = value);
+            Tabs.Select(this, SettingsView, tabId, onAfterApply: RefreshPartialViewBindings);
         }
 
         private void RefreshPartialViewBindings()
@@ -302,6 +368,10 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             OnPropertyChanged(nameof(CurrentRed));
             OnPropertyChanged(nameof(CurrentGreen));
             OnPropertyChanged(nameof(CurrentBlue));
+            OnPropertyChanged(nameof(TabToggleValue));
+            OnPropertyChanged(nameof(SecondaryTabToggleValue));
+            OnPropertyChanged(nameof(SelfQuickCastEnabled));
+            OnPropertyChanged(nameof(EnemyQuickCastEnabled));
 
             // Republish list bindings so any newly inserted list can populate its rows without
             // reloading persisted values over unsaved changes.
@@ -310,21 +380,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             ChatColorToggles?.ResetBindings();
         }
 
-        private string GetSelectedPartial()
-        {
-            if (IsIdentitySelected)
-                return IdentityPartial;
-
-            if (IsChatSelected)
-                return ChatPartial;
-
-            return GeneralPartial;
-        }
-
-        protected override void OnMainViewRestored()
-        {
-            ChangeSettingsView(GetSelectedPartial());
-        }
+        protected override void OnModalClosedRestore() => SelectTab(SelectedTabId);
 
         private void LoadColor()
         {
@@ -356,6 +412,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             dbPlayer.Settings.PortraitVitals = PortraitVitals;
             dbPlayer.Settings.DisplayCommsOutOfRangeWarnings = DisplayCommsOutOfRangeWarnings;
             dbPlayer.Settings.DisplayCooldownFloatingText = DisplayCooldownFloatingText;
+            dbPlayer.Settings.SelfQuickCastEnabled = SelfQuickCastEnabled;
+            dbPlayer.Settings.EnemyQuickCastEnabled = EnemyQuickCastEnabled;
             if (!GetIsDM(Player) && !GetIsDMPossessed(Player))
             {
                 dbPlayer.Settings.ShowDescriptorsForNamedPlayers = ShowDescriptorsForNamedPlayers;
@@ -385,6 +443,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             }
 
             DB.Set(dbPlayer);
+            QuickCast.ApplyPreferences(Player);
             Log.Write(LogGroup.Server, $"Settings saved for player {playerId}.");
 
             // Apply the vitals display preference immediately (portrait overlay vs. docked window).
@@ -410,30 +469,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             }
 
             Gui.TogglePlayerWindow(Player, GuiWindowType.ChangeDescription);
-        };
-
-        public Action OnClickGeneral() => () =>
-        {
-            IsGeneralSelected = true;
-            IsIdentitySelected = false;
-            IsChatSelected = false;
-            ChangeSettingsView(GeneralPartial);
-        };
-
-        public Action OnClickIdentity() => () =>
-        {
-            IsGeneralSelected = false;
-            IsIdentitySelected = true;
-            IsChatSelected = false;
-            ChangeSettingsView(IdentityPartial);
-        };
-
-        public Action OnClickChat() => () =>
-        {
-            IsGeneralSelected = false;
-            IsIdentitySelected = false;
-            IsChatSelected = true;
-            ChangeSettingsView(ChatPartial);
         };
 
         public Action OnClickSelectChat() => () =>

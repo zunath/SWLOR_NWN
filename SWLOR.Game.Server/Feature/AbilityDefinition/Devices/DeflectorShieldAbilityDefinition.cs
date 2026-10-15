@@ -43,6 +43,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 .SkillType(SkillType.Devices)
                 .HasMaxRange(DeviceAbilityRange.Standard)
                 .IsSingleTargetAbility()
+                .AllowsSelfQuickCast()
                 .RequiresTarget()
                 .HasCustomValidation((activator, target, _, _) =>
                     AbilityTargeting.ValidateFriendlyTarget(activator, target))
@@ -67,6 +68,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 .SkillType(SkillType.Devices)
                 .HasMaxRange(DeviceAbilityRange.Standard)
                 .IsSingleTargetAbility()
+                .AllowsSelfQuickCast()
                 .RequiresTarget()
                 .HasCustomValidation((activator, target, _, _) =>
                     AbilityTargeting.ValidateFriendlyTarget(activator, target))
@@ -91,6 +93,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 .SkillType(SkillType.Devices)
                 .HasMaxRange(DeviceAbilityRange.Standard)
                 .IsSingleTargetAbility()
+                .AllowsSelfQuickCast()
                 .RequiresTarget()
                 .HasCustomValidation((activator, target, _, _) =>
                     AbilityTargeting.ValidateFriendlyTarget(activator, target))

@@ -99,7 +99,8 @@ def publish(args):
 
 
 def assets(args):
-    native = prepare_native_tools()
+    if content.git(ROOT, 'status', '--porcelain'):
+        raise RuntimeError('Commit or discard source edits before publishing an immutable asset pack.')
     revision = content.revisions(ROOT)[1]
     source = ROOT / 'SWLOR_Haks'
     actual = content.git(source, 'rev-parse', 'HEAD')
@@ -107,6 +108,7 @@ def assets(args):
         raise RuntimeError('Initialize SWLOR_Haks at the parent repository pinned revision first.')
     if content.git(source, 'status', '--porcelain'):
         raise RuntimeError('The asset source checkout must be clean before publishing an immutable pack.')
+    native = prepare_native_tools()
     output = new_output(args.output)
     cli = output / 'cli'
     packed = output / 'packed'

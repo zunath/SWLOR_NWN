@@ -681,7 +681,7 @@ namespace SWLOR.Toolset
         {
             if (WorkspaceManifest.FindRoot(settings.ModuleRoot) != null)
             {
-                _ = ToolsetAssetPaths.AssetRoot(settings.ModuleRoot);
+                _ = ToolsetAssetPaths.AssetRoot(settings.ModuleRoot, verifyFiles: true);
                 return;
             }
             var repoRoot = ResolveRepoRoot(settings);

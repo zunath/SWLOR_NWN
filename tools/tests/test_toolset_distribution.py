@@ -107,6 +107,24 @@ class ToolsetDistributionTests(unittest.TestCase):
                 distribution.publish(argparse.Namespace(skip_workspace=False))
             prepare.assert_not_called()
 
+    def test_asset_pack_rejects_parent_edits_before_preparing_or_building(self):
+        for status in (' M Build/hakbuilder.json', 'M  Build/hakbuilder.json',
+                       ' M Module/ifo/module.ifo.json', 'M  Module/ifo/module.ifo.json'):
+            with self.subTest(status=status), patch.object(distribution.content, 'git', return_value=status) as git, patch.object(distribution, 'prepare_native_tools') as prepare, patch.object(distribution, 'new_output') as output, patch.object(distribution, 'publish_project') as publish:
+                with self.assertRaisesRegex(RuntimeError, 'Commit or discard source edits'):
+                    distribution.assets(argparse.Namespace(output='unused'))
+                git.assert_called_once_with(distribution.ROOT, 'status', '--porcelain')
+                prepare.assert_not_called()
+                output.assert_not_called()
+                publish.assert_not_called()
+
+    def test_asset_pack_still_rejects_dirty_submodule_before_preparing_tools(self):
+        revision = '2' * 40
+        with patch.object(distribution.content, 'git', side_effect=['', revision, ' M source']), patch.object(distribution.content, 'revisions', return_value=('1' * 40, revision)), patch.object(distribution, 'prepare_native_tools') as prepare:
+            with self.assertRaisesRegex(RuntimeError, 'asset source checkout must be clean'):
+                distribution.assets(argparse.Namespace(output='unused'))
+            prepare.assert_not_called()
+
     def test_apply_has_no_forced_timeout_but_read_only_checks_are_bounded(self):
         with tempfile.TemporaryDirectory() as temporary:
             root = Path(temporary)

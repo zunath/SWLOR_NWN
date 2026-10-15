@@ -5,13 +5,13 @@ namespace SWLOR.Toolset.Distribution;
 
 public static class ToolsetAssetPaths
 {
-    public static string? AssetRoot(string? moduleRoot)
+    public static string? AssetRoot(string? moduleRoot, bool verifyFiles = false)
     {
         var root = WorkspaceManifest.FindRoot(moduleRoot);
         if (root == null) return null;
         var manifest = WorkspaceManifest.Load(root);
         var assets = Path.Combine(WorkspaceDownload.AssetCacheDirectory, manifest.AssetRevision);
-        AssetManifest.Load(assets, manifest.AssetRevision, verifyFiles: false);
+        AssetManifest.Load(assets, manifest.AssetRevision, verifyFiles: verifyFiles);
         return assets;
     }
 

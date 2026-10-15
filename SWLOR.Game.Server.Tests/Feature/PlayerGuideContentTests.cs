@@ -8,6 +8,7 @@ using NUnit.Framework;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Feature.GuiDefinition.ViewModel;
 using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.StatusEffectService;
 
@@ -251,7 +252,8 @@ public class PlayerGuideContentTests
         text.Should().Contain("At +10 Light, Light powers gain +5% hit chance and Dark powers suffer -5%");
         text.Should().Contain("Universal Force powers");
         text.Should().Contain("Force Affinity does not change effect duration");
-        text.Should().Contain("At +6 Light, a Light power uses 130% magnitude and gains +3% hit chance");
+        text.Should().Contain("At +6 Light, a Light damage power uses 130% magnitude, a Light heal or shield uses 125%, and Light powers gain +3% hit chance");
+        text.Should().Contain("Healing, shields, and regeneration stop at 125 percent");
     }
 
     [Test]
@@ -262,6 +264,17 @@ public class PlayerGuideContentTests
 
         text.Should().Contain("activated ability damage, healing, and temporary HP");
         text.Should().Contain("does not reduce cooldowns");
+    }
+
+    [Test]
+    public void AbilitiesTopic_PublishesTheHostileAbilityDelay()
+    {
+        var topic = GetTopics().Single(topic => GetString(topic, "Name") == "Abilities");
+        var text = string.Join("\n", GetAllText(topic));
+
+        text.Should().Contain($"share a {HostileAbilityDelay.Seconds.ToString(CultureInfo.InvariantCulture)}-second wait after each one");
+        text.Should().Contain("goes off as soon as it ends");
+        text.Should().Contain("aren't hostile don't wait");
     }
 
     [Test]

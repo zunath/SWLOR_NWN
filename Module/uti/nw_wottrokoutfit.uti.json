@@ -110,11 +110,15 @@
   },
   "DescIdentified": {
     "type": "cexolocstring",
-    "value": {}
+    "value": {
+      "0": "Wott Rok's outfit has robust pocket seams and cuffs renewed with closely matched material. The repairs leave its outward character intact, giving a practical garment no reason to retire merely because it has worked."
+    }
   },
   "Description": {
     "type": "cexolocstring",
-    "value": {}
+    "value": {
+      "0": "Wott Rok's outfit has robust pocket seams and cuffs renewed with closely matched material. The repairs leave its outward character intact, giving a practical garment no reason to retire merely because it has worked."
+    }
   },
   "Identified": {
     "type": "byte",

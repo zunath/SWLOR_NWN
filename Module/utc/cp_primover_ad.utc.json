@@ -34,7 +34,7 @@
   },
   "Comment": {
     "type": "cexostring",
-    "value": "Capstone quest creature for Primal Overrun in Dathomir Grotto Apex Den."
+    "value": "Primal Overrun adept in Dathomir - Grotto Apex Den."
   },
   "Con": {
     "type": "byte",
@@ -63,7 +63,7 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "A level 50 capstone quest enemy for Primal Overrun in Dathomir Grotto Apex Den."
+      "0": "A young shell-back, heavy and armored, its head held low as if already lining up a charge. Off-world handlers bred its kind in the Grotto Apex Den to charge anything that moves; the handlers are bones now, but the shell-backs still hold the den."
     }
   },
   "Dex": {

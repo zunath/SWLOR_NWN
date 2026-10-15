@@ -51,10 +51,15 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
 
         private static void GroupDeflector1ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
+            var shielded = new List<uint>();
             foreach (var friendly in AbilityTargeting.GetFriendlyTargets(activator, target, true))
             {
                 ApplyShieldTemporaryHP(activator, friendly, 70, 8, 30f);
+                shielded.Add(friendly);
             }
+
+            if (shielded.Count > 0)
+                CombatPoint.AddSupportCombatPoint(activator, shielded, SkillType.Devices);
         }
 
         private static void ApplyShieldTemporaryHP(

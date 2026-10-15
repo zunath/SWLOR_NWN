@@ -134,7 +134,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.BloodlustTrait)
-                .Description("After you spend HP on a Heavy Vibroblade Offense ability, restore 15% of maximum STM, increased by 1 percentage point per MGT to a maximum of 35%. This can trigger once every 30 seconds.")
+                .Description("After you spend HP on a Heavy Vibroblade Offense ability, restore 15% of maximum STM, increased by 1 percentage point per MGT to a maximum of 35%, reduced in proportion when less than the full HP cost could be paid. This can trigger once every 30 seconds.")
                 .IncreasesStat(StatType.HeavyVibrobladeOffenseHitPointSpendStaminaRestoreBasePercent, 15)
                 .IncreasesStat(StatType.HeavyVibrobladeOffenseHitPointSpendStaminaRestoreScalingAbility, (int)AbilityType.Might + 1)
                 .IncreasesStat(StatType.HeavyVibrobladeOffenseHitPointSpendStaminaRestoreMaximumPercent, 35)
@@ -189,12 +189,13 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.DefensiveHarmonyTrait)
-                .Description("HP restoration used on you is 20% more effective. 10% chance to restore 8 STM when healed. Chance increases by 1% per MGT. (Maximum 40%)")
+                .Description("HP restoration used on you is 20% more effective. Instant ability heals on you have a 10% chance to restore 8 STM, increased by 1% per MGT (Maximum 40%). This can trigger once every 6 seconds.")
                 .IncreasesStat(StatType.HealingReceivedPercentAdjustment, 20)
                 .IncreasesStat(StatType.HealingReceivedStaminaRestoreChance, 10)
                 .IncreasesStat(StatType.HealingReceivedStaminaRestoreChanceScalingAbility, (int)AbilityType.Might + 1)
                 .IncreasesStat(StatType.HealingReceivedStaminaRestoreChanceMaximum, 40)
                 .IncreasesStat(StatType.HealingReceivedStaminaRestore, 8)
+                .IncreasesStat(StatType.HealingReceivedStaminaRestoreCooldownSeconds, 6)
                 .Price(4)
                 .RequirementSkill(SkillType.HeavyVibroblade, 15);
         }

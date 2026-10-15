@@ -1,6 +1,8 @@
 ﻿using System.Collections.Generic;
+using Newtonsoft.Json;
 using SWLOR.Game.Server.Core.NWNX.Enum;
 using SWLOR.Game.Server.Enumeration;
+using SWLOR.Game.Server.Feature.MigrationDefinition;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.CombatService;
@@ -18,6 +20,7 @@ using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.Game.Server.Entity
 {
+    [JsonCachedAcrossFrames]
     public class Player: EntityBase
     {
         public const int DefaultOutfitSlotLimit = 25;
@@ -64,6 +67,8 @@ namespace SWLOR.Game.Server.Entity
 
             ActiveShipId = Guid.Empty.ToString();
             UnknownDisplayName = string.Empty;
+            CDKey = string.Empty;
+            AccountName = string.Empty;
             IsUsingDualPistolMode = false;
             EmoteStyle = EmoteStyle.Regular;
             MovementRate = 1.0f;
@@ -80,6 +85,7 @@ namespace SWLOR.Game.Server.Entity
             CraftedRecipes = new Dictionary<RecipeType, DateTime>();
             LearnedTechniques = new Dictionary<FeatType, DateTime>();
             EquippedTechniques = new List<FeatType>();
+            MimicryLoadouts = new List<MimicryLoadout>();
             CharacterType = CharacterType.Invalid;
             KeyItems = new Dictionary<KeyItemType, DateTime>();
             Guilds = new Dictionary<GuildType, PlayerGuild>();
@@ -151,7 +157,14 @@ namespace SWLOR.Game.Server.Entity
         public EmoteStyle EmoteStyle { get; set; }
         public string SerializedHotBar { get; set; }
         public string ActiveShipId { get; set; }
+        [Indexed]
         public string UnknownDisplayName { get; set; }
+        // Account details recorded at each login so staff tools can show them for offline characters.
+        [Indexed]
+        public string CDKey { get; set; }
+        [Indexed]
+        public string AccountName { get; set; }
+        public DateTime? LastLoginDate { get; set; }
         public AppearanceType OriginalAppearanceType { get; set; }
         public float MovementRate { get; set; }
         public int CombatReadiness { get; set; }
@@ -201,6 +214,9 @@ namespace SWLOR.Game.Server.Entity
         public Dictionary<RecipeType, DateTime> CraftedRecipes { get; set; }
         public Dictionary<FeatType, DateTime> LearnedTechniques { get; set; }
         public List<FeatType> EquippedTechniques { get; set; }
+        public List<MimicryLoadout> MimicryLoadouts { get; set; }
+        public string ActiveMimicryLoadoutId { get; set; } = string.Empty;
+        [JsonConverter(typeof(RelocatedKeyItemsJsonConverter))]
         public Dictionary<KeyItemType, DateTime> KeyItems{ get; set; }
         public Dictionary<GuildType, PlayerGuild> Guilds { get; set; }
         public Dictionary<FactionType, PlayerFactionStanding> Factions { get; set; }
@@ -230,6 +246,12 @@ namespace SWLOR.Game.Server.Entity
         public ulong TotalRPExpGained { get; set; }
         public ulong SpamMessageCount { get; set; }
         public ulong OOCMessageCount { get; set; }
+        public ulong OOCMessagesSinceLastDistribution { get; set; }
+        public DateTime? OOCAllowanceDay { get; set; }
+        public int DailyOOCMessageCount { get; set; }
+        public int DailyDMPresentOOCMessageCount { get; set; }
+        public int DailyEventAreaOOCMessageCount { get; set; }
+        public int PendingOOCPenaltySteps { get; set; }
     }
 
     public class PlayerSkill
@@ -245,6 +267,7 @@ namespace SWLOR.Game.Server.Entity
         public int TimesCompleted { get; set; }
         public DateTime? DateLastCompleted { get; set; }
 
+        [JsonConverter(typeof(RelocatedKillProgressesJsonConverter))]
         public Dictionary<NPCGroupType, int> KillProgresses { get; set; } = new Dictionary<NPCGroupType, int>();
         public Dictionary<string, int> ItemProgresses { get; set; } = new Dictionary<string, int>();
     }
@@ -253,6 +276,7 @@ namespace SWLOR.Game.Server.Entity
     {
         public bool AlternateGripEnabled { get; set; }
         public int? BattleThemeId { get; set; }
+        public int? PersonalMusicTrackId { get; set; }
         public bool DisplayAchievementNotification { get; set; }
         public bool ShowHelmet { get; set; }
         public bool ShowCloak { get; set; }
@@ -263,6 +287,8 @@ namespace SWLOR.Game.Server.Entity
         public bool? ScrambleAccountName { get; set; }
         public bool? DisplayCommsOutOfRangeWarnings { get; set; }
         public bool DisplayCooldownFloatingText { get; set; }
+        public bool SelfQuickCastEnabled { get; set; }
+        public bool EnemyQuickCastEnabled { get; set; }
 
         // When enabled, Stamina and FP are shown as thin bars overlaid on the character portrait
         // instead of the standalone HP/STM/FP window docked in the lower-right corner.

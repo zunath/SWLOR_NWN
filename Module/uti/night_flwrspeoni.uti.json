@@ -26,11 +26,15 @@
   },
   "DescIdentified": {
     "type": "cexolocstring",
-    "value": {}
+    "value": {
+      "0": "A bundle of peonies has been tied beneath its generous layers of petals. The flowers seem determined to supply enough occasion for whichever doorstep they eventually reach."
+    }
   },
   "Description": {
     "type": "cexolocstring",
-    "value": {}
+    "value": {
+      "0": "A bundle of peonies has been tied beneath its generous layers of petals. The flowers seem determined to supply enough occasion for whichever doorstep they eventually reach."
+    }
   },
   "Identified": {
     "type": "byte",

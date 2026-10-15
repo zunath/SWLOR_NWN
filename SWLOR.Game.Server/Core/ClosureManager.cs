@@ -1,6 +1,7 @@
 using NWNX.NET;
 using SWLOR.Game.Server.Extension;
 using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.Service.FrameProfilerService;
 using SWLOR.Game.Server.Service.LogService;
 using System.Collections.Generic;
 
@@ -57,6 +58,7 @@ namespace SWLOR.Game.Server.Core
         {
             uint old = _objectSelf;
             _objectSelf = oidSelf;
+            var profile = FrameProfiler.EnterManaged();
 
             try
             {
@@ -65,6 +67,10 @@ namespace SWLOR.Game.Server.Core
             catch (Exception ex)
             {
                 Log.Write(LogGroup.Error, ex.ToMessageAndCompleteStacktrace());
+            }
+            finally
+            {
+                FrameProfiler.ExitManaged(FrameMetric.Closure, profile);
             }
 
             _closures.Remove(eid);

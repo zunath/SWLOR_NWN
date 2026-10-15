@@ -98,7 +98,9 @@
         },
         "Description": {
           "type": "cexolocstring",
-          "value": {}
+          "value": {
+            "0": "A command lectern stands at the center of the room, a final grading ledger open on it to a blank page. The annex master waits for whoever comes to write on it."
+          }
         },
         "DisarmDC": {
           "type": "byte",
@@ -463,7 +465,9 @@
         },
         "Description": {
           "type": "cexolocstring",
-          "value": {}
+          "value": {
+            "0": "A surgeon's stool and a rolled kit of blades sit beside the command table. The master of the knife cadre keeps this corner, and answers anyone who unrolls the kit."
+          }
         },
         "DisarmDC": {
           "type": "byte",
@@ -828,7 +832,9 @@
         },
         "Description": {
           "type": "cexolocstring",
-          "value": {}
+          "value": {
+            "0": "A security console glows in standby, every annex system routed through it. The man who runs the shutdown drills keeps his hand near it and his eyes on the door."
+          }
         },
         "DisarmDC": {
           "type": "byte",

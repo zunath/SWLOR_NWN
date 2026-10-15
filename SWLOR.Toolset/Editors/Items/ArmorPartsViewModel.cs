@@ -2,6 +2,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap;
 using SWLOR.Toolset.Domain.Editors.Behaviors;
 using SWLOR.Toolset.Domain.Editors.Items;
+using Nwn.Authoring.Documents.NimGff;
 using SWLOR.Toolset.Domain.Gff;
 
 namespace SWLOR.Toolset.Editors.Items
@@ -344,7 +345,7 @@ namespace SWLOR.Toolset.Editors.Items
         private IReadOnlyList<string> GetTintVariableKeys(TintMapLayerType layer) =>
             _store.Locals
                 .Where(entry =>
-                    entry.Type == SWLOR.Toolset.Domain.Documents.VarTable.TypeInt &&
+                    entry.Type == Nwn.Authoring.Documents.Native.VarTable.TypeInt &&
                     TintMapVariable.TryGetLayer(entry.Name, out var variableLayer) &&
                     variableLayer == layer)
                 .Select(entry => entry.Name)

@@ -1,10 +1,13 @@
 using System.Reflection;
 using System.Numerics;
 using FluentAssertions;
+using Microsoft.CodeAnalysis.CSharp;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 using NUnit.Framework;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Feature.AbilityDefinition.Force;
 using SWLOR.Game.Server.Feature.PerkDefinition;
+using SWLOR.Game.Server.Feature.StatusEffectDefinition;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
@@ -42,12 +45,12 @@ public class ForceUniversalTests
     {
         var forcePush = new ForcePushAbilityDefinition().BuildAbilities();
         AssertAbility(forcePush[FeatType.ForcePush1], "Force Push I", 1, RecastGroup.ForcePush, 45f, 0f, 2, true, false, false, true, AbilityActivationType.Casted, 5f);
-        AssertAbility(forcePush[FeatType.ForcePush2], "Force Push II", 2, RecastGroup.ForcePush, 45f, 0f, 3, true, false, false, true, AbilityActivationType.Casted, 5f);
-        AssertAbility(forcePush[FeatType.ForcePush3], "Force Push III", 3, RecastGroup.ForcePush, 45f, 0f, 4, true, false, false, true, AbilityActivationType.Casted, 5f);
+        AssertAbility(forcePush[FeatType.ForcePush2], "Force Push II", 2, RecastGroup.ForcePush, 45f, 0f, 4, true, false, false, true, AbilityActivationType.Casted, 5f);
+        AssertAbility(forcePush[FeatType.ForcePush3], "Force Push III", 3, RecastGroup.ForcePush, 45f, 0f, 5, true, false, false, true, AbilityActivationType.Casted, 5f);
 
         var forceLeap = new ForceLeapAbilityDefinition().BuildAbilities();
         AssertAbility(forceLeap[FeatType.ForceLeap1], "Force Leap I", 1, RecastGroup.ForceLeap, 18f, 0f, 3, true, true, true, false, AbilityActivationType.Casted, 15f);
-        AssertAbility(forceLeap[FeatType.ForceLeap2], "Force Leap II", 2, RecastGroup.ForceLeap, 18f, 0f, 4, true, true, true, false, AbilityActivationType.Casted, 18f);
+        AssertAbility(forceLeap[FeatType.ForceLeap2], "Force Leap II", 2, RecastGroup.ForceLeap, 18f, 0f, 5, true, true, true, false, AbilityActivationType.Casted, 18f);
     }
 
     [Test]
@@ -164,6 +167,38 @@ public class ForceUniversalTests
         source.Should().NotContain("ActionJumpToObject(target)");
         source.Should().NotContain("UsesImpactAnimation(Animation.ForceLeap)");
         source.Should().NotContain("VisualEffect.Vfx_Fnf_Summon_Monster_1");
+    }
+
+    [Test]
+    public void ForceLeap_LandsBeforeDamageAndLandsEvenWhenTheDamageKills()
+    {
+        var abilities = new ForceLeapAbilityDefinition().BuildAbilities();
+        foreach (var feat in new[] { FeatType.ForceLeap1, FeatType.ForceLeap2 })
+        {
+            abilities[feat].ActivationAction.Should().NotBeNull("the leap animation starts at activation");
+            abilities[feat].ImpactDelay.Should().Be(1f, "damage resolves when the leap animation lands");
+        }
+
+        var root = FindRepositoryRoot();
+        var source = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "Force" / "ForceLeapAbilityDefinition.cs").FullName);
+        var calls = CSharpSyntaxTree.ParseText(source).GetRoot().DescendantNodes()
+            .OfType<InvocationExpressionSyntax>().ToArray();
+        var jump = calls.Single(call => call.Expression.ToString() == "JumpToLocation");
+        var interrupt = calls.Single(call => call.ToString() == "ActionInterruption.ClearActions(target)");
+
+        interrupt.Ancestors().OfType<MethodDeclarationSyntax>().Single().Identifier.Text.Should().Be("CompleteLeap",
+            "a leap cancelled during its animation must not interrupt the target");
+
+        jump.Ancestors().OfType<IfStatementSyntax>().Should().BeEmpty(
+            "the jump must not be skipped when the impact damage kills the target");
+        source.IndexOf("GetIsDead(target)", StringComparison.Ordinal).Should().BeGreaterThan(jump.SpanStart,
+            "only the stun may depend on the target surviving");
+        foreach (var impactAction in new[] { "ForceLeap1ImpactAction", "ForceLeap2ImpactAction" })
+        {
+            var body = source[source.IndexOf($"private static void {impactAction}", StringComparison.Ordinal)..];
+            body.IndexOf("CompleteLeap(activator, target)", StringComparison.Ordinal).Should()
+                .BeLessThan(body.IndexOf("Ability.ApplyCombatImpact", StringComparison.Ordinal));
+        }
     }
 
     [Test]
@@ -333,6 +368,31 @@ public class ForceUniversalTests
     {
         perk.ForceAffinityType.Should().BeNull();
         perk.StatBonuses.Select(x => x.Stat).Should().NotContain(StatType.ForceAffinity);
+    }
+
+    [Test]
+    public void ForceConvergence_RestoresFortyPercentFPOverTwentySeconds()
+    {
+        ForceConvergenceStatusEffect.FPRestorePercent.Should().Be(40);
+        (new ForceConvergenceStatusEffect().Frequency * ForceConvergenceStatusEffect.FPRestoreTicks)
+            .Should().Be(20f);
+    }
+
+    [TestCase(100)]
+    [TestCase(103)]
+    [TestCase(7)]
+    public void ForceConvergence_TicksAddUpToExactlyTheFortyPercentBudget(int maxFP)
+    {
+        var total = SWLOR.Game.Server.Service.GameMath.PercentOf(maxFP, ForceConvergenceStatusEffect.FPRestorePercent);
+        var ticks = Enumerable.Range(1, ForceConvergenceStatusEffect.FPRestoreTicks)
+            .Select(tick => ForceConvergenceStatusEffect.GetFPRestoredThroughTick(total, tick)
+                            - ForceConvergenceStatusEffect.GetFPRestoredThroughTick(total, tick - 1))
+            .ToList();
+
+        ticks.Sum().Should().Be(total, "rounding each tick up would restore more than 40%");
+        ticks.Should().OnlyContain(amount => amount >= 0);
+        ForceConvergenceStatusEffect.GetFPRestoredThroughTick(total, ForceConvergenceStatusEffect.FPRestoreTicks + 5)
+            .Should().Be(total, "ticks past the tenth restore nothing");
     }
 
     private static Dictionary<PerkType, PerkDetail> BuildForceUniversalPerksWithout2daLookup()

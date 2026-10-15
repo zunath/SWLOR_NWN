@@ -126,7 +126,7 @@
   },
   "Comment": {
     "type": "cexostring",
-    "value": "Capstone quest creature for Eclipse of Resolve in Korriban Sith Crypt Depths."
+    "value": "Rare Umbral Raider elite in Mon Cala - Sith Crypt Depths."
   },
   "Con": {
     "type": "byte",
@@ -155,7 +155,7 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "A named rare elite of the Korriban Sith Crypt Depths. Controller."
+      "0": "A Wookiee broker who moves the Umbral Raiders' stolen relics out of the Sith Crypt Depths and keeps a heavy blade for anyone who questions the price. He knows every buyer on the route off Mon Cala."
     }
   },
   "Dex": {
@@ -225,7 +225,7 @@
   "FirstName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Eclipse Shade"
+      "0": "Umbral Relic Broker"
     }
   },
   "fortbonus": {
@@ -649,6 +649,21 @@
         "Value": {
           "type": "cexostring",
           "value": "KORCRYPT_ECLIPSE_COMP,100,1"
+        }
+      },
+      {
+        "__struct_id": 0,
+        "Name": {
+          "type": "cexostring",
+          "value": "LOOT_TABLE_4"
+        },
+        "Type": {
+          "type": "dword",
+          "value": 3
+        },
+        "Value": {
+          "type": "cexostring",
+          "value": "MUSIC_DISCS,1,1"
         }
       }
     ]

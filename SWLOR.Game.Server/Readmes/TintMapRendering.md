@@ -5,12 +5,45 @@ The generated tint materials share three fragment shaders in
 `fs_plt_hair_nm`. A change to palette lighting must cover all three, including
 materials shared by multiple models through `tintmap.2da`.
 
-The current item catalog includes helmet materials; weapons and dynamic cloaks
+The current item catalog includes helmet and cloak materials; weapons
 continue to use their native model/color choices. Hand-slot resolver support
 does not by itself introduce weapon tint assets. Before registering tintable
 weapons, provide distinct material identities or occurrence-specific rendering
 for independently colored copies of the same equipped model: creature material
 uniforms alone cannot distinguish identical main-hand and off-hand materials.
+
+Cloaks retain their native geometry, PLTs, inventory icons, and `.lod` sharing.
+Their mesh material is `cloaktint`; `cloaktint.2da` maps `cloakmodel.TEXTURE` to
+the original PLT layers and a tile in four checked-in BC5 atlases. The complete
+tint refresh writes `cloakTexture` after its single shader reset, then writes
+the normal palette/RGB rows. `fs_cloaktint` uses the same tint and lighting code
+as `fs_plt_tinter`, sampling only the selected tile. Native palette choices
+continue to update the inventory icon; custom RGB uses the existing item dye
+variables and survives editor reopening. The Toolset crops the same atlas tile
+for its viewport and thumbnails. `CloakTintAssets.py --check` validates the
+checked-in assets during a build, including a binding for every cloak MDL;
+explicit authoring requires `--game-data`. The client draws every cloak mesh with
+the `cloakmodel.TEXTURE` PLT, even where its bitmap names the model, another PLT,
+or nothing that exists (model 007's only visible mesh is the `cala_cloak` skin), so
+every mesh is bound. Authoring refuses a mesh naming a real TGA, DDS, or MTR.
+
+Authored MTRs can inherit a same-name DDS/TGA without declaring `texture0`.
+`TintMapMaterialSources.json` records that input as `implicitTexture0`.
+Helmet 101, both human neck 12 textures, and female human left shin 264 have
+obsolete PLT atlases that differ from their authored diffuse artwork.
+`GenerateAuthoredDiffuseTintMaps.py` registers a uniform channel selector while
+retaining the full-resolution diffuse and normal/specular textures. Cloth 1
+controls helmet 101 and shin 264; Skin controls the necks' authored surfaces.
+The mapped shader's opt-in `useAuthoredDiffuse` preserves original colors for
+native presets and reset. Explicit RGB replaces the hue using the original
+luminance detail, without sampling the obsolete PLT. Helmet 101 retains its
+generated render heads and RGB editor support. Other materials leave this mode off.
+After regenerating controls, run `GenerateTintMapAssets.py --refresh-model-bindings`
+and `GenerateHelmetRgbModels.py --apply`. Rebuild `sw_shader`, `sw_item`,
+`sw_pt_helm`, `sw_pt_neck`, `sw_pt_lshin`, `sw_pt_head`, `sw_tint_mtr`, the changed
+`sw_tint*` mask HAKs, and `sw_2da` together, then restart the client.
+These necks also feed the generated neck skin aliases; rerun
+`GenerateNeckModels.py --apply` after any neck source changes.
 
 ## Preserve the authored palette rows
 
@@ -241,6 +274,10 @@ gender that the source robe does not support.
 
 An empty robe attachment for that phenotype preserves the original robe number
 and its native body-part hiding rules without drawing a second copy.
+These tiny attachments must remain MDLs. The native robe lookup falls back to
+the base phenotype when only a `.lod` exists, drawing the original robe over
+the RGB body root. `ModelLodAssets.py` retains and validates the empty MDLs;
+visible geometry can still be shared.
 
 `SWLOR_Haks/tools/GenerateRobeRgbModels.py` keeps two independent joint trees
 inside each generated body root. The wearer's complete canonical skeleton stays
@@ -249,7 +286,51 @@ authored skeleton and meshes sit beneath a private `rg_model` branch. Garment
 joint names and skin bone references are renamed together; mesh data, material
 references, bind transforms, and native inverse skin binds are preserved.
 Duplicate legacy nodes are removed or renamed only after checking actual binary
-bone references and child/animation relationships.
+bone references and child/animation relationships. Empty `rp_` spacers give all
+robe bodies of one base body the same body-node indices; see
+[Neck skins on robe skeletons](#neck-skins-on-robe-skeletons).
+
+Generated robe phenotypes also need their own native cloak geometry resources.
+After changing the robe or cloak catalog, run
+`python -B SWLOR_Haks/tools/GenerateRobeCloakModels.py --game-data <installed-game-data-directory>`.
+It writes MDLs in place of its existing redirects, so then run
+`ModelLodAssets.py --apply --game-data` and `CloakTintAssets.py --game-data` in that order.
+The build rejects a cloak source recorded as unavailable once a HAK provides it.
+Commit `tools/RobeCloakModels.json`, canonical cloak MDLs and their phenotype-specific
+`.lod` redirects in `SWLOR_Haks/sw_pt_cloak`. They share the exact geometry, materials,
+skin binds and animation parents. `tools/ModelLodAssets.json` records each redirect's
+source hash and canonical dependency. The server's model availability checks follow
+valid LOD chains and reject missing targets and cycles. Toolset appearance catalogs,
+item previews and area models resolve those same redirects.
+
+Only these generated robe-phenotype cloaks may be redirects: they have no MDL on
+master, so a client that ignores them simply shows master's missing robe cloak.
+Every other model stays a native MDL even when another model is byte-identical.
+Background-client checks against master's MDLs showed area tiles drawn as voids,
+a missing tower shield and placeable, and the wrong cross-race torso through
+redirects, and with `graphics.lod.enabled = false` the client ignores redirects
+entirely (redirected helmet heads vanished). `ModelLodAssets.py --check` rejects
+any redirect outside the robe cloak catalog.
+
+For explicit model authoring, first run `python -B tools/ModelLodAssets.py --expand`
+from `SWLOR_Haks`, edit or regenerate the models, then run
+`python -B tools/ModelLodAssets.py --apply --game-data "<NWN>/data"` to publish
+checked-in redirects again. Overrides of base-game model names stay MDLs and are
+listed as `native_overrides`: an MDL-first lookup would otherwise load the stock model.
+The check fails if one of those MDLs is deleted, or if a redirect's name or target
+is defined by more than one HAK, since HAK priority could then load an unvalidated model.
+This is an authoring operation. Normal builds validate the checked-in LOD assets
+and package them with `nwn_erf --add-restypes lod:2078`; they never generate MDLs.
+`CheckPackedLods.py` then fails the build if a packer without that option dropped
+any `.lod` from the archives, so build haks only with the matching `SWLOR.CLI`.
+The Python authoring/audit reader reconstructs original model identities in memory
+and verifies their exact source hashes without creating loose MDL files.
+Changing a robe phenotype also refreshes the equipped
+cloak after the body update, including when returning to the base body.
+Equipped cloak edits also delete the affected open inventory GUI slot
+before resending it. Resending an add for the same item ID alone leaves the native
+client's icon cached. This refresh changes only client GUI state; item ownership,
+equipment and equip/unequip events remain untouched.
 
 `RobeSkeleton.py` generates shared animation parents for every converted model,
 including custom coats and robes with different joint hierarchies. Body and
@@ -712,6 +793,34 @@ Keep restored geometry and its palette mask paired. The base male hand models
 256-by-256 masks; retaining the earlier stock 64-by-64 masks changes their
 shading. The existing base male feet still use their matched stock models and
 masks. The material-profile tests protect both pairings.
+
+### Neck skins on robe skeletons
+
+External neck skins index bones by depth-first skeleton traversal, not animation
+part number. Inline robe bones shift that traversal. `neckrender.2da` selects
+compiled aliases whose bone tables match the wearer's actual root, preserving
+the original vertices, weights, inverse binds and material names. Both naked
+neck packets and equipped armor packets use these aliases; saved armor, body
+stats and outfit selections retain their authored IDs. The equipment packet
+hook restores the original field immediately after the synchronous writer.
+
+Garment joints must stay beneath their body bones, so each robe would otherwise
+shift later body nodes by a different amount and need its own aliases.
+`GenerateRobeRgbModels.py` inserts empty `rp_` dummies before body nodes until
+every robe body of one base body (for example all `pfh` robes) has the same
+body-node indices. One alias per source neck then serves all of them; the
+generator fails if any robe body breaks that layout. Aliases skip the stock
+skinny and horse-rider phenotypes (1, 3, 5, 6, 8), which no SWLOR creature
+uses. Regeneration deletes unused aliases and keeps their IDs reserved in
+`NeckModels.json` so an ID never renders a different neck.
+
+After changing body roots, robe bodies, neck meshes or phenotype fallbacks, run
+`python -B SWLOR_Haks/tools/GenerateNeckModels.py --game-data "<NWN>/data" --apply`,
+then repeat with `--check` and run `TestNeckModels.py --game-data "<NWN>/data"`.
+The HAK build rejects stale source/output hashes, a deleted repository input,
+and edits to the generator, skin remapping, or model parser code. Generated aliases must stay
+excluded from tint source discovery: they share the source neck's materials.
+Rebuild `sw_pt_neck.hak` and `sw_2da.hak` and deploy the matching server assembly.
 
 ### Exercise the reported NPCs
 

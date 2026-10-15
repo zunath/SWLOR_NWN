@@ -4,8 +4,11 @@ using System.Linq;
 using NWN.Native.API;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Extension;
+using SWLOR.Game.Server.Feature.AbilityDefinition;
 using SWLOR.Game.Server.Service.AbilityService;
+using SWLOR.Game.Server.Service.CombatRecorderService;
 using SWLOR.Game.Server.Service.CombatService;
+using SWLOR.Game.Server.Service.FrameProfilerService;
 using SWLOR.Game.Server.Service.LogService;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.Game.Server.Service.StatService;
@@ -47,6 +50,12 @@ namespace SWLOR.Game.Server.Service
         public const int MaximumNPCDetection = 50;
         public const float MinimumMovementSpeedMultiplier = 0f;
         public const float MaximumMovementSpeedMultiplier = 1.5f;
+        private const string WalkToggleVariable = "WALK_TOGGLE";
+        private const string WalkRestoreMovementRateVariable = "WALK_RESTORE_MOVEMENT_RATE";
+        private const string WalkRestoreBaseMovementRateVariable = "WALK_RESTORE_BASE_MOVEMENT_RATE";
+        private const string WalkRestoreMaximumMovementRateVariable = "WALK_RESTORE_MAX_MOVEMENT_RATE";
+        private const float PendingWalkMovementRestore = -1.0f;
+        private const float MinimumNativeMovementSpeedMultiplier = 0.125f;
         private const float DeflectionEvasionBoostDurationSeconds = 30f;
         private const float DeflectionEnmityBoostDurationSeconds = 30f;
         private const float DeflectionDefenseBoostDurationSeconds = 30f;
@@ -226,7 +235,7 @@ namespace SWLOR.Game.Server.Service
         public static int GetCurrentFP(uint creature, Player dbPlayer = null)
         {
             // Players
-            if (GetIsPC(creature) && !GetIsDM(creature))
+            if (GetIsPC(creature) && !GetIsDM(creature) && !GetIsDMPossessed(creature))
             {
                 if (dbPlayer == null)
                 {
@@ -306,7 +315,7 @@ namespace SWLOR.Game.Server.Service
         public static int GetCurrentStamina(uint creature, Player dbPlayer = null)
         {
             // Players
-            if (GetIsPC(creature) && !GetIsDM(creature))
+            if (GetIsPC(creature) && !GetIsDM(creature) && !GetIsDMPossessed(creature))
             {
                 if (dbPlayer == null)
                 {
@@ -368,6 +377,9 @@ namespace SWLOR.Game.Server.Service
                 SetLocalInt(creature, "FP", fp);
             }
 
+            if (CombatRecorder.IsRecording)
+                CombatRecorder.RecordResourceChange(creature, CombatRecordResource.FP, restored, GetCurrentFP(creature, dbPlayer));
+
             ExecuteScript("pc_fp_adjusted", creature);
             if (restored > 0)
                 Combat.ApplyFPRestoredEffects(creature);
@@ -389,7 +401,10 @@ namespace SWLOR.Game.Server.Service
         {
             if (reduceBy <= 0) return;
 
-            if (GetIsPC(creature) && !GetIsDM(creature))
+            if (CombatRecorder.IsRecording)
+                CombatRecorder.RecordResourceReduction(creature, CombatRecordResource.FP, reduceBy, GetCurrentFP(creature, dbPlayer));
+
+            if (GetIsPC(creature) && !GetIsDM(creature) && !GetIsDMPossessed(creature))
             {
                 var playerId = GetObjectUUID(creature);
                 if (dbPlayer == null)
@@ -459,6 +474,9 @@ namespace SWLOR.Game.Server.Service
                 SetLocalInt(creature, "STAMINA", fp);
             }
 
+            if (CombatRecorder.IsRecording)
+                CombatRecorder.RecordResourceChange(creature, CombatRecordResource.Stamina, restored, GetCurrentStamina(creature, dbPlayer));
+
             ExecuteScript("pc_stm_adjusted", creature);
             if (restored > 0)
                 Combat.ApplyStaminaRestoredEffects(creature);
@@ -480,7 +498,10 @@ namespace SWLOR.Game.Server.Service
         {
             if (reduceBy <= 0) return;
 
-            if (GetIsPC(creature) && !GetIsDM(creature))
+            if (CombatRecorder.IsRecording)
+                CombatRecorder.RecordResourceReduction(creature, CombatRecordResource.Stamina, reduceBy, GetCurrentStamina(creature, dbPlayer));
+
+            if (GetIsPC(creature) && !GetIsDM(creature) && !GetIsDMPossessed(creature))
             {
                 var playerId = GetObjectUUID(creature);
                 if (dbPlayer == null)
@@ -597,13 +618,16 @@ namespace SWLOR.Game.Server.Service
                 }
             }
 
-            // If player's current HP is higher than max, deal the difference in damage to bring them back down to their new maximum.
-            var currentHP = GetCurrentHitPoints(player);
+            // If player's current HP is higher than max, bring it back down to their new maximum. The native
+            // getter includes temporary HP, so compare base HP only or a shield would heal the player.
+            var currentHP = ObjectPlugin.GetCurrentHitPoints(player);
             var maxHP = GetMaxHitPoints(player);
             if (currentHP > maxHP)
             {
                 SetCurrentHitPoints(player, maxHP);
             }
+
+            TemporaryHitPointEffects.ScheduleLimitCheck(player);
         }
 
         /// <summary>
@@ -648,10 +672,60 @@ namespace SWLOR.Game.Server.Service
                 entity.Stamina = 0;
         }
 
+        public static bool IsWalkModeEnabled(uint creature) =>
+            GetLocalInt(creature, WalkToggleVariable) == 1 &&
+            (GetIsPC(creature) || GetIsDM(creature) || GetIsDMPossessed(creature));
+
+        [NWNEventHandler(ScriptName.OnDMPossessBefore)]
+        [NWNEventHandler(ScriptName.OnDMPossessFullPowerBefore)]
+        public static void ClearWalkModeBeforeDMPossessionChange()
+        {
+            var creature = OBJECT_SELF;
+            if (GetIsDMPossessed(creature) && IsWalkModeEnabled(creature))
+                ToggleWalkMode(creature);
+        }
+
+        public static bool ToggleWalkMode(uint player)
+        {
+            var isWalking = !IsWalkModeEnabled(player);
+            var isStaff = GetIsDM(player) || GetIsDMPossessed(player);
+            if (isWalking && isStaff && GetLocalFloat(player, WalkRestoreMovementRateVariable) == 0f)
+            {
+                var calculatedMovementRate = GetMovementSpeedMultiplier(player);
+                if (calculatedMovementRate <= MinimumMovementSpeedMultiplier)
+                {
+                    // The native disabled factor cannot establish the staff member's normal speed.
+                    SetLocalFloat(player, WalkRestoreMovementRateVariable, PendingWalkMovementRestore);
+                }
+                else
+                {
+                    var nativeMovementRate = CreaturePlugin.GetMovementRateFactor(player);
+                    var followsCalculatedRate = Math.Abs(nativeMovementRate -
+                        Math.Max(MinimumNativeMovementSpeedMultiplier, calculatedMovementRate)) < 0.001f;
+                    var baseMovementRate = followsCalculatedRate
+                        ? 1.0f + GetBaseMovementSpeedIncrease(player, false)
+                        : nativeMovementRate - GetMovementSpeedAdjustment(player);
+                    SetLocalFloat(player, WalkRestoreMovementRateVariable, nativeMovementRate);
+                    SetLocalFloat(player, WalkRestoreBaseMovementRateVariable, baseMovementRate);
+                    SetLocalFloat(player, WalkRestoreMaximumMovementRateVariable,
+                        followsCalculatedRate ? MaximumMovementSpeedMultiplier : float.MaxValue);
+                }
+            }
+
+            SetLocalInt(player, WalkToggleVariable, isWalking ? 1 : 0);
+            PlayerPlugin.SetAlwaysWalk(player, isWalking);
+            if (isWalking || !isStaff || GetLocalFloat(player, WalkRestoreMovementRateVariable) != 0f)
+                ApplyCreatureMovementRate(player);
+            return isWalking;
+        }
+
         public static void ApplyCreatureMovementRate(uint creature)
         {
             if (!GetIsObjectValid(creature) || GetObjectType(creature) != ObjectType.Creature)
                 return;
+
+            if (GetLocalInt(creature, WalkToggleVariable) == 1 && !IsWalkModeEnabled(creature))
+                DeleteLocalInt(creature, WalkToggleVariable);
 
             var isPlayer = GetIsPC(creature) && !GetIsDM(creature) && !GetIsDMPossessed(creature);
             if (isPlayer)
@@ -661,6 +735,13 @@ namespace SWLOR.Game.Server.Service
 
             var movementRate = GetMovementSpeedMultiplier(creature);
             CreaturePlugin.SetMovementRateFactor(creature, movementRate);
+            if (!IsWalkModeEnabled(creature) && movementRate > MinimumMovementSpeedMultiplier &&
+                GetLocalFloat(creature, WalkRestoreMovementRateVariable) != 0f)
+            {
+                DeleteLocalFloat(creature, WalkRestoreMovementRateVariable);
+                DeleteLocalFloat(creature, WalkRestoreBaseMovementRateVariable);
+                DeleteLocalFloat(creature, WalkRestoreMaximumMovementRateVariable);
+            }
         }
 
         public static float GetMovementSpeedMultiplier(uint creature)
@@ -672,8 +753,27 @@ namespace SWLOR.Game.Server.Service
                 return MinimumMovementSpeedMultiplier;
 
             var isPlayer = GetIsPC(creature) && !GetIsDM(creature) && !GetIsDMPossessed(creature);
-            var movementRate = 1.0f + GetBaseMovementSpeedIncrease(creature, isPlayer);
-            movementRate += GetStatAdjustment(creature, StatType.MovementSpeedPercentAdjustment) * 0.01f;
+            var isWalking = IsWalkModeEnabled(creature);
+            var restoreMovementRate = GetLocalFloat(creature, WalkRestoreMovementRateVariable);
+            var hasMovementRateRestore = restoreMovementRate > 0f;
+            var baseMovementRate = hasMovementRateRestore
+                ? GetLocalFloat(creature, WalkRestoreBaseMovementRateVariable)
+                : 1.0f + GetBaseMovementSpeedIncrease(creature, isPlayer);
+            if (isWalking)
+                baseMovementRate = hasMovementRateRestore ? Math.Min(1.0f, baseMovementRate) : 1.0f;
+
+            var movementRate = baseMovementRate + GetMovementSpeedAdjustment(creature);
+            var maximumMovementRate = isWalking
+                ? 1.0f
+                : hasMovementRateRestore
+                    ? GetLocalFloat(creature, WalkRestoreMaximumMovementRateVariable)
+                    : MaximumMovementSpeedMultiplier;
+            return Math.Clamp(movementRate, MinimumMovementSpeedMultiplier, maximumMovementRate);
+        }
+
+        private static float GetMovementSpeedAdjustment(uint creature)
+        {
+            var adjustment = GetStatAdjustment(creature, StatType.MovementSpeedPercentAdjustment) * 0.01f;
             for (var effect = GetFirstEffect(creature); GetIsEffectValid(effect); effect = GetNextEffect(creature))
             {
                 var type = GetEffectType(effect);
@@ -681,16 +781,16 @@ namespace SWLOR.Game.Server.Service
                 if (type == EffectTypeScript.MovementSpeedIncrease)
                 {
                     amount = GetEffectInteger(effect, 0) - 100;
-                    movementRate += amount * 0.01f;
+                    adjustment += amount * 0.01f;
                 }
                 else if (type == EffectTypeScript.MovementSpeedDecrease)
                 {
                     amount = GetEffectInteger(effect, 0);
-                    movementRate -= amount * 0.01f;
+                    adjustment -= amount * 0.01f;
                 }
             }
 
-            return Math.Clamp(movementRate, MinimumMovementSpeedMultiplier, MaximumMovementSpeedMultiplier);
+            return adjustment;
         }
 
         private static float GetBaseMovementSpeedIncrease(uint creature, bool isPlayer)
@@ -716,6 +816,8 @@ namespace SWLOR.Game.Server.Service
             if (ability == AbilityType.Invalid) return;
 
             CreaturePlugin.SetRawAbilityScore(player, ability, GetPlayerAttributeScore(entity, ability));
+            if (ability == AbilityType.Vitality)
+                TemporaryHitPointEffects.ScheduleLimitCheck(player);
         }
 
         private static int GetPlayerAttributeScore(Player entity, AbilityType ability)
@@ -1053,7 +1155,7 @@ namespace SWLOR.Game.Server.Service
             var skillLevel = 0;
             var stat = GetAbilityScore(creature, abilityType);
 
-            if (GetIsPC(creature) && !GetIsDM(creature))
+            if (GetIsPC(creature) && !GetIsDM(creature) && !GetIsDMPossessed(creature))
             {
                 var playerId = GetObjectUUID(creature);
                 var dbPlayer = DB.Get<Player>(playerId);
@@ -1109,7 +1211,7 @@ namespace SWLOR.Game.Server.Service
             // Defense the hit is mitigated against. The weapon's own skill rank still governs the roll.
             var usesForceAttack = useForceAttack || skillType == SkillType.Force;
 
-            if (creature.m_bPlayerCharacter == 1)
+            if (creature.m_bPlayerCharacter == 1 && !GetIsDMPossessed(creature.m_idSelf))
             {
                 var playerId = creature.m_pUUID.GetOrAssignRandom().ToString();
                 var dbPlayer = DB.Get<Player>(playerId);
@@ -1179,7 +1281,7 @@ namespace SWLOR.Game.Server.Service
             var defenseBonus = 0;
             var equipmentDefense = defenseBonusOverride;
 
-            if (GetIsPC(creature) && !GetIsDM(creature))
+            if (GetIsPC(creature) && !GetIsDM(creature) && !GetIsDMPossessed(creature))
             {
                 var playerId = GetObjectUUID(creature);
                 var dbPlayer = DB.Get<Player>(playerId);
@@ -1270,7 +1372,7 @@ namespace SWLOR.Game.Server.Service
             var defenseBonus = 0;
             var equipmentDefense = 0;
 
-            if (creature.m_bPlayerCharacter == 1)
+            if (creature.m_bPlayerCharacter == 1 && !GetIsDMPossessed(creature.m_idSelf))
             {
                 var playerId = creature.m_pUUID.GetOrAssignRandom().ToString();
                 var dbPlayer = DB.Get<Player>(playerId);
@@ -1391,7 +1493,7 @@ namespace SWLOR.Game.Server.Service
 
 
             // Creature skill level / NPC level, plus Accuracy granted by non-weapon equipment.
-            if (GetIsPC(creature) && !GetIsDM(creature))
+            if (GetIsPC(creature) && !GetIsDM(creature) && !GetIsDMPossessed(creature))
             {
                 var playerId = GetObjectUUID(creature);
                 var dbPlayer = DB.Get<Player>(playerId);
@@ -1481,7 +1583,7 @@ namespace SWLOR.Game.Server.Service
 
 
             // Creature skill level / NPC level, plus Accuracy granted by non-weapon equipment.
-            if (creature.m_bPlayerCharacter == 1)
+            if (creature.m_bPlayerCharacter == 1 && !GetIsDMPossessed(creature.m_idSelf))
             {
                 var playerId = creature.m_pUUID.GetOrAssignRandom().ToString();
                 var dbPlayer = DB.Get<Player>(playerId);
@@ -1564,7 +1666,7 @@ namespace SWLOR.Game.Server.Service
 
             Log.Write(LogGroup.Attack, $"Evasion regular AC = {ac}");
 
-            if (GetIsPC(creature) && !GetIsDM(creature))
+            if (GetIsPC(creature) && !GetIsDM(creature) && !GetIsDMPossessed(creature))
             {
                 var playerId = GetObjectUUID(creature);
                 var dbPlayer = DB.Get<Player>(playerId);
@@ -1599,7 +1701,7 @@ namespace SWLOR.Game.Server.Service
             var willpower = GetAbilityScore(creature, AbilityType.Willpower);
             var equipmentBonus = 0;
 
-            if (GetIsPC(creature) && !GetIsDM(creature))
+            if (GetIsPC(creature) && !GetIsDM(creature) && !GetIsDMPossessed(creature))
             {
                 var playerId = GetObjectUUID(creature);
                 var dbPlayer = DB.Get<Player>(playerId);
@@ -1654,7 +1756,7 @@ namespace SWLOR.Game.Server.Service
             var agility = GetAbilityScore(creature, AbilityType.Agility);
             var equipmentBonus = 0;
 
-            if (GetIsPC(creature) && !GetIsDM(creature))
+            if (GetIsPC(creature) && !GetIsDM(creature) && !GetIsDMPossessed(creature))
             {
                 var playerId = GetObjectUUID(creature);
                 var dbPlayer = DB.Get<Player>(playerId);
@@ -1705,7 +1807,7 @@ namespace SWLOR.Game.Server.Service
 
             Log.Write(LogGroup.Attack, $"Native Evasion AC = {ac}");
 
-            if (creature.m_bPlayerCharacter == 1)
+            if (creature.m_bPlayerCharacter == 1 && !GetIsDMPossessed(creature.m_idSelf))
             {
                 var playerId = creature.m_pUUID.GetOrAssignRandom().ToString();
                 var dbPlayer = DB.Get<Player>(playerId);
@@ -1861,18 +1963,21 @@ namespace SWLOR.Game.Server.Service
             if (staminaRestore > 0 &&
                 Combat.TryUseStatTrigger(creatureId, staminaRestoreStat, staminaRestoreCooldown))
             {
+                using var recorderAttribution = CombatRecorder.BeginStatTriggerAttribution(creatureId, staminaRestoreStat);
                 RestoreStamina(creatureId, staminaRestore);
             }
 
             if (fpRestore > 0 &&
                 Combat.TryUseStatTrigger(creatureId, fpRestoreStat, fpRestoreCooldown))
             {
+                using var recorderAttribution = CombatRecorder.BeginStatTriggerAttribution(creatureId, fpRestoreStat);
                 RestoreFP(creatureId, fpRestore);
             }
 
             if (staminaRestorePercent > 0)
             {
                 var amount = GameMath.PercentOf(GetMaxStamina(creatureId), staminaRestorePercent);
+                using var recorderAttribution = CombatRecorder.BeginStatTriggerAttribution(creatureId, StatType.DeflectionStaminaRestorePercent);
                 RestoreStamina(creatureId, amount);
             }
 
@@ -2216,8 +2321,10 @@ namespace SWLOR.Game.Server.Service
 
         public static int GetStatAdjustment(uint creature, StatType stat)
         {
+            var profile = FrameProfiler.Start();
             var persistentAdjustment = GetStatAdjustmentExcludingTemporaryModifiers(creature, stat);
             var temporaryAdjustment = TemporaryStatModifier.GetStatAdjustment(creature, stat);
+            FrameProfiler.Stop(FrameMetric.StatAdjustment, profile);
 
             return AggregateStatAdjustment(stat, persistentAdjustment, temporaryAdjustment);
         }
@@ -2257,7 +2364,8 @@ namespace SWLOR.Game.Server.Service
             return amount + (int)Math.Ceiling(amount * (adjustment / 100f));
         }
 
-        public static int ApplyHealingReceivedAdjustment(uint creature, int amount, bool applyReceivedEffects = true)
+        /// <param name="isInstantAbilityHeal">True for a heal an ability lands when it resolves. Only these can restore Stamina through the healing-received trigger.</param>
+        public static int ApplyHealingReceivedAdjustment(uint creature, int amount, bool applyReceivedEffects = true, bool isInstantAbilityHeal = false)
         {
             if (amount <= 0)
                 return amount;
@@ -2266,7 +2374,7 @@ namespace SWLOR.Game.Server.Service
             var adjustedAmount = Math.Max(1, ApplyPercentAdjustment(amount, adjustment));
 
             if (applyReceivedEffects)
-                ApplyHealingReceivedEffects(creature, adjustedAmount);
+                ApplyHealingReceivedEffects(creature, adjustedAmount, isInstantAbilityHeal);
 
             return adjustedAmount;
         }
@@ -2276,11 +2384,15 @@ namespace SWLOR.Game.Server.Service
             return currentHP <= 0 ? 0 : Math.Clamp(amount, 0, Math.Max(0, maxHP - currentHP));
         }
 
-        public static void ApplyHealingReceivedEffects(uint creature, int amount)
+        /// <param name="isInstantAbilityHeal">Heals over time, lifesteal, drains and regeneration pass false and never restore Stamina.</param>
+        public static void ApplyHealingReceivedEffects(uint creature, int amount, bool isInstantAbilityHeal = false)
         {
-            if (CalculateEffectiveHealingAmount(amount, GetCurrentHitPoints(creature), GetMaxHitPoints(creature)) <= 0)
+            if (CalculateEffectiveHealingAmount(amount, ObjectPlugin.GetCurrentHitPoints(creature), GetMaxHitPoints(creature)) <= 0)
                 return;
-            ApplyHealingReceivedStaminaRestore(creature);
+            // The heal these react to is applied right after them.
+            using var recorderReaction = CombatRecorder.BeginHealingReaction(creature);
+            if (isInstantAbilityHeal)
+                ApplyHealingReceivedStaminaRestore(creature);
             ApplyHealingReceivedAttackBoost(creature);
         }
 
@@ -2298,10 +2410,15 @@ namespace SWLOR.Game.Server.Service
                 chance = Math.Min(maximumChance, chance + Math.Max(0, GetAbilityScore(creature, scalingAbility)));
             }
 
-            if (Random.D100(1) <= chance)
-            {
-                RestoreStamina(creature, stamina);
-            }
+            if (Random.D100(1) > chance)
+                return;
+
+            var cooldownSeconds = GetStatAdjustment(creature, StatType.HealingReceivedStaminaRestoreCooldownSeconds);
+            if (!Combat.TryUseStatTrigger(creature, StatType.HealingReceivedStaminaRestore, cooldownSeconds))
+                return;
+
+            using var recorderAttribution = CombatRecorder.BeginStatTriggerAttribution(creature, StatType.HealingReceivedStaminaRestore);
+            RestoreStamina(creature, stamina);
         }
 
         private static void ApplyHealingReceivedAttackBoost(uint creature)
@@ -2376,11 +2493,20 @@ namespace SWLOR.Game.Server.Service
         /// <returns>An NPCStats object.</returns>
         public static NPCStats GetNPCStats(uint npc)
         {
-            var npcStats = new NPCStats();
-
             var skin = GetItemInSlot(InventorySlot.CreatureArmor, npc);
-            if (!GetIsObjectValid(skin))
-                return npcStats;
+            return GetIsObjectValid(skin)
+                ? GetNPCSkinStats(skin)
+                : new NPCStats();
+        }
+
+        /// <summary>
+        /// Reads the NPC stats a stat skin grants. Works on any skin item, equipped or not.
+        /// </summary>
+        /// <param name="skin">The stat skin item.</param>
+        /// <returns>An NPCStats object.</returns>
+        public static NPCStats GetNPCSkinStats(uint skin)
+        {
+            var npcStats = new NPCStats();
 
             for (var ip = GetFirstItemProperty(skin); GetIsItemPropertyValid(ip); ip = GetNextItemProperty(skin))
             {
@@ -2609,7 +2735,23 @@ namespace SWLOR.Game.Server.Service
         public static void LoadNPCStats(uint self)
         {
             var skin = GetItemInSlot(InventorySlot.CreatureArmor, self);
+            var maxHP = GetNPCSkinMaxHP(skin);
 
+            if (maxHP > 0)
+            {
+                SetNPCMaxHitPoints(self, maxHP, true);
+            }
+
+            SetLocalInt(self, "FP", GetMaxFP(self));
+            SetLocalInt(self, "STAMINA", GetMaxStamina(self));
+        }
+
+        /// <summary>
+        /// Returns the maximum HP a stat skin grants, or 0 when it grants none.
+        /// </summary>
+        /// <param name="skin">The stat skin item.</param>
+        public static int GetNPCSkinMaxHP(uint skin)
+        {
             var maxHP = 0;
             for (var ip = GetFirstItemProperty(skin); GetIsItemPropertyValid(ip); ip = GetNextItemProperty(skin))
             {
@@ -2619,16 +2761,7 @@ namespace SWLOR.Game.Server.Service
                 }
             }
 
-            if (maxHP > MaximumNPCHitPoints)
-                maxHP = MaximumNPCHitPoints;
-
-            if (maxHP > 0)
-            {
-                SetNPCMaxHitPoints(self, maxHP, true);
-            }
-
-            SetLocalInt(self, "FP", GetMaxFP(self));
-            SetLocalInt(self, "STAMINA", GetMaxStamina(self));
+            return Math.Min(maxHP, MaximumNPCHitPoints);
         }
 
         /// <summary>
@@ -2642,7 +2775,8 @@ namespace SWLOR.Game.Server.Service
         public static void SetNPCMaxHitPoints(uint creature, int desiredMaxHitPoints, bool restoreToFull = false)
         {
             desiredMaxHitPoints = System.Math.Clamp(desiredMaxHitPoints, 1, MaximumNPCHitPoints);
-            var originalCurrentHitPoints = GetCurrentHitPoints(creature);
+            // Base HP only: the native getter includes temporary HP, which must not become base HP.
+            var originalCurrentHitPoints = ObjectPlugin.GetCurrentHitPoints(creature);
 
             // Probe with the final budget, observe the engine-derived adjustment, then
             // compensate the base value. Repeating also handles NWN's one-HP-per-level
@@ -2680,6 +2814,8 @@ namespace SWLOR.Game.Server.Service
                     creature,
                     System.Math.Min(originalCurrentHitPoints, alignedMaxHitPoints));
             }
+
+            TemporaryHitPointEffects.ScheduleLimitCheck(creature);
         }
 
         /// <summary>
@@ -2730,6 +2866,7 @@ namespace SWLOR.Game.Server.Service
             if (GetLocalInt(self, SuppressNaturalRegenVariable) != 0)
                 return;
 
+            using var recorderAttribution = CombatRecorder.BeginAttribution(self, CombatRecordSourceKind.Regeneration);
             var maxFP = GetMaxFP(self);
             var maxSTM = GetMaxStamina(self);
             var previousFP = GetLocalInt(self, "FP");
@@ -2753,6 +2890,11 @@ namespace SWLOR.Game.Server.Service
 
             SetLocalInt(self, "FP", fp);
             SetLocalInt(self, "STAMINA", stm);
+            if (CombatRecorder.IsRecording)
+            {
+                CombatRecorder.RecordResourceChange(self, CombatRecordResource.FP, fp - previousFP, fp);
+                CombatRecorder.RecordResourceChange(self, CombatRecordResource.Stamina, stm - previousSTM, stm);
+            }
 
             if (fp != previousFP)
                 ExecuteScript("pc_fp_adjusted", self);

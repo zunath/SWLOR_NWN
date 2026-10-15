@@ -39,9 +39,10 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
                 .HasActivationDelay(1.5f)
                 .UsesAnimation(Animation.LoopingGetMid)
                 .PlaysSoundOnImpact("ksfx_healing")
-                .HasRecastDelay(RecastGroup.MedKit, 6f)
+                .HasRecastDelay(RecastGroup.MedKit, 10.5f)
                 .SkillType(SkillType.FirstAid)
                 .IsSingleTargetAbility()
+                .AllowsSelfQuickCast()
                 .IsHealingAbility()
                 .RequiresTarget()
                 .HasCustomValidation((activator, target, _, _) =>
@@ -64,9 +65,10 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
                 .HasActivationDelay(1.5f)
                 .UsesAnimation(Animation.LoopingGetMid)
                 .PlaysSoundOnImpact("ksfx_healing")
-                .HasRecastDelay(RecastGroup.MedKit, 6f)
+                .HasRecastDelay(RecastGroup.MedKit, 10.5f)
                 .SkillType(SkillType.FirstAid)
                 .IsSingleTargetAbility()
+                .AllowsSelfQuickCast()
                 .IsHealingAbility()
                 .RequiresTarget()
                 .HasCustomValidation((activator, target, _, _) =>
@@ -89,9 +91,10 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
                 .HasActivationDelay(1.5f)
                 .UsesAnimation(Animation.LoopingGetMid)
                 .PlaysSoundOnImpact("ksfx_healing")
-                .HasRecastDelay(RecastGroup.MedKit, 6f)
+                .HasRecastDelay(RecastGroup.MedKit, 10.5f)
                 .SkillType(SkillType.FirstAid)
                 .IsSingleTargetAbility()
+                .AllowsSelfQuickCast()
                 .IsHealingAbility()
                 .RequiresTarget()
                 .HasCustomValidation((activator, target, _, _) =>
@@ -114,9 +117,10 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
                 .HasActivationDelay(1.5f)
                 .UsesAnimation(Animation.LoopingGetMid)
                 .PlaysSoundOnImpact("ksfx_healing")
-                .HasRecastDelay(RecastGroup.MedKit, 6f)
+                .HasRecastDelay(RecastGroup.MedKit, 10.5f)
                 .SkillType(SkillType.FirstAid)
                 .IsSingleTargetAbility()
+                .AllowsSelfQuickCast()
                 .IsHealingAbility()
                 .RequiresTarget()
                 .HasCustomValidation((activator, target, _, _) =>
@@ -150,17 +154,16 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
 
         private static void ApplyMedKit(uint activator, uint target, int percent)
         {
-            var applied = false;
+            var treated = new List<uint>();
             foreach (var friendly in AbilityTargeting.GetFriendlyTargets(activator, target, false))
             {
                 HealPercent(activator, friendly, SkillType.FirstAid, percent);
                 FirstAidTreatmentAdjustments.ApplyTraumaMedicRiders(activator, friendly);
                 FirstAidTreatmentAdjustments.ApplyMedicalVisualEffect(friendly);
-                applied = true;
+                treated.Add(friendly);
             }
 
-            if (applied)
-                CombatPoint.AddCombatPointToAllTagged(activator, SkillType.FirstAid);
+            FirstAidTreatmentAdjustments.GrantCombatPoint(activator, treated);
         }
 
 
@@ -177,7 +180,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
             var amount = SWLOR.Game.Server.Feature.AbilityDefinition.AbilityEffectScaling.ScaleDirectEffect(baseAmount, GetAbilityScore(activator, ability));
             amount = Stat.ApplyOutgoingAbilityHealingAdjustment(activator, amount);
             amount = Ability.ApplyCombatReadinessToActivatedAbilityMagnitude(activator, amount);
-            amount = Stat.ApplyHealingReceivedAdjustment(target, amount);
+            amount = Stat.ApplyHealingReceivedAdjustment(target, amount, isInstantAbilityHeal: true);
 
             var hitPointsBeforeHealing = GetCurrentHitPoints(target);
             ApplyEffectToObject(DurationType.Instant, EffectHeal(amount), target);

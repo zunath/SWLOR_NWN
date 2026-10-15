@@ -87,8 +87,8 @@
   "Name": {
     "type": "cexolocstring",
     "value": {
-      "0": "Tatooine - Anchorhead - Verpex Bazaar",
-      "2": "Anchorhead - Verpex Bazaar"
+      "0": "[Prefab] Tatooine - Anchorhead - Verpex Bazaar",
+      "2": "[Prefab] Anchorhead - Verpex Bazaar"
     }
   },
   "NoRest": {

@@ -137,7 +137,7 @@
   },
   "Comment": {
     "type": "cexostring",
-    "value": "Capstone quest giver for Saber Cyclone in Dantooine Jedi Enclave Trial Halls."
+    "value": "Capstone quest giver for Saber Cyclone in Hutlar - Jedi Trial Halls."
   },
   "Con": {
     "type": "byte",
@@ -166,7 +166,7 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "Jora Sel is a saberstaff examiner tied to the Saber Cyclone capstone trials in Dantooine Jedi Enclave Trial Halls."
+      "0": "A broad-shouldered human man in a dusty traveling robe, a long staff wrapped in cloth at both ends propped beside him. He waits among the cargo crates with the stillness of someone used to sitting out sandstorms, but his eyes follow every movement in the square. Old scorch marks run along his forearms, the kind a practice blade leaves when it turns the wrong way."
     }
   },
   "Dex": {

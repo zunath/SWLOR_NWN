@@ -38,6 +38,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster
                 .HasRecastDelay(RecastGroup.Innervate, 12f)
                 .SkillType(SkillType.BeastMastery)
                 .IsSingleTargetAbility()
+                .AllowsSelfQuickCast()
                 .IsHealingAbility()
                 .RequiresTarget()
                 .HasCustomValidation((activator, target, _, _) =>
@@ -59,6 +60,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster
                 .HasRecastDelay(RecastGroup.Innervate, 12f)
                 .SkillType(SkillType.BeastMastery)
                 .IsSingleTargetAbility()
+                .AllowsSelfQuickCast()
                 .IsHealingAbility()
                 .RequiresTarget()
                 .HasCustomValidation((activator, target, _, _) =>
@@ -80,6 +82,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster
                 .HasRecastDelay(RecastGroup.Innervate, 12f)
                 .SkillType(SkillType.BeastMastery)
                 .IsSingleTargetAbility()
+                .AllowsSelfQuickCast()
                 .IsHealingAbility()
                 .RequiresTarget()
                 .HasCustomValidation((activator, target, _, _) =>
@@ -92,35 +95,39 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster
 
         private static void Innervate1ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
-            foreach (var friendly in SWLOR.Game.Server.Feature.AbilityDefinition.AbilityTargeting.GetFriendlyTargets(activator, target, false))
-            {
-                HealPercent(activator, friendly, 6);
-            }
+            ApplyInnervate(activator, target, 6);
         }
 
         private static void Innervate2ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
-            foreach (var friendly in SWLOR.Game.Server.Feature.AbilityDefinition.AbilityTargeting.GetFriendlyTargets(activator, target, false))
-            {
-                HealPercent(activator, friendly, 10);
-            }
+            ApplyInnervate(activator, target, 10);
         }
 
         private static void Innervate3ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
-            foreach (var friendly in SWLOR.Game.Server.Feature.AbilityDefinition.AbilityTargeting.GetFriendlyTargets(activator, target, false))
-            {
-                HealPercent(activator, friendly, 14);
-            }
+            ApplyInnervate(activator, target, 14);
         }
 
+        private static void ApplyInnervate(uint activator, uint target, int percent)
+        {
+            var healed = new List<uint>();
+            foreach (var friendly in SWLOR.Game.Server.Feature.AbilityDefinition.AbilityTargeting.GetFriendlyTargets(activator, target, false))
+            {
+                HealPercent(activator, friendly, percent);
+                healed.Add(friendly);
+            }
+
+            // Innervate is cast by a beast, so its owner earns the Beast Mastery credit.
+            if (healed.Count > 0)
+                CombatPoint.AddSupportCombatPoint(GetMaster(activator), healed, SkillType.BeastMastery);
+        }
 
         private static void HealPercent(uint activator, uint target, int percent)
         {
             var amount = GameMath.PercentOf(GetMaxHitPoints(target), percent);
             amount = Stat.ApplyOutgoingAbilityHealingAdjustment(activator, amount);
             amount = Ability.ApplyCombatReadinessToActivatedAbilityMagnitude(activator, amount);
-            amount = Stat.ApplyHealingReceivedAdjustment(target, amount);
+            amount = Stat.ApplyHealingReceivedAdjustment(target, amount, isInstantAbilityHeal: true);
 
             ApplyEffectToObject(DurationType.Instant, EffectHeal(amount), target);
             ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Healing_M), target);

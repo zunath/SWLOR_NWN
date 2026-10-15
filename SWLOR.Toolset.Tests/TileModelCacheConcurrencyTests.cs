@@ -26,6 +26,9 @@ namespace SWLOR.Toolset.Tests
         {
             get
             {
+                if (Support.ToolsetCorpusPaths.RepositoryRoot is { } configuredRoot)
+                    return configuredRoot;
+
                 var current = new DirectoryInfo(AppContext.BaseDirectory);
                 while (current != null)
                 {
@@ -44,7 +47,7 @@ namespace SWLOR.Toolset.Tests
         private static ResourceIndex BuildIndex() =>
             ResourceIndex.FromHakBuilderConfig(
                 Path.Combine(RepoRoot, "Build", "hakbuilder.json"),
-                Path.Combine(RepoRoot, "SWLOR_Haks"));
+                Support.ToolsetCorpusPaths.HaksRoot ?? Path.Combine(RepoRoot, "SWLOR_Haks"));
 
         /// <summary>Every distinct tile model of the interior tileset the corruption was first seen on.</summary>
         private static IReadOnlyList<string> ZsfTileModels(ResourceIndex index)

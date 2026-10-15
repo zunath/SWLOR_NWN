@@ -1,5 +1,8 @@
 using SWLOR.Toolset.Domain.Documents;
-using SWLOR.Toolset.Domain.Editing;
+using Nwn.Authoring.Areas.Placement;
+using Nwn.Authoring.Documents.Native;
+using Nwn.Authoring.Editing;
+using Nwn.Authoring.Documents.NimGff;
 using SWLOR.Toolset.Domain.Gff;
 using SWLOR.Toolset.Domain.Workspace;
 using SWLOR.NWN.Formats.Common;
@@ -194,7 +197,7 @@ namespace SWLOR.Toolset.Editors.Merchants
                     ? cached
                     : itemCache[resRef] = TryLoadItem(workspace, resRef);
 
-            var staged = new List<SaveService.StagedWrite>();
+            var staged = new List<AtomicFileGroupWriter.StagedWrite>();
             var areas = new List<string>();
             var updated = 0;
             try
@@ -254,18 +257,18 @@ namespace SWLOR.Toolset.Editors.Merchants
                         }
                     }
 
-                    staged.Add(SaveService.Stage(path, git.ToBytes()));
+                    staged.Add(SwlorFileWriteAccess.Writer.Stage(path, git.ToBytes()));
                     areas.Add(areaResRef);
                     updated += replacements.Count;
                 }
 
-                SaveService.CommitAll(staged);
+                SwlorFileWriteAccess.Writer.CommitAll(staged);
                 return (updated, areas);
             }
             catch
             {
                 foreach (var write in staged)
-                    SaveService.Discard(write);
+                    SwlorFileWriteAccess.Writer.Discard(write);
                 throw;
             }
         }

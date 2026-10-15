@@ -110,12 +110,14 @@
   },
   "DescIdentified": {
     "type": "cexolocstring",
-    "value": {}
+    "value": {
+      "0": "Practical panels and mismatched repairs give this Tunnel Drake armor its working appearance. It is equipment for the people sent to stand nearby while somebody more important collects the profit."
+    }
   },
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": ""
+      "0": "Practical panels and mismatched repairs give this Tunnel Drake armor its working appearance. It is equipment for the people sent to stand nearby while somebody more important collects the profit."
     }
   },
   "Identified": {

@@ -35,7 +35,7 @@ public class StealthRestTests
                 public const string CombatEntryWindowVariable = "STEALTH_COMBAT_ENTRY_WINDOW";
                 public enum ActionMode { Stealth }
                 public enum PerkType { Stealth }
-                public static bool Player, DM, NativeStealth, Combat, CombatWindow, OwnsPerk, ActionsCleared;
+                public static bool Player, DM, NativeStealth, Combat, CombatWindow, OwnsPerk, ActionsCleared, EnemiesReevaluated;
                 public static bool GetIsPC(uint creature) => Player;
                 public static bool GetIsDM(uint creature) => DM;
                 public static bool GetIsInCombat(uint creature) => Combat;
@@ -45,6 +45,12 @@ public class StealthRestTests
                 public static void AssignCommand(uint creature, Action action) => action();
                 public static void ClearAllActions() => ActionsCleared = true;
                 public static void ClearVerdictsForTarget(uint creature) { }
+                public static bool GetIsObjectValid(uint creature) => true;
+                public static void DelayCommand(float seconds, Action action) => action();
+            }
+            public static class Enmity
+            {
+                public static void ReevaluateEnemyAttackTargets(uint creature) => EnemiesReevaluated = true;
             }
             public class RestStatusEffect { }
             public class StealthStatusEffect { }
@@ -73,13 +79,15 @@ public class StealthRestTests
                     Combat = combat;
                     CombatWindow = combatWindow;
                     ActionsCleared = false;
+                    EnemiesReevaluated = false;
                     StatusEffect.Active.Clear();
                     if (resting) StatusEffect.Active.Add(typeof(RestStatusEffect));
 
                     OnStealthEntered();
 
                     return new[] { StatusEffect.HasStatusEffect<RestStatusEffect>(OBJECT_SELF),
-                        NativeStealth, StatusEffect.HasStatusEffect<StealthStatusEffect>(OBJECT_SELF), ActionsCleared };
+                        NativeStealth, StatusEffect.HasStatusEffect<StealthStatusEffect>(OBJECT_SELF), ActionsCleared,
+                        EnemiesReevaluated };
                 }
             }
             """;
@@ -97,13 +105,13 @@ public class StealthRestTests
     [Test]
     public void SuccessfulStealthEntry_EndsRestAndItsAnimationWhileRemainingHidden()
     {
-        Run().Should().Equal(false, true, true, true);
+        Run().Should().Equal(false, true, true, true, true);
     }
 
     [Test]
     public void SuccessfulStealthEntry_LeavesOtherActionsAloneWhenNotResting()
     {
-        Run(resting: false).Should().Equal(false, true, true, false);
+        Run(resting: false).Should().Equal(false, true, true, false, true);
     }
 
     [TestCase(false, true, false)]
@@ -112,20 +120,20 @@ public class StealthRestTests
     public void RejectedStealthEntry_PreservesRest(bool nativeStealth, bool ownsPerk, bool combat)
     {
         Run(nativeStealth: nativeStealth, ownsPerk: ownsPerk, combat: combat)
-            .Should().Equal(true, false, false, false);
+            .Should().Equal(true, false, false, false, false);
     }
 
     [Test]
     public void AuthorizedCombatStealthEntry_AlsoEndsRest()
     {
-        Run(combat: true, combatWindow: true).Should().Equal(false, true, true, true);
+        Run(combat: true, combatWindow: true).Should().Equal(false, true, true, true, true);
     }
 
     [TestCase(false, false)]
     [TestCase(true, true)]
     public void NPCAndDMStealthEntry_PreservesExistingBehavior(bool player, bool dm)
     {
-        Run(player: player, dm: dm).Should().Equal(true, true, false, false);
+        Run(player: player, dm: dm).Should().Equal(true, true, false, false, false);
     }
 
     private bool[] Run(bool resting = true, bool nativeStealth = true, bool ownsPerk = true,

@@ -47,6 +47,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .IsSingleTargetAbility()
                 .HasMaxRange(15f)
                 .RequiresTarget()
+                .HasActivationAction(BeginLeap)
+                .HasImpactDelay(LeapAnimationDurationSeconds)
                 .HasImpactAction(ForceLeap1ImpactAction)
                 .IsCastedAbility()
                 .PreservesNativeAnimationChoreography()
@@ -70,17 +72,19 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .IsSingleTargetAbility()
                 .HasMaxRange(18f)
                 .RequiresTarget()
+                .HasActivationAction(BeginLeap)
+                .HasImpactDelay(LeapAnimationDurationSeconds)
                 .HasImpactAction(ForceLeap2ImpactAction)
                 .IsCastedAbility()
                 .PreservesNativeAnimationChoreography()
                 .IsHostileAbility()
                 .BreaksStealth()
-                .RequirementFP(4);
+                .RequirementFP(5);
         }
 
         private static void ForceLeap1ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
-            LeapAndInterrupt(activator, target);
+            CompleteLeap(activator, target);
             Ability.ApplyCombatImpact(
                 activator,
                 target,
@@ -97,7 +101,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
 
         private static void ForceLeap2ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
-            LeapAndInterrupt(activator, target);
+            CompleteLeap(activator, target);
             Ability.ApplyCombatImpact(
                 activator,
                 target,
@@ -112,31 +116,39 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 targetVisualEffect: VisualEffect.Vfx_Imp_Pulse_Negative);
         }
 
-        private static void LeapAndInterrupt(uint activator, uint target)
+        private static bool BeginLeap(uint activator, uint target, int level, Location targetLocation)
         {
-            if (!GetIsObjectValid(target))
-                return;
+            if (!GetIsObjectValid(activator) || !GetIsObjectValid(target))
+                return false;
 
-            AssignCommand(target, () => ClearAllActions());
             AssignCommand(activator, () =>
             {
                 ClearAllActions();
                 ActionPlayAnimation(Animation.ForceLeap, LeapAnimationSpeed, LeapAnimationDurationSeconds);
-                ActionDoCommand(() =>
-                {
-                    if (!GetIsObjectValid(activator) || !GetIsObjectValid(target) ||
-                        GetIsDead(activator) || GetIsDead(target) || GetArea(activator) != GetArea(target))
-                        return;
+            });
 
-                    var destination = GetLeapDestination(activator, target);
-                    JumpToLocation(destination);
-                    SetFacingPoint(GetPosition(target));
-                    if (GetArea(activator) == GetAreaFromLocation(destination) &&
-                        GetDistanceBetweenLocations(GetLocation(activator), destination) < 2f &&
-                        GetIsReactionTypeHostile(target, activator))
-                        StatusEffect.ApplyStatusEffect(activator, target, typeof(StunnedStatusEffect),
-                            StunDurationSeconds, CombatDamageType.Force);
-                });
+            return true;
+        }
+
+        // The landing must not depend on the target surviving the impact damage.
+        private static void CompleteLeap(uint activator, uint target)
+        {
+            var destination = GetLeapDestination(activator, target);
+            ActionInterruption.ClearActions(target);
+            AssignCommand(activator, () =>
+            {
+                JumpToLocation(destination);
+                SetFacingPoint(GetPosition(target));
+
+                if (!GetIsObjectValid(target) || GetIsDead(activator) || GetIsDead(target) ||
+                    GetArea(activator) != GetArea(target))
+                    return;
+
+                if (GetArea(activator) == GetAreaFromLocation(destination) &&
+                    GetDistanceBetweenLocations(GetLocation(activator), destination) < 2f &&
+                    GetIsReactionTypeHostile(target, activator))
+                    StatusEffect.ApplyStatusEffect(activator, target, typeof(StunnedStatusEffect),
+                        StunDurationSeconds, CombatDamageType.Force);
             });
         }
 

@@ -1,8 +1,13 @@
+using System.Security.Cryptography;
 using FluentAssertions;
+using Nwn.Formats.Mtr;
 using NUnit.Framework;
-using SWLOR.NWN.Formats.Mdl;
+using Nwn.Formats.NativeModels;
+using Nwn.Preview.Scene;
 using SWLOR.Toolset.Domain.GameData.Resources;
 using SWLOR.Toolset.Domain.GameData.Tilesets;
+using Nwn.Formats.Tilesets;
+using Nwn.Authoring.Areas.Tiles;
 using SWLOR.Toolset.Domain.Render;
 using SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap;
 
@@ -39,7 +44,9 @@ namespace SWLOR.Toolset.Tests
 
         private static string HakBuilderConfigPath => Path.Combine(RepoRoot, "Build", "hakbuilder.json");
 
-        private static string HaksDirectory => Path.Combine(RepoRoot, "SWLOR_Haks");
+        private static string HaksDirectory =>
+            Environment.GetEnvironmentVariable("SWLOR_TEST_HAKS_ROOT") ??
+            Path.Combine(RepoRoot, "SWLOR_Haks");
 
         private static ResourceIndex BuildHakOnlyIndex() =>
             ResourceIndex.FromHakBuilderConfig(HakBuilderConfigPath, HaksDirectory);
@@ -208,6 +215,61 @@ namespace SWLOR.Toolset.Tests
         }
 
         [Test]
+        public void TextureLoader_LoadDds_ForNativeTintAti2MatchesIndependentCanonicalPixels()
+        {
+            var index = BuildHakOnlyIndex();
+            var identity = new ResourceIdentity(
+                "tm_e99bcc752e32b",
+                ResourceIdentity.TypeFromExtension("dds"));
+            index.TryLookup(identity, out var handle).Should().BeTrue(
+                "the explicit SWLOR_HAKS_ROOT fixture contains the pfa0 chest tint mask");
+            var source = handle.GetBytes();
+            Convert.ToHexStringLower(SHA256.HashData(source)).Should().Be(
+                "40f5b64a6c8b5e03fdf625cc4da881a1e30a34df84f2934ad1d545c7aea10e6e",
+                "the independent BC5 decode oracle is tied to this exact native resource");
+
+            var image = TextureLoader.LoadDds(
+                index,
+                "tm_e99bcc752e32b",
+                Nwn.Preview.Dds.DdsStoredRowOrder.BottomUp);
+
+            image.Should().NotBeNull();
+            image!.Width.Should().Be(512);
+            image.Height.Should().Be(512);
+            image.Pixels.Length.Should().Be(512 * 512 * 4);
+            Convert.ToHexStringLower(SHA256.HashData(image.Pixels)).Should().Be(
+                "c3def9de95a0b41bc28765529d2299d03b387b4e0f98e73e33ee538a7a995541",
+                "ATI2 RG must be decoded and standard NWN rows normalized bottom-up to top-down");
+            image.Pixels.Where((_, index) => index % 4 == 2).Should().OnlyContain(channel => channel == 0);
+            image.Pixels.Where((_, index) => index % 4 == 3).Should().OnlyContain(channel => channel == 255);
+        }
+
+        [Test]
+        public void TintMapTextureRenderer_ComposesNativeChestMaterialThroughSharedAti2Decoder()
+        {
+            var index = BuildHakOnlyIndex();
+            var material = MaterialResolver.TryParseMaterial(index, "pfh0_chest001");
+
+            material.Should().NotBeNull();
+            material!.RawShaderBindings.Should().ContainKey("customshaderFS").WhoseValue
+                .Should().Be("fs_plt_tinter");
+            MaterialResolver.GetTexture(material, 7).Should().Be("tm_e99bcc752e32b");
+
+            var image = TintMapTextureRenderer.Render(
+                index,
+                "pfh0_chest001",
+                material,
+                new Dictionary<int, int>(),
+                new Dictionary<string, int>());
+
+            image.Should().NotBeNull("the native ATI2 mask and palette resolve through the SWLOR resource index");
+            image!.Width.Should().Be(512);
+            image.Height.Should().Be(512);
+            image.Pixels.Length.Should().Be(512 * 512 * 4);
+            image.Pixels.Where((_, offset) => offset % 4 == 3).Should().OnlyContain(alpha => alpha == 255);
+        }
+
+        [Test]
         public void TextureLoader_LoadPlt_ForKnownCorpusTexture_DecodesToReportedDimensions()
         {
             var index = BuildHakOnlyIndex();
@@ -298,7 +360,7 @@ namespace SWLOR.Toolset.Tests
             var material = MaterialResolver.Parse(sample);
 
             material.RenderHint.Should().Be("NormalAndSpecMapped");
-            material.GetTexture(0).Should().Be("hutt_hbody");
+            MaterialResolver.GetTexture(material, 0).Should().Be("hutt_hbody");
         }
 
         [Test]
@@ -316,15 +378,16 @@ namespace SWLOR.Toolset.Tests
             var material = MaterialResolver.Parse(sample);
 
             material.RenderHint.Should().Be("Legacy");
-            material.GetTexture(0).Should().Be("base_diffuse");
-            material.GetTexture(1).Should().Be("base_normal");
-            material.CustomShaders.Should().ContainKey("customshaderVSH").WhoseValue.Should().Be("my_vertex_shader");
-            material.CustomShaders.Should().ContainKey("customshaderPSH").WhoseValue.Should().Be("my_pixel_shader");
-            material.Parameters.Should().ContainKey("useTexture1Alpha").WhoseValue.Should().Be("1.0");
-            material.GetAlphaTexture().Should().Be("base_normal");
-            material.GetAlphaSource().Should().Be(new MtrAlphaSource("base_normal", UsesRedChannel: false));
-            material.GetAlphaSource()!.Value.Cutoff.Should().Be(0.2f);
-            material.GetAlphaSource()!.Value.ByteCutoff.Should().Be(51);
+            MaterialResolver.GetTexture(material, 0).Should().Be("base_diffuse");
+            MaterialResolver.GetTexture(material, 1).Should().Be("base_normal");
+            material.RawShaderBindings.Should().ContainKey("customshaderVSH").WhoseValue.Should().Be("my_vertex_shader");
+            material.RawShaderBindings.Should().ContainKey("customshaderPSH").WhoseValue.Should().Be("my_pixel_shader");
+            material.Parameters["useTexture1Alpha"].TypeName.Should().Be("float");
+            material.Parameters["useTexture1Alpha"].RawValues.Should().Equal("1.0");
+            MaterialResolver.GetAlphaSource(material).Should().Be(new MtrAlphaSource("base_normal", UsesRedChannel: false));
+            MaterialResolver.GetAlphaSource(material)!.Value.Cutoff.Should().Be(0.2f);
+            MaterialResolver.GetAlphaSource(material)!.Value.ByteCutoff.Should().Be(51);
+            material.UnrecognizedDirectives.Should().ContainSingle(item => item.Text.Contains("someunknownparam"));
         }
 
         [Test]
@@ -336,9 +399,9 @@ namespace SWLOR.Toolset.Tests
 
             var material = MaterialResolver.Parse(sample);
 
-            material.GetAlphaSource().Should().Be(new MtrAlphaSource("cutout_mask", UsesRedChannel: true));
-            material.GetAlphaSource()!.Value.Cutoff.Should().Be(0.3f);
-            material.GetAlphaSource()!.Value.ByteCutoff.Should().Be(77);
+            MaterialResolver.GetAlphaSource(material).Should().Be(new MtrAlphaSource("cutout_mask", UsesRedChannel: true));
+            MaterialResolver.GetAlphaSource(material)!.Value.Cutoff.Should().Be(0.3f);
+            MaterialResolver.GetAlphaSource(material)!.Value.ByteCutoff.Should().Be(77);
         }
 
         [Test]
@@ -355,7 +418,7 @@ namespace SWLOR.Toolset.Tests
             var material = MaterialResolver.Parse(File.ReadAllText(path!));
 
             material.RenderHint.Should().Be("NormalAndSpecMapped");
-            material.GetTexture(0).Should().Be("hutt_hbody");
+            MaterialResolver.GetTexture(material, 0).Should().Be("hutt_hbody");
         }
 
         [Test]
@@ -439,6 +502,39 @@ namespace SWLOR.Toolset.Tests
             maps.Normal.Should().BeNull();
             maps.Specular.Should().BeNull();
             maps.Roughness.Should().BeNull();
+        }
+
+        [Test]
+        public void CloakAtlasPreview_PreservesPltLayersAcrossEveryAtlas()
+        {
+            var index = BuildHakOnlyIndex();
+            var material = MaterialResolver.TryParseMaterial(index, "cloaktint")!;
+            TintMapTextureRenderer.IsTintMapMaterial(material).Should().BeTrue();
+            foreach (var texture in new[] { 31, 32, 62, 64, 96, 107, 150 })
+            {
+                var source = SWLOR.NWN.Formats.Plt.PltReader.Read(Path.Combine(HaksDirectory, "sw_pt_cloak", $"cloak_{texture:000}.plt"));
+                var image = TintMapTextureRenderer.LoadTintMap(index, material, $"pfh0_cloak_{texture:000}")!;
+                image.Should().NotBeNull();
+                var scale = 512 / source.Width;
+                for (var pixel = 0; pixel < source.Pixels.Count; pixel += 37)
+                {
+                    var x = pixel % source.Width * scale;
+                    var y = 511 - pixel / source.Width * scale;
+                    (image.Pixels[(y * 512 + x) * 4 + 1] * 10 / 255).Should().Be(source.Pixels[pixel].Layer);
+                }
+            }
+            var cache = new PreviewTextureCache(index);
+            var colors = new Dictionary<string, int>
+            {
+                [TintMapVariable.GetItemGlobalColorStateName(TintMapLayerType.Cloth1)] = new TintMapColor(230, 40, 10).ToStoredValue()
+            };
+            var crescent = cache.Get("cloaktint", tintMapOverrides: colors, textureName: "pmh0_cloak_062");
+            var hammer = cache.Get("cloaktint", tintMapOverrides: colors, textureName: "pmh0_cloak_074");
+            crescent.Should().NotBeNull();
+            hammer.Should().NotBeNull();
+            crescent!.Pixels.Should().NotEqual(hammer!.Pixels, "shared cloak material must retain distinct texture tiles");
+            Enumerable.Range(0, crescent.Pixels.Length / 4).Should().Contain(pixel =>
+                crescent.Pixels[pixel * 4] > 40 && crescent.Pixels[pixel * 4] > crescent.Pixels[pixel * 4 + 1] * 3);
         }
 
         [Test]

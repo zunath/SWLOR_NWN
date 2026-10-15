@@ -64,7 +64,7 @@ public class NPCChaseTests
             public static class Stealth
             {
                 public static HashSet<uint> Hidden = new();
-                public static bool IsHiddenByInvisibility(uint observer, uint target) => Hidden.Contains(target);
+                public static bool IsHiddenFrom(uint observer, uint target) => Hidden.Contains(target);
             }
             public static class AI
             {

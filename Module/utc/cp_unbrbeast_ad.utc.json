@@ -34,7 +34,7 @@
   },
   "Comment": {
     "type": "cexostring",
-    "value": "Capstone quest creature for Unbreakable Beast in Dathomir Tarn Jungle Preserve."
+    "value": "Unbreakable Beast adept in Dathomir - Tarn Jungle Preserve."
   },
   "Con": {
     "type": "byte",
@@ -63,7 +63,7 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "A level 50 capstone quest enemy for Unbreakable Beast in Dathomir Tarn Jungle Preserve."
+      "0": "A young plated burrower, its armored back already scored by a breeder's goad. Pit-breeders in the Tarn Jungle Preserve beat its kind until they stopped flinching, called it training, and ran when the beasts broke loose."
     }
   },
   "Dex": {

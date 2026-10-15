@@ -25,16 +25,15 @@
     "value": 0
   },
   "DescIdentified": {
-    "id": 56620,
     "type": "cexolocstring",
     "value": {
-      "0": ""
+      "0": "Tiny scorch marks pepper the cuffs of these gloves. They have been repaired carefully enough to remain useful, though their owner never seems to have found a reason to stop working near the next spark."
     }
   },
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": ""
+      "0": "Tiny scorch marks pepper the cuffs of these gloves. They have been repaired carefully enough to remain useful, though their owner never seems to have found a reason to stop working near the next spark."
     }
   },
   "Identified": {
@@ -75,7 +74,7 @@
         },
         "CostValue": {
           "type": "word",
-          "value": 12
+          "value": 18
         },
         "Param1": {
           "type": "byte",
@@ -106,7 +105,7 @@
         },
         "CostValue": {
           "type": "word",
-          "value": 14
+          "value": 20
         },
         "Param1": {
           "type": "byte",
@@ -168,7 +167,7 @@
         },
         "CostValue": {
           "type": "word",
-          "value": 14
+          "value": 32
         },
         "Param1": {
           "type": "byte",
@@ -235,6 +234,26 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "spark_gloves"
+  },
+  "VarTable": {
+    "type": "list",
+    "value": [
+      {
+        "__struct_id": 0,
+        "Name": {
+          "type": "cexostring",
+          "value": "ITEM_STATS_REVISION"
+        },
+        "Type": {
+          "type": "dword",
+          "value": 1
+        },
+        "Value": {
+          "type": "int",
+          "value": 1
+        }
+      }
+    ]
   },
   "xModelPart1": {
     "type": "word",

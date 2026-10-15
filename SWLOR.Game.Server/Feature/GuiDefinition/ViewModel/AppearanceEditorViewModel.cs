@@ -296,6 +296,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             set => Set(value);
         }
 
+        public bool IsPlayerSettingsVisible
+        {
+            get => Get<bool>();
+            set => Set(value);
+        }
+
         public string ColorSheetResref
         {
             get => Get<string>();
@@ -808,7 +814,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             {
                 var appearanceType = GetAppearanceType(_target);
 
-                if (!_armorAppearances[appearanceType].Neck.Contains(GetItemAppearance(GetItem(), ItemAppearanceType.ArmorModel, (int)AppearanceArmor.Neck)) ||
+                if (!_armorAppearances[appearanceType].Neck.Prepend(0).Contains(GetItemAppearance(GetItem(), ItemAppearanceType.ArmorModel, (int)AppearanceArmor.Neck)) ||
                     !_armorAppearances[appearanceType].Torso.Contains(GetItemAppearance(GetItem(), ItemAppearanceType.ArmorModel, (int)AppearanceArmor.Torso)) ||
                     !_armorAppearances[appearanceType].Belt.Contains(GetItemAppearance(GetItem(), ItemAppearanceType.ArmorModel, (int)AppearanceArmor.Belt)) ||
                     !_armorAppearances[appearanceType].Pelvis.Contains(GetItemAppearance(GetItem(), ItemAppearanceType.ArmorModel, (int)AppearanceArmor.Pelvis)) ||
@@ -835,6 +841,18 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 {
                     return false;
                 }
+            }
+
+            // Helmets and cloaks must use a model offered for the wearer's appearance.
+            if (SelectedItemTypeIndex == 1 || SelectedItemTypeIndex == 2) // 1 = Helmet, 2 = Cloak
+            {
+                var appearanceType = GetAppearanceType(_target);
+                var partIds = SelectedItemTypeIndex == 1
+                    ? _armorAppearances[appearanceType].Helmet
+                    : _armorAppearances[appearanceType].Cloak;
+
+                if (!partIds.Contains(GetItemAppearance(item, ItemAppearanceType.SimpleModel, -1)))
+                    return false;
             }
 
             // Weapons must be registered in the weapon appearances list in order to show up.
@@ -934,11 +952,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             LoadBodyParts();
             RefreshTintMapAvailability();
             LoadTintMapEditor();
-            ShowHelmet = true;
-            ShowCloak = true;
-            LoadSettings();
+            InitializeSettings();
             ColorTargetText = string.Empty;
-            IsSettingsVisible = GetIsPC(_target) && !GetIsDM(_target) && !GetIsDMPossessed(_target);
             LoadItemTypeEditor();
 
             WatchOnClient(model => model.EditorTabToggleValue);
@@ -952,16 +967,20 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             WatchOnClient(model => model.CustomTintGreen);
             WatchOnClient(model => model.CustomTintBlue);
             _tintControlBindingsWatched = true;
+        }
 
-            if (GetIsPC(_target) && !GetIsDM(_target) && !GetIsDMPossessed(_target))
+        private void InitializeSettings()
+        {
+            IsPlayerSettingsVisible = GetIsPC(_target) && !GetIsDM(_target) && !GetIsDMPossessed(_target);
+            IsSettingsVisible = IsPlayerSettingsVisible || GetIsDM(Player) || GetIsDMPossessed(Player);
+            ShowHelmet = true;
+            ShowCloak = true;
+            LoadSettings();
+
+            if (IsPlayerSettingsVisible)
             {
-                IsSettingsVisible = true;
                 WatchOnClient(model => model.ShowHelmet);
                 WatchOnClient(model => model.ShowCloak);
-            }
-            else
-            {
-                IsSettingsVisible = false;
             }
         }
 
@@ -1858,7 +1877,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         private void LoadSettings()
         {
-            if (GetIsDM(_target) || GetIsDMPossessed(_target))
+            if (!GetIsPC(_target) || GetIsDM(_target) || GetIsDMPossessed(_target))
                 return;
 
             var playerId = GetObjectUUID(_target);
@@ -1902,7 +1921,10 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             if (SelectedItemTypeIndex == 0) // 0 = Armor
             {
-                NeckOptions = _armorAppearances[appearanceType].NeckOptions;
+                var neckOptions = new GuiBindingList<GuiComboEntry>();
+                foreach (var style in NeckAppearance.GetAvailableStyles(_target, _armorAppearances[appearanceType].Neck.Prepend(0)))
+                    neckOptions.Add(new GuiComboEntry(style.ToString(), style));
+                NeckOptions = neckOptions;
                 ChestOptions = _armorAppearances[appearanceType].TorsoOptions;
                 BeltOptions = _armorAppearances[appearanceType].BeltOptions;
                 PelvisOptions = _armorAppearances[appearanceType].PelvisOptions;
@@ -1910,7 +1932,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 foreach (var style in RobeAppearance.GetAvailableStyles(_target, _armorAppearances[appearanceType].Robe))
                     robeOptions.Add(new GuiComboEntry(style.ToString(), style));
                 RobeOptions = robeOptions;
-                if (RobeAppearance.RemoveUnavailableRobe(_target, item))
+                var repairedNeck = NeckAppearance.RemoveUnavailableNeck(_target, item);
+                if (RobeAppearance.RemoveUnavailableRobe(_target, item) || repairedNeck)
                     EquippedItemAppearance.Refresh(_target, item);
 
                 LeftShoulderOptions = _armorAppearances[appearanceType].ShoulderOptions;
@@ -2036,12 +2059,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             if (scale - Increment < appearance.MinimumScale)
             {
-                SendMessageToPC(_target, "You cannot decrease your height any further.");
+                SendScaleMessage("You cannot decrease your height any further.");
             }
             else
             {
                 SetObjectVisualTransform(_target, ObjectVisualTransform.Scale, scale - Increment);
-                SendMessageToPC(_target, $"Height: {GetObjectVisualTransform(_target, ObjectVisualTransform.Scale)}");
+                SendScaleMessage($"Height: {GetObjectVisualTransform(_target, ObjectVisualTransform.Scale)}");
             }
         };
         public Action OnIncreaseAppearanceScale() => () =>
@@ -2058,12 +2081,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             if (scale + Increment > appearance.MaximumScale)
             {
-                SendMessageToPC(_target, "You cannot increase your height any further.");
+                SendScaleMessage("You cannot increase your height any further.");
             }
             else
             {
                 SetObjectVisualTransform(_target, ObjectVisualTransform.Scale, scale + Increment);
-                SendMessageToPC(_target, $"Height: {GetObjectVisualTransform(_target, ObjectVisualTransform.Scale)}");
+                SendScaleMessage($"Height: {GetObjectVisualTransform(_target, ObjectVisualTransform.Scale)}");
             }
         };
 
@@ -2084,12 +2107,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             if (scale - Increment < appearance.MinimumHeadScale)
             {
-                SendMessageToPC(_target, "You cannot decrease your head size any further.");
+                SendScaleMessage("You cannot decrease your head size any further.");
             }
             else
             {
                 HelmetModelRenderer.SetHeadScale(_target, scale - Increment);
-                SendMessageToPC(_target, $"Head Size: {HelmetModelRenderer.GetHeadScale(_target)}");
+                SendScaleMessage($"Head Size: {HelmetModelRenderer.GetHeadScale(_target)}");
             }
         };
 
@@ -2110,14 +2133,20 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             if (scale + Increment > appearance.MaximumHeadScale)
             {
-                SendMessageToPC(_target, "You cannot increase your head size any further.");
+                SendScaleMessage("You cannot increase your head size any further.");
             }
             else
             {
                 HelmetModelRenderer.SetHeadScale(_target, scale + Increment);
-                SendMessageToPC(_target, $"Head Size: {HelmetModelRenderer.GetHeadScale(_target)}");
+                SendScaleMessage($"Head Size: {HelmetModelRenderer.GetHeadScale(_target)}");
             }
         };
+
+        private void SendScaleMessage(string message)
+        {
+            var owner = GetIsDMPossessed(Player) ? GetMaster(Player) : Player;
+            SendMessageToPC(owner, message);
+        }
 
         public Action OnSelectColorCategory() => () =>
         {
@@ -2618,6 +2647,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         public Action OnClickSaveSettings() => () =>
         {
+            if (!GetIsPC(_target) || GetIsDM(_target) || GetIsDMPossessed(_target))
+                return;
+
             var playerId = GetObjectUUID(_target);
             var dbPlayer = DB.Get<Player>(playerId);
 

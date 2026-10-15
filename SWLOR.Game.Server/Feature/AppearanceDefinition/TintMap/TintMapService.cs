@@ -118,12 +118,22 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
             QueueRefresh(GetPCItemLastUnequippedBy());
         }
 
-        [NWNEventHandler(ScriptName.OnSWLORItemEquipValidBefore)]
-        [NWNEventHandler(ScriptName.OnItemUnequipBefore)]
+        [NWNEventHandler(ScriptName.OnItemUnequipAfter)]
+        public static void OnAppearanceItemUnequipped()
+        {
+            var item = StringToObject(EventsPlugin.GetEventData("ITEM"));
+            if (GetIsObjectValid(item) && GetItemInSlot(InventorySlot.Head, OBJECT_SELF) != item)
+                HelmetModelRenderer.Release(item);
+        }
+
+        [NWNEventHandler(ScriptName.OnItemEquipValidateAfter)]
+        [NWNEventHandler(ScriptName.OnItemUnequipAfter)]
         public static void OnAppearanceEquipmentChanged()
         {
             var creature = OBJECT_SELF;
-            if (!Droid.IsDroid(creature) && !GetIsDMPossessed(creature))
+            // Module equipment events cover players. Native events also cover ordinary NPCs,
+            // including inventory changes made by a DM without possessing the wearer.
+            if (GetIsPC(creature) && !GetIsDMPossessed(creature))
                 return;
 
             QueueRefreshAndEditor(creature, GetMaster(creature));
@@ -148,10 +158,12 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
             var selections = TintMapModelResolver.GetCurrentSelections(creature);
             var rendersRobeRgb = RobeModelRenderer.Apply(creature, selections);
             HelmetModelRenderer.Apply(creature, selections);
+            NeckModelRenderer.Apply(creature);
             ProjectNativeRobeColors(creature, selections, rendersRobeRgb);
             ApplyEquippedHelmetColors(creature, selections, resetShaderOverrides);
             if (resetShaderOverrides)
                 ResetMaterialShaderUniforms(creature);
+            CloakTintRenderer.Apply(creature, selections);
             var creatureLayers = new HashSet<TintMapLayerType>();
             foreach (var selection in selections)
             {
@@ -1398,9 +1410,11 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
                 var armor = GetItemInSlot(InventorySlot.Chest, creature);
                 var recoveredRobe = GetIsObjectValid(armor) &&
                     RobeAppearance.RemoveUnavailableRobe(creature, armor);
+                var recoveredNeck = GetIsObjectValid(armor) &&
+                    NeckAppearance.RemoveUnavailableNeck(creature, armor);
                 CarryStoredEquipmentCustomColors(creature);
                 CarryStoredCreatureCustomColors(creature);
-                if (recoveredRobe)
+                if (recoveredRobe || recoveredNeck)
                     EquippedItemAppearance.Refresh(creature, armor, resetShaderOverrides);
                 else
                     ApplyCurrentColors(creature, resetShaderOverrides);

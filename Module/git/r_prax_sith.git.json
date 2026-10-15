@@ -214,6 +214,7 @@
           "type": "list",
           "value": [
             {
+              "__struct_id": 1,
               "AddCost": {
                 "type": "dword",
                 "value": 0
@@ -335,8 +336,7 @@
               "xModelPart1": {
                 "type": "word",
                 "value": 33
-              },
-              "__struct_id": 1
+              }
             },
             {
               "__struct_id": 2,
@@ -446,12 +446,14 @@
               },
               "DescIdentified": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "Dark outer layers soften the junctions of this Sith sorcerer's armor without hiding its weight. Its restrained ornament seems designed to suggest importance while leaving its precise source uncomfortably uncertain."
+                }
               },
               "Description": {
                 "type": "cexolocstring",
                 "value": {
-                  "0": ""
+                  "0": "Dark outer layers soften the junctions of this Sith sorcerer's armor without hiding its weight. Its restrained ornament seems designed to suggest importance while leaving its precise source uncomfortably uncertain."
                 }
               },
               "Identified": {
@@ -710,37 +712,6 @@
                     "Subtype": {
                       "type": "word",
                       "value": 0
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "ChanceAppear": {
-                      "type": "byte",
-                      "value": 100
-                    },
-                    "CostTable": {
-                      "type": "byte",
-                      "value": 26
-                    },
-                    "CostValue": {
-                      "type": "word",
-                      "value": 2
-                    },
-                    "Param1": {
-                      "type": "byte",
-                      "value": 255
-                    },
-                    "Param1Value": {
-                      "type": "byte",
-                      "value": 0
-                    },
-                    "PropertyName": {
-                      "type": "word",
-                      "value": 82
-                    },
-                    "Subtype": {
-                      "type": "word",
-                      "value": 5
                     }
                   },
                   {
@@ -1625,7 +1596,7 @@
               "__struct_id": 1,
               "Feat": {
                 "type": "word",
-                "value": 1862
+                "value": 2903
               }
             }
           ]
@@ -2660,6 +2631,7 @@
           "type": "list",
           "value": [
             {
+              "__struct_id": 1,
               "AddCost": {
                 "type": "dword",
                 "value": 0
@@ -2781,8 +2753,7 @@
               "xModelPart1": {
                 "type": "word",
                 "value": 44
-              },
-              "__struct_id": 1
+              }
             },
             {
               "__struct_id": 2,
@@ -2892,12 +2863,14 @@
               },
               "DescIdentified": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "Heavy panels sit close around this Sith warrior armor's main fittings. The fit suggests a fighter who regards a comfortable guard as more important than a comfortable place to wait for orders."
+                }
               },
               "Description": {
                 "type": "cexolocstring",
                 "value": {
-                  "0": ""
+                  "0": "Heavy panels sit close around this Sith warrior armor's main fittings. The fit suggests a fighter who regards a comfortable guard as more important than a comfortable place to wait for orders."
                 }
               },
               "Identified": {
@@ -5159,12 +5132,14 @@
               },
               "DescIdentified": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "This Sith lord's armor occupies space with a deliberate, formal severity. The workmanship is just as exacting beneath its outer plates, where impressive presentation has to answer to the less patient demands of being worn."
+                }
               },
               "Description": {
                 "type": "cexolocstring",
                 "value": {
-                  "0": ""
+                  "0": "This Sith lord's armor occupies space with a deliberate, formal severity. The workmanship is just as exacting beneath its outer plates, where impressive presentation has to answer to the less patient demands of being worn."
                 }
               },
               "Identified": {
@@ -7567,12 +7542,14 @@
               },
               "DescIdentified": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "A formal arrangement of substantial plates gives this Sith honor guard armor its imposing shape. The finish asks to be noticed, but its well-used fastenings suggest that standing ceremonially still is only part of the appointment."
+                }
               },
               "Description": {
                 "type": "cexolocstring",
                 "value": {
-                  "0": ""
+                  "0": "A formal arrangement of substantial plates gives this Sith honor guard armor its imposing shape. The finish asks to be noticed, but its well-used fastenings suggest that standing ceremonially still is only part of the appointment."
                 }
               },
               "Identified": {
@@ -9411,12 +9388,14 @@
               },
               "DescIdentified": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "A formal arrangement of substantial plates gives this Sith honor guard armor its imposing shape. The finish asks to be noticed, but its well-used fastenings suggest that standing ceremonially still is only part of the appointment."
+                }
               },
               "Description": {
                 "type": "cexolocstring",
                 "value": {
-                  "0": ""
+                  "0": "A formal arrangement of substantial plates gives this Sith honor guard armor its imposing shape. The finish asks to be noticed, but its well-used fastenings suggest that standing ceremonially still is only part of the appointment."
                 }
               },
               "Identified": {
@@ -11255,12 +11234,14 @@
               },
               "DescIdentified": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "A formal arrangement of substantial plates gives this Sith honor guard armor its imposing shape. The finish asks to be noticed, but its well-used fastenings suggest that standing ceremonially still is only part of the appointment."
+                }
               },
               "Description": {
                 "type": "cexolocstring",
                 "value": {
-                  "0": ""
+                  "0": "A formal arrangement of substantial plates gives this Sith honor guard armor its imposing shape. The finish asks to be noticed, but its well-used fastenings suggest that standing ceremonially still is only part of the appointment."
                 }
               },
               "Identified": {
@@ -13099,12 +13080,14 @@
               },
               "DescIdentified": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "A formal arrangement of substantial plates gives this Sith honor guard armor its imposing shape. The finish asks to be noticed, but its well-used fastenings suggest that standing ceremonially still is only part of the appointment."
+                }
               },
               "Description": {
                 "type": "cexolocstring",
                 "value": {
-                  "0": ""
+                  "0": "A formal arrangement of substantial plates gives this Sith honor guard armor its imposing shape. The finish asks to be noticed, but its well-used fastenings suggest that standing ceremonially still is only part of the appointment."
                 }
               },
               "Identified": {
@@ -14943,12 +14926,14 @@
               },
               "DescIdentified": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "A formal arrangement of substantial plates gives this Sith honor guard armor its imposing shape. The finish asks to be noticed, but its well-used fastenings suggest that standing ceremonially still is only part of the appointment."
+                }
               },
               "Description": {
                 "type": "cexolocstring",
                 "value": {
-                  "0": ""
+                  "0": "A formal arrangement of substantial plates gives this Sith honor guard armor its imposing shape. The finish asks to be noticed, but its well-used fastenings suggest that standing ceremonially still is only part of the appointment."
                 }
               },
               "Identified": {
@@ -26271,7 +26256,7 @@
         },
         "Y": {
           "type": "float",
-          "value": 72.00978851318359
+          "value": 71.85978698730469
         },
         "Z": {
           "type": "float",

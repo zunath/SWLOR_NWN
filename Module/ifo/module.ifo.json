@@ -11,6 +11,27 @@
         "__struct_id": 6,
         "Area_Name": {
           "type": "resref",
+          "value": "v_apartment_s00"
+        }
+      },
+      {
+        "__struct_id": 6,
+        "Area_Name": {
+          "type": "resref",
+          "value": "v_apartment_m00"
+        }
+      },
+      {
+        "__struct_id": 6,
+        "Area_Name": {
+          "type": "resref",
+          "value": "v_apartment_m01"
+        }
+      },
+      {
+        "__struct_id": 6,
+        "Area_Name": {
+          "type": "resref",
           "value": "pw_sc_tarnpres"
         }
       },
@@ -3239,6 +3260,27 @@
         "Area_Name": {
           "type": "resref",
           "value": "veles_tradecon"
+        }
+      },
+      {
+        "__struct_id": 6,
+        "Area_Name": {
+          "type": "resref",
+          "value": "hut_fdy_intake"
+        }
+      },
+      {
+        "__struct_id": 6,
+        "Area_Name": {
+          "type": "resref",
+          "value": "hut_fdy_assembly"
+        }
+      },
+      {
+        "__struct_id": 6,
+        "Area_Name": {
+          "type": "resref",
+          "value": "hut_fdy_core"
         }
       }
     ]

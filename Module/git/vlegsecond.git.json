@@ -1580,12 +1580,14 @@
               },
               "DescIdentified": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "A Sith trooper's armor, severe panels fitted over practical service layers. Its standardized appearance makes the wearer part of a recognizable military presence before any individual face or voice can matter."
+                }
               },
               "Description": {
                 "type": "cexolocstring",
                 "value": {
-                  "0": ""
+                  "0": "A Sith trooper's armor, severe panels fitted over practical service layers. Its standardized appearance makes the wearer part of a recognizable military presence before any individual face or voice can matter."
                 }
               },
               "Identified": {
@@ -3919,12 +3921,14 @@
               },
               "DescIdentified": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "A Sith trooper's armor, severe panels fitted over practical service layers. Its standardized appearance makes the wearer part of a recognizable military presence before any individual face or voice can matter."
+                }
               },
               "Description": {
                 "type": "cexolocstring",
                 "value": {
-                  "0": ""
+                  "0": "A Sith trooper's armor, severe panels fitted over practical service layers. Its standardized appearance makes the wearer part of a recognizable military presence before any individual face or voice can matter."
                 }
               },
               "Identified": {
@@ -5646,12 +5650,14 @@
               },
               "DescIdentified": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "A Sith trooper's armor, severe panels fitted over practical service layers. Its standardized appearance makes the wearer part of a recognizable military presence before any individual face or voice can matter."
+                }
               },
               "Description": {
                 "type": "cexolocstring",
                 "value": {
-                  "0": ""
+                  "0": "A Sith trooper's armor, severe panels fitted over practical service layers. Its standardized appearance makes the wearer part of a recognizable military presence before any individual face or voice can matter."
                 }
               },
               "Identified": {
@@ -7373,12 +7379,14 @@
               },
               "DescIdentified": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "A Sith trooper's armor, severe panels fitted over practical service layers. Its standardized appearance makes the wearer part of a recognizable military presence before any individual face or voice can matter."
+                }
               },
               "Description": {
                 "type": "cexolocstring",
                 "value": {
-                  "0": ""
+                  "0": "A Sith trooper's armor, severe panels fitted over practical service layers. Its standardized appearance makes the wearer part of a recognizable military presence before any individual face or voice can matter."
                 }
               },
               "Identified": {
@@ -9100,12 +9108,14 @@
               },
               "DescIdentified": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "A Sith trooper's armor, severe panels fitted over practical service layers. Its standardized appearance makes the wearer part of a recognizable military presence before any individual face or voice can matter."
+                }
               },
               "Description": {
                 "type": "cexolocstring",
                 "value": {
-                  "0": ""
+                  "0": "A Sith trooper's armor, severe panels fitted over practical service layers. Its standardized appearance makes the wearer part of a recognizable military presence before any individual face or voice can matter."
                 }
               },
               "Identified": {
@@ -11163,12 +11173,14 @@
               },
               "DescIdentified": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "Severe outer panels give this Legion armor its regimented silhouette. Its standardized fittings favor straightforward maintenance, letting an individual wearer disappear into a much larger military outline."
+                }
               },
               "Description": {
                 "type": "cexolocstring",
                 "value": {
-                  "0": ""
+                  "0": "Severe outer panels give this Legion armor its regimented silhouette. Its standardized fittings favor straightforward maintenance, letting an individual wearer disappear into a much larger military outline."
                 }
               },
               "Identified": {
@@ -12741,12 +12753,14 @@
               },
               "DescIdentified": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "Severe outer panels give this Legion armor its regimented silhouette. Its standardized fittings favor straightforward maintenance, letting an individual wearer disappear into a much larger military outline."
+                }
               },
               "Description": {
                 "type": "cexolocstring",
                 "value": {
-                  "0": ""
+                  "0": "Severe outer panels give this Legion armor its regimented silhouette. Its standardized fittings favor straightforward maintenance, letting an individual wearer disappear into a much larger military outline."
                 }
               },
               "Identified": {
@@ -90228,7 +90242,7 @@
         },
         "OnUsed": {
           "type": "resref",
-          "value": "x0_o2_use_chair"
+          "value": ""
         },
         "OnUserDefined": {
           "type": "resref",
@@ -102896,7 +102910,7 @@
         },
         "OnUsed": {
           "type": "resref",
-          "value": ""
+          "value": "jukebox_used"
         },
         "OnUserDefined": {
           "type": "resref",
@@ -102908,7 +102922,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "PortraitId": {
           "type": "word",
@@ -102920,7 +102934,7 @@
         },
         "Static": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Tag": {
           "type": "cexostring",
@@ -102960,7 +102974,7 @@
         },
         "Useable": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "Will": {
           "type": "byte",

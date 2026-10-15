@@ -46,10 +46,10 @@ public class FirstAidCombatUpgradeTests
     public void FirstAidAbilities_MatchCombatBible()
     {
         var medKit = new MedKitAbilityDefinition().BuildAbilities();
-        AssertAbility(medKit[FeatType.MedKit1], "Med Kit I", 1, RecastGroup.MedKit, 6f, 1.5f, 4, "med_supplies", 1, false, true);
-        AssertAbility(medKit[FeatType.MedKit2], "Med Kit II", 2, RecastGroup.MedKit, 6f, 1.5f, 6, "med_supplies", 1, false, true);
-        AssertAbility(medKit[FeatType.MedKit3], "Med Kit III", 3, RecastGroup.MedKit, 6f, 1.5f, 7, "med_supplies", 1, false, true);
-        AssertAbility(medKit[FeatType.MedKit4], "Med Kit IV", 4, RecastGroup.MedKit, 6f, 1.5f, 8, "med_supplies", 1, false, true);
+        AssertAbility(medKit[FeatType.MedKit1], "Med Kit I", 1, RecastGroup.MedKit, 10.5f, 1.5f, 4, "med_supplies", 1, false, true);
+        AssertAbility(medKit[FeatType.MedKit2], "Med Kit II", 2, RecastGroup.MedKit, 10.5f, 1.5f, 6, "med_supplies", 1, false, true);
+        AssertAbility(medKit[FeatType.MedKit3], "Med Kit III", 3, RecastGroup.MedKit, 10.5f, 1.5f, 7, "med_supplies", 1, false, true);
+        AssertAbility(medKit[FeatType.MedKit4], "Med Kit IV", 4, RecastGroup.MedKit, 10.5f, 1.5f, 8, "med_supplies", 1, false, true);
 
         var treatmentKit = new TreatmentKitAbilityDefinition().BuildAbilities();
         AssertAbility(treatmentKit[FeatType.TreatmentKit1], "Treatment Kit I", 1, RecastGroup.TreatmentKit, 6f, 1f, 3, "med_supplies", 1, false, true);
@@ -154,17 +154,14 @@ public class FirstAidCombatUpgradeTests
     {
         var root = FindRepositoryRoot();
         var medKit = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "FirstAid" / "MedKitAbilityDefinition.cs").FullName);
-        medKit.Should().Contain("CombatPoint.AddCombatPointToAllTagged(activator, SkillType.FirstAid);");
+        medKit.Should().Contain("FirstAidTreatmentAdjustments.GrantCombatPoint(activator, treated);");
 
         var treatmentKit = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "FirstAid" / "TreatmentKitAbilityDefinition.cs").FullName)
             .Replace("\r\n", "\n");
         treatmentKit.Should().Contain("StatusEffectCleanseType.TreatmentKit2");
         treatmentKit.Should().Contain("RemoveCleanseableStatusEffects(friendly, StatusEffectCleanseType.TreatmentKit2, false)");
-        treatmentKit.Split("GrantFirstAidCombatPointIfApplied(activator, affectedCount);").Length.Should().Be(4);
-        treatmentKit.Should().Contain(
-            "if (affectedCount > 0)\n" +
-            "                CombatPoint.AddCombatPointToAllTagged(activator, SkillType.FirstAid);");
-        treatmentKit.Split("CombatPoint.AddCombatPointToAllTagged(activator, SkillType.FirstAid);").Length.Should().Be(2);
+        treatmentKit.Split("FirstAidTreatmentAdjustments.GrantCombatPoint(activator, treated);").Length.Should().Be(4);
+        treatmentKit.Should().NotContain("AddCombatPointToAllTagged");
 
         var resuscitation = File.ReadAllText(
                 (root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "FirstAid" / "ResuscitationAbilityDefinition.cs").FullName)
@@ -172,6 +169,7 @@ public class FirstAidCombatUpgradeTests
         resuscitation.Should().Contain(
             "DelayCommand(0.1f, () =>\n" +
             "            {\n" +
+            "                using var recorderScope = CombatRecorder.BeginAbilityFeatAttribution(activator, FeatType.Resuscitation2);\n" +
             "                AbilityEffectScaling.ApplyActivatedScaledHeal(activator, target, 20);",
             "the rank-II heal must run after EffectResurrection settles or the engine silently discards it");
 
@@ -192,8 +190,8 @@ public class FirstAidCombatUpgradeTests
         koltoMist.Should().Contain("GetIsObjectValid(activator)");
         koltoMist.Should().Contain("GetCurrentHitPoints(activator) <= 0");
         koltoMist.Should().Contain("GetIsObjectValid(GetAreaFromLocation(location))");
-        koltoMist.Should().Contain("var applied = ApplyKoltoMistPulse(activator, location, percentPerTick, playPulseVisual);");
-        koltoMist.Should().Contain("if (applied && !combatPointAwarded)");
+        koltoMist.Should().Contain("var treated = ApplyKoltoMistPulse(activator, location, percentPerTick, playPulseVisual);");
+        koltoMist.Should().Contain("FirstAidTreatmentAdjustments.GrantCombatPoint(activator, treated, credited);");
         koltoMist.Should().Contain("visualEffect: VisualEffect.Vfx_Imp_Head_Heal");
         koltoMist.Should().Contain("StatusEffect.ApplyStatusEffect(");
         koltoMist.Should().Contain("typeof(KoltoMistHealingStatusEffect)");
@@ -208,8 +206,8 @@ public class FirstAidCombatUpgradeTests
         koltoMistStatus.Should().NotContain("protected override void Tick");
 
         var treatmentAdjustments = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "FirstAid" / "FirstAidTreatmentAdjustments.cs").FullName);
-        treatmentAdjustments.Should().Contain("CombatPoint.AddCombatPointToAllTagged(activator, SkillType.FirstAid);");
-        treatmentAdjustments.Should().Contain("GrantCombatPointIfApplied(uint activator, bool applied)");
+        treatmentAdjustments.Should().Contain("CombatPoint.AddSupportCombatPoint(activator, treated, SkillType.FirstAid");
+        treatmentAdjustments.Should().Contain("GrantCombatPoint(uint activator, IReadOnlyCollection<uint> treated");
         treatmentAdjustments.Should().Contain("if (!removedAilment)");
         treatmentAdjustments.Should().Contain("StatusEffect.ApplyStatusEffect(source, target, typeof(EmergencySealant1StatusEffect), 30f);");
         treatmentAdjustments.IndexOf("if (!removedAilment)", StringComparison.Ordinal)
@@ -225,7 +223,6 @@ public class FirstAidCombatUpgradeTests
             "FocusStimAbilityDefinition.cs",
             "InfusionAbilityDefinition.cs",
             "PainSuppressantAbilityDefinition.cs",
-            "ResuscitationAbilityDefinition.cs",
             "ShieldingAbilityDefinition.cs"
         };
 
@@ -236,6 +233,9 @@ public class FirstAidCombatUpgradeTests
                 "FirstAidTreatmentAdjustments.GrantCombatPoint",
                 $"{file} should award First Aid combat points after a successful support application");
         }
+
+        resuscitation.Split("CombatPoint.AddReviveSupportCombatPoint(activator, target, SkillType.FirstAid);").Length.Should().Be(3,
+            "a revived ally has no enmity, so both ranks must credit the enemies fighting its nearby party");
 
         var emergencySealantStatus = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "StatusEffectDefinition" / "EmergencySealant1StatusEffect.cs").FullName);
         emergencySealantStatus.Should().Contain("AbilityEffectScaling.ApplyScaledHeal(Source, creature, 1);");
@@ -430,12 +430,12 @@ public class FirstAidCombatUpgradeTests
             (FeatType.MedKit1, "Restores 8% of the target's maximum HP plus WIL scaling to a single target. Consumes medical supplies."),
             (FeatType.TreatmentKit1, "Removes Bleed and Poison from a single target. Consumes medical supplies."),
             (FeatType.KoltoMist1, "Deploys a 30-second healing mist cloud at a target location up to 15m away. Allies within 8m heal for 1% of maximum HP plus WIL scaling every 3 seconds. Consumes medical supplies."),
-            (FeatType.Resuscitation1, "Revives an unconscious target with 1 HP. Consumes medical supplies."),
+            (FeatType.Resuscitation1, "Revives an unconscious target with 1 HP. Consumes medical supplies. Taking damage interrupts the cast. Fails while a hostile player is within 20m, or, after a player kill, until your party near the target has gone 15 seconds without taking damage. A player can be revived mid-fight at most once every 5 minutes."),
             (FeatType.TreatmentKit2, "Removes Bleed, Poison, Toxin, Burn, Shock, and Disease from a single target. Consumes medical supplies."),
             (FeatType.MedKit2, "Restores 14% of the target's maximum HP plus WIL scaling to a single target. Consumes medical supplies."),
             (FeatType.Infusion1, "Grants a single target regeneration, healing 2% of maximum HP plus WIL scaling every 3 seconds for 30 seconds. Consumes medical supplies."),
             (FeatType.KoltoMist2, "Deploys a 30-second healing mist cloud at a target location up to 15m away. Allies within 8m heal for 2% of maximum HP plus WIL scaling every 3 seconds. Consumes medical supplies."),
-            (FeatType.Resuscitation2, "Revives an unconscious target with 20% HP plus WIL scaling. Consumes medical supplies."),
+            (FeatType.Resuscitation2, "Revives an unconscious target with 20% HP plus WIL scaling. Consumes medical supplies. Taking damage interrupts the cast. Fails while a hostile player is within 20m, or, after a player kill, until your party near the target has gone 15 seconds without taking damage. A player can be revived mid-fight at most once every 5 minutes."),
             (FeatType.MedKit3, "Restores 20% of the target's maximum HP plus WIL scaling to a single target. Consumes medical supplies."),
             (FeatType.TreatmentKit3, "Removes Bleed, Poison, Toxin, Burn, Shock, and Disease from a single target and grants 50% Fire Resistance, 50% Poison Resistance, 50% Electrical Resistance, 50% Ice Resistance, and 50% Trauma Resistance for 30 seconds."),
             (FeatType.EmergencyTriage1, "Restores 18% of the target's maximum HP plus WIL scaling instantly. Can target allies up to 15m away. Healing is doubled if the target is below 35% HP. Consumes extra medical supplies."),

@@ -1485,11 +1485,15 @@
               },
               "DescIdentified": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "This light travelling outfit folds into a modest space in a kit bag. Its easily reached fastenings suggest a garment designed for borrowed rooms, short stopovers, and departures that do not always happen on schedule."
+                }
               },
               "Description": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "This light travelling outfit folds into a modest space in a kit bag. Its easily reached fastenings suggest a garment designed for borrowed rooms, short stopovers, and departures that do not always happen on schedule."
+                }
               },
               "Identified": {
                 "type": "byte",
@@ -2489,12 +2493,14 @@
               },
               "DescIdentified": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "These rough street clothes have been altered and repaired without much concern for a tailor's approval. Their pockets sit close to the hands, where a few credits and other small persuasions are readily found."
+                }
               },
               "Description": {
                 "type": "cexolocstring",
                 "value": {
-                  "0": ""
+                  "0": "These rough street clothes have been altered and repaired without much concern for a tailor's approval. Their pockets sit close to the hands, where a few credits and other small persuasions are readily found."
                 }
               },
               "Identified": {
@@ -4226,12 +4232,14 @@
               },
               "DescIdentified": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "These rough street clothes have been altered and repaired without much concern for a tailor's approval. Their pockets sit close to the hands, where a few credits and other small persuasions are readily found."
+                }
               },
               "Description": {
                 "type": "cexolocstring",
                 "value": {
-                  "0": ""
+                  "0": "These rough street clothes have been altered and repaired without much concern for a tailor's approval. Their pockets sit close to the hands, where a few credits and other small persuasions are readily found."
                 }
               },
               "Identified": {
@@ -5746,12 +5754,14 @@
               },
               "DescIdentified": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "These rough street clothes have been altered and repaired without much concern for a tailor's approval. Their pockets sit close to the hands, where a few credits and other small persuasions are readily found."
+                }
               },
               "Description": {
                 "type": "cexolocstring",
                 "value": {
-                  "0": ""
+                  "0": "These rough street clothes have been altered and repaired without much concern for a tailor's approval. Their pockets sit close to the hands, where a few credits and other small persuasions are readily found."
                 }
               },
               "Identified": {

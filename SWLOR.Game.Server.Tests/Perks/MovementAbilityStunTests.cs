@@ -23,9 +23,9 @@ public class MovementAbilityStunTests
             "Feature", "AbilityDefinition", folder, definitionType.Name + ".cs"));
         var calls = CSharpSyntaxTree.ParseText(source).GetRoot().DescendantNodes()
             .OfType<InvocationExpressionSyntax>().ToArray();
-        var arrival = calls.Single(call => call.Expression.ToString() == "ActionDoCommand");
-        var stun = arrival.DescendantNodes().OfType<InvocationExpressionSyntax>()
-            .Single(call => call.Expression.ToString() == "StatusEffect.ApplyStatusEffect");
+        var stun = calls.Single(call => call.Expression.ToString() == "StatusEffect.ApplyStatusEffect");
+        var arrival = stun.Ancestors().OfType<InvocationExpressionSyntax>()
+            .First(call => call.Expression.ToString() is "ActionDoCommand" or "AssignCommand");
 
         stun.ArgumentList.Arguments.Take(4).Select(argument => argument.Expression.ToString())
             .Should().Equal("activator", "target", "typeof(StunnedStatusEffect)", "StunDurationSeconds");

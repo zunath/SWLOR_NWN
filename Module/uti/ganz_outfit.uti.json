@@ -110,11 +110,15 @@
   },
   "DescIdentified": {
     "type": "cexolocstring",
-    "value": {}
+    "value": {
+      "0": "Ganz's outfit has been altered for comfort around the shoulders without disturbing its outward shape. Its practical lining is a better guide to its owner's daily habits than the impression it makes across a room."
+    }
   },
   "Description": {
     "type": "cexolocstring",
-    "value": {}
+    "value": {
+      "0": "Ganz's outfit has been altered for comfort around the shoulders without disturbing its outward shape. Its practical lining is a better guide to its owner's daily habits than the impression it makes across a room."
+    }
   },
   "Identified": {
     "type": "byte",

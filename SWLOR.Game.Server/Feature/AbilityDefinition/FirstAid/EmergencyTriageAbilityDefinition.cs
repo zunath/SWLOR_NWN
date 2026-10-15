@@ -41,6 +41,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
                 .HasRecastDelay(RecastGroup.EmergencyTriage, 24f)
                 .SkillType(SkillType.FirstAid)
                 .IsSingleTargetAbility()
+                .AllowsSelfQuickCast()
                 .IsHealingAbility()
                 .HasMaxRange(RangeMeters)
                 .RequiresTarget()
@@ -59,7 +60,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
             var multiplier = GetCurrentHitPoints(friendly) <= GetMaxHitPoints(friendly) * 0.35f ? 2f : 1f;
             FirstAidTreatmentAdjustments.ApplyActivatedMedicalScaledHeal(activator, friendly, 18, multiplier: multiplier);
             FirstAidTreatmentAdjustments.ApplyTraumaMedicRiders(activator, friendly);
-            FirstAidTreatmentAdjustments.GrantCombatPoint(activator);
+            FirstAidTreatmentAdjustments.GrantCombatPoint(activator, friendly);
         }
     }
 }

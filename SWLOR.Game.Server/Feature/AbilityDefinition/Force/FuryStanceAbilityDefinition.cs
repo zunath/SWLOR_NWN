@@ -50,7 +50,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .UsesAnimation(Animation.CastOutAnimation)
                 .PlaysSoundOnImpact("ksfx_frc_buff")
                 .SkillType(SkillType.Force)
-                .RequirementFP(8);
+                .RequirementFP(10);
 
             ConfigureToggle(builder, typeof(FuryStance2StatusEffect));
         }

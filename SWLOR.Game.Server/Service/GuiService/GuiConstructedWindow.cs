@@ -15,6 +15,11 @@ namespace SWLOR.Game.Server.Service.GuiService
         public IReadOnlyList<string> LayoutFindings { get; set; }
 
         /// <summary>
+        /// When true, the window stays open when its player changes areas.
+        /// </summary>
+        public bool KeepsOpenOnAreaChange { get; set; }
+
+        /// <summary>
         /// The JSON text of each partial view, keyed by partial name.
         /// </summary>
         public IReadOnlyDictionary<string, string> PartialViewLayouts { get; set; }

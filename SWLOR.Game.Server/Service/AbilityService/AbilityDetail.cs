@@ -29,6 +29,7 @@ namespace SWLOR.Game.Server.Service.AbilityService
         public VisualEffect ActivationVisualEffect { get; set; }
         /// <summary>Finite receipt burst on each successfully affected recipient, once per impact or pulse.</summary>
         public VisualEffect SuccessfulImpactVisualEffect { get; set; } = VisualEffect.None;
+        public VisualEffect DamageImpactVisualEffect { get; set; } = VisualEffect.None;
         public string ActivationSound { get; set; }
         public string ImpactSound { get; set; }
         public RecastGroup RecastGroup { get; set; }
@@ -70,10 +71,15 @@ namespace SWLOR.Game.Server.Service.AbilityService
         public bool IsHealingAbility { get; set; }
         public bool DisplaysActivationMessage { get; set; }
         public bool BreaksStealth { get; set; }
+
+        /// <summary>Taking damage while this ability is being cast interrupts it.</summary>
+        public bool IsInterruptedByDamage { get; set; }
         public bool PreservesStealthDuringActivation { get; set; }
         public bool RequiresTarget { get; set; }
         public bool HasExplicitMaxRange { get; set; }
         public bool UsesActiveAttackTarget { get; set; }
+        /// <summary>Allows the optional cursor-free self-cast command for a self-legal support cast.</summary>
+        public bool AllowsSelfQuickCast { get; set; }
         public int AbilityLevel { get; set; }
         public SkillType SkillType { get; set; }
         public AbilityType CombatImpactDamageAbility { get; set; }

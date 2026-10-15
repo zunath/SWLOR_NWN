@@ -6,7 +6,7 @@
   },
   "Appearance_Type": {
     "type": "word",
-    "value": 10004
+    "value": 10015
   },
   "ArmorPart_RFoot": {
     "type": "byte",
@@ -126,7 +126,7 @@
   },
   "Comment": {
     "type": "cexostring",
-    "value": "Capstone quest creature for Saber Storm in Dantooine Jedi Enclave Trial Halls."
+    "value": "Sabrae Training Engine rare elite in Hutlar - Jedi Trial Halls."
   },
   "Con": {
     "type": "byte",
@@ -155,7 +155,7 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "A named rare elite of the Dantooine Jedi Enclave Trial Halls. Melee."
+      "0": "A tall training engine with a long blade, built to run the hardest trials in the Jedi halls hidden beneath a ruin in the Cloning Test Site. It wanders the corridors looking for students that left long ago, and its safeties no longer hold it back."
     }
   },
   "Dex": {
@@ -225,7 +225,7 @@
   "FirstName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Trialmaster Sabrae"
+      "0": "Sabrae Training Engine"
     }
   },
   "fortbonus": {
@@ -304,11 +304,11 @@
   },
   "PortraitId": {
     "type": "word",
-    "value": 1056
+    "value": 229
   },
   "Race": {
     "type": "byte",
-    "value": 15
+    "value": 167
   },
   "refbonus": {
     "type": "short",
@@ -569,7 +569,7 @@
   },
   "SoundSetFile": {
     "type": "word",
-    "value": 448
+    "value": 910
   },
   "SpecAbilityList": {
     "type": "list",
@@ -649,6 +649,21 @@
         "Value": {
           "type": "cexostring",
           "value": "DANENCLAVE_SABRAE_COMP,100,1"
+        }
+      },
+      {
+        "__struct_id": 0,
+        "Name": {
+          "type": "cexostring",
+          "value": "LOOT_TABLE_4"
+        },
+        "Type": {
+          "type": "dword",
+          "value": 3
+        },
+        "Value": {
+          "type": "cexostring",
+          "value": "MUSIC_DISCS,1,1"
         }
       }
     ]

@@ -25,16 +25,15 @@
     "value": 0
   },
   "DescIdentified": {
-    "id": 56620,
     "type": "cexolocstring",
     "value": {
-      "0": ""
+      "0": "The outer leather of these gloves has a coarse, unsettling grain. Close stitching holds it firmly around the fingers, turning a savage-looking material into something patiently tailored."
     }
   },
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": ""
+      "0": "The outer leather of these gloves has a coarse, unsettling grain. Close stitching holds it firmly around the fingers, turning a savage-looking material into something patiently tailored."
     }
   },
   "Identified": {

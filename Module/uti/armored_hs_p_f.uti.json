@@ -110,11 +110,15 @@
   },
   "DescIdentified": {
     "type": "cexolocstring",
-    "value": {}
+    "value": {
+      "0": "Purple panels distinguish this soldier's armor from a conventional service issue. Beneath the color, its substantial fittings remain the practical work of somebody expected to report for duty rather than pose for a portrait."
+    }
   },
   "Description": {
     "type": "cexolocstring",
-    "value": {}
+    "value": {
+      "0": "Purple panels distinguish this soldier's armor from a conventional service issue. Beneath the color, its substantial fittings remain the practical work of somebody expected to report for duty rather than pose for a portrait."
+    }
   },
   "Identified": {
     "type": "byte",

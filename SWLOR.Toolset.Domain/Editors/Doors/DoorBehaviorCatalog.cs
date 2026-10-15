@@ -1,6 +1,9 @@
+using NwnResRef = Nwn.Formats.Resources.ResourceReferenceRules;
 using SWLOR.NWN.Formats.Common;
 using SWLOR.Toolset.Domain.Documents;
+using Nwn.Authoring.Documents.Native;
 using SWLOR.Toolset.Domain.Editors.Behaviors;
+using Nwn.Authoring.Documents.NimGff;
 using SWLOR.Toolset.Domain.Gff;
 
 namespace SWLOR.Toolset.Domain.Editors.Doors
@@ -116,6 +119,7 @@ namespace SWLOR.Toolset.Domain.Editors.Doors
                     DisplayName = "Area Transition",
                     Group = "Movement",
                     Summary = "Walking through moves the player to another door or waypoint.",
+                    KeyRequiredRule = DoorKeyRequiredRule.FromKeyTagWhenLocked,
                     Fields = new[]
                     {
                         new DoorFieldDefinition
@@ -152,6 +156,7 @@ namespace SWLOR.Toolset.Domain.Editors.Doors
                     DisplayName = "Locked Door",
                     Group = "Access",
                     Summary = "The engine's lock: picked open, or opened by an item with the matching tag.",
+                    KeyRequiredRule = DoorKeyRequiredRule.FromKeyTag,
                     Fields = LockFields(conditional: false),
                     Manages = new[]
                     {

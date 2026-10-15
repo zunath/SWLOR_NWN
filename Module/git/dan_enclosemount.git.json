@@ -555,12 +555,14 @@
               },
               "DescIdentified": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "The formal arrangement of this Jedi Temple Guard armor conceals a practical, carefully maintained harness. It belongs to the watch at a threshold, where quiet discipline must remain useful when quiet ends."
+                }
               },
               "Description": {
                 "type": "cexolocstring",
                 "value": {
-                  "0": ""
+                  "0": "The formal arrangement of this Jedi Temple Guard armor conceals a practical, carefully maintained harness. It belongs to the watch at a threshold, where quiet discipline must remain useful when quiet ends."
                 }
               },
               "Identified": {
@@ -1998,12 +2000,14 @@
               },
               "DescIdentified": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "The formal arrangement of this Jedi Temple Guard armor conceals a practical, carefully maintained harness. It belongs to the watch at a threshold, where quiet discipline must remain useful when quiet ends."
+                }
               },
               "Description": {
                 "type": "cexolocstring",
                 "value": {
-                  "0": ""
+                  "0": "The formal arrangement of this Jedi Temple Guard armor conceals a practical, carefully maintained harness. It belongs to the watch at a threshold, where quiet discipline must remain useful when quiet ends."
                 }
               },
               "Identified": {
@@ -3441,12 +3445,14 @@
               },
               "DescIdentified": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "The formal arrangement of this Jedi Temple Guard armor conceals a practical, carefully maintained harness. It belongs to the watch at a threshold, where quiet discipline must remain useful when quiet ends."
+                }
               },
               "Description": {
                 "type": "cexolocstring",
                 "value": {
-                  "0": ""
+                  "0": "The formal arrangement of this Jedi Temple Guard armor conceals a practical, carefully maintained harness. It belongs to the watch at a threshold, where quiet discipline must remain useful when quiet ends."
                 }
               },
               "Identified": {
@@ -4884,12 +4890,14 @@
               },
               "DescIdentified": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "The formal arrangement of this Jedi Temple Guard armor conceals a practical, carefully maintained harness. It belongs to the watch at a threshold, where quiet discipline must remain useful when quiet ends."
+                }
               },
               "Description": {
                 "type": "cexolocstring",
                 "value": {
-                  "0": ""
+                  "0": "The formal arrangement of this Jedi Temple Guard armor conceals a practical, carefully maintained harness. It belongs to the watch at a threshold, where quiet discipline must remain useful when quiet ends."
                 }
               },
               "Identified": {
@@ -6327,12 +6335,14 @@
               },
               "DescIdentified": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "The formal arrangement of this Jedi Temple Guard armor conceals a practical, carefully maintained harness. It belongs to the watch at a threshold, where quiet discipline must remain useful when quiet ends."
+                }
               },
               "Description": {
                 "type": "cexolocstring",
                 "value": {
-                  "0": ""
+                  "0": "The formal arrangement of this Jedi Temple Guard armor conceals a practical, carefully maintained harness. It belongs to the watch at a threshold, where quiet discipline must remain useful when quiet ends."
                 }
               },
               "Identified": {

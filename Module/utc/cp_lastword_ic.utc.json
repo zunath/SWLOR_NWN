@@ -2,15 +2,15 @@
   "__data_type": "UTC ",
   "Appearance_Head": {
     "type": "byte",
-    "value": 244
+    "value": 40
   },
   "Appearance_Type": {
     "type": "word",
-    "value": 10180
+    "value": 10009
   },
   "ArmorPart_RFoot": {
     "type": "byte",
-    "value": 160
+    "value": 1
   },
   "BodyBag": {
     "type": "byte",
@@ -30,15 +30,15 @@
   },
   "BodyPart_LFoot": {
     "type": "byte",
-    "value": 160
+    "value": 1
   },
   "BodyPart_LHand": {
     "type": "byte",
-    "value": 63
+    "value": 1
   },
   "BodyPart_LShin": {
     "type": "byte",
-    "value": 243
+    "value": 1
   },
   "BodyPart_LShoul": {
     "type": "byte",
@@ -46,15 +46,15 @@
   },
   "BodyPart_LThigh": {
     "type": "byte",
-    "value": 241
+    "value": 1
   },
   "BodyPart_Neck": {
     "type": "byte",
-    "value": 107
+    "value": 1
   },
   "BodyPart_Pelvis": {
     "type": "byte",
-    "value": 237
+    "value": 1
   },
   "BodyPart_RBicep": {
     "type": "byte",
@@ -66,11 +66,11 @@
   },
   "BodyPart_RHand": {
     "type": "byte",
-    "value": 63
+    "value": 1
   },
   "BodyPart_RShin": {
     "type": "byte",
-    "value": 243
+    "value": 1
   },
   "BodyPart_RShoul": {
     "type": "byte",
@@ -78,11 +78,11 @@
   },
   "BodyPart_RThigh": {
     "type": "byte",
-    "value": 241
+    "value": 1
   },
   "BodyPart_Torso": {
     "type": "byte",
-    "value": 54
+    "value": 1
   },
   "Cha": {
     "type": "byte",
@@ -110,11 +110,11 @@
   },
   "Color_Hair": {
     "type": "byte",
-    "value": 1
+    "value": 16
   },
   "Color_Skin": {
     "type": "byte",
-    "value": 138
+    "value": 0
   },
   "Color_Tattoo1": {
     "type": "byte",
@@ -126,7 +126,7 @@
   },
   "Comment": {
     "type": "cexostring",
-    "value": "Capstone quest creature for Last Word in Anchorhead Canyon Range."
+    "value": "Last Word inner circle member in Tatooine - Anchorhead Canyon Range."
   },
   "Con": {
     "type": "byte",
@@ -155,7 +155,7 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "A level 50 capstone quest enemy for Last Word in Anchorhead Canyon Range."
+      "0": "An Echani gunman with a blaster pistol, one of the four who took over the canyon school after burying the old marshal's name in it. Some of them washed out of the marshal's classes and some never sat them, but together they have turned out ten years of duelists who think a fast draw is a verdict."
     }
   },
   "Dex": {
@@ -169,6 +169,13 @@
   "Equip_ItemList": {
     "type": "list",
     "value": [
+      {
+        "__struct_id": 2,
+        "EquippedRes": {
+          "type": "resref",
+          "value": "spy"
+        }
+      },
       {
         "__struct_id": 16,
         "EquippedRes": {
@@ -437,11 +444,11 @@
   },
   "PortraitId": {
     "type": "word",
-    "value": 4433
+    "value": 3665
   },
   "Race": {
     "type": "byte",
-    "value": 15
+    "value": 161
   },
   "refbonus": {
     "type": "short",

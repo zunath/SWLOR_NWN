@@ -339,12 +339,14 @@
               },
               "DescIdentified": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "Mahrani's coveralls have been repaired carefully around the working pockets and knees. Their familiar shape is more personal than any service stamp, built up through a long series of small adjustments and ordinary days."
+                }
               },
               "Description": {
                 "type": "cexolocstring",
                 "value": {
-                  "0": ""
+                  "0": "Mahrani's coveralls have been repaired carefully around the working pockets and knees. Their familiar shape is more personal than any service stamp, built up through a long series of small adjustments and ordinary days."
                 }
               },
               "Identified": {
@@ -3178,7 +3180,7 @@
               },
               "XOrientation": {
                 "type": "float",
-                "value": 5.380986103007298e-43
+                "value": 5.380986103007298e-043
               },
               "XPosition": {
                 "type": "float",
@@ -3801,7 +3803,7 @@
               },
               "XOrientation": {
                 "type": "float",
-                "value": 8.250845357944523e-42
+                "value": 8.250845357944523e-042
               },
               "XPosition": {
                 "type": "float",
@@ -4261,6 +4263,21 @@
                 "type": "int",
                 "value": 23
               }
+            },
+            {
+              "__struct_id": 0,
+              "Name": {
+                "type": "cexostring",
+                "value": "LOOT_TABLE_2"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 3
+              },
+              "Value": {
+                "type": "cexostring",
+                "value": "MUSIC_DISCS,1,1"
+              }
             }
           ]
         },
@@ -4513,7 +4530,7 @@
               },
               "XOrientation": {
                 "type": "float",
-                "value": 8.250845357944523e-42
+                "value": 8.250845357944523e-042
               },
               "XPosition": {
                 "type": "float",
@@ -5136,7 +5153,7 @@
               },
               "XOrientation": {
                 "type": "float",
-                "value": 5.380986103007298e-43
+                "value": 5.380986103007298e-043
               },
               "XPosition": {
                 "type": "float",
@@ -5596,6 +5613,21 @@
                 "type": "int",
                 "value": 23
               }
+            },
+            {
+              "__struct_id": 0,
+              "Name": {
+                "type": "cexostring",
+                "value": "LOOT_TABLE_2"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 3
+              },
+              "Value": {
+                "type": "cexostring",
+                "value": "MUSIC_DISCS,1,1"
+              }
             }
           ]
         },
@@ -5848,7 +5880,7 @@
               },
               "XOrientation": {
                 "type": "float",
-                "value": 8.250845357944523e-42
+                "value": 8.250845357944523e-042
               },
               "XPosition": {
                 "type": "float",
@@ -6471,7 +6503,7 @@
               },
               "XOrientation": {
                 "type": "float",
-                "value": 5.380986103007298e-43
+                "value": 5.380986103007298e-043
               },
               "XPosition": {
                 "type": "float",
@@ -6931,6 +6963,21 @@
                 "type": "int",
                 "value": 23
               }
+            },
+            {
+              "__struct_id": 0,
+              "Name": {
+                "type": "cexostring",
+                "value": "LOOT_TABLE_2"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 3
+              },
+              "Value": {
+                "type": "cexostring",
+                "value": "MUSIC_DISCS,1,1"
+              }
             }
           ]
         },
@@ -7183,7 +7230,7 @@
               },
               "XOrientation": {
                 "type": "float",
-                "value": 8.908087968876006e-39
+                "value": 8.908087968876006e-039
               },
               "XPosition": {
                 "type": "float",
@@ -7806,7 +7853,7 @@
               },
               "XOrientation": {
                 "type": "float",
-                "value": 5.380986103007298e-43
+                "value": 5.380986103007298e-043
               },
               "XPosition": {
                 "type": "float",
@@ -8265,6 +8312,21 @@
               "Value": {
                 "type": "int",
                 "value": 23
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Name": {
+                "type": "cexostring",
+                "value": "LOOT_TABLE_2"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 3
+              },
+              "Value": {
+                "type": "cexostring",
+                "value": "MUSIC_DISCS,1,1"
               }
             }
           ]
@@ -8997,12 +9059,14 @@
               },
               "DescIdentified": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "These guard robes marry a formal silhouette to a restrained, practical cut. The hems remain clear of the feet, leaving ceremony to the wearer instead of allowing it to become an obstacle to duty."
+                }
               },
               "Description": {
                 "type": "cexolocstring",
                 "value": {
-                  "0": ""
+                  "0": "These guard robes marry a formal silhouette to a restrained, practical cut. The hems remain clear of the feet, leaving ceremony to the wearer instead of allowing it to become an obstacle to duty."
                 }
               },
               "Identified": {
@@ -11147,12 +11211,14 @@
               },
               "DescIdentified": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "These guard robes marry a formal silhouette to a restrained, practical cut. The hems remain clear of the feet, leaving ceremony to the wearer instead of allowing it to become an obstacle to duty."
+                }
               },
               "Description": {
                 "type": "cexolocstring",
                 "value": {
-                  "0": ""
+                  "0": "These guard robes marry a formal silhouette to a restrained, practical cut. The hems remain clear of the feet, leaving ceremony to the wearer instead of allowing it to become an obstacle to duty."
                 }
               },
               "Identified": {
@@ -13297,12 +13363,14 @@
               },
               "DescIdentified": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "These guard robes marry a formal silhouette to a restrained, practical cut. The hems remain clear of the feet, leaving ceremony to the wearer instead of allowing it to become an obstacle to duty."
+                }
               },
               "Description": {
                 "type": "cexolocstring",
                 "value": {
-                  "0": ""
+                  "0": "These guard robes marry a formal silhouette to a restrained, practical cut. The hems remain clear of the feet, leaving ceremony to the wearer instead of allowing it to become an obstacle to duty."
                 }
               },
               "Identified": {
@@ -15447,12 +15515,14 @@
               },
               "DescIdentified": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "These guard robes marry a formal silhouette to a restrained, practical cut. The hems remain clear of the feet, leaving ceremony to the wearer instead of allowing it to become an obstacle to duty."
+                }
               },
               "Description": {
                 "type": "cexolocstring",
                 "value": {
-                  "0": ""
+                  "0": "These guard robes marry a formal silhouette to a restrained, practical cut. The hems remain clear of the feet, leaving ceremony to the wearer instead of allowing it to become an obstacle to duty."
                 }
               },
               "Identified": {

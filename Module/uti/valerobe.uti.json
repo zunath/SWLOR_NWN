@@ -110,12 +110,14 @@
   },
   "DescIdentified": {
     "type": "cexolocstring",
-    "value": {}
+    "value": {
+      "0": "Valerius' robe has a measured fall of cloth around its inner bindings. Small adjustments keep the familiar outline intact, allowing the garment to retain its composure through more than a motionless pose."
+    }
   },
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": ""
+      "0": "Valerius' robe has a measured fall of cloth around its inner bindings. Small adjustments keep the familiar outline intact, allowing the garment to retain its composure through more than a motionless pose."
     }
   },
   "Identified": {

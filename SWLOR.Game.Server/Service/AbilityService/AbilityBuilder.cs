@@ -389,6 +389,13 @@ namespace SWLOR.Game.Server.Service.AbilityService
             return this;
         }
 
+        /// <summary>Sets the impact visual applied only when the recipient receives positive damage.</summary>
+        public AbilityBuilder DisplaysVisualEffectOnDamage(VisualEffect visualEffect)
+        {
+            _activeAbility.DamageImpactVisualEffect = visualEffect;
+            return this;
+        }
+
         /// <summary>Sets the finite receipt burst used after a recipient is successfully affected.</summary>
         public AbilityBuilder DisplaysVisualEffectOnSuccessfulImpact(VisualEffect visualEffect)
         {
@@ -502,6 +509,13 @@ namespace SWLOR.Game.Server.Service.AbilityService
             _activeAbility.UsesActiveAttackTarget = true;
             _activeAbility.RequiresTarget = false;
 
+            return this;
+        }
+
+        /// <summary>Opts a self-legal support ability into the optional cursor-free self-cast command.</summary>
+        public AbilityBuilder AllowsSelfQuickCast()
+        {
+            _activeAbility.AllowsSelfQuickCast = true;
             return this;
         }
 
@@ -666,6 +680,16 @@ namespace SWLOR.Game.Server.Service.AbilityService
         public AbilityBuilder BreaksStealth()
         {
             _activeAbility.BreaksStealth = true;
+
+            return this;
+        }
+
+        /// <summary>
+        /// Taking damage while the ability is being cast interrupts it.
+        /// </summary>
+        public AbilityBuilder IsInterruptedByDamage()
+        {
+            _activeAbility.IsInterruptedByDamage = true;
 
             return this;
         }

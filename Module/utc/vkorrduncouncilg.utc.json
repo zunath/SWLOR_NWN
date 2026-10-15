@@ -142,7 +142,7 @@
   },
   "CurrentHitPoints": {
     "type": "short",
-    "value": 7467
+    "value": 6347
   },
   "DecayTime": {
     "type": "dword",
@@ -382,7 +382,7 @@
   },
   "HitPoints": {
     "type": "short",
-    "value": 7067
+    "value": 5947
   },
   "Int": {
     "type": "byte",
@@ -416,7 +416,7 @@
   },
   "MaxHitPoints": {
     "type": "short",
-    "value": 7467
+    "value": 6347
   },
   "NaturalAC": {
     "type": "byte",
@@ -804,6 +804,21 @@
         "Value": {
           "type": "cexostring",
           "value": "KORRIBAN_FORTRESS_RESOURCES,100,1"
+        }
+      },
+      {
+        "__struct_id": 0,
+        "Name": {
+          "type": "cexostring",
+          "value": "LOOT_TABLE_5"
+        },
+        "Type": {
+          "type": "dword",
+          "value": 3
+        },
+        "Value": {
+          "type": "cexostring",
+          "value": "MUSIC_DISCS_BOSS,5,1"
         }
       }
     ]

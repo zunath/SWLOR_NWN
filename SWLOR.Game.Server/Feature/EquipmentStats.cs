@@ -97,21 +97,9 @@ namespace SWLOR.Game.Server.Feature
             // If there's an item in the slot, run the stat removals first.
             var existingItemInSlot = GetItemInSlot(slot, creature);
             if (GetIsObjectValid(existingItemInSlot))
-            {
-                for (var ip = GetFirstItemProperty(existingItemInSlot); GetIsItemPropertyValid(ip); ip = GetNextItemProperty(existingItemInSlot))
-                {
-                    var type = GetItemPropertyType(ip);
-                    if (!_statChangeActions.ContainsKey(type)) continue;
-                    _statChangeActions[type](creature, existingItemInSlot, ip, false);
-                }
-            }
+                ApplyItemStats(creature, existingItemInSlot, false);
 
-            for (var ip = GetFirstItemProperty(item); GetIsItemPropertyValid(ip); ip = GetNextItemProperty(item))
-            {
-                var type = GetItemPropertyType(ip);
-                if (!_statChangeActions.ContainsKey(type)) continue;
-                _statChangeActions[type](creature, item, ip, true);
-            }
+            ApplyItemStats(creature, item, true);
         }
 
         /// <summary>
@@ -124,13 +112,39 @@ namespace SWLOR.Game.Server.Feature
             if (GetIsDM(creature) || GetIsDMPossessed(creature)) return;
 
             var item = StringToObject(EventsPlugin.GetEventData("ITEM"));
+            ApplyItemStats(creature, item, false);
+        }
 
+        /// <summary>
+        /// Adds or removes every stat an item grants its wearer, exactly as equipping or unequipping it does.
+        /// </summary>
+        /// <param name="creature">The wearer</param>
+        /// <param name="item">The equipped item</param>
+        /// <param name="isAdding">If true, the item's stats are added, if false they're removed</param>
+        public static void ApplyItemStats(uint creature, uint item, bool isAdding)
+        {
             for (var ip = GetFirstItemProperty(item); GetIsItemPropertyValid(ip); ip = GetNextItemProperty(item))
             {
                 var type = GetItemPropertyType(ip);
                 if (!_statChangeActions.ContainsKey(type)) continue;
-                _statChangeActions[type](creature, item, ip, false);
+                _statChangeActions[type](creature, item, ip, isAdding);
             }
+        }
+
+        /// <summary>
+        /// Adds or removes one amount of a stat for an equipped item, as a property of that size would on equip or unequip.
+        /// </summary>
+        /// <param name="creature">The wearer</param>
+        /// <param name="item">The equipped item the amount belongs to</param>
+        /// <param name="type">The stat's item property type</param>
+        /// <param name="subtype">The property subtype, such as the Defense damage type</param>
+        /// <param name="amount">The amount to add or remove</param>
+        /// <param name="isAdding">If true, the amount is added, if false it's removed</param>
+        public static void ApplyStatAmount(uint creature, uint item, ItemPropertyType type, int subtype, int amount, bool isAdding)
+        {
+            if (amount <= 0 || !_statChangeActions.TryGetValue(type, out var action))
+                return;
+            action(creature, item, ItemPropertyCustom(type, subtype, amount), isAdding);
         }
 
         [NWNEventHandler(ScriptName.OnItemEquipValidateAfter)]
@@ -202,7 +216,8 @@ namespace SWLOR.Game.Server.Feature
                     Stat.SetNPCMaxHitPoints(creature, maxHP);
                 }
 
-                if (GetCurrentHitPoints(creature) > GetMaxHitPoints(creature))
+                // Base HP only: the native getter includes temporary HP, which must not heal the NPC.
+                if (ObjectPlugin.GetCurrentHitPoints(creature) > GetMaxHitPoints(creature))
                 {
                     SetCurrentHitPoints(creature, GetMaxHitPoints(creature));
                 }

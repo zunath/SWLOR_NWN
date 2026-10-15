@@ -68,17 +68,26 @@ namespace SWLOR.Game.Server.Service.ShuttleService
 
         /// <summary>
         /// Computes the next scheduled departure time for a directional route, strictly after
-        /// utcNow and at most one period later.
+        /// utcNow, respecting an optional passenger boarding eligibility time.
         /// </summary>
         /// <param name="origin">The origin planet.</param>
         /// <param name="destination">The destination planet.</param>
         /// <param name="utcNow">The current UTC time to schedule from.</param>
+        /// <param name="notBeforeUtc">Optional earliest time this passenger may board.</param>
         /// <returns>The next departure time, in UTC.</returns>
-        public static DateTime GetNextDepartureUtc(PlanetType origin, PlanetType destination, DateTime utcNow)
+        public static DateTime GetNextDepartureUtc(PlanetType origin, PlanetType destination, DateTime utcNow, DateTime notBeforeUtc = default)
         {
+            // Include a departure exactly at the eligibility boundary, while still requiring
+            // every result to be strictly later than utcNow.
+            if (notBeforeUtc > utcNow)
+                utcNow = notBeforeUtc.AddTicks(-1);
+
             var period = GetPeriodSeconds(origin, destination);
             var offset = GetOffsetSeconds(origin, destination);
-            var t = (long)Math.Floor((utcNow - DateTime.UnixEpoch).TotalSeconds);
+            var elapsedTicks = utcNow.Ticks - DateTime.UnixEpoch.Ticks;
+            var t = elapsedTicks / TimeSpan.TicksPerSecond;
+            if (elapsedTicks < 0 && elapsedTicks % TimeSpan.TicksPerSecond != 0)
+                t--;
 
             long next;
             if (t < offset)

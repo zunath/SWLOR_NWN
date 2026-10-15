@@ -4,6 +4,7 @@ using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Feature;
 using SWLOR.Game.Server.Feature.AbilityDefinition;
 using SWLOR.Game.Server.Service.AbilityService;
+using SWLOR.Game.Server.Service.CombatRecorderService;
 using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.LogService;
 using SWLOR.Game.Server.Service.PerkService;
@@ -121,6 +122,8 @@ namespace SWLOR.Game.Server.Service
             trackedImpact.TriggeringWeaponDamage = GetIsObjectValid(triggeringWeapon)
                 ? WeaponDamage.GetEffectiveDMG(activator, triggeringWeapon)
                 : trackedImpact.TriggeringWeaponDamage;
+            if (GetIsObjectValid(triggeringWeapon))
+                trackedImpact.TriggeringWeaponDamageType = WeaponDamage.GetDamageType(triggeringWeapon);
             trackedImpact.ResolveDamageBonuses = () =>
             {
                 var abilitySkillType = Combat.GetAbilitySkillType(activator, ability);
@@ -174,11 +177,15 @@ namespace SWLOR.Game.Server.Service
             AbilityImpactSequence sequence = null,
             TrackedAbilityImpact sequenceOwner = null,
             bool resolveDamageBonusesFromOwner = false,
-            int? triggeringWeaponDamage = null)
+            int? triggeringWeaponDamage = null,
+            CombatDamageType? triggeringWeaponDamageType = null)
         {
             if (!GetIsObjectValid(activator) || ability == null)
                 return;
 
+            var abilitySkillType = Combat.GetAbilitySkillType(activator, ability);
+            var usesQueuedNaturalWeapon =
+                ability.ActivationType == AbilityActivationType.Weapon && ability.SkillType == SkillType.BeastMastery;
             _trackedAbilityImpacts[activator] = new TrackedAbilityImpact(
                 ability,
                 nextAbilityDamageBonus,
@@ -193,8 +200,10 @@ namespace SWLOR.Game.Server.Service
             {
                 SequenceOwner = sequenceOwner?.SequenceOwner ?? sequenceOwner,
                 TriggeringWeaponDamage = triggeringWeaponDamage ?? sequenceOwner?.TriggeringWeaponDamage ?? Combat.GetCombatImpactWeaponDamage(
-                    activator, Combat.GetAbilitySkillType(activator, ability),
-                    ability.ActivationType == AbilityActivationType.Weapon && ability.SkillType == SkillType.BeastMastery)
+                    activator, abilitySkillType, usesQueuedNaturalWeapon),
+                // Captured with the DMG so a delayed impact cannot pair it with a weapon swapped in later.
+                TriggeringWeaponDamageType = triggeringWeaponDamageType ?? sequenceOwner?.TriggeringWeaponDamageType ??
+                    Combat.GetCombatImpactWeaponDamageType(activator, abilitySkillType, usesQueuedNaturalWeapon)
             };
             if (resolveDamageBonusesFromOwner && sequenceOwner != null)
             {
@@ -219,6 +228,20 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>
+        /// Native current HP includes temporary HP. Subtract queued damage so another hit
+        /// cannot draw healing from health already claimed by an earlier impact.
+        /// </summary>
+        public static int GetRemainingDamageTargetHP(uint activator, uint target)
+        {
+            if (!GetIsObjectValid(target) || GetPlotFlag(target))
+                return 0;
+
+            var pendingDamage = GetTrackedAbilityImpact(activator)?.GetPendingDamage(target) ?? 0;
+            var currentHP = GetCurrentHitPoints(target);
+            return Combat.CalculateDamageEligibleForHealing(currentHP, currentHP, pendingDamage);
+        }
+
+        /// <summary>
         /// Reuses a payload's contributing sources within one impact. Delayed phases and
         /// recurring pulses receive fresh trackers, while conditions can still be checked per target.
         /// </summary>
@@ -237,10 +260,12 @@ namespace SWLOR.Game.Server.Service
         /// Retains the originating ability and cast sequence for recurring impacts without
         /// consuming another activation's pending bonuses or replacing its impact tracker.
         /// </summary>
-        public static Action CaptureRepeatedAbilityImpact(uint activator, Action impactAction, int baseDamage = 0)
+        public static Action CaptureRepeatedAbilityImpact(
+            uint activator, Action impactAction, int baseDamage = 0, bool requiresLivingActivator = true)
         {
             ArgumentNullException.ThrowIfNull(impactAction);
-            var applyImpact = CaptureRepeatedAbilityImpact<Action>(activator, action => action(), baseDamage);
+            var applyImpact = CaptureRepeatedAbilityImpact<Action>(
+                activator, action => action(), baseDamage, requiresLivingActivator);
             return () => applyImpact(impactAction);
         }
 
@@ -248,7 +273,8 @@ namespace SWLOR.Game.Server.Service
         /// Captures one cast's recurring impact context while allowing each delayed impact
         /// to retain its own target or payload. Bonuses are consumed only when an impact lands.
         /// </summary>
-        public static Action<T> CaptureRepeatedAbilityImpact<T>(uint activator, Action<T> impactAction, int baseDamage = 0)
+        public static Action<T> CaptureRepeatedAbilityImpact<T>(
+            uint activator, Action<T> impactAction, int baseDamage = 0, bool requiresLivingActivator = true)
         {
             ArgumentNullException.ThrowIfNull(impactAction);
             // Scheduled damage belongs to this cast. Resolve its armed bonuses now so
@@ -262,12 +288,14 @@ namespace SWLOR.Game.Server.Service
             var sequence = originatingImpact.Sequence;
             return payload =>
             {
-                if (!GetIsObjectValid(activator) || GetCurrentHitPoints(activator) <= 0)
+                if (!GetIsObjectValid(activator) || requiresLivingActivator && GetCurrentHitPoints(activator) <= 0)
                     return;
 
+                using var recorderAttribution = CombatRecorder.BeginAbilityAttribution(activator, ability);
                 var previousImpact = GetTrackedAbilityImpact(activator);
                 BeginAbilityImpact(activator, ability, 0, 0, countsAsAttackAttempt: false, sequence: sequence,
-                    triggeringWeaponDamage: originatingImpact.TriggeringWeaponDamage);
+                    triggeringWeaponDamage: originatingImpact.TriggeringWeaponDamage,
+                    triggeringWeaponDamageType: originatingImpact.TriggeringWeaponDamageType);
                 GetTrackedAbilityImpact(activator).CopyRepeatedDamageBonusesFrom(originatingImpact);
                 var completed = false;
                 try
@@ -276,6 +304,8 @@ namespace SWLOR.Game.Server.Service
                     var summary = EndAbilityImpact(activator);
                     originatingImpact.CompleteRepeatedDamageBonusImpact(summary.ImpactedTargetCount > 0);
                     completed = true;
+                    if (CombatRecorder.IsRecording)
+                        CombatRecorder.RecordRecurringAbilityImpact(activator, ability, summary);
                     Combat.ApplyAbilityImpactEffects(activator, summary);
                 }
                 finally
@@ -309,6 +339,7 @@ namespace SWLOR.Game.Server.Service
                     if (!GetIsObjectValid(activator) || GetCurrentHitPoints(activator) <= 0)
                         return;
 
+                    using var recorderAttribution = CombatRecorder.BeginAbilityAttribution(activator, originatingImpact.Ability);
                     var previousImpact = GetTrackedAbilityImpact(activator);
                     try
                     {
@@ -316,7 +347,8 @@ namespace SWLOR.Game.Server.Service
                         {
                             BeginAbilityImpact(activator, originatingImpact.Ability, 0, 0,
                                 countsAsAttackAttempt: false, sequence: originatingImpact.Sequence,
-                                triggeringWeaponDamage: originatingImpact.TriggeringWeaponDamage);
+                                triggeringWeaponDamage: originatingImpact.TriggeringWeaponDamage,
+                                triggeringWeaponDamageType: originatingImpact.TriggeringWeaponDamageType);
                             batchImpact = GetTrackedAbilityImpact(activator);
                             batchImpact.CopyRepeatedDamageBonusesFrom(originatingImpact);
                         }
@@ -333,6 +365,8 @@ namespace SWLOR.Game.Server.Service
                         {
                             _trackedAbilityImpacts[activator] = batchImpact;
                             var summary = EndAbilityImpact(activator);
+                            if (CombatRecorder.IsRecording)
+                                CombatRecorder.RecordRecurringAbilityImpact(activator, originatingImpact.Ability, summary);
                             Combat.ApplyAbilityImpactEffects(activator, summary);
                         }
                     }
@@ -502,6 +536,29 @@ namespace SWLOR.Game.Server.Service
             return Perk.GetForceAffinityMagnitudeMultiplier(
                 activator,
                 trackedImpact.Ability.EffectiveLevelPerkType);
+        }
+
+        public static float GetActiveForceAffinityRestorativeMagnitudeMultiplier(uint activator)
+        {
+            var trackedImpact = GetTrackedAbilityImpact(activator);
+            if (trackedImpact?.Ability?.SkillType != SkillType.Force)
+                return 1f;
+
+            return Perk.GetForceAffinityRestorativeMagnitudeMultiplier(
+                activator,
+                trackedImpact.Ability.EffectiveLevelPerkType);
+        }
+
+        public static int ApplyActiveForceAffinityRestorativeMagnitude(uint activator, int amount)
+        {
+            var trackedImpact = GetTrackedAbilityImpact(activator);
+            if (trackedImpact?.Ability?.SkillType != SkillType.Force)
+                return amount;
+
+            return Perk.ApplyForceAffinityRestorativeMagnitude(
+                activator,
+                trackedImpact.Ability.EffectiveLevelPerkType,
+                amount);
         }
 
         public static int ApplyActiveForceAffinityMagnitude(uint activator, int amount)
@@ -894,6 +951,55 @@ namespace SWLOR.Game.Server.Service
         private static void RemoveAuraEffect(uint source, uint recipient, Type type, bool sendsWornOffMessage = false)
         {
             StatusEffect.RemoveStatusEffect(recipient, type, source, sendsWornOffMessage);
+            RestoreStrongestAuraEffect(recipient, type, source);
+        }
+
+        /// <summary>
+        /// A stronger source replaces weaker copies of the same aura on a recipient. Once a source's copy
+        /// is removed, the strongest other source still covering the recipient applies its copy again.
+        /// </summary>
+        private static void RestoreStrongestAuraEffect(uint recipient, Type type, uint removedSource)
+        {
+            if (!GetIsObjectValid(recipient) || GetIsDead(recipient) || StatusEffect.HasStatusEffect(recipient, type))
+                return;
+
+            var strongestSource = OBJECT_INVALID;
+            PlayerAuraDetail strongestDetail = null;
+            var strongestSocial = int.MinValue;
+            foreach (var (source, playerAura) in _playerAuras)
+            {
+                if (source == removedSource)
+                    continue;
+
+                var detail = playerAura.Auras.FirstOrDefault(x => x.StatusEffect == type);
+                if (detail == null || !IsAuraRecipient(source, playerAura, detail, recipient))
+                    continue;
+
+                var social = GetAuraSourceSocial(source);
+                if (social <= strongestSocial)
+                    continue;
+
+                strongestSource = source;
+                strongestDetail = detail;
+                strongestSocial = social;
+            }
+
+            if (strongestDetail != null)
+                ApplyAuraEffect(strongestSource, recipient, type, strongestDetail.SuccessfulImpactVisualEffect);
+        }
+
+        private static bool IsAuraRecipient(uint source, PlayerAura playerAura, PlayerAuraDetail detail, uint recipient)
+        {
+            if (detail.TargetsSelf && source == recipient)
+                return true;
+
+            if (detail.TargetsParty && playerAura.PartyMembersInRange.Contains(recipient) && Party.IsInParty(source, recipient))
+                return true;
+
+            return detail.TargetsEnemies &&
+                   playerAura.CreaturesInRange.Contains(recipient) &&
+                   !GetIsDMPossessed(recipient) && !GetIsDM(recipient) &&
+                   (GetIsEnemy(source, recipient) || GetIsEnemy(recipient, source));
         }
 
         private static bool HasEqualOrStrongerAuraEffect(uint source, uint recipient, Type type)
@@ -1000,6 +1106,21 @@ namespace SWLOR.Game.Server.Service
 
             SendMessageToPC(activator, ColorToken.Green($"Aura '{effectName}' activated."));
             ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Fnf_Sound_Burst), activator);
+        }
+
+        /// <summary>
+        /// Retrieves the creatures a self-and-party aura applies to: the activator and the party
+        /// members currently inside its aura range.
+        /// </summary>
+        /// <param name="activator">The creature whose aura is checked.</param>
+        /// <returns>The activator followed by its party members in aura range.</returns>
+        public static List<uint> GetSelfAndPartyAuraRecipients(uint activator)
+        {
+            var recipients = new List<uint> { activator };
+            if (_playerAuras.TryGetValue(activator, out var aura))
+                recipients.AddRange(aura.PartyMembersInRange.Where(member => Party.IsInParty(activator, member)));
+
+            return recipients;
         }
 
         public static bool RemoveAura(uint activator, Type type, bool sendsWornOffMessage = false)
@@ -1111,6 +1232,8 @@ namespace SWLOR.Game.Server.Service
         /// <param name="target">The creature to remove from all aura ranges.</param>
         public static void RemoveCreatureFromAllAuraRanges(uint target)
         {
+            // Leave every range first so removing one aura copy cannot restore another source's copy.
+            var removedEffects = new List<(uint Leader, Type StatusEffect)>();
             foreach (var (leader, playerAura) in _playerAuras)
             {
                 if (playerAura.PartyMembersInRange.Remove(target))
@@ -1118,7 +1241,7 @@ namespace SWLOR.Game.Server.Service
                     foreach (var aura in playerAura.Auras)
                     {
                         if (aura.TargetsParty)
-                            RemoveAuraEffect(leader, target, aura.StatusEffect);
+                            removedEffects.Add((leader, aura.StatusEffect));
                     }
                 }
 
@@ -1127,9 +1250,14 @@ namespace SWLOR.Game.Server.Service
                     foreach (var aura in playerAura.Auras)
                     {
                         if (aura.TargetsEnemies)
-                            RemoveAuraEffect(leader, target, aura.StatusEffect);
+                            removedEffects.Add((leader, aura.StatusEffect));
                     }
                 }
+            }
+
+            foreach (var (leader, statusEffect) in removedEffects)
+            {
+                RemoveAuraEffect(leader, target, statusEffect);
             }
         }
 
@@ -1156,6 +1284,60 @@ namespace SWLOR.Game.Server.Service
                 {
                     if (aura.TargetsParty)
                         RemoveAuraEffect(leader, target, aura.StatusEffect);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Enrolls a creature that just joined a party in the party auras it is already standing in,
+        /// and enrolls the party members already standing in its own aura. The aura enter event only
+        /// fires on entry, so without this they would wait until they leave and re-enter the aura.
+        /// </summary>
+        /// <param name="member">The creature that joined the party.</param>
+        public static void EnrollPartyMemberInAuraRanges(uint member)
+        {
+            var area = GetArea(member);
+            if (!GetIsObjectValid(area))
+                return;
+
+            foreach (var aoe in ObjectSnapshot.InArea(area, ObjectType.AreaOfEffect))
+            {
+                var leader = GetAreaOfEffectCreator(aoe);
+                if (leader != member && !Party.IsInParty(leader, member))
+                    continue;
+
+                if (GetEventScript(aoe, EventScript.AreaOfEffect_OnObjectEnter) != ScriptName.OnAuraEnter)
+                    continue;
+
+                var creaturesInside = ObjectSnapshot.Capture(
+                    () => GetFirstInPersistentObject(aoe),
+                    () => GetNextInPersistentObject(aoe),
+                    GetIsObjectValid);
+
+                foreach (var creature in creaturesInside)
+                {
+                    if (creature == leader || GetIsDead(creature))
+                        continue;
+
+                    if (leader == member ? Party.IsInParty(leader, creature) : creature == member)
+                        AddPartyMemberToAuraRange(leader, creature);
+                }
+            }
+        }
+
+        private static void AddPartyMemberToAuraRange(uint leader, uint member)
+        {
+            if (!_playerAuras.ContainsKey(leader))
+                _playerAuras.Add(leader, new PlayerAura());
+
+            if (!_playerAuras[leader].PartyMembersInRange.Contains(member))
+                _playerAuras[leader].PartyMembersInRange.Add(member);
+
+            foreach (var detail in _playerAuras[leader].Auras)
+            {
+                if (detail.TargetsParty)
+                {
+                    ApplyAuraEffect(leader, member, detail.StatusEffect, detail.SuccessfulImpactVisualEffect);
                 }
             }
         }
@@ -1296,16 +1478,7 @@ namespace SWLOR.Game.Server.Service
             // Party Members
             if (Party.IsInParty(self, entering))
             {
-                if (!_playerAuras[self].PartyMembersInRange.Contains(entering))
-                    _playerAuras[self].PartyMembersInRange.Add(entering);
-
-                foreach (var detail in _playerAuras[self].Auras)
-                {
-                    if (detail.TargetsParty)
-                    {
-                        ApplyAuraEffect(self, entering, detail.StatusEffect, detail.SuccessfulImpactVisualEffect);
-                    }
-                }
+                AddPartyMemberToAuraRange(self, entering);
             }
 
             // Enemies
@@ -1539,7 +1712,8 @@ namespace SWLOR.Game.Server.Service
             bool resolvesHit = true,
             bool canCritical = true,
             float impactFlashDuration = DefaultImpactFlashDuration,
-            bool useUnscaledDamage = false)
+            bool useUnscaledDamage = false,
+            Action<TelegraphGeometry> onGeometryResolved = null)
         {
             PrepareCombatImpactDamageBonuses(activator, baseDamage);
             RecordAbilityImpactShape(activator, skillType, true);
@@ -1549,6 +1723,9 @@ namespace SWLOR.Game.Server.Service
             var geometry = ResolveCombatImpactGeometry(
                 activator, target, targetLocation, shape, lengthOrRadius, width, centerOnActivator, backOffsetOrigin,
                 trackedImpact?.ActivationAreaTelegraphs);
+
+            // Directional visuals must use the same captured footprint as the damage.
+            onGeometryResolved?.Invoke(geometry);
 
             if (telegraphDuration <= 0f)
             {
@@ -2360,7 +2537,7 @@ namespace SWLOR.Game.Server.Service
             DamageType? effectDamageType = null,
             bool firstHostileAbilityHitDamageBonusApplied = false)
         {
-            using var damageDerivedHealing = Combat.BeginDamageDerivedHealing(activator);
+            using var damageDerivedHealing = Combat.BeginDamageDerivedHealing(activator, target);
             var trackedImpact = GetTrackedAbilityImpact(activator);
 
             // Register the combat point before applying damage. A lethal hit resolves the target's
@@ -2443,6 +2620,13 @@ namespace SWLOR.Game.Server.Service
                 trackedImpact == null || trackedImpact.Summary.ImpactedTargetCount == 0,
                 appliedStatusCategories);
 
+            if (damage > 0 && trackedImpact?.Ability is { } impactAbility &&
+                impactAbility.DamageImpactVisualEffect != VisualEffect.None)
+            {
+                var damageVisual = EffectVisualEffect(impactAbility.DamageImpactVisualEffect);
+                ApplyEffectToObject(DurationType.Instant, damageVisual, target);
+            }
+
             if (damage > 0 || statusApplied)
             {
                 if (trackedImpact?.VisualEffects.Effect is { } authoredEffect && authoredEffect != VisualEffect.None)
@@ -2454,6 +2638,36 @@ namespace SWLOR.Game.Server.Service
             afterSuccessfulHit?.Invoke(target);
             RecordAbilityImpactTarget(activator, target, skillType, false);
             return damage;
+        }
+
+        /// <summary>
+        /// An impact that adds weapon DMG also takes that weapon's element, matching auto-attacks.
+        /// Like native weapon resolution, an element only replaces Physical; authored non-Physical types stay.
+        /// </summary>
+        public static CombatDamageType GetWeaponAbilityDamageType(uint activator, SkillType skillType, CombatDamageType damageType)
+        {
+            return ResolveWeaponAbilityDamageType(activator, skillType, damageType, GetTrackedAbilityImpact(activator));
+        }
+
+        private static CombatDamageType ResolveWeaponAbilityDamageType(
+            uint activator,
+            SkillType skillType,
+            CombatDamageType damageType,
+            TrackedAbilityImpact trackedImpact)
+        {
+            var usesQueuedNaturalWeapon = UsesQueuedNaturalWeapon(trackedImpact, skillType);
+            if (damageType != CombatDamageType.Physical ||
+                !Combat.IncludesCombatImpactWeaponDamage(skillType, usesQueuedNaturalWeapon))
+                return damageType;
+
+            return trackedImpact?.TriggeringWeaponDamageType ??
+                   Combat.GetCombatImpactWeaponDamageType(activator, skillType, usesQueuedNaturalWeapon);
+        }
+
+        private static bool UsesQueuedNaturalWeapon(TrackedAbilityImpact trackedImpact, SkillType skillType)
+        {
+            return trackedImpact?.Ability?.ActivationType == AbilityActivationType.Weapon &&
+                   skillType == SkillType.BeastMastery;
         }
 
         private static int ApplyHostileCombatImpact(
@@ -2483,8 +2697,11 @@ namespace SWLOR.Game.Server.Service
             bool canCritical = true,
             bool useUnscaledDamage = false)
         {
-            using var damageDerivedHealing = Combat.BeginDamageDerivedHealing(activator);
+            using var damageDerivedHealing = Combat.BeginDamageDerivedHealing(activator, target);
             var trackedImpact = GetTrackedAbilityImpact(activator);
+            // Unscaled impacts add no weapon DMG, so they keep their authored type.
+            if (!useUnscaledDamage)
+                damageType = ResolveWeaponAbilityDamageType(activator, skillType, damageType, trackedImpact);
             Combat.TrackHostileAbilityActivity(activator);
             Combat.TrackHostileDefensiveCombatEntryActivity(target, activator);
             var perkType = trackedImpact?.Ability?.EffectiveLevelPerkType ?? PerkType.Invalid;
@@ -2658,6 +2875,9 @@ namespace SWLOR.Game.Server.Service
             if (!GetIsObjectValid(activator) || !GetIsObjectValid(target) || ability == null)
                 return;
 
+            if (CombatRecorder.IsRecording)
+                CombatRecorder.RecordAttack(activator, target, attackResultType, hitRate, ability.Name);
+
             Messaging.SendMessageNearbyToPlayers(
                 target,
                 receiver => Combat.BuildAbilityCombatLogMessage(
@@ -2755,7 +2975,10 @@ namespace SWLOR.Game.Server.Service
             trackedImpact.DarkForceConversionApplied = true;
 
             if (fpRestore > 0)
+            {
+                using var recorderAttribution = CombatRecorder.BeginStatTriggerAttribution(activator, StatType.DarkForceDamageFPRestore);
                 Stat.RestoreFP(activator, fpRestore);
+            }
 
             var lowTargetThresholdPercent = Stat.GetStatAdjustment(activator, StatType.DarkForceDamageLowTargetHPThresholdPercent);
             var lowTargetHPCostPercent = Stat.GetStatAdjustment(activator, StatType.DarkForceDamageLowTargetHPCostPercent);
@@ -2774,7 +2997,11 @@ namespace SWLOR.Game.Server.Service
             var hpCost = Math.Max(1, GetMaxHitPoints(activator) * hpCostPercent / 100);
             hpCost = Math.Min(hpCost, Math.Max(0, GetCurrentHitPoints(activator) - 1));
             if (hpCost > 0)
+            {
+                if (CombatRecorder.IsRecording)
+                    CombatRecorder.ExpectHitPointCost(activator, hpCost);
                 AssignCommand(activator, () => ApplyEffectToObject(DurationType.Instant, EffectDamage(hpCost), activator));
+            }
         }
 
         private static int CalculateUnscaledCombatImpactDamage(
@@ -2832,9 +3059,7 @@ namespace SWLOR.Game.Server.Service
             int lowHPAbilityDamagePercentAdjustment = 0)
         {
             var trackedImpact = GetTrackedAbilityImpact(activator);
-            var usesQueuedNaturalWeapon =
-                trackedImpact?.Ability?.ActivationType == AbilityActivationType.Weapon &&
-                skillType == SkillType.BeastMastery;
+            var usesQueuedNaturalWeapon = UsesQueuedNaturalWeapon(trackedImpact, skillType);
             if (!HasCombatImpactDamage(baseDamage, trackedImpact?.NextAbilityDamageBonus ?? 0,
                     Combat.IsWeaponSkillType(skillType) || usesQueuedNaturalWeapon))
             {
@@ -3044,9 +3269,7 @@ namespace SWLOR.Game.Server.Service
             int lowHPAbilityDamagePercentAdjustment = 0)
         {
             var trackedImpact = GetTrackedAbilityImpact(activator);
-            var usesQueuedNaturalWeapon =
-                trackedImpact?.Ability?.ActivationType == AbilityActivationType.Weapon &&
-                skillType == SkillType.BeastMastery;
+            var usesQueuedNaturalWeapon = UsesQueuedNaturalWeapon(trackedImpact, skillType);
             if (!HasCombatImpactDamage(baseDamage, trackedImpact?.NextAbilityDamageBonus ?? 0,
                     Combat.IsWeaponSkillType(skillType) || usesQueuedNaturalWeapon))
             {
@@ -3508,6 +3731,7 @@ namespace SWLOR.Game.Server.Service
             public AbilityDetail Ability { get; }
             public AbilityImpactVisualEffects VisualEffects { get; }
             public int? TriggeringWeaponDamage { get; set; }
+            public CombatDamageType? TriggeringWeaponDamageType { get; set; }
             // Delayed shapes share the original tracker until a rider actually needs cast state.
             public TrackedAbilityImpact SequenceOwner { get; set; }
             public AbilityImpactSequence Sequence => _sequence ??= SequenceOwner?.Sequence ?? new AbilityImpactSequence();
@@ -3595,7 +3819,8 @@ namespace SWLOR.Game.Server.Service
                     Ability = ability,
                     SkillType = ability.SkillType,
                     IsAreaAbility = ability.IsAreaAbility,
-                    IsSingleTargetAbility = ability.IsSingleTargetAbility
+                    IsSingleTargetAbility = ability.IsSingleTargetAbility,
+                    ImpactedTargets = _impactedTargets
                 };
             }
 
@@ -3671,6 +3896,11 @@ namespace SWLOR.Game.Server.Service
                 QueueDamageEffect(target, damage, damageType, CombatDamageType.Invalid);
             }
 
+            public int GetPendingDamage(uint target)
+            {
+                return _pendingDamageEffects.Where(effect => effect.Target == target).Sum(effect => effect.Damage);
+            }
+
             public void QueueDirectDamageEffect(
                 uint target,
                 int damage,
@@ -3694,7 +3924,8 @@ namespace SWLOR.Game.Server.Service
                     target,
                     damage,
                     damageType,
-                    combatDamageType));
+                    combatDamageType,
+                    CombatRecorder.CaptureScope()));
             }
 
             public void FlushDamageEffects(uint activator)
@@ -3707,11 +3938,14 @@ namespace SWLOR.Game.Server.Service
 
                 AssignCommand(activator, () =>
                 {
+                    using var recorderAttribution = CombatRecorder.BeginAbilityAttribution(activator, Ability);
                     foreach (var effect in effects)
                     {
                         if (!GetIsObjectValid(effect.Target))
                             continue;
 
+                        // Damage queued under a nested scope, such as a status rider, lands under it.
+                        using var effectAttribution = CombatRecorder.BeginAttribution(effect.RecorderAttribution);
                         var isDirectAbilityDamage = effect.CombatDamageType != CombatDamageType.Invalid;
                         if (isDirectAbilityDamage)
                         {
@@ -3748,18 +3982,21 @@ namespace SWLOR.Game.Server.Service
                 uint target,
                 int damage,
                 DamageType damageType,
-                CombatDamageType combatDamageType)
+                CombatDamageType combatDamageType,
+                CombatRecordAttribution recorderAttribution)
             {
                 Target = target;
                 Damage = damage;
                 DamageType = damageType;
                 CombatDamageType = combatDamageType;
+                RecorderAttribution = recorderAttribution;
             }
 
             public uint Target { get; }
             public int Damage { get; }
             public DamageType DamageType { get; }
             public CombatDamageType CombatDamageType { get; }
+            public CombatRecordAttribution RecorderAttribution { get; }
         }
     }
 }

@@ -34,7 +34,7 @@
   },
   "Comment": {
     "type": "cexostring",
-    "value": "Capstone quest creature for Primal Overrun in Dathomir Grotto Apex Den."
+    "value": "Primal Overrun specialist in Dathomir - Grotto Apex Den."
   },
   "Con": {
     "type": "byte",
@@ -63,7 +63,7 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "A level 50 capstone quest enemy for Primal Overrun in Dathomir Grotto Apex Den."
+      "0": "An older shell-back, its shell pitted with old goad-stick scars. Years of being driven beat every trace of hesitation out of it, and it charges before anything gives the word."
     }
   },
   "Dex": {

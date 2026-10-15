@@ -21,6 +21,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.HeavyVibroblade
 
             StatusEffect.RemoveStatusEffect(activator, type, false);
             SendMessageToPC(activator, $"{StatusEffect.GetStatusEffectName(type)} deactivated.");
+            if (CombatRecorder.IsRecording)
+                CombatRecorder.NoteToggleDeactivated(activator);
             return false;
         }
 
@@ -33,7 +35,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.HeavyVibroblade
 
         protected static int SoulStrikeImpact(uint activator, uint target, Location targetLocation, int damageBonus, int healingPercent)
         {
-            using var damageDerivedHealing = Combat.BeginDamageDerivedHealing(activator);
+            using var damageDerivedHealing = Combat.BeginDamageDerivedHealing(activator, target);
             var damage = Ability.ApplyCombatImpact(activator, target, targetLocation, SkillType.HeavyVibroblade, damageBonus, 0, null, false);
             if (damage > 0)
             {
@@ -61,7 +63,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.HeavyVibroblade
                 target,
                 damage,
                 healingPercent,
-                applyCombatReadiness: true);
+                isActivatedHealing: true);
             if (amount > 0)
                 ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Negative_Energy), target);
         }
@@ -74,19 +76,35 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.HeavyVibroblade
         protected static void SacrificeHitPoints(uint activator, int basePercent, int minimumPercent)
         {
             var percent = GetHitPointCostPercent(activator, basePercent, minimumPercent);
-            var amount = GameMath.PercentOf(GetMaxHitPoints(activator), percent);
-            var currentHp = GetCurrentHitPoints(activator);
+            var cost = GameMath.PercentOf(GetMaxHitPoints(activator), percent);
+            // Paid as the activator's own action so the combat log shows it, and measured when it lands.
+            AssignCommand(activator, () => PayHitPoints(activator, cost));
+        }
 
-            if (currentHp <= 1)
+        private static void PayHitPoints(uint activator, int cost)
+        {
+            // The payment stops at 1 HP. Temporary HP absorbs it first, so riders such as Bloodlust
+            // scale with the HP actually lost.
+            var payment = Math.Min(GetCurrentHitPoints(activator) - 1, cost);
+            if (payment <= 0)
                 return;
 
-            amount = Math.Min(currentHp - 1, amount);
-            AssignCommand(activator, () =>
-            {
-                ApplyEffectToObject(DurationType.Instant, EffectDamage(amount), activator);
-                Combat.ApplyLowHPDamageTakenEffects(activator, amount);
-            });
-            Combat.ApplyHitPointSpendAbilityEffects(activator);
+            var hitPointsSpent = Combat.CalculateHitPointsSpentThroughTemporaryHitPoints(
+                payment,
+                TemporaryHitPointEffects.GetRemaining(activator));
+            if (CombatRecorder.IsRecording)
+                CombatRecorder.ExpectHitPointCost(activator, payment);
+            ApplyEffectToObject(DurationType.Instant, EffectDamage(payment), activator);
+            Combat.ApplyLowHPDamageTakenEffects(activator, payment);
+            Combat.ApplyHitPointSpendAbilityEffects(activator, hitPointsSpent, cost);
+        }
+
+        /// <summary>HP-cost abilities can't be used at 1 HP, where there is nothing left to pay.</summary>
+        protected static string ValidateCanSpendHitPoints(uint activator)
+        {
+            return GetCurrentHitPoints(activator) > 1
+                ? string.Empty
+                : "You need more than 1 HP to use this ability.";
         }
 
         protected static int GetHitPointCostPercent(uint activator, int basePercent, int minimumPercent)

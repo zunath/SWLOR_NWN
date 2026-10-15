@@ -10,6 +10,8 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Using Include="Nwn.Formats.Exceptions.NwnFormatException" Alias="NwnFormatException" />
+    <Using Include="Nwn.Authoring.Resources.TwoDaChoicePolicy" Alias="TwoDaChoicePolicy" />
     <PackageReference Include="FluentAssertions" Version="7.2.2" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.14.1" />
     <PackageReference Include="NUnit" Version="4.5.1" />
@@ -38,6 +40,7 @@
          against a real file rather than inferred from the serializer's behaviour; nothing here
          constructs a control, so no Avalonia runtime is needed. -->
     <ProjectReference Include="..\SWLOR.Toolset\SWLOR.Toolset.csproj" />
+    <ProjectReference Include="../tests/SWLOR.Toolset.PreviewRender/SWLOR.Toolset.PreviewRender.csproj" ReferenceOutputAssembly="false" />
   </ItemGroup>
 
 </Project>

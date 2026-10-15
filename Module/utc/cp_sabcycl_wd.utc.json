@@ -6,7 +6,7 @@
   },
   "Appearance_Type": {
     "type": "word",
-    "value": 10010
+    "value": 10015
   },
   "ArmorPart_RFoot": {
     "type": "byte",
@@ -126,7 +126,7 @@
   },
   "Comment": {
     "type": "cexostring",
-    "value": "Capstone quest creature for Saber Cyclone in Dantooine Jedi Enclave Trial Halls."
+    "value": "Saber Cyclone warden in Hutlar - Jedi Trial Halls."
   },
   "Con": {
     "type": "byte",
@@ -142,7 +142,7 @@
   },
   "CurrentHitPoints": {
     "type": "short",
-    "value": 4611
+    "value": 5425
   },
   "DecayTime": {
     "type": "dword",
@@ -155,7 +155,7 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "A level 50 capstone quest enemy for Saber Cyclone in Dantooine Jedi Enclave Trial Halls."
+      "0": "A tall, narrow gate droid with a long blade, guarding the approach to the Saber Trial Chamber. Its shutdown channel is broken, and it meets anyone who comes near with the same whirling attack."
     }
   },
   "Dex": {
@@ -372,7 +372,7 @@
   "FirstName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Saber Cyclone Warden"
+      "0": "Cyclone Gatekeeper Droid"
     }
   },
   "fortbonus": {
@@ -389,7 +389,7 @@
   },
   "HitPoints": {
     "type": "short",
-    "value": 4503
+    "value": 5317
   },
   "Int": {
     "type": "byte",
@@ -423,7 +423,7 @@
   },
   "MaxHitPoints": {
     "type": "short",
-    "value": 4611
+    "value": 5425
   },
   "NaturalAC": {
     "type": "byte",
@@ -451,11 +451,11 @@
   },
   "PortraitId": {
     "type": "word",
-    "value": 129
+    "value": 229
   },
   "Race": {
     "type": "byte",
-    "value": 15
+    "value": 167
   },
   "refbonus": {
     "type": "short",
@@ -716,7 +716,7 @@
   },
   "SoundSetFile": {
     "type": "word",
-    "value": 448
+    "value": 910
   },
   "SpecAbilityList": {
     "type": "list",
@@ -765,7 +765,7 @@
         },
         "Value": {
           "type": "int",
-          "value": 99
+          "value": 279
         }
       },
       {

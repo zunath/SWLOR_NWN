@@ -262,7 +262,7 @@ def build_sheet() -> Sheet:
         ["Combat/range", "Validated on actions", "", "", "", "", "", "Starting does not force combat. Terminal actions validate interaction range."],
         ["Terminal ownership", "Shared node; 3-minute stale claim", "", "", "", "", "", "One active owner. A stale committed claim resolves as a failure before another player may claim it."],
         ["Persistence", "Seed/failures/integrity on object", "", "", "", "", "", "Transferred lockboxes preserve their seed and failure state; retries use the same authored board."],
-        ["Success", "One weighted item + XP once", "", "", "", "", "", "Each tier grants XP until the next Slicing unlock (22/30/42/48/50). Lockbox is consumed. Terminal burns out and respawns at a new valid walkmesh point in 45-75 minutes."],
+        ["Success", "3-5 supplies + one weighted bonus + XP once", "", "", "", "", "", "Every success grants tier-appropriate supplies plus a tool or rare reward. Each tier grants XP until the next Slicing unlock (22/30/42/48/50). Lockbox is consumed. Terminal burns out and respawns at a new valid walkmesh point in 45-75 minutes."],
         ["Failure", "No reward or XP", "", "", "", "", "", "First failed attempt is free of destruction risk; subsequent attempts become progressively dangerous."],
         ["Direct reward rules", "Fixed-stat items", "", "", "", "", "", "Armor skill sets equipment requirements. No raw attributes, random affixes, sets, or direct-reward enhancement slots."],
     ])
@@ -280,8 +280,8 @@ def build_sheet() -> Sheet:
 
     sheet.merged("Reward Weights and Failure Curve")
     sheet.table(["Band", "Weight / Chance", "", "", "", "", "", "Notes"], [
-        ["Common/pre-existing item", "65%", "", "", "", "", "", "Tier-appropriate existing items may supplement the 100 new direct rewards."],
-        ["Tool", "15%", "", "", "", "", "", "Five unique tools per source pool across tiers."],
+        ["Recovered supplies", "100%", "", "", "", "", "", "3-5 units of one tier-appropriate material, rolled independently and awarded alongside the weighted bonus."],
+        ["Tool bonus", "80%", "", "", "", "", "", "One tool matching the source and security tier. Named items, schematics, and field notes replace this bonus; they never replace the supplies."],
         ["Named item", "12%", "", "", "", "", "", "Exceptional item is a 0.5% absolute sub-band, one per source/tier."],
         ["Schematic", "6%", "", "", "", "", "", "Lockbox and terminal schematic pools remain separate."],
         ["Field note", "2%", "", "", "", "", "", "Fifteen DiscoveryOnly mutation notes become Slicing rewards."],

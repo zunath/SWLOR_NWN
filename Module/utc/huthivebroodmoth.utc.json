@@ -146,7 +146,7 @@
         "__struct_id": 1,
         "Feat": {
           "type": "word",
-          "value": 1754
+          "value": 1839
         }
       },
       {
@@ -682,6 +682,21 @@
         "Value": {
           "type": "cexostring",
           "value": "QIONHIVE_RESOURCES,100,1"
+        }
+      },
+      {
+        "__struct_id": 0,
+        "Name": {
+          "type": "cexostring",
+          "value": "LOOT_TABLE_10"
+        },
+        "Type": {
+          "type": "dword",
+          "value": 3
+        },
+        "Value": {
+          "type": "cexostring",
+          "value": "MUSIC_DISCS_BOSS,5,1"
         }
       }
     ]

@@ -237,6 +237,22 @@ Three engine rules shape the setup:
   A fixture that kept the flag would never be destroyed, and leftover fixtures would pile up in
   the arena during multi-case sweeps.
 
+### Persistence and migration coverage
+
+Converting saved data successfully does not establish that players can keep using it safely.
+For changes to persisted gameplay objects, exercise the affected gameplay, change its state,
+save it through the normal gameplay path, and reload it. Migration tests must start with a
+legacy fixture and run the actual conversion first. Repeat the save/reload cycle at least twice and assert
+the final equipment, ownership, item counts, and stack quantities that apply to that object.
+Include missing or mismatched historical item IDs when identity controls removal or replacement.
+
+Droid inventory regressions live in `DroidInventoryEngineTests`. Its legacy inventory and
+equipment replacement scenarios migrate serialized controllers, verify retry stability, then
+equip, remove, replace, dismiss, and resummon through the live engine. Both the `Migration` and
+`DroidInventory` filters select these scenarios; `DroidInventoryCoverageTests` guards their discovery labels.
+Run `DroidInventory` for droid item persistence changes and include the relevant lifecycle tests
+when validating a migration. NUnit discovery checks do not replace the actual engine run.
+
 ### Timing guidance
 
 Status effects tick on the shared status-effect interval, roughly every 6 real seconds - not every
@@ -506,6 +522,43 @@ a server home whose `swlor.env` disables the watchdog can't silently remove the 
 before invoking the script (or before running `docker compose` directly) - the compose file reads
 it as `${SWLOR_ENGINE_TEST_SHUTDOWN:-true}`, so the container will stay up after the run completes
 instead of self-shutting-down 3 seconds later.
+
+### Combat load measurement
+
+`CombatLoadEngineTests` measure server frame time under a busy fight instead of asserting gameplay.
+They skip unless the filter names their category, so normal sweeps never run them:
+
+```bash
+./scripts/run-engine-tests.ps1 -Filter CombatLoad
+```
+
+Each test records 10 s of idle frames, then 60 s of a skirmish in a quiet arena: 15 NPCs a side, or
+20 headless players against 15 NPCs. A driver keeps every combatant casting heals, party buffs, auras,
+zones and area attacks, and every combatant has the Embattled trait. The result line (console
+`[COMBAT_LOAD]` and the JSON report) gives frame-time p50/p95/p99/max, slow-frame count, and per-second
+counters from `FrameProfiler` (DB calls, broadcasts, status effect changes, stat lookups, telegraph
+uniforms, top handlers and status effects by time).
+
+Before measuring, every combatant joins a party of five: NPCs as henchmen, players through the Party
+service's invitation-accept event, since a headless player has no client to accept. Players then get
+the aura area that module entry normally applies, and a stack of each consumable the rotation uses.
+The test checks that a party buff and a party aura reach another player. A run fails if any NPC dies, or
+if players (or NPCs, in the NPC-only scenario) never succeed at some rotation ability, because either
+would quietly shrink the workload.
+
+Read the numbers with these limits in mind:
+
+- The idle server sleeps between frames, so p50 mostly measures that sleep. Compare tails, slow-frame
+  counts and managed milliseconds per second.
+- The test environment enables the Attack and AI log groups, which production does not. When the
+  server home's log directory is a Windows bind mount, those writes can stall single frames for
+  hundreds of milliseconds. Point `SWLOR_APP_LOG_DIRECTORY` inside the container for measurement runs.
+- Headless players have no client: NUI windows, client network sends and character-sheet refreshes
+  cost nothing here. Measure those paths with real clients and `SWLOR_FRAME_PROFILER_ENABLED=true`.
+- Combat rolls are seeded, but AI timing still varies between runs; repeat a run before trusting a
+  small difference.
+- The driver waits on wall-clock time, so when frames run long it issues fewer casts. Compare casts
+  completed alongside frame times; a saturated server reports close to 1000 managed ms per second.
 
 ## CI
 

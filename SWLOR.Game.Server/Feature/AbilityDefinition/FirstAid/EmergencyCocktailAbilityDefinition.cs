@@ -37,6 +37,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
                 .HasRecastDelay(RecastGroup.Capstone, CapstoneAbility.RecastDelaySeconds)
                 .SkillType(SkillType.FirstAid)
                 .IsSingleTargetAbility()
+                .AllowsSelfQuickCast()
                 .RequiresTarget()
                 .HasCustomValidation((activator, target, _, _) =>
                     AbilityTargeting.ValidateFriendlyTarget(activator, target))
@@ -50,7 +51,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
         private static void EmergencyCocktail1ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
             var duration = CapstoneAbility.ActiveDurationSeconds;
-            var applied = false;
+            var treated = new List<uint>();
             foreach (var friendly in SWLOR.Game.Server.Feature.AbilityDefinition.AbilityTargeting.GetFriendlyTargets(activator, target, false))
             {
                 Stat.RestoreStamina(friendly, GameMath.PercentOf(Stat.GetMaxStamina(friendly), 25));
@@ -60,10 +61,10 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
                 StatusEffect.RemoveFirstStatusEffect(friendly, new[] { typeof(PoisonStatusEffect), typeof(ToxinStatusEffect) }, false);
                 FirstAidTreatmentAdjustments.ApplyCombatPharmacologyStimRiders(activator, friendly);
                 ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Restoration), friendly);
-                applied = true;
+                treated.Add(friendly);
             }
 
-            FirstAidTreatmentAdjustments.GrantCombatPointIfApplied(activator, applied);
+            FirstAidTreatmentAdjustments.GrantCombatPoint(activator, treated);
         }
     }
 }

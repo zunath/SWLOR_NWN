@@ -6,7 +6,7 @@
   },
   "BaseItem": {
     "type": "int",
-    "value": 1
+    "value": 13
   },
   "Charges": {
     "type": "byte",
@@ -46,15 +46,15 @@
   },
   "ModelPart1": {
     "type": "byte",
-    "value": 33
+    "value": 24
   },
   "ModelPart2": {
     "type": "byte",
-    "value": 73
+    "value": 44
   },
   "ModelPart3": {
     "type": "byte",
-    "value": 41
+    "value": 104
   },
   "PaletteID": {
     "type": "byte",
@@ -79,7 +79,7 @@
         },
         "CostValue": {
           "type": "word",
-          "value": 74
+          "value": 144
         },
         "Param1": {
           "type": "byte",
@@ -172,7 +172,7 @@
         },
         "CostValue": {
           "type": "word",
-          "value": 23
+          "value": 30
         },
         "Param1": {
           "type": "byte",
@@ -231,14 +231,14 @@
   },
   "xModelPart1": {
     "type": "word",
-    "value": 33
+    "value": 24
   },
   "xModelPart2": {
     "type": "word",
-    "value": 73
+    "value": 44
   },
   "xModelPart3": {
     "type": "word",
-    "value": 41
+    "value": 104
   }
 }

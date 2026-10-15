@@ -34,7 +34,7 @@
   },
   "Comment": {
     "type": "cexostring",
-    "value": "Capstone quest creature for Primal Overrun in Dathomir Grotto Apex Den."
+    "value": "Primal Overrun master in Dathomir - Sealed Apex Den."
   },
   "Con": {
     "type": "byte",
@@ -50,7 +50,7 @@
   },
   "CurrentHitPoints": {
     "type": "short",
-    "value": 4611
+    "value": 5425
   },
   "DecayTime": {
     "type": "dword",
@@ -63,7 +63,7 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "A level 50 capstone quest enemy for Primal Overrun in Dathomir Grotto Apex Den."
+      "0": "An enormous old bull rancor, his hide seamed with the scars of years under the goad. He was the last rancor a Dathomir clan ever bonded before off-world handlers taught him to charge on their word, and he sired the bull that guards the den."
     }
   },
   "Dex": {
@@ -192,7 +192,7 @@
   },
   "HitPoints": {
     "type": "short",
-    "value": 4503
+    "value": 5317
   },
   "Int": {
     "type": "byte",
@@ -226,7 +226,7 @@
   },
   "MaxHitPoints": {
     "type": "short",
-    "value": 4611
+    "value": 5425
   },
   "NaturalAC": {
     "type": "byte",

@@ -34,7 +34,7 @@
     <!-- Behavior is a normal field. Changing it simply changes the authoring surface. -->
     <Border DockPanel.Dock="Top" Background="{DynamicResource ShellBackgroundBrush}"
             BorderBrush="{DynamicResource RuleBrush}" BorderThickness="0,0,0,1" Padding="12,8">
-      <Grid ColumnDefinitions="Auto,230,*,Auto,Auto,Auto" ColumnSpacing="8">
+      <Grid ColumnDefinitions="Auto,230,*,Auto,Auto,Auto,Auto" ColumnSpacing="8">
         <TextBlock Grid.Column="0" Text="NPC BEHAVIOR" Classes="label" VerticalAlignment="Center" />
         <ComboBox Name="BehaviorSelector" Grid.Column="1" ItemsSource="{Binding BehaviorOptions}"
                   SelectedItem="{Binding SelectedBehavior, Mode=TwoWay}"
@@ -42,9 +42,10 @@
                   IsVisible="{Binding ShowEditor}" />
         <TextBlock Grid.Column="2" Text="{Binding ValidationSummary}" Classes="mono"
                    FontSize="10.5" VerticalAlignment="Center" Margin="8,0" />
-        <Button Grid.Column="3" Content="Undo" Command="{Binding UndoCommand}" />
-        <Button Grid.Column="4" Content="Redo" Command="{Binding RedoCommand}" />
-        <Button Grid.Column="5" Content="Save" Classes="primary" Command="{Binding SaveCommand}" />
+        <Button Grid.Column="3" Content="Graph" Click="OnGraphOverview" />
+        <Button Grid.Column="4" Content="Undo" Command="{Binding UndoCommand}" />
+        <Button Grid.Column="5" Content="Redo" Command="{Binding RedoCommand}" />
+        <Button Grid.Column="6" Content="Save" Classes="primary" Command="{Binding SaveCommand}" />
       </Grid>
     </Border>
 

@@ -137,7 +137,7 @@
   },
   "Comment": {
     "type": "cexostring",
-    "value": "Capstone quest giver for Emergency Cocktail in Dantooine Medical Sublevel."
+    "value": "Quest giver for the Emergency Cocktail line in Mon Cala - Medical Sublevel."
   },
   "Con": {
     "type": "byte",
@@ -166,7 +166,7 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "Kavi Dorn is a combat pharmacology doctor tied to the Emergency Cocktail capstone trials in Dantooine Medical Sublevel."
+      "0": "A tired human man with stained sleeves and steady hands, Kavi Dorn works a cluttered counter in the Medshed among racks of vials and stimpacks. Dark circles under his eyes suggest he has not slept properly in years. He mixes stabilizers by feel while he talks, and treats whoever is bleeding first without asking whose side they are on."
     }
   },
   "Dex": {

@@ -13,6 +13,10 @@ namespace SWLOR.Toolset.Domain.GameData.Tlk
     {
         public const uint CustomTlkBase = 16777216;
 
+        /// <summary>True when <paramref name="strRef"/> addresses an entry SWLOR's custom TLK editor can open.</summary>
+        public static bool IsEditableCustomStrRef(uint strRef) =>
+            strRef >= CustomTlkBase && strRef - CustomTlkBase <= TlkFormatLimits.MaximumEntryId;
+
         private readonly Lazy<(TlkJsonFile Custom, TlkFile? Base)> _data;
         private TlkFile? _selectedCustomBinary;
         private TlkFile? _publishedRepositoryBinary;

@@ -341,6 +341,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             set => Set(value);
         }
 
+        public string OffHandAccuracy
+        {
+            get => Get<string>();
+            set => Set(value);
+        }
+
         public int ForceAccuracy
         {
             get => Get<int>();
@@ -864,7 +870,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 var beastDetails = BeastMastery.GetBeastDetail(beastType);
                 damageStat = beastDetails.DamageStat;
                 accuracyStatOverride = beastDetails.AccuracyStat;
-                mainHand = GetItemInSlot(InventorySlot.CreatureArmor, _target);
+                // The skin's Accuracy is already included through the NPC stats, so read the claw combat attacks with.
+                mainHand = GetItemInSlot(InventorySlot.CreatureLeft, _target);
             }
             else
             {
@@ -880,6 +887,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             ForceDefense = Stat.GetDefense(_target, CombatDamageType.Force, AbilityType.Willpower);
 
             WeaponAccuracy = Stat.GetAccuracy(_target, mainHand, accuracyStatOverride, SkillType.Invalid);
+            OffHandAccuracy = GetIsObjectValid(offhandAttackWeapon) && Item.IsAttackWeaponType(GetBaseItemType(offhandAttackWeapon))
+                ? Stat.GetAccuracy(_target, offhandAttackWeapon, AbilityType.Invalid, SkillType.Invalid).ToString()
+                : "-";
             ForceAccuracy = Stat.GetAccuracy(
                 _target,
                 forceAccuracyWeapon,
@@ -956,7 +966,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             AddStat("Physical DEF %", FormatPercent(Stat.GetDefensePercentAdjustment(_target, CombatDamageType.Physical)), "Bonus or penalty applied to Physical DEF. Already included in the Physical DEF shown on the Attributes tab.");
             AddStat("Force DEF %", FormatPercent(Stat.GetDefensePercentAdjustment(_target, CombatDamageType.Force)), "Bonus or penalty applied to Force DEF. Already included in the Force DEF shown on the Attributes tab.");
             AddStat("Ability Accuracy", FormatPercent(Stat.GetStatAdjustment(_target, StatType.PhysicalAndForceAbilityHitChancePercentAdjustment)), "Direct percentage-point change to hit chance for weapon-skill and Force-skill ability hit checks only. Does not affect Mimicry abilities or the underlying Accuracy rating.");
-            AddStat("Accuracy %", FormatPercent(Stat.GetStatAdjustment(_target, StatType.AccuracyPercentAdjustment)), "Percentage bonus or penalty applied to the underlying Accuracy rating for attacks and ability hit checks, including Force and Mimicry. It is not a direct percentage-point change to hit chance and is already included in the Weapon Accuracy and Force Accuracy ratings shown on the Attributes tab.");
+            AddStat("Accuracy %", FormatPercent(Stat.GetStatAdjustment(_target, StatType.AccuracyPercentAdjustment)), "Percentage bonus or penalty applied to the underlying Accuracy rating for attacks and ability hit checks, including Force and Mimicry. It is not a direct percentage-point change to hit chance and is already included in the Main-hand Accuracy, Off-hand Accuracy, and Force Accuracy ratings shown on the Attributes tab.");
             AddStat("Evasion %", FormatPercent(Stat.GetStatAdjustment(_target, StatType.EvasionPercentAdjustment)), "Bonus or penalty applied to Evasion. Already included in the Evasion shown on the Attributes tab.");
             AddStat("Attack %", FormatPercent(Stat.GetStatAdjustment(_target, StatType.AttackPercentAdjustment)), "General bonus or penalty applied to Attack, including Force Attack.");
             AddStat("Force Attack %", FormatPercent(Stat.GetAttackPercentAdjustment(_target, SkillType.Force)), "Combined general and Force-specific Attack bonus or penalty. Already included in Force Attack on the Attributes tab.");
@@ -1068,7 +1078,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 return bonus;
 
             var dbPlayer = GetPlayerEntity();
-            return 1 + dbPlayer.STMRegen + GetAbilityScore(_target, AbilityType.Might) / 4 + bonus;
+            return NaturalRegeneration.BaseStaminaRegenPerThirtySeconds + dbPlayer.STMRegen + GetAbilityScore(_target, AbilityType.Might) / 4 + bonus;
         }
 
         private int GetCriticalRate(SkillType skillType)

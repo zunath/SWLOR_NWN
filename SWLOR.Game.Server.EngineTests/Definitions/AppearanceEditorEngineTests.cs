@@ -27,6 +27,46 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
     {
         private sealed record ArmorSnapshot(uint Item, int[] Models, int[] Colors, int[] Markers, int[] Projections);
 
+        [EngineTest("Cloak RGB edits persist across editor reopening and native palette reset", Category = "CloakRGB", TimeoutSeconds = 30f)]
+        public static async Task CloakRgbPersistenceAndPaletteReset(EngineTestContext ctx)
+        {
+            var civilian = await SpawnCivilianAsync(ctx);
+            var cloak = await ctx.EquipItemAsync(civilian, "advent_cloak", InventorySlot.Cloak);
+            await RunAssignedAsync(ctx, civilian, () =>
+            {
+                EquippedItemAppearance.Set(cloak, ItemAppearanceType.SimpleModel, -1, 175);
+                EquippedItemAppearance.Refresh(civilian, cloak);
+                TintMapService.ApplyCurrentColors(civilian);
+                var selection = TintMapModelResolver.GetCurrentSelections(civilian)
+                    .Single(value => value.Material.Resref == CloakTintRenderer.MaterialResref);
+                ctx.AssertEqual("cloak_062", selection.ModelResref, "Cloak registry follows TEXTURE, independently of MODEL 4");
+                var editor = BindWithoutClient(civilian);
+                editor.OnSelectEquipment()();
+                editor.SelectedItemTypeIndex = 2;
+                editor.SelectedColorCategoryIndex = (int)AppearanceArmorColor.Cloth1;
+                InvokePrivate(editor, "LoadTintMapEditor");
+                ctx.Assert(editor.IsCustomTintEditable, "Cloak Cloth1 enables RGB");
+                var color = new TintMapColor(17, 83, 209);
+                ApplyWatchedValue(editor, nameof(editor.SelectedTintColor), new GuiColor(color.Red, color.Green, color.Blue));
+                TintMapEngineTests.AssertNativeRgb(ctx, civilian, CloakTintRenderer.MaterialResref, TintMapLayerType.Cloth1, color);
+                editor = BindWithoutClient(civilian);
+                editor.OnSelectEquipment()();
+                editor.SelectedItemTypeIndex = 2;
+                editor.SelectedColorCategoryIndex = (int)AppearanceArmorColor.Cloth1;
+                InvokePrivate(editor, "LoadTintMapEditor");
+                AssertTintInput(ctx, editor, color, "Reopened cloak RGB");
+                editor.OnClickColorPalette(77)();
+                ctx.AssertEqual(0, GetLocalInt(cloak, TintMapVariable.GetItemGlobalColorStateName(TintMapLayerType.Cloth1)),
+                    "Native palette selection clears the cloak RGB override");
+                ctx.AssertEqual(77, GetItemAppearance(cloak, ItemAppearanceType.ArmorColor, (int)AppearanceArmorColor.Cloth1),
+                    "Native cloak palette is retained for the inventory icon");
+                ctx.AssertEqual(cloak, GetItemInSlot(InventorySlot.Cloak, civilian), "RGB does not replace or unequip the cloak");
+            });
+            await ctx.DelaySecondsAsync(1f);
+            await RunAssignedAsync(ctx, civilian, () =>
+                TintMapService.ApplyCurrentColors(civilian));
+        }
+
         [EngineTest("Body customization updates exposed hands and biceps while preserving clothing", Category = "BodyCustomization", TimeoutSeconds = 30f)]
         public static async Task ExposedBodyPartsFollowEditorSelections(EngineTestContext ctx)
         {
@@ -88,6 +128,16 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 DB.Set(new Player(playerId) { AppearanceScale = 0.92f, HeadAppearanceScale = 1.08f });
                 try
                 {
+                    // Settings load/save and cancellation are PC-only. Attach the synthetic
+                    // client before exercising any of those paths on this disposable fixture.
+                    native.m_bPlayerCharacter = 1;
+                    client = new global::NWN.Native.API.CNWSPlayer(0x7fff0000u);
+                    client.SetGameObject(global::NWN.Native.API.NWNXLib.g_pAppManager.m_pServerExoApp
+                        .GetGameObject(civilian).AsNWSObject());
+                    client.m_oidPCObject = civilian;
+                    global::NWN.Native.API.NWNXLib.g_pAppManager.m_pServerExoApp.GetPlayerList().Add(client);
+                    ctx.Assert(GetIsPC(civilian), "Fixture exercises the PC settings paths");
+
                     SetObjectVisualTransform(civilian, ObjectVisualTransform.Scale, 0.92f);
                     SetObjectVisualTransform(civilian, ObjectVisualTransform.Scale, 1.08f,
                         nScope: ObjectVisualTransformDataScopeType.CreatureHead);
@@ -108,17 +158,8 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                     ctx.Assert(Math.Abs(DB.Get<Player>(playerId).HeadAppearanceScale - 1.05f) < 0.0001f,
                         "Save persists head preview");
 
-                    // The close handler is PC-only. Mark only this disposable fixture as a
-                    // player and attach a synthetic client during its synchronous call.
                     editor.OnDecreaseHeadScale()();
                     SetObjectVisualTransform(civilian, ObjectVisualTransform.Scale, 1.1f);
-                    native.m_bPlayerCharacter = 1;
-                    client = new global::NWN.Native.API.CNWSPlayer(0x7fff0000u);
-                    client.SetGameObject(global::NWN.Native.API.NWNXLib.g_pAppManager.m_pServerExoApp
-                        .GetGameObject(civilian).AsNWSObject());
-                    client.m_oidPCObject = civilian;
-                    global::NWN.Native.API.NWNXLib.g_pAppManager.m_pServerExoApp.GetPlayerList().Add(client);
-                    ctx.Assert(GetIsPC(civilian), "Fixture exercises the PC cancellation path");
                     editor.OnCloseWindow()();
                     AssertScale(ctx, civilian, 0.92f, 1.05f, "Cancel restores both saved scales");
 
@@ -142,6 +183,28 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                     DB.Delete<Player>(playerId);
                 }
             });
+        }
+
+        [EngineTest("NPC scale edits remain on the creature without player settings", Category = "AppearanceEditor", TimeoutSeconds = 30f)]
+        public static async Task NpcScaleEditsDoNotCreatePlayerSettings(EngineTestContext ctx)
+        {
+            var civilian = await SpawnCivilianAsync(ctx);
+            await RunAssignedAsync(ctx, civilian, () =>
+            {
+                var id = GetObjectUUID(civilian);
+                ctx.Assert(!DB.Exists<Player>(id), "NPC starts without a player record");
+                SetObjectVisualTransform(civilian, ObjectVisualTransform.Scale, 1f);
+                HelmetModelRenderer.SetHeadScale(civilian, 1f);
+                var editor = BindWithoutClient(civilian);
+                ctx.Assert(!editor.IsPlayerSettingsVisible, "NPC has no player preference controls");
+                editor.OnIncreaseHeadScale()();
+                editor.OnDecreaseAppearanceScale()();
+                editor.OnClickSaveSettings()();
+                editor.OnCloseWindow()();
+                AssertScale(ctx, civilian, 0.99f, 1.01f, "NPC close retains direct scale edits");
+                ctx.Assert(!DB.Exists<Player>(id), "NPC load, Save and close do not create player data");
+            });
+            ctx.SetResultDetail("Real NPC scale handlers and close/Save paths; no DM client is attached. DM tab access is covered by the recording settings tests.");
         }
 
         private static void AssertScale(EngineTestContext ctx, uint target, float body, float head, string stage)

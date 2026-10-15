@@ -82,6 +82,24 @@ public class DevicesFieldSupportAndAssaultGadgetsTests
         }
     }
 
+    [TestCase("DeflectorShieldAbilityDefinition.cs")]
+    [TestCase("PowerCellAbilityDefinition.cs")]
+    [TestCase("GroupDeflectorAbilityDefinition.cs")]
+    [TestCase("EmergencyBunkerAbilityDefinition.cs")]
+    public void FieldSupportAllyAbilities_AwardDevicesCombatPoints(string file)
+    {
+        var root = FindRepositoryRoot();
+        var source = File.ReadAllText(
+            (root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "Devices" / file).FullName);
+
+        source.Should().MatchRegex(
+            @"CombatPoint\.AddSupportCombatPoint\(activator, [^;]*SkillType\.Devices",
+            $"{file} has no hostile impact, so it must award Devices combat points itself or the skill never levels");
+        source.Should().NotContain(
+            "AddCombatPointToAllTagged",
+            $"{file} must also credit the enemies fighting the allies it supports, not only enemies the caster already hit");
+    }
+
     [TestCase(true, 0, null, 45, 0)]
     [TestCase(true, 50, null, 0, 50)]
     [TestCase(false, 0, null, 45, 45)]
@@ -289,7 +307,7 @@ public class DevicesFieldSupportAndAssaultGadgetsTests
         var sonicBurst = File.ReadAllText(
             (root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "Devices" / "SonicBurstAbilityDefinition.cs").FullName);
         sonicBurst.Should().Contain("InterruptActivation(hitTarget);");
-        sonicBurst.Should().Contain("AssignCommand(target, () => ClearAllActions());");
+        sonicBurst.Should().Contain("ActionInterruption.ClearActions(target);");
 
         var flamethrower = File.ReadAllText(
             (root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "Devices" / "FlamethrowerAbilityDefinition.cs").FullName);

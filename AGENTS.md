@@ -44,11 +44,13 @@ Before writing code in an unfamiliar area, find two or three existing examples o
 
 ## Build and Test
 
+- Visual changes require actual NWN client screenshot evidence before handoff. Every agent, including Codex/GPT and Claude, must first read and follow `SWLOR.Game.Server/Readmes/InEngineVisualVerification.md`, the single shared procedure for the repository's isolated, silent background launcher.
 - Always pass `-p:RunPostBuildEvent=Never` when building. Without it, building `SWLOR.Game.Server` runs a slow deploy to the local NWN install.
 - Build once, then run only the relevant tests without rebuilding:
   - `dotnet build SWLOR.Game.Server.Tests\SWLOR.Game.Server.Tests.csproj -p:RunPostBuildEvent=Never`
   - `dotnet test SWLOR.Game.Server.Tests\SWLOR.Game.Server.Tests.csproj --no-build --filter "FullyQualifiedName~<TestClass>|FullyQualifiedName~<OtherTestClass>"`
 - Never run the full unfiltered suite unless the user asks or the change is genuinely broad (shared services, combat/stat infrastructure, enum or 2DA-wide edits, generator output). A localized change is verified by the tests that guard it. Say which test filters you ran.
+- Migration and persistence changes require in-engine use/change, save, and reload coverage with repeated cycles and ownership/quantity checks. Migration tests must start with legacy data and run the actual conversion first. Read the persistence and migration coverage section in `SWLOR.Game.Server/Readmes/EngineTesting.md` first. Droid item changes must run the `DroidInventory` engine filter.
 - Many tests read `SWLOR_Haks`. In a git worktree the submodule may be uninitialized or a stale plain copy; check `git submodule status` before treating 2DA, TLK, or icon test failures as real.
 - Some tests rewrite tracked files as a side effect (for example `CombatUpgradeBibleImplementationReview.csv`). Review that diff; do not commit it by accident.
 - Do not start background jobs, watchers, dev servers, or detached processes unless the user asks or the task strictly requires one. Use foreground commands with bounded timeouts. If a long-lived process is necessary, track its PID, stop it before handing off, and report the cleanup.
@@ -73,6 +75,7 @@ Before writing code in an unfamiliar area, find two or three existing examples o
 
 ## Content Rules
 
+- **Saber loot:** training sabers, training saberstaves, lightsabers, and saberstaves must never appear in regular loot tables, including rare, boss, chest, and steal tables. Their acquisition belongs to the dedicated progression/crafting systems. Validate loot by blueprint base item type, not display name.
 - **Conversations:** authored dialogue lives only in `SWLOR.Game.Server/ConversationData/*.conversation.json`. Edit those graphs directly; never create DLG sources or regenerate graphs from legacy files. `Module/dlg/dmfi_universal.dlg.json` and the empty `Module/dlg/x0_skill_ctrap.dlg.json` base-game crafting override are the native exceptions. Preserve NPC `Conversation` IDs and route through `dialog_start`. Read `SWLOR.Game.Server/Readmes/Conversations.md` first.
 - **Player identity:** player-facing surfaces never show raw character names, account names, or CD keys; they go through the `PlayerName` service. Read `SWLOR.Game.Server/Readmes/PlayerIdentity.md` before touching any surface that displays a player.
 - **Economy-restricted items:** NPC-only and unobtainable items must stay out of player search and economy surfaces. `Item.IsEconomyRestricted` is the only classifier; never hardcode resref lists. Read `SWLOR.Game.Server/Readmes/EconomyRestrictedItems.md` before adding item blueprints or item pickers.
@@ -83,7 +86,7 @@ Before writing code in an unfamiliar area, find two or three existing examples o
 
 - Read `SWLOR.Game.Server/Readmes/DesignBibleWorkbookRules.md` before editing any Design Bible workbook.
 - Never edit a workbook with `openpyxl` or any library that rewrites the whole file. It drops cached formula results and silently breaks formula-backed tabs and tests such as `NPCEnemyBalanceAuditTests`. Edit target cells at the zip/XML level (`<c r="G31" s="..." t="inlineStr"><is><t>TEXT</t></is></c>`) and copy every other zip entry byte-for-byte.
-- After editing `design/bible/SWLOR Design Bible - Combat Upgrade.xlsx`, run `powershell -ExecutionPolicy Bypass -File tools/UpdateCombatUpgradeAudit.ps1 -RefreshLocalBible`.
+- After editing `design/bible/SWLOR Design Bible.xlsx`, run `powershell -ExecutionPolicy Bypass -File tools/UpdateCombatUpgradeAudit.ps1 -RefreshLocalBible`.
 
 ## TLK and 2DA
 
@@ -94,8 +97,7 @@ Before writing code in an unfamiliar area, find two or three existing examples o
 ## Abilities
 
 - Each distinct ability gets its own `*AbilityDefinition.cs` file and matching `IAbilityListDefinition` class named for it. Ranks of one ability share its file; unrelated abilities never share a file.
-- Targeting metadata is declared on the ability definition through the builder, never in separate per-ability lists.
-- Only single-target hostile casts and **aimed** areas ("in a line", "in a cone") show a target cursor. Queued weapon abilities and **self-centered** areas ("enemies within Nm") use `TARGETSELF=1` with `HostileFeat` cleared and never call `RequiresTarget()`. Every rank of an area ability needs its own `spells.2da` row and `Spell` value, never `Spell.Invalid`. Read `SWLOR.Game.Server/Readmes/AbilityTargeting.md` before adding or changing an active ability; `AreaAbilityTargetingTests` enforces it.
+- Read `SWLOR.Game.Server/Readmes/AbilityTargeting.md` before adding or changing an active ability, its targeting metadata, or its native feat/spell rows.
 - **Icons:** read `SWLOR.Game.Server/Readmes/IconStandards.md` first. Icon resrefs are meaningful abbreviations within 16 characters, with no hash or generator suffixes. After changing an icon referenced by `feat.2da` or `spells.2da`, run `powershell -ExecutionPolicy Bypass -File tools/GenerateCooldownIcons.ps1 -Force` (ImageMagick output only). After changing any gameplay icon or manifest entry, run `powershell -ExecutionPolicy Bypass -File tools/UpdateGameplayIconStandards.ps1 -AuditOnly` and fix every failure.
 - **VFX:** choose perk, ability, status-effect, trap, and creature VFX from `SWLOR.Game.Server/Readmes/VisualEffectSelection.md` and `VisualEffectReference.csv` by gameplay moment, colors, and location, not by constant name. Use the CSV `CSharpEnum` value: `BEAM` with `EffectBeam`, `FNF` for location bursts, `IMP`/`COM` for impacts, `DUR` for persistent auras, `EYES` only when the eye cue is intended.
 

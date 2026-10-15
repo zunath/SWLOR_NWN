@@ -110,12 +110,14 @@
   },
   "DescIdentified": {
     "type": "cexolocstring",
-    "value": {}
+    "value": {
+      "0": "These Sith robes leave the wrists free beneath severe outer folds. Their shortened, workmanlike construction belongs closer to a training floor than a ceremonial dais, where movement would be somebody else's responsibility."
+    }
   },
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": ""
+      "0": "These Sith robes leave the wrists free beneath severe outer folds. Their shortened, workmanlike construction belongs closer to a training floor than a ceremonial dais, where movement would be somebody else's responsibility."
     }
   },
   "Identified": {

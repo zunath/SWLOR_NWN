@@ -18441,7 +18441,7 @@
         "Description": {
           "type": "cexolocstring",
           "value": {
-            "0": "The pit's champion cage hangs open, spear-notched and stained; the Private Pit's crippling master waits for a challenger worth breaking."
+            "0": "The private pit's champion cage hangs open, spear-notched and stained. Whoever holds the title here waits for the next fool to climb in."
           }
         },
         "DisarmDC": {
@@ -18808,7 +18808,7 @@
         "Description": {
           "type": "cexolocstring",
           "value": {
-            "0": "A cyclone of chalk and old blood scars the killing floor's center, where the tempest master ends every duel in a single storm."
+            "0": "A whirl of chalk and old blood scars the center of the killing floor, where the stable's champion ends every duel the same way."
           }
         },
         "DisarmDC": {
@@ -19175,7 +19175,7 @@
         "Description": {
           "type": "cexolocstring",
           "value": {
-            "0": "Crimson banners ring the pit; the Private Pit's red master has never once been carried off this floor."
+            "0": "Crimson banners ring the champion's floor. The man who holds Nyra Tane's old title has never once been carried off it."
           }
         },
         "DisarmDC": {

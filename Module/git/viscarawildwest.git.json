@@ -339,12 +339,14 @@
               },
               "DescIdentified": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "A rough outfit whose alterations owe more to necessity than fashion. Its owner seems to have taken care of the useful pockets while allowing the rest to acquire whatever reputation the road supplied."
+                }
               },
               "Description": {
                 "type": "cexolocstring",
                 "value": {
-                  "0": ""
+                  "0": "A rough outfit whose alterations owe more to necessity than fashion. Its owner seems to have taken care of the useful pockets while allowing the rest to acquire whatever reputation the road supplied."
                 }
               },
               "Identified": {
@@ -29309,23 +29311,23 @@
         },
         "XOrientation": {
           "type": "float",
-          "value": -0.9988061785697937
+          "value": -1.0
         },
         "XPosition": {
           "type": "float",
-          "value": 311.9114990234375
+          "value": 305.0
         },
         "YOrientation": {
           "type": "float",
-          "value": -0.04884853586554527
+          "value": 0.0
         },
         "YPosition": {
           "type": "float",
-          "value": 127.612419128418
+          "value": 121.0
         },
         "ZPosition": {
           "type": "float",
-          "value": 0.04303550720214844
+          "value": 0.0
         }
       },
       {
@@ -29697,6 +29699,67 @@
         "ZPosition": {
           "type": "float",
           "value": 0.01000052876770496
+        }
+      },
+      {
+        "Appearance": {
+          "type": "byte",
+          "value": 1
+        },
+        "Description": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "HasMapNote": {
+          "type": "byte",
+          "value": 0
+        },
+        "LinkedTo": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "LocalizedName": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "Stuck Recovery"
+          }
+        },
+        "MapNote": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "MapNoteEnabled": {
+          "type": "byte",
+          "value": 0
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "STUCK_WAYPOINT"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": "wp_stuck"
+        },
+        "__struct_id": 5,
+        "XPosition": {
+          "type": "float",
+          "value": 305.0
+        },
+        "YPosition": {
+          "type": "float",
+          "value": 121.0
+        },
+        "ZPosition": {
+          "type": "float",
+          "value": 0.0
+        },
+        "XOrientation": {
+          "type": "float",
+          "value": -1.0
+        },
+        "YOrientation": {
+          "type": "float",
+          "value": 0.0
         }
       }
     ]

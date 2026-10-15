@@ -41,8 +41,21 @@ namespace SWLOR.Game.Server.Service.GuiService.Component
         private string AcceptsInputBindName { get; set; }
         private bool IsAcceptsInputBound => !string.IsNullOrWhiteSpace(AcceptsInputBindName);
 
+        public bool KeepsOpenOnAreaChange { get; private set; }
+
         public Dictionary<string, IGuiWidget> PartialViews { get; }
         public List<IGuiWidget> Elements { get; }
+
+        /// <summary>
+        /// Keeps the window open when its player changes areas. Every other window closes on area entry.
+        /// This is a server-side setting and is not sent to the client.
+        /// </summary>
+        /// <param name="keepsOpen">true to keep the window open across area changes</param>
+        public GuiWindow<T> SetKeepsOpenOnAreaChange(bool keepsOpen)
+        {
+            KeepsOpenOnAreaChange = keepsOpen;
+            return this;
+        }
 
 
         /// <summary>

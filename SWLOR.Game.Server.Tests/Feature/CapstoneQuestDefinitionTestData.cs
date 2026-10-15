@@ -27,20 +27,20 @@ internal static class CapstoneQuestDefinitionTestData
             "CAPSTONE_VELES_MILITIA_ANNEX_BOSS_LOOT"),
         new AreaGroup(
             "dantooine_jedi_enclave_trial_halls",
-            "Dantooine Jedi Enclave Trial Halls",
-            PlanetType.Dantooine,
-            KeyItemType.CapstoneDantooineJediEnclaveTrialHallsKey,
-            "Sealed Jedi Enclave training wing; stone/enclave interiors, crystal-channel side rooms, and controlled saber trial chambers.",
+            "Hutlar Jedi Trial Halls",
+            PlanetType.Hutlar,
+            KeyItemType.CapstoneHutlarJediTrialHallsKey,
+            "Hidden Jedi training refuge beneath the ruin at Hutlar's Cloning Test Site; stone interiors, crystal-channel side rooms, and controlled saber trial chambers.",
             "wp_cap_dantjedi",
             "CAPSTONE_DANTOOINE_JEDI_ENCLAVE_TRIAL_HALLS",
             "CAPSTONE_DANTOOINE_JEDI_ENCLAVE_TRIAL_HALLS_LESSON_LOOT",
             "CAPSTONE_DANTOOINE_JEDI_ENCLAVE_TRIAL_HALLS_BOSS_LOOT"),
         new AreaGroup(
             "korriban_forge_caverns",
-            "Korriban Forge Caverns",
-            PlanetType.Korriban,
-            KeyItemType.CapstoneKorribanForgeCavernsKey,
-            "Ancient Sith weapon forge and cavern complex; heavy melee proving rooms, hazardous forge machinery, and a sealed champion chamber.",
+            "Tatooine Forge Caverns",
+            PlanetType.Tatooine,
+            KeyItemType.CapstoneTatooineForgeCavernsKey,
+            "Hidden Sith weapon forge cut into Tatooine's North Mine Cliffs; heavy melee proving rooms, hazardous forge machinery, and a sealed champion chamber.",
             "wp_cap_kforge",
             "CAPSTONE_KORRIBAN_FORGE_CAVERNS",
             "CAPSTONE_KORRIBAN_FORGE_CAVERNS_LESSON_LOOT",
@@ -97,10 +97,10 @@ internal static class CapstoneQuestDefinitionTestData
             "CAPSTONE_HUTLAR_QION_TEST_SITE_BOSS_LOOT"),
         new AreaGroup(
             "korriban_sith_crypt_depths",
-            "Korriban Sith Crypt Depths",
-            PlanetType.Korriban,
-            KeyItemType.CapstoneKorribanSithCryptDepthsKey,
-            "Deep Sith crypt trial space; tomb corridors, ritual vaults, light/dark pressure rooms, and one sealed final ritual chamber.",
+            "Mon Cala Sith Crypt Depths",
+            PlanetType.MonCala,
+            KeyItemType.CapstoneMonCalaSithCryptDepthsKey,
+            "Ancient Sith tomb beneath Mon Cala's Sharptooth Jungle caves; tomb corridors, ritual vaults, light/dark pressure rooms, and one sealed final ritual chamber.",
             "wp_cap_kcrypt",
             "CAPSTONE_KORRIBAN_SITH_CRYPT_DEPTHS",
             "CAPSTONE_KORRIBAN_SITH_CRYPT_DEPTHS_LESSON_LOOT",
@@ -110,17 +110,17 @@ internal static class CapstoneQuestDefinitionTestData
             "Viscara Republic Engineering Bunker",
             PlanetType.Viscara,
             KeyItemType.CapstoneViscaraRepublicEngineeringBunkerKey,
-            "Republic base engineering and command bunker; tactical consoles, shield generators, deployable-device lanes, and command-room boss space.",
+            "Abandoned Republic engineering and command bunker in the Viscara swamps; tactical consoles, shield generators, deployable-device lanes, and command-room boss space.",
             "wp_cap_vrepub",
             "CAPSTONE_VISCARA_REPUBLIC_ENGINEERING_BUNKER",
             "CAPSTONE_VISCARA_REPUBLIC_ENGINEERING_BUNKER_LESSON_LOOT",
             "CAPSTONE_VISCARA_REPUBLIC_ENGINEERING_BUNKER_BOSS_LOOT"),
         new AreaGroup(
             "dantooine_medical_sublevel",
-            "Dantooine Medical Sublevel",
-            PlanetType.Dantooine,
-            KeyItemType.CapstoneDantooineMedicalSublevelKey,
-            "Dantooine medical facility sublevel connected to old enclave conduits; triage rooms, conduit maintenance, and protected ward encounter space.",
+            "Mon Cala Medical Sublevel",
+            PlanetType.MonCala,
+            KeyItemType.CapstoneMonCalaMedicalSublevelKey,
+            "Sealed medical sublevel beneath Mon Cala's Coral Isles facility; triage rooms, conduit maintenance, and protected ward encounter space.",
             "wp_cap_dantmed",
             "CAPSTONE_DANTOOINE_MEDICAL_SUBLEVEL",
             "CAPSTONE_DANTOOINE_MEDICAL_SUBLEVEL_LESSON_LOOT",
@@ -908,11 +908,11 @@ internal static class CapstoneQuestDefinitionTestData
             },
             new[]
             {
-                NPCGroupType.Dantooine_EmergencyCocktail_Adept,
-                NPCGroupType.Dantooine_EmergencyCocktail_Specialist,
-                NPCGroupType.Dantooine_EmergencyCocktail_Warden,
-                NPCGroupType.Dantooine_EmergencyCocktail_InnerCircle,
-                NPCGroupType.Dantooine_EmergencyCocktail_Master,
+                NPCGroupType.MonCala_EmergencyCocktail_Adept,
+                NPCGroupType.MonCala_EmergencyCocktail_Specialist,
+                NPCGroupType.MonCala_EmergencyCocktail_Warden,
+                NPCGroupType.MonCala_EmergencyCocktail_InnerCircle,
+                NPCGroupType.MonCala_EmergencyCocktail_Master,
             },
             new[]
             {
@@ -981,11 +981,11 @@ internal static class CapstoneQuestDefinitionTestData
             },
             new[]
             {
-                NPCGroupType.Korriban_LastStandOfTheLight_Adept,
-                NPCGroupType.Korriban_LastStandOfTheLight_Specialist,
-                NPCGroupType.Korriban_LastStandOfTheLight_Warden,
-                NPCGroupType.Korriban_LastStandOfTheLight_InnerCircle,
-                NPCGroupType.Korriban_LastStandOfTheLight_Master,
+                NPCGroupType.MonCala_CryptRaider,
+                NPCGroupType.MonCala_CryptMarauder,
+                NPCGroupType.MonCala_CryptBreachCaptain,
+                NPCGroupType.MonCala_CryptReaver,
+                NPCGroupType.MonCala_CryptExpeditionLeader,
             },
             new[]
             {
@@ -1054,11 +1054,11 @@ internal static class CapstoneQuestDefinitionTestData
             },
             new[]
             {
-                NPCGroupType.Korriban_HungerOfTheDark_Adept,
-                NPCGroupType.Korriban_HungerOfTheDark_Specialist,
-                NPCGroupType.Korriban_HungerOfTheDark_Warden,
-                NPCGroupType.Korriban_HungerOfTheDark_InnerCircle,
-                NPCGroupType.Korriban_HungerOfTheDark_Master,
+                NPCGroupType.MonCala_VitaeReaverInitiate,
+                NPCGroupType.MonCala_VitaeReaverAdept,
+                NPCGroupType.MonCala_VitaeReaverEnforcer,
+                NPCGroupType.MonCala_VitaeReaverBinder,
+                NPCGroupType.MonCala_VitaeReaverChief,
             },
             new[]
             {
@@ -1127,11 +1127,11 @@ internal static class CapstoneQuestDefinitionTestData
             },
             new[]
             {
-                NPCGroupType.Korriban_EclipseOfResolve_Adept,
-                NPCGroupType.Korriban_EclipseOfResolve_Specialist,
-                NPCGroupType.Korriban_EclipseOfResolve_Warden,
-                NPCGroupType.Korriban_EclipseOfResolve_InnerCircle,
-                NPCGroupType.Korriban_EclipseOfResolve_Master,
+                NPCGroupType.MonCala_UmbralRaiderScout,
+                NPCGroupType.MonCala_UmbralRaiderAdept,
+                NPCGroupType.MonCala_UmbralRaiderCaptain,
+                NPCGroupType.MonCala_UmbralRaiderSaboteur,
+                NPCGroupType.MonCala_UmbralRaiderCommander,
             },
             new[]
             {
@@ -1200,11 +1200,11 @@ internal static class CapstoneQuestDefinitionTestData
             },
             new[]
             {
-                NPCGroupType.Korriban_AbsoluteDefense_Adept,
-                NPCGroupType.Korriban_AbsoluteDefense_Specialist,
-                NPCGroupType.Korriban_AbsoluteDefense_Warden,
-                NPCGroupType.Korriban_AbsoluteDefense_InnerCircle,
-                NPCGroupType.Korriban_AbsoluteDefense_Master,
+                NPCGroupType.Tatooine_AbsoluteDefense_Adept,
+                NPCGroupType.Tatooine_AbsoluteDefense_Specialist,
+                NPCGroupType.Tatooine_AbsoluteDefense_Warden,
+                NPCGroupType.Tatooine_AbsoluteDefense_InnerCircle,
+                NPCGroupType.Tatooine_AbsoluteDefense_Master,
             },
             new[]
             {
@@ -1273,11 +1273,11 @@ internal static class CapstoneQuestDefinitionTestData
             },
             new[]
             {
-                NPCGroupType.Korriban_SoulAscension_Adept,
-                NPCGroupType.Korriban_SoulAscension_Specialist,
-                NPCGroupType.Korriban_SoulAscension_Warden,
-                NPCGroupType.Korriban_SoulAscension_InnerCircle,
-                NPCGroupType.Korriban_SoulAscension_Master,
+                NPCGroupType.Tatooine_SoulAscension_Adept,
+                NPCGroupType.Tatooine_SoulAscension_Specialist,
+                NPCGroupType.Tatooine_SoulAscension_Warden,
+                NPCGroupType.Tatooine_SoulAscension_InnerCircle,
+                NPCGroupType.Tatooine_SoulAscension_Master,
             },
             new[]
             {
@@ -1492,11 +1492,11 @@ internal static class CapstoneQuestDefinitionTestData
             },
             new[]
             {
-                NPCGroupType.Dantooine_HoldTheLine_Adept,
-                NPCGroupType.Dantooine_HoldTheLine_Specialist,
-                NPCGroupType.Dantooine_HoldTheLine_Warden,
-                NPCGroupType.Dantooine_HoldTheLine_InnerCircle,
-                NPCGroupType.Dantooine_HoldTheLine_Master,
+                NPCGroupType.MonCala_HoldTheLine_Adept,
+                NPCGroupType.MonCala_HoldTheLine_Specialist,
+                NPCGroupType.MonCala_HoldTheLine_Warden,
+                NPCGroupType.MonCala_HoldTheLine_InnerCircle,
+                NPCGroupType.MonCala_HoldTheLine_Master,
             },
             new[]
             {
@@ -1638,11 +1638,11 @@ internal static class CapstoneQuestDefinitionTestData
             },
             new[]
             {
-                NPCGroupType.Dantooine_SaberStorm_Adept,
-                NPCGroupType.Dantooine_SaberStorm_Specialist,
-                NPCGroupType.Dantooine_SaberStorm_Warden,
-                NPCGroupType.Dantooine_SaberStorm_InnerCircle,
-                NPCGroupType.Dantooine_SaberStorm_Master,
+                NPCGroupType.Hutlar_StormDrillDroid,
+                NPCGroupType.Hutlar_StormDuelistDroid,
+                NPCGroupType.Hutlar_StormGatekeeperDroid,
+                NPCGroupType.Hutlar_StormExaminerDroid,
+                NPCGroupType.Hutlar_TempestTrainingEngine,
             },
             new[]
             {
@@ -1711,11 +1711,11 @@ internal static class CapstoneQuestDefinitionTestData
             },
             new[]
             {
-                NPCGroupType.Dantooine_GuardianMaster_Adept,
-                NPCGroupType.Dantooine_GuardianMaster_Specialist,
-                NPCGroupType.Dantooine_GuardianMaster_Warden,
-                NPCGroupType.Dantooine_GuardianMaster_InnerCircle,
-                NPCGroupType.Dantooine_GuardianMaster_Paragon,
+                NPCGroupType.Hutlar_GuardianPatrolDroid,
+                NPCGroupType.Hutlar_GuardianBulwarkDroid,
+                NPCGroupType.Hutlar_GuardianGatekeeperDroid,
+                NPCGroupType.Hutlar_GuardianShieldDroid,
+                NPCGroupType.Hutlar_BastionTrainingEngine,
             },
             new[]
             {
@@ -2076,11 +2076,11 @@ internal static class CapstoneQuestDefinitionTestData
             },
             new[]
             {
-                NPCGroupType.Dantooine_SaberCyclone_Adept,
-                NPCGroupType.Dantooine_SaberCyclone_Specialist,
-                NPCGroupType.Dantooine_SaberCyclone_Warden,
-                NPCGroupType.Dantooine_SaberCyclone_InnerCircle,
-                NPCGroupType.Dantooine_SaberCyclone_Master,
+                NPCGroupType.Hutlar_CycloneDrillDroid,
+                NPCGroupType.Hutlar_CycloneDuelistDroid,
+                NPCGroupType.Hutlar_CycloneGatekeeperDroid,
+                NPCGroupType.Hutlar_CycloneExaminerDroid,
+                NPCGroupType.Hutlar_VortexTrainingEngine,
             },
             new[]
             {
@@ -2149,11 +2149,11 @@ internal static class CapstoneQuestDefinitionTestData
             },
             new[]
             {
-                NPCGroupType.Dantooine_InfiniteConduit_Adept,
-                NPCGroupType.Dantooine_InfiniteConduit_Specialist,
-                NPCGroupType.Dantooine_InfiniteConduit_Warden,
-                NPCGroupType.Dantooine_InfiniteConduit_InnerCircle,
-                NPCGroupType.Dantooine_InfiniteConduit_Master,
+                NPCGroupType.MonCala_InfiniteConduit_Adept,
+                NPCGroupType.MonCala_InfiniteConduit_Specialist,
+                NPCGroupType.MonCala_InfiniteConduit_Warden,
+                NPCGroupType.MonCala_InfiniteConduit_InnerCircle,
+                NPCGroupType.MonCala_InfiniteConduit_Master,
             },
             new[]
             {
@@ -2222,11 +2222,11 @@ internal static class CapstoneQuestDefinitionTestData
             },
             new[]
             {
-                NPCGroupType.Korriban_Forcebane_Adept,
-                NPCGroupType.Korriban_Forcebane_Specialist,
-                NPCGroupType.Korriban_Forcebane_Warden,
-                NPCGroupType.Korriban_Forcebane_InnerCircle,
-                NPCGroupType.Korriban_Forcebane_Master,
+                NPCGroupType.Tatooine_Forcebane_Adept,
+                NPCGroupType.Tatooine_Forcebane_Specialist,
+                NPCGroupType.Tatooine_Forcebane_Warden,
+                NPCGroupType.Tatooine_Forcebane_InnerCircle,
+                NPCGroupType.Tatooine_Forcebane_Master,
             },
             new[]
             {

@@ -13,6 +13,27 @@ namespace SWLOR.Game.Server.Tests.Feature;
 
 public class PlayerMigrationTests
 {
+    [TestCase(15)]
+    [TestCase(17)]
+    public void CompletedPlayerCheckpointsDoNotRepeatLiveChangesOrRecordChanges(int checkpoint)
+    {
+        var saved = PlayerJson(checkpoint);
+        var migrations = typeof(_17_RemoveWeaponStatOverrides).Assembly.GetTypes()
+            .Where(type => !type.IsAbstract && !type.IsInterface && typeof(IPlayerMigration).IsAssignableFrom(type))
+            .Select(type => (IPlayerMigration)Activator.CreateInstance(type)!)
+            .Where(migration => migration.Version <= checkpoint);
+        foreach (var migration in migrations)
+        {
+            var guarded = new TestMigration(migration.Version,
+                () => Assert.Fail($"Completed live migration {migration.Version} was repeated"),
+                _ => Assert.Fail($"Completed record migration {migration.Version} was repeated"));
+            ApplyWithFile(guarded, () => saved.ToObject<Player>()!,
+                _ => Assert.Fail("Completed record checkpoint must not be written again"),
+                () => checkpoint, _ => Assert.Fail("Completed file checkpoint must not be written again"));
+        }
+        saved.Should().BeEquivalentTo(PlayerJson(checkpoint));
+    }
+
     [TestCase(0, false, true)]
     [TestCase(0, true, false)]
     [TestCase(-1, false, false)]

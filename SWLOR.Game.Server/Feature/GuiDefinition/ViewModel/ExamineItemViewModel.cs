@@ -3,10 +3,10 @@ using SWLOR.Game.Server.Feature.GuiDefinition.RefreshEvent;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.GuiService;
+using SWLOR.Game.Server.Service.GuiService.Component;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.StatService;
 using SWLOR.NWN.API.NWScript.Enum;
-using SWLOR.NWN.API.NWScript.Enum.Item;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 {
@@ -16,8 +16,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         IGuiRefreshable<StatAdjustmentRefreshEvent>
     {
         public const string ContentElement = "examine_item_content";
-        public const string ContentPartial = "EXAMINE_ITEM_BODY";
         private ExamineItemPayload _payload;
+        private string _renderedFacts;
+        private string _renderedBody;
+        private string _renderedIcon;
+        private string _contentLayout;
+        private bool _isContentApplied;
 
         public string WindowTitle
         {
@@ -25,23 +29,15 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             set => Set(value);
         }
 
-        public string Description
+        public GuiColor TitleColor
         {
-            get => Get<string>();
+            get => Get<GuiColor>();
             set => Set(value);
         }
 
-        public string ItemProperties
-        {
-            get => Get<string>();
-            set => Set(value);
-        }
+        public string Facts { get; private set; }
 
-        public string Weight
-        {
-            get => Get<string>();
-            set => Set(value);
-        }
+        public string Body { get; private set; }
 
         /// <summary>
         /// Replaces the native item examine panel, which is disabled for players on login.
@@ -63,44 +59,66 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         protected override void Initialize(ExamineItemPayload initialPayload)
         {
             _payload = initialPayload;
-            WindowTitle = initialPayload.ItemName;
-            ItemProperties = initialPayload.ItemProperties;
-            Weight = $"Weight: {initialPayload.Weight / 10.0m:0.0} lbs";
-            RefreshDescription();
-            ChangePartialView(ContentElement, ContentPartial);
+            _isContentApplied = false;
+            WindowTitle = ExamineItemText.PlainText(initialPayload.ItemName);
+            TitleColor = ExamineItemText.TitleColor(initialPayload.ItemName);
+            RefreshContent();
         }
 
-        private void RefreshDescription()
+        private void RefreshContent()
         {
             if (_payload == null)
                 return;
-            var itemDMG = _payload.ItemDMG;
-            var hasItemDMG = _payload.HasItemDMG;
             var hasLiveItem = GetIsObjectValid(_payload.ItemObject) && GetObjectUUID(_payload.ItemObject) == _payload.ItemId;
-            if (hasLiveItem && _payload.IsIdentified)
-            {
-                itemDMG = Item.GetDMG(_payload.ItemObject);
-                hasItemDMG = GetItemHasItemProperty(_payload.ItemObject, ItemPropertyType.DMG);
-                ItemProperties = Item.BuildItemPropertyString(_payload.ItemObject);
-            }
-            Description = _payload.Description;
-            if (!_payload.IsIdentified || !WeaponDamage.IsSingleWeaponType(_payload.ItemType))
-                return;
+            if (hasLiveItem)
+                _payload.Capture(_payload.ItemObject);
 
-            var preview = WeaponDamage.BuildSingleWeaponDescription(itemDMG,
-                WeaponDamage.GetNaturalSingleWeaponPercent(Player),
-                Stat.GetStatAdjustment(Player, StatType.SingleWeaponDamagePercentAdjustment), hasItemDMG);
-            Description = string.IsNullOrWhiteSpace(Description) ? preview : $"{Description.TrimEnd()}\n\n{preview}";
-            if (hasItemDMG && hasLiveItem && GetItemInSlot(InventorySlot.RightHand, Player) == _payload.ItemObject)
-                Description += EquipmentPredicates.HasSingleWeapon(Player)
-                    ? "\nSingle Weapon is active."
-                    : "\nSingle Weapon is inactive: your off hand must be empty.";
+            Facts = ExamineItemSheet.BuildFacts(_payload.BaseItemName, _payload.StackSize, _payload.Charges, _payload.Weight, _payload.IsIdentified);
+            Body = ExamineItemSheet.BuildBody(_payload.Description, _payload.ItemProperties, _payload.IsIdentified, BuildWeaponDetails(hasLiveItem));
+            ApplyContent();
         }
 
-        public void Refresh(EquipItemRefreshEvent payload) => RefreshDescription();
-        public void Refresh(UnequipItemRefreshEvent payload) => RefreshDescription();
-        public void Refresh(PerkAcquiredRefreshEvent payload) => RefreshDescription();
-        public void Refresh(PerkRefundedRefreshEvent payload) => RefreshDescription();
-        public void Refresh(StatAdjustmentRefreshEvent payload) => RefreshDescription();
+        private string BuildWeaponDetails(bool hasLiveItem)
+        {
+            if (!_payload.IsIdentified || !WeaponDamage.IsSingleWeaponType(_payload.ItemType))
+                return string.Empty;
+
+            var details = WeaponDamage.BuildSingleWeaponDescription(_payload.ItemDMG,
+                WeaponDamage.GetNaturalSingleWeaponPercent(Player),
+                Stat.GetStatAdjustment(Player, StatType.SingleWeaponDamagePercentAdjustment), _payload.HasItemDMG);
+            if (_payload.HasItemDMG && hasLiveItem && GetItemInSlot(InventorySlot.RightHand, Player) == _payload.ItemObject)
+                details += EquipmentPredicates.HasSingleWeapon(Player)
+                    ? "\nSingle Weapon is active."
+                    : "\nSingle Weapon is inactive: your off hand must be empty.";
+            return details;
+        }
+
+        private void ApplyContent()
+        {
+            var changed = _contentLayout == null ||
+                          !string.Equals(_renderedFacts, Facts, StringComparison.Ordinal) ||
+                          !string.Equals(_renderedBody, Body, StringComparison.Ordinal) ||
+                          !string.Equals(_renderedIcon, _payload.IconResref, StringComparison.Ordinal);
+            if (changed)
+            {
+                _contentLayout = JsonDump(ExamineItemLayout.Build(_payload.IconResref, _payload.IconSlotWidth, _payload.IconSlotHeight, Facts, Body));
+                _renderedFacts = Facts;
+                _renderedBody = Body;
+                _renderedIcon = _payload.IconResref;
+            }
+
+            // Bind clears the applied groups when reopening, but the cached layout can be reused.
+            if (!_isContentApplied || changed)
+            {
+                SetGroupLayout(ContentElement, JsonParse(_contentLayout));
+                _isContentApplied = true;
+            }
+        }
+
+        public void Refresh(EquipItemRefreshEvent payload) => RefreshContent();
+        public void Refresh(UnequipItemRefreshEvent payload) => RefreshContent();
+        public void Refresh(PerkAcquiredRefreshEvent payload) => RefreshContent();
+        public void Refresh(PerkRefundedRefreshEvent payload) => RefreshContent();
+        public void Refresh(StatAdjustmentRefreshEvent payload) => RefreshContent();
     }
 }

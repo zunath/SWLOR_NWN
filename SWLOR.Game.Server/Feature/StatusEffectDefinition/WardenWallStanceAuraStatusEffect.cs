@@ -17,6 +17,12 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
         public override StatusEffectStackType StackingType => StatusEffectStackType.StackFromMultipleSources;
         public override bool PersistsOnLogout => false;
 
+        /// <summary>
+        /// False for the stance's periodic refresh so allies already covered are not re-announced every tick.
+        /// </summary>
+        public bool AnnouncesApplication { get; init; } = true;
+        public override bool SendsApplicationMessage => AnnouncesApplication;
+
         public WardenWallStanceAuraStatusEffect()
         {
             StatGroup.Stats[StatType.PhysicalAndForceDefenseAuraPercentAdjustment] = 10;

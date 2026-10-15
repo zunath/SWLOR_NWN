@@ -110,11 +110,15 @@
   },
   "DescIdentified": {
     "type": "cexolocstring",
-    "value": {}
+    "value": {
+      "0": "The pockets of this mechanic's tunic have been arranged within easy reach of both hands. Sturdy stitching follows their lower edges, anticipating the weight of whatever the next repair requires."
+    }
   },
   "Description": {
     "type": "cexolocstring",
-    "value": {}
+    "value": {
+      "0": "The pockets of this mechanic's tunic have been arranged within easy reach of both hands. Sturdy stitching follows their lower edges, anticipating the weight of whatever the next repair requires."
+    }
   },
   "Identified": {
     "type": "byte",

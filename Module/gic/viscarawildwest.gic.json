@@ -933,6 +933,13 @@
           "type": "cexostring",
           "value": ""
         }
+      },
+      {
+        "__struct_id": 5,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Emergency /stuck recovery at the Mountain Ascent entrance, on the public forest floor alongside the arrival waypoint."
+        }
       }
     ]
   }

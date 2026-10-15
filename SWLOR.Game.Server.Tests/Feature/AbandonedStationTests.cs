@@ -146,16 +146,40 @@ public class AbandonedStationTests
     }
 
     [Test]
-    public void EscapePod_ReturnsStrandedPlayersToVeles()
+    public void EscapePod_RequiresConfirmationBeforeReturningPlayersToVeles()
     {
         var pod = List(Load("git", Main), "Placeable List").Single(p => Text(p, "Tag") == "aban_shuttle_exit");
         Value(pod, "LocName").GetProperty("0").GetString().Should().Be("Escape Pod");
-        Text(pod, "OnUsed").Should().Be("teleport");
+        Text(pod, "OnUsed").Should().Be("dialog_start");
+        Text(pod, "Conversation").Should().Be("aban_escape_pod");
         Number(pod, "Useable").Should().Be(1);
         Number(pod, "Plot").Should().Be(1);
         Local(pod, "DESTINATION")!.Value.GetString().Should().Be("ABAN_STATION_EXIT_LANDING");
         List(Load("git", "velesinterior"), "WaypointList").Count(w => Text(w, "Tag") == "ABAN_STATION_EXIT_LANDING")
             .Should().Be(1, "the pod lands at the Veles starport on Viscara");
+
+        using var document = JsonDocument.Parse(File.ReadAllText(Path.Combine(Root,
+            "SWLOR.Game.Server", "ConversationData", "aban_escape_pod.conversation.json")));
+        var graph = document.RootElement;
+        var prompt = graph.GetProperty("Nodes").GetProperty("entry-00000");
+        prompt.GetProperty("OnEnterActions").GetArrayLength().Should().Be(0,
+            "opening the confirmation must not launch the pod");
+        prompt.GetProperty("Text")[0].GetProperty("Text").GetString().Should().Contain("Veles starport");
+        prompt.GetProperty("Choices").EnumerateArray().Select(c => c.GetProperty("ChoiceId").GetString())
+            .Should().Equal("launch", "cancel");
+        var choices = graph.GetProperty("Choices");
+        var launch = choices.GetProperty("launch");
+        launch.GetProperty("IsAutomatic").GetBoolean().Should().BeFalse();
+        launch.GetProperty("EndsConversation").GetBoolean().Should().BeTrue();
+        var actions = launch.GetProperty("Actions");
+        actions.GetArrayLength().Should().Be(1);
+        actions[0].GetProperty("Key").GetString().Should().Be("action-teleport-out-of-combat");
+        actions[0].GetProperty("Arguments")[0].GetString().Should().Be("ABAN_STATION_EXIT_LANDING");
+        var cancel = choices.GetProperty("cancel");
+        cancel.GetProperty("IsAutomatic").GetBoolean().Should().BeFalse();
+        cancel.GetProperty("EndsConversation").GetBoolean().Should().BeTrue();
+        cancel.GetProperty("Actions").GetArrayLength().Should().Be(0,
+            "cancelling must leave the player on the station");
     }
 
     [Test]

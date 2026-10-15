@@ -1177,70 +1177,21 @@
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/AppearanceEditorViewModel.cs",
-    "Line": 1770,
+    "Line": 1777,
     "Member": "CloseForUnsupportedAppearance",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(owner, \"This creature's appearance cannot be customized.\")"
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/AppearanceEditorViewModel.cs",
-    "Line": 2055,
-    "Member": "OnDecreaseAppearanceScale",
+    "Line": 2148,
+    "Member": "SendScaleMessage",
     "Delivery": "Retained",
-    "Call": "SendMessageToPC(_target, \"You cannot decrease your height any further.\")"
+    "Call": "SendMessageToPC(owner, message)"
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/AppearanceEditorViewModel.cs",
-    "Line": 2060,
-    "Member": "OnDecreaseAppearanceScale",
-    "Delivery": "Retained",
-    "Call": "SendMessageToPC(_target, $\"Height: {GetObjectVisualTransform(_target, ObjectVisualTransform.Scale)}\")"
-  },
-  {
-    "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/AppearanceEditorViewModel.cs",
-    "Line": 2077,
-    "Member": "OnIncreaseAppearanceScale",
-    "Delivery": "Retained",
-    "Call": "SendMessageToPC(_target, \"You cannot increase your height any further.\")"
-  },
-  {
-    "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/AppearanceEditorViewModel.cs",
-    "Line": 2082,
-    "Member": "OnIncreaseAppearanceScale",
-    "Delivery": "Retained",
-    "Call": "SendMessageToPC(_target, $\"Height: {GetObjectVisualTransform(_target, ObjectVisualTransform.Scale)}\")"
-  },
-  {
-    "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/AppearanceEditorViewModel.cs",
-    "Line": 2103,
-    "Member": "OnDecreaseHeadScale",
-    "Delivery": "Retained",
-    "Call": "SendMessageToPC(_target, \"You cannot decrease your head size any further.\")"
-  },
-  {
-    "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/AppearanceEditorViewModel.cs",
-    "Line": 2108,
-    "Member": "OnDecreaseHeadScale",
-    "Delivery": "Retained",
-    "Call": "SendMessageToPC(_target, $\"Head Size: {HelmetModelRenderer.GetHeadScale(_target)}\")"
-  },
-  {
-    "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/AppearanceEditorViewModel.cs",
-    "Line": 2129,
-    "Member": "OnIncreaseHeadScale",
-    "Delivery": "Retained",
-    "Call": "SendMessageToPC(_target, \"You cannot increase your head size any further.\")"
-  },
-  {
-    "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/AppearanceEditorViewModel.cs",
-    "Line": 2134,
-    "Member": "OnIncreaseHeadScale",
-    "Delivery": "Retained",
-    "Call": "SendMessageToPC(_target, $\"Head Size: {HelmetModelRenderer.GetHeadScale(_target)}\")"
-  },
-  {
-    "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/AppearanceEditorViewModel.cs",
-    "Line": 2652,
+    "Line": 2668,
     "Member": "OnClickSaveSettings",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(_target, ColorToken.Green(\"Appearance settings saved successfully.\"))"

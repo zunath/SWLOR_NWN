@@ -30,7 +30,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Lightsaber
                 null,
                 null,
                 15,
-                8,
+                10,
                 2.0f,
                 false,
                 false,

@@ -144,14 +144,14 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Resuscitation")
 
                 .AddPerkLevel()
-                .Description("Revives an unconscious target with 1 HP. Consumes medical supplies.")
+                .Description("Revives an unconscious target with 1 HP. Consumes medical supplies. Taking damage interrupts the cast. Fails while a hostile player is within 20m, or, after a player kill, until your party near the target has gone 15 seconds without taking damage. A player can be revived mid-fight at most once every 5 minutes.")
                 .Price(3)
                 .RequirementSkill(SkillType.FirstAid, 18)
                 .DroidAISlots(1)
                 .GrantsFeat(FeatType.Resuscitation1)
 
                 .AddPerkLevel()
-                .Description("Revives an unconscious target with 20% HP plus WIL scaling. Consumes medical supplies.")
+                .Description("Revives an unconscious target with 20% HP plus WIL scaling. Consumes medical supplies. Taking damage interrupts the cast. Fails while a hostile player is within 20m, or, after a player kill, until your party near the target has gone 15 seconds without taking damage. A player can be revived mid-fight at most once every 5 minutes.")
                 .Price(3)
                 .RequirementSkill(SkillType.FirstAid, 35)
                 .DroidAISlots(2)

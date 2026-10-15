@@ -71,7 +71,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 "Force Judgment III",
                 3,
                 Rank3BaseDamage,
-                4,
+                5,
                 15f,
                 typeof(ForceJudgment3StatusEffect),
                 0);

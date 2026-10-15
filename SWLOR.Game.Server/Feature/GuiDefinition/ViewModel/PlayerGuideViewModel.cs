@@ -471,13 +471,13 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                         new ArticleBlock("How Affinity Changes",
                             "Owning any rank of a Light-aligned perk contributes +1 Light affinity. Owning any rank of a Dark-aligned perk contributes -1 Dark affinity. Additional ranks of the same perk do not contribute additional affinity. Refunding the perk removes its contribution. Universal Force perks do not change affinity."),
                         new ArticleBlock("Magnitude",
-                            "Each point toward a power's side increases that power's damage, healing, shields, regeneration, or drain magnitude by 5 percent. Each point toward the opposing side reduces it by 5 percent. The multiplier is limited to 50 percent at full opposition and 150 percent at full alignment."),
+                            "Each point toward a power's side increases that power's damage, healing, shields, regeneration, or drain magnitude by 5 percent. Each point toward the opposing side reduces it by 5 percent. The multiplier is limited to 50 percent at full opposition and 150 percent at full alignment. Healing, shields, and regeneration stop at 125 percent, so alignment past +5 no longer raises them."),
                         new ArticleBlock("Hit Chance",
                             "Affinity also changes the hit chance of detrimental Light and Dark Force powers. Divide affinity toward the power's side by two and round down to a whole percentage point: +3 matching affinity grants +1 percentage point, while 3 points toward the opposing side applies -2 percentage points. At +10 Light, Light powers gain +5% hit chance and Dark powers suffer -5%. At -10 Dark, Dark powers gain +5% and Light powers suffer -5%. These are percentage-point adjustments: a 70% chance with a +5 adjustment becomes 75%. The final chance shown in the combat log already includes this adjustment."),
                         new ArticleBlock("Universal Powers and Durations",
                             "Universal Force powers use their normal Willpower scaling but neither gain nor lose magnitude or hit chance from affinity. Force Affinity does not change effect duration. Status resistance and explicit duration modifiers can still change a duration."),
                         new ArticleBlock("Example: +6 Light",
-                            "At +6 Light, a Light power uses 130% magnitude and gains +3% hit chance. A Dark power uses 70% magnitude and suffers -3% hit chance. A Universal power remains at 100% magnitude with no affinity hit adjustment.")
+                            "At +6 Light, a Light damage power uses 130% magnitude, a Light heal or shield uses 125%, and Light powers gain +3% hit chance. A Dark power uses 70% magnitude and suffers -3% hit chance. A Universal power remains at 100% magnitude with no affinity hit adjustment.")
                     },
                     new[]
                     {
@@ -613,7 +613,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                         new ArticleBlock("Social",
                             "Improves XP gain and leadership capabilities. It also improves guild point acquisition, quest credit rewards, XP debt reduction on death, and reduces ship repair bills."),
                         new ArticleBlock("Resource Scaling and Regeneration",
-                            "Each Willpower point adds 3 maximum FP. Every 2 Might points add 3 maximum STM. Natural HP, FP, and STM regeneration occurs every 30 seconds; the Character Sheet shows the amount restored by each natural-regeneration tick.")
+                            "Each Willpower point adds 3 maximum FP. Every 2 Might points add 3 maximum STM. Natural HP and FP regeneration occurs every 30 seconds. STM regenerates continuously, a fifth of its 30-second amount every 6 seconds. The Character Sheet shows how much of each is restored per 30 seconds.")
                     },
                     new[]
                     {

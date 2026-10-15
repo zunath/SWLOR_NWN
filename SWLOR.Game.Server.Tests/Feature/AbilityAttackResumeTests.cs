@@ -19,11 +19,9 @@ public class AbilityAttackResumeTests
         while (directory != null && !File.Exists(Path.Combine(directory.FullName, "SWLOR.Game.Server.sln")))
             directory = directory.Parent;
         directory.Should().NotBeNull();
-        var source = File.ReadAllText(Path.Combine(directory!.FullName,
-            "SWLOR.Game.Server", "Feature", "UsePerkFeat.cs"));
-        var capture = CSharpSyntaxTree.ParseText(source).GetRoot()
-            .DescendantNodes().OfType<MethodDeclarationSyntax>()
-            .Single(method => method.Identifier.ValueText == "GetResumeAttackTarget").ToFullString();
+        var capture = ReadMethod(directory!, "GetResumeAttackTarget", "Feature", "UsePerkFeat.cs");
+        var queuedAttackTarget = ReadMethod(directory!, "GetQueuedAttackTarget",
+            "Feature", "AbilityDefinition", "ActionInterruption.cs");
         var harness = $$"""
             using static World;
             public static class World
@@ -60,6 +58,10 @@ public class AbilityAttackResumeTests
             {
                 public static uint GetHighestEnmityAttackTarget(uint creature) => ThreatTarget;
             }
+            public static class ActionInterruption
+            {
+                {{queuedAttackTarget}}
+            }
             public static class AbilityAttackResume
             {
                 {{capture}}
@@ -89,6 +91,14 @@ public class AbilityAttackResumeTests
         var result = compilation.Emit(stream);
         result.Success.Should().BeTrue(string.Join(Environment.NewLine, result.Diagnostics));
         _capture = Assembly.Load(stream.ToArray()).GetType("AbilityAttackResume")!.GetMethod("Capture")!;
+    }
+
+    private static string ReadMethod(DirectoryInfo root, string methodName, params string[] path)
+    {
+        var source = File.ReadAllText(Path.Combine([root.FullName, "SWLOR.Game.Server", .. path]));
+        return CSharpSyntaxTree.ParseText(source).GetRoot()
+            .DescendantNodes().OfType<MethodDeclarationSyntax>()
+            .Single(method => method.Identifier.ValueText == methodName).ToFullString();
     }
 
     [TestCase(ActionType.AttackObject)]

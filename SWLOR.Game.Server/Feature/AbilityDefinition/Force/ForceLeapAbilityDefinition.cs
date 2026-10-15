@@ -79,7 +79,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .PreservesNativeAnimationChoreography()
                 .IsHostileAbility()
                 .BreaksStealth()
-                .RequirementFP(4);
+                .RequirementFP(5);
         }
 
         private static void ForceLeap1ImpactAction(uint activator, uint target, int level, Location targetLocation)
@@ -134,7 +134,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
         private static void CompleteLeap(uint activator, uint target)
         {
             var destination = GetLeapDestination(activator, target);
-            AssignCommand(target, () => ClearAllActions());
+            ActionInterruption.ClearActions(target);
             AssignCommand(activator, () =>
             {
                 JumpToLocation(destination);

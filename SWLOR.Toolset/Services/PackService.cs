@@ -59,7 +59,8 @@ namespace SWLOR.Toolset.Services
                         () => ModuleWriteLock.Acquire(conversationDataRoot))
                     .ConfigureAwait(false);
 
-                var cliBuildExitCode = await BuildCliAsync(repoRoot).ConfigureAwait(false);
+                var sourceCheckout = File.Exists(Path.Combine(repoRoot, "SWLOR.CLI", "SWLOR.CLI.csproj"));
+                var cliBuildExitCode = sourceCheckout ? await BuildCliAsync(repoRoot).ConfigureAwait(false) : 0;
                 if (cliBuildExitCode != 0)
                 {
                     _log.AppendLine(
@@ -67,10 +68,11 @@ namespace SWLOR.Toolset.Services
                     return cliBuildExitCode;
                 }
 
-                var cliPath = ResolveCli(repoRoot);
-                if (cliPath == null)
+                var cliPath = sourceCheckout ? ResolveCli(repoRoot) : Path.Combine(
+                    AppContext.BaseDirectory, "tools", "SWLOR.CLI", "SWLOR.CLI.exe");
+                if (cliPath == null || !File.Exists(cliPath))
                 {
-                    _log.AppendLine("The SWLOR.CLI build succeeded but its executable was not found.");
+                    _log.AppendLine("The module packer was not found. Reinstall the toolset or rebuild SWLOR.CLI.");
                     return -1;
                 }
 
@@ -109,7 +111,9 @@ namespace SWLOR.Toolset.Services
                 stopwatch.Stop();
                 _log.AppendLine($"Pack finished with exit code {process.ExitCode} in {stopwatch.ElapsedMilliseconds}ms.");
 
-                if (process.ExitCode == 0 &&
+                if (process.ExitCode == 0 && !sourceCheckout)
+                    _log.AppendLine("Module packed. Conversation edits need a server build; export your contribution for review and testing.");
+                if (process.ExitCode == 0 && sourceCheckout &&
                     !DeployToDebugServer(repoRoot, moduleRoot, moduleFileName))
                     return -2;
 

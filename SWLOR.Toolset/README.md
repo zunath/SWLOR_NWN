@@ -17,7 +17,18 @@ reuses the existing pack pipeline unchanged.
 
 ---
 
-## Requirements
+## Installed toolset
+
+Download the installer or portable ZIP from [Releases](https://github.com/zunath/SWLOR_NWN/releases/latest). The standalone downloads become available after the first toolset release is published. The installer includes the .NET runtime and command-line tools; users do not need Git, Docker, Visual Studio, or an SDK.
+
+On first run, choose **Create SWLOR workspace** or **Open existing workspace**. A new workspace contains editable module resources, conversation graphs, the category catalog, and matching editor metadata. Its `swlor-workspace.json` records the original revision and file checksums. Assets are downloaded separately into `%LOCALAPPDATA%/SWLOR.Toolset/Assets/<revision>` and reused. NWN:EE remains the source of optional base-game assets.
+
+Use **File → Workspaces** to select another workspace, then reopen the application. Save and validate your edits, then use **File → Export Contribution** to create a ZIP for maintainer review. The export includes added, changed, and deleted resources without changing the original formatting. It never includes server code, credentials, or deployment configuration. Conversation changes still require a server build before in-game testing.
+
+**Help → Check for Updates** updates installed applications while keeping workspaces and asset packs separate. Downloading newer content creates a new workspace; it never replaces local edits.
+
+## Source build requirements
+
 
 | | |
 |---|---|
@@ -200,3 +211,32 @@ First-party toolset and format-library source is licensed under the repository's
 Third-party package and replacement provenance details are recorded in
 [LICENSE-NOTICE.md](LICENSE-NOTICE.md) and
 [FORMAT-PROVENANCE.md](../SWLOR.NWN.Formats/FORMAT-PROVENANCE.md).
+
+## Releases and maintainer imports
+
+Application source stays in this repository. The Windows release workflow builds self-contained application and packer executables, generates an editor catalog, tests distribution boundaries, and prepares Velopack installer/update packages. It reuses the asset pack for the exact pinned SWLOR_Haks revision, so routine editor releases do not clone or rebuild the large asset repository.
+
+Prepare assets once per SWLOR_Haks revision on a Windows machine with enough disk space for source assets, packed HAKs, and compressed download parts:
+
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass -File tools/PublishToolsetAssets.ps1 -OutputDirectory C:/Temp/swlor-assets-new
+```
+
+Upload every file from its `release` directory to a GitHub release named `toolset-assets-<full-haks-commit>`, with that release **not** marked latest. Files are split into 1 GiB parts with per-part and combined SHA-256 checksums.
+
+Run **Package SWLOR Toolset** in GitHub Actions with a semantic version. Preview runs upload artifacts. Public publishing requires master, the repository owner, and the `toolset-release` environment. Configure that environment's required reviewer and `TOOLSET_SIGNING_PFX_BASE64` / `TOOLSET_SIGNING_PASSWORD` secrets before publishing. Public releases fail closed without signing credentials.
+
+For a local preview build, download the matching `asset-pack.json`, then run:
+
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass -File tools/PublishToolset.ps1 -Version 1.0.0 -AssetDescriptor C:/Temp/asset-pack.json -OutputDirectory C:/Temp/swlor-toolset-new
+```
+
+Maintainers import contributions in a clean feature branch. Check first, review the result, then apply:
+
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass -File tools/ImportToolsetContribution.ps1 -Archive C:/Temp/contribution.zip -ToolsetPath C:/path/to/SWLOR.Toolset.exe
+powershell -NoProfile -ExecutionPolicy Bypass -File tools/ImportToolsetContribution.ps1 -Archive C:/Temp/contribution.zip -ToolsetPath C:/path/to/SWLOR.Toolset.exe -Apply
+```
+
+The helper checks the asset revision and refuses a dirty checkout or master for application. Every changed file must still match its original checksum. Import preserves exact bytes and rolls back writes if an operation fails; review the Git diff after any interrupted process before retrying. Build the server for conversation changes, run relevant validation, and submit the branch through a pull request.

@@ -1,0 +1,111 @@
+name: Package SWLOR Toolset
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: Toolset version (for example 1.0.0)
+        required: true
+        type: string
+      publish:
+        description: Publish a signed release from master
+        default: false
+        type: boolean
+
+permissions:
+  contents: read
+
+concurrency:
+  group: toolset-release
+  cancel-in-progress: false
+
+jobs:
+  package:
+    if: ${{ github.actor == 'zunath' && github.triggering_actor == 'zunath' && (!inputs.publish || github.ref == 'refs/heads/master') }}
+    runs-on: windows-latest
+    environment: toolset-release
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 10.0.x
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Resolve the pinned published asset pack
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          $revision = (git ls-tree HEAD SWLOR_Haks).Split()[2]
+          gh release download "toolset-assets-$revision" --repo zunath/SWLOR_NWN --pattern asset-pack.json --dir "$env:RUNNER_TEMP/assets"
+          if ($LASTEXITCODE -ne 0) {
+            throw "Publish the asset pack for $revision first using tools/PublishToolsetAssets.ps1. Editor releases reuse that immutable pack."
+          }
+      - name: Build and test the distribution boundaries
+        shell: pwsh
+        run: |
+          dotnet build SWLOR.Toolset.Tests/SWLOR.Toolset.Tests.csproj -c Release -p:RunPostBuildEvent=Never
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          dotnet test SWLOR.Toolset.Tests/SWLOR.Toolset.Tests.csproj -c Release --no-build --filter "FullyQualifiedName~ContributionArchiveTests|FullyQualifiedName~WorkspaceDownloadTests|FullyQualifiedName~GameCodeCatalogTests|FullyQualifiedName~PackServiceTests|FullyQualifiedName~HakSetupValidationTests|FullyQualifiedName~WorkspaceSetupWindowTests|FullyQualifiedName~AppRepositoryRootTests|FullyQualifiedName~ModuleCustomContentServiceTests|FullyQualifiedName~ScriptCompilerTests|FullyQualifiedName~ToolsetStartupViewTests"
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          python -B -m unittest discover -s tools/tests -p test_toolset_content.py -v
+          exit $LASTEXITCODE
+      - name: Build the installer and content snapshot
+        shell: pwsh
+        env:
+          TOOLSET_VERSION: ${{ inputs.version }}
+          PUBLISH_RELEASE: ${{ inputs.publish }}
+          SIGNING_PFX: ${{ inputs.publish && secrets.TOOLSET_SIGNING_PFX_BASE64 || '' }}
+          SIGNING_PASSWORD: ${{ inputs.publish && secrets.TOOLSET_SIGNING_PASSWORD || '' }}
+        run: |
+          $signParameters = $null
+          if ($env:PUBLISH_RELEASE -eq 'true') {
+            if (!$env:SIGNING_PFX -or !$env:SIGNING_PASSWORD) { throw 'Public releases require the toolset signing certificate and password in the toolset-release environment.' }
+            $pfx = Join-Path $env:RUNNER_TEMP 'toolset-signing.pfx'
+            [IO.File]::WriteAllBytes($pfx, [Convert]::FromBase64String($env:SIGNING_PFX))
+            try {
+              $password = ConvertTo-SecureString $env:SIGNING_PASSWORD -AsPlainText -Force
+              $certificate = Import-PfxCertificate -FilePath $pfx -Password $password -CertStoreLocation Cert:\CurrentUser\My
+              $signParameters = "/sha1 $($certificate.Thumbprint) /fd SHA256 /tr https://timestamp.digicert.com /td SHA256"
+            } finally { Remove-Item -LiteralPath $pfx }
+          }
+          ./tools/PublishToolset.ps1 -Version $env:TOOLSET_VERSION -AssetDescriptor "$env:RUNNER_TEMP/assets/asset-pack.json" -OutputDirectory "$env:RUNNER_TEMP/toolset-build" -SignParameters $signParameters
+      - name: Verify the published application outside the source checkout
+        shell: pwsh
+        run: |
+          $destination = Join-Path $env:RUNNER_TEMP 'toolset-install-check'
+          Copy-Item -LiteralPath "$env:RUNNER_TEMP/toolset-build/application" -Destination $destination -Recurse
+          $report = Join-Path $env:RUNNER_TEMP 'toolset-install-check.json'
+          $env:PATH = "$env:SystemRoot/System32;$env:SystemRoot"
+          $env:DOTNET_ROOT = Join-Path $env:RUNNER_TEMP 'no-installed-dotnet'
+          $process = Start-Process -FilePath "$destination/SWLOR.Toolset.exe" -ArgumentList @('--verify-install', "`"$report`"") -PassThru -WindowStyle Hidden
+          if (!$process.WaitForExit(60000)) { $process.Kill(); $process.WaitForExit(); throw 'The standalone installation check timed out.' }
+          if ($process.ExitCode -ne 0 -or !(Test-Path -LiteralPath $report) -or !((Get-Content -Raw $report | ConvertFrom-Json).Success)) {
+            throw 'The published toolset failed its standalone installation check.'
+          }
+      - uses: actions/upload-artifact@v4
+        with:
+          name: swlor-toolset-release
+          path: ${{ runner.temp }}/toolset-build/release/*
+          retention-days: 14
+
+  publish:
+    if: ${{ inputs.publish }}
+    needs: package
+    runs-on: ubuntu-latest
+    environment: toolset-release
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: swlor-toolset-release
+          path: release
+      - name: Publish the verified release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TOOLSET_VERSION: ${{ inputs.version }}
+          SOURCE_REVISION: ${{ github.sha }}
+        run: |
+          gh release create "toolset-v$TOOLSET_VERSION" release/* --repo zunath/SWLOR_NWN --target "$SOURCE_REVISION" --title "SWLOR Toolset $TOOLSET_VERSION" --notes "Standalone Windows toolset, contributor workspace, and matching asset downloads." --latest

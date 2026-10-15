@@ -27,7 +27,7 @@ namespace SWLOR.CombatSim.Tests.Engine
         [TestCase(35, 100.0)]
         public void SoulBurst_PaysMaxHpPercentLessMight_DownToItsFloor(int might, double expectedCost)
         {
-            var simulation = Spawn(RuleSets.Current(), might);
+            var simulation = Spawn(RuleSets.PreTuning(), might);
             var blade = simulation.Get("Blade");
 
             CastOnce(simulation, blade);
@@ -40,7 +40,7 @@ namespace SWLOR.CombatSim.Tests.Engine
         [Test]
         public void TheCost_RoundsUpLikeTheGamesPercentOf()
         {
-            var simulation = Spawn(RuleSets.Current(), 10, maxHp: 1001);
+            var simulation = Spawn(RuleSets.PreTuning(), 10, maxHp: 1001);
             var blade = simulation.Get("Blade");
 
             CastOnce(simulation, blade);
@@ -51,7 +51,7 @@ namespace SWLOR.CombatSim.Tests.Engine
         [Test]
         public void TemporaryHp_PaysFirst()
         {
-            var simulation = Spawn(RuleSets.Current(), 10);
+            var simulation = Spawn(RuleSets.PreTuning(), 10);
             var blade = simulation.Get("Blade");
             blade.TemporaryHp.Add(new TemporaryHpPool { Key = "Shield", Amount = 100, ExpiresAt = 600 });
 
@@ -63,9 +63,9 @@ namespace SWLOR.CombatSim.Tests.Engine
         }
 
         [Test]
-        public void CurrentRules_LandTheAbilityUnpaidAtOneHp()
+        public void PreTuning_LandTheAbilityUnpaidAtOneHp()
         {
-            var simulation = Spawn(RuleSets.Current(), 10);
+            var simulation = Spawn(RuleSets.PreTuning(), 10);
             var blade = simulation.Get("Blade");
             blade.Hp = 1;
 
@@ -76,9 +76,9 @@ namespace SWLOR.CombatSim.Tests.Engine
         }
 
         [Test]
-        public void TunedRules_RefuseTheAbilityAtOneHp()
+        public void CurrentRules_RefuseTheAbilityAtOneHp()
         {
-            var simulation = Spawn(RuleSets.Tuned(), 10);
+            var simulation = Spawn(RuleSets.Current(), 10);
             var blade = simulation.Get("Blade");
             blade.Hp = 1;
 
@@ -88,13 +88,13 @@ namespace SWLOR.CombatSim.Tests.Engine
         }
 
         // Bloodlust at Might 10: 15% + 10 = 25% of 1,000 STM. The cost is 300 HP.
+        [TestCase(RuleSets.PreTuningName, 0, 250)]
+        [TestCase(RuleSets.PreTuningName, 100, 250)]
+        [TestCase(RuleSets.PreTuningName, 400, 250)]
         [TestCase(RuleSets.CurrentName, 0, 250)]
-        [TestCase(RuleSets.CurrentName, 100, 250)]
-        [TestCase(RuleSets.CurrentName, 400, 250)]
-        [TestCase(RuleSets.TunedName, 0, 250)]
-        [TestCase(RuleSets.TunedName, 100, 167)]
-        [TestCase(RuleSets.TunedName, 400, 0)]
-        public void Bloodlust_RestoresStamina_ScaledByHpLostOnlyUnderTheTunedRules(string rules, int shield, int expectedStamina)
+        [TestCase(RuleSets.CurrentName, 100, 167)]
+        [TestCase(RuleSets.CurrentName, 400, 0)]
+        public void Bloodlust_RestoresStamina_ScaledByHpLostOnlyUnderTheCurrentRules(string rules, int shield, int expectedStamina)
         {
             var simulation = Spawn(RuleSets.Get(rules), 10, withBloodlust: true);
             var blade = simulation.Get("Blade");
@@ -110,7 +110,7 @@ namespace SWLOR.CombatSim.Tests.Engine
         [Test]
         public void Bloodlust_RoundsItsRestoreUp()
         {
-            var simulation = Spawn(RuleSets.Current(), 20, withBloodlust: true, maxStm: 50);
+            var simulation = Spawn(RuleSets.PreTuning(), 20, withBloodlust: true, maxStm: 50);
             var blade = simulation.Get("Blade");
             blade.Stm = 25;
 

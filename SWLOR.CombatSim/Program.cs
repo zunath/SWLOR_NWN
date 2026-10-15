@@ -9,7 +9,7 @@ using SWLOR.CombatSim.Scenario;
 const string Usage = """
 SWLOR combat simulator
 
-  run <scenario.json> [--rules current,tuned,tuned-pvp] [--rules-file custom.json]... [--runs 200] [--seed 1] [--out report.md] [--json results.json] [--detail]
+  run <scenario.json> [--rules pre-tuning,current,tuned-pvp] [--rules-file custom.json]... [--runs 200] [--seed 1] [--out report.md] [--json results.json] [--detail]
       Runs the scenario under each rule set and prints a comparison; --json also writes the raw per-rule-set results.
   rules [--name tuned-pvp]
       Prints a rule preset as JSON, to copy into a --rules-file and edit.

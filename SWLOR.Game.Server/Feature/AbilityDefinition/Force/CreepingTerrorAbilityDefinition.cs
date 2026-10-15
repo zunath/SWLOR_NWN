@@ -122,7 +122,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .IsHostileAbility()
                 .TriggersDarkForceConversion()
                 .BreaksStealth()
-                .RequirementFP(8);
+                .RequirementFP(10);
         }
 
         private static void CreepingTerror1ImpactAction(uint activator, uint target, int level, Location targetLocation)

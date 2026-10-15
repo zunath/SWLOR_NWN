@@ -23,7 +23,8 @@ public class ResourceRestorationTests
         var stat = CSharpSyntaxTree.ParseText(File.ReadAllText(Path.Combine(root.FullName,
             "SWLOR.Game.Server", "Service", "Stat.cs"))).GetRoot();
         var methods = stat.DescendantNodes().OfType<MethodDeclarationSyntax>()
-            .Where(method => method.Identifier.ValueText is "GetMaxFP" or "GetMaxStamina" or "RestoreFP" or "RestoreStamina");
+            .Where(method => method.Identifier.ValueText is "GetMaxFP" or "GetMaxStamina" or "RestoreFP" or "RestoreStamina"
+                or "GetCurrentFP" or "GetCurrentStamina");
         var constants = stat.DescendantNodes().OfType<FieldDeclarationSyntax>()
             .Where(field => field.Declaration.Variables.Any(variable =>
                 variable.Identifier.ValueText is "FPPerWillpower" or "StaminaPerTwoMight"));
@@ -38,6 +39,7 @@ public class ResourceRestorationTests
         // native actor queries, persistence, modifiers, and observable side effects.
         var source = $$"""
             using System;
+            using SWLOR.Game.Server.Service.CombatRecorderService;
             using SWLOR.Game.Server.Service.StatService;
             using SWLOR.NWN.API.NWScript.Enum;
             using Stat = ResourceHarness;
@@ -83,6 +85,11 @@ public class ResourceRestorationTests
                 private static class PlayerFeedback
                 {
                     public static void SendResourceRestored(uint creature, int amount, string resource) => Feedback++;
+                }
+                private static class CombatRecorder
+                {
+                    public static bool IsRecording => false;
+                    public static void RecordResourceChange(uint creature, CombatRecordResource resource, int delta, int valueAfter) { }
                 }
                 public static void Reset(bool pc, bool dm, bool possessed, bool missing, bool stamina)
                 {

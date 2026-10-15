@@ -31,6 +31,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.HeavyVibroblade
                 .Name("Sacrificial Blade")
                 .Level(1)
                 .HasAIHitPointCostPercent(_ => HitPointCostPercent)
+                .HasCustomValidation((activator, _, _, _) => ValidateCanSpendHitPoints(activator))
                 .HasActivationDelay(0f)
                 .UsesAnimation(Animation.DoubleStrike)
                 .HasRecastDelay(RecastGroup.SacrificialBlade, 45f)

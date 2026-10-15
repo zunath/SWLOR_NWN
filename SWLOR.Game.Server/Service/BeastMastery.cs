@@ -320,6 +320,7 @@ namespace SWLOR.Game.Server.Service
                     if (percentHeal > 0)
                     {
                         var healHP = (int)(GetMaxHitPoints(beast) * (percentHeal * 0.01f));
+                        using var recorderAttribution = CombatRecorder.BeginSetupAttribution(beast);
                         ApplyEffectToObject(DurationType.Instant, EffectHeal(healHP), beast);
                     }
 
@@ -490,10 +491,15 @@ namespace SWLOR.Game.Server.Service
         public static void BeastOnDeath()
         {
             var beast = OBJECT_SELF;
+            var beastId = GetBeastId(beast);
+            var killer = GetLastKiller();
+            Feature.AbilityDefinition.ReviveRules.RecordBeastDeath(
+                GetMaster(beast),
+                beastId,
+                GetIsObjectValid(killer) ? killer : GetLastHostileActor(beast));
             CompanionControl.Clear(beast);
             ExecuteScript("x2_hen_death", beast);
 
-            var beastId = GetBeastId(beast);
             var dbBeast = DB.Get<Beast>(beastId);
             if (dbBeast == null)
                 return;

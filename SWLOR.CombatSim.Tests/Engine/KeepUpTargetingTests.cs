@@ -35,7 +35,7 @@ namespace SWLOR.CombatSim.Tests.Engine
                         new CombatantSpec { Name = "Next", MaxHp = 1000 }
                     },
                     new[] { TestCombatants.Dummy("Enemy", true) }),
-                RuleSets.Current(),
+                RuleSets.PreTuning(),
                 _catalog);
             simulation.Get("Lowest").Hp = 200;
             simulation.Get("Next").Hp = 600;
@@ -59,7 +59,7 @@ namespace SWLOR.CombatSim.Tests.Engine
                     false,
                     new[] { TestCombatants.Medic("Medic", deflector), new CombatantSpec { Name = "Ward", MaxHp = 1000 } },
                     new[] { TestCombatants.Dummy("Enemy", true) }),
-                RuleSets.Current(),
+                RuleSets.PreTuning(),
                 _catalog);
             EffectCatalog.TryGet(FeatType.GroupDeflector1, out var effect).Should().BeTrue();
             var medic = simulation.Get("Medic");

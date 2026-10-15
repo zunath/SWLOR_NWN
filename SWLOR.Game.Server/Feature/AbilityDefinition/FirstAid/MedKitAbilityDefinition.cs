@@ -39,7 +39,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
                 .HasActivationDelay(1.5f)
                 .UsesAnimation(Animation.LoopingGetMid)
                 .PlaysSoundOnImpact("ksfx_healing")
-                .HasRecastDelay(RecastGroup.MedKit, 6f)
+                .HasRecastDelay(RecastGroup.MedKit, 10.5f)
                 .SkillType(SkillType.FirstAid)
                 .IsSingleTargetAbility()
                 .AllowsSelfQuickCast()
@@ -65,7 +65,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
                 .HasActivationDelay(1.5f)
                 .UsesAnimation(Animation.LoopingGetMid)
                 .PlaysSoundOnImpact("ksfx_healing")
-                .HasRecastDelay(RecastGroup.MedKit, 6f)
+                .HasRecastDelay(RecastGroup.MedKit, 10.5f)
                 .SkillType(SkillType.FirstAid)
                 .IsSingleTargetAbility()
                 .AllowsSelfQuickCast()
@@ -91,7 +91,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
                 .HasActivationDelay(1.5f)
                 .UsesAnimation(Animation.LoopingGetMid)
                 .PlaysSoundOnImpact("ksfx_healing")
-                .HasRecastDelay(RecastGroup.MedKit, 6f)
+                .HasRecastDelay(RecastGroup.MedKit, 10.5f)
                 .SkillType(SkillType.FirstAid)
                 .IsSingleTargetAbility()
                 .AllowsSelfQuickCast()
@@ -117,7 +117,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
                 .HasActivationDelay(1.5f)
                 .UsesAnimation(Animation.LoopingGetMid)
                 .PlaysSoundOnImpact("ksfx_healing")
-                .HasRecastDelay(RecastGroup.MedKit, 6f)
+                .HasRecastDelay(RecastGroup.MedKit, 10.5f)
                 .SkillType(SkillType.FirstAid)
                 .IsSingleTargetAbility()
                 .AllowsSelfQuickCast()
@@ -180,7 +180,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
             var amount = SWLOR.Game.Server.Feature.AbilityDefinition.AbilityEffectScaling.ScaleDirectEffect(baseAmount, GetAbilityScore(activator, ability));
             amount = Stat.ApplyOutgoingAbilityHealingAdjustment(activator, amount);
             amount = Ability.ApplyCombatReadinessToActivatedAbilityMagnitude(activator, amount);
-            amount = Stat.ApplyHealingReceivedAdjustment(target, amount);
+            amount = Stat.ApplyHealingReceivedAdjustment(target, amount, isInstantAbilityHeal: true);
 
             var hitPointsBeforeHealing = GetCurrentHitPoints(target);
             ApplyEffectToObject(DurationType.Instant, EffectHeal(amount), target);

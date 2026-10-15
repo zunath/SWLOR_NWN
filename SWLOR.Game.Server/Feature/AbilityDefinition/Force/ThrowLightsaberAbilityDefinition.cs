@@ -39,12 +39,12 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
 
         private static void ThrowLightsaber2(AbilityBuilder builder)
         {
-            ConfigureThrowLightsaber(builder, FeatType.ThrowLightsaber2, Spell.ThrowLightsaber2, "Throw Lightsaber II", 2, 20, 3, 1, 2);
+            ConfigureThrowLightsaber(builder, FeatType.ThrowLightsaber2, Spell.ThrowLightsaber2, "Throw Lightsaber II", 2, 20, 4, 1, 2);
         }
 
         private static void ThrowLightsaber3(AbilityBuilder builder)
         {
-            ConfigureThrowLightsaber(builder, FeatType.ThrowLightsaber3, Spell.ThrowLightsaber3, "Throw Lightsaber III", 3, 30, 4, 2, 3);
+            ConfigureThrowLightsaber(builder, FeatType.ThrowLightsaber3, Spell.ThrowLightsaber3, "Throw Lightsaber III", 3, 30, 5, 2, 3);
         }
 
         private static void ConfigureThrowLightsaber(

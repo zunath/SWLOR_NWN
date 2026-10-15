@@ -46,6 +46,7 @@ public class DMPossessedCombatTargetTests
             using System;
             using System.Collections.Generic;
             using System.Globalization;
+            using SWLOR.Game.Server.Service.CombatRecorderService;
             using SWLOR.Game.Server.Service.CombatService;
             using SWLOR.Game.Server.Service.SkillService;
             using SWLOR.NWN.API.NWScript.Enum;
@@ -83,6 +84,11 @@ public class DMPossessedCombatTargetTests
                     public static void Set(Player player) { Saved = player; Writes++; }
                 }
                 private static class BeastMastery { public static bool IsPlayerBeast(uint creature) => false; }
+                private static class CombatRecorder
+                {
+                    public static bool IsRecording => false;
+                    public static void RecordResourceReduction(uint creature, CombatRecordResource resource, int reduceBy, int currentValue) { }
+                }
                 private static bool GetIsPC(uint creature) => IsPC;
                 private static bool GetIsDM(uint creature) => IsDM;
                 private static bool GetIsDMPossessed(uint creature) => IsPossessed;

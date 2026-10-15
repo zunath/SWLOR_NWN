@@ -33,7 +33,7 @@ namespace SWLOR.CombatSim.Tests.Engine
             var scenario = Scenario(TestCombatants.Dummy("Player"));
             scenario.TimeStepSeconds = step;
 
-            var act = () => new Simulation(scenario, RuleSets.Current(), _catalog, 1).Run();
+            var act = () => new Simulation(scenario, RuleSets.PreTuning(), _catalog, 1).Run();
 
             act.Should().Throw<InvalidDataException>().WithMessage("*TimeStepSeconds*");
         }
@@ -47,7 +47,7 @@ namespace SWLOR.CombatSim.Tests.Engine
             var scenario = Scenario(TestCombatants.Dummy("Player"));
             scenario.DurationSeconds = duration;
 
-            var act = () => new Simulation(scenario, RuleSets.Current(), _catalog, 1).Run();
+            var act = () => new Simulation(scenario, RuleSets.PreTuning(), _catalog, 1).Run();
 
             act.Should().Throw<InvalidDataException>().WithMessage("*DurationSeconds*");
         }
@@ -61,7 +61,7 @@ namespace SWLOR.CombatSim.Tests.Engine
             var use = TestCombatants.Use("Anger1", AbilityTarget.Enemy);
             use.Damage = new DamageSpec { Min = 1f, Max = 1f };
 
-            var act = () => new Simulation(Scenario(TestCombatants.Medic("Beast", use)), RuleSets.Current(), catalog, 1).Spawn();
+            var act = () => new Simulation(Scenario(TestCombatants.Medic("Beast", use)), RuleSets.PreTuning(), catalog, 1).Spawn();
 
             act.Should().Throw<InvalidDataException>().WithMessage("*Anger1*recast*game engine*");
         }
@@ -71,7 +71,7 @@ namespace SWLOR.CombatSim.Tests.Engine
         {
             var scenario = TestScenarios.TwoTeams(false, new[] { TestCombatants.Dummy("Fighter"), TestCombatants.Dummy("Fighter") }, new[] { TestCombatants.Dummy("Enemy", true) });
 
-            var act = () => new Simulation(scenario, RuleSets.Current(), _catalog, 1).Spawn();
+            var act = () => new Simulation(scenario, RuleSets.PreTuning(), _catalog, 1).Spawn();
 
             act.Should().Throw<InvalidDataException>().WithMessage("*First*Fighter*");
         }
@@ -83,7 +83,7 @@ namespace SWLOR.CombatSim.Tests.Engine
             striker.AutoAttack.Damage.HitChanceVs = new Dictionary<string, float> { ["Tank"] = 0.5f };
             var scenario = ThreeTeams(striker, TestCombatants.Dummy("Tank", true), TestCombatants.Dummy("Tank", true));
 
-            var act = () => new Simulation(scenario, RuleSets.Current(), _catalog, 1).Spawn();
+            var act = () => new Simulation(scenario, RuleSets.PreTuning(), _catalog, 1).Spawn();
 
             act.Should().Throw<InvalidDataException>().WithMessage("*Striker*HitChanceVs*Tank*more than one opposing team*");
         }
@@ -95,7 +95,7 @@ namespace SWLOR.CombatSim.Tests.Engine
             scenario.Teams[0].TargetPolicy = TargetPolicy.Focus;
             scenario.Teams[0].FocusTarget = "Tank";
 
-            var act = () => new Simulation(scenario, RuleSets.Current(), _catalog, 1).Spawn();
+            var act = () => new Simulation(scenario, RuleSets.PreTuning(), _catalog, 1).Spawn();
 
             act.Should().Throw<InvalidDataException>().WithMessage("*FocusTarget*Tank*more than one opposing team*");
         }
@@ -117,7 +117,7 @@ namespace SWLOR.CombatSim.Tests.Engine
         {
             var scenario = TestScenarios.TwoTeams(false, new[] { TestCombatants.Dummy("Fighter") }, new[] { TestCombatants.Dummy("Fighter") });
 
-            var act = () => new Simulation(scenario, RuleSets.Current(), _catalog, 1).Spawn();
+            var act = () => new Simulation(scenario, RuleSets.PreTuning(), _catalog, 1).Spawn();
 
             act.Should().NotThrow();
         }
@@ -128,7 +128,7 @@ namespace SWLOR.CombatSim.Tests.Engine
             var player = TestCombatants.Dummy("Player");
             player.Perks = new List<string> { "NotARealPerk" };
 
-            var act = () => new Simulation(Scenario(player), RuleSets.Current(), _catalog, 1).Spawn();
+            var act = () => new Simulation(Scenario(player), RuleSets.PreTuning(), _catalog, 1).Spawn();
 
             act.Should().Throw<InvalidDataException>().WithMessage("*NotARealPerk*");
         }
@@ -153,7 +153,7 @@ namespace SWLOR.CombatSim.Tests.Engine
                 case "hits": strike.Damage.Hits = (int)value; break;
             }
 
-            var act = () => new Simulation(Scenario(TestCombatants.Medic("Medic", strike)), RuleSets.Current(), _catalog, 1).Spawn();
+            var act = () => new Simulation(Scenario(TestCombatants.Medic("Medic", strike)), RuleSets.PreTuning(), _catalog, 1).Spawn();
 
             act.Should().Throw<InvalidDataException>().WithMessage("*ShatteringStrike1*damage profile*");
         }
@@ -164,7 +164,7 @@ namespace SWLOR.CombatSim.Tests.Engine
             var scenario = Scenario(TestCombatants.Dummy("Player"));
             scenario.Teams[0].TargetPolicy = (TargetPolicy)99;
 
-            var act = () => new Simulation(scenario, RuleSets.Current(), _catalog, 1).Spawn();
+            var act = () => new Simulation(scenario, RuleSets.PreTuning(), _catalog, 1).Spawn();
 
             act.Should().Throw<InvalidDataException>().WithMessage("*TargetPolicy*");
         }
@@ -176,7 +176,7 @@ namespace SWLOR.CombatSim.Tests.Engine
         {
             var scenario = NamedAllyScenario(targetName, joinAtSeconds: 0f);
 
-            var act = () => new Simulation(scenario, RuleSets.Current(), _catalog, 1).Spawn();
+            var act = () => new Simulation(scenario, RuleSets.PreTuning(), _catalog, 1).Spawn();
 
             act.Should().Throw<InvalidDataException>().WithMessage("*NamedAlly*");
         }
@@ -186,7 +186,7 @@ namespace SWLOR.CombatSim.Tests.Engine
         {
             var scenario = NamedAllyScenario("Tank 2", joinAtSeconds: 30f);
 
-            var act = () => new Simulation(scenario, RuleSets.Current(), _catalog, 1).Spawn();
+            var act = () => new Simulation(scenario, RuleSets.PreTuning(), _catalog, 1).Spawn();
 
             act.Should().NotThrow();
         }
@@ -209,7 +209,7 @@ namespace SWLOR.CombatSim.Tests.Engine
             striker.AutoAttack.Damage.HitChanceVs = new Dictionary<string, float> { [name] = 0.5f };
             var scenario = TestScenarios.TwoTeams(false, new[] { striker }, new[] { TestCombatants.Dummy("Boss", true) });
 
-            var act = () => new Simulation(scenario, RuleSets.Current(), _catalog, 1).Spawn();
+            var act = () => new Simulation(scenario, RuleSets.PreTuning(), _catalog, 1).Spawn();
 
             act.Should().Throw<InvalidDataException>().WithMessage("*HitChanceVs*");
         }
@@ -223,7 +223,7 @@ namespace SWLOR.CombatSim.Tests.Engine
             bosses.Count = 2;
             var scenario = TestScenarios.TwoTeams(false, new[] { striker }, new[] { bosses });
 
-            var act = () => new Simulation(scenario, RuleSets.Current(), _catalog, 1).Spawn();
+            var act = () => new Simulation(scenario, RuleSets.PreTuning(), _catalog, 1).Spawn();
 
             act.Should().NotThrow();
         }
@@ -246,7 +246,7 @@ namespace SWLOR.CombatSim.Tests.Engine
                 case "perks": member.Perks = null; break;
             }
 
-            var act = () => new Simulation(scenario, RuleSets.Current(), _catalog, 1).Spawn();
+            var act = () => new Simulation(scenario, RuleSets.PreTuning(), _catalog, 1).Spawn();
 
             act.Should().Throw<InvalidDataException>();
         }
@@ -258,7 +258,7 @@ namespace SWLOR.CombatSim.Tests.Engine
             var dummy = TestCombatants.Dummy("Player");
             dummy.Count = count;
 
-            var act = () => new Simulation(Scenario(dummy), RuleSets.Current(), _catalog, 1).Spawn();
+            var act = () => new Simulation(Scenario(dummy), RuleSets.PreTuning(), _catalog, 1).Spawn();
 
             act.Should().Throw<InvalidDataException>().WithMessage("*Player*Count*");
         }
@@ -268,7 +268,7 @@ namespace SWLOR.CombatSim.Tests.Engine
         {
             var medic = TestCombatants.Medic("Medic", TestCombatants.Use("Benevolence1", (AbilityTarget)99));
 
-            var act = () => new Simulation(Scenario(medic), RuleSets.Current(), _catalog, 1).Spawn();
+            var act = () => new Simulation(Scenario(medic), RuleSets.PreTuning(), _catalog, 1).Spawn();
 
             act.Should().Throw<InvalidDataException>().WithMessage("*Benevolence1*Target*");
         }
@@ -279,7 +279,7 @@ namespace SWLOR.CombatSim.Tests.Engine
             var striker = TestCombatants.Striker("Striker");
             striker.AutoAttack.Damage.HitChance = 1.5f;
 
-            var act = () => new Simulation(Scenario(striker), RuleSets.Current(), _catalog, 1).Spawn();
+            var act = () => new Simulation(Scenario(striker), RuleSets.PreTuning(), _catalog, 1).Spawn();
 
             act.Should().Throw<InvalidDataException>().WithMessage("*Striker*autoattack*HitChance*");
         }
@@ -292,7 +292,7 @@ namespace SWLOR.CombatSim.Tests.Engine
             var scenario = Scenario(medic);
             scenario.TimeStepSeconds = 0.1f;
 
-            var act = () => new Simulation(scenario, RuleSets.Current(), _catalog, 1).Spawn();
+            var act = () => new Simulation(scenario, RuleSets.PreTuning(), _catalog, 1).Spawn();
 
             act.Should().Throw<InvalidDataException>().WithMessage("*Medic*ReactionSeconds*time step*");
         }
@@ -307,7 +307,7 @@ namespace SWLOR.CombatSim.Tests.Engine
             use.Damage = new DamageSpec { Min = 10f, Max = 10f };
             var medic = TestCombatants.Medic("Medic", use);
 
-            var act = () => new Simulation(Scenario(medic), RuleSets.Current(), _catalog, 1).Spawn();
+            var act = () => new Simulation(Scenario(medic), RuleSets.PreTuning(), _catalog, 1).Spawn();
 
             act.Should().Throw<InvalidDataException>().WithMessage("*ForceSpark1*must be Enemy*");
         }
@@ -319,7 +319,7 @@ namespace SWLOR.CombatSim.Tests.Engine
             use.Damage = new DamageSpec { Min = 10f, Max = 10f };
             var medic = TestCombatants.Medic("Medic", use);
 
-            var act = () => new Simulation(Scenario(medic), RuleSets.Current(), _catalog, 1).Spawn();
+            var act = () => new Simulation(Scenario(medic), RuleSets.PreTuning(), _catalog, 1).Spawn();
 
             act.Should().NotThrow();
         }
@@ -331,7 +331,7 @@ namespace SWLOR.CombatSim.Tests.Engine
         {
             var medic = TestCombatants.Medic("Medic", TestCombatants.Use(feat, AbilityTarget.Enemy));
 
-            var act = () => new Simulation(Scenario(medic), RuleSets.Current(), _catalog, 1).Spawn();
+            var act = () => new Simulation(Scenario(medic), RuleSets.PreTuning(), _catalog, 1).Spawn();
 
             act.Should().Throw<InvalidDataException>().WithMessage($"*{feat}*friendly zone*");
         }
@@ -343,7 +343,7 @@ namespace SWLOR.CombatSim.Tests.Engine
             var player = TestCombatants.Dummy("Player");
             player.Might = might;
 
-            var act = () => new Simulation(Scenario(player), RuleSets.Current(), _catalog, 1).Spawn();
+            var act = () => new Simulation(Scenario(player), RuleSets.PreTuning(), _catalog, 1).Spawn();
 
             act.Should().Throw<InvalidDataException>().WithMessage("*Might*");
         }
@@ -358,7 +358,7 @@ namespace SWLOR.CombatSim.Tests.Engine
             use.Damage = new DamageSpec { Min = 10f, Max = 10f };
             var medic = TestCombatants.Medic("Medic", use);
 
-            var act = () => new Simulation(Scenario(medic), RuleSets.Current(), _catalog, 1).Spawn();
+            var act = () => new Simulation(Scenario(medic), RuleSets.PreTuning(), _catalog, 1).Spawn();
 
             act.Should().Throw<InvalidDataException>().WithMessage($"*{feat}*not a hostile ability*");
         }
@@ -370,7 +370,7 @@ namespace SWLOR.CombatSim.Tests.Engine
             var player = TestCombatants.Dummy("Player");
             player.Name = name;
 
-            var act = () => new Simulation(Scenario(player), RuleSets.Current(), _catalog, 1).Spawn();
+            var act = () => new Simulation(Scenario(player), RuleSets.PreTuning(), _catalog, 1).Spawn();
 
             act.Should().Throw<InvalidDataException>().WithMessage("*Name*");
         }
@@ -381,7 +381,7 @@ namespace SWLOR.CombatSim.Tests.Engine
             var player = TestCombatants.Dummy("Player");
             player.Perks = new List<string> { "DefensiveHarmony", "DefensiveHarmony" };
 
-            var act = () => new Simulation(Scenario(player), RuleSets.Current(), _catalog, 1).Spawn();
+            var act = () => new Simulation(Scenario(player), RuleSets.PreTuning(), _catalog, 1).Spawn();
 
             act.Should().Throw<InvalidDataException>().WithMessage("*DefensiveHarmony*more than once*");
         }
@@ -392,7 +392,7 @@ namespace SWLOR.CombatSim.Tests.Engine
             var crowd = TestCombatants.Dummy("Crowd");
             crowd.Count = int.MaxValue;
 
-            var act = () => new Simulation(Scenario(crowd), RuleSets.Current(), _catalog, 1).Spawn();
+            var act = () => new Simulation(Scenario(crowd), RuleSets.PreTuning(), _catalog, 1).Spawn();
 
             act.Should().Throw<InvalidDataException>().WithMessage("*Crowd*Count*");
         }
@@ -403,7 +403,7 @@ namespace SWLOR.CombatSim.Tests.Engine
         {
             var striker = TestCombatants.Striker("Striker", attacksPerSecond);
 
-            var act = () => new Simulation(Scenario(striker), RuleSets.Current(), _catalog, 1).Spawn();
+            var act = () => new Simulation(Scenario(striker), RuleSets.PreTuning(), _catalog, 1).Spawn();
 
             act.Should().Throw<InvalidDataException>().WithMessage("*Striker*AttacksPerSecond*");
         }
@@ -415,7 +415,7 @@ namespace SWLOR.CombatSim.Tests.Engine
             var medic = TestCombatants.Medic("Medic", TestCombatants.Use("Benevolence1", AbilityTarget.Self));
             medic.ReactionSeconds = seconds;
 
-            var act = () => new Simulation(Scenario(medic), RuleSets.Current(), _catalog, 1).Spawn();
+            var act = () => new Simulation(Scenario(medic), RuleSets.PreTuning(), _catalog, 1).Spawn();
 
             act.Should().Throw<InvalidDataException>().WithMessage("*Medic*ReactionSeconds*");
         }
@@ -427,7 +427,7 @@ namespace SWLOR.CombatSim.Tests.Engine
         {
             var medic = TestCombatants.Medic("Medic", TestCombatants.Use("Benevolence1", AbilityTarget.LowestAlly, belowHpPercent: threshold));
 
-            var act = () => new Simulation(Scenario(medic), RuleSets.Current(), _catalog, 1).Spawn();
+            var act = () => new Simulation(Scenario(medic), RuleSets.PreTuning(), _catalog, 1).Spawn();
 
             act.Should().Throw<InvalidDataException>().WithMessage("*Benevolence1*BelowHpPercent*");
         }
@@ -438,7 +438,7 @@ namespace SWLOR.CombatSim.Tests.Engine
             var scenario = Scenario(TestCombatants.Dummy("Player"));
             scenario.Teams[1].Members.Clear();
 
-            var act = () => new Simulation(scenario, RuleSets.Current(), _catalog, 1).Spawn();
+            var act = () => new Simulation(scenario, RuleSets.PreTuning(), _catalog, 1).Spawn();
 
             act.Should().Throw<InvalidDataException>().WithMessage("*member*");
         }
@@ -451,7 +451,7 @@ namespace SWLOR.CombatSim.Tests.Engine
             var player = TestCombatants.Dummy("Player");
             player.MaxHp = maxHp;
 
-            var act = () => new Simulation(Scenario(player), RuleSets.Current(), _catalog, 1).Spawn();
+            var act = () => new Simulation(Scenario(player), RuleSets.PreTuning(), _catalog, 1).Spawn();
 
             act.Should().Throw<InvalidDataException>().WithMessage("*Player*MaxHp*");
         }
@@ -501,7 +501,7 @@ namespace SWLOR.CombatSim.Tests.Engine
                 case "readinessHuge": player.CombatReadinessPercent = 5000f; break;
             }
 
-            var act = () => new Simulation(Scenario(player), RuleSets.Current(), _catalog, 1).Spawn();
+            var act = () => new Simulation(Scenario(player), RuleSets.PreTuning(), _catalog, 1).Spawn();
 
             act.Should().Throw<InvalidDataException>().WithMessage("*Player*");
         }
@@ -516,7 +516,7 @@ namespace SWLOR.CombatSim.Tests.Engine
         {
             var medic = TestCombatants.Medic("Medic", TestCombatants.Use(feat, target));
 
-            var act = () => new Simulation(Scenario(medic), RuleSets.Current(), _catalog, 1).Spawn();
+            var act = () => new Simulation(Scenario(medic), RuleSets.PreTuning(), _catalog, 1).Spawn();
 
             act.Should().Throw<InvalidDataException>().WithMessage($"*{feat}*Target*");
         }
@@ -528,7 +528,7 @@ namespace SWLOR.CombatSim.Tests.Engine
         {
             var medic = TestCombatants.Medic("Medic", TestCombatants.Use(feat, target));
 
-            var act = () => new Simulation(Scenario(medic), RuleSets.Current(), _catalog, 1).Spawn();
+            var act = () => new Simulation(Scenario(medic), RuleSets.PreTuning(), _catalog, 1).Spawn();
 
             act.Should().NotThrow();
         }
@@ -541,7 +541,7 @@ namespace SWLOR.CombatSim.Tests.Engine
             var scenario = Scenario(striker);
             scenario.TimeStepSeconds = 0.1f;
 
-            var act = () => new Simulation(scenario, RuleSets.Current(), _catalog, 1).Spawn();
+            var act = () => new Simulation(scenario, RuleSets.PreTuning(), _catalog, 1).Spawn();
 
             act.Should().NotThrow("only ability decisions depend on the reaction time");
         }

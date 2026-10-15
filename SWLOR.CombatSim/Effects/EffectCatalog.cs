@@ -77,9 +77,8 @@ namespace SWLOR.CombatSim.Effects
             [FeatType.Resuscitation1] = new AbilityEffect { Kind = EffectKind.Revive, Percent = 0, Scaling = ScalingStat.None },
             [FeatType.Resuscitation2] = new AbilityEffect { Kind = EffectKind.Revive, Percent = 20 },
 
-            // Saberstaff stances are held for the whole fight; Infinite Conduit lasts 45 seconds.
+            // Conduit: the stance is held until toggled off (no duration in the game); the capstone lasts 45 seconds.
             [FeatType.ConduitStance1] = SelfStatus(typeof(ConduitStanceStatusEffect), 0f),
-            [FeatType.TempestStance1] = SelfStatus(typeof(TempestStanceStatusEffect), 0f),
             [FeatType.InfiniteConduit1] = SelfStatus(typeof(InfiniteConduitStatusEffect), 45f)
         };
 

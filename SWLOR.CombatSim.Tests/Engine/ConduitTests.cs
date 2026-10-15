@@ -1,11 +1,14 @@
 using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.CombatSim.Data;
+using SWLOR.CombatSim.Effects;
 using SWLOR.CombatSim.Engine;
 using SWLOR.CombatSim.Rules;
 using SWLOR.CombatSim.Scenario;
 using SWLOR.CombatSim.Tests.Support;
+using SWLOR.Game.Server.Feature.StatusEffectDefinition;
 using SWLOR.Game.Server.Service.SkillService;
+using SWLOR.Game.Server.Service.StatService;
 using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.CombatSim.Tests.Engine
@@ -158,15 +161,31 @@ namespace SWLOR.CombatSim.Tests.Engine
         }
 
         [Test]
-        public void TakingUpAnotherStance_EndsConduitStance()
+        public void TakingUpConduitStance_EndsAnyOtherStance()
         {
-            var (simulation, caster) = Spawn(new[] { "ConduitTraining" },
-                Stance(), TestCombatants.Use("TempestStance1", AbilityTarget.Self, keepUp: true), Hostile("FocusedArc4"));
+            var (simulation, caster) = Spawn(new[] { "ConduitTraining" }, Stance());
+            // No other stance is modeled yet, so one stands in here alongside an ordinary status.
+            caster.Statuses["OtherStance"] = new ActiveStatus
+            {
+                Stats = new Dictionary<StatType, int>(), ExpiresAt = double.PositiveInfinity, IsStance = true
+            };
+            caster.Statuses["OtherBuff"] = new ActiveStatus
+            {
+                Stats = new Dictionary<StatType, int>(), ExpiresAt = double.PositiveInfinity
+            };
 
-            SimulationClock.RunUntil(simulation, () => caster.Statuses.ContainsKey("TempestStanceStatusEffect"), LimitSeconds,
-                "Tempest Stance to go up");
+            SimulationClock.RunUntil(simulation, () => caster.Statuses.ContainsKey("ConduitStanceStatusEffect"), LimitSeconds,
+                "Conduit Stance to go up");
 
-            caster.Statuses.Should().NotContainKey("ConduitStanceStatusEffect", "a creature holds one stance at a time");
+            caster.Statuses.Should().NotContainKey("OtherStance", "a creature holds one stance at a time");
+            caster.Statuses.Should().ContainKey("OtherBuff");
+            caster.Statuses["ConduitStanceStatusEffect"].IsStance.Should().BeTrue();
+        }
+
+        [Test]
+        public void InfiniteConduit_IsNotAStance()
+        {
+            StatusStats.IsStance(typeof(InfiniteConduitStatusEffect)).Should().BeFalse();
         }
 
         [Test]

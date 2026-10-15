@@ -21,6 +21,7 @@ namespace SWLOR.Game.Server.Entity
         [Indexed]
         public bool IsRetired { get; set; }
         public string PrivateName { get; set; }
+        [Indexed]
         public string Descriptor { get; set; }
         public string Biography { get; set; }
         public int PortraitInternalId { get; set; }

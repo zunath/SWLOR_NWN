@@ -1078,7 +1078,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 return bonus;
 
             var dbPlayer = GetPlayerEntity();
-            return 1 + dbPlayer.STMRegen + GetAbilityScore(_target, AbilityType.Might) / 4 + bonus;
+            return NaturalRegeneration.BaseStaminaRegenPerThirtySeconds + dbPlayer.STMRegen + GetAbilityScore(_target, AbilityType.Might) / 4 + bonus;
         }
 
         private int GetCriticalRate(SkillType skillType)

@@ -118,7 +118,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.ForceConvergenceTrait)
-                .Description("After spending FP on a Force power, restore 20% of your maximum FP over 10 seconds and gain +5% Force ability Accuracy for 30 seconds. This can trigger once every 45 seconds.")
+                .Description("After spending FP on a Force power, restore 40% of your maximum FP over 20 seconds and gain +5% Force ability Accuracy for 30 seconds. This can trigger once every 45 seconds.")
                 .Price(4)
                 .RequirementSkill(SkillType.Force, 48)
                 .RequirementCharacterType(CharacterType.ForceSensitive)

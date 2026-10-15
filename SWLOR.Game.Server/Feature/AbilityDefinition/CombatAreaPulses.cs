@@ -96,7 +96,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
             VisualEffect targetVisualEffect = VisualEffect.None,
             VisualEffect areaVisualEffect = VisualEffect.None,
             bool alwaysApplyAreaVisualEffect = true,
-            Action<uint> afterSuccessfulHit = null)
+            Action<uint> afterSuccessfulHit = null,
+            AbilityType combatImpactDamageAbility = AbilityType.Invalid)
         {
             Ability.ApplyTelegraphedCombatImpact(
                 activator,
@@ -113,7 +114,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                 targetVisualEffect: targetVisualEffect,
                 areaVisualEffect: areaVisualEffect,
                 alwaysApplyAreaVisualEffect: alwaysApplyAreaVisualEffect,
-                afterSuccessfulHit: afterSuccessfulHit);
+                afterSuccessfulHit: afterSuccessfulHit,
+                combatImpactDamageAbility: combatImpactDamageAbility);
         }
 
         public static int CountHostileCreatures(uint activator, Location location, float radius)

@@ -29,7 +29,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 "Force Burst",
                 1,
                 BaseDamage,
-                6);
+                7);
 
             return builder.Build();
         }

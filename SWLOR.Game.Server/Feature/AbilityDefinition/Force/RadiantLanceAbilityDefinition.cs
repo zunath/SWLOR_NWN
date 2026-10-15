@@ -55,7 +55,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 "Radiant Lance II",
                 2,
                 Rank2BaseDamage,
-                5,
+                6,
                 15f);
         }
 
@@ -68,7 +68,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 "Radiant Lance III",
                 3,
                 Rank3BaseDamage,
-                6,
+                7,
                 18f);
         }
 

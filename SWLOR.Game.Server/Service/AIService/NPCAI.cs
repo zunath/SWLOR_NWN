@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Feature;
+using SWLOR.Game.Server.Native;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.CompanionControlService;
 using SWLOR.Game.Server.Service.LogService;
@@ -748,6 +749,9 @@ namespace SWLOR.Game.Server.Service.AIService
 
         private static bool GetHasEffect(uint creature, EffectTypeScript effectType)
         {
+            if (!AppliedEffects.MayHaveScriptType(creature, effectType))
+                return false;
+
             var effect = GetFirstEffect(creature);
             while (GetIsEffectValid(effect))
             {

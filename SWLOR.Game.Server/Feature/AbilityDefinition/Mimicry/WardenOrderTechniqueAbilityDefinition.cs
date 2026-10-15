@@ -37,7 +37,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                         var amount = GameMath.PercentOf(GetMaxHitPoints(ally), 15);
                         amount = Stat.ApplyOutgoingAbilityHealingAdjustment(activator, amount);
                         amount = Ability.ApplyCombatReadinessToActivatedAbilityMagnitude(activator, amount);
-                        amount = Stat.ApplyHealingReceivedAdjustment(ally, amount);
+                        amount = Stat.ApplyHealingReceivedAdjustment(ally, amount, isInstantAbilityHeal: true);
                         var hitPointsBeforeHealing = GetCurrentHitPoints(ally);
                         ApplyEffectToObject(DurationType.Instant, EffectHeal(amount), ally);
                         if (GetCurrentHitPoints(ally) > hitPointsBeforeHealing)

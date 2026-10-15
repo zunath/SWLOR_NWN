@@ -266,18 +266,18 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Revive Beast")
 
                 .AddPerkLevel()
-                .Description("Revives your pet with 1 HP.")
+                .Description("Revives your pet with 1 HP. Taking damage interrupts the cast. Fails while a hostile player is within 20m, or, after your pet is killed by a player, until your party nearby has gone 15 seconds without taking damage.")
                 .Price(1)
                 .GrantsFeat(FeatType.ReviveBeast1)
 
                 .AddPerkLevel()
-                .Description("Revives your pet with (10 + SOC)% HP.")
+                .Description("Revives your pet with (10 + SOC)% HP. Taking damage interrupts the cast. Fails while a hostile player is within 20m, or, after your pet is killed by a player, until your party nearby has gone 15 seconds without taking damage.")
                 .Price(2)
                 .RequirementSkill(SkillType.BeastMastery, 25)
                 .GrantsFeat(FeatType.ReviveBeast2)
 
                 .AddPerkLevel()
-                .Description("Revives your pet with (45 + SOC)% HP.")
+                .Description("Revives your pet with (45 + SOC)% HP. Taking damage interrupts the cast. Fails while a hostile player is within 20m, or, after your pet is killed by a player, until your party nearby has gone 15 seconds without taking damage.")
                 .Price(3)
                 .RequirementSkill(SkillType.BeastMastery, 40)
                 .GrantsFeat(FeatType.ReviveBeast3);

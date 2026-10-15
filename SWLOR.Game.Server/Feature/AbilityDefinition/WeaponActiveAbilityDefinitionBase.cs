@@ -479,6 +479,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                 if (hpCost <= 0)
                     return;
 
+                if (CombatRecorder.IsRecording)
+                    CombatRecorder.ExpectHitPointCost(activator, hpCost);
                 AssignCommand(activator, () => ApplyEffectToObject(DurationType.Instant, EffectDamage(hpCost), activator));
                 Combat.ApplyHitPointSpendAbilityEffects(activator, hpCost);
             }
@@ -487,7 +489,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
             {
                 if (ClearTargetActionsOnHit)
                 {
-                    AssignCommand(target, () => ClearAllActions());
+                    ActionInterruption.ClearActions(target);
                     UsePerkFeat.InterruptAbilityActivation(target);
                 }
 
@@ -1961,7 +1963,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                 .IsSingleTargetAbility()
                 .HasImpactAction((activator, target, level, targetLocation) =>
                 {
-                    AssignCommand(target, () => ClearAllActions());
+                    ActionInterruption.ClearActions(target);
                     Ability.ApplyCombatImpact(
                         activator,
                         target,
@@ -2102,6 +2104,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
 
             StatusEffect.RemoveStatusEffect(activator, type, false);
             SendMessageToPC(activator, $"{StatusEffect.GetStatusEffectName(type)} deactivated.");
+            if (CombatRecorder.IsRecording)
+                CombatRecorder.NoteToggleDeactivated(activator);
             return false;
         }
 

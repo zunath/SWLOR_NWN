@@ -16,6 +16,7 @@ public class DMPossessionBroadcastTests
     private const uint Creature = 2;
     private const uint Player = 3;
     private const uint OtherDM = 4;
+    private const uint Ally = 5;
     private const uint Encounter = 50;
     private const uint Cantina = 100;
     private const uint Spaceport = 101;
@@ -29,7 +30,18 @@ public class DMPossessionBroadcastTests
             public static class DMPresence
             {
                 {{Method("Service/DMPresence.cs", "GetControlledCreature")}}
+                {{Method("Service/DMPresence.cs", "GetDM")}}
             }
+
+            public static class Party
+            {
+                // Party membership is keyed by each player's own character, so a possessing DM's stays on their avatar.
+                public static readonly List<(uint First, uint Second)> Members = new();
+                public static bool IsInParty(uint first, uint second) =>
+                    Members.Contains((first, second)) || Members.Contains((second, first));
+            }
+
+            {{Type("Service/TelegraphService/TelegraphColorType.cs", "TelegraphColorType")}}
 
             public static class ObjectSnapshot
             {
@@ -100,7 +112,15 @@ public class DMPossessionBroadcastTests
                     Updated.Clear();
                     _sentShaderStates.Clear();
                     EventsPlugin.Target = OBJECT_INVALID;
+                    Party.Members.Clear();
                 }
+                public static void Refresh(uint[] players) => UpdateShadersForPlayers(players);
+                // UpdateShaderSlotsForPlayer resolves the party member once per viewer and passes it for every slot.
+                public static TelegraphColorType ColorFor(uint viewer, uint telegrapher, bool isHostile) =>
+                    DetermineTelegraphColorType(viewer, DMPresence.GetDM(viewer), telegrapher, isHostile);
+                {{Method("Service/Telegraph.cs", "DetermineTelegraphColorType")}}
+                {{Method("Service/Telegraph.cs", "SelectTelegraphColorType")}}
+                {{Method("Service/Telegraph.cs", "UpdateShadersForPlayers")}}
                 {{Method("Service/Telegraph.cs", "UpdateShadersForAllPlayers")}}
                 {{Method("Service/Telegraph.cs", "UpdateShadersForArea")}}
                 {{Method("Service/Telegraph.cs", "ResendShaderStateOnDMPossess")}}
@@ -242,6 +262,52 @@ public class DMPossessionBroadcastTests
 
     [TestCase(DMPossess)]
     [TestCase(DMPossessFullPower)]
+    public void TelegraphColors_UseThePartyOfAPossessingDMsAvatar(int possessionType)
+    {
+        OnlineCast(possessionType);
+        JoinParty(DM, Player);
+
+        TelegraphColor(Creature, Player).Should().Be("PartyMember");
+        TelegraphColor(Creature, Creature).Should().Be("Self");
+        TelegraphColor(Creature, Encounter).Should().Be("Hostile");
+    }
+
+    [Test]
+    public void TelegraphColors_UseAPlayersOwnParty()
+    {
+        _harness.AddPlayer(Player, area: Cantina);
+        _harness.AddPlayer(Ally, area: Cantina);
+        JoinParty(Player, Ally);
+
+        TelegraphColor(Player, Ally).Should().Be("PartyMember");
+        TelegraphColor(Player, Player).Should().Be("Self");
+        TelegraphColor(Player, Encounter).Should().Be("Hostile");
+    }
+
+    [Test]
+    public void TelegraphSlots_PassTheAvatarBehindAPossessedCreatureForPartyColors()
+    {
+        var slots = Method("Service/Telegraph.cs", "UpdateShaderSlotsForPlayer");
+
+        slots.Should().Contain("var partyMember = DMPresence.GetDM(player);")
+            .And.Contain("DetermineTelegraphColorType(player, partyMember, data.Creator, data.IsHostile)");
+    }
+
+    [TestCase(DMPossess)]
+    [TestCase(DMPossessFullPower)]
+    public void TelegraphPartyRefresh_ReachesAPossessingDM(int possessionType)
+    {
+        OnlineCast(possessionType);
+
+        _harness.Invoke("Telegraph", "Refresh", new[] { Player, DM, Encounter });
+
+        var updated = (List<uint>)_harness.GetField("Telegraph", "Updated");
+        updated.Should().Equal(Player, Creature);
+        updated.Select(_harness.ReceivingPlayer).Should().Equal(Player, DM);
+    }
+
+    [TestCase(DMPossess)]
+    [TestCase(DMPossessFullPower)]
     public void WeatherChange_ReachesAPossessingDMWhereTheirCreatureIs(int possessionType)
     {
         OnlineCast(possessionType);
@@ -279,6 +345,12 @@ public class DMPossessionBroadcastTests
         _harness.AddPlayer(OtherDM, isDM: true, area: Spaceport);
         PossessingDM(possessionType);
     }
+
+    private void JoinParty(uint first, uint second) =>
+        ((List<(uint, uint)>)_harness.GetField("Party", "Members")).Add((first, second));
+
+    private string TelegraphColor(uint viewer, uint telegrapher) =>
+        _harness.Invoke("Telegraph", "ColorFor", viewer, telegrapher, true).ToString()!;
 
     private void PossessingDM(int possessionType)
     {

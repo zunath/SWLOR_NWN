@@ -363,10 +363,13 @@ namespace SWLOR.Game.Server.Service
             return degrees * ((float)Math.PI / 180f);
         }
 
-        private static TelegraphColorType DetermineTelegraphColorType(uint player, uint telegrapher, bool isHostile)
+        // partyMember is the avatar behind a creature a DM possesses, which keeps the DM's party membership.
+        private static TelegraphColorType DetermineTelegraphColorType(uint player, uint partyMember, uint telegrapher, bool isHostile)
         {
             var isOwnTelegraph = player == telegrapher;
-            var isPartyMemberTelegraph = !isOwnTelegraph && Party.IsInParty(player, telegrapher);
+            var isPartyMemberTelegraph = !isOwnTelegraph &&
+                (Party.IsInParty(player, telegrapher) ||
+                 (partyMember != player && Party.IsInParty(partyMember, telegrapher)));
 
             return SelectTelegraphColorType(isOwnTelegraph, isPartyMemberTelegraph, isHostile);
         }
@@ -444,10 +447,14 @@ namespace SWLOR.Game.Server.Service
         {
             foreach (var player in players.Distinct())
             {
-                if (!GetIsObjectValid(player) || (!GetIsPC(player) && !GetIsDM(player)))
+                if (!GetIsObjectValid(player))
                     continue;
 
-                UpdateShaderForPlayer(player);
+                var viewer = DMPresence.GetControlledCreature(player);
+                if (!GetIsPC(viewer) && !GetIsDM(viewer))
+                    continue;
+
+                UpdateShaderForPlayer(viewer);
             }
         }
 
@@ -549,6 +556,7 @@ namespace SWLOR.Game.Server.Service
             }
 
             var telegraphs = SelectTelegraphsForRendering(_telegraphsByArea[area].Values);
+            var partyMember = DMPresence.GetDM(player);
 
             var i = 0;
             foreach (var telegraph in telegraphs)
@@ -557,7 +565,7 @@ namespace SWLOR.Game.Server.Service
                 var position = data.Position;
                 var size = data.Size;
 
-                var colorType = DetermineTelegraphColorType(player, data.Creator, data.IsHostile);
+                var colorType = DetermineTelegraphColorType(player, partyMember, data.Creator, data.IsHostile);
                 var packed = PackTelegraphData(data.Shape, colorType, size, data.Rotation);
 
                 if (sent.PackedData[i] != packed)

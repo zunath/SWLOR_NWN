@@ -25,7 +25,7 @@ public class WalkModeTests
             "SWLOR.Game.Server", "Service", "Stat.cs"))).GetRoot();
         var methodNames = new HashSet<string>
         {
-            "IsWalkModeEnabled", "ToggleWalkMode", "ApplyCreatureMovementRate", "GetMovementSpeedMultiplier",
+            "IsWalkModeEnabled", "ClearWalkModeBeforeDMPossessionChange", "ToggleWalkMode", "ApplyCreatureMovementRate", "GetMovementSpeedMultiplier",
             "GetMovementSpeedAdjustment", "GetBaseMovementSpeedIncrease"
         };
         var methods = stat.DescendantNodes().OfType<MethodDeclarationSyntax>()
@@ -38,6 +38,7 @@ public class WalkModeTests
             using System;
             using System.Collections.Generic;
             using SWLOR.Game.Server.Service.StatService;
+            using SWLOR.Game.Server.Core;
             using SWLOR.NWN.API.NWScript.Enum;
             using static World;
             public static class Movement
@@ -60,17 +61,20 @@ public class WalkModeTests
             public static class World
             {
                 public static bool IsDM, IsPossessed, AlwaysWalk;
+                public static bool IsPlayer;
+                public const uint OBJECT_SELF = 1;
                 public static float NativeRate;
                 public static int Adjustment, Disabled, NativeSlow, BaseRateSets;
                 public static readonly Dictionary<string, int> Ints = new();
                 public static readonly Dictionary<string, float> Floats = new();
                 public static bool GetIsObjectValid(uint creature) => creature == 1;
                 public static ObjectType GetObjectType(uint creature) => ObjectType.Creature;
-                public static bool GetIsPC(uint creature) => !IsPossessed;
+                public static bool GetIsPC(uint creature) => IsPlayer && !IsPossessed;
                 public static bool GetIsDM(uint creature) => IsDM;
                 public static bool GetIsDMPossessed(uint creature) => IsPossessed;
                 public static int GetLocalInt(uint creature, string key) => Ints.GetValueOrDefault(key);
                 public static void SetLocalInt(uint creature, string key, int value) => Ints[key] = value;
+                public static void DeleteLocalInt(uint creature, string key) => Ints.Remove(key);
                 public static float GetLocalFloat(uint creature, string key) => Floats.GetValueOrDefault(key);
                 public static void SetLocalFloat(uint creature, string key, float value) => Floats[key] = value;
                 public static void DeleteLocalFloat(uint creature, string key) => Floats.Remove(key);
@@ -84,6 +88,7 @@ public class WalkModeTests
                 public static void Reset()
                 {
                     IsDM = IsPossessed = AlwaysWalk = false;
+                    IsPlayer = true;
                     NativeRate = 1.25f;
                     Adjustment = Disabled = NativeSlow = BaseRateSets = 0;
                     Ints.Clear(); Floats.Clear();
@@ -185,6 +190,49 @@ public class WalkModeTests
         Get<float>("NativeRate").Should().BeApproximately(previousRate + adjustment * 0.01f, 0.001f);
     }
 
+    [Test]
+    public void PossessionChangeClearsOutgoingCreatureWalkStateBeforeRelease()
+    {
+        Set("IsPlayer", false);
+        Set("IsPossessed", true);
+        Set("NativeRate", 1.3f);
+        for (var cycle = 0; cycle < 2; cycle++)
+        {
+            Toggle();
+            Invoke("ClearWalkModeBeforeDMPossessionChange");
+            Get<bool>("AlwaysWalk").Should().BeFalse();
+            ((bool)Invoke("IsWalkModeEnabled")).Should().BeFalse();
+            Set("IsPossessed", false);
+            Invoke("ApplyCreatureMovementRate");
+            Get<float>("NativeRate").Should().BeApproximately(1.3f, 0.001f);
+            Get<Dictionary<string, float>>("Floats").Should().BeEmpty();
+            Set("IsPossessed", true);
+            ((bool)Invoke("IsWalkModeEnabled")).Should().BeFalse();
+        }
+    }
+
+    [TestCase(false)]
+    [TestCase(true)]
+    public void ReleasedNpcCannotRetainTheWalkCapIfThePossessionEventWasMissed(bool disabled)
+    {
+        Set("IsPlayer", false);
+        Set("IsPossessed", true);
+        Set("NativeRate", 1.3f);
+        Toggle();
+        Set("Disabled", disabled ? 1 : 0);
+        Set("IsPossessed", false);
+        ((bool)Invoke("IsWalkModeEnabled")).Should().BeFalse();
+        ((float)Invoke("GetMovementSpeedMultiplier")).Should().BeApproximately(disabled ? 0f : 1.3f, 0.001f);
+        Invoke("ApplyCreatureMovementRate");
+        Get<Dictionary<string, int>>("Ints").Should().NotContainKey("WALK_TOGGLE");
+        Set("Disabled", 0);
+        Invoke("ApplyCreatureMovementRate");
+        Get<float>("NativeRate").Should().BeApproximately(1.3f, 0.001f);
+        Get<Dictionary<string, float>>("Floats").Should().BeEmpty();
+        Set("IsPossessed", true);
+        ((bool)Invoke("IsWalkModeEnabled")).Should().BeFalse();
+    }
+
     [TestCase(false, false)]
     [TestCase(true, false)]
     [TestCase(false, true)]
@@ -274,7 +322,11 @@ public class WalkModeTests
     }
 
     private bool Toggle() => (bool)Invoke("ToggleWalkMode")!;
-    private object Invoke(string method) => _movement.GetMethod(method)!.Invoke(null, [1u]);
+    private object Invoke(string method)
+    {
+        var target = _movement.GetMethod(method)!;
+        return target.Invoke(null, target.GetParameters().Length == 0 ? [] : [1u]);
+    }
     private void Set(string field, object value) => _world.GetField(field)!.SetValue(null, value);
     private T Get<T>(string field) => (T)_world.GetField(field)!.GetValue(null)!;
 }

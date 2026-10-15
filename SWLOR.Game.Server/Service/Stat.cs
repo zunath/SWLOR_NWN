@@ -658,7 +658,18 @@ namespace SWLOR.Game.Server.Service
                 entity.Stamina = 0;
         }
 
-        public static bool IsWalkModeEnabled(uint creature) => GetLocalInt(creature, WalkToggleVariable) == 1;
+        public static bool IsWalkModeEnabled(uint creature) =>
+            GetLocalInt(creature, WalkToggleVariable) == 1 &&
+            (GetIsPC(creature) || GetIsDM(creature) || GetIsDMPossessed(creature));
+
+        [NWNEventHandler(ScriptName.OnDMPossessBefore)]
+        [NWNEventHandler(ScriptName.OnDMPossessFullPowerBefore)]
+        public static void ClearWalkModeBeforeDMPossessionChange()
+        {
+            var creature = OBJECT_SELF;
+            if (GetIsDMPossessed(creature) && IsWalkModeEnabled(creature))
+                ToggleWalkMode(creature);
+        }
 
         public static bool ToggleWalkMode(uint player)
         {
@@ -698,6 +709,9 @@ namespace SWLOR.Game.Server.Service
         {
             if (!GetIsObjectValid(creature) || GetObjectType(creature) != ObjectType.Creature)
                 return;
+
+            if (GetLocalInt(creature, WalkToggleVariable) == 1 && !IsWalkModeEnabled(creature))
+                DeleteLocalInt(creature, WalkToggleVariable);
 
             var isPlayer = GetIsPC(creature) && !GetIsDM(creature) && !GetIsDMPossessed(creature);
             if (isPlayer)

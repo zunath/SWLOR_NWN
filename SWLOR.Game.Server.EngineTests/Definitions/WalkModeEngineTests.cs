@@ -12,6 +12,20 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
 {
     public static class WalkModeEngineTests
     {
+        [EngineTest("Uncontrolled NPCs ignore and clear stale possessed walk state", Category = "WalkMode", TimeoutSeconds = 30f)]
+        public static async Task UncontrolledNpcClearsWalkState(EngineTestContext ctx)
+        {
+            var creature = ctx.SpawnCreature("civilian");
+            await ctx.DelaySecondsAsync(1f);
+            var baseline = Stat.GetMovementSpeedMultiplier(creature);
+            SetLocalInt(creature, "WALK_TOGGLE", 1);
+            ctx.Assert(!Stat.IsWalkModeEnabled(creature), "uncontrolled NPCs cannot retain player walk mode");
+            Stat.ApplyCreatureMovementRate(creature);
+            ctx.AssertEqual(0, GetLocalInt(creature, "WALK_TOGGLE"), "stale walk marker clears on refresh");
+            ctx.Assert(Math.Abs(baseline - CreaturePlugin.GetMovementRateFactor(creature)) < 0.001f,
+                "NPC movement refresh retains its normal movement factor");
+        }
+
         [EngineTest("Player exports reset temporary walk state on reconnect", Category = "WalkMode", TimeoutSeconds = 30f)]
         public static async Task PlayerExportsResetTemporaryWalkState(EngineTestContext ctx)
         {
@@ -82,6 +96,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 {
                     await ToggleAsync();
                     ctx.Assert(Stat.IsWalkModeEnabled(player), "walk enabled");
+                    ctx.Assert(IsNativeForcedWalkEnabled(player), "walk enables the native forced-walk flag");
                     AssertSpeed(1.0f, "walk uses normal walking speed");
                     ctx.Assert(GetActionMode(player, ActionMode.Detect), "walk does not disable detect mode");
 
@@ -89,6 +104,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                     AssertSpeed(1.0f, "stat refresh preserves normal walking speed");
                     await ToggleAsync();
                     ctx.Assert(!Stat.IsWalkModeEnabled(player), "walk disabled");
+                    ctx.Assert(!IsNativeForcedWalkEnabled(player), "disabling walk clears the native forced-walk flag");
                     AssertSpeed(1.25f, "disabling walk immediately restores the movement bonus");
                 }
 
@@ -152,5 +168,8 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                     $"{label}: native movement factor expected {nativeExpected}, got {applied}");
             }
         }
+
+        private static bool IsNativeForcedWalkEnabled(uint creature) =>
+            NWNXLib.g_pAppManager.m_pServerExoApp.GetGameObject(creature).AsNWSCreature().m_bForcedWalk != 0;
     }
 }

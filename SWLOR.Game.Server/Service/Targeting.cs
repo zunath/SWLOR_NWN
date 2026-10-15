@@ -53,11 +53,14 @@ namespace SWLOR.Game.Server.Service
         public static void RunTargetedItemAction()
         {
             var player = GetLastPlayerToSelectTarget();
-            if (!_playerTargetingActions.ContainsKey(player))
+            if (!_playerTargetingActions.TryGetValue(player, out var targetingAction))
                 return;
+
+            // Each registration answers one targeting click. Left in place, it would rerun on a later
+            // targeting click started by code that registers its own handler.
+            _playerTargetingActions.Remove(player);
             var targetedObject = GetTargetingModeSelectedObject();
             var targetedLocation = GetTargetingModeSelectedPosition();
-            var targetingAction = _playerTargetingActions[player];
 
             if (GetIsObjectValid(targetedObject))
             {

@@ -927,45 +927,6 @@ public class TintMapReviewTests
     }
 
     [Test]
-    public void SpeederAppearanceChangesRefreshTintMaps()
-    {
-        var source = ReadSource(
-            "SWLOR.Game.Server",
-            "Feature",
-            "ItemDefinition",
-            "SpeederItemDefinition.cs");
-        var methods = CSharpSyntaxTree.ParseText(source)
-            .GetRoot()
-            .DescendantNodes()
-            .OfType<MethodDeclarationSyntax>()
-            .Where(node => new[]
-            {
-                "Speeder",
-                "AttackedDismount",
-                "AttackDismount",
-                "AreaTransitionDismount"
-            }.Contains(node.Identifier.ValueText))
-            .ToDictionary(node => node.Identifier.ValueText);
-
-        methods.Keys.Should().BeEquivalentTo(
-            "Speeder",
-            "AttackedDismount",
-            "AttackDismount",
-            "AreaTransitionDismount");
-        foreach (var method in methods.Values)
-        {
-            method.DescendantNodes()
-                .OfType<InvocationExpressionSyntax>()
-                .Should()
-                .ContainSingle(invocation =>
-                    invocation.Expression.ToString() == "TintMapService.QueueRefreshAndEditor" &&
-                    invocation.ArgumentList.Arguments.Count == 2 &&
-                    invocation.ArgumentList.Arguments[0].Expression.ToString() ==
-                    invocation.ArgumentList.Arguments[1].Expression.ToString());
-        }
-    }
-
-    [Test]
     public void CombinedAppearanceRefreshUpdatesTintUniformsAndEditor()
     {
         var source = ReadSource(

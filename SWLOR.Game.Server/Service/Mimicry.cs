@@ -765,6 +765,7 @@ namespace SWLOR.Game.Server.Service
             DB.Set(dbPlayer);
 
             GrantTechniqueFeat(player, feat);
+            QuickCast.ApplyPreferences(player);
             Gui.PublishRefreshEvent(player, new TechniqueChangedRefreshEvent());
 
             return true;
@@ -792,6 +793,7 @@ namespace SWLOR.Game.Server.Service
 
             DB.Set(dbPlayer);
             RevokeTechniqueFeat(player, feat);
+            QuickCast.ApplyPreferences(player);
             Gui.PublishRefreshEvent(player, new TechniqueChangedRefreshEvent());
 
             return true;
@@ -865,6 +867,7 @@ namespace SWLOR.Game.Server.Service
             if (changed)
             {
                 DB.Set(dbPlayer);
+                QuickCast.ApplyPreferences(player);
                 Gui.PublishRefreshEvent(player, new TechniqueChangedRefreshEvent());
             }
         }
@@ -906,6 +909,7 @@ namespace SWLOR.Game.Server.Service
             var unequippedCount = dbPlayer.EquippedTechniques.Count;
             dbPlayer.EquippedTechniques.Clear();
             DB.Set(dbPlayer);
+            QuickCast.ApplyPreferences(player);
             Gui.PublishRefreshEvent(player, new TechniqueChangedRefreshEvent());
 
             Log.WriteStructured(
@@ -949,6 +953,7 @@ namespace SWLOR.Game.Server.Service
             {
                 GrantTechniqueFeat(player, feat);
             }
+            QuickCast.ApplyPreferences(player);
         }
 
         /// <summary>
@@ -964,6 +969,7 @@ namespace SWLOR.Game.Server.Service
             if (!GetIsObjectValid(player))
                 return;
 
+            feat = QuickCast.GetOriginalFeat(feat);
             var detail = GetTechniqueDetail(feat);
             if (detail != null && detail.IsMimicryTrait)
             {
@@ -971,8 +977,8 @@ namespace SWLOR.Game.Server.Service
                 // placed on the hotbar. Strip any feat/hotbar entry an earlier grant (or a prior
                 // version that granted the feat unconditionally) left behind. The trait's stats need
                 // no grant step - the stat pipeline reads them from the equipped list directly.
-                if (GetHasFeat(feat, player))
-                    CreaturePlugin.RemoveFeat(player, feat);
+                if (QuickCast.KnowsFeat(player, feat))
+                    QuickCast.RemoveFeat(player, feat);
 
                 RemoveFeatFromHotBar(player, feat);
                 return;
@@ -980,8 +986,8 @@ namespace SWLOR.Game.Server.Service
 
             // Active technique: grant the feat and add it to the hotbar, using the same rules as a
             // perk-purchased active ability (register + ImpactAction gate, first empty auto-add slot).
-            if (!GetHasFeat(feat, player))
-                CreaturePlugin.AddFeat(player, feat);
+            if (!QuickCast.KnowsFeat(player, feat))
+                CreaturePlugin.AddFeat(player, QuickCast.GetDisplayedFeat(player, feat));
 
             if (addToHotbar)
                 AddFeatToHotBar(player, feat);
@@ -1028,8 +1034,12 @@ namespace SWLOR.Game.Server.Service
             for (var slot = 0; slot < TotalHotBarSlots; slot++)
             {
                 var entry = PlayerPlugin.GetQuickBarSlot(player, slot);
-                if (entry.ObjectType == QuickBarSlotType.Feat && loadout.Techniques.Contains((FeatType)entry.INTParam1))
-                    loadout.HotbarSlots[slot] = (FeatType)entry.INTParam1;
+                if (entry.ObjectType != QuickBarSlotType.Feat)
+                    continue;
+
+                var feat = QuickCast.GetOriginalFeat((FeatType)entry.INTParam1);
+                if (loadout.Techniques.Contains(feat))
+                    loadout.HotbarSlots[slot] = feat;
             }
         }
 
@@ -1075,19 +1085,21 @@ namespace SWLOR.Game.Server.Service
             {
                 foreach (var feat in techniques)
                     RemoveFeatFromHotBar(player, feat);
-                foreach (var (slot, feat) in incoming.HotbarSlots)
+                foreach (var (slot, savedFeat) in incoming.HotbarSlots)
                 {
+                    var feat = QuickCast.GetOriginalFeat(savedFeat);
                     if (slot < 0 || slot >= TotalHotBarSlots || !techniques.Contains(feat) ||
                         !_techniques.TryGetValue(feat, out var detail) || detail.IsMimicryTrait)
                         continue;
                     var cell = PlayerPlugin.GetQuickBarSlot(player, slot);
                     if (cell.ObjectType == QuickBarSlotType.Empty ||
-                        cell.ObjectType == QuickBarSlotType.Feat && owned.Contains((FeatType)cell.INTParam1))
-                        PlayerPlugin.SetQuickBarSlot(player, slot, PlayerQuickBarSlot.UseFeat(feat));
+                        cell.ObjectType == QuickBarSlotType.Feat && owned.Contains(QuickCast.GetOriginalFeat((FeatType)cell.INTParam1)))
+                        PlayerPlugin.SetQuickBarSlot(player, slot, PlayerQuickBarSlot.UseFeat(QuickCast.GetDisplayedFeat(player, feat)));
                 }
             }
             foreach (var feat in techniques.Where(feat => !_techniques[feat].IsMimicryTrait))
                 AddFeatToHotBar(player, feat);
+            QuickCast.ApplyPreferences(player);
             Gui.PublishRefreshEvent(player, new TechniqueChangedRefreshEvent());
             return true;
         }
@@ -1102,6 +1114,7 @@ namespace SWLOR.Game.Server.Service
             if (!GetIsObjectValid(player))
                 return;
 
+            feat = QuickCast.GetOriginalFeat(feat);
             var detail = GetTechniqueDetail(feat);
             if (detail != null)
             {
@@ -1120,16 +1133,18 @@ namespace SWLOR.Game.Server.Service
                 }
             }
 
-            CreaturePlugin.RemoveFeat(player, feat);
+            QuickCast.RemoveFeat(player, feat);
             RemoveFeatFromHotBar(player, feat);
         }
 
         private static bool IsFeatOnHotBar(uint player, FeatType feat)
         {
+            feat = QuickCast.GetOriginalFeat(feat);
             for (var slot = 0; slot < TotalHotBarSlots; slot++)
             {
                 var quickBarSlot = PlayerPlugin.GetQuickBarSlot(player, slot);
-                if (quickBarSlot.ObjectType == QuickBarSlotType.Feat && quickBarSlot.INTParam1 == (int)feat)
+                if (quickBarSlot.ObjectType == QuickBarSlotType.Feat &&
+                    QuickCast.GetOriginalFeat((FeatType)quickBarSlot.INTParam1) == feat)
                     return true;
             }
 
@@ -1138,13 +1153,14 @@ namespace SWLOR.Game.Server.Service
 
         private static void AddFeatToHotBar(uint player, FeatType feat)
         {
+            feat = QuickCast.GetOriginalFeat(feat);
             if (!Ability.IsFeatRegistered(feat) || Ability.GetAbilityDetail(feat).ImpactAction == null)
                 return;
 
             if (IsFeatOnHotBar(player, feat))
                 return;
 
-            var quickBarSlot = PlayerQuickBarSlot.UseFeat(feat);
+            var quickBarSlot = PlayerQuickBarSlot.UseFeat(QuickCast.GetDisplayedFeat(player, feat));
 
             for (var slot = 0; slot < AutoAddHotBarSlots; slot++)
             {
@@ -1158,10 +1174,12 @@ namespace SWLOR.Game.Server.Service
 
         private static void RemoveFeatFromHotBar(uint player, FeatType feat)
         {
+            feat = QuickCast.GetOriginalFeat(feat);
             for (var slot = 0; slot < TotalHotBarSlots; slot++)
             {
                 var quickBarSlot = PlayerPlugin.GetQuickBarSlot(player, slot);
-                if (quickBarSlot.ObjectType == QuickBarSlotType.Feat && quickBarSlot.INTParam1 == (int)feat)
+                if (quickBarSlot.ObjectType == QuickBarSlotType.Feat &&
+                    QuickCast.GetOriginalFeat((FeatType)quickBarSlot.INTParam1) == feat)
                 {
                     PlayerPlugin.SetQuickBarSlot(player, slot, PlayerQuickBarSlot.Empty(QuickBarSlotType.Empty));
                 }
@@ -1240,7 +1258,7 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         public static bool IsTechniqueEquipped(Player dbPlayer, FeatType feat)
         {
-            return dbPlayer?.EquippedTechniques.Contains(feat) == true;
+            return dbPlayer?.EquippedTechniques.Contains(QuickCast.GetOriginalFeat(feat)) == true;
         }
 
         /// <summary>
@@ -1248,7 +1266,7 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         public static AbilityDetail GetTechniqueDetail(FeatType feat)
         {
-            return _techniques.TryGetValue(feat, out var detail) ? detail : null;
+            return _techniques.TryGetValue(QuickCast.GetOriginalFeat(feat), out var detail) ? detail : null;
         }
 
         /// <summary>
@@ -1256,7 +1274,7 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         public static bool IsTechnique(FeatType feat)
         {
-            return _techniques.ContainsKey(feat);
+            return _techniques.ContainsKey(QuickCast.GetOriginalFeat(feat));
         }
 
         /// <summary>

@@ -47,7 +47,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .IsCastedAbility()
                 .PreservesNativeAnimationChoreography()
                 .BreaksStealth()
-                .RequirementFP(5);
+                .RequirementFP(6);
         }
 
         private static void ForceIntercept1ImpactAction(uint activator, uint target, int level, Location targetLocation)

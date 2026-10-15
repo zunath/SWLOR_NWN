@@ -43,6 +43,7 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
             AlwaysWalk();
             AssociateCommands();
             Follow();
+            Afk();
             SetKnownName();
             ForgetKnownName();
             Introductions();
@@ -471,22 +472,13 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
         private void AlwaysWalk()
         {
             _builder.Create("alwayswalk", "walk")
-                .Description("Toggles forced walking when moving your character.")
+                .Description("Toggles forced walking at normal walking speed.")
                 .Permissions(AuthorizationLevel.All)
                 .Action((user, _, _, _) =>
                 {
-                    var wasWalking = GetLocalInt(user, "WALK_TOGGLE") == 1;
-                    PlayerPlugin.SetAlwaysWalk(user, !wasWalking);
-
-                    if (wasWalking)
-                    {
-                        SetLocalInt(user, "WALK_TOGGLE", 0);
-                        SendMessageToPC(user, $"Walk mode {ColorToken.Red("disabled")}.");
-                    } else
-                    {
-                        SetLocalInt(user, "WALK_TOGGLE", 1);
-                        SendMessageToPC(user, $"Walk mode {ColorToken.Green("enabled")}.");
-                    }
+                    var isWalking = Stat.ToggleWalkMode(user);
+                    var status = isWalking ? ColorToken.Green("enabled") : ColorToken.Red("disabled");
+                    SendMessageToPC(user, $"Walk mode {status}.");
                 });
         }
 
@@ -536,6 +528,23 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                     {
                         ActionMoveToObject(target, true);
                     });
+                });
+        }
+
+        private void Afk()
+        {
+            _builder.Create("afk")
+                .Description("Toggles a purple [AFK] indicator on your displayed name. Moving or using /afk again removes it.")
+                .Permissions(AuthorizationLevel.All)
+                .Validate((user, args) => !GetIsPC(user) || GetIsDM(user)
+                    ? "This command can only be used on player characters."
+                    : string.Empty)
+                .Action((user, target, location, args) =>
+                {
+                    var isAfk = PlayerName.ToggleAfk(user);
+                    SendMessageToPC(user, isAfk
+                        ? ColorToken.Purple("You are now AFK. Move or use /afk again when you return.")
+                        : "You are no longer AFK.");
                 });
         }
 
@@ -737,34 +746,46 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                 .Permissions(AuthorizationLevel.All)
                 .Action((user, target, location, args) =>
                 {
+                    // A DM possessing a creature types as the creature, but their windows are cached under the DM avatar
+                    // and can be shown on the creature, the avatar, or a creature they possessed earlier.
+                    var owner = DMPresence.GetDM(user);
+
                     // Close all open windows for the player
                     foreach (GuiWindowType type in Enum.GetValues(typeof(GuiWindowType)))
                     {
-                        if (type == GuiWindowType.Invalid) continue;
-                        if (Gui.IsWindowOpen(user, type))
+                        // The DM toolbar stands in for the hidden native taskbar and has a fixed position, so it stays as it is.
+                        if (type == GuiWindowType.Invalid || type == GuiWindowType.DMToolbar) continue;
+                        foreach (var uiTarget in DMPresence.GetShownOn(user, type))
                         {
-                            Gui.TogglePlayerWindow(user, type);
+                            if (Gui.IsWindowOpen(uiTarget, type))
+                            {
+                                Gui.TogglePlayerWindow(owner, type, uiTarget: uiTarget);
+                            }
                         }
                     }
 
-                    var playerId = GetObjectUUID(user);
+                    var playerId = GetObjectUUID(owner);
                     var dbPlayer = DB.Get<Player>(playerId);
 
-                    // Clear all stored window geometries
-                    dbPlayer.WindowGeometries.Clear();
+                    if (dbPlayer != null)
+                    {
+                        // Clear all stored window geometries
+                        dbPlayer.WindowGeometries.Clear();
 
-                    // Save the player data
-                    DB.Set(dbPlayer);
+                        // Save the player data
+                        DB.Set(dbPlayer);
+                    }
 
                     // Update all player window instances with default geometries
                     // This ensures that when windows are reopened, they use default positions
                     foreach (GuiWindowType type in Enum.GetValues(typeof(GuiWindowType)))
                     {
-                        if (type == GuiWindowType.Invalid) continue;
+                        // The DM toolbar stands in for the hidden native taskbar and has a fixed position, so it stays as it is.
+                        if (type == GuiWindowType.Invalid || type == GuiWindowType.DMToolbar) continue;
 
                         try
                         {
-                            var playerWindow = Gui.GetPlayerWindow(user, type);
+                            var playerWindow = Gui.GetPlayerWindow(owner, type);
                             var template = Gui.GetWindowTemplate(type);
                             playerWindow.ViewModel.Geometry = template.InitialGeometry;
                         }

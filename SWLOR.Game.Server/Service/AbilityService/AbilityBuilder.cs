@@ -518,6 +518,13 @@ namespace SWLOR.Game.Server.Service.AbilityService
             return this;
         }
 
+        /// <summary>Opts a self-legal support ability into the optional cursor-free self-cast command.</summary>
+        public AbilityBuilder AllowsSelfQuickCast()
+        {
+            _activeAbility.AllowsSelfQuickCast = true;
+            return this;
+        }
+
         /// <summary>
         /// Assigns an activation delay on the active ability we're building.
         /// This is typically used for casting times.
@@ -679,6 +686,16 @@ namespace SWLOR.Game.Server.Service.AbilityService
         public AbilityBuilder BreaksStealth()
         {
             _activeAbility.BreaksStealth = true;
+
+            return this;
+        }
+
+        /// <summary>
+        /// Taking damage while the ability is being cast interrupts it.
+        /// </summary>
+        public AbilityBuilder IsInterruptedByDamage()
+        {
+            _activeAbility.IsInterruptedByDamage = true;
 
             return this;
         }

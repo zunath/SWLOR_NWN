@@ -6192,9 +6192,11 @@ namespace SWLOR.Game.Server.Service.StatService
         [StatType(StatTypeCategory.BeneficialWhenPositive)]
         DamageEnmityPercentAdjustment = 1098,
 
-        /// <summary>Sequence line selector belonging to the same source as its technique payload.</summary>
-        [StatType(StatTypeCategory.NonBeneficial, StatTypeAggregation.Maximum)]
-        TechniqueLine = 1099,
+        /// <summary>
+        /// Seconds before the healing-received Stamina trigger can restore Stamina again.
+        /// </summary>
+        [StatType(StatTypeCategory.NonBeneficial)]
+        HealingReceivedStaminaRestoreCooldownSeconds = 1099,
 
         [StatType(StatTypeCategory.BeneficialWhenPositive)]
         TechniqueWindowExtensionSeconds = 1100,
@@ -6284,6 +6286,11 @@ namespace SWLOR.Game.Server.Service.StatService
         /// <summary>Registered content profile supplying reaction presentation, independent of equipped weapons.</summary>
         [StatType(StatTypeCategory.NonBeneficial, StatTypeAggregation.Maximum)]
         TechniquePresentationSkillType = 1159,
+
+        /// <summary>Sequence line selector belonging to the same source as its technique payload.</summary>
+        [StatType(StatTypeCategory.NonBeneficial, StatTypeAggregation.Maximum)]
+        TechniqueLine = 1160,
+
 
     }
 

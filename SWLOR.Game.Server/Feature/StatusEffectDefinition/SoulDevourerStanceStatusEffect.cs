@@ -22,7 +22,13 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
                 BaseRecoilPercent,
                 MinimumRecoilPercent,
                 GetAbilityScore(attacker, AbilityType.Might));
-            AssignCommand(attacker, () => ApplyEffectToObject(DurationType.Instant, EffectDamage(GameMath.PercentOf(damage, percent)), attacker));
+            // The recoil lands after this reaction's scope closes, so it carries the scope along.
+            var recorderAttribution = CombatRecorder.CaptureScope();
+            AssignCommand(attacker, () =>
+            {
+                using var recoilAttribution = CombatRecorder.BeginAttribution(recorderAttribution);
+                ApplyEffectToObject(DurationType.Instant, EffectDamage(GameMath.PercentOf(damage, percent)), attacker);
+            });
         }
         public SoulDevourerStanceStatusEffect()
         {

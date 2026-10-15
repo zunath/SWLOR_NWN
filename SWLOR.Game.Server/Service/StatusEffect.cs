@@ -1,10 +1,13 @@
 using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Core;
+using SWLOR.Game.Server.Feature.AbilityDefinition;
 using SWLOR.Game.Server.Feature.GuiDefinition.RefreshEvent;
 using SWLOR.Game.Server.Feature.StatusEffectDefinition;
+using SWLOR.Game.Server.Native;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.CombatService;
+using SWLOR.Game.Server.Service.FrameProfilerService;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.Game.Server.Service.StatService;
 using SWLOR.Game.Server.Service.StatusEffectService;
@@ -352,7 +355,7 @@ namespace SWLOR.Game.Server.Service
             // Wait until native removal settles, then only clear statuses without a timer.
             DelayCommand(0f, () =>
             {
-                if (!HasEffectByTag(player, tag))
+                if (!AppliedEffects.MayHaveTag(player, tag) || !HasEffectByTag(player, tag))
                     RemoveStatusEffectById(player, tag, true, false);
             });
         }
@@ -487,7 +490,7 @@ namespace SWLOR.Game.Server.Service
         public static void ApplyPermanentStatusEffect<T>(uint source, uint creature)
             where T: IStatusEffect
         {
-            ApplyStatusEffectInternal((IStatusEffect)Activator.CreateInstance(typeof(T)), source, creature, -1, true);
+            ApplyAndProfileStatusEffect((IStatusEffect)Activator.CreateInstance(typeof(T)), source, creature, -1, true);
         }
 
         public static void ApplyPermanentStatusEffect(Type type, uint source, uint creature)
@@ -495,7 +498,34 @@ namespace SWLOR.Game.Server.Service
             if (type == null)
                 throw new ArgumentNullException(nameof(type));
 
-            ApplyStatusEffectInternal((IStatusEffect)Activator.CreateInstance(type), source, creature, -1, true);
+            ApplyAndProfileStatusEffect((IStatusEffect)Activator.CreateInstance(type), source, creature, -1, true);
+        }
+
+        private static bool ApplyAndProfileStatusEffect(
+            IStatusEffect statusEffect,
+            uint source,
+            uint creature,
+            float durationSeconds,
+            bool isPermanent,
+            ResistanceType resistanceOverride = ResistanceType.Invalid,
+            CombatDamageType sourceDamageType = CombatDamageType.Invalid,
+            Type replacedStatusEffectType = null)
+        {
+            // A deferred application is timed when it runs after the swing.
+            if (IsDeferredNativeAttackStatusEffect(statusEffect, creature))
+                return ApplyStatusEffectInternal(statusEffect, source, creature, durationSeconds, isPermanent,
+                    resistanceOverride, sourceDamageType, replacedStatusEffectType);
+
+            var profile = FrameProfiler.Start();
+            try
+            {
+                return ApplyStatusEffectInternal(statusEffect, source, creature, durationSeconds, isPermanent,
+                    resistanceOverride, sourceDamageType, replacedStatusEffectType);
+            }
+            finally
+            {
+                FrameProfiler.Stop(FrameMetric.StatusEffectApply, profile, statusEffect.Name);
+            }
         }
 
         private static bool ApplyStatusEffectInternal(
@@ -616,6 +646,13 @@ namespace SWLOR.Game.Server.Service
                 }
             }
 
+            if (!isPermanent && replacedStatusEffectType == null &&
+                TryRefreshInPlace(statusEffect, source, creature, durationTicks, durationTicksWithoutResistance,
+                    Math.Min(durationSeconds, durationTicks * frequency), resistanceType))
+            {
+                return true;
+            }
+
             if (replacedStatusEffectType != null)
                 RemoveStatusEffect(replacedStatusEffectType, creature, OBJECT_INVALID, false, true, true);
 
@@ -710,6 +747,158 @@ namespace SWLOR.Game.Server.Service
             }
 
             return true;
+        }
+
+        /// <summary>
+        /// Restarts an opted-in effect in place when applying it again would produce the same state.
+        /// A non-stacking effect from another source is handed to the new source, as a fresh replacement
+        /// would be. Duration, tick schedule, native effect and application triggers match a fresh
+        /// application; the remove/add cycle and the repeated application message are skipped.
+        /// </summary>
+        private static bool TryRefreshInPlace(
+            IStatusEffect statusEffect,
+            uint source,
+            uint creature,
+            int durationTicks,
+            int durationTicksWithoutResistance,
+            float durationSeconds,
+            ResistanceType resistanceType)
+        {
+            if (statusEffect.StackingType is not (StatusEffectStackType.Disabled or StatusEffectStackType.StackFromMultipleSources) ||
+                !_creatureEffects.TryGetValue(creature, out var creatureEffects))
+            {
+                return false;
+            }
+
+            // Cheap opt-in check first; most effects never refresh in place.
+            var type = statusEffect.GetType();
+            var first = creatureEffects.GetEffect(type);
+            if (first == null || !statusEffect.CanRefreshInPlace(first))
+                return false;
+
+            // A fresh application replaces every instance of a non-stacking type, so only a lone instance qualifies.
+            var candidates = creatureEffects.GetAllEffects()
+                .Where(effect => effect.GetType() == type &&
+                                 (statusEffect.StackingType == StatusEffectStackType.Disabled || effect.Source == source))
+                .ToList();
+            if (candidates.Count != 1)
+                return false;
+
+            var active = candidates[0];
+            var originatingAbility = statusEffect.OriginatingAbility ?? Ability.GetActiveAbilityImpactSummary(source)?.Ability;
+            if (active.IsFlaggedForRemoval ||
+                active.DurationTicks < 0 ||
+                active.AppliedResistanceType != resistanceType ||
+                active.OriginatingAbility != originatingAbility ||
+                statusEffect.StatGroup.Stats.Any(stat =>
+                    stat.Value != 0 && active.StatGroup.Stats.GetValueOrDefault(stat.Key) != stat.Value) ||
+                !statusEffect.CanRefreshInPlace(active))
+            {
+                return false;
+            }
+
+            RemoveOtherCommandStatuses(creature, type, source);
+            foreach (var lessPowerful in statusEffect.LessPowerfulEffectTypes)
+            {
+                RemoveStatusEffect(lessPowerful, creature, OBJECT_INVALID, false, true, true);
+            }
+
+            var tickAnchor = GetRefreshTickAnchor(statusEffect, creatureEffects.GetAllEffects(), source);
+            if (active.Source != source)
+                active.ReassignSource(source);
+            RestartInPlace(creature, active, source, durationTicks, durationTicksWithoutResistance, durationSeconds,
+                tickAnchor, resistanceType);
+            return true;
+        }
+
+        /// <summary>
+        /// Restarts an active effect's duration exactly as re-applying the same effect from the same
+        /// source would, without replacing it or repeating its application message. For effects whose
+        /// re-application changes nothing else, such as Embattled with unchanged stacks.
+        /// </summary>
+        public static bool RestartStatusEffectDuration(
+            uint creature,
+            Type statusEffectClass,
+            uint source,
+            float durationSeconds)
+        {
+            if (!_creatureEffects.TryGetValue(creature, out var creatureEffects) ||
+                statusEffectClass == null ||
+                durationSeconds <= 0f)
+            {
+                return false;
+            }
+
+            var matches = creatureEffects.GetAllEffects()
+                .Where(effect => effect.GetType() == statusEffectClass && effect.Source == source)
+                .ToList();
+            if (matches.Count != 1)
+                return false;
+
+            var active = matches[0];
+            if (active.IsFlaggedForRemoval ||
+                active.DurationTicks < 0 ||
+                (active.Categories & StatusEffectCategory.HardCrowdControl) != 0)
+            {
+                return false;
+            }
+
+            var frequency = Math.Max(1f, active.Frequency);
+            var adjustedSeconds = ApplyOutgoingStatusDurationAdjustments(active, source, durationSeconds, false);
+            var ticks = Math.Max(1, (int)Math.Ceiling(adjustedSeconds / frequency));
+            var ticksWithoutResistance = ticks;
+            var resistanceType = active.AppliedResistanceType;
+            if (Resistance.IsValidResistanceType(resistanceType) &&
+                GetIsObjectValid(source) &&
+                GetIsObjectValid(creature) &&
+                GetIsReactionTypeHostile(creature, source))
+            {
+                if (Resistance.HasImmunity(creature, resistanceType))
+                    return false;
+
+                ticks = Resistance.CalculateResistedTicks(creature, resistanceType, ticks);
+            }
+
+            if (ticks <= 0)
+                return false;
+
+            adjustedSeconds = Math.Max(0.1f, Math.Min(adjustedSeconds + Math.Max(0, ticks - ticksWithoutResistance) * frequency,
+                ticks * frequency));
+            var tickAnchor = GetRefreshTickAnchor(active, creatureEffects.GetAllEffects(), source);
+            RestartInPlace(creature, active, source, ticks, ticksWithoutResistance, adjustedSeconds, tickAnchor, resistanceType);
+            return true;
+        }
+
+        private static void RestartInPlace(
+            uint creature,
+            IStatusEffect active,
+            uint source,
+            int durationTicks,
+            int durationTicksWithoutResistance,
+            float durationSeconds,
+            DateTime? tickAnchor,
+            ResistanceType resistanceType)
+        {
+            active.RestartDuration(durationTicks, durationSeconds, tickAnchor);
+            ReplaceNativeStatusEffect(creature, active, active.DurationTicks, false);
+            if (CombatRecorder.IsRecording)
+                CombatRecorder.RecordStatusApplied(source, creature, active, active.GetRemainingDurationSeconds(DateTime.UtcNow), false, true);
+
+            Combat.ApplyStatusAppliedTargetStaminaDrain(source, creature, active.Categories);
+            if ((active.Categories & StatusEffectCategory.Debuff) != 0 &&
+                source != creature && GetIsReactionTypeHostile(creature, source))
+            {
+                Combat.ApplyHostileAbilityPartyBuff(source, Ability.GetActiveAbilityImpactSummary(source)?.Ability, 0, true);
+            }
+            PublishStatusEffectReceivedRefresh(creature);
+
+            var durationResistanceMessage = BuildDurationResistanceMessage(
+                resistanceType, active.Name, durationTicksWithoutResistance, durationTicks, active.Frequency);
+            if (!string.IsNullOrWhiteSpace(durationResistanceMessage) &&
+                (GetIsPC(source) || GetIsDM(source)))
+            {
+                SendMessageToPC(source, durationResistanceMessage);
+            }
         }
 
         public static string BuildDurationResistanceMessage(
@@ -980,7 +1169,7 @@ namespace SWLOR.Game.Server.Service
             float durationSeconds,
             ResistanceType resistanceOverride = ResistanceType.Invalid)
         {
-            return ApplyStatusEffectInternal(
+            return ApplyAndProfileStatusEffect(
                 statusEffect,
                 source,
                 creature,
@@ -996,7 +1185,7 @@ namespace SWLOR.Game.Server.Service
             float durationSeconds,
             CombatDamageType sourceDamageType)
         {
-            return ApplyStatusEffectInternal(
+            return ApplyAndProfileStatusEffect(
                 statusEffect,
                 source,
                 creature,
@@ -1016,7 +1205,7 @@ namespace SWLOR.Game.Server.Service
             if (!TryCreateStatusEffect(statusEffectClass, out var statusEffect))
                 throw new KeyNotFoundException($"Status effect '{statusEffectClass?.Name ?? "null"}' is not registered.");
 
-            return ApplyStatusEffectInternal(
+            return ApplyAndProfileStatusEffect(
                 statusEffect,
                 source,
                 creature,
@@ -1036,7 +1225,7 @@ namespace SWLOR.Game.Server.Service
             if (!TryCreateStatusEffect(statusEffectClass, out var statusEffect))
                 throw new KeyNotFoundException($"Status effect '{statusEffectClass?.Name ?? "null"}' is not registered.");
 
-            return ApplyStatusEffectInternal(
+            return ApplyAndProfileStatusEffect(
                 statusEffect,
                 source,
                 creature,
@@ -1049,19 +1238,42 @@ namespace SWLOR.Game.Server.Service
 
         private static void ApplyTrackedNWNEffect(uint creature, IStatusEffect statusEffect, int durationTicks, bool isPermanent)
         {
-            if (HasEffectByTag(creature, statusEffect.Id))
+            if (AppliedEffects.MayHaveTag(creature, statusEffect.Id) && HasEffectByTag(creature, statusEffect.Id))
                 return;
 
+            ApplyNativeStatusEffect(creature, statusEffect, durationTicks, isPermanent);
+        }
+
+        // RemoveEffectByTag hides every effect it finds with the tag, so the presence check that
+        // ApplyTrackedNWNEffect makes would always fail here.
+        private static void ReplaceNativeStatusEffect(uint creature, IStatusEffect statusEffect, int durationTicks, bool isPermanent)
+        {
+            RemoveNativeStatusEffect(creature, statusEffect.Id);
+            ApplyNativeStatusEffect(creature, statusEffect, durationTicks, isPermanent);
+        }
+
+        private static void ApplyNativeStatusEffect(uint creature, IStatusEffect statusEffect, int durationTicks, bool isPermanent)
+        {
             var effect = BuildNativeStatusEffect(statusEffect);
 
             if (isPermanent || durationTicks < 0)
             {
                 ApplyEffectToObject(DurationType.Permanent, effect, creature);
-                return;
+            }
+            else
+            {
+                var durationSeconds = GetStatusEffectDurationSeconds(statusEffect, durationTicks);
+                ApplyEffectToObject(DurationType.Temporary, effect, creature, durationSeconds);
             }
 
-            var durationSeconds = GetStatusEffectDurationSeconds(statusEffect, durationTicks);
-            ApplyEffectToObject(DurationType.Temporary, effect, creature, durationSeconds);
+            ScheduleTemporaryHitPointLimitCheckForVitality(creature, statusEffect);
+        }
+
+        // Native Vitality effects change maximum HP outside the HP budget setters.
+        private static void ScheduleTemporaryHitPointLimitCheckForVitality(uint creature, IStatusEffect statusEffect)
+        {
+            if (statusEffect.StatGroup.Abilities.TryGetValue(AbilityType.Vitality, out var vitality) && vitality != 0)
+                TemporaryHitPointEffects.ScheduleLimitCheck(creature);
         }
 
         private static Effect BuildNativeStatusEffect(IStatusEffect statusEffect)
@@ -1186,9 +1398,10 @@ namespace SWLOR.Game.Server.Service
                     continue;
 
                 statusEffect.SetDurationSeconds(statusEffect.GetRemainingDurationSeconds(DateTime.UtcNow) + durationSeconds);
-                RemoveNativeStatusEffect(creature, statusEffect.Id);
-                ApplyTrackedNWNEffect(creature, statusEffect, statusEffect.DurationTicks, statusEffect.DurationTicks < 0);
+                ReplaceNativeStatusEffect(creature, statusEffect, statusEffect.DurationTicks, statusEffect.DurationTicks < 0);
                 extended = true;
+                if (CombatRecorder.IsRecording)
+                    CombatRecorder.RecordStatusApplied(source, creature, statusEffect, statusEffect.GetRemainingDurationSeconds(DateTime.UtcNow), false, true);
             }
 
             return extended;
@@ -1246,9 +1459,10 @@ namespace SWLOR.Game.Server.Service
                 adjustedSeconds = Math.Min(adjustedSeconds + Math.Max(0, ticks - originalTicks) * Math.Max(1f, statusEffect.Frequency),
                     ticks * Math.Max(1f, statusEffect.Frequency));
                 statusEffect.SetDurationSeconds(Math.Max(statusEffect.GetRemainingDurationSeconds(DateTime.UtcNow), adjustedSeconds));
-                RemoveNativeStatusEffect(creature, statusEffect.Id);
-                ApplyTrackedNWNEffect(creature, statusEffect, statusEffect.DurationTicks, statusEffect.DurationTicks < 0);
+                ReplaceNativeStatusEffect(creature, statusEffect, statusEffect.DurationTicks, statusEffect.DurationTicks < 0);
                 refreshed = true;
+                if (CombatRecorder.IsRecording)
+                    CombatRecorder.RecordStatusApplied(source, creature, statusEffect, statusEffect.GetRemainingDurationSeconds(DateTime.UtcNow), false, true);
             }
 
             return refreshed;
@@ -1385,6 +1599,13 @@ namespace SWLOR.Game.Server.Service
         public static void ConsumeStatusEffectStat(uint creature, StatType statType)
         {
             GetCreatureStatusEffects(creature).ConsumeStat(statType);
+        }
+
+        /// <summary>Sets a stat an effect recalculates while active, keeping the creature's stat total in step.</summary>
+        public static void SetStatusEffectStat(uint creature, IStatusEffect statusEffect, StatType statType, int value)
+        {
+            if (GetCreatureStatusEffects(creature).SetStat(statusEffect, statType, value))
+                Gui.PublishCharacterSheetRefreshEvent(creature, new StatAdjustmentRefreshEvent());
         }
 
         public static void RemoveStatusEffectsWithStat(
@@ -1747,7 +1968,7 @@ namespace SWLOR.Game.Server.Service
                 if (source != OBJECT_INVALID && statusEffect.Source != source)
                     continue;
 
-                RemoveStatusEffectInstance(
+                RemoveAndProfileStatusEffectInstance(
                     creature,
                     creatureEffects,
                     statusEffect,
@@ -1782,8 +2003,27 @@ namespace SWLOR.Game.Server.Service
                 return;
             }
 
-            RemoveStatusEffectInstance(creature, creatureEffects, statusEffect, sendsWornOffMessage, removeNativeEffect);
+            RemoveAndProfileStatusEffectInstance(creature, creatureEffects, statusEffect, sendsWornOffMessage, removeNativeEffect);
             RemoveCreatureIfEmpty(creature, creatureEffects, removeNativeEffect);
+        }
+
+        private static void RemoveAndProfileStatusEffectInstance(
+            uint creature,
+            CreatureStatusEffect creatureEffects,
+            IStatusEffect statusEffect,
+            bool sendsWornOffMessage,
+            bool removeNativeEffect,
+            bool isReplacement = false)
+        {
+            var profile = FrameProfiler.Start();
+            try
+            {
+                RemoveStatusEffectInstance(creature, creatureEffects, statusEffect, sendsWornOffMessage, removeNativeEffect, isReplacement);
+            }
+            finally
+            {
+                FrameProfiler.Stop(FrameMetric.StatusEffectRemove, profile, statusEffect.Name);
+            }
         }
 
         private static void RemoveStatusEffectInstance(
@@ -1819,6 +2059,8 @@ namespace SWLOR.Game.Server.Service
             {
                 DelayCommand(0.1f, () => Stat.ApplyCreatureMovementRate(creature));
             }
+
+            ScheduleTemporaryHitPointLimitCheckForVitality(creature, statusEffect);
 
             if (!isReplacement)
             {
@@ -2198,12 +2440,8 @@ namespace SWLOR.Game.Server.Service
             CombatDamageType sourceDamageType,
             Type replacedStatusEffectType)
         {
-            if ((statusEffect is not ILimitedAttackDelayReductionStatusEffect &&
-                 statusEffect is not ILimitedAttackNoDelayStatusEffect) ||
-                !_nativeAttackSwingDepth.ContainsKey(creature))
-            {
+            if (!IsDeferredNativeAttackStatusEffect(statusEffect, creature))
                 return false;
-            }
 
             if (!_deferredNativeAttackStatusEffects.TryGetValue(creature, out var deferredEffects))
             {
@@ -2211,7 +2449,7 @@ namespace SWLOR.Game.Server.Service
                 _deferredNativeAttackStatusEffects[creature] = deferredEffects;
             }
 
-            deferredEffects.Add(() => ApplyStatusEffectInternal(
+            deferredEffects.Add(() => ApplyAndProfileStatusEffect(
                 statusEffect,
                 source,
                 creature,
@@ -2221,6 +2459,13 @@ namespace SWLOR.Game.Server.Service
                 sourceDamageType,
                 replacedStatusEffectType));
             return true;
+        }
+
+        private static bool IsDeferredNativeAttackStatusEffect(IStatusEffect statusEffect, uint creature)
+        {
+            return (statusEffect is ILimitedAttackDelayReductionStatusEffect ||
+                    statusEffect is ILimitedAttackNoDelayStatusEffect) &&
+                   _nativeAttackSwingDepth.ContainsKey(creature);
         }
 
         /// <summary>

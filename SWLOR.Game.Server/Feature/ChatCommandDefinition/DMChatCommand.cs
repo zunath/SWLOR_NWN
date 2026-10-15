@@ -11,6 +11,7 @@ using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.BeastMasteryService;
 using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.ChatCommandService;
+using SWLOR.Game.Server.Service.CombatRecorderService;
 using SWLOR.Game.Server.Service.FactionService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.QuestService;
@@ -259,9 +260,12 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                 .RequiresTarget(ObjectType.Creature)
                 .Action((user, target, location, args) =>
                 {
+                    using var recorderAttribution = CombatRecorder.BeginAttribution(user, CombatRecordSourceKind.DungeonMaster);
                     if (GetIsDead(target))
                     {
                         ApplyEffectToObject(DurationType.Instant, EffectResurrection(), target);
+                        if (CombatRecorder.IsRecording)
+                            CombatRecorder.RecordResurrection(target);
                         Ability.ReapplyPlayerAuraAOE(target);
                     }
 
@@ -1080,7 +1084,7 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                 .AvailableToAllOnTestEnvironment()
                 .Action((user, target, location, args) =>
                 {
-                    Gui.TogglePlayerWindow(user, GuiWindowType.AreaNotes);
+                    DMPresence.ToggleWindow(user, GuiWindowType.AreaNotes);
                 });
         }
 
@@ -1092,7 +1096,7 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                 .AvailableToAllOnTestEnvironment()
                 .Action((user, target, location, args) =>
                 {
-                    Gui.TogglePlayerWindow(user, GuiWindowType.CreatureManager);
+                    DMPresence.ToggleWindow(user, GuiWindowType.CreatureManager);
                 });
         }
 
@@ -1103,15 +1107,7 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                 .Permissions(AuthorizationLevel.DM, AuthorizationLevel.Admin)
                 .Action((user, target, location, args) =>
                 {
-                    var player = user;
-                    var uiTarget = OBJECT_INVALID;
-                    if (GetIsDMPossessed(player))
-                    {
-                        uiTarget = player;
-                        player = GetMaster(player);
-                    }
-
-                    Gui.TogglePlayerWindow(player, GuiWindowType.DMTools, null, OBJECT_INVALID, uiTarget);
+                    DMPresence.ToggleWindow(user, GuiWindowType.DMTools);
                 });
         }
 
@@ -1123,15 +1119,7 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                 .AvailableToAllOnTestEnvironment()
                 .Action((user, target, location, args) =>
                 {
-                    var player = user;
-                    var uiTarget = OBJECT_INVALID;
-                    if (GetIsDMPossessed(player))
-                    {
-                        uiTarget = player;
-                        player = GetMaster(player);
-                    }
-
-                    Gui.TogglePlayerWindow(player, GuiWindowType.MusicPicker, new MusicPickerPayload(MusicPickerMode.DungeonMaster), OBJECT_INVALID, uiTarget);
+                    DMPresence.ToggleWindow(user, GuiWindowType.MusicPicker, new MusicPickerPayload(MusicPickerMode.DungeonMaster));
                 });
         }
 

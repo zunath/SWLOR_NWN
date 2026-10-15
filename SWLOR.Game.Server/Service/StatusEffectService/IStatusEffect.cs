@@ -40,8 +40,16 @@ namespace SWLOR.Game.Server.Service.StatusEffectService
         List<Type> LessPowerfulEffectTypes { get; }
         IStatusEffect Clone();
         string CanApply(uint creature);
+        /// <summary>
+        /// True when applying this effect over <paramref name="active"/>, the same type and ability, would
+        /// produce the same state, so the active effect restarts its duration in place (taking the new
+        /// source when the type does not stack). Only effects whose Apply and Remove change nothing but
+        /// their own stats may opt in.
+        /// </summary>
+        bool CanRefreshInPlace(IStatusEffect active);
         void AssignResistanceType(ResistanceType type);
         void ApplyEffect(uint source, uint creature, int durationTicks, float durationSeconds = 0f, DateTime? tickAnchor = null);
+        void RestartDuration(int durationTicks, float durationSeconds = 0f, DateTime? tickAnchor = null);
         void ReassignSource(uint source);
         void ExtendDurationTicks(int ticks);
         void SetDurationTicks(int ticks);

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Feature.StatusEffectDefinition;
+using SWLOR.Game.Server.Native;
 using SWLOR.Game.Server.Service.LogService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.NWN.API.NWNX;
@@ -308,11 +309,15 @@ namespace SWLOR.Game.Server.Service
                    !HasEffect(observer, EffectTypeScript.SeeInvisible, EffectTypeScript.TrueSeeing);
         }
 
-        private static bool HasEffect(uint creature, params EffectTypeScript[] effectTypes)
+        private static bool HasEffect(uint creature, EffectTypeScript effectType, EffectTypeScript otherEffectType)
         {
+            if (!AppliedEffects.MayHaveScriptType(creature, effectType, otherEffectType))
+                return false;
+
             for (var effect = GetFirstEffect(creature); GetIsEffectValid(effect); effect = GetNextEffect(creature))
             {
-                if (effectTypes.Contains(GetEffectType(effect)))
+                var type = GetEffectType(effect);
+                if (type == effectType || type == otherEffectType)
                     return true;
             }
 

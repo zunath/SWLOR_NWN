@@ -172,6 +172,9 @@ namespace SWLOR.Game.Server.Native
 
                     if (totalDamage > 0 && defender.m_bPlotObject == 0)
                     {
+                        if (CombatRecorder.IsRecording)
+                            CombatRecorder.ExpectWeaponDamage(attacker.m_idSelf, defender.m_idSelf, totalDamage, weaponSkillType);
+
                         var weaponId = weapon?.m_idSelf ?? OBJECT_INVALID;
                         PublishDamageDealtEvent(attacker.m_idSelf, defender.m_idSelf, weaponId, totalDamage, weaponSkillType, damageProfile.DamageType);
                     }

@@ -2059,12 +2059,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             if (scale - Increment < appearance.MinimumScale)
             {
-                SendMessageToPC(_target, "You cannot decrease your height any further.");
+                SendScaleMessage("You cannot decrease your height any further.");
             }
             else
             {
                 SetObjectVisualTransform(_target, ObjectVisualTransform.Scale, scale - Increment);
-                SendMessageToPC(_target, $"Height: {GetObjectVisualTransform(_target, ObjectVisualTransform.Scale)}");
+                SendScaleMessage($"Height: {GetObjectVisualTransform(_target, ObjectVisualTransform.Scale)}");
             }
         };
         public Action OnIncreaseAppearanceScale() => () =>
@@ -2081,12 +2081,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             if (scale + Increment > appearance.MaximumScale)
             {
-                SendMessageToPC(_target, "You cannot increase your height any further.");
+                SendScaleMessage("You cannot increase your height any further.");
             }
             else
             {
                 SetObjectVisualTransform(_target, ObjectVisualTransform.Scale, scale + Increment);
-                SendMessageToPC(_target, $"Height: {GetObjectVisualTransform(_target, ObjectVisualTransform.Scale)}");
+                SendScaleMessage($"Height: {GetObjectVisualTransform(_target, ObjectVisualTransform.Scale)}");
             }
         };
 
@@ -2107,12 +2107,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             if (scale - Increment < appearance.MinimumHeadScale)
             {
-                SendMessageToPC(_target, "You cannot decrease your head size any further.");
+                SendScaleMessage("You cannot decrease your head size any further.");
             }
             else
             {
                 HelmetModelRenderer.SetHeadScale(_target, scale - Increment);
-                SendMessageToPC(_target, $"Head Size: {HelmetModelRenderer.GetHeadScale(_target)}");
+                SendScaleMessage($"Head Size: {HelmetModelRenderer.GetHeadScale(_target)}");
             }
         };
 
@@ -2133,14 +2133,20 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             if (scale + Increment > appearance.MaximumHeadScale)
             {
-                SendMessageToPC(_target, "You cannot increase your head size any further.");
+                SendScaleMessage("You cannot increase your head size any further.");
             }
             else
             {
                 HelmetModelRenderer.SetHeadScale(_target, scale + Increment);
-                SendMessageToPC(_target, $"Head Size: {HelmetModelRenderer.GetHeadScale(_target)}");
+                SendScaleMessage($"Head Size: {HelmetModelRenderer.GetHeadScale(_target)}");
             }
         };
+
+        private void SendScaleMessage(string message)
+        {
+            var owner = GetIsDMPossessed(Player) ? GetMaster(Player) : Player;
+            SendMessageToPC(owner, message);
+        }
 
         public Action OnSelectColorCategory() => () =>
         {

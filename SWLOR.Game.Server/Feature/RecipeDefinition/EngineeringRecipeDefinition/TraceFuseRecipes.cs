@@ -14,13 +14,20 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
             Add(RecipeType.BraidedTraceFuse, "trace_fuse_2", 15, "elec_flawed", "fiberp_flawed");
             Add(RecipeType.PhaseTraceFuse, "trace_fuse_3", 25, "elec_imperfect", "fiberp_imperfect");
             Add(RecipeType.CryoTraceFuse, "trace_fuse_4", 35, "elec_high", "fiberp_high");
-            Add(RecipeType.NullTraceFuse, "trace_fuse_5", 45, "elec_perfect", "fiberp_perfect");
+            Add(RecipeType.NullTraceFuse, "trace_fuse_5", 45, "elec_perfect", "fiberp_perfect")
+                .EffectDescription(new[]
+                {
+                    "Prime in the slicing window.",
+                    "+1 trace on your first move.",
+                    "Consumed on that move.",
+                    "Works on security tiers 1-5."
+                });
             return _builder.Build();
         }
 
-        private void Add(RecipeType type, string resref, int level, string electronics, string polymer)
+        private RecipeBuilder Add(RecipeType type, string resref, int level, string electronics, string polymer)
         {
-            _builder.Create(type, SkillType.Engineering)
+            return _builder.Create(type, SkillType.Engineering)
                 .RequirementUnlocked()
                 .Category(RecipeCategoryType.Tool)
                 .Resref(resref)

@@ -30,6 +30,7 @@ namespace SWLOR.Game.Server
         public bool EngineTestShutdownOnCompletion { get; }
         public string EngineTestArenaResref { get; }
 
+        public bool RoleplayXPEnabled { get; }
         public int RoleplayXPDailyOOCAllowance { get; }
         public int RoleplayXPDMPresentOOCAllowance { get; }
 
@@ -71,6 +72,7 @@ namespace SWLOR.Game.Server
             EngineTestShutdownOnCompletion = ParseBool(Environment.GetEnvironmentVariable("SWLOR_ENGINE_TEST_SHUTDOWN"), true);
             EngineTestArenaResref = Environment.GetEnvironmentVariable("SWLOR_ENGINE_TEST_ARENA_RESREF");
 
+            RoleplayXPEnabled = ParseBool(Environment.GetEnvironmentVariable("SWLOR_RPXP_ENABLED"), false);
             RoleplayXPDailyOOCAllowance = ParseNonNegativeInt(
                 Environment.GetEnvironmentVariable("SWLOR_RPXP_OOC_DAILY_ALLOWANCE"), OOCAllowance.DefaultDailyAllowance);
             RoleplayXPDMPresentOOCAllowance = ParseNonNegativeInt(

@@ -25,6 +25,9 @@ namespace SWLOR.Game.Server.Feature
         [NWNEventHandler(ScriptName.OnModuleLoad)]
         public static void LoadOOCDetection()
         {
+            if (!ApplicationSettings.Get().RoleplayXPEnabled)
+                return;
+
             var path = ApplicationSettings.Get().RoleplayXPOOCDetectionFile;
             if (OOCDetectionLoader.TryLoad(path, out var detection, out var error))
             {
@@ -44,6 +47,9 @@ namespace SWLOR.Game.Server.Feature
         [NWNEventHandler(ScriptName.OnPlayerHeartbeat)]
         public static void DistributeRoleplayXP()
         {
+            if (!ApplicationSettings.Get().RoleplayXPEnabled)
+                return;
+
             var player = OBJECT_SELF;
             if (!GetIsPC(player) ||
                 GetIsDM(player) ||
@@ -123,6 +129,9 @@ namespace SWLOR.Game.Server.Feature
         [NWNEventHandler(ScriptName.OnNWNXChat)]
         public static void ProcessRPMessage()
         {
+            if (!ApplicationSettings.Get().RoleplayXPEnabled)
+                return;
+
             var channel = ChatPlugin.GetChannel();
             var player = ChatPlugin.GetSender();
             if (!GetIsPC(player) ||

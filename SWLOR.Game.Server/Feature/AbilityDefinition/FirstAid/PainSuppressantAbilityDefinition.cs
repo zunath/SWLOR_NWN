@@ -42,6 +42,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
                 .HasRecastDelay(RecastGroup.PainSuppressant, 30f)
                 .SkillType(SkillType.FirstAid)
                 .IsSingleTargetAbility()
+                .AllowsSelfQuickCast()
                 .RequiresTarget()
                 .HasCustomValidation((activator, target, _, _) =>
                     AbilityTargeting.ValidateFriendlyTarget(activator, target))
@@ -66,6 +67,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
                 .HasRecastDelay(RecastGroup.PainSuppressant, 30f)
                 .SkillType(SkillType.FirstAid)
                 .IsSingleTargetAbility()
+                .AllowsSelfQuickCast()
                 .RequiresTarget()
                 .HasCustomValidation((activator, target, _, _) =>
                     AbilityTargeting.ValidateFriendlyTarget(activator, target))
@@ -79,7 +81,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
         private static void PainSuppressant1ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
             var duration = FirstAidTreatmentAdjustments.ApplyStimDurationBonus(activator, 30f);
-            var applied = false;
+            var treated = new List<uint>();
             foreach (var friendly in SWLOR.Game.Server.Feature.AbilityDefinition.AbilityTargeting.GetFriendlyTargets(activator, target, false))
             {
                 ApplyTemporaryHP(activator, friendly, 10, duration);
@@ -87,16 +89,16 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
                     Ability.PlaySuccessfulImpactVisualEffect(activator, friendly);
                 FirstAidTreatmentAdjustments.ApplyCombatPharmacologyStimRiders(activator, friendly);
                 FirstAidTreatmentAdjustments.ApplyMedicalVisualEffect(friendly);
-                applied = true;
+                treated.Add(friendly);
             }
 
-            FirstAidTreatmentAdjustments.GrantCombatPointIfApplied(activator, applied);
+            FirstAidTreatmentAdjustments.GrantCombatPoint(activator, treated);
         }
 
         private static void PainSuppressant2ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
             var duration = FirstAidTreatmentAdjustments.ApplyStimDurationBonus(activator, 30f);
-            var applied = false;
+            var treated = new List<uint>();
             foreach (var friendly in SWLOR.Game.Server.Feature.AbilityDefinition.AbilityTargeting.GetFriendlyTargets(activator, target, false))
             {
                 ApplyTemporaryHP(activator, friendly, 15, duration);
@@ -104,10 +106,10 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
                     Ability.PlaySuccessfulImpactVisualEffect(activator, friendly);
                 FirstAidTreatmentAdjustments.ApplyCombatPharmacologyStimRiders(activator, friendly);
                 FirstAidTreatmentAdjustments.ApplyMedicalVisualEffect(friendly);
-                applied = true;
+                treated.Add(friendly);
             }
 
-            FirstAidTreatmentAdjustments.GrantCombatPointIfApplied(activator, applied);
+            FirstAidTreatmentAdjustments.GrantCombatPoint(activator, treated);
         }
 
 

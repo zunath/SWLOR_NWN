@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Feature;
+using SWLOR.Game.Server.Native;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.CompanionControlService;
 using SWLOR.Game.Server.Service.LogService;
@@ -157,6 +158,7 @@ namespace SWLOR.Game.Server.Service.AIService
             var state = GetState(creature, profileType);
             RefreshActionCache(creature, profile, state);
             var context = new AIContext(creature, trigger, eventTarget, profile, state, allies);
+            context.UseAttackableEnmityTarget();
 
             if (GetIsObjectValid(context.CurrentEnmityTarget) &&
                 AI.TryStartCombatLeashEvade(creature, context.CurrentEnmityTarget))
@@ -588,7 +590,7 @@ namespace SWLOR.Game.Server.Service.AIService
             }
             else if (!GetIsObjectValid(target) || target == creature)
             {
-                target = Enmity.GetHighestEnmityTarget(creature);
+                target = Enmity.GetHighestEnmityAttackTarget(creature);
             }
 
             if (!GetIsObjectValid(target))
@@ -747,6 +749,9 @@ namespace SWLOR.Game.Server.Service.AIService
 
         private static bool GetHasEffect(uint creature, EffectTypeScript effectType)
         {
+            if (!AppliedEffects.MayHaveScriptType(creature, effectType))
+                return false;
+
             var effect = GetFirstEffect(creature);
             while (GetIsEffectValid(effect))
             {

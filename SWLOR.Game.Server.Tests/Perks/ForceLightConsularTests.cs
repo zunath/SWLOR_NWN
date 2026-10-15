@@ -103,7 +103,7 @@ public class ForceLightConsularTests
 
         AssertAbility(throwRock[FeatType.ThrowRock1], "Throw Rock I", 1, RecastGroup.ThrowRock, 6f, 1.5f, 3, true, true, true, false, AbilityActivationType.Casted, 30f);
         AssertAbility(throwRock[FeatType.ThrowRock2], "Throw Rock II", 2, RecastGroup.ThrowRock, 6f, 1.5f, 4, true, true, true, false, AbilityActivationType.Casted, 30f);
-        AssertAbility(throwRock[FeatType.ThrowRock3], "Throw Rock III", 3, RecastGroup.ThrowRock, 6f, 1.5f, 5, true, true, true, false, AbilityActivationType.Casted, 30f);
+        AssertAbility(throwRock[FeatType.ThrowRock3], "Throw Rock III", 3, RecastGroup.ThrowRock, 6f, 1.5f, 6, true, true, true, false, AbilityActivationType.Casted, 30f);
 
         foreach (var ability in throwRock.Values)
         {
@@ -119,7 +119,7 @@ public class ForceLightConsularTests
         var forceBurst = new ForceBurstAbilityDefinition().BuildAbilities();
 
         forceBurst.Should().ContainSingle();
-        AssertAbility(forceBurst[FeatType.ForceBurst1], "Force Burst", 1, RecastGroup.ForceBurst, 15f, 1.5f, 6, true, true, false, true, AbilityActivationType.Casted, 15f);
+        AssertAbility(forceBurst[FeatType.ForceBurst1], "Force Burst", 1, RecastGroup.ForceBurst, 15f, 1.5f, 7, true, true, false, true, AbilityActivationType.Casted, 15f);
 
         var targeting = forceBurst[FeatType.ForceBurst1].Targeting;
         targeting.Should().NotBeNull();
@@ -329,9 +329,9 @@ public class ForceLightConsularTests
         source.Should().Contain("ApplyRenewal(activator, target, \"Renewal I\", 10f);");
         source.Should().Contain("ApplyRenewal(activator, target, \"Renewal II\", 20f);");
         source.Should().Contain("ApplyRenewal(activator, target, \"Renewal III\", 30f);");
-        source.Should().Contain("totalPercent * Ability.GetActiveForceAffinityMagnitudeMultiplier(activator)");
-        source.Should().Contain("new RegenerativeHealingStatusEffect(name, affinityAdjustedTotalPercent, 10)");
-        source.Should().MatchRegex(@"new RegenerativeHealingStatusEffect\(name, affinityAdjustedTotalPercent, 10\),\s*30f\)");
+        source.Should().Contain("totalPercent * Ability.GetActiveForceAffinityRestorativeMagnitudeMultiplier(activator)");
+        source.Should().Contain("new RegenerativeHealingStatusEffect(name, affinityAdjustedTotalPercent, 10, supportSkill: SkillType.Force, supportCredited: credited)");
+        source.Should().MatchRegex(@"new RegenerativeHealingStatusEffect\(name, affinityAdjustedTotalPercent, 10, [^)]*\),\s*30f\)");
         new RegenerativeHealingStatusEffect("Renewal", 30f, 10).Frequency.Should().Be(3f);
     }
 
@@ -355,7 +355,7 @@ public class ForceLightConsularTests
         var mindTrick = new MindTrickAbilityDefinition().BuildAbilities();
 
         AssertAbility(mindTrick[FeatType.MindTrick1], "Mind Trick I", 1, RecastGroup.MindTrick, 45f, 1f, 4, true, true, true, false, AbilityActivationType.Casted, 15f);
-        AssertAbility(mindTrick[FeatType.MindTrick2], "Mind Trick II", 2, RecastGroup.MindTrick, 45f, 1f, 5, true, true, true, false, AbilityActivationType.Casted, 15f);
+        AssertAbility(mindTrick[FeatType.MindTrick2], "Mind Trick II", 2, RecastGroup.MindTrick, 45f, 1f, 6, true, true, true, false, AbilityActivationType.Casted, 15f);
 
         var root = FindSourceRepositoryRoot();
         var abilitySource = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "Force" / "MindTrickAbilityDefinition.cs").FullName);
@@ -664,7 +664,7 @@ public class ForceLightConsularTests
         // reset the clock before the tick could ever run.
         new SereneFocusStatusEffect().Frequency.Should().Be(6f);
         var areaEffects = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "AbilityAreaEffects.cs").FullName);
-        areaEffects.Should().Contain("for (var elapsed = 3f; elapsed <= durationSeconds + 0.01f; elapsed += 3f)",
+        areaEffects.Should().Contain("CombatAreaPulses.GetPulseDelays(durationSeconds, 3f)",
             "the three-second healing pulse is what makes the refresh necessary");
 
         var sanctuary = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "Force" / "ForceSanctuaryAbilityDefinition.cs").FullName);

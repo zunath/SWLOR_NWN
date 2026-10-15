@@ -26,11 +26,15 @@
   },
   "DescIdentified": {
     "type": "cexolocstring",
-    "value": {}
+    "value": {
+      "0": "A plainly made work bracer, carefully fastened so that it does not interfere with the wrist. It has the earnest finish of an apprentice learning that useful equipment need not look complicated."
+    }
   },
   "Description": {
     "type": "cexolocstring",
-    "value": {}
+    "value": {
+      "0": "A plainly made work bracer, carefully fastened so that it does not interfere with the wrist. It has the earnest finish of an apprentice learning that useful equipment need not look complicated."
+    }
   },
   "Identified": {
     "type": "byte",

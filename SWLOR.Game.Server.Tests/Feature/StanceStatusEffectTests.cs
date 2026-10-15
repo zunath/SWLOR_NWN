@@ -32,6 +32,20 @@ public class StanceStatusEffectTests
     }
 
     [Test]
+    public void TankStanceStatRemovalPreservesOtherBonuses()
+    {
+        AddActiveEffect(Player, new DefensiveStanceStatusEffect());
+        AddActiveEffect(Player, new PerfectAegisStatusEffect());
+        Stat.GetStatAdjustmentExcludingTemporaryModifiers(Player, StatType.DamageEnmityPercentAdjustment).Should().Be(100);
+        Enmity.ClampEnmityPercentAdjustment(Stat.GetStatAdjustmentExcludingTemporaryModifiers(
+            Player, StatType.EnmityPercentAdjustment)).Should().Be(50);
+        var tracker = StatusEffect.GetCreatureStatusEffects(Player);
+        tracker.Remove(tracker.GetAllEffects().Single(effect => effect is DefensiveStanceStatusEffect));
+        Stat.GetStatAdjustmentExcludingTemporaryModifiers(Player, StatType.DamageEnmityPercentAdjustment).Should().Be(0);
+        Stat.GetStatAdjustmentExcludingTemporaryModifiers(Player, StatType.EnmityPercentAdjustment).Should().Be(25);
+    }
+
+    [Test]
     public void StanceStatusEffects_UseExclusiveStanceSourceType()
     {
         var stanceTypes = typeof(BerserkerStanceStatusEffect).Assembly
@@ -53,10 +67,35 @@ public class StanceStatusEffectTests
         }
     }
 
-    [Test]
-    public void BlazingSpikes_UsesExclusiveStanceSourceType()
+    [TestCase(typeof(BlazingSpikesStatusEffect), typeof(CycloneStanceStatusEffect))]
+    [TestCase(typeof(CycloneStanceStatusEffect), typeof(BlazingSpikesStatusEffect))]
+    public void BlazingSpikesAndCycloneStance_CoexistInEitherActivationOrder(Type firstType, Type secondType)
     {
-        new BlazingSpikesStatusEffect().SourceType.Should().Be(StatusEffectSourceType.Stance);
+        AddActiveEffect(Player, (IStatusEffect)Activator.CreateInstance(firstType)!);
+
+        StatusEffect.RemoveOtherStanceStatuses(Player, secondType, removeNativeEffect: false);
+        AddActiveEffect(Player, (IStatusEffect)Activator.CreateInstance(secondType)!);
+
+        StatusEffect.GetCreatureStatusEffects(Player).GetAllEffects().Select(effect => effect.GetType())
+            .Should().BeEquivalentTo(new[] { firstType, secondType });
+
+        StatusEffect.RemoveStatusEffect(Player, typeof(BlazingSpikesStatusEffect), sendsWornOffMessage: false, removeNativeEffect: false);
+
+        StatusEffect.GetCreatureStatusEffects(Player).GetAllEffects().Should().ContainSingle()
+            .Which.Should().BeOfType<CycloneStanceStatusEffect>("deactivating Blazing Spikes must preserve the stance");
+    }
+
+    [Test]
+    public void SwitchingStances_PreservesBlazingSpikes()
+    {
+        AddActiveEffect(Player, new BlazingSpikesStatusEffect());
+        AddActiveEffect(Player, new TestStanceAStatusEffect());
+
+        StatusEffect.RemoveOtherStanceStatuses(Player, typeof(TestStanceBStatusEffect), removeNativeEffect: false);
+        AddActiveEffect(Player, new TestStanceBStatusEffect());
+
+        StatusEffect.GetCreatureStatusEffects(Player).GetAllEffects().Select(effect => effect.GetType())
+            .Should().BeEquivalentTo(new[] { typeof(BlazingSpikesStatusEffect), typeof(TestStanceBStatusEffect) });
     }
 
     [Test]
@@ -71,6 +110,23 @@ public class StanceStatusEffectTests
         aura.Initializer!.Expressions.OfType<AssignmentExpressionSyntax>().Should()
             .ContainSingle(node => node.Left.ToString() == "OriginatingAbility" && node.Right.ToString() == "OriginatingAbility",
                 "the periodic aura must remain owned by its stance when no ability impact is active");
+    }
+
+    [Test]
+    public void WardenAura_AnnouncesOnlyTheFirstApplicationToEachAlly()
+    {
+        new WardenWallStanceAuraStatusEffect().SendsApplicationMessage.Should().BeTrue();
+        new WardenWallStanceAuraStatusEffect { AnnouncesApplication = false }.SendsApplicationMessage.Should().BeFalse();
+
+        var root = FindRepositoryRoot();
+        var syntax = CSharpSyntaxTree.ParseText(File.ReadAllText(Path.Combine(
+            root.FullName, "SWLOR.Game.Server", "Feature", "StatusEffectDefinition", "WardenWallStanceStatusEffect.cs"))).GetRoot();
+        var aura = syntax.DescendantNodes().OfType<ObjectCreationExpressionSyntax>()
+            .Single(node => node.Type.ToString() == nameof(WardenWallStanceAuraStatusEffect));
+        aura.Initializer!.Expressions.OfType<AssignmentExpressionSyntax>().Should()
+            .ContainSingle(node => node.Left.ToString() == nameof(WardenWallStanceAuraStatusEffect.AnnouncesApplication) &&
+                                   node.Right.ToString() == "!StatusEffect.HasStatusEffect(ally, typeof(WardenWallStanceAuraStatusEffect), creature)",
+                "the periodic refresh must not re-broadcast the aura to allies who already have it");
     }
 
     [Test]

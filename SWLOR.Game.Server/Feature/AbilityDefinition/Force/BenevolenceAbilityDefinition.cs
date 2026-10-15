@@ -34,9 +34,10 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .HasActivationDelay(1f)
                 .UsesAnimation(Animation.LoopingConjure1)
                 .PlaysSoundOnImpact("ksfx_healing")
-                .HasRecastDelay(RecastGroup.Benevolence, 6f)
+                .HasRecastDelay(RecastGroup.Benevolence, 10f)
                 .SkillType(SkillType.Force)
                 .IsSingleTargetAbility()
+                .AllowsSelfQuickCast()
                 .IsHealingAbility()
                 .HasMaxRange(15f)
                 .RequiresTarget()
@@ -59,9 +60,10 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .HasActivationDelay(1f)
                 .UsesAnimation(Animation.LoopingConjure1)
                 .PlaysSoundOnImpact("ksfx_healing")
-                .HasRecastDelay(RecastGroup.Benevolence, 6f)
+                .HasRecastDelay(RecastGroup.Benevolence, 10f)
                 .SkillType(SkillType.Force)
                 .IsSingleTargetAbility()
+                .AllowsSelfQuickCast()
                 .IsHealingAbility()
                 .HasMaxRange(15f)
                 .RequiresTarget()
@@ -84,9 +86,10 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .HasActivationDelay(1f)
                 .UsesAnimation(Animation.LoopingConjure1)
                 .PlaysSoundOnImpact("ksfx_healing")
-                .HasRecastDelay(RecastGroup.Benevolence, 6f)
+                .HasRecastDelay(RecastGroup.Benevolence, 10f)
                 .SkillType(SkillType.Force)
                 .IsSingleTargetAbility()
+                .AllowsSelfQuickCast()
                 .IsHealingAbility()
                 .HasMaxRange(15f)
                 .RequiresTarget()
@@ -95,7 +98,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .HasImpactAction(Benevolence3ImpactAction)
                 .IsCastedAbility()
                 .BreaksStealth()
-                .RequirementFP(7);
+                .RequirementFP(8);
         }
 
         private static void Benevolence1ImpactAction(uint activator, uint target, int level, Location targetLocation)
@@ -122,7 +125,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
             AbilityEffectScaling.ApplyActivatedScaledHeal(activator, friendly, percent, multiplier: multiplier);
             if (GetCurrentHitPoints(friendly) > hitPointsBeforeHealing)
                 Ability.PlaySuccessfulImpactVisualEffect(activator, friendly);
-            ForceControlHealingEffects.ApplyRestorativeControlPower(activator, friendly, targetWasBelowHalfHP);
+            var healed = new List<uint>(ForceControlHealingEffects.ApplyRestorativeControlPower(activator, friendly, targetWasBelowHalfHP)) { friendly };
+            CombatPoint.AddSupportCombatPoint(activator, healed, SkillType.Force);
         }
     }
 }

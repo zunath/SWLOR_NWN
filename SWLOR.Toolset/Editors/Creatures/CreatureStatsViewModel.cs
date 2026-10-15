@@ -2,6 +2,7 @@ using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
 using SWLOR.Toolset.Domain.Editors.Behaviors;
 using SWLOR.Toolset.Domain.Editors.Creatures;
+using Nwn.Authoring.Documents.NimGff;
 using SWLOR.Toolset.Domain.Gff;
 
 namespace SWLOR.Toolset.Editors.Creatures
@@ -12,6 +13,7 @@ namespace SWLOR.Toolset.Editors.Creatures
         private readonly CreatureValueStore _creature;
         private readonly CreatureEquipmentSet _equipment;
         private readonly Func<string, Action, bool> _runEdit;
+        private readonly Func<string, CreatureEquipmentDocument, Action, bool> _runEquipmentEdit;
 
         public ObservableCollection<CreatureStatCellViewModel> Vitals { get; } = new();
         public ObservableCollection<CreatureStatCellViewModel> Offense { get; } = new();
@@ -24,11 +26,13 @@ namespace SWLOR.Toolset.Editors.Creatures
         public CreatureStatsViewModel(
             CreatureValueStore creature,
             CreatureEquipmentSet equipment,
-            Func<string, Action, bool> runEdit)
+            Func<string, Action, bool> runEdit,
+            Func<string, CreatureEquipmentDocument, Action, bool> runEquipmentEdit)
         {
             _creature = creature;
             _equipment = equipment;
             _runEdit = runEdit;
+            _runEquipmentEdit = runEquipmentEdit;
 
             Vitals.Add(Skin("NPC Level", CreaturePropertyCatalog.Level, -1, 43, 0, 100));
             Vitals.Add(Skin("HP", CreaturePropertyCatalog.HitPoints, -1, 39, 0, 30000, combined: true));
@@ -97,24 +101,30 @@ namespace SWLOR.Toolset.Editors.Creatures
                         : skin?.Store.GetPropertyValue(propertyId, subtype) ?? 0;
                     return resistance ? CreaturePropertyCatalog.DecodeResistance(stored) : stored;
                 },
-                value => _runEdit($"Change {label}", () =>
+                value =>
                 {
-                    var skin = EnsureSkin();
-                    var stored = resistance ? CreaturePropertyCatalog.EncodeResistance(value) : value;
-                    int? optional = stored == 0 ? null : stored;
-                    if (combined)
-                        skin.Store.SetCombinedPropertyValue(propertyId, subtype, costTable, optional);
-                    else
-                        skin.Store.SetPropertyValue(propertyId, subtype, costTable, optional);
-                }),
+                    var skin = PrepareSkin();
+                    return _runEquipmentEdit($"Change {label}", skin, () =>
+                    {
+                        _equipment.InitializeIfNew(
+                            skin,
+                            CreaturePropertyCatalog.StatSkinSlot,
+                            CreaturePropertyCatalog.StatSkinBaseItem,
+                            "Creature Stat Skin");
+                        var stored = resistance ? CreaturePropertyCatalog.EncodeResistance(value) : value;
+                        int? optional = stored == 0 ? null : stored;
+                        if (combined)
+                            skin.Store.SetCombinedPropertyValue(propertyId, subtype, costTable, optional);
+                        else
+                            skin.Store.SetPropertyValue(propertyId, subtype, costTable, optional);
+                    });
+                },
                 minimum,
                 maximum);
         }
 
-        private CreatureEquipmentDocument EnsureSkin() => _equipment.Ensure(
+        private CreatureEquipmentDocument PrepareSkin() => _equipment.Prepare(
             CreaturePropertyCatalog.StatSkinSlot,
-            CreaturePropertyCatalog.StatSkinBaseItem,
-            "_sk",
-            "Creature Stat Skin");
+            "_sk");
     }
 }

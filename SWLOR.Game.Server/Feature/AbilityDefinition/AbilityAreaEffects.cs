@@ -51,7 +51,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
             Action<uint, float> onFirstApplication = null,
             VisualEffect areaMarkerVisualEffect = VisualEffect.None,
             float areaMarkerVisualEffectScale = 1f,
-            Func<float, Action<uint>> pulseVisualEffects = null)
+            Func<float, Action<uint>> pulseVisualEffects = null,
+            FeatType feat = FeatType.Invalid)
         {
             CreatePersistentSphereIndicator(
                 activator,
@@ -70,12 +71,12 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
             }
 
             var firstApplications = new HashSet<uint>();
-            for (var elapsed = 0f; elapsed < durationSeconds - 0.01f; elapsed += 3f)
+            foreach (var pulseDelay in CombatAreaPulses.GetRefreshPulseDelays(durationSeconds, 3f))
             {
-                var pulseDelay = elapsed;
                 var playReceipt = pulseVisualEffects?.Invoke(pulseDelay) ?? Ability.CaptureSuccessfulImpactVisualEffect(activator);
                 DelayCommand(pulseDelay, () =>
                 {
+                    using var recorderScope = CombatRecorder.BeginAbilityFeatAttribution(activator, feat);
                     foreach (var friendly in AbilityTargeting.GetFriendlyTargetsNearLocation(activator, location, radius))
                     {
                         if (firstApplications.Add(friendly))
@@ -100,14 +101,15 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
             VisualEffect visualEffect = VisualEffect.None,
             float multiplier = 1f,
             Action<uint, bool> onHealed = null,
-            Func<float, Action<uint>> pulseVisualEffects = null)
+            Func<float, Action<uint>> pulseVisualEffects = null,
+            FeatType feat = FeatType.Invalid)
         {
-            for (var elapsed = 3f; elapsed <= durationSeconds + 0.01f; elapsed += 3f)
+            foreach (var pulseDelay in CombatAreaPulses.GetPulseDelays(durationSeconds, 3f))
             {
-                var pulseDelay = elapsed;
                 var playReceipt = pulseVisualEffects?.Invoke(pulseDelay) ?? Ability.CaptureSuccessfulImpactVisualEffect(activator);
                 DelayCommand(pulseDelay, () =>
                 {
+                    using var recorderScope = CombatRecorder.BeginAbilityFeatAttribution(activator, feat);
                     foreach (var friendly in AbilityTargeting.GetFriendlyTargetsNearLocation(activator, location, radius))
                     {
                         var targetWasBelowHalfHP = GetMaxHitPoints(friendly) > 0 &&

@@ -610,8 +610,8 @@ public class GeneratedWeaponPerkBehaviorTests
 
         var combatSource = File.ReadAllText(Path.Combine(
             root.FullName, "SWLOR.Game.Server", "Service", "Combat.cs"));
-        combatSource.Should().Contain("if (isFirstSuccessfulTarget)");
-        combatSource.Should().Contain("ApplyLeadershipVanguardImpactRiders(activator)");
+        combatSource.Should().Contain("sequence.TryTriggerPartyBuff()");
+        combatSource.Should().Contain("ApplyHostileAbilityPartyBuff(activator, ability, damage, statusApplied)");
 
         var generatedWeaponSource = File.ReadAllText(Path.Combine(
             root.FullName,
@@ -655,12 +655,12 @@ public class GeneratedWeaponPerkBehaviorTests
         nativeAttackSource[beginSwing..endSwing].Should().Contain("try");
         nativeAttackSource[resolveAttack..endSwing].Should().Contain("finally");
         statusEffectSource.Should().Contain(
-            "statusEffect is not ILimitedAttackDelayReductionStatusEffect");
+            "statusEffect is ILimitedAttackDelayReductionStatusEffect");
         statusEffectSource.Should().Contain(
-            "statusEffect is not ILimitedAttackNoDelayStatusEffect");
+            "statusEffect is ILimitedAttackNoDelayStatusEffect");
         statusEffectSource.Should().Contain("_nativeAttackSwingDepth.Remove(attacker);");
         statusEffectSource.Should().Contain(
-            "deferredEffects.Add(() => ApplyStatusEffectInternal(",
+            "deferredEffects.Add(() => ApplyAndProfileStatusEffect(",
             "a speed effect granted by a precomputed roll must become active only after the swing ends");
     }
 
@@ -823,7 +823,6 @@ public class GeneratedWeaponPerkBehaviorTests
         AssertSourceStat("VibroknifePerkDefinition.cs", StatType.HostileAbilityHitNextAutoAttackNoDelayAllSkills, "1");
 
         AssertSourceStat("HeavyVibrobladePerkDefinition.cs", StatType.HeavyVibrobladeOffenseEssenceHunter, "1");
-        AssertSourceStat("HeavyVibrobladePerkDefinition.cs", StatType.HeavyVibrobladeOffenseSoulAscension, "1");
         AssertSourceStat("HeavyVibrobladePerkDefinition.cs", StatType.HeavyVibrobladeDefenseDamageDealtHPPercentRestore, "1");
 
         AssertSourceStat("RiflePerkDefinition.cs", StatType.IdleSkillAbilitySkillType, "(int)SkillType.Rifle");
@@ -1006,7 +1005,7 @@ public class GeneratedWeaponPerkBehaviorTests
         AssertStatusStat(assassins, StatType.PoisonDamageDealtPercentAdjustment, 20);
         AssertStatusStat(assassins, StatType.AttackPercentAdjustment, -10);
 
-        var shadowflow = new ShadowflowStanceStatusEffect();
+        var shadowflow = new ShadowflowStatusEffect();
         AssertStatusStat(shadowflow, StatType.AutoAttackHamstringSkillType, (int)SkillType.Invalid);
         AssertStatusStat(shadowflow, StatType.AutoAttackHamstringDurationSeconds, 18);
         AssertStatusStat(shadowflow, StatType.DefensePercentAdjustment, -20);
@@ -1231,7 +1230,7 @@ public class GeneratedWeaponPerkBehaviorTests
             AssertFeatSpellTargeting(featRows, spellRows, feat, "****", "1", "M", "0x03", "0");
         }
 
-        var shadowflow = new ShadowflowStanceAbilityDefinition().BuildAbilities()[FeatType.ShadowflowStance1];
+        var shadowflow = new ShadowflowAbilityDefinition().BuildAbilities()[FeatType.ShadowflowStance1];
         shadowflow.IsHostileAbility.Should().BeFalse();
         shadowflow.RequiresTarget.Should().BeFalse();
 
@@ -1710,7 +1709,7 @@ public class GeneratedWeaponPerkBehaviorTests
         var suppressionSource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Feature", "StatusEffectDefinition", "SuppressionStatusEffect.cs"));
         bleedSource.Should().Contain("WasNaturallyExpired");
         venomSource.Should().Contain("EffectDamage(damageAmount, CombatDamageType.Poison.GetNWScriptDamageType())");
-        venomSource.Should().Contain("var baseDamage = CalculateBaseDamagePerTick(_damageBonusPercent)");
+        venomSource.Should().Contain("var baseDamage = CalculateBaseDamagePerTick(_damageBonusPercent, _baseDamagePerTick)");
         venomSource.Should().Contain("Combat.ApplyDamageTypeDealtModifiers(source, baseDamage, CombatDamageType.Poison)");
         infectionSource.Should().Contain("public int Stacks");
         infectionSource.Should().Contain("DamagePerStack * Math.Max(1, Stacks)");

@@ -66,30 +66,6 @@ namespace SWLOR.Game.Server.Service.GuiService
             RegisterElementEvents(_activeWindow.Elements, windowId);
         }
 
-        private Dictionary<string, IReadOnlyCollection<string>> BuildPartialElementIds()
-        {
-            var partialElementIds = new Dictionary<string, IReadOnlyCollection<string>>();
-            foreach (var (partialName, partial) in _activeWindow.PartialViews)
-            {
-                var elementIds = new HashSet<string>();
-                CollectElementIds(partial.Elements, elementIds);
-                partialElementIds[partialName] = elementIds;
-            }
-
-            return partialElementIds;
-        }
-
-        private static void CollectElementIds(List<IGuiWidget> elements, HashSet<string> elementIds)
-        {
-            foreach (var element in elements)
-            {
-                if (!string.IsNullOrWhiteSpace(element.Id))
-                    elementIds.Add(element.Id);
-
-                CollectElementIds(element.Elements, elementIds);
-            }
-        }
-
         /// <summary>
         /// Builds the window and registers all associated events.
         /// </summary>
@@ -214,7 +190,6 @@ namespace SWLOR.Game.Server.Service.GuiService
             // solver, with a widget path - the client error itself carries no context.
             // Every warning is a real defect; see GuiLayoutValidator and Readmes/NuiLayoutRules.md.
             var layoutFindings = GuiLayoutValidator.Validate(windowId, _activeWindow.PartialViews);
-            var partialElementIds = BuildPartialElementIds();
 
             if (GuiLayoutValidator.IsValidationOnlyBuild)
             {
@@ -225,12 +200,15 @@ namespace SWLOR.Game.Server.Service.GuiService
                     _activeWindow.Geometry,
                     new Dictionary<string, Json>(),
                     layoutFindings,
-                    partialElementIds,
+                    new Dictionary<string, string>(),
                     () =>
                     {
                         var dataModelInstance = Activator.CreateInstance<T>();
                         return new GuiPlayerWindow(dataModelInstance);
-                    });
+                    })
+                {
+                    KeepsOpenOnAreaChange = _activeWindow.KeepsOpenOnAreaChange
+                };
             }
 
             foreach (var finding in layoutFindings)
@@ -239,9 +217,11 @@ namespace SWLOR.Game.Server.Service.GuiService
             }
 
             var partialViews = new Dictionary<string, Json>();
+            var partialViewLayouts = new Dictionary<string, string>();
             foreach (var (key, partial) in _activeWindow.PartialViews)
             {
                 partialViews[key] = partial.ToJson();
+                partialViewLayouts[key] = JsonDump(partialViews[key]);
             }
 
             var json = _activeWindow.Build();
@@ -258,14 +238,14 @@ namespace SWLOR.Game.Server.Service.GuiService
                     "[NUI JSON] window={WindowId} root={RootJson}",
                     windowId,
                     JsonDump(json));
-                foreach (var (partialName, partialJson) in partialViews)
+                foreach (var (partialName, partialJson) in partialViewLayouts)
                 {
                     Log.WriteStructured(
                         LogGroup.Server,
                         "[NUI JSON] window={WindowId} partial={PartialName} json={PartialJson}",
                         windowId,
                         partialName,
-                        JsonDump(partialJson));
+                        partialJson);
                 }
             }
 
@@ -278,13 +258,13 @@ namespace SWLOR.Game.Server.Service.GuiService
                 _activeWindow.Geometry,
                 partialViews,
                 layoutFindings,
-                partialElementIds,
+                partialViewLayouts,
                 () =>
             {
                 var dataModelInstance = Activator.CreateInstance<T>();
                 return new GuiPlayerWindow(dataModelInstance);
             });
-
+            constructedWindow.KeepsOpenOnAreaChange = _activeWindow.KeepsOpenOnAreaChange;
 
             return constructedWindow;
         }

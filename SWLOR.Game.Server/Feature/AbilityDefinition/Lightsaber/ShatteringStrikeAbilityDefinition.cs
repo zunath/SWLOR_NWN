@@ -41,7 +41,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Lightsaber
                 0.0f,
                 AbilityTargetingFlags.HarmsEnemies,
                 Animation.DoubleStrike,
-                0.0f,
+                7.0f,
                 AbilityType.Invalid,
                 new WeaponAbilityProfile
                 {
@@ -61,7 +61,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Lightsaber
                 typeof(SunderStatusEffect),
                 null,
                 6,
-                8,
+                10,
                 0.0f,
                 false,
                 true,
@@ -72,7 +72,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Lightsaber
                 0.0f,
                 AbilityTargetingFlags.HarmsEnemies,
                 Animation.DoubleStrike,
-                0.0f,
+                7.0f,
                 AbilityType.Invalid,
                 new WeaponAbilityProfile
                 {

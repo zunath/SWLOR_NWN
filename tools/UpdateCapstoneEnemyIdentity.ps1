@@ -9,7 +9,7 @@ Add-Type -AssemblyName System.IO.Compression.FileSystem
 
 $culture = [Globalization.CultureInfo]::InvariantCulture
 $modulePath = Join-Path $Root "Module"
-$workbookPath = Join-Path $Root "design\bible\SWLOR Design Bible - Combat Upgrade.xlsx"
+$workbookPath = Join-Path $Root "design\bible\SWLOR Design Bible.xlsx"
 $capstoneSourcePath = Join-Path $Root "SWLOR.Game.Server\Feature\QuestDefinition\CapstoneQuestDefinition.cs"
 $featTypePath = Join-Path $Root "SWLOR.NWN.API\NWScript\Enum\FeatType.cs"
 $feat2daPath = Join-Path $Root "SWLOR_Haks\sw_2da\feat.2da"
@@ -519,16 +519,9 @@ function Get-StepModifier($role, [int]$step, [int]$lineIndex) {
         }
     }
 
+    # Wardens (step 2) and masters (step 4) are party bosses.
     if ($step -eq 2) {
-        switch ($role) {
-            "Tank" { return "High Durability" }
-            "Ranged" { return "Hard to Hit" }
-            "Force" { return "High Resistance" }
-            "Controller" { return "Low Resource" }
-            "Support" { return "High Resistance" }
-            "Swarm" { return "Hard to Hit" }
-            default { return "High Damage" }
-        }
+        return "Group Boss"
     }
 
     if ($step -eq 3) {
@@ -536,15 +529,7 @@ function Get-StepModifier($role, [int]$step, [int]$lineIndex) {
         return $options[($lineIndex + $step) % $options.Count]
     }
 
-    switch ($role) {
-        "Tank" { return "High Durability" }
-        "Ranged" { return "High Damage" }
-        "Force" { return "High Resistance" }
-        "Controller" { return "Hard to Hit" }
-        "Support" { return "High Resistance" }
-        "Swarm" { return "Glass Cannon" }
-        default { return "High Damage" }
-    }
+    return "Group Boss"
 }
 
 function Get-RotatedPackage($line, [int]$step, [int]$count, $usedPackages) {

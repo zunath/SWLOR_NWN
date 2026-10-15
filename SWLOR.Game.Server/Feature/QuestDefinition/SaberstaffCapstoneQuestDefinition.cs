@@ -51,24 +51,24 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
                 .PrerequisiteSkill(SkillType.Saberstaff, 50)
                 .OnAcceptAction((player, sourceObject) =>
                 {
-                    KeyItem.GiveKeyItem(player, KeyItemType.CapstoneDantooineJediEnclaveTrialHallsKey);
+                    KeyItem.GiveKeyItem(player, KeyItemType.CapstoneHutlarJediTrialHallsKey);
                 })
                 .OnAbandonAction(player =>
                 {
-                    RemoveDantooineJediEnclaveTrialHallsAccessIfNoLongerNeeded(player);
+                    RemoveHutlarJediTrialHallsAccessIfNoLongerNeeded(player);
                 })
                 .RemoveKeyItemOnAbandon(KeyItemType.CapstoneSaberCycloneEnclaveTrialSlate)
                 .RemoveKeyItemOnComplete(KeyItemType.CapstoneSaberCycloneEnclaveTrialSlate)
 
                 .AddState()
                 .SetStateJournalText(
-                    "Jora Sel gave you the Dantooine Jedi Enclave Trial Halls Key. Defeat six Saber Cyclone adepts in the Dantooine Jedi Enclave Trial Halls on Dantooine and secure the Saber Cyclone Enclave Trial Slate.")
-                .AddKillObjective(NPCGroupType.Dantooine_SaberCyclone_Adept, 6)
+                    "Jora Sel gave you the Hutlar Jedi Trial Halls Key. From the Hutlar Outpost, take the north exit onto the Qion Tundra, go north-west into the Qion Valley, then west into the Cloning Test Site. At the site's north end, find the concrete entrance block on the east side of the big ruin, just south of the big pipe; through its east-facing blast door, disable six Cyclone Drill Droids in the Jedi Trial Halls and recover the Saber Cyclone Enclave Trial Slate.")
+                .AddKillObjective(NPCGroupType.Hutlar_CycloneDrillDroid, 6)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneSaberCycloneEnclaveTrialSlate)
 
                 .AddState()
                 .SetStateJournalText(
-                    "You secured the Saber Cyclone Enclave Trial Slate. Return it to Jora Sel at the colony interior on Dantooine.")
+                    "You recovered the Saber Cyclone Enclave Trial Slate. Return to Jora Sel in Tochee on Tatooine.")
                 .AddXPReward(15000)
                 .AddGoldReward(7500);
         }
@@ -83,13 +83,13 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "Defeat five Saber Cyclone specialists in the deep chambers of the Dantooine Jedi Enclave Trial Halls on Dantooine and secure the Saber Cyclone Kyber Focus Shard.")
-                .AddKillObjective(NPCGroupType.Dantooine_SaberCyclone_Specialist, 5)
+                    "Disable five Cyclone Duelist Droids deeper in the Jedi Trial Halls on Hutlar and recover the Saber Cyclone Kyber Focus Shard.")
+                .AddKillObjective(NPCGroupType.Hutlar_CycloneDuelistDroid, 5)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneSaberCycloneKyberFocusShard)
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Saber Cyclone Kyber Focus Shard is in hand. Bring it back to Jora Sel.")
+                    "You recovered the Saber Cyclone Kyber Focus Shard. Return to Jora Sel in Tochee on Tatooine.")
                 .AddXPReward(17500)
                 .AddGoldReward(9000);
         }
@@ -104,13 +104,13 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "Defeat the Saber Cyclone warden in the trial ring of the Dantooine Jedi Enclave Trial Halls on Dantooine and secure the Saber Cyclone Fractured Trial Sigil. The warden is too strong to face alone; bring at least two allies.")
-                .AddKillObjective(NPCGroupType.Dantooine_SaberCyclone_Warden, 1)
+                    "With at least two allies, disable the Cyclone Gatekeeper Droid guarding the approach to the Saber Trial Chamber in the Jedi Trial Halls on Hutlar and recover the Saber Cyclone Fractured Trial Sigil.")
+                .AddKillObjective(NPCGroupType.Hutlar_CycloneGatekeeperDroid, 1)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneSaberCycloneFracturedTrialSigil)
 
                 .AddState()
                 .SetStateJournalText(
-                    "The warden is defeated and the Saber Cyclone Fractured Trial Sigil secured. Return to Jora Sel at the colony interior on Dantooine.")
+                    "You recovered the Saber Cyclone Fractured Trial Sigil. Return to Jora Sel in Tochee on Tatooine.")
                 .AddXPReward(20000)
                 .AddGoldReward(10500);
         }
@@ -125,13 +125,13 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "Defeat the four members of the Saber Cyclone inner circle in the council chamber of the Dantooine Jedi Enclave Trial Halls on Dantooine and secure the Saber Cyclone Council Trial Chit.")
-                .AddKillObjective(NPCGroupType.Dantooine_SaberCyclone_InnerCircle, 4)
+                    "Disable four Cyclone Examiner Droids guarding the control systems of the Jedi Trial Halls on Hutlar and recover the Saber Cyclone Council Trial Chit.")
+                .AddKillObjective(NPCGroupType.Hutlar_CycloneExaminerDroid, 4)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneSaberCycloneCouncilTrialChit)
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Saber Cyclone Council Trial Chit is recovered. Return it to Jora Sel at the colony interior on Dantooine.")
+                    "You recovered the Saber Cyclone Council Trial Chit. Return to Jora Sel in Tochee on Tatooine.")
                 .AddXPReward(22500)
                 .AddGoldReward(12000);
         }
@@ -144,12 +144,12 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "Defeat the Saber Cyclone master in the deepest hall of the Dantooine Jedi Enclave Trial Halls on Dantooine. No proof needs to be carried back; the master's defeat is the proof. She is too strong to face alone; bring at least two allies.")
-                .AddKillObjective(NPCGroupType.Dantooine_SaberCyclone_Master, 1)
+                    "With at least two allies, disable the Vortex Training Engine in the Saber Trial Chamber at the north end of the Jedi Trial Halls on Hutlar.")
+                .AddKillObjective(NPCGroupType.Hutlar_VortexTrainingEngine, 1)
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Saber Cyclone master is defeated. Return to Jora Sel at the colony interior on Dantooine.")
+                    "The Vortex Training Engine is disabled. Return to Jora Sel in Tochee on Tatooine.")
                 .AddXPReward(30000)
                 .AddGoldReward(18000)
                 .OnCompleteAction((player, sourceObject) =>
@@ -164,24 +164,24 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
                 .PrerequisiteSkill(SkillType.Saberstaff, 50)
                 .OnAcceptAction((player, sourceObject) =>
                 {
-                    KeyItem.GiveKeyItem(player, KeyItemType.CapstoneDantooineMedicalSublevelKey);
+                    KeyItem.GiveKeyItem(player, KeyItemType.CapstoneMonCalaMedicalSublevelKey);
                 })
                 .OnAbandonAction(player =>
                 {
-                    RemoveDantooineMedicalSublevelAccessIfNoLongerNeeded(player);
+                    RemoveMonCalaMedicalSublevelAccessIfNoLongerNeeded(player);
                 })
                 .RemoveKeyItemOnAbandon(KeyItemType.CapstoneInfiniteConduitTriageWardLedger)
                 .RemoveKeyItemOnComplete(KeyItemType.CapstoneInfiniteConduitTriageWardLedger)
 
                 .AddState()
                 .SetStateJournalText(
-                    "Tessa Quell gave you the Dantooine Medical Sublevel Key. Defeat six Infinite Conduit adepts in the Dantooine Medical Sublevel on Dantooine and secure the Infinite Conduit Triage Ward Ledger.")
-                .AddKillObjective(NPCGroupType.Dantooine_InfiniteConduit_Adept, 6)
+                    "Tessa Quell gave you the Mon Cala Medical Sublevel Key. On Mon Cala, travel east from Dac City through the Coral Isles and enter the Coral Isles Facility on the south-west side of the outer isles, held by eco-terrorists. Inside, go through the sliding door off the entry hall; the service lift down to the Medical Sublevel stands in the red-walled bay just east of the office block. Defeat six Infinite Conduit adepts there and recover the Infinite Conduit Triage Ward Ledger.")
+                .AddKillObjective(NPCGroupType.MonCala_InfiniteConduit_Adept, 6)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneInfiniteConduitTriageWardLedger)
 
                 .AddState()
                 .SetStateJournalText(
-                    "You recovered the Infinite Conduit Triage Ward Ledger. Bring it to Tessa Quell at the Dantooine medical center.")
+                    "You recovered the Infinite Conduit Triage Ward Ledger. Bring it to Tessa Quell at the Anchorhead - Medical Center on Tatooine.")
                 .AddXPReward(15000)
                 .AddGoldReward(7500);
         }
@@ -196,13 +196,13 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "Defeat five Infinite Conduit specialists in the pump galleries of the Dantooine Medical Sublevel on Dantooine and secure the Infinite Conduit Kolto Conduit Coupler.")
-                .AddKillObjective(NPCGroupType.Dantooine_InfiniteConduit_Specialist, 5)
+                    "Defeat five Infinite Conduit specialists deeper in the Medical Sublevel on Mon Cala and recover the Infinite Conduit Kolto Conduit Coupler.")
+                .AddKillObjective(NPCGroupType.MonCala_InfiniteConduit_Specialist, 5)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneInfiniteConduitKoltoConduitCoupler)
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Infinite Conduit Kolto Conduit Coupler is recovered. Return it to Tessa Quell at the Dantooine medical center.")
+                    "The Infinite Conduit Kolto Conduit Coupler is recovered. Return it to Tessa Quell at the Anchorhead - Medical Center on Tatooine.")
                 .AddXPReward(17500)
                 .AddGoldReward(9000);
         }
@@ -217,13 +217,13 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "Defeat the Infinite Conduit warden in the flooded ward of the Dantooine Medical Sublevel on Dantooine and secure the Infinite Conduit Fractured Ward Sigil. The warden is too strong to face alone; bring at least two allies.")
-                .AddKillObjective(NPCGroupType.Dantooine_InfiniteConduit_Warden, 1)
+                    "With at least two allies, defeat the Infinite Conduit warden by the bloodstained altar in the north of the Medical Sublevel on Mon Cala and recover the Infinite Conduit Fractured Ward Sigil.")
+                .AddKillObjective(NPCGroupType.MonCala_InfiniteConduit_Warden, 1)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneInfiniteConduitFracturedWardSigil)
 
                 .AddState()
                 .SetStateJournalText(
-                    "The warden is defeated and the Infinite Conduit Fractured Ward Sigil secured. Return to Tessa Quell at the Dantooine medical center.")
+                    "You defeated the warden and recovered the Infinite Conduit Fractured Ward Sigil. Return to Tessa Quell at the Anchorhead - Medical Center on Tatooine.")
                 .AddXPReward(20000)
                 .AddGoldReward(10500);
         }
@@ -238,13 +238,13 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "Defeat the four members of the Infinite Conduit inner circle at the matron's station in the Dantooine Medical Sublevel on Dantooine and secure the Infinite Conduit Matron's Ward Token.")
-                .AddKillObjective(NPCGroupType.Dantooine_InfiniteConduit_InnerCircle, 4)
+                    "Defeat the four members of the Infinite Conduit inner circle in the Medical Sublevel on Mon Cala and recover the Infinite Conduit Matron's Ward Token.")
+                .AddKillObjective(NPCGroupType.MonCala_InfiniteConduit_InnerCircle, 4)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneInfiniteConduitMatronsWardToken)
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Infinite Conduit Matron's Ward Token is recovered. Bring it to Tessa Quell at the Dantooine medical center.")
+                    "The Infinite Conduit Matron's Ward Token is recovered. Bring it to Tessa Quell at the Anchorhead - Medical Center on Tatooine.")
                 .AddXPReward(22500)
                 .AddGoldReward(12000);
         }
@@ -257,12 +257,12 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "Defeat the Infinite Conduit master in the reservoir chamber at the bottom of the Dantooine Medical Sublevel on Dantooine. No proof needs to be carried back; the master's defeat is the proof. He is too strong to face alone; bring at least two allies.")
-                .AddKillObjective(NPCGroupType.Dantooine_InfiniteConduit_Master, 1)
+                    "With at least two allies, defeat the Infinite Conduit master in the Protected Ward, through the door in the north-east corner of the Medical Sublevel on Mon Cala. His defeat is all the proof Tessa Quell needs.")
+                .AddKillObjective(NPCGroupType.MonCala_InfiniteConduit_Master, 1)
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Infinite Conduit master is defeated. Return to Tessa Quell at the Dantooine medical center.")
+                    "The Infinite Conduit master is defeated. Return to Tessa Quell at the Anchorhead - Medical Center on Tatooine.")
                 .AddXPReward(30000)
                 .AddGoldReward(18000)
                 .OnCompleteAction((player, sourceObject) =>
@@ -271,7 +271,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
                 });
         }
 
-        private static void RemoveDantooineJediEnclaveTrialHallsAccessIfNoLongerNeeded(uint player)
+        private static void RemoveHutlarJediTrialHallsAccessIfNoLongerNeeded(uint player)
         {
             var questIds = new[]
             {
@@ -292,10 +292,10 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
                 SaberstaffCapstoneQuestDefinition.SaberCycloneMasteryQuestId,
             };
 
-            RemoveAreaAccessIfNoLongerNeeded(player, KeyItemType.CapstoneDantooineJediEnclaveTrialHallsKey, questIds);
+            RemoveAreaAccessIfNoLongerNeeded(player, KeyItemType.CapstoneHutlarJediTrialHallsKey, questIds);
         }
 
-        private static void RemoveDantooineMedicalSublevelAccessIfNoLongerNeeded(uint player)
+        private static void RemoveMonCalaMedicalSublevelAccessIfNoLongerNeeded(uint player)
         {
             var questIds = new[]
             {
@@ -316,7 +316,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
                 SaberstaffCapstoneQuestDefinition.InfiniteConduitMasteryQuestId,
             };
 
-            RemoveAreaAccessIfNoLongerNeeded(player, KeyItemType.CapstoneDantooineMedicalSublevelKey, questIds);
+            RemoveAreaAccessIfNoLongerNeeded(player, KeyItemType.CapstoneMonCalaMedicalSublevelKey, questIds);
         }
 
         private static void RemoveAreaAccessIfNoLongerNeeded(

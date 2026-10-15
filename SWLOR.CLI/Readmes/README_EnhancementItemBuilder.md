@@ -42,7 +42,7 @@ The tool expects a TSV file with the following columns:
 - Column 5: Progress penalty
 - Column 6: Property name
 - Column 7: Bonus amount
-- Column 8: Optional weapon damage type for `DMG` enhancements (`Physical`, `Force`, `Fire`, `Poison`, `Electrical`, or `Ice`)
+- Column 8: Optional weapon damage type for `DMG` enhancements (`Physical`, `Fire`, `Poison`, `Electrical`, or `Ice`). Force conversion is reserved for Imbuement Stance.
 
 ## Output Structure
 ```

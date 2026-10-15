@@ -1,89 +1,371 @@
 using System.Collections.Generic;
 using System.Linq;
+using SWLOR.Game.Server.Feature.GuiDefinition.Payload;
+using SWLOR.Game.Server.Feature.GuiDefinition.RefreshEvent;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.GuiService;
+using SWLOR.Game.Server.Service.GuiService.Component;
+using SWLOR.Game.Server.Service.MusicService;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 {
-    public class MusicPickerViewModel : GuiViewModelBase<MusicPickerViewModel, GuiPayloadBase>
+    public class MusicPickerViewModel : GuiViewModelBase<MusicPickerViewModel, GuiPayloadBase>,
+        IGuiRefreshable<KeyItemReceivedRefreshEvent>
     {
-        private readonly List<int> _songIds = new List<int>();
-        private readonly List<string> _songDisplayNames = new List<string>();
+        public const string ContentElement = "music_picker_content";
+        public const string PersonalContentPartial = "MUSIC_PICKER_PERSONAL";
+        public const string AreaContentPartial = "MUSIC_PICKER_AREA";
+        public const int PageSize = 8;
+        private const string OtherCategoryName = "Other";
+
+        private MusicPickerMode _mode;
+        private uint _jukebox;
+        private uint _musicPlayer;
+        private bool _suppressRefresh;
+        private string _selectedCategory = string.Empty;
+        private string[] _categories = Array.Empty<string>();
+        private MusicPickerEntry[] _entries = Array.Empty<MusicPickerEntry>();
+        private MusicPickerEntry[] _visible = Array.Empty<MusicPickerEntry>();
+
+        public string WindowTitle { get => Get<string>(); set => Set(value); }
+        public string HeaderText { get => Get<string>(); set => Set(value); }
+        public string ResultText { get => Get<string>(); set => Set(value); }
+        public string NowPlayingText { get => Get<string>(); set => Set(value); }
+        public string BattleThemeText { get => Get<string>(); set => Set(value); }
+        public GuiBindingList<GuiComboEntry> PageNumbers { get => Get<GuiBindingList<GuiComboEntry>>(); set => Set(value); }
+
+        public int SelectedPageIndex
+        {
+            get => Get<int>();
+            set
+            {
+                Set(value);
+                if (!_suppressRefresh)
+                    RefreshResults();
+            }
+        }
+        public bool IsCollectionMode { get => Get<bool>(); set => Set(value); }
 
         public string SearchText
         {
             get => Get<string>();
-            set => Set(value);
+            set
+            {
+                Set(value);
+                ResetToFirstPage();
+            }
         }
 
-        public GuiBindingList<string> SongNames
+        public bool ShowUncollected
         {
-            get => Get<GuiBindingList<string>>();
-            set => Set(value);
+            get => Get<bool>();
+            set
+            {
+                Set(value);
+                ResetToFirstPage();
+            }
         }
+
+        public GuiBindingList<string> CategoryNames { get => Get<GuiBindingList<string>>(); set => Set(value); }
+        public GuiBindingList<bool> CategorySelected { get => Get<GuiBindingList<bool>>(); set => Set(value); }
+        public GuiBindingList<string> SongNames { get => Get<GuiBindingList<string>>(); set => Set(value); }
+        public GuiBindingList<string> SongCategories { get => Get<GuiBindingList<string>>(); set => Set(value); }
+        public GuiBindingList<bool> PlayEnabled { get => Get<GuiBindingList<bool>>(); set => Set(value); }
 
         protected override void Initialize(GuiPayloadBase initialPayload)
         {
+            var payload = initialPayload as MusicPickerPayload ?? new MusicPickerPayload(MusicPickerMode.Personal);
+            _jukebox = payload.Jukebox;
+            _musicPlayer = payload.MusicPlayer;
+            _mode = payload.Mode;
+
+            // DMs can always play any track, whether they open the window by chat command or jukebox.
+            if (GetIsDM(Player) || GetIsDMPossessed(Player))
+                _mode = MusicPickerMode.DungeonMaster;
+
+            IsCollectionMode = _mode != MusicPickerMode.DungeonMaster;
+            WindowTitle = _mode switch
+            {
+                MusicPickerMode.Personal => "Portable Music Player",
+                MusicPickerMode.Jukebox => "Jukebox",
+                _ => "Area Music",
+            };
+
+            LoadEntries();
+            CategorySelected = new GuiBindingList<bool>();
+            SongNames = new GuiBindingList<string>();
+            SongCategories = new GuiBindingList<string>();
+            PlayEnabled = new GuiBindingList<bool>();
+            ResultText = string.Empty;
+            PageNumbers = new GuiBindingList<GuiComboEntry>();
+            _suppressRefresh = true;
+            SelectedPageIndex = 0;
+            _suppressRefresh = false;
+            ShowUncollected = false;
             SearchText = string.Empty;
-            Search();
+            SelectCategory(0);
+            RefreshPlaybackText();
 
             WatchOnClient(model => model.SearchText);
+            WatchOnClient(model => model.ShowUncollected);
+            WatchOnClient(model => model.SelectedPageIndex);
+            ChangePartialView(ContentElement, _mode == MusicPickerMode.Personal ? PersonalContentPartial : AreaContentPartial);
         }
 
-        private void Search()
+        private void LoadEntries()
         {
-            var searchText = SearchText ?? string.Empty;
+            _entries = BuildEntries(out var headerText);
+            HeaderText = headerText;
 
-            _songIds.Clear();
-            _songDisplayNames.Clear();
-
-            var songs = new GuiBindingList<string>();
-            foreach (var song in Music.GetAllSongs().OrderBy(x => x.DisplayName))
+            _categories = new[] { string.Empty }
+                .Concat(_entries.Select(entry => entry.Category).Distinct().OrderBy(name => name))
+                .ToArray();
+            var categoryNames = new GuiBindingList<string>();
+            foreach (var category in _categories)
             {
-                if (!string.IsNullOrWhiteSpace(searchText) &&
-                    !song.DisplayName.Contains(searchText, StringComparison.OrdinalIgnoreCase))
-                {
-                    continue;
-                }
-
-                _songIds.Add(song.ID);
-                _songDisplayNames.Add(song.DisplayName);
-                songs.Add($"{song.ID}: {song.DisplayName}");
+                var count = _entries.Count(entry => category.Length == 0 || entry.Category == category);
+                categoryNames.Add($"{(category.Length == 0 ? "All Songs" : category)} ({count})");
             }
 
-            SongNames = songs;
+            CategoryNames = categoryNames;
         }
 
-        public Action OnClickSearch() => Search;
-
-        public Action OnClickClearSearch() => () =>
+        /// <summary>
+        /// Rebuilds the collection when the player collects a song while the window is open.
+        /// </summary>
+        public void Refresh(KeyItemReceivedRefreshEvent payload)
         {
-            SearchText = string.Empty;
-            Search();
+            if (_mode == MusicPickerMode.DungeonMaster || !Music.TryGetCollectibleSong(payload.Type, out _))
+                return;
+
+            LoadEntries();
+            var categoryIndex = Array.IndexOf(_categories, _selectedCategory);
+            if (categoryIndex < 0 || _mode == MusicPickerMode.Jukebox)
+                SelectCategory(Math.Max(0, categoryIndex));
+            else
+                RefreshResults();
+        }
+
+        private MusicPickerEntry[] BuildEntries(out string headerText)
+        {
+            if (_mode == MusicPickerMode.DungeonMaster)
+            {
+                var tracks = Music.GetAllSongs()
+                    .Where(track => track.ID > 0)
+                    .Select(track => Music.TryGetCollectibleSongByTrackId(track.ID, out var song)
+                        ? new MusicPickerEntry(track.ID, Music.GetSongName(song), Music.GetCategoryName(song.Category), true)
+                        : new MusicPickerEntry(track.ID, track.DisplayName, OtherCategoryName, true))
+                    .OrderBy(entry => entry.Name)
+                    .ToArray();
+                headerText = $"All tracks: {tracks.Length}. Songs play for everyone in this area.";
+                return tracks;
+            }
+
+            var ownerId = GetObjectUUID(Player);
+            if (_mode == MusicPickerMode.Jukebox)
+            {
+                var jukeboxOwnerId = Music.GetJukeboxOwnerId(_jukebox);
+                if (!string.IsNullOrWhiteSpace(jukeboxOwnerId))
+                    ownerId = jukeboxOwnerId;
+            }
+
+            var collected = Music.GetCollectedTrackIds(ownerId);
+            var entries = Music.GetCollectibleSongs()
+                .Where(song => _mode != MusicPickerMode.Jukebox || collected.Contains(song.TrackId))
+                .Select(song => new MusicPickerEntry(
+                    song.TrackId,
+                    Music.GetSongName(song),
+                    Music.GetCategoryName(song.Category),
+                    collected.Contains(song.TrackId)))
+                .OrderBy(entry => entry.Name)
+                .ToArray();
+
+            var total = entries.Length;
+            if (_mode == MusicPickerMode.Personal)
+            {
+                headerText = $"Your collection: {collected.Count} of {total} songs. Only you hear them.";
+            }
+            else if (ownerId == GetObjectUUID(Player))
+            {
+                headerText = $"Your collection: {collected.Count} songs. Everyone in this area hears them.";
+            }
+            else
+            {
+                var ownerName = PlayerName.GetDisplayNameByPlayerId(Player, ownerId, "The owner");
+                headerText = $"{ownerName}'s collection: {collected.Count} songs. Everyone in this area hears them.";
+            }
+
+            return entries;
+        }
+
+        public Action OnSelectCategory() => () => SelectCategory(NuiGetEventArrayIndex());
+
+        private void SelectCategory(int index)
+        {
+            if (index < 0 || index >= _categories.Length)
+                return;
+
+            _selectedCategory = _categories[index];
+            var selected = new GuiBindingList<bool>();
+            for (var i = 0; i < _categories.Length; i++)
+                selected.Add(i == index);
+
+            CategorySelected = selected;
+            ResetToFirstPage();
+        }
+
+        private void ResetToFirstPage()
+        {
+            _suppressRefresh = true;
+            SelectedPageIndex = 0;
+            _suppressRefresh = false;
+            RefreshResults();
+        }
+
+        private void RefreshResults()
+        {
+            var search = SearchText ?? string.Empty;
+            var matches = _entries
+                .Where(entry => _selectedCategory.Length == 0 || entry.Category == _selectedCategory)
+                .Where(entry => entry.IsAvailable || (_mode == MusicPickerMode.Personal && ShowUncollected))
+                .Where(entry => search.Length == 0 || entry.Name.Contains(search, StringComparison.OrdinalIgnoreCase))
+                .ToArray();
+
+            var pagination = GuiPaginationState.Create(matches.Length, PageSize, SelectedPageIndex);
+            _suppressRefresh = true;
+            PageNumbers = pagination.PageNumbers;
+            SelectedPageIndex = pagination.SelectedPageIndex;
+            _suppressRefresh = false;
+            _visible = matches.Skip(SelectedPageIndex * PageSize).Take(PageSize).ToArray();
+
+            var names = new GuiBindingList<string>();
+            var categories = new GuiBindingList<string>();
+            var playEnabled = new GuiBindingList<bool>();
+            foreach (var entry in _visible)
+            {
+                names.Add(entry.IsAvailable ? entry.Name : $"{entry.Name} (not collected)");
+                categories.Add(entry.Category);
+                playEnabled.Add(entry.IsAvailable);
+            }
+
+            SongNames = names;
+            SongCategories = categories;
+            PlayEnabled = playEnabled;
+            ResultText = matches.Length == 1 ? "1 song" : $"{matches.Length} songs";
+        }
+
+        public Action OnClearSearch() => () => SearchText = string.Empty;
+        public Action OnPreviousPage() => () => SelectedPageIndex = Math.Max(0, SelectedPageIndex - 1);
+        public Action OnNextPage() => () => SelectedPageIndex = Math.Min(PageNumbers.Count - 1, SelectedPageIndex + 1);
+
+        public Action OnPlaySong() => () =>
+        {
+            if (CloseIfSourceIsGone() || !TryGetSelectedEntry(out var entry))
+                return;
+
+            if (_mode == MusicPickerMode.Personal)
+                Music.PlayForPlayer(Player, entry.TrackId);
+            else
+                Music.PlayInArea(GetMusicArea(), entry.TrackId);
+
+            FloatingTextStringOnCreature($"Now playing: {entry.Name}", Player, false);
+            RefreshPlaybackText();
         };
 
-        public Action OnSelectSong() => () =>
+        public Action OnSetBattleTheme() => () =>
         {
+            if (_mode != MusicPickerMode.Personal || CloseIfSourceIsGone() || !TryGetSelectedEntry(out var entry))
+                return;
+
+            Music.SetBattleTheme(Player, entry.TrackId);
+            FloatingTextStringOnCreature($"Battle theme: {entry.Name}", Player, false);
+            RefreshPlaybackText();
+        };
+
+        public Action OnClearBattleTheme() => () =>
+        {
+            if (_mode != MusicPickerMode.Personal || CloseIfSourceIsGone())
+                return;
+
+            Music.SetBattleTheme(Player, null);
+            RefreshPlaybackText();
+        };
+
+        public Action OnStop() => () =>
+        {
+            if (CloseIfSourceIsGone())
+                return;
+
+            if (_mode == MusicPickerMode.Personal)
+                Music.StopForPlayer(Player);
+            else
+                Music.StopInArea(GetMusicArea());
+
+            RefreshPlaybackText();
+        };
+
+        private bool TryGetSelectedEntry(out MusicPickerEntry entry)
+        {
+            entry = null;
             var index = NuiGetEventArrayIndex();
-            if (index < 0 || index >= _songIds.Count)
+            if (index < 0 || index >= _visible.Length)
+                return false;
+
+            entry = _visible[index];
+            return entry.IsAvailable;
+        }
+
+        /// <summary>
+        /// A jukebox window closes once its jukebox is destroyed, and a music player window
+        /// closes once the player no longer carries the Portable Music Player that opened it.
+        /// </summary>
+        private bool CloseIfSourceIsGone()
+        {
+            string message;
+            if (_mode == MusicPickerMode.Jukebox && !GetIsObjectValid(_jukebox))
+                message = "The jukebox is no longer here.";
+            else if (_mode == MusicPickerMode.Personal &&
+                     (!GetIsObjectValid(_musicPlayer) || GetItemPossessor(_musicPlayer) != Player))
+                message = "You no longer have the Portable Music Player.";
+            else
+                return false;
+
+            SendMessageToPC(Player, ColorToken.Red(message));
+            // A DM's window belongs to their avatar even while it is shown on a possessed creature.
+            Gui.ClosePlayerWindow(DMPresence.GetDM(Player), WindowType, Player);
+            return true;
+        }
+
+        private uint GetMusicArea()
+        {
+            return _mode == MusicPickerMode.Jukebox
+                ? GetArea(_jukebox)
+                : GetArea(Player);
+        }
+
+        private void RefreshPlaybackText()
+        {
+            if (_mode == MusicPickerMode.Personal)
             {
+                var trackId = Music.GetPersonalTrackId(Player);
+                NowPlayingText = trackId != null
+                    ? $"Now playing: {Music.GetTrackName(trackId.Value)}"
+                    : Music.IsAreaMusicStopped(GetArea(Player))
+                        ? "Now playing: nothing (stopped)"
+                        : "Now playing: area music";
+
+                var battleThemeId = Music.GetBattleThemeId(Player);
+                BattleThemeText = battleThemeId == null
+                    ? "Battle theme: area music"
+                    : $"Battle theme: {Music.GetTrackName(battleThemeId.Value)}";
                 return;
             }
 
-            var area = GetArea(Player);
-            if (!GetIsObjectValid(area))
-            {
-                return;
-            }
-
-            var songId = _songIds[index];
-            var songName = _songDisplayNames[index];
-
-            MusicBackgroundChangeDay(area, songId);
-            MusicBackgroundChangeNight(area, songId);
-            MusicBackgroundPlay(area);
-
-            FloatingTextStringOnCreature($"Song Selected: {songName}", Player, false);
-        };
+            var area = GetMusicArea();
+            NowPlayingText = Music.IsAreaMusicStopped(area)
+                ? "Now playing: nothing (stopped)"
+                : $"Now playing: {Music.GetTrackName(MusicBackgroundGetDayTrack(area))}";
+            BattleThemeText = string.Empty;
+        }
     }
 }

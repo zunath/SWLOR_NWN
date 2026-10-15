@@ -40,6 +40,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
                 .HasRecastDelay(RecastGroup.Infusion, 24f)
                 .SkillType(SkillType.FirstAid)
                 .IsSingleTargetAbility()
+                .AllowsSelfQuickCast()
                 .IsHealingAbility()
                 .RequiresTarget()
                 .HasCustomValidation((activator, target, _, _) =>
@@ -65,6 +66,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
                 .HasRecastDelay(RecastGroup.Infusion, 24f)
                 .SkillType(SkillType.FirstAid)
                 .IsSingleTargetAbility()
+                .AllowsSelfQuickCast()
                 .IsHealingAbility()
                 .RequiresTarget()
                 .HasCustomValidation((activator, target, _, _) =>
@@ -89,15 +91,16 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
         private static void ApplyInfusion(uint activator, uint target, string name, float totalPercent)
         {
             var friendly = AbilityTargeting.ResolveFriendlyTarget(activator, target);
+            var credited = new HashSet<uint>();
             if (StatusEffect.ApplyStatusEffect(
                 activator,
                 friendly,
-                new RegenerativeHealingStatusEffect(name, totalPercent, 10, true),
+                new RegenerativeHealingStatusEffect(name, totalPercent, 10, true, SkillType.FirstAid, credited),
                 30f))
                 Ability.PlaySuccessfulImpactVisualEffect(activator, friendly);
             FirstAidTreatmentAdjustments.ApplyTraumaMedicRiders(activator, friendly);
             FirstAidTreatmentAdjustments.ApplyMedicalVisualEffect(friendly);
-            FirstAidTreatmentAdjustments.GrantCombatPoint(activator);
+            FirstAidTreatmentAdjustments.GrantCombatPoint(activator, new[] { friendly }, credited);
         }
 
     }

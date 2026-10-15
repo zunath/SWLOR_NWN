@@ -18,7 +18,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Lightsaber
             var builder = new AbilityBuilder();
 
             Build(builder, FeatType.Reprisal1, "Reprisal I", 1, 16, 6, 2);
-            Build(builder, FeatType.Reprisal2, "Reprisal II", 2, 30, 9, 3);
+            Build(builder, FeatType.Reprisal2, "Reprisal II", 2, 30, 9, 4);
 
             return builder.Build();
         }
@@ -56,7 +56,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Lightsaber
                 0.0f,
                 AbilityTargetingFlags.HarmsEnemies,
                 Animation.DoubleStrike,
-                0.0f,
+                7.0f,
                 AbilityType.Invalid,
                 new WeaponAbilityProfile
                 {

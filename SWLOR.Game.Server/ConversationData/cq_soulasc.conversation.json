@@ -260,7 +260,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "...and the blade is raised, and the blade is dry, and behold: a stranger arrives on the amen. Stand there. You fit the verse. Below us, in the Korriban Forge Caverns, a congregation I once led drinks from every edge they quench and offers nothing back. Their newest, six adepts with loud thirsts, keep my old ledger of heats beside the crucibles and read it like scripture. It is not scripture. It is an accounting. Cut the six down, bring back the Soul Ascension Forge Heat Ledger, and I will teach you the first verse of a blade that drinks.",
+          "Text": "...and the blade is raised, and the blade is dry, and behold: a stranger arrives on the amen. Stand there. You fit the verse. Out on Tatooine, in the Forge Caverns, a congregation I once led drinks from every edge they quench and offers nothing back. Their newest, six adepts with loud thirsts, keep my old ledger of heats beside the crucibles and read it like scripture. It is not scripture. It is an accounting. Cut the six down, bring back the Soul Ascension Forge Heat Ledger, and I will teach you the first verse of a blade that drinks.",
           "Style": 0,
           "Color": null
         }
@@ -286,6 +286,10 @@
         {
           "ChoiceId": "reply-00005",
           "Conditions": []
+        },
+        {
+          "ChoiceId": "neutral-ask",
+          "Conditions": []
         }
       ]
     },
@@ -302,7 +306,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Then receive the key as an offering received. It opens the sealed gate down into the caverns. Walk the descent like a procession, not a charge; the fire notices manners. And bring me the ledger while its ink still matters.",
+          "Text": "Then receive this key the way an offering is received, with both hands. On Tatooine, walk south from the Anchorhead spaceport through the South District to the Southern Entrance, out its east side into the Rocky Desert, and north into the North Mine Cliffs. A short walk on, beside an old mine cart, an arched tunnel mouth slopes down under the canyon floor. Carry the key down with you; the way in answers to it. Tusken Raiders haunt those cliffs. Walk the descent like a procession, not a charge, and bring the ledger back to me here in The Hub while its ink still matters.",
           "Style": 0,
           "Color": null
         }
@@ -511,7 +515,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Go down past the first crucible hall. The troughs sing where the heat thickens; you'll hear them before you see them. And don't listen long to the matrix once you carry it. It flatters. It has always flattered.",
+          "Text": "Go deeper than the adepts dared. The troughs sing where the heat thickens. And don't listen long to the matrix once you carry it. It flatters. It has always flattered.",
           "Style": 0,
           "Color": null
         }
@@ -584,7 +588,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Don't say 'their master' as though he arrived from somewhere else. He was my first witness. He heard every verse I ever wrote and ascended past all of them, and what he is now sits at the bottom of my confession like a stone. Ask me again when you are stronger. By then I will owe you the answer.",
+          "Text": "Don't speak of him as though he arrived from somewhere else. He was my first witness. He heard every verse I ever wrote and ascended past all of them, and what he is now sits at the bottom of my confession like a stone. Ask me again when you are stronger. By then I will owe you the answer.",
           "Style": 0,
           "Color": null
         }
@@ -678,7 +682,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Now the liturgy turns, and I must confess before I can ask. The third verse belongs to a warden: the anvil-keeper who cracked his own anvil the night the congregation turned, and wears a shard of it at his throat. I consecrated that anvil. My hands. My verse. He keeps the deep hall alone and drinks every blade that comes to him, one at a time, patiently, like communion. So hear my instruction as liturgy, not caution. A rite requires witnesses. Three at the least. Go down with companions whose names you would speak at an altar, let his thirst split three ways, and break the vessel. Then bring me the Soul Ascension Cracked Anvil Sigil from his neck.",
+          "Text": "Now the liturgy turns, and I must confess before I can ask. The third verse belongs to a warden: the anvil-keeper who cracked his own anvil the night the congregation turned, and wears a shard of it at his throat. I consecrated that anvil. He keeps the trial altar in the north-west of the caverns and drinks every blade that comes to him, one at a time, like communion. A rite requires witnesses, three at the least. Go with companions whose names you would speak at an altar, let his thirst split three ways, and bring me the Soul Ascension Cracked Anvil Sigil from his neck.",
           "Style": 0,
           "Color": null
         }
@@ -819,7 +823,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The warden still keeps the deep hall, and the altar is still declared empty. Witnesses, three at the least, and the Soul Ascension Cracked Anvil Sigil off his neck. The third verse is patient, but it is not optional.",
+          "Text": "The warden still keeps the north-west altar, and the altar is still declared empty. Witnesses, three at the least, and the Soul Ascension Cracked Anvil Sigil off his neck. The third verse is patient, but it is not optional.",
           "Style": 0,
           "Color": null
         }
@@ -1096,7 +1100,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The last verse, and I will speak it as confession, because that is what it is. In the sanctum waits my first witness. The master. The one who ascended past the rim of the rite I wrote for him. His blade drinks as yours drinks, older and deeper, and every stroke he takes from you, he keeps. The sanctum keeps those who enter unaccompanied. It has never once returned one. That is not a warning; it is arithmetic and liturgy agreeing for once. Take your witnesses down one last time and end him. There is nothing to carry out afterward. No ledger, no cup, no shard. His ending is the offering, and the verse it finishes is yours.",
+          "Text": "The last verse, and I will speak it as confession. In the Champion Forge, through the door at the north end of the caverns, waits my first witness. The master. His blade drinks as yours drinks, older and deeper, and every stroke he takes from you, he keeps. That sanctum has never returned anyone who entered it alone. Take your witnesses down one last time and end him. There is nothing to carry out afterward. No ledger, no cup, no shard. His ending is the offering, and the verse it finishes is yours.",
           "Style": 0,
           "Color": null
         }
@@ -1211,7 +1215,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "You ask. That is most of the answer already; he never asked. The rite fails in one direction only: a blade that drinks, and a soul that stops offering. Stops confessing. Stops tithing. Stops kneeling to anything at all. You have hauled every debt I named up into the light and put it in my hands. Keep doing that, with your witnesses, with whatever you kneel to, and you will die old, ascended exactly as far as a soul should go. Stop doing it, and someday someone stands where you stand now, being sent down for you. That is not a threat. It is the same verse that sent you.",
+          "Text": "You ask. That is most of the answer already; he never asked. The rite fails in one direction only: a blade that drinks, and a soul that stops offering. You have hauled every debt I named up into the light and put it in my hands. Keep doing that, with your witnesses and whatever you kneel to, and you will die old, ascended exactly as far as a soul should go. Stop, and someday someone stands where you stand now, being sent down for you. That is not a threat. It is the same verse that sent you.",
           "Style": 0,
           "Color": null
         }
@@ -1291,6 +1295,32 @@
       ],
       "OnEnterActions": [],
       "Choices": []
+    },
+    "neutral-meeting": {
+      "Id": "neutral-meeting",
+      "SpeakerName": "",
+      "SpeakerTag": "",
+      "PortraitResref": "",
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Text": [
+        {
+          "Text": "The Hub on Smuggler's Moon hears every creed and keeps none of them. That suits a confession. I ask what your blade has learned, not what banner follows it. My congregation hides in the Forge Caverns on Tatooine, down the old mine tunnel in the North Mine Cliffs. No temple and no academy owns them now; they answer only to their thirst. Go there for the debt. Come back here to read it aloud.",
+          "Style": 0,
+          "Color": null
+        }
+      ],
+      "OnEnterActions": [],
+      "Choices": [
+        {
+          "ChoiceId": "neutral-return",
+          "Conditions": []
+        }
+      ]
     }
   },
   "Choices": {
@@ -1350,7 +1380,7 @@
     "reply-00002": {
       "Id": "reply-00002",
       "Text": {
-        "Text": "What is Soul Ascension?",
+        "Text": "What does Soul Ascension teach?",
         "Style": 4,
         "Color": null
       },
@@ -2138,6 +2168,52 @@
       "Next": [
         {
           "TargetNodeId": "entry-00041",
+          "Conditions": []
+        }
+      ],
+      "EndsConversation": false,
+      "IsAutomatic": false
+    },
+    "neutral-ask": {
+      "Id": "neutral-ask",
+      "Text": {
+        "Text": "Why are we meeting here, and where is the trial?",
+        "Style": 4,
+        "Color": null
+      },
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Actions": [],
+      "Next": [
+        {
+          "TargetNodeId": "neutral-meeting",
+          "Conditions": []
+        }
+      ],
+      "EndsConversation": false,
+      "IsAutomatic": false
+    },
+    "neutral-return": {
+      "Id": "neutral-return",
+      "Text": {
+        "Text": "Back to the assignment.",
+        "Style": 4,
+        "Color": null
+      },
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Actions": [],
+      "Next": [
+        {
+          "TargetNodeId": "entry-00002",
           "Conditions": []
         }
       ],

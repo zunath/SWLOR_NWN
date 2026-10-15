@@ -263,6 +263,47 @@ public class CombatDamageTests
     }
 
     [Test]
+    public void WeaponAbilityDamage_TakesTheElementWheneverWeaponDmgIsIncluded()
+    {
+        var root = FindRepositoryRoot();
+        var abilitySource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Service", "Ability.cs"));
+        var combatSource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Service", "Combat.cs"));
+
+        ExtractMethod(combatSource, "public static int GetCombatImpactWeaponDamage")
+            .Should().Contain("if (!IncludesCombatImpactWeaponDamage(skillType, usesQueuedNaturalWeapon))");
+        ExtractMethod(combatSource, "public static CombatDamageType GetCombatImpactWeaponDamageType")
+            .Should().Contain("IncludesCombatImpactWeaponDamage(skillType, usesQueuedNaturalWeapon)", "the element applies exactly when the DMG does")
+            .And.Contain("WeaponDamage.GetDamageType(GetCombatImpactWeapon(activator, skillType, usesQueuedNaturalWeapon))",
+                "the element comes from the same weapon that supplies the DMG");
+
+        var resolve = ExtractMethod(abilitySource, "private static CombatDamageType ResolveWeaponAbilityDamageType");
+        resolve.Should().Contain("damageType != CombatDamageType.Physical",
+            "like native weapon resolution, an element only replaces Physical");
+        resolve.Should().Contain("!Combat.IncludesCombatImpactWeaponDamage(skillType, usesQueuedNaturalWeapon)");
+        resolve.Should().Contain("trackedImpact?.TriggeringWeaponDamageType");
+        abilitySource.Should().Contain("if (!useUnscaledDamage)", "unscaled impacts add no weapon DMG");
+        abilitySource.Should().Contain("damageType = ResolveWeaponAbilityDamageType(activator, skillType, damageType, trackedImpact);");
+        abilitySource.Should().Contain("trackedImpact.TriggeringWeaponDamageType = WeaponDamage.GetDamageType(triggeringWeapon);");
+        abilitySource.Should().Contain("TriggeringWeaponDamageType = triggeringWeaponDamageType ?? sequenceOwner?.TriggeringWeaponDamageType");
+        Combat.IncludesCombatImpactWeaponDamage(SkillType.Pistol, false).Should().BeTrue();
+        Combat.IncludesCombatImpactWeaponDamage(SkillType.BeastMastery, true).Should().BeTrue("queued natural weapons add their DMG");
+        Combat.IncludesCombatImpactWeaponDamage(SkillType.BeastMastery, false).Should().BeFalse();
+        Combat.IncludesCombatImpactWeaponDamage(SkillType.Force, false).Should().BeFalse();
+    }
+
+    [TestCase(CombatDamageType.Physical, (int)CombatDamageType.Fire, CombatDamageType.Fire)]
+    [TestCase(CombatDamageType.Physical, (int)CombatDamageType.Force, CombatDamageType.Physical)]
+    [TestCase(CombatDamageType.Physical, (int)CombatDamageType.Thermal, CombatDamageType.Physical)]
+    [TestCase(CombatDamageType.Ice, (int)CombatDamageType.Fire, CombatDamageType.Ice)]
+    public void WeaponDamageResolveDamageType_MatchesNativeWeaponResolution(
+        CombatDamageType current,
+        int subtype,
+        CombatDamageType expected)
+    {
+        WeaponDamage.ResolveDamageType(current, subtype).Should().Be(expected);
+    }
+
+    [Test]
     public void QueuedWeaponDamage_UsesTheTriggeringItemAndPreservesReflectionWeaponSelection()
     {
         var root = FindRepositoryRoot();
@@ -310,7 +351,8 @@ public class CombatDamageTests
         System.Text.RegularExpressions.Regex.IsMatch(attackSource,
             @"GetRangedAbilityLongRangeHitChanceAdjustment\(\s*attacker.m_idSelf,\s*defender.m_idSelf,\s*abilitySkillType\)").Should().BeTrue();
         System.Text.RegularExpressions.Regex.IsMatch(attackSource,
-            @"GetQueuedWeaponAbilityActivationHitChanceAdjustment\(\s*attacker.m_idSelf,\s*abilitySkillType\)").Should().BeTrue();
+            @"queuedAbility == null \? 0 : Combat\.GetQueuedWeaponAbilityActivationHitChanceAdjustment\(\s*attacker.m_idSelf,\s*abilitySkillType\)")
+            .Should().BeTrue("ability accuracy must not affect ordinary weapon attacks");
         System.Text.RegularExpressions.Regex.IsMatch(attackSource,
             @"StoreQueuedWeaponAbilityCriticalRateBonus\(\s*attacker.m_idSelf,\s*abilitySkillType,").Should().BeTrue();
         attackSource.Should().Contain("Combat.PrepareAutoAttackCycleCriticalRate(attacker.m_idSelf, weaponSkillType)");
@@ -724,17 +766,21 @@ public class CombatDamageTests
         var impactWeaponDamage = ExtractMethod(combatSource, "public static int GetCombatImpactWeaponDamage");
         var impactWeaponSelection = ExtractMethod(combatSource, "private static uint GetCombatImpactWeapon");
 
+        var queuedNaturalWeapon = ExtractMethod(abilitySource, "private static bool UsesQueuedNaturalWeapon");
+        queuedNaturalWeapon.Should().Contain(
+            "trackedImpact?.Ability?.ActivationType == AbilityActivationType.Weapon");
+        queuedNaturalWeapon.Should().Contain("skillType == SkillType.BeastMastery");
+
         foreach (var damageCalculation in new[] { playerDamage, npcDamage })
         {
-            damageCalculation.Should().Contain(
-                "trackedImpact?.Ability?.ActivationType == AbilityActivationType.Weapon");
-            damageCalculation.Should().Contain("skillType == SkillType.BeastMastery");
+            damageCalculation.Should().Contain("var usesQueuedNaturalWeapon = UsesQueuedNaturalWeapon(trackedImpact, skillType);");
             damageCalculation.Should().Contain("Combat.IsWeaponSkillType(skillType) || usesQueuedNaturalWeapon");
             damageCalculation.Should().Contain(
                 "Combat.GetCombatImpactWeaponDamage(activator, skillType, usesQueuedNaturalWeapon, triggeringWeaponDamage: trackedImpact?.TriggeringWeaponDamage)");
         }
 
-        impactWeaponDamage.Should().Contain(
+        impactWeaponDamage.Should().Contain("IncludesCombatImpactWeaponDamage(skillType, usesQueuedNaturalWeapon)");
+        ExtractMethod(combatSource, "public static bool IncludesCombatImpactWeaponDamage").Should().Contain(
             "usesQueuedNaturalWeapon && skillType == SkillType.BeastMastery");
         impactWeaponSelection.Should().Contain(
             "return GetCreatureNaturalWeapon(activator);");
@@ -769,7 +815,8 @@ public class CombatDamageTests
 
         combatSource.Should().Contain("ApplyTriggeredDamage(defender, attacker, reflectedDamage, damageType);");
         combatSource.Should().Contain("var appliedDamage = ApplyTriggeredDamage(");
-        combatSource.Should().Contain("Enmity.ModifyEnmity(attacker, target, appliedDamage);");
+        combatSource.Should().NotContain("Enmity.ModifyEnmity(attacker, target, appliedDamage);",
+            "triggered damage is credited by the native damage event, once");
         abilitySource.Should().Contain("Combat.ApplyDamageReflectionEffects(activator, target, damage, damageType);");
         abilitySource.Should().NotContain("Combat.ApplyDamageReflectionEffects(activator, target, calculatedDamage, damageType);");
     }
@@ -893,7 +940,6 @@ public class CombatDamageTests
             Path.Combine(root.FullName, "SWLOR.Game.Server", "Feature", "AbilityDefinition", "AbilityEffectScaling.cs"),
             Path.Combine(root.FullName, "SWLOR.Game.Server", "Feature", "AbilityDefinition", "FirstAid", "FirstAidTreatmentAdjustments.cs"),
             Path.Combine(root.FullName, "SWLOR.Game.Server", "Feature", "AbilityDefinition", "FirstAid", "MedKitAbilityDefinition.cs"),
-            Path.Combine(root.FullName, "SWLOR.Game.Server", "Feature", "AbilityDefinition", "Force", "ForceDrainAbilityDefinition.cs"),
             Path.Combine(root.FullName, "SWLOR.Game.Server", "Feature", "AbilityDefinition", "Beastmaster", "InnervateAbilityDefinition.cs"),
             Path.Combine(root.FullName, "SWLOR.Game.Server", "Feature", "AbilityDefinition", "Beastmaster", "RewardAbilityDefinition.cs"),
         };
@@ -911,10 +957,18 @@ public class CombatDamageTests
             "HeavyVibroblade",
             "HeavyVibrobladeActiveAbilityDefinitionBase.cs"));
         heavyVibrobladeSource.Should().Contain("Combat.ApplyDamageDerivedHealing(");
-        heavyVibrobladeSource.Should().Contain("applyCombatReadiness: true");
-        File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Service", "Combat.cs"))
-            .Should()
-            .Contain("Ability.ApplyCombatReadinessToActivatedAbilityMagnitude(creature, amount)");
+        heavyVibrobladeSource.Should().Contain("isActivatedHealing: true");
+        var damageHealing = ExtractMethod(File.ReadAllText(Path.Combine(
+            root.FullName, "SWLOR.Game.Server", "Service", "Combat.cs")),
+            "public static int ApplyDamageDerivedHealing(");
+        damageHealing.Should().NotContain("ApplyCombatReadiness",
+            "damage-derived healing already inherits Combat Readiness through its damage");
+        var forceDrain = File.ReadAllText(Path.Combine(root.FullName,
+            "SWLOR.Game.Server", "Feature", "AbilityDefinition", "Force", "ForceDrainAbilityDefinition.cs"));
+        forceDrain.Should().Contain("Combat.BeginDamageDerivedHealing(activator, target)");
+        forceDrain.Should().Contain("Combat.ApplyDamageDerivedHealing(");
+        forceDrain.Should().NotContain("EffectHeal(");
+        forceDrain.Should().NotContain("ApplyCombatReadinessToActivatedAbilityMagnitude");
 
         var directScaledHealingSources = new[]
         {
@@ -1408,9 +1462,8 @@ public class CombatDamageTests
                 .Select(property => TryGetNestedInt(property, "Subtype", "value", out var subtype) ? subtype : -1)
                 .ToList();
 
-            weaponDamageTypes.Should().Equal(
-                new[] { (int)CombatDamageType.Physical },
-                $"{resref} should not inherit or declare poison damage");
+            weaponDamageTypes.Should().BeEmpty(
+                $"{resref} deals Physical damage by default and should not inherit or declare poison damage");
         }
     }
 
@@ -1685,6 +1738,80 @@ public class CombatDamageTests
         Split2daColumns(itemPropDefLines.First(x => x.StartsWith("134")))
             .Should()
             .Contain(new[] { "16859986", "WeaponDamageType", "iprp_c_dmgtype", "16859986" });
+    }
+
+    [Test]
+    public void WeaponDamageTypeOptions_OnlyOfferElements()
+    {
+        var root = FindRepositoryRoot();
+        var rows = File.ReadAllLines(Path.Combine(root.FullName, "SWLOR_Haks", "sw_2da", "iprp_c_dmgtype.2da"))
+            .Skip(3)
+            .Select(Split2daColumns)
+            .Where(columns => columns.Length >= 3)
+            .ToDictionary(columns => int.Parse(columns[0]), columns => columns[2]);
+
+        rows[(int)CombatDamageType.Physical].Should().Be("****", "an item without a damage type already deals Physical damage");
+        rows[(int)CombatDamageType.Force].Should().Be("****", "Force conversion belongs to Imbuement Stance");
+        rows.Where(row => row.Value != "****").Select(row => (CombatDamageType)row.Key)
+            .Should().OnlyContain(type => type.IsElementalDamageType());
+    }
+
+    [TestCase(CombatDamageType.Physical, CombatDamageType.Physical)]
+    [TestCase(CombatDamageType.Force, CombatDamageType.Physical)]
+    [TestCase(CombatDamageType.Fire, CombatDamageType.Fire)]
+    [TestCase(CombatDamageType.Ice, CombatDamageType.Ice)]
+    public void WeaponDamageTypeProperty_OnlyElementsRetypeWeaponDamage(CombatDamageType subtype, CombatDamageType expected)
+    {
+        var resolve = typeof(SWLOR.Game.Server.Native.GetDamageRoll).GetMethod("ResolveWeaponDamageType",
+            System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Static)!;
+
+        resolve.Invoke(null, new object[] { CombatDamageType.Physical, (int)subtype }).Should().Be(expected);
+    }
+
+    [Test]
+    public void ModuleItems_DoNotCarryRetiredWeaponDamageTypes()
+    {
+        var root = FindRepositoryRoot();
+        var offenders = new List<string>();
+
+        foreach (var folder in new[] { "uti", "utc", "utm", "utp", "git" })
+        foreach (var file in Directory.EnumerateFiles(Path.Combine(root.FullName, "Module", folder), "*.json"))
+        {
+            var text = ReadJsonText(file);
+            if (!text.Contains("\"value\": 134"))
+                continue;
+
+            using var document = JsonDocument.Parse(text);
+            foreach (var property in EnumerateObjects(document.RootElement))
+            {
+                if (TryGetNestedInt(property, "PropertyName", "value", out var name) &&
+                    name == (int)ItemPropertyType.WeaponDamageType &&
+                    TryGetNestedInt(property, "Subtype", "value", out var subtype) &&
+                    subtype is (int)CombatDamageType.Physical or (int)CombatDamageType.Force)
+                {
+                    offenders.Add($"{Path.GetFileName(file)} ({(CombatDamageType)subtype})");
+                }
+            }
+        }
+
+        offenders.Should().BeEmpty("Physical is the default and Force belongs to Imbuement Stance");
+    }
+
+    private static IEnumerable<JsonElement> EnumerateObjects(JsonElement element)
+    {
+        if (element.ValueKind == JsonValueKind.Object)
+        {
+            yield return element;
+            foreach (var child in element.EnumerateObject())
+            foreach (var nested in EnumerateObjects(child.Value))
+                yield return nested;
+        }
+        else if (element.ValueKind == JsonValueKind.Array)
+        {
+            foreach (var child in element.EnumerateArray())
+            foreach (var nested in EnumerateObjects(child))
+                yield return nested;
+        }
     }
 
     [Test]

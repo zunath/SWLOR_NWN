@@ -6,7 +6,7 @@
   },
   "Appearance_Type": {
     "type": "word",
-    "value": 10010
+    "value": 10015
   },
   "ArmorPart_RFoot": {
     "type": "byte",
@@ -126,7 +126,7 @@
   },
   "Comment": {
     "type": "cexostring",
-    "value": "Capstone quest creature for Saber Storm in Dantooine Jedi Enclave Trial Halls."
+    "value": "Saber Storm master in Hutlar - Saber Trial Chamber."
   },
   "Con": {
     "type": "byte",
@@ -142,7 +142,7 @@
   },
   "CurrentHitPoints": {
     "type": "short",
-    "value": 4611
+    "value": 5425
   },
   "DecayTime": {
     "type": "dword",
@@ -155,7 +155,7 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "A level 50 capstone quest enemy for Saber Storm in Dantooine Jedi Enclave Trial Halls."
+      "0": "The tall droid at the heart of the Saber Storm drills, its blade never still. From the Saber Trial Chamber it drives every damaged routine in the halls, and nothing left in its programming tells it to stop."
     }
   },
   "Dex": {
@@ -379,7 +379,7 @@
   "FirstName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Saber Storm Master"
+      "0": "Tempest Training Engine"
     }
   },
   "fortbonus": {
@@ -396,7 +396,7 @@
   },
   "HitPoints": {
     "type": "short",
-    "value": 4503
+    "value": 5317
   },
   "Int": {
     "type": "byte",
@@ -430,7 +430,7 @@
   },
   "MaxHitPoints": {
     "type": "short",
-    "value": 4611
+    "value": 5425
   },
   "NaturalAC": {
     "type": "byte",
@@ -458,11 +458,11 @@
   },
   "PortraitId": {
     "type": "word",
-    "value": 129
+    "value": 229
   },
   "Race": {
     "type": "byte",
-    "value": 15
+    "value": 167
   },
   "refbonus": {
     "type": "short",
@@ -723,7 +723,7 @@
   },
   "SoundSetFile": {
     "type": "word",
-    "value": 448
+    "value": 910
   },
   "SpecAbilityList": {
     "type": "list",
@@ -772,7 +772,7 @@
         },
         "Value": {
           "type": "int",
-          "value": 91
+          "value": 271
         }
       },
       {

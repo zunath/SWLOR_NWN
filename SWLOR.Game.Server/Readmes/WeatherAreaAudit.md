@@ -27,11 +27,11 @@ not an in-client inspection of every tile. See [Weather.md](Weather.md) for depl
 
 | Resource | Area | Flags | Weather policy | Audit note |
 |---|---|---:|---|---|
-| `anc_dsrt_speeder` | Tatooine - Anchorhead - To Mos Eisley | 4 | Scripted: Tatooine |  |
-| `anchor_entreenor` | Tatooine - Anchorhead - North Entrance | 4 | Scripted: Tatooine |  |
-| `anchor_entreesud` | Tatooine - Anchorhead - South Entry | 4 | Scripted: Tatooine |  |
-| `anchor_road_est` | Tatooine - Anchorhead - Sandy Dune Desert - North East | 4 | Scripted: Tatooine |  |
-| `anchor_roche01` | Tatooine - Rocky Pass | 4 | Scripted: Tatooine |  |
+| `anc_dsrt_speeder` | [Prefab] Tatooine - Anchorhead - To Mos Eisley | 4 | Scripted: Tatooine |  |
+| `anchor_entreenor` | [Prefab] Tatooine - Anchorhead - North Entrance | 4 | Scripted: Tatooine |  |
+| `anchor_entreesud` | [Prefab] Tatooine - Anchorhead - South Entry | 4 | Scripted: Tatooine |  |
+| `anchor_road_est` | [Prefab] Tatooine - Anchorhead - Sandy Dune Desert - North East | 4 | Scripted: Tatooine |  |
+| `anchor_roche01` | [Prefab] Tatooine - Rocky Pass | 4 | Scripted: Tatooine |  |
 | `apartment_002` | Small Player Apartment - Style 1 | 1 | Sheltered |  |
 | `apartment_2` | Medium Player Apartment - Style 1 | 1 | Sheltered |  |
 | `apartment_3` | Large Player Apartment - Style 1 | 1 | Sheltered |  |
@@ -146,10 +146,10 @@ not an in-client inspection of every tile. See [Weather.md](Weather.md) for depl
 | `ka_trenchpr1` | [Prefab] Trench Warfare | 0 | Authored native only |  |
 | `ka_vis_mntscrapy` | [Prefab] Scrapyard | 0 | Authored native only |  |
 | `karthviscdun1` | [Prefab] Old Mine | 3 | Sheltered |  |
-| `kash_village` | Kashyyyk - Village | 0 | Scripted: Kashyyyk | Explicit climate override |
-| `kashyyyk_camp` | Kashyyyk - War Camp | 4 | Scripted: Kashyyyk | Explicit climate override |
-| `kashyyykpaths` | Kashyyyk - Forest Paths | 4 | Scripted: Kashyyyk | Explicit climate override |
-| `kashyyykshadow` | Kashyyyk - Shadowlands | 4 | Scripted: Kashyyyk | Explicit climate override |
+| `kash_village` | [Prefab] Kashyyyk - Village | 0 | Scripted: Kashyyyk | Explicit climate override |
+| `kashyyyk_camp` | [Prefab] Kashyyyk - War Camp | 4 | Scripted: Kashyyyk | Explicit climate override |
+| `kashyyykpaths` | [Prefab] Kashyyyk - Forest Paths | 4 | Scripted: Kashyyyk | Explicit climate override |
+| `kashyyykshadow` | [Prefab] Kashyyyk - Shadowlands | 4 | Scripted: Kashyyyk | Explicit climate override |
 | `korr_cavern` | Korriban - Caverns | 3 | Sheltered | Shelter flags corrected |
 | `korr_crypt_zil` | Korriban - Sith Crypt | 3 | Sheltered | Shelter flags corrected |
 | `korr_plains` | Korriban - Dunes | 4 | Scripted: Korriban |  |
@@ -170,11 +170,11 @@ not an in-client inspection of every tile. See [Weather.md](Weather.md) for depl
 | `moncalajungelsu` | Mon Cala - Sharptooth Jungle - South | 0 | Scripted: MonCala |  |
 | `moncalaorbit` | Space - Mon Cala Orbit | 1 | Sheltered |  |
 | `moncalawildjungl` | Mon Cala - Sharptooth Jungle - North | 0 | Scripted: MonCala |  |
-| `moseis_dow_ca001` | Tatooine - Mos Eisley - Docking Bay 94 | 4 | Scripted: Tatooine |  |
-| `moseis_dow_can` | Tatooine - Mos Esper - Dowager Queen | 4 | Scripted: Tatooine |  |
-| `moseis_exit_sud` | Tatooine - Mos Esper - South Entrance | 4 | Scripted: Tatooine |  |
-| `moseis_lucky` | Tatooine - Mos Esper - Cantina Quarter | 4 | Scripted: Tatooine |  |
-| `moseis_sand_001` | Tatooine - Dune Desert | 4 | Scripted: Tatooine |  |
+| `moseis_dow_ca001` | [Prefab] Tatooine - Mos Eisley - Docking Bay 94 | 4 | Scripted: Tatooine |  |
+| `moseis_dow_can` | [Prefab] Tatooine - Mos Esper - Dowager Queen | 4 | Scripted: Tatooine |  |
+| `moseis_exit_sud` | [Prefab] Tatooine - Mos Esper - South Entrance | 4 | Scripted: Tatooine |  |
+| `moseis_lucky` | [Prefab] Tatooine - Mos Esper - Cantina Quarter | 4 | Scripted: Tatooine |  |
+| `moseis_sand_001` | [Prefab] Tatooine - Dune Desert | 4 | Scripted: Tatooine |  |
 | `moseis_sand_003` | Tatooine - Deep Canyon | 4 | Scripted: Tatooine |  |
 | `moseis_sand_004` | Tatooine - Dune Desert | 4 | Scripted: Tatooine |  |
 | `moseis_sand_005` | Tatooine - Dune Desert | 4 | Scripted: Tatooine |  |
@@ -194,12 +194,12 @@ not an in-client inspection of every tile. See [Weather.md](Weather.md) for depl
 | `ns_industrialsec` | [Prefab] Industrial Sector | 0 | Authored native only |  |
 | `ns_prfb_nsinteri` | [Prefab] Nar Shaddaa - Interior | 1 | Sheltered | Shelter flags corrected |
 | `ooc_area` | *Welcome to Star Wars: Legends of the Old Republic! | 1 | Sheltered |  |
-| `ossu_wastesruin` | Ossus - Wastes Ruins | 0 | Scripted: Ossus | Explicit climate override |
-| `ossus_cavefacili` | Ossus - Wastes Cave Facility | 3 | Sheltered | Shelter flags corrected |
-| `ossus_landstart` | Ossus - Landing Pads | 0 | Scripted: Ossus | Explicit climate override |
-| `ossus_tempinisde` | Ossus - Jedi Temple | 3 | Sheltered |  |
-| `ossus_wastejungl` | Ossus - Waste Jungle | 4 | Scripted: Ossus | Explicit climate override |
-| `ossustemp` | Ossus - Ruin Temple | 0 | Scripted: Ossus | Explicit climate override |
+| `ossu_wastesruin` | [Prefab] Ossus - Wastes Ruins | 0 | Scripted: Ossus | Explicit climate override |
+| `ossus_cavefacili` | [Prefab] Ossus - Wastes Cave Facility | 3 | Sheltered | Shelter flags corrected |
+| `ossus_landstart` | [Prefab] Ossus - Landing Pads | 0 | Scripted: Ossus | Explicit climate override |
+| `ossus_tempinisde` | [Prefab] Ossus - Jedi Temple | 3 | Sheltered |  |
+| `ossus_wastejungl` | [Prefab] Ossus - Waste Jungle | 4 | Scripted: Ossus | Explicit climate override |
+| `ossustemp` | [Prefab] Ossus - Ruin Temple | 0 | Scripted: Ossus | Explicit climate override |
 | `player_rnd` | Building Template - Lab Style 1 | 5 | Sheltered |  |
 | `playerap_l_fur` | Large Player Apartment - Style 2 (Furnished) | 1 | Sheltered |  |
 | `playerap_l_unf` | Large Player Apartment - Style 2 (Unfurnished) | 1 | Sheltered |  |
@@ -246,7 +246,7 @@ not an in-client inspection of every tile. See [Weather.md](Weather.md) for depl
 | `pw_ar_gentemp` | [Prefab] Temple, Generic | 1 | Sheltered |  |
 | `pw_ar_indzon_vka` | [Prefab] City, Industrial Sector | 0 | Authored native only |  |
 | `pw_ar_ka_arkania` | [Prefab] Arkania  | 0 | Authored native only |  |
-| `pw_ar_kashyk` | Kashyyyk - Wookie Village, Canopy | 0 | Scripted: Kashyyyk | Explicit climate override |
+| `pw_ar_kashyk` | [Prefab] Kashyyyk - Wookie Village, Canopy | 0 | Scripted: Kashyyyk | Explicit climate override |
 | `pw_ar_narcatwalk` | Smuggler's Moon - Catwalks | 0 | Scripted: SmugglersMoon |  |
 | `pw_ar_nardocks` | Smuggler's Moon - Shipping District | 0 | Scripted: SmugglersMoon |  |
 | `pw_ar_narpromena` | Smuggler's Moon - Promenade | 0 | Scripted: SmugglersMoon |  |
@@ -276,16 +276,16 @@ not an in-client inspection of every tile. See [Weather.md](Weather.md) for depl
 | `pw_sc_aboveland` | [Prefab] Above the Land | 0 | Authored native only |  |
 | `pw_sc_abovewater` | [Prefab] Above the Water | 0 | Authored native only |  |
 | `pw_sc_canyonpit` | Tatooine - Canyon Dueling Pit | 4 | Scripted: Tatooine | Reviewed open-air layout |
-| `pw_sc_dantmedsub` | Dantooine - Medical Sublevel | 7 | Sheltered |  |
-| `pw_sc_dantprowar` | Dantooine - Protected Ward | 3 | Sheltered |  |
+| `pw_sc_dantmedsub` | Mon Cala - Medical Sublevel | 7 | Sheltered |  |
+| `pw_sc_dantprowar` | Mon Cala - Protected Ward | 3 | Sheltered |  |
 | `pw_sc_dath_apexd` | Dathomir - Grotto Apex Den | 7 | Sheltered |  |
 | `pw_sc_dath_sden` | Dathomir - Sealed Apex Den | 7 | Sheltered |  |
 | `pw_sc_emfbackr` | Smuggler's Moon - Fight Club Backrooms | 3 | Sheltered |  |
-| `pw_sc_jeditrial` | Dantooine - Saber Trial Chamber | 1 | Sheltered |  |
-| `pw_sc_korrforge` | Korriban - Champion Forge | 7 | Sheltered |  |
+| `pw_sc_jeditrial` | Hutlar - Saber Trial Chamber | 1 | Sheltered |  |
+| `pw_sc_korrforge` | Tatooine - Champion Forge | 7 | Sheltered |  |
 | `pw_sc_qioncore` | Hutlar - Overload Chamber | 1 | Sheltered |  |
 | `pw_sc_repubcmd` | Viscara - Engineering Command Room | 3 | Sheltered |  |
-| `pw_sc_sithritual` | Korriban - Final Ritual Chamber | 3 | Sheltered |  |
+| `pw_sc_sithritual` | Mon Cala - Final Ritual Chamber | 3 | Sheltered |  |
 | `pw_sc_smarena` | Smuggler's Moon - Private Pit | 3 | Sheltered |  |
 | `pw_sc_tarnalpha` | Dathomir - Alpha Beast Hollow | 4 | Scripted: Dathomir |  |
 | `pw_sc_velescmd` | Viscara - Militia Command Room | 1 | Sheltered |  |
@@ -315,17 +315,17 @@ not an in-client inspection of every tile. See [Weather.md](Weather.md) for depl
 | `ship_mule_z` | Starship - Mule | 1 | Sheltered |  |
 | `ship_panth_z` | Starship - Panther | 1 | Sheltered |  |
 | `ship_saber_z` | Starship - Saber | 1 | Sheltered |  |
-| `ship_secchan_int` | Starship - Second Chance | 1 | Sheltered |  |
+| `ship_secchan_int` | [Prefab] Starship - Second Chance | 1 | Sheltered |  |
 | `ship_strike_z` | Starship - Striker | 1 | Sheltered |  |
 | `ship_throne_z` | Starship - Throne | 1 | Sheltered |  |
-| `shuttle` | Starship Shuttle - Interior | 1 | Sheltered |  |
+| `shuttle` | [Prefab] Starship Shuttle - Interior | 1 | Sheltered |  |
 | `smesks_entry` | Tatooine - Smesk's Entryway | 7 | Sheltered |  |
 | `smesks_palace` | Tatooine - Mos Esper - Smesk's Palace | 1 | Sheltered | Shelter flags corrected |
 | `sol_hutlarqcanyo` | Hutlar - Qion Box Canyon | 4 | Scripted: Hutlar |  |
 | `sol_hutlarqfooth` | Hutlar - Qion Foothills | 4 | Scripted: Hutlar |  |
 | `sol_mandaloriani` | Hutlar - Qion Box Canyon - Fort Ka'ra | 3 | Sheltered |  |
-| `sol_swampsbase` | Viscara - Swamp Base - Interior | 3 | Sheltered |  |
-| `sol_swampstemple` | Viscara - Swamp Base - Temple | 3 | Sheltered |  |
+| `sol_swampsbase` | [Prefab] Viscara - Swamp Base - Interior | 3 | Sheltered |  |
+| `sol_swampstemple` | [Prefab] Viscara - Swamp Base - Temple | 3 | Sheltered |  |
 | `space_dathomir` | Space - Dathomir Orbit | 1 | Sheltered |  |
 | `space_derelict_k` | [Prefab] Derelict Facility | 1 | Sheltered |  |
 | `space_korriban` | Space - Korriban Orbit | 1 | Sheltered |  |
@@ -337,11 +337,11 @@ not an in-client inspection of every tile. See [Weather.md](Weather.md) for depl
 | `starport` | Building Template - Starport Style 1 | 1 | Sheltered |  |
 | `starship1_int` | Starship - Light Freighter 1 | 1 | Sheltered |  |
 | `starship2_int` | Starship - Light Escort 1 | 1 | Sheltered |  |
-| `starship3_int` | Starship - Light Freighter 1 | 1 | Sheltered |  |
-| `starship4_int` | Starship - Heavy Freighter - Interior | 1 | Sheltered |  |
+| `starship3_int` | [Prefab] Starship - Light Freighter 1 | 1 | Sheltered |  |
+| `starship4_int` | [Prefab] Starship - Heavy Freighter - Interior | 1 | Sheltered |  |
 | `tat_anc_aridhill` | Tatooine - Arid Hilly Desert | 4 | Scripted: Tatooine |  |
 | `tat_anc_astropor` | Tatooine - Anchorhead - Spaceport | 4 | Scripted: Tatooine |  |
-| `tat_anc_cantina` | Tatooine - Anchorhead - Cantina | 3 | Sheltered |  |
+| `tat_anc_cantina` | [Prefab] Tatooine - Anchorhead - Cantina | 3 | Sheltered |  |
 | `tat_anc_desroad1` | Tatooine - Desert Road | 4 | Scripted: Tatooine |  |
 | `tat_anc_desroad2` | Tatooine - Desert Road | 4 | Scripted: Tatooine |  |
 | `tat_anc_droidshp` | Tatooine - Anchorhead - Droid Shop | 1 | Sheltered | Shelter flags corrected |
@@ -353,7 +353,7 @@ not an in-client inspection of every tile. See [Weather.md](Weather.md) for depl
 | `tat_anc_medical` | Tatooine - Anchorhead - Medical Center | 1 | Sheltered |  |
 | `tat_anc_nedunes` | Tatooine - North East Dunes | 4 | Scripted: Tatooine |  |
 | `tat_anc_nminecli` | Tatooine - North Mine Cliffs | 4 | Scripted: Tatooine |  |
-| `tat_anc_northdis` | Tatooine - Anchorhead - North District | 4 | Scripted: Tatooine |  |
+| `tat_anc_northdis` | [Prefab] Tatooine - Anchorhead - North District | 4 | Scripted: Tatooine |  |
 | `tat_anc_northhil` | Tatooine - North Hills | 4 | Scripted: Tatooine |  |
 | `tat_anc_nthdunes` | Tatooine - Northern Dunes | 0 | Scripted: Tatooine |  |
 | `tat_anc_rckpass1` | Tatooine - Rocky Pass | 4 | Scripted: Tatooine |  |
@@ -367,23 +367,23 @@ not an in-client inspection of every tile. See [Weather.md](Weather.md) for depl
 | `tat_anc_totoche3` | Tatooine - To Tochee | 4 | Scripted: Tatooine |  |
 | `tat_anc_tuskncmp` | Tatooine - Tusken Camp | 4 | Scripted: Tatooine |  |
 | `tat_anc_tuskntnt` | Tatooine - Tusken Raider Tent | 1 | Sheltered |  |
-| `tat_anc_verpexba` | Tatooine - Anchorhead - Verpex Bazaar | 3 | Sheltered |  |
+| `tat_anc_verpexba` | [Prefab] Tatooine - Anchorhead - Verpex Bazaar | 3 | Sheltered |  |
 | `tat_babysarlacc` | Tatooine - Baby Sarlacc Cave | 7 | Sheltered |  |
 | `tat_brokenjawa` | Tatooine - Broken Down Jawa Machine | 4 | Scripted: Tatooine |  |
 | `tat_chasmpass` | Tatooine - Chasm Pass | 0 | Scripted: Tatooine |  |
 | `tat_elevagiifarm` | Tatooine - Elevagii Farm | 4 | Scripted: Tatooine |  |
-| `tat_rancorcave` | Tatooine - Rancor Cave | 7 | Sheltered |  |
-| `tat_rockypasslge` | Tatooine - Rocky Pass | 4 | Scripted: Tatooine |  |
+| `tat_rancorcave` | [Prefab] Tatooine - Rancor Cave | 7 | Sheltered |  |
+| `tat_rockypasslge` | [Prefab] Tatooine - Rocky Pass | 4 | Scripted: Tatooine |  |
 | `tat_smeskspalace` | Tatooine - Smesk's Palace | 4 | Scripted: Tatooine |  |
 | `tat_tocheemain` | Tatooine - Tochee | 4 | Scripted: Tatooine |  |
-| `tat_tomoseisley1` | Tatooine - To Mos Eisley | 4 | Scripted: Tatooine |  |
+| `tat_tomoseisley1` | [Prefab] Tatooine - To Mos Eisley | 4 | Scripted: Tatooine |  |
 | `tat_tuskcavebot` | Tatooine - Tusken Raider Cave - Bottom Floor | 7 | Sheltered |  |
 | `tat_tuskcavemain` | Tatooine - Tusken Raider Cave - Main Floor | 3 | Sheltered |  |
 | `tat_tuskcavetunn` | Tatooine - Tusken Raider Cave - Tunnels | 7 | Sheltered |  |
 | `tat_wormden` | Tatooine - The Worm Den | 7 | Sheltered |  |
 | `tatooineorbit` | Space - Tatooine Orbit | 1 | Sheltered |  |
-| `tochee_cantina` | Tatooine - Anchorhead - Club d'Ash | 3 | Sheltered |  |
-| `tosche_cantina_s` | Tatooine - Anchorhead - Smuggler's Den | 3 | Sheltered |  |
+| `tochee_cantina` | [Prefab] Tatooine - Anchorhead - Club d'Ash | 3 | Sheltered |  |
+| `tosche_cantina_s` | [Prefab] Tatooine - Anchorhead - Smuggler's Den | 3 | Sheltered |  |
 | `v_cox_base` | Viscara - Coxxion Base | 1 | Sheltered |  |
 | `v_jediforest_cav` | Viscara - Jedi Temple Forest Cave | 7 | Sheltered |  |
 | `v_jeditemple_v2` | Viscara - Jedi Temple Exterior | 4 | Scripted: Viscara |  |
@@ -394,8 +394,8 @@ not an in-client inspection of every tile. See [Weather.md](Weather.md) for depl
 | `v_repubbase_hang` | Viscara - Republic Base - Hangar | 3 | Sheltered |  |
 | `v_repubbase_jnrm` | Viscara - Republic Base - Junior Mess | 1 | Sheltered |  |
 | `v_repubbase_off` | Viscara - Republic Base - Offices | 1 | Sheltered |  |
-| `v_sithlake_int` | Viscara - Sith Lake Outpost | 3 | Sheltered |  |
-| `v_swamp_base` | Viscara - Swamplands - Sith Base | 4 | Scripted: Viscara |  |
+| `v_sithlake_int` | [Prefab] Viscara - Sith Lake Outpost | 3 | Sheltered |  |
+| `v_swamp_base` | [Prefab] Viscara - Swamplands - Sith Base | 4 | Scripted: Viscara |  |
 | `v_swamp_ruins001` | Viscara - Swamplands Ruins | 4 | Scripted: Viscara |  |
 | `v_swamp_undergro` | Viscara - Swamplands Underground | 3 | Sheltered |  |
 | `valkorrdung1a` | Korriban - Sith Fortress, Approach | 4 | Scripted: Korriban |  |
@@ -412,7 +412,7 @@ not an in-client inspection of every tile. See [Weather.md](Weather.md) for depl
 | `veles_shops` | Viscara - Veles - Shops | 1 | Sheltered |  |
 | `velesinterior` | Viscara - Veles - Starport | 1 | Sheltered |  |
 | `velesrestgarden` | Viscara - Rest's Public Gardens | 1 | Sheltered |  |
-| `visc_forcevision` | Force Vision - First Rites | 1 | Sheltered |  |
+| `visc_forcevision` | [Prefab] Force Vision - First Rites | 1 | Sheltered |  |
 | `visc_sewer_depth` | Viscara - Veles - Sewers Depths | 3 | Sheltered |  |
 | `viscara_archive` | [Prefab] Czerka Archives | 3 | Sheltered |  |
 | `viscara_cave_2ka` | [Prefab] Overgrown Caves | 7 | Sheltered |  |

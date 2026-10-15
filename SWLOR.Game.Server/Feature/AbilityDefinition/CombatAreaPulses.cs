@@ -1,3 +1,4 @@
+using SWLOR.Game.Server.Core;
 using System;
 using System.Collections.Generic;
 using SWLOR.Game.Server.Service;
@@ -43,9 +44,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
             if (durationSeconds <= 0f || intervalSeconds <= 0f || pulseAction == null)
                 return;
 
-            for (var elapsed = intervalSeconds; elapsed <= durationSeconds + 0.01f; elapsed += intervalSeconds)
+            foreach (var pulseDelay in GetPulseDelays(durationSeconds, intervalSeconds))
             {
-                var pulseDelay = elapsed;
                 DelayCommand(pulseDelay, () =>
                 {
                     if (!GetIsObjectValid(activator) || GetCurrentHitPoints(activator) <= 0)
@@ -60,6 +60,30 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
             }
         }
 
+        public static IEnumerable<float> GetPulseDelays(float durationSeconds, float intervalSeconds)
+        {
+            ValidatePulseTiming(durationSeconds, intervalSeconds);
+            var count = checked((int)Math.Floor(((double)durationSeconds + 0.01d) / intervalSeconds));
+            for (var pulse = 0; pulse < count; pulse++)
+                yield return (float)((pulse + 1d) * intervalSeconds);
+        }
+
+        public static IEnumerable<float> GetRefreshPulseDelays(float durationSeconds, float intervalSeconds)
+        {
+            ValidatePulseTiming(durationSeconds, intervalSeconds);
+            // Refresh zones immediately and strictly before expiry, preserving the existing tolerance.
+            var count = checked((int)Math.Ceiling(((double)durationSeconds - 0.01d) / intervalSeconds));
+            for (var pulse = 0; pulse < count; pulse++)
+                yield return (float)(pulse * (double)intervalSeconds);
+        }
+
+        private static void ValidatePulseTiming(float durationSeconds, float intervalSeconds)
+        {
+            if (!float.IsFinite(durationSeconds) || !float.IsFinite(intervalSeconds) ||
+                durationSeconds <= 0f || intervalSeconds <= 0f)
+                throw new ArgumentOutOfRangeException(nameof(durationSeconds), "Pulse duration and interval must be finite and positive.");
+        }
+
         public static void ApplyCombatPulse(
             uint activator,
             Location location,
@@ -72,7 +96,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
             VisualEffect targetVisualEffect = VisualEffect.None,
             VisualEffect areaVisualEffect = VisualEffect.None,
             bool alwaysApplyAreaVisualEffect = true,
-            Action<uint> afterSuccessfulHit = null)
+            Action<uint> afterSuccessfulHit = null,
+            AbilityType combatImpactDamageAbility = AbilityType.Invalid)
         {
             Ability.ApplyTelegraphedCombatImpact(
                 activator,
@@ -89,7 +114,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                 targetVisualEffect: targetVisualEffect,
                 areaVisualEffect: areaVisualEffect,
                 alwaysApplyAreaVisualEffect: alwaysApplyAreaVisualEffect,
-                afterSuccessfulHit: afterSuccessfulHit);
+                afterSuccessfulHit: afterSuccessfulHit,
+                combatImpactDamageAbility: combatImpactDamageAbility);
         }
 
         public static int CountHostileCreatures(uint activator, Location location, float radius)
@@ -108,9 +134,11 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
             if (!GetIsObjectValid(activator) || !GetIsObjectValid(GetAreaFromLocation(location)))
                 yield break;
 
-            var creature = GetFirstObjectInShape(Shape.Sphere, radius, location, true);
-            while (GetIsObjectValid(creature))
+            foreach (var creature in ObjectSnapshot.InShape(Shape.Sphere, radius, location, true))
             {
+                if (!GetIsObjectValid(creature))
+                    continue;
+
                 if (GetCurrentHitPoints(creature) > 0 &&
                     !GetIsDead(creature) &&
                     GetIsReactionTypeHostile(creature, activator))
@@ -118,7 +146,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                     yield return creature;
                 }
 
-                creature = GetNextObjectInShape(Shape.Sphere, radius, location, true);
             }
         }
     }

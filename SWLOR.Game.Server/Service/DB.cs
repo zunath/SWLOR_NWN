@@ -1,4 +1,6 @@
+using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Reflection;
 using System.Threading;
@@ -11,6 +13,7 @@ using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Extension;
 using SWLOR.Game.Server.Service.DBService;
+using SWLOR.Game.Server.Service.FrameProfilerService;
 
 namespace SWLOR.Game.Server.Service
 {
@@ -29,12 +32,39 @@ namespace SWLOR.Game.Server.Service
             }
         }
 
+        /// <summary>
+        /// Updates one unindexed property without deserializing legacy fields in the entity.
+        /// </summary>
+        internal static void SetUnindexedJsonProperty<T>(string id, string propertyName, string json)
+            where T : EntityBase
+        {
+            var property = typeof(T).GetProperty(propertyName);
+            if (property == null || property.GetCustomAttribute<IndexedAttribute>() != null)
+                throw new ArgumentException("A declared, unindexed entity property is required.", nameof(propertyName));
+
+            RecordWrite(typeof(T));
+            var key = $"{_keyPrefixByType[typeof(T)]}:{id}";
+            _jsonAcrossFrames.Remove(key);
+            var profile = FrameProfiler.Start();
+            var result = _multiplexer.GetDatabase().JsonSet(key,
+                json, path: $".{propertyName}", setOption: SetOption.SetOnlyIfExists);
+            FrameProfiler.Stop(FrameMetric.DBOther, profile, FrameProfiler.Utf8Bytes(json));
+            if (!result.IsSuccess)
+                throw new InvalidOperationException($"Could not update {typeof(T).Name} {id}.{propertyName}.");
+            _cachedEntities.Remove(id);
+        }
+
         private static ApplicationSettings _appSettings;
         private static readonly Dictionary<Type, string> _keyPrefixByType = new();
         private static readonly Dictionary<Type, Client> _searchClientsByType = new();
         private static readonly Dictionary<Type, List<string>> _indexedPropertiesByName = new();
         private static ConnectionMultiplexer _multiplexer;
         private static readonly Dictionary<string, EntityBase> _cachedEntities = new();
+        private static readonly ConcurrentDictionary<Type, long> _writeVersionsByType = new();
+        private const int MaxJsonAcrossFrames = 2000;
+        // Redis key -> stored JSON for types marked JsonCachedAcrossFrames. Kept current by Set, Delete and partial writes.
+        private static readonly Dictionary<string, string> _jsonAcrossFrames = new();
+        private static readonly HashSet<Type> _jsonCachedTypes = new();
 
         static DB()
         {
@@ -57,11 +87,7 @@ namespace SWLOR.Game.Server.Service
             _multiplexer = ConnectionMultiplexer.Connect(options);
 
             Console.WriteLine($"Waiting for database connection. If this takes longer than 10 minutes, there's a problem.");
-            while (!_multiplexer.IsConnected)
-            {
-                // Spin
-                Thread.Sleep(100);
-            }
+            DBStartupWait.Until(() => _multiplexer.IsConnected, "database connection", TimeSpan.FromMinutes(10));
             Console.WriteLine($"Database connection established.");
 
             LoadEntities();
@@ -106,14 +132,117 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>
-        /// Processes the Redis Search index with the latest changes.
+        /// Makes sure the entity's search index matches the current schema. The index is only rebuilt
+        /// when its definition changed or the live index is not the one this code creates.
         /// </summary>
         /// <param name="entity"></param>
         private static void ProcessIndex(EntityBase entity)
         {
             var type = entity.GetType();
+            var indexedProperties = type.GetProperties()
+                .Where(prop => prop.GetCustomAttribute(typeof(IndexedAttribute)) != null)
+                .ToList();
 
-            // Drop any existing index
+            // Cache the indexed properties for quick look-up later.
+            _indexedPropertiesByName[type] = indexedProperties.Select(prop => prop.Name).ToList();
+
+            var createArgs = SearchIndexDefinition.BuildCreateArgs(
+                type.Name,
+                _keyPrefixByType[type],
+                indexedProperties.Select(prop => (prop.Name, SearchIndexDefinition.IsNumeric(prop.PropertyType))));
+            var fingerprint = SearchIndexDefinition.Fingerprint(createArgs);
+
+            if (IsIndexCurrent(type, fingerprint))
+            {
+                Console.WriteLine($"Index for {type} is current");
+                WaitForReindexing(type);
+                return;
+            }
+
+            DropIndex(type);
+            _multiplexer.GetDatabase().Execute("FT.CREATE", createArgs.ToArray());
+            Console.WriteLine($"Created index for {type}");
+            WaitForReindexing(type);
+            SyncIndexEntries(type);
+
+            // Stored last so an interrupted rebuild runs again on the next boot.
+            _multiplexer.GetDatabase().StringSet(SearchIndexDefinition.FingerprintKey(type.Name), fingerprint);
+        }
+
+        private static bool IsIndexCurrent(Type type, string fingerprint)
+        {
+            // The stored fingerprint is written only after a rebuild finishes its resync.
+            var stored = _multiplexer.GetDatabase().StringGet(SearchIndexDefinition.FingerprintKey(type.Name));
+            if (stored != fingerprint)
+                return false;
+
+            // Another build (for example a rollback) can recreate the live index without updating the stored fingerprint.
+            return GetLiveIndexFingerprint(type.Name) == fingerprint;
+        }
+
+        /// <summary>
+        /// Describes the live index from FT.INFO in the same form as the fingerprint, or returns null
+        /// when the index is missing, uses options this code never sets, or cannot be read.
+        /// </summary>
+        private static string GetLiveIndexFingerprint(string indexName)
+        {
+            try
+            {
+                var info = (RedisResult[])_multiplexer.GetDatabase().Execute("FT.INFO", indexName);
+                string keyType = null;
+                List<string> prefixes = null;
+                List<string> stopWords = null;
+                var fields = new List<(string Name, string Type)>();
+
+                for (var i = 0; i + 1 < info.Length; i += 2)
+                {
+                    switch ((string)info[i])
+                    {
+                        case "index_options":
+                            if (((RedisResult[])info[i + 1]).Length > 0)
+                                return null;
+                            break;
+                        case "index_definition":
+                            var definition = (RedisResult[])info[i + 1];
+                            for (var j = 0; j + 1 < definition.Length; j += 2)
+                            {
+                                if ((string)definition[j] == "key_type")
+                                    keyType = (string)definition[j + 1];
+                                else if ((string)definition[j] == "prefixes")
+                                    prefixes = ((RedisResult[])definition[j + 1]).Select(prefix => (string)prefix).ToList();
+                            }
+                            break;
+                        case "attributes":
+                            foreach (RedisResult[] attribute in (RedisResult[])info[i + 1])
+                            {
+                                var tokens = attribute.Select(token => (string)token).ToList();
+                                if (!SearchIndexDefinition.TryReadLiveField(tokens, out var field))
+                                    return null;
+                                fields.Add(field);
+                            }
+                            break;
+                        case "stopwords_list":
+                            stopWords = ((RedisResult[])info[i + 1]).Select(word => (string)word).ToList();
+                            break;
+                    }
+                }
+
+                if (keyType == null || prefixes == null)
+                    return null;
+
+                return SearchIndexDefinition.Fingerprint(
+                    SearchIndexDefinition.DescribeLiveIndex(indexName, keyType, prefixes, stopWords, fields));
+            }
+            catch (Exception ex)
+            {
+                if (!ex.Message.Contains("Unknown Index name", StringComparison.InvariantCultureIgnoreCase))
+                    Console.WriteLine($"Could not read index {indexName}. Exception: {ex.ToMessageAndCompleteStacktrace()}");
+                return null;
+            }
+        }
+
+        private static void DropIndex(Type type)
+        {
             try
             {
                 // FT.DROPINDEX is used here in lieu of DropIndex() as it does not cause all documents to be lost.
@@ -130,68 +259,132 @@ namespace SWLOR.Game.Server.Service
                 {
                     Console.WriteLine($"Issue dropping index for type {type}. Exception: {ex.ToMessageAndCompleteStacktrace()}");
                 }
-
             }
+        }
 
-            // Build the schema based on the IndexedAttribute associated to properties.
-            var schema = new Schema();
-            var indexedProperties = new List<string>();
+        /// <summary>
+        /// Rewrites search hashes from the stored records so they hold every currently indexed field,
+        /// and removes search hashes whose record no longer exists.
+        /// </summary>
+        private static void SyncIndexEntries(Type type)
+        {
+            var db = _multiplexer.GetDatabase();
+            var client = _searchClientsByType[type];
+            var keyPrefix = _keyPrefixByType[type];
+            var indexKeyPrefix = SearchIndexDefinition.KeyPrefix(keyPrefix);
+            var records = 0;
+            var added = 0;
+            var updated = 0;
+            var removed = 0;
+            var unreadable = 0;
 
-            foreach (var prop in type.GetProperties())
+            foreach (var batch in ScanKeys($"{keyPrefix}:*").Chunk(500))
             {
-                var attribute = prop.GetCustomAttribute(typeof(IndexedAttribute));
-                if (attribute != null)
+                var jsonReads = batch.Select(key => db.ExecuteAsync("JSON.GET", key)).ToArray();
+                var entryReads = batch.Select(key => db.HashGetAllAsync(indexKeyPrefix + key.Substring(keyPrefix.Length + 1))).ToArray();
+
+                for (var index = 0; index < batch.Length; index++)
                 {
-                    if (prop.PropertyType == typeof(int) ||
-                        prop.PropertyType == typeof(int?) ||
-                        prop.PropertyType == typeof(ulong) ||
-                        prop.PropertyType == typeof(ulong?) ||
-                        prop.PropertyType == typeof(long) ||
-                        prop.PropertyType == typeof(long?))
+                    string json;
+                    try
                     {
-                        schema.AddNumericField(prop.Name);
+                        var result = jsonReads[index].Result;
+                        if (result.IsNull)
+                            continue;
+                        json = result.ToString();
                     }
+                    catch (Exception)
+                    {
+                        // Not a JSON record (another key family sharing the prefix).
+                        continue;
+                    }
+
+                    records++;
+                    var indexKey = indexKeyPrefix + batch[index].Substring(keyPrefix.Length + 1);
+                    Dictionary<string, RedisValue> expected;
+                    try
+                    {
+                        expected = BuildIndexData(type, (EntityBase)JsonConvert.DeserializeObject(json, type));
+                    }
+                    catch (Exception ex)
+                    {
+                        unreadable++;
+                        Console.WriteLine($"Could not rebuild search entry {indexKey}. Exception: {ex.ToMessageAndCompleteStacktrace()}");
+                        continue;
+                    }
+
+                    var existing = entryReads[index].Result;
+                    if (EntryMatches(existing, expected))
+                        continue;
+
+                    client.ReplaceDocument(indexKey, expected);
+                    if (existing.Length == 0)
+                        added++;
                     else
-                    {
-                        schema.AddTextField(prop.Name);
-                    }
-
-                    indexedProperties.Add(prop.Name);
+                        updated++;
                 }
-
             }
 
-            // Cache the indexed properties for quick look-up later.
-            _indexedPropertiesByName[type] = indexedProperties;
+            foreach (var batch in ScanKeys(indexKeyPrefix + "*").Chunk(500))
+            {
+                var recordChecks = batch.Select(key => db.KeyExistsAsync(key.Substring("Index:".Length))).ToArray();
+                for (var index = 0; index < batch.Length; index++)
+                {
+                    if (recordChecks[index].Result)
+                        continue;
 
-            _searchClientsByType[type].CreateIndex(schema, new Client.ConfiguredIndexOptions());
-            Console.WriteLine($"Created index for {type}");
-            WaitForReindexing(type);
+                    client.DeleteDocument(batch[index]);
+                    removed++;
+                }
+            }
+
+            Console.WriteLine($"Synced search entries for {type}: {records} records, {added} added, {updated} updated, {removed} orphans removed, {unreadable} unreadable.");
+        }
+
+        private static bool EntryMatches(HashEntry[] existing, Dictionary<string, RedisValue> expected)
+        {
+            if (existing.Length != expected.Count)
+                return false;
+
+            return existing.All(entry =>
+                expected.TryGetValue(entry.Name, out var value) &&
+                value.ToString() == entry.Value.ToString());
+        }
+
+        private static IEnumerable<string> ScanKeys(string pattern)
+        {
+            var cursor = "0";
+            do
+            {
+                var result = (RedisResult[])_multiplexer.GetDatabase().Execute("SCAN", cursor, "MATCH", pattern, "COUNT", "1000");
+                cursor = (string)result[0];
+                foreach (var key in (RedisResult[])result[1])
+                {
+                    yield return (string)key;
+                }
+            } while (cursor != "0");
         }
 
         private static void WaitForReindexing(Type type)
         {
-            string indexing;
-
             Console.WriteLine($"Waiting for Redis to complete indexing of: {type}");
-            do
+            DBStartupWait.Until(() =>
             {
-                Thread.Sleep(100);
-
                 try
                 {
                     // If there is a lot of data or the machine is slow, this command can time out.
                     // Ignore when this happens and retry the command in 100ms.
                     var info = _searchClientsByType[type].GetInfo();
-                    indexing = info["percent_indexed"];
+                    return double.TryParse(info["percent_indexed"], NumberStyles.Float,
+                        CultureInfo.InvariantCulture, out var indexed) && indexed >= 1d;
                 }
                 catch (Exception ex)
                 {
-                    indexing = "0";
                     Console.WriteLine($"Error during indexing: {ex.ToMessageAndCompleteStacktrace()}");
+                    return false;
                 }
 
-            } while (indexing != "1");
+            }, $"Redis index {type.Name}", TimeSpan.FromMinutes(10));
         }
 
         /// <summary>
@@ -211,6 +404,8 @@ namespace SWLOR.Game.Server.Service
                 var type = entity.GetType();
                 // Register the type by itself first.
                 _keyPrefixByType[type] = type.Name;
+                if (type.GetCustomAttribute<JsonCachedAcrossFramesAttribute>() != null)
+                    _jsonCachedTypes.Add(type);
 
                 // Register the search client.
                 _searchClientsByType[type] = new Client(type.Name, _multiplexer.GetDatabase());
@@ -228,11 +423,56 @@ namespace SWLOR.Game.Server.Service
         public static void Set<T>(T entity)
             where T : EntityBase
         {
+            var profile = FrameProfiler.Start();
             var type = typeof(T);
+            RecordWrite(type);
             var data = JsonConvert.SerializeObject(entity);
 
             var keyPrefix = _keyPrefixByType[type];
-            var indexKey = $"Index:{keyPrefix}:{entity.Id}";
+            var key = $"{keyPrefix}:{entity.Id}";
+            _jsonAcrossFrames.Remove(key);
+            var indexKey = SearchIndexDefinition.KeyPrefix(keyPrefix) + entity.Id;
+            var indexData = BuildIndexData(type, entity);
+            // Both commands go out on the same connection in this order, so the main thread waits for one round trip instead of two.
+            var indexWrite = _searchClientsByType[type].ReplaceDocumentAsync(indexKey, indexData);
+            var jsonWrite = _multiplexer.GetDatabase().JsonSetAsync(key, data);
+            indexWrite.GetAwaiter().GetResult();
+            jsonWrite.GetAwaiter().GetResult();
+            _cachedEntities[entity.Id] = entity;
+            if (_jsonCachedTypes.Contains(type))
+                RememberJson(key, data);
+            FrameProfiler.Stop(FrameMetric.DBSet, profile, FrameProfiler.Utf8Bytes(data));
+        }
+
+        /// <summary>
+        /// Increases on every Set, Delete, and partial write of the entity type. Services can keep data
+        /// derived from that type across frames and discard it when the version changes.
+        /// </summary>
+        public static long GetWriteVersion<T>()
+            where T : EntityBase
+        {
+            return _writeVersionsByType.TryGetValue(typeof(T), out var version) ? version : 0;
+        }
+
+        // Recorded before the write so a failed write still invalidates derived data.
+        private static void RecordWrite(Type type)
+        {
+            _writeVersionsByType.AddOrUpdate(type, 1, (_, version) => version + 1);
+        }
+
+        private static void RememberJson(string key, string json)
+        {
+            if (_jsonAcrossFrames.Count >= MaxJsonAcrossFrames && !_jsonAcrossFrames.ContainsKey(key))
+                _jsonAcrossFrames.Clear();
+
+            _jsonAcrossFrames[key] = json;
+        }
+
+        /// <summary>
+        /// Builds the search hash fields for an entity. Used by Set and by the index sync so both write identical entries.
+        /// </summary>
+        private static Dictionary<string, RedisValue> BuildIndexData(Type type, EntityBase entity)
+        {
             var indexData = new Dictionary<string, RedisValue>();
 
             foreach (var prop in _indexedPropertiesByName[type])
@@ -259,9 +499,8 @@ namespace SWLOR.Game.Server.Service
                     indexData[prop] = (dynamic)value;
                 }
             }
-            _searchClientsByType[type].ReplaceDocument(indexKey, indexData);
-            _multiplexer.GetDatabase().JsonSet($"{keyPrefix}:{entity.Id}", data);
-            _cachedEntities[entity.Id] = entity;
+
+            return indexData;
         }
 
         /// <summary>
@@ -276,17 +515,36 @@ namespace SWLOR.Game.Server.Service
             var keyPrefix = _keyPrefixByType[typeof(T)];
             if (_cachedEntities.ContainsKey(id))
             {
+                FrameProfiler.Count(FrameMetric.DBGetCached);
                 return (T)_cachedEntities[id];
             }
             else
             {
-                RedisValue data = _multiplexer.GetDatabase().JsonGet($"{keyPrefix}:{id}").ToString();
+                var profile = FrameProfiler.Start();
+                var key = $"{keyPrefix}:{id}";
+                var cachesJson = _jsonCachedTypes.Contains(typeof(T));
+                var metric = FrameMetric.DBGetJsonCached;
+                if (!cachesJson || !_jsonAcrossFrames.TryGetValue(key, out var data))
+                {
+                    metric = FrameMetric.DBGet;
+                    data = _multiplexer.GetDatabase().JsonGet(key).ToString();
 
-                if (string.IsNullOrWhiteSpace(data))
-                    return default;
+                    if (string.IsNullOrWhiteSpace(data))
+                    {
+                        FrameProfiler.Stop(FrameMetric.DBGet, profile);
+                        return default;
+                    }
 
+                    if (cachesJson)
+                        RememberJson(key, data);
+                }
+
+                // A fresh instance every frame: unsaved changes to an instance never outlive the frame.
+                var deserializeProfile = FrameProfiler.Start();
                 var entity = JsonConvert.DeserializeObject<T>(data);
+                FrameProfiler.Stop(FrameMetric.DBDeserialize, deserializeProfile);
                 _cachedEntities[id] = entity;
+                FrameProfiler.Stop(metric, profile, FrameProfiler.Utf8Bytes(data));
 
                 return entity;
             }
@@ -302,7 +560,9 @@ namespace SWLOR.Game.Server.Service
         public static string GetRawJson<T>(string id)
         {
             var keyPrefix = _keyPrefixByType[typeof(T)];
+            var profile = FrameProfiler.Start();
             RedisValue data = _multiplexer.GetDatabase().JsonGet($"{keyPrefix}:{id}").ToString();
+            FrameProfiler.Stop(FrameMetric.DBOther, profile, FrameProfiler.Utf8Bytes(data));
 
             if (string.IsNullOrWhiteSpace(data))
                 return string.Empty;
@@ -322,8 +582,11 @@ namespace SWLOR.Game.Server.Service
             var keyPrefix = _keyPrefixByType[typeof(T)];
             if (_cachedEntities.ContainsKey(id))
                 return true;
-            else
-                return _multiplexer.GetDatabase().KeyExists($"{keyPrefix}:{id}");
+
+            var profile = FrameProfiler.Start();
+            var exists = _multiplexer.GetDatabase().KeyExists($"{keyPrefix}:{id}");
+            FrameProfiler.Stop(FrameMetric.DBOther, profile);
+            return exists;
         }
 
         /// <summary>
@@ -335,9 +598,13 @@ namespace SWLOR.Game.Server.Service
             where T: EntityBase
         {
             var keyPrefix = _keyPrefixByType[typeof(T)];
-            var indexKey = $"Index:{keyPrefix}:{id}";
+            var indexKey = SearchIndexDefinition.KeyPrefix(keyPrefix) + id;
+            RecordWrite(typeof(T));
+            _jsonAcrossFrames.Remove($"{keyPrefix}:{id}");
+            var profile = FrameProfiler.Start();
             _searchClientsByType[typeof(T)].DeleteDocument(indexKey);
             _multiplexer.GetDatabase().JsonDelete($"{keyPrefix}:{id}");
+            FrameProfiler.Stop(FrameMetric.DBOther, profile);
             _cachedEntities.Remove(id);
         }
 
@@ -378,7 +645,10 @@ namespace SWLOR.Game.Server.Service
             {
                 // Remove the 'Index:' prefix.
                 var recordId = doc.Id.Remove(0, 6);
-                yield return _multiplexer.GetDatabase().JsonGet<T>(recordId);
+                var profile = FrameProfiler.Start();
+                var entity = _multiplexer.GetDatabase().JsonGet<T>(recordId);
+                FrameProfiler.Stop(FrameMetric.DBSearchDocument, profile);
+                yield return entity;
             }
         }
 
@@ -397,7 +667,10 @@ namespace SWLOR.Game.Server.Service
             {
                 // Remove the 'Index:' prefix.
                 var recordId = doc.Id.Remove(0, 6);
-                yield return _multiplexer.GetDatabase().JsonGet(recordId).ToString();
+                var profile = FrameProfiler.Start();
+                var json = _multiplexer.GetDatabase().JsonGet(recordId).ToString();
+                FrameProfiler.Stop(FrameMetric.DBSearchDocument, profile, FrameProfiler.Utf8Bytes(json));
+                yield return json;
             }
         }
 
@@ -421,8 +694,20 @@ namespace SWLOR.Game.Server.Service
         {
             var client = _searchClientsByType[typeof(T)];
             var searchQuery = query.BuildQuery(countsOnly);
-            // Retry the read itself, never the caller's settlement/refund workflow or its writes.
-            return DBSearchRetry.Execute(() => client.Search(searchQuery), typeof(T).Name);
+            var profile = FrameProfiler.Start();
+            try
+            {
+                // Retry the read itself, never the caller's settlement/refund workflow or its writes.
+                return DBSearchRetry.Execute(() => client.Search(searchQuery), typeof(T).Name, delayMilliseconds =>
+                {
+                    FrameProfiler.Count(FrameMetric.DBSearchRetry);
+                    Thread.Sleep(delayMilliseconds);
+                });
+            }
+            finally
+            {
+                FrameProfiler.Stop(FrameMetric.DBSearch, profile);
+            }
         }
     }
 }

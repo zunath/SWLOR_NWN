@@ -351,7 +351,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                         new ArticleBlock("Your Public Description",
                             "An unrecognized player character appears as a gray public description. Use /name <description> on yourself to set the gray text shown to players who have not saved a label for your current identity. This does not change your real character name. Labels and public descriptions are limited to 64 characters and cannot include color codes."),
                         new ArticleBlock("Introducing Yourself",
-                            "Use /introduce <name> to offer a name or alias to players within 20 meters who can see you. They receive a chat notice and can use /introductions to Remember or Dismiss it. Nothing is saved without their approval, and replacing an existing private label requires confirmation. Introductions belong to your current identity, expire after 10 minutes, and become unavailable if you disconnect or change identity. The command has a 5-minute cooldown that persists across reconnects. Repeating a pending name does not send another notice."),
+                            "Use /introduce <name> to offer a name or alias to players within 20 meters who can see you. They receive a chat notice and can use /introductions to Remember or Dismiss it. Nothing is saved without their approval, and replacing an existing private label requires confirmation. Introductions belong to your current identity, expire after 10 minutes, and become unavailable if you disconnect or change identity. The command has a 2-minute cooldown that persists across reconnects. Repeating a pending name does not send another notice."),
                         new ArticleBlock("Example",
                             "A masked character uses the public description 'Tall Armored Human.' Mira saves the private label 'Red Coat,' so only Mira sees Red Coat. Jax has not saved a label, so Jax still sees Tall Armored Human in gray. Neither player renamed the masked character. If the mask is a disguise, labels saved for the character's normal identity remain separate."),
                         new ArticleBlock("Emotes and Languages",
@@ -359,7 +359,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                         new ArticleBlock("OOC and Speech Restrictions",
                             "Text after // or (( is treated as out-of-character and is not translated through the language system. Dead characters cannot speak, and the Shout channel remains staff-only."),
                         new ArticleBlock("Useful Chat Commands",
-                            "Use /introduce <name> to offer a name or alias to nearby players, and /introductions to review names offered to you. /introduce has a 5-minute cooldown. Use /help to browse commands, /dice to open the dice bag, /bug to report a problem, /resetwindows to restore window positions, and /stuck only as an emergency escape when trapped on a map. /stuck has a 30 minute cooldown.")
+                            "Use /introduce <name> to offer a name or alias to nearby players, and /introductions to review names offered to you. /introduce has a 2-minute cooldown. Use /help to browse commands, /dice to open the dice bag, /bug to report a problem, /resetwindows to restore window positions, and /stuck only as an emergency escape when trapped on a map. /stuck has a 30 minute cooldown.")
                     },
                     new[]
                     {
@@ -369,7 +369,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                         new QuestionAnswer("Can another player rename my character?", "No. They can only save a private label visible to their own character."),
                         new QuestionAnswer("Can two players see different names for the same character?", "Yes. Each character keeps their own private labels."),
                         new QuestionAnswer("Does /name reveal someone's real identity?", "No. It records what your character believes or calls the currently presented identity."),
-                        new QuestionAnswer("How do introductions work?", "Use /introduce <name> to offer a name or alias to players within 20 meters who can see you. It has a 5-minute cooldown that persists across reconnects. Recipients use /introductions to choose Remember or Dismiss. Replacing an existing private label requires confirmation; ignoring or dismissing the offer changes nothing. An introduction does not prove the name is true."),
+                        new QuestionAnswer("How do introductions work?", "Use /introduce <name> to offer a name or alias to players within 20 meters who can see you. It has a 2-minute cooldown that persists across reconnects. Recipients use /introductions to choose Remember or Dismiss. Replacing an existing private label requires confirmation; ignoring or dismissing the offer changes nothing. An introduction does not prove the name is true."),
                         new QuestionAnswer("How do I label another player?", "Type /name <label>, then click that player character. Use /forgetname and click them again to remove only your private label. Target yourself with /name to set your gray public description."),
                         new QuestionAnswer("How do I change languages?", "Use /language help, then /language <alias>. Wookiees remain in Shyriiwook."),
                         new QuestionAnswer("How do languages improve?", "Listening to partially understood non-Basic speech can grant language XP over time."),
@@ -395,7 +395,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                         new ArticleBlock("XP Debt",
                             "XP debt is paid first. If earned XP is less than your debt, all of that XP removes debt and none goes to the skill."),
                         new ArticleBlock("Roleplay XP",
-                            "Qualifying in-character Talk, Whisper, and Comms around other players builds toward automatic RP XP awards. OOC text does not count and can reset the current buildup. Social and citizen Cantina upgrades improve the award. Available RP XP can be distributed to eligible skills from the Skills window or spent in the Training Store.")
+                            "Qualifying in-character Talk, Whisper, and Comms around other players builds toward automatic RP XP awards. OOC text does not count. Social and citizen Cantina upgrades improve the award. Available RP XP can be distributed to eligible skills from the Skills window or spent in the Training Store.")
                     },
                     new[]
                     {
@@ -471,13 +471,13 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                         new ArticleBlock("How Affinity Changes",
                             "Owning any rank of a Light-aligned perk contributes +1 Light affinity. Owning any rank of a Dark-aligned perk contributes -1 Dark affinity. Additional ranks of the same perk do not contribute additional affinity. Refunding the perk removes its contribution. Universal Force perks do not change affinity."),
                         new ArticleBlock("Magnitude",
-                            "Each point toward a power's side increases that power's damage, healing, shields, regeneration, or drain magnitude by 5 percent. Each point toward the opposing side reduces it by 5 percent. The multiplier is limited to 50 percent at full opposition and 150 percent at full alignment."),
+                            "Each point toward a power's side increases that power's damage, healing, shields, regeneration, or drain magnitude by 5 percent. Each point toward the opposing side reduces it by 5 percent. The multiplier is limited to 50 percent at full opposition and 150 percent at full alignment. Healing, shields, and regeneration stop at 125 percent, so alignment past +5 no longer raises them."),
                         new ArticleBlock("Hit Chance",
                             "Affinity also changes the hit chance of detrimental Light and Dark Force powers. Divide affinity toward the power's side by two and round down to a whole percentage point: +3 matching affinity grants +1 percentage point, while 3 points toward the opposing side applies -2 percentage points. At +10 Light, Light powers gain +5% hit chance and Dark powers suffer -5%. At -10 Dark, Dark powers gain +5% and Light powers suffer -5%. These are percentage-point adjustments: a 70% chance with a +5 adjustment becomes 75%. The final chance shown in the combat log already includes this adjustment."),
                         new ArticleBlock("Universal Powers and Durations",
                             "Universal Force powers use their normal Willpower scaling but neither gain nor lose magnitude or hit chance from affinity. Force Affinity does not change effect duration. Status resistance and explicit duration modifiers can still change a duration."),
                         new ArticleBlock("Example: +6 Light",
-                            "At +6 Light, a Light power uses 130% magnitude and gains +3% hit chance. A Dark power uses 70% magnitude and suffers -3% hit chance. A Universal power remains at 100% magnitude with no affinity hit adjustment.")
+                            "At +6 Light, a Light damage power uses 130% magnitude, a Light heal or shield uses 125%, and Light powers gain +3% hit chance. A Dark power uses 70% magnitude and suffers -3% hit chance. A Universal power remains at 100% magnitude with no affinity hit adjustment.")
                     },
                     new[]
                     {
@@ -554,7 +554,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                         new ArticleBlock("Ability Details",
                             "Ability descriptions show the FP cost, STM cost, recast time, and what the ability does."),
                         new ArticleBlock("Cooldowns",
-                            "If an ability is still cooling down, the game tells you how long to wait before you can use it again."),
+                            "If an ability is still cooling down, the game tells you how long to wait before you can use it again. Hostile abilities also share a 0.5-second wait after each one. A hostile ability you use during that wait goes off as soon as it ends, and if you use several, only the last one goes off. Healing, support, and other abilities that aren't hostile don't wait."),
                         new ArticleBlock("Recast Groups",
                             "Some abilities share a cooldown group. Using one ability in that group can make the other abilities in the same group wait too.")
                     },
@@ -613,7 +613,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                         new ArticleBlock("Social",
                             "Improves XP gain and leadership capabilities. It also improves guild point acquisition, quest credit rewards, XP debt reduction on death, and reduces ship repair bills."),
                         new ArticleBlock("Resource Scaling and Regeneration",
-                            "Each Willpower point adds 3 maximum FP. Every 2 Might points add 3 maximum STM. Natural HP, FP, and STM regeneration occurs every 30 seconds; the Character Sheet shows the amount restored by each natural-regeneration tick.")
+                            "Each Willpower point adds 3 maximum FP. Every 2 Might points add 3 maximum STM. Natural HP and FP regeneration occurs every 30 seconds. STM regenerates continuously, a fifth of its 30-second amount every 6 seconds. The Character Sheet shows how much of each is restored per 30 seconds.")
                     },
                     new[]
                     {
@@ -1079,7 +1079,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                         new ArticleBlock("Boarding",
                             "Be within 15 meters of your departure terminal when boarding is called. If you miss the shuttle, your ticket remains valid and rolls over to the next scheduled departure."),
                         new ArticleBlock("Refunds and Transit",
-                            "Before boarding, you may refund the ticket at its departure starport. Only the fare is returned; transportation tax is not refunded. Ticketed and in-transit journeys persist through logout and server restart, and an in-transit character is delivered correctly on return."),
+                            "Before boarding, you may refund the ticket at any starport flights terminal, then book a new flight from that terminal. Only the fare is returned; transportation tax is not refunded. Ticketed and in-transit journeys persist through logout and server restart, and an in-transit character is delivered correctly on return."),
                         new ArticleBlock("Taxi Destinations",
                             "Local taxi travel requires the Taxi Hailing Device key item. Visit a taxi terminal and register its location, then use terminals to travel to registered destinations in the same region for the displayed credit fare.")
                     },

@@ -137,7 +137,7 @@
   },
   "Comment": {
     "type": "cexostring",
-    "value": "Capstone quest giver for Last Stand of the Light in Korriban Sith Crypt Depths."
+    "value": "Capstone quest giver for Last Stand of the Light in Mon Cala - Sith Crypt Depths."
   },
   "Con": {
     "type": "byte",
@@ -166,7 +166,7 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "Seris Nahl is a crypt-side light adept tied to the Last Stand of the Light capstone trials in Korriban Sith Crypt Depths."
+      "0": "A human woman in worn travelling robes, Seris Nahl keeps to the edge of the Promenade crowd with a medpac on her hip and the alert stillness of someone used to watching exits. Cave grit and dried jungle mud still cling to her boots and the hem of her cloak. She speaks quietly with spacers and pilots, arranging passage for wounded people who cannot afford to be asked questions."
     }
   },
   "Dex": {

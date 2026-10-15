@@ -195,7 +195,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.ImbuementStance1)
-                .Description("While active, your hostile auto-attacks deal Force damage instead of physical and cost 2 FP each.")
+                .Description("While active, your hostile auto-attacks deal Force damage instead of their normal damage type, including elemental damage, and cost 2 FP each.")
                 .Price(4)
                 .RequirementSkill(SkillType.Lightsaber, 20)
                 .RequirementCharacterType(CharacterType.ForceSensitive);
@@ -389,7 +389,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.ImmovableStance1)
-                .Description("While active, generate + 30% Enmity and gain + 8 Mobility Resistance, but your Attack and Force Attack are reduced by 25%.")
+                .Description("While active, generate + 30% Enmity and gain + 8 Mobility Resistance, but your Attack and Force Attack are reduced by 25%. You generate +100% threat from damage dealt, before general Enmity modifiers.")
                 .Price(4)
                 .RequirementSkill(SkillType.Lightsaber, 20)
                 .RequirementCharacterType(CharacterType.ForceSensitive);

@@ -71,7 +71,7 @@
   },
   "ModelPart1": {
     "type": "byte",
-    "value": 223
+    "value": 110
   },
   "PaletteID": {
     "type": "byte",
@@ -96,7 +96,7 @@
         },
         "CostValue": {
           "type": "word",
-          "value": 13
+          "value": 14
         },
         "Param1": {
           "type": "byte",
@@ -127,7 +127,7 @@
         },
         "CostValue": {
           "type": "word",
-          "value": 17
+          "value": 21
         },
         "Param1": {
           "type": "byte",
@@ -158,7 +158,7 @@
         },
         "CostValue": {
           "type": "word",
-          "value": 22
+          "value": 81
         },
         "Param1": {
           "type": "byte",
@@ -257,8 +257,28 @@
     "type": "resref",
     "value": "scav_visor"
   },
+  "VarTable": {
+    "type": "list",
+    "value": [
+      {
+        "__struct_id": 0,
+        "Name": {
+          "type": "cexostring",
+          "value": "ITEM_STATS_REVISION"
+        },
+        "Type": {
+          "type": "dword",
+          "value": 1
+        },
+        "Value": {
+          "type": "int",
+          "value": 1
+        }
+      }
+    ]
+  },
   "xModelPart1": {
     "type": "word",
-    "value": 223
+    "value": 110
   }
 }

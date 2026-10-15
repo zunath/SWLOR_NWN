@@ -2,15 +2,15 @@
   "__data_type": "UTC ",
   "Appearance_Head": {
     "type": "byte",
-    "value": 193
+    "value": 137
   },
   "Appearance_Type": {
     "type": "word",
-    "value": 10003
+    "value": 6
   },
   "ArmorPart_RFoot": {
     "type": "byte",
-    "value": 208
+    "value": 1
   },
   "BodyBag": {
     "type": "byte",
@@ -18,27 +18,27 @@
   },
   "BodyPart_Belt": {
     "type": "byte",
-    "value": 106
+    "value": 0
   },
   "BodyPart_LBicep": {
     "type": "byte",
-    "value": 208
+    "value": 1
   },
   "BodyPart_LFArm": {
     "type": "byte",
-    "value": 245
+    "value": 1
   },
   "BodyPart_LFoot": {
     "type": "byte",
-    "value": 208
+    "value": 1
   },
   "BodyPart_LHand": {
     "type": "byte",
-    "value": 208
+    "value": 1
   },
   "BodyPart_LShin": {
     "type": "byte",
-    "value": 228
+    "value": 1
   },
   "BodyPart_LShoul": {
     "type": "byte",
@@ -46,7 +46,7 @@
   },
   "BodyPart_LThigh": {
     "type": "byte",
-    "value": 208
+    "value": 1
   },
   "BodyPart_Neck": {
     "type": "byte",
@@ -54,23 +54,23 @@
   },
   "BodyPart_Pelvis": {
     "type": "byte",
-    "value": 209
+    "value": 1
   },
   "BodyPart_RBicep": {
     "type": "byte",
-    "value": 208
+    "value": 1
   },
   "BodyPart_RFArm": {
     "type": "byte",
-    "value": 245
+    "value": 1
   },
   "BodyPart_RHand": {
     "type": "byte",
-    "value": 208
+    "value": 1
   },
   "BodyPart_RShin": {
     "type": "byte",
-    "value": 228
+    "value": 1
   },
   "BodyPart_RShoul": {
     "type": "byte",
@@ -78,11 +78,11 @@
   },
   "BodyPart_RThigh": {
     "type": "byte",
-    "value": 208
+    "value": 1
   },
   "BodyPart_Torso": {
     "type": "byte",
-    "value": 193
+    "value": 1
   },
   "Cha": {
     "type": "byte",
@@ -110,11 +110,11 @@
   },
   "Color_Hair": {
     "type": "byte",
-    "value": 125
+    "value": 7
   },
   "Color_Skin": {
     "type": "byte",
-    "value": 41
+    "value": 0
   },
   "Color_Tattoo1": {
     "type": "byte",
@@ -126,7 +126,7 @@
   },
   "Comment": {
     "type": "cexostring",
-    "value": "Capstone quest creature for Hunger of the Dark in Korriban Sith Crypt Depths."
+    "value": "Hunger of the Dark inner circle member in Mon Cala - Sith Crypt Depths."
   },
   "Con": {
     "type": "byte",
@@ -155,7 +155,7 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "A level 50 capstone quest enemy for Hunger of the Dark in Korriban Sith Crypt Depths."
+      "0": "A senior human acolyte of the Vitae Reavers in a stolen officer's uniform, carrying a staff. Binders do the heavy work of the dig in the Sith Crypt Depths and the killing that keeps it going."
     }
   },
   "Dex": {
@@ -169,6 +169,13 @@
   "Equip_ItemList": {
     "type": "list",
     "value": [
+      {
+        "__struct_id": 2,
+        "EquippedRes": {
+          "type": "resref",
+          "value": "sith_officer_uni"
+        }
+      },
       {
         "__struct_id": 16,
         "EquippedRes": {
@@ -358,7 +365,7 @@
   "FirstName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Hunger of the Dark Inner Circle"
+      "0": "Vitae Reaver Binder"
     }
   },
   "fortbonus": {
@@ -437,11 +444,11 @@
   },
   "PortraitId": {
     "type": "word",
-    "value": 237
+    "value": 4157
   },
   "Race": {
     "type": "byte",
-    "value": 15
+    "value": 6
   },
   "refbonus": {
     "type": "short",
@@ -702,7 +709,7 @@
   },
   "SoundSetFile": {
     "type": "word",
-    "value": 448
+    "value": 413
   },
   "SpecAbilityList": {
     "type": "list",
@@ -751,7 +758,7 @@
         },
         "Value": {
           "type": "int",
-          "value": 200
+          "value": 290
         }
       },
       {

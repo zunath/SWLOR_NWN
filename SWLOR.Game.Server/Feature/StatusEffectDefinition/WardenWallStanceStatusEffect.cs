@@ -28,6 +28,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
 
         protected override void Apply(uint creature, int durationTicks)
         {
+            StatGroup.Stats[StatType.DamageEnmityPercentAdjustment] = 100;
             StatGroup.Stats[StatType.PhysicalAndForceDefenseAuraPercentAdjustment] = 10;
         }
 
@@ -40,7 +41,8 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
             {
                 StatusEffect.ApplyStatusEffect(creature, ally, new WardenWallStanceAuraStatusEffect
                 {
-                    OriginatingAbility = OriginatingAbility
+                    OriginatingAbility = OriginatingAbility,
+                    AnnouncesApplication = !StatusEffect.HasStatusEffect(ally, typeof(WardenWallStanceAuraStatusEffect), creature)
                 }, AuraBuffDurationSeconds);
             }
         }

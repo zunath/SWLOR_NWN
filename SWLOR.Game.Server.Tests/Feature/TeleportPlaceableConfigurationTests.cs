@@ -1,12 +1,41 @@
 using System.Text.Json;
 using FluentAssertions;
 using NUnit.Framework;
+using SWLOR.Game.Server.Core;
 
 namespace SWLOR.Game.Server.Tests.Feature;
 
 public class TeleportPlaceableConfigurationTests
 {
     private const string PartyTeleportVariable = "TELEPORT_PARTY_MEMBERS";
+
+    [Test]
+    public void TradeConcourseWarehouse_RestrictsEntryAndProvidesAnExitAfterDoorRelocks()
+    {
+        var root = FindRepositoryRoot();
+        using var document = JsonDocument.Parse(File.ReadAllText(Path.Combine(
+            root.FullName, "Module", "git", "veles_tradecon.git.json")));
+        var area = document.RootElement;
+        var doors = area.GetProperty("Door List").GetProperty("value").EnumerateArray().ToArray();
+        var entrance = doors.Single(door => GetString(door, "Tag") == "concourse_warehouse_door");
+
+        GetString(entrance, "KeyName").Should().Be("Key_Smuggler_1");
+        entrance.GetProperty("KeyRequired").GetProperty("value").GetInt32().Should().Be(1);
+        entrance.GetProperty("Locked").GetProperty("value").GetInt32().Should().Be(1);
+        GetString(entrance, "OnOpen").Should().Be(ScriptName.OnDoorAutoRelockOpen);
+        GetString(entrance, "OnClosed").Should().Be(ScriptName.OnDoorAutoRelockClosed);
+        doors.Where(door => GetString(door, "Tag") != "concourse_warehouse_door")
+            .Should().OnlyContain(door => GetString(door, "OnOpen") == string.Empty &&
+                                         GetString(door, "OnClosed") == string.Empty);
+
+        var exit = area.GetProperty("Placeable List").GetProperty("value").EnumerateArray()
+            .Single(placeable => GetString(placeable, "Tag") == "concourse_warehouse_exit");
+        GetString(exit, "OnUsed").Should().Be(ScriptName.OnPlaceableTeleport);
+        GetLocalInt(exit, "KEY_ITEM_ID").Should().Be(0);
+        GetLocalString(exit, "DESTINATION").Should().Be("V_Warehouse_To_Concourse");
+        EnumerateTags(area).Should().Contain(GetString(entrance, "LinkedTo"))
+            .And.Contain(GetLocalString(exit, "DESTINATION"));
+    }
 
     [Test]
     public void TeleportPlaceables_DefinePartyTeleportFlag()
@@ -29,14 +58,14 @@ public class TeleportPlaceableConfigurationTests
         {
             "Module/git/veles_sewers.git.json|Enter Sewers Depths|VISC_SEWER_DEPTHS_INSIDE|tele_obj|tele_obj",
             "Module/git/veles_sheriff.git.json|Veles Militia Annex|VELES_ANNEX_ENTRY|tele_obj|tele_obj",
-            "Module/git/dan_jedienlibry.git.json|Jedi Enclave Trial Halls|pw_sc_jedihalls_entry|tele_obj|tele_obj",
-            "Module/git/valkorrdung1c.git.json|Forge Caverns|pw_sc_forgecav_entry|tele_obj|tele_obj",
-            "Module/git/anchor_entreenor.git.json|Anchorhead Canyon Range|pw_sc_canyonrng_entry|tele_obj|tele_obj",
+            "Module/git/hutlar_testsite.git.json|Jedi Trial Halls|pw_sc_jedihalls_entry|tele_obj|tele_obj",
+            "Module/git/tat_anc_nminecli.git.json|Forge Caverns|pw_sc_forgecav_entry|tele_obj|tele_obj",
+            "Module/git/tat_anc_rckpass2.git.json|Anchorhead Canyon Range|pw_sc_canyonrng_entry|tele_obj|tele_obj",
             "Module/git/sol_hutlarqcanyo.git.json|Qion Test Site|pw_sc_qiontest_entry|tele_obj|tele_obj",
-            "Module/git/korr_crypt_zil.git.json|Sith Crypt Depths|pw_sc_cryptdeep_entry|tele_obj|tele_obj",
-            "Module/git/v_repubbase_cd.git.json|Republic Engineering Bunker|pw_sc_repubeng_entry|tele_obj|tele_obj",
+            "Module/git/moncaladungeon1.git.json|Sith Crypt Depths|pw_sc_cryptdeep_entry|tele_obj|tele_obj",
+            "Module/git/viscaranwswamp.git.json|Republic Engineering Bunker|pw_sc_repubeng_entry|tele_obj|tele_obj",
             "Module/git/dath_tarnjungles.git.json|Tarn Jungle Preserve|pw_sc_tarnpres_entry|tele_obj|tele_obj",
-            "Module/git/dan_warehouse.git.json|Dantooine Medical Sublevel|to_medsublevel|tele_obj|tele_obj",
+            "Module/git/moncalacifacilit.git.json|Medical Sublevel|to_medsublevel|tele_obj|tele_obj",
             "Module/git/dathgrottocavern.git.json|Enter the Grotto Apex Den|DATH_APEX_DEN_INSIDE|tele_obj|tele_obj",
             "Module/git/pw_ar_nsficlub.git.json|[Back Rooms]|SMUG_BACKROOMS|tele_obj|tele_obj",
             "Module/git/czs220_maintlvl.git.json|Enter the Breaker Bay|CZ220_MAINT_ENTRANCE_BREAKER|tele_obj|tele_obj",
@@ -56,7 +85,6 @@ public class TeleportPlaceableConfigurationTests
     private static readonly string[] KnownUnbuiltTeleporters =
     {
         "Module/git/druz_shalim.git.json|Invisible Object (Large)|Druzer_Starport_Inside",
-        "Module/git/zomb_abanstation.git.json|Take Shuttle Back to Viscara|",
     };
 
     [Test]

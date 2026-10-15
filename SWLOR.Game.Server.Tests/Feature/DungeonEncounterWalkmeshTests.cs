@@ -60,6 +60,122 @@ public class DungeonEncounterWalkmeshTests
             triangles.Any(t => Covers(t, new Vector3(x, y, 0))).Should().BeTrue($"the combat floor must support walking at ({x}, {y})");
     }
 
+    [Test]
+    public void CzerkaWeaponsFacility_UsesTwentyFixedGeneralSpawnsOnClearFloor()
+    {
+        var root = FindRoot();
+        using var git = JsonDocument.Parse(File.ReadAllText(Path.Combine(root, "Module", "git", "pw_ar_czarmrange.git.json")));
+        var area = git.RootElement;
+        area.GetProperty("VarTable").GetProperty("value").EnumerateArray()
+            .Should().NotContain(v => Text(v, "Name") == "CREATURE_SPAWN_TABLE_ID",
+                "random area positions can select floor enclosed by static scenery");
+        var waypoints = area.GetProperty("WaypointList").GetProperty("value").EnumerateArray().ToArray();
+        var generalSpawns = waypoints.Where(w => Text(w, "Tag") == "CAPSTONE_CZERKA_ARMS_TEST_RANGE").ToArray();
+        generalSpawns.Should().HaveCount(20, "the 16 by 16 area previously received twenty random general spawns");
+        generalSpawns.Select(w => (Number(w, "XPosition"), Number(w, "YPosition"))).Should().OnlyHaveUniqueItems();
+
+        var spawnPoints = waypoints.Where(w => Text(w, "Tag") == "CAPSTONE_CZERKA_ARMS_TEST_RANGE"
+            || Text(w, "Tag") == "CZERKA_ARMS_TEST_RANGE_RARES" || Text(w, "Tag").EndsWith("_WD_SPAWN")).ToArray();
+        spawnPoints.Should().HaveCount(24);
+        var floor = ReadWalkableFloor(root, "pw_ar_czarmrange", "sw_t_garage");
+        var appearances = TwoDAReader.Read(Path.Combine(root, "SWLOR_Haks", "sw_2da", "placeables.2da"));
+        var meshes = Directory.EnumerateFiles(Path.Combine(root, "SWLOR_Haks"), "*.pwk", SearchOption.AllDirectories)
+            .ToDictionary(Path.GetFileNameWithoutExtension, StringComparer.OrdinalIgnoreCase);
+        foreach (var point in spawnPoints)
+        {
+            var position = new Vector3(Number(point, "XPosition"), Number(point, "YPosition"), Number(point, "ZPosition"));
+            var body = Enumerable.Range(0, 16).Select(i => position + new Vector3(
+                .75f * MathF.Cos(i * MathF.PI / 8), .75f * MathF.Sin(i * MathF.PI / 8), 0)).Prepend(position).ToArray();
+            foreach (var sample in body)
+                floor.Any(t => Covers(t, sample)).Should().BeTrue($"{Text(point, "Tag")} needs room for a creature at {sample}");
+
+            foreach (var placeable in area.GetProperty("Placeable List").GetProperty("value").EnumerateArray())
+            {
+                var model = appearances.GetValue((int)Number(placeable, "Appearance"), "ModelName");
+                // Models without PWKs do not contribute native collision.
+                if (!meshes.TryGetValue(model, out var mesh)) continue;
+                var placement = Matrix4x4.CreateRotationZ(Number(placeable, "Bearing"))
+                    * Matrix4x4.CreateTranslation(Number(placeable, "X"), Number(placeable, "Y"), Number(placeable, "Z"));
+                foreach (var bounds in ReadCollisionBounds(mesh, placement))
+                foreach (var sample in body)
+                {
+                    var local = Vector3.Transform(sample, bounds.Inverse);
+                    var overlaps = local.X >= bounds.Min.X && local.X <= bounds.Max.X
+                        && local.Y >= bounds.Min.Y && local.Y <= bounds.Max.Y
+                        && local.Z + 1.8f > bounds.Min.Z && local.Z + .05f < bounds.Max.Z;
+                    overlaps.Should().BeFalse($"{Text(point, "Tag")} at {position} must clear {model}'s collision volume");
+                }
+            }
+        }
+    }
+
+    // Qion Test Site, Forge Caverns and Canyon Range use base-game tiles whose walkmeshes are not in the repository.
+    [TestCase("pw_sc_jedihalls", "sw_t_office")]
+    [TestCase("pw_sc_cryptdeep", "sw_t_alienruin")]
+    [TestCase("pw_sc_repubeng", "sw_t_facility")]
+    [TestCase("pw_sc_tarnpres", "sw_t_jungle")]
+    public void SlicingTerminals_HaveAClearApproachOnTheirUseSide(string area, string hakFolder)
+    {
+        var root = FindRoot();
+        using var git = JsonDocument.Parse(File.ReadAllText(Path.Combine(root, "Module", "git", area + ".git.json")));
+        var terminals = git.RootElement.GetProperty("WaypointList").GetProperty("value").EnumerateArray()
+            .Where(w => Text(w, "Tag") == "SLICING_TERMINAL_T5").ToArray();
+        terminals.Should().HaveCount(2);
+        var floor = ReadWalkableFloor(root, area, hakFolder);
+        var appearances = TwoDAReader.Read(Path.Combine(root, "SWLOR_Haks", "sw_2da", "placeables.2da"));
+        var meshes = Directory.EnumerateFiles(Path.Combine(root, "SWLOR_Haks"), "*.pwk", SearchOption.AllDirectories)
+            .ToDictionary(Path.GetFileNameWithoutExtension, StringComparer.OrdinalIgnoreCase);
+        var scenery = git.RootElement.GetProperty("Placeable List").GetProperty("value").EnumerateArray()
+            .Select(p => (Model: appearances.GetValue((int)Number(p, "Appearance"), "ModelName"), Placeable: p))
+            .Where(p => meshes.ContainsKey(p.Model))
+            .SelectMany(p => ReadCollisionBounds(meshes[p.Model], Matrix4x4.CreateRotationZ(Number(p.Placeable, "Bearing"))
+                * Matrix4x4.CreateTranslation(Number(p.Placeable, "X"), Number(p.Placeable, "Y"), Number(p.Placeable, "Z"))))
+            .ToArray();
+
+        foreach (var terminal in terminals)
+        {
+            var position = new Vector3(Number(terminal, "XPosition"), Number(terminal, "YPosition"), Number(terminal, "ZPosition"));
+            var facing = new Vector3(Number(terminal, "XOrientation"), Number(terminal, "YOrientation"), 0);
+            // The terminal model (shp_crate1_m) is used from the side opposite its facing; verified in the client.
+            var approach = position - facing * 1.5f;
+            var body = Enumerable.Range(0, 8).Select(i => approach + new Vector3(
+                .4f * MathF.Cos(i * MathF.PI / 4), .4f * MathF.Sin(i * MathF.PI / 4), 0)).Prepend(approach).ToArray();
+            foreach (var sample in body)
+            {
+                floor.Any(t => Covers(t, sample, .5f)).Should().BeTrue(
+                    $"{area} slicing terminal at {position} needs walkable floor on its use side at {sample}");
+                scenery.Any(bounds => Inside(bounds, sample)).Should().BeFalse(
+                    $"{area} slicing terminal at {position} needs its use side at {sample} clear of scenery");
+            }
+        }
+    }
+
+    private static bool Inside((Vector3 Min, Vector3 Max, Matrix4x4 Inverse) bounds, Vector3 sample)
+    {
+        var local = Vector3.Transform(sample, bounds.Inverse);
+        return local.X >= bounds.Min.X && local.X <= bounds.Max.X
+            && local.Y >= bounds.Min.Y && local.Y <= bounds.Max.Y
+            && local.Z + 1.8f > bounds.Min.Z && local.Z + .05f < bounds.Max.Z;
+    }
+
+    private static IEnumerable<(Vector3 Min, Vector3 Max, Matrix4x4 Inverse)> ReadCollisionBounds(string file, Matrix4x4 placement)
+    {
+        foreach (Match node in Regex.Matches(File.ReadAllText(file), @"(?is)node\s+trimesh\s+\S+\s+(.*?)endnode"))
+        {
+            var lines = node.Groups[1].Value.Split('\n').Select(l => l.Split((char[])null, StringSplitOptions.RemoveEmptyEntries)).Where(l => l.Length > 0).ToArray();
+            var vi = Array.FindIndex(lines, l => l[0] == "verts");
+            if (vi < 0 || int.Parse(lines[vi][1]) == 0) continue;
+            var vertices = lines.Skip(vi + 1).Take(int.Parse(lines[vi][1])).Select(l => new Vector3(Parse(l[0]), Parse(l[1]), Parse(l[2]))).ToArray();
+            var position = lines.Single(l => l[0] == "position").Skip(1).Select(Parse).ToArray();
+            var orientation = lines.Single(l => l[0] == "orientation").Skip(1).Select(Parse).ToArray();
+            var axis = new Vector3(orientation[0], orientation[1], orientation[2]);
+            var rotation = Math.Abs(orientation[3]) < .00001f ? Quaternion.Identity : Quaternion.CreateFromAxisAngle(Vector3.Normalize(axis), orientation[3]);
+            var transform = Matrix4x4.CreateFromQuaternion(rotation) * Matrix4x4.CreateTranslation(position[0], position[1], position[2]) * placement;
+            Matrix4x4.Invert(transform, out var inverse).Should().BeTrue();
+            yield return (vertices.Aggregate(Vector3.Min), vertices.Aggregate(Vector3.Max), inverse);
+        }
+    }
+
     private static List<Vector3[]> ReadWalkableFloor(string root, string area, string hakFolder)
     {
         using var are = JsonDocument.Parse(File.ReadAllText(Path.Combine(root, "Module", "are", area + ".are.json")));
@@ -114,14 +230,14 @@ public class DungeonEncounterWalkmeshTests
         return result;
     }
 
-    private static bool Covers(Vector3[] triangle, Vector3 point)
+    private static bool Covers(Vector3[] triangle, Vector3 point, float heightTolerance = .05f)
     {
         var a = triangle[0]; var u = triangle[1] - a; var v = triangle[2] - a; var d = point - a;
         var determinant = u.X * v.Y - u.Y * v.X;
         if (Math.Abs(determinant) < .00001f) return false;
         var s = (d.X * v.Y - d.Y * v.X) / determinant;
         var t = (u.X * d.Y - u.Y * d.X) / determinant;
-        return s >= -.00001f && t >= -.00001f && s + t <= 1.00001f && Math.Abs(a.Z + s * u.Z + t * v.Z - point.Z) <= .05f;
+        return s >= -.00001f && t >= -.00001f && s + t <= 1.00001f && Math.Abs(a.Z + s * u.Z + t * v.Z - point.Z) <= heightTolerance;
     }
 
     private static string Text(JsonElement o, string name) => o.GetProperty(name).GetProperty("value").GetString()!;

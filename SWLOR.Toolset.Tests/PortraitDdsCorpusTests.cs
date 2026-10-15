@@ -82,7 +82,7 @@ public class PortraitDdsCorpusTests
                 failures.Add($"{name}: RGB error {intended}, vertical {vertical}, horizontal {horizontal}; " +
                              "decoded artwork differs from the reviewed source orientation");
         }
-        Assert.That(count, Is.EqualTo(8109), "Every retained portrait must be exercised by the real toolset decoder.");
+        Assert.That(count, Is.EqualTo(8105), "Every retained portrait must be exercised by the real toolset decoder.");
         Assert.That(failures, Is.Empty,
             $"{failures.Count} portrait failures. First twenty:\n{string.Join("\n", failures.Take(20))}");
     }

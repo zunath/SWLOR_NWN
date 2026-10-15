@@ -1,3 +1,4 @@
+using SWLOR.Game.Server.Core;
  using System.Collections.Generic;
  using SWLOR.Game.Server.Service;
  using SWLOR.Game.Server.Service.PerkService;
@@ -44,7 +45,7 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
             .Name(name)
             .ShortName(shortName)
             .Type(ShipModuleType.LaserBattery)
-            .Texture("iit_ess8_088")
+            .Texture("iit_smlasbattery")
             .Description(description)
             .ValidTargetType(ObjectType.Creature)
             .MaxDistance(20f)
@@ -68,11 +69,13 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                     var delay = i * 2f;
                     DelayCommand(delay, () =>
                     {
-                        if (!GetIsDead(activator))
+                        if (Space.CanShipFire(activator))
                         {
-                            var nearbyTarget = GetFirstObjectInShape(Shape.Sphere, 20f, GetLocation(activator), true, ObjectType.Creature);
-                            while (GetIsObjectValid(nearbyTarget))
+                            foreach (var nearbyTarget in ObjectSnapshot.InShape(Shape.Sphere, 20f, GetLocation(activator), true, ObjectType.Creature))
                             {
+                                if (!GetIsObjectValid(nearbyTarget))
+                                    continue;
+
                                 if (nearbyTarget != activator &&
                                     Random.D4(1) != 1 &&
                                     GetIsEnemy(nearbyTarget, activator) &&
@@ -107,7 +110,6 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                                     Enmity.ModifyEnmity(activator, nearbyTarget, damage);
                                     CombatPoint.AddCombatPoint(activator, nearbyTarget, SkillType.Piloting);
                                 }
-                                nearbyTarget = GetNextObjectInShape(Shape.Sphere, 20f, GetLocation(activator), true, ObjectType.Creature);
                             }
                         }
                     });

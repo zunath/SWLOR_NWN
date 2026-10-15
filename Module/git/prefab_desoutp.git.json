@@ -6200,13 +6200,13 @@
                     "DescIdentified": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": ""
+                        "0": "Small fittings and compact plates divide this armor into a surprisingly intricate whole. Its smith seems to have enjoyed making substantial protection out of components that first appear almost insignificant."
                       }
                     },
                     "Description": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": ""
+                        "0": "Small fittings and compact plates divide this armor into a surprisingly intricate whole. Its smith seems to have enjoyed making substantial protection out of components that first appear almost insignificant."
                       }
                     },
                     "Identified": {
@@ -6603,13 +6603,13 @@
                     "DescIdentified": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": ""
+                        "0": "Broad, quiet surfaces give this armor the air of a sentry already at its post. A closer look reveals the small service marks and careful adjustments that keep such a watch from being merely ornamental."
                       }
                     },
                     "Description": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": ""
+                        "0": "Broad, quiet surfaces give this armor the air of a sentry already at its post. A closer look reveals the small service marks and careful adjustments that keep such a watch from being merely ornamental."
                       }
                     },
                     "Identified": {
@@ -7006,13 +7006,13 @@
                     "DescIdentified": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": ""
+                        "0": "Careful tailoring gives this tunic a composed, almost courtly silhouette. Its practical lining suggests an owner unwilling to leave every difficult task to an attendant."
                       }
                     },
                     "Description": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": ""
+                        "0": "Careful tailoring gives this tunic a composed, almost courtly silhouette. Its practical lining suggests an owner unwilling to leave every difficult task to an attendant."
                       }
                     },
                     "Identified": {
@@ -7471,13 +7471,13 @@
                     "DescIdentified": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": ""
+                        "0": "A reserved tunic whose interest lies in the details: concealed ties, deliberate folds, and small patterns that only become visible close up. Its maker seems to have understood the value of looking unremarkable from a distance."
                       }
                     },
                     "Description": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": ""
+                        "0": "A reserved tunic whose interest lies in the details: concealed ties, deliberate folds, and small patterns that only become visible close up. Its maker seems to have understood the value of looking unremarkable from a distance."
                       }
                     },
                     "Identified": {
@@ -7936,13 +7936,13 @@
                     "DescIdentified": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": ""
+                        "0": "This tunic's strong lines are softened by a carefully fitted lining. It holds an imposing shape without making every movement look like a negotiation with the fabric."
                       }
                     },
                     "Description": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": ""
+                        "0": "This tunic's strong lines are softened by a carefully fitted lining. It holds an imposing shape without making every movement look like a negotiation with the fabric."
                       }
                     },
                     "Identified": {
@@ -8401,13 +8401,13 @@
                     "DescIdentified": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": ""
+                        "0": "This tunic's unconventional fastenings work better than their untidy arrangement suggests. It belongs to the sort of wardrobe assembled according to experience rather than an approved list."
                       }
                     },
                     "Description": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": ""
+                        "0": "This tunic's unconventional fastenings work better than their untidy arrangement suggests. It belongs to the sort of wardrobe assembled according to experience rather than an approved list."
                       }
                     },
                     "Identified": {
@@ -10570,7 +10570,6 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 100926,
                       "type": "cexolocstring",
                       "value": {
                         "0": ""
@@ -10806,7 +10805,6 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 100926,
                       "type": "cexolocstring",
                       "value": {
                         "0": ""
@@ -11042,7 +11040,6 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 56605,
                       "type": "cexolocstring",
                       "value": {
                         "0": ""
@@ -11278,7 +11275,6 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 56605,
                       "type": "cexolocstring",
                       "value": {
                         "0": ""
@@ -11514,7 +11510,6 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 56605,
                       "type": "cexolocstring",
                       "value": {
                         "0": ""
@@ -11781,7 +11776,6 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 56605,
                       "type": "cexolocstring",
                       "value": {
                         "0": ""
@@ -12048,7 +12042,6 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 56605,
                       "type": "cexolocstring",
                       "value": {
                         "0": ""
@@ -12315,7 +12308,6 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 56605,
                       "type": "cexolocstring",
                       "value": {
                         "0": ""
@@ -12582,7 +12574,6 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 13336,
                       "type": "cexolocstring",
                       "value": {
                         "0": ""
@@ -12832,7 +12823,6 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 13336,
                       "type": "cexolocstring",
                       "value": {
                         "0": ""
@@ -13082,7 +13072,6 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 13336,
                       "type": "cexolocstring",
                       "value": {}
                     },
@@ -13392,7 +13381,6 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 13336,
                       "type": "cexolocstring",
                       "value": {}
                     },
@@ -13702,7 +13690,6 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 13336,
                       "type": "cexolocstring",
                       "value": {}
                     },
@@ -14012,7 +13999,6 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 13336,
                       "type": "cexolocstring",
                       "value": {}
                     },
@@ -14322,16 +14308,15 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 48321,
                       "type": "cexolocstring",
                       "value": {
-                        "0": ""
+                        "0": "A compact bracer threaded with tiny, faintly humming circuits."
                       }
                     },
                     "Description": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": ""
+                        "0": "A compact bracer threaded with tiny, faintly humming circuits."
                       }
                     },
                     "Identified": {
@@ -14343,7 +14328,6 @@
                       "value": 1
                     },
                     "LocalizedName": {
-                      "id": 48320,
                       "type": "cexolocstring",
                       "value": {
                         "0": "Quark Bracer"
@@ -14558,16 +14542,15 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 48321,
                       "type": "cexolocstring",
                       "value": {
-                        "0": ""
+                        "0": "A finely made bracer issued to elite sentinels."
                       }
                     },
                     "Description": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": ""
+                        "0": "A finely made bracer issued to elite sentinels."
                       }
                     },
                     "Identified": {
@@ -14579,7 +14562,6 @@
                       "value": 1
                     },
                     "LocalizedName": {
-                      "id": 48320,
                       "type": "cexolocstring",
                       "value": {
                         "0": "Sentinel Bracer"
@@ -14802,7 +14784,6 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 66560,
                       "type": "cexolocstring",
                       "value": {
                         "0": ""
@@ -15060,7 +15041,6 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 66560,
                       "type": "cexolocstring",
                       "value": {
                         "0": ""
@@ -15318,7 +15298,6 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 66560,
                       "type": "cexolocstring",
                       "value": {
                         "0": ""
@@ -15607,7 +15586,6 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 66560,
                       "type": "cexolocstring",
                       "value": {
                         "0": ""
@@ -15896,7 +15874,6 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 66560,
                       "type": "cexolocstring",
                       "value": {
                         "0": ""
@@ -16187,7 +16164,6 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 66560,
                       "type": "cexolocstring",
                       "value": {
                         "0": ""
@@ -16470,16 +16446,15 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 56620,
                       "type": "cexolocstring",
                       "value": {
-                        "0": ""
+                        "0": "Broad cuffs and a clean line of stitching give these gloves a decisive appearance. Their palms are plainer, made for the business the hands must actually perform."
                       }
                     },
                     "Description": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": ""
+                        "0": "Broad cuffs and a clean line of stitching give these gloves a decisive appearance. Their palms are plainer, made for the business the hands must actually perform."
                       }
                     },
                     "Identified": {
@@ -16768,16 +16743,15 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 56620,
                       "type": "cexolocstring",
                       "value": {
-                        "0": ""
+                        "0": "These gloves have been adjusted around the fingers in ways that depart from a standard pattern. Their owner knew what felt right and apparently felt little obligation to explain the changes to a quartermaster."
                       }
                     },
                     "Description": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": ""
+                        "0": "These gloves have been adjusted around the fingers in ways that depart from a standard pattern. Their owner knew what felt right and apparently felt little obligation to explain the changes to a quartermaster."
                       }
                     },
                     "Identified": {
@@ -17066,16 +17040,15 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 56620,
                       "type": "cexolocstring",
                       "value": {
-                        "0": ""
+                        "0": "The neat cuffs of these gloves retain their shape despite the wear in their palms. They are well suited to a wearer who wishes to keep an air of formality while getting their hands dirty."
                       }
                     },
                     "Description": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": ""
+                        "0": "The neat cuffs of these gloves retain their shape despite the wear in their palms. They are well suited to a wearer who wishes to keep an air of formality while getting their hands dirty."
                       }
                     },
                     "Identified": {
@@ -17364,16 +17337,15 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 56620,
                       "type": "cexolocstring",
                       "value": {
-                        "0": ""
+                        "0": "Fine marks are hidden beneath the turned-back cuffs of these gloves. They were made for a wearer's own contemplation, not for the audience that impressive clothing sometimes gathers."
                       }
                     },
                     "Description": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": ""
+                        "0": "Fine marks are hidden beneath the turned-back cuffs of these gloves. They were made for a wearer's own contemplation, not for the audience that impressive clothing sometimes gathers."
                       }
                     },
                     "Identified": {
@@ -17748,13 +17720,13 @@
                     "DescIdentified": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": ""
+                        "0": "Broad armored panels and substantial mounting lugs give this droid torso shell its heavy, industrial outline. The straightforward assembly retains the small tool marks of a build made to earn its keep."
                       }
                     },
                     "Description": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": ""
+                        "0": "Broad armored panels and substantial mounting lugs give this droid torso shell its heavy, industrial outline. The straightforward assembly retains the small tool marks of a build made to earn its keep."
                       }
                     },
                     "Identified": {
@@ -18182,13 +18154,13 @@
                     "DescIdentified": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": ""
+                        "0": "Broad armored panels and substantial mounting lugs give this droid torso shell its heavy, industrial outline. Neatly finished seats and consistent fastenings show a pattern refined beyond its earliest workshop version."
                       }
                     },
                     "Description": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": ""
+                        "0": "Broad armored panels and substantial mounting lugs give this droid torso shell its heavy, industrial outline. Neatly finished seats and consistent fastenings show a pattern refined beyond its earliest workshop version."
                       }
                     },
                     "Identified": {
@@ -18616,13 +18588,13 @@
                     "DescIdentified": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": ""
+                        "0": "Closely fitted panels leave this light droid shell a spare, compact outline around its chassis mounts. The straightforward assembly retains the small tool marks of a build made to earn its keep."
                       }
                     },
                     "Description": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": ""
+                        "0": "Closely fitted panels leave this light droid shell a spare, compact outline around its chassis mounts. The straightforward assembly retains the small tool marks of a build made to earn its keep."
                       }
                     },
                     "Identified": {
@@ -19081,13 +19053,13 @@
                     "DescIdentified": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": ""
+                        "0": "Closely fitted panels leave this light droid shell a spare, compact outline around its chassis mounts. Neatly finished seats and consistent fastenings show a pattern refined beyond its earliest workshop version."
                       }
                     },
                     "Description": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": ""
+                        "0": "Closely fitted panels leave this light droid shell a spare, compact outline around its chassis mounts. Neatly finished seats and consistent fastenings show a pattern refined beyond its earliest workshop version."
                       }
                     },
                     "Identified": {
@@ -20707,7 +20679,6 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 56605,
                       "type": "cexolocstring",
                       "value": {
                         "0": ""
@@ -20912,7 +20883,6 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 56605,
                       "type": "cexolocstring",
                       "value": {
                         "0": ""
@@ -21148,7 +21118,6 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 56605,
                       "type": "cexolocstring",
                       "value": {
                         "0": ""
@@ -21353,7 +21322,6 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 56605,
                       "type": "cexolocstring",
                       "value": {
                         "0": ""
@@ -21651,7 +21619,6 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 13336,
                       "type": "cexolocstring",
                       "value": {
                         "0": ""
@@ -21901,7 +21868,6 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 13336,
                       "type": "cexolocstring",
                       "value": {
                         "0": ""
@@ -22182,7 +22148,6 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 13336,
                       "type": "cexolocstring",
                       "value": {}
                     },
@@ -22461,7 +22426,6 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 13336,
                       "type": "cexolocstring",
                       "value": {}
                     },
@@ -22802,16 +22766,15 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 48321,
                       "type": "cexolocstring",
                       "value": {
-                        "0": ""
+                        "0": "An armored forearm plate engineered to bolt onto a droid chassis."
                       }
                     },
                     "Description": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": ""
+                        "0": "An armored forearm plate engineered to bolt onto a droid chassis."
                       }
                     },
                     "Identified": {
@@ -22823,7 +22786,6 @@
                       "value": 1
                     },
                     "LocalizedName": {
-                      "id": 48320,
                       "type": "cexolocstring",
                       "value": {
                         "0": "DHBR-001"
@@ -23038,16 +23000,15 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 48321,
                       "type": "cexolocstring",
                       "value": {
-                        "0": ""
+                        "0": "An armored forearm plate engineered to bolt onto a droid chassis."
                       }
                     },
                     "Description": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": ""
+                        "0": "An armored forearm plate engineered to bolt onto a droid chassis."
                       }
                     },
                     "Identified": {
@@ -23059,7 +23020,6 @@
                       "value": 1
                     },
                     "LocalizedName": {
-                      "id": 48320,
                       "type": "cexolocstring",
                       "value": {
                         "0": "DHBR-002"
@@ -23313,7 +23273,6 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 66560,
                       "type": "cexolocstring",
                       "value": {
                         "0": ""
@@ -23540,7 +23499,6 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 66560,
                       "type": "cexolocstring",
                       "value": {
                         "0": ""
@@ -23821,16 +23779,15 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 56620,
                       "type": "cexolocstring",
                       "value": {
-                        "0": ""
+                        "0": "This slim droid forearm assembly encloses its fittings beneath carefully seated panels, leaving the working joints clear. The straightforward assembly retains the small tool marks of a build made to earn its keep."
                       }
                     },
                     "Description": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": ""
+                        "0": "This slim droid forearm assembly encloses its fittings beneath carefully seated panels, leaving the working joints clear. The straightforward assembly retains the small tool marks of a build made to earn its keep."
                       }
                     },
                     "Identified": {
@@ -24026,16 +23983,15 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 56620,
                       "type": "cexolocstring",
                       "value": {
-                        "0": ""
+                        "0": "This slim droid forearm assembly encloses its fittings beneath carefully seated panels, leaving the working joints clear. Neatly finished seats and consistent fastenings show a pattern refined beyond its earliest workshop version."
                       }
                     },
                     "Description": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": ""
+                        "0": "This slim droid forearm assembly encloses its fittings beneath carefully seated panels, leaving the working joints clear. Neatly finished seats and consistent fastenings show a pattern refined beyond its earliest workshop version."
                       }
                     },
                     "Identified": {
@@ -24332,7 +24288,6 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 66560,
                       "type": "cexolocstring",
                       "value": {
                         "0": ""
@@ -24590,7 +24545,6 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 66560,
                       "type": "cexolocstring",
                       "value": {
                         "0": ""
@@ -24988,13 +24942,13 @@
                     "DescIdentified": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": ""
+                        "0": "Broad armored panels and substantial mounting lugs give this droid torso shell its heavy, industrial outline. The service covers fit with the assurance of a design that has already taught its maker which details matter."
                       }
                     },
                     "Description": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": ""
+                        "0": "Broad armored panels and substantial mounting lugs give this droid torso shell its heavy, industrial outline. The service covers fit with the assurance of a design that has already taught its maker which details matter."
                       }
                     },
                     "Identified": {
@@ -25422,13 +25376,13 @@
                     "DescIdentified": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": ""
+                        "0": "Closely fitted panels leave this light droid shell a spare, compact outline around its chassis mounts. The service covers fit with the assurance of a design that has already taught its maker which details matter."
                       }
                     },
                     "Description": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": ""
+                        "0": "Closely fitted panels leave this light droid shell a spare, compact outline around its chassis mounts. The service covers fit with the assurance of a design that has already taught its maker which details matter."
                       }
                     },
                     "Identified": {
@@ -26470,7 +26424,6 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 56605,
                       "type": "cexolocstring",
                       "value": {
                         "0": ""
@@ -26737,7 +26690,6 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 56605,
                       "type": "cexolocstring",
                       "value": {
                         "0": ""
@@ -27035,7 +26987,6 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 13336,
                       "type": "cexolocstring",
                       "value": {
                         "0": ""
@@ -27316,7 +27267,6 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 13336,
                       "type": "cexolocstring",
                       "value": {}
                     },
@@ -27657,16 +27607,15 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 48321,
                       "type": "cexolocstring",
                       "value": {
-                        "0": ""
+                        "0": "An armored forearm plate engineered to bolt onto a droid chassis."
                       }
                     },
                     "Description": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": ""
+                        "0": "An armored forearm plate engineered to bolt onto a droid chassis."
                       }
                     },
                     "Identified": {
@@ -27678,7 +27627,6 @@
                       "value": 1
                     },
                     "LocalizedName": {
-                      "id": 48320,
                       "type": "cexolocstring",
                       "value": {
                         "0": "DHBR-003"
@@ -27932,7 +27880,6 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 66560,
                       "type": "cexolocstring",
                       "value": {
                         "0": ""
@@ -28221,7 +28168,6 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 66560,
                       "type": "cexolocstring",
                       "value": {
                         "0": ""
@@ -28533,16 +28479,15 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 56620,
                       "type": "cexolocstring",
                       "value": {
-                        "0": ""
+                        "0": "This slim droid forearm assembly encloses its fittings beneath carefully seated panels, leaving the working joints clear. The service covers fit with the assurance of a design that has already taught its maker which details matter."
                       }
                     },
                     "Description": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": ""
+                        "0": "This slim droid forearm assembly encloses its fittings beneath carefully seated panels, leaving the working joints clear. The service covers fit with the assurance of a design that has already taught its maker which details matter."
                       }
                     },
                     "Identified": {
@@ -28948,13 +28893,13 @@
                     "DescIdentified": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": ""
+                        "0": "Broad armored panels and substantial mounting lugs give this droid torso shell its heavy, industrial outline. The service covers fit with the assurance of a design that has already taught its maker which details matter. Revised fitting marks distinguish this assembly from the standard production pattern."
                       }
                     },
                     "Description": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": ""
+                        "0": "Broad armored panels and substantial mounting lugs give this droid torso shell its heavy, industrial outline. The service covers fit with the assurance of a design that has already taught its maker which details matter. Revised fitting marks distinguish this assembly from the standard production pattern."
                       }
                     },
                     "Identified": {
@@ -29382,13 +29327,13 @@
                     "DescIdentified": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": ""
+                        "0": "Closely fitted panels leave this light droid shell a spare, compact outline around its chassis mounts. The service covers fit with the assurance of a design that has already taught its maker which details matter. Revised fitting marks distinguish this assembly from the standard production pattern."
                       }
                     },
                     "Description": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": ""
+                        "0": "Closely fitted panels leave this light droid shell a spare, compact outline around its chassis mounts. The service covers fit with the assurance of a design that has already taught its maker which details matter. Revised fitting marks distinguish this assembly from the standard production pattern."
                       }
                     },
                     "Identified": {
@@ -30430,7 +30375,6 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 56605,
                       "type": "cexolocstring",
                       "value": {
                         "0": ""
@@ -30697,7 +30641,6 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 56605,
                       "type": "cexolocstring",
                       "value": {
                         "0": ""
@@ -30995,7 +30938,6 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 13336,
                       "type": "cexolocstring",
                       "value": {
                         "0": ""
@@ -31276,7 +31218,6 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 13336,
                       "type": "cexolocstring",
                       "value": {}
                     },
@@ -31617,16 +31558,15 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 48321,
                       "type": "cexolocstring",
                       "value": {
-                        "0": ""
+                        "0": "A reinforced forearm plate engineered to bolt onto a droid chassis, upgraded with improved shielding."
                       }
                     },
                     "Description": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": ""
+                        "0": "A reinforced forearm plate engineered to bolt onto a droid chassis, upgraded with improved shielding."
                       }
                     },
                     "Identified": {
@@ -31638,7 +31578,6 @@
                       "value": 1
                     },
                     "LocalizedName": {
-                      "id": 48320,
                       "type": "cexolocstring",
                       "value": {
                         "0": "DHBR-003 A"
@@ -31892,7 +31831,6 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 66560,
                       "type": "cexolocstring",
                       "value": {
                         "0": ""
@@ -32173,16 +32111,15 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 56620,
                       "type": "cexolocstring",
                       "value": {
-                        "0": ""
+                        "0": "This slim droid forearm assembly encloses its fittings beneath carefully seated panels, leaving the working joints clear. The service covers fit with the assurance of a design that has already taught its maker which details matter. Revised fitting marks distinguish this assembly from the standard production pattern."
                       }
                     },
                     "Description": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": ""
+                        "0": "This slim droid forearm assembly encloses its fittings beneath carefully seated panels, leaving the working joints clear. The service covers fit with the assurance of a design that has already taught its maker which details matter. Revised fitting marks distinguish this assembly from the standard production pattern."
                       }
                     },
                     "Identified": {
@@ -32510,7 +32447,6 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 66560,
                       "type": "cexolocstring",
                       "value": {
                         "0": ""
@@ -49086,7 +49022,6 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 56640,
                       "type": "cexolocstring",
                       "value": {
                         "0": ""
@@ -49291,7 +49226,6 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 56640,
                       "type": "cexolocstring",
                       "value": {
                         "0": ""
@@ -49527,7 +49461,6 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 56640,
                       "type": "cexolocstring",
                       "value": {
                         "0": ""
@@ -49794,7 +49727,6 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 56640,
                       "type": "cexolocstring",
                       "value": {
                         "0": ""
@@ -50061,7 +49993,6 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 56640,
                       "type": "cexolocstring",
                       "value": {
                         "0": ""
@@ -50328,7 +50259,6 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 56640,
                       "type": "cexolocstring",
                       "value": {
                         "0": ""
@@ -50595,7 +50525,6 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 48931,
                       "type": "cexolocstring",
                       "value": {
                         "0": ""
@@ -50800,7 +50729,6 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 48931,
                       "type": "cexolocstring",
                       "value": {
                         "0": ""
@@ -51036,7 +50964,6 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 48931,
                       "type": "cexolocstring",
                       "value": {
                         "0": ""
@@ -51303,7 +51230,6 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 48931,
                       "type": "cexolocstring",
                       "value": {
                         "0": ""
@@ -51570,7 +51496,6 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 48931,
                       "type": "cexolocstring",
                       "value": {
                         "0": ""
@@ -51837,7 +51762,6 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 48931,
                       "type": "cexolocstring",
                       "value": {
                         "0": ""
@@ -52112,7 +52036,6 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 56640,
                       "type": "cexolocstring",
                       "value": {
                         "0": ""
@@ -52317,7 +52240,6 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 56640,
                       "type": "cexolocstring",
                       "value": {
                         "0": ""
@@ -52553,7 +52475,6 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 56640,
                       "type": "cexolocstring",
                       "value": {
                         "0": ""
@@ -52789,7 +52710,6 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 56640,
                       "type": "cexolocstring",
                       "value": {
                         "0": ""
@@ -53087,7 +53007,6 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 48931,
                       "type": "cexolocstring",
                       "value": {
                         "0": ""
@@ -53292,7 +53211,6 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 48931,
                       "type": "cexolocstring",
                       "value": {
                         "0": ""
@@ -53528,7 +53446,6 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 48931,
                       "type": "cexolocstring",
                       "value": {
                         "0": ""
@@ -53733,7 +53650,6 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 48931,
                       "type": "cexolocstring",
                       "value": {
                         "0": ""
@@ -54031,7 +53947,6 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 56640,
                       "type": "cexolocstring",
                       "value": {
                         "0": ""
@@ -54267,7 +54182,6 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 56640,
                       "type": "cexolocstring",
                       "value": {
                         "0": ""
@@ -54565,7 +54479,6 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 48931,
                       "type": "cexolocstring",
                       "value": {
                         "0": ""
@@ -54801,7 +54714,6 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 48931,
                       "type": "cexolocstring",
                       "value": {
                         "0": ""
@@ -55099,7 +55011,6 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 56640,
                       "type": "cexolocstring",
                       "value": {
                         "0": ""
@@ -55366,7 +55277,6 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 56640,
                       "type": "cexolocstring",
                       "value": {
                         "0": ""
@@ -55664,7 +55574,6 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 48931,
                       "type": "cexolocstring",
                       "value": {
                         "0": ""
@@ -55931,7 +55840,6 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 48931,
                       "type": "cexolocstring",
                       "value": {
                         "0": ""
@@ -56264,7 +56172,7 @@
                     },
                     "ModelPart1": {
                       "type": "byte",
-                      "value": 20
+                      "value": 46
                     },
                     "Plot": {
                       "type": "byte",
@@ -56352,7 +56260,7 @@
                     },
                     "xModelPart1": {
                       "type": "word",
-                      "value": 20
+                      "value": 46
                     },
                     "XOrientation": {
                       "type": "float",
@@ -56507,7 +56415,6 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 64105,
                       "type": "cexolocstring",
                       "value": {
                         "0": ""
@@ -56677,7 +56584,7 @@
                     },
                     "ModelPart1": {
                       "type": "byte",
-                      "value": 20
+                      "value": 46
                     },
                     "Plot": {
                       "type": "byte",
@@ -56765,7 +56672,7 @@
                     },
                     "xModelPart1": {
                       "type": "word",
-                      "value": 20
+                      "value": 46
                     },
                     "XOrientation": {
                       "type": "float",
@@ -57724,7 +57631,7 @@
                     },
                     "ModelPart1": {
                       "type": "byte",
-                      "value": 20
+                      "value": 46
                     },
                     "Plot": {
                       "type": "byte",
@@ -57812,7 +57719,7 @@
                     },
                     "xModelPart1": {
                       "type": "word",
-                      "value": 20
+                      "value": 46
                     },
                     "XOrientation": {
                       "type": "float",

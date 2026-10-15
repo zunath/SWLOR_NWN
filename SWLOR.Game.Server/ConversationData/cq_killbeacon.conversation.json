@@ -239,7 +239,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Negative. This briefing requires full command of Devices doctrine, and your file doesn't clear that bar yet. Return when it does.",
+          "Text": "Negative. This briefing requires full command of field explosives and devices, and your file doesn't clear that bar yet. Return when it does.",
           "Style": 0,
           "Color": null
         }
@@ -260,7 +260,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Grid reference Viscara, Republic Engineering Bunker, designation contested. An engineering cell has repurposed bunker fire-control hardware for unsanctioned live testing, six adepts confirmed on site. Your objective: neutralize the six, recover the Killzone Beacon Republic Bunker Docket, and report back. Briefing's already running; catch up.",
+          "Text": "Target: the Republic Engineering Bunker on Viscara, abandoned in the swamps and since overrun. An engineering cell has turned its old fire-control hardware to unsanctioned live testing, six adepts confirmed. Route: Veles starport, south gate into the Wildlands, south to the Lake, then west through the Eastern Swamplands into the Western. The bunker sits half-sunk just west of where you come in, door facing south. Neutralize the six, recover the Killzone Beacon Republic Bunker Docket, and report back here.",
           "Style": 0,
           "Color": null
         }
@@ -286,6 +286,10 @@
         {
           "ChoiceId": "reply-00005",
           "Conditions": []
+        },
+        {
+          "ChoiceId": "neutral-ask",
+          "Conditions": []
         }
       ]
     },
@@ -302,7 +306,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Confirmed. Bunker key issued. Grid reference logged, six hostiles expected, docket is the extraction priority. Report on return.",
+          "Text": "Confirmed. Bunker key issued. Six hostiles expected, docket is the extraction priority. Report back to this briefing point on return.",
           "Style": 0,
           "Color": null
         }
@@ -323,7 +327,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "It marks a kill zone before the enemy occupies it, so fire converges the instant they do. Effective doctrine in the right hands. In the wrong hands it paints friendly positions just as easily, which is why it cannot leak.",
+          "Text": "Because it marks a kill zone before the enemy occupies it, so fire converges the instant they do. Effective in the right hands. In the wrong hands it paints friendly positions just as easily, which is why it cannot leak.",
           "Style": 0,
           "Color": null
         }
@@ -349,7 +353,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "That docket is the Republic's own filing on bunker fire-control assets. If it's in that cell's hands, someone with clearance handed it to them, and I need a name before I need a court-martial.",
+          "Text": "That docket is the Republic's own filing on the bunker's fire-control assets, and it should have left with the last crew when the bunker was abandoned. If it's in that cell's hands, someone with clearance handed it to them, and I need a name before I need a court-martial.",
           "Style": 0,
           "Color": null
         }
@@ -401,7 +405,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Objective unchanged: six adepts, one docket, Viscara Republic Engineering Bunker. Report when both are in hand.",
+          "Text": "Objective unchanged: six adepts, one docket, Viscara Republic Engineering Bunker. Western Swamplands, a short walk west of the Eastern crossing, sealed door facing south. Report when both are in hand.",
           "Style": 0,
           "Color": null
         }
@@ -511,7 +515,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Delay noted, but keep it short. Every hour that relay stays live is an hour more data leaves that bunker.",
+          "Text": "Copy. Move quickly. Every hour that relay stays live is an hour more data leaves that bunker.",
           "Style": 0,
           "Color": null
         }
@@ -610,7 +614,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Relay's still broadcasting from Viscara Republic Engineering Bunker. Five specialists standing between you and silence. Move.",
+          "Text": "Relay's still broadcasting from the Engineering Bunker. Five specialists standing between you and silence. Move.",
           "Style": 0,
           "Color": null
         }
@@ -720,7 +724,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Granted. Take the time you need. I would rather delay this briefing than close it with your name on a casualty report.",
+          "Text": "Acknowledged. Take the time you need to assemble them. I would rather delay this briefing than close it with your name on a casualty report.",
           "Style": 0,
           "Color": null
         }
@@ -793,7 +797,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Textbook, which is what makes him dangerous. He's not improvising. He's running Republic tactics against Republic-trained targets, which means he's had exactly the kind of teacher I'm afraid he's had.",
+          "Text": "Textbook, which is what makes him dangerous. He's an Ugnaught engineer running Republic tactics against Republic-trained targets, which means he's had exactly the kind of teacher I'm afraid he's had.",
           "Style": 0,
           "Color": null
         }
@@ -887,7 +891,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Fourth objective: the inner circle holds a Quartermaster Override Chip, the authorization trail for every requisition that armed this cell. Four hostiles. Recover the chip; I need to know who signed for this hardware.",
+          "Text": "Fourth objective: the inner circle holds a Quartermaster Override Chip, the authorization trail for every requisition that armed this cell. Four hostiles, Bothans by the intercepts. Recover the chip; I need to know who signed for this hardware.",
           "Style": 0,
           "Color": null
         }
@@ -929,7 +933,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Delay logged. Return when ready. This objective isn't going anywhere; unfortunately, neither is the chain of command I'm about to expose.",
+          "Text": "Copy. Bring the chip back intact. It's the only evidence I'll get that a court-martial can't argue with.",
           "Style": 0,
           "Color": null
         }
@@ -1096,7 +1100,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Final objective, and I'll say this plainly instead of by the book: the bunker's master holds killzone beacon doctrine at a level the Republic never cleared for field use, and he intends to paint a live position as the target, not a range marker. Fire team of three, minimum, non-negotiable. I've watched this doctrine used correctly exactly once. I'd like to watch it again.",
+          "Text": "Final objective, and I'll say this plainly instead of by the book: the bunker's master has taken killzone beacon doctrine further than the Republic ever cleared for field use, and he intends to paint a live position as the target, not a range marker. Fire team of three, minimum, non-negotiable. I've watched this doctrine used correctly exactly once. I'd like to watch it again.",
           "Style": 0,
           "Color": null
         }
@@ -1138,7 +1142,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Take it. I would rather you go in ready than go in on my schedule. This briefing ends when the objective is actually secure, not before.",
+          "Text": "Affirmative. Go in ready, as a team. This briefing ends when the objective is actually secure, not before.",
           "Style": 0,
           "Color": null
         }
@@ -1159,7 +1163,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Command's own staging ground, if his projections hold. He's not testing anymore. He's rehearsing a strike against people who trust that ground is safe.",
+          "Text": "Veles, if his projections hold. It's the nearest settlement to that swamp. He's not testing anymore. He's rehearsing a strike against people who don't even know that bunker is occupied.",
           "Style": 0,
           "Color": null
         }
@@ -1185,7 +1189,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "From this briefing room, originally, back when I still thought doctrine couldn't be misused by someone who understood it well enough. I was wrong. I've stopped pretending otherwise.",
+          "Text": "From me, originally. I taught it to engineering cadets inside that bunker, back when it was still staffed and I still thought doctrine couldn't be misused by someone who understood it well enough. I was wrong. I've stopped pretending otherwise.",
           "Style": 0,
           "Color": null
         }
@@ -1291,6 +1295,32 @@
       ],
       "OnEnterActions": [],
       "Choices": []
+    },
+    "neutral-meeting": {
+      "Id": "neutral-meeting",
+      "SpeakerName": "",
+      "SpeakerTag": "",
+      "PortraitResref": "",
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Text": [
+        {
+          "Text": "Public briefing point: Corporate District, Smuggler's Moon. The contract concerns unsanctioned weapons testing, not Republic recruitment. I need qualified operators regardless of allegiance, and they gather here. The objective is the Republic Engineering Bunker on Viscara, abandoned in the Swamplands and part of no working base now; nobody's flag flies over it. Land at the Veles starport and follow the route in the briefing. Report back to this briefing point.",
+          "Style": 0,
+          "Color": null
+        }
+      ],
+      "OnEnterActions": [],
+      "Choices": [
+        {
+          "ChoiceId": "neutral-return",
+          "Conditions": []
+        }
+      ]
     }
   },
   "Choices": {
@@ -1350,7 +1380,7 @@
     "reply-00002": {
       "Id": "reply-00002",
       "Text": {
-        "Text": "What does a killzone beacon actually do?",
+        "Text": "Why does the Republic guard killzone beacon doctrine so closely?",
         "Style": 4,
         "Color": null
       },
@@ -2138,6 +2168,52 @@
       "Next": [
         {
           "TargetNodeId": "entry-00041",
+          "Conditions": []
+        }
+      ],
+      "EndsConversation": false,
+      "IsAutomatic": false
+    },
+    "neutral-ask": {
+      "Id": "neutral-ask",
+      "Text": {
+        "Text": "Why are we meeting here, and where is the trial?",
+        "Style": 4,
+        "Color": null
+      },
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Actions": [],
+      "Next": [
+        {
+          "TargetNodeId": "neutral-meeting",
+          "Conditions": []
+        }
+      ],
+      "EndsConversation": false,
+      "IsAutomatic": false
+    },
+    "neutral-return": {
+      "Id": "neutral-return",
+      "Text": {
+        "Text": "Back to the assignment.",
+        "Style": 4,
+        "Color": null
+      },
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Actions": [],
+      "Next": [
+        {
+          "TargetNodeId": "entry-00002",
           "Conditions": []
         }
       ],

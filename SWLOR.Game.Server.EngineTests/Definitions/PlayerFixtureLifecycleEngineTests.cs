@@ -55,6 +55,20 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
         }
 
         /// <summary>
+        /// The engine ignores DestroyObject on player-flagged creatures, so a fixture that kept
+        /// the flag after disposal would stay in the arena beside every later case.
+        /// </summary>
+        [EngineTest("Disposed player fixture can be destroyed", Category = "PlayerFixture", TimeoutSeconds = 30f)]
+        public static async Task DisposedFixtureIsDestroyable(EngineTestContext ctx)
+        {
+            var fixture = await PlayerAbilityFixture.CreateAsync(ctx);
+            var creature = fixture.Creature;
+            fixture.Dispose();
+            AssignCommand(creature, () => DestroyObject(creature));
+            await ctx.WaitUntilAsync(() => !GetIsObjectValid(creature), 5f, "the disposed fixture creature to be destroyed");
+        }
+
+        /// <summary>
         /// Returns a snapshot so later native player enumeration cannot alter comparisons.
         /// </summary>
         private static HashSet<uint> GetPlayerRoster()

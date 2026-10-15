@@ -23,6 +23,118 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
     {
         private readonly record struct NativeTintRow(string Material, string Parameter, int Type, float Value);
 
+        [EngineTest("NPC outfit changes refresh all resolved dye channels without possession", Category = "NpcEquipmentAppearance", TimeoutSeconds = 60f)]
+        public static async Task NpcOutfitChangesRefreshDyes(EngineTestContext ctx)
+        {
+            var npc = ctx.SpawnCreature("civilian");
+            await ctx.WaitUntilAsync(() => GetIsObjectValid(GetItemInSlot(InventorySlot.Chest, npc)),
+                10f, "the civilian's initial outfit");
+            await ctx.DelaySecondsAsync(1f);
+            ctx.Assert(!GetIsPC(npc) && !GetIsDMPossessed(npc), "The fixture is an ordinary unpossessed NPC.");
+            var original = GetItemInSlot(InventorySlot.Chest, npc);
+
+            for (var pass = 0; pass < 2; pass++)
+            {
+                var outfit = OBJECT_INVALID;
+                var colors = Enumerable.Range(0, 6).Select(channel => 30 + pass * 50 + channel).ToArray();
+                await RunAssignedAsync(ctx, npc, () =>
+                {
+                    outfit = CopyItem(original, npc, false);
+                    ctx.Assert(GetIsObjectValid(outfit), "The replacement outfit exists.");
+                    SetItemCursedFlag(outfit, false);
+                    SetPlotFlag(outfit, false);
+                    EquippedItemAppearance.Set(outfit, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.Robe, 0);
+                    EquippedItemAppearance.Set(outfit, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.LeftForearm, 6);
+                    for (var index = 0; index < 6 * (1 + (int)AppearanceArmor.Num); index++)
+                        EquippedItemAppearance.Set(outfit, ItemAppearanceType.ArmorColor, index,
+                            index < 6 ? colors[index] : 255);
+                });
+                await ctx.WaitFrameAsync();
+                var oldOutfit = GetItemInSlot(InventorySlot.Chest, npc);
+                await RunAssignedAsync(ctx, npc, () =>
+                {
+                    SetItemCursedFlag(oldOutfit, false);
+                    SetPlotFlag(oldOutfit, false);
+                    ClearAllActions();
+                    ActionUnequipItem(oldOutfit);
+                });
+                await ctx.WaitUntilAsync(() => GetItemInSlot(InventorySlot.Chest, npc) != oldOutfit,
+                    10f, "the old outfit to leave the chest slot");
+                await RunAssignedAsync(ctx, npc, () => ActionEquipItem(outfit, InventorySlot.Chest));
+                await ctx.WaitUntilAsync(() => GetItemInSlot(InventorySlot.Chest, npc) == outfit,
+                    10f, "the new outfit to equip");
+                await ctx.DelaySecondsAsync(0.75f);
+
+                var rows = ReadNativeRows(ctx, npc);
+                AssertNoResetRecords(ctx, rows);
+                var checkedLayers = new HashSet<TintMapLayerType>();
+                foreach (var selection in TintMapModelResolver.GetCurrentSelections(npc)
+                             .Where(selection => selection.PaletteSource == outfit))
+                {
+                    foreach (var layer in selection.Material.Layers.Where(layer => !TintMapVariable.IsCreatureColorLayer(layer)))
+                    {
+                        var channel = (int)Enum.Parse<AppearanceArmorColor>(layer.ToString());
+                        var definition = TintMapMaterialRegistry.GetLayer(layer);
+                        AssertNativeRow(ctx, rows, selection.Material.Resref.ToLowerInvariant(),
+                            definition.UniformName.ToLowerInvariant(),
+                            (definition.PaletteBaseRow + colors[channel] + 0.5f) / 2048f);
+                        checkedLayers.Add(layer);
+                    }
+                }
+                ctx.Assert(checkedLayers.Count >= 3, "The replacement covers multiple clothing dye channels.");
+                for (var channel = 0; channel < colors.Length; channel++)
+                    ctx.AssertEqual(colors[channel], GetItemAppearance(outfit, ItemAppearanceType.ArmorColor, channel),
+                        $"Pass {pass}: native dye channel {channel} stays authored");
+                ctx.AssertEqual(npc, GetItemPossessor(oldOutfit), "The old outfit stays in the NPC inventory.");
+                ctx.AssertEqual(npc, GetItemPossessor(outfit), "The new outfit stays owned by the NPC.");
+            }
+            ctx.SetResultDetail("Two real outfit replacements on an unpossessed NPC refreshed every resolved clothing palette row and retained all six native dye channels and item ownership. No manual tint refresh after equipping.");
+        }
+
+        [EngineTest("NPC helmet removal restores the head and releases the hidden flag without possession", Category = "NpcEquipmentAppearance", TimeoutSeconds = 60f)]
+        public static async Task NpcHelmetRemovalRestoresHead(EngineTestContext ctx)
+        {
+            var npc = ctx.SpawnCreature("civilian");
+            await ctx.DelaySecondsAsync(1f);
+            ctx.Assert(!GetIsPC(npc) && !GetIsDMPossessed(npc), "The fixture is an ordinary unpossessed NPC.");
+            var helmet = await ctx.EquipItemAsync(npc, "advent_helmet", InventorySlot.Head);
+            var native = NWNXLib.g_pAppManager.m_pServerExoApp.GetCreatureByGameObjectID(npc);
+            var originalHead = native.m_pStats.m_nHeadVariation;
+            await RunAssignedAsync(ctx, npc, () =>
+            {
+                SetItemCursedFlag(helmet, false);
+                SetPlotFlag(helmet, false);
+                EquippedItemAppearance.Set(helmet, ItemAppearanceType.SimpleModel, 0, 114);
+                // Establish a projected helmet as a control, independently of the equip hook.
+                TintMapService.ApplyCurrentColors(npc);
+            });
+
+            for (var pass = 0; pass < 2; pass++)
+            {
+                ctx.AssertEqual((ushort)1114, native.m_cAppearance.m_nHeadVariation, "The visible helmet uses its render head.");
+                ctx.AssertEqual(1, GetHiddenWhenEquipped(helmet), "The separate attachment is hidden while projected.");
+                await RunAssignedAsync(ctx, npc, () =>
+                {
+                    ClearAllActions();
+                    ActionUnequipItem(helmet);
+                });
+                await ctx.WaitUntilAsync(() => GetItemInSlot(InventorySlot.Head, npc) != helmet,
+                    10f, "the helmet to leave the NPC head slot");
+                await ctx.DelaySecondsAsync(0.75f);
+                ctx.AssertEqual(originalHead, native.m_cAppearance.m_nHeadVariation, "Unequipping restores the canonical head.");
+                ctx.AssertEqual(originalHead, native.m_pStats.m_nHeadVariation, "The canonical head never changes.");
+                ctx.AssertEqual(0, GetHiddenWhenEquipped(helmet), "The removed helmet's render-only hidden flag is released.");
+                ctx.AssertEqual(npc, GetItemPossessor(helmet), "The removed helmet stays in the NPC inventory.");
+                await RunAssignedAsync(ctx, npc, () => ActionEquipItem(helmet, InventorySlot.Head));
+                await ctx.WaitUntilAsync(() => GetItemInSlot(InventorySlot.Head, npc) == helmet,
+                    10f, "the same helmet to re-equip");
+                await ctx.DelaySecondsAsync(0.75f);
+                ctx.AssertEqual((ushort)1114, native.m_cAppearance.m_nHeadVariation, "Re-equipping automatically restores the helmet visual.");
+                ctx.Assert(HelmetModelRenderer.IsShownByOwner(helmet), "The helmet remains visible by owner choice.");
+            }
+            ctx.SetResultDetail("Two real unequip/re-equip cycles on an unpossessed NPC restored its canonical head, released the removed helmet's native hidden flag, automatically restored the equipped render head, and retained item identity and ownership.");
+        }
+
         [EngineTest("Tint module declares the client material and mask packs", Category = "Tint")]
         public static Task ModuleDeclaresTintAssets(EngineTestContext ctx)
         {
@@ -59,7 +171,16 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             ctx.AssertEqual((ushort)1114, nativePilot.m_cAppearance.m_nHeadVariation,
                 "Helmet114 geometry must render through the head which receives creature material rows.");
             ctx.AssertEqual(OBJECT_INVALID, nativePilot.m_cAppearance.m_oidHeadItem,
-                "The separate native helmet is suppressed only in the replicated appearance.");
+                "The separate native helmet is suppressed in the replicated appearance.");
+            // Full creature updates send the worn helmet from the inventory unless it is natively hidden.
+            ctx.AssertEqual(1, GetHiddenWhenEquipped(helmet), "The native helmet attachment is hidden from clients.");
+            ctx.Assert(HelmetModelRenderer.IsShownByOwner(helmet), "The owner still shows the helmet.");
+            // The server rebuilds the replicated equipment before every client appearance update.
+            nativePilot.UpdateAppearanceForEquippedItems();
+            ctx.AssertEqual(OBJECT_INVALID, nativePilot.m_cAppearance.m_oidHeadItem,
+                "The native equipment refresh sent to observers keeps the helmet on its render head.");
+            ctx.AssertEqual((ushort)1114, nativePilot.m_cAppearance.m_nHeadVariation,
+                "The native equipment refresh keeps the render head.");
             ctx.AssertEqual(originalHead, nativePilot.m_pStats.m_nHeadVariation, "Canonical head remains unchanged.");
             ctx.AssertEqual((int)originalHead, GetCreatureBodyPart(CreaturePart.Head, pilot),
                 "Appearance editing and persistence still read the canonical head through NWScript.");
@@ -113,17 +234,19 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 }
                 try
                 {
-                    SetHiddenWhenEquipped(helmet, true);
+                    HelmetModelRenderer.SetShownByOwner(helmet, false);
                     TintMapService.RefreshAfterColorChange(pilot);
                     ctx.AssertEqual(originalHead, nativePilot.m_cAppearance.m_nHeadVariation, "Hide helmet restores the canonical head.");
                     ctx.AssertEqual(1, GetHiddenWhenEquipped(helmet), "Rendering honors the user's hidden flag.");
+                    ctx.Assert(!HelmetModelRenderer.IsShownByOwner(helmet), "The owner's hide choice is kept.");
                 }
                 finally
                 {
-                    SetHiddenWhenEquipped(helmet, false);
+                    HelmetModelRenderer.SetShownByOwner(helmet, true);
                     TintMapService.RefreshAfterColorChange(pilot);
                 }
                 ctx.AssertEqual((ushort)1114, nativePilot.m_cAppearance.m_nHeadVariation, "Show helmet restores the render head.");
+                ctx.AssertEqual(1, GetHiddenWhenEquipped(helmet), "Show helmet hides the native attachment again.");
 
                 // The head path carries the native per-species helmet scale on top of the
                 // creature's own head size, and restores that head size when the helmet hides.
@@ -137,12 +260,12 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 ctx.Assert(Math.Abs(GetObjectVisualTransform(pilot, ObjectVisualTransform.Scale,
                         nScope: ObjectVisualTransformDataScopeType.CreatureHead) - 1.1f * pilotHelmetScale) < 0.001f,
                     "A head size change while projected keeps the helmet scale.");
-                SetHiddenWhenEquipped(helmet, true);
+                HelmetModelRenderer.SetShownByOwner(helmet, false);
                 TintMapService.RefreshAfterColorChange(pilot);
                 ctx.Assert(Math.Abs(GetObjectVisualTransform(pilot, ObjectVisualTransform.Scale,
                         nScope: ObjectVisualTransformDataScopeType.CreatureHead) - 1.1f) < 0.001f,
                     "Hiding the helmet restores the creature's own head size.");
-                SetHiddenWhenEquipped(helmet, false);
+                HelmetModelRenderer.SetShownByOwner(helmet, true);
                 HelmetModelRenderer.SetHeadScale(pilot, 1f);
                 TintMapService.RefreshAfterColorChange(pilot);
 
@@ -157,6 +280,8 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                         "A race without generated helmet heads keeps its canonical head.");
                     ctx.AssertEqual(helmet, nativePilot.m_cAppearance.m_oidHeadItem,
                         "A race without generated helmet heads keeps the native helmet attachment.");
+                    ctx.AssertEqual(0, GetHiddenWhenEquipped(helmet),
+                        "The native helmet is visible to clients again where it cannot render through the head.");
                     ctx.Assert(!HelmetModelRenderer.SupportsRgb(TintMapModelResolver.GetCurrentSelections(pilot)
                             .Single(s => s.Material.Resref == "helm_114")),
                         "RGB is unavailable where the helmet cannot render through the head.");

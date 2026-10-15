@@ -137,7 +137,7 @@
   },
   "Comment": {
     "type": "cexostring",
-    "value": "Capstone quest giver for Saber Storm in Dantooine Jedi Enclave Trial Halls."
+    "value": "Capstone quest giver for Saber Storm in Hutlar - Jedi Trial Halls."
   },
   "Con": {
     "type": "byte",
@@ -166,7 +166,7 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "Talan Rees is a enclave drill keeper tied to the Saber Storm capstone trials in Dantooine Jedi Enclave Trial Halls."
+      "0": "A lean human woman in a plain, sand-colored training robe, a covered hilt clipped at her hip. She stands balanced on the balls of her feet, as if a drill could start at any moment, and faint burn scars mark the backs of her hands. She watches every ship that sets down at the spaceport like someone waiting for a student who can keep up."
     }
   },
   "Dex": {
@@ -364,7 +364,7 @@
   },
   "PortraitId": {
     "type": "word",
-    "value": 303
+    "value": 4076
   },
   "Race": {
     "type": "byte",

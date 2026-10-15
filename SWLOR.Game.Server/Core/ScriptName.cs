@@ -71,6 +71,8 @@ namespace SWLOR.Game.Server.Core
         public const string OnCreatureAttackBefore = "crea_attack_bef";
         public const string OnCreatureSpawnBefore = "crea_spawn_bef";
         public const string OnCreatureDeathBefore = "crea_death_bef";
+        public const string OnCreatureLeashStarted = "crea_leash_start";
+        public const string OnCreatureLeashEnded = "crea_leash_end";
 
         // Item events
         public const string OnItemHit = "item_on_hit";
@@ -206,6 +208,10 @@ namespace SWLOR.Game.Server.Core
         public const string OnRestTriggerEnter = "rest_trg_enter";
         public const string OnRestTriggerExit = "rest_trg_exit";
 
+        // Door events
+        public const string OnDoorAutoRelockOpen = "door_relock_open";
+        public const string OnDoorAutoRelockClosed = "door_relock_shut";
+
         // Placeable events
         public const string OnPlaceableTeleport = "teleport";
         public const string OnPlaceablePermanentVfx = "permanent_vfx";
@@ -234,6 +240,7 @@ namespace SWLOR.Game.Server.Core
         public const string OnTrashOpened = "trash_opened";
         public const string OnTrashClosed = "trash_closed";
         public const string OnTrashDisturbed = "trash_disturbed";
+        public const string OnJukeboxUsed = "jukebox_used";
 
         // Trap events
         public const string OnPitfallTrap = "pitfalltrap";
@@ -293,10 +300,6 @@ namespace SWLOR.Game.Server.Core
         // Resource events
         public const string OnResourceUsed = "res_used";
         public const string OnResourceHeartbeat = "res_heartbeat";
-
-        // Speeder events
-        public const string OnEnmityAcquired = "enmity_acquired";
-        public const string OnSpeederHook = "speeder_hook";
 
         // World events
         public const string OnEnterWorld = "enter_world";

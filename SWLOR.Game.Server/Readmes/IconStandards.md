@@ -118,7 +118,9 @@ Final exported icons must not include contact-sheet gutters, stray outer margins
 
 Production gameplay TGA files must use bottom-left TGA origin (`image descriptor` bit 5 clear, descriptor `8` for 32-bit alpha TGAs). NUI rendering honors TGA origin metadata, while the classic NWN hotbar and feat icon paths render these gameplay resources upright when they match the legacy bottom-left icon layout. ImageMagick previews can make this look inverted unless the export flips the pixel rows while writing the bottom-left origin metadata.
 
-Production gameplay TGA files must be fully opaque. Do not leave transparent or partially transparent edge pixels in feat, spell, ability, or status-effect icons.
+Inventory item TGAs use transparent backgrounds and transparent outer borders, matching native NWN inventory art. Do not stamp semantic frames or dark mattes into 64x64 inventory resources. The opacity and semantic-frame requirements below apply to 32x32 action/status icons.
+
+Production action/status gameplay TGA files must be fully opaque. Do not leave transparent or partially transparent edge pixels in feat, spell, ability, or status-effect icons.
 
 ## Artwork Quality
 
@@ -175,7 +177,7 @@ The gameplay icon manifest is:
 
 Required fields:
 
-- `Type`: `Ability`, `Feat`, `Spell`, or `StatusEffect`.
+- `Type`: `Ability`, `Feat`, `Spell`, `StatusEffect`, or `Item`.
 - `Key`: stable identifier, such as a feat label or status-effect class name.
 - `DisplayName`: player-facing name when available.
 - `SemanticCategory`: one of the approved semantic categories.
@@ -186,6 +188,10 @@ Required fields:
 Generated status-effect labels in `effecticons.2da` must use compact PascalCase without underscores, such as `AilmentResistance3`. Icon file resrefs should be short, meaningful abbreviations that stay within NWN's 16-character resource limit. Do not append opaque hash, collision, or generator suffixes such as random-looking letters or digits after the meaningful abbreviation.
 
 ## Enforcement
+
+Item artwork uses the existing `GameplayIconManifest.csv`. Original sources and generation prompts live in `SWLOR_Haks/sw_item_source/`. Use meaningful 32x32 action resrefs and engine-required 64x64 `i<ItemClass>_<model>` inventory aliases. Inventory aliases must have transparent backgrounds and borders; only action icons use the shared semantic frame and regular green cooldown tools. Run `python tools/NormalizeInventoryIconTransparency.py --apply` after exporting framed ESS inventory aliases. Ranks of one function share artwork; different functions need distinct designs.
+
+Current appearances come from blueprints. Legacy conversion belongs only in new player migration 19 and server migration 27; historical mappings are icon test fixtures. Retain unused numeric ESS slots as original artwork aliases for saved custom appearances; `sw_item_source/general/native-library.csv` records their source mappings and hashes.
 
 Icon tools and audits must fail when a gameplay icon violates these standards:
 

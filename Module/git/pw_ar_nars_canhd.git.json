@@ -330,11 +330,15 @@
               },
               "DescIdentified": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "A worker's outfit with broad pockets and stout seams around the shoulders. It has been cut for the part of a shift spent carrying, lifting, and reaching rather than the moment somebody takes attendance."
+                }
               },
               "Description": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "A worker's outfit with broad pockets and stout seams around the shoulders. It has been cut for the part of a shift spent carrying, lifting, and reaching rather than the moment somebody takes attendance."
+                }
               },
               "Identified": {
                 "type": "byte",
@@ -2349,11 +2353,15 @@
               },
               "DescIdentified": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "A worker's outfit with broad pockets and stout seams around the shoulders. It has been cut for the part of a shift spent carrying, lifting, and reaching rather than the moment somebody takes attendance."
+                }
               },
               "Description": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "A worker's outfit with broad pockets and stout seams around the shoulders. It has been cut for the part of a shift spent carrying, lifting, and reaching rather than the moment somebody takes attendance."
+                }
               },
               "Identified": {
                 "type": "byte",
@@ -3353,11 +3361,15 @@
               },
               "DescIdentified": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "Black coveralls give these working clothes an orderly appearance even after a hard shift. The concealed lining is more revealing, carrying the wear of tools and hurried repairs that the dark outside keeps discreet."
+                }
               },
               "Description": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "Black coveralls give these working clothes an orderly appearance even after a hard shift. The concealed lining is more revealing, carrying the wear of tools and hurried repairs that the dark outside keeps discreet."
+                }
               },
               "Identified": {
                 "type": "byte",
@@ -4357,11 +4369,15 @@
               },
               "DescIdentified": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "A worker's outfit with broad pockets and stout seams around the shoulders. It has been cut for the part of a shift spent carrying, lifting, and reaching rather than the moment somebody takes attendance."
+                }
               },
               "Description": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "A worker's outfit with broad pockets and stout seams around the shoulders. It has been cut for the part of a shift spent carrying, lifting, and reaching rather than the moment somebody takes attendance."
+                }
               },
               "Identified": {
                 "type": "byte",
@@ -5374,11 +5390,15 @@
               },
               "DescIdentified": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "Light grey cloth and uncomplicated layers keep this outfit easy to wear through a long passage. The strongest stitching is inside the pockets, where a traveller tends to keep the things that cannot be replaced at the next port."
+                }
               },
               "Description": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "Light grey cloth and uncomplicated layers keep this outfit easy to wear through a long passage. The strongest stitching is inside the pockets, where a traveller tends to keep the things that cannot be replaced at the next port."
+                }
               },
               "Identified": {
                 "type": "byte",
@@ -6412,11 +6432,15 @@
               },
               "DescIdentified": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "Light grey cloth and uncomplicated layers keep this outfit easy to wear through a long passage. The strongest stitching is inside the pockets, where a traveller tends to keep the things that cannot be replaced at the next port."
+                }
               },
               "Description": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "Light grey cloth and uncomplicated layers keep this outfit easy to wear through a long passage. The strongest stitching is inside the pockets, where a traveller tends to keep the things that cannot be replaced at the next port."
+                }
               },
               "Identified": {
                 "type": "byte",
@@ -7450,12 +7474,14 @@
               },
               "DescIdentified": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "White fabric gives this Republic uniform a crisp, unmistakable appearance. A close inspection reveals the stubborn little marks of service that survive even the most determined efforts at regulation presentation."
+                }
               },
               "Description": {
                 "type": "cexolocstring",
                 "value": {
-                  "0": ""
+                  "0": "White fabric gives this Republic uniform a crisp, unmistakable appearance. A close inspection reveals the stubborn little marks of service that survive even the most determined efforts at regulation presentation."
                 }
               },
               "Identified": {
@@ -8355,7 +8381,7 @@
         "Description": {
           "type": "cexolocstring",
           "value": {
-            "0": "Dax Rell is a private-ring pit boss tied to the Crippling Defense capstone trials in Smuggler's Moon Fight Club Backrooms."
+            "0": "Dax Rell leans against the gaming machines of the Hyper Dive Cantina, sizing up every passing fighter's reach and footwork with a booker's practiced eye. She dresses for business rather than the ring, though her stance says she once fought in it, and a spearman's calluses still mark her hands. She books fighters for the Fight Club below The Slums, and lately she has been keeping a close watch on whatever goes on behind its back rooms."
           }
         },
         "Dex": {
@@ -8477,12 +8503,14 @@
               },
               "DescIdentified": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "A smuggler's outfit cut to pass through a busy port without explaining too much about its owner. The lining has more careful stitching than the outside, particularly around places that an impatient searcher might overlook."
+                }
               },
               "Description": {
                 "type": "cexolocstring",
                 "value": {
-                  "0": ""
+                  "0": "A smuggler's outfit cut to pass through a busy port without explaining too much about its owner. The lining has more careful stitching than the outside, particularly around places that an impatient searcher might overlook."
                 }
               },
               "Identified": {
@@ -8806,7 +8834,7 @@
         },
         "PortraitId": {
           "type": "word",
-          "value": 309
+          "value": 4075
         },
         "Race": {
           "type": "byte",

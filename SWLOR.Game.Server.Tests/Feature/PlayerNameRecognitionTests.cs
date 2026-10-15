@@ -9,6 +9,39 @@ namespace SWLOR.Game.Server.Tests.Feature;
 public class PlayerNameRecognitionTests
 {
     [Test]
+    public void DMExamine_ExposesRealAccountAndDescriptorOnlyToStaff()
+    {
+        var root = FindRepositoryRoot();
+        var source = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Feature",
+            "GuiDefinition", "ViewModel", "DMPlayerExamineViewModel.cs"));
+        var examine = ExtractMethod(source, "public static void ShowExamineWindow(uint dm, uint target)");
+        var nativeExamine = ExtractMethod(source, "public static void ExaminePlayer()");
+        var disabledExamine = ExtractMethod(source, "public static void ExamineDisabledPlayerPanel()");
+        var initialize = ExtractMethod(source, "protected override void Initialize(DMPlayerExaminePayload initialPayload)");
+        var details = ExtractMethod(source, "private void LoadTargetDetails()");
+        var definition = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Feature",
+            "GuiDefinition", "DMPlayerExamineDefinition.cs"));
+
+        nativeExamine.Should().Contain("ShowExamineWindow(OBJECT_SELF, StringToObject(EventsPlugin.GetEventData(\"EXAMINEE_OBJECT_ID\")))");
+        nativeExamine.Should().NotContain("Gui.TogglePlayerWindow");
+        disabledExamine.Should().Contain("ShowExamineWindow(GetLastGuiEventPlayer(), GetLastGuiEventObject())");
+        disabledExamine.Should().NotContain("Gui.TogglePlayerWindow");
+        examine.Should().Contain("if (!GetIsDM(dm) && !GetIsDMPossessed(dm))");
+        // DMPresence keeps the window under the DM avatar while a possessing DM examines as the creature.
+        examine.Should().Contain("DMPresence.ToggleWindow(dm, GuiWindowType.DMPlayerExamine, payload);");
+        examine.IndexOf("return;", StringComparison.Ordinal).Should()
+            .BeLessThan(examine.IndexOf("DMPresence.ToggleWindow", StringComparison.Ordinal));
+        initialize.Should().Contain("_target = initialPayload.Target;");
+        initialize.Should().Contain("LoadTargetDetails();");
+        details.Should().Contain("Descriptor = GetIsPC(_target) && !GetIsDM(_target) ? Disguise.GetDisplayDescriptor(_target) : \"N/A\";");
+        details.Should().Contain("TrueName = GetName(_target);");
+        details.Should().Contain("AccountName = GetPCPlayerName(_target);");
+        definition.Should().Contain("AddDetailRow(col, \"Descriptor\", model => model.Descriptor);");
+        definition.Should().Contain("AddDetailRow(col, \"True name\", model => model.TrueName);");
+        definition.Should().Contain("AddDetailRow(col, \"Account\", model => model.AccountName);");
+    }
+
+    [Test]
     public void PlayerNameOverrides_ObfuscateCommunityNameWhenEnabled()
     {
         var root = FindRepositoryRoot();
@@ -58,6 +91,11 @@ public class PlayerNameRecognitionTests
         var playerMethod = ExtractMethod(source, "private static void ApplyNameOverridesForPlayer(uint player)");
         var dmObserverMethod = ExtractMethod(source, "private static void ApplyNameOverridesForDMObserver(uint dm)");
         var trueNameMethod = ExtractMethod(source, "private static void ApplyTrueNameOverride(uint observer, uint target)");
+
+        // NWNX ignores staff overrides unless DM participation is enabled at startup.
+        var environment = File.ReadAllLines(Path.Combine(root.FullName, "SWLOR.Game.Server", "Docker", "swlor.env"));
+        environment.Should().Contain("NWNX_RENAME_ALLOW_DM=true");
+        environment.Should().Contain("NWNX_RENAME_OVERWRITE_DISPLAY_NAME=false");
 
         enterMethod.Should().Contain("if (GetIsDM(player))");
         enterMethod.Should().Contain("ApplyNameOverridesForDMObserver(player);");
@@ -131,7 +169,7 @@ public class PlayerNameRecognitionTests
     }
 
     [Test]
-    public void KnownNameStorage_CachesObserverRecordsDuringScriptContext()
+    public void KnownNameStorage_CachesObserverRecordsUntilKnownNamesChange()
     {
         var root = FindRepositoryRoot();
         var source = File.ReadAllText(Path.Combine(
@@ -143,9 +181,14 @@ public class PlayerNameRecognitionTests
         var findMethod = ExtractMethod(source, "private static PlayerKnownName FindKnownNames(string observerId)");
         var getMethod = ExtractMethod(source, "private static PlayerKnownName GetKnownNames(uint observer, bool createIfMissing)");
 
+        var exitHandler = ExtractMethod(source, "public static void ReleaseKnownNamesOnExit()");
+
         source.Should().Contain("private static readonly Dictionary<string, PlayerKnownName> KnownNamesByObserverId");
-        staticConstructor.Should().Contain("ServerManager.OnScriptContextEnd += KnownNamesByObserverId.Clear;");
+        staticConstructor.Should().NotContain("KnownNamesByObserverId.Clear");
+        findMethod.Should().Contain("DB.GetWriteVersion<PlayerKnownName>()");
+        findMethod.Should().Contain("KnownNamesByObserverId.Clear();");
         findMethod.Should().Contain("KnownNamesByObserverId.TryGetValue(observerId, out var dbKnownNames)");
+        exitHandler.Should().Contain("KnownNamesByObserverId.Remove(observerId);");
         findMethod.Should().Contain("DB.Search(new DBQuery<PlayerKnownName>()");
         findMethod.Should().Contain("KnownNamesByObserverId[observerId] = dbKnownNames;");
         getMethod.Should().Contain("KnownNamesByObserverId[observerId] = dbKnownNames;");
@@ -216,7 +259,7 @@ public class PlayerNameRecognitionTests
     }
 
     [Test]
-    public void KnownNameStorage_RejectsDuplicateAliasesPerObserver()
+    public void KnownNameStorage_RejectsAliasesUsedByAnotherOnlineCharacter()
     {
         var root = FindRepositoryRoot();
         var source = File.ReadAllText(Path.Combine(
@@ -229,10 +272,17 @@ public class PlayerNameRecognitionTests
         var uniquenessMethod = ExtractMethod(source, "private static string ValidateKnownNameIsUnique(");
 
         setMethod.Should().Contain("ValidateKnownNameAssignment(observer, target, name);");
-        assignmentValidationMethod.Should().Contain("return ValidateKnownNameIsUnique(dbKnownNames, targetId, sanitizedName);");
-        uniquenessMethod.Should().Contain("entry.Key != targetId");
+        assignmentValidationMethod.Should().Contain("return ValidateKnownNameIsUnique(observer, target, sanitizedName);");
+        uniquenessMethod.Should().Contain("GetFirstPC()");
+        uniquenessMethod.Should().Contain("player == target");
+        uniquenessMethod.Should().Contain("TryGetKnownName(observer, player, out var knownName)");
         uniquenessMethod.Should().Contain("StringComparison.OrdinalIgnoreCase");
-        uniquenessMethod.Should().Contain("You already use that name for another character.");
+        uniquenessMethod.Should().Contain("You already use that name for another character who is online.");
+
+        // Stored labels for offline or disguised identities must not block a name, and the rule must
+        // not depend on whether a label belongs to a disguise.
+        uniquenessMethod.Should().NotContain("KnownNames");
+        uniquenessMethod.Should().NotContain("IsDisguiseIdentityKey");
     }
 
     [Test]
@@ -318,14 +368,14 @@ public class PlayerNameRecognitionTests
 
         var nameOverrideMethod = ExtractMethod(source, "private static void ApplyNameOverride(uint observer, uint target)");
         nameOverrideMethod.Should().Contain("UnknownNamePrefix");
-        nameOverrideMethod.Should().Contain("UnknownNameSuffix");
+        nameOverrideMethod.Should().Contain("GetNameOverrideSuffix(target, isUnknown)");
         nameOverrideMethod.Should().Contain("RenamePlugin.SetPCNameOverride(target, displayName, prefix, suffix, PlayerNameOverrideType.Default, observer);");
         nameOverrideMethod.Should().NotContain("SetCreatureNameOverride");
 
         var applyPlayerMethod = ExtractMethod(source, "private static void ApplyNameOverridesForPlayer(uint player)");
         applyPlayerMethod.Should().Contain("var ownDisplayName = ShouldShowOwnDescriptor(player)");
         applyPlayerMethod.Should().Contain("BuildDisplayNameWithDescriptor(GetName(player), unknownDisplayName)");
-        applyPlayerMethod.Should().Contain("RenamePlugin.SetPCNameOverride(player, ownDisplayName, string.Empty, string.Empty, PlayerNameOverrideType.Default, player);");
+        applyPlayerMethod.Should().Contain("RenamePlugin.SetPCNameOverride(player, ownDisplayName, string.Empty, GetNameOverrideSuffix(player), PlayerNameOverrideType.Default, player);");
 
         var resolveDisplayMethod = ExtractMethod(source, "private static string ResolveDisplayName(uint observer, uint target, out bool isUnknown)");
         resolveDisplayMethod.Should().Contain("ShouldShowDescriptorForNamedPlayers(observer)");

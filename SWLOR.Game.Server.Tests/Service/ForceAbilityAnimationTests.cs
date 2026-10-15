@@ -42,7 +42,8 @@ public class ForceAbilityAnimationTests
             foreach (var (feat, ability) in abilities)
             {
                 ability.ActivationDelay(0, 0, ability.AbilityLevel).Should().Be(ExpectedCast(entry.Id, ability.AbilityLevel), entry.Id);
-                ability.ImpactDelay.Should().Be(0, entry.Id);
+                ability.ImpactDelay.Should().Be(entry.Id == "ForceLeap" ? 1f : 0f,
+                    "Force Leap resolves its damage when the leap lands");
                 ability.IsChanneled.Should().BeFalse("current Force effects are timed effects, not caster channels");
                 ability.PreviewAnimation.Should().BeSameAs(entry.Clip);
                 ability.QueuedAttackAnimation.Should().BeNull();

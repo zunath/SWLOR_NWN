@@ -24,7 +24,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
                 : 10;
 
             StatGroup.Stats[StatType.FatalDamageTemporaryHPPercent] =
-                AbilityEffectScaling.ApplyActiveForceAffinityMagnitude(Source, TemporaryHPPercent);
+                AbilityEffectScaling.ApplyActiveForceAffinityRestorativeMagnitude(Source, TemporaryHPPercent);
             StatGroup.Stats[StatType.FatalDamageTemporaryHPDurationSeconds] = TemporaryHPDurationSeconds;
             StatGroup.Stats[StatType.FatalDamageTemporaryHPScalingAbilityScore] = scalingAbilityScore;
         }

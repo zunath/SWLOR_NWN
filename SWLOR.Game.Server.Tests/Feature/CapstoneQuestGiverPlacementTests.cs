@@ -7,25 +7,31 @@ namespace SWLOR.Game.Server.Tests.Feature;
 
 public class CapstoneQuestGiverPlacementTests
 {
-    // Every capstone quest giver -> its own distinct, non-dungeon hub area (git file stem).
-    // One giver per area, except the three Dathomir hubs (only three non-dungeon areas exist on
-    // Dathomir for six beast-mastery givers), which carry two each.
+    // Every capstone quest giver -> a non-dungeon hub area (git file stem). One giver per area, except
+    // SharedHubs: Dathomir has only three safe areas for six beast-mastery givers, and every other safe
+    // Tatooine/Smuggler's Moon hub already holds a giver, and Fort Ka'ra is a faction area, so these carry two each.
     private static readonly (string Giver, string Area)[] Placements =
     {
         ("cq_invinc", "veles_sheriff"), ("cq_vitrupt", "veles_cantina"), ("cq_sysshut", "veles_cz_tower"),
-        ("cq_killbeacon", "v_repubbase_1"), ("cq_embunker", "v_repubbase_ext"), ("cq_deccommand", "v_repubbase_cd"),
-        ("cq_sabstorm", "dan_jedienclave"), ("cq_guardmst", "dan_jedlibrary"), ("cq_sabcycl", "dan_interiors"),
-        ("cq_emcocktail", "dan_repubmed"), ("cq_holdline", "dan_repgarrison"), ("cq_infconduit", "dan_medinterior"),
-        ("cq_absdef", "ar_scor_kacademy"), ("cq_soulasc", "scor_knwinterior"), ("cq_forcebane", "ar_scor_kortemp"),
-        ("cq_lightstand", "korribanlandingp"), ("cq_darkhung", "ar_scor_korrcan"), ("cq_eclipse", "scor_kscaves"),
-        ("cq_adamguard", "nanostation015"), ("cq_scraplock", "czs220_hangar"), ("cq_worldbrk", "dan_battlemon"),
-        ("cq_unmovctr", "tat_anc_cantina"), ("cq_lastword", "tosche_cantina_s"), ("cq_deadhand", "tochee_cantina"),
-        ("cq_killbox", "pw_ar_nsczgnstr"), ("cq_oneshot", "pw_ar_czoffice"), ("cq_rainsteel", "pw_ar_nscrafting"),
-        ("cq_thermdet", "hutlar_outpost"), ("cq_overbarr", "sol_mandaloriani"), ("cq_perflurry", "sol_hutlarqcanyo"),
+        ("cq_killbeacon", "pw_ar_narscorpd"), ("cq_embunker", "tat_anc_gocorpst"), ("cq_deccommand", "pw_ar_nsshipyard"),
+        ("cq_sabstorm", "tat_anc_astropor"), ("cq_guardmst", "tat_anc_southdis"), ("cq_sabcycl", "tat_tocheemain"),
+        ("cq_emcocktail", "pw_ar_ns_medical"), ("cq_holdline", "pw_ar_nardocks"), ("cq_infconduit", "tat_anc_medical"),
+        ("cq_absdef", "pw_ar_nsficlub"), ("cq_soulasc", "pw_ar_narshahub"), ("cq_forcebane", "tat_anc_southent"),
+        ("cq_lightstand", "pw_ar_narpromena"), ("cq_darkhung", "tat_anc_junix"), ("cq_eclipse", "pw_ar_nardocks"),
+        ("cq_adamguard", "nanostation015"), ("cq_scraplock", "czs220_hangar"), ("cq_worldbrk", "tat_anc_droidshp"),
+        ("cq_unmovctr", "tat_elevagiifarm"), ("cq_lastword", "tat_anc_southent"), ("cq_deadhand", "tat_anc_junix"),
+        ("cq_killbox", "pw_ar_nsczgnstr"), ("cq_oneshot", "pw_ar_nsshipyard"), ("cq_rainsteel", "pw_ar_nscrafting"),
+        ("cq_thermdet", "hutlar_outpost"), ("cq_overbarr", "hutlar_outpost"), ("cq_perflurry", "sol_hutlarqcanyo"),
         ("cq_primover", "dath_landingpad"), ("cq_apexbite", "dath_landingpad"),
         ("cq_untinst", "dath_cz_baseok"), ("cq_unbrbeast", "dath_cz_baseok"),
         ("cq_forcebeast", "dath_waterfallru"), ("cq_alpharhy", "dath_waterfallru"),
         ("cq_cripdef", "pw_ar_nars_canhd"), ("cq_tempbloom", "pw_ar_bhbar"), ("cq_redbloom", "pw_ar_nscasino"),
+    };
+
+    private static readonly string[] SharedHubs =
+    {
+        "dath_landingpad", "dath_cz_baseok", "dath_waterfallru",
+        "tat_anc_southent", "tat_anc_junix", "pw_ar_nsshipyard", "pw_ar_nardocks", "hutlar_outpost",
     };
 
     [Test]
@@ -42,16 +48,14 @@ public class CapstoneQuestGiverPlacementTests
     [Test]
     public void QuestGivers_AreSpreadAcrossDistinctAreas()
     {
-        // Givers must not be bunched: one per area, except the three Dathomir hubs (Dathomir has
-        // only three non-dungeon areas for its six beast-mastery givers) which may hold two each.
+        // Givers must not be bunched: one per area, except the SharedHubs, which may hold two each.
         var perArea = Placements
             .GroupBy(p => p.Area)
             .ToDictionary(g => g.Key, g => g.Count());
 
-        var dathomirHubs = new[] { "dath_landingpad", "dath_cz_baseok", "dath_waterfallru" };
         foreach (var (area, count) in perArea)
         {
-            var cap = dathomirHubs.Contains(area) ? 2 : 1;
+            var cap = SharedHubs.Contains(area) ? 2 : 1;
             count.Should().BeLessThanOrEqualTo(cap, $"{area} should not have more than {cap} quest giver(s)");
         }
 
@@ -114,22 +118,79 @@ public class CapstoneQuestGiverPlacementTests
     }
 
     [Test]
-    public void WorldbreakerTurnInJournals_NameThePlacedGiversArea()
+    public void EveryTurnInJournal_NamesThePlacedGiversArea()
     {
-        var area = Placements.Single(p => p.Giver == "cq_worldbrk").Area;
-        using var are = LoadModuleJson("are", $"{area}.are.json");
-        var location = GetLocString(are.RootElement, "Name").Split(" - ", 2);
-        location.Should().HaveCount(2, "the giver's area name identifies its planet and location");
+        var quests = typeof(VibrobladeCapstoneQuestDefinition).Assembly.GetTypes()
+            .Where(type => type.IsClass && !type.IsAbstract &&
+                           typeof(SWLOR.Game.Server.Service.QuestService.IQuestListDefinition).IsAssignableFrom(type) &&
+                           type.Name.EndsWith("CapstoneQuestDefinition", StringComparison.Ordinal))
+            .SelectMany(type => ((SWLOR.Game.Server.Service.QuestService.IQuestListDefinition)
+                Activator.CreateInstance(type)!).BuildQuests())
+            .ToDictionary(pair => pair.Key, pair => pair.Value);
 
-        var quests = new StaffCapstoneQuestDefinition().BuildQuests()
-            .Where(q => q.Key.StartsWith("worldbreaker_", StringComparison.Ordinal))
-            .Select(q => q.Value)
-            .ToArray();
-        quests.Should().HaveCount(5);
-        foreach (var quest in quests)
+        foreach (var (giver, area) in Placements)
         {
-            quest.States[2].JournalText.Should().Contain($"{location[1]} on {location[0]}",
-                $"{quest.QuestId} must direct players to KX-17's placed hub");
+            var line = CapstoneQuestDefinitionTestData.Lines.Single(line => line.QuestGiver.Resref == giver);
+            using var are = LoadModuleJson("are", $"{area}.are.json");
+            var location = GetLocString(are.RootElement, "Name").Trim().Split(" - ", 2);
+            foreach (var questId in line.QuestIds)
+            {
+                var journal = quests[questId].States[2].JournalText;
+                journal.Should().Contain(line.QuestGiver.Name, questId);
+                // Existing journals also use the lore name Nar Shaddaa for Smuggler's Moon.
+                if (giver is "cq_lightstand" or "cq_darkhung" or "cq_eclipse" or "cq_absdef" or
+                    "cq_soulasc" or "cq_forcebane" or "cq_sabstorm" or "cq_guardmst" or
+                    "cq_sabcycl" or "cq_infconduit" or "cq_emcocktail" or "cq_holdline" or
+                    "cq_worldbrk" or "cq_killbeacon" or "cq_embunker" or "cq_deccommand" or
+                    "cq_unmovctr" or "cq_lastword" or "cq_deadhand")
+                {
+                    journal.Should().Contain($"{location[1]} on {location[0]}", questId);
+                }
+            }
+        }
+    }
+
+    [Test]
+    public void CapstoneQuestGivers_AvoidFactionHeadquartersAndPlanets()
+    {
+        foreach (var (_, area) in Placements)
+        {
+            using var are = LoadModuleJson("are", $"{area}.are.json");
+            var location = GetLocString(are.RootElement, "Name");
+            location.Should().NotStartWith("Dantooine - ");
+            location.Should().NotStartWith("Korriban - ");
+            location.Should().NotContain("Republic Base");
+        }
+    }
+
+    [Test]
+    public void RelocatedGivers_ExplainNeutralMeetingPointWithoutAdvancingQuests()
+    {
+        // Faction-bound givers moved to neutral ground explain why they are there.
+        var relocatedGivers = new[]
+        {
+            "cq_lightstand", "cq_darkhung", "cq_eclipse", "cq_absdef",
+            "cq_soulasc", "cq_forcebane", "cq_sabstorm", "cq_guardmst",
+            "cq_sabcycl", "cq_infconduit", "cq_emcocktail", "cq_holdline",
+            "cq_worldbrk", "cq_killbeacon", "cq_embunker", "cq_deccommand",
+        };
+        foreach (var (giver, area) in Placements.Where(p => relocatedGivers.Contains(p.Giver)))
+        {
+            var path = Path.Combine(FindRepositoryRoot().FullName, "SWLOR.Game.Server",
+                "ConversationData", $"{giver}.conversation.json");
+            using var graph = JsonDocument.Parse(File.ReadAllText(path));
+            var root = graph.RootElement;
+            var explanation = root.GetProperty("Nodes").GetProperty("neutral-meeting");
+            explanation.GetProperty("OnEnterActions").GetArrayLength().Should().Be(0);
+            foreach (var choiceId in new[] { "neutral-ask", "neutral-return" })
+            {
+                var choice = root.GetProperty("Choices").GetProperty(choiceId);
+                choice.GetProperty("Actions").GetArrayLength().Should().Be(0);
+                choice.GetProperty("EndsConversation").GetBoolean().Should().BeFalse();
+            }
+            using var are = LoadModuleJson("are", $"{area}.are.json");
+            var planet = GetLocString(are.RootElement, "Name").Split(" - ", 2)[0];
+            explanation.GetProperty("Text")[0].GetProperty("Text").GetString().Should().Contain(planet);
         }
     }
 

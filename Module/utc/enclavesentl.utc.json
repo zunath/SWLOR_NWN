@@ -6,7 +6,7 @@
   },
   "Appearance_Type": {
     "type": "word",
-    "value": 10004
+    "value": 2187
   },
   "ArmorPart_RFoot": {
     "type": "byte",
@@ -126,7 +126,7 @@
   },
   "Comment": {
     "type": "cexostring",
-    "value": "Capstone quest creature for Guardian Master in Dantooine Jedi Enclave Trial Halls."
+    "value": "Enclave Security Droid rare elite in Hutlar - Jedi Trial Halls."
   },
   "Con": {
     "type": "byte",
@@ -155,7 +155,7 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "A named rare elite of the Dantooine Jedi Enclave Trial Halls. Ranged."
+      "0": "A sentry droid left to guard the hidden enclave beneath a ruin in the Cloning Test Site. Its sensors still sweep the old halls, and it treats every visitor as an intruder."
     }
   },
   "Dex": {
@@ -225,7 +225,7 @@
   "FirstName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Enclave Sentinel"
+      "0": "Enclave Security Droid"
     }
   },
   "fortbonus": {
@@ -304,11 +304,11 @@
   },
   "PortraitId": {
     "type": "word",
-    "value": 581
+    "value": 1333
   },
   "Race": {
     "type": "byte",
-    "value": 15
+    "value": 167
   },
   "refbonus": {
     "type": "short",
@@ -569,7 +569,7 @@
   },
   "SoundSetFile": {
     "type": "word",
-    "value": 448
+    "value": 54
   },
   "SpecAbilityList": {
     "type": "list",
@@ -649,6 +649,21 @@
         "Value": {
           "type": "cexostring",
           "value": "DANENCLAVE_SENTINEL_COMP,100,1"
+        }
+      },
+      {
+        "__struct_id": 0,
+        "Name": {
+          "type": "cexostring",
+          "value": "LOOT_TABLE_4"
+        },
+        "Type": {
+          "type": "dword",
+          "value": 3
+        },
+        "Value": {
+          "type": "cexostring",
+          "value": "MUSIC_DISCS,1,1"
         }
       }
     ]

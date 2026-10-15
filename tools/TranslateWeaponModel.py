@@ -41,16 +41,28 @@ def _finite_float(data: bytes | bytearray, offset: int, description: str) -> flo
     return value
 
 
-def translate_model(data: bytes, delta: tuple[float, float, float]) -> bytes:
+def _finite_triple(values, description: str) -> tuple[float, float, float]:
+    if len(values) != 3 or any(not isinstance(value, (int, float)) or not math.isfinite(value)
+                               for value in values):
+        raise ValueError(f"{description} must contain three finite numbers")
+    return tuple(float(value) for value in values)
+
+
+def translate_model(data: bytes, delta: tuple[float, float, float], pitch: float = 0.0,
+                    pivot: tuple[float, float, float] = (0.0, 0.0, 0.0)) -> bytes:
     """Return a translated copy of one rigid, static compiled weapon MDL.
 
     Only each direct root child's one-row position values and the model bounds
     change. Vertex, mesh, material and orientation data remain byte-identical.
+    A nonzero pitch first rotates each child about the weapon X axis through
+    `pivot` (degrees; positive raises a -Z barrel), which also rewrites the
+    child's static orientation and conservatively widens the bounds.
     """
-    if len(delta) != 3 or any(not isinstance(value, (int, float)) or not math.isfinite(value)
-                              for value in delta):
-        raise ValueError("offset must contain three finite numbers")
-    offset = tuple(float(value) for value in delta)
+    offset = _finite_triple(delta, "offset")
+    pivot = _finite_triple(pivot, "pivot")
+    if not isinstance(pitch, (int, float)) or not math.isfinite(pitch):
+        raise ValueError("pitch must be finite")
+    angle = math.radians(float(pitch))
     distance = math.sqrt(sum(value * value for value in offset))
     if not math.isfinite(distance):
         raise ValueError("offset length must be finite")
@@ -158,13 +170,13 @@ def translate_model(data: bytes, delta: tuple[float, float, float]) -> bytes:
         position = tuple(_finite_float(data, value_start + (value_index + axis) * 4,
                                        "position controller value") for axis in range(3))
         # Static transform arrays use independent time and value windows.
-        for axis in range(4):
-            _finite_float(data, value_start + (orientation_key[3] + axis) * 4,
-                          "orientation controller value")
+        orientation = tuple(_finite_float(data, value_start + (orientation_key[3] + axis) * 4,
+                                          "orientation controller value") for axis in range(4))
         protected.append((child, child + NODE_HEADER_SIZE + TRIMESH_HEADER_SIZE, "trimesh node"))
         arrays.extend([(key_range[0], key_range[1], "controller keys"),
                        (value_range[0], value_range[1], "controller values")])
-        edits.append((value_start + value_index * 4, position))
+        edits.append((value_start + value_index * 4, position,
+                      value_start + orientation_key[3] * 4, orientation))
 
     for index, (start, end, description) in enumerate(arrays):
         if any(start < other_end and other_start < end
@@ -175,23 +187,38 @@ def translate_model(data: bytes, delta: tuple[float, float, float]) -> bytes:
                 raise ValueError(f"{description} alias another controller array")
 
     result = bytearray(data)
-    for value_offset, position in edits:
+    cosine, sine = math.cos(angle), math.sin(angle)
+    half_cosine, half_sine = math.cos(angle / 2), math.sin(angle / 2)
+    for value_offset, position, orientation_offset, orientation in edits:
+        if angle:
+            y, z = position[1] - pivot[1], position[2] - pivot[2]
+            position = (position[0], pivot[1] + y * cosine - z * sine, pivot[2] + y * sine + z * cosine)
+            x, qy, qz, w = orientation
+            # Rotation about X composed before the child's own static orientation.
+            rotated = (half_cosine * x + half_sine * w, half_cosine * qy - half_sine * qz,
+                       half_cosine * qz + half_sine * qy, half_cosine * w - half_sine * x)
+            if not all(math.isfinite(value) for value in rotated):
+                raise ValueError("rotated orientation must remain finite")
+            struct.pack_into("<4f", result, orientation_offset, *rotated)
         for axis, amount in enumerate(offset):
-            if amount == 0:
+            if amount == 0 and not (angle and axis):
                 continue
             translated_position = position[axis] + amount
             if not math.isfinite(translated_position):
                 raise ValueError("translated position must remain finite")
             struct.pack_into("<f", result, value_offset + axis * 4, translated_position)
+    # A point at distance d from the pivot moves at most 2 d sin(|angle| / 2).
+    sweep = 2 * (radius + math.sqrt(sum(value * value for value in pivot))) * abs(half_sine)
     for axis, amount in enumerate(offset):
-        if amount == 0:
+        if amount == 0 and not sweep:
             continue
-        translated_minimum = minimum[axis] + amount
-        translated_maximum = maximum[axis] + amount
+        translated_minimum = minimum[axis] + amount - sweep
+        translated_maximum = maximum[axis] + amount + sweep
         if not math.isfinite(translated_minimum) or not math.isfinite(translated_maximum):
             raise ValueError("translated model bounds must remain finite")
         struct.pack_into("<f", result, MODEL_BASE + 136 + axis * 4, translated_minimum)
         struct.pack_into("<f", result, MODEL_BASE + 148 + axis * 4, translated_maximum)
+    distance += sweep
     translated_radius = radius + distance
     if not math.isfinite(translated_radius):
         raise ValueError("translated model radius must remain finite")
@@ -204,7 +231,11 @@ def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("input", type=Path)
     parser.add_argument("output", type=Path)
-    parser.add_argument("--offset", nargs=3, type=float, required=True, metavar=("X", "Y", "Z"))
+    parser.add_argument("--offset", nargs=3, type=float, default=(0.0, 0.0, 0.0), metavar=("X", "Y", "Z"))
+    parser.add_argument("--pitch", type=float, default=0.0,
+                        help="Degrees about the weapon X axis through --pivot; positive raises the muzzle")
+    parser.add_argument("--pivot", nargs=3, type=float, default=(0.0, 0.0, 0.0), metavar=("X", "Y", "Z"),
+                        help="Pitch pivot in weapon attachment space, normally the grip contact")
     args = parser.parse_args()
     source = args.input.resolve()
     destination = args.output.resolve()
@@ -212,7 +243,7 @@ def main() -> None:
         parser.error("input and output must be different files")
     if destination.exists():
         parser.error(f"output already exists: {destination}")
-    translated = translate_model(source.read_bytes(), tuple(args.offset))
+    translated = translate_model(source.read_bytes(), tuple(args.offset), args.pitch, tuple(args.pivot))
     destination.parent.mkdir(parents=True, exist_ok=True)
     destination.write_bytes(translated)
 

@@ -41,12 +41,12 @@
   "LocalizedName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Weapon Enhancement - Force Damage I"
+      "0": "Weapon Enhancement - DMG I"
     }
   },
   "ModelPart1": {
     "type": "byte",
-    "value": 81
+    "value": 173
   },
   "PaletteID": {
     "type": "byte",
@@ -151,37 +151,6 @@
           "type": "word",
           "value": 18
         }
-      },
-      {
-        "__struct_id": 0,
-        "ChanceAppear": {
-          "type": "byte",
-          "value": 100
-        },
-        "CostTable": {
-          "type": "byte",
-          "value": 0
-        },
-        "CostValue": {
-          "type": "word",
-          "value": 0
-        },
-        "Param1": {
-          "type": "byte",
-          "value": 255
-        },
-        "Param1Value": {
-          "type": "byte",
-          "value": 0
-        },
-        "PropertyName": {
-          "type": "word",
-          "value": 134
-        },
-        "Subtype": {
-          "type": "word",
-          "value": 2
-        }
       }
     ]
   },
@@ -201,8 +170,28 @@
     "type": "resref",
     "value": "wen_dmg_for1"
   },
+  "VarTable": {
+    "type": "list",
+    "value": [
+      {
+        "__struct_id": 0,
+        "Name": {
+          "type": "cexostring",
+          "value": "NO_ECONOMY"
+        },
+        "Type": {
+          "type": "dword",
+          "value": 1
+        },
+        "Value": {
+          "type": "int",
+          "value": 1
+        }
+      }
+    ]
+  },
   "xModelPart1": {
     "type": "word",
-    "value": 81
+    "value": 173
   }
 }

@@ -105,16 +105,28 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.MarkTargetTrait)
-                .Description("When a Vanguard Command offensive command affects an enemy, party members within Leadership range (5m base) gain +8% damage for 30 seconds. SOC scaling can raise this to +10%.")
+                .Description("When your hostile ability from any skill successfully damages or debuffs an enemy, party members within Leadership range (5m base) gain +8% damage for 30 seconds. SOC scaling can raise this to +10%. Triggers once per ability use, at most once every 45 seconds.")
                 .Price(3)
                 .RequirementSkill(SkillType.Leadership, 12)
-                .IncreasesStat(StatType.LeadershipVanguardMarkTargetRank, 1)
+                .IncreasesStat(StatType.HostileAbilityPartyBuffDamagePercent, 8)
+                .IncreasesStat(StatType.HostileAbilityPartyBuffMaximumDamagePercent, 10)
+                .IncreasesStat(StatType.HostileAbilityPartyBuffDurationSeconds, 30)
+                .IncreasesStat(StatType.HostileAbilityPartyBuffCooldownSeconds, 45)
+                .IncreasesStat(StatType.HostileAbilityPartyBuffNameStrRef, 16780505)
+                .IncreasesStat(StatType.HostileAbilityPartyBuffIcon, (int)EffectIconType.MarkTarget1StatusEffect)
 
                 .AddPerkLevel()
-                .Description("When a Vanguard Command offensive command affects an enemy, party members within Leadership range (5m base) gain +12% damage and +10% Accuracy for 30 seconds. SOC scaling can raise these to +15% damage and +12% Accuracy.")
+                .Description("When your hostile ability from any skill successfully damages or debuffs an enemy, party members within Leadership range (5m base) gain +12% damage and +10% Accuracy for 30 seconds. SOC scaling can raise these to +15% damage and +12% Accuracy. Triggers once per ability use, at most once every 45 seconds.")
                 .Price(4)
                 .RequirementSkill(SkillType.Leadership, 35)
-                .IncreasesStat(StatType.LeadershipVanguardMarkTargetRank, 2);
+                .IncreasesStat(StatType.HostileAbilityPartyBuffDamagePercent, 12)
+                .IncreasesStat(StatType.HostileAbilityPartyBuffMaximumDamagePercent, 15)
+                .IncreasesStat(StatType.HostileAbilityPartyBuffAccuracyPercent, 10)
+                .IncreasesStat(StatType.HostileAbilityPartyBuffMaximumAccuracyPercent, 12)
+                .IncreasesStat(StatType.HostileAbilityPartyBuffDurationSeconds, 30)
+                .IncreasesStat(StatType.HostileAbilityPartyBuffCooldownSeconds, 45)
+                .IncreasesStat(StatType.HostileAbilityPartyBuffNameStrRef, 16780507)
+                .IncreasesStat(StatType.HostileAbilityPartyBuffIcon, (int)EffectIconType.MarkTarget2StatusEffect);
         }
 
         private void ChargeOrder()

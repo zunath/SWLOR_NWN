@@ -34,7 +34,7 @@
   },
   "Comment": {
     "type": "cexostring",
-    "value": "Capstone quest creature for Untouchable Instinct in Dathomir Grotto Apex Den."
+    "value": "Untouchable Instinct master in Dathomir - Sealed Apex Den."
   },
   "Con": {
     "type": "byte",
@@ -50,7 +50,7 @@
   },
   "CurrentHitPoints": {
     "type": "short",
-    "value": 4611
+    "value": 5425
   },
   "DecayTime": {
     "type": "dword",
@@ -63,7 +63,7 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "A level 50 capstone quest enemy for Untouchable Instinct in Dathomir Grotto Apex Den."
+      "0": "A giant brown lizard, older and larger than the one he sired, who shifts between perfect stillness and sudden bursts of speed. The handlers' training took hold in him completely, and nothing in the den moves earlier or faster."
     }
   },
   "Dex": {
@@ -132,7 +132,7 @@
         "__struct_id": 1,
         "Feat": {
           "type": "word",
-          "value": 1822
+          "value": 1760
         }
       },
       {
@@ -178,7 +178,7 @@
   },
   "HitPoints": {
     "type": "short",
-    "value": 4503
+    "value": 5317
   },
   "Int": {
     "type": "byte",
@@ -212,7 +212,7 @@
   },
   "MaxHitPoints": {
     "type": "short",
-    "value": 4611
+    "value": 5425
   },
   "NaturalAC": {
     "type": "byte",

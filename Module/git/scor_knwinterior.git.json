@@ -319,11 +319,15 @@
               },
               "DescIdentified": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "A worker's outfit with broad pockets and stout seams around the shoulders. It has been cut for the part of a shift spent carrying, lifting, and reaching rather than the moment somebody takes attendance."
+                }
               },
               "Description": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "A worker's outfit with broad pockets and stout seams around the shoulders. It has been cut for the part of a shift spent carrying, lifting, and reaching rather than the moment somebody takes attendance."
+                }
               },
               "Identified": {
                 "type": "byte",
@@ -1323,11 +1327,15 @@
               },
               "DescIdentified": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "A bounty hunter's working outfit with concealed closures and space for a few useful necessities. It looks respectable enough to meet a client and worn enough to suggest the meeting is only the beginning of the job."
+                }
               },
               "Description": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "A bounty hunter's working outfit with concealed closures and space for a few useful necessities. It looks respectable enough to meet a client and worn enough to suggest the meeting is only the beginning of the job."
+                }
               },
               "Identified": {
                 "type": "byte",
@@ -2671,11 +2679,15 @@
               },
               "DescIdentified": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "A bounty hunter's working outfit with concealed closures and space for a few useful necessities. It looks respectable enough to meet a client and worn enough to suggest the meeting is only the beginning of the job."
+                }
               },
               "Description": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "A bounty hunter's working outfit with concealed closures and space for a few useful necessities. It looks respectable enough to meet a client and worn enough to suggest the meeting is only the beginning of the job."
+                }
               },
               "Identified": {
                 "type": "byte",
@@ -4019,11 +4031,15 @@
               },
               "DescIdentified": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "Blue fabric gives this gambler's outfit enough distinction to be remembered at the table. Its practical inner pockets suggest that the owner would prefer the exact contents of their purse to remain less memorable."
+                }
               },
               "Description": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "Blue fabric gives this gambler's outfit enough distinction to be remembered at the table. Its practical inner pockets suggest that the owner would prefer the exact contents of their purse to remain less memorable."
+                }
               },
               "Identified": {
                 "type": "byte",
@@ -5023,11 +5039,15 @@
               },
               "DescIdentified": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "A corporate militia outfit with utilitarian seams and the disciplined outline Czerka likes to put between its property and everyone else. The fabric makes no distinction between guarding a warehouse and enforcing the company's idea of order."
+                }
               },
               "Description": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "A corporate militia outfit with utilitarian seams and the disciplined outline Czerka likes to put between its property and everyone else. The fabric makes no distinction between guarding a warehouse and enforcing the company's idea of order."
+                }
               },
               "Identified": {
                 "type": "byte",
@@ -6027,12 +6047,14 @@
               },
               "DescIdentified": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "Clean, practical layers make up this chef's working outfit. Its sleeves can be secured clear of a preparation surface, and its front has survived the sort of scrubbing that fine dining rarely includes in its stories."
+                }
               },
               "Description": {
                 "type": "cexolocstring",
                 "value": {
-                  "0": ""
+                  "0": "Clean, practical layers make up this chef's working outfit. Its sleeves can be secured clear of a preparation surface, and its front has survived the sort of scrubbing that fine dining rarely includes in its stories."
                 }
               },
               "Identified": {
@@ -9094,11 +9116,15 @@
               },
               "DescIdentified": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "A worker's outfit with broad pockets and stout seams around the shoulders. It has been cut for the part of a shift spent carrying, lifting, and reaching rather than the moment somebody takes attendance."
+                }
               },
               "Description": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "A worker's outfit with broad pockets and stout seams around the shoulders. It has been cut for the part of a shift spent carrying, lifting, and reaching rather than the moment somebody takes attendance."
+                }
               },
               "Identified": {
                 "type": "byte",
@@ -10098,11 +10124,15 @@
               },
               "DescIdentified": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "A worker's outfit with broad pockets and stout seams around the shoulders. It has been cut for the part of a shift spent carrying, lifting, and reaching rather than the moment somebody takes attendance."
+                }
               },
               "Description": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "A worker's outfit with broad pockets and stout seams around the shoulders. It has been cut for the part of a shift spent carrying, lifting, and reaching rather than the moment somebody takes attendance."
+                }
               },
               "Identified": {
                 "type": "byte",
@@ -10827,1685 +10857,6 @@
         "ZPosition": {
           "type": "float",
           "value": 0.0
-        }
-      },
-      {
-        "__struct_id": 4,
-        "Appearance_Head": {
-          "type": "byte",
-          "value": 59
-        },
-        "Appearance_Type": {
-          "type": "word",
-          "value": 6
-        },
-        "ArmorPart_RFoot": {
-          "type": "byte",
-          "value": 1
-        },
-        "BodyBag": {
-          "type": "byte",
-          "value": 0
-        },
-        "BodyPart_Belt": {
-          "type": "byte",
-          "value": 0
-        },
-        "BodyPart_LBicep": {
-          "type": "byte",
-          "value": 1
-        },
-        "BodyPart_LFArm": {
-          "type": "byte",
-          "value": 1
-        },
-        "BodyPart_LFoot": {
-          "type": "byte",
-          "value": 1
-        },
-        "BodyPart_LHand": {
-          "type": "byte",
-          "value": 1
-        },
-        "BodyPart_LShin": {
-          "type": "byte",
-          "value": 1
-        },
-        "BodyPart_LShoul": {
-          "type": "byte",
-          "value": 0
-        },
-        "BodyPart_LThigh": {
-          "type": "byte",
-          "value": 1
-        },
-        "BodyPart_Neck": {
-          "type": "byte",
-          "value": 1
-        },
-        "BodyPart_Pelvis": {
-          "type": "byte",
-          "value": 1
-        },
-        "BodyPart_RBicep": {
-          "type": "byte",
-          "value": 1
-        },
-        "BodyPart_RFArm": {
-          "type": "byte",
-          "value": 1
-        },
-        "BodyPart_RHand": {
-          "type": "byte",
-          "value": 1
-        },
-        "BodyPart_RShin": {
-          "type": "byte",
-          "value": 1
-        },
-        "BodyPart_RShoul": {
-          "type": "byte",
-          "value": 0
-        },
-        "BodyPart_RThigh": {
-          "type": "byte",
-          "value": 1
-        },
-        "BodyPart_Torso": {
-          "type": "byte",
-          "value": 1
-        },
-        "Cha": {
-          "type": "byte",
-          "value": 9
-        },
-        "ChallengeRating": {
-          "type": "float",
-          "value": 0.125
-        },
-        "ClassList": {
-          "type": "list",
-          "value": [
-            {
-              "__struct_id": 2,
-              "Class": {
-                "type": "int",
-                "value": 4
-              },
-              "ClassLevel": {
-                "type": "short",
-                "value": 1
-              }
-            },
-            {
-              "__struct_id": 2,
-              "Class": {
-                "type": "int",
-                "value": 52
-              },
-              "ClassLevel": {
-                "type": "short",
-                "value": 1
-              }
-            }
-          ]
-        },
-        "Color_Hair": {
-          "type": "byte",
-          "value": 2
-        },
-        "Color_Skin": {
-          "type": "byte",
-          "value": 16
-        },
-        "Color_Tattoo1": {
-          "type": "byte",
-          "value": 1
-        },
-        "Color_Tattoo2": {
-          "type": "byte",
-          "value": 1
-        },
-        "Con": {
-          "type": "byte",
-          "value": 16
-        },
-        "Conversation": {
-          "type": "resref",
-          "value": "cq_soulasc"
-        },
-        "CRAdjust": {
-          "type": "int",
-          "value": -3
-        },
-        "CurrentHitPoints": {
-          "type": "short",
-          "value": 15
-        },
-        "DecayTime": {
-          "type": "dword",
-          "value": 5000
-        },
-        "Deity": {
-          "type": "cexostring",
-          "value": ""
-        },
-        "Description": {
-          "type": "cexolocstring",
-          "value": {
-            "0": "Senn Dralok is a scarred heavy-blade ascetic tied to the Soul Ascension capstone trials in Korriban Forge Caverns."
-          }
-        },
-        "Dex": {
-          "type": "byte",
-          "value": 13
-        },
-        "Disarmable": {
-          "type": "byte",
-          "value": 0
-        },
-        "Equip_ItemList": {
-          "type": "list",
-          "value": [
-            {
-              "__struct_id": 2,
-              "AddCost": {
-                "type": "dword",
-                "value": 49
-              },
-              "ArmorPart_Belt": {
-                "type": "byte",
-                "value": 0
-              },
-              "ArmorPart_LBicep": {
-                "type": "byte",
-                "value": 248
-              },
-              "ArmorPart_LFArm": {
-                "type": "byte",
-                "value": 245
-              },
-              "ArmorPart_LFoot": {
-                "type": "byte",
-                "value": 241
-              },
-              "ArmorPart_LHand": {
-                "type": "byte",
-                "value": 245
-              },
-              "ArmorPart_LShin": {
-                "type": "byte",
-                "value": 228
-              },
-              "ArmorPart_LShoul": {
-                "type": "byte",
-                "value": 0
-              },
-              "ArmorPart_LThigh": {
-                "type": "byte",
-                "value": 232
-              },
-              "ArmorPart_Neck": {
-                "type": "byte",
-                "value": 2
-              },
-              "ArmorPart_Pelvis": {
-                "type": "byte",
-                "value": 233
-              },
-              "ArmorPart_RBicep": {
-                "type": "byte",
-                "value": 248
-              },
-              "ArmorPart_RFArm": {
-                "type": "byte",
-                "value": 245
-              },
-              "ArmorPart_RFoot": {
-                "type": "byte",
-                "value": 241
-              },
-              "ArmorPart_RHand": {
-                "type": "byte",
-                "value": 245
-              },
-              "ArmorPart_Robe": {
-                "type": "byte",
-                "value": 0
-              },
-              "ArmorPart_RShin": {
-                "type": "byte",
-                "value": 228
-              },
-              "ArmorPart_RShoul": {
-                "type": "byte",
-                "value": 0
-              },
-              "ArmorPart_RThigh": {
-                "type": "byte",
-                "value": 232
-              },
-              "ArmorPart_Torso": {
-                "type": "byte",
-                "value": 248
-              },
-              "BaseItem": {
-                "type": "int",
-                "value": 16
-              },
-              "Charges": {
-                "type": "byte",
-                "value": 0
-              },
-              "Cloth1Color": {
-                "type": "byte",
-                "value": 23
-              },
-              "Cloth2Color": {
-                "type": "byte",
-                "value": 23
-              },
-              "Cost": {
-                "type": "dword",
-                "value": 50
-              },
-              "Cursed": {
-                "type": "byte",
-                "value": 1
-              },
-              "DescIdentified": {
-                "type": "cexolocstring",
-                "value": {}
-              },
-              "Description": {
-                "type": "cexolocstring",
-                "value": {
-                  "0": ""
-                }
-              },
-              "Identified": {
-                "type": "byte",
-                "value": 1
-              },
-              "Leather1Color": {
-                "type": "byte",
-                "value": 23
-              },
-              "Leather2Color": {
-                "type": "byte",
-                "value": 23
-              },
-              "LocalizedName": {
-                "id": 12835,
-                "type": "cexolocstring",
-                "value": {
-                  "0": "Elite Sith Trooper Armour"
-                }
-              },
-              "Metal1Color": {
-                "type": "byte",
-                "value": 24
-              },
-              "Metal2Color": {
-                "type": "byte",
-                "value": 17
-              },
-              "Plot": {
-                "type": "byte",
-                "value": 0
-              },
-              "PropertiesList": {
-                "type": "list",
-                "value": [
-                  {
-                    "__struct_id": 0,
-                    "ChanceAppear": {
-                      "type": "byte",
-                      "value": 100
-                    },
-                    "CostTable": {
-                      "type": "byte",
-                      "value": 2
-                    },
-                    "CostValue": {
-                      "type": "word",
-                      "value": 10
-                    },
-                    "Param1": {
-                      "type": "byte",
-                      "value": 255
-                    },
-                    "Param1Value": {
-                      "type": "byte",
-                      "value": 0
-                    },
-                    "PropertyName": {
-                      "type": "word",
-                      "value": 1
-                    },
-                    "Subtype": {
-                      "type": "word",
-                      "value": 0
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "ChanceAppear": {
-                      "type": "byte",
-                      "value": 100
-                    },
-                    "CostTable": {
-                      "type": "byte",
-                      "value": 49
-                    },
-                    "CostValue": {
-                      "type": "word",
-                      "value": 2
-                    },
-                    "Param1": {
-                      "type": "byte",
-                      "value": 255
-                    },
-                    "Param1Value": {
-                      "type": "byte",
-                      "value": 0
-                    },
-                    "PropertyName": {
-                      "type": "word",
-                      "value": 116
-                    },
-                    "Subtype": {
-                      "type": "word",
-                      "value": 0
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "ChanceAppear": {
-                      "type": "byte",
-                      "value": 100
-                    },
-                    "CostTable": {
-                      "type": "byte",
-                      "value": 42
-                    },
-                    "CostValue": {
-                      "type": "word",
-                      "value": 30
-                    },
-                    "Param1": {
-                      "type": "byte",
-                      "value": 255
-                    },
-                    "Param1Value": {
-                      "type": "byte",
-                      "value": 0
-                    },
-                    "PropertyName": {
-                      "type": "word",
-                      "value": 109
-                    },
-                    "Subtype": {
-                      "type": "word",
-                      "value": 0
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "ChanceAppear": {
-                      "type": "byte",
-                      "value": 100
-                    },
-                    "CostTable": {
-                      "type": "byte",
-                      "value": 0
-                    },
-                    "CostValue": {
-                      "type": "word",
-                      "value": 0
-                    },
-                    "Param1": {
-                      "type": "byte",
-                      "value": 255
-                    },
-                    "Param1Value": {
-                      "type": "byte",
-                      "value": 0
-                    },
-                    "PropertyName": {
-                      "type": "word",
-                      "value": 127
-                    },
-                    "Subtype": {
-                      "type": "word",
-                      "value": 0
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "ChanceAppear": {
-                      "type": "byte",
-                      "value": 100
-                    },
-                    "CostTable": {
-                      "type": "byte",
-                      "value": 0
-                    },
-                    "CostValue": {
-                      "type": "word",
-                      "value": 0
-                    },
-                    "Param1": {
-                      "type": "byte",
-                      "value": 255
-                    },
-                    "Param1Value": {
-                      "type": "byte",
-                      "value": 0
-                    },
-                    "PropertyName": {
-                      "type": "word",
-                      "value": 127
-                    },
-                    "Subtype": {
-                      "type": "word",
-                      "value": 0
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "ChanceAppear": {
-                      "type": "byte",
-                      "value": 100
-                    },
-                    "CostTable": {
-                      "type": "byte",
-                      "value": 0
-                    },
-                    "CostValue": {
-                      "type": "word",
-                      "value": 0
-                    },
-                    "Param1": {
-                      "type": "byte",
-                      "value": 255
-                    },
-                    "Param1Value": {
-                      "type": "byte",
-                      "value": 0
-                    },
-                    "PropertyName": {
-                      "type": "word",
-                      "value": 127
-                    },
-                    "Subtype": {
-                      "type": "word",
-                      "value": 0
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "ChanceAppear": {
-                      "type": "byte",
-                      "value": 100
-                    },
-                    "CostTable": {
-                      "type": "byte",
-                      "value": 0
-                    },
-                    "CostValue": {
-                      "type": "word",
-                      "value": 0
-                    },
-                    "Param1": {
-                      "type": "byte",
-                      "value": 255
-                    },
-                    "Param1Value": {
-                      "type": "byte",
-                      "value": 0
-                    },
-                    "PropertyName": {
-                      "type": "word",
-                      "value": 127
-                    },
-                    "Subtype": {
-                      "type": "word",
-                      "value": 0
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "ChanceAppear": {
-                      "type": "byte",
-                      "value": 100
-                    },
-                    "CostTable": {
-                      "type": "byte",
-                      "value": 0
-                    },
-                    "CostValue": {
-                      "type": "word",
-                      "value": 0
-                    },
-                    "Param1": {
-                      "type": "byte",
-                      "value": 255
-                    },
-                    "Param1Value": {
-                      "type": "byte",
-                      "value": 0
-                    },
-                    "PropertyName": {
-                      "type": "word",
-                      "value": 130
-                    },
-                    "Subtype": {
-                      "type": "word",
-                      "value": 0
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "ChanceAppear": {
-                      "type": "byte",
-                      "value": 100
-                    },
-                    "CostTable": {
-                      "type": "byte",
-                      "value": 6
-                    },
-                    "CostValue": {
-                      "type": "word",
-                      "value": 3
-                    },
-                    "Param1": {
-                      "type": "byte",
-                      "value": 255
-                    },
-                    "Param1Value": {
-                      "type": "byte",
-                      "value": 0
-                    },
-                    "PropertyName": {
-                      "type": "word",
-                      "value": 22
-                    },
-                    "Subtype": {
-                      "type": "word",
-                      "value": 4
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "ChanceAppear": {
-                      "type": "byte",
-                      "value": 100
-                    },
-                    "CostTable": {
-                      "type": "byte",
-                      "value": 7
-                    },
-                    "CostValue": {
-                      "type": "word",
-                      "value": 1
-                    },
-                    "Param1": {
-                      "type": "byte",
-                      "value": 255
-                    },
-                    "Param1Value": {
-                      "type": "byte",
-                      "value": 0
-                    },
-                    "PropertyName": {
-                      "type": "word",
-                      "value": 23
-                    },
-                    "Subtype": {
-                      "type": "word",
-                      "value": 0
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "ChanceAppear": {
-                      "type": "byte",
-                      "value": 100
-                    },
-                    "CostTable": {
-                      "type": "byte",
-                      "value": 7
-                    },
-                    "CostValue": {
-                      "type": "word",
-                      "value": 1
-                    },
-                    "Param1": {
-                      "type": "byte",
-                      "value": 255
-                    },
-                    "Param1Value": {
-                      "type": "byte",
-                      "value": 0
-                    },
-                    "PropertyName": {
-                      "type": "word",
-                      "value": 23
-                    },
-                    "Subtype": {
-                      "type": "word",
-                      "value": 9
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "ChanceAppear": {
-                      "type": "byte",
-                      "value": 100
-                    },
-                    "CostTable": {
-                      "type": "byte",
-                      "value": 7
-                    },
-                    "CostValue": {
-                      "type": "word",
-                      "value": 1
-                    },
-                    "Param1": {
-                      "type": "byte",
-                      "value": 255
-                    },
-                    "Param1Value": {
-                      "type": "byte",
-                      "value": 0
-                    },
-                    "PropertyName": {
-                      "type": "word",
-                      "value": 23
-                    },
-                    "Subtype": {
-                      "type": "word",
-                      "value": 15
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "ChanceAppear": {
-                      "type": "byte",
-                      "value": 100
-                    },
-                    "CostTable": {
-                      "type": "byte",
-                      "value": 7
-                    },
-                    "CostValue": {
-                      "type": "word",
-                      "value": 1
-                    },
-                    "Param1": {
-                      "type": "byte",
-                      "value": 255
-                    },
-                    "Param1Value": {
-                      "type": "byte",
-                      "value": 0
-                    },
-                    "PropertyName": {
-                      "type": "word",
-                      "value": 23
-                    },
-                    "Subtype": {
-                      "type": "word",
-                      "value": 10
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "ChanceAppear": {
-                      "type": "byte",
-                      "value": 100
-                    },
-                    "CostTable": {
-                      "type": "byte",
-                      "value": 7
-                    },
-                    "CostValue": {
-                      "type": "word",
-                      "value": 1
-                    },
-                    "Param1": {
-                      "type": "byte",
-                      "value": 255
-                    },
-                    "Param1Value": {
-                      "type": "byte",
-                      "value": 0
-                    },
-                    "PropertyName": {
-                      "type": "word",
-                      "value": 23
-                    },
-                    "Subtype": {
-                      "type": "word",
-                      "value": 1
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "ChanceAppear": {
-                      "type": "byte",
-                      "value": 100
-                    },
-                    "CostTable": {
-                      "type": "byte",
-                      "value": 7
-                    },
-                    "CostValue": {
-                      "type": "word",
-                      "value": 1
-                    },
-                    "Param1": {
-                      "type": "byte",
-                      "value": 255
-                    },
-                    "Param1Value": {
-                      "type": "byte",
-                      "value": 0
-                    },
-                    "PropertyName": {
-                      "type": "word",
-                      "value": 23
-                    },
-                    "Subtype": {
-                      "type": "word",
-                      "value": 2
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "ChanceAppear": {
-                      "type": "byte",
-                      "value": 100
-                    },
-                    "CostTable": {
-                      "type": "byte",
-                      "value": 7
-                    },
-                    "CostValue": {
-                      "type": "word",
-                      "value": 1
-                    },
-                    "Param1": {
-                      "type": "byte",
-                      "value": 255
-                    },
-                    "Param1Value": {
-                      "type": "byte",
-                      "value": 0
-                    },
-                    "PropertyName": {
-                      "type": "word",
-                      "value": 23
-                    },
-                    "Subtype": {
-                      "type": "word",
-                      "value": 13
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "ChanceAppear": {
-                      "type": "byte",
-                      "value": 100
-                    },
-                    "CostTable": {
-                      "type": "byte",
-                      "value": 5
-                    },
-                    "CostValue": {
-                      "type": "word",
-                      "value": 3
-                    },
-                    "Param1": {
-                      "type": "byte",
-                      "value": 255
-                    },
-                    "Param1Value": {
-                      "type": "byte",
-                      "value": 0
-                    },
-                    "PropertyName": {
-                      "type": "word",
-                      "value": 20
-                    },
-                    "Subtype": {
-                      "type": "word",
-                      "value": 0
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "ChanceAppear": {
-                      "type": "byte",
-                      "value": 100
-                    },
-                    "CostTable": {
-                      "type": "byte",
-                      "value": 5
-                    },
-                    "CostValue": {
-                      "type": "word",
-                      "value": 85
-                    },
-                    "Param1": {
-                      "type": "byte",
-                      "value": 255
-                    },
-                    "Param1Value": {
-                      "type": "byte",
-                      "value": 0
-                    },
-                    "PropertyName": {
-                      "type": "word",
-                      "value": 20
-                    },
-                    "Subtype": {
-                      "type": "word",
-                      "value": 1
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "ChanceAppear": {
-                      "type": "byte",
-                      "value": 100
-                    },
-                    "CostTable": {
-                      "type": "byte",
-                      "value": 5
-                    },
-                    "CostValue": {
-                      "type": "word",
-                      "value": 3
-                    },
-                    "Param1": {
-                      "type": "byte",
-                      "value": 255
-                    },
-                    "Param1Value": {
-                      "type": "byte",
-                      "value": 0
-                    },
-                    "PropertyName": {
-                      "type": "word",
-                      "value": 20
-                    },
-                    "Subtype": {
-                      "type": "word",
-                      "value": 2
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "ChanceAppear": {
-                      "type": "byte",
-                      "value": 100
-                    },
-                    "CostTable": {
-                      "type": "byte",
-                      "value": 5
-                    },
-                    "CostValue": {
-                      "type": "word",
-                      "value": 3
-                    },
-                    "Param1": {
-                      "type": "byte",
-                      "value": 255
-                    },
-                    "Param1Value": {
-                      "type": "byte",
-                      "value": 0
-                    },
-                    "PropertyName": {
-                      "type": "word",
-                      "value": 20
-                    },
-                    "Subtype": {
-                      "type": "word",
-                      "value": 13
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "ChanceAppear": {
-                      "type": "byte",
-                      "value": 100
-                    },
-                    "CostTable": {
-                      "type": "byte",
-                      "value": 48
-                    },
-                    "CostValue": {
-                      "type": "word",
-                      "value": 100
-                    },
-                    "Param1": {
-                      "type": "byte",
-                      "value": 255
-                    },
-                    "Param1Value": {
-                      "type": "byte",
-                      "value": 0
-                    },
-                    "PropertyName": {
-                      "type": "word",
-                      "value": 131
-                    },
-                    "Subtype": {
-                      "type": "word",
-                      "value": 0
-                    }
-                  }
-                ]
-              },
-              "StackSize": {
-                "type": "word",
-                "value": 1
-              },
-              "Stolen": {
-                "type": "byte",
-                "value": 0
-              },
-              "Tag": {
-                "type": "cexostring",
-                "value": "e_sith_tarmour"
-              },
-              "TemplateResRef": {
-                "type": "resref",
-                "value": "e_sith_tarmour01"
-              },
-              "xArmorPart_Belt": {
-                "type": "word",
-                "value": 0
-              },
-              "xArmorPart_LBice": {
-                "type": "word",
-                "value": 248
-              },
-              "xArmorPart_LFArm": {
-                "type": "word",
-                "value": 245
-              },
-              "xArmorPart_LFoot": {
-                "type": "word",
-                "value": 241
-              },
-              "xArmorPart_LHand": {
-                "type": "word",
-                "value": 245
-              },
-              "xArmorPart_LShin": {
-                "type": "word",
-                "value": 228
-              },
-              "xArmorPart_LShou": {
-                "type": "word",
-                "value": 0
-              },
-              "xArmorPart_LThig": {
-                "type": "word",
-                "value": 232
-              },
-              "xArmorPart_Neck": {
-                "type": "word",
-                "value": 2
-              },
-              "xArmorPart_Pelvi": {
-                "type": "word",
-                "value": 233
-              },
-              "xArmorPart_RBice": {
-                "type": "word",
-                "value": 248
-              },
-              "xArmorPart_RFArm": {
-                "type": "word",
-                "value": 245
-              },
-              "xArmorPart_RFoot": {
-                "type": "word",
-                "value": 241
-              },
-              "xArmorPart_RHand": {
-                "type": "word",
-                "value": 245
-              },
-              "xArmorPart_Robe": {
-                "type": "word",
-                "value": 0
-              },
-              "xArmorPart_RShin": {
-                "type": "word",
-                "value": 228
-              },
-              "xArmorPart_RShou": {
-                "type": "word",
-                "value": 0
-              },
-              "xArmorPart_RThig": {
-                "type": "word",
-                "value": 232
-              },
-              "xArmorPart_Torso": {
-                "type": "word",
-                "value": 248
-              },
-              "XOrientation": {
-                "type": "float",
-                "value": 0.0
-              },
-              "XPosition": {
-                "type": "float",
-                "value": -1.0
-              },
-              "YOrientation": {
-                "type": "float",
-                "value": 1.0
-              },
-              "YPosition": {
-                "type": "float",
-                "value": -1.0
-              },
-              "ZPosition": {
-                "type": "float",
-                "value": -1.0
-              }
-            }
-          ]
-        },
-        "FactionID": {
-          "type": "word",
-          "value": 2
-        },
-        "FeatList": {
-          "type": "list",
-          "value": [
-            {
-              "__struct_id": 1,
-              "Feat": {
-                "type": "word",
-                "value": 2
-              }
-            },
-            {
-              "__struct_id": 1,
-              "Feat": {
-                "type": "word",
-                "value": 3
-              }
-            },
-            {
-              "__struct_id": 1,
-              "Feat": {
-                "type": "word",
-                "value": 4
-              }
-            },
-            {
-              "__struct_id": 1,
-              "Feat": {
-                "type": "word",
-                "value": 6
-              }
-            },
-            {
-              "__struct_id": 1,
-              "Feat": {
-                "type": "word",
-                "value": 10
-              }
-            },
-            {
-              "__struct_id": 1,
-              "Feat": {
-                "type": "word",
-                "value": 1089
-              }
-            },
-            {
-              "__struct_id": 1,
-              "Feat": {
-                "type": "word",
-                "value": 28
-              }
-            },
-            {
-              "__struct_id": 1,
-              "Feat": {
-                "type": "word",
-                "value": 258
-              }
-            },
-            {
-              "__struct_id": 1,
-              "Feat": {
-                "type": "word",
-                "value": 32
-              }
-            },
-            {
-              "__struct_id": 1,
-              "Feat": {
-                "type": "word",
-                "value": 106
-              }
-            },
-            {
-              "__struct_id": 1,
-              "Feat": {
-                "type": "word",
-                "value": 45
-              }
-            },
-            {
-              "__struct_id": 1,
-              "Feat": {
-                "type": "word",
-                "value": 46
-              }
-            }
-          ]
-        },
-        "FirstName": {
-          "type": "cexolocstring",
-          "value": {
-            "0": "Senn"
-          }
-        },
-        "fortbonus": {
-          "type": "short",
-          "value": 0
-        },
-        "Gender": {
-          "type": "byte",
-          "value": 0
-        },
-        "GoodEvil": {
-          "type": "byte",
-          "value": 50
-        },
-        "HitPoints": {
-          "type": "short",
-          "value": 15
-        },
-        "Int": {
-          "type": "byte",
-          "value": 10
-        },
-        "Interruptable": {
-          "type": "byte",
-          "value": 0
-        },
-        "IsImmortal": {
-          "type": "byte",
-          "value": 1
-        },
-        "IsPC": {
-          "type": "byte",
-          "value": 0
-        },
-        "LastName": {
-          "type": "cexolocstring",
-          "value": {
-            "0": "Dralok"
-          }
-        },
-        "LawfulChaotic": {
-          "type": "byte",
-          "value": 50
-        },
-        "Lootable": {
-          "type": "byte",
-          "value": 0
-        },
-        "MaxHitPoints": {
-          "type": "short",
-          "value": 21
-        },
-        "NaturalAC": {
-          "type": "byte",
-          "value": 0
-        },
-        "NoPermDeath": {
-          "type": "byte",
-          "value": 1
-        },
-        "PerceptionRange": {
-          "type": "byte",
-          "value": 11
-        },
-        "Phenotype": {
-          "type": "int",
-          "value": 0
-        },
-        "Plot": {
-          "type": "byte",
-          "value": 1
-        },
-        "PortraitId": {
-          "type": "word",
-          "value": 307
-        },
-        "Race": {
-          "type": "byte",
-          "value": 6
-        },
-        "refbonus": {
-          "type": "short",
-          "value": 0
-        },
-        "ScriptAttacked": {
-          "type": "resref",
-          "value": ""
-        },
-        "ScriptDamaged": {
-          "type": "resref",
-          "value": ""
-        },
-        "ScriptDeath": {
-          "type": "resref",
-          "value": ""
-        },
-        "ScriptDialogue": {
-          "type": "resref",
-          "value": "dialog_start"
-        },
-        "ScriptDisturbed": {
-          "type": "resref",
-          "value": ""
-        },
-        "ScriptEndRound": {
-          "type": "resref",
-          "value": ""
-        },
-        "ScriptHeartbeat": {
-          "type": "resref",
-          "value": ""
-        },
-        "ScriptOnBlocked": {
-          "type": "resref",
-          "value": ""
-        },
-        "ScriptOnNotice": {
-          "type": "resref",
-          "value": ""
-        },
-        "ScriptRested": {
-          "type": "resref",
-          "value": ""
-        },
-        "ScriptSpawn": {
-          "type": "resref",
-          "value": ""
-        },
-        "ScriptSpellAt": {
-          "type": "resref",
-          "value": ""
-        },
-        "ScriptUserDefine": {
-          "type": "resref",
-          "value": ""
-        },
-        "SkillList": {
-          "type": "list",
-          "value": [
-            {
-              "__struct_id": 0,
-              "Rank": {
-                "type": "byte",
-                "value": 0
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Rank": {
-                "type": "byte",
-                "value": 0
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Rank": {
-                "type": "byte",
-                "value": 0
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Rank": {
-                "type": "byte",
-                "value": 0
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Rank": {
-                "type": "byte",
-                "value": 0
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Rank": {
-                "type": "byte",
-                "value": 0
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Rank": {
-                "type": "byte",
-                "value": 0
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Rank": {
-                "type": "byte",
-                "value": 0
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Rank": {
-                "type": "byte",
-                "value": 0
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Rank": {
-                "type": "byte",
-                "value": 0
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Rank": {
-                "type": "byte",
-                "value": 0
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Rank": {
-                "type": "byte",
-                "value": 0
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Rank": {
-                "type": "byte",
-                "value": 0
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Rank": {
-                "type": "byte",
-                "value": 0
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Rank": {
-                "type": "byte",
-                "value": 0
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Rank": {
-                "type": "byte",
-                "value": 0
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Rank": {
-                "type": "byte",
-                "value": 0
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Rank": {
-                "type": "byte",
-                "value": 0
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Rank": {
-                "type": "byte",
-                "value": 0
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Rank": {
-                "type": "byte",
-                "value": 0
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Rank": {
-                "type": "byte",
-                "value": 0
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Rank": {
-                "type": "byte",
-                "value": 0
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Rank": {
-                "type": "byte",
-                "value": 0
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Rank": {
-                "type": "byte",
-                "value": 0
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Rank": {
-                "type": "byte",
-                "value": 0
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Rank": {
-                "type": "byte",
-                "value": 0
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Rank": {
-                "type": "byte",
-                "value": 0
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Rank": {
-                "type": "byte",
-                "value": 0
-              }
-            }
-          ]
-        },
-        "SoundSetFile": {
-          "type": "word",
-          "value": 219
-        },
-        "SpecAbilityList": {
-          "type": "list",
-          "value": []
-        },
-        "StartingPackage": {
-          "type": "byte",
-          "value": 4
-        },
-        "Str": {
-          "type": "byte",
-          "value": 16
-        },
-        "Subrace": {
-          "type": "cexostring",
-          "value": ""
-        },
-        "Tag": {
-          "type": "cexostring",
-          "value": "cq_soulasc"
-        },
-        "Tail_New": {
-          "type": "dword",
-          "value": 0
-        },
-        "TemplateList": {
-          "type": "list",
-          "value": []
-        },
-        "TemplateResRef": {
-          "type": "resref",
-          "value": "cq_soulasc"
-        },
-        "WalkRate": {
-          "type": "int",
-          "value": 7
-        },
-        "willbonus": {
-          "type": "short",
-          "value": 0
-        },
-        "Wings_New": {
-          "type": "dword",
-          "value": 0
-        },
-        "Wis": {
-          "type": "byte",
-          "value": 10
-        },
-        "xAppearance_Head": {
-          "type": "word",
-          "value": 59
-        },
-        "xArmorPart_RFoot": {
-          "type": "word",
-          "value": 1
-        },
-        "xBodyPart_Belt": {
-          "type": "word",
-          "value": 0
-        },
-        "xBodyPart_LBicep": {
-          "type": "word",
-          "value": 1
-        },
-        "xBodyPart_LFArm": {
-          "type": "word",
-          "value": 1
-        },
-        "xBodyPart_LFoot": {
-          "type": "word",
-          "value": 1
-        },
-        "xBodyPart_LHand": {
-          "type": "word",
-          "value": 1
-        },
-        "xBodyPart_LShin": {
-          "type": "word",
-          "value": 1
-        },
-        "xBodyPart_LShoul": {
-          "type": "word",
-          "value": 0
-        },
-        "xBodyPart_LThigh": {
-          "type": "word",
-          "value": 1
-        },
-        "xBodyPart_Neck": {
-          "type": "word",
-          "value": 1
-        },
-        "xBodyPart_Pelvis": {
-          "type": "word",
-          "value": 1
-        },
-        "xBodyPart_RBicep": {
-          "type": "word",
-          "value": 1
-        },
-        "xBodyPart_RFArm": {
-          "type": "word",
-          "value": 1
-        },
-        "xBodyPart_RHand": {
-          "type": "word",
-          "value": 1
-        },
-        "xBodyPart_RShin": {
-          "type": "word",
-          "value": 1
-        },
-        "xBodyPart_RShoul": {
-          "type": "word",
-          "value": 0
-        },
-        "xBodyPart_RThigh": {
-          "type": "word",
-          "value": 1
-        },
-        "xBodyPart_Torso": {
-          "type": "word",
-          "value": 1
-        },
-        "XOrientation": {
-          "type": "float",
-          "value": 0.7071066498756409
-        },
-        "XPosition": {
-          "type": "float",
-          "value": 146.6084442138672
-        },
-        "YOrientation": {
-          "type": "float",
-          "value": 0.70710688829422
-        },
-        "YPosition": {
-          "type": "float",
-          "value": 143.5881195068359
-        },
-        "ZPosition": {
-          "type": "float",
-          "value": -5.7220458984375e-006
         }
       }
     ]
@@ -72249,7 +70600,7 @@
         },
         "OnUsed": {
           "type": "resref",
-          "value": "x0_o2_use_chair"
+          "value": ""
         },
         "OnUserDefined": {
           "type": "resref",
@@ -72474,7 +70825,7 @@
         },
         "OnUsed": {
           "type": "resref",
-          "value": "x0_o2_use_chair"
+          "value": ""
         },
         "OnUserDefined": {
           "type": "resref",
@@ -79942,7 +78293,7 @@
         },
         "OnUsed": {
           "type": "resref",
-          "value": "x0_o2_use_chair"
+          "value": ""
         },
         "OnUserDefined": {
           "type": "resref",
@@ -92409,13 +90760,13 @@
                     "DescIdentified": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": ""
+                        "0": "Dark plates catch the light along the edges of this Eclipse armor and leave its recessed surfaces in shadow. Its carefully arranged layers turn that simple contrast into a severe, deliberate silhouette."
                       }
                     },
                     "Description": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": ""
+                        "0": "Dark plates catch the light along the edges of this Eclipse armor and leave its recessed surfaces in shadow. Its carefully arranged layers turn that simple contrast into a severe, deliberate silhouette."
                       }
                     },
                     "Identified": {
@@ -92812,13 +91163,13 @@
                     "DescIdentified": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": ""
+                        "0": "This tunic's outer simplicity conceals a meticulous pattern of internal seams. It feels like a tailor's final answer to a problem they have spent a long time refining."
                       }
                     },
                     "Description": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": ""
+                        "0": "This tunic's outer simplicity conceals a meticulous pattern of internal seams. It feels like a tailor's final answer to a problem they have spent a long time refining."
                       }
                     },
                     "Identified": {
@@ -93277,13 +91628,13 @@
                     "DescIdentified": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": ""
+                        "0": "This tunic combines a formal outline with unusually careful interior work. Every visible fold seems deliberate, as though the tailor expected it to represent its wearer before a word was spoken."
                       }
                     },
                     "Description": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": ""
+                        "0": "This tunic combines a formal outline with unusually careful interior work. Every visible fold seems deliberate, as though the tailor expected it to represent its wearer before a word was spoken."
                       }
                     },
                     "Identified": {
@@ -94551,7 +92902,6 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 100926,
                       "type": "cexolocstring",
                       "value": {
                         "0": ""
@@ -94787,7 +93137,6 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 56605,
                       "type": "cexolocstring",
                       "value": {
                         "0": ""
@@ -95023,7 +93372,6 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 56605,
                       "type": "cexolocstring",
                       "value": {
                         "0": ""
@@ -95290,7 +93638,6 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 56605,
                       "type": "cexolocstring",
                       "value": {
                         "0": ""
@@ -95557,7 +93904,6 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 13336,
                       "type": "cexolocstring",
                       "value": {
                         "0": ""
@@ -95807,7 +94153,6 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 13336,
                       "type": "cexolocstring",
                       "value": {}
                     },
@@ -96117,7 +94462,6 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 13336,
                       "type": "cexolocstring",
                       "value": {}
                     },
@@ -96427,16 +94771,15 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 48321,
                       "type": "cexolocstring",
                       "value": {
-                        "0": ""
+                        "0": "A dark bracer etched with the image of a sun swallowed by shadow."
                       }
                     },
                     "Description": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": ""
+                        "0": "A dark bracer etched with the image of a sun swallowed by shadow."
                       }
                     },
                     "Identified": {
@@ -96448,7 +94791,6 @@
                       "value": 1
                     },
                     "LocalizedName": {
-                      "id": 48320,
                       "type": "cexolocstring",
                       "value": {
                         "0": "Eclipse Bracer"
@@ -96671,7 +95013,6 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 66560,
                       "type": "cexolocstring",
                       "value": {
                         "0": ""
@@ -96929,7 +95270,6 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 66560,
                       "type": "cexolocstring",
                       "value": {
                         "0": ""
@@ -97218,7 +95558,6 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 66560,
                       "type": "cexolocstring",
                       "value": {
                         "0": ""
@@ -97501,16 +95840,15 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 56620,
                       "type": "cexolocstring",
                       "value": {
-                        "0": ""
+                        "0": "Fine seams and substantial cuffs make these gloves look expensive without relying on conspicuous decoration. The finish holds up to close inspection, which is often where grand names begin to lose their authority."
                       }
                     },
                     "Description": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": ""
+                        "0": "Fine seams and substantial cuffs make these gloves look expensive without relying on conspicuous decoration. The finish holds up to close inspection, which is often where grand names begin to lose their authority."
                       }
                     },
                     "Identified": {
@@ -97799,16 +96137,15 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 56620,
                       "type": "cexolocstring",
                       "value": {
-                        "0": ""
+                        "0": "These gloves are understated until the fingers move, revealing a careful arrangement of small, flexible panels. Their quality lies in work that would be easy to miss on a sales counter."
                       }
                     },
                     "Description": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": ""
+                        "0": "These gloves are understated until the fingers move, revealing a careful arrangement of small, flexible panels. Their quality lies in work that would be easy to miss on a sales counter."
                       }
                     },
                     "Identified": {
@@ -98183,13 +96520,13 @@
                     "DescIdentified": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": ""
+                        "0": "Broad armored panels and substantial mounting lugs give this droid torso shell its heavy, industrial outline. The straightforward assembly retains the small tool marks of a build made to earn its keep."
                       }
                     },
                     "Description": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": ""
+                        "0": "Broad armored panels and substantial mounting lugs give this droid torso shell its heavy, industrial outline. The straightforward assembly retains the small tool marks of a build made to earn its keep."
                       }
                     },
                     "Identified": {
@@ -98617,13 +96954,13 @@
                     "DescIdentified": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": ""
+                        "0": "Broad armored panels and substantial mounting lugs give this droid torso shell its heavy, industrial outline. Neatly finished seats and consistent fastenings show a pattern refined beyond its earliest workshop version."
                       }
                     },
                     "Description": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": ""
+                        "0": "Broad armored panels and substantial mounting lugs give this droid torso shell its heavy, industrial outline. Neatly finished seats and consistent fastenings show a pattern refined beyond its earliest workshop version."
                       }
                     },
                     "Identified": {
@@ -99051,13 +97388,13 @@
                     "DescIdentified": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": ""
+                        "0": "Broad armored panels and substantial mounting lugs give this droid torso shell its heavy, industrial outline. The service covers fit with the assurance of a design that has already taught its maker which details matter."
                       }
                     },
                     "Description": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": ""
+                        "0": "Broad armored panels and substantial mounting lugs give this droid torso shell its heavy, industrial outline. The service covers fit with the assurance of a design that has already taught its maker which details matter."
                       }
                     },
                     "Identified": {
@@ -99485,13 +97822,13 @@
                     "DescIdentified": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": ""
+                        "0": "Broad armored panels and substantial mounting lugs give this droid torso shell its heavy, industrial outline. The inner fittings are as carefully dressed as the visible panels, evidence of workmanship no customer should have to discover through a fault."
                       }
                     },
                     "Description": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": ""
+                        "0": "Broad armored panels and substantial mounting lugs give this droid torso shell its heavy, industrial outline. The inner fittings are as carefully dressed as the visible panels, evidence of workmanship no customer should have to discover through a fault."
                       }
                     },
                     "Identified": {
@@ -99919,13 +98256,13 @@
                     "DescIdentified": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": ""
+                        "0": "Broad armored panels and substantial mounting lugs give this droid torso shell its heavy, industrial outline. Every accessible edge has been patiently finished, bringing even routine maintenance to the standard of the completed shell."
                       }
                     },
                     "Description": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": ""
+                        "0": "Broad armored panels and substantial mounting lugs give this droid torso shell its heavy, industrial outline. Every accessible edge has been patiently finished, bringing even routine maintenance to the standard of the completed shell."
                       }
                     },
                     "Identified": {
@@ -100353,13 +98690,13 @@
                     "DescIdentified": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": ""
+                        "0": "Closely fitted panels leave this light droid shell a spare, compact outline around its chassis mounts. The straightforward assembly retains the small tool marks of a build made to earn its keep."
                       }
                     },
                     "Description": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": ""
+                        "0": "Closely fitted panels leave this light droid shell a spare, compact outline around its chassis mounts. The straightforward assembly retains the small tool marks of a build made to earn its keep."
                       }
                     },
                     "Identified": {
@@ -100818,13 +99155,13 @@
                     "DescIdentified": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": ""
+                        "0": "Closely fitted panels leave this light droid shell a spare, compact outline around its chassis mounts. Neatly finished seats and consistent fastenings show a pattern refined beyond its earliest workshop version."
                       }
                     },
                     "Description": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": ""
+                        "0": "Closely fitted panels leave this light droid shell a spare, compact outline around its chassis mounts. Neatly finished seats and consistent fastenings show a pattern refined beyond its earliest workshop version."
                       }
                     },
                     "Identified": {
@@ -101314,13 +99651,13 @@
                     "DescIdentified": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": ""
+                        "0": "Closely fitted panels leave this light droid shell a spare, compact outline around its chassis mounts. The service covers fit with the assurance of a design that has already taught its maker which details matter."
                       }
                     },
                     "Description": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": ""
+                        "0": "Closely fitted panels leave this light droid shell a spare, compact outline around its chassis mounts. The service covers fit with the assurance of a design that has already taught its maker which details matter."
                       }
                     },
                     "Identified": {
@@ -101810,13 +100147,13 @@
                     "DescIdentified": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": ""
+                        "0": "Closely fitted panels leave this light droid shell a spare, compact outline around its chassis mounts. The inner fittings are as carefully dressed as the visible panels, evidence of workmanship no customer should have to discover through a fault."
                       }
                     },
                     "Description": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": ""
+                        "0": "Closely fitted panels leave this light droid shell a spare, compact outline around its chassis mounts. The inner fittings are as carefully dressed as the visible panels, evidence of workmanship no customer should have to discover through a fault."
                       }
                     },
                     "Identified": {
@@ -102306,13 +100643,13 @@
                     "DescIdentified": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": ""
+                        "0": "Closely fitted panels leave this light droid shell a spare, compact outline around its chassis mounts. Every accessible edge has been patiently finished, bringing even routine maintenance to the standard of the completed shell."
                       }
                     },
                     "Description": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": ""
+                        "0": "Closely fitted panels leave this light droid shell a spare, compact outline around its chassis mounts. Every accessible edge has been patiently finished, bringing even routine maintenance to the standard of the completed shell."
                       }
                     },
                     "Identified": {
@@ -105846,7 +104183,6 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 56605,
                       "type": "cexolocstring",
                       "value": {
                         "0": ""
@@ -106051,7 +104387,6 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 56605,
                       "type": "cexolocstring",
                       "value": {
                         "0": ""
@@ -106287,7 +104622,6 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 56605,
                       "type": "cexolocstring",
                       "value": {
                         "0": ""
@@ -106554,7 +104888,6 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 56605,
                       "type": "cexolocstring",
                       "value": {
                         "0": ""
@@ -106821,7 +105154,6 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 56605,
                       "type": "cexolocstring",
                       "value": {
                         "0": ""
@@ -107088,7 +105420,6 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 56605,
                       "type": "cexolocstring",
                       "value": {
                         "0": ""
@@ -107293,7 +105624,6 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 56605,
                       "type": "cexolocstring",
                       "value": {
                         "0": ""
@@ -107591,7 +105921,6 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 56605,
                       "type": "cexolocstring",
                       "value": {
                         "0": ""
@@ -107889,7 +106218,6 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 56605,
                       "type": "cexolocstring",
                       "value": {
                         "0": ""
@@ -108187,7 +106515,6 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 56605,
                       "type": "cexolocstring",
                       "value": {
                         "0": ""
@@ -108485,7 +106812,6 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 13336,
                       "type": "cexolocstring",
                       "value": {
                         "0": ""
@@ -108735,7 +107061,6 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 13336,
                       "type": "cexolocstring",
                       "value": {
                         "0": ""
@@ -109016,7 +107341,6 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 13336,
                       "type": "cexolocstring",
                       "value": {
                         "0": ""
@@ -109297,7 +107621,6 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 13336,
                       "type": "cexolocstring",
                       "value": {
                         "0": ""
@@ -109578,7 +107901,6 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 13336,
                       "type": "cexolocstring",
                       "value": {
                         "0": ""
@@ -109859,7 +108181,6 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 13336,
                       "type": "cexolocstring",
                       "value": {}
                     },
@@ -110138,7 +108459,6 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 13336,
                       "type": "cexolocstring",
                       "value": {}
                     },
@@ -110479,7 +108799,6 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 13336,
                       "type": "cexolocstring",
                       "value": {}
                     },
@@ -110820,7 +109139,6 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 13336,
                       "type": "cexolocstring",
                       "value": {}
                     },
@@ -111161,7 +109479,6 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 13336,
                       "type": "cexolocstring",
                       "value": {}
                     },
@@ -111502,16 +109819,15 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 48321,
                       "type": "cexolocstring",
                       "value": {
-                        "0": ""
+                        "0": "An armored forearm plate engineered to bolt onto a droid chassis."
                       }
                     },
                     "Description": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": ""
+                        "0": "An armored forearm plate engineered to bolt onto a droid chassis."
                       }
                     },
                     "Identified": {
@@ -111523,7 +109839,6 @@
                       "value": 1
                     },
                     "LocalizedName": {
-                      "id": 48320,
                       "type": "cexolocstring",
                       "value": {
                         "0": "DHBR-001"
@@ -111738,16 +110053,15 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 48321,
                       "type": "cexolocstring",
                       "value": {
-                        "0": ""
+                        "0": "An armored forearm plate engineered to bolt onto a droid chassis."
                       }
                     },
                     "Description": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": ""
+                        "0": "An armored forearm plate engineered to bolt onto a droid chassis."
                       }
                     },
                     "Identified": {
@@ -111759,7 +110073,6 @@
                       "value": 1
                     },
                     "LocalizedName": {
-                      "id": 48320,
                       "type": "cexolocstring",
                       "value": {
                         "0": "DHBR-002"
@@ -112005,16 +110318,15 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 48321,
                       "type": "cexolocstring",
                       "value": {
-                        "0": ""
+                        "0": "An armored forearm plate engineered to bolt onto a droid chassis."
                       }
                     },
                     "Description": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": ""
+                        "0": "An armored forearm plate engineered to bolt onto a droid chassis."
                       }
                     },
                     "Identified": {
@@ -112026,7 +110338,6 @@
                       "value": 1
                     },
                     "LocalizedName": {
-                      "id": 48320,
                       "type": "cexolocstring",
                       "value": {
                         "0": "DHBR-003"
@@ -112272,16 +110583,15 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 48321,
                       "type": "cexolocstring",
                       "value": {
-                        "0": ""
+                        "0": "An armored forearm plate engineered to bolt onto a droid chassis."
                       }
                     },
                     "Description": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": ""
+                        "0": "An armored forearm plate engineered to bolt onto a droid chassis."
                       }
                     },
                     "Identified": {
@@ -112293,7 +110603,6 @@
                       "value": 1
                     },
                     "LocalizedName": {
-                      "id": 48320,
                       "type": "cexolocstring",
                       "value": {
                         "0": "DHBR-004"
@@ -112539,16 +110848,15 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 48321,
                       "type": "cexolocstring",
                       "value": {
-                        "0": ""
+                        "0": "An armored forearm plate engineered to bolt onto a droid chassis."
                       }
                     },
                     "Description": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": ""
+                        "0": "An armored forearm plate engineered to bolt onto a droid chassis."
                       }
                     },
                     "Identified": {
@@ -112560,7 +110868,6 @@
                       "value": 1
                     },
                     "LocalizedName": {
-                      "id": 48320,
                       "type": "cexolocstring",
                       "value": {
                         "0": "DHBR-005"
@@ -112814,7 +111121,6 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 66560,
                       "type": "cexolocstring",
                       "value": {
                         "0": ""
@@ -113041,7 +111347,6 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 66560,
                       "type": "cexolocstring",
                       "value": {
                         "0": ""
@@ -113330,7 +111635,6 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 66560,
                       "type": "cexolocstring",
                       "value": {
                         "0": ""
@@ -113619,7 +111923,6 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 66560,
                       "type": "cexolocstring",
                       "value": {
                         "0": ""
@@ -113908,7 +112211,6 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 66560,
                       "type": "cexolocstring",
                       "value": {
                         "0": ""
@@ -114189,16 +112491,15 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 56620,
                       "type": "cexolocstring",
                       "value": {
-                        "0": ""
+                        "0": "This slim droid forearm assembly encloses its fittings beneath carefully seated panels, leaving the working joints clear. The straightforward assembly retains the small tool marks of a build made to earn its keep."
                       }
                     },
                     "Description": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": ""
+                        "0": "This slim droid forearm assembly encloses its fittings beneath carefully seated panels, leaving the working joints clear. The straightforward assembly retains the small tool marks of a build made to earn its keep."
                       }
                     },
                     "Identified": {
@@ -114394,16 +112695,15 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 56620,
                       "type": "cexolocstring",
                       "value": {
-                        "0": ""
+                        "0": "This slim droid forearm assembly encloses its fittings beneath carefully seated panels, leaving the working joints clear. Neatly finished seats and consistent fastenings show a pattern refined beyond its earliest workshop version."
                       }
                     },
                     "Description": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": ""
+                        "0": "This slim droid forearm assembly encloses its fittings beneath carefully seated panels, leaving the working joints clear. Neatly finished seats and consistent fastenings show a pattern refined beyond its earliest workshop version."
                       }
                     },
                     "Identified": {
@@ -114692,16 +112992,15 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 56620,
                       "type": "cexolocstring",
                       "value": {
-                        "0": ""
+                        "0": "This slim droid forearm assembly encloses its fittings beneath carefully seated panels, leaving the working joints clear. The service covers fit with the assurance of a design that has already taught its maker which details matter."
                       }
                     },
                     "Description": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": ""
+                        "0": "This slim droid forearm assembly encloses its fittings beneath carefully seated panels, leaving the working joints clear. The service covers fit with the assurance of a design that has already taught its maker which details matter."
                       }
                     },
                     "Identified": {
@@ -115021,16 +113320,15 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 56620,
                       "type": "cexolocstring",
                       "value": {
-                        "0": ""
+                        "0": "This slim droid forearm assembly encloses its fittings beneath carefully seated panels, leaving the working joints clear. The inner fittings are as carefully dressed as the visible panels, evidence of workmanship no customer should have to discover through a fault."
                       }
                     },
                     "Description": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": ""
+                        "0": "This slim droid forearm assembly encloses its fittings beneath carefully seated panels, leaving the working joints clear. The inner fittings are as carefully dressed as the visible panels, evidence of workmanship no customer should have to discover through a fault."
                       }
                     },
                     "Identified": {
@@ -115350,16 +113648,15 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 56620,
                       "type": "cexolocstring",
                       "value": {
-                        "0": ""
+                        "0": "This slim droid forearm assembly encloses its fittings beneath carefully seated panels, leaving the working joints clear. Every accessible edge has been patiently finished, bringing even routine maintenance to the standard of the completed shell."
                       }
                     },
                     "Description": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": ""
+                        "0": "This slim droid forearm assembly encloses its fittings beneath carefully seated panels, leaving the working joints clear. Every accessible edge has been patiently finished, bringing even routine maintenance to the standard of the completed shell."
                       }
                     },
                     "Identified": {
@@ -115687,7 +113984,6 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 66560,
                       "type": "cexolocstring",
                       "value": {
                         "0": ""
@@ -115945,7 +114241,6 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 66560,
                       "type": "cexolocstring",
                       "value": {
                         "0": ""
@@ -116265,7 +114560,6 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 66560,
                       "type": "cexolocstring",
                       "value": {
                         "0": ""
@@ -116585,7 +114879,6 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 66560,
                       "type": "cexolocstring",
                       "value": {
                         "0": ""
@@ -116905,7 +115198,6 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 66560,
                       "type": "cexolocstring",
                       "value": {
                         "0": ""
@@ -117241,11 +115533,11 @@
                       "value": 1
                     },
                     "LocalizedName": {
+                      "id": 191,
                       "type": "cexolocstring",
                       "value": {
                         "0": "Basic Knife"
-                      },
-                      "id": 191
+                      }
                     },
                     "ModelPart1": {
                       "type": "byte",
@@ -117457,11 +115749,11 @@
                       "value": 1
                     },
                     "LocalizedName": {
+                      "id": 191,
                       "type": "cexolocstring",
                       "value": {
                         "0": "Field Knife"
-                      },
-                      "id": 191
+                      }
                     },
                     "ModelPart1": {
                       "type": "byte",
@@ -117889,11 +116181,11 @@
                       "value": 1
                     },
                     "LocalizedName": {
+                      "id": 191,
                       "type": "cexolocstring",
                       "value": {
                         "0": "Veteran Knife"
-                      },
-                      "id": 191
+                      }
                     },
                     "ModelPart1": {
                       "type": "byte",
@@ -118105,11 +116397,11 @@
                       "value": 1
                     },
                     "LocalizedName": {
+                      "id": 191,
                       "type": "cexolocstring",
                       "value": {
                         "0": "Delta Knife"
-                      },
-                      "id": 191
+                      }
                     },
                     "ModelPart1": {
                       "type": "byte",
@@ -118321,11 +116613,11 @@
                       "value": 1
                     },
                     "LocalizedName": {
+                      "id": 191,
                       "type": "cexolocstring",
                       "value": {
                         "0": "Prime Knife"
-                      },
-                      "id": 191
+                      }
                     },
                     "ModelPart1": {
                       "type": "byte",
@@ -119405,11 +117697,11 @@
                       "value": 1
                     },
                     "LocalizedName": {
+                      "id": 167,
                       "type": "cexolocstring",
                       "value": {
                         "0": "Field Great Sword"
-                      },
-                      "id": 167
+                      }
                     },
                     "ModelPart1": {
                       "type": "byte",
@@ -119623,11 +117915,11 @@
                       "value": 1
                     },
                     "LocalizedName": {
+                      "id": 167,
                       "type": "cexolocstring",
                       "value": {
                         "0": "Titan Great Sword"
-                      },
-                      "id": 167
+                      }
                     },
                     "ModelPart1": {
                       "type": "byte",
@@ -120277,11 +118569,11 @@
                       "value": 1
                     },
                     "LocalizedName": {
+                      "id": 167,
                       "type": "cexolocstring",
                       "value": {
                         "0": "Prime Great Sword"
-                      },
-                      "id": 167
+                      }
                     },
                     "ModelPart1": {
                       "type": "byte",
@@ -141617,7 +139909,6 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 56640,
                       "type": "cexolocstring",
                       "value": {
                         "0": ""
@@ -141853,7 +140144,6 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 56640,
                       "type": "cexolocstring",
                       "value": {
                         "0": ""
@@ -142120,7 +140410,6 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 56640,
                       "type": "cexolocstring",
                       "value": {
                         "0": ""
@@ -142387,7 +140676,6 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 48931,
                       "type": "cexolocstring",
                       "value": {
                         "0": ""
@@ -142623,7 +140911,6 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 48931,
                       "type": "cexolocstring",
                       "value": {
                         "0": ""
@@ -142890,7 +141177,6 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 48931,
                       "type": "cexolocstring",
                       "value": {
                         "0": ""
@@ -143165,7 +141451,6 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 56640,
                       "type": "cexolocstring",
                       "value": {
                         "0": ""
@@ -143370,7 +141655,6 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 56640,
                       "type": "cexolocstring",
                       "value": {
                         "0": ""
@@ -143606,7 +141890,6 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 56640,
                       "type": "cexolocstring",
                       "value": {
                         "0": ""
@@ -143842,7 +142125,6 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 56640,
                       "type": "cexolocstring",
                       "value": {
                         "0": ""
@@ -144109,7 +142391,6 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 56640,
                       "type": "cexolocstring",
                       "value": {
                         "0": ""
@@ -144376,7 +142657,6 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 56640,
                       "type": "cexolocstring",
                       "value": {
                         "0": ""
@@ -144612,7 +142892,6 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 56640,
                       "type": "cexolocstring",
                       "value": {
                         "0": ""
@@ -144910,7 +143189,6 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 56640,
                       "type": "cexolocstring",
                       "value": {
                         "0": ""
@@ -145208,7 +143486,6 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 56640,
                       "type": "cexolocstring",
                       "value": {
                         "0": ""
@@ -145506,7 +143783,6 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 56640,
                       "type": "cexolocstring",
                       "value": {
                         "0": ""
@@ -145804,7 +144080,6 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 48931,
                       "type": "cexolocstring",
                       "value": {
                         "0": ""
@@ -146009,7 +144284,6 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 48931,
                       "type": "cexolocstring",
                       "value": {
                         "0": ""
@@ -146245,7 +144519,6 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 48931,
                       "type": "cexolocstring",
                       "value": {
                         "0": ""
@@ -146481,7 +144754,6 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 48931,
                       "type": "cexolocstring",
                       "value": {
                         "0": ""
@@ -146748,7 +145020,6 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 48931,
                       "type": "cexolocstring",
                       "value": {
                         "0": ""
@@ -147015,7 +145286,6 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 48931,
                       "type": "cexolocstring",
                       "value": {
                         "0": ""
@@ -147220,7 +145490,6 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 48931,
                       "type": "cexolocstring",
                       "value": {
                         "0": ""
@@ -147518,7 +145787,6 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 48931,
                       "type": "cexolocstring",
                       "value": {
                         "0": ""
@@ -147816,7 +146084,6 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 48931,
                       "type": "cexolocstring",
                       "value": {
                         "0": ""
@@ -148114,7 +146381,6 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 48931,
                       "type": "cexolocstring",
                       "value": {
                         "0": ""
@@ -148447,7 +146713,7 @@
                     },
                     "ModelPart1": {
                       "type": "byte",
-                      "value": 20
+                      "value": 46
                     },
                     "Plot": {
                       "type": "byte",
@@ -148515,7 +146781,7 @@
                     },
                     "xModelPart1": {
                       "type": "word",
-                      "value": 20
+                      "value": 46
                     },
                     "XOrientation": {
                       "type": "float",
@@ -148693,8 +146959,7 @@
                       "type": "cexolocstring",
                       "value": {
                         "0": ""
-                      },
-                      "id": 64105
+                      }
                     },
                     "Description": {
                       "type": "cexolocstring",
@@ -148860,7 +147125,7 @@
                     },
                     "ModelPart1": {
                       "type": "byte",
-                      "value": 20
+                      "value": 46
                     },
                     "Plot": {
                       "type": "byte",
@@ -148928,7 +147193,7 @@
                     },
                     "xModelPart1": {
                       "type": "word",
-                      "value": 20
+                      "value": 46
                     },
                     "XOrientation": {
                       "type": "float",
@@ -149021,7 +147286,7 @@
                     },
                     "ModelPart1": {
                       "type": "byte",
-                      "value": 20
+                      "value": 46
                     },
                     "Plot": {
                       "type": "byte",
@@ -149089,7 +147354,7 @@
                     },
                     "xModelPart1": {
                       "type": "word",
-                      "value": 20
+                      "value": 46
                     },
                     "XOrientation": {
                       "type": "float",
@@ -149182,7 +147447,7 @@
                     },
                     "ModelPart1": {
                       "type": "byte",
-                      "value": 20
+                      "value": 46
                     },
                     "Plot": {
                       "type": "byte",
@@ -149250,7 +147515,7 @@
                     },
                     "xModelPart1": {
                       "type": "word",
-                      "value": 20
+                      "value": 46
                     },
                     "XOrientation": {
                       "type": "float",
@@ -149911,7 +148176,7 @@
                     },
                     "ModelPart1": {
                       "type": "byte",
-                      "value": 20
+                      "value": 46
                     },
                     "Plot": {
                       "type": "byte",
@@ -149979,7 +148244,7 @@
                     },
                     "xModelPart1": {
                       "type": "word",
-                      "value": 20
+                      "value": 46
                     },
                     "XOrientation": {
                       "type": "float",

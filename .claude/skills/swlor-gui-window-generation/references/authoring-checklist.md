@@ -12,8 +12,7 @@ Run every sweep; each must answer YES before building.
       `window.AddColumn` root (rule R5). This holds even for windows WITHOUT tabs:
       grep your definition for `AddStandardLayout` — zero matches is an automatic fail.
 - [ ] No-tab windows: exactly one body partial, applied in `Initialize` via
-      `ChangePartialView(TabContentElement, MainContentPartial)` (and re-applied in
-      `OnModalClosedRestore` if the window shows modals).
+      `ChangePartialView(TabContentElement, MainContentPartial)`.
 - [ ] Every tab partial is a fixed-width borderless `Scrollbars(None)` panel.
 - [ ] Partial names and element ids are `const string`s on the ViewModel, referenced
       from the definition (never string literals in two places).
@@ -30,7 +29,9 @@ Run every sweep; each must answer YES before building.
 - [ ] R4: the toggles-bound tab property only calls `HandleClientChange`; the swap
       logic lives in a separate `SelectTab` method.
 - [ ] R6: if the window calls `ShowModal` or `ShowInputModal` anywhere AND has tabs,
-      `OnModalClosedRestore` is overridden.
+      `OnModalClosedRestore` re-selects the tab so its refresh action reruns.
+- [ ] R7: no direct `NuiSetGroupLayout` calls and no delayed layout re-applies;
+      partials go through `ChangePartialView`/`SwapNestedPartialView`.
 - [ ] R1: every non-last `AddTable` column passes a width > 0.
 - [ ] Lists: every cell of one list binds a `GuiBindingList` property, all kept the
       same length; `BindRowCount` is called; per-row click handlers use

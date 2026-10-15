@@ -2,7 +2,7 @@
   "__data_type": "UTC ",
   "Appearance_Head": {
     "type": "byte",
-    "value": 109
+    "value": 101
   },
   "Appearance_Type": {
     "type": "word",
@@ -10,7 +10,7 @@
   },
   "ArmorPart_RFoot": {
     "type": "byte",
-    "value": 241
+    "value": 1
   },
   "BodyBag": {
     "type": "byte",
@@ -22,7 +22,7 @@
   },
   "BodyPart_LBicep": {
     "type": "byte",
-    "value": 133
+    "value": 1
   },
   "BodyPart_LFArm": {
     "type": "byte",
@@ -30,7 +30,7 @@
   },
   "BodyPart_LFoot": {
     "type": "byte",
-    "value": 241
+    "value": 1
   },
   "BodyPart_LHand": {
     "type": "byte",
@@ -38,7 +38,7 @@
   },
   "BodyPart_LShin": {
     "type": "byte",
-    "value": 228
+    "value": 1
   },
   "BodyPart_LShoul": {
     "type": "byte",
@@ -58,7 +58,7 @@
   },
   "BodyPart_RBicep": {
     "type": "byte",
-    "value": 133
+    "value": 1
   },
   "BodyPart_RFArm": {
     "type": "byte",
@@ -70,7 +70,7 @@
   },
   "BodyPart_RShin": {
     "type": "byte",
-    "value": 228
+    "value": 1
   },
   "BodyPart_RShoul": {
     "type": "byte",
@@ -82,7 +82,7 @@
   },
   "BodyPart_Torso": {
     "type": "byte",
-    "value": 28
+    "value": 1
   },
   "Cha": {
     "type": "byte",
@@ -110,11 +110,11 @@
   },
   "Color_Hair": {
     "type": "byte",
-    "value": 120
+    "value": 9
   },
   "Color_Skin": {
     "type": "byte",
-    "value": 4
+    "value": 6
   },
   "Color_Tattoo1": {
     "type": "byte",
@@ -126,7 +126,7 @@
   },
   "Comment": {
     "type": "cexostring",
-    "value": "Capstone quest creature for Scrapheap Lockdown in CZ-220 Breaker Yard."
+    "value": "Scrapheap Lockdown adept in CZ-220 - Breaker Bay."
   },
   "Con": {
     "type": "byte",
@@ -155,7 +155,7 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "A level 50 capstone quest enemy for Scrapheap Lockdown in CZ-220 Breaker Yard."
+      "0": "A stocky Ugnaught in black yard coveralls with katars on both fists. He holds his corner of a sealed bay the way he was drilled: close the room around the fight and let nothing inside move without his leave. He is one of the crew's recruits, posted in the Breaker Yard's outer bays under a forged work order."
     }
   },
   "Dex": {
@@ -169,6 +169,13 @@
   "Equip_ItemList": {
     "type": "list",
     "value": [
+      {
+        "__struct_id": 2,
+        "EquippedRes": {
+          "type": "resref",
+          "value": "worker_outfit_2"
+        }
+      },
       {
         "__struct_id": 16,
         "EquippedRes": {
@@ -430,11 +437,11 @@
   },
   "PortraitId": {
     "type": "word",
-    "value": 4292
+    "value": 4285
   },
   "Race": {
     "type": "byte",
-    "value": 15
+    "value": 163
   },
   "refbonus": {
     "type": "short",

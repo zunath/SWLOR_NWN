@@ -64,6 +64,18 @@ namespace SWLOR.Game.Server.Service
             PlayerPlugin.SetTlkOverride(player, PartyChatMessagePrefixStrRef, CommsMessagePrefix);
         }
 
+        [NWNEventHandler(ScriptName.OnModuleEnter)]
+        public static void ApplyShoutChannelName()
+        {
+            var player = GetEnteringObject();
+            var isDM = GetIsDM(player) || GetIsDMPossessed(player);
+            if (!GetIsPC(player) && !isDM)
+                return;
+
+            // Keep this per-client; a global override would also label DM Shout as disabled.
+            PlayerPlugin.SetTlkOverride(player, 66751, isDM ? "Shout" : "Disabled");
+        }
+
         /// <summary>
         /// Whenever a DM possesses a creature, track the NPC on their object so that messages can be
         /// sent to them during the possession.
@@ -89,6 +101,14 @@ namespace SWLOR.Game.Server.Service
                 // Clear busy status of the possessed creature to prevent ability usage issues
                 Activity.ClearBusy(target);
             }
+        }
+
+        /// <summary>
+        /// Retrieves the creature a DM is currently possessing, or OBJECT_INVALID if there is none.
+        /// </summary>
+        public static uint GetDMPossessedCreature(uint dm)
+        {
+            return GetLocalObject(dm, DMPossessedCreature);
         }
 
         /// <summary>

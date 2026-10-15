@@ -25,16 +25,15 @@
     "value": 0
   },
   "DescIdentified": {
-    "id": 56620,
     "type": "cexolocstring",
     "value": {
-      "0": ""
+      "0": "The neat cuffs of these gloves retain their shape despite the wear in their palms. They are well suited to a wearer who wishes to keep an air of formality while getting their hands dirty."
     }
   },
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": ""
+      "0": "The neat cuffs of these gloves retain their shape despite the wear in their palms. They are well suited to a wearer who wishes to keep an air of formality while getting their hands dirty."
     }
   },
   "Identified": {

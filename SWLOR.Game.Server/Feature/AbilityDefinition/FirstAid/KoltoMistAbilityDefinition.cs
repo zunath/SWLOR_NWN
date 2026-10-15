@@ -89,12 +89,12 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
 
         private static void KoltoMist1ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
-            ApplyKoltoMist(activator, target, targetLocation, Rank1HealPercentPerTick);
+            ApplyKoltoMist(activator, target, targetLocation, Rank1HealPercentPerTick, FeatType.KoltoMist1);
         }
 
         private static void KoltoMist2ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
-            ApplyKoltoMist(activator, target, targetLocation, Rank2HealPercentPerTick);
+            ApplyKoltoMist(activator, target, targetLocation, Rank2HealPercentPerTick, FeatType.KoltoMist2);
         }
 
         private static string ValidateTargetingRange(uint activator, uint target, int effectivePerkLevel, Location targetLocation)
@@ -106,7 +106,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
             return $"You are out of range. This ability has a range of {RangeMeters} meters.";
         }
 
-        private static void ApplyKoltoMist(uint activator, uint target, Location targetLocation, float percentPerTick)
+        private static void ApplyKoltoMist(uint activator, uint target, Location targetLocation, float percentPerTick, FeatType feat)
         {
             var location = AbilityTargeting.ResolveImpactLocation(activator, target, targetLocation);
 
@@ -125,7 +125,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
                 location,
                 DurationSeconds);
 
-            var combatPointAwarded = false;
+            var credited = new HashSet<uint>();
             for (var elapsed = TickIntervalSeconds; elapsed <= DurationSeconds + 0.01f; elapsed += TickIntervalSeconds)
             {
                 var pulseDelay = elapsed;
@@ -135,22 +135,19 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
                     if (!GetIsObjectValid(activator) || GetCurrentHitPoints(activator) <= 0)
                         return;
 
+                    using var recorderScope = CombatRecorder.BeginAbilityFeatAttribution(activator, feat);
                     if (!GetIsObjectValid(GetAreaFromLocation(location)))
                         return;
 
-                    var applied = ApplyKoltoMistPulse(activator, location, percentPerTick, playPulseVisual);
-                    if (applied && !combatPointAwarded)
-                    {
-                        combatPointAwarded = true;
-                        FirstAidTreatmentAdjustments.GrantCombatPoint(activator);
-                    }
+                    var treated = ApplyKoltoMistPulse(activator, location, percentPerTick, playPulseVisual);
+                    FirstAidTreatmentAdjustments.GrantCombatPoint(activator, treated, credited);
                 });
             }
         }
 
-        private static bool ApplyKoltoMistPulse(uint activator, Location location, float percentPerTick, Action<uint> playPulseVisual)
+        private static List<uint> ApplyKoltoMistPulse(uint activator, Location location, float percentPerTick, Action<uint> playPulseVisual)
         {
-            var applied = false;
+            var treated = new List<uint>();
             foreach (var friendly in AbilityTargeting.GetFriendlyTargetsNearLocation(activator, location, HealRadiusMeters))
             {
                 var hitPointsBeforeHealing = GetCurrentHitPoints(friendly);
@@ -168,10 +165,10 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
                     typeof(KoltoMistHealingStatusEffect),
                     StatusRefreshDurationSeconds))
                     playPulseVisual(friendly);
-                applied = true;
+                treated.Add(friendly);
             }
 
-            return applied;
+            return treated;
         }
     }
 }

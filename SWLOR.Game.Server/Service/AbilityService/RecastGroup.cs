@@ -664,6 +664,10 @@ namespace SWLOR.Game.Server.Service.AbilityService
         BloodFrenzyFlurry = 432,
         [RecastGroup("Concussive Challenge", "Conc. Chall.", true)]
         ConcussiveChallenge = 433,
+        [RecastGroup("Chain Lightning", "Chain Light.", true)]
+        ChainLightning = 574,
+        [RecastGroup("Blood Siphon", "Blood Siphon", true)]
+        BloodSiphon = 575,
         [RecastGroup("Force Sheath", "Force Sheath", true)]
         ForceSheath = 474,
         [RecastGroup("Shattering Strike", "Shatter Str.", true)]
@@ -700,7 +704,7 @@ namespace SWLOR.Game.Server.Service.AbilityService
         RuptureStrike = 436,
         [RecastGroup("Hemorrhage", "Hemorrhage", true)]
         Hemorrhage = 437,
-        [RecastGroup("Shadowflow Stance", "Shado. Stance", true)]
+        [RecastGroup("Shadowflow", "Shadowflow", true)]
         ShadowflowStance = 438,
         [RecastGroup("Severing Strike", "Sever. Strike", true)]
         SeveringStrike = 439,

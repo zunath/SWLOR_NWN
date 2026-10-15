@@ -22,7 +22,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions.PerkCoverage
                     Perk = PerkType.BloodFrenzy,
                     MaxLevel = 1,
                     Prices = new[] { 6 },
-                    GrantedFeats = new[] { FeatType.BloodFrenzyTrait },
+                    GrantedFeats = new[] { FeatType.BloodFrenzyBurst },
                 },
                 new()
                 {

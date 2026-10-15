@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using SWLOR.Game.Server.Feature.ItemDefinition;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.CraftService;
 using SWLOR.Game.Server.Service.PerkService;
@@ -30,6 +31,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EspionageRecipeDefinition
                 .Level(level)
                 .SkillUpToRank(Skill.GetEspionagePracticeRankLimit(PerkType.Poisoncraft, tier))
                 .Quantity(1)
+                .EffectDescription(VenomCoatingItemDefinition.BuildEffectSummary(tier, true))
                 .Component(creatureMaterial, 1)
                 .Component(herb, 2);
         }

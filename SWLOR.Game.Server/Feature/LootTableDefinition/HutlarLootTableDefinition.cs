@@ -13,10 +13,146 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
             QionSlugs();
             QionTigers();
             QionHiveLoot();
+            DroidFoundry();
 
             CapstoneHutlarDungeonRares();
             HutqionRareElites();
             return _builder.Build();
+        }
+
+        private void DroidFoundry()
+        {
+            _builder.Create("HUTLAR_FOUNDRY_INTAKE")
+                .AddItem("elec_imperfect", 10)
+                .AddItem("elec_high", 10)
+                .AddItem("scrap_metal", 25)
+                .AddGold(70, 20);
+
+            _builder.Create("HUTLAR_FOUNDRY_ASSEMBLY")
+                .AddItem("elec_imperfect", 10)
+                .AddItem("elec_high", 10)
+                .AddItem("scrap_metal", 20)
+                .AddGold(85, 25);
+
+            _builder.Create("HUTLAR_FOUNDRY_CORE")
+                .AddItem("elec_high", 20)
+                .AddItem("scrap_metal", 15)
+                .AddGold(100, 30);
+
+            _builder.Create("HUTLAR_FOUNDRY_RARES")
+                .IsRare()
+                .AddItem("ruby", 90, 1, true)
+                .AddItem("emerald", 5, 1, true)
+                .AddItem("lockbox_t5", 3, 1, true)
+                .AddItem("map_276", 2, 1, true);
+
+            // Tier 5 droid plating and Carapace armor salvaged from the Assembly Line and Core.
+            _builder.Create("HUTLAR_FOUNDRY_GEAR")
+                .AddItem("dhar005s", 1)
+                .AddItem("dlar005s", 1)
+                .AddItem("dhhl005s", 1)
+                .AddItem("dlhl005s", 1)
+                .AddItem("dhbe005s", 1)
+                .AddItem("dlbe005s", 1)
+                .AddItem("dhlg005s", 1)
+                .AddItem("dllg005s", 1)
+                .AddItem("dhbr005s", 1)
+                .AddItem("dhcl005s", 1)
+                .AddItem("dlcl005s", 1)
+                .AddItem("dlbr005s", 1)
+                .AddItem("dhnk005s", 1)
+                .AddItem("dlnk005s", 1)
+                .AddItem("dhrg005s", 1)
+                .AddItem("cara_armor", 1)
+                .AddItem("cara_tunic", 1)
+                .AddItem("cara_robes", 1)
+                .AddItem("cara_cap", 1)
+                .AddItem("cara_headdress", 1)
+                .AddItem("cara_helmet", 1)
+                .AddItem("cara_boots", 1)
+                .AddItem("cara_leggings", 1)
+                .AddItem("cara_shoes", 1)
+                .AddItem("cara_bracer", 1)
+                .AddItem("cara_gloves", 1)
+                .AddItem("cara_wraps", 1)
+                .AddItem("dlrg005s", 1);
+
+            _builder.Create("HUTLAR_FOUNDRY_OVERSEER_RECIPES")
+                .AddItem("recipe_chlsupg", 10)
+                .AddItem("recipe_chssupg", 10)
+                .AddItem("recipe_chigswd", 10)
+                .AddItem("recipe_chispear", 10)
+                .AddItem("recipe_chiknife", 10)
+                .AddItem("recipe_chipistol", 10)
+                .AddItem("recipe_chistaff", 10)
+                .AddItem("recipe_chilngswd", 10)
+                .AddItem("recipe_chikatar", 10)
+                .AddItem("recipe_chishuri", 10)
+                .AddItem("recipe_chirifle", 10)
+                .AddItem("recipe_chitwinbl", 10)
+                .AddItem("recipe_chielec", 10)
+                .AddItem("recipe_chitelec", 10)
+                .AddItem("recipe_chshield", 10)
+                .AddItem("recipe_chcloak", 10)
+                .AddItem("recipe_chbelt", 10)
+                .AddItem("recipe_chring", 10)
+                .AddItem("recipe_chneck", 10)
+                .AddItem("recipe_chbreast", 10)
+                .AddItem("recipe_chhelm", 10)
+                .AddItem("recipe_chbracer", 10)
+                .AddItem("recipe_chlegg", 10)
+                .AddItem("recipe_mgcloak", 10)
+                .AddItem("recipe_mgbelt", 10)
+                .AddItem("recipe_mgring", 10)
+                .AddItem("recipe_mgneck", 10)
+                .AddItem("recipe_mgtunic", 10)
+                .AddItem("recipe_mgcap", 10)
+                .AddItem("recipe_mggloves", 10)
+                .AddItem("recipe_mgboots", 10)
+                .AddItem("recipe_imcloak", 10)
+                .AddItem("recipe_imbelt", 10)
+                .AddItem("recipe_imring", 10)
+                .AddItem("recipe_imneck", 10)
+                .AddItem("recipe_imtunic", 10)
+                .AddItem("recipe_imcap", 10)
+                .AddItem("recipe_imgloves", 10)
+                .AddItem("recipe_imboots", 10);
+
+            _builder.Create("HUTLAR_FOUNDRY_OVERSEER_ELECTRONICS")
+                .AddItem("elec_high", 1, 2);
+
+            _builder.Create("HUTLAR_FOUNDRY_OVERSEER_LOCKBOX")
+                .AddItem("lockbox_t5", 1);
+
+            _builder.Create("HUTLAR_FOUNDRY_OVERSEER_RARES")
+                .IsRare()
+                .AddItem("emerald", 60, 1, true)
+                .AddItem("map_276", 40, 1, true);
+
+            // Named rare elites: unique gear plus a blueprint, and a guaranteed salvage component
+            // that the blueprint's recipe requires.
+            _builder.Create("HUTLAR_FOUNDRY_SORTER_RARES")
+                .IsRare()
+                .AddItem("grapple_bracer", 1, 1, true)
+                .AddItem("conveyor_treads", 1, 1, true)
+                .AddItem("bp_sortharness", 1, 1, true);
+            _builder.Create("HUTLAR_FOUNDRY_FOREMAN_RARES")
+                .IsRare()
+                .AddItem("line_visor", 1, 1, true)
+                .AddItem("riveted_mantle", 1, 1, true)
+                .AddItem("bp_assemgaunt", 1, 1, true);
+            _builder.Create("HUTLAR_FOUNDRY_INSPECTOR_RARES")
+                .IsRare()
+                .AddItem("quality_signet", 1, 1, true)
+                .AddItem("lattice_plate", 1, 1, true)
+                .AddItem("bp_nullcollar", 1, 1, true);
+
+            _builder.Create("HUTLAR_FOUNDRY_SORTER_COMP")
+                .AddItem("sorting_actuator", 1, 1);
+            _builder.Create("HUTLAR_FOUNDRY_FOREMAN_COMP")
+                .AddItem("torque_regulator", 1, 1);
+            _builder.Create("HUTLAR_FOUNDRY_INSPECTOR_COMP")
+                .AddItem("faultscan_optic", 1, 1);
         }
 
         private void HutqionRareElites()

@@ -137,7 +137,7 @@
   },
   "Comment": {
     "type": "cexostring",
-    "value": "Capstone quest giver for Absolute Defense in Korriban Forge Caverns."
+    "value": "Capstone quest giver for Absolute Defense in Tatooine - Forge Caverns."
   },
   "Con": {
     "type": "byte",
@@ -166,7 +166,7 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "Valis Korr is a forge-shield veteran tied to the Absolute Defense capstone trials in Korriban Forge Caverns."
+      "0": "Valis Korr sits among her tools at a corner table of the Fight Club, a woman with forge-scarred forearms and the unhurried stillness of someone who has spent a lifetime watching metal cool. She studies every guard that steps into the ring the way a smith checks steel for flaws in the grain. She once ran a forge cut into the old mine workings of Tatooine's North Mine Cliffs, until the smith-guards she trained swore themselves to a darker oath and drove her out."
     }
   },
   "Dex": {
@@ -364,7 +364,7 @@
   },
   "PortraitId": {
     "type": "word",
-    "value": 306
+    "value": 4070
   },
   "Race": {
     "type": "byte",

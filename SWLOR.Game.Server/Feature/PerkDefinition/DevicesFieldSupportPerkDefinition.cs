@@ -199,7 +199,6 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Price(5)
                 .RequirementSkill(SkillType.Devices, 50)
                 .RequirementCharacterType(CharacterType.Standard)
-                .DroidAISlots(1)
                 .GrantsFeat(FeatType.EmergencyBunker1)
                 .RequirementQuest(DevicesCapstoneQuestDefinition.EmergencyBunkerMasteryQuestId);
         }

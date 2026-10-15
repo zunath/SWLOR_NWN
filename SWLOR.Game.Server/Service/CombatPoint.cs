@@ -11,6 +11,8 @@ namespace SWLOR.Game.Server.Service
 {
     public static class CombatPoint
     {
+        private const float ReviveSupportRangeMeters = 20f;
+
         /// <summary>
         /// Tracks the combat points earned by players during combat.
         /// </summary>
@@ -138,7 +140,8 @@ namespace SWLOR.Game.Server.Service
                             {
                                 var adjXP = baseXP * (cp / totalCatCP);
                                 adjXP += adjXP * areaBonus;
-                                Skill.GiveSkillXP(player, skillType, (int)adjXP);
+                                Skill.GiveSkillXP(player, skillType, (int)adjXP,
+                                    xpMessageSource: skillType == SkillType.Mimicry ? npc : OBJECT_INVALID);
                             }
                         }
                         else
@@ -330,6 +333,77 @@ namespace SWLOR.Game.Server.Service
             {
                 AddCombatPoint(player, creature, skill, amount);
             }
+        }
+
+        /// <summary>
+        /// Adds a combat point for a player to every NPC they are tagged on and every NPC in combat
+        /// with the creatures they supported, so a supporter who never attacked still earns XP when
+        /// those enemies die. Aggro-proximity enmity alone does not count as combat.
+        /// </summary>
+        /// <param name="player">The player receiving the point.</param>
+        /// <param name="supportedCreatures">The creatures the player repaired, healed, or otherwise supported.</param>
+        /// <param name="skill">The skill to associate with the point.</param>
+        /// <param name="amount">The number of points to add.</param>
+        /// <param name="alreadyCredited">
+        /// Optional per-cast record for support that applies over time. Creatures already in it are
+        /// skipped and newly credited creatures are added, so each enemy is credited once per cast.
+        /// </param>
+        public static void AddSupportCombatPoint(
+            uint player,
+            IEnumerable<uint> supportedCreatures,
+            SkillType skill,
+            int amount = 1,
+            ISet<uint> alreadyCredited = null)
+        {
+            if (!GetIsPC(player) || GetIsDM(player)) return;
+
+            var creatures = _playerToCreatureTracker.TryGetValue(player, out var tagged)
+                ? new HashSet<uint>(tagged)
+                : new HashSet<uint>();
+
+            foreach (var supported in supportedCreatures)
+            {
+                foreach (var enemy in Enmity.GetEnmityTowardsAllEnemies(supported).Keys)
+                {
+                    if (Enmity.HasNonProximityEnmity(supported, enemy))
+                        creatures.Add(enemy);
+                }
+            }
+
+            foreach (var creature in creatures)
+            {
+                if (alreadyCredited != null && !alreadyCredited.Add(creature))
+                    continue;
+
+                AddCombatPoint(player, creature, skill, amount);
+            }
+        }
+
+        /// <summary>
+        /// Adds a combat point for a player to every NPC they are tagged on and every NPC in combat
+        /// with the single creature they supported.
+        /// </summary>
+        /// <param name="player">The player receiving the point.</param>
+        /// <param name="supportedCreature">The creature the player repaired, healed, or otherwise supported.</param>
+        /// <param name="skill">The skill to associate with the point.</param>
+        /// <param name="amount">The number of points to add.</param>
+        public static void AddSupportCombatPoint(uint player, uint supportedCreature, SkillType skill, int amount = 1)
+        {
+            AddSupportCombatPoint(player, new[] { supportedCreature }, skill, amount);
+        }
+
+        /// <summary>
+        /// Adds support combat points for bringing a creature back into a fight. A revived or newly
+        /// summoned creature has no enmity of its own (death clears it), so the enemies fighting its
+        /// nearby party members are credited instead.
+        /// </summary>
+        /// <param name="player">The player receiving the point.</param>
+        /// <param name="anchor">The revived creature, or the owner a summoned creature joins.</param>
+        /// <param name="skill">The skill to associate with the point.</param>
+        /// <param name="amount">The number of points to add.</param>
+        public static void AddReviveSupportCombatPoint(uint player, uint anchor, SkillType skill, int amount = 1)
+        {
+            AddSupportCombatPoint(player, Party.GetAllPartyMembersWithinRange(anchor, ReviveSupportRangeMeters), skill, amount);
         }
 
         /// <summary>

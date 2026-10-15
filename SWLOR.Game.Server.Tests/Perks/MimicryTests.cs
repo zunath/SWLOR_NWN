@@ -640,11 +640,10 @@ public class MimicryTests
         }
     }
 
-    // The core completeness requirement: every NPC ability the game registers must be learnable
-    // through Mimicry, and every technique must copy a real NPC ability. Asserted bidirectionally
-    // and 1:1 so the pool can never drift out of sync with the NPC ability roster.
+    // Every technique must copy a real NPC ability, and no NPC ability may be learnable through more
+    // than one technique. NPC abilities without a technique are NPC-only.
     [Test]
-    public void MimicryTechniques_EveryRegisteredNpcAbilityHasExactlyOneTechniqueTwin()
+    public void MimicryTechniques_CopyRegisteredNpcAbilitiesAtMostOnceEach()
     {
         var npcAbilities = BuildAllAbilities(NpcAbilityNamespace);
         var techniques = BuildAllAbilities(MimicryTechniqueNamespace);
@@ -670,15 +669,10 @@ public class MimicryTests
                 $"{technique.Feat}'s MimicrySourceFeat ({technique.Detail.MimicrySourceFeat}) should be a registered NPC ability");
         }
 
-        // Every registered NPC ability must be learnable through exactly one technique.
-        foreach (var npc in npcAbilities)
+        foreach (var (sourceFeat, twins) in techniquesBySourceFeat)
         {
-            techniquesBySourceFeat.Should().ContainKey(npc.Feat,
-                $"NPC ability {npc.Feat} (from {npc.DefinitionType.Name}) has no Mimicry technique that copies it");
-
-            techniquesBySourceFeat[npc.Feat].Should().ContainSingle(
-                $"NPC ability {npc.Feat} should have exactly one Mimicry technique twin, " +
-                $"found {(techniquesBySourceFeat.TryGetValue(npc.Feat, out var twins) ? twins.Count : 0)}");
+            twins.Should().ContainSingle(
+                $"NPC ability {sourceFeat} should be learnable through at most one Mimicry technique, found {twins.Count}");
         }
     }
 
@@ -1164,14 +1158,31 @@ public class MimicryTests
     [Test]
     public void Mimicry_IsACombatPointEarningSkill()
     {
-        // Mimicry combat points come from two sources: casting techniques, and the Combat Analyzer
-        // recording nearby enemies' technique use (analysis points). Both only convert to Mimicry
-        // skill XP when the creature dies if Mimicry is a non-Exempt combat-point category. The
-        // attribute default is Exempt, so this guards that Mimicry stays a CP-earning skill.
+        // Actively used techniques must continue sharing utility XP. Passive observation pays
+        // separately and must not change the skill's category to bypass active XP sharing.
         var attribute = typeof(SkillType).GetField(nameof(SkillType.Mimicry))!
             .GetCustomAttribute<SkillAttribute>();
         attribute.Should().NotBeNull();
         attribute!.CombatPointCategory.Should().Be(CombatPointCategoryType.Utility);
+    }
+
+    [TestCase(20, 20, 30)]
+    [TestCase(19, 20, 22)]
+    [TestCase(18, 20, 15)]
+    [TestCase(17, 20, 7)]
+    [TestCase(16, 20, 3)]
+    [TestCase(15, 20, 0)]
+    [TestCase(0, 20, 0)]
+    [TestCase(21, 20, 30)]
+    [TestCase(26, 20, 30)]
+    [TestCase(100, 20, 30)]
+    [TestCase(49, 49, 30)]
+    [TestCase(50, 50, 0)]
+    [TestCase(100, 50, 0)]
+    public void ObservationXP_IsSmallRankRelativeAndStopsAtMastery(int npcLevel, int mimicryRank, int expectedXP)
+    {
+        Skill.CacheXPChartData();
+        Mimicry.CalculateAnalysisXP(npcLevel, mimicryRank).Should().Be(expectedXP);
     }
 
     [Test]

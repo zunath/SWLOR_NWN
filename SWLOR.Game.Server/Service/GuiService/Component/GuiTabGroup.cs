@@ -1,25 +1,7 @@
 // ============================================================================
 // GuiTabGroup.cs
 //
-// PROBLEM THIS SOLVES
-// --------------------
-// CharacterSheetViewModel.RestoreSelectedTabPartial() layers a SECOND,
-// manual redraw workaround on top of a fix ChangePartialView already does
-// automatically (GuiViewModelBase.ApplyRefreshBugFix nudges Geometry.Height
-// on every ChangePartialView call). The manual layer exists specifically
-// because *nested* partials (a partial swapped inside another partial's
-// content area) can still get dropped mid-redraw - per the existing code
-// comment: "NUI can drop nested partial layouts while its parent is being
-// redrawn." The workaround is: force a full root redraw, apply the target
-// partial, then reapply it again one tick later.
-//
-// Separately, TopTabId/BottomTabId require a hand-written re-entrancy guard
-// (_isSynchronizingTabRows) purely to keep two paired toggle groups and one
-// logical SelectedTabId from feeding back into each other.
-//
-// Both of these are generic problems, not specific to the character sheet.
-// This file moves them into reusable helpers so a new window author doesn't
-// need to know the nested-partial bug exists at all.
+// Reusable tab registration and paired-toggle sync for tabbed windows.
 // ============================================================================
 
 using System;
@@ -29,23 +11,8 @@ using SWLOR.Game.Server.Service.GuiService;
 
 namespace SWLOR.Game.Server.Service.GuiService.Component
 {
-    // ------------------------------------------------------------------
-    // GuiViewModelBase<TDerived, TPayload> ALREADY HAS SwapNestedPartialView
-    // as of the patch applied directly to that file (see the diff added
-    // right after ChangePartialView). GuiTabGroup.Select below calls it
-    // directly - TViewModel must derive from a GuiViewModelBase to expose it.
-    // ------------------------------------------------------------------
-
-    // ------------------------------------------------------------------
-    // TAB REGISTRATION - replaces GetTabPartialName + the RefreshSelectedTabData
-    // switch statement + RestoreSelectedTabPartial's manual sequencing
-    // ------------------------------------------------------------------
-
     /// <summary>
-    /// Registers a set of tabs (id -> partial name -> optional refresh action)
-    /// and drives selection through the nested-partial-safe swap path, so a
-    /// window author just describes "what tabs exist" instead of re-deriving
-    /// the redraw sequencing per window.
+    /// Registers a set of tabs (id -> partial name -> optional refresh action).
     /// </summary>
     public class GuiTabGroup<TViewModel, TPayload>
         where TViewModel : GuiViewModelBase<TViewModel, TPayload>
@@ -62,8 +29,7 @@ namespace SWLOR.Game.Server.Service.GuiService.Component
         public string GetPartialName(int tabId) => _tabs[tabId].PartialId;
 
         /// <summary>
-        /// Applies the given tab: runs its refresh action (if any) then swaps
-        /// the nested partial in via the safe double-reapply path.
+        /// Runs the tab's refresh action (if any), then applies its partial.
         /// </summary>
         public void Select(TViewModel model, string contentElementId, int tabId, Action onAfterApply = null)
         {

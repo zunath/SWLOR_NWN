@@ -3007,6 +3007,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Fault-Lattice Plating"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "lattice_plate"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Fenbloom Harness"
                     },
                     "RESREF": {
@@ -5300,6 +5311,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Line-Calibration Visor"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "line_visor"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Low-Blow Visor"
                     },
                     "RESREF": {
@@ -5575,6 +5597,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Quarantine Respirator"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "quarantine_mask"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Quark Helmet"
                     },
                     "RESREF": {
@@ -5657,6 +5690,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "republictrooperh"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Riot-Visor Helmet"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "riotvisor_helm"
                     }
                   },
                   {
@@ -8369,6 +8413,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Chief Varrick Attack"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "abs_zchief_wp"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Chirodactyl Bite"
                     },
                     "RESREF": {
@@ -8963,6 +9018,50 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Rakghoul Alpha Attack"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "abs_rakalpha_wp"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Rakghoul Attack"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "abs_rakghoul_wp"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Rakghoul Brute Attack"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "abs_rakbrute_wp"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Rakghoul Stalker Attack"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "abs_rakstalk_wp"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Rancor Bite"
                     },
                     "RESREF": {
@@ -8979,6 +9078,94 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "rancor_wp"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Reanimated Dockhand Attack"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "abs_zdockhand_wp"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Reanimated Geneticist Attack"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "abs_zgenetic_wp"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Reanimated Rancor Attack"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "abs_zrancor_wp"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Reanimated Researcher Attack"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "abs_zresearch_wp"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Reanimated Security Guard Attack"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "abs_zguard_wp"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Reanimated Station Director Attack"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "abs_zdirector_wp"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Reanimated Technician Attack"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "abs_ztech_wp"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Reanimated Test Subject Attack"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "abs_zsubject_wp"
                     }
                   },
                   {
@@ -9133,6 +9320,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "zomb_bite2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Subject Zero Attack"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "abs_subzero_wp"
                     }
                   },
                   {
@@ -10628,6 +10826,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Arc Welder Drone Armament"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "fdy_welder_wp"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Autoblaster"
                     },
                     "RESREF": {
@@ -10771,6 +10980,61 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Foreman RX-12 Armament"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "fdy_foreman_wp"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Forge Warden Armament"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "fdy_forgewd_wp"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Foundry Overseer Armament"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "fdy_overseer_wp"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Foundry War Droid Armament"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "fdy_wardroid_wp"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Hunter-Killer Unit Armament"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "fdy_hunter_wp"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Imperial Combot Rifle"
                     },
                     "RESREF": {
@@ -10831,6 +11095,39 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "impwarform2_wp"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Inspector Q-0 Armament"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "fdy_inspector_wp"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Intake Sentry Droid Armament"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "fdy_sentry_wp"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Juggernaut Droid Armament"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "fdy_juggernt_wp"
                     }
                   },
                   {
@@ -12696,6 +12993,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Line Defender Droid Armament"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "fdy_linedef_wp"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Lord Nephthyra Lightsaber"
                     },
                     "RESREF": {
@@ -12828,6 +13136,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Reclamation Droid Armament"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "fdy_reclaim_wp"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Red Vein Scavenger Vibroblade"
                     },
                     "RESREF": {
@@ -12883,11 +13202,44 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Riveter Droid Armament"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "fdy_riveter_wp"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Salvage Hauler Droid Armament"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "fdy_hauler_wp"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Sewer Patrol Droid Rifle"
                     },
                     "RESREF": {
                       "type": "resref",
                       "value": "sewerpatrol_wp"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Siege Droid Armament"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "fdy_siege_wp"
                     }
                   },
                   {
@@ -13312,6 +13664,28 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Smelter Hulk Armament"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "fdy_smelter_wp"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Sorter Prime Armament"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "fdy_sorter_wp"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Temple Council Guardian Lightsaber"
                     },
                     "RESREF": {
@@ -13482,6 +13856,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Arc Welder Drone Stat Skin"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "fdy_welder_sk"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Ashwing Echo Stat Skin"
                     },
                     "RESREF": {
@@ -13608,6 +13993,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "it_creitemunf001"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Chief Varrick Stat Skin"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "abs_zchief_sk"
                     }
                   },
                   {
@@ -13955,6 +14351,50 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Foreman RX-12 Stat Skin"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "fdy_foreman_sk"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Forge Warden Stat Skin"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "fdy_forgewd_sk"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Foundry Overseer Stat Skin"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "fdy_overseer_sk"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Foundry War Droid Stat Skin"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "fdy_wardroid_sk"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Gaping Spider Stat Skin"
                     },
                     "RESREF": {
@@ -14175,6 +14615,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Hunter-Killer Unit Stat Skin"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "fdy_hunter_sk"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Imperial Combot Stat Skin"
                     },
                     "RESREF": {
@@ -14263,6 +14714,28 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Inspector Q-0 Stat Skin"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "fdy_inspector_sk"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Intake Sentry Droid Stat Skin"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "fdy_sentry_sk"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Iriaz Stat Skin"
                     },
                     "RESREF": {
@@ -14301,6 +14774,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "jawaaddit_sk"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Juggernaut Droid Stat Skin"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "fdy_juggernt_sk"
                     }
                   },
                   {
@@ -16584,6 +17068,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Line Defender Droid Stat Skin"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "fdy_linedef_sk"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Lord Nephthyra Stat Skin"
                     },
                     "RESREF": {
@@ -17244,6 +17739,50 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Rakghoul Alpha Stat Skin"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "abs_rakalpha_sk"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Rakghoul Brute Stat Skin"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "abs_rakbrute_sk"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Rakghoul Stalker Stat Skin"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "abs_rakstalk_sk"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Rakghoul Stat Skin"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "abs_rakghoul_sk"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Rancor Stat Skin"
                     },
                     "RESREF": {
@@ -17260,6 +17799,105 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "rancor_sk"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Reanimated Dockhand Stat Skin"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "abs_zdockhand_sk"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Reanimated Geneticist Stat Skin"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "abs_zgenetic_sk"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Reanimated Rancor Stat Skin"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "abs_zrancor_sk"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Reanimated Researcher Stat Skin"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "abs_zresearch_sk"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Reanimated Security Guard Stat Skin"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "abs_zguard_sk"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Reanimated Station Director Stat Skin"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "abs_zdirector_sk"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Reanimated Technician Stat Skin"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "abs_ztech_sk"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Reanimated Test Subject Stat Skin"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "abs_zsubject_sk"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Reclamation Droid Stat Skin"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "fdy_reclaim_sk"
                     }
                   },
                   {
@@ -17304,6 +17942,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "riktasha_sk"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Riveter Droid Stat Skin"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "fdy_riveter_sk"
                     }
                   },
                   {
@@ -17359,6 +18008,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "sableq_sk"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Salvage Hauler Droid Stat Skin"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "fdy_hauler_sk"
                     }
                   },
                   {
@@ -17491,6 +18151,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "shyrack_sk"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Siege Droid Stat Skin"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "fdy_siege_sk"
                     }
                   },
                   {
@@ -18135,11 +18806,33 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Smelter Hulk Stat Skin"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "fdy_smelter_sk"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Sootline Rusk Stat Skin"
                     },
                     "RESREF": {
                       "type": "resref",
                       "value": "soot_rusk_sk"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Sorter Prime Stat Skin"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "fdy_sorter_sk"
                     }
                   },
                   {
@@ -18195,6 +18888,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "stormplume_sk"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Subject Zero Stat Skin"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "abs_subzero_sk"
                     }
                   },
                   {
@@ -24916,6 +25620,17 @@
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
+                            "value": "Breach-Seal Belt"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "breachseal_belt"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
                             "value": "Byysk Belt"
                           },
                           "RESREF": {
@@ -26302,6 +27017,17 @@
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
+                            "value": "Sorting-Arm Harness"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "sorting_harness"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
                             "value": "Spiritbeast Sash"
                           },
                           "RESREF": {
@@ -26785,6 +27511,17 @@
                           "RESREF": {
                             "type": "resref",
                             "value": "infconduit_l8"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Conveyor-Tread Boots"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "conveyor_treads"
                           }
                         },
                         {
@@ -28908,6 +29645,17 @@
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
+                            "value": "Grapple-Arm Bracer"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "grapple_bracer"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
                             "value": "Guardian Bracer"
                           },
                           "RESREF": {
@@ -28990,6 +29738,17 @@
                           "RESREF": {
                             "type": "resref",
                             "value": "lab_bracer"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Lockdown Bracer"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "lockdown_bracer"
                           }
                         },
                         {
@@ -30343,6 +31102,17 @@
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
+                            "value": "Isolation Shroud"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "isolation_shroud"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
                             "value": "Jeweled Cloak"
                           },
                           "RESREF": {
@@ -30612,6 +31382,17 @@
                           "RESREF": {
                             "type": "resref",
                             "value": "primover_l3"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Riveted Shoulder Mantle"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "riveted_mantle"
                           }
                         },
                         {
@@ -31134,6 +31915,17 @@
                           "RESREF": {
                             "type": "resref",
                             "value": "soulasc_l3"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Assembly-Line Gauntlets"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "assembly_gaunt"
                           }
                         },
                         {
@@ -42460,6 +43252,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Fault-Scan Optic"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "faultscan_optic"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Feevina"
                     },
                     "RESREF": {
@@ -48939,6 +49742,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Override Keyspike"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "override_spike"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Paprika I"
                     },
                     "RESREF": {
@@ -49241,6 +50055,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "mb_shell"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Plague Culture Vial"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "plague_culture"
                     }
                   },
                   {
@@ -51403,6 +52228,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Sorting Actuator"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "sorting_actuator"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Spear Boost I"
                     },
                     "RESREF": {
@@ -52717,6 +53553,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "torporand_juice"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Torque Regulator"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "torque_regulator"
                     }
                   },
                   {
@@ -54120,7 +54967,7 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Weapon Enhancement - Force Damage I"
+                      "value": "Weapon Enhancement - DMG I"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -54131,7 +54978,7 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Weapon Enhancement - Force Damage II"
+                      "value": "Weapon Enhancement - DMG II"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -54142,7 +54989,7 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Weapon Enhancement - Force Damage III"
+                      "value": "Weapon Enhancement - DMG III"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -56126,6 +56973,17 @@
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
+                            "value": "Null-Field Collar"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "nullfield_collar"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
                             "value": "Onslaught Necklace"
                           },
                           "RESREF": {
@@ -56307,6 +57165,17 @@
                           "RESREF": {
                             "type": "resref",
                             "value": "prm_bul_neck"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Serum-Cell Necklace"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "serumcell_neck"
                           }
                         },
                         {
@@ -57863,6 +58732,17 @@
                           "RESREF": {
                             "type": "resref",
                             "value": "se_band"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Quality-Seal Signet"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "quality_signet"
                           }
                         },
                         {
@@ -61614,6 +62494,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Blueprint: Assembly-Line Gauntlets"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "bp_assemgaunt"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Blueprint: Aurek"
                     },
                     "RESREF": {
@@ -61652,6 +62543,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "recipe_bolrifle"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Blueprint: Breach-Seal Belt"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "bp_breachbelt"
                     }
                   },
                   {
@@ -63605,6 +64507,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Blueprint: Null-Field Collar"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "bp_nullcollar"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Blueprint: Ocular Filter I"
                     },
                     "RESREF": {
@@ -63995,6 +64908,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "bpmbbraise"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Blueprint: Serum-Cell Necklace"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "bp_serumneck"
                     }
                   },
                   {
@@ -64523,6 +65447,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "recipe_social2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Blueprint: Sorting-Arm Harness"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "bp_sortharness"
                     }
                   },
                   {
@@ -66619,6 +67554,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Hutlar - Droid Foundry Map"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "map_276"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Hutlar - Outpost Map"
                     },
                     "RESREF": {
@@ -66883,28 +67829,6 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Instruction Disc: Emergency Bunker"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "id_emgbunker"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Instruction Disc: Emergency Cocktail"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "id_emgcocktail"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
                       "value": "Instruction Disc: Emergency Triage"
                     },
                     "RESREF": {
@@ -67136,17 +68060,6 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Instruction Disc: Killzone Beacon"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "id_killbeacon"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
                       "value": "Instruction Disc: Kolto Mist I"
                     },
                     "RESREF": {
@@ -67207,17 +68120,6 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "id_medkit4"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Instruction Disc: Overload Barrage"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "id_overbarrage"
                     }
                   },
                   {
@@ -67477,17 +68379,6 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Instruction Disc: Thermal Detonator"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "id_thermdeton"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
                       "value": "Instruction Disc: Treatment Kit I"
                     },
                     "RESREF": {
@@ -67559,28 +68450,6 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "id_wristrck3"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Instruction Disc: Absolute Defense"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "id_absodefe"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Instruction Disc: Adamantine Guard"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "id_adamguar"
                     }
                   },
                   {
@@ -67774,17 +68643,6 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Instruction Disc: Crippling Defense"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "id_cripdefe"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
                       "value": "Instruction Disc: Crippling Shot I"
                     },
                     "RESREF": {
@@ -67911,17 +68769,6 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "id_cyclstan"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Instruction Disc: Dead Man's Hand"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "id_deadmanshand"
                     }
                   },
                   {
@@ -68104,17 +68951,6 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Instruction Disc: Escape Artist"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "id_escapeartist"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
                       "value": "Instruction Disc: Explosive Toss I"
                     },
                     "RESREF": {
@@ -68230,17 +69066,6 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "id_flurrystance"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Instruction Disc: Forcebane"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "id_forcebane"
                     }
                   },
                   {
@@ -68522,17 +69347,6 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Instruction Disc: Invincible"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "id_invincible"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
                       "value": "Instruction Disc: Iron Wall Stance"
                     },
                     "RESREF": {
@@ -68571,17 +69385,6 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "id_jointlock3"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Instruction Disc: Kill Box"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "id_killbox"
                     }
                   },
                   {
@@ -68637,17 +69440,6 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "id_lacestan"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Instruction Disc: Last Word"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "id_lastword"
                     }
                   },
                   {
@@ -68731,17 +69523,6 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Instruction Disc: One Shot"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "id_oneshot"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
                       "value": "Instruction Disc: Ordnance Stance"
                     },
                     "RESREF": {
@@ -68802,17 +69583,6 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "id_percstan"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Instruction Disc: Perfect Flurry"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "id_perfflur"
                     }
                   },
                   {
@@ -68995,33 +69765,11 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Instruction Disc: Rain of Steel"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "id_rainofsteel"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
                       "value": "Instruction Disc: Rampart"
                     },
                     "RESREF": {
                       "type": "resref",
                       "value": "id_rampart"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Instruction Disc: Red Bloom"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "id_redbloom"
                     }
                   },
                   {
@@ -69171,17 +69919,6 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Instruction Disc: Scrapheap Lockdown"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "id_scralock"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
                       "value": "Instruction Disc: Scrapper Stance"
                     },
                     "RESREF": {
@@ -69259,7 +69996,7 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Instruction Disc: Shadowflow Stance"
+                      "value": "Instruction Disc: Shadowflow"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -69655,17 +70392,6 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Instruction Disc: Tempest Bloom"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "id_tempestbloom"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
                       "value": "Instruction Disc: Twin Rupture I"
                     },
                     "RESREF": {
@@ -69682,17 +70408,6 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "id_twinrupture2"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Instruction Disc: Unmoving Center"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "id_unmocent"
                     }
                   },
                   {
@@ -69798,17 +70513,6 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Instruction Disc: Viral Cascade"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "id_viralcascade"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
                       "value": "Instruction Disc: Virulent Blade I"
                     },
                     "RESREF": {
@@ -69869,17 +70573,6 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "id_whirguar"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Instruction Disc: Worldbreaker"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "id_worldbreaker"
                     }
                   },
                   {
@@ -71026,6 +71719,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "night_candleabra"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Datapad"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "handdatapad"
                     }
                   },
                   {

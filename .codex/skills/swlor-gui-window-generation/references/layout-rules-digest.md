@@ -24,11 +24,14 @@ lines for your window is a hard gate — every warning is a confirmed defect.**
   `window.AddStandardLayout(...)`. Hand-rolled roots freeze the content region at a
   constant width. Tab partials are fixed-width (250-560f) borderless
   `Scrollbars(None)` panels; scrolling comes from the standard layout's host group.
-- **R6 (doc; framework hook):** tabbed windows with modals MUST override
+- **R6 (doc; framework hook):** closing a modal restores assigned partials
+  automatically. Tabbed windows with modals override
   `protected override void OnModalClosedRestore() => Tabs.Select(this, TabContentElement, SelectedTabId);`
-  or the tab content vanishes when any modal closes.
-- **R7 (doc):** element ids are not validated server-side (typos = client-only error);
-  never nest partials more than 2 deep (window root → partial → one nested slot).
+  so the tab's refresh action reruns after the modal's action.
+- **R7 (doc):** `ChangePartialView`/`SetGroupLayout` compose group layouts into one
+  root layout; a group layout sent on its own stays blank in the client, so never
+  call `NuiSetGroupLayout` on a group or re-apply layouts on a delay. Element ids are
+  not validated server-side (a typo silently shows nothing).
 
 ## Verified working — do NOT avoid these (all confirmed in-game)
 

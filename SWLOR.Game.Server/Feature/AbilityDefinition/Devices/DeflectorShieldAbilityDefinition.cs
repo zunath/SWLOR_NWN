@@ -43,6 +43,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 .SkillType(SkillType.Devices)
                 .HasMaxRange(DeviceAbilityRange.Standard)
                 .IsSingleTargetAbility()
+                .AllowsSelfQuickCast()
                 .RequiresTarget()
                 .HasCustomValidation((activator, target, _, _) =>
                     AbilityTargeting.ValidateFriendlyTarget(activator, target))
@@ -67,6 +68,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 .SkillType(SkillType.Devices)
                 .HasMaxRange(DeviceAbilityRange.Standard)
                 .IsSingleTargetAbility()
+                .AllowsSelfQuickCast()
                 .RequiresTarget()
                 .HasCustomValidation((activator, target, _, _) =>
                     AbilityTargeting.ValidateFriendlyTarget(activator, target))
@@ -91,6 +93,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 .SkillType(SkillType.Devices)
                 .HasMaxRange(DeviceAbilityRange.Standard)
                 .IsSingleTargetAbility()
+                .AllowsSelfQuickCast()
                 .RequiresTarget()
                 .HasCustomValidation((activator, target, _, _) =>
                     AbilityTargeting.ValidateFriendlyTarget(activator, target))
@@ -102,26 +105,30 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
 
         private static void DeflectorShield1ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
-            foreach (var friendly in AbilityTargeting.GetFriendlyTargets(activator, target, false))
-            {
-                ApplyShieldTemporaryHP(activator, friendly, 35, 6, 45f);
-            }
+            ApplyDeflectorShield(activator, target, 35, 6);
         }
 
         private static void DeflectorShield2ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
-            foreach (var friendly in AbilityTargeting.GetFriendlyTargets(activator, target, false))
-            {
-                ApplyShieldTemporaryHP(activator, friendly, 65, 9, 45f);
-            }
+            ApplyDeflectorShield(activator, target, 65, 9);
         }
 
         private static void DeflectorShield3ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
+            ApplyDeflectorShield(activator, target, 100, 12);
+        }
+
+        private static void ApplyDeflectorShield(uint activator, uint target, int flatAmount, int percent)
+        {
+            var shielded = new List<uint>();
             foreach (var friendly in AbilityTargeting.GetFriendlyTargets(activator, target, false))
             {
-                ApplyShieldTemporaryHP(activator, friendly, 100, 12, 45f);
+                ApplyShieldTemporaryHP(activator, friendly, flatAmount, percent, 45f);
+                shielded.Add(friendly);
             }
+
+            if (shielded.Count > 0)
+                CombatPoint.AddSupportCombatPoint(activator, shielded, SkillType.Devices);
         }
 
         private static void ApplyShieldTemporaryHP(

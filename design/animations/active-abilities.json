@@ -2510,7 +2510,7 @@
     "InternalName": "sw_imbuestn",
     "Category": "Lightsaber",
     "Type": "Stance",
-    "Description": "While active, your hostile auto-attacks deal Force damage instead of physical and cost 2 FP each.",
+    "Description": "While active, your hostile auto-attacks deal Force damage instead of their normal damage type, including elemental damage, and cost 2 FP each.",
     "Reference": "",
     "BibleAnimationRow": 175,
     "PerkId": "ImbuementStance",
@@ -3326,7 +3326,9 @@
     "BibleAnimationRow": 215,
     "PerkId": "OverclockedAnalyzer",
     "Feats": [
-      "Overload"
+      "Overload",
+      "BloodFrenzyBurst",
+      "SoulAscensionBurst"
     ],
     "DefinitionFiles": [
       "SWLOR.Game.Server/Feature/AbilityDefinition/CombatAnalyzer/OverclockedAnalyzerAbilityDefinition.cs"
@@ -5803,8 +5805,8 @@
   {
     "Id": "ShadowflowStance",
     "EquipmentRequirement": "OneHanded",
-    "Name": "Shadowflow Stance",
-    "DisplayName": "Shadowflow Stance",
+    "Name": "Shadowflow",
+    "DisplayName": "Shadowflow",
     "InternalName": "sw_shadf_stn",
     "Category": "Vibroknife",
     "Type": "Stance",
@@ -5816,7 +5818,7 @@
       "ShadowflowStance1"
     ],
     "DefinitionFiles": [
-      "SWLOR.Game.Server/Feature/AbilityDefinition/Vibroknife/ShadowflowStanceAbilityDefinition.cs"
+      "SWLOR.Game.Server/Feature/AbilityDefinition/Vibroknife/ShadowflowAbilityDefinition.cs"
     ],
     "CurrentPlayback": "DoubleStrike"
   },

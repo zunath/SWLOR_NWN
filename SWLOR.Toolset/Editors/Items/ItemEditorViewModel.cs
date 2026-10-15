@@ -4,13 +4,14 @@ using Avalonia.Threading;
 using CommunityToolkit.Mvvm.ComponentModel;
 using SWLOR.Toolset.Domain.Editors.Behaviors;
 using SWLOR.Toolset.Domain.Editors.Items;
-using SWLOR.Toolset.Domain.Editing;
+using Nwn.Authoring.Editing;
 using SWLOR.Toolset.Domain.GameData.GameCode;
 using SWLOR.Toolset.Domain.GameData.Lookups;
 using SWLOR.Toolset.Domain.GameData.Resources;
+using Nwn.Authoring.Documents.NimGff;
 using SWLOR.Toolset.Domain.Gff;
 using SWLOR.Toolset.Domain.Render;
-using SWLOR.Toolset.Domain.Render.Icons;
+using Nwn.Preview.Icons;
 using SWLOR.Toolset.Editors.Behaviors;
 using SWLOR.Toolset.Editors.TintMaps;
 using SWLOR.Toolset.Editors.Triggers;
@@ -621,7 +622,7 @@ namespace SWLOR.Toolset.Editors.Items
         private void RebuildVariablesSection()
         {
             Variables = ShowsVariablesTab
-                ? new VarTableSectionViewModel(RunEdit, _store.Locals, _gameCodeIndex)
+                ? SwlorVarTablePolicy.Create(RunEdit, _store.Locals, _gameCodeIndex)
                 : null;
             OnPropertyChanged(nameof(ShowsVariablesTab));
         }

@@ -1,7 +1,9 @@
 using System.Globalization;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.Service.LogService;
 using SWLOR.Game.Server.Service.PropertyService;
+using SWLOR.Game.Server.Service.RoleplayXPService;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using Player = SWLOR.Game.Server.Entity.Player;
@@ -14,8 +16,27 @@ namespace SWLOR.Game.Server.Feature
         private const string RPTickVariable = "RP_SYSTEM_TICKS";
         private const string RPTimestampVariable = "RP_SYSTEM_LAST_MESSAGE_TIMESTAMP";
         private const int RPRequiredTicks = 300;
-        private const int OOCPenaltyTicks = 50;
-        private const int MaxOOCPenaltyTicks = 300;
+
+        private static OOCDetectionModel _oocDetection;
+
+        /// <summary>
+        /// Loads the external OOC detection file at server start so a bad file is reported at boot.
+        /// </summary>
+        [NWNEventHandler(ScriptName.OnModuleLoad)]
+        public static void LoadOOCDetection()
+        {
+            var path = ApplicationSettings.Get().RoleplayXPOOCDetectionFile;
+            if (OOCDetectionLoader.TryLoad(path, out var detection, out var error))
+            {
+                Log.Write(LogGroup.Server, $"Loaded RP XP OOC detection file '{path}'.", true);
+            }
+            else
+            {
+                Log.Write(LogGroup.Server, $"RP XP OOC detection file not loaded ({error}). Using the built-in word list.", true);
+            }
+
+            _oocDetection = detection;
+        }
 
         /// <summary>
         /// Once every 30 minutes, the RP system will check all players and distribute RP XP if applicable.
@@ -57,22 +78,42 @@ namespace SWLOR.Game.Server.Feature
 
             var playerId = GetObjectUUID(player);
             var dbPlayer = DB.Get<Player>(playerId) ?? new Player(playerId);
+            var now = DateTime.UtcNow;
 
-            if (dbPlayer.RoleplayProgress.RPPoints >= 50)
+            if (dbPlayer.RoleplayProgress.RPPoints < 50)
             {
-                var socialModifier = GetAbilityModifier(AbilityType.Social, player);
-                const int BaseXP = 1500;
-                var delta = dbPlayer.RoleplayProgress.RPPoints - 50;
-                var bonusXP = delta * 25;
-                var xp = BaseXP + bonusXP + socialModifier * (BaseXP / 4);
-                var cantinaBonus = Property.GetEffectiveUpgradeLevel(dbPlayer.CitizenPropertyId, PropertyUpgradeType.CantinaLevel);
-                xp += (int)(BaseXP * (cantinaBonus * 0.05f));
+                LogSkippedDistribution(player, dbPlayer, now);
+                return;
+            }
 
-                dbPlayer.RoleplayProgress.RPPoints = 0;
-                dbPlayer.RoleplayProgress.TotalRPExpGained += (ulong)xp;
-                dbPlayer.UnallocatedXP += xp;
-                DB.Set(dbPlayer);
+            var socialModifier = GetAbilityModifier(AbilityType.Social, player);
+            const int BaseXP = 1500;
+            var delta = dbPlayer.RoleplayProgress.RPPoints - 50;
+            var bonusXP = delta * 25;
+            var xp = BaseXP + bonusXP + socialModifier * (BaseXP / 4);
+            var cantinaBonus = Property.GetEffectiveUpgradeLevel(dbPlayer.CitizenPropertyId, PropertyUpgradeType.CantinaLevel);
+            xp += (int)(BaseXP * (cantinaBonus * 0.05f));
+            var xpBeforePenalty = xp;
+            var rpPoints = dbPlayer.RoleplayProgress.RPPoints;
+            var oocMessages = dbPlayer.RoleplayProgress.OOCMessagesSinceLastDistribution;
+            var penaltySteps = dbPlayer.RoleplayProgress.PendingOOCPenaltySteps;
+            var settings = ApplicationSettings.Get();
+            var penaltyPercentPerMessage = settings.RoleplayXPOOCPenaltyEnabled ? settings.RoleplayXPOOCPenaltyPercent : 0;
+            xp = OOCAllowance.ApplyPenalty(xp, penaltySteps, penaltyPercentPerMessage);
 
+            dbPlayer.RoleplayProgress.RPPoints = 0;
+            if (settings.RoleplayXPOOCPenaltyEnabled)
+                dbPlayer.RoleplayProgress.PendingOOCPenaltySteps = 0;
+            dbPlayer.RoleplayProgress.OOCMessagesSinceLastDistribution = 0;
+            dbPlayer.RoleplayProgress.TotalRPExpGained += (ulong)xp;
+            dbPlayer.UnallocatedXP += xp;
+            DB.Set(dbPlayer);
+
+            LogCompletedDistribution(player, dbPlayer, now, rpPoints, BaseXP, bonusXP, socialModifier,
+                cantinaBonus, xpBeforePenalty, oocMessages, penaltySteps, penaltyPercentPerMessage, xp);
+
+            if (xp > 0)
+            {
                 SendMessageToPC(player, $"You gained {xp} roleplay XP.");
             }
         }
@@ -107,13 +148,20 @@ namespace SWLOR.Game.Server.Feature
             var playerID = GetObjectUUID(player);
             var dbPlayer = DB.Get<Player>(playerID) ?? new Player(playerID);
 
-            // Is this an OOC message?
-            if (IsOOCMessage(message))
+            var messageType = RoleplayMessageClassifier.Classify(
+                message,
+                _oocDetection ?? OOCDetectionModel.Default,
+                dbPlayer.EmoteStyle);
+            if (messageType == RoleplayMessageType.OutOfCharacter)
             {
-                RefreshRPMessageTimestamp(player, now);
-                ApplyOOCMessagePenalty(player, dbPlayer);
+                ProcessOOCMessage(player, dbPlayer, now, channel, message);
                 return;
             }
+
+            // Chat commands and typo corrections neither earn RP points nor count as OOC.
+            if (messageType == RoleplayMessageType.ChatCommand ||
+                messageType == RoleplayMessageType.TypoCorrection)
+                return;
 
             // Is the message too short?
             if (message.Length <= 3) return;
@@ -141,6 +189,66 @@ namespace SWLOR.Game.Server.Feature
             DB.Set(dbPlayer);
         }
 
+        private static void ProcessOOCMessage(uint player, Player dbPlayer, DateTime now, ChatChannel channel, string message)
+        {
+            RefreshRPMessageTimestamp(player, now);
+            var settings = ApplicationSettings.Get();
+            var context = GetOOCMessageContext(player);
+            var previousPenaltySteps = dbPlayer.RoleplayProgress.PendingOOCPenaltySteps;
+            OOCAllowance.RecordOOCMessage(
+                dbPlayer.RoleplayProgress,
+                now,
+                context,
+                settings.RoleplayXPDailyOOCAllowance,
+                settings.RoleplayXPDMPresentOOCAllowance,
+                settings.RoleplayXPEventAreaOOCAllowance,
+                settings.RoleplayXPOOCPenaltyEnabled);
+            DB.Set(dbPlayer);
+
+            LogOOCMessage(player, dbPlayer, now, channel, message, context, previousPenaltySteps, settings);
+        }
+
+        private static void LogSkippedDistribution(uint player, Player dbPlayer, DateTime now)
+        {
+            Log.WriteStructured(
+                LogGroup.RoleplayXP,
+                "RP XP distribution skipped: PlayerId={PlayerId} CharacterName={CharacterName} AccountName={AccountName} CDKey={CDKey} OccurredUtc={OccurredUtc:O} Reason={Reason} RPPoints={RPPoints} RequiredRPPoints={RequiredRPPoints} OOCMessagesSinceLastDistribution={OOCMessagesSinceLastDistribution} PendingOOCPenaltySteps={PendingOOCPenaltySteps}",
+                dbPlayer.Id, dbPlayer.Name, GetPCPlayerName(player), GetPCPublicCDKey(player), now,
+                "InsufficientRPPoints", dbPlayer.RoleplayProgress.RPPoints, 50,
+                dbPlayer.RoleplayProgress.OOCMessagesSinceLastDistribution, dbPlayer.RoleplayProgress.PendingOOCPenaltySteps);
+        }
+
+        private static void LogCompletedDistribution(uint player, Player dbPlayer, DateTime now, int rpPoints,
+            int baseXP, int bonusXP, int socialModifier, int cantinaLevel, int xpBeforePenalty, ulong oocMessages,
+            int penaltySteps, int penaltyPercentPerMessage, int awardedXP)
+        {
+            Log.WriteStructured(
+                LogGroup.RoleplayXP,
+                "RP XP distribution completed: PlayerId={PlayerId} CharacterName={CharacterName} AccountName={AccountName} CDKey={CDKey} OccurredUtc={OccurredUtc:O} RPPoints={RPPoints} BaseXP={BaseXP} BonusXP={BonusXP} SocialModifier={SocialModifier} CantinaLevel={CantinaLevel} XPBeforePenalty={XPBeforePenalty} OOCMessagesSinceLastDistribution={OOCMessagesSinceLastDistribution} OOCPenaltySteps={OOCPenaltySteps} OOCPenaltyPercentPerMessage={OOCPenaltyPercentPerMessage} OOCPenaltyPercent={OOCPenaltyPercent} XPLostToOOCPenalty={XPLostToOOCPenalty} AwardedXP={AwardedXP} UnallocatedXP={UnallocatedXP}",
+                dbPlayer.Id, dbPlayer.Name, GetPCPlayerName(player), GetPCPublicCDKey(player), now,
+                rpPoints, baseXP, bonusXP, socialModifier, cantinaLevel,
+                xpBeforePenalty, oocMessages, penaltySteps, penaltyPercentPerMessage,
+                Math.Clamp(penaltySteps * penaltyPercentPerMessage, 0, 100), xpBeforePenalty - awardedXP, awardedXP, dbPlayer.UnallocatedXP);
+        }
+
+        private static void LogOOCMessage(uint player, Player dbPlayer, DateTime now, ChatChannel channel,
+            string message, OOCMessageContext context, int previousPenaltySteps, ApplicationSettings settings)
+        {
+            var penaltyPercentPerMessage = settings.RoleplayXPOOCPenaltyEnabled ? settings.RoleplayXPOOCPenaltyPercent : 0;
+            Log.WriteStructured(
+                LogGroup.RoleplayXP,
+                "RP XP OOC message recorded: PlayerId={PlayerId} CharacterName={CharacterName} AccountName={AccountName} CDKey={CDKey} OccurredUtc={OccurredUtc:O} Channel={Channel} AreaResref={AreaResref} Context={Context} OOCMessagesSinceLastDistribution={OOCMessagesSinceLastDistribution} DailyOOCMessageCount={DailyOOCMessageCount} DailyDMPresentOOCMessageCount={DailyDMPresentOOCMessageCount} DailyEventAreaOOCMessageCount={DailyEventAreaOOCMessageCount} DailyAllowance={DailyAllowance} DMPresentAllowance={DMPresentAllowance} EventAreaAllowance={EventAreaAllowance} PreviousOOCPenaltySteps={PreviousOOCPenaltySteps} PendingOOCPenaltySteps={PendingOOCPenaltySteps} OOCPenaltyPercentPerMessage={OOCPenaltyPercentPerMessage} NextAwardOOCPenaltyPercent={NextAwardOOCPenaltyPercent} Message={Message}",
+                dbPlayer.Id, dbPlayer.Name, GetPCPlayerName(player), GetPCPublicCDKey(player), now,
+                channel, GetResRef(GetArea(player)), context,
+                dbPlayer.RoleplayProgress.OOCMessagesSinceLastDistribution,
+                dbPlayer.RoleplayProgress.DailyOOCMessageCount, dbPlayer.RoleplayProgress.DailyDMPresentOOCMessageCount,
+                dbPlayer.RoleplayProgress.DailyEventAreaOOCMessageCount, settings.RoleplayXPDailyOOCAllowance,
+                settings.RoleplayXPDMPresentOOCAllowance, settings.RoleplayXPEventAreaOOCAllowance,
+                previousPenaltySteps, dbPlayer.RoleplayProgress.PendingOOCPenaltySteps,
+                penaltyPercentPerMessage,
+                Math.Clamp(dbPlayer.RoleplayProgress.PendingOOCPenaltySteps * penaltyPercentPerMessage, 0, 100), message);
+        }
+
         private static string RefreshRPMessageTimestamp(uint player, DateTime now)
         {
             var timestampString = GetLocalString(player, RPTimestampVariable);
@@ -148,40 +256,34 @@ namespace SWLOR.Game.Server.Feature
             return timestampString;
         }
 
-        private static bool IsOOCMessage(string message)
+        /// <summary>
+        /// Flags whether the player is in an event area and whether a DM or DM-possessed
+        /// creature is in the player's area. Each grants its own OOC allowance.
+        /// </summary>
+        private static OOCMessageContext GetOOCMessageContext(uint player)
         {
-            var trimmedMessage = message.TrimStart();
-            if (trimmedMessage.Length <= 0)
-                return false;
+            var area = GetArea(player);
+            if (!GetIsObjectValid(area))
+                return OOCMessageContext.Standard;
 
-            return
-                trimmedMessage.StartsWith("//", StringComparison.Ordinal) ||
-                trimmedMessage.StartsWith("((", StringComparison.Ordinal) ||
-                trimmedMessage.StartsWith("[[", StringComparison.Ordinal) ||
-                trimmedMessage.StartsWith("{{", StringComparison.Ordinal) ||
-                trimmedMessage.StartsWith("OOC:", StringComparison.OrdinalIgnoreCase) ||
-                trimmedMessage.StartsWith("[OOC]", StringComparison.OrdinalIgnoreCase) ||
-                trimmedMessage.StartsWith("(OOC)", StringComparison.OrdinalIgnoreCase);
-        }
+            var context = GetLocalBool(area, Communication.EventCommsAreaVariable)
+                ? OOCMessageContext.EventArea
+                : OOCMessageContext.Standard;
 
-        private static void ApplyOOCMessagePenalty(uint player, Player dbPlayer)
-        {
-            dbPlayer.RoleplayProgress.OOCMessageCount++;
-            dbPlayer.RoleplayProgress.RPPoints = 0;
-            DB.Set(dbPlayer);
+            for (var pc = GetFirstPC(); GetIsObjectValid(pc); pc = GetNextPC())
+            {
+                if (!GetIsDM(pc) && !GetIsDMPossessed(pc))
+                    continue;
 
-            var penaltyTicks = GetOOCMessagePenaltyTicks(dbPlayer.RoleplayProgress.OOCMessageCount);
-            SetLocalInt(player, RPTickVariable, -penaltyTicks);
-        }
+                var possessed = Communication.GetDMPossessedCreature(pc);
+                if (GetArea(pc) == area ||
+                    (GetIsObjectValid(possessed) && GetArea(possessed) == area))
+                {
+                    return context | OOCMessageContext.DMPresent;
+                }
+            }
 
-        private static int GetOOCMessagePenaltyTicks(ulong oocMessageCount)
-        {
-            if (oocMessageCount <= 1)
-                return 0;
-
-            var penaltySteps = oocMessageCount - 1;
-            var penaltyTicks = penaltySteps * OOCPenaltyTicks;
-            return (int)Math.Min((ulong)MaxOOCPenaltyTicks, penaltyTicks);
+            return context;
         }
 
         /// <summary>

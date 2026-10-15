@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using SWLOR.Game.Server.Feature.ItemDefinition;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.CraftService;
 using SWLOR.Game.Server.Service.PerkService;
@@ -20,6 +21,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EspionageRecipeDefinition
                 .Level(3)
                 .SkillUpToRank(Skill.GetEspionagePracticeRankLimit(PerkType.Poisoncraft, 1))
                 .Quantity(5)
+                .EffectDescription(VenomCoatingItemDefinition.BuildEffectSummary(1, false))
                 .Component("kath_blood", 3)
                 .Component("herb_v", 2);
 
@@ -31,6 +33,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EspionageRecipeDefinition
                 .Level(16)
                 .SkillUpToRank(Skill.GetEspionagePracticeRankLimit(PerkType.Poisoncraft, 2))
                 .Quantity(5)
+                .EffectDescription(VenomCoatingItemDefinition.BuildEffectSummary(2, false))
                 .Component("raivor_blood", 3)
                 .Component("herb_m", 2);
 
@@ -42,6 +45,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EspionageRecipeDefinition
                 .Level(26)
                 .SkillUpToRank(Skill.GetEspionagePracticeRankLimit(PerkType.Poisoncraft, 3))
                 .Quantity(5)
+                .EffectDescription(VenomCoatingItemDefinition.BuildEffectSummary(3, false))
                 .Component("byysk_meat", 3)
                 .Component("herb_c", 2);
 
@@ -53,6 +57,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EspionageRecipeDefinition
                 .Level(36)
                 .SkillUpToRank(Skill.GetEspionagePracticeRankLimit(PerkType.Poisoncraft, 4))
                 .Quantity(5)
+                .EffectDescription(VenomCoatingItemDefinition.BuildEffectSummary(4, false))
                 .Component("sanddemon_meat", 3)
                 .Component("herb_t", 2);
 
@@ -64,6 +69,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EspionageRecipeDefinition
                 .Level(46)
                 .SkillUpToRank(Skill.GetEspionagePracticeRankLimit(PerkType.Poisoncraft, 5))
                 .Quantity(5)
+                .EffectDescription(VenomCoatingItemDefinition.BuildEffectSummary(5, false))
                 .Component("wild_innards", 3)
                 .Component("herb_x", 2);
 

@@ -137,7 +137,7 @@
   },
   "Comment": {
     "type": "cexostring",
-    "value": "Capstone quest giver for Forcebane in Korriban Forge Caverns."
+    "value": "Capstone quest giver for Forcebane in Tatooine - Forge Caverns."
   },
   "Con": {
     "type": "byte",
@@ -166,7 +166,7 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "Maar Veth is a anti-Force spear master tied to the Forcebane capstone trials in Korriban Forge Caverns."
+      "0": "A lean, weathered human man keeps to the shade of the wall beside Anchorhead's southern gate, a long iron-shod spear grounded at his side. His knuckles are scarred, and his gaze follows anyone in robes until they have passed. He has the patient, unfriendly stillness of an old hunter who stopped trusting the Force a long time ago and never apologized for it."
     }
   },
   "Dex": {
@@ -364,7 +364,7 @@
   },
   "PortraitId": {
     "type": "word",
-    "value": 308
+    "value": 4189
   },
   "Race": {
     "type": "byte",

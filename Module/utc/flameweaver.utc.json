@@ -126,7 +126,7 @@
   },
   "Comment": {
     "type": "cexostring",
-    "value": "Capstone quest creature for Soul Ascension in Korriban Forge Caverns."
+    "value": "Named rare elite (ranged) for Soul Ascension in Tatooine - Forge Caverns."
   },
   "Con": {
     "type": "byte",
@@ -155,7 +155,7 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "A named rare elite of the Korriban Forge Caverns. Ranged."
+      "0": "An Echani ascendant of the forge congregation, his skin seared and bright from long years at the crucibles. He walks the galleries of the Forge Caverns chanting old verses and prefers to strike at intruders before they can close on him."
     }
   },
   "Dex": {
@@ -649,6 +649,21 @@
         "Value": {
           "type": "cexostring",
           "value": "KORFORGE_FLAME_COMP,100,1"
+        }
+      },
+      {
+        "__struct_id": 0,
+        "Name": {
+          "type": "cexostring",
+          "value": "LOOT_TABLE_4"
+        },
+        "Type": {
+          "type": "dword",
+          "value": 3
+        },
+        "Value": {
+          "type": "cexostring",
+          "value": "MUSIC_DISCS,1,1"
         }
       }
     ]

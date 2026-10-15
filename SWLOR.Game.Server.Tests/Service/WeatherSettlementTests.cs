@@ -26,6 +26,8 @@ public sealed class WeatherSettlementTests
         var feedback = ExtractMethod("SWLOR.Game.Server/Service/WeatherService/WeatherConditions.cs", "GetFeedback", 5);
         var lightningDamage = ExtractMethod("SWLOR.Game.Server/Service/WeatherService/WeatherConditions.cs", "GetLightningDamage", 2);
         var feedbackText = ExtractClass("SWLOR.Game.Server/Service/WeatherService/WeatherFeedbackText.cs", "WeatherFeedbackText");
+        var captureObjects = ExtractMethod("SWLOR.Game.Server/Core/ObjectSnapshot.cs", "Capture", 3);
+        var objectsInShape = ExtractMethod("SWLOR.Game.Server/Core/ObjectSnapshot.cs", "InShape", 5);
 
         var source = $$"""
             using System;
@@ -33,6 +35,11 @@ public sealed class WeatherSettlementTests
             using System.Linq;
             using static WeatherWorld;
 
+            public static class ObjectSnapshot
+            {
+                {{captureObjects}}
+                {{objectsInShape}}
+            }
             public enum WeatherHazard { None, Acid, Sand, Snow }
             public enum WeatherStorm { None, Thunder, Sand, Snow }
             public enum Precipitation { Clear, Rain, Snow, Foggy }
@@ -131,6 +138,7 @@ public sealed class WeatherSettlementTests
                 public static readonly List<Effect> LocationEffects = new();
                 public static readonly List<(uint Target, string Message)> Messages = new();
                 public static int TargetIterations;
+                public static int SearchResetsOnDamage;
                 private static int _targetIndex;
                 private static uint _targetArea;
                 public static bool IsWeatherArea(uint area) => Weatherable.TryGetValue(area, out var value) && value;
@@ -152,7 +160,14 @@ public sealed class WeatherSettlementTests
                 public static Effect EffectVisualEffect(VisualEffect visual) => new("visual", Visual: visual);
                 public static Effect EffectKnockdown() => new("knockdown");
                 public static void ApplyEffectToObject(DurationType duration, Effect effect, uint target, float seconds = 0)
-                    => ObjectEffects.Add((target, effect, duration));
+                {
+                    ObjectEffects.Add((target, effect, duration));
+                    if (effect.Kind == "damage" && SearchResetsOnDamage > 0)
+                    {
+                        SearchResetsOnDamage--;
+                        GetFirstObjectInShape(Shape.Sphere, 6f, GetLocation(target), false, ObjectType.Creature);
+                    }
+                }
                 public static void ApplyEffectAtLocation(DurationType duration, Effect effect, Location location)
                     => LocationEffects.Add(effect);
                 public static uint GetAreaFromLocation(Location location) => location.Area;
@@ -181,7 +196,7 @@ public sealed class WeatherSettlementTests
                     Weatherable.Clear(); Booleans.Clear(); Integers.Clear(); PropertyIds.Clear(); Properties.Clear();
                     Conditions.Clear(); NativeWeather.Clear(); CreatureAreas.Clear(); PlayerCharacters.Clear(); Dms.Clear(); Possessed.Clear();
                     Dead.Clear(); ObjectTypes.Clear(); Targets.Clear(); ObjectEffects.Clear(); LocationEffects.Clear();
-                    Messages.Clear(); TargetIterations = 0; _targetIndex = 0; _targetArea = 0;
+                    Messages.Clear(); TargetIterations = 0; SearchResetsOnDamage = 0; _targetIndex = 0; _targetArea = 0;
                 }
             }
             public static class WeatherRuntime
@@ -237,6 +252,7 @@ public sealed class WeatherSettlementTests
                 public static string[] Messages(uint target) => WeatherWorld.Messages.Where(x => x.Target == target).Select(x => x.Message).ToArray();
                 public static int LightningVisualCount => WeatherWorld.LocationEffects.Count(x => x.Kind == "visual" && x.Visual == VisualEffect.Vfx_Imp_Lightning_M);
                 public static int TargetIterationCount => WeatherWorld.TargetIterations;
+                public static void ResetSearchDuringDamage(int times) => WeatherWorld.SearchResetsOnDamage = times;
             }
             """;
 
@@ -365,6 +381,21 @@ public sealed class WeatherSettlementTests
         TargetIterationCount.Should().BeGreaterThan(0);
         DamageCount(10).Should().Be(1);
         KnockdownCount(10).Should().Be(1);
+    }
+
+    [Test]
+    public void LightningDamageCallbacksCannotRestartTheOuterTargetSearch()
+    {
+        SetWeatherable(1, true);
+        SetTarget(10, 1);
+        SetTarget(11, 1);
+        // Bound the simulated reentrancy so a regression fails without hanging the test runner.
+        Call("ResetSearchDuringDamage", 3);
+
+        Strike(1, 100);
+
+        DamageCount(10).Should().Be(1);
+        DamageCount(11).Should().Be(1);
     }
 
     [TestCase("AcidRain")]

@@ -35,7 +35,7 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                 .Name(name)
                 .ShortName(shortName)
                 .Type(ShipModuleType.TurboLaser)
-                .Texture("iit_ess_079")
+                .Texture("iit_smturbolas")
                 .Description(description)
                 .MaxDistance(30f)
                 .ValidTargetType(ObjectType.Creature)
@@ -74,7 +74,7 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                         var delay = i * 3f;
                         DelayCommand(delay, () =>
                         {
-                            if (!GetIsDead(activator) && !GetIsDead(target))
+                            if (Space.CanShipFire(activator) && !GetIsDead(target))
                             {
                                 var roll = Random.D100(1);
                                 var isHit = roll <= chanceToHit;

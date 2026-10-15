@@ -23,9 +23,9 @@ public class MovementAbilityStunTests
             "Feature", "AbilityDefinition", folder, definitionType.Name + ".cs"));
         var calls = CSharpSyntaxTree.ParseText(source).GetRoot().DescendantNodes()
             .OfType<InvocationExpressionSyntax>().ToArray();
-        var arrival = calls.Single(call => call.Expression.ToString() == "ActionDoCommand");
-        var stun = arrival.DescendantNodes().OfType<InvocationExpressionSyntax>()
-            .Single(call => call.Expression.ToString() == "StatusEffect.ApplyStatusEffect");
+        var stun = calls.Single(call => call.Expression.ToString() == "StatusEffect.ApplyStatusEffect");
+        var arrival = stun.Ancestors().OfType<InvocationExpressionSyntax>()
+            .First(call => call.Expression.ToString() is "ActionDoCommand" or "AssignCommand");
 
         stun.ArgumentList.Arguments.Take(4).Select(argument => argument.Expression.ToString())
             .Should().Equal("activator", "target", "typeof(StunnedStatusEffect)", "StunDurationSeconds");
@@ -40,5 +40,41 @@ public class MovementAbilityStunTests
         arrival.ToString().Should().Contain("GetIsDead(activator)").And.Contain("GetIsDead(target)")
             .And.Contain("GetArea(activator) != GetArea(target)").And.Contain("GetIsReactionTypeHostile(target, activator)");
         source.Should().NotContain("EffectStunned()", "tracked Stunned supplies resistance and shared control immunity");
+    }
+
+    [Test]
+    public void ShadowStep_TurnsTargetBackToItsCastFacingOnArrival()
+    {
+        var source = ReadDefinitionSource("Espionage", nameof(ShadowStepAbilityDefinition));
+        var root = CSharpSyntaxTree.ParseText(source).GetRoot();
+        var calls = root.DescendantNodes().OfType<InvocationExpressionSyntax>().ToArray();
+        var jump = calls.Single(call => call.Expression.ToString() == "ActionJumpToLocation");
+        var arrival = calls.Single(call => call.Expression.ToString() == "ActionDoCommand");
+        var stun = arrival.DescendantNodes().OfType<InvocationExpressionSyntax>()
+            .Single(call => call.Expression.ToString() == "StatusEffect.ApplyStatusEffect");
+        var turnBack = arrival.DescendantNodes().OfType<InvocationExpressionSyntax>()
+            .Single(call => call.Expression.ToString() == "SetFacing");
+        var facingCapture = root.DescendantNodes().OfType<VariableDeclaratorSyntax>()
+            .Single(declarator => declarator.Identifier.Text == "targetFacing");
+
+        facingCapture.Initializer!.Value.ToString().Should().Be("GetFacing(target)");
+        facingCapture.SpanStart.Should().BeLessThan(jump.SpanStart,
+            "the facing that places the activator behind the target is read before the jump");
+        turnBack.ArgumentList.Arguments.Select(argument => argument.Expression.ToString())
+            .Should().Equal("targetFacing", "target");
+        turnBack.SpanStart.Should().BeLessThan(stun.SpanStart,
+            "the target must be facing away when the stun freezes it");
+        turnBack.Ancestors().OfType<IfStatementSyntax>().Should().Contain(statement =>
+            statement.Condition.ToString() == "GetIsReactionTypeHostile(target, activator)");
+    }
+
+    private static string ReadDefinitionSource(string folder, string typeName)
+    {
+        var directory = new DirectoryInfo(TestContext.CurrentContext.TestDirectory);
+        while (directory != null && !File.Exists(Path.Combine(directory.FullName, "SWLOR.Game.Server.sln")))
+            directory = directory.Parent;
+        directory.Should().NotBeNull();
+        return File.ReadAllText(Path.Combine(directory!.FullName, "SWLOR.Game.Server",
+            "Feature", "AbilityDefinition", folder, typeName + ".cs"));
     }
 }

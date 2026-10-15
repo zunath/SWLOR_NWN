@@ -14,6 +14,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
 
         public IronWallStanceStatusEffect()
         {
+            StatGroup.Stats[StatType.DamageEnmityPercentAdjustment] = 100;
             StatGroup.Stats[StatType.DefensePercentAdjustment] = 25;
             StatGroup.Stats[StatType.ForceDefensePercentAdjustment] = 20;
             StatGroup.Stats[StatType.EnmityPercentAdjustment] = 30;

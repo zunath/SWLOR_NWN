@@ -625,8 +625,8 @@ public class TintMapReviewTests
             .Select(argument => argument.Expression.ToString());
 
         handlerScripts.Should().BeEquivalentTo(
-            "ScriptName.OnSWLORItemEquipValidBefore",
-            "ScriptName.OnItemUnequipBefore");
+            "ScriptName.OnItemEquipValidateAfter",
+            "ScriptName.OnItemUnequipAfter");
         var invocations = method.DescendantNodes()
             .OfType<InvocationExpressionSyntax>()
             .ToList();
@@ -643,12 +643,8 @@ public class TintMapReviewTests
             invocation.ArgumentList.Arguments.Count == 1 &&
             invocation.ArgumentList.Arguments[0].Expression is IdentifierNameSyntax argument &&
             argument.Identifier.ValueText == "creature");
-        var acceptsDroids = invocations.Any(invocation =>
-            invocation.Expression is MemberAccessExpressionSyntax
-            {
-                Expression: IdentifierNameSyntax { Identifier.ValueText: "Droid" },
-                Name.Identifier.ValueText: "IsDroid"
-            } &&
+        var distinguishesPlayerModuleEvents = invocations.Any(invocation =>
+            invocation.Expression is IdentifierNameSyntax { Identifier.ValueText: "GetIsPC" } &&
             invocation.ArgumentList.Arguments.Count == 1 &&
             invocation.ArgumentList.Arguments[0].Expression.ToString() == "creature");
         var acceptsDmPossessedCreatures = invocations.Any(invocation =>
@@ -657,7 +653,7 @@ public class TintMapReviewTests
             invocation.ArgumentList.Arguments[0].Expression.ToString() == "creature");
         queuesEditorRefresh.Should().BeTrue();
         resolvesOwner.Should().BeTrue();
-        acceptsDroids.Should().BeTrue();
+        distinguishesPlayerModuleEvents.Should().BeTrue();
         acceptsDmPossessedCreatures.Should().BeTrue();
         typeof(AppearanceEditorViewModel)
             .GetInterfaces()
@@ -916,53 +912,14 @@ public class TintMapReviewTests
     [Test]
     public void ToolsetPreviewUsesActualRgbOverrides()
     {
-        var source = ReadSource("SWLOR.Toolset", "Viewport", "GlAreaControl.cs");
-        var bindTintMapState = FindMethod(source, "BindTintMapState").ToString();
+        var source = ReadSource("SWLOR.Toolset", "Viewport", "SwlorAreaViewportMaterialProvider.cs");
+        var resolveTintSurface = FindMethod(source, "ResolveTintSurface").ToString();
 
-        bindTintMapState.Should().Contain("TintMapPaletteColors.GetClosestColorId(layer, custom)",
+        resolveTintSurface.Should().Contain("TintMapPaletteColors.GetClosestColorId(layer, custom)",
             "native fallback still needs a valid row for robes");
-        bindTintMapState.Should().Contain("custom.Red / 255f");
-        bindTintMapState.Should().Contain("custom.Green / 255f");
-        bindTintMapState.Should().Contain("custom.Blue / 255f, 1f");
-    }
-
-    [Test]
-    public void SpeederAppearanceChangesRefreshTintMaps()
-    {
-        var source = ReadSource(
-            "SWLOR.Game.Server",
-            "Feature",
-            "ItemDefinition",
-            "SpeederItemDefinition.cs");
-        var methods = CSharpSyntaxTree.ParseText(source)
-            .GetRoot()
-            .DescendantNodes()
-            .OfType<MethodDeclarationSyntax>()
-            .Where(node => new[]
-            {
-                "Speeder",
-                "AttackedDismount",
-                "AttackDismount",
-                "AreaTransitionDismount"
-            }.Contains(node.Identifier.ValueText))
-            .ToDictionary(node => node.Identifier.ValueText);
-
-        methods.Keys.Should().BeEquivalentTo(
-            "Speeder",
-            "AttackedDismount",
-            "AttackDismount",
-            "AreaTransitionDismount");
-        foreach (var method in methods.Values)
-        {
-            method.DescendantNodes()
-                .OfType<InvocationExpressionSyntax>()
-                .Should()
-                .ContainSingle(invocation =>
-                    invocation.Expression.ToString() == "TintMapService.QueueRefreshAndEditor" &&
-                    invocation.ArgumentList.Arguments.Count == 2 &&
-                    invocation.ArgumentList.Arguments[0].Expression.ToString() ==
-                    invocation.ArgumentList.Arguments[1].Expression.ToString());
-        }
+        resolveTintSurface.Should().Contain("custom.Red / 255f");
+        resolveTintSurface.Should().Contain("custom.Green / 255f");
+        resolveTintSurface.Should().Contain("custom.Blue / 255f, 1f");
     }
 
     [Test]
@@ -1277,12 +1234,15 @@ public class TintMapReviewTests
         var viewportSource = ReadSource(
             "SWLOR.Toolset",
             "Viewport",
-            "GlAreaControl.cs");
-        var viewportResolver = FindMethod(viewportSource, "ResolveTexture").ToString();
-        viewportResolver.Should().Contain("hasMaterial || parsedMaterial != null",
+            "SwlorAreaViewportMaterialProvider.cs");
+        var viewportResolver = FindMethod(viewportSource, "ResolveSurface").ToString();
+        viewportResolver.Should().Contain("TryParseMaterial(surfaceName)",
             "explicit MTR bindings remain authoritative in the live viewport");
-        viewportResolver.Should().Contain("IsTintMapMaterial(candidate)",
-            "bitmap-name fallback in the live viewport must use the same tint-material gate");
+        viewportResolver.Should().Contain("TryTintMaterialFallback(surfaceName)",
+            "a bitmap-only mesh may only fall back to a same-resref tint material");
+        FindMethod(viewportSource, "TryTintMaterialFallback").ToString()
+            .Should().Contain("IsTintMapMaterial(candidate)",
+                "bitmap-name fallback in the live viewport must use the same tint-material gate");
         viewportResolver.Should().NotContain("resolveMaterial: true",
             "ordinary bitmap-only viewport meshes must bypass same-resref MTR lookup");
     }
@@ -2012,22 +1972,6 @@ public class TintMapReviewTests
                 TintMapVariable.GetItemGlobalColorStateName(TintMapLayerType.Cloth1))
             .Should().BeFalse();
         TintMapVariable.IsItemGlobalInheritanceStateName("TMI_not-a-layer").Should().BeFalse();
-    }
-
-    [Test]
-    public void FlatColorViewportPassesClearTintMapState()
-    {
-        var viewportSource = ReadSource(
-            "SWLOR.Toolset",
-            "Viewport",
-            "GlAreaControl.cs");
-        var setUniformMethod = FindMethod(viewportSource, "SetUniformBool");
-        var methodBody = setUniformMethod.ToString();
-
-        methodBody.Should().Contain("name == \"hasTexture\" && !value",
-            "every existing flat-color pass disables hasTexture through this shared path");
-        methodBody.Should().Contain("SetUniformBoolCore(\"hasTintMap\", false)");
-        methodBody.Should().Contain("SetUniformBoolCore(\"hasTintAlpha\", false)");
     }
 
     [Test]

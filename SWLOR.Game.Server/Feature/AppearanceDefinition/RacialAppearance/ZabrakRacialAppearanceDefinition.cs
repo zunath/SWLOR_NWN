@@ -1,6 +1,6 @@
 namespace SWLOR.Game.Server.Feature.AppearanceDefinition.RacialAppearance
 {
-    public class ZabrakRacialAppearanceDefinition: RacialAppearanceBaseDefinition
+    public class ZabrakRacialAppearanceDefinition: HumanModelRacialAppearanceBaseDefinition
     {
         public override float MaximumScale => 1.3f;
         public override int[] MaleHeads { get; } = { 56, 57, 58, 59, 60, 61, 62, 103, 266, 291, 292, 293, 294, 295, 296, 297, 298, 299, 300, 301 };

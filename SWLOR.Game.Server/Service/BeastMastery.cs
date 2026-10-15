@@ -320,6 +320,7 @@ namespace SWLOR.Game.Server.Service
                     if (percentHeal > 0)
                     {
                         var healHP = (int)(GetMaxHitPoints(beast) * (percentHeal * 0.01f));
+                        using var recorderAttribution = CombatRecorder.BeginSetupAttribution(beast);
                         ApplyEffectToObject(DurationType.Instant, EffectHeal(healHP), beast);
                     }
 
@@ -355,9 +356,9 @@ namespace SWLOR.Game.Server.Service
             CreaturePlugin.SetRawAbilityScore(beast, AbilityType.Social, level.Stats[AbilityType.Social]);
             Stat.SetNPCMaxHitPoints(beast, level.HP);
 
-            var attackBonus = (int)(level.MaxAttackBonus * (dbBeast.AttackPurity * 0.01f));
-            var accuracyBonus = (int)(level.MaxAccuracyBonus * (dbBeast.AccuracyPurity * 0.01f));
-            var evasionBonus = (int)(level.MaxEvasionBonus * (dbBeast.EvasionPurity * 0.01f));
+            var attackBonus = BeastCombatStatCalculator.CalculateAttackBonus(level, dbBeast);
+            var accuracyBonus = BeastCombatStatCalculator.CalculateAccuracyBonus(level, dbBeast);
+            var evasionBonus = BeastCombatStatCalculator.CalculateEvasionBonus(level, dbBeast);
 
             BiowareXP2.IPSafeAddItemProperty(skin, ItemPropertyCustom(ItemPropertyType.Attack, -1, attackBonus), 0f, AddItemPropertyPolicy.ReplaceExisting, false, false);
             BiowareXP2.IPRemoveMatchingItemProperties(skin, ItemPropertyType.AccuracyBonus, DurationType.Invalid, -1);
@@ -490,10 +491,15 @@ namespace SWLOR.Game.Server.Service
         public static void BeastOnDeath()
         {
             var beast = OBJECT_SELF;
+            var beastId = GetBeastId(beast);
+            var killer = GetLastKiller();
+            Feature.AbilityDefinition.ReviveRules.RecordBeastDeath(
+                GetMaster(beast),
+                beastId,
+                GetIsObjectValid(killer) ? killer : GetLastHostileActor(beast));
             CompanionControl.Clear(beast);
             ExecuteScript("x2_hen_death", beast);
 
-            var beastId = GetBeastId(beast);
             var dbBeast = DB.Get<Beast>(beastId);
             if (dbBeast == null)
                 return;

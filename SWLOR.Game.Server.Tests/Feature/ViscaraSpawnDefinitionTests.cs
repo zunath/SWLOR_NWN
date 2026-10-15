@@ -173,7 +173,7 @@ public class ViscaraSpawnDefinitionTests
         ("redvein_vblade", "Red Vein Vibroblade", 1, 23, 36, 45, 23, false),
         ("pulse_calrifle", "Pulse-Frame Calibration Rifle", 7, 38, 46, 45, 30, true),
         ("rending_cleaver", "Rending Cleaver", 13, 42, 39, 45, 30, false),
-        ("duel_splitter", "Duelist's Splitter", 12, 27, 41, 45, 29, false),
+        ("duel_splitter", "Duelist's Splitter", 12, 23, 41, 45, 23, false),
         ("redvein_pistol", "Red Vein Holdout", 61, 22, 45, 45, 25, true),
         ("sump_vknife", "Sump-Cut Vibroknife", 22, 21, 37, 45, 22, false),
         ("gutter_staff", "Gutterline Staff", 50, 23, 44, 45, 27, false),
@@ -186,7 +186,7 @@ public class ViscaraSpawnDefinitionTests
         ("charm_katar", "Charmbreaker Katar", 310, 18, 43, 45, 22, false),
         ("redcircle_star", "Red-Circle Shuriken", 59, 18, 47, 45, 22, false),
         ("duel_fang", "Duelist's Fang", 1, 23, 36, 45, 23, false),
-        ("circle_twin", "Circle Twinblade", 12, 27, 41, 45, 29, false),
+        ("circle_twin", "Circle Twinblade", 12, 23, 41, 45, 23, false),
     };
 
     private static readonly (
@@ -593,7 +593,7 @@ public class ViscaraSpawnDefinitionTests
             root.FullName,
             "design",
             "bible",
-            "SWLOR Design Bible - Combat Upgrade.xlsx"));
+            "SWLOR Design Bible.xlsx"));
         var worksheet = ReadWorksheetByName(archive, "Smithery Recipes");
         var sharedStrings = ReadSharedStrings(archive);
         var recipes = new FanghideRecipes().BuildRecipes();
@@ -632,7 +632,7 @@ public class ViscaraSpawnDefinitionTests
             root.FullName,
             "design",
             "bible",
-            "SWLOR Design Bible - Combat Upgrade.xlsx"));
+            "SWLOR Design Bible.xlsx"));
         var worksheet = ReadWorksheetByName(archive, "Smithery Recipes");
         var sharedStrings = ReadSharedStrings(archive);
         var recipes = new SkycrestRecipes().BuildRecipes();
@@ -1196,7 +1196,7 @@ public class ViscaraSpawnDefinitionTests
             root.FullName,
             "design",
             "bible",
-            "SWLOR Design Bible - Combat Upgrade.xlsx"));
+            "SWLOR Design Bible.xlsx"));
         var sharedStrings = ReadSharedStrings(archive);
         var smitheryWorksheet = ReadWorksheetByName(archive, "Smithery Recipes");
         var fabricationWorksheet = ReadWorksheetByName(archive, "Fabrication Recipes");

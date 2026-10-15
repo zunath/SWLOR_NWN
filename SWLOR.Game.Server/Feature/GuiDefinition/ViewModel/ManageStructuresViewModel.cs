@@ -497,8 +497,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var placeable = Property.GetPlaceableByPropertyId(structure.Id);
             var facing = GetFacing(placeable) + 20f;
 
-            while (facing > 360f)
-                facing -= 360f;
+            facing = GameMath.NormalizeDegrees(facing);
 
             AssignCommand(placeable, () => SetFacing(facing));
         };
@@ -509,8 +508,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var placeable = Property.GetPlaceableByPropertyId(structure.Id);
             var facing = GetFacing(placeable) - 20f;
 
-            while (facing > 360f)
-                facing -= 360f;
+            facing = GameMath.NormalizeDegrees(facing);
 
             AssignCommand(placeable, () => SetFacing(facing));
         };

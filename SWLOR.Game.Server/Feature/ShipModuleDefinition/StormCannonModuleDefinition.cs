@@ -31,7 +31,7 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                 .Name(name)
                 .ShortName(shortName)
                 .Type(ShipModuleType.IonCannon)
-                .Texture("iit_ess2_062")
+                .Texture("iit_smstormcann")
                 .Description(description)
                 .MaxDistance(40f)
                 .ValidTargetType(ObjectType.Creature)
@@ -70,7 +70,7 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                             var roll = Random.D100(1);
                             var isHit = roll <= chanceToHit;
 
-                            if (!GetIsDead(activator) && !GetIsDead(target))
+                            if (Space.CanShipFire(activator) && !GetIsDead(target))
                             {
                                 if (isHit)
                                 {

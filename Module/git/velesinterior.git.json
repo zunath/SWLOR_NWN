@@ -4980,11 +4980,15 @@
               },
               "DescIdentified": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "A corporate militia outfit with utilitarian seams and the disciplined outline Czerka likes to put between its property and everyone else. The fabric makes no distinction between guarding a warehouse and enforcing the company's idea of order."
+                }
               },
               "Description": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "A corporate militia outfit with utilitarian seams and the disciplined outline Czerka likes to put between its property and everyone else. The fabric makes no distinction between guarding a warehouse and enforcing the company's idea of order."
+                }
               },
               "Identified": {
                 "type": "byte",
@@ -6190,11 +6194,15 @@
               },
               "DescIdentified": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "A corporate militia outfit with utilitarian seams and the disciplined outline Czerka likes to put between its property and everyone else. The fabric makes no distinction between guarding a warehouse and enforcing the company's idea of order."
+                }
               },
               "Description": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "A corporate militia outfit with utilitarian seams and the disciplined outline Czerka likes to put between its property and everyone else. The fabric makes no distinction between guarding a warehouse and enforcing the company's idea of order."
+                }
               },
               "Identified": {
                 "type": "byte",
@@ -7411,12 +7419,14 @@
               },
               "DescIdentified": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "A colonist's practical outfit, made for the days between arrival and the comfortable life promised in a recruitment notice. In Veles, clothes like these belong as readily to an established worker as to someone still looking for their first room."
+                }
               },
               "Description": {
                 "type": "cexolocstring",
                 "value": {
-                  "0": ""
+                  "0": "A colonist's practical outfit, made for the days between arrival and the comfortable life promised in a recruitment notice. In Veles, clothes like these belong as readily to an established worker as to someone still looking for their first room."
                 }
               },
               "Identified": {
@@ -8426,11 +8436,15 @@
               },
               "DescIdentified": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "A corporate militia outfit with utilitarian seams and the disciplined outline Czerka likes to put between its property and everyone else. The fabric makes no distinction between guarding a warehouse and enforcing the company's idea of order."
+                }
               },
               "Description": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "A corporate militia outfit with utilitarian seams and the disciplined outline Czerka likes to put between its property and everyone else. The fabric makes no distinction between guarding a warehouse and enforcing the company's idea of order."
+                }
               },
               "Identified": {
                 "type": "byte",
@@ -9669,11 +9683,15 @@
               },
               "DescIdentified": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "A corporate militia outfit with utilitarian seams and the disciplined outline Czerka likes to put between its property and everyone else. The fabric makes no distinction between guarding a warehouse and enforcing the company's idea of order."
+                }
               },
               "Description": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "A corporate militia outfit with utilitarian seams and the disciplined outline Czerka likes to put between its property and everyone else. The fabric makes no distinction between guarding a warehouse and enforcing the company's idea of order."
+                }
               },
               "Identified": {
                 "type": "byte",
@@ -10912,11 +10930,15 @@
               },
               "DescIdentified": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "A corporate militia outfit with utilitarian seams and the disciplined outline Czerka likes to put between its property and everyone else. The fabric makes no distinction between guarding a warehouse and enforcing the company's idea of order."
+                }
               },
               "Description": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "A corporate militia outfit with utilitarian seams and the disciplined outline Czerka likes to put between its property and everyone else. The fabric makes no distinction between guarding a warehouse and enforcing the company's idea of order."
+                }
               },
               "Identified": {
                 "type": "byte",
@@ -12095,12 +12117,14 @@
               },
               "DescIdentified": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "A colonist's practical outfit, made for the days between arrival and the comfortable life promised in a recruitment notice. In Veles, clothes like these belong as readily to an established worker as to someone still looking for their first room."
+                }
               },
               "Description": {
                 "type": "cexolocstring",
                 "value": {
-                  "0": ""
+                  "0": "A colonist's practical outfit, made for the days between arrival and the comfortable life promised in a recruitment notice. In Veles, clothes like these belong as readily to an established worker as to someone still looking for their first room."
                 }
               },
               "Identified": {
@@ -13108,11 +13132,15 @@
               },
               "DescIdentified": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "A shopkeeper's outfit with a neat front and a lining strengthened around its working pockets. The garment is meant to look welcoming, though its owner has plainly kept their credit chips well within reach."
+                }
               },
               "Description": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "A shopkeeper's outfit with a neat front and a lining strengthened around its working pockets. The garment is meant to look welcoming, though its owner has plainly kept their credit chips well within reach."
+                }
               },
               "Identified": {
                 "type": "byte",
@@ -14126,12 +14154,14 @@
               },
               "DescIdentified": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "A smuggler's outfit cut to pass through a busy port without explaining too much about its owner. The lining has more careful stitching than the outside, particularly around places that an impatient searcher might overlook."
+                }
               },
               "Description": {
                 "type": "cexolocstring",
                 "value": {
-                  "0": ""
+                  "0": "A smuggler's outfit cut to pass through a busy port without explaining too much about its owner. The lining has more careful stitching than the outside, particularly around places that an impatient searcher might overlook."
                 }
               },
               "Identified": {
@@ -15185,11 +15215,15 @@
               },
               "DescIdentified": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "A corporate militia outfit with utilitarian seams and the disciplined outline Czerka likes to put between its property and everyone else. The fabric makes no distinction between guarding a warehouse and enforcing the company's idea of order."
+                }
               },
               "Description": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "A corporate militia outfit with utilitarian seams and the disciplined outline Czerka likes to put between its property and everyone else. The fabric makes no distinction between guarding a warehouse and enforcing the company's idea of order."
+                }
               },
               "Identified": {
                 "type": "byte",
@@ -16151,6 +16185,1573 @@
         "ZPosition": {
           "type": "float",
           "value": -5.7220458984375e-006
+        }
+      },
+      {
+        "__struct_id": 4,
+        "Appearance_Head": {
+          "type": "byte",
+          "value": 42
+        },
+        "Appearance_Type": {
+          "type": "word",
+          "value": 6
+        },
+        "ArmorPart_RFoot": {
+          "type": "byte",
+          "value": 1
+        },
+        "BodyBag": {
+          "type": "byte",
+          "value": 0
+        },
+        "BodyPart_Belt": {
+          "type": "byte",
+          "value": 0
+        },
+        "BodyPart_LBicep": {
+          "type": "byte",
+          "value": 1
+        },
+        "BodyPart_LFArm": {
+          "type": "byte",
+          "value": 1
+        },
+        "BodyPart_LFoot": {
+          "type": "byte",
+          "value": 1
+        },
+        "BodyPart_LHand": {
+          "type": "byte",
+          "value": 1
+        },
+        "BodyPart_LShin": {
+          "type": "byte",
+          "value": 1
+        },
+        "BodyPart_LShoul": {
+          "type": "byte",
+          "value": 0
+        },
+        "BodyPart_LThigh": {
+          "type": "byte",
+          "value": 1
+        },
+        "BodyPart_Neck": {
+          "type": "byte",
+          "value": 1
+        },
+        "BodyPart_Pelvis": {
+          "type": "byte",
+          "value": 1
+        },
+        "BodyPart_RBicep": {
+          "type": "byte",
+          "value": 1
+        },
+        "BodyPart_RFArm": {
+          "type": "byte",
+          "value": 1
+        },
+        "BodyPart_RHand": {
+          "type": "byte",
+          "value": 1
+        },
+        "BodyPart_RShin": {
+          "type": "byte",
+          "value": 1
+        },
+        "BodyPart_RShoul": {
+          "type": "byte",
+          "value": 0
+        },
+        "BodyPart_RThigh": {
+          "type": "byte",
+          "value": 1
+        },
+        "BodyPart_Torso": {
+          "type": "byte",
+          "value": 1
+        },
+        "Cha": {
+          "type": "byte",
+          "value": 9
+        },
+        "ChallengeRating": {
+          "type": "float",
+          "value": 4.0
+        },
+        "ClassList": {
+          "type": "list",
+          "value": [
+            {
+              "__struct_id": 2,
+              "Class": {
+                "type": "int",
+                "value": 4
+              },
+              "ClassLevel": {
+                "type": "short",
+                "value": 5
+              }
+            }
+          ]
+        },
+        "Color_Hair": {
+          "type": "byte",
+          "value": 118
+        },
+        "Color_Skin": {
+          "type": "byte",
+          "value": 1
+        },
+        "Color_Tattoo1": {
+          "type": "byte",
+          "value": 1
+        },
+        "Color_Tattoo2": {
+          "type": "byte",
+          "value": 1
+        },
+        "Con": {
+          "type": "byte",
+          "value": 16
+        },
+        "Conversation": {
+          "type": "resref",
+          "value": "zomb_telconv"
+        },
+        "CRAdjust": {
+          "type": "int",
+          "value": 0
+        },
+        "CurrentHitPoints": {
+          "type": "short",
+          "value": 32
+        },
+        "DecayTime": {
+          "type": "dword",
+          "value": 5000
+        },
+        "Deity": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "Description": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "A lean spacer in a worn flight jacket who never looks up from his datapad for long. Telford Brelnak listens to the beacons over Viscara and passes on what he hears to anyone with a ship."
+          }
+        },
+        "Dex": {
+          "type": "byte",
+          "value": 13
+        },
+        "Disarmable": {
+          "type": "byte",
+          "value": 0
+        },
+        "Equip_ItemList": {
+          "type": "list",
+          "value": [
+            {
+              "__struct_id": 2,
+              "AddCost": {
+                "type": "dword",
+                "value": 0
+              },
+              "ArmorPart_Belt": {
+                "type": "byte",
+                "value": 106
+              },
+              "ArmorPart_LBicep": {
+                "type": "byte",
+                "value": 249
+              },
+              "ArmorPart_LFArm": {
+                "type": "byte",
+                "value": 246
+              },
+              "ArmorPart_LFoot": {
+                "type": "byte",
+                "value": 242
+              },
+              "ArmorPart_LHand": {
+                "type": "byte",
+                "value": 192
+              },
+              "ArmorPart_LShin": {
+                "type": "byte",
+                "value": 228
+              },
+              "ArmorPart_LShoul": {
+                "type": "byte",
+                "value": 0
+              },
+              "ArmorPart_LThigh": {
+                "type": "byte",
+                "value": 235
+              },
+              "ArmorPart_Neck": {
+                "type": "byte",
+                "value": 2
+              },
+              "ArmorPart_Pelvis": {
+                "type": "byte",
+                "value": 234
+              },
+              "ArmorPart_RBicep": {
+                "type": "byte",
+                "value": 249
+              },
+              "ArmorPart_RFArm": {
+                "type": "byte",
+                "value": 246
+              },
+              "ArmorPart_RFoot": {
+                "type": "byte",
+                "value": 242
+              },
+              "ArmorPart_RHand": {
+                "type": "byte",
+                "value": 192
+              },
+              "ArmorPart_Robe": {
+                "type": "byte",
+                "value": 0
+              },
+              "ArmorPart_RShin": {
+                "type": "byte",
+                "value": 228
+              },
+              "ArmorPart_RShoul": {
+                "type": "byte",
+                "value": 0
+              },
+              "ArmorPart_RThigh": {
+                "type": "byte",
+                "value": 235
+              },
+              "ArmorPart_Torso": {
+                "type": "byte",
+                "value": 100
+              },
+              "BaseItem": {
+                "type": "int",
+                "value": 16
+              },
+              "Charges": {
+                "type": "byte",
+                "value": 0
+              },
+              "Cloth1Color": {
+                "type": "byte",
+                "value": 134
+              },
+              "Cloth2Color": {
+                "type": "byte",
+                "value": 119
+              },
+              "Cost": {
+                "type": "dword",
+                "value": 1
+              },
+              "Cursed": {
+                "type": "byte",
+                "value": 0
+              },
+              "DescIdentified": {
+                "type": "cexolocstring",
+                "value": {
+                  "0": "Telford's clothing is worn along the cuffs and lower folds, where a garment tends to record more than its owner intends. Older repairs remain visible beneath the newer work, stubborn traces of the person it was fitted to."
+                }
+              },
+              "Description": {
+                "type": "cexolocstring",
+                "value": {
+                  "0": "Telford's clothing is worn along the cuffs and lower folds, where a garment tends to record more than its owner intends. Older repairs remain visible beneath the newer work, stubborn traces of the person it was fitted to."
+                }
+              },
+              "Identified": {
+                "type": "byte",
+                "value": 1
+              },
+              "Leather1Color": {
+                "type": "byte",
+                "value": 135
+              },
+              "Leather2Color": {
+                "type": "byte",
+                "value": 133
+              },
+              "LocalizedName": {
+                "type": "cexolocstring",
+                "value": {
+                  "0": "Telford's Clothing"
+                }
+              },
+              "Metal1Color": {
+                "type": "byte",
+                "value": 3
+              },
+              "Metal2Color": {
+                "type": "byte",
+                "value": 0
+              },
+              "Plot": {
+                "type": "byte",
+                "value": 0
+              },
+              "PropertiesList": {
+                "type": "list",
+                "value": []
+              },
+              "StackSize": {
+                "type": "word",
+                "value": 1
+              },
+              "Stolen": {
+                "type": "byte",
+                "value": 0
+              },
+              "Tag": {
+                "type": "cexostring",
+                "value": "zomb_telcloth"
+              },
+              "TemplateResRef": {
+                "type": "resref",
+                "value": "zomb_telcloth"
+              },
+              "xArmorPart_Belt": {
+                "type": "word",
+                "value": 106
+              },
+              "xArmorPart_LBice": {
+                "type": "word",
+                "value": 249
+              },
+              "xArmorPart_LFArm": {
+                "type": "word",
+                "value": 246
+              },
+              "xArmorPart_LFoot": {
+                "type": "word",
+                "value": 242
+              },
+              "xArmorPart_LHand": {
+                "type": "word",
+                "value": 192
+              },
+              "xArmorPart_LShin": {
+                "type": "word",
+                "value": 228
+              },
+              "xArmorPart_LShou": {
+                "type": "word",
+                "value": 0
+              },
+              "xArmorPart_LThig": {
+                "type": "word",
+                "value": 235
+              },
+              "xArmorPart_Neck": {
+                "type": "word",
+                "value": 2
+              },
+              "xArmorPart_Pelvi": {
+                "type": "word",
+                "value": 234
+              },
+              "xArmorPart_RBice": {
+                "type": "word",
+                "value": 249
+              },
+              "xArmorPart_RFArm": {
+                "type": "word",
+                "value": 246
+              },
+              "xArmorPart_RFoot": {
+                "type": "word",
+                "value": 242
+              },
+              "xArmorPart_RHand": {
+                "type": "word",
+                "value": 192
+              },
+              "xArmorPart_Robe": {
+                "type": "word",
+                "value": 0
+              },
+              "xArmorPart_RShin": {
+                "type": "word",
+                "value": 228
+              },
+              "xArmorPart_RShou": {
+                "type": "word",
+                "value": 0
+              },
+              "xArmorPart_RThig": {
+                "type": "word",
+                "value": 235
+              },
+              "xArmorPart_Torso": {
+                "type": "word",
+                "value": 100
+              },
+              "XOrientation": {
+                "type": "float",
+                "value": 3.363116314379561e-043
+              },
+              "XPosition": {
+                "type": "float",
+                "value": -1.0
+              },
+              "YOrientation": {
+                "type": "float",
+                "value": 1.0
+              },
+              "YPosition": {
+                "type": "float",
+                "value": -1.0
+              },
+              "ZPosition": {
+                "type": "float",
+                "value": -1.0
+              }
+            },
+            {
+              "__struct_id": 16,
+              "AddCost": {
+                "type": "dword",
+                "value": 0
+              },
+              "BaseItem": {
+                "type": "int",
+                "value": 7
+              },
+              "Charges": {
+                "type": "byte",
+                "value": 0
+              },
+              "Cost": {
+                "type": "dword",
+                "value": 1
+              },
+              "Cursed": {
+                "type": "byte",
+                "value": 0
+              },
+              "DescIdentified": {
+                "type": "cexolocstring",
+                "value": {}
+              },
+              "Description": {
+                "type": "cexolocstring",
+                "value": {
+                  "0": ""
+                }
+              },
+              "Identified": {
+                "type": "byte",
+                "value": 1
+              },
+              "LocalizedName": {
+                "id": 174,
+                "type": "cexolocstring",
+                "value": {
+                  "0": "Telford's Blaster"
+                }
+              },
+              "ModelPart1": {
+                "type": "byte",
+                "value": 31
+              },
+              "ModelPart2": {
+                "type": "byte",
+                "value": 254
+              },
+              "ModelPart3": {
+                "type": "byte",
+                "value": 11
+              },
+              "Plot": {
+                "type": "byte",
+                "value": 0
+              },
+              "PropertiesList": {
+                "type": "list",
+                "value": [
+                  {
+                    "__struct_id": 0,
+                    "ChanceAppear": {
+                      "type": "byte",
+                      "value": 100
+                    },
+                    "CostTable": {
+                      "type": "byte",
+                      "value": 45
+                    },
+                    "CostValue": {
+                      "type": "word",
+                      "value": 4
+                    },
+                    "Param1": {
+                      "type": "byte",
+                      "value": 255
+                    },
+                    "Param1Value": {
+                      "type": "byte",
+                      "value": 0
+                    },
+                    "PropertyName": {
+                      "type": "word",
+                      "value": 142
+                    },
+                    "Subtype": {
+                      "type": "word",
+                      "value": 0
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "ChanceAppear": {
+                      "type": "byte",
+                      "value": 100
+                    },
+                    "CostTable": {
+                      "type": "byte",
+                      "value": 42
+                    },
+                    "CostValue": {
+                      "type": "word",
+                      "value": 19
+                    },
+                    "Param1": {
+                      "type": "byte",
+                      "value": 255
+                    },
+                    "Param1Value": {
+                      "type": "byte",
+                      "value": 0
+                    },
+                    "PropertyName": {
+                      "type": "word",
+                      "value": 109
+                    },
+                    "Subtype": {
+                      "type": "word",
+                      "value": 0
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "ChanceAppear": {
+                      "type": "byte",
+                      "value": 100
+                    },
+                    "CostTable": {
+                      "type": "byte",
+                      "value": 0
+                    },
+                    "CostValue": {
+                      "type": "word",
+                      "value": 0
+                    },
+                    "Param1": {
+                      "type": "byte",
+                      "value": 255
+                    },
+                    "Param1Value": {
+                      "type": "byte",
+                      "value": 0
+                    },
+                    "PropertyName": {
+                      "type": "word",
+                      "value": 127
+                    },
+                    "Subtype": {
+                      "type": "word",
+                      "value": 0
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "ChanceAppear": {
+                      "type": "byte",
+                      "value": 100
+                    },
+                    "CostTable": {
+                      "type": "byte",
+                      "value": 0
+                    },
+                    "CostValue": {
+                      "type": "word",
+                      "value": 0
+                    },
+                    "Param1": {
+                      "type": "byte",
+                      "value": 255
+                    },
+                    "Param1Value": {
+                      "type": "byte",
+                      "value": 0
+                    },
+                    "PropertyName": {
+                      "type": "word",
+                      "value": 127
+                    },
+                    "Subtype": {
+                      "type": "word",
+                      "value": 0
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "ChanceAppear": {
+                      "type": "byte",
+                      "value": 100
+                    },
+                    "CostTable": {
+                      "type": "byte",
+                      "value": 0
+                    },
+                    "CostValue": {
+                      "type": "word",
+                      "value": 0
+                    },
+                    "Param1": {
+                      "type": "byte",
+                      "value": 255
+                    },
+                    "Param1Value": {
+                      "type": "byte",
+                      "value": 0
+                    },
+                    "PropertyName": {
+                      "type": "word",
+                      "value": 127
+                    },
+                    "Subtype": {
+                      "type": "word",
+                      "value": 0
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "ChanceAppear": {
+                      "type": "byte",
+                      "value": 100
+                    },
+                    "CostTable": {
+                      "type": "byte",
+                      "value": 0
+                    },
+                    "CostValue": {
+                      "type": "word",
+                      "value": 0
+                    },
+                    "Param1": {
+                      "type": "byte",
+                      "value": 255
+                    },
+                    "Param1Value": {
+                      "type": "byte",
+                      "value": 0
+                    },
+                    "PropertyName": {
+                      "type": "word",
+                      "value": 127
+                    },
+                    "Subtype": {
+                      "type": "word",
+                      "value": 0
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "ChanceAppear": {
+                      "type": "byte",
+                      "value": 100
+                    },
+                    "CostTable": {
+                      "type": "byte",
+                      "value": 0
+                    },
+                    "CostValue": {
+                      "type": "word",
+                      "value": 0
+                    },
+                    "Param1": {
+                      "type": "byte",
+                      "value": 255
+                    },
+                    "Param1Value": {
+                      "type": "byte",
+                      "value": 0
+                    },
+                    "PropertyName": {
+                      "type": "word",
+                      "value": 127
+                    },
+                    "Subtype": {
+                      "type": "word",
+                      "value": 0
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "ChanceAppear": {
+                      "type": "byte",
+                      "value": 100
+                    },
+                    "CostTable": {
+                      "type": "byte",
+                      "value": 0
+                    },
+                    "CostValue": {
+                      "type": "word",
+                      "value": 0
+                    },
+                    "Param1": {
+                      "type": "byte",
+                      "value": 255
+                    },
+                    "Param1Value": {
+                      "type": "byte",
+                      "value": 0
+                    },
+                    "PropertyName": {
+                      "type": "word",
+                      "value": 130
+                    },
+                    "Subtype": {
+                      "type": "word",
+                      "value": 0
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "ChanceAppear": {
+                      "type": "byte",
+                      "value": 100
+                    },
+                    "CostTable": {
+                      "type": "byte",
+                      "value": 0
+                    },
+                    "CostValue": {
+                      "type": "word",
+                      "value": 0
+                    },
+                    "Param1": {
+                      "type": "byte",
+                      "value": 255
+                    },
+                    "Param1Value": {
+                      "type": "byte",
+                      "value": 0
+                    },
+                    "PropertyName": {
+                      "type": "word",
+                      "value": 130
+                    },
+                    "Subtype": {
+                      "type": "word",
+                      "value": 0
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "ChanceAppear": {
+                      "type": "byte",
+                      "value": 100
+                    },
+                    "CostTable": {
+                      "type": "byte",
+                      "value": 0
+                    },
+                    "CostValue": {
+                      "type": "word",
+                      "value": 0
+                    },
+                    "Param1": {
+                      "type": "byte",
+                      "value": 255
+                    },
+                    "Param1Value": {
+                      "type": "byte",
+                      "value": 0
+                    },
+                    "PropertyName": {
+                      "type": "word",
+                      "value": 130
+                    },
+                    "Subtype": {
+                      "type": "word",
+                      "value": 0
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "ChanceAppear": {
+                      "type": "byte",
+                      "value": 100
+                    },
+                    "CostTable": {
+                      "type": "byte",
+                      "value": 48
+                    },
+                    "CostValue": {
+                      "type": "word",
+                      "value": 100
+                    },
+                    "Param1": {
+                      "type": "byte",
+                      "value": 255
+                    },
+                    "Param1Value": {
+                      "type": "byte",
+                      "value": 0
+                    },
+                    "PropertyName": {
+                      "type": "word",
+                      "value": 131
+                    },
+                    "Subtype": {
+                      "type": "word",
+                      "value": 0
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "ChanceAppear": {
+                      "type": "byte",
+                      "value": 100
+                    },
+                    "CostTable": {
+                      "type": "byte",
+                      "value": 14
+                    },
+                    "CostValue": {
+                      "type": "word",
+                      "value": 14
+                    },
+                    "Param1": {
+                      "type": "byte",
+                      "value": 255
+                    },
+                    "Param1Value": {
+                      "type": "byte",
+                      "value": 0
+                    },
+                    "PropertyName": {
+                      "type": "word",
+                      "value": 61
+                    },
+                    "Subtype": {
+                      "type": "word",
+                      "value": 1
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "ChanceAppear": {
+                      "type": "byte",
+                      "value": 100
+                    },
+                    "CostTable": {
+                      "type": "byte",
+                      "value": 52
+                    },
+                    "CostValue": {
+                      "type": "word",
+                      "value": 30
+                    },
+                    "Param1": {
+                      "type": "byte",
+                      "value": 255
+                    },
+                    "Param1Value": {
+                      "type": "byte",
+                      "value": 0
+                    },
+                    "PropertyName": {
+                      "type": "word",
+                      "value": 98
+                    },
+                    "Subtype": {
+                      "type": "word",
+                      "value": 0
+                    }
+                  }
+                ]
+              },
+              "StackSize": {
+                "type": "word",
+                "value": 1
+              },
+              "Stolen": {
+                "type": "byte",
+                "value": 0
+              },
+              "Tag": {
+                "type": "cexostring",
+                "value": "zomb_telgun"
+              },
+              "TemplateResRef": {
+                "type": "resref",
+                "value": "zomb_telgun"
+              },
+              "xModelPart1": {
+                "type": "word",
+                "value": 31
+              },
+              "xModelPart2": {
+                "type": "word",
+                "value": 254
+              },
+              "xModelPart3": {
+                "type": "word",
+                "value": 11
+              },
+              "XOrientation": {
+                "type": "float",
+                "value": 3.363116314379561e-043
+              },
+              "XPosition": {
+                "type": "float",
+                "value": -1.0
+              },
+              "YOrientation": {
+                "type": "float",
+                "value": 1.0
+              },
+              "YPosition": {
+                "type": "float",
+                "value": -1.0
+              },
+              "ZPosition": {
+                "type": "float",
+                "value": -1.0
+              }
+            }
+          ]
+        },
+        "FactionID": {
+          "type": "word",
+          "value": 2
+        },
+        "FeatList": {
+          "type": "list",
+          "value": [
+            {
+              "__struct_id": 1,
+              "Feat": {
+                "type": "word",
+                "value": 2
+              }
+            },
+            {
+              "__struct_id": 1,
+              "Feat": {
+                "type": "word",
+                "value": 3
+              }
+            },
+            {
+              "__struct_id": 1,
+              "Feat": {
+                "type": "word",
+                "value": 4
+              }
+            },
+            {
+              "__struct_id": 1,
+              "Feat": {
+                "type": "word",
+                "value": 6
+              }
+            },
+            {
+              "__struct_id": 1,
+              "Feat": {
+                "type": "word",
+                "value": 10
+              }
+            },
+            {
+              "__struct_id": 1,
+              "Feat": {
+                "type": "word",
+                "value": 391
+              }
+            },
+            {
+              "__struct_id": 1,
+              "Feat": {
+                "type": "word",
+                "value": 26
+              }
+            },
+            {
+              "__struct_id": 1,
+              "Feat": {
+                "type": "word",
+                "value": 1089
+              }
+            },
+            {
+              "__struct_id": 1,
+              "Feat": {
+                "type": "word",
+                "value": 28
+              }
+            },
+            {
+              "__struct_id": 1,
+              "Feat": {
+                "type": "word",
+                "value": 258
+              }
+            },
+            {
+              "__struct_id": 1,
+              "Feat": {
+                "type": "word",
+                "value": 32
+              }
+            },
+            {
+              "__struct_id": 1,
+              "Feat": {
+                "type": "word",
+                "value": 106
+              }
+            },
+            {
+              "__struct_id": 1,
+              "Feat": {
+                "type": "word",
+                "value": 45
+              }
+            },
+            {
+              "__struct_id": 1,
+              "Feat": {
+                "type": "word",
+                "value": 46
+              }
+            }
+          ]
+        },
+        "FirstName": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "Telford"
+          }
+        },
+        "fortbonus": {
+          "type": "short",
+          "value": 0
+        },
+        "Gender": {
+          "type": "byte",
+          "value": 0
+        },
+        "GoodEvil": {
+          "type": "byte",
+          "value": 50
+        },
+        "HitPoints": {
+          "type": "short",
+          "value": 32
+        },
+        "Int": {
+          "type": "byte",
+          "value": 10
+        },
+        "Interruptable": {
+          "type": "byte",
+          "value": 1
+        },
+        "IsImmortal": {
+          "type": "byte",
+          "value": 1
+        },
+        "IsPC": {
+          "type": "byte",
+          "value": 0
+        },
+        "LastName": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "Brelnak"
+          }
+        },
+        "LawfulChaotic": {
+          "type": "byte",
+          "value": 50
+        },
+        "Lootable": {
+          "type": "byte",
+          "value": 0
+        },
+        "MaxHitPoints": {
+          "type": "short",
+          "value": 47
+        },
+        "NaturalAC": {
+          "type": "byte",
+          "value": 0
+        },
+        "NoPermDeath": {
+          "type": "byte",
+          "value": 0
+        },
+        "PerceptionRange": {
+          "type": "byte",
+          "value": 11
+        },
+        "Phenotype": {
+          "type": "int",
+          "value": 0
+        },
+        "Plot": {
+          "type": "byte",
+          "value": 1
+        },
+        "PortraitId": {
+          "type": "word",
+          "value": 4148
+        },
+        "Race": {
+          "type": "byte",
+          "value": 6
+        },
+        "refbonus": {
+          "type": "short",
+          "value": 0
+        },
+        "ScriptAttacked": {
+          "type": "resref",
+          "value": ""
+        },
+        "ScriptDamaged": {
+          "type": "resref",
+          "value": ""
+        },
+        "ScriptDeath": {
+          "type": "resref",
+          "value": ""
+        },
+        "ScriptDialogue": {
+          "type": "resref",
+          "value": "dialog_start"
+        },
+        "ScriptDisturbed": {
+          "type": "resref",
+          "value": ""
+        },
+        "ScriptEndRound": {
+          "type": "resref",
+          "value": ""
+        },
+        "ScriptHeartbeat": {
+          "type": "resref",
+          "value": ""
+        },
+        "ScriptOnBlocked": {
+          "type": "resref",
+          "value": ""
+        },
+        "ScriptOnNotice": {
+          "type": "resref",
+          "value": ""
+        },
+        "ScriptRested": {
+          "type": "resref",
+          "value": ""
+        },
+        "ScriptSpawn": {
+          "type": "resref",
+          "value": ""
+        },
+        "ScriptSpellAt": {
+          "type": "resref",
+          "value": ""
+        },
+        "ScriptUserDefine": {
+          "type": "resref",
+          "value": ""
+        },
+        "SkillList": {
+          "type": "list",
+          "value": [
+            {
+              "__struct_id": 0,
+              "Rank": {
+                "type": "byte",
+                "value": 0
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Rank": {
+                "type": "byte",
+                "value": 0
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Rank": {
+                "type": "byte",
+                "value": 0
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Rank": {
+                "type": "byte",
+                "value": 0
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Rank": {
+                "type": "byte",
+                "value": 0
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Rank": {
+                "type": "byte",
+                "value": 0
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Rank": {
+                "type": "byte",
+                "value": 0
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Rank": {
+                "type": "byte",
+                "value": 0
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Rank": {
+                "type": "byte",
+                "value": 0
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Rank": {
+                "type": "byte",
+                "value": 0
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Rank": {
+                "type": "byte",
+                "value": 0
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Rank": {
+                "type": "byte",
+                "value": 0
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Rank": {
+                "type": "byte",
+                "value": 0
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Rank": {
+                "type": "byte",
+                "value": 0
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Rank": {
+                "type": "byte",
+                "value": 0
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Rank": {
+                "type": "byte",
+                "value": 0
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Rank": {
+                "type": "byte",
+                "value": 0
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Rank": {
+                "type": "byte",
+                "value": 0
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Rank": {
+                "type": "byte",
+                "value": 0
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Rank": {
+                "type": "byte",
+                "value": 0
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Rank": {
+                "type": "byte",
+                "value": 0
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Rank": {
+                "type": "byte",
+                "value": 0
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Rank": {
+                "type": "byte",
+                "value": 0
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Rank": {
+                "type": "byte",
+                "value": 0
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Rank": {
+                "type": "byte",
+                "value": 0
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Rank": {
+                "type": "byte",
+                "value": 0
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Rank": {
+                "type": "byte",
+                "value": 0
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Rank": {
+                "type": "byte",
+                "value": 0
+              }
+            }
+          ]
+        },
+        "SoundSetFile": {
+          "type": "word",
+          "value": 440
+        },
+        "SpecAbilityList": {
+          "type": "list",
+          "value": []
+        },
+        "StartingPackage": {
+          "type": "byte",
+          "value": 4
+        },
+        "Str": {
+          "type": "byte",
+          "value": 17
+        },
+        "Subrace": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "zomb_telford"
+        },
+        "Tail_New": {
+          "type": "dword",
+          "value": 0
+        },
+        "TemplateList": {
+          "type": "list",
+          "value": []
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": "zomb_telford"
+        },
+        "VarTable": {
+          "type": "list",
+          "value": [
+            {
+              "__struct_id": 0,
+              "Name": {
+                "type": "cexostring",
+                "value": "QUEST_ID_1"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 1
+              },
+              "Value": {
+                "type": "int",
+                "value": 31
+              }
+            }
+          ]
+        },
+        "WalkRate": {
+          "type": "int",
+          "value": 4
+        },
+        "willbonus": {
+          "type": "short",
+          "value": 0
+        },
+        "Wings_New": {
+          "type": "dword",
+          "value": 0
+        },
+        "Wis": {
+          "type": "byte",
+          "value": 10
+        },
+        "xAppearance_Head": {
+          "type": "word",
+          "value": 42
+        },
+        "xArmorPart_RFoot": {
+          "type": "word",
+          "value": 1
+        },
+        "xBodyPart_Belt": {
+          "type": "word",
+          "value": 0
+        },
+        "xBodyPart_LBicep": {
+          "type": "word",
+          "value": 1
+        },
+        "xBodyPart_LFArm": {
+          "type": "word",
+          "value": 1
+        },
+        "xBodyPart_LFoot": {
+          "type": "word",
+          "value": 1
+        },
+        "xBodyPart_LHand": {
+          "type": "word",
+          "value": 1
+        },
+        "xBodyPart_LShin": {
+          "type": "word",
+          "value": 1
+        },
+        "xBodyPart_LShoul": {
+          "type": "word",
+          "value": 0
+        },
+        "xBodyPart_LThigh": {
+          "type": "word",
+          "value": 1
+        },
+        "xBodyPart_Neck": {
+          "type": "word",
+          "value": 1
+        },
+        "xBodyPart_Pelvis": {
+          "type": "word",
+          "value": 1
+        },
+        "xBodyPart_RBicep": {
+          "type": "word",
+          "value": 1
+        },
+        "xBodyPart_RFArm": {
+          "type": "word",
+          "value": 1
+        },
+        "xBodyPart_RHand": {
+          "type": "word",
+          "value": 1
+        },
+        "xBodyPart_RShin": {
+          "type": "word",
+          "value": 1
+        },
+        "xBodyPart_RShoul": {
+          "type": "word",
+          "value": 0
+        },
+        "xBodyPart_RThigh": {
+          "type": "word",
+          "value": 1
+        },
+        "xBodyPart_Torso": {
+          "type": "word",
+          "value": 1
+        },
+        "XOrientation": {
+          "type": "float",
+          "value": -0.642788
+        },
+        "XPosition": {
+          "type": "float",
+          "value": 86.9
+        },
+        "YOrientation": {
+          "type": "float",
+          "value": -0.766044
+        },
+        "YPosition": {
+          "type": "float",
+          "value": 58.6
+        },
+        "ZPosition": {
+          "type": "float",
+          "value": 0.0
         }
       }
     ]
@@ -137820,7 +139421,7 @@
                     },
                     "ModelPart1": {
                       "type": "byte",
-                      "value": 35
+                      "value": 248
                     },
                     "Plot": {
                       "type": "byte",
@@ -137856,7 +139457,7 @@
                     },
                     "xModelPart1": {
                       "type": "word",
-                      "value": 35
+                      "value": 248
                     },
                     "XOrientation": {
                       "type": "float",
@@ -137927,7 +139528,7 @@
                     },
                     "ModelPart1": {
                       "type": "byte",
-                      "value": 4
+                      "value": 239
                     },
                     "Plot": {
                       "type": "byte",
@@ -137963,7 +139564,7 @@
                     },
                     "xModelPart1": {
                       "type": "word",
-                      "value": 4
+                      "value": 239
                     },
                     "XOrientation": {
                       "type": "float",
@@ -138034,7 +139635,7 @@
                     },
                     "ModelPart1": {
                       "type": "byte",
-                      "value": 210
+                      "value": 238
                     },
                     "Plot": {
                       "type": "byte",
@@ -138070,7 +139671,7 @@
                     },
                     "xModelPart1": {
                       "type": "word",
-                      "value": 210
+                      "value": 238
                     },
                     "XOrientation": {
                       "type": "float",
@@ -138141,7 +139742,7 @@
                     },
                     "ModelPart1": {
                       "type": "byte",
-                      "value": 18
+                      "value": 237
                     },
                     "Plot": {
                       "type": "byte",
@@ -138177,7 +139778,7 @@
                     },
                     "xModelPart1": {
                       "type": "word",
-                      "value": 18
+                      "value": 237
                     },
                     "XOrientation": {
                       "type": "float",
@@ -138248,7 +139849,7 @@
                     },
                     "ModelPart1": {
                       "type": "byte",
-                      "value": 216
+                      "value": 236
                     },
                     "Plot": {
                       "type": "byte",
@@ -138284,7 +139885,7 @@
                     },
                     "xModelPart1": {
                       "type": "word",
-                      "value": 216
+                      "value": 236
                     },
                     "XOrientation": {
                       "type": "float",
@@ -138355,7 +139956,7 @@
                     },
                     "ModelPart1": {
                       "type": "byte",
-                      "value": 26
+                      "value": 234
                     },
                     "Plot": {
                       "type": "byte",
@@ -138391,7 +139992,7 @@
                     },
                     "xModelPart1": {
                       "type": "word",
-                      "value": 26
+                      "value": 234
                     },
                     "XOrientation": {
                       "type": "float",
@@ -138462,7 +140063,7 @@
                     },
                     "ModelPart1": {
                       "type": "byte",
-                      "value": 39
+                      "value": 232
                     },
                     "Plot": {
                       "type": "byte",
@@ -138498,7 +140099,7 @@
                     },
                     "xModelPart1": {
                       "type": "word",
-                      "value": 39
+                      "value": 232
                     },
                     "XOrientation": {
                       "type": "float",
@@ -138569,7 +140170,7 @@
                     },
                     "ModelPart1": {
                       "type": "byte",
-                      "value": 50
+                      "value": 230
                     },
                     "Plot": {
                       "type": "byte",
@@ -138605,7 +140206,7 @@
                     },
                     "xModelPart1": {
                       "type": "word",
-                      "value": 50
+                      "value": 230
                     },
                     "XOrientation": {
                       "type": "float",
@@ -138676,7 +140277,7 @@
                     },
                     "ModelPart1": {
                       "type": "byte",
-                      "value": 84
+                      "value": 229
                     },
                     "Plot": {
                       "type": "byte",
@@ -138712,7 +140313,7 @@
                     },
                     "xModelPart1": {
                       "type": "word",
-                      "value": 84
+                      "value": 229
                     },
                     "XOrientation": {
                       "type": "float",
@@ -138783,7 +140384,7 @@
                     },
                     "ModelPart1": {
                       "type": "byte",
-                      "value": 89
+                      "value": 228
                     },
                     "Plot": {
                       "type": "byte",
@@ -138819,7 +140420,7 @@
                     },
                     "xModelPart1": {
                       "type": "word",
-                      "value": 89
+                      "value": 228
                     },
                     "XOrientation": {
                       "type": "float",
@@ -138890,7 +140491,7 @@
                     },
                     "ModelPart1": {
                       "type": "byte",
-                      "value": 27
+                      "value": 224
                     },
                     "Plot": {
                       "type": "byte",
@@ -138926,7 +140527,7 @@
                     },
                     "xModelPart1": {
                       "type": "word",
-                      "value": 27
+                      "value": 224
                     },
                     "XOrientation": {
                       "type": "float",
@@ -138997,7 +140598,7 @@
                     },
                     "ModelPart1": {
                       "type": "byte",
-                      "value": 40
+                      "value": 223
                     },
                     "Plot": {
                       "type": "byte",
@@ -139033,7 +140634,7 @@
                     },
                     "xModelPart1": {
                       "type": "word",
-                      "value": 40
+                      "value": 223
                     },
                     "XOrientation": {
                       "type": "float",
@@ -139104,7 +140705,7 @@
                     },
                     "ModelPart1": {
                       "type": "byte",
-                      "value": 55
+                      "value": 220
                     },
                     "Plot": {
                       "type": "byte",
@@ -139140,7 +140741,7 @@
                     },
                     "xModelPart1": {
                       "type": "word",
-                      "value": 55
+                      "value": 220
                     },
                     "XOrientation": {
                       "type": "float",
@@ -139211,7 +140812,7 @@
                     },
                     "ModelPart1": {
                       "type": "byte",
-                      "value": 214
+                      "value": 219
                     },
                     "Plot": {
                       "type": "byte",
@@ -139247,7 +140848,7 @@
                     },
                     "xModelPart1": {
                       "type": "word",
-                      "value": 214
+                      "value": 219
                     },
                     "XOrientation": {
                       "type": "float",
@@ -139600,7 +141201,7 @@
                     },
                     "ModelPart1": {
                       "type": "byte",
-                      "value": 84
+                      "value": 229
                     },
                     "Plot": {
                       "type": "byte",
@@ -139636,7 +141237,7 @@
                     },
                     "xModelPart1": {
                       "type": "word",
-                      "value": 84
+                      "value": 229
                     },
                     "XOrientation": {
                       "type": "float",
@@ -139707,7 +141308,7 @@
                     },
                     "ModelPart1": {
                       "type": "byte",
-                      "value": 84
+                      "value": 229
                     },
                     "Plot": {
                       "type": "byte",
@@ -139743,7 +141344,7 @@
                     },
                     "xModelPart1": {
                       "type": "word",
-                      "value": 84
+                      "value": 229
                     },
                     "XOrientation": {
                       "type": "float",
@@ -139814,7 +141415,7 @@
                     },
                     "ModelPart1": {
                       "type": "byte",
-                      "value": 84
+                      "value": 229
                     },
                     "Plot": {
                       "type": "byte",
@@ -139850,7 +141451,7 @@
                     },
                     "xModelPart1": {
                       "type": "word",
-                      "value": 84
+                      "value": 229
                     },
                     "XOrientation": {
                       "type": "float",
@@ -139921,7 +141522,7 @@
                     },
                     "ModelPart1": {
                       "type": "byte",
-                      "value": 84
+                      "value": 229
                     },
                     "Plot": {
                       "type": "byte",
@@ -139957,7 +141558,7 @@
                     },
                     "xModelPart1": {
                       "type": "word",
-                      "value": 84
+                      "value": 229
                     },
                     "XOrientation": {
                       "type": "float",
@@ -140026,7 +141627,7 @@
                     },
                     "ModelPart1": {
                       "type": "byte",
-                      "value": 32
+                      "value": 245
                     },
                     "Plot": {
                       "type": "byte",
@@ -140062,7 +141663,7 @@
                     },
                     "xModelPart1": {
                       "type": "word",
-                      "value": 32
+                      "value": 245
                     },
                     "XOrientation": {
                       "type": "float",
@@ -140131,7 +141732,7 @@
                     },
                     "ModelPart1": {
                       "type": "byte",
-                      "value": 145
+                      "value": 244
                     },
                     "Plot": {
                       "type": "byte",
@@ -140167,7 +141768,7 @@
                     },
                     "xModelPart1": {
                       "type": "word",
-                      "value": 145
+                      "value": 244
                     },
                     "XOrientation": {
                       "type": "float",
@@ -140236,7 +141837,7 @@
                     },
                     "ModelPart1": {
                       "type": "byte",
-                      "value": 145
+                      "value": 247
                     },
                     "Plot": {
                       "type": "byte",
@@ -140272,7 +141873,7 @@
                     },
                     "xModelPart1": {
                       "type": "word",
-                      "value": 145
+                      "value": 247
                     },
                     "XOrientation": {
                       "type": "float",
@@ -140341,7 +141942,7 @@
                     },
                     "ModelPart1": {
                       "type": "byte",
-                      "value": 145
+                      "value": 245
                     },
                     "Plot": {
                       "type": "byte",
@@ -140377,7 +141978,7 @@
                     },
                     "xModelPart1": {
                       "type": "word",
-                      "value": 145
+                      "value": 245
                     },
                     "XOrientation": {
                       "type": "float",
@@ -140446,7 +142047,7 @@
                     },
                     "ModelPart1": {
                       "type": "byte",
-                      "value": 145
+                      "value": 246
                     },
                     "Plot": {
                       "type": "byte",
@@ -140482,7 +142083,7 @@
                     },
                     "xModelPart1": {
                       "type": "word",
-                      "value": 145
+                      "value": 246
                     },
                     "XOrientation": {
                       "type": "float",
@@ -140551,7 +142152,7 @@
                     },
                     "ModelPart1": {
                       "type": "byte",
-                      "value": 123
+                      "value": 251
                     },
                     "Plot": {
                       "type": "byte",
@@ -140587,7 +142188,7 @@
                     },
                     "xModelPart1": {
                       "type": "word",
-                      "value": 123
+                      "value": 251
                     },
                     "XOrientation": {
                       "type": "float",
@@ -140656,7 +142257,7 @@
                     },
                     "ModelPart1": {
                       "type": "byte",
-                      "value": 121
+                      "value": 250
                     },
                     "Plot": {
                       "type": "byte",
@@ -140692,7 +142293,7 @@
                     },
                     "xModelPart1": {
                       "type": "word",
-                      "value": 121
+                      "value": 250
                     },
                     "XOrientation": {
                       "type": "float",
@@ -140761,7 +142362,7 @@
                     },
                     "ModelPart1": {
                       "type": "byte",
-                      "value": 122
+                      "value": 248
                     },
                     "Plot": {
                       "type": "byte",
@@ -140797,7 +142398,7 @@
                     },
                     "xModelPart1": {
                       "type": "word",
-                      "value": 122
+                      "value": 248
                     },
                     "XOrientation": {
                       "type": "float",
@@ -140866,7 +142467,7 @@
                     },
                     "ModelPart1": {
                       "type": "byte",
-                      "value": 124
+                      "value": 249
                     },
                     "Plot": {
                       "type": "byte",
@@ -140902,7 +142503,7 @@
                     },
                     "xModelPart1": {
                       "type": "word",
-                      "value": 124
+                      "value": 249
                     },
                     "XOrientation": {
                       "type": "float",
@@ -140973,7 +142574,7 @@
                     },
                     "ModelPart1": {
                       "type": "byte",
-                      "value": 17
+                      "value": 250
                     },
                     "Plot": {
                       "type": "byte",
@@ -141009,7 +142610,7 @@
                     },
                     "xModelPart1": {
                       "type": "word",
-                      "value": 17
+                      "value": 250
                     },
                     "XOrientation": {
                       "type": "float",

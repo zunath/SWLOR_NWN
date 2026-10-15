@@ -619,9 +619,14 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                     Stat.ReduceStamina(caster, 20);
                     var before = Stat.GetCurrentStamina(caster);
                     var hp = GetCurrentHitPoints(target);
+                    Combat.ApplyAbilityStaminaCostFPRestore(caster, ability, 9);
                     Ability.BeginAbilityImpact(caster, ability);
                     try { await ctx.ExecuteInCreatureContextAsync(caster, () => ability.ImpactAction(caster, target, 1, GetLocation(caster))); }
-                    finally { Ability.EndAbilityImpact(caster); }
+                    finally
+                    {
+                        Ability.EndAbilityImpact(caster);
+                        Combat.CompleteAbilityStaminaCostContext(caster, ability);
+                    }
                     await ctx.WaitUntilAsync(() => GetCurrentHitPoints(target) < hp, 5f, "the area impact to land");
                     ctx.AssertEqual(before + (count >= 3 ? 6 : 0), Stat.GetCurrentStamina(caster), $"{count} targets must refund once only at the three-target threshold");
                 }

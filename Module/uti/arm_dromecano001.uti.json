@@ -110,11 +110,15 @@
   },
   "DescIdentified": {
     "type": "cexolocstring",
-    "value": {}
+    "value": {
+      "0": "Scuffed panels and readily reached service hatches give this scavenger droid's plating its workmanlike shape. Dust catches around the fastenings, where the next inspection will probably find another fragment of somebody else's discarded machinery."
+    }
   },
   "Description": {
     "type": "cexolocstring",
-    "value": {}
+    "value": {
+      "0": "Scuffed panels and readily reached service hatches give this scavenger droid's plating its workmanlike shape. Dust catches around the fastenings, where the next inspection will probably find another fragment of somebody else's discarded machinery."
+    }
   },
   "Identified": {
     "type": "byte",

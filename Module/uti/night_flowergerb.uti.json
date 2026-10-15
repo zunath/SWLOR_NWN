@@ -26,11 +26,15 @@
   },
   "DescIdentified": {
     "type": "cexolocstring",
-    "value": {}
+    "value": {
+      "0": "The broad face of this gerbera seems determined to look cheerful under any lighting. Its neatly prepared stem turns an ordinary flower into a modest, portable occasion."
+    }
   },
   "Description": {
     "type": "cexolocstring",
-    "value": {}
+    "value": {
+      "0": "The broad face of this gerbera seems determined to look cheerful under any lighting. Its neatly prepared stem turns an ordinary flower into a modest, portable occasion."
+    }
   },
   "Identified": {
     "type": "byte",

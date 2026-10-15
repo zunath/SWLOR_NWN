@@ -6,7 +6,7 @@
   },
   "Appearance_Type": {
     "type": "word",
-    "value": 10010
+    "value": 10015
   },
   "ArmorPart_RFoot": {
     "type": "byte",
@@ -126,7 +126,7 @@
   },
   "Comment": {
     "type": "cexostring",
-    "value": "Capstone quest creature for Guardian Master in Dantooine Jedi Enclave Trial Halls."
+    "value": "Guardian Master warden in Hutlar - Jedi Trial Halls."
   },
   "Con": {
     "type": "byte",
@@ -142,7 +142,7 @@
   },
   "CurrentHitPoints": {
     "type": "short",
-    "value": 10254
+    "value": 7324
   },
   "DecayTime": {
     "type": "dword",
@@ -155,7 +155,7 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "A level 50 capstone quest enemy for Guardian Master in Dantooine Jedi Enclave Trial Halls."
+      "0": "A tall, narrow gate droid with a long blade, holding a sealed door in the eastern halls under the ruin. Its shutdown channel is broken, and it will not give ground to anyone."
     }
   },
   "Dex": {
@@ -336,13 +336,6 @@
         "__struct_id": 1,
         "Feat": {
           "type": "word",
-          "value": 1880
-        }
-      },
-      {
-        "__struct_id": 1,
-        "Feat": {
-          "type": "word",
           "value": 1881
         }
       },
@@ -372,7 +365,7 @@
   "FirstName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Guardian Master Warden"
+      "0": "Guardian Gatekeeper Droid"
     }
   },
   "fortbonus": {
@@ -389,7 +382,7 @@
   },
   "HitPoints": {
     "type": "short",
-    "value": 10110
+    "value": 7180
   },
   "Int": {
     "type": "byte",
@@ -423,7 +416,7 @@
   },
   "MaxHitPoints": {
     "type": "short",
-    "value": 10254
+    "value": 7324
   },
   "NaturalAC": {
     "type": "byte",
@@ -451,11 +444,11 @@
   },
   "PortraitId": {
     "type": "word",
-    "value": 4259
+    "value": 229
   },
   "Race": {
     "type": "byte",
-    "value": 15
+    "value": 167
   },
   "refbonus": {
     "type": "short",
@@ -716,7 +709,7 @@
   },
   "SoundSetFile": {
     "type": "word",
-    "value": 448
+    "value": 910
   },
   "SpecAbilityList": {
     "type": "list",
@@ -765,7 +758,7 @@
         },
         "Value": {
           "type": "int",
-          "value": 94
+          "value": 274
         }
       },
       {

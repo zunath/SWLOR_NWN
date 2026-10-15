@@ -2,15 +2,15 @@
   "__data_type": "UTC ",
   "Appearance_Head": {
     "type": "byte",
-    "value": 111
+    "value": 20
   },
   "Appearance_Type": {
     "type": "word",
-    "value": 10007
+    "value": 6
   },
   "ArmorPart_RFoot": {
     "type": "byte",
-    "value": 247
+    "value": 1
   },
   "BodyBag": {
     "type": "byte",
@@ -18,27 +18,27 @@
   },
   "BodyPart_Belt": {
     "type": "byte",
-    "value": 100
+    "value": 0
   },
   "BodyPart_LBicep": {
     "type": "byte",
-    "value": 112
+    "value": 1
   },
   "BodyPart_LFArm": {
     "type": "byte",
-    "value": 101
+    "value": 1
   },
   "BodyPart_LFoot": {
     "type": "byte",
-    "value": 247
+    "value": 1
   },
   "BodyPart_LHand": {
     "type": "byte",
-    "value": 151
+    "value": 1
   },
   "BodyPart_LShin": {
     "type": "byte",
-    "value": 241
+    "value": 1
   },
   "BodyPart_LShoul": {
     "type": "byte",
@@ -46,31 +46,31 @@
   },
   "BodyPart_LThigh": {
     "type": "byte",
-    "value": 240
+    "value": 1
   },
   "BodyPart_Neck": {
     "type": "byte",
-    "value": 104
+    "value": 1
   },
   "BodyPart_Pelvis": {
     "type": "byte",
-    "value": 237
+    "value": 1
   },
   "BodyPart_RBicep": {
     "type": "byte",
-    "value": 112
+    "value": 1
   },
   "BodyPart_RFArm": {
     "type": "byte",
-    "value": 101
+    "value": 1
   },
   "BodyPart_RHand": {
     "type": "byte",
-    "value": 151
+    "value": 1
   },
   "BodyPart_RShin": {
     "type": "byte",
-    "value": 241
+    "value": 1
   },
   "BodyPart_RShoul": {
     "type": "byte",
@@ -78,11 +78,11 @@
   },
   "BodyPart_RThigh": {
     "type": "byte",
-    "value": 240
+    "value": 1
   },
   "BodyPart_Torso": {
     "type": "byte",
-    "value": 104
+    "value": 1
   },
   "Cha": {
     "type": "byte",
@@ -110,11 +110,11 @@
   },
   "Color_Hair": {
     "type": "byte",
-    "value": 1
+    "value": 7
   },
   "Color_Skin": {
     "type": "byte",
-    "value": 107
+    "value": 0
   },
   "Color_Tattoo1": {
     "type": "byte",
@@ -126,7 +126,7 @@
   },
   "Comment": {
     "type": "cexostring",
-    "value": "Capstone quest creature for Vital Rupture in Veles Militia Annex."
+    "value": "Vital Rupture adept in Viscara - Veles Militia Annex."
   },
   "Con": {
     "type": "byte",
@@ -155,7 +155,7 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "A level 50 capstone quest enemy for Vital Rupture in Veles Militia Annex."
+      "0": "A human in dark, close-fitting clothes, one of the knife cadre that kept drilling inside the Veles Militia Annex after it was sealed. He is a quick study with sloppy technique, and he practices the rupture cut with his vibroknife on anyone who wanders in."
     }
   },
   "Dex": {
@@ -169,6 +169,13 @@
   "Equip_ItemList": {
     "type": "list",
     "value": [
+      {
+        "__struct_id": 2,
+        "EquippedRes": {
+          "type": "resref",
+          "value": "spy"
+        }
+      },
       {
         "__struct_id": 16,
         "EquippedRes": {
@@ -430,11 +437,11 @@
   },
   "PortraitId": {
     "type": "word",
-    "value": 3638
+    "value": 4104
   },
   "Race": {
     "type": "byte",
-    "value": 15
+    "value": 6
   },
   "refbonus": {
     "type": "short",
@@ -695,7 +702,7 @@
   },
   "SoundSetFile": {
     "type": "word",
-    "value": 448
+    "value": 413
   },
   "SpecAbilityList": {
     "type": "list",

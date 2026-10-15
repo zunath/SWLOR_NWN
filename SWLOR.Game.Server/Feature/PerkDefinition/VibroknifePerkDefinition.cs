@@ -33,7 +33,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
             CripplingSlice();
             VenaticRecovery();
             Backstab();
-            ShadowflowStance();
+            Shadowflow();
             CheapShot();
             Hobbled();
             EscapeArtist();
@@ -49,28 +49,28 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.PathogenStrike1)
                 .DroidAISlots(1)
-                .Description("Deals weapon DMG + 6. Extends your Venom and Infection effects on the target by 4 seconds.")
+                .Description("On your next attack, deal weapon DMG + 6 and extend your Venom and Infection effects on the target by 4 seconds.")
                 .Price(2)
                 .RequirementSkill(SkillType.Vibroknife, 2)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.PathogenStrike2)
                 .DroidAISlots(2)
-                .Description("Deals weapon DMG + 12. Extends your Venom and Infection effects on the target by 4 seconds.")
+                .Description("On your next attack, deal weapon DMG + 12 and extend your Venom and Infection effects on the target by 4 seconds.")
                 .Price(2)
                 .RequirementSkill(SkillType.Vibroknife, 12)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.PathogenStrike3)
                 .DroidAISlots(3)
-                .Description("Deals weapon DMG + 16. Extends your Venom and Infection effects on the target by 6 seconds.")
+                .Description("On your next attack, deal weapon DMG + 16 and extend your Venom and Infection effects on the target by 6 seconds.")
                 .Price(3)
                 .RequirementSkill(SkillType.Vibroknife, 28)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.PathogenStrike4)
                 .DroidAISlots(4)
-                .Description("Deals weapon DMG + 19. Extends your Venom and Infection effects on the target by 6 seconds.")
+                .Description("On your next attack, deal weapon DMG + 19 and extend your Venom and Infection effects on the target by 6 seconds.")
                 .Price(5)
                 .RequirementSkill(SkillType.Vibroknife, 40);
         }
@@ -125,21 +125,21 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.VirulentBlade1)
                 .DroidAISlots(1)
-                .Description("Deals weapon DMG + 9. Inflicts Venom for 30 seconds.")
+                .Description("On your next attack, deal weapon DMG + 9 and inflict Venom for 30 seconds.")
                 .Price(2)
                 .RequirementSkill(SkillType.Vibroknife, 10)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.VirulentBlade2)
                 .DroidAISlots(2)
-                .Description("Deals weapon DMG + 12. Inflicts Venom for 30 seconds.")
+                .Description("On your next attack, deal weapon DMG + 12 and inflict Venom for 30 seconds.")
                 .Price(4)
                 .RequirementSkill(SkillType.Vibroknife, 30)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.VirulentBlade3)
                 .DroidAISlots(3)
-                .Description("Deals weapon DMG + 16. Inflicts Venom for 30 seconds.")
+                .Description("On your next attack, deal weapon DMG + 16 and inflict Venom for 30 seconds.")
                 .Price(4)
                 .RequirementSkill(SkillType.Vibroknife, 38);
         }
@@ -231,7 +231,6 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.ViralCascade1)
-                .DroidAISlots(1)
                 .Description("Deals weapon DMG + 30, deals an additional +20 DMG if the target is inflicted with your Venom and +8 DMG per stack of your Infection on the target. Consumes your Venom and Infection stacks from the target.")
                 .Price(6)
                 .RequirementSkill(SkillType.Vibroknife, 50)
@@ -379,10 +378,10 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .RequirementSkill(SkillType.Vibroknife, 32);
         }
 
-        private void ShadowflowStance()
+        private void Shadowflow()
         {
             _builder.Create(PerkCategoryType.VibroknifeSaboteur, PerkType.ShadowflowStance)
-                .Name("Shadowflow Stance")
+                .Name("Shadowflow")
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.ShadowflowStance1)
@@ -428,7 +427,6 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.EscapeArtist1)
-                .DroidAISlots(1)
                 .Description("Deals weapon DMG + 30 and Blinds the target for 12 seconds and grants Invisibility for 30 seconds.")
                 .Price(6)
                 .RequirementSkill(SkillType.Vibroknife, 50)

@@ -3,6 +3,7 @@ using System.Linq;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.NWNX.Enum;
 using SWLOR.Game.Server.Entity;
+using SWLOR.Game.Server.Extension;
 using SWLOR.Game.Server.Feature.GuiDefinition.RefreshEvent;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.CombatService;
@@ -47,6 +48,9 @@ namespace SWLOR.Game.Server.Service
         // In-memory witness tracker: npc -> playerId -> technique feats witnessed but not yet learned.
         private static readonly Dictionary<uint, Dictionary<string, HashSet<FeatType>>> _witnesses = new();
 
+        // Observation is passive: keep its credit out of the combat points used to share active skill XP.
+        private static readonly Dictionary<uint, HashSet<string>> _analysisObservers = new();
+
         private static bool _witnessSweepScheduled;
 
         private const float WitnessRadius = 15.0f;
@@ -57,7 +61,9 @@ namespace SWLOR.Game.Server.Service
         private const int OverclockedAnalyzerSlotBonus = 2;
         private const int ResonancePotencyPerTechnique = 5;
         private const int ResonancePotencyCap = 20;
-        private const int AnalysisCombatPointsPerWitness = 1;
+        private const int AnalysisXPPercent = 5;
+        private const int MaximumAnalysisXPPerCreature = 30;
+        private static readonly int MaximumMimicryRank = SkillType.Mimicry.GetAttribute<SkillType, SkillAttribute>().MaxRank;
 
         private const int BaseLearnChancePercent = 20;
         private const int LearnChancePerRankDelta = 2;
@@ -278,7 +284,7 @@ namespace SWLOR.Game.Server.Service
                 if (!GetIsDM(nearby))
                 {
                     TryRecordWitness(activator, nearby, techniqueFeat, techniqueDetail);
-                    TryAwardAnalysisCombatPoint(activator, nearby);
+                    TryRecordAnalysis(activator, nearby);
                 }
             }
         }
@@ -297,17 +303,10 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>
-        /// Records a witness entry for a player/technique pair, if they qualify and haven't already
-        /// been recorded. Sends the "recording" floating text exactly once per (npc, player, technique).
+        /// Records one analysis credit per player and creature, including already learned techniques.
+        /// The observer must already be participating in combat. Observation never adds combat points.
         /// </summary>
-        /// <summary>
-        /// Grants a Mimicry combat point toward a creature when a player with the Combat Analyzer
-        /// witnesses it use a technique, provided the player is already engaged with it (has earned
-        /// combat points against it). The point converts to Mimicry XP when the creature dies, giving
-        /// an ongoing analysis-driven leveling source alongside learning and using techniques. Unlike
-        /// witness recording, this keeps paying out after the technique has already been learned.
-        /// </summary>
-        private static void TryAwardAnalysisCombatPoint(uint npc, uint player)
+        private static void TryRecordAnalysis(uint npc, uint player)
         {
             if (Perk.GetPerkLevel(player, PerkType.CombatAnalyzer) < 1)
                 return;
@@ -315,9 +314,77 @@ namespace SWLOR.Game.Server.Service
             if (!CombatPoint.HasCombatPoints(player, npc))
                 return;
 
-            CombatPoint.AddCombatPoint(player, npc, SkillType.Mimicry, AnalysisCombatPointsPerWitness);
+            if (!_analysisObservers.TryGetValue(npc, out var observers))
+            {
+                observers = new HashSet<string>();
+                _analysisObservers[npc] = observers;
+            }
+
+            observers.Add(GetObjectUUID(player));
         }
 
+        /// <summary>
+        /// Pays observation XP only after the normal kill payout has validated participation,
+        /// survival, area, and distance. Consuming the credit prevents repeat event payouts.
+        /// </summary>
+        [NWNEventHandler(ScriptName.OnCombatPointXPDistribute)]
+        public static void CombatPointXPDistributed()
+        {
+            var player = OBJECT_SELF;
+            var npc = StringToObject(EventsPlugin.GetEventData("NPC"));
+            if (!_analysisObservers.TryGetValue(npc, out var observers) ||
+                !observers.Remove(GetObjectUUID(player)))
+                return;
+
+            if (observers.Count == 0)
+                _analysisObservers.Remove(npc);
+
+            if (Perk.GetPerkLevel(player, PerkType.CombatAnalyzer) < 1)
+                return;
+
+            var dbPlayer = DB.Get<Player>(GetObjectUUID(player));
+            var xp = CalculateAnalysisXP(Stat.GetNPCStats(npc).Level, dbPlayer.Skills[SkillType.Mimicry].Rank);
+            if (xp > 0)
+            {
+                // No area or character XP bonuses: this passive reward must stay within its cap.
+                Skill.GiveSkillXP(player, SkillType.Mimicry, xp, ignoreBonuses: true, xpMessageSource: npc);
+            }
+        }
+
+        /// <summary>
+        /// Observation grants 5% of rank-relative kill XP, capped at 30 before normal penalties.
+        /// Trivial enemies and mastered Mimicry grant no observation XP.
+        /// </summary>
+        public static int CalculateAnalysisXP(int npcLevel, int mimicryRank)
+        {
+            if (mimicryRank >= MaximumMimicryRank)
+                return 0;
+
+            return Math.Min(MaximumAnalysisXPPerCreature,
+                Skill.GetDeltaXP(npcLevel - mimicryRank) * AnalysisXPPercent / 100);
+        }
+
+        [NWNEventHandler(ScriptName.OnModuleExit)]
+        [NWNEventHandler(ScriptName.OnAreaExit)]
+        public static void ClearAnalysisOnPlayerExit()
+        {
+            var player = GetExitingObject();
+            if (!GetIsPC(player) || GetIsDM(player))
+                return;
+
+            var playerId = GetObjectUUID(player);
+            foreach (var (npc, observers) in _analysisObservers.ToArray())
+            {
+                observers.Remove(playerId);
+                if (observers.Count == 0)
+                    _analysisObservers.Remove(npc);
+            }
+        }
+
+        /// <summary>
+        /// Records a witness entry for a player/technique pair, if they qualify and haven't already
+        /// been recorded. Sends the "recording" floating text exactly once per (npc, player, technique).
+        /// </summary>
         private static void TryRecordWitness(uint npc, uint player, FeatType techniqueFeat, AbilityDetail techniqueDetail)
         {
             if (Perk.GetPerkLevel(player, PerkType.CombatAnalyzer) < 1)
@@ -386,9 +453,6 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         private static void SweepStaleWitnesses()
         {
-            if (_witnesses.Count <= 0)
-                return;
-
             var staleCreatures = new List<uint>();
             foreach (var npc in _witnesses.Keys)
             {
@@ -399,6 +463,14 @@ namespace SWLOR.Game.Server.Service
             foreach (var npc in staleCreatures)
             {
                 _witnesses.Remove(npc);
+            }
+
+            // Ineligible observers receive no combat payout event. Reclaim their credit after death
+            // as well as despawn, without depending on creature-death handler ordering.
+            foreach (var npc in _analysisObservers.Keys.ToArray())
+            {
+                if (!GetIsObjectValid(npc) || GetIsDead(npc))
+                    _analysisObservers.Remove(npc);
             }
         }
 
@@ -461,7 +533,7 @@ namespace SWLOR.Game.Server.Service
             foreach (var detail in learnedDetails)
             {
                 SendMessageToPC(player, ColorToken.Green($"You learned the technique: {detail.Name}!"));
-                Skill.GiveSkillXP(player, SkillType.Mimicry, LearnTechniqueXP);
+                Skill.GiveSkillXP(player, SkillType.Mimicry, LearnTechniqueXP, xpMessageSource: npc);
 
                 Log.WriteStructured(
                     LogGroup.Mimicry,
@@ -693,6 +765,7 @@ namespace SWLOR.Game.Server.Service
             DB.Set(dbPlayer);
 
             GrantTechniqueFeat(player, feat);
+            QuickCast.ApplyPreferences(player);
             Gui.PublishRefreshEvent(player, new TechniqueChangedRefreshEvent());
 
             return true;
@@ -720,6 +793,7 @@ namespace SWLOR.Game.Server.Service
 
             DB.Set(dbPlayer);
             RevokeTechniqueFeat(player, feat);
+            QuickCast.ApplyPreferences(player);
             Gui.PublishRefreshEvent(player, new TechniqueChangedRefreshEvent());
 
             return true;
@@ -793,6 +867,7 @@ namespace SWLOR.Game.Server.Service
             if (changed)
             {
                 DB.Set(dbPlayer);
+                QuickCast.ApplyPreferences(player);
                 Gui.PublishRefreshEvent(player, new TechniqueChangedRefreshEvent());
             }
         }
@@ -834,6 +909,7 @@ namespace SWLOR.Game.Server.Service
             var unequippedCount = dbPlayer.EquippedTechniques.Count;
             dbPlayer.EquippedTechniques.Clear();
             DB.Set(dbPlayer);
+            QuickCast.ApplyPreferences(player);
             Gui.PublishRefreshEvent(player, new TechniqueChangedRefreshEvent());
 
             Log.WriteStructured(
@@ -853,11 +929,23 @@ namespace SWLOR.Game.Server.Service
             if (!GetIsPC(player) || GetIsDM(player))
                 return;
 
-            if (Perk.GetPerkLevel(player, PerkType.CombatAnalyzer) < 1)
+            // Character initialization can run migrations that clear native feats later in
+            // this same module-enter event. Restore techniques after those handlers finish.
+            DelayCommand(0f, () => RestorePlayerTechniques(player));
+        }
+
+        private static void RestorePlayerTechniques(uint player)
+        {
+            if (!GetIsObjectValid(player))
                 return;
 
             var playerId = GetObjectUUID(player);
             var dbPlayer = DB.Get<Player>(playerId);
+            if (dbPlayer == null)
+                return;
+
+            if (Perk.GetPerkLevel(player, PerkType.CombatAnalyzer) < 1)
+                return;
 
             EnforceSlotBudget(player, dbPlayer);
 
@@ -865,7 +953,7 @@ namespace SWLOR.Game.Server.Service
             {
                 GrantTechniqueFeat(player, feat);
             }
-
+            QuickCast.ApplyPreferences(player);
         }
 
         /// <summary>
@@ -876,11 +964,12 @@ namespace SWLOR.Game.Server.Service
         /// there is no grant or revoke step for them here, and any stale feat/hotbar entry is stripped
         /// so a trait can never end up castable or on the quickbar.
         /// </summary>
-        private static void GrantTechniqueFeat(uint player, FeatType feat)
+        private static void GrantTechniqueFeat(uint player, FeatType feat, bool addToHotbar = true)
         {
             if (!GetIsObjectValid(player))
                 return;
 
+            feat = QuickCast.GetOriginalFeat(feat);
             var detail = GetTechniqueDetail(feat);
             if (detail != null && detail.IsMimicryTrait)
             {
@@ -888,8 +977,8 @@ namespace SWLOR.Game.Server.Service
                 // placed on the hotbar. Strip any feat/hotbar entry an earlier grant (or a prior
                 // version that granted the feat unconditionally) left behind. The trait's stats need
                 // no grant step - the stat pipeline reads them from the equipped list directly.
-                if (GetHasFeat(feat, player))
-                    CreaturePlugin.RemoveFeat(player, feat);
+                if (QuickCast.KnowsFeat(player, feat))
+                    QuickCast.RemoveFeat(player, feat);
 
                 RemoveFeatFromHotBar(player, feat);
                 return;
@@ -897,10 +986,122 @@ namespace SWLOR.Game.Server.Service
 
             // Active technique: grant the feat and add it to the hotbar, using the same rules as a
             // perk-purchased active ability (register + ImpactAction gate, first empty auto-add slot).
-            if (!GetHasFeat(feat, player))
-                CreaturePlugin.AddFeat(player, feat);
+            if (!QuickCast.KnowsFeat(player, feat))
+                CreaturePlugin.AddFeat(player, QuickCast.GetDisplayedFeat(player, feat));
 
-            AddFeatToHotBar(player, feat);
+            if (addToHotbar)
+                AddFeatToHotBar(player, feat);
+        }
+
+        /// <summary>Validates the entire draft before changing any equipped state.</summary>
+        public static bool ValidateLoadout(Player dbPlayer, IReadOnlyCollection<FeatType> techniques, out string error)
+        {
+            error = string.Empty;
+            if (techniques.Count != techniques.Distinct().Count())
+                error = "A build cannot contain duplicate techniques.";
+            else
+            {
+                var rank = dbPlayer.Skills.TryGetValue(SkillType.Mimicry, out var skill) ? skill.Rank : 0;
+                var used = 0;
+                foreach (var feat in techniques)
+                {
+                    if (!_techniques.TryGetValue(feat, out var detail))
+                    {
+                        error = "This build contains an unavailable technique. Remove it before applying.";
+                        break;
+                    }
+                    if (!dbPlayer.LearnedTechniques.ContainsKey(feat))
+                    {
+                        error = $"You have not learned {detail.Name}.";
+                        break;
+                    }
+                    if (rank < detail.MimicrySkillRequirement)
+                    {
+                        error = $"{detail.Name} requires Mimicry rank {detail.MimicrySkillRequirement}.";
+                        break;
+                    }
+                    used += detail.MimicrySlotCost;
+                }
+                if (error.Length == 0 && used > GetMaxSlots(dbPlayer))
+                    error = $"This build needs {used} technique slots; you have {GetMaxSlots(dbPlayer)}.";
+            }
+            return error.Length == 0;
+        }
+
+        public static void CaptureLoadoutHotbar(uint player, MimicryLoadout loadout)
+        {
+            loadout.HotbarSlots.Clear();
+            for (var slot = 0; slot < TotalHotBarSlots; slot++)
+            {
+                var entry = PlayerPlugin.GetQuickBarSlot(player, slot);
+                if (entry.ObjectType != QuickBarSlotType.Feat)
+                    continue;
+
+                var feat = QuickCast.GetOriginalFeat((FeatType)entry.INTParam1);
+                if (loadout.Techniques.Contains(feat))
+                    loadout.HotbarSlots[slot] = feat;
+            }
+        }
+
+        public static bool ApplyLoadout(uint player, string loadoutId, IReadOnlyCollection<FeatType> techniques, out string error)
+        {
+            error = string.Empty;
+            if (!GetIsPC(player) || GetIsDM(player))
+                error = "Only players may apply technique builds.";
+            else if (GetIsInCombat(player))
+                error = "You cannot apply a technique build while in combat.";
+            if (error.Length > 0)
+                return false;
+
+            var dbPlayer = DB.Get<Player>(GetObjectUUID(player));
+            var incoming = dbPlayer.MimicryLoadouts.FirstOrDefault(x => x.Id == loadoutId);
+            if (incoming == null)
+            {
+                error = "That loadout no longer exists.";
+                return false;
+            }
+            if (!ValidateLoadout(dbPlayer, techniques, out error))
+                return false;
+
+            var previous = dbPlayer.EquippedTechniques.ToList();
+            var outgoing = dbPlayer.MimicryLoadouts.FirstOrDefault(x => x.Id == dbPlayer.ActiveMimicryLoadoutId);
+            // A modified equipped set must not overwrite the saved preset's hotbar layout.
+            if (outgoing != null && MimicryLoadouts.Matches(outgoing.Techniques, previous))
+                CaptureLoadoutHotbar(player, outgoing);
+
+            // Commit the whole set once. Revoke only outgoing feats so shared stances survive.
+            // RecastTimes is intentionally untouched when builds change.
+            dbPlayer.EquippedTechniques = techniques.ToList();
+            dbPlayer.ActiveMimicryLoadoutId = loadoutId;
+            DB.Set(dbPlayer);
+            foreach (var feat in previous.Except(techniques))
+                RevokeTechniqueFeat(player, feat);
+            foreach (var feat in techniques)
+                GrantTechniqueFeat(player, feat, false);
+
+            // Restore only empty or Mimicry-owned cells. Other shortcuts always take precedence.
+            var owned = previous.Concat(techniques).ToHashSet();
+            if (incoming.HotbarSlots.Count > 0)
+            {
+                foreach (var feat in techniques)
+                    RemoveFeatFromHotBar(player, feat);
+                foreach (var (slot, savedFeat) in incoming.HotbarSlots)
+                {
+                    var feat = QuickCast.GetOriginalFeat(savedFeat);
+                    if (slot < 0 || slot >= TotalHotBarSlots || !techniques.Contains(feat) ||
+                        !_techniques.TryGetValue(feat, out var detail) || detail.IsMimicryTrait)
+                        continue;
+                    var cell = PlayerPlugin.GetQuickBarSlot(player, slot);
+                    if (cell.ObjectType == QuickBarSlotType.Empty ||
+                        cell.ObjectType == QuickBarSlotType.Feat && owned.Contains(QuickCast.GetOriginalFeat((FeatType)cell.INTParam1)))
+                        PlayerPlugin.SetQuickBarSlot(player, slot, PlayerQuickBarSlot.UseFeat(QuickCast.GetDisplayedFeat(player, feat)));
+                }
+            }
+            foreach (var feat in techniques.Where(feat => !_techniques[feat].IsMimicryTrait))
+                AddFeatToHotBar(player, feat);
+            QuickCast.ApplyPreferences(player);
+            Gui.PublishRefreshEvent(player, new TechniqueChangedRefreshEvent());
+            return true;
         }
 
         /// <summary>
@@ -913,6 +1114,7 @@ namespace SWLOR.Game.Server.Service
             if (!GetIsObjectValid(player))
                 return;
 
+            feat = QuickCast.GetOriginalFeat(feat);
             var detail = GetTechniqueDetail(feat);
             if (detail != null)
             {
@@ -931,16 +1133,18 @@ namespace SWLOR.Game.Server.Service
                 }
             }
 
-            CreaturePlugin.RemoveFeat(player, feat);
+            QuickCast.RemoveFeat(player, feat);
             RemoveFeatFromHotBar(player, feat);
         }
 
         private static bool IsFeatOnHotBar(uint player, FeatType feat)
         {
+            feat = QuickCast.GetOriginalFeat(feat);
             for (var slot = 0; slot < TotalHotBarSlots; slot++)
             {
                 var quickBarSlot = PlayerPlugin.GetQuickBarSlot(player, slot);
-                if (quickBarSlot.ObjectType == QuickBarSlotType.Feat && quickBarSlot.INTParam1 == (int)feat)
+                if (quickBarSlot.ObjectType == QuickBarSlotType.Feat &&
+                    QuickCast.GetOriginalFeat((FeatType)quickBarSlot.INTParam1) == feat)
                     return true;
             }
 
@@ -949,13 +1153,14 @@ namespace SWLOR.Game.Server.Service
 
         private static void AddFeatToHotBar(uint player, FeatType feat)
         {
+            feat = QuickCast.GetOriginalFeat(feat);
             if (!Ability.IsFeatRegistered(feat) || Ability.GetAbilityDetail(feat).ImpactAction == null)
                 return;
 
             if (IsFeatOnHotBar(player, feat))
                 return;
 
-            var quickBarSlot = PlayerQuickBarSlot.UseFeat(feat);
+            var quickBarSlot = PlayerQuickBarSlot.UseFeat(QuickCast.GetDisplayedFeat(player, feat));
 
             for (var slot = 0; slot < AutoAddHotBarSlots; slot++)
             {
@@ -969,10 +1174,12 @@ namespace SWLOR.Game.Server.Service
 
         private static void RemoveFeatFromHotBar(uint player, FeatType feat)
         {
+            feat = QuickCast.GetOriginalFeat(feat);
             for (var slot = 0; slot < TotalHotBarSlots; slot++)
             {
                 var quickBarSlot = PlayerPlugin.GetQuickBarSlot(player, slot);
-                if (quickBarSlot.ObjectType == QuickBarSlotType.Feat && quickBarSlot.INTParam1 == (int)feat)
+                if (quickBarSlot.ObjectType == QuickBarSlotType.Feat &&
+                    QuickCast.GetOriginalFeat((FeatType)quickBarSlot.INTParam1) == feat)
                 {
                     PlayerPlugin.SetQuickBarSlot(player, slot, PlayerQuickBarSlot.Empty(QuickBarSlotType.Empty));
                 }
@@ -1051,7 +1258,7 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         public static bool IsTechniqueEquipped(Player dbPlayer, FeatType feat)
         {
-            return dbPlayer?.EquippedTechniques.Contains(feat) == true;
+            return dbPlayer?.EquippedTechniques.Contains(QuickCast.GetOriginalFeat(feat)) == true;
         }
 
         /// <summary>
@@ -1059,7 +1266,7 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         public static AbilityDetail GetTechniqueDetail(FeatType feat)
         {
-            return _techniques.TryGetValue(feat, out var detail) ? detail : null;
+            return _techniques.TryGetValue(QuickCast.GetOriginalFeat(feat), out var detail) ? detail : null;
         }
 
         /// <summary>
@@ -1067,7 +1274,7 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         public static bool IsTechnique(FeatType feat)
         {
-            return _techniques.ContainsKey(feat);
+            return _techniques.ContainsKey(QuickCast.GetOriginalFeat(feat));
         }
 
         /// <summary>

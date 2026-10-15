@@ -58,8 +58,8 @@ namespace SWLOR.Game.Server.EngineTests.Definitions.AbilityBehaviors
                     Target = AbilityTargetKind.HostileCreature,
                     ExpectsSTMCost = true,
                     ExpectsRecast = true,
-                    OutcomeAssertionWaiverReason = "The impact only changes the private enmity table and plays a VFX; the harness has no read-only enmity observation seam.",
-                    Notes = "ApplyGoad only modifies enmity + plays a VFX; no trackable status effect or damage.",
+                    MinimumTargetEnmityAfterImpact = 400,
+                    Notes = "Verifies generated threat; target switching is covered by TankEnmityEngineTests.",
                 },
                 new()
                 {

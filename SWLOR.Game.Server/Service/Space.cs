@@ -14,6 +14,7 @@ using SWLOR.Game.Server.Service.PropertyService;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.Game.Server.Service.SpaceService;
 using SWLOR.Game.Server.Service.StatService;
+using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Item;
@@ -40,10 +41,14 @@ namespace SWLOR.Game.Server.Service
         private static readonly HashSet<AppearanceType> _shipAppearances = new();
 
         private static readonly Dictionary<string, uint> _shipClones = new();
+        private static readonly Dictionary<uint, PendingShipLaunch> _pendingShipLaunches = new();
 
         private static readonly Dictionary<PlanetType, Dictionary<string, ShipDockPoint>> _dockPoints = new();
 
         private static readonly HashSet<uint> _playersInSpace = new();
+
+        private const float NPCShipKeepDistance = 15f;
+        private const float ShipDamageMessageRange = 10f;
 
         /// <summary>
         /// When the module loads, cache all space data into memory.
@@ -75,6 +80,7 @@ namespace SWLOR.Game.Server.Service
         public static void ExitServer()
         {
             var player = GetExitingObject();
+            _pendingShipLaunches.Remove(player);
             if (!IsPlayerInSpaceMode(player))
                 return;
 
@@ -453,6 +459,13 @@ namespace SWLOR.Game.Server.Service
         public static void UpdateSpacePosition()
         {
             var player = GetEnteringObject();
+            TryCompleteShipLaunch(player);
+            UpdateSpacePosition(player);
+        }
+
+        /// <summary>Persists the actual ship position after launch completion or a later area change.</summary>
+        private static void UpdateSpacePosition(uint player)
+        {
             if (!GetIsPC(player) || GetIsDM(player)) return;
             if (!IsPlayerInSpaceMode(player)) return;
 
@@ -461,7 +474,7 @@ namespace SWLOR.Game.Server.Service
             var dbShip = DB.Get<PlayerShip>(dbPlayer.ActiveShipId);
             var dbProperty = DB.Get<WorldProperty>(dbShip.PropertyId);
             var position = GetPosition(player);
-            var areaResref = GetResRef(OBJECT_SELF);
+            var areaResref = GetResRef(GetArea(player));
             var orientation = GetFacing(player);
 
             dbProperty.Positions[PropertyLocationType.CurrentPosition] = new PropertyLocation
@@ -485,6 +498,10 @@ namespace SWLOR.Game.Server.Service
             var player = GetExitingObject();
             if (GetIsDM(player)) return;
 
+            if (_pendingShipLaunches.TryGetValue(player, out var launch) &&
+                OBJECT_SELF == GetAreaFromLocation(launch.PilotLocation))
+                launch.HasDeparted = true;
+
             ClearCurrentTarget(player);
         }
 
@@ -498,6 +515,18 @@ namespace SWLOR.Game.Server.Service
         {
             var area = GetArea(OBJECT_SELF);
             var player = GetLastUsedBy();
+            if (IsPlayerInSpaceMode(player))
+                return;
+
+            // A second click may replace a canceled jump while still inside. Once the
+            // area transition starts, keep the original request and return location.
+            if (_pendingShipLaunches.TryGetValue(player, out var previousLaunch))
+            {
+                if (previousLaunch.HasDeparted || GetArea(player) != GetAreaFromLocation(previousLaunch.PilotLocation))
+                    return;
+                _pendingShipLaunches.Remove(player);
+            }
+
             var playerId = GetObjectUUID(player);
             var propertyId = Property.GetPropertyId(area);
             var permissionQuery = new DBQuery<WorldPropertyPermission>()
@@ -521,8 +550,8 @@ namespace SWLOR.Game.Server.Service
                 return;
             }
 
-            if (_shipClones.ContainsKey(dbShip.Id) &&
-                !GetIsObjectValid(_shipClones[dbShip.Id]))
+            if ((_shipClones.ContainsKey(dbShip.Id) && !GetIsObjectValid(_shipClones[dbShip.Id])) ||
+                _pendingShipLaunches.Values.Any(launch => launch.ShipId == dbShip.Id))
             {
                 SendMessageToPC(player, ColorToken.Red("This ship's controls are in use."));
                 return;
@@ -534,25 +563,108 @@ namespace SWLOR.Game.Server.Service
                 return;
             }
 
-            SetLocalLocation(player, "SPACE_INSTANCE_LOCATION", GetLocation(player));
-            SetLocalBool(player, "SPACE_INSTANCE_LOCATION_SET", true);
-            EnterSpaceMode(player, dbShip.Id);
-
             var dbProperty = DB.Get<WorldProperty>(propertyId);
 
             // The existence of a current location means the ship is currently in space.
             // Warp the player to the ship's location.
             // Otherwise the player is docked. Warp the player to the space location of this dock.
-            var propertyLocation = dbProperty.Positions.ContainsKey(PropertyLocationType.CurrentPosition)
-                ? dbProperty.Positions[PropertyLocationType.CurrentPosition]
-                : dbProperty.Positions[PropertyLocationType.SpacePosition];
+            if (dbProperty == null ||
+                (!dbProperty.Positions.TryGetValue(PropertyLocationType.CurrentPosition, out var propertyLocation) &&
+                 !dbProperty.Positions.TryGetValue(PropertyLocationType.SpacePosition, out propertyLocation)) ||
+                propertyLocation == null || string.IsNullOrWhiteSpace(propertyLocation.AreaResref))
+            {
+                SendMessageToPC(player, ColorToken.Red("Unable to locate this starship's space destination. Notify an admin."));
+                Log.WriteStructured(LogGroup.Space, "Ship launch destination missing: PlayerId={PlayerId} ShipId={ShipId} PropertyId={PropertyId}", playerId, dbShip.Id, propertyId);
+                return;
+            }
 
             var spaceArea = Area.GetAreaByResref(propertyLocation.AreaResref);
+            if (!GetIsObjectValid(spaceArea) || spaceArea == area)
+            {
+                SendMessageToPC(player, ColorToken.Red("This starship's space destination is unavailable. Notify an admin."));
+                Log.WriteStructured(LogGroup.Space, "Ship launch area unavailable: PlayerId={PlayerId} ShipId={ShipId} AreaResref={AreaResref}", playerId, dbShip.Id, propertyLocation.AreaResref);
+                return;
+            }
+
             var spacePosition = Vector3(propertyLocation.X, propertyLocation.Y, propertyLocation.Z);
             var location = Location(spaceArea, spacePosition, propertyLocation.Orientation);
 
-            AssignCommand(player, () => ClearAllActions());
-            AssignCommand(player, () => ActionJumpToLocation(location));
+            var launch = new PendingShipLaunch
+            {
+                PlayerId = playerId,
+                ShipId = dbShip.Id,
+                SpaceArea = spaceArea,
+                PilotLocation = GetLocation(player),
+                ExpiresAt = DateTime.UtcNow.AddSeconds(30)
+            };
+            _pendingShipLaunches[player] = launch;
+            Scheduler.Schedule(() => CheckShipLaunch(player, launch), TimeSpan.FromMilliseconds(100));
+
+            // Only movement belongs in the action queue. Area entry and the scheduler
+            // complete the launch independently of client input and area-load timing.
+            AssignCommand(player, () =>
+            {
+                ClearAllActions();
+                ActionJumpToLocation(location);
+            });
+        }
+
+        /// <summary>Commits ship state only after the player reaches the requested destination area.</summary>
+        private static bool TryCompleteShipLaunch(uint player)
+        {
+            if (!_pendingShipLaunches.TryGetValue(player, out var launch) || GetArea(player) != launch.SpaceArea)
+                return false;
+
+            _pendingShipLaunches.Remove(player);
+            if (GetObjectUUID(player) != launch.PlayerId || IsPlayerInSpaceMode(player) || GetIsDead(player))
+                return false;
+
+            SetLocalLocation(player, "SPACE_INSTANCE_LOCATION", launch.PilotLocation);
+            SetLocalBool(player, "SPACE_INSTANCE_LOCATION_SET", true);
+            EnterSpaceMode(player, launch.ShipId, launch.PilotLocation);
+            return true;
+        }
+
+        /// <summary>Polls independently of creature actions, preserving loading requests and expiring unstarted jumps.</summary>
+        private static void CheckShipLaunch(uint player, PendingShipLaunch launch)
+        {
+            // A canceled request may have been replaced by a later click on the controls.
+            if (!_pendingShipLaunches.TryGetValue(player, out var current) || current != launch)
+                return;
+
+            if (!GetIsObjectValid(player) || GetObjectUUID(player) != launch.PlayerId ||
+                GetIsDead(player) || !GetIsObjectValid(launch.SpaceArea))
+            {
+                _pendingShipLaunches.Remove(player);
+                return;
+            }
+
+            if (TryCompleteShipLaunch(player))
+            {
+                UpdateSpacePosition(player);
+                return;
+            }
+
+            var area = GetArea(player);
+            var interior = GetAreaFromLocation(launch.PilotLocation);
+            if (GetIsObjectValid(area) && area != interior && area != launch.SpaceArea)
+            {
+                _pendingShipLaunches.Remove(player);
+                return;
+            }
+
+            // Cancel an unstarted jump after a bounded wait. A player already loading
+            // the new area keeps their reservation until arrival, death, or disconnect.
+            if (!launch.HasDeparted && area == interior && DateTime.UtcNow >= launch.ExpiresAt)
+            {
+                _pendingShipLaunches.Remove(player);
+                SendMessageToPC(player, ColorToken.Red("Unable to reach this starship's space destination. Please try again or notify an admin."));
+                Log.WriteStructured(LogGroup.Space, "Ship launch did not arrive: PlayerId={PlayerId} ShipId={ShipId} AreaResref={AreaResref}",
+                    launch.PlayerId, launch.ShipId, GetResRef(launch.SpaceArea));
+                return;
+            }
+
+            Scheduler.Schedule(() => CheckShipLaunch(player, launch), TimeSpan.FromMilliseconds(100));
         }
 
         /// <summary>
@@ -662,7 +774,8 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         /// <param name="player">The player entering space mode.</param>
         /// <param name="shipId">The Id of the ship to enter space with.</param>
-        public static void EnterSpaceMode(uint player, string shipId)
+        /// <param name="pilotLocation">The interior location where the Pilot clone should remain.</param>
+        public static void EnterSpaceMode(uint player, string shipId, Location pilotLocation)
         {
             // Ground effects must be removed when entering space mode.
             // Otherwise players could buff on the ground, then get those same bonuses while in space.
@@ -672,7 +785,7 @@ namespace SWLOR.Game.Server.Service
                 RemoveEffect(player, effect);
             }
 
-            ClonePlayerAndSit(player);
+            ClonePlayerAndSit(player, pilotLocation);
 
             var playerId = GetObjectUUID(player);
             var dbPlayer = DB.Get<Player>(playerId);
@@ -768,21 +881,13 @@ namespace SWLOR.Game.Server.Service
             DB.Set(dbPlayer);
             DB.Set(dbPlayerShip);
 
-            // If the ship is in the "actively piloted" list, it means it's in space.
-            // Destroy the NPC clone that's associated with this ship since the player is taking over the controls.
-            if (_shipClones.ContainsKey(dbPlayerShip.Id))
+            // Replace the unpiloted NPC with the player and mark the controls occupied
+            // immediately; DestroyObject may leave the NPC valid until the frame ends.
+            if (_shipClones.TryGetValue(dbPlayerShip.Id, out var clone) && GetIsObjectValid(clone))
             {
-                var clone = _shipClones[dbPlayerShip.Id];
-                if (GetIsObjectValid(clone))
-                {
-                    DestroyObject(clone);
-                }
+                DestroyObject(clone);
             }
-            // Otherwise add the ship to the list and associate an invalid object to its clone.
-            else
-            {
-                _shipClones[dbPlayerShip.Id] = OBJECT_INVALID;
-            }
+            _shipClones[dbPlayerShip.Id] = OBJECT_INVALID;
 
             if(!_playersInSpace.Contains(player))
                 _playersInSpace.Add(player);
@@ -813,11 +918,10 @@ namespace SWLOR.Game.Server.Service
             DeleteLocalBool(player, "SPACE_INSTANCE_LOCATION_SET");
         }
 
-        private static void ClonePlayerAndSit(uint player)
+        private static void ClonePlayerAndSit(uint player, Location pilotLocation)
         {
-            var chair = GetNearestObjectByTag("pilot_chair", player);
-            var location = GetLocation(player);
-            var copy = CopyObject(player, location, OBJECT_INVALID, "spaceship_copy");
+            var copy = CopyObject(player, pilotLocation, OBJECT_INVALID, "spaceship_copy");
+            var chair = GetNearestObjectByTag("pilot_chair", copy);
             SetName(copy, "Pilot");
             ChangeToStandardFaction(copy, StandardFaction.Defender);
             TakeGoldFromCreature(GetGold(copy), copy, true);
@@ -1095,6 +1199,19 @@ namespace SWLOR.Game.Server.Service
             ApplyShipExamineDetails(item);
         }
 
+        /// <summary>
+        /// Combines an item's authored description with its ship module description. An item with no
+        /// authored description reports its base item's placeholder text, which is dropped.
+        /// </summary>
+        public static string BuildShipModuleDescription(string originalDescription, string baseItemDescription, string moduleDescription)
+        {
+            var original = originalDescription?.Trim() ?? string.Empty;
+            if (original.Length == 0 || original == (baseItemDescription?.Trim() ?? string.Empty))
+                return moduleDescription;
+
+            return $"{original}\n{moduleDescription}";
+        }
+
         private static void ApplyShipModuleExamineDetails(uint item)
         {
             // Must be an item
@@ -1110,9 +1227,8 @@ namespace SWLOR.Game.Server.Service
             if (string.IsNullOrWhiteSpace(moduleDetail.Description)) return;
 
             // Append the ship module's description to the item's description.
-            var description = GetDescription(item, true);
-            description += moduleDetail.Description + "\n";
-            SetDescription(item, description);
+            var baseItemDescription = GetStringByStrRef(StringToInt(Get2DAString("baseitems", "Description", (int)GetBaseItemType(item))));
+            SetDescription(item, BuildShipModuleDescription(GetDescription(item, true), baseItemDescription, moduleDetail.Description));
 
             // Apply item properties defined in code.
             foreach (var (perkType, level) in moduleDetail.RequiredPerks)
@@ -1236,6 +1352,14 @@ namespace SWLOR.Game.Server.Service
             if (GetIsPC(activator) && GetDistanceBetween(activator, target) > maxDistance)
             {
                 SendMessageToPC(activator, $"Target is too far away. Maximum distance: {maxDistance} meters.");
+                return;
+            }
+
+            if (!GetIsPC(activator) &&
+                IsOffensiveShipModule(shipModuleDetails.Type) &&
+                !shipModuleDetails.CanTargetSelf &&
+                GetDistanceBetween(activator, target) > maxDistance)
+            {
                 return;
             }
 
@@ -1690,7 +1814,8 @@ namespace SWLOR.Game.Server.Service
 
             var targetShipStatus = GetShipStatus(target);
 
-            if (targetShipStatus == null)
+            // Leashed ships neither take nor deal damage while they return home, like plot-flagged ground enemies.
+            if (targetShipStatus == null || AI.IsLeashEvading(target) || AI.IsLeashEvading(attacker))
                 return;
 
             var remainingDamage = amount;
@@ -1767,8 +1892,9 @@ namespace SWLOR.Game.Server.Service
             }
 
             // Notify nearby players of damage taken by target.
-            Messaging.SendMessageNearbyToPlayers(
+            NotifyShipDamage(
                 attacker,
+                target,
                 receiver => $"{PlayerName.GetDisplayName(receiver, attacker)} deals {amount} damage to {PlayerName.GetDisplayName(receiver, target)}.");
 
             if(GetIsPC(attacker))
@@ -1789,7 +1915,8 @@ namespace SWLOR.Game.Server.Service
 
             var targetShipStatus = GetShipStatus(target);
 
-            if (targetShipStatus == null)
+            // Leashed ships neither take nor deal damage while they return home, like plot-flagged ground enemies.
+            if (targetShipStatus == null || AI.IsLeashEvading(target) || AI.IsLeashEvading(attacker))
                 return;
 
             if (targetShipStatus.Hull > 0)
@@ -1838,8 +1965,9 @@ namespace SWLOR.Game.Server.Service
             }
 
             // Notify nearby players of damage taken by target.
-            Messaging.SendMessageNearbyToPlayers(
+            NotifyShipDamage(
                 attacker,
+                target,
                 receiver => $"{PlayerName.GetDisplayName(receiver, attacker)} deals {amount} damage directly to hull of {PlayerName.GetDisplayName(receiver, target)}.");
 
             if (GetIsPC(attacker))
@@ -1867,6 +1995,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>Applies the existing ship destruction and pilot cleanup to the specified creature.</summary>
         public static void ApplyDeath(uint creature)
         {
+            _pendingShipLaunches.Remove(creature);
             if (!IsPlayerInSpaceMode(creature))
                 return;
 
@@ -1984,13 +2113,29 @@ namespace SWLOR.Game.Server.Service
         {
             var now = DateTime.UtcNow;
 
+            // Ships destroyed or killed without their death event firing must stop acting.
+            var defunctShips = _shipNPCs.Keys
+                .Where(creature => !GetIsObjectValid(creature) || GetIsDead(creature))
+                .ToList();
+            foreach (var creature in defunctShips)
+            {
+                _shipNPCs.Remove(creature);
+            }
+
             foreach (var (creature, shipStatus) in _shipNPCs)
             {
+                if (AI.IsLeashEvading(creature))
+                    continue;
+
                 ApplyAutoShipRecovery(creature, shipStatus);
 
                 // Determine target
                 var target = Enmity.GetHighestEnmityTarget(creature);
                 if (!GetIsObjectValid(target)) continue;
+
+                // Ships follow the same combat leash as ground enemies.
+                if (AI.TryStartCombatLeashEvade(creature, target))
+                    continue;
 
                 // Determine which modules are available.
                 var highModules = shipStatus.HighPowerModules.Where(x =>
@@ -2015,16 +2160,24 @@ namespace SWLOR.Game.Server.Service
                 })
                     .Select(s => new Tuple<FeatType, ShipStatus.ShipStatusModule>(LowSlotToFeat(s.Key), s.Value));
 
-                var availableModules = highModules.Concat(lowModules);
-                // Keep distance from target.
-                AssignCommand(creature, () =>
-                {
-                    ClearAllActions();
-                    ActionMoveAwayFromObject(target, true, 15f);
-                });
+                var availableModules = highModules.Concat(lowModules).ToList();
+                var targetShipStatus = GetShipStatus(target);
+                var distance = GetDistanceBetween(creature, target);
+
+                // Engage at the range of the shortest weapon that can hit this target so every such weapon gets used.
+                var engagementDistance = shipStatus.HighPowerModules.Values
+                    .Concat(shipStatus.LowPowerModules.Values)
+                    .Where(x => CanNPCFireShipModule(creature, shipStatus, target, targetShipStatus, x))
+                    .Select(x => GetShipModuleMaxDistance(creature, shipStatus, target, targetShipStatus, x))
+                    .DefaultIfEmpty(0f)
+                    .Min();
+                var holdDistance = engagementDistance > 0f
+                    ? Math.Min(NPCShipKeepDistance, engagementDistance * 0.75f)
+                    : NPCShipKeepDistance;
 
                 // Determine which module(s) to activate
                 SetCurrentTarget(creature, target);
+                var featsToUse = new List<FeatType>();
                 foreach (var (feat, shipModule) in availableModules)
                 {
                     var shipModuleDetail = _shipModules[shipModule.ItemTag];
@@ -2047,28 +2200,126 @@ namespace SWLOR.Game.Server.Service
                             useModule = true;
                         }
                     }
-                    else if (shipModuleDetail.Type == ShipModuleType.LaserBattery ||
-                             shipModuleDetail.Type == ShipModuleType.AssaultConcussionMissile ||
-                             shipModuleDetail.Type == ShipModuleType.StormCannon ||
-                             shipModuleDetail.Type == ShipModuleType.QuadLaser ||
-                             shipModuleDetail.Type == ShipModuleType.ProtonBomb ||
-                             shipModuleDetail.Type == ShipModuleType.Missile ||
-                             shipModuleDetail.Type == ShipModuleType.IonCannon ||
-                             shipModuleDetail.Type == ShipModuleType.BeamLaser ||
-                             shipModuleDetail.Type == ShipModuleType.CombatLaser)
+                    else if (IsOffensiveShipModule(shipModuleDetail.Type))
                     {
-                        useModule = true;
+                        var maxDistance = GetShipModuleMaxDistance(creature, shipStatus, target, targetShipStatus, shipModule);
+                        // Self-centered weapons hit enemies around the firing ship rather than the selected target.
+                        useModule = CanNPCFireShipModule(creature, shipStatus, target, targetShipStatus, shipModule) &&
+                                    (shipModuleDetail.CanTargetSelf
+                                        ? HasEnemyShipWithin(creature, maxDistance)
+                                        : distance <= maxDistance);
                     }
 
                     if (useModule)
                     {
-                        AssignCommand(creature, () =>
-                        {
-                            ActionUseFeat(feat, target);
-                        });
+                        featsToUse.Add(feat);
                     }
                 }
+
+                // Fire from the current position first, then close in when beyond weapon range or keep distance.
+                AssignCommand(creature, () =>
+                {
+                    ClearAllActions();
+                    foreach (var feat in featsToUse)
+                    {
+                        ActionUseFeat(feat, target);
+                    }
+
+                    if (engagementDistance > 0f && distance > engagementDistance)
+                        ActionMoveToObject(target, true, holdDistance);
+                    else
+                        ActionMoveAwayFromObject(target, true, holdDistance);
+                });
             }
+        }
+
+        /// <summary>
+        /// Whether a ship can keep firing a delayed salvo. Dead and leashed ships stop.
+        /// </summary>
+        public static bool CanShipFire(uint ship)
+        {
+            return !GetIsDead(ship) && !AI.IsLeashEvading(ship);
+        }
+
+        /// <summary>
+        /// Leashed ships start and finish returning home at full strength, matching the full heal ground enemies receive.
+        /// </summary>
+        [NWNEventHandler(ScriptName.OnCreatureLeashStarted)]
+        [NWNEventHandler(ScriptName.OnCreatureLeashEnded)]
+        public static void RestoreLeashedShip()
+        {
+            if (!_shipNPCs.TryGetValue(OBJECT_SELF, out var shipStatus))
+                return;
+
+            shipStatus.Shield = shipStatus.MaxShield;
+            shipStatus.Hull = shipStatus.MaxHull;
+        }
+
+        private static bool HasEnemyShipWithin(uint creature, float distance)
+        {
+            return ObjectSnapshot.InShape(Shape.Sphere, distance, GetLocation(creature), true, ObjectType.Creature)
+                .Any(nearby => nearby != creature &&
+                               GetIsObjectValid(nearby) &&
+                               GetIsEnemy(nearby, creature) &&
+                               GetShipStatus(nearby) != null);
+        }
+
+        /// <summary>
+        /// Whether an NPC ship's offensive module passes its target validation against the given target.
+        /// </summary>
+        private static bool CanNPCFireShipModule(
+            uint creature,
+            ShipStatus shipStatus,
+            uint target,
+            ShipStatus targetShipStatus,
+            ShipStatus.ShipStatusModule shipModule)
+        {
+            var shipModuleDetail = _shipModules[shipModule.ItemTag];
+            if (!IsOffensiveShipModule(shipModuleDetail.Type) || targetShipStatus == null)
+                return false;
+
+            return string.IsNullOrWhiteSpace(shipModuleDetail.ModuleValidationAction?.Invoke(creature, shipStatus, target, targetShipStatus, shipModule.ModuleBonus));
+        }
+
+        /// <summary>
+        /// Notifies players near the attacker, plus a targeted pilot who is outside that radius, of ship damage.
+        /// </summary>
+        private static void NotifyShipDamage(uint attacker, uint target, Messaging.BuildMessageDelegate buildMessage)
+        {
+            Messaging.SendMessageNearbyToPlayers(attacker, buildMessage, ShipDamageMessageRange);
+
+            if (GetIsPC(target) &&
+                target != attacker &&
+                GetDistanceBetween(attacker, target) > ShipDamageMessageRange)
+            {
+                SendMessageToPC(target, buildMessage(target));
+            }
+        }
+
+        private static bool IsOffensiveShipModule(ShipModuleType type)
+        {
+            return type == ShipModuleType.LaserBattery ||
+                   type == ShipModuleType.AssaultConcussionMissile ||
+                   type == ShipModuleType.StormCannon ||
+                   type == ShipModuleType.QuadLaser ||
+                   type == ShipModuleType.ProtonBomb ||
+                   type == ShipModuleType.Missile ||
+                   type == ShipModuleType.IonCannon ||
+                   type == ShipModuleType.BeamLaser ||
+                   type == ShipModuleType.CombatLaser;
+        }
+
+        private static float GetShipModuleMaxDistance(
+            uint activator,
+            ShipStatus activatorShipStatus,
+            uint target,
+            ShipStatus targetShipStatus,
+            ShipStatus.ShipStatusModule shipModule)
+        {
+            var shipModuleDetail = _shipModules[shipModule.ItemTag];
+            return shipModuleDetail.ModuleMaxDistanceAction == null
+                ? 10f
+                : shipModuleDetail.ModuleMaxDistanceAction(activator, activatorShipStatus, target, targetShipStatus, shipModule.ModuleBonus);
         }
 
         /// <summary>
@@ -2125,7 +2376,8 @@ namespace SWLOR.Game.Server.Service
             var shipClone = _shipClones.ContainsKey(dbShip.Id)
                 ? _shipClones[dbShip.Id]
                 : OBJECT_INVALID;
-            var isPiloted = !GetIsObjectValid(shipClone);
+            var isPiloted = !GetIsObjectValid(shipClone) ||
+                            _pendingShipLaunches.Values.Any(launch => launch.ShipId == dbShip.Id);
 
             // Other players are in the instance or someone is piloting the ship.
             // No need to send the ship back to the dock.

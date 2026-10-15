@@ -166,7 +166,7 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "Jek Talin is a dust-line pistol coach tied to the Last Word capstone trials in Anchorhead Canyon Range."
+      "0": "A lean, sun-dried human man stands at the western edge of Anchorhead's Southern Entrance, just off the trail that runs out to the Rocky Pass, a worn holster riding low on his hip. He watches that trail the way a range marshal watches a firing line, and his hand never strays far from his pistol. The dust of the Anchorhead canyons still sits in the creases of his coat."
     }
   },
   "Dex": {
@@ -364,7 +364,7 @@
   },
   "PortraitId": {
     "type": "word",
-    "value": 316
+    "value": 4203
   },
   "Race": {
     "type": "byte",

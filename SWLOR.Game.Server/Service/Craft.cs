@@ -446,6 +446,21 @@ namespace SWLOR.Game.Server.Service
             recipeDetails.Add(string.Empty);
             recipeDetailColors.Add(GuiColor.Green);
 
+            if (detail.EffectLines.Count > 0)
+            {
+                recipeDetails.Add("[EFFECT]");
+                recipeDetailColors.Add(GuiColor.Cyan);
+
+                foreach (var line in detail.EffectLines)
+                {
+                    recipeDetails.Add(line);
+                    recipeDetailColors.Add(GuiColor.White);
+                }
+
+                recipeDetails.Add(string.Empty);
+                recipeDetailColors.Add(GuiColor.White);
+            }
+
             recipeDetails.Add("[PROPERTIES]");
             recipeDetailColors.Add(GuiColor.Cyan);
             var tempStorage = GetObjectByTag("TEMP_ITEM_STORAGE");
@@ -844,6 +859,13 @@ namespace SWLOR.Game.Server.Service
                 return false;
             }
 
+            // Force conversion belongs to Imbuement Stance, including its FP cost.
+            if (explicitDamageType == CombatDamageType.Force)
+            {
+                damageType = CombatDamageType.Physical;
+                return true;
+            }
+
             if (explicitDamageType.IsCharacterDamageType())
             {
                 damageType = explicitDamageType;
@@ -868,6 +890,8 @@ namespace SWLOR.Game.Server.Service
 
             if (type == ItemPropertyType.WeaponDamageType)
             {
+                if (subType == (int)CombatDamageType.Force)
+                    return;
                 ApplyWeaponDamageTypeProperty(item, ip, subType);
                 return;
             }

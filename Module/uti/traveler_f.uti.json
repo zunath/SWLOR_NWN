@@ -110,12 +110,14 @@
   },
   "DescIdentified": {
     "type": "cexolocstring",
-    "value": {}
+    "value": {
+      "0": "A traveller's clothes, chosen to fold into a small bag and endure a journey without much attention. The lining has been renewed where straps rub against it, suggesting that the owner expects to leave again soon."
+    }
   },
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": ""
+      "0": "A traveller's clothes, chosen to fold into a small bag and endure a journey without much attention. The lining has been renewed where straps rub against it, suggesting that the owner expects to leave again soon."
     }
   },
   "Identified": {

@@ -81,7 +81,7 @@
         },
         "CostValue": {
           "type": "word",
-          "value": 7
+          "value": 6
         },
         "Param1": {
           "type": "byte",
@@ -241,6 +241,26 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "stw_groundloop"
+  },
+  "VarTable": {
+    "type": "list",
+    "value": [
+      {
+        "__struct_id": 0,
+        "Name": {
+          "type": "cexostring",
+          "value": "ITEM_STATS_REVISION"
+        },
+        "Type": {
+          "type": "dword",
+          "value": 1
+        },
+        "Value": {
+          "type": "int",
+          "value": 1
+        }
+      }
+    ]
   },
   "xModelPart1": {
     "type": "word",

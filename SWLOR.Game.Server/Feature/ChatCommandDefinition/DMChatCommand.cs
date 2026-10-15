@@ -1,17 +1,22 @@
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using SWLOR.Game.Server.Core;
+using SWLOR.Game.Server.Core.Async;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Enumeration;
+using SWLOR.Game.Server.Feature.GuiDefinition.Payload;
 using SWLOR.Game.Server.Feature.GuiDefinition.RefreshEvent;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.BeastMasteryService;
 using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.ChatCommandService;
+using SWLOR.Game.Server.Service.CombatRecorderService;
 using SWLOR.Game.Server.Service.FactionService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.QuestService;
 using SWLOR.Game.Server.Service.LogService;
+using SWLOR.Game.Server.Service.MusicService;
 using Faction = SWLOR.Game.Server.Service.Faction;
 using ChatChannel = SWLOR.Game.Server.Core.NWNX.Enum.ChatChannel;
 using SWLOR.NWN.API.Engine;
@@ -255,9 +260,12 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                 .RequiresTarget(ObjectType.Creature)
                 .Action((user, target, location, args) =>
                 {
+                    using var recorderAttribution = CombatRecorder.BeginAttribution(user, CombatRecordSourceKind.DungeonMaster);
                     if (GetIsDead(target))
                     {
                         ApplyEffectToObject(DurationType.Instant, EffectResurrection(), target);
+                        if (CombatRecorder.IsRecording)
+                            CombatRecorder.RecordResurrection(target);
                         Ability.ReapplyPlayerAuraAOE(target);
                     }
 
@@ -1076,7 +1084,7 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                 .AvailableToAllOnTestEnvironment()
                 .Action((user, target, location, args) =>
                 {
-                    Gui.TogglePlayerWindow(user, GuiWindowType.AreaNotes);
+                    DMPresence.ToggleWindow(user, GuiWindowType.AreaNotes);
                 });
         }
 
@@ -1088,7 +1096,7 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                 .AvailableToAllOnTestEnvironment()
                 .Action((user, target, location, args) =>
                 {
-                    Gui.TogglePlayerWindow(user, GuiWindowType.CreatureManager);
+                    DMPresence.ToggleWindow(user, GuiWindowType.CreatureManager);
                 });
         }
 
@@ -1099,27 +1107,19 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                 .Permissions(AuthorizationLevel.DM, AuthorizationLevel.Admin)
                 .Action((user, target, location, args) =>
                 {
-                    var player = user;
-                    var uiTarget = OBJECT_INVALID;
-                    if (GetIsDMPossessed(player))
-                    {
-                        uiTarget = player;
-                        player = GetMaster(player);
-                    }
-
-                    Gui.TogglePlayerWindow(player, GuiWindowType.DMTools, null, OBJECT_INVALID, uiTarget);
+                    DMPresence.ToggleWindow(user, GuiWindowType.DMTools);
                 });
         }
 
         private void MusicWindow()
         {
             _builder.Create("music")
-                .Description("Toggles the Area Music Picker window.")
+                .Description("Toggles the area music window, which can play any track.")
                 .Permissions(AuthorizationLevel.DM, AuthorizationLevel.Admin)
                 .AvailableToAllOnTestEnvironment()
                 .Action((user, target, location, args) =>
                 {
-                    Gui.TogglePlayerWindow(user, GuiWindowType.MusicPicker);
+                    DMPresence.ToggleWindow(user, GuiWindowType.MusicPicker, new MusicPickerPayload(MusicPickerMode.DungeonMaster));
                 });
         }
 
@@ -1135,7 +1135,7 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
 
                     return string.Empty;
                 })
-                .Action(async (user, target, location, args) =>
+                .Action((user, target, location, args) =>
                 {
                     var message = string.Join(" ", args);
                     var url = _appSettings.DMShoutWebhookUrl;
@@ -1146,22 +1146,32 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                     var authorName = $"{GetName(user)} ({GetPCPlayerName(user)}) [{GetPCPublicCDKey(user)}]";
                     if (!string.IsNullOrWhiteSpace(url))
                     {
-                        try
-                        {
-                            var enqueued = await BackgroundJob.EnqueueDiscordWebhook(url, authorName, message, 15105570);
-                            if (!enqueued)
-                            {
-                                Log.Write(LogGroup.Error, "Failed to queue DM shout Discord webhook.");
-                                SendMessageToPC(user, ColorToken.Red("ERROR: Unable to queue DM shout Discord webhook. Please notify an admin."));
-                            }
-                        }
-                        catch (Exception ex)
-                        {
-                            Log.Write(LogGroup.Error, $"Failed to queue DM shout Discord webhook. {ex}");
-                            SendMessageToPC(user, ColorToken.Red("ERROR: Unable to queue DM shout Discord webhook. Please notify an admin."));
-                        }
+                        _ = SendDMShoutWebhookAsync(user, url, authorName, message);
                     }
                 });
+        }
+
+        private static async Task SendDMShoutWebhookAsync(uint user, string url, string authorName, string message)
+        {
+            try
+            {
+                var userId = GetObjectUUID(user);
+                var enqueued = await BackgroundJob.EnqueueDiscordWebhook(url, authorName, message, 15105570);
+                await NwTask.SwitchToMainThread();
+
+                if (!GetIsObjectValid(user) || !GetIsPC(user) || GetObjectUUID(user) != userId)
+                    return;
+
+                if (!enqueued)
+                {
+                    Log.Write(LogGroup.Error, "Failed to queue DM shout Discord webhook.");
+                    SendMessageToPC(user, ColorToken.Red("ERROR: Unable to queue DM shout Discord webhook. Please notify an admin."));
+                }
+            }
+            catch (Exception ex)
+            {
+                Log.WriteError(ex, "DM shout Discord webhook submission failed.");
+            }
         }
 
         private void SetScale()

@@ -218,7 +218,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The conduits are singing steady, and so are you. The current runs through you now -- both blades, one river, pooling nowhere. Come sit in the ward sometimes when your hands are empty. Healing is the same flow, pointed gently.",
+          "Text": "The pipes in this clinic hum steady, and so do you. The current runs through you now: both blades, one river, pooling nowhere. Come sit in the ward sometimes when your hands are empty. Healing is the same flow, pointed gently.",
           "Style": 0,
           "Color": null
         }
@@ -239,7 +239,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Listen -- the conduits are low and even today. The ward below is calm. You are not, quite. The current still snags on you somewhere; I can hear it in how you carry that staff. Finish learning it -- all of it, until nothing about the saberstaff is still a stranger to you -- and then come sit with me. The conduit form waits better than most teachers.",
+          "Text": "Listen. The pipes in this clinic run low and even today. You don't, quite. The current still snags on you somewhere; I can hear it in how you carry that staff. Finish learning it, until nothing about the saberstaff is still a stranger to you, and then come sit with me. The conduit form waits better than most teachers.",
           "Style": 0,
           "Color": null
         }
@@ -260,7 +260,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Do you hear the conduits this morning? Under the ward -- there, that low note. Out of tune. There are practitioners in the Dantooine Medical Sublevel who took the conduit form from me and dammed it: they pool the Force in their blades and let it stagnate, and stagnant power always finds somewhere to spill. Go down, defeat six of their adepts, and bring me the Infinite Conduit Triage Ward Ledger they carried off when they sealed the stair. The ward cannot sort its sick without it, and I cannot reach them anymore.",
+          "Text": "These pipes sound nothing like the conduits beneath my old ward on Mon Cala. Those had a low note that kept time with a blade, with the whole sea leaning on every line. Students I taught there, in the Medical Sublevel beneath the Coral Isles Facility, took the conduit form and dammed it. They pool the Force in their blades and let it stagnate, and stagnant power always finds somewhere to spill. Go to Mon Cala, defeat six of their adepts, and bring me the Infinite Conduit Triage Ward Ledger. My patients' records are in it, and I cannot reach them anymore.",
           "Style": 0,
           "Color": null
         }
@@ -286,6 +286,10 @@
         {
           "ChoiceId": "reply-00005",
           "Conditions": []
+        },
+        {
+          "ChoiceId": "neutral-ask",
+          "Conditions": []
         }
       ]
     },
@@ -302,7 +306,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Then go quietly and come back whole. The key I've given you opens the service door behind the recovery ward; past it, follow the pipes down. Six adepts, the ledger, and back to me. I'll keep a bed warm. I always do.",
+          "Text": "Then take this key, go quietly, and come back whole. It works the service lift down to the sublevel. On Mon Cala, go east from Dac City through the Coral Isles to the facility on the south-west side of the outer isles. Eco-terrorists hold it now. Go through the sliding door off the entry hall; the lift stands in the red-walled bay just east of the office block. At the bottom, follow the pipes. Six adepts, the ledger, and back to me. I'll keep a bed ready. I always do.",
           "Style": 0,
           "Color": null
         }
@@ -349,7 +353,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Beneath us. The sublevel runs under this whole facility -- it was cut as a kolto reserve, and I taught the form down there because the conduits keep honest time. Take the work and I'll give you the sublevel key; it opens the sealed service door behind the recovery ward. Past that seal, everything is theirs now. Follow the pipes.",
+          "Text": "On Mon Cala. The sublevel was cut as a kolto reserve beneath the Coral Isles Facility. From the landing at the \"Elite\" Hotel in Dac City, go out through the surface streets and east into the Coral Isles, the inner isles and then the outer. The facility stands on the south-west side of the outer isles, held by eco-terrorists. Inside, take the sliding door off the entry hall; a service lift in the red-walled bay just east of the office block goes down. Take the work and the key to that lift is yours.",
           "Style": 0,
           "Color": null
         }
@@ -375,7 +379,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Adepts who learned to hold the current instead of carrying it. Their strikes land heavier than they should, and they do not yield -- a dammed current doesn't know how to stop, only how to break. Don't try to outlast them; end each one cleanly and move on. And mind the kolto lines. The ward above still breathes through them.",
+          "Text": "Adepts who learned to hold the current instead of carrying it. Their strikes land heavier than they should, and they do not yield; a dammed current doesn't know how to stop, only how to break. Don't try to outlast them. End each one cleanly and move on. And mind the kolto lines. That reserve is what my patients will come home to.",
           "Style": 0,
           "Color": null
         }
@@ -401,7 +405,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The stair is still sealed behind you and the ledger is still below. Six adepts stand between the ward and its Infinite Conduit Triage Ward Ledger. Go gently. But go.",
+          "Text": "The ledger is still below, and six adepts stand between you and it. In the Coral Isles Facility on Mon Cala, take the sliding door off the entry hall to the service lift in the red-walled bay, just east of the office block. Go gently. But go.",
           "Style": 0,
           "Color": null
         }
@@ -422,7 +426,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "You're back -- and the current under the floor sounds looser already. That's the ledger under your arm, water-stained and all. May I?",
+          "Text": "You're back, and you carry the current looser already. That's the ledger under your arm, water-stained and all. May I?",
           "Style": 0,
           "Color": null
         }
@@ -448,7 +452,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Thank you. No -- don't wave that off. A ward runs on its ledger the way a form runs on breath. Six of theirs are quiet below, and forty of mine are safer above. Take the credits, drink some water, and rest. The current has more to show you.",
+          "Text": "Thank you. No, don't wave that off. A ward runs on its ledger the way a form runs on breath. Six of theirs are quiet below, and forty of mine can be treated properly again, wherever the evacuation scattered them. Drink some water and rest. The current has more to show you.",
           "Style": 0,
           "Color": null
         }
@@ -469,7 +473,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Sit a moment. The conduits changed pitch in the night, and that pitch means pressure. The specialists below have pulled the Infinite Conduit Kolto Conduit Coupler off the main line -- they use it to throttle the flow to their practice chamber. Famine, then flood. It is starving the ward's kolto pressure and teaching them exactly the wrong lesson at once. Defeat the five specialists and bring the coupler home to the line it belongs to.",
+          "Text": "Sit a moment. The specialists below have pulled the Infinite Conduit Kolto Conduit Coupler off the main line. They use it to throttle the flow to their practice chamber: famine, then flood. It is fouling the reserve and teaching them exactly the wrong lesson at once. Defeat the five specialists and bring the coupler to me. It goes back on its line when the ward reopens.",
           "Style": 0,
           "Color": null
         }
@@ -558,7 +562,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Deeper than the adepts kept -- the pump galleries, where the main kolto lines run. Your key still opens the service door. From there, follow the sound of water being made to wait; their practice chamber leans against the main line, and you will feel the throttled current before you see them.",
+          "Text": "Deeper than the adepts kept, where the main kolto lines run. Go back down through the facility and follow the sound of water being made to wait. Their practice chamber leans against the main line, and you will feel the throttled current before you see them.",
           "Style": 0,
           "Color": null
         }
@@ -610,7 +614,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The galleries still run throttled -- I hear it every hour, like a held note. Five specialists, and the Infinite Conduit Kolto Conduit Coupler comes back to the main line. The ward is patient. The patients are less so.",
+          "Text": "Five specialists still throttle the line, and the Infinite Conduit Kolto Conduit Coupler is still in their hands. The reserve is patient. My patients are less so.",
           "Style": 0,
           "Color": null
         }
@@ -631,7 +635,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "I felt the pressure even out before dawn -- the whole ward exhaled at once. You have it, then. Let me see.",
+          "Text": "Something in the Force loosened last night, like a held breath let go. You have it, then. Let me see.",
           "Style": 0,
           "Color": null
         }
@@ -657,7 +661,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Not even scorched. The line takes it back tonight, and the ward sleeps to a steady hum for the first time in weeks. You're learning the form the right way round -- flow first, blades after. Rest now. The next current runs colder.",
+          "Text": "Not even scorched. When the ward reopens, this goes back on the line first. You're learning the form the right way round: flow first, blades after. Rest now. The next current runs colder.",
           "Style": 0,
           "Color": null
         }
@@ -678,7 +682,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Come sit. I will say this slowly, because it deserves slowness. The deep sublevel has a warden now -- their word, and he has earned it in the worst way. He holds the flooded ward at the bottom of the stair, and he wears that ward's fractured sigil as if guarding a thing were the same as keeping it alive. The current breaks against him, and he drinks what breaks. Hear me completely: no one has come back from him alone, and I have sat at enough bedsides to say that with certainty. Bring companions to share the load -- two at the very least. Defeat him, and bring me the Infinite Conduit Fractured Ward Sigil, so the deep ward can be given back to healing.",
+          "Text": "Come sit. I will say this slowly, because it deserves slowness. The sublevel has a warden now. Their word, and he has earned it in the worst way. He holds the deep ward, and he wears its fractured sigil as if guarding a thing were the same as keeping it alive. The current breaks against him, and he drinks what breaks. No one has come back from him alone. Bring at least two companions. Defeat him, and bring me the Infinite Conduit Fractured Ward Sigil, so the deep ward can be given back to healing.",
           "Style": 0,
           "Color": null
         }
@@ -720,7 +724,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Good. When you face him, remember -- he must hold everything, and you must hold nothing. Let his weight be his problem. Strike, release, let a companion strike while you breathe. The sigil never leaves him; it will come up with you or not at all.",
+          "Text": "Good. When you face him, remember: he must hold everything, and you must hold nothing. Let his weight be his problem. Strike, release, let a companion strike while you breathe. The sigil never leaves him; it will come up with you or not at all.",
           "Style": 0,
           "Color": null
         }
@@ -741,7 +745,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "A ward-keeper, once. One of ours. When the others began damming the current, he chose not to join them -- he chose to exceed them, to hold every drop of the deep ward's flow inside himself. What is left is a reservoir shaped like a man. There is a person in there somewhere. The pressure speaks for him now.",
+          "Text": "A ward-keeper, once. One of ours, a Bothan who kept the deep ward's night watch. When the others began damming the current, he chose not to join them. He chose to exceed them, to hold every drop of the deep ward's flow inside himself. What is left is a reservoir with a face. There is a person in there somewhere. The pressure speaks for him now.",
           "Style": 0,
           "Color": null
         }
@@ -767,7 +771,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Down every stair you have cleared, and one more -- the flooded ward at the sublevel's floor, where the kolto stands waist-deep and the light comes up through it. Your key brings you to the last door; he broke its lock himself, from the inside. He is not hiding. Things that full never do.",
+          "Text": "Deep in the sublevel, in its northern rooms, at the far end from the door you come in by. Look for the old altar with blood dried on the floor around it. He broke the deep ward's lock himself, from the inside. He is not hiding. Things that full never do.",
           "Style": 0,
           "Color": null
         }
@@ -819,7 +823,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The flooded ward still presses on the whole sublevel -- I feel it in the conduits like a breath being held. Gather your companions before you go down. The Infinite Conduit Fractured Ward Sigil comes up into the light with you, or it stays in the dark with him.",
+          "Text": "He still holds the deep ward of the Medical Sublevel. Gather your companions before you go down. The Infinite Conduit Fractured Ward Sigil comes up into the light with you, or it stays in the dark with him.",
           "Style": 0,
           "Color": null
         }
@@ -840,7 +844,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The held breath is gone. The whole sublevel let it out in the night, and I have been smiling at pipes all morning like a fool. Sit down first -- sit. Now. The sigil.",
+          "Text": "Something heavy let go in the Force last night, and I have been smiling at the pipes in this clinic all morning like a fool. Sit down first. Sit. Now. The sigil.",
           "Style": 0,
           "Color": null
         }
@@ -866,7 +870,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Fractured, and it held its shape anyway. Most of us do. I will consecrate the deep ward again this week, and his name goes back on the keepers' wall -- the old name, from before. That mercy was yours, and you did it wisely: with others. Keep those people close. The last doors down there do not open for one pair of hands.",
+          "Text": "Fractured, and it held its shape anyway. Most of us do. When the ward reopens I will consecrate the deep ward again, and his name goes back on the keepers' wall, the old name from before. That mercy was yours, and you did it wisely: with others. Keep those people close. The last doors down there do not open for one pair of hands.",
           "Style": 0,
           "Color": null
         }
@@ -887,7 +891,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The conduits sing almost clean now. Almost. Four voices still out of tune -- the inner circle, the ones who taught everyone below to dam the flow in the first place. They have taken the matron's old station at the heart of the sublevel, and they pass her ward token hand to hand like something to be proud of. Defeat all four and bring me the Infinite Conduit Matron's Ward Token. It belongs to the station, and the station belongs to the sick.",
+          "Text": "The current runs almost clean now. Almost. Four voices are still out of tune: the inner circle, the ones who taught everyone below to dam the flow in the first place. They have taken the matron's old station in the sublevel, and they pass her ward token hand to hand like something to be proud of. Defeat all four and bring me the Infinite Conduit Matron's Ward Token. It belongs to the station, and the station belongs to the sick.",
           "Style": 0,
           "Color": null
         }
@@ -950,7 +954,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The first four I ever taught the conduit form. That is the wound underneath all of this, and now you know it. They understood the current perfectly and trusted it not at all -- and mistrust, in the end, is just a dam you build out of yourself. They are better than anything you have faced below, except perhaps the warden. Together, they may be better than him.",
+          "Text": "The first four I ever taught the conduit form. That is the wound underneath all of this. They understood the current perfectly and trusted it not at all, so they grafted machinery into their own bodies to hold more of it. Mistrust, in the end, is just a dam you build out of yourself. Together, they may be better than the warden.",
           "Style": 0,
           "Color": null
         }
@@ -976,7 +980,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The matron's station -- the round chamber at the heart of the sublevel, where every kolto line meets. Follow any main line inward and it will take you there. They know the warden fell. They will be standing close together by now. Fear does that, even to the practiced.",
+          "Text": "Deep in the sublevel. They no longer keep to the station itself; they walk its rooms in turn, guarding what they took. They know the warden fell. They will be standing close together by now. Fear does that, even to the practiced.",
           "Style": 0,
           "Color": null
         }
@@ -1002,7 +1006,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Four currents braided into one defense. Press one and another answers. Unbraid them if you can; if you cannot, bring companions and braid your own. And spare the station itself -- every line in the sublevel crosses that room, and the ward above drinks from those pipes while you fight.",
+          "Text": "Four currents braided into one defense. Press one and another answers. Unbraid them if you can; if you cannot, bring companions and braid your own. And spare the station itself. Every line in the sublevel crosses that room, and I mean to bring my patients home to that kolto.",
           "Style": 0,
           "Color": null
         }
@@ -1028,7 +1032,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Four of them still hold the matron's station, and the Infinite Conduit Matron's Ward Token still passes between their hands. The heart of the sublevel beats around them. Go when you are braided, and not before.",
+          "Text": "Four of them still hold the matron's station, and the Infinite Conduit Matron's Ward Token still passes between their hands. Go when you are braided, and not before.",
           "Style": 0,
           "Color": null
         }
@@ -1049,7 +1053,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "I know that weight from across a room. She wore it thirty years, and it never once sat well in proud hands. Yours aren't. Give it here -- gently.",
+          "Text": "I know that weight from across a room. She wore it twenty years, and it never once sat well in proud hands. Yours aren't. Give it here, gently.",
           "Style": 0,
           "Color": null
         }
@@ -1075,7 +1079,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Then only the deepest room is left. The matron who wore this saved more lives than I can count without ever raising a blade, and she taught me that the ward and the form are the same practice. I will hang it back at her station myself. One current remains -- and it runs through someone I do not have the strength to face. You might.",
+          "Text": "Then only the deepest room is left. The matron who wore this saved more lives than I can count without ever raising a blade, and she taught me that the ward and the form are the same practice. I will hang it back at her station myself. One current remains, and it runs through someone I do not have the strength to face. You might.",
           "Style": 0,
           "Color": null
         }
@@ -1096,7 +1100,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Sit with me. Both of us this time -- I have been standing over this decision for days. At the bottom of the sublevel, past every door you have opened, there is a reservoir chamber, and the one waiting in it perfected the form you came here to learn. Infinite conduit, truly -- the Force pouring through both blades without pooling, without pausing, without end. Then he turned the river inward, and now it pours only into him. He taught the four you defeated. He learned beside me, once. A current needs more than one channel -- go with companions, three channels at the least, and let the river divide among you where it would drown one alone. There is nothing to carry back. When he falls, the current comes home by itself, and I will feel it arrive.",
+          "Text": "Sit with me. I have been standing over this decision for days. Past every door you have opened, the sublevel ends at the Protected Ward, where we kept the patients who could not be moved. The one waiting there perfected the form you came to learn: the Force pouring through both blades without pooling, without end. Then he turned the river inward. He taught the four you defeated. He learned beside me, once. Go with at least two companions. There is nothing to carry back. When he falls, I will know.",
           "Style": 0,
           "Color": null
         }
@@ -1138,7 +1142,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Then take the last lesson with you through the door: do not admire him mid-fight. Everyone does -- it is the opening he waits for. Watch his feet, trade the current between you, and come home. All of you. I will be listening to the conduits until you do.",
+          "Text": "Then take the last lesson with you through the door: do not admire him mid-fight. Everyone does; it is the opening he waits for. Watch his feet, trade the current between you, and come home. All of you. I will be listening for you until you do.",
           "Style": 0,
           "Color": null
         }
@@ -1159,7 +1163,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The best of us. That is not sentiment; it is measurement. He moves the way the form promises -- endless, effortless, both blades one motion. But nothing leaves him anymore. Imagine a river that only accepts. When you see it, you will understand why I sent you to unmake the dams first. He is the last one, and he is beautiful, and he must come down.",
+          "Text": "The best of us. That is not sentiment; it is measurement. He moves the way the form promises: endless, effortless, both blades one motion. But nothing leaves him anymore. Imagine a river that only accepts. When you see it, you will understand why I sent you to unmake the dams first. He is the last one, and he is beautiful, and he must come down.",
           "Style": 0,
           "Color": null
         }
@@ -1185,7 +1189,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The reservoir chamber at the very bottom -- below the flooded ward, below the station, where the sublevel keeps its deepest kolto in the dark. Your key ends at his door, and the door is not barred. A river that only accepts stays open at the mouth.",
+          "Text": "The Protected Ward. Its door is in the north-east corner of the sublevel, the far end from where you come in. He has made it a reservoir, every drop of stored kolto held in the dark around him. The door is not barred. A river that only accepts stays open at the mouth.",
           "Style": 0,
           "Color": null
         }
@@ -1211,7 +1215,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The form itself, perfected and pointed at you. He will not surge like the specialists or hoard like the warden. He flows -- endlessly -- and one defender simply drowns in it. Three channels divide the current: while he pours into one of you, the others cut. Trade places before anyone empties. Whoever tires falls back to breathe. That rhythm is the entire battle.",
+          "Text": "The form itself, perfected and pointed at you. He will not surge like the specialists or hoard like the warden. He flows, endlessly, and one defender simply drowns in it. Three of you divide the current: while he pours into one, the others cut. Trade places before anyone empties. Whoever tires falls back to breathe. That rhythm is the entire battle.",
           "Style": 0,
           "Color": null
         }
@@ -1237,7 +1241,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "He is still down there. The conduits sing around him the way water sings around a stone. Gather your companions -- three channels, no fewer -- and finish the form's long argument with itself. I will be here. I am always here.",
+          "Text": "He is still down there in the Protected Ward. Gather your companions, three of you and no fewer, and finish the form's long argument with itself. I will be here. I am always here.",
           "Style": 0,
           "Color": null
         }
@@ -1258,7 +1262,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "I felt it at dawn. The current turned and came home -- every line in the sublevel at once, like a tide remembering the moon. The ward thinks the kolto pressure fixed itself. We know better. Come here. Tell me it is done; I want to hear it in a voice.",
+          "Text": "I felt it at dawn, even from here. The current turned and came home, like a tide remembering the moon. Come here. Tell me it is done; I want to hear it in a voice.",
           "Style": 0,
           "Color": null
         }
@@ -1284,13 +1288,39 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "And now it runs through you. I can hear it under your breathing -- in one hand, out the other, pooling nowhere. That is the whole form; there was never anything else to teach. He would have wanted a student like you, back when he still wanted students. Go gently with it. And when you find someone worth teaching, teach them the way you learned it: flow first, blades after, and never -- never -- alone.",
+          "Text": "And now it runs through you. I can hear it under your breathing: in one hand, out the other, pooling nowhere. That is the whole form; there was never anything else to teach. He would have wanted a student like you, back when he still wanted students. Go gently with it. And when you find someone worth teaching, teach them the way you learned it: flow first, blades after, and never alone.",
           "Style": 0,
           "Color": null
         }
       ],
       "OnEnterActions": [],
       "Choices": []
+    },
+    "neutral-meeting": {
+      "Id": "neutral-meeting",
+      "SpeakerName": "",
+      "SpeakerTag": "",
+      "PortraitResref": "",
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Text": [
+        {
+          "Text": "Anchorhead Medical Center on Tatooine gives me somewhere to work while my old ward is sealed. Power should circulate, and so should help. Your faction has no place on a patient's chart. My old ward is the Medical Sublevel, beneath the Coral Isles Facility on Mon Cala, and the practitioners are still down there. Bring the ledger back to me at this clinic.",
+          "Style": 0,
+          "Color": null
+        }
+      ],
+      "OnEnterActions": [],
+      "Choices": [
+        {
+          "ChoiceId": "neutral-return",
+          "Conditions": []
+        }
+      ]
     }
   },
   "Choices": {
@@ -1320,7 +1350,7 @@
     "reply-00001": {
       "Id": "reply-00001",
       "Text": {
-        "Text": "Six adepts, one ledger. The stair opens today.",
+        "Text": "Six adepts, one ledger. The lift goes down today.",
         "Style": 4,
         "Color": null
       },
@@ -1350,7 +1380,7 @@
     "reply-00002": {
       "Id": "reply-00002",
       "Text": {
-        "Text": "What is the conduit form?",
+        "Text": "What does the conduit form teach?",
         "Style": 4,
         "Color": null
       },
@@ -2053,7 +2083,7 @@
     "reply-00031": {
       "Id": "reply-00031",
       "Text": {
-        "Text": "Where is the reservoir chamber?",
+        "Text": "Where is he waiting?",
         "Style": 4,
         "Color": null
       },
@@ -2138,6 +2168,52 @@
       "Next": [
         {
           "TargetNodeId": "entry-00041",
+          "Conditions": []
+        }
+      ],
+      "EndsConversation": false,
+      "IsAutomatic": false
+    },
+    "neutral-ask": {
+      "Id": "neutral-ask",
+      "Text": {
+        "Text": "Why are we meeting here, and where is the trial?",
+        "Style": 4,
+        "Color": null
+      },
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Actions": [],
+      "Next": [
+        {
+          "TargetNodeId": "neutral-meeting",
+          "Conditions": []
+        }
+      ],
+      "EndsConversation": false,
+      "IsAutomatic": false
+    },
+    "neutral-return": {
+      "Id": "neutral-return",
+      "Text": {
+        "Text": "Back to the assignment.",
+        "Style": 4,
+        "Color": null
+      },
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Actions": [],
+      "Next": [
+        {
+          "TargetNodeId": "entry-00002",
           "Conditions": []
         }
       ],

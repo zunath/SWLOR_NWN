@@ -1,10 +1,10 @@
 <UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:viewport="using:SWLOR.Toolset.Viewport"
+             xmlns:viewport="using:Nwn.Toolset.Avalonia.Areas"
              x:Class="SWLOR.Toolset.Viewport.ModelPreviewControl">
 
   <Grid>
-    <viewport:GlAreaControl x:Name="ModelView" />
+    <viewport:AreaViewportControl x:Name="ModelView" />
 
     <!-- OpenGlControlBase has no Background brush, so pointer events never hit-test to it. This
          transparent overlay captures drags and forwards them, exactly as the area editor does. -->

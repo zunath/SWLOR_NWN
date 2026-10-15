@@ -331,7 +331,7 @@
               },
               "XOrientation": {
                 "type": "float",
-                "value": 1.561231460655137e-39
+                "value": 1.561231460655137e-039
               },
               "XPosition": {
                 "type": "float",
@@ -478,12 +478,14 @@
               },
               "DescIdentified": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "The clean lines of this Sith officer's armor are interrupted only by disciplined service fittings. Its severe finish makes the wearer look like someone who expects a report, even before anyone has been asked to provide one."
+                }
               },
               "Description": {
                 "type": "cexolocstring",
                 "value": {
-                  "0": ""
+                  "0": "The clean lines of this Sith officer's armor are interrupted only by disciplined service fittings. Its severe finish makes the wearer look like someone who expects a report, even before anyone has been asked to provide one."
                 }
               },
               "Identified": {
@@ -2501,11 +2503,15 @@
               },
               "DescIdentified": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "These rags have been repaired with scraps that no longer resemble their original fabric. They are the kind of possession that survives a hurried departure because it was already being worn when everything else had to be left behind."
+                }
               },
               "Description": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "These rags have been repaired with scraps that no longer resemble their original fabric. They are the kind of possession that survives a hurried departure because it was already being worn when everything else had to be left behind."
+                }
               },
               "Identified": {
                 "type": "byte",

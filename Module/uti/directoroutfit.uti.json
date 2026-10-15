@@ -110,12 +110,14 @@
   },
   "DescIdentified": {
     "type": "cexolocstring",
-    "value": {}
+    "value": {
+      "0": "The director's outfit presents an orderly front and a carefully maintained collar. Its discreet inner pockets offer room for the things an important person prefers not to hand to an assistant."
+    }
   },
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": ""
+      "0": "The director's outfit presents an orderly front and a carefully maintained collar. Its discreet inner pockets offer room for the things an important person prefers not to hand to an assistant."
     }
   },
   "Identified": {

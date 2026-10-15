@@ -110,7 +110,7 @@
         },
         "CostValue": {
           "type": "word",
-          "value": 20
+          "value": 5
         },
         "Param1": {
           "type": "byte",
@@ -217,6 +217,21 @@
         "Name": {
           "type": "cexostring",
           "value": "NO_ECONOMY"
+        },
+        "Type": {
+          "type": "dword",
+          "value": 1
+        },
+        "Value": {
+          "type": "int",
+          "value": 1
+        }
+      },
+      {
+        "__struct_id": 0,
+        "Name": {
+          "type": "cexostring",
+          "value": "ITEM_STATS_REVISION"
         },
         "Type": {
           "type": "dword",

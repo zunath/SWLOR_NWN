@@ -31,7 +31,7 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                 .Name(name)
                 .ShortName(shortName)
                 .Type(ShipModuleType.BulwarkShieldGenerator)
-                .Texture("iit_ess_075")
+                .Texture("iit_smbulwark")
                 .Description(description)
                 .PowerType(ShipModulePowerType.High)
                 .Capacitor(25)
@@ -46,11 +46,17 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                     ApplyEffectToObject(DurationType.Temporary, EffectVisualEffect(VisualEffect.Vfx_Dur_Aura_Pulse_Blue_White), activator, 12.0f);
 
                     const float Distance = 20f;
-                    var nearby = GetFirstObjectInShape(Shape.Sphere, Distance, GetLocation(activator), true, ObjectType.Creature);
                     var count = 1;
+                    var repaired = new List<uint>();
 
-                    while (GetIsObjectValid(nearby) && count <= 6)
+                    foreach (var nearby in ObjectSnapshot.InShape(Shape.Sphere, Distance, GetLocation(activator), true, ObjectType.Creature))
                     {
+                        if (count > 6)
+                            break;
+
+                        if (!GetIsObjectValid(nearby))
+                            continue;
+
                         if (!GetIsEnemy(nearby, activator) &&
                             !GetIsDead(activator) &&
                             Space.GetShipStatus(nearby) != null &&
@@ -63,6 +69,7 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                             ApplyEffectToObject(DurationType.Temporary, EffectAbilityIncrease(AbilityType.Vitality, 4), nearby, 10.0f);
 
                             Space.RestoreShield(nearby, nearbyStatus, recovery);
+                            repaired.Add(nearby);
 
                             if (GetIsPC(nearby) && !GetIsDM(nearby) && !GetIsDMPossessed(nearby))
                             {
@@ -83,14 +90,13 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                             count++;
                         }
 
-                        nearby = GetNextObjectInShape(Shape.Sphere, Distance, GetLocation(activator), true, ObjectType.Creature);
                     }
 
                     Enmity.ModifyEnmityOnAll(activator, 100 + repairAmount);
                     Messaging.SendMessageNearbyToPlayers(
                         activator,
                         receiver => $"{PlayerName.GetDisplayName(receiver, activator)} begins restoring {recovery} shield HP to nearby ships reinforcing their shield integrity.");
-                    CombatPoint.AddCombatPointToAllTagged(activator, SkillType.Piloting);
+                    CombatPoint.AddSupportCombatPoint(activator, repaired, SkillType.Piloting);
                 });
         }
     }

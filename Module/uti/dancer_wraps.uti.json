@@ -25,16 +25,15 @@
     "value": 0
   },
   "DescIdentified": {
-    "id": 56620,
     "type": "cexolocstring",
     "value": {
-      "0": ""
+      "0": "These wraps have been wound to leave the fingers free and the wrists closely bound. Their ends tuck away beneath older layers, where a sudden turn cannot send them trailing across a fighting ring."
     }
   },
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": ""
+      "0": "These wraps have been wound to leave the fingers free and the wrists closely bound. Their ends tuck away beneath older layers, where a sudden turn cannot send them trailing across a fighting ring."
     }
   },
   "Identified": {
@@ -75,7 +74,7 @@
         },
         "CostValue": {
           "type": "word",
-          "value": 12
+          "value": 17
         },
         "Param1": {
           "type": "byte",
@@ -106,7 +105,7 @@
         },
         "CostValue": {
           "type": "word",
-          "value": 14
+          "value": 18
         },
         "Param1": {
           "type": "byte",
@@ -137,7 +136,7 @@
         },
         "CostValue": {
           "type": "word",
-          "value": 16
+          "value": 30
         },
         "Param1": {
           "type": "byte",
@@ -235,6 +234,26 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "dancer_wraps"
+  },
+  "VarTable": {
+    "type": "list",
+    "value": [
+      {
+        "__struct_id": 0,
+        "Name": {
+          "type": "cexostring",
+          "value": "ITEM_STATS_REVISION"
+        },
+        "Type": {
+          "type": "dword",
+          "value": 1
+        },
+        "Value": {
+          "type": "int",
+          "value": 1
+        }
+      }
+    ]
   },
   "xModelPart1": {
     "type": "word",

@@ -111,13 +111,13 @@
   "DescIdentified": {
     "type": "cexolocstring",
     "value": {
-      "0": ""
+      "0": "Pale inlays trace the joints of this dark plate like a second skeleton. Dust has lodged around each one, preserving the outlines even where the armor's finish has been worn away."
     }
   },
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": ""
+      "0": "Pale inlays trace the joints of this dark plate like a second skeleton. Dust has lodged around each one, preserving the outlines even where the armor's finish has been worn away."
     }
   },
   "Identified": {
@@ -170,7 +170,7 @@
         },
         "CostValue": {
           "type": "word",
-          "value": 28
+          "value": 103
         },
         "Param1": {
           "type": "byte",
@@ -201,7 +201,7 @@
         },
         "CostValue": {
           "type": "word",
-          "value": 18
+          "value": 30
         },
         "Param1": {
           "type": "byte",
@@ -232,7 +232,7 @@
         },
         "CostValue": {
           "type": "word",
-          "value": 9
+          "value": 25
         },
         "Param1": {
           "type": "byte",
@@ -299,6 +299,26 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "lightstand_w2"
+  },
+  "VarTable": {
+    "type": "list",
+    "value": [
+      {
+        "__struct_id": 0,
+        "Name": {
+          "type": "cexostring",
+          "value": "ITEM_STATS_REVISION"
+        },
+        "Type": {
+          "type": "dword",
+          "value": 1
+        },
+        "Value": {
+          "type": "int",
+          "value": 1
+        }
+      }
+    ]
   },
   "xArmorPart_Belt": {
     "type": "word",

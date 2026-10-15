@@ -1,3 +1,4 @@
+using SWLOR.Game.Server.Core;
 using System;
 using System.Collections.Generic;
 using SWLOR.Game.Server.Service;
@@ -137,13 +138,14 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
         {
             foreach (var blastLocation in blastLocations)
             {
-                var creature = GetFirstObjectInShape(Shape.Sphere, blastRadius, blastLocation, true, ObjectType.Creature);
-                while (GetIsObjectValid(creature))
+                foreach (var creature in ObjectSnapshot.InShape(Shape.Sphere, blastRadius, blastLocation, true, ObjectType.Creature))
                 {
+                    if (!GetIsObjectValid(creature))
+                        continue;
+
                     if (creature != activator && GetIsReactionTypeHostile(creature, activator))
                         return true;
 
-                    creature = GetNextObjectInShape(Shape.Sphere, blastRadius, blastLocation, true, ObjectType.Creature);
                 }
             }
 

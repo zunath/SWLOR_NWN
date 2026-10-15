@@ -624,19 +624,20 @@ namespace SWLOR.Game.Server.Service
 
         private static void StartLeashEvade(uint creature, Location homeLocation)
         {
-            if (!IsLeashEvading(creature))
-            {
-                SetLocalBool(creature, LeashEvadeActiveVariable, true);
-                SetLocalBool(creature, LeashEvadeRestorePlotFlagVariable, GetPlotFlag(creature));
-                SetLocalInt(creature, LeashEvadeRestoreMovementRateVariable, GetMovementRate(creature));
-                SetPlotFlag(creature, true);
-            }
+            if (IsLeashEvading(creature))
+                return;
+
+            SetLocalBool(creature, LeashEvadeActiveVariable, true);
+            SetLocalBool(creature, LeashEvadeRestorePlotFlagVariable, GetPlotFlag(creature));
+            SetLocalInt(creature, LeashEvadeRestoreMovementRateVariable, GetMovementRate(creature));
+            SetPlotFlag(creature, true);
 
             RemoveEnemySourcedStatusEffects(creature);
             SetCurrentHitPoints(creature, GetMaxHitPoints(creature));
             Enmity.ClearEnmityTable(creature);
             NPCAI.ClearState(creature);
             ApplyLeashEvadeMovementRate(creature);
+            ExecuteScript(ScriptName.OnCreatureLeashStarted, creature);
             DelayCommand(0.2f, () =>
             {
                 if (IsLeashEvading(creature))
@@ -710,6 +711,7 @@ namespace SWLOR.Game.Server.Service
             DeleteLocalBool(creature, LeashEvadeActiveVariable);
             DeleteLocalBool(creature, LeashEvadeReturnQueuedVariable);
             RestoreLeashEvadeMovementRate(creature);
+            ExecuteScript(ScriptName.OnCreatureLeashEnded, creature);
         }
 
         public static bool TryStartCombatLeashEvade(uint creature, uint target)
@@ -719,6 +721,11 @@ namespace SWLOR.Game.Server.Service
 
         private static bool TryStartLeashEvade(uint creature, uint target)
         {
+            // Removing control effects can request another attack before evade cleanup finishes.
+            // Report it as handled so callers neither restart cleanup nor resume combat.
+            if (IsLeashEvading(creature))
+                return true;
+
             var homeLocation = GetLocalLocation(creature, "HOME_LOCATION");
             if (!ShouldStartCombatLeashEvade(creature, target, homeLocation))
                 return false;

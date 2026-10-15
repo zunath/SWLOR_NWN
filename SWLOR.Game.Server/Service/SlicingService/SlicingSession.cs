@@ -580,17 +580,22 @@ namespace SWLOR.Game.Server.Service.SlicingService
         {
             GrantXP(session.Player, session.Tier);
 
-            var reward = SlicingReward.Roll(
+            var rewards = SlicingReward.RollSuccess(
                 session.Source,
                 session.Tier,
                 Random.Next(10000),
+                Random.Next(int.MaxValue),
                 Random.Next(int.MaxValue));
-            CreateItemOnObject(reward.Resref, session.Player, reward.Quantity);
 
             var playerId = GetObjectUUID(session.Player);
+            foreach (var reward in rewards)
+            {
+                CreateItemOnObject(reward.Resref, session.Player, reward.Quantity);
+                SendMessageToPC(session.Player, $"You recover {reward.Quantity}x {Cache.GetItemNameByResref(reward.Resref)}.");
+            }
+            var receivedRewards = string.Join(", ", rewards.Select(reward => $"{reward.Quantity}x '{reward.Resref}'"));
             Log.Write(LogGroup.Crafting,
-                $"Player '{GetName(session.Player)}' ({playerId}) completed {session.Source} slicing board {session.Board.BoardId} and received {reward.Quantity}x '{reward.Resref}'.");
-            SendMessageToPC(session.Player, $"You recover {reward.Quantity}x {Cache.GetItemNameByResref(reward.Resref)}.");
+                $"Player '{GetName(session.Player)}' ({playerId}) completed {session.Source} slicing board {session.Board.BoardId} and received {receivedRewards}.");
 
             Release(session);
             if (session.Source == SlicingSourceType.Lockbox)

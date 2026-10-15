@@ -166,7 +166,7 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "Mikka Varn is a field medic turned knife instructor tied to the Vital Rupture capstone trials in Veles Militia Annex."
+      "0": "Mikka Varn is a compact man with a field medic's steady hands and a vibroknife worn where a surgeon would keep his tools. He studies people the way he once read triage cases, noting where they would bleed before he settles on their faces. He served as the medic of the Veles Militia Annex until its door was sealed, and he now spends his evenings in Racin' Jims nursing a drink and an old grievance."
     }
   },
   "Dex": {
@@ -364,7 +364,7 @@
   },
   "PortraitId": {
     "type": "word",
-    "value": 301
+    "value": 4161
   },
   "Race": {
     "type": "byte",

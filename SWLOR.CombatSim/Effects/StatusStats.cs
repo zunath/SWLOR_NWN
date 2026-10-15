@@ -5,7 +5,9 @@ namespace SWLOR.CombatSim.Effects
 {
     /// <summary>
     /// Reads a status effect's stats from its definition in SWLOR.Game.Server, so a modeled status can't drift from the
-    /// game. Only stats the simulator reads have any effect.
+    /// game. Only stats the simulator reads have any effect, as with perks: hit chance and damage come from each use's
+    /// damage profile, so attack and damage stats (Conduit Stance's -10% Attack, Infinite Conduit's +20 DMG) are not
+    /// applied, and a scenario's damage profiles describe the build as it fights, stance included.
     /// </summary>
     public static class StatusStats
     {

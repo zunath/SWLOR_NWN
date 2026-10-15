@@ -30,6 +30,21 @@ public class PowerGloveFitTests
         Invoke<string>("ResolveHandModel", race, gender, phenotype, side, natural, armor).Should().Be(expected);
     }
 
+    [TestCase("pmo2_handr201", 2, false, true, "pmo0_handr201")]
+    [TestCase("pmo2_handl201", 2, false, true, "pmo0_handl201")]
+    [TestCase("pfe2_handl208", 2, false, true, "pfe0_handl208")]
+    [TestCase("pmh2_handr001", 2, true, true, "pmh2_handr001")]
+    [TestCase("pmh2_handl250", 2, false, false, "pmh2_handl250")]
+    [TestCase("pmo0_handr201", 0, false, true, "pmo0_handr201")]
+    [TestCase("pmo1_handr201", 1, false, true, "pmo1_handr201")]
+    [TestCase("", 2, false, true, "")]
+    public void WideHandSelectionUsesNativeResourceFallbackOnlyWhenTheWidePartIsAbsent(
+        string requested, int phenotype, bool requestedExists, bool normalExists, string expected)
+    {
+        Func<string, bool> available = model => model == requested ? requestedExists : normalExists;
+        Invoke<string>("ResolveAvailableHandModel", requested, phenotype, available).Should().Be(expected);
+    }
+
     [TestCase(101)]
     [TestCase(102)]
     [TestCase(104)]

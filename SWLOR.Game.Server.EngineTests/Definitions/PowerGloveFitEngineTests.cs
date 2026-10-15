@@ -4,6 +4,7 @@ using System.Reflection;
 using System.Threading.Tasks;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.EngineTests.Framework;
+using SWLOR.Game.Server.Feature.AppearanceDefinition;
 using SWLOR.Game.Server.Feature.AppearanceDefinition.ItemAppearance;
 using SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap;
 using SWLOR.NWN.API.NWNX;
@@ -156,6 +157,62 @@ public static class PowerGloveFitEngineTests
         AssertFit(ctx, sword, 1.37f, "Swapping back preserves the other weapon's independent transform");
         PowerGlovePairEngineTests.AssertOwnedItems(ctx, wearer, right, 1);
         ctx.SetResultDetail("One real glove supplies both hands through native equipment events, body/armor/weapon edits, invisible reset, either-hand removal, rejected independent offhand equip, replacement and drop/acquire. Repeated refresh preserves authored appearance IDs and independent transform channels. Client pixels require separate visual verification.");
+    }
+
+    [EngineTest("Wide Power Glove wearers fit the hand resource actually available to the client", Category = "PowerGloveFit", TimeoutSeconds = 60f)]
+    public static async Task WideBodyHandFallbackLifecycle(EngineTestContext ctx)
+    {
+        var wearer = await CreateWearer(ctx);
+        var right = await PowerGlovePairEngineTests.EquipMain(ctx, wearer);
+        var left = await PowerGlovePairEngineTests.WaitForPair(ctx, wearer, right);
+        await ctx.ExecuteInCreatureContextAsync(wearer, () =>
+        {
+            SetBody(wearer, AppearanceType.Cathar, 201, 201);
+            SetPhenoType(PhenoType.Big, wearer);
+            ChangeGlove(wearer, right, 119);
+            ctx.AssertEqual(2, RobeModelRenderer.GetBasePhenotype(wearer), "The wearer retains the wide body");
+            AssertSelectedHand("pmo0_handr201", CreaturePart.RightHand, "r");
+            AssertSelectedHand("pmo0_handl201", CreaturePart.LeftHand, "l");
+            AssertGripPair(ctx, right, left, FitVector.Zero, "pmo0_handr201", "pmo0_handl201", 119,
+                "Absent wide Cathar hands use the actual normal hand fit");
+
+            SetBody(wearer, AppearanceType.Human, 1, 1);
+            SetPhenoType(PhenoType.Big, wearer);
+            ExecuteScript(ScriptName.OnAppearanceEdit, wearer);
+            AssertSelectedHand("pmh2_handr001", CreaturePart.RightHand, "r");
+            AssertSelectedHand("pmh2_handl001", CreaturePart.LeftHand, "l");
+
+            SetCreatureBodyPart(CreaturePart.LeftHand, 250, wearer);
+            ExecuteScript(ScriptName.OnAppearanceEdit, wearer);
+            AssertSelectedHand("pmh0_handl250", CreaturePart.LeftHand, "l");
+            AssertPair(ctx, right, left, 1f, "An unmeasured fallback hand releases both fitted scales");
+            AssertNoGripLocals(ctx, right, "Incomplete wide main hand");
+            AssertNoGripLocals(ctx, left, "Incomplete wide companion");
+
+            var missingPart = Enumerable.Range(3, 253).First(part =>
+                !ModelResource.Exists($"pmh2_handl{part:D3}") && !ModelResource.Exists($"pmh0_handl{part:D3}"));
+            SetCreatureBodyPart(CreaturePart.LeftHand, missingPart, wearer);
+            ExecuteScript(ScriptName.OnAppearanceEdit, wearer);
+            AssertSelectedHand($"pmh2_handl{missingPart:D3}", CreaturePart.LeftHand, "l");
+            AssertPair(ctx, right, left, 1f, "Missing wide and normal hands release both fitted scales");
+            AssertNoGripLocals(ctx, right, "Missing wide main hand");
+            AssertNoGripLocals(ctx, left, "Missing wide companion");
+
+            SetBody(wearer, AppearanceType.Cathar, 201, 201);
+            ExecuteScript(ScriptName.OnAppearanceEdit, wearer);
+            AssertGripPair(ctx, right, left, FitVector.Zero, "pmo0_handr201", "pmo0_handl201", 119,
+                "Returning to the normal body restores both grips without accumulating a translation");
+            PowerGlovePairEngineTests.AssertOwnedItems(ctx, wearer, right, 1);
+        });
+        ctx.SetResultDetail("Native wide-body changes retain available wide hands, resolve missing Cathar hands to the normal resources, release incomplete pairs, and restore normal fits while retaining one owned glove. Client resource-selection images are verified separately.");
+
+        void AssertSelectedHand(string expected, CreaturePart part, string side)
+        {
+            var actual = (string)typeof(PowerGloveFit)
+                .GetMethod("GetHandModel", BindingFlags.Static | BindingFlags.NonPublic)!
+                .Invoke(null, new object[] { wearer, part, side })!;
+            ctx.AssertEqual(expected, actual, "Selected " + side + " hand resource");
+        }
     }
 
     [EngineTest("Corrected Power Glove grips own distinct hand translations through cosmetic and equipment changes", Category = "PowerGloveFit", TimeoutSeconds = 90f)]

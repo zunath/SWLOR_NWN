@@ -130,8 +130,10 @@ public static class PowerGloveFit
         var armorPart = GetIsObjectValid(armor)
             ? GetItemAppearance(armor, ItemAppearanceType.ArmorModel, (int)part)
             : 0;
-        return ResolveHandModel(Get2DAString("appearance", "RACE", appearance), GetGender(creature),
-            RobeModelRenderer.GetBasePhenotype(creature), side, GetCreatureBodyPart(part, creature), armorPart);
+        var phenotype = RobeModelRenderer.GetBasePhenotype(creature);
+        var model = ResolveHandModel(Get2DAString("appearance", "RACE", appearance), GetGender(creature),
+            phenotype, side, GetCreatureBodyPart(part, creature), armorPart);
+        return ResolveAvailableHandModel(model, phenotype, ModelResource.Exists);
     }
 
     private static string ResolveHandModel(string race, Gender gender, int phenotype, string side, int naturalPart, int armorPart)
@@ -141,6 +143,17 @@ public static class PowerGloveFit
         if (string.IsNullOrWhiteSpace(race) || race.Length != 1 || part <= 0)
             return string.Empty;
         return $"p{(gender == Gender.Female ? 'f' : 'm')}{race.ToLowerInvariant()}{phenotype}_hand{side}{part:D3}";
+    }
+
+    private static string ResolveAvailableHandModel(string model, int phenotype, Func<string, bool> modelExists)
+    {
+        if (phenotype != 2 || string.IsNullOrEmpty(model) || model.Length < 5 || model[3] != '2' ||
+            modelExists(model))
+            return model;
+
+        // Native wide bodies use the normal hand resource when their corresponding part is absent.
+        var normalModel = model[..3] + "0" + model[4..];
+        return modelExists(normalModel) ? normalModel : model;
     }
 
     private static void Fit(uint item, string handModel, string rightModel, string leftModel)

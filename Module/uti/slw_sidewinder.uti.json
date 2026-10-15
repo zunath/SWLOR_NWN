@@ -81,7 +81,7 @@
         },
         "CostValue": {
           "type": "word",
-          "value": 15
+          "value": 11
         },
         "Param1": {
           "type": "byte",
@@ -174,7 +174,7 @@
         },
         "CostValue": {
           "type": "word",
-          "value": 3
+          "value": 1
         },
         "Param1": {
           "type": "byte",
@@ -272,6 +272,26 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "slw_sidewinder"
+  },
+  "VarTable": {
+    "type": "list",
+    "value": [
+      {
+        "__struct_id": 0,
+        "Name": {
+          "type": "cexostring",
+          "value": "ITEM_STATS_REVISION"
+        },
+        "Type": {
+          "type": "dword",
+          "value": 1
+        },
+        "Value": {
+          "type": "int",
+          "value": 1
+        }
+      }
+    ]
   },
   "xModelPart1": {
     "type": "word",

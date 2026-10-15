@@ -141,6 +141,29 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             ctx.Assert(!GetIsDead(npc), "The NPC must stay alive throughout.");
         }
 
+        [EngineTest("A temporary HP grant waiting for room lands only up to the cap as it stands when it lands", Category = LimitCategory, TimeoutSeconds = 30f)]
+        public static async Task DeferredGrantRechecksTheCap(EngineTestContext ctx)
+        {
+            var arena = await QuietArena.CreateAsync(ctx);
+            var npc = await SpawnNPCAsync(ctx, arena, "nw_rat001", MaximumNPCHitPoints, immortal: false);
+
+            TemporaryHitPointEffects.ApplyFlat(npc, FirstKey, Headroom, 60f);
+            await ctx.WaitFrameAsync();
+
+            // The replacement waits for the engine to release the old pool, so all of it is deferred.
+            ctx.AssertEqual(Headroom, TemporaryHitPointEffects.ApplyFlat(npc, FirstKey, Headroom, 60f), "the replacement reserves the released room");
+
+            // Maximum HP drops natively while the grant waits, without the limit check a budget change schedules.
+            ObjectPlugin.SetMaxHitPoints(npc, 4000);
+            var cap = TemporaryHitPointEffects.GetMaximumTotal(npc);
+            ctx.Assert(cap < Headroom, $"the cap falls below the reserved amount (cap {cap})");
+
+            await ctx.WaitFrameAsync();
+            await ctx.WaitUntilAsync(() => TemporaryHitPointEffects.GetRemaining(npc, FirstKey) > 0, 2f, "the deferred grant to land");
+            ctx.AssertEqual(cap, TemporaryHitPointEffects.GetRemaining(npc, FirstKey), "the deferred grant lands only up to the lowered cap");
+            ctx.AssertEqual(cap, TemporaryHitPointEffects.GetGrantedAmount(npc, FirstKey), "the granted amount follows what landed");
+        }
+
         [EngineTest("Temporary HP grants waiting on a removed pool share its room without claiming it twice", Category = LimitCategory, TimeoutSeconds = 30f)]
         public static async Task DeferredGrantsReserveReleasedRoom(EngineTestContext ctx)
         {

@@ -296,11 +296,30 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
             if (HasEffectWithTag(target, pendingTag))
             {
                 RemoveEffectByTag(target, pendingTag);
-                var appliedAmount = Math.Min(amount, GetCapacity(target));
+                // The cap can fall while the grant waits, such as when a Vitality buff wears off, so it is
+                // checked again here and the part it no longer allows is dropped instead of waiting.
+                var allowedAmount = CalculateGrantedAmount(
+                    amount, GetMaximumTotal(target), GetRemaining(target) + GetLocalInt(target, DeferredTotalVariable));
+                var appliedAmount = Math.Min(allowedAmount, GetCapacity(target));
                 if (appliedAmount > 0)
                     ApplyPoolEffect(target, EffectTagPrefix + effectKey, appliedAmount, durationSeconds);
 
-                remainingAmount = amount - appliedAmount;
+                remainingAmount = allowedAmount - appliedAmount;
+                if (allowedAmount < amount)
+                {
+                    var kept = GetRemaining(target, effectKey) + remainingAmount;
+                    SetLocalInt(target, GetGrantedVariable(effectKey),
+                        Math.Max(0, GetLocalInt(target, GetGrantedVariable(effectKey)) - (amount - allowedAmount)));
+                    if (CombatRecorder.IsRecording)
+                        CombatRecorder.RecordTemporaryHitPointsTrimmed(target, effectKey, amount - allowedAmount, kept);
+                    NotifyPoolTrimmed(target, effectKey, kept);
+                    if (kept <= 0)
+                    {
+                        Remove(target, effectKey);
+                        return;
+                    }
+                }
+
                 if (remainingAmount > 0 && GetPendingRemoval(target) > 0 && durationSeconds > PendingRemovalDelaySeconds)
                 {
                     ScheduleDeferredGrant(target, effectKey, generation, remainingAmount, durationSeconds - PendingRemovalDelaySeconds);
@@ -430,10 +449,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
 
             var pools = GetKeyedPools(target).OrderBy(pool => pool.DurationSeconds).ToList();
             var kept = CalculateTrimmedAmounts(pools.Select(pool => pool.Amount).ToList(), excess);
-            var trackers = StatusEffect.GetCreatureStatusEffects(target)
-                .GetAllEffects()
-                .OfType<ITemporaryHitPointPoolStatusEffect>()
-                .ToList();
             for (var index = 0; index < pools.Count; index++)
             {
                 var (effectKey, amount, durationSeconds) = pools[index];
@@ -447,9 +462,20 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                 else
                     ApplyFlatInternal(target, effectKey, kept[index], Math.Max(1, durationSeconds), recordGrant: false);
 
-                foreach (var tracker in trackers.Where(tracker => tracker.TemporaryHitPointPoolKey == effectKey))
-                    tracker.OnTemporaryHitPointPoolTrimmed(target, kept[index]);
+                NotifyPoolTrimmed(target, effectKey, kept[index]);
             }
+        }
+
+        // Status effects that track a pool, such as Guardian's Resolve, follow it down when it is trimmed.
+        private static void NotifyPoolTrimmed(uint target, string effectKey, int kept)
+        {
+            var trackers = StatusEffect.GetCreatureStatusEffects(target)
+                .GetAllEffects()
+                .OfType<ITemporaryHitPointPoolStatusEffect>()
+                .Where(tracker => tracker.TemporaryHitPointPoolKey == effectKey)
+                .ToList();
+            foreach (var tracker in trackers)
+                tracker.OnTemporaryHitPointPoolTrimmed(target, kept);
         }
 
         /// <summary>What each pool keeps after <paramref name="excess"/> is taken from the pools in order.</summary>

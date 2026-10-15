@@ -50,6 +50,7 @@ namespace SWLOR.Game.Server.Feature
         private const string ActiveAbilityEffectivePerkLevelName = "ACTIVE_ABILITY_EFFECTIVE_PERK_LEVEL";
         private const string ActiveAbilityWeaponIneffectiveFeedbackSuppressedName = "ACTIVE_ABILITY_WEAPON_INEFFECTIVE_FEEDBACK_SUPPRESSED";
         private const string ActiveAbilityWeaponIneffectiveFeedbackWasHiddenName = "ACTIVE_ABILITY_WEAPON_INEFFECTIVE_FEEDBACK_WAS_HIDDEN";
+        private const string HeldHostileAbilityPressName = "HELD_HOSTILE_ABILITY_PRESS";
         private static readonly Dictionary<uint, ActiveAbilityActivation> _activeAbilityActivations = new();
         private sealed class QueuedWeaponAttackReservation
         {
@@ -386,6 +387,9 @@ namespace SWLOR.Game.Server.Feature
             {
                 if (Ability.CanUseAbility(activator, target, feat, effectivePerkLevel, targetLocation))
                 {
+                    if (HoldForHostileAbilityDelay(activator, target, feat, targetLocation, ability))
+                        return true;
+
                     Combat.ClearQueuedWeaponAbilityActivationBonuses(activator);
                     var executeQueue = ability.ActivationAction == null ||
                                        ability.ActivationAction.Invoke(
@@ -415,6 +419,9 @@ namespace SWLOR.Game.Server.Feature
             {
                 if (Ability.CanUseAbility(activator, target, feat, effectivePerkLevel, targetLocation))
                 {
+                    if (HoldForHostileAbilityDelay(activator, target, feat, targetLocation, ability))
+                        return true;
+
                     if (GetIsObjectValid(target) && target != activator)
                     {
                         if (ability.DisplaysActivationMessage)
@@ -438,6 +445,42 @@ namespace SWLOR.Game.Server.Feature
             if (CombatRecorder.IsRecording)
                 CombatRecorder.RecordAbilityDenied(activator, target, ability, feat, Ability.GetLastActivationDenialReason(), false);
             return false;
+        }
+
+        /// <summary>
+        /// Holds a hostile ability used during the shared hostile ability delay and uses it when the
+        /// delay ends, so a quick second press isn't refused. A later press replaces the held one, which
+        /// is checked again when it is used. A hostile ability used outside the delay starts it.
+        /// </summary>
+        /// <returns>true if the ability is held, false if it can be used now.</returns>
+        private static bool HoldForHostileAbilityDelay(
+            uint activator,
+            uint target,
+            FeatType feat,
+            Location targetLocation,
+            AbilityDetail ability)
+        {
+            if (!ability.IsHostileAbility)
+                return false;
+
+            // Every hostile press replaces a held one, including one whose delay ended a moment
+            // before its timer ran.
+            var press = GetLocalInt(activator, HeldHostileAbilityPressName) + 1;
+            SetLocalInt(activator, HeldHostileAbilityPressName, press);
+
+            var remaining = HostileAbilityDelay.GetRemainingSeconds(activator);
+            if (remaining <= 0f)
+            {
+                HostileAbilityDelay.Start(activator);
+                return false;
+            }
+
+            AssignCommand(activator, () => DelayCommand(remaining, () =>
+            {
+                if (GetLocalInt(activator, HeldHostileAbilityPressName) == press)
+                    TryUseAbility(activator, target, feat, targetLocation);
+            }));
+            return true;
         }
 
         /// <summary>

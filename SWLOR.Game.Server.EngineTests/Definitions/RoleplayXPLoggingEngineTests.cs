@@ -30,6 +30,8 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 {
                     var player = Reload(ctx, owner.Id);
                     player.RoleplayProgress.RPPoints = 49;
+                    // Exercise a saved balance from before penalties were disabled.
+                    player.RoleplayProgress.PendingOOCPenaltySteps = settings.RoleplayXPOOCPenaltyEnabled ? 0 : 3;
                     player.RoleplayProgress.OOCAllowanceDay = OOCAllowance.GetAllowanceDay(DateTime.UtcNow);
                     player.RoleplayProgress.DailyOOCMessageCount = settings.RoleplayXPDailyOOCAllowance;
                     DB.Set(player);
@@ -52,18 +54,20 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                     ctx.AssertEqual(expectedBalance, player.UnallocatedXP, "Skipped payout does not award XP");
 
                     player.RoleplayProgress.RPPoints = 50;
-                    // The second cycle proves that a fully consumed award still closes the period.
+                    // The second cycle covers a full reduction when enabled, and full XP when disabled.
                     if (cycle == 1) player.RoleplayProgress.PendingOOCPenaltySteps = OOCAllowance.MaxPenaltySteps;
+                    var penaltyBalance = player.RoleplayProgress.PendingOOCPenaltySteps;
                     var xpBeforePenalty = 1500 + GetAbilityModifier(AbilityType.Social, owner.Creature) * 375;
                     var awarded = OOCAllowance.ApplyPenalty(xpBeforePenalty, player.RoleplayProgress.PendingOOCPenaltySteps,
-                        settings.RoleplayXPOOCPenaltyPercent);
+                        settings.RoleplayXPOOCPenaltyEnabled ? settings.RoleplayXPOOCPenaltyPercent : 0);
                     expectedBalance += awarded;
                     expectedLifetimeXP += (ulong)awarded;
                     DB.Set(player);
                     await Distribute(ctx, owner.Creature);
                     player = Reload(ctx, owner.Id);
                     ctx.AssertEqual(0UL, player.RoleplayProgress.OOCMessagesSinceLastDistribution, "Completed payout resets the saved count");
-                    ctx.AssertEqual(0, player.RoleplayProgress.PendingOOCPenaltySteps, "Completed payout consumes penalties");
+                    ctx.AssertEqual(settings.RoleplayXPOOCPenaltyEnabled ? 0 : penaltyBalance,
+                        player.RoleplayProgress.PendingOOCPenaltySteps, "Only enabled penalties consume the saved balance");
                     ctx.AssertEqual(0, player.RoleplayProgress.RPPoints, "Completed payout consumes RP points");
                     ctx.AssertEqual(expectedBalance, player.UnallocatedXP, "Saved balance matches actual award");
                     ctx.AssertEqual(expectedLifetimeXP, player.RoleplayProgress.TotalRPExpGained, "Saved lifetime XP matches actual award");

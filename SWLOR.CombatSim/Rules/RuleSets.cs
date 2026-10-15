@@ -1,4 +1,5 @@
 using Newtonsoft.Json;
+using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.PvpCombatService;
 
 namespace SWLOR.CombatSim.Rules
@@ -75,6 +76,7 @@ namespace SWLOR.CombatSim.Rules
             HarmonyCooldownSeconds = 6f,
             RefuseHitPointCostsAtOneHitPoint = true,
             ScaleHitPointSpendRestoreToHitPointsLost = true,
+            HostileAbilityDelaySeconds = HostileAbilityDelay.Seconds,
             Revives = ReviveRule.BlockedInPvpLimitedInPve,
             // The PvP rules come from the game itself, so the two can't drift apart.
             PvpHealingRamp = ToRamp(PvpCombatRules.HealingReductionSteps),

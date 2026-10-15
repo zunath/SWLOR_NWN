@@ -1,6 +1,7 @@
 using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.CombatSim.Rules;
+using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.PvpCombatService;
 
 namespace SWLOR.CombatSim.Tests.Rules
@@ -150,6 +151,7 @@ namespace SWLOR.CombatSim.Tests.Rules
             rules.ConvergenceDurationSeconds.Should().Be(30f);
             rules.HarmonyInstantHealsOnly.Should().BeFalse();
             rules.HarmonyCooldownSeconds.Should().Be(0f);
+            rules.HostileAbilityDelaySeconds.Should().Be(0f);
             rules.FpCostMultiplier.Should().Be(1f / 1.2f);
             rules.StmCostMultiplier.Should().Be(1f);
             rules.Revives.Should().Be(ReviveRule.Unrestricted);
@@ -176,6 +178,7 @@ namespace SWLOR.CombatSim.Tests.Rules
             rules.Revives.Should().Be(ReviveRule.BlockedInPvpLimitedInPve);
             rules.RefuseHitPointCostsAtOneHitPoint.Should().BeTrue();
             rules.ScaleHitPointSpendRestoreToHitPointsLost.Should().BeTrue();
+            rules.HostileAbilityDelaySeconds.Should().Be(HostileAbilityDelay.Seconds);
         }
 
         [Test]

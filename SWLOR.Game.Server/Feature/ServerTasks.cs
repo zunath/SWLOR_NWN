@@ -160,10 +160,16 @@ namespace SWLOR.Game.Server.Feature
 
                     for (var player = GetFirstPC(); GetIsObjectValid(player); player = GetNextPC())
                     {
+                        if (DMPresence.IsControlledByDM(player))
+                        {
+                            DMPresence.SendMessage(player, message);
+                            continue;
+                        }
+
                         var playerId = GetObjectUUID(player);
                         var dbPlayer = DB.Get<Player>(playerId);
 
-                        if(GetIsDM(player) || GetIsDMPossessed(player) || (dbPlayer != null && dbPlayer.Settings.DisplayServerResetReminders))
+                        if (dbPlayer != null && dbPlayer.Settings.DisplayServerResetReminders)
                             SendMessageToPC(player, message);
                     }
 

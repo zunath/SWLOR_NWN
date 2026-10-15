@@ -629,7 +629,7 @@ namespace SWLOR.Game.Server.Service
         {
             for (var player = GetFirstPC(); GetIsObjectValid(player); player = GetNextPC())
             {
-                if (GetIsDM(player) || GetIsDMPossessed(player) || GetArea(player) != _area)
+                if (GetArea(player) != _area || DMPresence.IsControlledByDM(player))
                     continue;
 
                 GetParticipantId(player);

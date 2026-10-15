@@ -104,14 +104,6 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>
-        /// Retrieves the creature a DM is currently possessing, or OBJECT_INVALID if there is none.
-        /// </summary>
-        public static uint GetDMPossessedCreature(uint dm)
-        {
-            return GetLocalObject(dm, DMPossessedCreature);
-        }
-
-        /// <summary>
         /// When a player focuses the chatbar, set a typing indicator on the player; when
         /// unfocused, remove the indicator.
         /// </summary>
@@ -258,9 +250,10 @@ namespace SWLOR.Game.Server.Service
             {
                 allPlayersAndDMs.Add(player);
 
-                if (GetIsDM(player) || GetIsDMPossessed(player))
+                // Chat sent to a possessing DM's avatar never reaches them, so send it to the creature they control.
+                if (DMPresence.IsControlledByDM(player))
                 {
-                    allDMs.Add(player);
+                    allDMs.Add(DMPresence.GetControlledCreature(player));
                 }
             }
 
@@ -365,7 +358,7 @@ namespace SWLOR.Game.Server.Service
 
                 if (channel == ChatChannel.PlayerParty)
                 {
-                    if (GetIsDM(receiver))
+                    if (GetIsDM(receiver) || GetIsDMPossessed(receiver))
                     {
                         // Convenience for DMs - append the party members.
                         finalMessage.Append("{ ");

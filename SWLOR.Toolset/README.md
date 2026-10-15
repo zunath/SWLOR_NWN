@@ -19,7 +19,7 @@ reuses the existing pack pipeline unchanged.
 
 ## Installed toolset
 
-Download the Windows installer or portable ZIP, or the Linux x64 AppImage or portable tar.gz from [Releases](https://github.com/zunath/SWLOR_NWN/releases/latest). The standalone downloads become available after the first toolset release is published. All packages include the .NET runtime and command-line tools; users do not need Git, Docker, Visual Studio, or an SDK.
+Download the Windows installer or portable ZIP, or the Linux x64 AppImage or portable tar.gz from [Releases](https://github.com/zunath/SWLOR_NWN/releases/latest). The standalone downloads become available after the first toolset release is published. All packages include the .NET runtime and command-line tools; users do not need Git, Python, Docker, Visual Studio, or an SDK.
 
 On first run, choose **Create SWLOR workspace** or **Open existing workspace**. A new workspace contains editable module resources, conversation graphs, the category catalog, and matching editor metadata. Its `swlor-workspace.json` records the original revision and file checksums. Assets are downloaded separately into `%LOCALAPPDATA%/SWLOR.Toolset/Assets/<revision>` on Windows or `~/.local/share/SWLOR.Toolset/Assets/<revision>` on Linux (respecting `XDG_DATA_HOME`) and reused. NWN:EE remains the source of optional base-game assets.
 
@@ -36,7 +36,6 @@ Use **File → Workspaces** to select another workspace, then reopen the applica
 | Submodules | `SWLOR_Haks` must be initialised |
 | NWN:EE install | **Optional.** Needed only for base-game tilesets/models; SWLOR hak content works without one |
 | OS | Windows x64 or Linux x64; Ubuntu 24.04 tested, X11 or Wayland with XWayland, OpenGL |
-| Python | 3.11 or newer for setup, packaging, and maintainer imports |
 | Linux source tools | `libpcre3`, `libsqlite3-0`, plus the desktop libraries listed in the root README |
 
 ```bash
@@ -45,7 +44,7 @@ git submodule update --init --recursive
 
 ## Build and run
 
-Use `Setup.cmd` / `StartToolset.cmd` on Windows or `./Setup.sh` / `./StartToolset.sh` on Linux. These prepare host-native packing and compiler utilities. Linux downloads are pinned and verified by SHA-256 before execution.
+Use `Setup.cmd` / `StartToolset.cmd` on Windows or `./Setup.sh` / `./StartToolset.sh` on Linux. These run the shared .NET setup command and prepare host-native packing and compiler utilities. Source setup and launch do not require Python. Linux downloads are pinned and verified by SHA-256 before execution.
 
 For manual builds, always run `dotnet` from the **repository root**:
 
@@ -223,6 +222,8 @@ Third-party package and replacement provenance details are recorded in
 ## Releases and maintainer imports
 
 Application source stays in this repository. The release workflow builds self-contained Windows and Linux applications and packers, tests distribution boundaries on both hosts, and prepares Velopack installer/AppImage updates. Both platforms share one content snapshot and the asset pack for the exact pinned SWLOR_Haks revision, so routine editor releases do not clone or rebuild the large asset repository.
+
+Release packaging and maintainer import commands require Python 3.11 or newer.
 
 Prepare assets once per SWLOR_Haks revision on either platform with enough disk space for source assets, packed HAKs, and compressed download parts (use `python3` on Linux):
 

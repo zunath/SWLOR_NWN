@@ -14,7 +14,7 @@ Download **SWLOR Toolset** from [Releases](https://github.com/zunath/SWLOR_NWN/r
 4. Edit, save, and run **Tools → Run Validation**.
 5. Use **File → Export Contribution** and send the ZIP to your SWLOR maintainer for review.
 
-Git, Visual Studio, Docker, and the .NET SDK are not required for the installed toolset. The first workspace downloads SWLOR assets separately; later workspaces reuse them. Application updates preserve your editable files. **Help → Check for Updates** updates an installed Windows copy or Linux AppImage. Portable archives are updated by downloading a newer archive.
+Git, Python, Visual Studio, Docker, and the .NET SDK are not required for the installed toolset. The first workspace downloads SWLOR assets separately; later workspaces reuse them. Application updates preserve your editable files. **Help → Check for Updates** updates an installed Windows copy or Linux AppImage. Portable archives are updated by downloading a newer archive.
 
 Conversations need a matching server build before they can be tested in game. Exporting a contribution lets the maintainer build and test the reviewed changes together.
 
@@ -22,7 +22,7 @@ The standalone downloads become available after the first toolset release is pub
 
 ## Source developers
 
-Install [Git](https://git-scm.com/downloads), [Python 3.11 or newer](https://www.python.org/downloads/), and a stable [.NET 10 SDK](https://dotnet.microsoft.com/download/dotnet/10.0). Use an IDE that supports that SDK if you want code editing or debugging. Docker Engine with Compose on Linux, or Docker Desktop on Windows, is needed only to run a local server; NWN:EE supplies base-game assets and the game client.
+Install [Git](https://git-scm.com/downloads) and a stable [.NET 10 SDK](https://dotnet.microsoft.com/download/dotnet/10.0). Use an IDE that supports that SDK if you want code editing or debugging. Docker Engine with Compose on Linux, or Docker Desktop on Windows, is needed only to run a local server; NWN:EE supplies base-game assets and the game client.
 
 Fork this repository, then clone your fork:
 
@@ -32,7 +32,7 @@ git clone --recursive https://github.com/<your_username>/SWLOR_NWN.git
 
 Double-click **Setup.cmd** inside the checkout. It initializes the pinned asset submodule and builds the toolset. No IDE setup or startup-project selection is needed.
 
-- **CheckSetup.cmd** checks the source prerequisites without changing files or containers.
+- **CheckSetup.cmd** checks the source prerequisites without changing submodules, native tools, or containers. The small .NET checker builds on its first run.
 - **StartToolset.cmd** builds and opens the editor from source.
 - **Setup.cmd -Profile Server** checks Docker and builds the local server launcher.
 - **StartServer.cmd** packs the module, prepares this checkout's local server files, and runs the server. The first run can take a while. Press Ctrl+C to stop it.
@@ -40,12 +40,12 @@ Double-click **Setup.cmd** inside the checkout. It initializes the pinned asset 
 On Linux, install these source-tool dependencies on Ubuntu 24.04:
 
 ```bash
-sudo apt-get install python3 libpcre3 libsqlite3-0 libfontconfig1 libx11-6 libxrandr2 libxfixes3 libxi6 libxcursor1 libice6 libsm6 libglib2.0-0t64 libgl1 libgl1-mesa-dri
+sudo apt-get install libpcre3 libsqlite3-0 libfontconfig1 libx11-6 libxrandr2 libxfixes3 libxi6 libxcursor1 libice6 libsm6 libglib2.0-0t64 libgl1 libgl1-mesa-dri
 ./Setup.sh
 ./StartToolset.sh
 ```
 
-`./CheckSetup.sh`, `./Setup.sh --profile Server`, and `./StartServer.sh` provide the same checks and server workflow. Setup downloads checksum-verified Linux NWN utilities into the user's cache; it does not require PowerShell. Both platforms also support `python scripts/SetupRepository.py --mode Check --profile Server` (use `python3` on Linux).
+`./CheckSetup.sh`, `./Setup.sh --profile Server`, and `./StartServer.sh` provide the same checks and server workflow. Setup downloads checksum-verified Linux NWN utilities into the user's cache; it does not require PowerShell. Both platforms use the same .NET setup command; Python is not required. For direct invocation from the repository root, use `dotnet run --project scripts/SWLOR.ContributorSetup -p:RunPostBuildEvent=Never -- --mode Check --profile Server`.
 
 Builds always disable automatic deployment. The server shortcut explicitly invokes the existing pack/deploy pipeline. Existing local configuration is preserved.
 

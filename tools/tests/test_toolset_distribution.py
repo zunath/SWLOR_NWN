@@ -13,8 +13,6 @@ from unittest.mock import patch
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 import toolset_common as common
 import ToolsetDistribution as distribution
-sys.path.insert(0, str(Path(__file__).resolve().parents[2] / 'scripts'))
-import SetupRepository as setup
 
 class ToolsetDistributionTests(unittest.TestCase):
     def test_linux_runtime_uses_native_names(self):
@@ -90,7 +88,7 @@ class ToolsetDistributionTests(unittest.TestCase):
             if os.name != 'nt':
                 self.assertEqual((target / 'nwn_erf').stat().st_mode & 0o777, 0o755)
 
-    def test_windows_setup_and_packaging_report_missing_native_dlls(self):
+    def test_windows_packaging_reports_missing_native_dlls(self):
         for missing in ('pcre64.dll', 'libnwnscriptcomp.dll'):
             with self.subTest(missing=missing), tempfile.TemporaryDirectory() as temporary:
                 root = Path(temporary)
@@ -102,10 +100,6 @@ class ToolsetDistributionTests(unittest.TestCase):
                 with patch.object(common, 'ROOT', root), patch.object(common, 'os', SimpleNamespace(name='nt')):
                     with self.assertRaisesRegex(RuntimeError, missing):
                         common.prepare_native_tools()
-                with patch.object(setup, 'ROOT', root), patch.object(setup, 'os', SimpleNamespace(name='nt')), patch.object(setup.shutil, 'which', return_value='tool'), patch.object(setup, 'run', return_value='10.0.402'):
-                    failures = setup.check('Toolset')
-                    self.assertEqual(len(failures), 1)
-                    self.assertIn(missing, failures[0])
 
     def test_revision_pinned_packaging_rejects_local_edits_before_building(self):
         with patch.object(distribution.content, 'git', return_value=' M source'), patch.object(distribution, 'prepare_native_tools') as prepare:

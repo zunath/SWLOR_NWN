@@ -1,0 +1,18 @@
+{
+  "Version": "2.1.2",
+  "LinuxUrl": "https://github.com/niv/neverwinter.nim/releases/download/2.1.2/neverwinter-x86_64-linux-gnu.zip",
+  "LinuxSha256": "f9cc2e50fbe6f750954d11b824434a92b12913cc0a3442e95dcc5eefd4ddc387",
+  "NativeNames": [
+    "nwn_erf",
+    "nwn_gff",
+    "nwn_script_comp",
+    "nwn_tlk"
+  ],
+  "WindowsFiles": [
+    "nwn_erf.exe",
+    "nwn_gff.exe",
+    "nwn_script_comp.exe",
+    "pcre64.dll",
+    "libnwnscriptcomp.dll"
+  ]
+}

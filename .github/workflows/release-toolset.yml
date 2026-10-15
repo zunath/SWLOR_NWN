@@ -62,6 +62,10 @@ jobs:
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           dotnet test SWLOR.Toolset.Tests/SWLOR.Toolset.Tests.csproj -c Release --no-build --filter "FullyQualifiedName~ContributionArchiveTests|FullyQualifiedName~WorkspaceDownloadTests|FullyQualifiedName~GameCodeCatalogTests|FullyQualifiedName~PackServiceTests|FullyQualifiedName~HakSetupValidationTests|FullyQualifiedName~WorkspaceSetupWindowTests|FullyQualifiedName~AppRepositoryRootTests|FullyQualifiedName~ModuleCustomContentServiceTests|FullyQualifiedName~ScriptCompilerTests|FullyQualifiedName~ToolsetStartupViewTests|FullyQualifiedName~ErfArchiveServiceTests|FullyQualifiedName~NativeGffInputTests|FullyQualifiedName~NativeToolPathTests|FullyQualifiedName~LinuxGameDiscoveryTests|FullyQualifiedName~NwnIniProfileTests"
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          dotnet build scripts/SWLOR.ContributorSetup.Tests/SWLOR.ContributorSetup.Tests.csproj -c Release -p:RunPostBuildEvent=Never
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          dotnet test scripts/SWLOR.ContributorSetup.Tests/SWLOR.ContributorSetup.Tests.csproj -c Release --no-build --filter "FullyQualifiedName~SetupOptionsTests|FullyQualifiedName~NativeToolsTests|FullyQualifiedName~SetupApplicationTests|FullyQualifiedName~CommandRunnerTests"
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           python -B -m unittest tools.tests.test_toolset_content tools.tests.test_toolset_distribution -v
           exit $LASTEXITCODE
       - name: Resolve the pinned published asset pack

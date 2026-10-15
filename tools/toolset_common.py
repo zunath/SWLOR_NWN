@@ -13,14 +13,15 @@ import urllib.request
 import zipfile
 
 if sys.version_info < (3, 11):
-    raise SystemExit('Install Python 3.11 or newer to use the source setup and release commands.')
+    raise SystemExit('Install Python 3.11 or newer to use release and maintainer commands.')
 
 ROOT = Path(__file__).resolve().parents[1]
-NATIVE_VERSION = '2.1.2'
-LINUX_URL = 'https://github.com/niv/neverwinter.nim/releases/download/2.1.2/neverwinter-x86_64-linux-gnu.zip'
-LINUX_SHA256 = 'f9cc2e50fbe6f750954d11b824434a92b12913cc0a3442e95dcc5eefd4ddc387'
-NATIVE_NAMES = ('nwn_erf', 'nwn_gff', 'nwn_script_comp', 'nwn_tlk')
-WINDOWS_NATIVE_FILES = tuple(name + '.exe' for name in NATIVE_NAMES[:3]) + ('pcre64.dll', 'libnwnscriptcomp.dll')
+_NATIVE_CONFIG = json.loads((ROOT / 'tools/native-tools.json').read_text(encoding='utf-8'))
+NATIVE_VERSION = _NATIVE_CONFIG['Version']
+LINUX_URL = _NATIVE_CONFIG['LinuxUrl']
+LINUX_SHA256 = _NATIVE_CONFIG['LinuxSha256']
+NATIVE_NAMES = tuple(_NATIVE_CONFIG['NativeNames'])
+WINDOWS_NATIVE_FILES = tuple(_NATIVE_CONFIG['WindowsFiles'])
 
 
 def runtime_id():

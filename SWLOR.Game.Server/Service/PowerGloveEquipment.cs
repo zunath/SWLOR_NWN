@@ -293,7 +293,7 @@ public static class PowerGloveEquipment
             foreach (var scope in TransformScopes)
             foreach (var transform in Enum.GetValues<ObjectVisualTransform>())
             {
-                var value = GetObjectVisualTransform(main, transform, nScope: scope);
+                var value = PowerGloveFit.GetMirroredTransform(main, companion, transform, scope);
                 if (Math.Abs(GetObjectVisualTransform(companion, transform, nScope: scope) - value) > .0001f)
                     SetObjectVisualTransform(companion, transform, value, nScope: scope);
             }

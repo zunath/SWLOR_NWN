@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Threading.Tasks;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.EngineTests.Framework;
@@ -9,6 +10,7 @@ using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Creature;
 using SWLOR.NWN.API.NWScript.Enum.Item;
+using FitVector = System.Numerics.Vector3;
 
 namespace SWLOR.Game.Server.EngineTests.Definitions;
 
@@ -63,7 +65,7 @@ public static class PowerGloveFitEngineTests
             ClearArmorHands(armor);
             SetBody(wearer, AppearanceType.Human, 45, 45);
             ChangeGlove(wearer, right, 121);
-            AssertPair(ctx, right, left, 1.24f, "Relic Claws use the validated hand045 pair clearance");
+            AssertPair(ctx, right, left, 1f, "Relic Claws center on hand045 without enlarging the model");
             SetBody(wearer, AppearanceType.Elf, 208, 208);
             SetGender(wearer, Gender.Female);
             ChangeGlove(wearer, right, 119);
@@ -151,6 +153,120 @@ public static class PowerGloveFitEngineTests
         ctx.SetResultDetail("One real glove supplies both hands through native equipment events, body/armor/weapon edits, invisible reset, either-hand removal, rejected independent offhand equip, replacement and drop/acquire. Repeated refresh preserves authored appearance IDs and independent transform channels. Client pixels require separate visual verification.");
     }
 
+    [EngineTest("Corrected Power Glove grips own distinct hand translations through cosmetic and equipment changes", Category = "PowerGloveFit", TimeoutSeconds = 90f)]
+    public static async Task PerHandGripTranslationLifecycle(EngineTestContext ctx)
+    {
+        var wearer = await CreateWearer(ctx);
+        var right = await PowerGlovePairEngineTests.EquipMain(ctx, wearer);
+        var left = await PowerGlovePairEngineTests.WaitForPair(ctx, wearer, right);
+        var authored = new FitVector(.013f, -.021f, .007f);
+        await ctx.ExecuteInCreatureContextAsync(wearer, () =>
+        {
+            SetPartTranslation(right, authored);
+            SetObjectVisualTransform(right, ObjectVisualTransform.Scale, 1.13f);
+            SetObjectVisualTransform(right, ObjectVisualTransform.RotateZ, 17f);
+            SetObjectVisualTransform(right, ObjectVisualTransform.TranslateX, .024f);
+            SetObjectVisualTransform(right, ObjectVisualTransform.RotateY, 9f, nScope: FitScope);
+            SetBody(wearer, AppearanceType.Cathar, 201, 201);
+            ExecuteScript(ScriptName.OnAppearanceEdit, wearer);
+
+            foreach (var appearance in new[] { 110, 112, 113, 116, 118, 121 })
+            {
+                var label = $"Grip {appearance}";
+                ChangeGlove(wearer, right, appearance);
+                var scale = Expected("pmo0_handr201", "pmo0_handl201", appearance);
+                var rightOffset = GripTranslation("pmo0_handr201", appearance, scale);
+                var leftOffset = GripTranslation("pmo0_handl201", appearance, scale);
+                ctx.Assert(rightOffset.LengthSquared() > 0f && leftOffset.LengthSquared() > 0f,
+                    label + " requires both measured grip corrections");
+                ctx.Assert(FitVector.Distance(rightOffset, leftOffset) > .001f,
+                    label + " has separate right and left corrections");
+                AssertGripPair(ctx, right, left, authored, "pmo0_handr201", "pmo0_handl201", appearance, label);
+                for (var pass = 0; pass < 5; pass++)
+                {
+                    PowerGloveEquipment.RefreshAppearance(wearer);
+                    TintMapService.ApplyCurrentColors(wearer);
+                }
+                AssertGripPair(ctx, right, left, authored, "pmo0_handr201", "pmo0_handl201", appearance,
+                    label + " repeated and nested refresh");
+
+                var edit = new FitVector(.002f, -.001f, .003f);
+                SetPartTranslation(right, ReadPartTranslation(right) + edit);
+                authored += edit;
+                TintMapService.ApplyCurrentColors(wearer);
+                AssertGripPair(ctx, right, left, authored, "pmo0_handr201", "pmo0_handl201", appearance,
+                    label + " preserves an authored edit while fitted");
+
+                foreach (var releasedAppearance in new[] { 106, 101, 119 })
+                {
+                    ChangeGlove(wearer, right, releasedAppearance);
+                    AssertGripPair(ctx, right, left, authored, "pmo0_handr201", "pmo0_handl201", releasedAppearance,
+                        label + " releases only its delta for another appearance");
+                    AssertNoGripLocals(ctx, right, label + " released main");
+                    AssertNoGripLocals(ctx, left, label + " released companion");
+                }
+                ChangeGlove(wearer, right, appearance);
+                SetBody(wearer, AppearanceType.Human, 1, 1);
+                ExecuteScript(ScriptName.OnAppearanceEdit, wearer);
+                AssertGripPair(ctx, right, left, authored, "pmh0_handr001", "pmh0_handl001", appearance,
+                    label + " body edit restores the authored Human grip");
+                AssertNoGripLocals(ctx, right, label + " Human main");
+                AssertNoGripLocals(ctx, left, label + " Human companion");
+                SetBody(wearer, AppearanceType.Cathar, 201, 201);
+                ExecuteScript(ScriptName.OnAppearanceEdit, wearer);
+                AssertGripPair(ctx, right, left, authored, "pmo0_handr201", "pmo0_handl201", appearance,
+                    label + " body edit reapplies each measured hand offset");
+                foreach (var unmeasuredPart in new[] { CreaturePart.RightHand, CreaturePart.LeftHand })
+                {
+                    SetCreatureBodyPart(unmeasuredPart, 250, wearer);
+                    ctx.AssertEqual(250, GetCreatureBodyPart(unmeasuredPart, wearer),
+                        label + " native fixture retains the explicit unmeasured hand ID");
+                    ExecuteScript(ScriptName.OnAppearanceEdit, wearer);
+                    ctx.AssertEqual(250, GetCreatureBodyPart(unmeasuredPart, wearer),
+                        label + " appearance refresh retains the unmeasured hand ID");
+                    AssertPair(ctx, right, left, 1f, label + " either unmeasured hand restores both authored scales");
+                    AssertVector(ctx, ReadPartTranslation(right), authored,
+                        label + " incomplete pair releases the known or unknown main offset");
+                    AssertVector(ctx, ReadPartTranslation(left), authored,
+                        label + " incomplete pair releases the known or unknown companion offset");
+                    AssertNoGripLocals(ctx, right, label + " incomplete main");
+                    AssertNoGripLocals(ctx, left, label + " incomplete companion");
+                    SetCreatureBodyPart(unmeasuredPart, 201, wearer);
+                    ExecuteScript(ScriptName.OnAppearanceEdit, wearer);
+                    AssertGripPair(ctx, right, left, authored, "pmo0_handr201", "pmo0_handl201", appearance,
+                        label + " completing the pair restores each hand correction");
+                }
+                AssertTransform(ctx, right, ObjectVisualTransform.Scale, 1.13f, ObjectVisualTransformDataScopeType.Base,
+                    label + " preserves authored base scale");
+                AssertTransform(ctx, right, ObjectVisualTransform.RotateZ, 17f, ObjectVisualTransformDataScopeType.Base,
+                    label + " preserves authored base rotation");
+                AssertTransform(ctx, right, ObjectVisualTransform.TranslateX, .024f, ObjectVisualTransformDataScopeType.Base,
+                    label + " preserves authored base translation");
+                AssertTransform(ctx, right, ObjectVisualTransform.RotateY, 9f, FitScope,
+                    label + " preserves authored part rotation");
+            }
+        });
+
+        await ctx.ExecuteInCreatureContextAsync(wearer, () => ActionUnequipItem(left));
+        await PowerGlovePairEngineTests.WaitForRemovedPair(ctx, wearer, right, left);
+        AssertVector(ctx, ReadPartTranslation(right), authored, "Removing the cosmetic hand restores authored main translation");
+        AssertNoGripLocals(ctx, right, "Removed real glove");
+        await PowerGlovePairEngineTests.EquipExisting(ctx, wearer, right, InventorySlot.RightHand);
+        left = await PowerGlovePairEngineTests.WaitForPair(ctx, wearer, right);
+        await ctx.ExecuteInCreatureContextAsync(wearer, () =>
+        {
+            AssertGripPair(ctx, right, left, authored, "pmo0_handr201", "pmo0_handl201", 121, "Regenerated pair");
+            // Exercise the exact acquire/loss normalizer after native re-equipping. A late
+            // callback describes an old relocation, while current slots remain authoritative.
+            NormalizeCurrentItem(right);
+            NormalizeCurrentItem(left);
+            AssertGripPair(ctx, right, left, authored, "pmo0_handr201", "pmo0_handl201", 121,
+                "Late relocation normalization preserves the currently equipped pair");
+            PowerGlovePairEngineTests.AssertOwnedItems(ctx, wearer, right, 1);
+        });
+        ctx.SetResultDetail("All six corrected grips retain distinct right/left measured offsets and an authored translation through nested cosmetic refresh, live edits, invisible/legacy/other-model resets, body edits, native offhand removal and re-equip. Explicit native hand250 in either slot restores both authored scales/translations until both measured hands return. Current-slot normalization preserves a re-equipped pair after a late relocation notification. This case verifies native transform state; client pixels require separate verification.");
+    }
+
     [EngineTest("One owned Power Glove retains paired fit through two save reload cycles with nested inventory", Category = "PowerGloveFit", TimeoutSeconds = 90f)]
     public static async Task SaveReloadDoesNotCompoundOrChangeOwnership(EngineTestContext ctx)
     {
@@ -159,10 +275,14 @@ public static class PowerGloveFitEngineTests
         var left = await PowerGlovePairEngineTests.WaitForPair(ctx, wearer, right);
         var bag = await CreateItem(ctx, wearer, "bag_sm", wearer);
         var stored = await CreateItem(ctx, wearer, "t_pglove", bag);
+        var authored = new FitVector(.013f, -.021f, .007f);
+        var storedAuthored = new FitVector(-.017f, .009f, .019f);
         await ctx.ExecuteInCreatureContextAsync(wearer, () =>
         {
             SetLocalString(right, RoleVariable, "right");
             SetLocalString(stored, RoleVariable, "stored");
+            SetPartTranslation(right, authored);
+            SetPartTranslation(stored, storedAuthored);
             SetBody(wearer, AppearanceType.Cathar, 201, 201);
             ExecuteScript(ScriptName.OnAppearanceEdit, wearer);
         });
@@ -173,7 +293,7 @@ public static class PowerGloveFitEngineTests
             var items = GloveInventory(wearer);
             right = items.Single(item => GetLocalString(item, RoleVariable) == "right");
             stored = items.Single(item => GetLocalString(item, RoleVariable) == "stored");
-            var appearance = cycle == 0 ? 104 : 105;
+            var appearance = cycle == 0 ? 110 : 121;
             var data = string.Empty;
             var ownerIdentity = string.Empty;
             var bagIdentity = string.Empty;
@@ -183,6 +303,8 @@ public static class PowerGloveFitEngineTests
             await ctx.ExecuteInCreatureContextAsync(wearer, () => ActionUnequipItem(cycle == 0 ? right : left));
             await PowerGlovePairEngineTests.WaitForRemovedPair(ctx, wearer, right, left);
             AssertFit(ctx, right, 1f, label + " normalizes the removed real glove");
+            AssertVector(ctx, ReadPartTranslation(right), authored, label + " removal restores authored translation");
+            AssertNoGripLocals(ctx, right, label + " removed real glove");
             await PowerGlovePairEngineTests.EquipExisting(ctx, wearer, right, InventorySlot.RightHand);
             left = await PowerGlovePairEngineTests.WaitForPair(ctx, wearer, right);
             var previousItems = InventoryItems(wearer);
@@ -193,9 +315,13 @@ public static class PowerGloveFitEngineTests
                 AddItemProperty(DurationType.Permanent, ItemPropertyCustom(ItemPropertyType.Accuracy, -1, 7 + cycle), right);
                 ChangeGlove(wearer, right, appearance);
                 AssertPair(ctx, right, left, Expected("pmo0_handr201", "pmo0_handl201", appearance), label + " fitted equipment before saving");
+                AssertGripPair(ctx, right, left, authored, "pmo0_handr201", "pmo0_handl201", appearance,
+                    label + " saves nonzero, separately owned grip deltas");
                 ctx.Assert(ReadAppearance(right).SequenceEqual(ReadAppearance(left)), label + " mirrors the real glove's appearance");
-                // Model a stale native transform in a saved bag, without introducing a persistent marker.
+                // A bag can contain a previously fitted item in an older save. Persist the
+                // same delta metadata and native transform that fit owns, then normalize it on reload.
                 SetObjectVisualTransform(stored, ObjectVisualTransform.Scale, 1.45f, nScope: FitScope);
+                ApplyTranslation(stored, new FitVector(.005f, -.011f, .017f));
                 saved = items.ToDictionary(item => GetLocalString(item, RoleVariable),
                     item => (GetObjectUUID(item), GetItemStackSize(item), ReadAppearance(item), PowerGlovePairEngineTests.Properties(item)));
                 ctx.AssertEqual(2, saved.Count, label + " contains exactly the equipped real glove and the nested spare");
@@ -257,20 +383,25 @@ public static class PowerGloveFitEngineTests
                         ctx.AssertEqual(bagIdentity, GetObjectUUID(ownerBag), label + " preserves the same bag identity");
                         ctx.AssertEqual(wearer, GetItemPossessor(ownerBag), label + " creature still owns that bag");
                         AssertFit(ctx, item, 1f, label + " normalization removes stale fit from nested inventory");
+                        AssertVector(ctx, ReadPartTranslation(item), storedAuthored,
+                            label + " nested normalization removes only the saved grip delta");
+                        AssertNoGripLocals(ctx, item, label + " normalized nested glove");
                     }
                     else
                     {
                         ctx.AssertEqual(wearer, GetItemPossessor(item), label + " creature owns the equipped glove");
                         ctx.AssertEqual(item, GetItemInSlot(InventorySlot.RightHand, wearer), label + " retains the original main-hand assignment");
                         AssertPair(ctx, item, left, Expected("pmo0_handr201", "pmo0_handl201", appearance), label + " recomputes both fits without compounding");
+                        AssertGripPair(ctx, item, left, authored, "pmo0_handr201", "pmo0_handl201", appearance,
+                            label + " restores authored translation and separate hand deltas without compounding");
                         ctx.Assert(ReadAppearance(item).SequenceEqual(ReadAppearance(left)), label + " restores matching visual choices");
                         ctx.Assert(!GetIsItemPropertyValid(GetFirstItemProperty(left)), label + " never copies upgrades to the cosmetic hand");
                     }
                 }
-                ctx.Log(label + " verified the two real glove identities, ownership, quantities, upgrades, appearances and one paired cosmetic fit");
+                ctx.Log(label + " verified two real glove identities, ownership, quantities, upgrades, appearances, authored translations and separate paired grip deltas");
             });
         }
-        ctx.SetResultDetail("Two native owner/item export-import cycles follow either-hand removal, re-equip, upgrades and cosmetic edits. One equipped real glove and one nested spare retain IDs, ownership, slots, upgrades, model/color fields, counts and quantities. Each reload normalizes stored scale and supplies exactly one cosmetic companion with matching absolute fit and no item properties.");
+        ctx.SetResultDetail("Two native owner/item export-import cycles follow either-hand removal, re-equip, upgrades and cosmetic edits with nonzero grip offsets. One equipped real glove and one nested spare retain IDs, ownership, slots, upgrades, model/color fields, authored translations, counts and quantities. Each reload removes stale bag deltas and restores exactly one companion with separate measured hand translation, shared scale and no item properties.");
     }
 
     private static async Task<uint> CreateWearer(EngineTestContext ctx)
@@ -329,6 +460,62 @@ public static class PowerGloveFitEngineTests
     private static float Expected(string right, string left, int appearance) =>
         Math.Max(PowerGloveHandFitCatalog.GetScale(right, appearance), PowerGloveHandFitCatalog.GetScale(left, appearance));
 
+    private static FitVector GripTranslation(string hand, int appearance, float scale) =>
+        (FitVector)typeof(PowerGloveFit).Assembly.GetType(
+                "SWLOR.Game.Server.Feature.AppearanceDefinition.ItemAppearance.PowerGloveGripFits")!
+            .GetMethod("GetTranslation", BindingFlags.Static | BindingFlags.NonPublic)!
+            .Invoke(null, new object[] { hand, appearance, scale })!;
+
+    private static void ApplyTranslation(uint item, FitVector translation) =>
+        typeof(PowerGloveFit).GetMethod("ApplyTranslation", BindingFlags.Static | BindingFlags.NonPublic)!
+            .Invoke(null, new object[] { item, translation });
+
+    private static void NormalizeCurrentItem(uint item) =>
+        typeof(PowerGloveFit).GetMethod("NormalizeCurrentItem", BindingFlags.Static | BindingFlags.NonPublic)!
+            .Invoke(null, new object[] { item });
+
+    private static void AssertGripPair(EngineTestContext ctx, uint right, uint left, FitVector authored,
+        string rightModel, string leftModel, int appearance, string label)
+    {
+        var scale = Expected(rightModel, leftModel, appearance);
+        AssertPair(ctx, right, left, scale, label);
+        AssertGrip(right, GripTranslation(rightModel, appearance, scale), "right");
+        AssertGrip(left, GripTranslation(leftModel, appearance, scale), "left");
+
+        void AssertGrip(uint item, FitVector offset, string side)
+        {
+            AssertVector(ctx, ReadPartTranslation(item), authored + offset, label + " " + side + " translation");
+            AssertVector(ctx, new FitVector(GetLocalFloat(item, "POWER_GLOVE_FIT_X"),
+                GetLocalFloat(item, "POWER_GLOVE_FIT_Y"), GetLocalFloat(item, "POWER_GLOVE_FIT_Z")),
+                offset, label + " " + side + " persisted owned delta");
+        }
+    }
+
+    private static FitVector ReadPartTranslation(uint item) => new(
+        GetObjectVisualTransform(item, ObjectVisualTransform.TranslateX, nScope: FitScope),
+        GetObjectVisualTransform(item, ObjectVisualTransform.TranslateY, nScope: FitScope),
+        GetObjectVisualTransform(item, ObjectVisualTransform.TranslateZ, nScope: FitScope));
+
+    private static void SetPartTranslation(uint item, FitVector translation)
+    {
+        SetObjectVisualTransform(item, ObjectVisualTransform.TranslateX, translation.X, nScope: FitScope);
+        SetObjectVisualTransform(item, ObjectVisualTransform.TranslateY, translation.Y, nScope: FitScope);
+        SetObjectVisualTransform(item, ObjectVisualTransform.TranslateZ, translation.Z, nScope: FitScope);
+    }
+
+    private static void AssertVector(EngineTestContext ctx, FitVector actual, FitVector expected, string label) =>
+        ctx.Assert(FitVector.Distance(actual, expected) < .00001f, $"{label}: expected {expected}, actual {actual}");
+
+    private static void AssertNoGripLocals(EngineTestContext ctx, uint item, string label)
+    {
+        for (var index = 0; index < ObjectPlugin.GetLocalVariableCount(item); index++)
+        {
+            var key = ObjectPlugin.GetLocalVariable(item, index).Key;
+            ctx.Assert(key != "POWER_GLOVE_FIT_X" && key != "POWER_GLOVE_FIT_Y" && key != "POWER_GLOVE_FIT_Z",
+                label + " removes owned grip delta local " + key);
+        }
+    }
+
     private static void AssertPair(EngineTestContext ctx, uint right, uint left, float expected, string label)
     {
         AssertFit(ctx, right, expected, label + " right");
@@ -344,7 +531,12 @@ public static class PowerGloveFitEngineTests
         AssertTransform(ctx, item, ObjectVisualTransform.RotateZ, 17f, ObjectVisualTransformDataScopeType.Base, "Base rotation remains independent");
         AssertTransform(ctx, item, ObjectVisualTransform.TranslateX, .024f, ObjectVisualTransformDataScopeType.Base, "Base translation remains independent");
         AssertTransform(ctx, item, ObjectVisualTransform.RotateY, 9f, FitScope, "Middle rotation remains independent");
-        AssertTransform(ctx, item, ObjectVisualTransform.TranslateZ, .007f, FitScope, "Middle translation remains independent");
+        AssertTransform(ctx, item, ObjectVisualTransform.TranslateX, GetLocalFloat(item, "POWER_GLOVE_FIT_X"), FitScope,
+            "Middle authored X translation remains independent");
+        AssertTransform(ctx, item, ObjectVisualTransform.TranslateY, GetLocalFloat(item, "POWER_GLOVE_FIT_Y"), FitScope,
+            "Middle authored Y translation remains independent");
+        AssertTransform(ctx, item, ObjectVisualTransform.TranslateZ, .007f + GetLocalFloat(item, "POWER_GLOVE_FIT_Z"), FitScope,
+            "Middle authored Z translation remains independent");
     }
 
     private static void AssertTransform(EngineTestContext ctx, uint item, ObjectVisualTransform transform, float expected,

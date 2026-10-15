@@ -3,6 +3,7 @@ using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Game.Server.Feature.AppearanceDefinition.ItemAppearance;
 using SWLOR.NWN.API.NWScript.Enum;
+using FitVector = System.Numerics.Vector3;
 
 namespace SWLOR.Game.Server.Tests.Feature;
 
@@ -70,18 +71,18 @@ public class PowerGloveFitTests
     [TestCase(107, 1.16f, 1.00f, 1.48f)]
     [TestCase(108, 1.22f, 1.24f, 1.86f)]
     [TestCase(109, 1.14f, 1.14f, 1.82f)]
-    [TestCase(110, 1.24f, 1.24f, 1.92f)]
+    [TestCase(110, 1.00f, 1.00f, 1.00f)]
     [TestCase(111, 1.24f, 1.26f, 1.84f)]
-    [TestCase(112, 1.16f, 1.08f, 1.80f)]
-    [TestCase(113, 1.20f, 1.20f, 1.82f)]
+    [TestCase(112, 1.00f, 1.00f, 1.00f)]
+    [TestCase(113, 1.00f, 1.00f, 1.00f)]
     [TestCase(114, 1.22f, 1.20f, 1.76f)]
     [TestCase(115, 1.40f, 1.40f, 1.92f)]
-    [TestCase(116, 1.00f, 1.48f, 1.96f)]
+    [TestCase(116, 1.00f, 1.00f, 1.00f)]
     [TestCase(117, 1.22f, 1.26f, 1.68f)]
-    [TestCase(118, 1.08f, 1.16f, 1.66f)]
+    [TestCase(118, 1.00f, 1.00f, 1.00f)]
     [TestCase(119, 1.08f, 1.10f, 1.92f)]
     [TestCase(120, 1.10f, 1.08f, 1.64f)]
-    [TestCase(121, 1.00f, 1.82f, 1.82f)]
+    [TestCase(121, 1.00f, 1.00f, 1.00f)]
     public void OpenFramesUseTheirOwnMeasuredClearanceOnBothHands(
         int appearance, float right, float left, float fallback)
     {
@@ -100,12 +101,135 @@ public class PowerGloveFitTests
     }
 
     [TestCase(119, "pfe0_handr208", "pfe0_handl208", 1.30f)]
-    [TestCase(121, "pmh0_handr045", "pmh0_handl045", 1.24f)]
+    [TestCase(121, "pmh0_handr045", "pmh0_handl045", 1.00f)]
     public void PairClearanceIncludesTheValidatedSharedScaleCorrection(
         int appearance, string right, string left, float expected)
     {
         Invoke<float>("ResolveScale", right, left, appearance).Should().Be(expected);
         Invoke<float>("ResolveScale", left, right, appearance).Should().Be(expected);
+    }
+
+    [Test]
+    public void RepeatedGripRebasingPreservesAuthoredEditsAndReleasesItsOwnDelta()
+    {
+        var authored = new FitVector(.013f, -.021f, .007f);
+        var current = authored;
+        var previous = FitVector.Zero;
+        for (var pass = 0; pass < 100; pass++)
+        {
+            var next = pass % 2 == 0
+                ? new FitVector(-.017f, .009f, -.039f)
+                : new FitVector(.023f, -.014f, -.051f);
+            current = Invoke<FitVector>("RebaseTranslation", current, previous, next);
+            AssertVector(current, authored + next);
+            previous = next;
+            if (pass != 49) continue;
+            var edit = new FitVector(.004f, -.003f, .002f);
+            authored += edit;
+            current += edit;
+        }
+        AssertVector(Invoke<FitVector>("RebaseTranslation", current, previous, FitVector.Zero), authored);
+    }
+
+    [TestCase(110, 1.16f, -.015f)]
+    [TestCase(112, 1.20f, -.025f)]
+    [TestCase(113, 1.36f, -.015f)]
+    [TestCase(116, 1.36f, -.025f)]
+    [TestCase(118, 1.00f, -.015f)]
+    [TestCase(121, 1.48f, -.025f)]
+    public void CorrectedGripsHaveIndependentHandOffsetsAndCompensateForTheSharedScale(
+        int appearance, float catharScale, float authoredDepth)
+    {
+        foreach (var side in new[] { "r", "l" })
+        {
+            AssertVector(GripTranslation($"pmh0_hand{side}001", appearance, 1f), FitVector.Zero);
+            AssertVector(GripTranslation($"pmh0_hand{side}001", appearance, 1.5f),
+                -.5f * new FitVector(0f, .035f, authoredDepth));
+            AssertVector(GripTranslation($"pmo0_hand{side}201".ToUpperInvariant(), appearance, catharScale),
+                GripTranslation($"pmo0_hand{side}201", appearance, catharScale));
+        }
+        Invoke<float>("ResolveScale", "pmo0_handr201", "pmo0_handl201", appearance).Should().Be(catharScale);
+        var right = GripTranslation("pmo0_handr201", appearance, catharScale);
+        var left = GripTranslation("pmo0_handl201", appearance, catharScale);
+        right.LengthSquared().Should().BeGreaterThan(0f);
+        left.LengthSquared().Should().BeGreaterThan(0f);
+        FitVector.Distance(right, left).Should().BeGreaterThan(.001f);
+        AssertVector(GripTranslation("unmeasured", appearance, 1f), FitVector.Zero);
+        AssertVector(GripTranslation(null, appearance, 1f), FitVector.Zero);
+    }
+
+    [TestCase(101)]
+    [TestCase(102)]
+    [TestCase(103)]
+    [TestCase(104)]
+    [TestCase(105)]
+    [TestCase(106)]
+    [TestCase(107)]
+    [TestCase(108)]
+    [TestCase(109)]
+    [TestCase(111)]
+    [TestCase(114)]
+    [TestCase(115)]
+    [TestCase(117)]
+    [TestCase(119)]
+    [TestCase(120)]
+    public void OtherAppearancesNeverAcquireGripTranslation(int appearance)
+    {
+        AssertVector(GripTranslation("pmo0_handr201", appearance, 1.92f), FitVector.Zero);
+        AssertVector(GripTranslation("pmo0_handl201", appearance, 1.92f), FitVector.Zero);
+    }
+
+    [TestCase(110)]
+    [TestCase(112)]
+    [TestCase(113)]
+    [TestCase(116)]
+    [TestCase(118)]
+    [TestCase(121)]
+    public void EitherUnmeasuredHandReleasesTheEntireCorrectedPair(int appearance)
+    {
+        Invoke<bool>("CanFitPair", "pmo0_handr201", "pmo0_handl201", appearance).Should().BeTrue();
+        foreach (var unknown in new[] { "pmo0_handl250", "unknown", "", null })
+        {
+            Invoke<bool>("CanFitPair", "pmo0_handr201", unknown, appearance).Should().BeFalse();
+            Invoke<bool>("CanFitPair", unknown, "pmo0_handl201", appearance).Should().BeFalse();
+            Invoke<float>("ResolveScale", "pmo0_handr201", unknown, appearance).Should().Be(1f);
+            Invoke<float>("ResolveScale", unknown, "pmo0_handl201", appearance).Should().Be(1f);
+        }
+    }
+
+    [TestCase(101)]
+    [TestCase(102)]
+    [TestCase(104)]
+    [TestCase(105)]
+    [TestCase(107)]
+    [TestCase(108)]
+    [TestCase(109)]
+    [TestCase(111)]
+    [TestCase(114)]
+    [TestCase(115)]
+    [TestCase(117)]
+    [TestCase(119)]
+    [TestCase(120)]
+    public void UnmeasuredHandDoesNotChangeOtherAppearancesExistingScalePolicy(int appearance)
+    {
+        Invoke<bool>("CanFitPair", "pmo0_handr201", "unknown", appearance).Should().BeTrue();
+        var expected = Math.Max(PowerGloveHandFitCatalog.GetScale("pmo0_handr201", appearance),
+            PowerGloveHandFitCatalog.GetScale("unknown", appearance));
+        Invoke<float>("ResolveScale", "pmo0_handr201", "unknown", appearance).Should().Be(expected);
+        Invoke<float>("ResolveScale", "unknown", "pmo0_handr201", appearance).Should().Be(expected);
+    }
+
+    private static FitVector GripTranslation(string hand, int appearance, float scale) =>
+        (FitVector)typeof(PowerGloveFit).Assembly.GetType(
+                "SWLOR.Game.Server.Feature.AppearanceDefinition.ItemAppearance.PowerGloveGripFits")!
+            .GetMethod("GetTranslation", BindingFlags.Static | BindingFlags.NonPublic)!
+            .Invoke(null, new object[] { hand, appearance, scale })!;
+
+    private static void AssertVector(FitVector actual, FitVector expected)
+    {
+        actual.X.Should().BeApproximately(expected.X, .000001f);
+        actual.Y.Should().BeApproximately(expected.Y, .000001f);
+        actual.Z.Should().BeApproximately(expected.Z, .000001f);
     }
 
     private static T Invoke<T>(string method, params object[] arguments) =>

@@ -5,6 +5,7 @@ using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Creature;
 using SWLOR.NWN.API.NWScript.Enum.Item;
+using FitVector = System.Numerics.Vector3;
 
 namespace SWLOR.Game.Server.Feature.AppearanceDefinition.ItemAppearance;
 
@@ -13,6 +14,9 @@ public static class PowerGloveFit
 {
     private const ObjectVisualTransformDataScopeType FitScope =
         (ObjectVisualTransformDataScopeType)ObjectVisualTransformDataScopeItemType.ItemPart2;
+    private const string AppliedTranslationXVariable = "POWER_GLOVE_FIT_X";
+    private const string AppliedTranslationYVariable = "POWER_GLOVE_FIT_Y";
+    private const string AppliedTranslationZVariable = "POWER_GLOVE_FIT_Z";
 
     [NWNEventHandler(ScriptName.OnModuleEnter)]
     public static void OnModuleEnter() => RefreshInventory(GetEnteringObject());
@@ -25,17 +29,19 @@ public static class PowerGloveFit
     [NWNEventHandler(ScriptName.OnModuleAcquire)]
     public static void OnAcquire()
     {
-        var owner = GetModuleItemAcquiredBy();
-        var creature = GetObjectType(owner) == ObjectType.Creature;
-        NormalizeItemAndContents(GetModuleItemAcquired(),
-            creature ? GetItemInSlot(InventorySlot.RightHand, owner) : OBJECT_INVALID,
-            creature ? GetItemInSlot(InventorySlot.LeftHand, owner) : OBJECT_INVALID);
-        if (creature)
+        var item = GetModuleItemAcquired();
+        var owner = GetItemPossessor(item);
+        NormalizeCurrentItem(item);
+        if (GetObjectType(owner) == ObjectType.Creature)
             Apply(owner);
     }
 
     [NWNEventHandler(ScriptName.OnModuleUnacquire)]
-    public static void OnUnacquire() => NormalizeItemAndContents(GetModuleItemLost(), OBJECT_INVALID, OBJECT_INVALID);
+    public static void OnUnacquire()
+    {
+        // A delayed relocation callback must not strip a fit already applied after re-equipping.
+        NormalizeCurrentItem(GetModuleItemLost());
+    }
 
     [NWNEventHandler(ScriptName.OnSWLORItemEquipValidBefore)]
     public static void OnEquipBefore()
@@ -75,6 +81,15 @@ public static class PowerGloveFit
         Apply(creature);
     }
 
+    private static void NormalizeCurrentItem(uint item)
+    {
+        var owner = GetItemPossessor(item);
+        var creature = GetObjectType(owner) == ObjectType.Creature;
+        NormalizeItemAndContents(item,
+            creature ? GetItemInSlot(InventorySlot.RightHand, owner) : OBJECT_INVALID,
+            creature ? GetItemInSlot(InventorySlot.LeftHand, owner) : OBJECT_INVALID);
+    }
+
     private static void NormalizeItemAndContents(uint item, uint right, uint left)
     {
         if (!GetIsObjectValid(item))
@@ -102,8 +117,8 @@ public static class PowerGloveFit
 
         var rightModel = GetHandModel(creature, CreaturePart.RightHand, "r");
         var leftModel = GetHandModel(creature, CreaturePart.LeftHand, "l");
-        Fit(right, rightModel, leftModel);
-        Fit(left, rightModel, leftModel);
+        Fit(right, rightModel, rightModel, leftModel);
+        Fit(left, leftModel, rightModel, leftModel);
     }
 
     private static string GetHandModel(uint creature, CreaturePart part, string side)
@@ -127,18 +142,28 @@ public static class PowerGloveFit
         return $"p{(gender == Gender.Female ? 'f' : 'm')}{race.ToLowerInvariant()}{phenotype}_hand{side}{part:D3}";
     }
 
-    private static void Fit(uint item, string rightModel, string leftModel)
+    private static void Fit(uint item, string handModel, string rightModel, string leftModel)
     {
         if (!IsPowerGlove(item))
             return;
         var appearance = GetItemAppearance(item, ItemAppearanceType.WeaponColor, (int)AppearanceWeapon.Middle) * 100 +
                          GetItemAppearance(item, ItemAppearanceType.WeaponModel, (int)AppearanceWeapon.Middle);
-        SetScale(item, ResolveScale(rightModel, leftModel, appearance));
+        var scale = ResolveScale(rightModel, leftModel, appearance);
+        SetScale(item, scale);
+        ApplyTranslation(item, CanFitPair(rightModel, leftModel, appearance)
+            ? PowerGloveGripFits.GetTranslation(handModel, appearance, scale)
+            : FitVector.Zero);
     }
 
     private static float ResolveScale(string rightModel, string leftModel, int appearance) =>
-        Math.Max(PowerGloveHandFitCatalog.GetScale(rightModel, appearance),
-            PowerGloveHandFitCatalog.GetScale(leftModel, appearance));
+        CanFitPair(rightModel, leftModel, appearance)
+            ? Math.Max(PowerGloveHandFitCatalog.GetScale(rightModel, appearance),
+                PowerGloveHandFitCatalog.GetScale(leftModel, appearance))
+            : 1f;
+
+    private static bool CanFitPair(string rightModel, string leftModel, int appearance) =>
+        !PowerGloveGripFits.IsCorrected(appearance) ||
+        PowerGloveGripFits.HasTarget(rightModel, appearance) && PowerGloveGripFits.HasTarget(leftModel, appearance);
 
     private static bool IsPowerGlove(uint item) => GetIsObjectValid(item) &&
         GetObjectType(item) == ObjectType.Item && (GetBaseItemType(item) == BaseItem.PowerGlove ||
@@ -148,13 +173,58 @@ public static class PowerGloveFit
     private static void Release(uint item)
     {
         if (IsPowerGlove(item))
+        {
+            ApplyTranslation(item, FitVector.Zero);
             SetScale(item, 1f);
+        }
+    }
+
+    /// <summary>Mirrors authored transforms while retaining each hand's separately owned fit offset.</summary>
+    internal static float GetMirroredTransform(uint main, uint companion, ObjectVisualTransform transform,
+        ObjectVisualTransformDataScopeType scope)
+    {
+        var value = GetObjectVisualTransform(main, transform, nScope: scope);
+        var variable = scope == FitScope ? transform switch
+        {
+            ObjectVisualTransform.TranslateX => AppliedTranslationXVariable,
+            ObjectVisualTransform.TranslateY => AppliedTranslationYVariable,
+            ObjectVisualTransform.TranslateZ => AppliedTranslationZVariable,
+            _ => null
+        } : null;
+        return variable == null ? value : value - GetLocalFloat(main, variable) + GetLocalFloat(companion, variable);
+    }
+
+    private static FitVector RebaseTranslation(FitVector current, FitVector previousOffset, FitVector nextOffset) =>
+        current - previousOffset + nextOffset;
+
+    private static void ApplyTranslation(uint item, FitVector offset)
+    {
+        var current = new FitVector(
+            GetObjectVisualTransform(item, ObjectVisualTransform.TranslateX, nScope: FitScope),
+            GetObjectVisualTransform(item, ObjectVisualTransform.TranslateY, nScope: FitScope),
+            GetObjectVisualTransform(item, ObjectVisualTransform.TranslateZ, nScope: FitScope));
+        var previous = new FitVector(GetLocalFloat(item, AppliedTranslationXVariable),
+            GetLocalFloat(item, AppliedTranslationYVariable), GetLocalFloat(item, AppliedTranslationZVariable));
+        var next = RebaseTranslation(current, previous, offset);
+        SetTranslationAxis(item, ObjectVisualTransform.TranslateX, next.X, AppliedTranslationXVariable, offset.X);
+        SetTranslationAxis(item, ObjectVisualTransform.TranslateY, next.Y, AppliedTranslationYVariable, offset.Y);
+        SetTranslationAxis(item, ObjectVisualTransform.TranslateZ, next.Z, AppliedTranslationZVariable, offset.Z);
+    }
+
+    private static void SetTranslationAxis(uint item, ObjectVisualTransform transform, float value,
+        string variable, float appliedOffset)
+    {
+        if (Math.Abs(GetObjectVisualTransform(item, transform, nScope: FitScope) - value) > .000001f)
+            SetObjectVisualTransform(item, transform, value, nScope: FitScope);
+        // Native serialization retains both this delta and the fitted transform.
+        if (appliedOffset == 0f) DeleteLocalFloat(item, variable);
+        else SetLocalFloat(item, variable, appliedOffset);
     }
 
     private static void SetScale(uint item, float scale)
     {
         // Absolute, part-scoped values cannot compound after export/import or repeated refreshes.
-        // The base scale and all rotation/translation channels remain independently owned.
+        // Base transforms and every rotation remain independently owned.
         if (Math.Abs(GetObjectVisualTransform(item, ObjectVisualTransform.Scale, nScope: FitScope) - scale) > 0.0001f)
             SetObjectVisualTransform(item, ObjectVisualTransform.Scale, scale, nScope: FitScope);
     }

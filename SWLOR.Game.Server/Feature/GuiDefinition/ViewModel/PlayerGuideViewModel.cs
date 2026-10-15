@@ -677,7 +677,33 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                         new QuestionAnswer("Why can't I rest?", "You may be in combat, too close to enemies, near a party member in combat, or outside a dungeon safe-rest location."),
                         new QuestionAnswer("What is subdual?", "A PvP defeat setting that replaces normal death with 60 seconds knocked down and a 5 minute accuracy, evasion, and movement penalty.")
                     },
-                    new[] { "XP Debt", "Skills", "Attributes", "Combat Basics", "Useful Windows" }),
+                    new[] { "XP Debt", "Skills", "Attributes", "Combat Basics", "PvP Combat", "Useful Windows" }),
+
+                new(
+                    "PvP Combat",
+                    "Combat",
+                    "How long fights between players wind down: the PvP combat timer, the healing reduction, the damage increase, and shorter hard crowd control.",
+                    "Long PvP fights",
+                    new[]
+                    {
+                        new ArticleBlock("PvP Combat Timer",
+                            "You enter PvP combat when you deal damage to, or take damage from, another player or a player's pet. Players who are only nearby don't count. The timer starts at the first hit and only resets after 30 seconds without PvP damage dealt or taken; switching targets, hiding briefly, or a fresh healer arriving does not reset it. A status icon counts down to the next step, and each step prints a line in your combat log."),
+                        new ArticleBlock("Healing Reduction",
+                            "From 2:00 of PvP combat, healing you receive drops by 10%, then 20% at 2:30, 30% at 3:00, 45% at 3:30, and 60% from 4:00 on, where it stays. It covers every way HP comes back: heals, heals over time, lifesteal, consumables, resting, and natural regeneration. FP and STM recovery are not affected, and shields (temporary HP) are not reduced."),
+                        new ArticleBlock("Damage Increase",
+                            "From 3:00 of PvP combat, damage players and their pets deal to you rises by 20%, then 40% at 3:30, 60% at 4:00, 80% at 4:30, and doubles (+100%) from 5:00 on. It follows how long you have been in PvP combat, not your attacker's timer, so NPCs take normal damage from you and players who just joined the fight take normal damage."),
+                        new ArticleBlock("Hard Crowd Control",
+                            "Hard crowd control that a player or a player's pet applies to another player lasts half as long, at least one second."),
+                        new ArticleBlock("When It Ends",
+                            "PvP combat ends 30 seconds after the last PvP damage dealt or taken, or when you die or are subdued. Healing and damage return to normal at once."),
+                    },
+                    new[]
+                    {
+                        new QuestionAnswer("Why are my heals weaker?", "You have been in PvP combat for 2 minutes or more. Healing you receive drops in steps, down to 60% less from 4:00 on."),
+                        new QuestionAnswer("Why am I taking more damage from players?", "You have been in PvP combat for 3 minutes or more. Damage players and their pets deal to you rises in steps, up to double from 5:00 on."),
+                        new QuestionAnswer("How do I reset it?", "Go 30 seconds without dealing or taking damage from another player or a player's pet.")
+                    },
+                    new[] { "Combat Basics", "Death & Recovery", StatusEffectGuideTopics.TopicName }),
 
                 new(
                     "Combat Basics",

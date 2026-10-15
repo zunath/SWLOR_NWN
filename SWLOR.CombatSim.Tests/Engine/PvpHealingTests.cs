@@ -21,10 +21,10 @@ namespace SWLOR.CombatSim.Tests.Engine
             _catalog = AbilityCatalog.Load();
         }
 
-        // The tuned-pvp preset has no flat cut; these tests exercise the multiplier itself.
-        private static RuleSet TunedPvpWithFlatCut()
+        // The current preset has no flat cut; these tests exercise the multiplier itself.
+        private static RuleSet CurrentWithFlatCut()
         {
-            var rules = RuleSets.TunedPvp();
+            var rules = RuleSets.Current();
             rules.PvpHealingMultiplier = 0.7f;
             rules.PvpTemporaryHpMultiplier = 0.7f;
             return rules;
@@ -34,9 +34,9 @@ namespace SWLOR.CombatSim.Tests.Engine
         [TestCase(119, 1000)]
         [TestCase(120, 900)]
         [TestCase(240, 400)]
-        public void TunedPvpPreset_HasNoFlatCut_OnlyTheRamp(int secondsOfCombat, double expected)
+        public void CurrentPreset_HasNoFlatCut_OnlyTheRamp(int secondsOfCombat, double expected)
         {
-            var fight = new PvpFight(_catalog, RuleSets.TunedPvp());
+            var fight = new PvpFight(_catalog, RuleSets.Current());
 
             fight.FightUntil(secondsOfCombat);
 
@@ -52,9 +52,9 @@ namespace SWLOR.CombatSim.Tests.Engine
         [TestCase(240, 280)]
         [TestCase(300, 280)]
         [TestCase(1200, 280)]
-        public void TunedPvp_HealingReceivedInContinuousPvpCombat_IsSeventyPercentThenRampsDown(int secondsOfCombat, double expected)
+        public void Current_HealingReceivedInContinuousPvpCombat_IsSeventyPercentThenRampsDown(int secondsOfCombat, double expected)
         {
-            var fight = new PvpFight(_catalog, TunedPvpWithFlatCut());
+            var fight = new PvpFight(_catalog, CurrentWithFlatCut());
 
             fight.FightUntil(secondsOfCombat);
 
@@ -62,18 +62,18 @@ namespace SWLOR.CombatSim.Tests.Engine
         }
 
         [Test]
-        public void TunedPvp_HealingReceivedPercentIsAppliedBeforeThePvpReduction()
+        public void Current_HealingReceivedPercentIsAppliedBeforeThePvpReduction()
         {
-            var fight = new PvpFight(_catalog, TunedPvpWithFlatCut()) { TargetHealingReceivedPercent = 10f };
+            var fight = new PvpFight(_catalog, CurrentWithFlatCut()) { TargetHealingReceivedPercent = 10f };
             fight.FightUntil(0);
 
             fight.HealAt(0).Should().BeApproximately(RawHeal * 1.1 * 0.7, Tolerance);
         }
 
         [Test]
-        public void TunedPvp_RegenerationAndOverTimeHealsAreReducedToo()
+        public void Current_RegenerationAndOverTimeHealsAreReducedToo()
         {
-            var fight = new PvpFight(_catalog, TunedPvpWithFlatCut());
+            var fight = new PvpFight(_catalog, CurrentWithFlatCut());
             fight.FightUntil(120);
 
             fight.HealAt(120, HealKind.OverTime).Should().BeApproximately(630, Tolerance);
@@ -81,9 +81,9 @@ namespace SWLOR.CombatSim.Tests.Engine
         }
 
         [Test]
-        public void TunedPvp_NoReductionWhenTheScenarioIsNotPvp()
+        public void Current_NoReductionWhenTheScenarioIsNotPvp()
         {
-            var fight = new PvpFight(_catalog, TunedPvpWithFlatCut()) { IsPvp = false };
+            var fight = new PvpFight(_catalog, CurrentWithFlatCut()) { IsPvp = false };
             fight.HealAt(0).Should().BeApproximately(RawHeal, Tolerance);
 
             fight.FightUntil(300);
@@ -92,9 +92,9 @@ namespace SWLOR.CombatSim.Tests.Engine
         }
 
         [Test]
-        public void TunedPvp_NoReductionWhenTheAttackerIsAnNpc()
+        public void Current_NoReductionWhenTheAttackerIsAnNpc()
         {
-            var fight = new PvpFight(_catalog, TunedPvpWithFlatCut()) { AttackerIsNpc = true };
+            var fight = new PvpFight(_catalog, CurrentWithFlatCut()) { AttackerIsNpc = true };
 
             fight.FightUntil(300);
 
@@ -102,9 +102,9 @@ namespace SWLOR.CombatSim.Tests.Engine
         }
 
         [Test]
-        public void TunedPvp_NoReductionWhenTheHealedCombatantIsAnNpc()
+        public void Current_NoReductionWhenTheHealedCombatantIsAnNpc()
         {
-            var fight = new PvpFight(_catalog, TunedPvpWithFlatCut()) { TargetIsNpc = true };
+            var fight = new PvpFight(_catalog, CurrentWithFlatCut()) { TargetIsNpc = true };
 
             fight.FightUntil(300);
 
@@ -112,7 +112,6 @@ namespace SWLOR.CombatSim.Tests.Engine
         }
 
         [TestCase("pre-tuning")]
-        [TestCase("current")]
         public void RuleSetsWithoutPvpRules_DoNotReducePvpHealing(string ruleSetName)
         {
             var fight = new PvpFight(_catalog, RuleSets.Get(ruleSetName));
@@ -123,9 +122,9 @@ namespace SWLOR.CombatSim.Tests.Engine
         }
 
         [Test]
-        public void TunedPvp_ThirtyOneQuietSecondsEndTheCombat_AndTheNextOneStartsOverAtSeventyPercent()
+        public void Current_ThirtyOneQuietSecondsEndTheCombat_AndTheNextOneStartsOverAtSeventyPercent()
         {
-            var fight = new PvpFight(_catalog, TunedPvpWithFlatCut());
+            var fight = new PvpFight(_catalog, CurrentWithFlatCut());
             fight.FightUntil(240);
             fight.HealAt(240).Should().BeApproximately(280, Tolerance);
 
@@ -136,9 +135,9 @@ namespace SWLOR.CombatSim.Tests.Engine
         }
 
         [Test]
-        public void TunedPvp_ActivityWithinThirtySeconds_KeepsTheSameCombatGoing()
+        public void Current_ActivityWithinThirtySeconds_KeepsTheSameCombatGoing()
         {
-            var fight = new PvpFight(_catalog, TunedPvpWithFlatCut());
+            var fight = new PvpFight(_catalog, CurrentWithFlatCut());
             fight.FightUntil(240);
 
             fight.Hit(240 + 29);

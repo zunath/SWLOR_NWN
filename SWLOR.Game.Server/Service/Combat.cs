@@ -618,6 +618,10 @@ namespace SWLOR.Game.Server.Service
             if (HasDamageImmunity(defender, damageType))
                 return 0;
 
+            // Damage passed on to a protector was already raised for the player who was hit.
+            if (deliveryType != CombatDamageDeliveryType.Transferred)
+                damage = PvpCombat.ApplyDamageIncrease(defender, attacker, damage, isLandedAttack);
+
             var leadershipPhysicalAdjustment = !typedLeadershipReductionAlreadyApplied &&
                                                damageType.IsPhysicalDamageType()
                 ? GetLeadershipPhysicalDamageTakenPercentAdjustment(defender)

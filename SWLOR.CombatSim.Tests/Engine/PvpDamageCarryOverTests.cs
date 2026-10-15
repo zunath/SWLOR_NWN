@@ -37,7 +37,7 @@ namespace SWLOR.CombatSim.Tests.Engine
                     true,
                     new[] { TestCombatants.Dummy("Ramped player") },
                     new[] { TestCombatants.Dummy("Sparring partner"), TestCombatants.Dummy("Fresh player"), TestCombatants.Dummy("NPC", isNpc: true) }),
-                RuleSets.TunedPvp(),
+                RuleSets.Current(),
                 _catalog);
             _rampedPlayer = _simulation.Get("Ramped player");
             _sparringPartner = _simulation.Get("Sparring partner");

@@ -1,19 +1,19 @@
 using Newtonsoft.Json;
+using SWLOR.Game.Server.Service.PvpCombatService;
 
 namespace SWLOR.CombatSim.Rules
 {
     /// <summary>
     /// Rule presets: the rules before the combat tuning (the October 2026 PvP test the sample scenarios are calibrated
-    /// against), the game as this code builds it (healing, FP costs, revives and fixes for PvE and PvP), and the game
-    /// plus the proposed PvP attrition rules (a healing ramp that stops at -60% and a damage ramp up to double).
+    /// against), and the game as this code builds it (healing, FP costs, revives and fixes for PvE and PvP, and the
+    /// PvP rules: a healing ramp that stops at -60% and a damage ramp up to double).
     /// </summary>
     public static class RuleSets
     {
         public const string PreTuningName = "pre-tuning";
         public const string CurrentName = "current";
-        public const string TunedPvpName = "tuned-pvp";
 
-        public static IReadOnlyList<string> Names { get; } = new[] { PreTuningName, CurrentName, TunedPvpName };
+        public static IReadOnlyList<string> Names { get; } = new[] { PreTuningName, CurrentName };
 
         /// <summary>Reads a rule set from JSON, such as an edited copy of a preset; a file without a name is named after the file.</summary>
         public static RuleSet Load(string path)
@@ -46,7 +46,6 @@ namespace SWLOR.CombatSim.Rules
             {
                 PreTuningName => PreTuning(),
                 CurrentName => Current(),
-                TunedPvpName => TunedPvp(),
                 _ => throw new ArgumentException($"Unknown rule set '{name}'. Known: {string.Join(", ", Names)}.")
             };
         }
@@ -76,22 +75,14 @@ namespace SWLOR.CombatSim.Rules
             HarmonyCooldownSeconds = 6f,
             RefuseHitPointCostsAtOneHitPoint = true,
             ScaleHitPointSpendRestoreToHitPointsLost = true,
-            Revives = ReviveRule.BlockedInPvpLimitedInPve
+            Revives = ReviveRule.BlockedInPvpLimitedInPve,
+            // The PvP rules come from the game itself, so the two can't drift apart.
+            PvpHealingRamp = ToRamp(PvpCombatRules.HealingReductionSteps),
+            PvpDamageBackstop = ToRamp(PvpCombatRules.DamageIncreaseSteps),
+            PvpCombatWindowSeconds = PvpCombatRules.CombatWindowSeconds
         };
 
-        public static RuleSet TunedPvp()
-        {
-            var rules = Current();
-            rules.Name = TunedPvpName;
-            rules.PvpHealingRamp = new List<RampStep>
-            {
-                new(120f, 10f), new(150f, 20f), new(180f, 30f), new(210f, 45f), new(240f, 60f)
-            };
-            rules.PvpDamageBackstop = new List<RampStep>
-            {
-                new(180f, 20f), new(210f, 40f), new(240f, 60f), new(270f, 80f), new(300f, 100f)
-            };
-            return rules;
-        }
+        private static List<RampStep> ToRamp(IReadOnlyList<PvpCombatRampStep> steps) =>
+            steps.Select(step => new RampStep(step.AtSeconds, step.Percent)).ToList();
     }
 }

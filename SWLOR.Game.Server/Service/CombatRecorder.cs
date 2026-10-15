@@ -39,6 +39,8 @@ namespace SWLOR.Game.Server.Service
         private static readonly List<CombatRecordPendingDamage> _pendingDamage = new();
         private static readonly Dictionary<(uint Target, string Key), (int SourceId, CombatRecordAttribution Attribution)> _temporaryHitPointGrants = new();
         private static readonly Dictionary<uint, uint> _lastDamageSources = new();
+        // Healing the PvP reduction took off the heal now being applied to each target.
+        private static readonly Dictionary<uint, int> _pvpHealingReductions = new();
         private static readonly List<CombatRecordDamageApplication> _damageApplications = new();
         private static readonly List<CombatRecordEvent> _heldEvents = new();
         private static readonly List<CombatRecordWriter> _unfinishedWriters = new();
@@ -124,6 +126,7 @@ namespace SWLOR.Game.Server.Service
             _heldInsertIndex = -1;
             _deathFrames.Clear();
             _awaitingHeal.Clear();
+            _pvpHealingReductions.Clear();
             _isInHealingReaction = false;
 
             var directory = CombatRecordFileNames.GetDirectory(ApplicationSettings.Get().LogDirectory);
@@ -355,6 +358,7 @@ namespace SWLOR.Game.Server.Service
 
             var awaiting = _awaitingHeal.ToArray();
             _awaitingHeal.Clear();
+            _pvpHealingReductions.Clear();
             foreach (var recordEvent in awaiting)
                 Enqueue(recordEvent);
         }
@@ -1196,10 +1200,21 @@ namespace SWLOR.Game.Server.Service
         #region Healing and temporary HP
 
         /// <summary>
+        /// Notes how much the PvP healing reduction took off the heal now being applied to
+        /// <paramref name="target"/>, so the heal is recorded with the cut instead of as overheal.
+        /// </summary>
+        public static void RecordPvpHealingReduced(uint target, int requested, int reduced)
+        {
+            if (requested > reduced && IsInRecordedArea(target))
+                _pvpHealingReductions[target] = requested - reduced;
+        }
+
+        /// <summary>
         /// Called by the native heal hook after the engine applied a heal effect.
         /// </summary>
         internal static void RecordHealingApplied(uint creator, uint target, int requested, int hitPointsBefore, int hitPointsAfter, int maxHitPoints)
         {
+            _pvpHealingReductions.Remove(target, out var pvpReduced);
             // A heal reacting to a hit still in progress ends what that hit left.
             var application = FindDamageApplication(target);
             if (application >= 0 && !_damageApplications[application].HasHitPointsLeftByHit)
@@ -1215,16 +1230,18 @@ namespace SWLOR.Game.Server.Service
             if (attribution.Kind == CombatRecordSourceKind.Setup)
                 return;
 
+            // The cut is not overheal: the heal only ever asked for what was left of it.
             Enqueue(CombatRecordEvent.Healing(
                 GetParticipantId(attribution.Actor),
                 GetParticipantId(target),
                 attribution.Kind,
                 attribution.Name,
                 attribution.Code,
-                requested,
+                Math.Max(0, requested - pvpReduced),
                 hitPointsBefore,
                 hitPointsAfter,
-                maxHitPoints));
+                maxHitPoints,
+                pvpReduced));
 
             ReleaseAwaitingHealFor(target);
         }

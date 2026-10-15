@@ -9,6 +9,7 @@ using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Feature.GuiDefinition.ViewModel;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.PerkService;
+using SWLOR.Game.Server.Service.PvpCombatService;
 using SWLOR.Game.Server.Service.StatusEffectService;
 
 namespace SWLOR.Game.Server.Tests.Feature;
@@ -204,6 +205,29 @@ public class PlayerGuideContentTests
             GetItems(GetTopics().Single(item => GetString(item, "Name") == family), "RelatedTopics")
                 .Should().Contain("Control & Harmful Effects");
         }
+    }
+
+    [Test]
+    public void PvpCombatTopic_PublishesTheCurrentRules()
+    {
+        var text = string.Join("\n", GetAllText(GetTopics().Single(topic => GetString(topic, "Name") == "PvP Combat")));
+
+        text.Should().Contain($"{PvpCombatRules.CombatWindowSeconds:0} seconds without PvP damage");
+        PvpCombatRules.HardCrowdControlDurationPercent.Should().Be(50, "the guide says hard crowd control lasts half as long");
+        text.Should().Contain("lasts half as long");
+        AssertRampText(text, "healing you receive drops by", PvpCombatRules.HealingReductionSteps);
+        AssertRampText(text, "damage players and their pets deal to you rises by", PvpCombatRules.DamageIncreaseSteps);
+    }
+
+    private static void AssertRampText(string text, string phrase, IReadOnlyList<PvpCombatRampStep> steps)
+    {
+        static string Time(float seconds) => $"{(int)seconds / 60}:{(int)seconds % 60:00}";
+
+        text.Should().Contain($"From {Time(steps[0].AtSeconds)} of PvP combat, {phrase} {steps[0].Percent}%");
+        for (var index = 1; index < steps.Count - 1; index++)
+            text.Should().Contain($"{steps[index].Percent}% at {Time(steps[index].AtSeconds)}");
+        text.Should().Contain($"{steps[^1].Percent}%");
+        text.Should().Contain($"from {Time(steps[^1].AtSeconds)} on");
     }
 
     [Test]

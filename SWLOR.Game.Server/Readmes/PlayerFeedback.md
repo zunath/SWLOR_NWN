@@ -18,6 +18,7 @@ settings are cached at startup. Gameplay and server audit logs are unaffected.
 | `Space`, all ship modules | Ship and direct-hull damage amounts, hit/miss results, hull/shield/capacitor restoration, repair fields, and E-War activation. |
 | `ResolveAttackRoll`, `Ability`, `Combat` | Attack and ability outcomes, critical hits/immunity, Guard and Critical Ward mitigation, deflection/reflection, temporary-HP damage, resource drains, and readiness/stack/recharge information. |
 | `StatusEffect`, `GuardedStatusEffect` | Status application, expiry, resistance, duration changes, application failures, and guarding relationships. Existing per-effect message opt-outs remain respected. |
+| `PvpCombat` | Private combat-log lines when a player enters PvP combat, at each healing-reduction and damage-increase step, and when it ends. At most about eight per fight. |
 | `UsePerkFeat` | Queue, ready, interruption, and expiry/cancellation notices. Nearby delivery includes the actor once. Stale timers and silent cleanup do not produce Production notices. |
 | `Skill`, `BeastMastery`, `Guild`, `Faction`, `RoleplayXP` | XP and point gains/losses, debt repayment, standings, level/rank changes, and unlocks. |
 | `QuestObjectives` and quests | Item/kill progress counters, requirement/stage completion, rewards, acceptance, and cancellation. |

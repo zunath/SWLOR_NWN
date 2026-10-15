@@ -288,17 +288,10 @@
   },
   {
     "File": "SWLOR.Game.Server/Feature/ChatCommandDefinition/CharacterChatCommand.cs",
-    "Line": 484,
+    "Line": 481,
     "Member": "AlwaysWalk",
     "Delivery": "Retained",
-    "Call": "SendMessageToPC(user, $\"Walk mode {ColorToken.Red(\"disabled\")}.\")"
-  },
-  {
-    "File": "SWLOR.Game.Server/Feature/ChatCommandDefinition/CharacterChatCommand.cs",
-    "Line": 488,
-    "Member": "AlwaysWalk",
-    "Delivery": "Retained",
-    "Call": "SendMessageToPC(user, $\"Walk mode {ColorToken.Green(\"enabled\")}.\")"
+    "Call": "SendMessageToPC(user, $\"Walk mode {status}.\")"
   },
   {
     "File": "SWLOR.Game.Server/Feature/ChatCommandDefinition/CharacterChatCommand.cs",
@@ -306,6 +299,13 @@
     "Member": "AssociateCommands",
     "Delivery": "Retained",
     "Call": "SpeakString(message)"
+  },
+  {
+    "File": "SWLOR.Game.Server/Feature/ChatCommandDefinition/CharacterChatCommand.cs",
+    "Line": 545,
+    "Member": "Afk",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(user, isAfk\n                        ? ColorToken.Purple(\"You are now AFK. Move or use /afk again when you return.\")\n                        : \"You are no longer AFK.\")"
   },
   {
     "File": "SWLOR.Game.Server/Feature/ChatCommandDefinition/CharacterChatCommand.cs",
@@ -4550,6 +4550,13 @@
     "Call": "SendMessageToPC(sender, ColorToken.Red($\"'{displayName}' is ambiguous. Use /name on the intended player before sending tells.\"))"
   },
   {
+    "File": "SWLOR.Game.Server/Service/PlayerName.cs",
+    "Line": 114,
+    "Member": "CheckAfkMovement",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(player, \"You are no longer AFK.\")"
+  },
+  {
     "File": "SWLOR.Game.Server/Service/Poisons.cs",
     "Line": 77,
     "Member": "ConsumePoisonCoating",
@@ -4695,6 +4702,27 @@
     "Member": "OpenCityManagementMenu",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red(\"You do not have permission to access this terminal.\"))"
+  },
+  {
+    "File": "SWLOR.Game.Server/Service/PvpCombat.cs",
+    "Line": 246,
+    "Member": "Update",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(player, ColorToken.Combat(healingStep < 0\n                        ? \"You are in PvP combat. Healing you receive starts dropping at 2:00 and damage players deal to you starts rising at 3:00. It ends after 30 seconds without PvP damage.\"\n                        : $\"PvP combat {FormatTime(PvpCombatRules.HealingReductionSteps[healingStep].AtSeconds)}: healing you receive is reduced by {PvpCombatRules.HealingReductionSteps[healingStep].Percent}%.\"))"
+  },
+  {
+    "File": "SWLOR.Game.Server/Service/PvpCombat.cs",
+    "Line": 258,
+    "Member": "Update",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(player, ColorToken.Combat(\n                    $\"PvP combat {FormatTime(step.AtSeconds)}: damage players deal to you is increased by {step.Percent}%.\"))"
+  },
+  {
+    "File": "SWLOR.Game.Server/Service/PvpCombat.cs",
+    "Line": 292,
+    "Member": "End",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(player, ColorToken.Combat(\"PvP combat has ended. Healing and damage are back to normal.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/Quest.cs",
@@ -5332,6 +5360,13 @@
     "Member": "SendStatusEffectFailure",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(recipient, message)"
+  },
+  {
+    "File": "SWLOR.Game.Server/Service/StatusEffect.cs",
+    "Line": 902,
+    "Member": "RestartInPlace",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(source, durationResistanceMessage)"
   },
   {
     "File": "SWLOR.Game.Server/Service/StatusEffect.cs",

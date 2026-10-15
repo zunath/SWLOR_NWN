@@ -8,7 +8,7 @@ using SWLOR.NWN.API.NWScript.Enum.Item;
 namespace SWLOR.Game.Server.Feature;
 
 /// <summary>A cosmetic melee weapon grip preference. It changes combat poses and attacks, never combat stats.</summary>
-public static class DoublehandStance
+public static class Grip
 {
     private const string EnabledVariable = "DOUBLEHAND_ENABLED";
     private const string ModeVariable = "DOUBLEHAND_MODE";
@@ -40,7 +40,7 @@ public static class DoublehandStance
     [NWNEventHandler(ScriptName.OnModuleRespawn)]
     public static void OnRespawn() => Refresh(GetLastRespawnButtonPresser(), true);
 
-    // Called before the katar owner restores its mappings, so releasing Doublehand cannot erase them.
+    // Called before the katar owner restores its mappings, so releasing Grip cannot erase them.
     internal static void Refresh(uint creature, bool forceRefresh = false, bool playTransition = false)
     {
         if (!GetIsObjectValid(creature) || QueuedAttackAnimation.IsActive(creature)) return;

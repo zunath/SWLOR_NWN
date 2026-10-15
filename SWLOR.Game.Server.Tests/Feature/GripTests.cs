@@ -5,7 +5,7 @@ using SWLOR.NWN.API.NWScript.Enum.Item;
 
 namespace SWLOR.Game.Server.Tests.Feature;
 
-public class DoublehandStanceTests
+public class GripTests
 {
     [TestCase(2, 2, false, true, false)]
     [TestCase(1, 1, false, true, false)]
@@ -15,7 +15,7 @@ public class DoublehandStanceTests
     [TestCase(0, 0, true, false, false)]
     public void RefreshDoesNotReplayEmoteWithoutTransition(int desired, int applied, bool toggle, bool supported, bool expected)
     {
-        DoublehandStance.ShouldPlayTransition(desired, applied, toggle, supported).Should().Be(expected);
+        Grip.ShouldPlayTransition(desired, applied, toggle, supported).Should().Be(expected);
     }
 
     [TestCase(true)]
@@ -43,10 +43,10 @@ public class DoublehandStanceTests
     [TestCase(BaseItem.Dagger, 0)]
     public void SelectsStyleOnlyForSupportedWeaponAndEmptyOffhand(BaseItem weapon, int mode)
     {
-        DoublehandStance.GetMode(true, weapon, false).Should().Be(mode);
-        DoublehandStance.GetMode(false, weapon, false).Should().Be(0);
-        DoublehandStance.GetMode(true, weapon, true).Should().Be(0);
-        DoublehandStance.GetMode(true, null, false).Should().Be(0);
+        Grip.GetMode(true, weapon, false).Should().Be(mode);
+        Grip.GetMode(false, weapon, false).Should().Be(0);
+        Grip.GetMode(true, weapon, true).Should().Be(0);
+        Grip.GetMode(true, null, false).Should().Be(0);
     }
 
     [Test]
@@ -54,11 +54,11 @@ public class DoublehandStanceTests
     {
         var maps = new Dictionary<string, string> { ["dodges"] = "custom_dodge", ["throwr"] = "bowshot" };
         void Replace(string a, string b) { if (b == "") maps.Remove(a); else maps[a] = b; }
-        DoublehandStance.ApplyTransition(1, 0, false, Replace);
+        Grip.ApplyTransition(1, 0, false, Replace);
         maps["1hreadyr"].Should().Be("2hreadyr");
         maps["1hparryl"].Should().Be("2hparryl");
         maps["2wslashr"].Should().Be("2hslashr");
-        DoublehandStance.ApplyTransition(2, 1, false, Replace);
+        Grip.ApplyTransition(2, 1, false, Replace);
         maps.Should().NotContainKey("1hreadyr");
         maps["2hreadyr"].Should().Be("1hreadyr");
         maps["plreadyr"].Should().Be("1hreadyr");
@@ -73,7 +73,7 @@ public class DoublehandStanceTests
         maps.Should().NotContainKey("2hslashr");
         maps.Should().NotContainKey("2wslashr");
         maps.Values.Should().NotContain(value => maps.ContainsKey(value));
-        DoublehandStance.ApplyTransition(0, 2, false, Replace);
+        Grip.ApplyTransition(0, 2, false, Replace);
         maps.Should().HaveCount(2);
         maps["dodges"].Should().Be("custom_dodge");
         maps["throwr"].Should().Be("bowshot");
@@ -84,11 +84,11 @@ public class DoublehandStanceTests
     public void QueueReleaseRestoresFullSelectedStyle(int mode, string destination)
     {
         var maps = new Dictionary<string, string>();
-        DoublehandStance.ApplyTransition(mode, mode, true, (a, b) => { if (b == "") maps.Remove(a); else maps[a] = b; });
+        Grip.ApplyTransition(mode, mode, true, (a, b) => { if (b == "") maps.Remove(a); else maps[a] = b; });
         maps.Should().HaveCount(mode == 1 ? 22 : 10);
         maps.Values.Should().OnlyContain(value => value.StartsWith(destination) || (mode == 2 && value == "sw_nohold"));
         maps.Clear();
-        DoublehandStance.ApplyTransition(0, 0, true, (a, b) => maps[a] = b);
+        Grip.ApplyTransition(0, 0, true, (a, b) => maps[a] = b);
         maps.Should().BeEmpty();
     }
 }

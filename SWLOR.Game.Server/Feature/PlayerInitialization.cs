@@ -45,7 +45,7 @@ namespace SWLOR.Game.Server.Feature
 
                 InitializeNativeCombatStats(player);
                 ExecuteScript(ScriptName.OnCharacterInitAfter, OBJECT_SELF);
-                DoublehandStance.Initialize(player);
+                Grip.Initialize(player);
                 return;
             }
 
@@ -69,7 +69,7 @@ namespace SWLOR.Game.Server.Feature
                 PlayerName.RefreshNameOverridesForPlayer(player);
 
             ExecuteScript(ScriptName.OnCharacterInitAfter, OBJECT_SELF);
-            DoublehandStance.Initialize(player);
+            Grip.Initialize(player);
         }
 
         internal static bool RequiresExistingPlayerRecord(Player player)

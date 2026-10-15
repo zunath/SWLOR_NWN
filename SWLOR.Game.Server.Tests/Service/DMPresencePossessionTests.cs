@@ -66,6 +66,17 @@ public class DMPresencePossessionTests
     }
 
     [Test]
+    public void GetControlledCreature_ReturnsPlayersAndIdleDMsWithoutAnNWNXCall()
+    {
+        _harness.AddPlayer(Player);
+        _harness.AddPlayer(DM, isDM: true);
+
+        GetControlledCreature(Player).Should().Be(Player);
+        GetControlledCreature(DM).Should().Be(DM);
+        _harness.GameObjectLookups.Should().Be(0, "broadcast loops resolve every online player through this");
+    }
+
+    [Test]
     public void GetControlledCreature_IgnoresAPlayerPossessingAFamiliar()
     {
         _harness.AddPlayer(Player);

@@ -114,12 +114,15 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>
-        /// Returns the creature a DM is acting through: the creature they possess, or their avatar.
+        /// Returns the creature a DM is acting through: the creature they possess, or their avatar. Anything else,
+        /// including any player from GetFirstPC/GetNextPC, is returned unchanged, so messages, chat, and shader
+        /// updates sent to the result reach a possessing DM.
         /// </summary>
-        /// <param name="actor">A DM avatar or the creature they possess.</param>
+        /// <param name="actor">A DM avatar, the creature they possess, or a player.</param>
         public static uint GetControlledCreature(uint actor)
         {
-            if (GetIsDMPossessed(actor))
+            // GetIsPC is true for whatever a player controls, and false for a possessing DM's avatar.
+            if (GetIsPC(actor))
                 return actor;
 
             // Possession only changes the object a player controls; GetFirstPC keeps returning the avatar.

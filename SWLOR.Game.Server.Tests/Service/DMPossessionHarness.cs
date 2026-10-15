@@ -39,6 +39,7 @@ internal sealed class DMPossessionHarness
                 Masters.Clear();
                 Areas.Clear();
                 Messages.Clear();
+                PlayerPlugin.GameObjectLookups = 0;
             }
 
             public static void AddPlayer(uint character, bool hasDMPrivileges) =>
@@ -92,8 +93,11 @@ internal sealed class DMPossessionHarness
 
         public static class PlayerPlugin
         {
+            public static int GameObjectLookups;
+
             public static uint GetGameObject(uint player)
             {
+                GameObjectLookups++;
                 foreach (var entry in World.Players)
                 {
                     if (entry.Character == player)
@@ -138,11 +142,13 @@ internal sealed class DMPossessionHarness
     }
 
     /// <summary>
-    /// Returns the source of a production method, by name, from a file under SWLOR.Game.Server.
+    /// Returns the source of a production method, by name, from a file under SWLOR.Game.Server. Attributes such as
+    /// NWNEventHandler are dropped.
     /// </summary>
     public static string Method(string relativePath, string name) =>
         ParseServerFile(relativePath).DescendantNodes().OfType<MethodDeclarationSyntax>()
             .Single(method => method.Identifier.ValueText == name)
+            .WithAttributeLists(default)
             .ToFullString();
 
     /// <summary>
@@ -198,6 +204,11 @@ internal sealed class DMPossessionHarness
     /// Returns the player whose client receives a message or chat sent to the object, or <see cref="Invalid"/>.
     /// </summary>
     public uint ReceivingPlayer(uint obj) => (uint)CallWorld("ReceivingPlayer", obj)!;
+
+    /// <summary>
+    /// The number of NWNX GetGameObject calls since the last reset.
+    /// </summary>
+    public int GameObjectLookups => (int)_assembly.GetType("PlayerPlugin")!.GetField("GameObjectLookups")!.GetValue(null)!;
 
     public IReadOnlyList<(uint Character, string Message)> Messages =>
         (List<(uint Character, string Message)>)_world.GetField("Messages")!.GetValue(null)!;

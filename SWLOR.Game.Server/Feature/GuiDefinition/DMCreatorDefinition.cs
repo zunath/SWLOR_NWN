@@ -63,7 +63,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                                     .AddOption("Triggers", (int)DMBlueprintCategory.Triggers)
                                     .AddOption("Encounters", (int)DMBlueprintCategory.Encounters)
                                     .BindSelectedIndex(model => model.SelectedType)
-                                    .SetTooltip("What to create")
                                     .SetWidth(140f)
                                     .SetHeight(ButtonHeight);
 
@@ -71,7 +70,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                                     .AddOption("Custom", (int)DMBlueprintSource.Custom)
                                     .AddOption("Standard", (int)DMBlueprintSource.Standard)
                                     .BindSelectedIndex(model => model.SelectedSource)
-                                    .SetTooltip("Custom: the module's palette. Standard: the base game's palette.")
                                     .SetWidth(110f)
                                     .SetHeight(ButtonHeight);
 
@@ -79,7 +77,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                                 filters.AddComboBox()
                                     .BindOptions(model => model.CategoryOptions)
                                     .BindSelectedIndex(model => model.SelectedCategoryIndex)
-                                    .SetTooltip("Palette category")
                                     .SetWidth(CategoryComboWidth)
                                     .SetHeight(ButtonHeight);
 

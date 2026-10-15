@@ -42,7 +42,8 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
             _builder.Create("STATION_RARES")
                 .IsRare()
                 .AddItem("citrine", 70, 1, true)
-                .AddItem("lockbox_t3", 30, 1, true);
+                .AddItem("lockbox_t3", 30, 1, true)
+                .AddItem("map_277", 2, 1, true);
 
             _builder.Create("STATION_DIRECTOR")
                 .AddItem("lockbox_t3", 1);

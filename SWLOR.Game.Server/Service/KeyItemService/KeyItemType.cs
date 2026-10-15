@@ -564,6 +564,8 @@ namespace SWLOR.Game.Server.Service.KeyItemService
         CapstoneForceBondedBeastDenMothersFangToken = 275,
         [KeyItem(KeyItemCategoryType.Maps, "Hutlar - Droid Foundry Map", true, "Map of the droid foundry beneath the Abandoned Outpost on Hutlar.")]
         HutlarDroidFoundryMap = 276,
+        [KeyItem(KeyItemCategoryType.Maps, "Abandoned Station Map", true, "Map of the Main Level, Restricted Level, and Director's Chambers of the Abandoned Station.")]
+        AbandonedStationMap = 277,
 
         // Incubation field notes — one per mutation target beast. The declared Name is a
         // readable fallback; IncubationFieldNote injects the canonical Name and the full

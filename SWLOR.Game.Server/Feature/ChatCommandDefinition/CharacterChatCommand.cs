@@ -378,15 +378,10 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
             const float Increment = 0.01f;
 
             _builder.Create("headscale")
-                .Description("Adjusts your head size separately from body height. Usage: /headscale [value|+/-]. Omit value to view current size. Limits depend on your race.")
+                .Description("Adjusts your head size separately from body height, including a creature you possess as a DM. Usage: /headscale [value|+/-]. Omit value to view current size. Limits depend on your race.")
                 .Permissions(AuthorizationLevel.All)
                 .Validate((user, args) =>
                 {
-                    if (GetIsDM(user) || GetIsDMPossessed(user))
-                    {
-                        return "This command can only be used by players.";
-                    }
-
                     if (!RacialAppearanceRegistry.TryGet(GetAppearanceType(user), out var appearance))
                     {
                         return "Your appearance type does not support head scaling.";
@@ -425,9 +420,11 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
 
                     var minScale = appearance.MinimumHeadScale;
                     var maxScale = appearance.MaximumHeadScale;
-                    var playerId = GetObjectUUID(user);
-                    var dbPlayer = DB.Get<Player>(playerId);
-                    var current = dbPlayer.HeadAppearanceScale <= 0f ? 1.0f : dbPlayer.HeadAppearanceScale;
+                    var isDM = GetIsDM(user) || GetIsDMPossessed(user);
+                    var dbPlayer = isDM ? null : DB.Get<Player>(GetObjectUUID(user));
+                    var current = dbPlayer == null
+                        ? HelmetModelRenderer.GetHeadScale(user)
+                        : dbPlayer.HeadAppearanceScale <= 0f ? 1.0f : dbPlayer.HeadAppearanceScale;
                     float newScale;
 
                     if (args.Length <= 0)
@@ -460,8 +457,11 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                         return;
                     }
 
-                    dbPlayer.HeadAppearanceScale = newScale;
-                    DB.Set(dbPlayer);
+                    if (dbPlayer != null)
+                    {
+                        dbPlayer.HeadAppearanceScale = newScale;
+                        DB.Set(dbPlayer);
+                    }
 
                     HelmetModelRenderer.SetHeadScale(user, newScale);
 

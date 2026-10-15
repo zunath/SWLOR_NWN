@@ -19,8 +19,8 @@ namespace SWLOR.Game.Server.Service.CombatRecorderService
         public uint Owner;
 
         /// <summary>
-        /// The recording that captured this attribution, so one stored for later (a trap) is not
-        /// replayed into a later recording.
+        /// The recording that captured this attribution, so queued work or a trap that runs after
+        /// that recording stopped is not credited to its source in a later recording.
         /// </summary>
         public int Recording;
 

@@ -390,7 +390,12 @@ namespace SWLOR.Game.Server.Service
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static CombatRecordAttribution CaptureAttackAttribution(uint attacker)
         {
-            return IsRecording ? ResolveAttackAttribution(attacker) : default;
+            if (!IsRecording)
+                return default;
+
+            var attribution = ResolveAttackAttribution(attacker);
+            attribution.Recording = _recording;
+            return attribution;
         }
 
         private static CombatRecordAttribution ResolveAttackAttribution(uint attacker)
@@ -402,10 +407,14 @@ namespace SWLOR.Game.Server.Service
                 attacker, CombatRecordSourceKind.Autoattack, null, (int)Combat.GetEquippedWeaponSkillType(attacker), 0);
         }
 
+        /// <summary>
+        /// Restores a captured attribution. One captured during an earlier recording is ignored, since
+        /// its source belongs to that recording.
+        /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static CombatRecordAttributionScope BeginAttribution(in CombatRecordAttribution attribution)
         {
-            return IsRecording && attribution.Actor != 0
+            return IsRecording && attribution.Actor != 0 && attribution.Recording == _recording
                 ? PushAttribution(attribution.Actor, attribution.Kind, attribution.Name, attribution.Code, attribution.Rank, attribution.Owner)
                 : default;
         }

@@ -1136,6 +1136,69 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             }
         }
 
+        /// <summary>
+        /// Work queued during one recording with its captured scope, such as deferred ability damage,
+        /// can run after that recording stops and another starts; it must not carry the old source along.
+        /// </summary>
+        [EngineTest("Combat recorder ignores a scope captured during an earlier recording", Category = "CombatRecorder", TimeoutSeconds = 60f)]
+        public static async Task IgnoresScopeFromEarlierRecording(EngineTestContext ctx)
+        {
+            ctx.Assert(!CombatRecorder.IsRecording, "no combat recording may be running before the test");
+
+            var arena = await QuietArena.CreateAsync(ctx);
+            var attacker = arena.Spawn(CreatureResref, 0f, 0f);
+            var target = arena.Spawn(CreatureResref, 2f, 0f);
+            await ctx.DelaySecondsAsync(1f);
+            Prepare(ctx, attacker, "Recorder Queued Attacker", 1000);
+            Prepare(ctx, target, "Recorder Queued Target", 1000);
+
+            CombatRecordWriter firstWriter = null;
+            CombatRecordWriter writer;
+            try
+            {
+                ctx.Assert(CombatRecorder.Start(arena.Area, "engine test capture", out var captureMessage), captureMessage);
+                firstWriter = CombatRecorder.LastWriter;
+                CombatRecordAttribution captured;
+                using (CombatRecorder.BeginAbilityFeatAttribution(attacker, FeatType.ForceLightning1))
+                    captured = CombatRecorder.CaptureScope();
+                ctx.Assert(captured.Actor != 0, "the first recording captures the open ability scope");
+                CombatRecorder.Stop("engine test", out _);
+
+                ctx.Assert(CombatRecorder.Start(arena.Area, "engine test replay", out var replayMessage), replayMessage);
+                writer = CombatRecorder.LastWriter;
+                await ctx.ExecuteInCreatureContextAsync(attacker, () =>
+                {
+                    using var replayed = CombatRecorder.BeginAttribution(captured);
+                    ApplyEffectToObject(DurationType.Instant, EffectDamage(10), target);
+                });
+                await ctx.DelaySecondsAsync(0.5f);
+            }
+            finally
+            {
+                if (CombatRecorder.IsRecording)
+                    CombatRecorder.Stop("engine test", out _);
+            }
+
+            await ctx.WaitUntilAsync(() => writer.Completion.IsCompleted && firstWriter.Completion.IsCompleted, 10f,
+                "both recording writers to finish their files");
+            ctx.Assert(writer.Error == null, $"the recording writer failed: {writer.Error}");
+            var events = File.ReadAllLines(writer.EventsPath).Select(ParseLine).ToList();
+
+            var targetId = ParticipantId(ctx, events, "Recorder Queued Target");
+            var hit = events.Single(e => Type(e) == "damage" && e.GetProperty("target").GetInt32() == targetId);
+            ctx.Assert(hit.GetProperty("source_kind").GetString() != "ability" &&
+                       hit.GetProperty("source_name").GetString() != "Force Lightning I",
+                $"the earlier recording's ability is not replayed (recorded as {hit.GetProperty("source_kind").GetString()} " +
+                $"'{hit.GetProperty("source_name").GetString()}')");
+
+            AssertParticipantsDeclaredFirst(ctx, events);
+            foreach (var recording in new[] { firstWriter, writer })
+            {
+                File.Delete(recording.EventsPath);
+                File.Delete(recording.SummaryPath);
+            }
+        }
+
         private static async Task UseAbilityAsync(EngineTestContext ctx, uint caster, uint target, FeatType feat)
         {
             var used = false;

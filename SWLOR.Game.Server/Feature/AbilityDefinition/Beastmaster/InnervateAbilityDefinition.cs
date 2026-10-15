@@ -127,7 +127,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster
             var amount = GameMath.PercentOf(GetMaxHitPoints(target), percent);
             amount = Stat.ApplyOutgoingAbilityHealingAdjustment(activator, amount);
             amount = Ability.ApplyCombatReadinessToActivatedAbilityMagnitude(activator, amount);
-            amount = Stat.ApplyHealingReceivedAdjustment(target, amount);
+            amount = Stat.ApplyHealingReceivedAdjustment(target, amount, isInstantAbilityHeal: true);
 
             ApplyEffectToObject(DurationType.Instant, EffectHeal(amount), target);
             ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Healing_M), target);

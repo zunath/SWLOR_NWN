@@ -28,9 +28,9 @@ namespace SWLOR.CombatSim.Tests.Engine
         }
 
         [Test]
-        public void Tuned_CapsTotalTemporaryHpAtHalfOfMaxHp_EvenAfterSeveralDifferentShields()
+        public void Current_CapsTotalTemporaryHpAtHalfOfMaxHp_EvenAfterSeveralDifferentShields()
         {
-            var simulation = Spawn(RuleSets.Tuned(), new[] { TestCombatants.Medic("Medic", SelfKeepUp(DifferentShields)) });
+            var simulation = Spawn(RuleSets.Current(), new[] { TestCombatants.Medic("Medic", SelfKeepUp(DifferentShields)) });
             var medic = simulation.Get("Medic");
 
             var peak = RunAndTrackPeakTemporaryHp(simulation, medic, ShieldingWindowSeconds);
@@ -48,7 +48,7 @@ namespace SWLOR.CombatSim.Tests.Engine
                 var wounded = new CombatantSpec { Name = "Wounded", MaxHp = 1000, HpRegenPer30Seconds = 30f };
                 var simulation = new Simulation(
                     TestScenarios.TwoTeams(false, new[] { wounded }, new[] { TestCombatants.Dummy("Enemy", true) }),
-                    RuleSets.Current(),
+                    RuleSets.PreTuning(),
                     _catalog,
                     seed);
                 simulation.Spawn();
@@ -65,7 +65,7 @@ namespace SWLOR.CombatSim.Tests.Engine
         public void NaturalRegeneration_WaitsWhileTemporaryHpFillsTheHealthBar(int shield, bool expectHealing)
         {
             var wounded = new CombatantSpec { Name = "Wounded", MaxHp = 1000, HpRegenPer30Seconds = 30f };
-            var simulation = Spawn(RuleSets.Current(), new[] { wounded });
+            var simulation = Spawn(RuleSets.PreTuning(), new[] { wounded });
             var combatant = simulation.Get("Wounded");
             combatant.Hp = 900;
             if (shield > 0)
@@ -78,12 +78,12 @@ namespace SWLOR.CombatSim.Tests.Engine
         }
 
         [Test]
-        public void Tuned_CapUsesTheRecipientsMaxHp()
+        public void Current_CapUsesTheRecipientsMaxHp()
         {
             var medic = TestCombatants.Medic("Medic", DifferentShields
                 .Select(feat => TestCombatants.Use(feat, AbilityTarget.NamedAlly, keepUp: true, targetName: "Tank"))
                 .ToArray());
-            var simulation = Spawn(RuleSets.Tuned(), new[] { medic, new CombatantSpec { Name = "Tank", MaxHp = 400 } });
+            var simulation = Spawn(RuleSets.Current(), new[] { medic, new CombatantSpec { Name = "Tank", MaxHp = 400 } });
 
             var peak = RunAndTrackPeakTemporaryHp(simulation, simulation.Get("Tank"), ShieldingWindowSeconds);
 
@@ -91,9 +91,9 @@ namespace SWLOR.CombatSim.Tests.Engine
         }
 
         [Test]
-        public void CurrentRules_StackShieldsFromDifferentKeysPastHalfOfMaxHp()
+        public void PreTuning_StackShieldsFromDifferentKeysPastHalfOfMaxHp()
         {
-            var simulation = Spawn(RuleSets.Current(), new[] { TestCombatants.Medic("Medic", SelfKeepUp(DifferentShields)) });
+            var simulation = Spawn(RuleSets.PreTuning(), new[] { TestCombatants.Medic("Medic", SelfKeepUp(DifferentShields)) });
             var medic = simulation.Get("Medic");
 
             var peak = RunAndTrackPeakTemporaryHp(simulation, medic, ShieldingWindowSeconds);
@@ -102,8 +102,8 @@ namespace SWLOR.CombatSim.Tests.Engine
             medic.TemporaryHp.Select(p => p.Key).Distinct().Should().HaveCount(DifferentShields.Length);
         }
 
+        [TestCase("pre-tuning")]
         [TestCase("current")]
-        [TestCase("tuned")]
         public void CastingTheSameShieldAgain_ReplacesTheOldOneInsteadOfStacking(string ruleSetName)
         {
             var simulation = Spawn(RuleSets.Get(ruleSetName), new[]
@@ -125,11 +125,11 @@ namespace SWLOR.CombatSim.Tests.Engine
         }
 
         [Test]
-        public void Tuned_ReplacingAShieldIsNotShrunkByTheShieldItReplaces()
+        public void Current_ReplacingAShieldIsNotShrunkByTheShieldItReplaces()
         {
             // Pain Suppressant and Deflector Shield fill all but 92 of the cap; Guardian Ward takes that remainder.
             // Recasting Guardian Ward must get the same 92 back, not 0 because its old pool still counted against the cap.
-            var simulation = Spawn(RuleSets.Tuned(), new[]
+            var simulation = Spawn(RuleSets.Current(), new[]
             {
                 TestCombatants.Medic("Medic",
                     TestCombatants.Use("PainSuppressant2", AbilityTarget.Self, keepUp: true),

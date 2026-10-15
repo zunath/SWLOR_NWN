@@ -19,35 +19,44 @@ namespace SWLOR.CombatSim.Tests.Rules
 
         [TestCase(FeatType.Benevolence1)]
         [TestCase(FeatType.Benevolence3)]
-        public void Tuned_SetsBenevolenceRecastToTenSeconds(FeatType feat)
+        public void Current_HasBenevolenceRecastAtTenSeconds(FeatType feat)
         {
-            RuleSets.Tuned().GetRecastSeconds(_catalog.Get(feat)).Should().Be(10f);
+            RuleSets.Current().GetRecastSeconds(_catalog.Get(feat)).Should().Be(10f);
         }
 
         [TestCase(FeatType.MedKit1)]
         [TestCase(FeatType.MedKit4)]
-        public void Tuned_SetsMedKitRecastToTenAndAHalfSeconds(FeatType feat)
+        public void Current_HasMedKitRecastAtTenAndAHalfSeconds(FeatType feat)
         {
-            RuleSets.Tuned().GetRecastSeconds(_catalog.Get(feat)).Should().Be(10.5f);
+            RuleSets.Current().GetRecastSeconds(_catalog.Get(feat)).Should().Be(10.5f);
         }
 
         [TestCase(FeatType.Benevolence3)]
         [TestCase(FeatType.MedKit4)]
         [TestCase(FeatType.QuickDraw4)]
         [TestCase(FeatType.Resuscitation2)]
-        public void CurrentRules_UseTheGameDataRecast(FeatType feat)
+        public void Current_UsesTheGameDataRecast(FeatType feat)
         {
             var ability = _catalog.Get(feat);
 
             RuleSets.Current().GetRecastSeconds(ability).Should().Be(ability.RecastSeconds);
         }
 
+        [TestCase(FeatType.Benevolence1)]
+        [TestCase(FeatType.Benevolence3)]
+        [TestCase(FeatType.MedKit1)]
+        [TestCase(FeatType.MedKit4)]
+        public void PreTuning_PutsBenevolenceAndMedKitBackAtSixSeconds(FeatType feat)
+        {
+            RuleSets.PreTuning().GetRecastSeconds(_catalog.Get(feat)).Should().Be(6f);
+        }
+
         [Test]
-        public void Tuned_LeavesGroupsWithoutAnOverrideAtTheirGameDataRecast()
+        public void PreTuning_LeavesGroupsWithoutAnOverrideAtTheirGameDataRecast()
         {
             var quickDraw4 = _catalog.Get(FeatType.QuickDraw4);
 
-            RuleSets.Tuned().GetRecastSeconds(quickDraw4).Should().Be(quickDraw4.RecastSeconds);
+            RuleSets.PreTuning().GetRecastSeconds(quickDraw4).Should().Be(quickDraw4.RecastSeconds);
         }
 
         [Test]

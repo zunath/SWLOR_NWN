@@ -33,7 +33,7 @@ namespace SWLOR.CombatSim.Tests.Engine
                     false,
                     new[] { TestCombatants.Medic("Medic", triage), new CombatantSpec { Name = "Ally", MaxHp = AllyMaxHp } },
                     new[] { TestCombatants.Dummy("Enemy", true) }),
-                RuleSets.Current(),
+                RuleSets.PreTuning(),
                 _catalog);
             var ally = simulation.Get("Ally");
             ally.Hp = AllyMaxHp * 0.30;
@@ -45,7 +45,7 @@ namespace SWLOR.CombatSim.Tests.Engine
 
             EffectCatalog.TryGet(FeatType.EmergencyTriage1, out var effect).Should().BeTrue();
             var expected = HealingMath.DirectHeal(effect, AllyMaxHp, hpPercentTheGameSees, false, 26, 10,
-                RuleSets.Current().ForceAffinityHealingCap, 0f, 0f);
+                RuleSets.PreTuning().ForceAffinityHealingCap, 0f, 0f);
             ally.Stats.HealingReceived.Should().Be(expected);
         }
     }

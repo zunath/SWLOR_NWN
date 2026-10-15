@@ -28,9 +28,9 @@ namespace SWLOR.CombatSim.Tests.Engine
         }
 
         [Test]
-        public void Tuned_HealOverTimeTicksNeverRefundStamina()
+        public void Current_HealOverTimeTicksNeverRefundStamina()
         {
-            var (simulation, tank, healer) = SpawnTank(RuleSets.Tuned());
+            var (simulation, tank, healer) = SpawnTank(RuleSets.Current());
 
             var refundTimes = HealOncePerSecond(simulation, tank, healer, HealKind.OverTime);
 
@@ -40,9 +40,9 @@ namespace SWLOR.CombatSim.Tests.Engine
         }
 
         [Test]
-        public void CurrentRules_HealOverTimeTicksCanRefundStamina()
+        public void PreTuning_HealOverTimeTicksCanRefundStamina()
         {
-            var (simulation, tank, healer) = SpawnTank(RuleSets.Current());
+            var (simulation, tank, healer) = SpawnTank(RuleSets.PreTuning());
 
             var refundTimes = HealOncePerSecond(simulation, tank, healer, HealKind.OverTime);
 
@@ -51,9 +51,9 @@ namespace SWLOR.CombatSim.Tests.Engine
         }
 
         [Test]
-        public void Tuned_InstantAbilityHealsStillRefundStamina_AtMostOncePerSixSeconds()
+        public void Current_InstantAbilityHealsStillRefundStamina_AtMostOncePerSixSeconds()
         {
-            var (simulation, tank, healer) = SpawnTank(RuleSets.Tuned());
+            var (simulation, tank, healer) = SpawnTank(RuleSets.Current());
 
             var refundTimes = HealOncePerSecond(simulation, tank, healer, HealKind.InstantAbility);
 
@@ -63,9 +63,9 @@ namespace SWLOR.CombatSim.Tests.Engine
         }
 
         [Test]
-        public void CurrentRules_InstantAbilityHealsCanRefundWithoutACooldown()
+        public void PreTuning_InstantAbilityHealsCanRefundWithoutACooldown()
         {
-            var (simulation, tank, healer) = SpawnTank(RuleSets.Current());
+            var (simulation, tank, healer) = SpawnTank(RuleSets.PreTuning());
 
             var refundTimes = HealOncePerSecond(simulation, tank, healer, HealKind.InstantAbility);
 
@@ -73,8 +73,8 @@ namespace SWLOR.CombatSim.Tests.Engine
             GapsBetween(refundTimes).Min().Should().BeLessThan(6.0);
         }
 
+        [TestCase("pre-tuning")]
         [TestCase("current")]
-        [TestCase("tuned")]
         public void NaturalRegeneration_NeverRefundsStamina(string ruleSetName)
         {
             var (simulation, tank, healer) = SpawnTank(RuleSets.Get(ruleSetName));
@@ -88,7 +88,7 @@ namespace SWLOR.CombatSim.Tests.Engine
         [TestCase(false, HealAmount)]
         public void ThePerkMakesHealsOnYouTwentyPercentStronger(bool withPerk, int expected)
         {
-            var (simulation, tank, healer) = SpawnTank(RuleSets.Current(), withPerk);
+            var (simulation, tank, healer) = SpawnTank(RuleSets.PreTuning(), withPerk);
 
             simulation.ApplyHealing(healer, tank, HealAmount, HealKind.InstantAbility);
 
@@ -98,16 +98,16 @@ namespace SWLOR.CombatSim.Tests.Engine
         [Test]
         public void WithoutThePerk_NoHealRefundsStamina()
         {
-            var (simulation, tank, healer) = SpawnTank(RuleSets.Current(), withPerk: false);
+            var (simulation, tank, healer) = SpawnTank(RuleSets.PreTuning(), withPerk: false);
 
             HealOncePerSecond(simulation, tank, healer, HealKind.InstantAbility).Should().BeEmpty();
             HealOncePerSecond(simulation, tank, healer, HealKind.OverTime).Should().BeEmpty();
         }
 
         [Test]
-        public void Tuned_ARealInfusionNeverRefundsStaminaThroughItsTicks()
+        public void Current_ARealInfusionNeverRefundsStaminaThroughItsTicks()
         {
-            var (simulation, tank) = SpawnSelfInfusingTank(RuleSets.Tuned());
+            var (simulation, tank) = SpawnSelfInfusingTank(RuleSets.Current());
 
             RunKeepingTankWounded(simulation, tank, 300);
 
@@ -116,9 +116,9 @@ namespace SWLOR.CombatSim.Tests.Engine
         }
 
         [Test]
-        public void CurrentRules_ARealInfusionRefundsStaminaThroughItsTicks()
+        public void PreTuning_ARealInfusionRefundsStaminaThroughItsTicks()
         {
-            var (simulation, tank) = SpawnSelfInfusingTank(RuleSets.Current());
+            var (simulation, tank) = SpawnSelfInfusingTank(RuleSets.PreTuning());
 
             RunKeepingTankWounded(simulation, tank, 300);
 
@@ -126,7 +126,7 @@ namespace SWLOR.CombatSim.Tests.Engine
         }
 
         [Test]
-        public void Tuned_PurifyingWaveCountsAsAnInstantHeal()
+        public void Current_PurifyingWaveCountsAsAnInstantHeal()
         {
             var wave = TestCombatants.Use("PurifyingWave1", AbilityTarget.Self);
             wave.Damage = new DamageSpec { Min = 1, Max = 1 };
@@ -140,7 +140,7 @@ namespace SWLOR.CombatSim.Tests.Engine
             };
             var simulation = TestScenarios.Spawn(
                 TestScenarios.TwoTeams(false, new[] { tank, TestCombatants.Medic("Healer", wave) }, new[] { TestCombatants.Dummy("Enemy", true) }),
-                RuleSets.Tuned(),
+                RuleSets.Current(),
                 _catalog);
 
             simulation.Get("Tank").Stm = StartingStamina;

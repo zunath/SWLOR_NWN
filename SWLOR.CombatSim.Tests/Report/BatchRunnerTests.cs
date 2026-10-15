@@ -24,11 +24,11 @@ namespace SWLOR.CombatSim.Tests.Report
         [TestCase(25)]
         public void Run_ProducesOneFightEndTimePerRun(int runs)
         {
-            var summary = BatchRunner.Run(DecisiveScenario(), RuleSets.Tuned(), _catalog, runs, seed: 1);
+            var summary = BatchRunner.Run(DecisiveScenario(), RuleSets.Current(), _catalog, runs, seed: 1);
 
             summary.Runs.Should().Be(runs);
             summary.FightEndTimes.Should().HaveCount(runs);
-            summary.RuleSetName.Should().Be("tuned");
+            summary.RuleSetName.Should().Be("current");
         }
 
         [Test]
@@ -40,7 +40,7 @@ namespace SWLOR.CombatSim.Tests.Report
                 new[] { TestCombatants.Striker("Fighter", attacksPerSecond: 1f, damage: 10f) },
                 durationSeconds: 30f);
 
-            var summary = BatchRunner.Run(scenario, RuleSets.Current(), _catalog, 3, seed: 1);
+            var summary = BatchRunner.Run(scenario, RuleSets.PreTuning(), _catalog, 3, seed: 1);
 
             summary.Combatants.Should().HaveCount(2);
             summary.Combatants.Select(c => c.TeamIndex).Should().BeEquivalentTo(new[] { 0, 1 });
@@ -54,7 +54,7 @@ namespace SWLOR.CombatSim.Tests.Report
         {
             const int runs = 10;
 
-            var summary = BatchRunner.Run(DecisiveScenario(), RuleSets.Current(), _catalog, runs, seed: 1);
+            var summary = BatchRunner.Run(DecisiveScenario(), RuleSets.PreTuning(), _catalog, runs, seed: 1);
 
             summary.DecisiveRuns.Should().Be(runs);
             summary.WinsByTeam.Should().ContainSingle().Which.Should().Be(new KeyValuePair<int, int>(0, runs));
@@ -67,7 +67,7 @@ namespace SWLOR.CombatSim.Tests.Report
         [Test]
         public void Run_SummarisesEachCombatantAcrossRuns()
         {
-            var summary = BatchRunner.Run(DecisiveScenario(), RuleSets.Current(), _catalog, 10, seed: 1);
+            var summary = BatchRunner.Run(DecisiveScenario(), RuleSets.PreTuning(), _catalog, 10, seed: 1);
 
             summary.Combatants.Select(c => c.Name).Should().Equal("Striker", "Target");
             var striker = summary.Combatants.Single(c => c.Name == "Striker");
@@ -90,7 +90,7 @@ namespace SWLOR.CombatSim.Tests.Report
                 durationSeconds: 60f);
             scenario.Teams[0].Members[1].JoinAtSeconds = 30f;
 
-            var summary = BatchRunner.Run(scenario, RuleSets.Current(), _catalog, 5, seed: 1);
+            var summary = BatchRunner.Run(scenario, RuleSets.PreTuning(), _catalog, 5, seed: 1);
 
             var early = summary.Combatants.Single(c => c.Name == "Early").AverageFpSpentPerMinute;
             var late = summary.Combatants.Single(c => c.Name == "Late").AverageFpSpentPerMinute;
@@ -112,7 +112,7 @@ namespace SWLOR.CombatSim.Tests.Report
                 durationSeconds: 86_400f);
             scenario.TimeStepSeconds = 0.001f;
 
-            var act = () => BatchRunner.Run(scenario, RuleSets.Current(), _catalog, 3, seed: 1);
+            var act = () => BatchRunner.Run(scenario, RuleSets.PreTuning(), _catalog, 3, seed: 1);
 
             act.Should().Throw<ArgumentException>().WithMessage("*combatant-steps*");
         }
@@ -124,7 +124,7 @@ namespace SWLOR.CombatSim.Tests.Report
             var foes = Horde("Foes");
             var scenario = TestScenarios.TwoTeams(false, new[] { crowd }, new[] { foes }, durationSeconds: 1f);
 
-            var act = () => BatchRunner.Run(scenario, RuleSets.Current(), _catalog, 1, seed: 1);
+            var act = () => BatchRunner.Run(scenario, RuleSets.PreTuning(), _catalog, 1, seed: 1);
 
             act.Should().Throw<ArgumentException>().WithMessage("*simulated events*");
         }
@@ -137,7 +137,7 @@ namespace SWLOR.CombatSim.Tests.Report
                 durationSeconds: 86_400f);
             scenario.TimeStepSeconds = 86_400f;
 
-            var act = () => BatchRunner.Run(scenario, RuleSets.Current(), _catalog, BatchRunner.MaximumRuns, seed: 1);
+            var act = () => BatchRunner.Run(scenario, RuleSets.PreTuning(), _catalog, BatchRunner.MaximumRuns, seed: 1);
 
             act.Should().Throw<ArgumentException>().WithMessage("*simulated events*");
         }
@@ -150,7 +150,7 @@ namespace SWLOR.CombatSim.Tests.Report
             medic.ReactionSeconds = 0.001f;
             var scenario = TestScenarios.TwoTeams(false, new[] { medic }, new[] { TestCombatants.Dummy("Enemy", true) }, durationSeconds: 2.9f);
             scenario.TimeStepSeconds = 0.001f;
-            var rules = RuleSets.Current();
+            var rules = RuleSets.PreTuning();
             rules.RecastOverrides["ForceSanctuary"] = 0f;
 
             var act = () => BatchRunner.Run(scenario, rules, _catalog, 1000, seed: 1);
@@ -172,7 +172,7 @@ namespace SWLOR.CombatSim.Tests.Report
             var scenario = TestScenarios.TwoTeams(false, new[] { casters }, new[] { crowd }, durationSeconds: 0.001f);
             scenario.TimeStepSeconds = 0.001f;
 
-            var act = () => BatchRunner.Run(scenario, RuleSets.Current(), _catalog, 100, seed: 1);
+            var act = () => BatchRunner.Run(scenario, RuleSets.PreTuning(), _catalog, 100, seed: 1);
 
             act.Should().Throw<ArgumentException>().WithMessage("*simulated events*");
         }
@@ -187,7 +187,7 @@ namespace SWLOR.CombatSim.Tests.Report
             right.Count = 200;
             var scenario = TestScenarios.TwoTeams(false, new[] { left }, new[] { right });
 
-            var act = () => BatchRunner.Run(scenario, RuleSets.Current(), _catalog, 200, seed: 1);
+            var act = () => BatchRunner.Run(scenario, RuleSets.PreTuning(), _catalog, 200, seed: 1);
 
             act.Should().Throw<ArgumentException>().WithMessage("*combatant-pair checks*");
         }
@@ -201,7 +201,7 @@ namespace SWLOR.CombatSim.Tests.Report
                 hoarder.Abilities.Add(TestCombatants.Use("Benevolence1", AbilityTarget.Self, belowHpPercent: 0, minIntervalSeconds: 600));
             var scenario = TestScenarios.TwoTeams(false, new[] { hoarder }, new[] { TestCombatants.Dummy("Enemy", true) });
 
-            var act = () => BatchRunner.Run(scenario, RuleSets.Current(), _catalog, 200, seed: 1);
+            var act = () => BatchRunner.Run(scenario, RuleSets.PreTuning(), _catalog, 200, seed: 1);
 
             act.Should().Throw<ArgumentException>().WithMessage("*priority-list checks*");
         }
@@ -216,7 +216,7 @@ namespace SWLOR.CombatSim.Tests.Report
             crowd.Count = 200;
             var scenario = TestScenarios.TwoTeams(false, new[] { shouters }, new[] { crowd }, durationSeconds: 86_400f);
             scenario.TimeStepSeconds = 1f;
-            var rules = RuleSets.Current();
+            var rules = RuleSets.PreTuning();
             rules.RecastOverrides["CleanseOrder"] = 0f;
 
             var act = () => BatchRunner.Run(scenario, rules, _catalog, 1, seed: 1);
@@ -241,7 +241,7 @@ namespace SWLOR.CombatSim.Tests.Report
             crowd.Count = 200;
             var scenario = TestScenarios.TwoTeams(false, new[] { crowd }, new[] { TestCombatants.Dummy("Enemy", true) });
 
-            var act = () => BatchRunner.Run(scenario, RuleSets.Current(), _catalog, 100_000, seed: 1);
+            var act = () => BatchRunner.Run(scenario, RuleSets.PreTuning(), _catalog, 100_000, seed: 1);
 
             act.Should().Throw<ArgumentException>().WithMessage("*combatant-runs*");
         }
@@ -252,7 +252,7 @@ namespace SWLOR.CombatSim.Tests.Report
             var scenario = TestScenarios.TwoTeams(true,
                 new[] { TestCombatants.Dummy("Left") }, new[] { TestCombatants.Dummy("Right") }, durationSeconds: 5f);
 
-            var summary = BatchRunner.Run(scenario, RuleSets.Current(), _catalog, 3, seed: 1);
+            var summary = BatchRunner.Run(scenario, RuleSets.PreTuning(), _catalog, 3, seed: 1);
 
             summary.Runs.Should().Be(3);
             summary.FightEndTimes.Should().HaveCount(3).And.OnlyContain(t => Math.Abs(t - 5.0) < 1e-6);
@@ -265,9 +265,9 @@ namespace SWLOR.CombatSim.Tests.Report
         [Test]
         public void Run_IsDeterministicForASeed_AndVariesWithTheSeed()
         {
-            var first = BatchRunner.Run(DecisiveScenario(), RuleSets.Current(), _catalog, 20, seed: 42);
-            var second = BatchRunner.Run(DecisiveScenario(), RuleSets.Current(), _catalog, 20, seed: 42);
-            var otherSeed = BatchRunner.Run(DecisiveScenario(), RuleSets.Current(), _catalog, 20, seed: 43);
+            var first = BatchRunner.Run(DecisiveScenario(), RuleSets.PreTuning(), _catalog, 20, seed: 42);
+            var second = BatchRunner.Run(DecisiveScenario(), RuleSets.PreTuning(), _catalog, 20, seed: 42);
+            var otherSeed = BatchRunner.Run(DecisiveScenario(), RuleSets.PreTuning(), _catalog, 20, seed: 43);
 
             second.FightEndTimes.Should().Equal(first.FightEndTimes);
             first.FightEndTimes.Distinct().Should().HaveCountGreaterThan(1, "each run starts its attacks at a different random moment");

@@ -599,6 +599,9 @@ namespace SWLOR.CombatSim.Engine
                 if (use.MinIntervalSeconds > 0 && caster.LastUsedAt.TryGetValue(use.Feat, out var lastUsedAt) && _now < lastUsedAt + use.MinIntervalSeconds)
                     continue;
 
+                if (info.IsHostile && _now + 1e-9 < caster.HostileAbilityReadyAt)
+                    continue;
+
                 // Queueing another weapon ability would replace the one waiting for a hit.
                 if (info.IsQueuedWeapon && caster.QueuedWeaponAbility != null)
                     continue;
@@ -659,6 +662,8 @@ namespace SWLOR.CombatSim.Engine
             };
 
             caster.NextActionAt = _now + info.CastSeconds + info.ImpactDelaySeconds + caster.Spec.ReactionSeconds;
+            if (info.IsHostile)
+                caster.HostileAbilityReadyAt = _now + _rules.HostileAbilityDelaySeconds;
             // The game stops the attack for an ability and resumes it 0.1s after the impact, or after queueing a weapon
             // ability (QueueWeaponAbility), so a swing due now cannot carry the ability queued with it.
             caster.NextAttackAt = Math.Max(caster.NextAttackAt, _now + info.CastSeconds + info.ImpactDelaySeconds + ResumeAttackDelaySeconds);
@@ -1100,7 +1105,7 @@ namespace SWLOR.CombatSim.Engine
 
         /// <summary>
         /// Pays an ability's HP cost the way the game's SacrificeHitPoints does: temporary HP first, never below 1 HP.
-        /// The live rules let it land unpaid at 1 HP; Bloodlust's stamina restore follows the payment.
+        /// Before the tuning it landed unpaid at 1 HP; Bloodlust's stamina restore follows the payment.
         /// </summary>
         private void PayHitPoints(Combatant caster, HitPointCost cost)
         {
@@ -1147,7 +1152,7 @@ namespace SWLOR.CombatSim.Engine
 
             // GameMath.PercentOf rounds the restore up, to at least 1.
             double stamina = Math.Max(1, (int)Math.Ceiling(caster.Spec.MaxStm * (percent / 100f)));
-            // The tuned rules scale the restore by the share of the cost actually lost, at least 1.
+            // The current rules scale the restore by the share of the cost actually lost, at least 1.
             if (_rules.ScaleHitPointSpendRestoreToHitPointsLost && hitPointsLost < fullCost)
                 stamina = Math.Max(1, Math.Ceiling(stamina * hitPointsLost / fullCost));
             RestoreStamina(caster, (int)stamina, true);

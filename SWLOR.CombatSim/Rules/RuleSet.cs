@@ -5,7 +5,8 @@ namespace SWLOR.CombatSim.Rules
 {
     /// <summary>
     /// The balance rules a simulation runs under. Presets live in <see cref="RuleSets"/>; any value can be
-    /// overridden from a JSON file to try alternatives without code changes.
+    /// overridden from a JSON file to try alternatives without code changes. Behavior defaults are the rules before
+    /// the combat tuning; <see cref="RuleSets.Current"/> sets the ones the game has now.
     /// </summary>
     public sealed class RuleSet
     {
@@ -13,7 +14,7 @@ namespace SWLOR.CombatSim.Rules
 
         public string Name { get; set; }
 
-        /// <summary>Highest multiplier Light affinity may apply to heals and shields (x1.5 today).</summary>
+        /// <summary>Highest multiplier Light affinity may apply to heals and shields (x1.5 before the tuning, x1.25 now).</summary>
         public float ForceAffinityHealingCap { get; set; } = 1.5f;
 
         /// <summary>Recast seconds by recast group name, replacing the game data's value.</summary>
@@ -24,7 +25,7 @@ namespace SWLOR.CombatSim.Rules
 
         /// <summary>
         /// How long Force Convergence restores FP. The status, and its Force accuracy bonus, lasts 30 seconds under every
-        /// rule set; the tuned game restores its FP over the first 20.
+        /// rule set; the game now restores its FP over the first 20.
         /// </summary>
         public float ConvergenceDurationSeconds { get; set; } = 30f;
         public bool HarmonyInstantHealsOnly { get; set; }
@@ -39,6 +40,9 @@ namespace SWLOR.CombatSim.Rules
 
         /// <summary>Bloodlust's stamina restore shrinks with the HP actually lost, instead of paying in full.</summary>
         public bool ScaleHitPointSpendRestoreToHitPointsLost { get; set; }
+
+        /// <summary>Seconds a hostile ability makes the caster wait before their next hostile ability; 0 means no wait.</summary>
+        public float HostileAbilityDelaySeconds { get; set; }
 
         public ReviveRule Revives { get; set; } = ReviveRule.Unrestricted;
         public float PveReviveLockoutSeconds { get; set; } = 300f;
@@ -128,6 +132,7 @@ namespace SWLOR.CombatSim.Rules
             // A bound keeps every adjusted cost a sensible whole number.
             Between(nameof(FpCostMultiplier), FpCostMultiplier, 0, MaximumCostMultiplier);
             Between(nameof(StmCostMultiplier), StmCostMultiplier, 0, MaximumCostMultiplier);
+            AtLeast(nameof(HostileAbilityDelaySeconds), HostileAbilityDelaySeconds, 0);
 
             if (!Enum.IsDefined(Revives))
                 problems.Add($"{nameof(Revives)} must be one of {string.Join(", ", Enum.GetNames<ReviveRule>())}");

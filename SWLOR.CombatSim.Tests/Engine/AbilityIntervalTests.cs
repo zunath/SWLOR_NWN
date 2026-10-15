@@ -75,7 +75,7 @@ namespace SWLOR.CombatSim.Tests.Engine
             caster.MaxFp = 1;
             var simulation = TestScenarios.Spawn(
                 TestScenarios.TwoTeams(false, new[] { caster }, new[] { TestCombatants.Dummy("Enemy", true) }),
-                RuleSets.Current(),
+                RuleSets.PreTuning(),
                 _catalog);
             var combatant = simulation.Get("Caster");
 
@@ -96,7 +96,7 @@ namespace SWLOR.CombatSim.Tests.Engine
             caster.ReactionSeconds = 0.1f;
             var scenario = TestScenarios.TwoTeams(false, new[] { caster }, new[] { TestCombatants.Dummy("Enemy", true) }, durationSeconds: 0.05f);
 
-            var result = new Simulation(scenario, RuleSets.Current(), _catalog, 1).Run();
+            var result = new Simulation(scenario, RuleSets.PreTuning(), _catalog, 1).Run();
 
             result.Combatants.Single(c => c.Name == "Caster").Stats.StarvedSeconds.Should().BeLessThanOrEqualTo(0.05 + 1e-9);
         }
@@ -114,7 +114,7 @@ namespace SWLOR.CombatSim.Tests.Engine
             enemy.MaxHp = 1;
             var scenario = TestScenarios.TwoTeams(false, new[] { caster }, new[] { enemy }, durationSeconds: 60f);
 
-            var result = new Simulation(scenario, RuleSets.Current(), _catalog, 1).Run();
+            var result = new Simulation(scenario, RuleSets.PreTuning(), _catalog, 1).Run();
 
             result.WinningTeam.Should().Be(0);
             result.Combatants.Single(c => c.Name == "Caster").Stats.StarvedSeconds.Should().BeLessThanOrEqualTo(result.EndedAt,
@@ -141,7 +141,7 @@ namespace SWLOR.CombatSim.Tests.Engine
                 false,
                 new[] { TestCombatants.Medic("Caster", Rock(interval)) },
                 new[] { TestCombatants.Dummy("Enemy", true) });
-            var simulation = new Simulation(scenario, RuleSets.Current(), _catalog, 1);
+            var simulation = new Simulation(scenario, RuleSets.PreTuning(), _catalog, 1);
 
             var act = () => simulation.Spawn();
 
@@ -162,7 +162,7 @@ namespace SWLOR.CombatSim.Tests.Engine
                     false,
                     new[] { TestCombatants.Medic("Caster", abilities), new CombatantSpec { Name = "Ally", MaxHp = 1000 } },
                     new[] { TestCombatants.Dummy("Enemy", true) }),
-                RuleSets.Current(),
+                RuleSets.PreTuning(),
                 _catalog);
             return (simulation, simulation.Get("Caster"), simulation.Get("Enemy"));
         }

@@ -398,9 +398,9 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             var source = ctx.SpawnCreature("civilian", 1f);
             var target = ctx.SpawnCreature("civilian", 3f);
             await ctx.DelaySecondsAsync(1f);
-            Prepare(ctx, source, 1000, 500);
+            Prepare(ctx, source, 1000, 600);
             Prepare(ctx, target, 1000, 1000);
-            TemporaryHitPointEffects.ApplyFlat(source, "LIFESTEAL_RECIPIENT", 600, 30f);
+            TemporaryHitPointEffects.ApplyFlat(source, "LIFESTEAL_RECIPIENT", 500, 30f);
             TemporaryStatModifier.Add(source, StatType.HealingReceivedAttackPercentAdjustment, 10, 30f);
             TemporaryStatModifier.Add(source, StatType.HealingReceivedAttackDurationSeconds, 30, 30f);
             TemporaryStatModifier.Add(source, StatType.DefeatedEnemyHPPercentRestore, 12, 30f);
@@ -412,13 +412,13 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 ctx.AssertEqual(60, Combat.ApplyDamageDerivedHealing(source, 684, 25),
                     "ordinary lifesteal also restores base HP");
             }
-            ctx.AssertEqual(710, ObjectPlugin.GetCurrentHitPoints(source), "both damage-derived heals reach base HP");
+            ctx.AssertEqual(810, ObjectPlugin.GetCurrentHitPoints(source), "both damage-derived heals reach base HP");
             ctx.AssertEqual(10, Stat.GetStatAdjustment(source, StatType.AttackPercentAdjustment),
                 "receiving healing still triggers the attack reward while shielded");
             Combat.ApplyDefeatedEnemyEffects(source);
             Combat.ApplyDefeatedEnemyEffects(source);
-            ctx.AssertEqual(830, ObjectPlugin.GetCurrentHitPoints(source), "kill recovery heals base HP and retains its 120-HP budget");
-            ctx.AssertEqual(600, TemporaryHitPointEffects.GetRemaining(source), "healing does not replace or consume temporary HP");
+            ctx.AssertEqual(930, ObjectPlugin.GetCurrentHitPoints(source), "kill recovery heals base HP and retains its 120-HP budget");
+            ctx.AssertEqual(500, TemporaryHitPointEffects.GetRemaining(source), "healing does not replace or consume temporary HP");
         }
 
         [EngineTest("Shielded overhealing spends only recovered base HP from shared budgets", Category = "CombatHealing", TimeoutSeconds = 20f)]
@@ -429,7 +429,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             await ctx.DelaySecondsAsync(1f);
             Prepare(ctx, source, 1000, 999);
             Prepare(ctx, target, 1000, 1000);
-            TemporaryHitPointEffects.ApplyFlat(source, "LIFESTEAL_RECIPIENT", 600, 30f);
+            TemporaryHitPointEffects.ApplyFlat(source, "LIFESTEAL_RECIPIENT", 500, 30f);
             TemporaryStatModifier.Add(source, StatType.DefeatedEnemyHPPercentRestore, 12, 30f);
             using (Combat.BeginDamageDerivedHealing(source, target))
                 ctx.AssertEqual(1, Combat.ApplyDamageDerivedHealing(source, 684, 25), "only one missing base HP is healed");
@@ -448,7 +448,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             using (Combat.BeginDamageDerivedHealing(source, target))
                 ctx.AssertEqual(0, Combat.ApplyDamageDerivedHealing(source, 684, 25), "the 240-HP rolling limit still applies");
             ctx.AssertEqual(859, ObjectPlugin.GetCurrentHitPoints(source), "base HP receives 120 kill HP plus 239 remaining passive HP");
-            ctx.AssertEqual(600, TemporaryHitPointEffects.GetRemaining(source), "overhealing does not refill or consume the shield");
+            ctx.AssertEqual(500, TemporaryHitPointEffects.GetRemaining(source), "overhealing does not refill or consume the shield");
         }
 
         [EngineTest("Ability lifesteal includes reactive shields before reserving queued damage", Category = "CombatHealing", TimeoutSeconds = 20f)]

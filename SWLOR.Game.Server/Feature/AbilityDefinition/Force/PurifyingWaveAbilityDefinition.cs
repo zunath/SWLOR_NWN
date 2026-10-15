@@ -47,7 +47,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .IsCastedAbility()
                 .IsHostileAbility()
                 .BreaksStealth()
-                .RequirementFP(7);
+                .RequirementFP(8);
         }
 
         private static void PurifyingWave1ImpactAction(uint activator, uint target, int level, Location targetLocation)

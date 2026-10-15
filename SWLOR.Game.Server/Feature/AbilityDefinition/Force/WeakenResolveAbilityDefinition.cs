@@ -71,7 +71,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .IsCastedAbility()
                 .IsHostileAbility()
                 .BreaksStealth()
-                .RequirementFP(5);
+                .RequirementFP(6);
         }
 
         private static void WeakenResolve1ImpactAction(uint activator, uint target, int level, Location targetLocation)

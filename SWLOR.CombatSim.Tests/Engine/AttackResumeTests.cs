@@ -29,7 +29,7 @@ namespace SWLOR.CombatSim.Tests.Engine
             caster.AutoAttack = new AutoAttackSpec { AttacksPerSecond = 4f, Damage = new DamageSpec { Min = 1f, Max = 1f, HitChance = 1f } };
             var simulation = TestScenarios.Spawn(
                 TestScenarios.TwoTeams(false, new[] { caster }, new[] { TestCombatants.Dummy("Enemy", true) }),
-                RuleSets.Current(),
+                RuleSets.PreTuning(),
                 _catalog);
             var attacker = simulation.Get("Caster");
             var enemy = simulation.Get("Enemy");

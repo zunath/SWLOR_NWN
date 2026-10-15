@@ -18,9 +18,9 @@ namespace SWLOR.CombatSim.Tests.Cli
         [Test]
         public void RulesNames_AreSplitOnCommasAndTrimmed()
         {
-            var options = new Dictionary<string, List<string>> { ["--rules"] = new() { "current, tuned" } };
+            var options = new Dictionary<string, List<string>> { ["--rules"] = new() { "pre-tuning, current" } };
 
-            RuleSetSelection.Resolve(options).Select(rules => rules.Name).Should().Equal(RuleSets.CurrentName, RuleSets.TunedName);
+            RuleSetSelection.Resolve(options).Select(rules => rules.Name).Should().Equal(RuleSets.PreTuningName, RuleSets.CurrentName);
         }
 
         [TestCase("")]

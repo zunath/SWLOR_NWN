@@ -50,7 +50,7 @@ namespace SWLOR.CombatSim.Tests.Engine
                         ally
                     },
                     new[] { TestCombatants.Dummy("Enemy", true) }),
-                RuleSets.Current(),
+                RuleSets.PreTuning(),
                 _catalog);
             var target = simulation.Get("Ally");
             SimulationClock.RunUntil(
@@ -77,7 +77,7 @@ namespace SWLOR.CombatSim.Tests.Engine
                         new CombatantSpec { Name = "Ally", MaxHp = TestCombatants.EffectivelyUnlimited }
                     },
                     new[] { TestCombatants.Dummy("Enemy", true) }),
-                RuleSets.Current(),
+                RuleSets.PreTuning(),
                 _catalog);
             var ally = simulation.Get("Ally");
             ally.Hp = ally.Spec.MaxHp * 0.30;
@@ -98,7 +98,7 @@ namespace SWLOR.CombatSim.Tests.Engine
             var ally = new CombatantSpec { Name = "Ally", MaxHp = TestCombatants.EffectivelyUnlimited, DamageReductionPercent = 20f };
             var simulation = TestScenarios.Spawn(
                 TestScenarios.TwoTeams(false, new[] { TestCombatants.Medic("Medic", use), ally }, new[] { TestCombatants.Dummy("Enemy", true) }),
-                RuleSets.Current(),
+                RuleSets.PreTuning(),
                 _catalog);
             CastOnce(simulation);
 
@@ -120,7 +120,7 @@ namespace SWLOR.CombatSim.Tests.Engine
                         new CombatantSpec { Name = "Higher", MaxHp = 1000 }
                     },
                     new[] { TestCombatants.Dummy("Enemy", true) }),
-                RuleSets.Current(),
+                RuleSets.PreTuning(),
                 _catalog);
             var lower = simulation.Get("Lower");
             lower.Hp = 300;
@@ -201,7 +201,7 @@ namespace SWLOR.CombatSim.Tests.Engine
             var ally = new CombatantSpec { Name = "Ally", MaxHp = TestCombatants.EffectivelyUnlimited };
             return TestScenarios.Spawn(
                 TestScenarios.TwoTeams(false, new[] { TestCombatants.Medic("Medic", use), ally }, new[] { TestCombatants.Dummy("Enemy", true) }),
-                RuleSets.Current(),
+                RuleSets.PreTuning(),
                 _catalog);
         }
 

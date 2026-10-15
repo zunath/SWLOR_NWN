@@ -42,6 +42,9 @@ namespace SWLOR.CombatSim.Engine
         /// <summary>When each ability (by feat name) was last used, for <see cref="AbilityUseSpec.MinIntervalSeconds"/>.</summary>
         public Dictionary<string, double> LastUsedAt { get; } = new();
 
+        /// <summary>When the next hostile ability can be used, for <see cref="Rules.RuleSet.HostileAbilityDelaySeconds"/>.</summary>
+        public double HostileAbilityReadyAt { get; set; }
+
         public PendingCast Casting { get; set; }
         public double NextActionAt { get; set; }
         public double NextAttackAt { get; set; }

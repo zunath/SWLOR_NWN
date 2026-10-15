@@ -40,7 +40,7 @@ namespace SWLOR.CombatSim.Tests.Engine
             striker.AutoAttack.Damage.Area = true;
             var simulation = TestScenarios.Spawn(
                 TestScenarios.TwoTeams(false, new[] { striker }, new[] { TestCombatants.Dummy("First", true), TestCombatants.Dummy("Second", true) }),
-                RuleSets.Current(),
+                RuleSets.PreTuning(),
                 _catalog);
 
             RunThrough(simulation, BaselineStep);
@@ -65,7 +65,7 @@ namespace SWLOR.CombatSim.Tests.Engine
         {
             var simulation = TestScenarios.Spawn(
                 TestScenarios.TwoTeams(false, new[] { TestCombatants.Striker("Striker", attacksPerSecond: 2f, damage: 10f) }, new[] { TestCombatants.Dummy("Target", true) }),
-                RuleSets.Current(),
+                RuleSets.PreTuning(),
                 _catalog);
 
             RunThrough(simulation, step);
@@ -77,7 +77,7 @@ namespace SWLOR.CombatSim.Tests.Engine
             var regenerator = new CombatantSpec { Name = "Regenerator", MaxHp = 1000, MaxFp = 1000, FpRegenPer30Seconds = 30, MaxStm = 1000, StmRegenPer30Seconds = 30 };
             var simulation = TestScenarios.Spawn(
                 TestScenarios.TwoTeams(false, new[] { regenerator }, new[] { TestCombatants.Dummy("Enemy", true) }),
-                RuleSets.Current(),
+                RuleSets.PreTuning(),
                 _catalog);
             var spawned = simulation.Get("Regenerator");
             spawned.Fp = 0;

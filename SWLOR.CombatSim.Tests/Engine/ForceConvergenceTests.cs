@@ -27,9 +27,9 @@ namespace SWLOR.CombatSim.Tests.Engine
         }
 
         [Test]
-        public void CurrentRules_RestoreSixtyPercentOfMaxFpOverThirtySeconds()
+        public void PreTuning_RestoreSixtyPercentOfMaxFpOverThirtySeconds()
         {
-            var (simulation, caster) = SpawnCaster(RuleSets.Current(), withPerk: true);
+            var (simulation, caster) = SpawnCaster(RuleSets.PreTuning(), withPerk: true);
 
             var ticks = CastOnceAndCollectRefundTicks(simulation, caster, out var castAt);
 
@@ -40,9 +40,9 @@ namespace SWLOR.CombatSim.Tests.Engine
         }
 
         [Test]
-        public void Tuned_RestoresFortyPercentOfMaxFpOverTwentySeconds()
+        public void Current_RestoresFortyPercentOfMaxFpOverTwentySeconds()
         {
-            var (simulation, caster) = SpawnCaster(RuleSets.Tuned(), withPerk: true);
+            var (simulation, caster) = SpawnCaster(RuleSets.Current(), withPerk: true);
 
             var ticks = CastOnceAndCollectRefundTicks(simulation, caster, out var castAt);
 
@@ -55,7 +55,7 @@ namespace SWLOR.CombatSim.Tests.Engine
         [Test]
         public void RefundsArrive_EveryTwoSeconds()
         {
-            var (simulation, caster) = SpawnCaster(RuleSets.Current(), withPerk: true);
+            var (simulation, caster) = SpawnCaster(RuleSets.PreTuning(), withPerk: true);
 
             var ticks = CastOnceAndCollectRefundTicks(simulation, caster, out _);
 
@@ -63,8 +63,8 @@ namespace SWLOR.CombatSim.Tests.Engine
                 (ticks[i] - ticks[i - 1]).Should().BeInRange(TickSeconds - 0.15, TickSeconds + 0.15);
         }
 
+        [TestCase("pre-tuning")]
         [TestCase("current")]
-        [TestCase("tuned")]
         public void WithoutThePerk_NothingIsRestored(string ruleSetName)
         {
             var (simulation, caster) = SpawnCaster(RuleSets.Get(ruleSetName), withPerk: false);
@@ -79,7 +79,7 @@ namespace SWLOR.CombatSim.Tests.Engine
         [Test]
         public void AbilityThatCostsOnlyStamina_DoesNotTriggerConvergence()
         {
-            var (simulation, caster) = SpawnCaster(RuleSets.Current(), withPerk: true, feat: "MedKit1");
+            var (simulation, caster) = SpawnCaster(RuleSets.PreTuning(), withPerk: true, feat: "MedKit1");
 
             var ticks = CastOnceAndCollectRefundTicks(simulation, caster, out _);
 
@@ -90,7 +90,7 @@ namespace SWLOR.CombatSim.Tests.Engine
         [Test]
         public void CastingAgainDuringTheWindow_DoesNotExtendOrRepeatIt()
         {
-            var (simulation, caster) = SpawnCaster(RuleSets.Current(), withPerk: true);
+            var (simulation, caster) = SpawnCaster(RuleSets.PreTuning(), withPerk: true);
             SimulationClock.RunUntil(simulation, () => caster.Stats.AbilitiesUsed == 1, 10, "first cast resolved");
 
             // Wounded again 14 seconds in, so the same Benevolence is cast a second time inside the 45 second cooldown.
@@ -149,7 +149,7 @@ namespace SWLOR.CombatSim.Tests.Engine
         [Test]
         public void AZeroFpCostMultiplier_StillTriggersConvergence_FromTheDeclaredRequirement()
         {
-            var rules = RuleSets.Tuned();
+            var rules = RuleSets.Current();
             rules.FpCostMultiplier = 0f;
             var lightning = TestCombatants.Use("ForceLightning3", AbilityTarget.Enemy, minIntervalSeconds: 600);
             lightning.Damage = new DamageSpec { Min = 1f, Max = 1f, HitChance = 1f };
@@ -184,7 +184,7 @@ namespace SWLOR.CombatSim.Tests.Engine
                 Abilities = new List<AbilityUseSpec> { use }
             };
             var scenario = TestScenarios.TwoTeams(false, new[] { caster }, new[] { TestCombatants.Dummy("Enemy", true) });
-            var simulation = TestScenarios.Spawn(scenario, RuleSets.Tuned(), _catalog);
+            var simulation = TestScenarios.Spawn(scenario, RuleSets.Current(), _catalog);
             var spawned = simulation.Get("Caster");
             spawned.Fp = StartingFp + 100;
             return (simulation, spawned);

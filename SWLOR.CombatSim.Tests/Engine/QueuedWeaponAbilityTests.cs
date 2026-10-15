@@ -34,7 +34,7 @@ namespace SWLOR.CombatSim.Tests.Engine
                 fighter.AutoAttack = new AutoAttackSpec { AttacksPerSecond = 0f, Damage = new DamageSpec { Min = 1f, Max = 1f } };
             var scenario = TestScenarios.TwoTeams(false, new[] { fighter }, new[] { TestCombatants.Dummy("Enemy", true) });
 
-            var act = () => new Simulation(scenario, RuleSets.Current(), _catalog, 1).Spawn();
+            var act = () => new Simulation(scenario, RuleSets.PreTuning(), _catalog, 1).Spawn();
 
             act.Should().Throw<InvalidDataException>().WithMessage("*FortressStrike3*autoattack*");
         }
@@ -90,7 +90,7 @@ namespace SWLOR.CombatSim.Tests.Engine
                 false, new[] { fighter }, Enumerable.Range(1, 3).Select(i => TestCombatants.Dummy($"Enemy {i}", true)));
             scenario.Teams[0].TargetPolicy = TargetPolicy.Focus;
             scenario.Teams[0].FocusTarget = "Enemy 1";
-            var simulation = TestScenarios.Spawn(scenario, RuleSets.Current(), _catalog);
+            var simulation = TestScenarios.Spawn(scenario, RuleSets.PreTuning(), _catalog);
             var attacker = simulation.Get("Fighter");
 
             SimulationClock.RunUntil(simulation, () => attacker.Stats.AbilitiesUsed == 1, 10, "Fortress Strike queued");
@@ -130,7 +130,7 @@ namespace SWLOR.CombatSim.Tests.Engine
             fighter.Abilities.Add(strike);
             return TestScenarios.Spawn(
                 TestScenarios.TwoTeams(false, new[] { fighter }, new[] { TestCombatants.Dummy("Enemy", true) }),
-                RuleSets.Current(),
+                RuleSets.PreTuning(),
                 _catalog);
         }
     }

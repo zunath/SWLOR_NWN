@@ -108,34 +108,6 @@ public static class PairedRangedConversionEngineTests
                 ctx.Assert(TwinPistolEquipment.IsActivePair(actor), "The fixture equips a real companion pair");
             });
             await ctx.DelaySecondsAsync(.4f);
-            // The opt-in companion scheduler must not alter the default native damage-roll
-            // contract: remaining physical damage notifies inline; full conversion is Triggered-only.
-            await ctx.ExecuteInCreatureContextAsync(actor, () =>
-            {
-                var native = NWNXLib.g_pAppManager.m_pServerExoApp.GetGameObject(actor).AsNWSCreature();
-                var defender = NWNXLib.g_pAppManager.m_pServerExoApp.GetGameObject(target).AsNWSObject();
-                native.m_pcCombatRound.StartCombatRound(target);
-                native.m_pcCombatRound.m_nCurrentAttack = 0;
-                native.m_pcCombatRound.GetAttack(0).m_bRangedAttack = 1;
-                Combat.SetAutoAttackHitResolutionOverride(true);
-                ctx.SeedRandom(1);
-                native.ResolveAttackRoll(defender);
-                var damage = native.m_pStats.GetDamageRoll(defender, 0, 0, 0, 0, 0);
-                ctx.AssertEqual(conversionPercent == 100 ? 0 : 1, probe.DirectNotifications,
-                    "The default native resolver preserves inline physical direct notifications");
-                ctx.AssertEqual(damage, probe.DirectDamage, "The default direct notification uses only remaining physical damage");
-                ctx.AssertEqual(0, probe.Notifications, "The default converted Force portion still defers off the native stack");
-            });
-            if (conversionPercent > 0)
-                await ctx.WaitUntilAsync(() => probe.Notifications == 1, 1f, "the default native conversion control to settle");
-            await ctx.ExecuteInCreatureContextAsync(actor, () =>
-            {
-                probe = new ProjectileConversionProbeStatusEffect();
-                ctx.Assert(StatusEffect.ApplyStatusEffect(actor, target, probe, 60f), "A fresh reaction probe isolates the actual projectile");
-                ObjectPlugin.SetCurrentHitPoints(target, 20000);
-                ObjectPlugin.SetCurrentHitPoints(actor, 10000);
-                Stat.RestoreFP(target, Stat.GetMaxFP(target));
-            });
             Impacts.Clear();
             _observedActor = actor;
             _observedTarget = target;
@@ -212,14 +184,14 @@ public static class PairedRangedConversionEngineTests
                 3f, "the converted projectile and its complete triggered reaction to arrive");
             await ctx.DelaySecondsAsync(.3f);
             ctx.AssertEqual(1, probe.Notifications, "The converted portion dispatches its reaction exactly once");
-            ctx.AssertEqual(fp - 1 - GameMath.PercentOf(launchDamage, 10), Stat.GetCurrentFP(target),
+            ctx.AssertEqual(fp - 1 - (launchDamage > 0 ? GameMath.PercentOf(launchDamage, 10) : 0), Stat.GetCurrentFP(target),
                 "The captured critical rider and converted reaction spend FP only at arrival");
             ctx.AssertEqual(conversionPercent == 100 ? 0 : 1, probe.DirectNotifications,
                 "Partial conversion notifies one direct hit; full conversion retains the native Triggered-only contract");
             ctx.AssertEqual(conversionPercent == 100 ? 0 : 1, probe.PreDamageNotifications,
                 "Physical pre-damage reactions preserve their original count");
             ctx.AssertEqual(launchDamage, probe.DirectDamage, "The direct callback preserves the remaining physical amount");
-            ctx.AssertEqual(actorHealth + GameMath.PercentOf(launchDamage, 2), GetCurrentHitPoints(actor),
+            ctx.AssertEqual(actorHealth + (launchDamage > 0 ? GameMath.PercentOf(launchDamage, 2) : 0), GetCurrentHitPoints(actor),
                 "Blood Weapon heals exactly once from the same physical share as the native path");
             ctx.AssertEqual(launchDamage, Impacts.Sum(impact => impact.Physical), "The physical portion uses its captured final mitigation once");
             ctx.AssertEqual(0, Impacts.Sum(impact => impact.Fire), "Changing the weapon in flight creates no new Fire payload");

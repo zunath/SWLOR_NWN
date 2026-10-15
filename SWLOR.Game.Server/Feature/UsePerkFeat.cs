@@ -175,7 +175,12 @@ namespace SWLOR.Game.Server.Feature
                 ? activation.ActivationId : string.Empty;
 
         public static bool InterruptAbilityActivation(uint activator, string expectedActivationId) =>
-            InterruptAbilityActivation(activator, expectedActivationId, CombatRecordInterruptCause.Other, OBJECT_INVALID);
+            InterruptAbilityActivation(activator, expectedActivationId, CombatRecordInterruptCause.Other);
+
+        /// <summary>Cancels only the captured activation, preserving its interruption cause.</summary>
+        public static bool InterruptAbilityActivation(
+            uint activator, string expectedActivationId, CombatRecordInterruptCause cause) =>
+            InterruptAbilityActivation(activator, expectedActivationId, cause, OBJECT_INVALID);
 
         private static bool InterruptAbilityActivation(
             uint activator, string expectedActivationId, CombatRecordInterruptCause cause, uint damagedBy)

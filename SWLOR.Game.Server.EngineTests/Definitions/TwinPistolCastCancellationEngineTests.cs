@@ -1,12 +1,16 @@
+using System.IO;
 using System.Linq;
+using System.Text.Json;
 using System.Threading.Tasks;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.EngineTests.Framework;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Feature;
+using SWLOR.Game.Server.Feature.AbilityDefinition;
 using SWLOR.Game.Server.Feature.StatusEffectDefinition;
 using SWLOR.Game.Server.Native;
 using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.Service.CombatRecorderService;
 using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
@@ -23,6 +27,103 @@ public static class TwinPistolCastCancellationEngineTests
 
     [EngineTest("Final Salvo weapon swap preserves captured Momentum and cancels payment and impact", Category = "TwinPistolCancellation", TimeoutSeconds = 45f)]
     public static Task FinalSalvoSwap(EngineTestContext ctx) => WeaponSwap(ctx, FeatType.FinalSalvo, PerkType.FinalSalvo);
+
+    [EngineTest("Twin Suns native death cancels its unpaid cast and records exactly one Died interruption", Category = "TwinPistolCancellation", TimeoutSeconds = 45f)]
+    public static Task TwinSunsDeath(EngineTestContext ctx) => DeathDuringCast(ctx, FeatType.TwinSuns, PerkType.TwinSuns);
+
+    [EngineTest("Final Salvo native death cancels its unpaid cast and records exactly one Died interruption", Category = "TwinPistolCancellation", TimeoutSeconds = 45f)]
+    public static Task FinalSalvoDeath(EngineTestContext ctx) => DeathDuringCast(ctx, FeatType.FinalSalvo, PerkType.FinalSalvo);
+
+    [EngineTest("A native fatal-damage save cancels the Twin cast without recording a death", Category = "TwinPistolCancellation", TimeoutSeconds = 45f)]
+    public static Task FinalSalvoFatalSave(EngineTestContext ctx) => DeathDuringCast(ctx, FeatType.FinalSalvo, PerkType.FinalSalvo, fatalSave: true);
+
+    private static async Task DeathDuringCast(EngineTestContext ctx, FeatType feat, PerkType perk, bool fatalSave = false)
+    {
+        ctx.Assert(!CombatRecorder.IsRecording, "The death regression owns its recording");
+        using var player = await PlayerAbilityFixture.CreateAsync(ctx);
+        var actor = player.Creature;
+        CombatRecordWriter writer = null;
+        var ability = Ability.GetAbilityDetail(feat);
+        Combat.SetAutoAttackHitResolutionOverride(false);
+        Combat.SetAbilityHitResolutionOverride(true);
+        try
+        {
+            var (target, _, _, _) = await Prepare(ctx, player, perk);
+            var health = GetCurrentHitPoints(target);
+            var stamina = Stat.GetCurrentStamina(actor);
+            await ctx.ExecuteInCreatureContextAsync(actor, () =>
+            {
+                SetPlotFlag(actor, false);
+                SetImmortal(actor, false);
+                if (fatalSave)
+                {
+                    TemporaryStatModifier.Add(actor, StatType.FatalDamageTemporaryHPPercent, 20, 30f);
+                    TemporaryStatModifier.Add(actor, StatType.FatalDamageTemporaryHPDurationSeconds, 30, 30f);
+                    ObjectPlugin.SetCurrentHitPoints(actor, 1);
+                    ctx.AssertEqual(1, GetCurrentHitPoints(actor), "Native fatal-save setup starts at one HP");
+                    ctx.AssertEqual(0, TemporaryHitPointEffects.GetRemaining(actor), "No shield exists before the native dying event");
+                }
+                Ability.ClearLastCompletedAbilityImpactSummary(actor);
+                ctx.Assert(CombatRecorder.Start(GetArea(actor), "Twin capstone death regression", out var message), message);
+                writer = CombatRecorder.LastWriter;
+                ctx.Assert(UsePerkFeat.TryUseAbility(actor, target, feat, GetLocation(target)),
+                    $"The real two-second cast starts: {Ability.GetLastActivationDenialReason()}");
+                ctx.Assert(TwinPistolAbility.HasActiveActivation(actor) && Activity.IsBusy(actor),
+                    "The captured activation is unpaid and active before death");
+                ctx.AssertEqual(stamina, Stat.GetCurrentStamina(actor), "The cast has not paid its stamina cost");
+            });
+            await ctx.DelaySecondsAsync(.25f);
+            // Native effects run the death/dying events rather than calling the cancellation helper.
+            await ctx.ExecuteInCreatureContextAsync(actor, () =>
+                ApplyEffectToObject(DurationType.Instant, fatalSave ? EffectDamage(2) : EffectDeath(), actor));
+            await ctx.WaitUntilAsync(() => !Activity.IsBusy(actor) && (fatalSave
+                    ? !GetIsDead(actor) && GetCurrentHitPoints(actor) > 0 && TemporaryHitPointEffects.GetRemaining(actor) > 0
+                    : GetIsDead(actor)), 1f,
+                "the native death/dying event to release the cast before its two-second deadline");
+            ctx.Assert(!TwinPistolAbility.HasActiveActivation(actor), "The native event releases the captured Twin activation");
+            ctx.AssertEqual(string.Empty, UsePerkFeat.GetActiveAbilityActivationId(actor),
+                "The native event removes the exact shared activation");
+            await ctx.DelaySecondsAsync(2.2f);
+            ctx.AssertEqual(stamina, Stat.GetCurrentStamina(actor), "The canceled cast never pays stamina");
+            ctx.Assert(!Recast.IsOnRecastDelay(actor, ability.RecastGroup).Item1, "The canceled cast starts no capstone recast");
+            ctx.Assert(Ability.GetLastCompletedAbilityImpactSummary(actor) == null, "The canceled cast never resolves an impact");
+            ctx.AssertEqual(health, GetCurrentHitPoints(target), "The canceled cast never damages its selected target");
+        }
+        finally
+        {
+            if (writer != null && CombatRecorder.IsRecording)
+                CombatRecorder.Stop("Twin capstone death regression", out _);
+            Cleanup(actor);
+            ReviveRulesEngineTests.DestroyCorpsePlaceable(actor);
+            ReviveRulesEngineTests.ReleaseBody(actor);
+        }
+
+        await ctx.WaitUntilAsync(() => writer.Completion.IsCompleted, 10f, "the owned death recording to finish");
+        ctx.Assert(writer.Error == null, $"The death recording failed: {writer.Error}");
+        var events = File.ReadAllLines(writer.EventsPath).Select(line =>
+        {
+            using var document = JsonDocument.Parse(line);
+            return document.RootElement.Clone();
+        }).ToArray();
+        var casts = events.Where(e => e.GetProperty("type").GetString() == "ability_cast" &&
+                                     e.GetProperty("feat_id").GetInt32() == (int)feat).ToArray();
+        ctx.AssertEqual(1, casts.Length, "The recorder contains one real capstone activation");
+        var casterId = casts[0].GetProperty("caster").GetInt32();
+        var interruptions = events.Where(e => e.GetProperty("type").GetString() == "ability_interrupted" &&
+                                             e.GetProperty("caster").GetInt32() == casterId).ToArray();
+        ctx.AssertEqual(1, interruptions.Length, "Death and the canceled deadline produce exactly one interruption");
+        var expectedCause = fatalSave ? "other" : "died";
+        ctx.AssertEqual(expectedCause, interruptions[0].GetProperty("cause").GetString(), "The interruption preserves the settled death/dying outcome");
+        ctx.Assert(!interruptions.Any(e => e.GetProperty("cause").GetString() == (fatalSave ? "died" : "other")),
+            "Cleanup never relabels the settled death/dying outcome");
+        ctx.Assert(!events.Any(e => (e.GetProperty("type").GetString() is "ability_cost" or "ability_impact") &&
+                                  e.GetProperty("caster").GetInt32() == casterId),
+            "The recording contains no capstone payment or impact after death");
+        ctx.AssertEqual(1, writer.Completion.Result.GetParticipant(casterId).AbilityInterruptions[ability.Name][expectedCause],
+            "The recorder summary counts the interruption once");
+        File.Delete(writer.EventsPath);
+        File.Delete(writer.SummaryPath);
+    }
 
     private static async Task WeaponSwap(EngineTestContext ctx, FeatType feat, PerkType perk)
     {
@@ -97,6 +198,11 @@ public static class TwinPistolCastCancellationEngineTests
                     $"The unrelated two-second cast starts: {Ability.GetLastActivationDenialReason()}");
                 var newId = UsePerkFeat.GetActiveAbilityActivationId(actor);
                 ctx.Assert(!string.IsNullOrWhiteSpace(newId) && newId != oldId, "The later cast owns a distinct identity");
+                ctx.Assert(!UsePerkFeat.InterruptAbilityActivation(actor, oldId, CombatRecordInterruptCause.Died),
+                    "A stale death cancellation cannot interrupt the newer shared activation");
+                TwinPistolAbility.Cancel(actor, CombatRecordInterruptCause.Died);
+                ctx.AssertEqual(newId, UsePerkFeat.GetActiveAbilityActivationId(actor),
+                    "Death cleanup of the stale Twin capture preserves the unrelated activation");
                 SwapToRifle(ctx, actor, main, companion, replacement);
                 ctx.AssertEqual(newId, UsePerkFeat.GetActiveAbilityActivationId(actor), "Stale equipment cleanup does not interrupt the later cast");
                 ctx.Assert(Activity.IsBusy(actor), "The unrelated cast remains busy");

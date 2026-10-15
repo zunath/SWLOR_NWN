@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Native;
 using SWLOR.Game.Server.Feature;
+using SWLOR.Game.Server.Service.CombatRecorderService;
 using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.Game.Server.Service.StatService;
@@ -101,10 +102,14 @@ namespace SWLOR.Game.Server.Service
             });
         }
 
-        public static void Cancel(uint actor)
+        public static void Cancel(uint actor, CombatRecordInterruptCause cause = CombatRecordInterruptCause.Other)
         {
+            // Death can dispatch equipment or area cleanup before its dedicated lifecycle handler.
+            if (cause == CombatRecordInterruptCause.Other && GetIsObjectValid(actor) &&
+                (GetIsDead(actor) || GetCurrentHitPoints(actor) <= 0))
+                cause = CombatRecordInterruptCause.Died;
             if (Activations.Remove(actor, out var activation) && !string.IsNullOrWhiteSpace(activation.ActivationId))
-                UsePerkFeat.InterruptAbilityActivation(actor, activation.ActivationId);
+                UsePerkFeat.InterruptAbilityActivation(actor, activation.ActivationId, cause);
             WeaponRepositioning.Cancel(actor);
         }
 

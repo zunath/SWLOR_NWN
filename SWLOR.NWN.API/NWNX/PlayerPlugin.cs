@@ -449,6 +449,16 @@ namespace SWLOR.NWN.API.NWNX
             global::NWN.Core.NWNX.PlayerPlugin.ToggleDM(oPlayer, bIsDM ? 1 : 0);
         }
 
+        /// <summary>
+        /// Returns the game object a player currently controls, such as the creature a DM possesses.
+        /// </summary>
+        /// <param name="oPlayer">The player object, as returned by GetFirstPC() and GetNextPC().</param>
+        /// <returns>The controlled game object, or OBJECT_INVALID on error.</returns>
+        public static uint GetGameObject(uint oPlayer)
+        {
+            return global::NWN.Core.NWNX.PlayerPlugin.GetGameObject(oPlayer);
+        }
+
 
         /// <summary>
         /// Override the mouse cursor of oObject for oPlayer only.

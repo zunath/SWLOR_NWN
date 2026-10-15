@@ -19,6 +19,12 @@ namespace SWLOR.Game.Server.Feature
         private static TimeSpan RestartTime => new TimeSpan(0, 10, 0, 0); // 0 = Restarts happen at 6 AM eastern time
         private static DateTime _nextNotification;
 
+        public static DateTime GetNextScheduledRestart(DateTime utcNow)
+        {
+            var restartDate = utcNow.Date.Add(RestartTime);
+            return utcNow > restartDate ? restartDate.AddDays(1) : restartDate;
+        }
+
         /// <summary>
         /// Every six seconds, the server will check to see if an automated restart is required.
         /// The time must be within 30 seconds of the schedule restart time (see RestartTime above)
@@ -143,12 +149,7 @@ namespace SWLOR.Game.Server.Feature
             Scheduler.ScheduleRepeating(() =>
             {
                 var now = DateTime.UtcNow;
-                var restartDate = new DateTime(now.Year, now.Month, now.Day, RestartTime.Hours, RestartTime.Minutes, RestartTime.Seconds);
-
-                if (RestartTime < now.TimeOfDay)
-                {
-                    restartDate = restartDate.AddDays(1);
-                }
+                var restartDate = GetNextScheduledRestart(now);
 
                 if (now >= _nextNotification)
                 {

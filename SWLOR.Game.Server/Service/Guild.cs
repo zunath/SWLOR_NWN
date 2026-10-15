@@ -1,9 +1,11 @@
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Extension;
+using SWLOR.Game.Server.Feature;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.QuestService;
 using SWLOR.NWN.API.NWScript.Enum;
@@ -193,6 +195,24 @@ namespace SWLOR.Game.Server.Service
                 return new Dictionary<string, QuestDetail>();
 
             return _activeGuildTasks[guild].ToDictionary(x => x.Key, y => y.Value);
+        }
+
+        public static string GetTaskRotationText(QuestDetail task)
+        {
+            if (task.GuildType == GuildType.Invalid)
+                return string.Empty;
+
+            var isCurrentTask = _activeGuildTasks.TryGetValue(task.GuildType, out var tasks) &&
+                                tasks.ContainsKey(task.QuestId);
+            var status = isCurrentTask
+                ? ""
+                : "Status: Expired rotation task. This task is no longer in the current guild task rotation.\n\n";
+            var restart = ServerTasks.GetNextScheduledRestart(DateTime.UtcNow)
+                .ToString("yyyy-MM-dd HH:mm", CultureInfo.InvariantCulture);
+
+            return status + $"Guild task rotation refreshes at the next scheduled server restart: {restart} UTC. " +
+                   "An earlier restart may refresh tasks sooner.\n\n" +
+                   "Accepted tasks do not expire and can still be completed after the rotation changes.";
         }
 
         /// <summary>

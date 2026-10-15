@@ -97,6 +97,10 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var objectives = state.GetObjectives().ToList();
             sb.Append(state.JournalText);
 
+            var rotationText = Guild.GetTaskRotationText(questDetail);
+            if (!string.IsNullOrEmpty(rotationText))
+                sb.Append("\n\n").Append(rotationText);
+
             if (objectives.Count > 0)
             {
                 sb.Append("\n\n");

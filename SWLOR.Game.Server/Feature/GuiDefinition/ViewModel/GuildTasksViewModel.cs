@@ -216,20 +216,10 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 return;
             }
 
-            var currentTasks = Guild.GetAllActiveGuildTasks(_guildType);
-            var isExpired = pcQuest != null &&
-                            pcQuest.DateLastCompleted == null &&
-                            task.GuildType == _guildType &&
-                            !currentTasks.ContainsKey(questId);
-
             var gpAmount = task.Rewards.OfType<GPReward>().Sum(x => Guild.CalculateGPReward(Player, _guildType, x.Amount));
             var creditAmount = task.Rewards.OfType<GoldReward>().Sum(x => Quest.CalculateQuestGoldReward(Player, true, x.Amount));
 
-            TaskDetails = $"Task: {task.Name}\n\nRewards:\nCredits: {creditAmount}\nGuild Points: {gpAmount}";
-            if (isExpired)
-            {
-                TaskDetails += "\n\nStatus: Expired task. This task is no longer in the current guild task rotation.";
-            }
+            TaskDetails = $"Task: {task.Name}\n\n{Guild.GetTaskRotationText(task)}\n\nRewards:\nCredits: {creditAmount}\nGuild Points: {gpAmount}";
 
             if (pcQuest == null || pcQuest.DateLastCompleted != null)
                 IsAcceptEnabled = true;

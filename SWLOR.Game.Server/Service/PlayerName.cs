@@ -69,7 +69,7 @@ namespace SWLOR.Game.Server.Service
 
         public static bool ToggleAfk(uint player)
         {
-            if (!GetIsObjectValid(player) || !GetIsPC(player) || GetIsDM(player))
+            if (!GetIsObjectValid(player) || !GetIsPC(player) || GetIsDM(player) || GetIsDMPossessed(player))
                 return false;
 
             if (!RemoveAfk(player))
@@ -137,6 +137,7 @@ namespace SWLOR.Game.Server.Service
                 !GetIsPC(target) ||
                 GetIsDM(sender) ||
                 GetIsDM(target) ||
+                GetIsDMPossessed(target) ||
                 GetIsDMPossessed(sender))
             {
                 return;
@@ -171,7 +172,7 @@ namespace SWLOR.Game.Server.Service
         public static string GetAuditName(uint target)
         {
             var canonicalName = GetName(target);
-            if (!GetIsObjectValid(target) || !GetIsPC(target) || GetIsDM(target))
+            if (!GetIsObjectValid(target) || !GetIsPC(target) || GetIsDM(target) || GetIsDMPossessed(target))
                 return canonicalName;
 
             return $"{canonicalName} [{Disguise.GetDisplayDescriptor(target)}]";
@@ -311,7 +312,7 @@ namespace SWLOR.Game.Server.Service
 
         public static string GetColoredDisplayName(uint observer, uint target)
         {
-            if (!GetIsPC(target) || GetIsDM(target))
+            if (!GetIsPC(target) || GetIsDM(target) || GetIsDMPossessed(target))
                 return ColorToken.GetNameNPCColor(target);
 
             var displayName = ResolveDisplayName(observer, target, out var isUnknown);
@@ -334,7 +335,7 @@ namespace SWLOR.Game.Server.Service
 
         public static string GetColoredChatDisplayName(uint observer, uint target)
         {
-            if (!GetIsPC(target) || GetIsDM(target))
+            if (!GetIsPC(target) || GetIsDM(target) || GetIsDMPossessed(target))
                 return ColorToken.GetNameNPCColor(target);
 
             var displayName = ResolveChatDisplayName(observer, target, out var isUnknown);
@@ -426,7 +427,7 @@ namespace SWLOR.Game.Server.Service
 
         private static string ValidateKnownNameTarget(uint observer, uint target)
         {
-            if (!GetIsObjectValid(target) || !GetIsPC(target) || GetIsDM(target))
+            if (!GetIsObjectValid(target) || !GetIsPC(target) || GetIsDM(target) || GetIsDMPossessed(target))
                 return "Known names may only target player characters.";
 
             if (target == observer)
@@ -594,7 +595,7 @@ namespace SWLOR.Game.Server.Service
 
         private static void ApplyNameOverridesForPlayer(uint player)
         {
-            if (!GetIsObjectValid(player) || !GetIsPC(player) || GetIsDM(player))
+            if (!GetIsObjectValid(player) || !GetIsPC(player) || GetIsDM(player) || GetIsDMPossessed(player))
                 return;
 
             var unknownDisplayName = Disguise.GetDisplayDescriptor(player);
@@ -638,7 +639,7 @@ namespace SWLOR.Game.Server.Service
 
             for (var player = GetFirstPC(); GetIsObjectValid(player); player = GetNextPC())
             {
-                if (!GetIsPC(player) || GetIsDM(player))
+                if (!GetIsPC(player) || GetIsDM(player) || GetIsDMPossessed(player))
                     continue;
 
                 ApplyTrueNameOverride(dm, player);
@@ -651,7 +652,8 @@ namespace SWLOR.Game.Server.Service
                 !GetIsObjectValid(target) ||
                 !GetIsPC(observer) ||
                 !GetIsPC(target) ||
-                GetIsDM(target))
+                GetIsDM(target) ||
+                GetIsDMPossessed(target))
             {
                 return;
             }
@@ -661,12 +663,15 @@ namespace SWLOR.Game.Server.Service
 
         private static void ApplyNameOverride(uint observer, uint target)
         {
+            // Possessed NPCs can be player-controlled. NWNX Rename restores their blueprint
+            // name after an override, discarding the display name set by the DM's rename tool.
             if (!GetIsObjectValid(observer) ||
                 !GetIsObjectValid(target) ||
                 !GetIsPC(observer) ||
                 !GetIsPC(target) ||
                 GetIsDM(observer) ||
-                GetIsDM(target))
+                GetIsDM(target) ||
+                GetIsDMPossessed(target))
             {
                 return;
             }
@@ -692,7 +697,8 @@ namespace SWLOR.Game.Server.Service
                    GetIsObjectValid(target) &&
                    GetIsPC(observer) &&
                    GetIsPC(target) &&
-                   !GetIsDM(target);
+                   !GetIsDM(target) &&
+                   !GetIsDMPossessed(target);
         }
 
         private static void ApplyChatNameOverride(uint observer, uint target)
@@ -735,7 +741,7 @@ namespace SWLOR.Game.Server.Service
             if (!GetIsObjectValid(target))
                 return string.Empty;
 
-            if (!GetIsPC(target) || GetIsDM(target))
+            if (!GetIsPC(target) || GetIsDM(target) || GetIsDMPossessed(target))
                 return GetName(target);
 
             if (!GetIsObjectValid(observer) ||
@@ -762,7 +768,7 @@ namespace SWLOR.Game.Server.Service
             if (!GetIsObjectValid(target))
                 return string.Empty;
 
-            if (!GetIsPC(target) || GetIsDM(target))
+            if (!GetIsPC(target) || GetIsDM(target) || GetIsDMPossessed(target))
                 return GetName(target);
 
             if (!GetIsObjectValid(observer) ||

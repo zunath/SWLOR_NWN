@@ -49,6 +49,8 @@ namespace SWLOR.Game.Server.Service
         public const float MinimumMovementSpeedMultiplier = 0f;
         public const float MaximumMovementSpeedMultiplier = 1.5f;
         private const string WalkToggleVariable = "WALK_TOGGLE";
+        private const string WalkRestoreMovementRateVariable = "WALK_RESTORE_MOVEMENT_RATE";
+        private const string WalkRestoreMovementAdjustmentVariable = "WALK_RESTORE_MOVEMENT_ADJUSTMENT";
         private const float DeflectionEvasionBoostDurationSeconds = 30f;
         private const float DeflectionEnmityBoostDurationSeconds = 30f;
         private const float DeflectionDefenseBoostDurationSeconds = 30f;
@@ -658,9 +660,24 @@ namespace SWLOR.Game.Server.Service
         public static bool ToggleWalkMode(uint player)
         {
             var isWalking = !IsWalkModeEnabled(player);
+            var isStaff = GetIsDM(player) || GetIsDMPossessed(player);
+            if (isWalking && isStaff)
+            {
+                SetLocalFloat(player, WalkRestoreMovementRateVariable, CreaturePlugin.GetMovementRateFactor(player));
+                SetLocalFloat(player, WalkRestoreMovementAdjustmentVariable, GetMovementSpeedAdjustment(player));
+            }
+
             PlayerPlugin.SetAlwaysWalk(player, isWalking);
             SetLocalInt(player, WalkToggleVariable, isWalking ? 1 : 0);
-            ApplyCreatureMovementRate(player);
+            if (isWalking || !isStaff || GetLocalFloat(player, WalkRestoreMovementRateVariable) > 0f)
+                ApplyCreatureMovementRate(player);
+
+            if (!isWalking)
+            {
+                DeleteLocalFloat(player, WalkRestoreMovementRateVariable);
+                DeleteLocalFloat(player, WalkRestoreMovementAdjustmentVariable);
+            }
+
             return isWalking;
         }
 
@@ -688,8 +705,25 @@ namespace SWLOR.Game.Server.Service
                 return MinimumMovementSpeedMultiplier;
 
             var isPlayer = GetIsPC(creature) && !GetIsDM(creature) && !GetIsDMPossessed(creature);
-            var movementRate = 1.0f + GetBaseMovementSpeedIncrease(creature, isPlayer);
-            movementRate += GetStatAdjustment(creature, StatType.MovementSpeedPercentAdjustment) * 0.01f;
+            var isWalking = IsWalkModeEnabled(creature);
+            var restoreMovementRate = GetLocalFloat(creature, WalkRestoreMovementRateVariable);
+            var hasMovementRateRestore = restoreMovementRate > 0f;
+            var baseMovementRate = hasMovementRateRestore
+                ? restoreMovementRate - GetLocalFloat(creature, WalkRestoreMovementAdjustmentVariable)
+                : 1.0f + GetBaseMovementSpeedIncrease(creature, isPlayer);
+            if (isWalking)
+                baseMovementRate = hasMovementRateRestore ? Math.Min(1.0f, baseMovementRate) : 1.0f;
+
+            var movementRate = baseMovementRate + GetMovementSpeedAdjustment(creature);
+            var maximumMovementRate = isWalking
+                ? 1.0f
+                : hasMovementRateRestore ? float.MaxValue : MaximumMovementSpeedMultiplier;
+            return Math.Clamp(movementRate, MinimumMovementSpeedMultiplier, maximumMovementRate);
+        }
+
+        private static float GetMovementSpeedAdjustment(uint creature)
+        {
+            var adjustment = GetStatAdjustment(creature, StatType.MovementSpeedPercentAdjustment) * 0.01f;
             for (var effect = GetFirstEffect(creature); GetIsEffectValid(effect); effect = GetNextEffect(creature))
             {
                 var type = GetEffectType(effect);
@@ -697,19 +731,16 @@ namespace SWLOR.Game.Server.Service
                 if (type == EffectTypeScript.MovementSpeedIncrease)
                 {
                     amount = GetEffectInteger(effect, 0) - 100;
-                    movementRate += amount * 0.01f;
+                    adjustment += amount * 0.01f;
                 }
                 else if (type == EffectTypeScript.MovementSpeedDecrease)
                 {
                     amount = GetEffectInteger(effect, 0);
-                    movementRate -= amount * 0.01f;
+                    adjustment -= amount * 0.01f;
                 }
             }
 
-            var maximumMovementRate = IsWalkModeEnabled(creature)
-                ? 1.0f
-                : MaximumMovementSpeedMultiplier;
-            return Math.Clamp(movementRate, MinimumMovementSpeedMultiplier, maximumMovementRate);
+            return adjustment;
         }
 
         private static float GetBaseMovementSpeedIncrease(uint creature, bool isPlayer)

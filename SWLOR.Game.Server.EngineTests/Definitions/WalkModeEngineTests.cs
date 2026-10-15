@@ -50,9 +50,21 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 AssertSpeed(1.5f, "disabling walk restores the buffed movement cap");
                 TemporaryStatModifier.Clear(player);
 
+                foreach (var slow in new[] { 1, 10, 20, 25 })
+                {
+                    TemporaryStatModifier.Add(player, StatType.MovementSpeedPercentAdjustment, -slow, 30f);
+                    await ToggleAsync();
+                    AssertSpeed(1.0f - slow * 0.01f, $"walking preserves a {slow}% slow");
+                    Stat.ApplyCreatureMovementRate(player);
+                    AssertSpeed(1.0f - slow * 0.01f, $"refresh preserves a {slow}% walking slow");
+                    await ToggleAsync();
+                    AssertSpeed(1.25f - slow * 0.01f, $"disabling walk preserves a {slow}% slow");
+                    TemporaryStatModifier.Clear(player);
+                }
+
                 TemporaryStatModifier.Add(player, StatType.MovementSpeedPercentAdjustment, -50, 30f);
                 await ToggleAsync();
-                AssertSpeed(0.75f, "walking does not raise a slower movement rate");
+                AssertSpeed(0.5f, "walking applies stronger slows to its normal baseline");
                 await ToggleAsync();
                 AssertSpeed(0.75f, "disabling walk does not clear a movement penalty");
 

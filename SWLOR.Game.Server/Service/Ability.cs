@@ -4,6 +4,7 @@ using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Feature;
 using SWLOR.Game.Server.Feature.AbilityDefinition;
 using SWLOR.Game.Server.Service.AbilityService;
+using SWLOR.Game.Server.Service.CombatRecorderService;
 using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.LogService;
 using SWLOR.Game.Server.Service.PerkService;
@@ -290,6 +291,7 @@ namespace SWLOR.Game.Server.Service
                 if (!GetIsObjectValid(activator) || requiresLivingActivator && GetCurrentHitPoints(activator) <= 0)
                     return;
 
+                using var recorderAttribution = CombatRecorder.BeginAbilityAttribution(activator, ability);
                 var previousImpact = GetTrackedAbilityImpact(activator);
                 BeginAbilityImpact(activator, ability, 0, 0, countsAsAttackAttempt: false, sequence: sequence,
                     triggeringWeaponDamage: originatingImpact.TriggeringWeaponDamage,
@@ -302,6 +304,8 @@ namespace SWLOR.Game.Server.Service
                     var summary = EndAbilityImpact(activator);
                     originatingImpact.CompleteRepeatedDamageBonusImpact(summary.ImpactedTargetCount > 0);
                     completed = true;
+                    if (CombatRecorder.IsRecording)
+                        CombatRecorder.RecordRecurringAbilityImpact(activator, ability, summary);
                     Combat.ApplyAbilityImpactEffects(activator, summary);
                 }
                 finally
@@ -335,6 +339,7 @@ namespace SWLOR.Game.Server.Service
                     if (!GetIsObjectValid(activator) || GetCurrentHitPoints(activator) <= 0)
                         return;
 
+                    using var recorderAttribution = CombatRecorder.BeginAbilityAttribution(activator, originatingImpact.Ability);
                     var previousImpact = GetTrackedAbilityImpact(activator);
                     try
                     {
@@ -360,6 +365,8 @@ namespace SWLOR.Game.Server.Service
                         {
                             _trackedAbilityImpacts[activator] = batchImpact;
                             var summary = EndAbilityImpact(activator);
+                            if (CombatRecorder.IsRecording)
+                                CombatRecorder.RecordRecurringAbilityImpact(activator, originatingImpact.Ability, summary);
                             Combat.ApplyAbilityImpactEffects(activator, summary);
                         }
                     }
@@ -529,6 +536,29 @@ namespace SWLOR.Game.Server.Service
             return Perk.GetForceAffinityMagnitudeMultiplier(
                 activator,
                 trackedImpact.Ability.EffectiveLevelPerkType);
+        }
+
+        public static float GetActiveForceAffinityRestorativeMagnitudeMultiplier(uint activator)
+        {
+            var trackedImpact = GetTrackedAbilityImpact(activator);
+            if (trackedImpact?.Ability?.SkillType != SkillType.Force)
+                return 1f;
+
+            return Perk.GetForceAffinityRestorativeMagnitudeMultiplier(
+                activator,
+                trackedImpact.Ability.EffectiveLevelPerkType);
+        }
+
+        public static int ApplyActiveForceAffinityRestorativeMagnitude(uint activator, int amount)
+        {
+            var trackedImpact = GetTrackedAbilityImpact(activator);
+            if (trackedImpact?.Ability?.SkillType != SkillType.Force)
+                return amount;
+
+            return Perk.ApplyForceAffinityRestorativeMagnitude(
+                activator,
+                trackedImpact.Ability.EffectiveLevelPerkType,
+                amount);
         }
 
         public static int ApplyActiveForceAffinityMagnitude(uint activator, int amount)
@@ -2845,6 +2875,9 @@ namespace SWLOR.Game.Server.Service
             if (!GetIsObjectValid(activator) || !GetIsObjectValid(target) || ability == null)
                 return;
 
+            if (CombatRecorder.IsRecording)
+                CombatRecorder.RecordAttack(activator, target, attackResultType, hitRate, ability.Name);
+
             Messaging.SendMessageNearbyToPlayers(
                 target,
                 receiver => Combat.BuildAbilityCombatLogMessage(
@@ -2942,7 +2975,10 @@ namespace SWLOR.Game.Server.Service
             trackedImpact.DarkForceConversionApplied = true;
 
             if (fpRestore > 0)
+            {
+                using var recorderAttribution = CombatRecorder.BeginStatTriggerAttribution(activator, StatType.DarkForceDamageFPRestore);
                 Stat.RestoreFP(activator, fpRestore);
+            }
 
             var lowTargetThresholdPercent = Stat.GetStatAdjustment(activator, StatType.DarkForceDamageLowTargetHPThresholdPercent);
             var lowTargetHPCostPercent = Stat.GetStatAdjustment(activator, StatType.DarkForceDamageLowTargetHPCostPercent);
@@ -2961,7 +2997,11 @@ namespace SWLOR.Game.Server.Service
             var hpCost = Math.Max(1, GetMaxHitPoints(activator) * hpCostPercent / 100);
             hpCost = Math.Min(hpCost, Math.Max(0, GetCurrentHitPoints(activator) - 1));
             if (hpCost > 0)
+            {
+                if (CombatRecorder.IsRecording)
+                    CombatRecorder.ExpectHitPointCost(activator, hpCost);
                 AssignCommand(activator, () => ApplyEffectToObject(DurationType.Instant, EffectDamage(hpCost), activator));
+            }
         }
 
         private static int CalculateUnscaledCombatImpactDamage(
@@ -3779,7 +3819,8 @@ namespace SWLOR.Game.Server.Service
                     Ability = ability,
                     SkillType = ability.SkillType,
                     IsAreaAbility = ability.IsAreaAbility,
-                    IsSingleTargetAbility = ability.IsSingleTargetAbility
+                    IsSingleTargetAbility = ability.IsSingleTargetAbility,
+                    ImpactedTargets = _impactedTargets
                 };
             }
 
@@ -3883,7 +3924,8 @@ namespace SWLOR.Game.Server.Service
                     target,
                     damage,
                     damageType,
-                    combatDamageType));
+                    combatDamageType,
+                    CombatRecorder.CaptureScope()));
             }
 
             public void FlushDamageEffects(uint activator)
@@ -3896,11 +3938,14 @@ namespace SWLOR.Game.Server.Service
 
                 AssignCommand(activator, () =>
                 {
+                    using var recorderAttribution = CombatRecorder.BeginAbilityAttribution(activator, Ability);
                     foreach (var effect in effects)
                     {
                         if (!GetIsObjectValid(effect.Target))
                             continue;
 
+                        // Damage queued under a nested scope, such as a status rider, lands under it.
+                        using var effectAttribution = CombatRecorder.BeginAttribution(effect.RecorderAttribution);
                         var isDirectAbilityDamage = effect.CombatDamageType != CombatDamageType.Invalid;
                         if (isDirectAbilityDamage)
                         {
@@ -3937,18 +3982,21 @@ namespace SWLOR.Game.Server.Service
                 uint target,
                 int damage,
                 DamageType damageType,
-                CombatDamageType combatDamageType)
+                CombatDamageType combatDamageType,
+                CombatRecordAttribution recorderAttribution)
             {
                 Target = target;
                 Damage = damage;
                 DamageType = damageType;
                 CombatDamageType = combatDamageType;
+                RecorderAttribution = recorderAttribution;
             }
 
             public uint Target { get; }
             public int Damage { get; }
             public DamageType DamageType { get; }
             public CombatDamageType CombatDamageType { get; }
+            public CombatRecordAttribution RecorderAttribution { get; }
         }
     }
 }

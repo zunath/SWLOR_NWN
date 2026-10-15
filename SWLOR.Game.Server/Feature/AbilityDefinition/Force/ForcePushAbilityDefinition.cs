@@ -92,7 +92,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .IsCastedAbility()
                 .IsHostileAbility()
                 .BreaksStealth()
-                .RequirementFP(3);
+                .RequirementFP(4);
         }
 
         private static void ForcePush3(AbilityBuilder builder)
@@ -120,7 +120,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .IsCastedAbility()
                 .IsHostileAbility()
                 .BreaksStealth()
-                .RequirementFP(4);
+                .RequirementFP(5);
         }
 
         private static void ForcePush1ImpactAction(uint activator, uint target, int level, Location targetLocation)

@@ -844,6 +844,7 @@ namespace SWLOR.Game.Server.Service
             {
                 DelayCommand(4f, () =>
                 {
+                    using var recorderAttribution = CombatRecorder.BeginSetupAttribution(droid);
                     ApplyEffectToObject(DurationType.Instant, EffectHeal(GetMaxHitPoints(droid)), droid);
                 });
             });
@@ -1043,7 +1044,11 @@ namespace SWLOR.Game.Server.Service
             return generatedItems;
         }
 
-        private static void SaveItemSnapshot(uint droid)
+        /// <summary>
+        /// Saves the droid's equipped and carried items onto its controller, keeping pending restore and return entries.
+        /// </summary>
+        /// <param name="droid">The droid whose items are saved.</param>
+        public static void SaveItemSnapshot(uint droid)
         {
             if (!IsDroid(droid) || GetLocalBool(droid, DroidIsSpawning))
                 return;

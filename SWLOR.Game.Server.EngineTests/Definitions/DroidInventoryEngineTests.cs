@@ -15,7 +15,7 @@ using SWLOR.NWN.API.NWScript.Enum.Item.Property;
 
 namespace SWLOR.Game.Server.EngineTests.Definitions
 {
-    public static class DroidInventoryEngineTests
+    public static partial class DroidInventoryEngineTests
     {
         private const string RepositoryFixture = "DROID_TEST_REPOSITORY";
         private const string RepositoryHeight = "DROID_TEST_REPOSITORY_HEIGHT";

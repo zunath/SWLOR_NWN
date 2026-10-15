@@ -18,42 +18,60 @@ namespace SWLOR.CombatSim.Tests.Rules
         }
 
         [Test]
-        public void Tuned_RaisesBenevolenceIIIFromSevenToEightFp()
+        public void Current_ChargesTheGameDataCost_BenevolenceIIIAtEightFp()
         {
             var benevolence3 = _catalog.Get(FeatType.Benevolence3);
 
             benevolence3.SkillRequirement.Should().Be(38);
-            benevolence3.FP.Should().Be(7);
-            RuleSets.Tuned().GetFpCost(benevolence3).Should().Be(8);
+            benevolence3.FP.Should().Be(8);
+            RuleSets.Current().GetFpCost(benevolence3).Should().Be(8);
         }
 
         [Test]
-        public void Tuned_LeavesStaminaCostsAlone_QuickDrawIVStaysAtTwelve()
+        public void PreTuning_PutsBenevolenceIIIBackAtSevenFp()
+        {
+            RuleSets.PreTuning().GetFpCost(_catalog.Get(FeatType.Benevolence3)).Should().Be(7);
+        }
+
+        [Test]
+        public void PreTuning_ExactlyUndoesTheRoundedTwentyPercentRise()
+        {
+            var preTuning = RuleSets.PreTuning();
+
+            for (var cost = 1; cost <= 200; cost++)
+            {
+                var raised = preTuning.AdjustCost(cost, 40, 1.2f);
+                preTuning.AdjustCost(raised, 40, preTuning.FpCostMultiplier).Should().Be(cost, $"{cost} FP was raised to {raised}");
+            }
+        }
+
+        [Test]
+        public void Current_LeavesStaminaCostsAlone_QuickDrawIVStaysAtTwelve()
         {
             var quickDraw4 = _catalog.Get(FeatType.QuickDraw4);
 
             quickDraw4.SkillRequirement.Should().Be(40);
             quickDraw4.STM.Should().Be(12);
-            RuleSets.Tuned().GetStmCost(quickDraw4).Should().Be(12);
+            RuleSets.Current().GetStmCost(quickDraw4).Should().Be(12);
         }
 
         [Test]
-        public void Tuned_LeavesMedKitIAtFourStaminaBecauseItHasNoSkillRequirement()
+        public void Current_LeavesMedKitIAtFourStaminaBecauseItHasNoSkillRequirement()
         {
             var medKit1 = _catalog.Get(FeatType.MedKit1);
 
             medKit1.SkillRequirement.Should().Be(0);
             medKit1.STM.Should().Be(4);
-            RuleSets.Tuned().GetStmCost(medKit1).Should().Be(4);
+            RuleSets.Current().GetStmCost(medKit1).Should().Be(4);
         }
 
         [Test]
-        public void Tuned_DoesNotChargeFpForAStaminaAbilityOrStaminaForAnFpAbility()
+        public void Current_DoesNotChargeFpForAStaminaAbilityOrStaminaForAnFpAbility()
         {
-            var tuned = RuleSets.Tuned();
+            var current = RuleSets.Current();
 
-            tuned.GetFpCost(_catalog.Get(FeatType.QuickDraw4)).Should().Be(0);
-            tuned.GetStmCost(_catalog.Get(FeatType.Benevolence3)).Should().Be(0);
+            current.GetFpCost(_catalog.Get(FeatType.QuickDraw4)).Should().Be(0);
+            current.GetStmCost(_catalog.Get(FeatType.Benevolence3)).Should().Be(0);
         }
 
         [TestCase(FeatType.Benevolence3)]
@@ -61,7 +79,7 @@ namespace SWLOR.CombatSim.Tests.Rules
         [TestCase(FeatType.MedKit1)]
         [TestCase(FeatType.MedKit4)]
         [TestCase(FeatType.Resuscitation2)]
-        public void CurrentRules_LeaveEveryCostUnchanged(FeatType feat)
+        public void Current_ChargesEveryCostAsTheGameDataHasIt(FeatType feat)
         {
             var ability = _catalog.Get(feat);
             var current = RuleSets.Current();
@@ -76,7 +94,7 @@ namespace SWLOR.CombatSim.Tests.Rules
         [TestCase(0, 10, 10)]
         public void AdjustCost_AppliesTheMultiplierOnlyFromTheSkillThreshold(int skillRequirement, int baseCost, int expected)
         {
-            RuleSets.Tuned().AdjustCost(baseCost, skillRequirement, 1.2f).Should().Be(expected);
+            RuleSets.Current().AdjustCost(baseCost, skillRequirement, 1.2f).Should().Be(expected);
         }
 
         [TestCase(7, 8)]
@@ -86,13 +104,13 @@ namespace SWLOR.CombatSim.Tests.Rules
         [TestCase(3, 4)]
         public void AdjustCost_RoundsToTheNearestWholeNumber(int baseCost, int expected)
         {
-            RuleSets.Tuned().AdjustCost(baseCost, 40, 1.2f).Should().Be(expected);
+            RuleSets.Current().AdjustCost(baseCost, 40, 1.2f).Should().Be(expected);
         }
 
         [Test]
         public void AdjustCost_NeverChargesForAFreeAbility()
         {
-            RuleSets.Tuned().AdjustCost(0, 40, 1.2f).Should().Be(0);
+            RuleSets.Current().AdjustCost(0, 40, 1.2f).Should().Be(0);
         }
     }
 }

@@ -25,10 +25,14 @@ public class RoleplayXPLoggingTests
         while (root != null && !File.Exists(Path.Combine(root.FullName, "SWLOR.Game.Server.sln"))) root = root.Parent;
         root.Should().NotBeNull();
         var source = File.ReadAllText(Path.Combine(root!.FullName, "SWLOR.Game.Server", "Feature", "RoleplayXP.cs"));
-        var methods = CSharpSyntaxTree.ParseText(source).GetRoot().DescendantNodes().OfType<MethodDeclarationSyntax>()
+        var syntax = CSharpSyntaxTree.ParseText(source).GetRoot();
+        var fields = syntax.DescendantNodes().OfType<FieldDeclarationSyntax>()
+            .Where(field => field.Declaration.Variables.Any(variable => variable.Identifier.Text is "RPTickVariable" or "RPRequiredTicks" or "_oocDetection"))
+            .Select(field => field.NormalizeWhitespace().ToFullString());
+        var methods = syntax.DescendantNodes().OfType<MethodDeclarationSyntax>()
             .Where(method => method.Identifier.Text is "ProcessPlayerRoleplayXP" or "ProcessOOCMessage"
-                or "LogSkippedDistribution" or "LogCompletedDistribution" or "LogOOCMessage")
-            .Select(method => method.WithModifiers(SyntaxFactory.TokenList(
+                or "LogSkippedDistribution" or "LogCompletedDistribution" or "LogOOCMessage" or "ProcessRPMessage" or "DistributeRoleplayXP")
+            .Select(method => method.WithAttributeLists(default).WithModifiers(SyntaxFactory.TokenList(
                 SyntaxFactory.Token(SyntaxKind.PublicKeyword), SyntaxFactory.Token(SyntaxKind.StaticKeyword)))
                 .NormalizeWhitespace().ToFullString());
         var boundaries = """
@@ -38,9 +42,12 @@ public class RoleplayXPLoggingTests
                 {
                     public static bool Dead;
                     public static int SocialModifier;
+                    public static int Ticks;
+                    public const uint OBJECT_SELF = 1;
                     public static OOCMessageContext Context;
                     public static bool GetIsPC(uint player) => true;
                     public static bool GetIsDM(uint player) => false;
+                    public static bool GetIsDMPossessed(uint player) => false;
                     public static bool GetIsDead(uint player) => Dead;
                     public static int GetCurrentHitPoints(uint player) => Dead ? 0 : 100;
                     public static string GetObjectUUID(uint player) => "player";
@@ -49,7 +56,15 @@ public class RoleplayXPLoggingTests
                     public static int GetAbilityModifier(AbilityType ability, uint player) => SocialModifier;
                     public static uint GetArea(uint player) => 2;
                     public static string GetResRef(uint obj) => "test_area";
+                    public static int GetLocalInt(uint player, string name) => Ticks;
+                    public static void SetLocalInt(uint player, string name, int value) { Ticks = value; }
                     public static void SendMessageToPC(uint player, string text) { }
+                }
+                public static class ChatPlugin
+                {
+                    public static ChatChannel GetChannel() => ChatChannel.PlayerTalk;
+                    public static uint GetSender() => 1;
+                    public static string GetMessage() => "\"The council convenes tomorrow.\"";
                 }
                 public static class DB
                 {
@@ -65,7 +80,9 @@ public class RoleplayXPLoggingTests
                 }
                 public class ApplicationSettings
                 {
+                    public static bool PenaltiesEnabled;
                     public static ApplicationSettings Get() => new();
+                    public bool RoleplayXPOOCPenaltyEnabled => PenaltiesEnabled;
                     public int RoleplayXPDailyOOCAllowance => 2;
                     public int RoleplayXPDMPresentOOCAllowance => 3;
                     public int? RoleplayXPEventAreaOOCAllowance => null;
@@ -88,15 +105,18 @@ public class RoleplayXPLoggingTests
                 }
                 public static class RoleplayXP
                 {
-                    private static void RefreshRPMessageTimestamp(uint player, DateTime now) { }
+                    FIELDS
+                    private static string RefreshRPMessageTimestamp(uint player, DateTime now) => null;
+                    private static bool CanReceiveRPPoint(uint player, ChatChannel channel) => true;
                     private static OOCMessageContext GetOOCMessageContext(uint player) => Native.Context;
                     METHODS
                 }
             }
-            """.Replace("METHODS", string.Join(Environment.NewLine, methods));
+            """.Replace("METHODS", string.Join(Environment.NewLine, methods)).Replace("FIELDS", string.Join(Environment.NewLine, fields));
         const string imports = """
             global using System;
             global using System.Collections.Generic;
+            global using System.Globalization;
             global using System.Linq;
             global using System.Text.RegularExpressions;
             global using Newtonsoft.Json;
@@ -128,8 +148,10 @@ public class RoleplayXPLoggingTests
         SetField("DB", "Saved", null);
         SetField("Native", "Dead", false);
         SetField("Native", "SocialModifier", 0);
+        SetField("Native", "Ticks", 0);
         SetField("Native", "Context", OOCMessageContext.Standard);
         SetField("Property", "CantinaLevel", 0);
+        SetField("ApplicationSettings", "PenaltiesEnabled", true);
         Entries.Clear();
     }
 
@@ -229,6 +251,64 @@ public class RoleplayXPLoggingTests
         Invoke("ProcessPlayerRoleplayXP", 1u);
         Entries.Should().BeEmpty();
         _player.RoleplayProgress.OOCMessagesSinceLastDistribution.Should().Be(5);
+    }
+
+    [Test]
+    public void DisabledPenalties_KeepChatPointsAndHeartbeatPayoutsActive()
+    {
+        SetField("ApplicationSettings", "PenaltiesEnabled", false);
+        _player.RoleplayProgress.RPPoints = 49;
+        _player.RoleplayProgress.PendingOOCPenaltySteps = 7;
+        Invoke("ProcessRPMessage");
+        _player.RoleplayProgress.RPPoints.Should().Be(50);
+
+        SetField("Native", "Ticks", 299);
+        Invoke("DistributeRoleplayXP");
+
+        var saved = JsonConvert.DeserializeObject<Player>((string)Entries.Single()["Saved"])!;
+        saved.UnallocatedXP.Should().Be(1600);
+        saved.RoleplayProgress.RPPoints.Should().Be(0);
+        saved.RoleplayProgress.PendingOOCPenaltySteps.Should().Be(7);
+        Entries.Single()["OOCPenaltyPercent"].Should().Be(0);
+    }
+
+    [Test]
+    public void DisabledPenalties_PreserveBonusesAndDebtAcrossRepeatedSaveReload()
+    {
+        SetField("ApplicationSettings", "PenaltiesEnabled", false);
+        SetField("Native", "SocialModifier", 2);
+        SetField("Property", "CantinaLevel", 4);
+        _player.RoleplayProgress.PendingOOCPenaltySteps = 9;
+        for (var cycle = 1; cycle <= 2; cycle++)
+        {
+            _player.RoleplayProgress.RPPoints = 54;
+            Invoke("ProcessPlayerRoleplayXP", 1u);
+            var entry = Entries.Last();
+            entry["AwardedXP"].Should().Be(2650);
+            entry["XPLostToOOCPenalty"].Should().Be(0);
+            _player = JsonConvert.DeserializeObject<Player>((string)entry["Saved"])!;
+            SetField("DB", "Current", _player);
+            _player.UnallocatedXP.Should().Be(100 + cycle * 2650);
+            _player.RoleplayProgress.PendingOOCPenaltySteps.Should().Be(9);
+        }
+    }
+
+    [Test]
+    public void DisabledPenalties_LogOOCWithoutBankingNewDebt()
+    {
+        SetField("ApplicationSettings", "PenaltiesEnabled", false);
+        _player.RoleplayProgress.PendingOOCPenaltySteps = 3;
+        for (var index = 0; index < 4; index++)
+            Invoke("ProcessOOCMessage", 1u, _player, Now, ChatChannel.PlayerTalk, "//brb");
+        var entry = Entries.Last();
+        entry["PendingOOCPenaltySteps"].Should().Be(3);
+        entry["DailyOOCMessageCount"].Should().Be(4);
+        entry["NextAwardOOCPenaltyPercent"].Should().Be(0);
+        entry["OOCMessagesSinceLastDistribution"].Should().Be(4UL);
+
+        SetField("ApplicationSettings", "PenaltiesEnabled", true);
+        Invoke("ProcessOOCMessage", 1u, _player, Now, ChatChannel.PlayerTalk, "//back");
+        _player.RoleplayProgress.PendingOOCPenaltySteps.Should().Be(4, "only messages recorded after enablement add debt");
     }
 
     private static void AssertIdentity(Dictionary<string, object> entry)

@@ -1,6 +1,7 @@
 using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.CombatSim.Rules;
+using SWLOR.Game.Server.Service.AbilityService;
 
 namespace SWLOR.CombatSim.Tests.Rules
 {
@@ -111,11 +112,11 @@ namespace SWLOR.CombatSim.Tests.Rules
         [Test]
         public void Names_ListTheThreePresets()
         {
-            RuleSets.Names.Should().Equal("current", "tuned", "tuned-pvp");
+            RuleSets.Names.Should().Equal("pre-tuning", "current", "tuned-pvp");
         }
 
-        [TestCase("current")]
-        [TestCase("TUNED")]
+        [TestCase("Pre-Tuning")]
+        [TestCase("CURRENT")]
         [TestCase("Tuned-PVP")]
         public void Get_FindsPresetsRegardlessOfCase(string name)
         {
@@ -127,30 +128,31 @@ namespace SWLOR.CombatSim.Tests.Rules
         {
             var act = () => RuleSets.Get("nonexistent");
 
-            act.Should().Throw<ArgumentException>().WithMessage("*nonexistent*current*tuned*tuned-pvp*");
+            act.Should().Throw<ArgumentException>().WithMessage("*nonexistent*pre-tuning*current*tuned-pvp*");
         }
 
         [Test]
         public void Get_ReturnsAFreshInstanceEachTime()
         {
-            var first = RuleSets.Get("tuned");
+            var first = RuleSets.Get("pre-tuning");
             first.RecastOverrides["Benevolence"] = 99f;
 
-            RuleSets.Get("tuned").RecastOverrides["Benevolence"].Should().Be(10f);
+            RuleSets.Get("pre-tuning").RecastOverrides["Benevolence"].Should().Be(6f);
         }
 
         [Test]
-        public void Current_MatchesTheLiveRules()
+        public void PreTuning_MatchesTheRulesBeforeTheTuning()
         {
-            var rules = RuleSets.Current();
+            var rules = RuleSets.PreTuning();
 
             rules.ForceAffinityHealingCap.Should().Be(1.5f);
-            rules.RecastOverrides.Should().BeEmpty();
+            rules.RecastOverrides.Should().Contain("Benevolence", 6f).And.Contain("MedKit", 6f).And.HaveCount(2);
             rules.TemporaryHpCapPercent.Should().BeNull();
             rules.ConvergenceDurationSeconds.Should().Be(30f);
             rules.HarmonyInstantHealsOnly.Should().BeFalse();
             rules.HarmonyCooldownSeconds.Should().Be(0f);
-            rules.FpCostMultiplier.Should().Be(1f);
+            rules.HostileAbilityDelaySeconds.Should().Be(0f);
+            rules.FpCostMultiplier.Should().Be(1f / 1.2f);
             rules.StmCostMultiplier.Should().Be(1f);
             rules.Revives.Should().Be(ReviveRule.Unrestricted);
             rules.PvpHealingMultiplier.Should().Be(1f);
@@ -159,28 +161,30 @@ namespace SWLOR.CombatSim.Tests.Rules
         }
 
         [Test]
-        public void Tuned_ContainsThePveHealingCostAndFixChanges()
+        public void Current_ContainsThePveHealingCostAndFixChanges()
         {
-            var rules = RuleSets.Tuned();
+            var rules = RuleSets.Current();
 
             rules.ForceAffinityHealingCap.Should().Be(1.25f);
-            rules.RecastOverrides.Should().Contain("Benevolence", 10f).And.Contain("MedKit", 10.5f);
+            // The new recasts and FP costs are in the game data the catalog reads.
+            rules.RecastOverrides.Should().BeEmpty();
             rules.TemporaryHpCapPercent.Should().Be(50f);
             rules.ConvergenceDurationSeconds.Should().Be(20f);
             rules.HarmonyInstantHealsOnly.Should().BeTrue();
             rules.HarmonyCooldownSeconds.Should().Be(6f);
-            rules.FpCostMultiplier.Should().Be(1.2f);
+            rules.FpCostMultiplier.Should().Be(1f);
             rules.StmCostMultiplier.Should().Be(1f);
             rules.CostSkillThreshold.Should().Be(28);
             rules.Revives.Should().Be(ReviveRule.BlockedInPvpLimitedInPve);
             rules.RefuseHitPointCostsAtOneHitPoint.Should().BeTrue();
             rules.ScaleHitPointSpendRestoreToHitPointsLost.Should().BeTrue();
+            rules.HostileAbilityDelaySeconds.Should().Be(HostileAbilityDelay.Seconds);
         }
 
         [Test]
-        public void Tuned_HasNoPvpHealingOrDamageRules()
+        public void Current_HasNoPvpHealingOrDamageRules()
         {
-            var rules = RuleSets.Tuned();
+            var rules = RuleSets.Current();
 
             rules.PvpHealingMultiplier.Should().Be(1f);
             rules.PvpTemporaryHpMultiplier.Should().Be(1f);
@@ -189,16 +193,17 @@ namespace SWLOR.CombatSim.Tests.Rules
         }
 
         [Test]
-        public void TunedPvp_IsTunedPlusThePvpRules()
+        public void TunedPvp_IsCurrentPlusThePvpRules()
         {
-            var tuned = RuleSets.Tuned();
+            var current = RuleSets.Current();
             var tunedPvp = RuleSets.TunedPvp();
 
-            tunedPvp.ForceAffinityHealingCap.Should().Be(tuned.ForceAffinityHealingCap);
-            tunedPvp.TemporaryHpCapPercent.Should().Be(tuned.TemporaryHpCapPercent);
-            tunedPvp.ConvergenceDurationSeconds.Should().Be(tuned.ConvergenceDurationSeconds);
-            tunedPvp.FpCostMultiplier.Should().Be(tuned.FpCostMultiplier);
-            tunedPvp.Revives.Should().Be(tuned.Revives);
+            tunedPvp.ForceAffinityHealingCap.Should().Be(current.ForceAffinityHealingCap);
+            tunedPvp.TemporaryHpCapPercent.Should().Be(current.TemporaryHpCapPercent);
+            tunedPvp.ConvergenceDurationSeconds.Should().Be(current.ConvergenceDurationSeconds);
+            tunedPvp.FpCostMultiplier.Should().Be(current.FpCostMultiplier);
+            tunedPvp.Revives.Should().Be(current.Revives);
+            tunedPvp.HostileAbilityDelaySeconds.Should().Be(current.HostileAbilityDelaySeconds);
 
             tunedPvp.PvpHealingMultiplier.Should().Be(1f);
             tunedPvp.PvpTemporaryHpMultiplier.Should().Be(1f);

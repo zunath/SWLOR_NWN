@@ -32,6 +32,7 @@ namespace SWLOR.Game.Server.Service
             NamedAnimation.ClearOnDeath(player);
             Feature.UsePerkFeat.ClearQueuedAbility(player);
             var hostile = GetLastHostileActor(player);
+            Feature.AbilityDefinition.ReviveRules.RecordPlayerDeath(player, hostile);
 
             SetStandardFactionReputation(StandardFaction.Commoner, 100, player);
             SetStandardFactionReputation(StandardFaction.Merchant, 100, player);
@@ -52,6 +53,8 @@ namespace SWLOR.Game.Server.Service
                 var dbHostilePlayer = DB.Get<Player>(hostilePlayerId);
                 if (dbHostilePlayer != null && dbHostilePlayer.Settings.IsSubdualModeEnabled)
                 {
+                    if (CombatRecorder.IsRecording)
+                        CombatRecorder.RecordSubdual(player, hostile);
                     SendMessageToPC(player, "You have been subdued.");
                     Messaging.SendMessageNearbyToPlayers(
                         player,
@@ -83,7 +86,10 @@ namespace SWLOR.Game.Server.Service
 
             var amount = maxHP / 2;
             ApplyEffectToObject(DurationType.Instant, EffectResurrection(), player);
-            ApplyEffectToObject(DurationType.Instant, EffectHeal(amount), player);
+            if (CombatRecorder.IsRecording)
+                CombatRecorder.RecordRespawn(player);
+            using (CombatRecorder.BeginRespawnAttribution())
+                ApplyEffectToObject(DurationType.Instant, EffectHeal(amount), player);
 
             SendToHomePoint(player);
             var xpLost = ApplyPenalties(player);

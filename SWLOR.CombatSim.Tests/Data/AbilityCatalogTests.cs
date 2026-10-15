@@ -37,10 +37,10 @@ namespace SWLOR.CombatSim.Tests.Data
             ability.PerkName.Should().Be("Benevolence");
             ability.RecastGroup.Should().Be("Benevolence");
             ability.SkillRequirement.Should().Be(38);
-            ability.FP.Should().Be(7);
+            ability.FP.Should().Be(8);
             ability.STM.Should().Be(0);
             ability.CastSeconds.Should().Be(1f);
-            ability.RecastSeconds.Should().Be(6f);
+            ability.RecastSeconds.Should().Be(10f);
             ability.IsHealing.Should().BeTrue();
             ability.IsHostile.Should().BeFalse();
             ability.UnreadableTiming.Should().BeNull();

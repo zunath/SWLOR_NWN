@@ -25,7 +25,7 @@ public class WalkModeTests
             "SWLOR.Game.Server", "Service", "Stat.cs"))).GetRoot();
         var methodNames = new HashSet<string>
         {
-            "IsWalkModeEnabled", "ToggleWalkMode", "ApplyCreatureMovementRate", "GetMovementSpeedMultiplier",
+            "IsWalkModeEnabled", "ApplyPlayerStats", "ApplyTemporaryPlayerStats", "ToggleWalkMode", "RestoreWalkMode", "ApplyCreatureMovementRate", "GetMovementSpeedMultiplier",
             "GetMovementSpeedAdjustment", "GetBaseMovementSpeedIncrease"
         };
         var methods = stat.DescendantNodes().OfType<MethodDeclarationSyntax>()
@@ -38,6 +38,7 @@ public class WalkModeTests
             using System;
             using System.Collections.Generic;
             using SWLOR.Game.Server.Service.StatService;
+            using SWLOR.Game.Server.Core;
             using SWLOR.NWN.API.NWScript.Enum;
             using static World;
             public static class Movement
@@ -65,6 +66,7 @@ public class WalkModeTests
                 public static readonly Dictionary<string, int> Ints = new();
                 public static readonly Dictionary<string, float> Floats = new();
                 public static bool GetIsObjectValid(uint creature) => creature == 1;
+                public static uint GetEnteringObject() => 1;
                 public static ObjectType GetObjectType(uint creature) => ObjectType.Creature;
                 public static bool GetIsPC(uint creature) => !IsPossessed;
                 public static bool GetIsDM(uint creature) => IsDM;
@@ -147,15 +149,40 @@ public class WalkModeTests
         Get<float>("NativeRate").Should().BeApproximately(1f, 0.001f);
     }
 
-    [Test]
-    public void StaffRestorationCannotBypassNewlyDisabledMovement()
+    [TestCase(false, false)]
+    [TestCase(true, false)]
+    [TestCase(false, true)]
+    [TestCase(true, true)]
+    public void StaffRestorationSurvivesDisabledMovementAndFurtherToggles(bool toggleWhileDisabled, bool useSlow)
     {
         Set("IsDM", true);
         Set("NativeRate", 1.4f);
         Toggle();
-        Set("Disabled", 1);
+        Set(useSlow ? "Adjustment" : "Disabled", useSlow ? -200 : 1);
         Toggle();
         Get<float>("NativeRate").Should().Be(0.125f);
+        Get<Dictionary<string, float>>("Floats").Should().NotBeEmpty();
+        if (toggleWhileDisabled)
+        {
+            Toggle();
+            Toggle();
+        }
+        Set("Disabled", 0);
+        Set("Adjustment", 0);
+        Invoke("ApplyCreatureMovementRate");
+        Get<float>("NativeRate").Should().BeApproximately(1.4f, 0.001f);
+        Get<Dictionary<string, float>>("Floats").Should().BeEmpty();
+    }
+
+    [TestCase(false)]
+    [TestCase(true)]
+    public void EntryRestoresTheNativeFlagFromPersistedWalkState(bool walking)
+    {
+        Get<Dictionary<string, int>>("Ints")["WALK_TOGGLE"] = walking ? 1 : 0;
+        Set("AlwaysWalk", !walking);
+        Invoke("ApplyPlayerStats");
+        Get<bool>("AlwaysWalk").Should().Be(walking);
+        Get<float>("NativeRate").Should().Be(walking ? 1f : 1.25f);
     }
 
     [Test]
@@ -193,7 +220,11 @@ public class WalkModeTests
     }
 
     private bool Toggle() => (bool)Invoke("ToggleWalkMode")!;
-    private object Invoke(string method) => _movement.GetMethod(method)!.Invoke(null, [1u]);
+    private object Invoke(string method)
+    {
+        var target = _movement.GetMethod(method)!;
+        return target.Invoke(null, target.GetParameters().Length == 0 ? [] : [1u]);
+    }
     private void Set(string field, object value) => _world.GetField(field)!.SetValue(null, value);
     private T Get<T>(string field) => (T)_world.GetField(field)!.GetValue(null)!;
 }

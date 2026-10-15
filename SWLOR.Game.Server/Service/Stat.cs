@@ -174,9 +174,9 @@ namespace SWLOR.Game.Server.Service
         private static void ApplyTemporaryPlayerStats()
         {
             var player = GetEnteringObject();
-            if (!GetIsPC(player) || GetIsDM(player)) return;
+            if (!GetIsPC(player) && !GetIsDMPossessed(player)) return;
 
-            ApplyCreatureMovementRate(player);
+            RestoreWalkMode(player);
         }
 
         /// <summary>
@@ -661,24 +661,24 @@ namespace SWLOR.Game.Server.Service
         {
             var isWalking = !IsWalkModeEnabled(player);
             var isStaff = GetIsDM(player) || GetIsDMPossessed(player);
-            if (isWalking && isStaff)
+            if (isWalking && isStaff && GetLocalFloat(player, WalkRestoreMovementRateVariable) <= 0f)
             {
                 SetLocalFloat(player, WalkRestoreMovementRateVariable, CreaturePlugin.GetMovementRateFactor(player));
                 SetLocalFloat(player, WalkRestoreMovementAdjustmentVariable, GetMovementSpeedAdjustment(player));
             }
 
-            PlayerPlugin.SetAlwaysWalk(player, isWalking);
             SetLocalInt(player, WalkToggleVariable, isWalking ? 1 : 0);
-            if (isWalking || !isStaff || GetLocalFloat(player, WalkRestoreMovementRateVariable) > 0f)
-                ApplyCreatureMovementRate(player);
-
-            if (!isWalking)
-            {
-                DeleteLocalFloat(player, WalkRestoreMovementRateVariable);
-                DeleteLocalFloat(player, WalkRestoreMovementAdjustmentVariable);
-            }
-
+            RestoreWalkMode(player);
             return isWalking;
+        }
+
+        public static void RestoreWalkMode(uint player)
+        {
+            var isWalking = IsWalkModeEnabled(player);
+            PlayerPlugin.SetAlwaysWalk(player, isWalking);
+            if (isWalking || (!GetIsDM(player) && !GetIsDMPossessed(player)) ||
+                GetLocalFloat(player, WalkRestoreMovementRateVariable) > 0f)
+                ApplyCreatureMovementRate(player);
         }
 
         public static void ApplyCreatureMovementRate(uint creature)
@@ -694,6 +694,12 @@ namespace SWLOR.Game.Server.Service
 
             var movementRate = GetMovementSpeedMultiplier(creature);
             CreaturePlugin.SetMovementRateFactor(creature, movementRate);
+            if (!IsWalkModeEnabled(creature) && movementRate > MinimumMovementSpeedMultiplier &&
+                GetLocalFloat(creature, WalkRestoreMovementRateVariable) > 0f)
+            {
+                DeleteLocalFloat(creature, WalkRestoreMovementRateVariable);
+                DeleteLocalFloat(creature, WalkRestoreMovementAdjustmentVariable);
+            }
         }
 
         public static float GetMovementSpeedMultiplier(uint creature)

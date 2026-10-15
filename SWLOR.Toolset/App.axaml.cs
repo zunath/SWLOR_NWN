@@ -148,7 +148,12 @@ namespace SWLOR.Toolset
                 }
 
                 window.ShowStartupError(
-                    $"Toolset startup failed after {stopwatch.ElapsedMilliseconds}ms: {ex.GetBaseException().Message}");
+                    $"Toolset startup failed after {stopwatch.ElapsedMilliseconds}ms: {ex.GetBaseException().Message}",
+                    async () =>
+                    {
+                        if (await WorkspaceSetupWindow.ShowAsync(window, settings))
+                            await BootstrapAsync(window, settings);
+                    });
             }
         }
 

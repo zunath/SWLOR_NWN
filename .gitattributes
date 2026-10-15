@@ -60,3 +60,9 @@
 
 # This script is executed by bash from a Windows bind mount.
 SWLOR.Game.Server/Docker/prepare-server-home.sh text eol=lf
+
+# Contributor entry points must also run from Windows-mounted checkouts.
+/Setup.sh text eol=lf
+/CheckSetup.sh text eol=lf
+/StartToolset.sh text eol=lf
+/StartServer.sh text eol=lf

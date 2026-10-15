@@ -1950,8 +1950,8 @@ namespace SWLOR.Toolset.Services
                                  ?? throw new DirectoryNotFoundException(
                                      "Could not find the repository's tools/SWLOR.CLI directory.");
             return RequireTools(
-                _erfToolOverride ?? Path.Combine(toolsDirectory, "nwn_erf.exe"),
-                _gffToolOverride ?? Path.Combine(toolsDirectory, "nwn_gff.exe"));
+                _erfToolOverride ?? NativeToolPath.Find("nwn_erf", toolsDirectory) ?? NativeToolPath.ExecutableName("nwn_erf"),
+                _gffToolOverride ?? NativeToolPath.Find("nwn_gff", toolsDirectory) ?? NativeToolPath.ExecutableName("nwn_gff"));
         }
 
         private static string? FindToolsDirectory(string start)
@@ -1983,6 +1983,7 @@ namespace SWLOR.Toolset.Services
             CancellationToken cancellationToken,
             params string[] arguments)
         {
+            using var nativeInput = NativeGffInput.PrepareForTool(executable, workingDirectory, arguments);
             var startInfo = new ProcessStartInfo(executable)
             {
                 WorkingDirectory = workingDirectory,
@@ -1995,6 +1996,7 @@ namespace SWLOR.Toolset.Services
                 startInfo.ArgumentList.Add(argument);
 
             using var process = new Process { StartInfo = startInfo };
+            NativeToolPath.ConfigureLibraryPath(process.StartInfo);
             process.Start();
             var outputTask = process.StandardOutput.ReadToEndAsync(cancellationToken);
             var errorTask = process.StandardError.ReadToEndAsync(cancellationToken);

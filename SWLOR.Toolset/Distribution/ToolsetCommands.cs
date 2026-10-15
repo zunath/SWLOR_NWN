@@ -1,4 +1,6 @@
+using SWLOR.NWN.Formats.Common;
 using System.Text.Json;
+using SWLOR.Toolset.Domain.Script.Compile;
 using SWLOR.Toolset.Domain.Distribution;
 using SWLOR.Toolset.Domain.GameData.GameCode;
 
@@ -28,8 +30,12 @@ public static class ToolsetCommands
             else if (args[0] == "--verify-install" && args.Length == 2)
             {
                 var root = AppContext.BaseDirectory;
-                foreach (var relative in new[] { "tools/SWLOR.CLI/SWLOR.CLI.exe", "tools/SWLOR.CLI/nwn_erf.exe", "tools/SWLOR.CLI/nwn_gff.exe", "tools/SWLOR.CLI/nwn_script_comp.exe", "tools/SWLOR.CLI/pcre64.dll", "tools/SWLOR.CLI/libnwnscriptcomp.dll" })
-                    if (!File.Exists(Path.Combine(root, relative))) throw new FileNotFoundException("Incomplete toolset installation: " + relative);
+                var tools = Path.Combine(root, "tools", "SWLOR.CLI");
+                foreach (var name in new[] { "SWLOR.CLI", "nwn_erf", "nwn_gff", "nwn_script_comp" })
+                    if (NativeToolPath.FindInDirectory(tools, name) == null)
+                        throw new FileNotFoundException("Incomplete toolset installation: " + NativeToolPath.ExecutableName(name));
+                var library = OperatingSystem.IsWindows() ? "libnwnscriptcomp.dll" : "libnwnscriptcomp.so";
+                if (!File.Exists(Path.Combine(tools, library))) throw new FileNotFoundException("Missing native compiler library: " + library);
                 if (!Directory.EnumerateFiles(Path.Combine(root, "SWLOR.NWN.API", "NWN"), "nwscript*.nss").Any())
                     throw new FileNotFoundException("The NWScript engine header is missing.");
                 VerifyStandalonePacking();
@@ -56,6 +62,16 @@ public static class ToolsetCommands
                 Directory.CreateDirectory(Path.Combine(module, folder));
             File.WriteAllText(Path.Combine(module, "ifo", "module.ifo.json"),
                 "{\"__data_type\":\"IFO \",\"__struct_id\":4294967295}");
+            var header = Directory.EnumerateFiles(Path.Combine(AppContext.BaseDirectory, "SWLOR.NWN.API", "NWN"), "nwscript*.nss").First();
+            File.Copy(header, Path.Combine(module, "nss", "nwscript.nss"));
+            var script = Path.Combine(module, "nss", "install_check.nss");
+            File.WriteAllText(script, "void main() { object speaker = GetPCSpeaker(); }");
+            var bytecode = Path.Combine(module, "ncs", "install_check.ncs");
+            var compiler = NativeToolPath.Find("nwn_script_comp")!;
+            var compiled = new ScriptCompiler(compiler, new[] { Path.Combine(module, "nss") })
+                .CompileAsync(script, outputPath: bytecode).GetAwaiter().GetResult();
+            if (!compiled.Succeeded || !File.Exists(bytecode))
+                throw new InvalidOperationException("The standalone compiler failed: " + compiled.Output);
             var result = new Services.PackService(new Workspace.OutputLogService()).PackAsync(module).GetAwaiter().GetResult();
             if (result != 0 || !Directory.EnumerateFiles(module, "*.mod").Any())
                 throw new InvalidOperationException("The standalone packer could not build a fixture module.");

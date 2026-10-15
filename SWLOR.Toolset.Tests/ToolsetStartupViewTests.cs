@@ -47,6 +47,19 @@ namespace SWLOR.Toolset.Tests
         }
 
         [AvaloniaTest]
+        public async Task StartupFailureCanReturnToWorkspaceSelection()
+        {
+            var window = new MainWindow((ToolsetSettings?)null);
+            var recovered = false;
+            window.ShowStartupError("Missing workspace assets.", () => { recovered = true; return Task.CompletedTask; });
+            var button = window.FindControl<Button>("StartupWorkspaceButton")!;
+            button.IsVisible.Should().BeTrue();
+            button.RaiseEvent(new Avalonia.Interactivity.RoutedEventArgs(Button.ClickEvent));
+            await Task.Yield();
+            recovered.Should().BeTrue();
+        }
+
+        [AvaloniaTest]
         public void BootstrapFailureLeavesAnActionableVisibleState()
         {
             var settingsPath = Path.Combine(

@@ -51,8 +51,8 @@ namespace SWLOR.Toolset.Tests
             _service = new ErfArchiveService(
                 _workspace,
                 log,
-                Path.Combine(tools, "nwn_erf.exe"),
-                Path.Combine(tools, "nwn_gff.exe"),
+                Path.Combine(tools, NativeToolPath.ExecutableName("nwn_erf")),
+                Path.Combine(tools, NativeToolPath.ExecutableName("nwn_gff")),
                 dispatchToUiThread: action =>
                 {
                     _workspaceDispatches++;
@@ -2122,20 +2122,11 @@ namespace SWLOR.Toolset.Tests
 
         private static string FindToolsDirectory()
         {
-            var current = new DirectoryInfo(TestContext.CurrentContext.TestDirectory);
-            while (current != null)
-            {
-                var candidate = Path.Combine(current.FullName, "tools", "SWLOR.CLI");
-                if (File.Exists(Path.Combine(candidate, "nwn_erf.exe")) &&
-                    File.Exists(Path.Combine(candidate, "nwn_gff.exe")))
-                {
-                    return candidate;
-                }
-
-                current = current.Parent;
-            }
-
-            throw new DirectoryNotFoundException("Could not find tools/SWLOR.CLI from the test output.");
+            var native = NativeToolPath.Find("nwn_erf",
+                Path.Combine(CorpusLocator.RepositoryRoot, "tools", "SWLOR.CLI"));
+            return native == null
+                ? throw new DirectoryNotFoundException("Run source setup to install host-native NWN tools.")
+                : Path.GetDirectoryName(native)!;
         }
     }
 }

@@ -655,19 +655,26 @@ namespace SWLOR.Toolset.Shell
                 StatusText = "Export contribution needs a downloaded SWLOR workspace. Repository contributors can use Git.";
                 return;
             }
-            if (!await _editorService.Value.SaveAllAsync()) return;
-            var owner = (Avalonia.Application.Current?.ApplicationLifetime as IClassicDesktopStyleApplicationLifetime)?.MainWindow;
-            if (owner == null) return;
-            var selected = await owner.StorageProvider.SaveFilePickerAsync(new FilePickerSaveOptions
-            {
-                Title = "Export contribution", SuggestedFileName = "SWLOR contribution.zip", DefaultExtension = "zip",
-                FileTypeChoices = new[] { new FilePickerFileType("SWLOR contribution") { Patterns = new[] { "*.zip" } } }
-            });
-            var path = selected?.TryGetLocalPath();
-            if (path == null) return;
             IsPacking = true;
             try
             {
+                using (ModuleMutationLock.AllowModuleWrites())
+                {
+                    if (!await _editorService.Value.SaveAllAsync().ConfigureAwait(true))
+                    {
+                        StatusText = "Export cancelled: an open editor could not save.";
+                        return;
+                    }
+                }
+                var owner = (Avalonia.Application.Current?.ApplicationLifetime as IClassicDesktopStyleApplicationLifetime)?.MainWindow;
+                if (owner == null) return;
+                var selected = await owner.StorageProvider.SaveFilePickerAsync(new FilePickerSaveOptions
+                {
+                    Title = "Export contribution", SuggestedFileName = "SWLOR contribution.zip", DefaultExtension = "zip",
+                    FileTypeChoices = new[] { new FilePickerFileType("SWLOR contribution") { Patterns = new[] { "*.zip" } } }
+                });
+                var path = selected?.TryGetLocalPath();
+                if (path == null) return;
                 var count = await Task.Run(() => ContributionArchive.Export(root, path));
                 StatusText = $"Exported {count} saved change(s). Send this file to your SWLOR maintainer for review.";
             }
@@ -683,7 +690,7 @@ namespace SWLOR.Toolset.Shell
             {
                 var manager = new Velopack.UpdateManager(new Velopack.Sources.GithubSource(
                     "https://github.com/zunath/SWLOR_NWN", null, false));
-                if (!manager.IsInstalled) { StatusText = "Use the installer release to enable application updates."; return; }
+                if (!manager.IsInstalled) { StatusText = "Use the Windows installer or Linux AppImage to enable application updates."; return; }
                 StatusText = "Checking for application updates...";
                 var update = await manager.CheckForUpdatesAsync();
                 if (update == null) { StatusText = "The toolset is up to date."; return; }

@@ -34,12 +34,13 @@ public sealed class WorkspaceDownload
             throw new IOException("Choose a new workspace folder. Existing workspaces are never replaced.");
         var assets = Path.Combine(cacheRoot, feed.AssetRevision);
         Directory.CreateDirectory(cacheRoot);
-        if (!Directory.Exists(assets))
+        progress?.Report("Verifying shared SWLOR assets...");
+        var cacheValid = await Task.Run(() => IsAssetCacheValid(assets, feed.AssetRevision), cancellationToken);
+        if (!cacheValid)
         {
             progress?.Report("Downloading SWLOR assets. This first download can take a while...");
             await InstallAsync(feed.Assets, assets, true, feed, cancellationToken);
         }
-        AssetManifest.Load(assets, feed.AssetRevision, verifyFiles: false);
         progress?.Report("Downloading the editable workspace...");
         await InstallAsync(feed.Workspace, destination, false, feed, cancellationToken);
         var workspace = WorkspaceManifest.Load(destination);
@@ -100,12 +101,59 @@ public sealed class WorkspaceDownload
                 var current = ContentPaths.Capture(extracted);
                 if (current.Count != manifest.Baseline.Count) throw new InvalidDataException("The workspace baseline is incomplete.");
             }
-            Directory.Move(extracted, destination);
+            if (assets) PublishAssets(extracted, destination, feed.AssetRevision);
+            else Directory.Move(extracted, destination);
         }
         finally
         {
             // Staging is a freshly generated, task-owned sibling, never the destination.
             if (Directory.Exists(staging)) Directory.Delete(staging, recursive: true);
+        }
+    }
+
+    private static bool IsAssetCacheValid(string directory, string revision)
+    {
+        try
+        {
+            AssetManifest.Load(directory, revision, verifyFiles: true);
+            return true;
+        }
+        catch (Exception exception) when (exception is InvalidDataException or IOException or JsonException)
+        {
+            return false;
+        }
+    }
+
+    private static void PublishAssets(string extracted, string destination, string revision)
+    {
+        string? previous = null;
+        try
+        {
+            if (Directory.Exists(destination))
+            {
+                if (IsAssetCacheValid(destination, revision)) return;
+                previous = destination + ".corrupt-" + Guid.NewGuid().ToString("N");
+                try { Directory.Move(destination, previous); }
+                catch (IOException) when (!Directory.Exists(destination)) { previous = null; }
+            }
+            try { Directory.Move(extracted, destination); }
+            catch (IOException) when (Directory.Exists(destination))
+            {
+                // Another installer may have published the same immutable revision first.
+                AssetManifest.Load(destination, revision, verifyFiles: true);
+            }
+        }
+        catch
+        {
+            if (previous != null && Directory.Exists(previous) && !Directory.Exists(destination))
+                Directory.Move(previous, destination);
+            throw;
+        }
+        finally
+        {
+            // Discard the displaced cache only after a complete replacement exists.
+            if (previous != null && Directory.Exists(previous) && Directory.Exists(destination))
+                Directory.Delete(previous, recursive: true);
         }
     }
 

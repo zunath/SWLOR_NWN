@@ -157,6 +157,8 @@
                      TextAlignment="Center"
                      TextWrapping="Wrap"
                      Foreground="{DynamicResource InkSecondaryBrush}" />
+          <Button x:Name="StartupWorkspaceButton" Content="Choose workspace"
+                  HorizontalAlignment="Center" IsVisible="False" Click="OnStartupWorkspaceClick" />
         </StackPanel>
         </ScrollViewer>
       </Border>

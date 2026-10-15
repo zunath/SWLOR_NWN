@@ -8,7 +8,11 @@ on:
         required: true
         type: string
       publish:
-        description: Publish a signed release from master
+        description: Publish a release from master
+        default: false
+        type: boolean
+      sign_windows:
+        description: Sign Windows packages using the configured certificate
         default: false
         type: boolean
 
@@ -22,17 +26,46 @@ concurrency:
 jobs:
   package:
     if: ${{ github.actor == 'zunath' && github.triggering_actor == 'zunath' && (!inputs.publish || github.ref == 'refs/heads/master') }}
-    runs-on: windows-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: windows-latest
+            platform: win-x64
+          - os: ubuntu-24.04
+            platform: linux-x64
+    runs-on: ${{ matrix.os }}
     environment: toolset-release
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-dotnet@v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-dotnet@67a3573c9a986a3f9c594539f4ab511d57bb3ce9 # v4
         with:
           dotnet-version: 10.0.x
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
         with:
           python-version: '3.12'
+      - name: Install Linux build and desktop dependencies
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y libpcre3 libsqlite3-0 libfuse2t64 libfontconfig1 libx11-6 libxrandr2 libxfixes3 libxi6 libxcursor1 libice6 libsm6 libglib2.0-0t64 libgl1 libgl1-mesa-dri xvfb xauth x11-utils squashfs-tools file desktop-file-utils patchelf
+      - name: Prepare verified host-native utilities
+        run: python -B tools/ToolsetDistribution.py prepare-tools
+      - name: Build and test the distribution boundaries
+        shell: pwsh
+        env:
+          SWLOR_REQUIRE_NATIVE_TOOLS: '1'
+        run: |
+          dotnet build SWLOR.Toolset.Tests/SWLOR.Toolset.Tests.csproj -c Release -p:RunPostBuildEvent=Never
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          dotnet test SWLOR.Toolset.Tests/SWLOR.Toolset.Tests.csproj -c Release --no-build --filter "FullyQualifiedName~ContributionArchiveTests|FullyQualifiedName~WorkspaceDownloadTests|FullyQualifiedName~GameCodeCatalogTests|FullyQualifiedName~PackServiceTests|FullyQualifiedName~HakSetupValidationTests|FullyQualifiedName~WorkspaceSetupWindowTests|FullyQualifiedName~AppRepositoryRootTests|FullyQualifiedName~ModuleCustomContentServiceTests|FullyQualifiedName~ScriptCompilerTests|FullyQualifiedName~ToolsetStartupViewTests|FullyQualifiedName~ErfArchiveServiceTests|FullyQualifiedName~NativeGffInputTests|FullyQualifiedName~NativeToolPathTests|FullyQualifiedName~LinuxGameDiscoveryTests|FullyQualifiedName~NwnIniProfileTests"
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          python -B -m unittest tools.tests.test_toolset_content tools.tests.test_toolset_distribution -v
+          exit $LASTEXITCODE
       - name: Resolve the pinned published asset pack
+        if: runner.os == 'Windows'
         shell: pwsh
         env:
           GH_TOKEN: ${{ github.token }}
@@ -40,28 +73,20 @@ jobs:
           $revision = (git ls-tree HEAD SWLOR_Haks).Split()[2]
           gh release download "toolset-assets-$revision" --repo zunath/SWLOR_NWN --pattern asset-pack.json --dir "$env:RUNNER_TEMP/assets"
           if ($LASTEXITCODE -ne 0) {
-            throw "Publish the asset pack for $revision first using tools/PublishToolsetAssets.ps1. Editor releases reuse that immutable pack."
+            throw "Publish the asset pack for $revision first using tools/ToolsetDistribution.py assets. Editor releases reuse that immutable pack."
           }
-      - name: Build and test the distribution boundaries
-        shell: pwsh
-        run: |
-          dotnet build SWLOR.Toolset.Tests/SWLOR.Toolset.Tests.csproj -c Release -p:RunPostBuildEvent=Never
-          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
-          dotnet test SWLOR.Toolset.Tests/SWLOR.Toolset.Tests.csproj -c Release --no-build --filter "FullyQualifiedName~ContributionArchiveTests|FullyQualifiedName~WorkspaceDownloadTests|FullyQualifiedName~GameCodeCatalogTests|FullyQualifiedName~PackServiceTests|FullyQualifiedName~HakSetupValidationTests|FullyQualifiedName~WorkspaceSetupWindowTests|FullyQualifiedName~AppRepositoryRootTests|FullyQualifiedName~ModuleCustomContentServiceTests|FullyQualifiedName~ScriptCompilerTests|FullyQualifiedName~ToolsetStartupViewTests"
-          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
-          python -B -m unittest discover -s tools/tests -p test_toolset_content.py -v
-          exit $LASTEXITCODE
-      - name: Build the installer and content snapshot
+      - name: Build Windows installer and shared content snapshot
+        if: runner.os == 'Windows'
         shell: pwsh
         env:
           TOOLSET_VERSION: ${{ inputs.version }}
-          PUBLISH_RELEASE: ${{ inputs.publish }}
-          SIGNING_PFX: ${{ inputs.publish && secrets.TOOLSET_SIGNING_PFX_BASE64 || '' }}
-          SIGNING_PASSWORD: ${{ inputs.publish && secrets.TOOLSET_SIGNING_PASSWORD || '' }}
+          SIGN_WINDOWS: ${{ inputs.sign_windows }}
+          SIGNING_PFX: ${{ inputs.sign_windows && secrets.TOOLSET_SIGNING_PFX_BASE64 || '' }}
+          SIGNING_PASSWORD: ${{ inputs.sign_windows && secrets.TOOLSET_SIGNING_PASSWORD || '' }}
         run: |
           $signParameters = $null
-          if ($env:PUBLISH_RELEASE -eq 'true') {
-            if (!$env:SIGNING_PFX -or !$env:SIGNING_PASSWORD) { throw 'Public releases require the toolset signing certificate and password in the toolset-release environment.' }
+          if ($env:SIGN_WINDOWS -eq 'true') {
+            if (!$env:SIGNING_PFX -or !$env:SIGNING_PASSWORD) { throw 'Signing was requested. Configure TOOLSET_SIGNING_PFX_BASE64 and TOOLSET_SIGNING_PASSWORD in toolset-release.' }
             $pfx = Join-Path $env:RUNNER_TEMP 'toolset-signing.pfx'
             [IO.File]::WriteAllBytes($pfx, [Convert]::FromBase64String($env:SIGNING_PFX))
             try {
@@ -71,36 +96,41 @@ jobs:
             } finally { Remove-Item -LiteralPath $pfx }
           }
           ./tools/PublishToolset.ps1 -Version $env:TOOLSET_VERSION -AssetDescriptor "$env:RUNNER_TEMP/assets/asset-pack.json" -OutputDirectory "$env:RUNNER_TEMP/toolset-build" -SignParameters $signParameters
-      - name: Verify the published application outside the source checkout
+      - name: Build Linux AppImage and portable archive
+        if: runner.os == 'Linux'
+        env:
+          TOOLSET_VERSION: ${{ inputs.version }}
+        run: python3 -B tools/ToolsetDistribution.py publish --version "$TOOLSET_VERSION" --skip-workspace --output "$RUNNER_TEMP/toolset-build"
+      - name: Verify installed application outside the source checkout
         shell: pwsh
         run: |
-          $destination = Join-Path $env:RUNNER_TEMP 'toolset-install-check'
-          Copy-Item -LiteralPath "$env:RUNNER_TEMP/toolset-build/application" -Destination $destination -Recurse
-          $report = Join-Path $env:RUNNER_TEMP 'toolset-install-check.json'
-          $env:PATH = "$env:SystemRoot/System32;$env:SystemRoot"
-          $env:DOTNET_ROOT = Join-Path $env:RUNNER_TEMP 'no-installed-dotnet'
-          $process = Start-Process -FilePath "$destination/SWLOR.Toolset.exe" -ArgumentList @('--verify-install', "`"$report`"") -PassThru -WindowStyle Hidden
-          if (!$process.WaitForExit(60000)) { $process.Kill(); $process.WaitForExit(); throw 'The standalone installation check timed out.' }
-          if ($process.ExitCode -ne 0 -or !(Test-Path -LiteralPath $report) -or !((Get-Content -Raw $report | ConvertFrom-Json).Success)) {
-            throw 'The published toolset failed its standalone installation check.'
-          }
-      - uses: actions/upload-artifact@v4
+          python -B tools/VerifyToolsetInstallation.py "$env:RUNNER_TEMP/toolset-build/application" "$env:RUNNER_TEMP/toolset-install-check.json"
+          exit $LASTEXITCODE
+      - name: Verify Linux AppImage and desktop startup
+        if: runner.os == 'Linux'
+        run: |
+          image=$(find "$RUNNER_TEMP/toolset-build/release" -maxdepth 1 -name '*.AppImage' -print -quit)
+          test -n "$image"
+          APPIMAGE_EXTRACT_AND_RUN=1 "$image" --verify-install "$RUNNER_TEMP/appimage-check.json"
+          xvfb-run -a python3 -B tools/VerifyToolsetInstallation.py "$RUNNER_TEMP/toolset-build/application" "$RUNNER_TEMP/linux-desktop-check.json" --desktop
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
-          name: swlor-toolset-release
+          name: swlor-toolset-${{ matrix.platform }}
           path: ${{ runner.temp }}/toolset-build/release/*
           retention-days: 14
 
   publish:
     if: ${{ inputs.publish }}
     needs: package
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     environment: toolset-release
     permissions:
       contents: write
     steps:
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
         with:
-          name: swlor-toolset-release
+          pattern: swlor-toolset-*
+          merge-multiple: true
           path: release
       - name: Publish the verified release
         env:
@@ -108,4 +138,9 @@ jobs:
           TOOLSET_VERSION: ${{ inputs.version }}
           SOURCE_REVISION: ${{ github.sha }}
         run: |
-          gh release create "toolset-v$TOOLSET_VERSION" release/* --repo zunath/SWLOR_NWN --target "$SOURCE_REVISION" --title "SWLOR Toolset $TOOLSET_VERSION" --notes "Standalone Windows toolset, contributor workspace, and matching asset downloads." --latest
+          if [[ "$TOOLSET_VERSION" == *-* ]]; then
+            release_options=(--prerelease --latest=false)
+          else
+            release_options=(--latest)
+          fi
+          gh release create "toolset-v$TOOLSET_VERSION" release/* --repo zunath/SWLOR_NWN --target "$SOURCE_REVISION" --title "SWLOR Toolset $TOOLSET_VERSION" --notes "Standalone Windows and Linux toolsets, shared contributor workspace, and matching asset downloads." "${release_options[@]}"

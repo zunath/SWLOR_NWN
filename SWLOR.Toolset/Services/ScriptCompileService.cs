@@ -55,8 +55,7 @@ namespace SWLOR.Toolset.Services
                 if (root == null)
                     return null;
 
-                var path = Path.Combine(root, "tools", "SWLOR.CLI", "nwn_script_comp.exe");
-                return File.Exists(path) ? path : null;
+                return NativeToolPath.Find("nwn_script_comp", Path.Combine(root, "tools", "SWLOR.CLI"));
             }
         }
 
@@ -130,7 +129,7 @@ namespace SWLOR.Toolset.Services
             var compiler = CreateCompiler();
             if (workspace == null || compiler == null)
             {
-                _log.AppendLine("Cannot compile: no module open, or nwn_script_comp.exe is missing from tools/SWLOR.CLI.");
+                _log.AppendLine("Cannot compile: no module open, or The native NWScript compiler is missing. Run repository setup or reinstall the toolset.");
                 return CompileOutcome.Failed(resRef);
             }
 
@@ -380,7 +379,7 @@ namespace SWLOR.Toolset.Services
             {
                 var diagnosticResRef = string.IsNullOrWhiteSpace(d.File)
                     ? sourceResRef
-                    : Path.GetFileNameWithoutExtension(d.File);
+                    : Path.GetFileNameWithoutExtension(d.File.Replace('\\', '/'));
                 var belongsToSource = string.Equals(
                     diagnosticResRef, sourceResRef, StringComparison.OrdinalIgnoreCase);
                 var (start, length) = belongsToSource

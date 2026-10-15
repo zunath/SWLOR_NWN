@@ -72,10 +72,15 @@ def workspace(root, output, catalog, assets, release_url):
     write_json(output / 'toolset-feed.json', {'SchemaVersion': 1, 'ContentRevision': revision,
                'AssetRevision': asset_revision, 'Workspace': descriptor, 'Assets': assets['Archive']})
 
+def assigned_haks(root):
+    # Legacy Nim void values can contain raw bytes; HAK names remain ordinary JSON text.
+    ifo = json.loads((root / 'Module/ifo/module.ifo.json').read_text(encoding='utf-8-sig', errors='surrogateescape'))
+    return [entry['Mod_Hak']['value'] for entry in ifo['Mod_HakList']['value']]
+
+
 def asset_pack(root, output, packed, release_url):
     _, revision = revisions(root)
-    ifo = json.loads((root / 'Module/ifo/module.ifo.json').read_text(encoding='utf-8-sig'))
-    hak_names = [entry['Mod_Hak']['value'] for entry in ifo['Mod_HakList']['value']]
+    hak_names = assigned_haks(root)
     files = {f'hak/{name}.hak': packed / 'hak' / f'{name}.hak' for name in hak_names}
     files['tlk/sw_tlk.tlk'] = packed / 'tlk/sw_tlk.tlk'
     files['tlk/sw_tlk.tlk.json'] = root / 'SWLOR_Haks/sw_tlk/sw_tlk.tlk.json'

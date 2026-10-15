@@ -20,19 +20,9 @@ public class WorkspaceDownloadTests
     [Test]
     public async Task DownloadSeparatesReusableAssetsFromEditableWorkspaces()
     {
-        var assetFiles = new Dictionary<string, byte[]> { ["hak/sw_2da.hak"] = Encoding.UTF8.GetBytes("archive"),
-            ["tlk/sw_tlk.tlk.json"] = Encoding.UTF8.GetBytes("{}"), ["tlk/sw_tlk.tlk"] = new byte[] { 1 } };
-        var assets = new AssetManifest { AssetRevision = Revision, Files = assetFiles.ToDictionary(pair => pair.Key, pair => ContentPaths.Hash(pair.Value)) };
-        assetFiles[AssetManifest.FileName] = JsonSerializer.SerializeToUtf8Bytes(assets);
-        var content = new Dictionary<string, byte[]> { ["Module/utc/example.utc.json"] = Encoding.UTF8.GetBytes("{ }\r\n") };
-        var workspace = new WorkspaceManifest { ContentRevision = Revision, AssetRevision = Revision,
-            Baseline = content.ToDictionary(pair => pair.Key, pair => ContentPaths.Hash(pair.Value)) };
-        content[WorkspaceManifest.FileName] = JsonSerializer.SerializeToUtf8Bytes(workspace);
-        var payloads = new Dictionary<string, byte[]> { [Release + "assets"] = Zip(assetFiles), [Release + "workspace"] = Zip(content) };
+        var (feed, payloads) = CreateFeed();
         using var client = new HttpClient(new DownloadHandler(payloads));
         var download = new WorkspaceDownload(client);
-        var feed = new ToolsetFeed { ContentRevision = Revision, AssetRevision = Revision,
-            Assets = Descriptor(Release + "assets", payloads[Release + "assets"]), Workspace = Descriptor(Release + "workspace", payloads[Release + "workspace"]) };
         var cache = Path.Combine(_root, "cache");
         var first = Path.Combine(_root, "first");
         await download.CreateAsync(feed, first, cache, null, CancellationToken.None);
@@ -110,6 +100,59 @@ public class WorkspaceDownloadTests
         Directory.EnumerateDirectories(Path.Combine(_root, "cache")).Should().BeEmpty();
     }
 
+    [TestCase(0)]
+    [TestCase(1)]
+    [TestCase(2)]
+    public async Task DamagedAssetCacheCanBeReinstalledWithoutChangingAnExistingWorkspace(int damage)
+    {
+        var (feed, payloads) = CreateFeed();
+        using var client = new HttpClient(new DownloadHandler(payloads));
+        var download = new WorkspaceDownload(client);
+        var cache = Path.Combine(_root, "cache");
+        var first = Path.Combine(_root, "first");
+        await download.CreateAsync(feed, first, cache, null, CancellationToken.None);
+        var editable = Path.Combine(first, "Module/utc/example.utc.json");
+        File.WriteAllText(editable, "local edit");
+        var hak = Path.Combine(cache, Revision, "hak/sw_2da.hak");
+        if (damage == 1) File.Delete(hak);
+        else if (damage == 2) File.WriteAllText(Path.Combine(cache, Revision, AssetManifest.FileName), "{");
+        else File.WriteAllText(hak, "corrupt");
+        await download.CreateAsync(feed, Path.Combine(_root, "second"), cache, null, CancellationToken.None);
+        File.ReadAllText(hak).Should().Be("archive");
+        File.ReadAllText(editable).Should().Be("local edit");
+        Directory.EnumerateDirectories(cache).Select(Path.GetFileName).Should().Equal(Revision);
+    }
+
+    [Test]
+    public async Task ConcurrentWorkspaceDownloadsShareOneVerifiedAssetCache()
+    {
+        var (feed, payloads) = CreateFeed();
+        using var client = new HttpClient(new DownloadHandler(payloads, synchronizeAssets: true));
+        var download = new WorkspaceDownload(client);
+        var cache = Path.Combine(_root, "cache");
+        await Task.WhenAll(
+            download.CreateAsync(feed, Path.Combine(_root, "first"), cache, null, CancellationToken.None),
+            download.CreateAsync(feed, Path.Combine(_root, "second"), cache, null, CancellationToken.None));
+        AssetManifest.Load(Path.Combine(cache, Revision), Revision, verifyFiles: true);
+        Directory.EnumerateDirectories(cache).Select(Path.GetFileName).Should().Equal(Revision);
+    }
+
+    private static (ToolsetFeed, Dictionary<string, byte[]>) CreateFeed()
+    {
+        var assetFiles = new Dictionary<string, byte[]> { ["hak/sw_2da.hak"] = Encoding.UTF8.GetBytes("archive"),
+            ["tlk/sw_tlk.tlk.json"] = Encoding.UTF8.GetBytes("{}"), ["tlk/sw_tlk.tlk"] = new byte[] { 1 } };
+        var assets = new AssetManifest { AssetRevision = Revision, Files = assetFiles.ToDictionary(pair => pair.Key, pair => ContentPaths.Hash(pair.Value)) };
+        assetFiles[AssetManifest.FileName] = JsonSerializer.SerializeToUtf8Bytes(assets);
+        var content = new Dictionary<string, byte[]> { ["Module/utc/example.utc.json"] = Encoding.UTF8.GetBytes("{ }\r\n") };
+        var workspace = new WorkspaceManifest { ContentRevision = Revision, AssetRevision = Revision,
+            Baseline = content.ToDictionary(pair => pair.Key, pair => ContentPaths.Hash(pair.Value)) };
+        content[WorkspaceManifest.FileName] = JsonSerializer.SerializeToUtf8Bytes(workspace);
+        var payloads = new Dictionary<string, byte[]> { [Release + "assets"] = Zip(assetFiles), [Release + "workspace"] = Zip(content) };
+        var feed = new ToolsetFeed { ContentRevision = Revision, AssetRevision = Revision,
+            Assets = Descriptor(Release + "assets", payloads[Release + "assets"]), Workspace = Descriptor(Release + "workspace", payloads[Release + "workspace"]) };
+        return (feed, payloads);
+    }
+
     private static DownloadArchive Descriptor(string url, byte[] bytes) => new() { Sha256 = ContentPaths.Hash(bytes),
         Parts = new() { new DownloadPart(url, ContentPaths.Hash(bytes), bytes.Length) } };
     private static byte[] Zip(Dictionary<string, byte[]> files)
@@ -119,11 +162,21 @@ public class WorkspaceDownloadTests
             foreach (var (name, payload) in files) { using var output = zip.CreateEntry(name).Open(); output.Write(payload); }
         return bytes.ToArray();
     }
-    private sealed class DownloadHandler(Dictionary<string, byte[]> payloads) : HttpMessageHandler
+    private sealed class DownloadHandler(Dictionary<string, byte[]> payloads, bool synchronizeAssets = false) : HttpMessageHandler
     {
-        protected override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken token) =>
-            Task.FromResult(payloads.TryGetValue(request.RequestUri!.ToString(), out var bytes)
+        private readonly TaskCompletionSource _bothAssetRequests = new(TaskCreationOptions.RunContinuationsAsynchronously);
+        private int _assetRequests;
+
+        protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken token)
+        {
+            if (synchronizeAssets && request.RequestUri!.ToString() == Release + "assets")
+            {
+                if (Interlocked.Increment(ref _assetRequests) == 2) _bothAssetRequests.TrySetResult();
+                await _bothAssetRequests.Task.WaitAsync(TimeSpan.FromSeconds(10), token);
+            }
+            return payloads.TryGetValue(request.RequestUri!.ToString(), out var bytes)
                 ? new HttpResponseMessage(HttpStatusCode.OK) { Content = new ByteArrayContent(bytes) }
-                : new HttpResponseMessage(HttpStatusCode.NotFound));
+                : new HttpResponseMessage(HttpStatusCode.NotFound);
+        }
     }
 }

@@ -69,7 +69,7 @@ namespace SWLOR.Toolset.Services
                 }
 
                 var cliPath = sourceCheckout ? ResolveCli(repoRoot) : Path.Combine(
-                    AppContext.BaseDirectory, "tools", "SWLOR.CLI", "SWLOR.CLI.exe");
+                    AppContext.BaseDirectory, "tools", "SWLOR.CLI", NativeToolPath.ExecutableName("SWLOR.CLI"));
                 if (cliPath == null || !File.Exists(cliPath))
                 {
                     _log.AppendLine("The module packer was not found. Reinstall the toolset or rebuild SWLOR.CLI.");
@@ -339,7 +339,7 @@ namespace SWLOR.Toolset.Services
         /// <summary>Finds the Debug CLI produced immediately before packing.</summary>
         internal static string? ResolveCli(string repoRoot)
         {
-            var path = Path.Combine(repoRoot, "SWLOR.CLI", "bin", "Debug", "net10.0", "SWLOR.CLI.exe");
+            var path = Path.Combine(repoRoot, "SWLOR.CLI", "bin", "Debug", "net10.0", NativeToolPath.ExecutableName("SWLOR.CLI"));
             return File.Exists(path) ? path : null;
         }
 

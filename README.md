@@ -6,7 +6,7 @@ SWLOR is a Neverwinter Nights: Enhanced Edition persistent world. This repositor
 
 ## Toolset users and content contributors
 
-Use the **SWLOR Toolset installer** from [Releases](https://github.com/zunath/SWLOR_NWN/releases/latest). Choose the installer asset, rather than GitHub's source-code ZIP. A portable ZIP is also available for running without installation.
+Download **SWLOR Toolset** from [Releases](https://github.com/zunath/SWLOR_NWN/releases/latest): the Windows installer or portable ZIP, or the Linux x64 AppImage or portable tar.gz. Choose an application asset rather than GitHub's source-code ZIP. On Linux, make the AppImage executable with `chmod +x *.AppImage`, then open it. Ubuntu 24.04 is the tested Linux baseline; use X11 or Wayland with XWayland.
 
 1. Install and open SWLOR Toolset.
 2. Select **Create SWLOR workspace** and choose a folder for your work.
@@ -14,7 +14,7 @@ Use the **SWLOR Toolset installer** from [Releases](https://github.com/zunath/SW
 4. Edit, save, and run **Tools → Run Validation**.
 5. Use **File → Export Contribution** and send the ZIP to your SWLOR maintainer for review.
 
-Git, Visual Studio, Docker, and the .NET SDK are not required for the installed toolset. The first workspace downloads SWLOR assets separately; later workspaces reuse them. Application updates preserve your editable files. **Help → Check for Updates** updates an installed copy.
+Git, Visual Studio, Docker, and the .NET SDK are not required for the installed toolset. The first workspace downloads SWLOR assets separately; later workspaces reuse them. Application updates preserve your editable files. **Help → Check for Updates** updates an installed Windows copy or Linux AppImage. Portable archives are updated by downloading a newer archive.
 
 Conversations need a matching server build before they can be tested in game. Exporting a contribution lets the maintainer build and test the reviewed changes together.
 
@@ -22,7 +22,7 @@ The standalone downloads become available after the first toolset release is pub
 
 ## Source developers
 
-Install [Git](https://git-scm.com/downloads/win) and a stable [.NET 10 SDK](https://dotnet.microsoft.com/download/dotnet/10.0). Use an IDE that supports that SDK if you want code editing or debugging. Docker Desktop is needed only to run a local server; NWN:EE supplies base-game assets and the game client.
+Install [Git](https://git-scm.com/downloads), [Python 3.11 or newer](https://www.python.org/downloads/), and a stable [.NET 10 SDK](https://dotnet.microsoft.com/download/dotnet/10.0). Use an IDE that supports that SDK if you want code editing or debugging. Docker Engine with Compose on Linux, or Docker Desktop on Windows, is needed only to run a local server; NWN:EE supplies base-game assets and the game client.
 
 Fork this repository, then clone your fork:
 
@@ -37,21 +37,25 @@ Double-click **Setup.cmd** inside the checkout. It initializes the pinned asset 
 - **Setup.cmd -Profile Server** checks Docker and builds the local server launcher.
 - **StartServer.cmd** packs the module, prepares this checkout's local server files, and runs the server. The first run can take a while. Press Ctrl+C to stop it.
 
-For command-line use:
+On Linux, install these source-tool dependencies on Ubuntu 24.04:
 
-```powershell
-powershell -NoProfile -ExecutionPolicy Bypass -File scripts/SetupRepository.ps1 -Mode Check -Profile Server
+```bash
+sudo apt-get install python3 libpcre3 libsqlite3-0 libfontconfig1 libx11-6 libxrandr2 libxfixes3 libxi6 libxcursor1 libice6 libsm6 libglib2.0-0t64 libgl1 libgl1-mesa-dri
+./Setup.sh
+./StartToolset.sh
 ```
+
+`./CheckSetup.sh`, `./Setup.sh --profile Server`, and `./StartServer.sh` provide the same checks and server workflow. Setup downloads checksum-verified Linux NWN utilities into the user's cache; it does not require PowerShell. Both platforms also support `python scripts/SetupRepository.py --mode Check --profile Server` (use `python3` on Linux).
 
 Builds always disable automatic deployment. The server shortcut explicitly invokes the existing pack/deploy pipeline. Existing local configuration is preserved.
 
 ## Troubleshooting
 
-**Missing assets or TLK:** run Setup.cmd. It initializes the exact SWLOR_Haks revision pinned by the parent repository.
+**Missing assets or TLK:** run Setup.cmd or ./Setup.sh. It initializes the exact SWLOR_Haks revision pinned by the parent repository.
 
 **SDK not found:** install a stable .NET 10 SDK and reopen your terminal or IDE. global.json selects the latest installed .NET 10 feature band.
 
-**Docker unavailable:** start Docker Desktop, select Linux containers, and run CheckSetup.cmd -Profile Server.
+**Docker unavailable:** start Docker Engine with Compose on Linux, or Docker Desktop with Linux containers on Windows. Run ./CheckSetup.sh --profile Server or CheckSetup.cmd -Profile Server.
 
 **Missing HAK/TLK when joining a local server:** point your NWN profile's HAK and TLK aliases at this checkout's debugserver/hak and debugserver/tlk directories, or copy those built files into your profile.
 

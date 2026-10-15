@@ -16,7 +16,7 @@ public sealed class WorkspaceSetupWindow : Window
     private readonly Button _download = new() { Content = "Create SWLOR workspace" };
     private readonly Button _open = new() { Content = "Open existing workspace" };
     private readonly Button _game = new() { Content = "Locate Neverwinter Nights" };
-    private readonly CancellationTokenSource _cancellation = new();
+    private CancellationTokenSource _cancellation = new();
     private bool _busy;
 
     public WorkspaceSetupWindow(ToolsetSettings settings)
@@ -71,6 +71,8 @@ public sealed class WorkspaceSetupWindow : Window
         var parent = folders.FirstOrDefault()?.TryGetLocalPath();
         if (parent == null) return;
         var destination = Path.Combine(parent, "SWLOR Workspace " + DateTime.Now.ToString("yyyy-MM-dd HHmmss"));
+        _cancellation.Dispose();
+        _cancellation = new CancellationTokenSource();
         _busy = true;
         _download.IsEnabled = _open.IsEnabled = _game.IsEnabled = false;
         try
@@ -85,7 +87,7 @@ public sealed class WorkspaceSetupWindow : Window
             _busy = false;
             Close(true);
         }
-        catch (OperationCanceledException) { _busy = false; Close(false); }
+        catch (OperationCanceledException) { _status.Text = "Download cancelled. You can retry or open an existing workspace."; }
         catch (Exception exception) { _status.Text = "Workspace download failed: " + exception.Message; }
         finally { _busy = false; _download.IsEnabled = _open.IsEnabled = _game.IsEnabled = true; }
     }

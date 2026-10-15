@@ -36,6 +36,12 @@ class ToolsetContentTests(unittest.TestCase):
             self.assertIsNone(content.CONTENT.fullmatch(path))
 
 
+    def test_real_module_ifo_with_raw_void_bytes_can_be_read(self):
+        root = Path(__file__).resolve().parents[2]
+        original = (root / 'Module/ifo/module.ifo.json').read_bytes()
+        self.assertIn(b'\xff', original)
+        self.assertIn('sw_2da', content.assigned_haks(root))
+
     def test_asset_bundle_contains_exact_assigned_haks_and_both_tlk_forms(self):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)

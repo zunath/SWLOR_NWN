@@ -871,10 +871,19 @@ namespace SWLOR.CombatSim.Engine
                     Revive(caster, target, effect);
                     break;
                 case EffectKind.SelfStatus:
+                    var isStance = StatusStats.IsStance(effect.StatusType);
+                    // One stance at a time, as the game's RemoveOtherStanceStatuses does.
+                    if (isStance)
+                    {
+                        foreach (var key in caster.Statuses.Where(s => s.Value.IsStance).Select(s => s.Key).ToList())
+                            caster.Statuses.Remove(key);
+                    }
+
                     caster.Statuses[effect.Key] = new ActiveStatus
                     {
                         Stats = StatusStats.Get(effect.StatusType),
-                        ExpiresAt = effect.DurationSeconds > 0 ? _now + effect.DurationSeconds : double.PositiveInfinity
+                        ExpiresAt = effect.DurationSeconds > 0 ? _now + effect.DurationSeconds : double.PositiveInfinity,
+                        IsStance = isStance
                     };
                     break;
             }

@@ -9,5 +9,8 @@ namespace SWLOR.CombatSim.Engine
 
         /// <summary>When the status ends; infinity for one held all fight, such as a stance.</summary>
         public double ExpiresAt { get; init; }
+
+        /// <summary>A stance; taking up another stance ends it.</summary>
+        public bool IsStance { get; init; }
     }
 }

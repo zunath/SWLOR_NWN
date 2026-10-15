@@ -158,6 +158,18 @@ namespace SWLOR.CombatSim.Tests.Engine
         }
 
         [Test]
+        public void TakingUpAnotherStance_EndsConduitStance()
+        {
+            var (simulation, caster) = Spawn(new[] { "ConduitTraining" },
+                Stance(), TestCombatants.Use("TempestStance1", AbilityTarget.Self, keepUp: true), Hostile("FocusedArc4"));
+
+            SimulationClock.RunUntil(simulation, () => caster.Statuses.ContainsKey("TempestStanceStatusEffect"), LimitSeconds,
+                "Tempest Stance to go up");
+
+            caster.Statuses.Should().NotContainKey("ConduitStanceStatusEffect", "a creature holds one stance at a time");
+        }
+
+        [Test]
         public void ASelfStatus_MustTargetItsCaster()
         {
             var scenario = TestScenarios.TwoTeams(false,

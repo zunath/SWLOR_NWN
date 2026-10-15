@@ -2565,7 +2565,12 @@ namespace SWLOR.Game.Server.Service
 
         public static void ApplyDamageTakenEffects(uint defender, uint attacker, int damage)
         {
-            if (!GetIsObjectValid(defender) || GetIsDead(defender) || damage <= 0)
+            if (!GetIsObjectValid(defender) || damage <= 0)
+                return;
+
+            // A lethal hit interrupts too: subdual can stand the caster back up before the cast would finish.
+            Feature.UsePerkFeat.InterruptActivationOnDamage(defender, attacker);
+            if (GetIsDead(defender))
                 return;
 
             var attackPercent = Stat.GetStatAdjustment(defender, StatType.DamageTakenAttackPercentAdjustment);
@@ -2584,7 +2589,6 @@ namespace SWLOR.Game.Server.Service
             ApplyDamageTakenNextSkillAbilityDamage(defender);
             ApplyReversalCutReady(defender);
             TrackRecentDamageTaken(defender);
-            Feature.UsePerkFeat.InterruptActivationOnDamage(defender, attacker);
             ApplyRecentDamageTargetHitEffects(defender, attacker);
 
             if (GetIsObjectValid(attacker) && GetIsReactionTypeHostile(attacker, defender))

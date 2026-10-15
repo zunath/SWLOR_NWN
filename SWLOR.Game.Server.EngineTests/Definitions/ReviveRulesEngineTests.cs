@@ -124,6 +124,36 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             }
         }
 
+        [EngineTest("A lethal hit interrupts a Resuscitation cast even if the caster is back up before it would finish", Category = "Revive", TimeoutSeconds = 30f)]
+        public static async Task LethalDamageInterruptsReviveCast(EngineTestContext ctx)
+        {
+            var (caster, body) = await PrepareReviveAsync(ctx);
+            try
+            {
+                var attacker = ctx.SpawnCreature("nw_rat001", -3f);
+                var (activated, denial) = await TryReviveAsync(ctx, caster, body);
+                ctx.Assert(activated, $"the revive cast starts: {denial}");
+                await ctx.DelaySecondsAsync(1f);
+
+                // The killing blow's damage event runs while the caster is dead, and PvP subdual can stand
+                // them back up well before the 4-second cast would finish.
+                ApplyEffectToObject(DurationType.Instant, EffectDeath(), caster);
+                await ctx.WaitUntilAsync(() => GetIsDead(caster), 5f, "the caster to die");
+                Combat.ApplyDamageTakenEffects(caster, attacker, 50);
+                ApplyEffectToObject(DurationType.Instant, EffectResurrection(), caster);
+                await ctx.WaitUntilAsync(() => !GetIsDead(caster), 2f, "the caster to be back up");
+
+                await ctx.DelaySecondsAsync(4f);
+                ctx.Assert(GetIsDead(body), "a revive whose caster took a lethal hit leaves the body dead");
+            }
+            finally
+            {
+                DestroyCorpsePlaceable(caster);
+                ReleaseBody(caster);
+                ReleaseBody(body);
+            }
+        }
+
         private static async Task<(uint Caster, uint Body)> PrepareReviveAsync(EngineTestContext ctx)
         {
             var caster = ctx.SpawnCreature(ActorResref, -0.5f);

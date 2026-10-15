@@ -50,8 +50,10 @@ namespace SWLOR.Game.Server.Service
         public const float MaximumMovementSpeedMultiplier = 1.5f;
         private const string WalkToggleVariable = "WALK_TOGGLE";
         private const string WalkRestoreMovementRateVariable = "WALK_RESTORE_MOVEMENT_RATE";
-        private const string WalkRestoreMovementAdjustmentVariable = "WALK_RESTORE_MOVEMENT_ADJUSTMENT";
+        private const string WalkRestoreBaseMovementRateVariable = "WALK_RESTORE_BASE_MOVEMENT_RATE";
+        private const string WalkRestoreMaximumMovementRateVariable = "WALK_RESTORE_MAX_MOVEMENT_RATE";
         private const float PendingWalkMovementRestore = -1.0f;
+        private const float MinimumNativeMovementSpeedMultiplier = 0.125f;
         private const float DeflectionEvasionBoostDurationSeconds = 30f;
         private const float DeflectionEnmityBoostDurationSeconds = 30f;
         private const float DeflectionDefenseBoostDurationSeconds = 30f;
@@ -664,15 +666,24 @@ namespace SWLOR.Game.Server.Service
             var isStaff = GetIsDM(player) || GetIsDMPossessed(player);
             if (isWalking && isStaff && GetLocalFloat(player, WalkRestoreMovementRateVariable) == 0f)
             {
-                if (GetMovementSpeedMultiplier(player) <= MinimumMovementSpeedMultiplier)
+                var calculatedMovementRate = GetMovementSpeedMultiplier(player);
+                if (calculatedMovementRate <= MinimumMovementSpeedMultiplier)
                 {
                     // The native disabled factor cannot establish the staff member's normal speed.
                     SetLocalFloat(player, WalkRestoreMovementRateVariable, PendingWalkMovementRestore);
                 }
                 else
                 {
-                    SetLocalFloat(player, WalkRestoreMovementRateVariable, CreaturePlugin.GetMovementRateFactor(player));
-                    SetLocalFloat(player, WalkRestoreMovementAdjustmentVariable, GetMovementSpeedAdjustment(player));
+                    var nativeMovementRate = CreaturePlugin.GetMovementRateFactor(player);
+                    var followsCalculatedRate = Math.Abs(nativeMovementRate -
+                        Math.Max(MinimumNativeMovementSpeedMultiplier, calculatedMovementRate)) < 0.001f;
+                    var baseMovementRate = followsCalculatedRate
+                        ? 1.0f + GetBaseMovementSpeedIncrease(player, false)
+                        : nativeMovementRate - GetMovementSpeedAdjustment(player);
+                    SetLocalFloat(player, WalkRestoreMovementRateVariable, nativeMovementRate);
+                    SetLocalFloat(player, WalkRestoreBaseMovementRateVariable, baseMovementRate);
+                    SetLocalFloat(player, WalkRestoreMaximumMovementRateVariable,
+                        followsCalculatedRate ? MaximumMovementSpeedMultiplier : float.MaxValue);
                 }
             }
 
@@ -700,7 +711,8 @@ namespace SWLOR.Game.Server.Service
                 GetLocalFloat(creature, WalkRestoreMovementRateVariable) != 0f)
             {
                 DeleteLocalFloat(creature, WalkRestoreMovementRateVariable);
-                DeleteLocalFloat(creature, WalkRestoreMovementAdjustmentVariable);
+                DeleteLocalFloat(creature, WalkRestoreBaseMovementRateVariable);
+                DeleteLocalFloat(creature, WalkRestoreMaximumMovementRateVariable);
             }
         }
 
@@ -717,7 +729,7 @@ namespace SWLOR.Game.Server.Service
             var restoreMovementRate = GetLocalFloat(creature, WalkRestoreMovementRateVariable);
             var hasMovementRateRestore = restoreMovementRate > 0f;
             var baseMovementRate = hasMovementRateRestore
-                ? restoreMovementRate - GetLocalFloat(creature, WalkRestoreMovementAdjustmentVariable)
+                ? GetLocalFloat(creature, WalkRestoreBaseMovementRateVariable)
                 : 1.0f + GetBaseMovementSpeedIncrease(creature, isPlayer);
             if (isWalking)
                 baseMovementRate = hasMovementRateRestore ? Math.Min(1.0f, baseMovementRate) : 1.0f;
@@ -725,7 +737,9 @@ namespace SWLOR.Game.Server.Service
             var movementRate = baseMovementRate + GetMovementSpeedAdjustment(creature);
             var maximumMovementRate = isWalking
                 ? 1.0f
-                : hasMovementRateRestore ? float.MaxValue : MaximumMovementSpeedMultiplier;
+                : hasMovementRateRestore
+                    ? GetLocalFloat(creature, WalkRestoreMaximumMovementRateVariable)
+                    : MaximumMovementSpeedMultiplier;
             return Math.Clamp(movementRate, MinimumMovementSpeedMultiplier, maximumMovementRate);
         }
 

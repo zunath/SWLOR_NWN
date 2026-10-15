@@ -147,6 +147,44 @@ public class WalkModeTests
         Get<float>("NativeRate").Should().BeApproximately(1f, 0.001f);
     }
 
+    [TestCase(false, 50)]
+    [TestCase(false, 80)]
+    [TestCase(false, -125)]
+    [TestCase(true, 50)]
+    [TestCase(true, 80)]
+    [TestCase(true, -125)]
+    public void StaffSnapshotsPreserveTheBaselineBehindMovementCaps(bool possessed, int adjustment)
+    {
+        Set("IsDM", !possessed);
+        Set("IsPossessed", possessed);
+        Set("Adjustment", adjustment);
+        Invoke("ApplyCreatureMovementRate");
+        var previousRate = Get<float>("NativeRate");
+        Toggle();
+        Toggle();
+        Get<float>("NativeRate").Should().BeApproximately(previousRate, 0.001f,
+            "an unchanged modifier retains the same capped or native-minimum rate");
+        Toggle();
+        Set("Adjustment", 0);
+        Invoke("ApplyCreatureMovementRate");
+        Toggle();
+        Get<float>("NativeRate").Should().BeApproximately(1.3f, 0.001f,
+            "expiration restores the unclamped staff baseline");
+    }
+
+    [TestCase(2f, 20)]
+    [TestCase(1.4f, 50)]
+    public void NativeStaffOverridesRetainTheirModifierChanges(float previousRate, int adjustment)
+    {
+        Set("IsDM", true);
+        Set("NativeRate", previousRate);
+        Toggle();
+        Set("Adjustment", adjustment);
+        Invoke("ApplyCreatureMovementRate");
+        Toggle();
+        Get<float>("NativeRate").Should().BeApproximately(previousRate + adjustment * 0.01f, 0.001f);
+    }
+
     [TestCase(false, false)]
     [TestCase(true, false)]
     [TestCase(false, true)]

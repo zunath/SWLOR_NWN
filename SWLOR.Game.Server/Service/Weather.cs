@@ -368,10 +368,11 @@ namespace SWLOR.Game.Server.Service
             var occupiedAreas = new HashSet<uint>();
             foreach (var player in ObjectSnapshot.Players())
             {
-                players.Add(player);
-                occupiedAreas.Add(GetArea(player));
-                if (changed) DoWeatherEffects(player);
-                else ApplyWeatherDamage(player, now);
+                var viewer = DMPresence.GetControlledCreature(player);
+                players.Add(viewer);
+                occupiedAreas.Add(GetArea(viewer));
+                if (changed) DoWeatherEffects(viewer);
+                else ApplyWeatherDamage(viewer, now);
             }
 
             foreach (var player in _exposures.Keys.Where(player => !players.Contains(player)).ToArray())

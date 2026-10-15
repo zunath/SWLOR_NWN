@@ -340,8 +340,8 @@ namespace SWLOR.Game.Server.Service
             for (var player = GetFirstPC(); GetIsObjectValid(player); player = GetNextPC())
             {
                 if (record.DetectedBy.Contains(player) ||
-                    GetIsDM(player) ||
-                    GetArea(player) != GetAreaFromLocation(record.Location))
+                    GetArea(player) != GetAreaFromLocation(record.Location) ||
+                    DMPresence.IsControlledByDM(player))
                 {
                     continue;
                 }

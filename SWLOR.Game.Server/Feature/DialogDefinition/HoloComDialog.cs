@@ -96,7 +96,7 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
 
             for (var pc = GetFirstPC(); GetIsObjectValid(pc); pc = GetNextPC())
             {
-                if (pc == player || HoloCom.IsControlledByDM(pc) || Space.IsPlayerInSpaceMode(pc))
+                if (pc == player || DMPresence.IsControlledByDM(pc) || Space.IsPlayerInSpaceMode(pc))
                     continue;
 
                 var message = $"Call {PlayerName.GetDisplayName(player, pc)}";

@@ -23,6 +23,118 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
     {
         private readonly record struct NativeTintRow(string Material, string Parameter, int Type, float Value);
 
+        [EngineTest("NPC outfit changes refresh all resolved dye channels without possession", Category = "NpcEquipmentAppearance", TimeoutSeconds = 60f)]
+        public static async Task NpcOutfitChangesRefreshDyes(EngineTestContext ctx)
+        {
+            var npc = ctx.SpawnCreature("civilian");
+            await ctx.WaitUntilAsync(() => GetIsObjectValid(GetItemInSlot(InventorySlot.Chest, npc)),
+                10f, "the civilian's initial outfit");
+            await ctx.DelaySecondsAsync(1f);
+            ctx.Assert(!GetIsPC(npc) && !GetIsDMPossessed(npc), "The fixture is an ordinary unpossessed NPC.");
+            var original = GetItemInSlot(InventorySlot.Chest, npc);
+
+            for (var pass = 0; pass < 2; pass++)
+            {
+                var outfit = OBJECT_INVALID;
+                var colors = Enumerable.Range(0, 6).Select(channel => 30 + pass * 50 + channel).ToArray();
+                await RunAssignedAsync(ctx, npc, () =>
+                {
+                    outfit = CopyItem(original, npc, false);
+                    ctx.Assert(GetIsObjectValid(outfit), "The replacement outfit exists.");
+                    SetItemCursedFlag(outfit, false);
+                    SetPlotFlag(outfit, false);
+                    EquippedItemAppearance.Set(outfit, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.Robe, 0);
+                    EquippedItemAppearance.Set(outfit, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.LeftForearm, 6);
+                    for (var index = 0; index < 6 * (1 + (int)AppearanceArmor.Num); index++)
+                        EquippedItemAppearance.Set(outfit, ItemAppearanceType.ArmorColor, index,
+                            index < 6 ? colors[index] : 255);
+                });
+                await ctx.WaitFrameAsync();
+                var oldOutfit = GetItemInSlot(InventorySlot.Chest, npc);
+                await RunAssignedAsync(ctx, npc, () =>
+                {
+                    SetItemCursedFlag(oldOutfit, false);
+                    SetPlotFlag(oldOutfit, false);
+                    ClearAllActions();
+                    ActionUnequipItem(oldOutfit);
+                });
+                await ctx.WaitUntilAsync(() => GetItemInSlot(InventorySlot.Chest, npc) != oldOutfit,
+                    10f, "the old outfit to leave the chest slot");
+                await RunAssignedAsync(ctx, npc, () => ActionEquipItem(outfit, InventorySlot.Chest));
+                await ctx.WaitUntilAsync(() => GetItemInSlot(InventorySlot.Chest, npc) == outfit,
+                    10f, "the new outfit to equip");
+                await ctx.DelaySecondsAsync(0.75f);
+
+                var rows = ReadNativeRows(ctx, npc);
+                AssertNoResetRecords(ctx, rows);
+                var checkedLayers = new HashSet<TintMapLayerType>();
+                foreach (var selection in TintMapModelResolver.GetCurrentSelections(npc)
+                             .Where(selection => selection.PaletteSource == outfit))
+                {
+                    foreach (var layer in selection.Material.Layers.Where(layer => !TintMapVariable.IsCreatureColorLayer(layer)))
+                    {
+                        var channel = (int)Enum.Parse<AppearanceArmorColor>(layer.ToString());
+                        var definition = TintMapMaterialRegistry.GetLayer(layer);
+                        AssertNativeRow(ctx, rows, selection.Material.Resref.ToLowerInvariant(),
+                            definition.UniformName.ToLowerInvariant(),
+                            (definition.PaletteBaseRow + colors[channel] + 0.5f) / 2048f);
+                        checkedLayers.Add(layer);
+                    }
+                }
+                ctx.Assert(checkedLayers.Count >= 3, "The replacement covers multiple clothing dye channels.");
+                for (var channel = 0; channel < colors.Length; channel++)
+                    ctx.AssertEqual(colors[channel], GetItemAppearance(outfit, ItemAppearanceType.ArmorColor, channel),
+                        $"Pass {pass}: native dye channel {channel} stays authored");
+                ctx.AssertEqual(npc, GetItemPossessor(oldOutfit), "The old outfit stays in the NPC inventory.");
+                ctx.AssertEqual(npc, GetItemPossessor(outfit), "The new outfit stays owned by the NPC.");
+            }
+            ctx.SetResultDetail("Two real outfit replacements on an unpossessed NPC refreshed every resolved clothing palette row and retained all six native dye channels and item ownership. No manual tint refresh after equipping.");
+        }
+
+        [EngineTest("NPC helmet removal restores the head and releases the hidden flag without possession", Category = "NpcEquipmentAppearance", TimeoutSeconds = 60f)]
+        public static async Task NpcHelmetRemovalRestoresHead(EngineTestContext ctx)
+        {
+            var npc = ctx.SpawnCreature("civilian");
+            await ctx.DelaySecondsAsync(1f);
+            ctx.Assert(!GetIsPC(npc) && !GetIsDMPossessed(npc), "The fixture is an ordinary unpossessed NPC.");
+            var helmet = await ctx.EquipItemAsync(npc, "advent_helmet", InventorySlot.Head);
+            var native = NWNXLib.g_pAppManager.m_pServerExoApp.GetCreatureByGameObjectID(npc);
+            var originalHead = native.m_pStats.m_nHeadVariation;
+            await RunAssignedAsync(ctx, npc, () =>
+            {
+                SetItemCursedFlag(helmet, false);
+                SetPlotFlag(helmet, false);
+                EquippedItemAppearance.Set(helmet, ItemAppearanceType.SimpleModel, 0, 114);
+                // Establish a projected helmet as a control, independently of the equip hook.
+                TintMapService.ApplyCurrentColors(npc);
+            });
+
+            for (var pass = 0; pass < 2; pass++)
+            {
+                ctx.AssertEqual((ushort)1114, native.m_cAppearance.m_nHeadVariation, "The visible helmet uses its render head.");
+                ctx.AssertEqual(1, GetHiddenWhenEquipped(helmet), "The separate attachment is hidden while projected.");
+                await RunAssignedAsync(ctx, npc, () =>
+                {
+                    ClearAllActions();
+                    ActionUnequipItem(helmet);
+                });
+                await ctx.WaitUntilAsync(() => GetItemInSlot(InventorySlot.Head, npc) != helmet,
+                    10f, "the helmet to leave the NPC head slot");
+                await ctx.DelaySecondsAsync(0.75f);
+                ctx.AssertEqual(originalHead, native.m_cAppearance.m_nHeadVariation, "Unequipping restores the canonical head.");
+                ctx.AssertEqual(originalHead, native.m_pStats.m_nHeadVariation, "The canonical head never changes.");
+                ctx.AssertEqual(0, GetHiddenWhenEquipped(helmet), "The removed helmet's render-only hidden flag is released.");
+                ctx.AssertEqual(npc, GetItemPossessor(helmet), "The removed helmet stays in the NPC inventory.");
+                await RunAssignedAsync(ctx, npc, () => ActionEquipItem(helmet, InventorySlot.Head));
+                await ctx.WaitUntilAsync(() => GetItemInSlot(InventorySlot.Head, npc) == helmet,
+                    10f, "the same helmet to re-equip");
+                await ctx.DelaySecondsAsync(0.75f);
+                ctx.AssertEqual((ushort)1114, native.m_cAppearance.m_nHeadVariation, "Re-equipping automatically restores the helmet visual.");
+                ctx.Assert(HelmetModelRenderer.IsShownByOwner(helmet), "The helmet remains visible by owner choice.");
+            }
+            ctx.SetResultDetail("Two real unequip/re-equip cycles on an unpossessed NPC restored its canonical head, released the removed helmet's native hidden flag, automatically restored the equipped render head, and retained item identity and ownership.");
+        }
+
         [EngineTest("Tint module declares the client material and mask packs", Category = "Tint")]
         public static Task ModuleDeclaresTintAssets(EngineTestContext ctx)
         {

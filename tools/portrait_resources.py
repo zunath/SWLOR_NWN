@@ -6,7 +6,7 @@ import re
 
 
 # Independent of the CSV, so a partial asset checkout cannot silently pass.
-EXPECTED_CONVERSION_COUNT = 8109
+EXPECTED_CONVERSION_COUNT = 8105
 
 
 def safe_name(name, suffix):

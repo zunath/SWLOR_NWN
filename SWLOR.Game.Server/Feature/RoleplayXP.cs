@@ -266,20 +266,9 @@ namespace SWLOR.Game.Server.Feature
                 ? OOCMessageContext.EventArea
                 : OOCMessageContext.Standard;
 
-            for (var pc = GetFirstPC(); GetIsObjectValid(pc); pc = GetNextPC())
-            {
-                if (!GetIsDM(pc) && !GetIsDMPossessed(pc))
-                    continue;
-
-                var possessed = Communication.GetDMPossessedCreature(pc);
-                if (GetArea(pc) == area ||
-                    (GetIsObjectValid(possessed) && GetArea(possessed) == area))
-                {
-                    return context | OOCMessageContext.DMPresent;
-                }
-            }
-
-            return context;
+            return DMPresence.IsDMPresentInArea(area)
+                ? context | OOCMessageContext.DMPresent
+                : context;
         }
 
         /// <summary>

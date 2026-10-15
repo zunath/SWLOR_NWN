@@ -4,6 +4,7 @@ using NWN.Native.API;
 using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.LogService;
 using SWLOR.NWN.API.Engine;
+using SWLOR.NWN.API.NWNX;
 
 namespace SWLOR.Game.Server.Service
 {
@@ -121,14 +122,40 @@ namespace SWLOR.Game.Server.Service
             if (GetIsDMPossessed(actor))
                 return actor;
 
-            // A possessed creature is listed among the PCs, with the DM avatar as its master.
+            // Possession only changes the object a player controls; GetFirstPC keeps returning the avatar.
+            var controlled = PlayerPlugin.GetGameObject(actor);
+            return GetIsDMPossessed(controlled) ? controlled : actor;
+        }
+
+        /// <summary>
+        /// Returns true when an object from GetFirstPC/GetNextPC belongs to a DM. GetFirstPC keeps returning a DM's
+        /// avatar while they possess a creature, and GetIsDM, GetIsDMPossessed, and GetIsPC are all false for the
+        /// avatar then, so the creature the player controls is checked too.
+        /// </summary>
+        /// <param name="player">An object returned by GetFirstPC or GetNextPC.</param>
+        public static bool IsControlledByDM(uint player)
+        {
+            if (GetIsDM(player) || GetIsDMPossessed(player))
+                return true;
+
+            var controlled = PlayerPlugin.GetGameObject(player);
+            return GetIsDM(controlled) || GetIsDMPossessed(controlled);
+        }
+
+        /// <summary>
+        /// Returns true when a DM's avatar, or a creature a DM possesses, is in the area.
+        /// </summary>
+        /// <param name="area">The area to check.</param>
+        public static bool IsDMPresentInArea(uint area)
+        {
             for (var pc = GetFirstPC(); GetIsObjectValid(pc); pc = GetNextPC())
             {
-                if (GetIsDMPossessed(pc) && GetMaster(pc) == actor)
-                    return pc;
+                if (IsControlledByDM(pc) &&
+                    (GetArea(pc) == area || GetArea(GetControlledCreature(pc)) == area))
+                    return true;
             }
 
-            return actor;
+            return false;
         }
 
         /// <summary>

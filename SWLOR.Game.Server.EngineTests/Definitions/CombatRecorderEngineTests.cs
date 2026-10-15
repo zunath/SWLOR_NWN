@@ -1001,6 +1001,65 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             File.Delete(writer.SummaryPath);
         }
 
+        /// <summary>
+        /// A zone buff's next pulse restarts the active status in place instead of replacing it, so the
+        /// recording must log that as a refresh rather than lose it.
+        /// </summary>
+        [EngineTest("Combat recorder logs a status restarted in place as a refresh", Category = "CombatRecorder", TimeoutSeconds = 60f)]
+        public static async Task RecordsInPlaceStatusRestartAsRefresh(EngineTestContext ctx)
+        {
+            ctx.Assert(!CombatRecorder.IsRecording, "no combat recording may be running before the test");
+
+            var arena = await QuietArena.CreateAsync(ctx);
+            var caster = arena.Spawn(CreatureResref, 0f, 0f);
+            var ally = arena.Spawn(CreatureResref, 2f, 0f);
+            await ctx.DelaySecondsAsync(1f);
+            Prepare(ctx, caster, "Recorder Zone Caster", 1000);
+            Prepare(ctx, ally, "Recorder Zone Ally", 1000);
+
+            var type = typeof(ForceSanctuary1StatusEffect);
+            CombatRecordWriter writer;
+            try
+            {
+                ctx.Assert(CombatRecorder.Start(arena.Area, "engine test refresh", out var startMessage), startMessage);
+                writer = CombatRecorder.LastWriter;
+
+                ctx.Assert(StatusEffect.ApplyStatusEffect(caster, ally, type, 3.2f), "the zone buff applies");
+                var applied = StatusEffect.GetStatusEffect(ally, type);
+                await ctx.DelaySecondsAsync(1f);
+                ctx.Assert(StatusEffect.ApplyStatusEffect(caster, ally, type, 3.2f), "the next pulse re-applies the zone buff");
+                ctx.Assert(ReferenceEquals(applied, StatusEffect.GetStatusEffect(ally, type)), "the pulse restarts the active buff in place");
+                await ctx.DelaySecondsAsync(0.5f);
+            }
+            finally
+            {
+                if (CombatRecorder.IsRecording)
+                    CombatRecorder.Stop("engine test", out _);
+                StatusEffect.RemoveStatusEffect(type, ally);
+            }
+
+            await ctx.WaitUntilAsync(() => writer.Completion.IsCompleted, 10f, "the recording writer to finish its files");
+            ctx.Assert(writer.Error == null, $"the recording writer failed: {writer.Error}");
+            var events = File.ReadAllLines(writer.EventsPath).Select(ParseLine).ToList();
+
+            var casterId = ParticipantId(ctx, events, "Recorder Zone Caster");
+            var allyId = ParticipantId(ctx, events, "Recorder Zone Ally");
+            var buffEvents = events.Where(e => e.TryGetProperty("effect_type", out var effectType) &&
+                                               effectType.GetString() == type.Name &&
+                                               e.GetProperty("target").GetInt32() == allyId)
+                .Select(Type)
+                .ToList();
+            ctx.Assert(buffEvents.SequenceEqual(new[] { "status_apply", "status_refresh" }),
+                $"the buff is applied once and then refreshed, not replaced (events: {string.Join(", ", buffEvents)})");
+            var refresh = events.Single(e => Type(e) == "status_refresh" && e.GetProperty("target").GetInt32() == allyId);
+            ctx.AssertEqual(casterId, refresh.GetProperty("source").GetInt32(), "the refresh's source");
+            ctx.Assert(refresh.GetProperty("duration_s").GetDouble() > 3.0, "the refresh records the restarted duration");
+
+            AssertParticipantsDeclaredFirst(ctx, events);
+            File.Delete(writer.EventsPath);
+            File.Delete(writer.SummaryPath);
+        }
+
         private static async Task UseAbilityAsync(EngineTestContext ctx, uint caster, uint target, FeatType feat)
         {
             var used = false;

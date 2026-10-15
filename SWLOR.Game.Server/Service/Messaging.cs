@@ -1,3 +1,4 @@
+using SWLOR.Game.Server.Service.FrameProfilerService;
 using SWLOR.NWN.API.NWScript.Enum.Creature;
 
 namespace SWLOR.Game.Server.Service
@@ -22,7 +23,9 @@ namespace SWLOR.Game.Server.Service
             if (buildMessage == null)
                 throw new ArgumentNullException(nameof(buildMessage));
 
+            var profile = FrameProfiler.Start();
             SendMessageToPC(sender, buildMessage(sender));
+            var receivers = profile != 0 && GetIsPC(sender) ? 1 : 0;
 
             int nth = 1;
             var nearby = GetNearestCreature(CreatureType.PlayerCharacter, 1, sender, nth);
@@ -31,11 +34,15 @@ namespace SWLOR.Game.Server.Service
                 if (sender != nearby)
                 {
                     SendMessageToPC(nearby, buildMessage(nearby));
+                    receivers++;
                 }
 
                 nth++;
                 nearby = GetNearestCreature(CreatureType.PlayerCharacter, 1, sender, nth);
             }
+
+            FrameProfiler.Stop(FrameMetric.Broadcast, profile);
+            FrameProfiler.Count(FrameMetric.BroadcastReceiver, receivers);
         }
     }
 }

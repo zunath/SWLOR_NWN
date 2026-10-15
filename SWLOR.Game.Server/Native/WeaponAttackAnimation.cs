@@ -6,6 +6,7 @@ using NWNX.NET;
 using NWNX.NET.Native;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.Service.FrameProfilerService;
 
 namespace SWLOR.Game.Server.Native;
 
@@ -217,6 +218,7 @@ public static unsafe class WeaponAttackAnimation
     {
         var original = (delegate* unmanaged<void*, void*, void*, void*, int, uint>)_computeHook->m_trampoline;
         var updates = original(message, player, obj, last, playerObject);
+        var profile = FrameProfiler.EnterManaged();
         try
         {
             var nativeObject = CNWSObject.FromPointer(obj);
@@ -228,6 +230,7 @@ public static unsafe class WeaponAttackAnimation
                 updates |= AnimationReplacementUpdate;
         }
         catch (Exception ex) { Log.WriteError(ex, "Could not refresh a weapon attack animation"); }
+        finally { FrameProfiler.ExitManaged(FrameMetric.ObjectUpdateHook, profile); }
         return updates;
     }
 
@@ -238,7 +241,22 @@ public static unsafe class WeaponAttackAnimation
     [UnmanagedCallersOnly]
     private static void WriteUpdate(void* message, void* player, void* obj, void* last, uint updates, uint appearance)
     {
-        var original = (delegate* unmanaged<void*, void*, void*, void*, uint, uint, void>)_writeHook->m_trampoline;
+        var profile = FrameProfiler.EnterManaged();
+        try { WriteObjectUpdate(message, player, obj, last, updates, appearance); }
+        finally { FrameProfiler.ExitManaged(FrameMetric.ObjectUpdateHook, profile); }
+    }
+
+    private static void WriteObjectUpdate(void* message, void* player, void* obj, void* last, uint updates, uint appearance)
+    {
+        var trampoline = (delegate* unmanaged<void*, void*, void*, void*, uint, uint, void>)_writeHook->m_trampoline;
+        // Packet serialization is engine work; keep it out of managed time.
+        void original(void* message, void* player, void* obj, void* last, uint updates, uint appearance)
+        {
+            var native = FrameProfiler.Start();
+            trampoline(message, player, obj, last, updates, appearance);
+            FrameProfiler.ExcludeFromManaged(native);
+        }
+
         // Keep exceptions inside managed code; the native call must run exactly once.
         Playback playback = null;
         var stage = 0;

@@ -11,6 +11,8 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
         {
             ZombieRancor();
             StationHorrors();
+            StationGear();
+            BossUniques();
             NamedRares();
 
             return _builder.Build();
@@ -42,13 +44,87 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
             _builder.Create("STATION_RARES")
                 .IsRare()
                 .AddItem("citrine", 70, 1, true)
-                .AddItem("lockbox_t3", 30, 1, true);
+                .AddItem("lockbox_t3", 30, 1, true)
+                .AddItem("map_277", 20, 1, true);
 
             _builder.Create("STATION_DIRECTOR")
                 .AddItem("lockbox_t3", 1);
 
             _builder.Create("STATION_RANCOR")
                 .AddItem("lockbox_t3", 1);
+        }
+
+        private void StationGear()
+        {
+            // Level-25 gear worn by the crew: security drops Containment armor and weapons,
+            // dock crews drop Gantry light armor, researchers drop Biolab Force armor.
+            _builder.Create("STATION_SECURITY_GEAR")
+                .AddItem("cnt_helmet", 1)
+                .AddItem("cnt_armor", 1)
+                .AddItem("cnt_bracer", 1)
+                .AddItem("cnt_leggings", 1)
+                .AddItem("cnt_shield", 1)
+                .AddItem("cnt_longsword", 1)
+                .AddItem("cnt_knife", 1)
+                .AddItem("cnt_gswd", 1)
+                .AddItem("cnt_spear", 1)
+                .AddItem("cnt_twinblade", 1)
+                .AddItem("cnt_katar", 1)
+                .AddItem("cnt_staff", 1)
+                .AddItem("cnt_pistol", 1)
+                .AddItem("cnt_rifle", 1)
+                .AddItem("cnt_shuriken", 1);
+
+            _builder.Create("STATION_CREW_GEAR")
+                .AddItem("gantry_cap", 1)
+                .AddItem("gantry_tunic", 1)
+                .AddItem("gantry_gloves", 1)
+                .AddItem("gantry_boots", 1);
+
+            _builder.Create("STATION_RESEARCH_GEAR")
+                .AddItem("biolab_cap", 1)
+                .AddItem("biolab_tunic", 1)
+                .AddItem("biolab_gloves", 1)
+                .AddItem("biolab_boots", 1);
+
+            // Rakghouls, test subjects and the rancor carry whatever their victims wore.
+            _builder.Create("STATION_GEAR")
+                .AddItem("cnt_helmet", 1)
+                .AddItem("cnt_armor", 1)
+                .AddItem("cnt_bracer", 1)
+                .AddItem("cnt_leggings", 1)
+                .AddItem("cnt_shield", 1)
+                .AddItem("cnt_longsword", 1)
+                .AddItem("cnt_knife", 1)
+                .AddItem("cnt_gswd", 1)
+                .AddItem("cnt_spear", 1)
+                .AddItem("cnt_twinblade", 1)
+                .AddItem("cnt_katar", 1)
+                .AddItem("cnt_staff", 1)
+                .AddItem("cnt_pistol", 1)
+                .AddItem("cnt_rifle", 1)
+                .AddItem("cnt_shuriken", 1)
+                .AddItem("gantry_cap", 1)
+                .AddItem("gantry_tunic", 1)
+                .AddItem("gantry_gloves", 1)
+                .AddItem("gantry_boots", 1)
+                .AddItem("biolab_cap", 1)
+                .AddItem("biolab_tunic", 1)
+                .AddItem("biolab_gloves", 1)
+                .AddItem("biolab_boots", 1);
+        }
+
+        private void BossUniques()
+        {
+            _builder.Create("STATION_DIRECTOR_RARES")
+                .IsRare()
+                .AddItem("director_coat", 1, 1, true)
+                .AddItem("director_signet", 1, 1, true);
+
+            _builder.Create("STATION_RANCOR_RARES")
+                .IsRare()
+                .AddItem("rancorbone_gswd", 1, 1, true)
+                .AddItem("rancorhide_cloak", 1, 1, true);
         }
 
         private void NamedRares()

@@ -189,6 +189,43 @@ public static class MimicryLoadoutEngineTests
         ctx.SetResultDetail("Production view-model Manage handlers: in-window bar swaps, Cancel from both steps, rejected and accepted rename, confirmed delete, last-build guard, and Redis persistence. Client rendering excluded.");
     }
 
+    [EngineTest("Revert re-equips the saved build when applied changes modified it, and otherwise resets only the preview", Category = "MimicryLoadouts", TimeoutSeconds = 30f)]
+    public static async Task RevertModifiedBuild(EngineTestContext ctx)
+    {
+        using var fixture = await PlayerAbilityFixture.CreateAsync(ctx);
+        var (first, _) = Prepare(fixture);
+        var player = fixture.Creature;
+        Apply(ctx, player, first, Rush, Trait);
+        var model = new TechniquesViewModel();
+        Bind(model, player);
+
+        RemoveFromPreview(model, Trait);
+        ctx.Assert(model.CanRevert, "an unsaved preview can be reverted");
+        model.OnClickRevert()();
+        ctx.AssertEqual("Revert the preview to the saved build?", model.ModalPromptText, "an unmodified equipped build only resets the preview");
+        model.OnModalConfirmClick()();
+        AssertSet(ctx, new[] { Rush, Trait }, Preview(model), "Revert restores the saved preview");
+
+        // Snap Rush is active (a native feat); traits are never granted as feats.
+        RemoveFromPreview(model, Rush);
+        model.OnClickApply()();
+        ctx.Assert(!GetHasFeat(Rush, player), "applying the change revokes the removed technique");
+        AddToPreview(model, Rush);
+        ctx.Assert(model.ActiveLoadoutText.EndsWith("(Modified)"), "applying an unsaved change marks the equipped build as modified");
+        ctx.Assert(model.CanRevert, "Revert stays available while the equipped build is modified, even when the preview matches the save");
+        model.OnClickRevert()();
+        ctx.Assert(model.ModalPromptText.Contains("re-equips"), "the confirmation says the saved build is re-equipped");
+        model.OnModalConfirmClick()();
+        await ctx.WaitFrameAsync();
+        var record = ReadPersisted(fixture.Id);
+        AssertSet(ctx, new[] { Rush, Trait }, record.EquippedTechniques, "Revert re-equips the saved build");
+        ctx.AssertEqual(first, record.ActiveMimicryLoadoutId, "Revert keeps the build active");
+        ctx.Assert(GetHasFeat(Rush, player), "Revert grants the restored native feat");
+        ctx.AssertEqual("Equipped: First", model.ActiveLoadoutText, "Revert clears the modified flag");
+        ctx.Assert(!model.CanRevert, "nothing is left to revert");
+        ctx.SetResultDetail("Production view-model Revert: preview-only revert, then applied-unsaved change reverted with re-equip, Redis state, native feat, (Modified) flag and Revert availability.");
+    }
+
     [EngineTest("Technique build changes preserve native quickbar layouts and unrelated shortcuts", Category = "MimicryLoadouts", TimeoutSeconds = 30f)]
     public static async Task HotbarRoundTrip(EngineTestContext ctx)
     {
@@ -355,6 +392,15 @@ public static class MimicryLoadoutEngineTests
         if (index < 0) throw new InvalidOperationException($"Technique {feat} is absent from the learned list.");
         typeof(TechniquesViewModel).GetField("_selectedUnequippedIndex", BindingFlags.Instance | BindingFlags.NonPublic).SetValue(model, index);
         model.OnClickEquip()();
+    }
+
+    private static void RemoveFromPreview(TechniquesViewModel model, FeatType feat)
+    {
+        var field = typeof(TechniquesViewModel).GetField("_equippedFeats", BindingFlags.Instance | BindingFlags.NonPublic);
+        var index = ((List<FeatType>)field.GetValue(model)).IndexOf(feat);
+        if (index < 0) throw new InvalidOperationException($"Technique {feat} is absent from the preview.");
+        typeof(TechniquesViewModel).GetField("_selectedEquippedIndex", BindingFlags.Instance | BindingFlags.NonPublic).SetValue(model, index);
+        model.OnClickUnequip()();
     }
 
     private static bool IsFeat(uint player, int slot, FeatType feat)

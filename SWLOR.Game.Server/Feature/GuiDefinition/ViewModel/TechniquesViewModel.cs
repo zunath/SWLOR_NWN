@@ -502,7 +502,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             ActiveLoadoutText = active == null ? "Equipped: Custom build" :
                 $"Equipped: {active.Name}" + (MimicryLoadouts.Matches(active.Techniques, record.EquippedTechniques) ? "" : " (Modified)");
             PreviewTitle = $"Preview: {selected.Name}" + (IsDirty ? " (unsaved)" : "");
-            CanRevert = IsDirty;
+            CanRevert = IsDirty || IsEquippedCopyModified(record);
             if (!Mimicry.ValidateLoadout(record, _draft, out var error))
             {
                 StatusText = error;
@@ -517,6 +517,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             else
                 StatusText = IsDirty ? "Unsaved preview. Apply Build to equip it; Save to keep it." : "Apply Build to equip this preview.";
         }
+
+        // The selected build is equipped with applied changes that were never saved ("(Modified)").
+        private bool IsEquippedCopyModified(PlayerEntity record) =>
+            record.ActiveMimicryLoadoutId == _selectedLoadoutId &&
+            !MimicryLoadouts.Matches(record.MimicryLoadouts.First(x => x.Id == _selectedLoadoutId).Techniques,
+                record.EquippedTechniques);
 
         private void ShowError(string error)
         {
@@ -621,9 +627,18 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 confirmText: "Discard", cancelText: "Keep editing"), "Save", "More...");
         }
 
-        public Action OnClickRevert() => () => ShowModal("Revert the preview to the saved build?", () =>
+        public Action OnClickRevert() => () => ShowModal(IsEquippedCopyModified(Record)
+                ? "Revert to the saved build? This also re-equips it, replacing the changes you applied."
+                : "Revert the preview to the saved build?", () =>
         {
             LoadDraft(_selectedLoadoutId);
+            if (IsEquippedCopyModified(Record) &&
+                !Mimicry.ApplyLoadout(Player, _selectedLoadoutId, _draft, out var error))
+            {
+                LoadLists();
+                ShowError(error);
+                return;
+            }
             LoadLists();
         }, confirmText: "Revert", cancelText: "Cancel");
 

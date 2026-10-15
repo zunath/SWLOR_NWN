@@ -523,6 +523,43 @@ before invoking the script (or before running `docker compose` directly) - the c
 it as `${SWLOR_ENGINE_TEST_SHUTDOWN:-true}`, so the container will stay up after the run completes
 instead of self-shutting-down 3 seconds later.
 
+### Combat load measurement
+
+`CombatLoadEngineTests` measure server frame time under a busy fight instead of asserting gameplay.
+They skip unless the filter names their category, so normal sweeps never run them:
+
+```bash
+./scripts/run-engine-tests.ps1 -Filter CombatLoad
+```
+
+Each test records 10 s of idle frames, then 60 s of a skirmish in a quiet arena: 15 NPCs a side, or
+20 headless players against 15 NPCs. A driver keeps every combatant casting heals, party buffs, auras,
+zones and area attacks, and every combatant has the Embattled trait. The result line (console
+`[COMBAT_LOAD]` and the JSON report) gives frame-time p50/p95/p99/max, slow-frame count, and per-second
+counters from `FrameProfiler` (DB calls, broadcasts, status effect changes, stat lookups, telegraph
+uniforms, top handlers and status effects by time).
+
+Before measuring, every combatant joins a party of five: NPCs as henchmen, players through the Party
+service's invitation-accept event, since a headless player has no client to accept. Players then get
+the aura area that module entry normally applies, and a stack of each consumable the rotation uses.
+The test checks that a party buff and a party aura reach another player. A run fails if any NPC dies, or
+if players (or NPCs, in the NPC-only scenario) never succeed at some rotation ability, because either
+would quietly shrink the workload.
+
+Read the numbers with these limits in mind:
+
+- The idle server sleeps between frames, so p50 mostly measures that sleep. Compare tails, slow-frame
+  counts and managed milliseconds per second.
+- The test environment enables the Attack and AI log groups, which production does not. When the
+  server home's log directory is a Windows bind mount, those writes can stall single frames for
+  hundreds of milliseconds. Point `SWLOR_APP_LOG_DIRECTORY` inside the container for measurement runs.
+- Headless players have no client: NUI windows, client network sends and character-sheet refreshes
+  cost nothing here. Measure those paths with real clients and `SWLOR_FRAME_PROFILER_ENABLED=true`.
+- Combat rolls are seeded, but AI timing still varies between runs; repeat a run before trusting a
+  small difference.
+- The driver waits on wall-clock time, so when frames run long it issues fewer casts. Compare casts
+  completed alongside frame times; a saturated server reports close to 1000 managed ms per second.
+
 ## CI
 
 `.github/workflows/engine-tests.yml` runs on `ubuntu-latest` with a 60-minute timeout, triggered by:

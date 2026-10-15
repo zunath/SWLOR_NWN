@@ -1,6 +1,7 @@
 using SWLOR.Game.Server.Core.Async;
 using SWLOR.Game.Server.Extension;
 using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.Service.FrameProfilerService;
 using SWLOR.Game.Server.Service.LogService;
 
 namespace SWLOR.Game.Server.Core
@@ -12,6 +13,8 @@ namespace SWLOR.Game.Server.Core
 
         public void ProcessMainLoop(ulong frame)
         {
+            FrameProfiler.OnFrameStart(frame);
+            var profile = FrameProfiler.EnterManaged();
             OnScriptContextBegin?.Invoke();
 
             try
@@ -25,6 +28,7 @@ namespace SWLOR.Game.Server.Core
             }
 
             OnScriptContextEnd?.Invoke();
+            FrameProfiler.ExitManaged(FrameMetric.Scheduler, profile);
         }
 
         private void ProcessAsynchronousTasks()

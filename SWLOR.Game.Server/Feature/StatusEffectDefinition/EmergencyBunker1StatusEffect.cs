@@ -12,6 +12,9 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
         public override EffectIconType Icon => EffectIconType.EmergencyBunker1StatusEffect;
         public override bool PersistsOnLogout => false;
 
+        // Zone pulses re-apply this every few seconds with the same fixed stats.
+        public override bool CanRefreshInPlace(IStatusEffect active) => active is EmergencyBunker1StatusEffect;
+
         public EmergencyBunker1StatusEffect()
         {
             StatGroup.Stats[StatType.PhysicalDamageTakenPercentAdjustment] = -15;

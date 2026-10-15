@@ -12,5 +12,8 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
         public override bool PersistsOnLogout => false;
         public override bool SendsApplicationMessage => false;
         public override bool SendsWornOffMessage => false;
+
+        // Zone pulses re-apply this every few seconds and it carries nothing but its duration.
+        public override bool CanRefreshInPlace(IStatusEffect active) => active is KoltoMistHealingStatusEffect;
     }
 }

@@ -22,7 +22,7 @@ def write_json(path, data):
     path.write_text(json.dumps(data, indent=2) + '\n', encoding='utf-8')
 
 def revisions(root):
-    return git(root, 'rev-parse', 'HEAD'), git(root, 'ls-tree', 'HEAD', 'SWLOR_Haks').split()[2]
+    return git(root, 'rev-parse', 'HEAD'), git(root, 'rev-parse', 'HEAD:SWLOR_Haks')
 
 def split_archive(path, release_url):
     parts = []

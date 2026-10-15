@@ -42,7 +42,18 @@ public static class NativeToolPath
     public static void ConfigureLibraryPath(ProcessStartInfo startInfo)
     {
         if (!OperatingSystem.IsLinux()) return;
-        var directory = Path.GetDirectoryName(Path.GetFullPath(startInfo.FileName))!;
+        var executable = startInfo.FileName;
+        if (string.IsNullOrWhiteSpace(executable)) return;
+        if (!Path.IsPathRooted(executable) && Path.GetFileName(executable) == executable)
+        {
+            startInfo.Environment.TryGetValue("PATH", out var searchPath);
+            executable = (searchPath ?? "").Split(Path.PathSeparator)
+                .Select(entry => Path.GetFullPath(Path.Combine(string.IsNullOrEmpty(entry) ? "." : entry, startInfo.FileName)))
+                .FirstOrDefault(File.Exists);
+            if (executable == null) return;
+            startInfo.FileName = executable;
+        }
+        var directory = Path.GetDirectoryName(Path.GetFullPath(executable))!;
         startInfo.Environment.TryGetValue("LD_LIBRARY_PATH", out var previous);
         startInfo.Environment["LD_LIBRARY_PATH"] = string.IsNullOrEmpty(previous) ? directory : directory + ":" + previous;
     }

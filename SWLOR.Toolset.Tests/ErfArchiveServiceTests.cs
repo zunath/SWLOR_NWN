@@ -51,8 +51,8 @@ namespace SWLOR.Toolset.Tests
             _service = new ErfArchiveService(
                 _workspace,
                 log,
-                Path.Combine(tools, NativeToolPath.ExecutableName("nwn_erf")),
-                Path.Combine(tools, NativeToolPath.ExecutableName("nwn_gff")),
+                NativeToolPath.Find("nwn_erf", tools)!,
+                NativeToolPath.Find("nwn_gff", tools)!,
                 dispatchToUiThread: action =>
                 {
                     _workspaceDispatches++;

@@ -20,6 +20,7 @@ NATIVE_VERSION = '2.1.2'
 LINUX_URL = 'https://github.com/niv/neverwinter.nim/releases/download/2.1.2/neverwinter-x86_64-linux-gnu.zip'
 LINUX_SHA256 = 'f9cc2e50fbe6f750954d11b824434a92b12913cc0a3442e95dcc5eefd4ddc387'
 NATIVE_NAMES = ('nwn_erf', 'nwn_gff', 'nwn_script_comp', 'nwn_tlk')
+WINDOWS_NATIVE_FILES = tuple(name + '.exe' for name in NATIVE_NAMES[:3]) + ('pcre64.dll', 'libnwnscriptcomp.dll')
 
 
 def runtime_id():
@@ -78,8 +79,8 @@ def system_library(name):
 def prepare_native_tools():
     if os.name == 'nt':
         directory = ROOT / 'tools/SWLOR.CLI'
-        for name in NATIVE_NAMES[:3]:
-            if not (directory / executable(name)).is_file():
+        for name in WINDOWS_NATIVE_FILES:
+            if not (directory / name).is_file():
                 raise RuntimeError(f'Missing bundled utility {name}; restore tools/SWLOR.CLI from Git.')
         return directory
     directory = native_cache()

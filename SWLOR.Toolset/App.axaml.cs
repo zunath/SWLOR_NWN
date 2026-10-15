@@ -140,6 +140,7 @@ namespace SWLOR.Toolset
             catch (Exception ex)
             {
                 stopwatch.Stop();
+                window.ResetAfterStartupFailure();
                 if (result != null)
                 {
                     if (ReferenceEquals(_serviceProvider, result))
@@ -434,13 +435,13 @@ namespace SWLOR.Toolset
                 RegisterStandaloneGameData(services, settings);
                 return;
             }
-            var sw2DaDirectory = Path.Combine(repoRoot ?? assets!, "SWLOR_Haks", "sw_2da");
+            var sw2DaDirectory = repoRoot == null ? null : Path.Combine(repoRoot, "SWLOR_Haks", "sw_2da");
             var swTlkJsonPath = assets == null
                 ? Path.Combine(repoRoot!, "SWLOR_Haks", "sw_tlk", "sw_tlk.tlk.json")
                 : Path.Combine(assets, "tlk", "sw_tlk.tlk.json");
             var swTlkBinaryPath = Path.ChangeExtension(swTlkJsonPath, null);
-            var hakBuilderConfigPath = Path.Combine(repoRoot ?? assets!, "Build", "hakbuilder.json");
-            var swlorHaksRoot = Path.Combine(repoRoot ?? assets!, "SWLOR_Haks");
+            var hakBuilderConfigPath = repoRoot == null ? null : Path.Combine(repoRoot, "Build", "hakbuilder.json");
+            var swlorHaksRoot = repoRoot == null ? null : Path.Combine(repoRoot, "SWLOR_Haks");
             var moduleHakLayers = ResolveStartupHakLayers(settings.ModuleRoot, ToolsetAssetPaths.Profile(settings.ModuleRoot));
             if (assets != null && moduleHakLayers == null)
                 throw new InvalidDataException("The workspace's HAK archives are incomplete. Download its matching asset pack.");
@@ -453,7 +454,7 @@ namespace SWLOR.Toolset
                 services.AddSingleton(new Editors.Tlk.TlkEditorSource(
                 swTlkJsonPath,
                 swTlkBinaryPath,
-                sw2DaDirectory,
+                sw2DaDirectory!,
                 repoRoot));
 
             // Located once and reused: both the resource index and the base TLK below need it.
@@ -493,12 +494,12 @@ namespace SWLOR.Toolset
                 Func<KeyBifCatalog?>? loadBaseLayer = nwnInstallPath == null
                     ? null
                     : () => KeyBifCatalog.Load(Path.Combine(nwnInstallPath, "data"));
-                services.AddSingleton(moduleHakLayers == null
-                    ? ResourceIndex.FromHakBuilderConfigDeferred(
-                        hakBuilderConfigPath,
-                        swlorHaksRoot,
-                        loadBaseLayer)
-                    : ResourceIndex.CreateDeferred(moduleHakLayers, loadBaseLayer));
+                services.AddSingleton(assets != null || moduleHakLayers != null
+                    ? ResourceIndex.CreateDeferred(moduleHakLayers!, loadBaseLayer)
+                    : ResourceIndex.FromHakBuilderConfigDeferred(
+                        hakBuilderConfigPath!,
+                        swlorHaksRoot!,
+                        loadBaseLayer));
                 services.AddSingleton(sp => new TwoDaService(sp.GetRequiredService<ResourceIndex>()));
 
                 // The area 3D view needs both, and both need the ResourceIndex above -
@@ -513,7 +514,7 @@ namespace SWLOR.Toolset
                     sp.GetRequiredService<ResourceIndex>(),
                     () => BuildSurfaceWalkability(sp.GetService<TwoDaService>())));
             }
-            else if (hasTwoDa)
+            else if (hasTwoDa && sw2DaDirectory != null)
             {
                 services.AddSingleton(new TwoDaService(sw2DaDirectory));
             }

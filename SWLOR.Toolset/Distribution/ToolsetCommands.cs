@@ -38,7 +38,7 @@ public static class ToolsetCommands
                 if (!File.Exists(Path.Combine(tools, library))) throw new FileNotFoundException("Missing native compiler library: " + library);
                 if (!Directory.EnumerateFiles(Path.Combine(root, "SWLOR.NWN.API", "NWN"), "nwscript*.nss").Any())
                     throw new FileNotFoundException("The NWScript engine header is missing.");
-                VerifyStandalonePacking();
+                VerifyStandalonePacking(tools);
                 File.WriteAllText(args[1], JsonSerializer.Serialize(new { Success = true, ApplicationRoot = root }));
             }
             else throw new ArgumentException("Invalid arguments for " + args[0]);
@@ -52,7 +52,7 @@ public static class ToolsetCommands
         }
         return true;
     }
-    private static void VerifyStandalonePacking()
+    private static void VerifyStandalonePacking(string tools)
     {
         var fixture = Path.Combine(Path.GetTempPath(), "swlor_install_check_" + Guid.NewGuid().ToString("N"));
         var module = Path.Combine(fixture, "Module");
@@ -67,7 +67,7 @@ public static class ToolsetCommands
             var script = Path.Combine(module, "nss", "install_check.nss");
             File.WriteAllText(script, "void main() { object speaker = GetPCSpeaker(); }");
             var bytecode = Path.Combine(module, "ncs", "install_check.ncs");
-            var compiler = NativeToolPath.Find("nwn_script_comp")!;
+            var compiler = NativeToolPath.FindInDirectory(tools, "nwn_script_comp")!;
             var compiled = new ScriptCompiler(compiler, new[] { Path.Combine(module, "nss") })
                 .CompileAsync(script, outputPath: bytecode).GetAwaiter().GetResult();
             if (!compiled.Succeeded || !File.Exists(bytecode))

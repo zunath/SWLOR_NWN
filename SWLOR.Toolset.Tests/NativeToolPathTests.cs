@@ -52,6 +52,36 @@ public class NativeToolPathTests
     }
 
     [Test]
+    public void BareExecutableUsesItsPathDirectoryForLinuxLibraries()
+    {
+        if (!OperatingSystem.IsLinux()) Assert.Ignore("Linux shared libraries");
+        var directory = Path.Combine(Path.GetTempPath(), "swlor_path_" + Guid.NewGuid().ToString("N"));
+        Directory.CreateDirectory(directory);
+        try
+        {
+            var executable = Path.Combine(directory, "nwn_erf");
+            File.WriteAllText(executable, "native utility");
+            var start = new ProcessStartInfo("nwn_erf");
+            start.Environment["PATH"] = directory;
+            start.Environment["LD_LIBRARY_PATH"] = "/existing";
+            NativeToolPath.ConfigureLibraryPath(start);
+            start.FileName.Should().Be(executable);
+            start.Environment["LD_LIBRARY_PATH"].Should().Be(directory + ":/existing");
+        }
+        finally { Directory.Delete(directory, recursive: true); }
+    }
+
+    [Test]
+    public void UnknownExecutableDoesNotInventALinuxLibraryDirectory()
+    {
+        var start = new ProcessStartInfo("missing_" + Guid.NewGuid().ToString("N"));
+        start.Environment["PATH"] = Path.GetTempPath();
+        start.Environment["LD_LIBRARY_PATH"] = "/existing";
+        NativeToolPath.ConfigureLibraryPath(start);
+        start.Environment["LD_LIBRARY_PATH"].Should().Be("/existing");
+    }
+
+    [Test]
     public void LinuxNativeLibrariesAreScopedToTheChildProcess()
     {
         var start = new ProcessStartInfo(Path.Combine(Path.GetTempPath(), "tools", "nwn_erf"));

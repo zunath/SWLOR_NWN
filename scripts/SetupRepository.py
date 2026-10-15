@@ -11,7 +11,7 @@ import sys
 
 sys.dont_write_bytecode = True
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / 'tools'))
-from toolset_common import ROOT, NATIVE_NAMES, executable, native_cache, native_environment, prepare_native_tools, run, runtime_id
+from toolset_common import ROOT, NATIVE_NAMES, WINDOWS_NATIVE_FILES, executable, native_cache, native_environment, prepare_native_tools, run, runtime_id
 
 
 def check(profile):
@@ -30,8 +30,8 @@ def check(profile):
         except RuntimeError:
             failures.append('Install a stable .NET 10 SDK. global.json selects the newest installed .NET 10 feature band; previews are not used.')
     if os.name == 'nt':
-        for name in NATIVE_NAMES[:3]:
-            if not (ROOT / 'tools/SWLOR.CLI' / executable(name)).is_file():
+        for name in WINDOWS_NATIVE_FILES:
+            if not (ROOT / 'tools/SWLOR.CLI' / name).is_file():
                 failures.append('Restore the bundled utility ' + name + ' from Git.')
     else:
         for library in ('libpcre.so.3', 'libsqlite3.so.0'):

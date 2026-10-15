@@ -1,6 +1,8 @@
 using Avalonia.Controls;
 using Avalonia.Headless.NUnit;
 using FluentAssertions;
+using Microsoft.Extensions.DependencyInjection;
+using System.Reflection;
 using SWLOR.Toolset.Settings;
 using SWLOR.Toolset.Shell;
 
@@ -57,6 +59,42 @@ namespace SWLOR.Toolset.Tests
             button.RaiseEvent(new Avalonia.Interactivity.RoutedEventArgs(Button.ClickEvent));
             await Task.Yield();
             recovered.Should().BeTrue();
+        }
+
+        [AvaloniaTest]
+        public async Task FailedWorkspaceRecoveryRemainsRetryable()
+        {
+            var window = new MainWindow((ToolsetSettings?)null);
+            window.ShowStartupError("Missing assets.", () => Task.FromException(new IOException("Unavailable folder.")));
+            var button = window.FindControl<Button>("StartupWorkspaceButton")!;
+            button.RaiseEvent(new Avalonia.Interactivity.RoutedEventArgs(Button.ClickEvent));
+            await Task.Yield();
+            window.FindControl<TextBlock>("StartupStatus")!.Text.Should().Contain("Unavailable folder.");
+            button.IsEnabled.Should().BeTrue();
+            button.IsVisible.Should().BeTrue();
+        }
+
+        [AvaloniaTest]
+        public void FailedAttachedShellCanBeResetAndAttachedAgain()
+        {
+            var settings = ToolsetSettings.Load(Path.Combine(Path.GetTempPath(), "swlor_reset_" + Guid.NewGuid().ToString("N") + ".json"));
+            var services = new ServiceCollection();
+            typeof(App).GetMethod("ConfigureServices", BindingFlags.NonPublic | BindingFlags.Static)!
+                .Invoke(null, [services, settings]);
+            using var provider = services.BuildServiceProvider();
+            var shell = provider.GetRequiredService<ShellViewModel>();
+            var window = new MainWindow(settings);
+            try
+            {
+                window.AttachViewModel(shell);
+                window.KeyBindings.Should().NotBeEmpty();
+                window.ResetAfterStartupFailure();
+                window.DataContext.Should().BeNull();
+                window.KeyBindings.Should().BeEmpty();
+                Action retry = () => window.AttachViewModel(shell);
+                retry.Should().NotThrow();
+            }
+            finally { window.ResetAfterStartupFailure(); }
         }
 
         [AvaloniaTest]

@@ -1946,9 +1946,7 @@ namespace SWLOR.Toolset.Services
 
             var workspace = RequireWorkspace();
             var toolsDirectory = FindToolsDirectory(workspace.ModuleRoot)
-                                 ?? FindToolsDirectory(AppContext.BaseDirectory)
-                                 ?? throw new DirectoryNotFoundException(
-                                     "Could not find the repository's tools/SWLOR.CLI directory.");
+                                 ?? FindToolsDirectory(AppContext.BaseDirectory);
             return RequireTools(
                 _erfToolOverride ?? NativeToolPath.Find("nwn_erf", toolsDirectory) ?? NativeToolPath.ExecutableName("nwn_erf"),
                 _gffToolOverride ?? NativeToolPath.Find("nwn_gff", toolsDirectory) ?? NativeToolPath.ExecutableName("nwn_gff"));

@@ -10,6 +10,7 @@ using SWLOR.Game.Server.Service.CombatRecorderService;
 using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.FrameProfilerService;
 using SWLOR.Game.Server.Service.LogService;
+using SWLOR.Game.Server.Service.PvpCombatService;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.Game.Server.Service.StatService;
 using SWLOR.Game.Server.Service.StatusEffectService;
@@ -2387,6 +2388,8 @@ namespace SWLOR.Game.Server.Service
         /// <param name="isInstantAbilityHeal">Heals over time, lifesteal, drains and regeneration pass false and never restore Stamina.</param>
         public static void ApplyHealingReceivedEffects(uint creature, int amount, bool isInstantAbilityHeal = false)
         {
+            // The PvP healing ramp cuts the heal when it lands, so these react to what is left of it.
+            amount = PvpCombatRules.ReduceHealing(amount, PvpCombat.GetHealingReductionPercent(creature));
             if (CalculateEffectiveHealingAmount(amount, ObjectPlugin.GetCurrentHitPoints(creature), GetMaxHitPoints(creature)) <= 0)
                 return;
             // The heal these react to is applied right after them.

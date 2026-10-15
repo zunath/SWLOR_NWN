@@ -135,6 +135,19 @@ namespace SWLOR.CombatSim.Tests.Engine
         }
 
         [Test]
+        public void Current_DeathEndsThePvpCombat_SoARevivedPlayerIsHealedInFull()
+        {
+            var fight = new PvpFight(_catalog, CurrentWithFlatCut());
+            fight.FightUntil(240);
+
+            fight.KillTargetAt(245);
+            fight.ReviveTargetAt(250);
+
+            fight.HealAt(250).Should().BeApproximately(RawHeal, Tolerance,
+                "dying ended the PvP combat, though its last hit was only five seconds earlier");
+        }
+
+        [Test]
         public void Current_ActivityWithinThirtySeconds_KeepsTheSameCombatGoing()
         {
             var fight = new PvpFight(_catalog, CurrentWithFlatCut());

@@ -1,3 +1,4 @@
+using System;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -8,6 +9,7 @@ using SWLOR.Game.Server.Feature;
 using SWLOR.Game.Server.Service.CombatRecorderService;
 using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.PvpCombatService;
+using SWLOR.Game.Server.Service.StatService;
 using SWLOR.Game.Server.Service.StatusEffectService;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
@@ -123,15 +125,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             CombatRecordWriter writer;
             try
             {
-                // The headless fixture starts with a few HP; normal native levels give the heals room to show.
-                SetPlotFlag(player.Creature, false);
-                CreaturePlugin.SetClassByPosition(player.Creature, 0, ClassType.Standard);
-                await ctx.ExecuteInCreatureContextAsync(player.Creature, () =>
-                    typeof(PlayerInitialization).GetMethod("EnsureNativeLevels", BindingFlags.Static | BindingFlags.NonPublic)
-                        .Invoke(null, new object[] { player.Creature }));
-                CreaturePlugin.SetRawAbilityScore(player.Creature, AbilityType.Vitality, 10);
-                await ctx.WaitFrameAsync();
-                var maximum = GetMaxHitPoints(player.Creature);
+                var maximum = await GiveNativeLevelsAsync(ctx, player.Creature);
                 ctx.Assert(maximum >= 400, $"the player has room to heal (max HP {maximum})");
                 ObjectPlugin.SetCurrentHitPoints(player.Creature, maximum - 300);
 
@@ -223,6 +217,80 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             {
                 PvpCombat.EndForTesting(player.Creature);
             }
+        }
+
+        [EngineTest("Failing to disarm another player's kit trap is PvP damage", Category = Category, TimeoutSeconds = 40f)]
+        public static async Task FailedDisarmOfAPlayersTrapIsPvpDamage(EngineTestContext ctx)
+        {
+            using var owner = await PlayerAbilityFixture.CreateAsync(ctx, 4f);
+            using var victim = await PlayerAbilityFixture.CreateAsync(ctx, -4f);
+            await ctx.WaitFrameAsync();
+            try
+            {
+                var maximum = await GiveNativeLevelsAsync(ctx, victim.Creature);
+                ctx.Assert(maximum > 60, $"the victim survives the doubled hit (max HP {maximum})");
+                PvpCombat.SetCombatSecondsForTesting(victim.Creature, 300);
+                ctx.Assert(!PvpCombat.IsInPvpCombat(owner.Creature), "the trap's owner is not in PvP combat yet");
+
+                // A tier 1 kit trap whose disarm fails, as Traps does when the roll misses.
+                var recordType = typeof(Traps).GetNestedType("TrapRecord", BindingFlags.NonPublic);
+                var record = Activator.CreateInstance(recordType, nonPublic: true);
+                recordType.GetProperty("Owner").SetValue(record, owner.Creature);
+                recordType.GetProperty("Tier").SetValue(record, 1);
+                typeof(Traps).GetMethod("TriggerOnDisarmFailure", BindingFlags.Static | BindingFlags.NonPublic)
+                    .Invoke(null, new[] { record, victim.Creature });
+
+                await ctx.WaitUntilAsync(() => GetCurrentHitPoints(victim.Creature) < maximum, 5f, "the trap's hit to land");
+                ctx.AssertEqual(maximum - 40, GetCurrentHitPoints(victim.Creature), "the tier 1 trap's 20 damage is doubled at 5:00");
+                ctx.Assert(PvpCombat.IsInPvpCombat(owner.Creature), "the trap's owner enters PvP combat");
+            }
+            finally
+            {
+                PvpCombat.EndForTesting(owner.Creature);
+                PvpCombat.EndForTesting(victim.Creature);
+            }
+        }
+
+        [EngineTest("Healing-received effects react to the heal left after the PvP cut", Category = Category, TimeoutSeconds = 40f)]
+        public static async Task HealingReceivedEffectsFollowTheCutHeal(EngineTestContext ctx)
+        {
+            using var player = await PlayerAbilityFixture.CreateAsync(ctx, 4f);
+            await ctx.WaitFrameAsync();
+            try
+            {
+                TemporaryStatModifier.Add(player.Creature, StatType.HealingReceivedAttackPercentAdjustment, 10, 30f);
+                TemporaryStatModifier.Add(player.Creature, StatType.HealingReceivedAttackDurationSeconds, 30, 30f);
+                var maximum = GetMaxHitPoints(player.Creature);
+                ctx.Assert(maximum >= 3, $"the fixture has room for a 2-HP heal (max HP {maximum})");
+                ObjectPlugin.SetCurrentHitPoints(player.Creature, maximum - 2);
+                var attackBefore = Stat.GetStatAdjustment(player.Creature, StatType.AttackPercentAdjustment);
+                PvpCombat.SetCombatSecondsForTesting(player.Creature, 240);
+
+                Stat.ApplyHealingReceivedEffects(player.Creature, 2);
+                ctx.AssertEqual(attackBefore, Stat.GetStatAdjustment(player.Creature, StatType.AttackPercentAdjustment),
+                    "the 60% cut leaves nothing of a 2-HP heal, so there is no Attack boost");
+
+                Stat.ApplyHealingReceivedEffects(player.Creature, 3);
+                ctx.AssertEqual(attackBefore + 10, Stat.GetStatAdjustment(player.Creature, StatType.AttackPercentAdjustment),
+                    "a 3-HP heal still restores 1 HP after the cut");
+            }
+            finally
+            {
+                PvpCombat.EndForTesting(player.Creature);
+            }
+        }
+
+        // The headless fixture starts with a few HP; normal native levels give heals and hits room to show.
+        private static async Task<int> GiveNativeLevelsAsync(EngineTestContext ctx, uint player)
+        {
+            SetPlotFlag(player, false);
+            CreaturePlugin.SetClassByPosition(player, 0, ClassType.Standard);
+            await ctx.ExecuteInCreatureContextAsync(player, () =>
+                typeof(PlayerInitialization).GetMethod("EnsureNativeLevels", BindingFlags.Static | BindingFlags.NonPublic)
+                    .Invoke(null, new object[] { player }));
+            CreaturePlugin.SetRawAbilityScore(player, AbilityType.Vitality, 10);
+            await ctx.WaitFrameAsync();
+            return GetMaxHitPoints(player);
         }
 
         private static async Task HitAsync(EngineTestContext ctx, uint attacker, uint target)

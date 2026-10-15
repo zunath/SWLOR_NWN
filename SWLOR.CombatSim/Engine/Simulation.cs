@@ -1479,6 +1479,9 @@ namespace SWLOR.CombatSim.Engine
             // Statuses end at death; a revived caster takes its stance up again.
             target.Statuses.Clear();
             target.KilledByPlayer = killer != null && IsPlayerVersusPlayer(killer, target);
+            // Death ends PvP combat, as the game's PvpCombat.EndOnDeath does, so a revive starts a new one.
+            target.PvpCombatStartedAt = double.NegativeInfinity;
+            target.LastPvpActivityAt = double.NegativeInfinity;
             target.TemporaryHp.Clear();
             target.DamageReductions.Clear();
             target.HealsOverTime.Clear();

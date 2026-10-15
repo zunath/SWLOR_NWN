@@ -64,6 +64,31 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             }
         }
 
+        [EngineTest("A hostile ability used just after the shared delay ends replaces one still waiting to go off", Category = "HostileAbilityDelay", TimeoutSeconds = 30f)]
+        public static async Task HostileAbilityAfterTheDelay_ReplacesAPressStillWaiting(EngineTestContext ctx)
+        {
+            var (caster, target) = await SpawnAsync(ctx);
+            Combat.SetAbilityHitResolutionOverride(false);
+            try
+            {
+                await UseAbilityAsync(ctx, caster, target, FeatType.ForceTouch1);
+                await WaitForRecastAsync(ctx, caster, RecastGroup.ForceTouch, "Force Touch to go off at once");
+                await UseAbilityAsync(ctx, caster, target, FeatType.ForceLeap1);
+
+                // The delay ends before the held Force Leap's timer runs, as it can when a frame is late.
+                HostileAbilityDelay.EndForTesting(caster);
+                await UseAbilityAsync(ctx, caster, target, FeatType.ForcePush1);
+                await WaitForRecastAsync(ctx, caster, RecastGroup.ForcePush, "Force Push to go off at once");
+
+                await ctx.DelaySecondsAsync(1.5f);
+                ctx.Assert(!IsOnRecast(caster, RecastGroup.ForceLeap), "the replaced Force Leap never goes off");
+            }
+            finally
+            {
+                Combat.SetAbilityHitResolutionOverride(null);
+            }
+        }
+
         [EngineTest("An ability that isn't hostile doesn't wait for the shared hostile delay", Category = "HostileAbilityDelay", TimeoutSeconds = 30f)]
         public static async Task AbilityThatIsNotHostile_DoesNotWait(EngineTestContext ctx)
         {

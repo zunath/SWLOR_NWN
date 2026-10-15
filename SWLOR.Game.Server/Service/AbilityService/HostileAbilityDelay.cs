@@ -27,5 +27,11 @@ namespace SWLOR.Game.Server.Service.AbilityService
         {
             SetLocalString(creature, ReadyAtVariable, RecastTimestamp.Format(DateTime.UtcNow.AddSeconds(Seconds)));
         }
+
+        /// <summary>Ends the creature's delay at once. For tests only.</summary>
+        public static void EndForTesting(uint creature)
+        {
+            DeleteLocalString(creature, ReadyAtVariable);
+        }
     }
 }

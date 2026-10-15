@@ -463,6 +463,11 @@ namespace SWLOR.Game.Server.Feature
             if (!ability.IsHostileAbility)
                 return false;
 
+            // Every hostile press replaces a held one, including one whose delay ended a moment
+            // before its timer ran.
+            var press = GetLocalInt(activator, HeldHostileAbilityPressName) + 1;
+            SetLocalInt(activator, HeldHostileAbilityPressName, press);
+
             var remaining = HostileAbilityDelay.GetRemainingSeconds(activator);
             if (remaining <= 0f)
             {
@@ -470,8 +475,6 @@ namespace SWLOR.Game.Server.Feature
                 return false;
             }
 
-            var press = GetLocalInt(activator, HeldHostileAbilityPressName) + 1;
-            SetLocalInt(activator, HeldHostileAbilityPressName, press);
             AssignCommand(activator, () => DelayCommand(remaining, () =>
             {
                 if (GetLocalInt(activator, HeldHostileAbilityPressName) == press)

@@ -83,9 +83,19 @@ public sealed class GameCodeCatalog : IGameCodeIndex
             VisualEffects = source.VisualEffects.ToDictionary(pair => pair.Key, pair => pair.Value),
             VisualEffectReferences = source.VisualEffectReferences.ToDictionary(pair => pair.Key, pair => pair.Value),
     };
-    public static GameCodeCatalog Load(string path, string revision)
+    public static GameCodeCatalog LoadWorkspace(string root)
     {
-        var catalog = JsonSerializer.Deserialize<GameCodeCatalog>(File.ReadAllText(path), Options)
+        var manifest = WorkspaceManifest.Load(root);
+        return Load(ContentPaths.Resolve(root, WorkspaceManifest.CatalogPath), manifest.ContentRevision, manifest.RequireCatalogHash());
+    }
+
+    public static GameCodeCatalog Load(string path, string revision, string? expectedHash = null)
+    {
+        var bytes = File.ReadAllBytes(path);
+        if (expectedHash != null && (!ContentPaths.IsHash(expectedHash) ||
+            !ContentPaths.Hash(bytes).Equals(expectedHash, StringComparison.OrdinalIgnoreCase)))
+            throw new InvalidDataException("The editor catalog checksum failed. Download the matching content snapshot.");
+        var catalog = JsonSerializer.Deserialize<GameCodeCatalog>(bytes, Options)
             ?? throw new InvalidDataException("The editor catalog is empty.");
         if (catalog.SchemaVersion != 1 || catalog.ContentRevision != revision || !ContentPaths.IsRevision(revision))
             throw new InvalidDataException("The editor catalog does not match this workspace. Download its matching content snapshot.");

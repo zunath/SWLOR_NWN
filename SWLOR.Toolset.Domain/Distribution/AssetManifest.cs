@@ -11,7 +11,7 @@ public sealed class AssetManifest
 
     public static AssetManifest Load(string root, string revision, bool verifyFiles)
     {
-        var manifest = JsonSerializer.Deserialize<AssetManifest>(File.ReadAllText(Path.Combine(root, FileName)))
+        var manifest = JsonSerializer.Deserialize<AssetManifest>(File.ReadAllText(ContentPaths.Resolve(root, FileName)))
             ?? throw new InvalidDataException("Empty asset manifest.");
         if (manifest.SchemaVersion != 1 || manifest.AssetRevision != revision || !ContentPaths.IsRevision(revision) || manifest.Files == null || manifest.Files.Count == 0 ||
             !manifest.Files.ContainsKey("tlk/sw_tlk.tlk") || !manifest.Files.ContainsKey("tlk/sw_tlk.tlk.json"))
@@ -25,6 +25,19 @@ public sealed class AssetManifest
                 (verifyFiles && !string.Equals(ContentPaths.HashFile(path), hash, StringComparison.OrdinalIgnoreCase)))
                 throw new InvalidDataException($"Missing or damaged asset: {relative}. Download the asset pack again.");
         }
+        var remaining = new HashSet<string>(paths, StringComparer.OrdinalIgnoreCase) { FileName };
+        var directories = new Stack<string>();
+        directories.Push(root);
+        while (directories.TryPop(out var directory))
+            foreach (var entry in Directory.EnumerateFileSystemEntries(directory))
+            {
+                var relative = Path.GetRelativePath(root, entry).Replace('\\', '/');
+                _ = ContentPaths.Resolve(root, relative); // Reject linked files and directories, including undeclared ones.
+                if (Directory.Exists(entry)) directories.Push(entry);
+                else if (!remaining.Remove(relative))
+                    throw new InvalidDataException($"Undeclared asset file: {relative}. Download the asset pack again.");
+            }
+        if (remaining.Count != 0) throw new InvalidDataException("The asset cache is incomplete.");
         return manifest;
     }
 

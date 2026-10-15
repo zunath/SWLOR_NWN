@@ -61,6 +61,7 @@ def publish(args):
     release.mkdir()
     for project, destination in [('SWLOR.Toolset/SWLOR.Toolset.csproj', application), ('SWLOR.CLI/SWLOR.CLI.csproj', cli)]:
         publish_project(project, destination, rid, args.version)
+    content.write_json(application / 'toolset-release.json', {'Version': args.version})
     copy_tools(native, cli)
     for relative in ('SWLOR.NWN.API/NWN', 'SWLOR.NWN.API/NWScript'):
         shutil.copytree(ROOT / relative, application / relative, ignore=shutil.ignore_patterns('bin', 'obj'))

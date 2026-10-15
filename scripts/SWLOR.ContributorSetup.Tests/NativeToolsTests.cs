@@ -28,6 +28,26 @@ public class NativeToolsTests
         Assert.That(native.CheckPrerequisites("Toolset"), Is.EqualTo(new[] { "Restore the bundled utility " + missing + " from Git." }));
     }
 
+    public static IEnumerable<string> DesktopLibraryNames => NativeTools.DesktopLibraries.Keys;
+
+    [TestCaseSource(nameof(DesktopLibraryNames))]
+    public void LinuxDoctorReportsEveryMissingDesktopLibrary(string missing)
+    {
+        var native = new NativeTools(_root, new CommandRunner(), Configuration, windows: false,
+            libraryAvailable: name => name != missing);
+        var failures = native.CheckPrerequisites("Toolset").ToArray();
+        Assert.That(failures, Has.Length.EqualTo(1));
+        Assert.That(failures[0], Does.Contain(missing).And.Contain(NativeTools.DesktopLibraries[missing]));
+    }
+
+    [Test]
+    public void LinuxServerProfileDoesNotRequireDesktopLibraries()
+    {
+        var native = new NativeTools(_root, new CommandRunner(), Configuration, windows: false,
+            libraryAvailable: name => !NativeTools.DesktopLibraries.ContainsKey(name));
+        Assert.That(native.CheckPrerequisites("Server"), Is.Empty);
+    }
+
     [Test]
     public void LinuxCacheRequiresEveryLibraryAndItsOriginalHash()
     {

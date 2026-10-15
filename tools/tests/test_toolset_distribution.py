@@ -107,6 +107,17 @@ class ToolsetDistributionTests(unittest.TestCase):
                 distribution.publish(argparse.Namespace(skip_workspace=False))
             prepare.assert_not_called()
 
+    def test_published_application_records_its_own_release_for_workspace_downloads(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            output = Path(temporary) / 'build'
+            args = argparse.Namespace(skip_workspace=True, output=str(output), version='1.1.0-beta', sign_parameters=None)
+            def publish_project(project, destination, rid, version=None):
+                destination.mkdir(parents=True, exist_ok=True)
+            with patch.object(distribution, 'runtime_id', return_value='win-x64'), patch.object(distribution, 'os', SimpleNamespace(name='nt', environ=os.environ)), patch.object(distribution, 'prepare_native_tools', return_value=Path(temporary)), patch.object(distribution, 'publish_project', side_effect=publish_project), patch.object(distribution, 'copy_tools'), patch.object(distribution.shutil, 'copytree'), patch.object(distribution.shutil, 'copyfile'), patch.object(distribution, 'notices'), patch.object(distribution, 'run'):
+                distribution.publish(args)
+            marker = json.loads((output / 'application/toolset-release.json').read_text(encoding='utf-8'))
+            self.assertEqual(marker['Version'], args.version)
+
     def test_asset_pack_rejects_parent_edits_before_preparing_or_building(self):
         for status in (' M Build/hakbuilder.json', 'M  Build/hakbuilder.json',
                        ' M Module/ifo/module.ifo.json', 'M  Module/ifo/module.ifo.json'):

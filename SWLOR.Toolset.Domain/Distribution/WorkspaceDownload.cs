@@ -8,13 +8,18 @@ namespace SWLOR.Toolset.Domain.Distribution;
 public sealed class WorkspaceDownload
 {
     private readonly HttpClient _client;
-    public WorkspaceDownload(HttpClient client) => _client = client;
+    private readonly string _feedUrl;
+    public WorkspaceDownload(HttpClient client, string? installedVersion = null)
+    {
+        _client = client;
+        _feedUrl = installedVersion == null ? ToolsetFeed.DefaultUrl : ToolsetFeed.UrlForVersion(installedVersion);
+    }
     public static string AssetCacheDirectory => Path.Combine(
         Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "SWLOR.Toolset", "Assets");
 
     public async Task<ToolsetFeed> ReadFeedAsync(CancellationToken cancellationToken)
     {
-        using var response = await _client.GetAsync(ToolsetFeed.DefaultUrl, cancellationToken);
+        using var response = await _client.GetAsync(_feedUrl, cancellationToken);
         response.EnsureSuccessStatusCode();
         if (response.Content.Headers.ContentLength > 2 * 1024 * 1024)
             throw new InvalidDataException("The download feed is too large.");
@@ -98,6 +103,7 @@ public sealed class WorkspaceDownload
                 foreach (var (path, hash) in manifest.Baseline)
                     if (!ContentPaths.HashFile(ContentPaths.Resolve(extracted, path)).Equals(hash, StringComparison.OrdinalIgnoreCase))
                         throw new InvalidDataException($"Workspace checksum failed: {path}");
+                manifest.ValidateMetadata(extracted);
                 var current = ContentPaths.Capture(extracted);
                 if (current.Count != manifest.Baseline.Count) throw new InvalidDataException("The workspace baseline is incomplete.");
             }

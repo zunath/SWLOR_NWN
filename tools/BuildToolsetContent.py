@@ -61,7 +61,8 @@ def workspace(root, output, catalog, assets, release_url):
     files = [name for name in git(root, 'ls-files', 'Module', 'SWLOR.Game.Server/ConversationData', 'toolset/categories.json').splitlines()
              if CONTENT.fullmatch(name)]
     manifest = {'SchemaVersion': 1, 'ContentRevision': revision, 'AssetRevision': asset_revision,
-                'Baseline': {name: digest(root / name) for name in files}}
+                'Baseline': {name: digest(root / name) for name in files},
+                'MetadataHashes': {'Metadata/game-code.json': digest(catalog)}}
     archive = output / 'workspace.zip'
     with zipfile.ZipFile(archive, 'x', compression=zipfile.ZIP_DEFLATED, compresslevel=6) as bundle:
         for name in files:

@@ -11,15 +11,25 @@ internal class NativeTools
     private readonly CommandRunner _runner;
     private readonly NativeToolConfiguration _configuration;
     private readonly bool _windows;
+    private readonly Func<string, bool> _libraryAvailable;
+    internal static readonly IReadOnlyDictionary<string, string> DesktopLibraries = new Dictionary<string, string>
+    {
+        ["libfontconfig.so.1"] = "libfontconfig1", ["libX11.so.6"] = "libx11-6",
+        ["libXrandr.so.2"] = "libxrandr2", ["libXfixes.so.3"] = "libxfixes3",
+        ["libXi.so.6"] = "libxi6", ["libXcursor.so.1"] = "libxcursor1",
+        ["libICE.so.6"] = "libice6", ["libSM.so.6"] = "libsm6",
+        ["libglib-2.0.so.0"] = "libglib2.0-0t64", ["libGL.so.1"] = "libgl1"
+    };
     internal string CacheDirectory { get; }
 
     public NativeTools(string root, CommandRunner runner, NativeToolConfiguration? configuration = null,
-        string? cacheDirectory = null, bool? windows = null)
+        string? cacheDirectory = null, bool? windows = null, Func<string, bool>? libraryAvailable = null)
     {
         _root = root;
         _runner = runner;
         _configuration = configuration ?? NativeToolConfiguration.Load(root);
         _windows = windows ?? OperatingSystem.IsWindows();
+        _libraryAvailable = libraryAvailable ?? CanLoad;
         CacheDirectory = cacheDirectory ?? Path.Combine(
             Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData, Environment.SpecialFolderOption.DoNotVerify),
             "SWLOR.Toolset", "NativeTools", _windows ? "win-x64" : "linux-x64");
@@ -34,10 +44,15 @@ internal class NativeTools
                     yield return "Restore the bundled utility " + name + " from Git.";
             yield break;
         }
-        if (new[] { "libpcre.so.3", "libsqlite3.so.0" }.Any(name => !CanLoad(name)))
+        if (new[] { "libpcre.so.3", "libsqlite3.so.0" }.Any(name => !_libraryAvailable(name)))
             yield return "Install libpcre3 and libsqlite3-0 with your Linux package manager.";
-        if (profile == "Toolset" && new[] { "libfontconfig.so.1", "libX11.so.6", "libGL.so.1" }.Any(name => !CanLoad(name)))
-            yield return "Install desktop dependencies: libfontconfig1 libx11-6 libgl1. Use X11 or Wayland with XWayland.";
+        if (profile == "Toolset")
+        {
+            var missing = DesktopLibraries.Keys.Where(name => !_libraryAvailable(name)).ToArray();
+            if (missing.Length != 0)
+                yield return "Install desktop dependencies: " + string.Join(" ", DesktopLibraries.Values) +
+                    " libgl1-mesa-dri. Missing libraries: " + string.Join(", ", missing) + ". Use X11 or Wayland with XWayland.";
+        }
     }
 
     private static bool CanLoad(string name)

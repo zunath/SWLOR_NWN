@@ -423,9 +423,7 @@ namespace SWLOR.Toolset
             var workspaceRoot = WorkspaceManifest.FindRoot(settings.ModuleRoot);
             if (workspaceRoot != null)
             {
-                var manifest = WorkspaceManifest.Load(workspaceRoot);
-                services.AddSingleton<IGameCodeIndex>(_ => GameCodeCatalog.Load(
-                    Path.Combine(workspaceRoot, "Metadata", "game-code.json"), manifest.ContentRevision));
+                services.AddSingleton<IGameCodeIndex>(_ => GameCodeCatalog.LoadWorkspace(workspaceRoot));
             }
             else
                 services.AddSingleton<IGameCodeIndex>(_ => new GameCodeIndex(gameServerSourceRoot));

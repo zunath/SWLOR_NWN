@@ -133,10 +133,12 @@ public class HakSetupValidationTests
         action.Should().Throw<InvalidOperationException>().WithMessage("*tiles.hak*");
     }
 
-    [TestCase("hak/sw_2da.hak")]
-    [TestCase("tlk/sw_tlk.tlk")]
-    [TestCase("tlk/sw_tlk.tlk.json")]
-    public void StartupRejectsCachedAssetsChangedAfterWorkspaceCreation(string damagedFile)
+    [TestCase("hak/sw_2da.hak", false)]
+    [TestCase("tlk/sw_tlk.tlk", false)]
+    [TestCase("tlk/sw_tlk.tlk.json", false)]
+    [TestCase("hak/unlisted.hak", true)]
+    [TestCase("tlk/unlisted.tlk", true)]
+    public void StartupRejectsChangedOrUndeclaredCachedAssets(string damagedFile, bool undeclared)
     {
         var revision = Guid.NewGuid().ToString("N") + "00000000";
         var workspace = Path.Combine(_root, "workspace");
@@ -164,6 +166,13 @@ public class HakSetupValidationTests
             validate.Should().NotThrow();
 
             var damaged = Path.Combine(assets, damagedFile);
+            if (undeclared)
+            {
+                File.WriteAllText(damaged, "undeclared");
+                validate.Should().Throw<System.Reflection.TargetInvocationException>()
+                    .WithInnerException<InvalidDataException>().WithMessage("*Undeclared asset file*" + damagedFile + "*");
+                return;
+            }
             var writeTime = File.GetLastWriteTimeUtc(damaged);
             var bytes = File.ReadAllBytes(damaged);
             bytes[0] ^= 1;

@@ -84,6 +84,9 @@ class ToolsetContentTests(unittest.TestCase):
                 self.assertEqual(original, bundle.read('Module/utc/example.utc.json'))
                 manifest = json.loads(bundle.read('swlor-workspace.json'))
                 self.assertEqual(content.digest(source), manifest['Baseline']['Module/utc/example.utc.json'])
+                self.assertEqual(content.digest(catalog), manifest['MetadataHashes']['Metadata/game-code.json'])
+                self.assertNotIn('Metadata/game-code.json', manifest['Baseline'])
+                self.assertEqual(catalog.read_bytes(), bundle.read('Metadata/game-code.json'))
             with patch.object(content, 'revisions', return_value=('1' * 40, '3' * 40)):
                 with self.assertRaisesRegex(ValueError, 'do not match'):
                     content.workspace(root, output, catalog, assets, 'https://example.com/release')

@@ -78,7 +78,7 @@ public sealed class WorkspaceSetupWindow : Window
         try
         {
             using var client = new HttpClient { Timeout = TimeSpan.FromMinutes(60) };
-            var download = new WorkspaceDownload(client);
+            var download = new WorkspaceDownload(client, ToolsetFeed.ReadInstalledVersion(AppContext.BaseDirectory));
             _status.Text = "Checking available content...";
             var feed = await download.ReadFeedAsync(_cancellation.Token);
             await download.CreateAsync(feed, destination, WorkspaceDownload.AssetCacheDirectory,

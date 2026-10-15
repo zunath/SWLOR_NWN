@@ -103,6 +103,7 @@ public class WorkspaceDownloadTests
     [TestCase(0)]
     [TestCase(1)]
     [TestCase(2)]
+    [TestCase(3)]
     public async Task DamagedAssetCacheCanBeReinstalledWithoutChangingAnExistingWorkspace(int damage)
     {
         var (feed, payloads) = CreateFeed();
@@ -116,9 +117,11 @@ public class WorkspaceDownloadTests
         var hak = Path.Combine(cache, Revision, "hak/sw_2da.hak");
         if (damage == 1) File.Delete(hak);
         else if (damage == 2) File.WriteAllText(Path.Combine(cache, Revision, AssetManifest.FileName), "{");
+        else if (damage == 3) File.WriteAllText(Path.Combine(cache, Revision, "hak", "unlisted.hak"), "undeclared");
         else File.WriteAllText(hak, "corrupt");
         await download.CreateAsync(feed, Path.Combine(_root, "second"), cache, null, CancellationToken.None);
         File.ReadAllText(hak).Should().Be("archive");
+        File.Exists(Path.Combine(cache, Revision, "hak", "unlisted.hak")).Should().BeFalse();
         File.ReadAllText(editable).Should().Be("local edit");
         Directory.EnumerateDirectories(cache).Select(Path.GetFileName).Should().Equal(Revision);
     }
@@ -137,6 +140,39 @@ public class WorkspaceDownloadTests
         Directory.EnumerateDirectories(cache).Select(Path.GetFileName).Should().Equal(Revision);
     }
 
+    [TestCase(false)]
+    [TestCase(true)]
+    public async Task CatalogChecksumsAreRequiredBeforePublishingDownloadedWorkspaces(bool omitChecksum)
+    {
+        var (feed, payloads) = CreateFeed();
+        using (var stream = new MemoryStream(payloads[Release + "workspace"]))
+        using (var archive = new ZipArchive(stream, ZipArchiveMode.Read))
+        {
+            var files = new Dictionary<string, byte[]>();
+            foreach (var entry in archive.Entries)
+            {
+                using var input = entry.Open();
+                using var output = new MemoryStream();
+                input.CopyTo(output);
+                files[entry.FullName] = output.ToArray();
+            }
+            if (omitChecksum)
+            {
+                var manifest = JsonSerializer.Deserialize<WorkspaceManifest>(files[WorkspaceManifest.FileName])!;
+                manifest.MetadataHashes.Clear();
+                files[WorkspaceManifest.FileName] = JsonSerializer.SerializeToUtf8Bytes(manifest);
+            }
+            else files[WorkspaceManifest.CatalogPath] = Encoding.UTF8.GetBytes("changed catalog");
+            payloads[Release + "workspace"] = Zip(files);
+            feed.Workspace = Descriptor(Release + "workspace", payloads[Release + "workspace"]);
+        }
+        using var client = new HttpClient(new DownloadHandler(payloads));
+        var destination = Path.Combine(_root, "workspace");
+        Func<Task> download = () => new WorkspaceDownload(client).CreateAsync(feed, destination, Path.Combine(_root, "cache"), null, CancellationToken.None);
+        await download.Should().ThrowAsync<InvalidDataException>().WithMessage("*checksum*");
+        Directory.Exists(destination).Should().BeFalse();
+    }
+
     private static (ToolsetFeed, Dictionary<string, byte[]>) CreateFeed()
     {
         var assetFiles = new Dictionary<string, byte[]> { ["hak/sw_2da.hak"] = Encoding.UTF8.GetBytes("archive"),
@@ -146,6 +182,12 @@ public class WorkspaceDownloadTests
         var content = new Dictionary<string, byte[]> { ["Module/utc/example.utc.json"] = Encoding.UTF8.GetBytes("{ }\r\n") };
         var workspace = new WorkspaceManifest { ContentRevision = Revision, AssetRevision = Revision,
             Baseline = content.ToDictionary(pair => pair.Key, pair => ContentPaths.Hash(pair.Value)) };
+        var catalog = JsonSerializer.SerializeToUtf8Bytes(new SWLOR.Toolset.Domain.GameData.GameCode.GameCodeCatalog
+        {
+            ContentRevision = Revision, QuestIds = new() { "quest" }, SpawnTableIds = new() { "spawn" }
+        });
+        workspace.MetadataHashes[WorkspaceManifest.CatalogPath] = ContentPaths.Hash(catalog);
+        content[WorkspaceManifest.CatalogPath] = catalog;
         content[WorkspaceManifest.FileName] = JsonSerializer.SerializeToUtf8Bytes(workspace);
         var payloads = new Dictionary<string, byte[]> { [Release + "assets"] = Zip(assetFiles), [Release + "workspace"] = Zip(content) };
         var feed = new ToolsetFeed { ContentRevision = Revision, AssetRevision = Revision,

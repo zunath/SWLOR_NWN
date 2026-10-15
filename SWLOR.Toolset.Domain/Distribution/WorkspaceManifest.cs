@@ -6,10 +6,29 @@ namespace SWLOR.Toolset.Domain.Distribution;
 public sealed class WorkspaceManifest
 {
     public const string FileName = "swlor-workspace.json";
+    public const string CatalogPath = "Metadata/game-code.json";
     public int SchemaVersion { get; set; } = 1;
     public string ContentRevision { get; set; } = string.Empty;
     public string AssetRevision { get; set; } = string.Empty;
     public Dictionary<string, string> Baseline { get; set; } = new(StringComparer.OrdinalIgnoreCase);
+
+    public Dictionary<string, string> MetadataHashes { get; set; } = new();
+
+    internal string RequireCatalogHash()
+    {
+        if (MetadataHashes == null || MetadataHashes.Count != 1 ||
+            !MetadataHashes.TryGetValue(CatalogPath, out var hash) || !ContentPaths.IsHash(hash))
+            throw new InvalidDataException("The editor metadata checksum is missing. Download the matching content snapshot.");
+        return hash;
+    }
+
+    internal void ValidateMetadata(string root)
+    {
+        var expected = RequireCatalogHash();
+        var path = ContentPaths.Resolve(root, CatalogPath);
+        if (!File.Exists(path) || !ContentPaths.HashFile(path).Equals(expected, StringComparison.OrdinalIgnoreCase))
+            throw new InvalidDataException("The editor catalog checksum failed. Download the matching content snapshot.");
+    }
 
     public static WorkspaceManifest Load(string root)
     {

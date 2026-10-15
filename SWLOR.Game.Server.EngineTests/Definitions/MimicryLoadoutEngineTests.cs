@@ -188,12 +188,52 @@ public static class MimicryLoadoutEngineTests
         await ctx.WaitFrameAsync();
         ctx.Assert(DB.Get<Player>(fixture.Id).MimicryLoadouts.Single(x => x.Id == first).Techniques.Contains(Wave), "Save works during combat");
         AssertSet(ctx, new[] { Rush, Trait }, DB.Get<Player>(fixture.Id).EquippedTechniques, "combat Save does not equip the preview");
+        model.OnClickRevert()();
+        model.OnModalConfirmClick()();
+        await ctx.WaitFrameAsync();
+        ctx.Assert(model.StatusText.Contains("combat"), "combat Revert reports that it cannot re-equip the saved build");
+        AssertSet(ctx, new[] { Rush, Trait }, DB.Get<Player>(fixture.Id).EquippedTechniques, "combat Revert leaves the equipped set unchanged");
+        ctx.Assert(model.CanRevert, "Revert stays available after a combat denial");
         AssignCommand(player, () => ClearAllActions());
         AssignCommand(enemy, () => ClearAllActions());
         DestroyObject(enemy);
         await ctx.WaitUntilAsync(() => !GetIsInCombat(player), 15f, "the native player to leave combat");
         Apply(ctx, player, second, Wave, Trait);
-        ctx.SetResultDetail("Real hostile combat: Apply denial is atomic across DB/feats/36 quickbar cells; Save succeeds; Apply succeeds after leaving combat.");
+        ctx.SetResultDetail("Real hostile combat: Apply and Revert re-equip denials are atomic across DB/feats/36 quickbar cells; Save succeeds; Apply succeeds after leaving combat.");
+    }
+
+    [EngineTest("Revert discards an applied but unsaved change to the equipped build", Category = "MimicryLoadouts", TimeoutSeconds = 30f)]
+    public static async Task RevertRestoresEquippedBuild(EngineTestContext ctx)
+    {
+        using var fixture = await PlayerAbilityFixture.CreateAsync(ctx);
+        var (first, _) = Prepare(fixture);
+        var player = fixture.Creature;
+        Apply(ctx, player, first, Rush, Trait);
+        var model = new TechniquesViewModel();
+        Bind(model, player);
+        for (var cycle = 1; cycle <= 2; cycle++)
+        {
+            RemoveFromPreview(model, Rush);
+            model.OnClickApply()();
+            ctx.Assert(model.ActiveLoadoutText.EndsWith("(Modified)"), $"cycle {cycle}: an unsaved Apply marks the equipped build modified");
+            // Cycle 2 first restores the preview by hand, leaving only the equipped set modified.
+            if (cycle == 2)
+                AddToPreview(model, Rush);
+            ctx.Assert(model.CanRevert, $"cycle {cycle}: Revert is available while the equipped build is modified");
+            model.OnClickRevert()();
+            ctx.Assert(model.ModalPromptText.Contains("equip"), $"cycle {cycle}: the Revert prompt says it re-equips");
+            model.OnModalConfirmClick()();
+            await ctx.WaitFrameAsync();
+            var record = ReadPersisted(fixture.Id);
+            AssertSet(ctx, new[] { Rush, Trait }, record.EquippedTechniques, $"cycle {cycle}: Revert re-equips the saved build");
+            ctx.AssertEqual(first, record.ActiveMimicryLoadoutId, $"cycle {cycle}: Revert keeps the build active");
+            AssertSet(ctx, new[] { Rush, Trait }, record.MimicryLoadouts.Single(x => x.Id == first).Techniques, $"cycle {cycle}: Revert does not rewrite the saved build");
+            AssertSet(ctx, new[] { Rush, Trait }, Preview(model), $"cycle {cycle}: Revert restores the preview");
+            ctx.Assert(GetHasFeat(Rush, player), $"cycle {cycle}: Revert restores the native feat");
+            ctx.Assert(!model.ActiveLoadoutText.Contains("Modified"), $"cycle {cycle}: Revert clears the Modified flag");
+            ctx.Assert(!model.CanRevert, $"cycle {cycle}: nothing is left to revert");
+        }
+        ctx.SetResultDetail("Production view-model Apply/Revert handlers with a dirty preview and with only the equipped set modified; Redis, native feat and Modified flag checked over two cycles.");
     }
 
     [EngineTest("Actual technique cooldown survives switching away and back and expires normally", Category = "MimicryLoadouts", TimeoutSeconds = 60f)]
@@ -279,6 +319,15 @@ public static class MimicryLoadoutEngineTests
         if (index < 0) throw new InvalidOperationException($"Technique {feat} is absent from the learned list.");
         typeof(TechniquesViewModel).GetField("_selectedUnequippedIndex", BindingFlags.Instance | BindingFlags.NonPublic).SetValue(model, index);
         model.OnClickEquip()();
+    }
+
+    private static void RemoveFromPreview(TechniquesViewModel model, FeatType feat)
+    {
+        var field = typeof(TechniquesViewModel).GetField("_equippedFeats", BindingFlags.Instance | BindingFlags.NonPublic);
+        var index = ((List<FeatType>)field.GetValue(model)).IndexOf(feat);
+        if (index < 0) throw new InvalidOperationException($"Technique {feat} is absent from the preview.");
+        typeof(TechniquesViewModel).GetField("_selectedEquippedIndex", BindingFlags.Instance | BindingFlags.NonPublic).SetValue(model, index);
+        model.OnClickUnequip()();
     }
 
     private static bool IsFeat(uint player, int slot, FeatType feat)

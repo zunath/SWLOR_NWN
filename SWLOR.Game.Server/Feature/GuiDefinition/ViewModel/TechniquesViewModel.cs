@@ -487,7 +487,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             ActiveLoadoutText = active == null ? "Equipped: Custom build" :
                 $"Equipped: {active.Name}" + (MimicryLoadouts.Matches(active.Techniques, record.EquippedTechniques) ? "" : " (Modified)");
             PreviewTitle = $"Preview: {selected.Name}" + (IsDirty ? " (unsaved)" : "");
-            CanRevert = IsDirty;
+            CanRevert = IsDirty || RevertReequips(record);
             if (!Mimicry.ValidateLoadout(record, _draft, out var error))
             {
                 StatusText = error;
@@ -577,10 +577,22 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 confirmText: "Discard", cancelText: "Keep editing"), "Save", "More...");
         }
 
-        public Action OnClickRevert() => () => ShowModal("Revert the preview to the saved build?", () =>
+        // An applied but unsaved change to the equipped build is also discarded by Revert.
+        private bool RevertReequips(PlayerEntity record) =>
+            record.ActiveMimicryLoadoutId == _selectedLoadoutId &&
+            !MimicryLoadouts.Matches(record.MimicryLoadouts.First(x => x.Id == _selectedLoadoutId).Techniques, record.EquippedTechniques);
+
+        public Action OnClickRevert() => () => ShowModal(RevertReequips(Record)
+            ? "Revert to the saved build and equip it?"
+            : "Revert the preview to the saved build?", () =>
         {
+            var reequip = RevertReequips(Record);
             LoadDraft(_selectedLoadoutId);
+            var error = string.Empty;
+            var failed = reequip && !Mimicry.ApplyLoadout(Player, _selectedLoadoutId, _draft, out error);
             LoadLists();
+            if (failed)
+                ShowError(error);
         }, confirmText: "Revert", cancelText: "Cancel");
 
         public Action OnClickApply() => () =>

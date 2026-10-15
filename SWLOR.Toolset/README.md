@@ -25,7 +25,7 @@ On first run, choose **Create SWLOR workspace** or **Open existing workspace**. 
 
 Use **File → Workspaces** to select another workspace, then reopen the application. Save and validate your edits, then use **File → Export Contribution** to create a ZIP for maintainer review. The export includes added, changed, and deleted resources without changing the original formatting. It never includes server code, credentials, or deployment configuration. Conversation changes still require a server build before in-game testing.
 
-**Help → Check for Updates** updates installed Windows applications and Linux AppImages while keeping workspaces and asset packs separate. Portable archives are updated by downloading a newer archive. Downloading newer content creates a new workspace; it never replaces local edits.
+**Help → Check for Updates** updates installed Windows applications and Linux AppImages while keeping workspaces and asset packs separate. Prerelease installations also consider newer prereleases; stable installations consider stable releases. Portable archives are updated by downloading a newer archive. Downloading newer content creates a new workspace; it never replaces local edits.
 
 ## Source build requirements
 

@@ -3,6 +3,7 @@ using System.Text.Json;
 using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Toolset.Domain.Distribution;
+using SWLOR.Toolset.Distribution;
 
 namespace SWLOR.Toolset.Tests;
 
@@ -33,6 +34,16 @@ public class ToolsetFeedTests
     {
         Action action = () => ToolsetFeed.UrlForVersion(version);
         action.Should().Throw<InvalidDataException>();
+    }
+
+    [TestCase(null, false)]
+    [TestCase("1.0.0", false)]
+    [TestCase("1.1.0-beta", true)]
+    [TestCase("1.1.0-beta.2", true)]
+    public void GithubUpdateSourceFollowsTheInstalledVersionChannel(string? version, bool prerelease)
+    {
+        var source = ToolsetUpdateSource.Create(version);
+        source.Prerelease.Should().Be(prerelease);
     }
 
     private sealed class FeedHandler(string expected) : HttpMessageHandler

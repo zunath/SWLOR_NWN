@@ -688,8 +688,8 @@ namespace SWLOR.Toolset.Shell
             if (IsInteractionBlocked) return;
             try
             {
-                var manager = new Velopack.UpdateManager(new Velopack.Sources.GithubSource(
-                    "https://github.com/zunath/SWLOR_NWN", null, false));
+                var manager = new Velopack.UpdateManager(ToolsetUpdateSource.Create(
+                    ToolsetFeed.ReadInstalledVersion(AppContext.BaseDirectory)));
                 if (!manager.IsInstalled) { StatusText = "Use the Windows installer or Linux AppImage to enable application updates."; return; }
                 StatusText = "Checking for application updates...";
                 var update = await manager.CheckForUpdatesAsync();

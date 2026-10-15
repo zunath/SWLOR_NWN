@@ -12,8 +12,8 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
 {
     public static class WalkModeEngineTests
     {
-        [EngineTest("Walk state survives character export, reload and session restoration", Category = "WalkMode", TimeoutSeconds = 30f)]
-        public static async Task WalkStateSurvivesReconnect(EngineTestContext ctx)
+        [EngineTest("Player exports reset temporary walk state on reconnect", Category = "WalkMode", TimeoutSeconds = 30f)]
+        public static async Task PlayerExportsResetTemporaryWalkState(EngineTestContext ctx)
         {
             using var fixture = await PlayerAbilityFixture.CreateAsync(ctx);
             var player = fixture.Creature;
@@ -24,15 +24,15 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 {
                     foreach (var walking in new[] { true, false })
                     {
-                        await ctx.ExecuteInCreatureContextAsync(player, () => command.DoAction(player, OBJECT_INVALID, null));
-                        var savedState = SaveAndReloadWalkState(ctx, player);
+                        if (Stat.IsWalkModeEnabled(player) != walking)
+                            await ctx.ExecuteInCreatureContextAsync(player, () => command.DoAction(player, OBJECT_INVALID, null));
+                        var savedState = ExportAndReloadWalkState(ctx, player);
                         PlayerPlugin.SetAlwaysWalk(player, false);
                         SetLocalInt(player, "WALK_TOGGLE", savedState);
-                        Stat.RestoreWalkMode(player);
-                        ctx.AssertEqual(walking, Stat.IsWalkModeEnabled(player), "reloaded walk state");
-                        var expected = walking ? 1f : 1.25f;
-                        ctx.Assert(Math.Abs(expected - CreaturePlugin.GetMovementRateFactor(player)) < 0.001f,
-                            "session restoration applies the saved state's movement factor");
+                        Stat.ApplyCreatureMovementRate(player);
+                        ctx.Assert(!Stat.IsWalkModeEnabled(player), "temporary walk state does not survive a player export");
+                        ctx.Assert(Math.Abs(1.25f - CreaturePlugin.GetMovementRateFactor(player)) < 0.001f,
+                            "entry refresh retains normal movement when the new session is not forced to walk");
                     }
                 }
             }
@@ -43,7 +43,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             }
         }
 
-        private static unsafe int SaveAndReloadWalkState(EngineTestContext ctx, uint player)
+        private static unsafe int ExportAndReloadWalkState(EngineTestContext ctx, uint player)
         {
             var native = NWNXLib.g_pAppManager.m_pServerExoApp.GetGameObject(player).AsNWSCreature();
             using var file = new CResGFF();
@@ -52,12 +52,14 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             using var format = new CExoString("V2.0");
             ctx.Assert(file.CreateGFFFile(root, fileType, format) != 0, "create character export");
             ctx.Assert(native.SaveCreature(file, root, 0, 0, 1, 0) != 0, "save walk state through native character export");
-            fixed (byte* label = Encoding.ASCII.GetBytes("IsPC\0")) file.WriteFieldBYTE(root, 1, label);
+            fixed (byte* label = Encoding.ASCII.GetBytes("VarTable\0"))
+                ctx.AssertEqual(uint.MaxValue, file.GetFieldByLabel(root, label), "player exports omit ordinary local variables");
             using var restored = new CNWSCreature(OBJECT_INVALID, 1, 1);
-            ctx.Assert(restored.LoadCreature(file, root, 0, 0, 0, 0) != 0, "reload native player character");
+            ctx.AssertEqual(0u, restored.m_pStats.ReadStatsFromGff(file, root, restored.m_cAppearance, 0, 1, 0, 1),
+                "reload through the native player character stats path");
             using var stateName = new CExoString("WALK_TOGGLE");
             var savedState = restored.m_ScriptVars.GetInt(stateName);
-            ctx.AssertEqual(GetLocalInt(player, "WALK_TOGGLE"), savedState, "character file retains walk state");
+            ctx.AssertEqual(0, savedState, "native player reload does not restore the temporary walk marker");
             return savedState;
         }
 

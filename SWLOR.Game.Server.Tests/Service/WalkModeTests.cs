@@ -25,20 +25,19 @@ public class WalkModeTests
             "SWLOR.Game.Server", "Service", "Stat.cs"))).GetRoot();
         var methodNames = new HashSet<string>
         {
-            "IsWalkModeEnabled", "ApplyPlayerStats", "ApplyTemporaryPlayerStats", "ToggleWalkMode", "RestoreWalkMode", "ApplyCreatureMovementRate", "GetMovementSpeedMultiplier",
+            "IsWalkModeEnabled", "ToggleWalkMode", "ApplyCreatureMovementRate", "GetMovementSpeedMultiplier",
             "GetMovementSpeedAdjustment", "GetBaseMovementSpeedIncrease"
         };
         var methods = stat.DescendantNodes().OfType<MethodDeclarationSyntax>()
             .Where(method => methodNames.Contains(method.Identifier.Text)).ToArray();
         methods.Should().HaveCount(methodNames.Count);
         var fields = stat.DescendantNodes().OfType<FieldDeclarationSyntax>().Where(field =>
-            field.Declaration.Variables.Any(variable => variable.Identifier.Text.StartsWith("Walk", StringComparison.Ordinal) ||
+            field.Declaration.Variables.Any(variable => variable.Identifier.Text.Contains("Walk", StringComparison.Ordinal) ||
                 variable.Identifier.Text.Contains("MovementSpeed", StringComparison.Ordinal)));
         var source = $$"""
             using System;
             using System.Collections.Generic;
             using SWLOR.Game.Server.Service.StatService;
-            using SWLOR.Game.Server.Core;
             using SWLOR.NWN.API.NWScript.Enum;
             using static World;
             public static class Movement
@@ -66,7 +65,6 @@ public class WalkModeTests
                 public static readonly Dictionary<string, int> Ints = new();
                 public static readonly Dictionary<string, float> Floats = new();
                 public static bool GetIsObjectValid(uint creature) => creature == 1;
-                public static uint GetEnteringObject() => 1;
                 public static ObjectType GetObjectType(uint creature) => ObjectType.Creature;
                 public static bool GetIsPC(uint creature) => !IsPossessed;
                 public static bool GetIsDM(uint creature) => IsDM;
@@ -174,15 +172,33 @@ public class WalkModeTests
         Get<Dictionary<string, float>>("Floats").Should().BeEmpty();
     }
 
-    [TestCase(false)]
-    [TestCase(true)]
-    public void EntryRestoresTheNativeFlagFromPersistedWalkState(bool walking)
+    [TestCase(false, false)]
+    [TestCase(true, false)]
+    [TestCase(false, true)]
+    [TestCase(true, true)]
+    public void StaffEnteringWalkWhileAlreadyDisabledNeverSnapshotsTheDisabledFactor(bool recoverWhileWalking, bool useSlow)
     {
-        Get<Dictionary<string, int>>("Ints")["WALK_TOGGLE"] = walking ? 1 : 0;
-        Set("AlwaysWalk", !walking);
-        Invoke("ApplyPlayerStats");
-        Get<bool>("AlwaysWalk").Should().Be(walking);
-        Get<float>("NativeRate").Should().Be(walking ? 1f : 1.25f);
+        Set("IsDM", true);
+        Set("NativeRate", 1.4f);
+        Set(useSlow ? "Adjustment" : "Disabled", useSlow ? -200 : 1);
+        Invoke("ApplyCreatureMovementRate");
+        Get<float>("NativeRate").Should().Be(0.125f);
+        Toggle();
+        Toggle();
+        Toggle();
+        if (!recoverWhileWalking)
+            Toggle();
+        Set("Disabled", 0);
+        Set("Adjustment", 0);
+        Invoke("ApplyCreatureMovementRate");
+        if (recoverWhileWalking)
+        {
+            Get<float>("NativeRate").Should().Be(1f);
+            Toggle();
+        }
+        Get<float>("NativeRate").Should().BeApproximately(1.3f, 0.001f,
+            "the pre-existing staff refresh baseline applies when no valid prior factor could be captured");
+        Get<Dictionary<string, float>>("Floats").Should().BeEmpty();
     }
 
     [Test]
@@ -220,11 +236,7 @@ public class WalkModeTests
     }
 
     private bool Toggle() => (bool)Invoke("ToggleWalkMode")!;
-    private object Invoke(string method)
-    {
-        var target = _movement.GetMethod(method)!;
-        return target.Invoke(null, target.GetParameters().Length == 0 ? [] : [1u]);
-    }
+    private object Invoke(string method) => _movement.GetMethod(method)!.Invoke(null, [1u]);
     private void Set(string field, object value) => _world.GetField(field)!.SetValue(null, value);
     private T Get<T>(string field) => (T)_world.GetField(field)!.GetValue(null)!;
 }

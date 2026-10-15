@@ -94,14 +94,45 @@ public class AbandonedStationTests
         .ToHashSet();
 
     [Test]
-    public void Station_IsReachedOnlyByShipFromViscaraOrbit()
+    public void Station_IsReachedOnlyThroughItsOwnSpaceDock()
     {
         foreach (var area in StationAreas)
             Local(Load("git", area), "PLANET_TYPE_ID")!.Value.GetInt32().Should().Be((int)PlanetType.Viscara, area);
 
-        var docks = List(Load("git", Main), "WaypointList").Where(w => Text(w, "Tag") == "STARSHIP_DOCKPOINT").ToArray();
-        docks.Should().ContainSingle("pilots land in the docking bay from Viscara orbit");
+        var landingPoints = List(Load("git", Main), "WaypointList");
+        landingPoints.Should().NotContain(w => Text(w, "Tag") == "STARSHIP_DOCKPOINT",
+            "the station must not appear in Viscara's planetary docking menu");
+        var docks = landingPoints.Where(w => Text(w, "Tag") == "ABANDONED_STATION_DOCK_LANDING").ToArray();
+        docks.Should().ContainSingle("the station has its own arrival point in the docking bay");
         Value(docks[0], "LocalizedName").GetProperty("0").GetString().Should().Be("Abandoned Station");
+
+        var orbit = Load("git", "viscaraorbit");
+        var placeables = List(orbit, "Placeable List");
+        var station = placeables.Single(p => Text(p, "Tag") == "ABANDONED_STATION");
+        Number(station, "Appearance").Should().Be(31477);
+        var dock = placeables.Single(p => Text(p, "Tag") == "ABANDONED_STATION_DOCK");
+        Text(dock, "OnUsed").Should().Be("generic_convo");
+        Number(dock, "Useable").Should().Be(1);
+        Number(dock, "Plot").Should().Be(1);
+        Local(dock, "CONVERSATION")!.Value.GetString().Should().Be("StarportDockDialog");
+        Local(dock, "PLANET_TYPE_ID")!.Value.GetInt32().Should().Be((int)PlanetType.Viscara);
+        Local(dock, "STARPORT_LANDING_WAYPOINT_TAG")!.Value.GetString().Should().Be(Text(docks[0], "Tag"));
+        var departure = List(orbit, "WaypointList").Single(w => Text(w, "Tag") ==
+            Local(dock, "STARPORT_TELEPORT_WAYPOINT")!.Value.GetString());
+        Distance(Position(station), Position(dock)).Should().BeInRange(5, 20);
+        Distance(Position(dock), Position(departure)).Should().BeInRange(2, 8);
+        var planetaryDock = placeables.Single(p => Text(p, "Tag") == "spc_dock" &&
+            Local(p, "PLANET_TYPE_ID")!.Value.GetInt32() == (int)PlanetType.Viscara);
+        Local(planetaryDock, "STARPORT_LANDING_WAYPOINT_TAG").Should().BeNull();
+        Distance(Position(dock), Position(planetaryDock)).Should().BeGreaterThan(30);
+        foreach (var existing in placeables.Where(p => Text(p, "Tag") is not
+                     ("ABANDONED_STATION" or "ABANDONED_STATION_DOCK")))
+        {
+            Distance(Position(station), Position(existing)).Should().BeGreaterThan(150,
+                $"the station must occupy open space away from {Text(existing, "Tag")}");
+            Distance(Position(dock), Position(existing)).Should().BeGreaterThan(150,
+                "the station's docking marker must also remain separate from existing objects");
+        }
 
         // No shuttle, door, trigger or conversation outside the station sends players in.
         var outsideReferences = Directory.EnumerateFiles(Path.Combine(Root, "Module", "git"), "*.git.json")

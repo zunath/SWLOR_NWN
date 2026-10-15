@@ -253398,7 +253398,7 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "STARSHIP_DOCKPOINT"
+          "value": "ABANDONED_STATION_DOCK_LANDING"
         },
         "TemplateResRef": {
           "type": "resref",

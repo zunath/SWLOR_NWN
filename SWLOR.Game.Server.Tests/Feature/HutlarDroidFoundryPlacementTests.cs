@@ -15,6 +15,13 @@ public class HutlarDroidFoundryPlacementTests
     private const string OutpostDoor = "HUT_FDY_OUTPOST_DOOR";
     private const string OverseerTable = "HUTLAR_FOUNDRY_OVERSEER";
 
+    // The tilesets' own door-transition groups: zsf01 "Transiton" and tsw01 "Door_Trans".
+    private static readonly Dictionary<string, int> TransitionTiles = new()
+    {
+        ["zsf01"] = 37,
+        ["tsw01"] = 174,
+    };
+
     private static readonly (string Resref, string Name, string SpawnTable, string[] Roster)[] Floors =
     {
         ("hut_fdy_intake", "Hutlar - Droid Foundry Intake", "HUTLAR_FOUNDRY_INTAKE",
@@ -158,6 +165,15 @@ public class HutlarDroidFoundryPlacementTests
     }
 
     [Test]
+    public void Travel_EntranceAndExitDoorsOpenOntoTransitionTiles()
+    {
+        // A destination door opens when players arrive through it, so the tile behind it is always seen.
+        AssertTransitionTileBehind(Outpost, OutpostDoor);
+        AssertTransitionTileBehind("hut_fdy_intake", "PG_hut_fdy_intake_DOOR_ENT_1");
+        AssertTransitionTileBehind("hut_fdy_core", "PG_hut_fdy_core_DOOR_EXIT_1");
+    }
+
+    [Test]
     public void SpawnTables_UseEachFloorsDroidRosterAndLeashHome()
     {
         var tables = new HutlarSpawnDefinition().BuildSpawnTables();
@@ -207,5 +223,28 @@ public class HutlarDroidFoundryPlacementTests
         Local(placeable, "DESTINATION")!.Value.GetString().Should().Be(destination);
         Local(placeable, "TELEPORT_PARTY_MEMBERS")!.Value.GetInt32().Should().Be(0);
         List(targetArea, "WaypointList").Count(w => Text(w, "Tag") == destination).Should().Be(1);
+    }
+
+    private static void AssertTransitionTileBehind(string resref, string doorTag)
+    {
+        var area = Load("are", resref);
+        var git = Load("git", resref);
+        var door = Tagged(git, "Door List", doorTag);
+        var bearing = Number(door, "Bearing");
+        var front = ((int)Math.Round(Math.Sin(bearing)), (int)Math.Round(-Math.Cos(bearing)));
+        var (x, y) = Position(door);
+        var tileX = (int)Math.Floor((x - front.Item1 * 5) / 10);
+        var tileY = (int)Math.Floor((y - front.Item2 * 5) / 10);
+        var tile = List(area, "Tile_List")[tileX + tileY * (int)Number(area, "Width")];
+
+        Number(tile, "Tile_ID").Should().Be(TransitionTiles[Text(area, "Tileset")], $"{doorTag} must not open onto a room");
+        // Both transition tiles have their only doorway on the west edge; each orientation step turns it 90 degrees counter-clockwise.
+        var doorway = (-1, 0);
+        for (var turn = 0; turn < (int)Number(tile, "Tile_Orientation"); turn++)
+            doorway = (-doorway.Item2, doorway.Item1);
+        doorway.Should().Be(front, $"the transition tile's doorway must meet {doorTag}");
+        List(git, "Placeable List").Should().NotContain(
+            p => (int)Math.Floor(Position(p).X / 10) == tileX && (int)Math.Floor(Position(p).Y / 10) == tileY,
+            $"nothing may be left floating behind {doorTag}");
     }
 }

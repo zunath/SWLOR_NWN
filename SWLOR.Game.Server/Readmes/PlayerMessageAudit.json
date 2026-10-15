@@ -4579,7 +4579,7 @@
   },
   {
     "File": "SWLOR.Game.Server/Service/PlayerName.cs",
-    "Line": 157,
+    "Line": 158,
     "Member": "PreventAmbiguousTellTargets",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(sender, ColorToken.Red($\"'{displayName}' is ambiguous. Use /name on the intended player before sending tells.\"))"

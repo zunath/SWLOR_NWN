@@ -175,9 +175,14 @@ public static class PowerGloveFit
                 PowerGloveHandFitCatalog.GetScale(leftModel, appearance))
             : 1f;
 
-    private static bool CanFitPair(string rightModel, string leftModel, int appearance) =>
-        !PowerGloveGripFits.IsCorrected(appearance) ||
-        PowerGloveGripFits.HasTarget(rightModel, appearance) && PowerGloveGripFits.HasTarget(leftModel, appearance);
+    private static bool CanFitPair(string rightModel, string leftModel, int appearance)
+    {
+        var requiresMeasuredPair = PowerGloveGripFits.IsCorrected(appearance) ||
+                                   PowerGloveHandFitOverrides.HasFit(rightModel, appearance) ||
+                                   PowerGloveHandFitOverrides.HasFit(leftModel, appearance);
+        return !requiresMeasuredPair || PowerGloveHandFitCatalog.HasMeasuredFit(rightModel, appearance) &&
+               PowerGloveHandFitCatalog.HasMeasuredFit(leftModel, appearance);
+    }
 
     private static bool IsPowerGlove(uint item) => GetIsObjectValid(item) &&
         GetObjectType(item) == ObjectType.Item && (GetBaseItemType(item) == BaseItem.PowerGlove ||

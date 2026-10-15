@@ -129,6 +129,8 @@ internal static class PowerGloveGripFits
 
     internal static GripVector GetTranslation(string handModel, int appearanceId, float sharedScale)
     {
+        if (PowerGloveHandFitOverrides.TryGetTranslation(handModel, appearanceId, sharedScale, out var translation))
+            return translation;
         var index = GetIndex(appearanceId);
         if (index < 0 || string.IsNullOrWhiteSpace(handModel) ||
             !HandGripCenters.TryGetValue(handModel, out var targets))

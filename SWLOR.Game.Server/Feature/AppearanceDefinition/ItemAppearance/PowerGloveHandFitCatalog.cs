@@ -90,6 +90,8 @@ public static class PowerGloveHandFitCatalog
 
     public static float GetScale(string handModel, int appearanceId)
     {
+        if (PowerGloveHandFitOverrides.TryGetScale(handModel, appearanceId, out var measuredScale))
+            return measuredScale;
         if (PowerGloveOpenFrameFits.TryGetScale(handModel, appearanceId, out var frameScale))
             return frameScale;
 
@@ -107,5 +109,17 @@ public static class PowerGloveHandFitCatalog
         return !string.IsNullOrWhiteSpace(handModel) && HandSizes.TryGetValue(handModel, out var handSize)
             ? Math.Clamp(handSize, 1f, originalSize)
             : originalSize;
+    }
+
+    internal static bool HasMeasuredFit(string handModel, int appearanceId)
+    {
+        if (PowerGloveHandFitOverrides.HasFit(handModel, appearanceId))
+            return true;
+        if (PowerGloveGripFits.IsCorrected(appearanceId))
+            return PowerGloveGripFits.HasTarget(handModel, appearanceId);
+        if (appearanceId is >= 107 and <= 121)
+            return PowerGloveOpenFrameFits.HasMeasuredScale(handModel);
+        return (appearanceId is 101 or 102 or 103 or 104 or 105) &&
+               !string.IsNullOrWhiteSpace(handModel) && HandSizes.ContainsKey(handModel);
     }
 }

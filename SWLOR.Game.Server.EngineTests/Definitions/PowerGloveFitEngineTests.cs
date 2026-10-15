@@ -182,6 +182,23 @@ public static class PowerGloveFitEngineTests
             AssertSelectedHand("pmh2_handr001", CreaturePart.RightHand, "r");
             AssertSelectedHand("pmh2_handl001", CreaturePart.LeftHand, "l");
 
+            foreach (var appearance in Enumerable.Range(101, 21))
+            {
+                ChangeGlove(wearer, right, appearance);
+                AssertGripPair(ctx, right, left, FitVector.Zero, "pmh2_handr001", "pmh2_handl001", appearance,
+                    "Available wide hands use their measured pair fit");
+                SetCreatureBodyPart(CreaturePart.LeftHand, 201, wearer);
+                ExecuteScript(ScriptName.OnAppearanceEdit, wearer);
+                AssertSelectedHand("pmh0_handl201", CreaturePart.LeftHand, "l");
+                AssertGripPair(ctx, right, left, FitVector.Zero, "pmh2_handr001", "pmh0_handl201", appearance,
+                    "A wide hand and normal fallback share scale with independent offsets");
+                SetCreatureBodyPart(CreaturePart.LeftHand, 1, wearer);
+                ExecuteScript(ScriptName.OnAppearanceEdit, wearer);
+                AssertGripPair(ctx, right, left, FitVector.Zero, "pmh2_handr001", "pmh2_handl001", appearance,
+                    "Restoring both wide hands replaces the previous offsets");
+            }
+            ChangeGlove(wearer, right, 119);
+
             SetCreatureBodyPart(CreaturePart.LeftHand, 250, wearer);
             ExecuteScript(ScriptName.OnAppearanceEdit, wearer);
             AssertSelectedHand("pmh0_handl250", CreaturePart.LeftHand, "l");
@@ -329,7 +346,7 @@ public static class PowerGloveFitEngineTests
         ctx.SetResultDetail("All eight corrected grips retain distinct right/left measured offsets and an authored translation through nested cosmetic refresh, live edits, invisible/legacy/other-model resets, body edits, native offhand removal and re-equip. Explicit native hand250 in either slot restores both authored scales/translations until both measured hands return. Current-slot normalization preserves a re-equipped pair after a late relocation notification. This case verifies native transform state; client pixels require separate verification.");
     }
 
-    [EngineTest("One owned Power Glove retains paired fit through two save reload cycles with nested inventory", Category = "PowerGloveFit", TimeoutSeconds = 90f)]
+    [EngineTest("One owned Power Glove retains normal and wide fits through repeated save reload with nested inventory", Category = "PowerGloveFit", TimeoutSeconds = 90f)]
     public static async Task SaveReloadDoesNotCompoundOrChangeOwnership(EngineTestContext ctx)
     {
         var wearer = await CreateWearer(ctx);
@@ -349,13 +366,15 @@ public static class PowerGloveFitEngineTests
             ExecuteScript(ScriptName.OnAppearanceEdit, wearer);
         });
 
-        for (var cycle = 0; cycle < 2; cycle++)
+        for (var cycle = 0; cycle < 3; cycle++)
         {
             var label = $"Save/reload cycle {cycle + 1}";
             var items = GloveInventory(wearer);
             right = items.Single(item => GetLocalString(item, RoleVariable) == "right");
             stored = items.Single(item => GetLocalString(item, RoleVariable) == "stored");
-            var appearance = cycle == 0 ? 110 : 121;
+            var appearance = cycle switch { 0 => 110, 1 => 103, _ => 119 };
+            var rightModel = cycle == 0 ? "pmo0_handr201" : "pmh2_handr001";
+            var leftModel = cycle == 0 ? "pmo0_handl201" : "pmh2_handl001";
             var data = string.Empty;
             var ownerIdentity = string.Empty;
             var bagIdentity = string.Empty;
@@ -374,10 +393,16 @@ public static class PowerGloveFitEngineTests
             {
                 ctx.AssertEqual(right, GetItemInSlot(InventorySlot.RightHand, wearer), label + " begins with the original main glove");
                 ctx.Assert(PowerGloveEquipment.IsLinkedPair(wearer, right, left), label + " uses a generated companion");
+                if (cycle == 1)
+                {
+                    SetBody(wearer, AppearanceType.Human, 1, 1);
+                    SetPhenoType(PhenoType.Big, wearer);
+                    ExecuteScript(ScriptName.OnAppearanceEdit, wearer);
+                }
                 AddItemProperty(DurationType.Permanent, ItemPropertyCustom(ItemPropertyType.Accuracy, -1, 7 + cycle), right);
                 ChangeGlove(wearer, right, appearance);
-                AssertPair(ctx, right, left, Expected("pmo0_handr201", "pmo0_handl201", appearance), label + " fitted equipment before saving");
-                AssertGripPair(ctx, right, left, authored, "pmo0_handr201", "pmo0_handl201", appearance,
+                AssertPair(ctx, right, left, Expected(rightModel, leftModel, appearance), label + " fitted equipment before saving");
+                AssertGripPair(ctx, right, left, authored, rightModel, leftModel, appearance,
                     label + " saves nonzero, separately owned grip deltas");
                 ctx.Assert(ReadAppearance(right).SequenceEqual(ReadAppearance(left)), label + " mirrors the real glove's appearance");
                 // A bag can contain a previously fitted item in an older save. Persist the
@@ -422,6 +447,8 @@ public static class PowerGloveFitEngineTests
             await ctx.ExecuteInCreatureContextAsync(wearer, () =>
             {
                 ctx.AssertEqual(ownerIdentity, GetObjectUUID(wearer), label + " preserves the owner identity");
+                ctx.AssertEqual(cycle == 0 ? 0 : 2, RobeModelRenderer.GetBasePhenotype(wearer),
+                    label + " preserves the fitted normal or wide body");
                 var restored = GloveInventory(wearer);
                 ctx.AssertEqual(2, restored.Count, label + " retains exactly two real Power Gloves including the bag item");
                 ctx.AssertEqual(1, InventoryItems(wearer).Count(PowerGloveEquipment.IsGeneratedCompanion), label + " retains exactly one temporary cosmetic hand");
@@ -453,8 +480,8 @@ public static class PowerGloveFitEngineTests
                     {
                         ctx.AssertEqual(wearer, GetItemPossessor(item), label + " creature owns the equipped glove");
                         ctx.AssertEqual(item, GetItemInSlot(InventorySlot.RightHand, wearer), label + " retains the original main-hand assignment");
-                        AssertPair(ctx, item, left, Expected("pmo0_handr201", "pmo0_handl201", appearance), label + " recomputes both fits without compounding");
-                        AssertGripPair(ctx, item, left, authored, "pmo0_handr201", "pmo0_handl201", appearance,
+                        AssertPair(ctx, item, left, Expected(rightModel, leftModel, appearance), label + " recomputes both fits without compounding");
+                        AssertGripPair(ctx, item, left, authored, rightModel, leftModel, appearance,
                             label + " restores authored translation and separate hand deltas without compounding");
                         ctx.Assert(ReadAppearance(item).SequenceEqual(ReadAppearance(left)), label + " restores matching visual choices");
                         ctx.Assert(!GetIsItemPropertyValid(GetFirstItemProperty(left)), label + " never copies upgrades to the cosmetic hand");
@@ -463,7 +490,7 @@ public static class PowerGloveFitEngineTests
                 ctx.Log(label + " verified two real glove identities, ownership, quantities, upgrades, appearances, authored translations and separate paired grip deltas");
             });
         }
-        ctx.SetResultDetail("Two native owner/item export-import cycles follow either-hand removal, re-equip, upgrades and cosmetic edits with nonzero grip offsets. One equipped real glove and one nested spare retain IDs, ownership, slots, upgrades, model/color fields, authored translations, counts and quantities. Each reload removes stale bag deltas and restores exactly one companion with separate measured hand translation, shared scale and no item properties.");
+        ctx.SetResultDetail("Three native owner/item export-import cycles include a normal Cathar followed by two wide Human cycles, either-hand removal, re-equip, upgrades and cosmetic edits with nonzero grip offsets. One equipped real glove and one nested spare retain IDs, ownership, slots, upgrades, model/color fields, authored translations, counts and quantities. Each reload removes stale bag deltas and restores exactly one companion with separate measured hand translation, shared scale and no item properties.");
     }
 
     private static async Task<uint> CreateWearer(EngineTestContext ctx)

@@ -107,6 +107,9 @@ internal static class PowerGloveOpenFrameFits
     private static readonly float[] FallbackScales =
         { 1.48f, 1.86f, 1.82f, 1.00f, 1.84f, 1.00f, 1.00f, 1.76f, 1.92f, 1.00f, 1.68f, 1.00f, 1.00f, 1.00f, 1.00f };
 
+    internal static bool HasMeasuredScale(string handModel) =>
+        !string.IsNullOrWhiteSpace(handModel) && HandScales.ContainsKey(handModel);
+
     internal static bool TryGetScale(string handModel, int appearanceId, out float scale)
     {
         scale = 1f;

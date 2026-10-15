@@ -170,7 +170,7 @@
         },
         "CostValue": {
           "type": "word",
-          "value": 21
+          "value": 22
         },
         "Param1": {
           "type": "byte",
@@ -201,7 +201,7 @@
         },
         "CostValue": {
           "type": "word",
-          "value": 26
+          "value": 27
         },
         "Param1": {
           "type": "byte",
@@ -232,7 +232,7 @@
         },
         "CostValue": {
           "type": "word",
-          "value": 92
+          "value": 93
         },
         "Param1": {
           "type": "byte",
@@ -330,6 +330,26 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "gatekeep_plate"
+  },
+  "VarTable": {
+    "type": "list",
+    "value": [
+      {
+        "__struct_id": 0,
+        "Name": {
+          "type": "cexostring",
+          "value": "ITEM_STATS_REVISION"
+        },
+        "Type": {
+          "type": "dword",
+          "value": 1
+        },
+        "Value": {
+          "type": "int",
+          "value": 1
+        }
+      }
+    ]
   },
   "xArmorPart_Belt": {
     "type": "word",

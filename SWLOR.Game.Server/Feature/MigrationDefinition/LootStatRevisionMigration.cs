@@ -4,9 +4,11 @@ using System.Linq;
 using Newtonsoft.Json;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.Bioware;
+using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.DroidService;
 using SWLOR.NWN.API.Engine;
+using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Item;
 
@@ -29,7 +31,7 @@ public static class LootStatRevisionMigration
     {
         var owner = GetModuleItemAcquiredBy();
         var item = GetModuleItemAcquired();
-        if (GetIsPC(owner) && !GetIsDM(owner))
+        if (GetIsPC(owner) && !GetIsDM(owner) && !GetIsDMPossessed(owner))
             MigrateObject(item);
         else if (Droid.IsDroid(owner) && MigrateObject(item))
             Droid.SaveItemSnapshot(owner);
@@ -44,29 +46,75 @@ public static class LootStatRevisionMigration
         if (!GetIsObjectValid(obj))
             return false;
 
-        var changed = false;
         var objectType = GetObjectType(obj);
         if (objectType == ObjectType.Creature)
         {
             if (Droid.IsDroid(obj))
                 return MigrateSummonedDroid(obj);
-            // Stored DM creatures and live NPCs keep their authored gear.
-            if (!GetIsPC(obj) || GetIsDM(obj))
+            // Stored DM creatures, DM-possessed creatures and live NPCs keep their authored gear.
+            if (!GetIsPC(obj) || GetIsDM(obj) || GetIsDMPossessed(obj))
                 return false;
-            for (var slot = 0; slot < NumberOfInventorySlots; slot++)
-                changed |= MigrateObject(GetItemInSlot((InventorySlot)slot, obj));
-            changed |= MigrateSummonedDroid(Droid.GetDroid(obj));
+            return MigratePlayer(obj);
         }
-        else if (objectType == ObjectType.Item)
+
+        var changed = false;
+        if (objectType == ObjectType.Item)
         {
             changed |= MigrateItem(obj);
             changed |= MigrateConstructedDroid(obj);
         }
+        changed |= MigrateContents(obj);
+        return changed;
+    }
 
+    private static bool MigratePlayer(uint player)
+    {
+        var pools = CapturePools(player);
+        var changed = false;
+        for (var slot = 0; slot < NumberOfInventorySlots; slot++)
+            changed |= MigrateObject(GetItemInSlot((InventorySlot)slot, player));
+        changed |= MigrateSummonedDroid(Droid.GetDroid(player));
+        changed |= MigrateContents(player);
+        if (changed)
+            RestorePools(player, pools);
+        return changed;
+    }
+
+    private static bool MigrateContents(uint obj)
+    {
+        var changed = false;
         if (GetHasInventory(obj))
             for (var item = GetFirstItemInInventory(obj); GetIsObjectValid(item); item = GetNextItemInInventory(obj))
                 changed |= MigrateObject(item);
         return changed;
+    }
+
+    /// <summary>
+    /// Records current HP, FP and STM before equipped items are revised. Each item's difference is applied
+    /// on its own, so an item that lowers a maximum can clamp a pool that a later item raises again.
+    /// </summary>
+    private static (int HP, int FP, int Stamina) CapturePools(uint creature)
+    {
+        var dbPlayer = GetIsPC(creature) ? DB.Get<Player>(GetObjectUUID(creature)) : null;
+        return (ObjectPlugin.GetCurrentHitPoints(creature), dbPlayer?.FP ?? 0, dbPlayer?.Stamina ?? 0);
+    }
+
+    /// <summary>Gives back any HP, FP or STM lost to an intermediate cap, never above the final maximum.</summary>
+    private static void RestorePools(uint creature, (int HP, int FP, int Stamina) pools)
+    {
+        if (ObjectPlugin.GetCurrentHitPoints(creature) < pools.HP)
+            SetCurrentHitPoints(creature, Math.Min(pools.HP, GetMaxHitPoints(creature)));
+
+        if (!GetIsPC(creature))
+            return;
+        var dbPlayer = DB.Get<Player>(GetObjectUUID(creature));
+        if (dbPlayer == null)
+            return;
+        if (dbPlayer.FP < pools.FP)
+            dbPlayer.FP = Math.Min(pools.FP, Stat.GetMaxFP(creature, dbPlayer));
+        if (dbPlayer.Stamina < pools.Stamina)
+            dbPlayer.Stamina = Math.Min(pools.Stamina, Stat.GetMaxStamina(creature, dbPlayer));
+        DB.Set(dbPlayer);
     }
 
     /// <summary>Preserves saved identities and unchanged payloads, releasing every temporary native object.</summary>
@@ -172,14 +220,16 @@ public static class LootStatRevisionMigration
         if (!GetIsObjectValid(droid) || !Droid.IsDroid(droid))
             return false;
 
+        var pools = CapturePools(droid);
         var changed = false;
         for (var slot = 0; slot < NumberOfInventorySlots; slot++)
             changed |= MigrateItem(GetItemInSlot((InventorySlot)slot, droid));
-        for (var item = GetFirstItemInInventory(droid); GetIsObjectValid(item); item = GetNextItemInInventory(droid))
-            changed |= MigrateObject(item);
-        if (changed)
-            Droid.SaveItemSnapshot(droid);
-        return changed;
+        changed |= MigrateContents(droid);
+        if (!changed)
+            return false;
+        RestorePools(droid, pools);
+        Droid.SaveItemSnapshot(droid);
+        return true;
     }
 
     private static bool MigrateConstructedDroid(uint controller)

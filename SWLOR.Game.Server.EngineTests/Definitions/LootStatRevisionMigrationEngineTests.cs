@@ -193,6 +193,50 @@ public static partial class MigrationEngineTests
         });
     }
 
+    [EngineTest("Player loot stat migration keeps current HP when an earlier slot lowers it and a later slot raises it", Category = LootCategory, TimeoutSeconds = 60f)]
+    public static async Task PlayerLootStatRevisionKeepsHPAcrossMixedSlots(EngineTestContext ctx)
+    {
+        // The cloak slot is visited before the ring slots: the cloak's HP drops by one, the ring's rises by eleven.
+        const string cloakResref = "circle_mantle";
+        const string ringResref = "absdef_l6";
+        using var fixture = await PlayerAbilityFixture.CreateAsync(ctx);
+        var player = fixture.Creature;
+        var cloak = await CreateItemAsync(ctx, player, cloakResref, player);
+        var ring = await CreateItemAsync(ctx, player, ringResref, player);
+        await ctx.ExecuteInCreatureContextAsync(player, () =>
+        {
+            foreach (var item in new[] { cloak, ring })
+            {
+                StampLegacyLoot(item, NoEnhancements);
+                RemoveRequirement(item);
+            }
+        });
+        await EquipAsync(ctx, player, cloak, InventorySlot.Cloak);
+        await EquipAsync(ctx, player, ring, InventorySlot.RightRing);
+
+        var maxHP = 0;
+        await ctx.ExecuteInCreatureContextAsync(player, () =>
+        {
+            // Keep native max HP below the fixture's per-level cap so every HP change is visible.
+            var record = DB.Get<Player>(GetObjectUUID(player));
+            Stat.AdjustPlayerMaxHP(record, player, 150 - record.MaxHP);
+            DB.Set(record);
+            maxHP = GetMaxHitPoints(player);
+            SetCurrentHitPoints(player, maxHP);
+        });
+        await ctx.WaitFrameAsync();
+
+        await ctx.ExecuteInCreatureContextAsync(player, () =>
+        {
+            new _22_ReviseLootStats().Migrate(player);
+            AssertRevisedLoot(ctx, cloak, NoEnhancements);
+            AssertRevisedLoot(ctx, ring, NoEnhancements);
+            var hpDifference = PoolDifference(cloakResref, ItemPropertyType.HPBonus) + PoolDifference(ringResref, ItemPropertyType.HPBonus);
+            ctx.AssertEqual(maxHP + hpDifference, GetMaxHitPoints(player), "Native max HP moves by the combined revised HP");
+            ctx.AssertEqual(maxHP, ObjectPlugin.GetCurrentHitPoints(player), "A cloak lowering HP before a ring raises it costs no current HP");
+        });
+    }
+
     private static int PoolDifference(string resref, ItemPropertyType type) =>
         LootStatRevisionCatalog.Changes[resref].Where(x => x.Type == type).Sum(x => x.Current - x.Previous);
 

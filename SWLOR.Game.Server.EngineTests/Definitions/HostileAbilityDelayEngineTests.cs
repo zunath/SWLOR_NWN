@@ -76,8 +76,8 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 await UseAbilityAsync(ctx, caster, target, FeatType.ForceLeap1);
 
                 // The delay ends before the held Force Leap's timer runs, as it can when a frame is late.
-                HostileAbilityDelay.EndForTesting(caster);
-                await UseAbilityAsync(ctx, caster, target, FeatType.ForcePush1);
+                // Both happen in one script run so that timer can't run in between.
+                await UseAbilityAsync(ctx, caster, target, FeatType.ForcePush1, () => HostileAbilityDelay.EndForTesting(caster));
                 await WaitForRecastAsync(ctx, caster, RecastGroup.ForcePush, "Force Push to go off at once");
 
                 await ctx.DelaySecondsAsync(1.5f);
@@ -127,13 +127,14 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             return (caster, target);
         }
 
-        private static async Task UseAbilityAsync(EngineTestContext ctx, uint caster, uint target, FeatType feat)
+        private static async Task UseAbilityAsync(EngineTestContext ctx, uint caster, uint target, FeatType feat, Action beforeUse = null)
         {
             var attempted = false;
             var used = false;
             var denial = string.Empty;
             AssignCommand(caster, () =>
             {
+                beforeUse?.Invoke();
                 used = UsePerkFeat.TryUseAbility(caster, target, feat, GetLocation(target));
                 if (!used)
                     denial = Ability.GetLastActivationDenialReason();

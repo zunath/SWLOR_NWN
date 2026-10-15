@@ -83,6 +83,35 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             }
         }
 
+        [EngineTest("Damage passed on to a protecting player keeps them in PvP combat without being raised again", Category = Category, TimeoutSeconds = 40f)]
+        public static async Task TransferredDamageKeepsTheProtectorInPvpCombat(EngineTestContext ctx)
+        {
+            using var attacker = await PlayerAbilityFixture.CreateAsync(ctx, 4f);
+            using var protector = await PlayerAbilityFixture.CreateAsync(ctx, -4f);
+            await ctx.WaitFrameAsync();
+            try
+            {
+                PvpCombat.SetCombatSecondsForTesting(protector.Creature, 300);
+                PvpCombat.EndForTesting(protector.Creature);
+                ctx.Assert(!PvpCombat.IsInPvpCombat(protector.Creature), "the protector starts outside PvP combat");
+
+                var transferred = Combat.ApplyDamageTakenModifiers(protector.Creature, 50, attacker.Creature,
+                    CombatDamageType.Physical, CombatDamageDeliveryType.Transferred);
+                ctx.Assert(PvpCombat.IsInPvpCombat(protector.Creature), "the protector enters PvP combat");
+                ctx.Assert(PvpCombat.IsInPvpCombat(attacker.Creature), "the attacker stays in PvP combat");
+
+                PvpCombat.SetCombatSecondsForTesting(protector.Creature, 300);
+                ctx.AssertEqual(transferred, Combat.ApplyDamageTakenModifiers(protector.Creature, 50, attacker.Creature,
+                        CombatDamageType.Physical, CombatDamageDeliveryType.Transferred, isLandedAttack: false),
+                    "damage passed on is not doubled again, however long the protector has fought");
+            }
+            finally
+            {
+                PvpCombat.EndForTesting(attacker.Creature);
+                PvpCombat.EndForTesting(protector.Creature);
+            }
+        }
+
         [EngineTest("Healing a player in a long PvP fight is cut, and the recording logs the cut apart from overheal", Category = Category, TimeoutSeconds = 40f)]
         public static async Task HealingRampCutsEveryHeal(EngineTestContext ctx)
         {

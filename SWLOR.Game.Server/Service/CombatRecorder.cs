@@ -60,6 +60,8 @@ namespace SWLOR.Game.Server.Service
         private static DateTime _startedUtc;
         private static int _eventsEnqueued;
         private static string _hookWarning;
+        // Numbers each recording so a captured attribution can tell which one it came from.
+        private static int _recording;
 
         /// <summary>
         /// True while a recording runs. Hooks check this before doing any work.
@@ -110,6 +112,7 @@ namespace SWLOR.Game.Server.Service
             _area = area;
             _startedUtc = DateTime.UtcNow;
             _eventsEnqueued = 0;
+            _recording++;
             _attributionDepth = 0;
             _participantIds.Clear();
             _participants.Clear();
@@ -294,8 +297,8 @@ namespace SWLOR.Game.Server.Service
 
         /// <summary>
         /// Attributes a trap going off to whatever placed it (the ability or kit captured with
-        /// <see cref="CaptureScope"/>), or to a trap of its owner when it was placed before the
-        /// recording started.
+        /// <see cref="CaptureScope"/>), or to a trap of its owner when it was placed before this
+        /// recording started, including during an earlier recording.
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static CombatRecordAttributionScope BeginTrapAttribution(uint owner, in CombatRecordAttribution placedBy)
@@ -303,7 +306,7 @@ namespace SWLOR.Game.Server.Service
             if (!IsRecording)
                 return default;
 
-            return placedBy.Actor != 0
+            return placedBy.Actor != 0 && placedBy.Recording == _recording
                 ? BeginAttribution(placedBy)
                 : PushAttribution(owner, CombatRecordSourceKind.Trap, null, 0, 0);
         }
@@ -372,7 +375,12 @@ namespace SWLOR.Game.Server.Service
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static CombatRecordAttribution CaptureScope()
         {
-            return IsRecording && _attributionDepth > 0 ? _attributions[_attributionDepth - 1] : default;
+            if (!IsRecording || _attributionDepth <= 0)
+                return default;
+
+            var attribution = _attributions[_attributionDepth - 1];
+            attribution.Recording = _recording;
+            return attribution;
         }
 
         /// <summary>

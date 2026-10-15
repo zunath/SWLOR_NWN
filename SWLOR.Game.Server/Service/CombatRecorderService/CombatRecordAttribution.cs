@@ -18,6 +18,12 @@ namespace SWLOR.Game.Server.Service.CombatRecorderService
         /// </summary>
         public uint Owner;
 
+        /// <summary>
+        /// The recording that captured this attribution, so one stored for later (a trap) is not
+        /// replayed into a later recording.
+        /// </summary>
+        public int Recording;
+
         public CombatRecordAttribution(uint actor, CombatRecordSourceKind kind, string name, int code, int rank, uint owner = 0)
         {
             Actor = actor;
@@ -26,6 +32,7 @@ namespace SWLOR.Game.Server.Service.CombatRecorderService
             Code = code;
             Rank = rank;
             Owner = owner;
+            Recording = 0;
         }
     }
 }

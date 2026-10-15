@@ -1060,6 +1060,82 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             File.Delete(writer.SummaryPath);
         }
 
+        /// <summary>
+        /// A trap placed during one recording and set off during the next was placed before that
+        /// recording started, so it belongs to its owner's trap, not to what the earlier recording captured.
+        /// </summary>
+        [EngineTest("Combat recorder credits a trap placed during an earlier recording to its owner's trap", Category = "CombatRecorder", TimeoutSeconds = 60f)]
+        public static async Task RecordsTrapFromEarlierRecordingAsOwnersTrap(EngineTestContext ctx)
+        {
+            ctx.Assert(!CombatRecorder.IsRecording, "no combat recording may be running before the test");
+
+            var arena = await QuietArena.CreateAsync(ctx);
+            var owner = arena.Spawn(CreatureResref, 0f, 0f);
+            var target = arena.Spawn(CreatureResref, 1f, 0f);
+            await ctx.DelaySecondsAsync(1f);
+            Prepare(ctx, owner, "Recorder Trapper", 1000);
+            Prepare(ctx, target, "Recorder Trapped", 1000);
+            foreach (var creature in new[] { owner, target })
+            {
+                SetAILevel(creature, AILevel.VeryLow);
+                ApplyEffectToObject(DurationType.Temporary, EffectCutsceneParalyze(), creature, 60f);
+            }
+            ctx.MakeHostile(target);
+
+            CombatRecordWriter placementWriter = null;
+            CombatRecordWriter writer;
+            // The trap's one detonation must land.
+            Combat.SetAbilityHitResolutionOverride(true);
+            try
+            {
+                ctx.Assert(CombatRecorder.Start(arena.Area, "engine test trap placed", out var placedMessage), placedMessage);
+                placementWriter = CombatRecorder.LastWriter;
+                var placed = false;
+                await ctx.ExecuteInCreatureContextAsync(owner, () =>
+                {
+                    using var placement = CombatRecorder.BeginAbilityFeatAttribution(owner, FeatType.ShockTrap);
+                    placed = Traps.TryPlaceKitTrap(owner, GetLocation(target), 1);
+                });
+                ctx.Assert(placed, "the trap is placed during the first recording");
+                CombatRecorder.Stop("engine test", out _);
+
+                ctx.Assert(CombatRecorder.Start(arena.Area, "engine test trap fired", out var firedMessage), firedMessage);
+                writer = CombatRecorder.LastWriter;
+                await ctx.WaitUntilAsync(() => GetCurrentHitPoints(target) < 1000, 10f, "the trap to arm and go off");
+                await ctx.DelaySecondsAsync(0.5f);
+            }
+            finally
+            {
+                if (CombatRecorder.IsRecording)
+                    CombatRecorder.Stop("engine test", out _);
+                Traps.ClearTraps(owner);
+                Combat.SetAbilityHitResolutionOverride(null);
+            }
+
+            await ctx.WaitUntilAsync(() => writer.Completion.IsCompleted && placementWriter.Completion.IsCompleted, 10f,
+                "both recording writers to finish their files");
+            ctx.Assert(writer.Error == null, $"the recording writer failed: {writer.Error}");
+            var events = File.ReadAllLines(writer.EventsPath).Select(ParseLine).ToList();
+
+            var ownerId = ParticipantId(ctx, events, "Recorder Trapper");
+            var targetId = ParticipantId(ctx, events, "Recorder Trapped");
+            var hits = events.Where(e => Type(e) == "damage" && e.GetProperty("target").GetInt32() == targetId).ToList();
+            ctx.Assert(hits.Count > 0, "the trap's damage is recorded");
+            foreach (var hit in hits)
+            {
+                ctx.AssertEqual(ownerId, hit.GetProperty("source").GetInt32(), "the trap's damage belongs to its owner");
+                ctx.AssertEqual("trap", hit.GetProperty("source_kind").GetString(),
+                    "a trap placed before this recording is the owner's trap, not the earlier recording's ability");
+            }
+
+            AssertParticipantsDeclaredFirst(ctx, events);
+            foreach (var recording in new[] { placementWriter, writer })
+            {
+                File.Delete(recording.EventsPath);
+                File.Delete(recording.SummaryPath);
+            }
+        }
+
         private static async Task UseAbilityAsync(EngineTestContext ctx, uint caster, uint target, FeatType feat)
         {
             var used = false;

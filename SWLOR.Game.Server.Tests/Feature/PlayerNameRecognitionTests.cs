@@ -544,7 +544,7 @@ public class PlayerNameRecognitionTests
         viewModelSource.Should().Contain("public bool ShowDescriptorsForNamedPlayers");
         viewModelSource.Should().Contain("public bool ShowOwnDescriptor");
         viewModelSource.Should().Contain("public bool ScrambleAccountName");
-        viewModelSource.Should().Contain("public bool IsIdentitySelected");
+        viewModelSource.Should().Contain(".AddTab(1, IdentityPartial)");
         viewModelSource.Should().Contain("ShowDescriptorsForNamedPlayers = dbPlayer.Settings.ShowDescriptorsForNamedPlayers ?? true;");
         viewModelSource.Should().Contain("ShowOwnDescriptor = dbPlayer.Settings.ShowOwnDescriptor ?? true;");
         viewModelSource.Should().Contain("ScrambleAccountName = dbPlayer.Settings.ScrambleAccountName ?? true;");

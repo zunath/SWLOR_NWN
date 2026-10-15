@@ -599,6 +599,9 @@ namespace SWLOR.CombatSim.Engine
                 if (use.MinIntervalSeconds > 0 && caster.LastUsedAt.TryGetValue(use.Feat, out var lastUsedAt) && _now < lastUsedAt + use.MinIntervalSeconds)
                     continue;
 
+                if (info.IsHostile && _now + 1e-9 < caster.HostileAbilityReadyAt)
+                    continue;
+
                 // Queueing another weapon ability would replace the one waiting for a hit.
                 if (info.IsQueuedWeapon && caster.QueuedWeaponAbility != null)
                     continue;
@@ -659,6 +662,8 @@ namespace SWLOR.CombatSim.Engine
             };
 
             caster.NextActionAt = _now + info.CastSeconds + info.ImpactDelaySeconds + caster.Spec.ReactionSeconds;
+            if (info.IsHostile)
+                caster.HostileAbilityReadyAt = _now + _rules.HostileAbilityDelaySeconds;
             // The game stops the attack for an ability and resumes it 0.1s after the impact, or after queueing a weapon
             // ability (QueueWeaponAbility), so a swing due now cannot carry the ability queued with it.
             caster.NextAttackAt = Math.Max(caster.NextAttackAt, _now + info.CastSeconds + info.ImpactDelaySeconds + ResumeAttackDelaySeconds);

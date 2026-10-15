@@ -1,4 +1,5 @@
 using Newtonsoft.Json;
+using SWLOR.Game.Server.Service.AbilityService;
 
 namespace SWLOR.CombatSim.Rules
 {
@@ -76,6 +77,7 @@ namespace SWLOR.CombatSim.Rules
             HarmonyCooldownSeconds = 6f,
             RefuseHitPointCostsAtOneHitPoint = true,
             ScaleHitPointSpendRestoreToHitPointsLost = true,
+            HostileAbilityDelaySeconds = HostileAbilityDelay.Seconds,
             Revives = ReviveRule.BlockedInPvpLimitedInPve
         };
 

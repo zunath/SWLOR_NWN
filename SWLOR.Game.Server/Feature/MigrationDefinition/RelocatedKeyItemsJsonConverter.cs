@@ -7,7 +7,7 @@ using SWLOR.Game.Server.Service.KeyItemService;
 namespace SWLOR.Game.Server.Feature.MigrationDefinition;
 
 /// <summary>
-/// Reads key items saved under a relocated dungeon's former enum names, such as a record restored after migration 28.
+/// Reads key items saved under a relocated dungeon's former enum names, such as a record restored after server migration 27.
 /// </summary>
 public sealed class RelocatedKeyItemsJsonConverter : JsonConverter<Dictionary<KeyItemType, DateTime>>
 {

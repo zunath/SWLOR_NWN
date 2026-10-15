@@ -1,9 +1,10 @@
+using SWLOR.Game.Server.Feature.StatusEffectDefinition;
 using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.CombatSim.Effects
 {
     /// <summary>
-    /// Heal, shield and revive magnitudes for the abilities the simulator models, transcribed from their
+    /// Heal, shield, revive and self-status effects for the abilities the simulator models, transcribed from their
     /// definitions under SWLOR.Game.Server/Feature/AbilityDefinition. Update this table when those numbers change.
     /// </summary>
     public static class EffectCatalog
@@ -74,7 +75,11 @@ namespace SWLOR.CombatSim.Effects
             [FeatType.CleanseOrder2] = PartyShout(12, 15),
 
             [FeatType.Resuscitation1] = new AbilityEffect { Kind = EffectKind.Revive, Percent = 0, Scaling = ScalingStat.None },
-            [FeatType.Resuscitation2] = new AbilityEffect { Kind = EffectKind.Revive, Percent = 20 }
+            [FeatType.Resuscitation2] = new AbilityEffect { Kind = EffectKind.Revive, Percent = 20 },
+
+            // Conduit: the stance is held for the whole fight; the capstone lasts 45 seconds.
+            [FeatType.ConduitStance1] = SelfStatus(typeof(ConduitStanceStatusEffect), 0f),
+            [FeatType.InfiniteConduit1] = SelfStatus(typeof(InfiniteConduitStatusEffect), 45f)
         };
 
         public static bool TryGet(FeatType feat, out AbilityEffect effect) => Effects.TryGetValue(feat, out effect);
@@ -139,6 +144,11 @@ namespace SWLOR.CombatSim.Effects
         {
             Kind = EffectKind.PartyTemporaryHp, Percent = minimum, MaximumPercent = maximum, Scaling = ScalingStat.Social,
             Key = "CleanseOrder", DurationSeconds = 30f
+        };
+
+        private static AbilityEffect SelfStatus(Type statusType, float durationSeconds) => new()
+        {
+            Kind = EffectKind.SelfStatus, StatusType = statusType, Key = statusType.Name, DurationSeconds = durationSeconds
         };
     }
 }

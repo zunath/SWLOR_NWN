@@ -59,8 +59,15 @@ namespace SWLOR.CombatSim.Engine
             StatType.HeavyVibrobladeOffenseHitPointSpendStaminaRestoreBasePercent,
             StatType.HeavyVibrobladeOffenseHitPointSpendStaminaRestoreCooldownSeconds,
             StatType.HeavyVibrobladeOffenseHitPointSpendStaminaRestoreScalingAbility,
-            StatType.HeavyVibrobladeOffenseHitPointSpendStaminaRestoreMaximumPercent
+            StatType.HeavyVibrobladeOffenseHitPointSpendStaminaRestoreMaximumPercent,
+            StatType.AbilityStaminaCostFPRestorePercentSkillType,
+            StatType.AbilityStaminaCostFPRestorePercent,
+            StatType.AbilityFPCostStaminaRestorePercentSkillType,
+            StatType.AbilityFPCostStaminaRestorePercent
         };
+
+        // Combat's MaximumCrossResourceRestorePercent: Conduit never returns more than this share of a cost.
+        private const int MaximumCrossResourceRestorePercent = 95;
 
         private readonly ScenarioSpec _scenario;
         private readonly RuleSet _rules;
@@ -307,7 +314,11 @@ namespace SWLOR.CombatSim.Engine
 
             // Shields ending now are gone before regeneration, heals over time and zone pulses read anyone's HP.
             foreach (var combatant in _combatants)
+            {
                 combatant.TemporaryHp.RemoveAll(p => p.ExpiresAt <= _now || p.Amount <= 0);
+                foreach (var key in combatant.Statuses.Where(s => s.Value.ExpiresAt <= _now).Select(s => s.Key).ToList())
+                    combatant.Statuses.Remove(key);
+            }
 
             foreach (var combatant in _combatants.ToList())
             {
@@ -408,6 +419,9 @@ namespace SWLOR.CombatSim.Engine
                 throw new InvalidDataException(isRevive
                     ? $"'{use.Feat}' revives, so its Target must be DeadAlly."
                     : $"'{use.Feat}' does not revive, so it cannot target a DeadAlly.");
+
+            if (effect?.Kind == EffectKind.SelfStatus && use.Target != AbilityTarget.Self)
+                throw new InvalidDataException($"'{use.Feat}' puts a status on its caster, so its Target must be Self.");
 
             var isFriendlySingleTarget = effect != null && !isRevive && !IsPartyEffect(effect);
             if (isFriendlySingleTarget && use.Target == AbilityTarget.Enemy)
@@ -726,6 +740,7 @@ namespace SWLOR.CombatSim.Engine
                 caster.Stm -= cast.StmCost;
                 caster.Stats.FpSpent += cast.FpCost;
                 caster.Stats.StmSpent += cast.StmCost;
+                RestoreCrossResource(caster, cast);
                 caster.Stats.AbilitiesUsed++;
                 caster.RecastReadyAt[cast.Ability.RecastGroup] = _now + _rules.GetRecastSeconds(cast.Ability);
                 caster.LastUsedAt[cast.Use.Feat] = _now;
@@ -849,8 +864,38 @@ namespace SWLOR.CombatSim.Engine
                 case EffectKind.Revive:
                     Revive(caster, target, effect);
                     break;
+                case EffectKind.SelfStatus:
+                    caster.Statuses[effect.Key] = new ActiveStatus
+                    {
+                        Stats = StatusStats.Get(effect.StatusType),
+                        ExpiresAt = effect.DurationSeconds > 0 ? _now + effect.DurationSeconds : double.PositiveInfinity
+                    };
+                    break;
             }
         }
+
+        /// <summary>
+        /// Conduit, as Combat's stamina-cost FP restore and FP-cost stamina restore do it: an ability of the matching skill
+        /// gives back part of the STM it cost as FP, or part of the FP as STM, rounded down.
+        /// </summary>
+        private void RestoreCrossResource(Combatant caster, PendingCast cast)
+        {
+            var skill = cast.Ability.SkillType;
+            if (cast.StmCost > 0 && IsRestoreSkill(caster, StatType.AbilityStaminaCostFPRestorePercentSkillType, skill))
+                RestoreFp(caster, CrossResourceRestore(cast.StmCost, caster.GetStat(StatType.AbilityStaminaCostFPRestorePercent)), true);
+
+            if (cast.FpCost > 0 && IsRestoreSkill(caster, StatType.AbilityFPCostStaminaRestorePercentSkillType, skill))
+                RestoreStamina(caster, CrossResourceRestore(cast.FpCost, caster.GetStat(StatType.AbilityFPCostStaminaRestorePercent)), true);
+        }
+
+        private static bool IsRestoreSkill(Combatant caster, StatType skillStat, SkillType skill)
+        {
+            var required = caster.GetStat(skillStat);
+            return required > 0 && (int)skill == required;
+        }
+
+        private static int CrossResourceRestore(int cost, int percent) =>
+            percent <= 0 ? 0 : cost * Math.Min(percent, MaximumCrossResourceRestorePercent) / 100;
 
         private void TriggerConvergence(Combatant caster)
         {
@@ -906,6 +951,7 @@ namespace SWLOR.CombatSim.Engine
                 EffectKind.PartyHealOverTime => caster.GetZone(effect.Key) == null,
                 EffectKind.TemporaryHp => target.TemporaryHp.All(p => p.Key != effect.Key),
                 EffectKind.PartyTemporaryHp => target.TemporaryHp.All(p => p.Key != effect.Key),
+                EffectKind.SelfStatus => !target.Statuses.ContainsKey(effect.Key),
                 _ => true
             };
         }
@@ -1392,6 +1438,8 @@ namespace SWLOR.CombatSim.Engine
             target.Hp = 0;
             target.Casting = null;
             target.QueuedWeaponAbility = null;
+            // Statuses end at death; a revived caster takes its stance up again.
+            target.Statuses.Clear();
             target.KilledByPlayer = killer != null && IsPlayerVersusPlayer(killer, target);
             target.TemporaryHp.Clear();
             target.DamageReductions.Clear();

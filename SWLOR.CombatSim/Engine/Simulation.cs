@@ -629,6 +629,15 @@ namespace SWLOR.CombatSim.Engine
                 if (target == null || !ConditionHolds(caster, use, effect, target))
                     continue;
 
+                // Stances and self buffs toggle (ToggleSelfStatus): using one that is active turns it off at once,
+                // spending nothing and starting no recast.
+                if (effect?.Kind == EffectKind.SelfStatus && caster.Statuses.Remove(effect.Key))
+                {
+                    caster.NextActionAt = _now + caster.Spec.ReactionSeconds;
+                    caster.IsStarved = starved;
+                    return;
+                }
+
                 var fp = _rules.GetFpCost(info);
                 var stm = _rules.GetStmCost(info);
                 if (caster.Fp < fp || caster.Stm < stm)
@@ -736,11 +745,7 @@ namespace SWLOR.CombatSim.Engine
                     return;
                 }
 
-                caster.Fp -= cast.FpCost;
-                caster.Stm -= cast.StmCost;
-                caster.Stats.FpSpent += cast.FpCost;
-                caster.Stats.StmSpent += cast.StmCost;
-                RestoreCrossResource(caster, cast);
+                PayCosts(caster, cast);
                 caster.Stats.AbilitiesUsed++;
                 caster.RecastReadyAt[cast.Ability.RecastGroup] = _now + _rules.GetRecastSeconds(cast.Ability);
                 caster.LastUsedAt[cast.Use.Feat] = _now;
@@ -875,17 +880,38 @@ namespace SWLOR.CombatSim.Engine
         }
 
         /// <summary>
-        /// Conduit, as Combat's stamina-cost FP restore and FP-cost stamina restore do it: an ability of the matching skill
-        /// gives back part of the STM it cost as FP, or part of the FP as STM, rounded down.
+        /// Pays a cast's costs in the order the ability lists them, each followed by Conduit's restore of the other
+        /// resource, as the game's requirements do: an FP-first ability returns STM before its STM cost makes room for it.
         /// </summary>
-        private void RestoreCrossResource(Combatant caster, PendingCast cast)
+        private void PayCosts(Combatant caster, PendingCast cast)
         {
-            var skill = cast.Ability.SkillType;
-            if (cast.StmCost > 0 && IsRestoreSkill(caster, StatType.AbilityStaminaCostFPRestorePercentSkillType, skill))
-                RestoreFp(caster, CrossResourceRestore(cast.StmCost, caster.GetStat(StatType.AbilityStaminaCostFPRestorePercent)), true);
+            if (cast.Ability.PaysFpFirst)
+            {
+                PayFp(caster, cast);
+                PayStamina(caster, cast);
+            }
+            else
+            {
+                PayStamina(caster, cast);
+                PayFp(caster, cast);
+            }
+        }
 
-            if (cast.FpCost > 0 && IsRestoreSkill(caster, StatType.AbilityFPCostStaminaRestorePercentSkillType, skill))
+        // Conduit, as Combat's FP-cost stamina restore and stamina-cost FP restore do it, rounded down.
+        private void PayFp(Combatant caster, PendingCast cast)
+        {
+            caster.Fp -= cast.FpCost;
+            caster.Stats.FpSpent += cast.FpCost;
+            if (cast.FpCost > 0 && IsRestoreSkill(caster, StatType.AbilityFPCostStaminaRestorePercentSkillType, cast.Ability.SkillType))
                 RestoreStamina(caster, CrossResourceRestore(cast.FpCost, caster.GetStat(StatType.AbilityFPCostStaminaRestorePercent)), true);
+        }
+
+        private void PayStamina(Combatant caster, PendingCast cast)
+        {
+            caster.Stm -= cast.StmCost;
+            caster.Stats.StmSpent += cast.StmCost;
+            if (cast.StmCost > 0 && IsRestoreSkill(caster, StatType.AbilityStaminaCostFPRestorePercentSkillType, cast.Ability.SkillType))
+                RestoreFp(caster, CrossResourceRestore(cast.StmCost, caster.GetStat(StatType.AbilityStaminaCostFPRestorePercent)), true);
         }
 
         private static bool IsRestoreSkill(Combatant caster, StatType skillStat, SkillType skill)

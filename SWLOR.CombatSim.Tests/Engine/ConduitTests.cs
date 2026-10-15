@@ -113,6 +113,33 @@ namespace SWLOR.CombatSim.Tests.Engine
         }
 
         [Test]
+        public void ConduitRestore_FollowsTheOrderTheAbilityPaysItsCosts()
+        {
+            _catalog.Get(FeatType.ThrowLightsaber3).PaysFpFirst.Should().BeTrue();
+            _catalog.Get(FeatType.ThrowLightsaber3).SkillType.Should().Be(SkillType.Force);
+            var (simulation, caster) = Spawn(new[] { "ConduitTraining" }, Hostile("ThrowLightsaber3"));
+
+            UseAbilities(simulation, caster, 1);
+
+            caster.Stats.StmRefunded.Should().Be(0,
+                "the FP cost is paid and its STM restored while STM is still full; the STM cost comes after");
+        }
+
+        [Test]
+        public void UsingAnActiveStanceAgain_TurnsItOffWithoutPaying()
+        {
+            var (simulation, caster) = Spawn(new[] { "ConduitTraining" }, TestCombatants.Use("ConduitStance1", AbilityTarget.Self));
+
+            SimulationClock.RunUntil(simulation, () => caster.Statuses.ContainsKey("ConduitStanceStatusEffect"), LimitSeconds, "the stance to go up");
+            SimulationClock.RunUntil(simulation, () => !caster.Statuses.ContainsKey("ConduitStanceStatusEffect"), 60.0,
+                "the stance to be used again once off recast");
+
+            caster.Stats.AbilitiesUsed.Should().Be(1, "turning a stance off is not a cast");
+            SimulationClock.RunUntil(simulation, () => caster.Statuses.ContainsKey("ConduitStanceStatusEffect"), 60.0,
+                "the stance to go back up on the next action, as nothing put it on recast");
+        }
+
+        [Test]
         public void ASelfStatus_MustTargetItsCaster()
         {
             var scenario = TestScenarios.TwoTeams(false,

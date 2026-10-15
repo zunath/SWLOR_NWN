@@ -82,11 +82,11 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.ConduitTrainingTrait)
-                .Description("Saberstaff abilities that spend STM restore FP equal to 35% of the STM cost. Force abilities that spend FP restore STM equal to 35% of the FP cost.")
+                .Description("Saberstaff abilities that spend STM restore FP equal to 20% of the STM cost. Force abilities that spend FP restore STM equal to 20% of the FP cost.")
                 .IncreasesStat(StatType.AbilityStaminaCostFPRestorePercentSkillType, (int)SkillType.Saberstaff)
-                .IncreasesStat(StatType.AbilityStaminaCostFPRestorePercent, 35)
+                .IncreasesStat(StatType.AbilityStaminaCostFPRestorePercent, 20)
                 .IncreasesStat(StatType.AbilityFPCostStaminaRestorePercentSkillType, (int)SkillType.Force)
-                .IncreasesStat(StatType.AbilityFPCostStaminaRestorePercent, 35)
+                .IncreasesStat(StatType.AbilityFPCostStaminaRestorePercent, 20)
                 .Price(2)
                 .RequirementSkill(SkillType.Saberstaff, 5)
                 .RequirementCharacterType(CharacterType.ForceSensitive);
@@ -194,7 +194,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.ConduitStance1)
-                .Description("While active, Saberstaff abilities restore FP equal to 25% of STM spent and Force abilities restore STM equal to 25% of FP spent, but Attack and Force Attack are reduced by 10%.")
+                .Description("While active, Saberstaff abilities restore FP equal to 40% of STM spent and Force abilities restore STM equal to 40% of FP spent, but Attack and Force Attack are reduced by 10%.")
                 .Price(4)
                 .RequirementSkill(SkillType.Saberstaff, 20)
                 .RequirementCharacterType(CharacterType.ForceSensitive);

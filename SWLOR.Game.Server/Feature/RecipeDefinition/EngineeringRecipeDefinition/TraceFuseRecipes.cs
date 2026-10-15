@@ -17,7 +17,9 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
             Add(RecipeType.NullTraceFuse, "trace_fuse_5", 45, "elec_perfect", "fiberp_perfect")
                 .EffectDescription(new[]
                 {
-                    "Prime in the slicing window.",
+                    "In the slicing window:",
+                    "Select this fuse with < or >.",
+                    "Click Activate Tool.",
                     "+1 trace on your first move.",
                     "Consumed on that move.",
                     "Works on security tiers 1-5."

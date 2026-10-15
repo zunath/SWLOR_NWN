@@ -31,7 +31,8 @@ public static class OrdinaryAttackTraits
     public static void Reconcile(uint actor)
     {
         if (!States.TryGetValue(actor, out var state)) return;
-        if (!GetIsObjectValid(actor) || GetIsDead(actor) || GetCurrentHitPoints(actor) <= 0) { Clear(actor); return; }
+        if (!GetIsObjectValid(actor)) { Clear(actor); return; }
+        if (GetIsDead(actor) || GetCurrentHitPoints(actor) <= 0) { ClearOnDeath(actor); return; }
         state.Reconcile(DateTime.UtcNow, GetConfiguration(actor));
         Sync(actor, state);
     }
@@ -39,6 +40,12 @@ public static class OrdinaryAttackTraits
     public static void Clear(uint actor)
     {
         if (States.TryGetValue(actor, out var state)) state.Clear();
+        StatusEffect.RemoveStatusEffect<OrdinaryAttackHasteStatusEffect>(actor);
+    }
+
+    public static void ClearOnDeath(uint actor)
+    {
+        if (States.TryGetValue(actor, out var state)) state.Reset();
         StatusEffect.RemoveStatusEffect<OrdinaryAttackHasteStatusEffect>(actor);
     }
 

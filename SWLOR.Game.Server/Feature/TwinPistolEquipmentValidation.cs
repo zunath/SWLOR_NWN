@@ -57,7 +57,8 @@ public static class TwinPistolEquipmentValidation
 
     public static void Revalidate(uint creature)
     {
-        if (Revalidating.Contains(creature) || !GetIsObjectValid(creature) || (!GetIsPC(creature) && !Droid.IsDroid(creature)) ||
+        if (Revalidating.Contains(creature) || TwinPistolEquipment.IsChanging(creature) ||
+            !GetIsObjectValid(creature) || (!GetIsPC(creature) && !Droid.IsDroid(creature)) ||
             GetIsDM(creature) || GetIsDMPossessed(creature)) return;
 
         var main = GetItemInSlot(InventorySlot.RightHand, creature);

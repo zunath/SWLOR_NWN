@@ -9,8 +9,9 @@ public static class OrdinaryAttackCombatLifecycle
     public static void Reconcile()
     {
         var actor = OBJECT_SELF;
-        if (GetIsDead(actor) || GetCurrentHitPoints(actor) <= 0 ||
-            !GetIsInCombat(actor) && !Activity.IsBusy(actor))
+        if (GetIsDead(actor) || GetCurrentHitPoints(actor) <= 0)
+            OrdinaryAttackTraits.ClearOnDeath(actor);
+        else if (!GetIsInCombat(actor) && !Activity.IsBusy(actor))
             OrdinaryAttackTraits.Clear(actor);
         else OrdinaryAttackTraits.Reconcile(actor);
     }
@@ -18,7 +19,7 @@ public static class OrdinaryAttackCombatLifecycle
     [NWNEventHandler(ScriptName.OnAreaExit)]
     public static void OnAreaExit() => OrdinaryAttackTraits.Clear(GetExitingObject());
     [NWNEventHandler(ScriptName.OnModuleDeath)]
-    public static void OnDeath() => OrdinaryAttackTraits.Clear(GetLastPlayerDied());
+    public static void OnDeath() => OrdinaryAttackTraits.ClearOnDeath(GetLastPlayerDied());
     [NWNEventHandler(ScriptName.OnModuleDying)]
     public static void OnDying()
     {
@@ -27,11 +28,11 @@ public static class OrdinaryAttackCombatLifecycle
         DelayCommand(0f, () =>
         {
             if (GetIsObjectValid(actor) && (GetIsDead(actor) || GetCurrentHitPoints(actor) <= 0))
-                OrdinaryAttackTraits.Clear(actor);
+                OrdinaryAttackTraits.ClearOnDeath(actor);
         });
     }
     [NWNEventHandler(ScriptName.OnCreatureDeathAfter)]
-    public static void OnCreatureDeath() => OrdinaryAttackTraits.Clear(OBJECT_SELF);
+    public static void OnCreatureDeath() => OrdinaryAttackTraits.ClearOnDeath(OBJECT_SELF);
     [NWNEventHandler(ScriptName.OnModuleExit)]
     public static void OnExit() => OrdinaryAttackTraits.ClearActor(GetExitingObject());
 }

@@ -74,4 +74,24 @@ public class OrdinaryAttackHasteStateTests
         state.Reconcile(Start.AddSeconds(3), Configuration with { MaximumStacks = 0 });
         state.Stacks.Should().Be(0, "leaving the granting stance removes its ramp");
     }
+
+    [TestCase(10u)]
+    [TestCase(20u)]
+    public void DeathReset_StartsAFreshRampBeforeThePreviousGrantCooldownExpires(uint target)
+    {
+        var state = new OrdinaryAttackHasteState();
+        state.RecordHit(Start, Configuration, 10, 1);
+        state.Stacks.Should().Be(1);
+
+        state.Reset();
+        state.Stacks.Should().Be(0);
+        state.Expires.Should().Be(default(DateTime));
+        state.RecordHit(Start.AddSeconds(.5), Configuration, target, 1).Should().BeTrue();
+        state.Stacks.Should().Be(1, "a new life retains neither the old grant gate nor hit identities");
+
+        state.RecordHit(Start.AddSeconds(1), Configuration, target, 2);
+        state.Stacks.Should().Be(1, "the revived ramp starts its own two-second grant cooldown");
+        state.RecordHit(Start.AddSeconds(2.5), Configuration, target, 3);
+        state.Stacks.Should().Be(2);
+    }
 }

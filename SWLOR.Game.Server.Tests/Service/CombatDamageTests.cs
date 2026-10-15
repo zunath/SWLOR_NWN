@@ -1103,7 +1103,7 @@ public class CombatDamageTests
         combatSource.Should().Contain("public static void SendTemporaryHitPointDamageFeedback(uint attacker, uint defender, int damage)");
         combatSource.Should().Contain("GetEffectType(effect) == EffectTypeScript.TemporaryHitpoints");
         abilitySource.Should().Contain("Combat.SendTemporaryHitPointDamageFeedback(activator, target, damage);");
-        damageRollSource.Should().Contain("Combat.SendTemporaryHitPointDamageFeedback(attacker.m_idSelf, defender.m_idSelf, totalDamage);");
+        damageRollSource.Should().Contain("Combat.SendTemporaryHitPointDamageFeedback(attackerId, defenderId, rolledDamage);");
     }
 
     [Test]

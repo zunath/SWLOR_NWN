@@ -37,6 +37,53 @@ public static class TwinPistolCastCancellationEngineTests
     [EngineTest("A native fatal-damage save preserves earned Haste and cancels the Twin cast without recording a death", Category = "TwinPistolCancellation", TimeoutSeconds = 45f)]
     public static Task FinalSalvoFatalSave(EngineTestContext ctx) => DeathDuringCast(ctx, FeatType.FinalSalvo, PerkType.FinalSalvo, fatalSave: true);
 
+    [EngineTest("Native death and immediate resurrection start a fresh Akimbo Haste grant cooldown", Category = "TwinPistolCancellation", TimeoutSeconds = 45f)]
+    public static async Task DeathResetsOrdinaryHasteCooldown(EngineTestContext ctx)
+    {
+        using var player = await PlayerAbilityFixture.CreateAsync(ctx);
+        var actor = player.Creature;
+        var earnedAt = default(DateTime);
+        Combat.SetAutoAttackHitResolutionOverride(false);
+        try
+        {
+            var (target, _, _, _) = await Prepare(ctx, player, PerkType.FinalSalvo);
+            await ctx.ExecuteInCreatureContextAsync(actor, () =>
+            {
+                SetPlotFlag(actor, false);
+                SetImmortal(actor, false);
+                earnedAt = DateTime.UtcNow;
+                SeedExistingTraits(actor, target);
+                ctx.AssertEqual(1, StatusEffect.GetStatusEffect<OrdinaryAttackHasteStatusEffect>(actor)?.Stacks ?? 0,
+                    "The original life has an earned stack and a running two-second grant cooldown");
+                ApplyEffectToObject(DurationType.Instant, EffectDeath(), actor);
+            });
+            await ctx.WaitUntilAsync(() => GetIsDead(actor), 1f, "native death to finish before immediate resurrection");
+            ctx.AssertEqual(0, StatusEffect.GetStatusEffect<OrdinaryAttackHasteStatusEffect>(actor)?.Stacks ?? 0,
+                "Actual native death clears the earned ordinary Haste stack");
+            await ctx.ExecuteInCreatureContextAsync(actor, () =>
+            {
+                ApplyEffectToObject(DurationType.Instant, EffectResurrection(), actor);
+                ctx.Assert(!GetIsDead(actor) && GetCurrentHitPoints(actor) > 0, "The native resurrection restores a living actor");
+                ctx.MakeHostile(target);
+                StatusEffect.ApplyPermanentStatusEffect<AkimboStanceStatusEffect>(actor, actor);
+                ctx.Assert((DateTime.UtcNow - earnedAt).TotalSeconds < 2,
+                    "The first revived hit occurs before the original two-second cooldown could expire");
+                OrdinaryAttackTraits.RecordHit(actor, target, long.MaxValue - 10);
+                ctx.AssertEqual(1, StatusEffect.GetStatusEffect<OrdinaryAttackHasteStatusEffect>(actor)?.Stacks ?? 0,
+                    "The first ordinary hit after actual death immediately earns the new life's first stack");
+                OrdinaryAttackTraits.RecordHit(actor, target, long.MaxValue - 11);
+                ctx.AssertEqual(1, StatusEffect.GetStatusEffect<OrdinaryAttackHasteStatusEffect>(actor)?.Stacks ?? 0,
+                    "The revived ramp still enforces its new two-second grant cooldown");
+            });
+        }
+        finally
+        {
+            Cleanup(actor);
+            ReviveRulesEngineTests.DestroyCorpsePlaceable(actor);
+            ReviveRulesEngineTests.ReleaseBody(actor);
+        }
+    }
+
     private static async Task DeathDuringCast(EngineTestContext ctx, FeatType feat, PerkType perk, bool fatalSave = false)
     {
         ctx.Assert(!CombatRecorder.IsRecording, "The death regression owns its recording");

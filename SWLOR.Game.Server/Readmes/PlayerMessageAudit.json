@@ -1177,70 +1177,21 @@
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/AppearanceEditorViewModel.cs",
-    "Line": 1771,
+    "Line": 1778,
     "Member": "CloseForUnsupportedAppearance",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(owner, \"This creature's appearance cannot be customized.\")"
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/AppearanceEditorViewModel.cs",
-    "Line": 2056,
-    "Member": "OnDecreaseAppearanceScale",
+    "Line": 2149,
+    "Member": "SendScaleMessage",
     "Delivery": "Retained",
-    "Call": "SendMessageToPC(_target, \"You cannot decrease your height any further.\")"
+    "Call": "SendMessageToPC(owner, message)"
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/AppearanceEditorViewModel.cs",
-    "Line": 2061,
-    "Member": "OnDecreaseAppearanceScale",
-    "Delivery": "Retained",
-    "Call": "SendMessageToPC(_target, $\"Height: {GetObjectVisualTransform(_target, ObjectVisualTransform.Scale)}\")"
-  },
-  {
-    "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/AppearanceEditorViewModel.cs",
-    "Line": 2078,
-    "Member": "OnIncreaseAppearanceScale",
-    "Delivery": "Retained",
-    "Call": "SendMessageToPC(_target, \"You cannot increase your height any further.\")"
-  },
-  {
-    "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/AppearanceEditorViewModel.cs",
-    "Line": 2083,
-    "Member": "OnIncreaseAppearanceScale",
-    "Delivery": "Retained",
-    "Call": "SendMessageToPC(_target, $\"Height: {GetObjectVisualTransform(_target, ObjectVisualTransform.Scale)}\")"
-  },
-  {
-    "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/AppearanceEditorViewModel.cs",
-    "Line": 2104,
-    "Member": "OnDecreaseHeadScale",
-    "Delivery": "Retained",
-    "Call": "SendMessageToPC(_target, \"You cannot decrease your head size any further.\")"
-  },
-  {
-    "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/AppearanceEditorViewModel.cs",
-    "Line": 2109,
-    "Member": "OnDecreaseHeadScale",
-    "Delivery": "Retained",
-    "Call": "SendMessageToPC(_target, $\"Head Size: {HelmetModelRenderer.GetHeadScale(_target)}\")"
-  },
-  {
-    "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/AppearanceEditorViewModel.cs",
-    "Line": 2130,
-    "Member": "OnIncreaseHeadScale",
-    "Delivery": "Retained",
-    "Call": "SendMessageToPC(_target, \"You cannot increase your head size any further.\")"
-  },
-  {
-    "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/AppearanceEditorViewModel.cs",
-    "Line": 2135,
-    "Member": "OnIncreaseHeadScale",
-    "Delivery": "Retained",
-    "Call": "SendMessageToPC(_target, $\"Head Size: {HelmetModelRenderer.GetHeadScale(_target)}\")"
-  },
-  {
-    "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/AppearanceEditorViewModel.cs",
-    "Line": 2653,
+    "Line": 2669,
     "Member": "OnClickSaveSettings",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(_target, ColorToken.Green(\"Appearance settings saved successfully.\"))"
@@ -3375,14 +3326,14 @@
   },
   {
     "File": "SWLOR.Game.Server/Feature/TwinPistolEquipmentValidation.cs",
-    "Line": 101,
+    "Line": 102,
     "Member": "Revalidate",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(observer, ColorToken.Red(!string.IsNullOrEmpty(mainError) ? mainError : companionError))"
   },
   {
     "File": "SWLOR.Game.Server/Feature/TwinPistolEquipmentValidation.cs",
-    "Line": 119,
+    "Line": 120,
     "Member": "ReturnEquippedItem",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(creature, ColorToken.Red(GetUnusableEquipmentError(creature)))"

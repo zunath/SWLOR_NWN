@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Text.Json;
 using System.Threading.Tasks;
 using SWLOR.Game.Server.Core;
@@ -33,7 +34,8 @@ public static class PairedRangedConversionEngineTests
     public static void ObserveNativeImpact()
     {
         if (OBJECT_SELF != _observedTarget || GetLastDamager(OBJECT_SELF) != _observedActor) return;
-        Impacts.Add((Math.Max(0, GetDamageDealtByType(DamageType.Slashing)),
+        Impacts.Add((Math.Max(0, GetDamageDealtByType(DamageType.BaseWeapon)) +
+                     Math.Max(0, GetDamageDealtByType(DamageType.Slashing)),
             Math.Max(0, GetDamageDealtByType(DamageType.Force)),
             Math.Max(0, GetDamageDealtByType(DamageType.Fire)), Environment.TickCount64));
     }
@@ -44,7 +46,10 @@ public static class PairedRangedConversionEngineTests
     [EngineTest("A fully converted companion projectile arrives even with no remaining physical damage", Category = "TwinPistolConversion", TimeoutSeconds = 45f)]
     public static Task FullConversion(EngineTestContext ctx) => VerifyArrival(ctx, 100);
 
-    private static async Task VerifyArrival(EngineTestContext ctx, int conversionPercent)
+    [EngineTest("A lethal converted companion hit applies its captured physical share before Force", Category = "TwinPistolConversion", TimeoutSeconds = 45f)]
+    public static Task LethalConversion(EngineTestContext ctx) => VerifyArrival(ctx, 75, lethalConverted: true);
+
+    private static async Task VerifyArrival(EngineTestContext ctx, int conversionPercent, bool lethalConverted = false)
     {
         ctx.Assert(!CombatRecorder.IsRecording, "The conversion regression owns its recording");
         var actor = ctx.SpawnCreature("nw_bandit001", -.5f);
@@ -59,6 +64,15 @@ public static class PairedRangedConversionEngineTests
         var flightMilliseconds = 0f;
         var health = 0;
         var fp = 0;
+        var preflightHealth = 0;
+        var preflightFP = 0;
+        var preflightNotifications = -1;
+        var preflightImpacts = -1;
+        var preflightAt = 0L;
+        var preflightDirect = -1;
+        var preflightPreDamage = -1;
+        var actorHealth = 0;
+        var preflightActorHealth = 0;
         try
         {
             await ctx.ExecuteInCreatureContextAsync(actor, () =>
@@ -71,14 +85,17 @@ public static class PairedRangedConversionEngineTests
                     ctx.SuppressNPCNaturalRegen(creature);
                     Stat.SetNPCMaxHitPoints(creature, 20000, true);
                 }
-                ReplaceProperty(companion, ItemPropertyType.DMG, ItemPropertyCustom(ItemPropertyType.DMG, -1, 40));
+                ReplaceProperty(companion, ItemPropertyType.DMG, ItemPropertyCustom(ItemPropertyType.DMG, -1, 200));
                 ReplaceProperty(companion, ItemPropertyType.WeaponDamageType,
                     ItemPropertyCustom(ItemPropertyType.WeaponDamageType, (int)CombatDamageType.Physical));
                 TemporaryStatModifier.Add(target, StatType.IncomingPhysicalToForceConversionPercent, conversionPercent, 60f);
                 TemporaryStatModifier.Add(target, StatType.LeadershipForceDamageTakenPercentAdjustment, -20, 60f);
                 TemporaryStatModifier.Add(target, StatType.LeadershipPhysicalDamageTakenPercentAdjustment, -20, 60f);
                 TemporaryStatModifier.Add(target, StatType.RangedDeflection, -100, 60f);
-                ApplyEffectToObject(DurationType.Temporary, EffectDamageImmunityIncrease(DamageType.Force, 50), target, 60f);
+                TemporaryStatModifier.Add(actor, StatType.CriticalRatePercentAdjustment, 100, 60f);
+                TemporaryStatModifier.Add(actor, StatType.CriticalTargetFPLossPercentOfDamage, 10, 60f);
+                if (!lethalConverted)
+                    ApplyEffectToObject(DurationType.Temporary, EffectDamageImmunityIncrease(DamageType.Force, 50), target, 60f);
                 if (conversionPercent == 100)
                     ApplyEffectToObject(DurationType.Temporary, EffectDamageImmunityIncrease(DamageType.Slashing, 100), target, 60f);
                 ApplyEffectToObject(DurationType.Temporary, EffectCutsceneParalyze(), target, 60f);
@@ -86,71 +103,142 @@ public static class PairedRangedConversionEngineTests
                 ctx.SetNPCResources(target, 100, 100);
                 ctx.MakeHostile(target);
                 ctx.Assert(StatusEffect.ApplyStatusEffect(actor, target, probe, 60f), "The native reaction probe is active");
+                ctx.Assert(StatusEffect.ApplyStatusEffect(actor, actor, new BloodWeaponStatusEffect(), 60f), "A real direct-hit Blood Weapon rider is active");
+                ObjectPlugin.SetCurrentHitPoints(actor, 10000);
                 ctx.Assert(TwinPistolEquipment.IsActivePair(actor), "The fixture equips a real companion pair");
             });
             await ctx.DelaySecondsAsync(.4f);
-            var native = NWNXLib.g_pAppManager.m_pServerExoApp.GetGameObject(actor).AsNWSCreature();
-            var distance = GetDistanceBetween(actor, target);
-            flightMilliseconds = PairedRangedPresentation.FlightSeconds(distance) * 1000f;
-            ctx.Assert(distance >= 9f && distance < native.MaxAttackRange(target), "The firing lane provides a visible flight window within range");
-            health = GetCurrentHitPoints(target);
-            fp = Stat.GetCurrentFP(target);
+            // The opt-in companion scheduler must not alter the default native damage-roll
+            // contract: remaining physical damage notifies inline; full conversion is Triggered-only.
+            await ctx.ExecuteInCreatureContextAsync(actor, () =>
+            {
+                var native = NWNXLib.g_pAppManager.m_pServerExoApp.GetGameObject(actor).AsNWSCreature();
+                var defender = NWNXLib.g_pAppManager.m_pServerExoApp.GetGameObject(target).AsNWSObject();
+                native.m_pcCombatRound.StartCombatRound(target);
+                native.m_pcCombatRound.m_nCurrentAttack = 0;
+                native.m_pcCombatRound.GetAttack(0).m_bRangedAttack = 1;
+                Combat.SetAutoAttackHitResolutionOverride(true);
+                ctx.SeedRandom(1);
+                native.ResolveAttackRoll(defender);
+                var damage = native.m_pStats.GetDamageRoll(defender, 0, 0, 0, 0, 0);
+                ctx.AssertEqual(conversionPercent == 100 ? 0 : 1, probe.DirectNotifications,
+                    "The default native resolver preserves inline physical direct notifications");
+                ctx.AssertEqual(damage, probe.DirectDamage, "The default direct notification uses only remaining physical damage");
+                ctx.AssertEqual(0, probe.Notifications, "The default converted Force portion still defers off the native stack");
+            });
+            if (conversionPercent > 0)
+                await ctx.WaitUntilAsync(() => probe.Notifications == 1, 1f, "the default native conversion control to settle");
+            await ctx.ExecuteInCreatureContextAsync(actor, () =>
+            {
+                probe = new ProjectileConversionProbeStatusEffect();
+                ctx.Assert(StatusEffect.ApplyStatusEffect(actor, target, probe, 60f), "A fresh reaction probe isolates the actual projectile");
+                ObjectPlugin.SetCurrentHitPoints(target, 20000);
+                ObjectPlugin.SetCurrentHitPoints(actor, 10000);
+                Stat.RestoreFP(target, Stat.GetMaxFP(target));
+            });
             Impacts.Clear();
             _observedActor = actor;
             _observedTarget = target;
-            ctx.SeedRandom(20261015);
-            ctx.Assert(CombatRecorder.Start(GetArea(actor), "Paired projectile conversion regression", out var message), message);
-            writer = CombatRecorder.LastWriter;
-            var initial = native.m_pcCombatRound.m_nCurrentAttack;
-            Combat.SetAutoAttackHitResolutionOverride(false);
-            await ctx.ExecuteInCreatureContextAsync(actor, () => ActionAttack(target));
-            await ctx.WaitUntilAsync(() => native.m_pcCombatRound.m_nCurrentAttack != initial, 6f,
-                "the native main hand to miss so only the companion can deal damage");
             Combat.SetAutoAttackHitResolutionOverride(true);
-            var deadline = Environment.TickCount64 + 3000;
-            RangedWeaponAttackContext.Roll shot;
-            while ((shot = RangedWeaponAttackContext.GetRoll(actor, target, native.m_pcCombatRound.m_nCurrentAttack)) is not
-                   { Completed: true } || shot.Weapon != companion)
-            {
-                ctx.Assert(Environment.TickCount64 < deadline, "The companion completes its native launch roll");
-                await ctx.WaitFrameAsync();
-            }
-            detectedAt = Environment.TickCount64;
-            launchDamage = shot.Damage;
-            ctx.AssertEqual(CombatDamageType.Physical, shot.DamageType, "The launched result captures its physical profile");
-            if (conversionPercent == 100)
-                ctx.AssertEqual(0, launchDamage, "Full conversion leaves no physical payload to drive scheduling");
-            else ctx.Assert(launchDamage > 0, "Partial conversion retains a physical payload");
+            var resolveCompanion = typeof(PairedRangedAttackCycle).GetMethod("ResolveCompanion", BindingFlags.NonPublic | BindingFlags.Static);
+            ctx.Assert(resolveCompanion != null, "The existing production companion resolver is available");
             await ctx.ExecuteInCreatureContextAsync(actor, () =>
             {
                 ClearAllActions();
+                var native = NWNXLib.g_pAppManager.m_pServerExoApp.GetGameObject(actor).AsNWSCreature();
+                var defender = NWNXLib.g_pAppManager.m_pServerExoApp.GetGameObject(target).AsNWSObject();
+                var distance = GetDistanceBetween(actor, target);
+                flightMilliseconds = PairedRangedPresentation.FlightSeconds(distance) * 1000f;
+                ctx.Assert(distance >= 9f && distance < native.MaxAttackRange(target),
+                    "The actual launch distance provides a visible flight window within range");
+                health = GetCurrentHitPoints(target);
+                fp = Stat.GetCurrentFP(target);
+                actorHealth = GetCurrentHitPoints(actor);
+                ctx.SeedRandom(1);
+                ctx.Assert(CombatRecorder.Start(GetArea(actor), "Paired projectile conversion regression", out var message), message);
+                writer = CombatRecorder.LastWriter;
+                native.m_pcCombatRound.StartCombatRound(target);
+                native.m_pcCombatRound.m_nCurrentAttack = 0;
+                detectedAt = Environment.TickCount64;
+                // Invoke only the existing companion resolver: real native rolls and projectile dispatch,
+                // with no main projectile or asynchronous launch-detection race in the timing fixture.
+                resolveCompanion.Invoke(null, new object[]
+                {
+                    native, defender, WeaponShotProfile.Capture(actor, companion, SkillType.TwinPistol)
+                });
+                var shot = RangedWeaponAttackContext.GetRoll(actor, target, 0);
+                ctx.Assert(shot is { Completed: true } && shot.Weapon == companion,
+                    "The production native companion roll completes synchronously");
+                launchDamage = shot.Damage;
+                ctx.AssertEqual(CombatDamageType.Physical, shot.DamageType, "The launched result captures its physical profile");
+                if (conversionPercent == 100)
+                    ctx.AssertEqual(0, launchDamage, "Full conversion leaves no physical payload to drive scheduling");
+                else ctx.Assert(GameMath.PercentOf(launchDamage, 2) > 0, "Partial conversion retains enough physical damage to exercise Blood Weapon healing");
+                if (lethalConverted)
+                {
+                    ObjectPlugin.SetCurrentHitPoints(target, launchDamage + 1);
+                    health = GetCurrentHitPoints(target);
+                }
+                // Creature-context helpers poll every 250ms, longer than this flight. Capture the
+                // real pre-arrival state on the native scheduler before yielding back to the test.
+                AssignCommand(GetModule(), () => DelayCommand(flightMilliseconds / 2000f, () =>
+                {
+                    preflightHealth = GetCurrentHitPoints(target);
+                    preflightFP = Stat.GetCurrentFP(target);
+                    preflightNotifications = probe.Notifications;
+                    preflightImpacts = Impacts.Count;
+                    preflightDirect = probe.DirectNotifications;
+                    preflightPreDamage = probe.PreDamageNotifications;
+                    preflightActorHealth = GetCurrentHitPoints(actor);
+                    preflightAt = Environment.TickCount64;
+                }));
                 // Mutation after launch must not re-type or recompute either portion in flight.
-                ReplaceProperty(companion, ItemPropertyType.DMG, ItemPropertyCustom(ItemPropertyType.DMG, -1, 200));
+                ReplaceProperty(companion, ItemPropertyType.DMG, ItemPropertyCustom(ItemPropertyType.DMG, -1, 10));
                 ReplaceProperty(companion, ItemPropertyType.WeaponDamageType,
                     ItemPropertyCustom(ItemPropertyType.WeaponDamageType, (int)CombatDamageType.Fire));
             });
-            await ctx.DelaySecondsAsync(flightMilliseconds / 2000f);
-            ctx.AssertEqual(health, GetCurrentHitPoints(target), "Neither damage portion lands before the bolt arrives");
-            ctx.AssertEqual(fp, Stat.GetCurrentFP(target), "The converted reaction spends no FP before arrival");
-            ctx.AssertEqual(0, probe.Notifications, "The converted hit dispatches no status reaction before arrival");
-            ctx.AssertEqual(0, Impacts.Count, "No native damage event precedes projectile arrival");
-            await ctx.WaitUntilAsync(() => Impacts.Any(impact => impact.Force > 0) && probe.Notifications > 0,
+            await ctx.WaitUntilAsync(() => preflightAt > 0, 1f, "the native preflight sample to execute");
+            ctx.Assert(preflightAt < detectedAt + flightMilliseconds,
+                "The preflight assertion samples the actual launch window before arrival");
+            ctx.AssertEqual(health, preflightHealth, "Neither damage portion lands before the bolt arrives");
+            ctx.AssertEqual(fp, preflightFP, "The converted reaction spends no FP before arrival");
+            ctx.AssertEqual(0, preflightNotifications, "The converted hit dispatches no status reaction before arrival");
+            ctx.AssertEqual(0, preflightImpacts, "No native damage event precedes projectile arrival");
+            ctx.AssertEqual(0, preflightDirect, "No ordinary direct-hit notification precedes arrival");
+            ctx.AssertEqual(0, preflightPreDamage, "No physical pre-damage reaction precedes arrival");
+            ctx.AssertEqual(actorHealth, preflightActorHealth, "Blood Weapon cannot heal from a bolt still in flight");
+            await ctx.WaitUntilAsync(() => probe.Notifications > 0 && (lethalConverted
+                    ? GetIsDead(target) : Impacts.Any(impact => impact.Force > 0)),
                 3f, "the converted projectile and its complete triggered reaction to arrive");
             await ctx.DelaySecondsAsync(.3f);
             ctx.AssertEqual(1, probe.Notifications, "The converted portion dispatches its reaction exactly once");
-            ctx.AssertEqual(fp - 1, Stat.GetCurrentFP(target), "The test-only reaction spends exactly one FP at arrival");
+            ctx.AssertEqual(fp - 1 - GameMath.PercentOf(launchDamage, 10), Stat.GetCurrentFP(target),
+                "The captured critical rider and converted reaction spend FP only at arrival");
+            ctx.AssertEqual(conversionPercent == 100 ? 0 : 1, probe.DirectNotifications,
+                "Partial conversion notifies one direct hit; full conversion retains the native Triggered-only contract");
+            ctx.AssertEqual(conversionPercent == 100 ? 0 : 1, probe.PreDamageNotifications,
+                "Physical pre-damage reactions preserve their original count");
+            ctx.AssertEqual(launchDamage, probe.DirectDamage, "The direct callback preserves the remaining physical amount");
+            ctx.AssertEqual(actorHealth + GameMath.PercentOf(launchDamage, 2), GetCurrentHitPoints(actor),
+                "Blood Weapon heals exactly once from the same physical share as the native path");
             ctx.AssertEqual(launchDamage, Impacts.Sum(impact => impact.Physical), "The physical portion uses its captured final mitigation once");
             ctx.AssertEqual(0, Impacts.Sum(impact => impact.Fire), "Changing the weapon in flight creates no new Fire payload");
             var force = Impacts.Sum(impact => impact.Force);
-            ctx.Assert(Math.Abs(force - probe.Damage * .5f) <= 1f,
-                "The native 50 percent Force immunity applies once to the converted, Leadership-mitigated portion");
+            if (!lethalConverted)
+                ctx.Assert(Math.Abs(force - probe.Damage * .5f) <= 1f,
+                    "The native 50 percent Force immunity applies once to the converted, Leadership-mitigated portion");
             if (conversionPercent == 50)
                 ctx.Assert(Math.Abs(probe.Damage - launchDamage) <= 1,
                     "Both equal split portions receive their equal typed Leadership reductions exactly once");
-            ctx.AssertEqual(launchDamage + force, health - GetCurrentHitPoints(target), "Exactly the captured physical and converted Force portions remove HP");
+            if (lethalConverted) ctx.Assert(GetIsDead(target), "The converted portion kills only after physical damage leaves one HP");
+            else ctx.AssertEqual(launchDamage + force, health - GetCurrentHitPoints(target), "Exactly the captured physical and converted Force portions remove HP");
             ctx.Assert(Impacts.All(impact => impact.At >= detectedAt + flightMilliseconds - 50f) &&
                        probe.NotifiedAt >= detectedAt + flightMilliseconds - 50f,
                 "Damage and triggered effects share projectile arrival timing within one native frame");
+            if (launchDamage > 0)
+                ctx.Assert(probe.PreDamageAt >= detectedAt + flightMilliseconds - 50f &&
+                           probe.DirectNotifiedAt >= detectedAt + flightMilliseconds - 50f,
+                    "Physical pre/post hit effects share the same arrival deadline");
             if (launchDamage > 0)
                 ctx.Assert(Impacts.Max(impact => impact.At) - Impacts.Min(impact => impact.At) <= 100,
                     "Both native damage portions arrive together");
@@ -165,6 +253,9 @@ public static class PairedRangedConversionEngineTests
             PairedRangedAttackCycle.Cancel(actor);
             Combat.SetAutoAttackHitResolutionOverride(null);
             StatusEffect.RemoveStatusEffect(target, typeof(ProjectileConversionProbeStatusEffect), actor, false);
+            StatusEffect.RemoveStatusEffect(actor, typeof(BloodWeaponStatusEffect), actor, false);
+            ReviveRulesEngineTests.DestroyCorpsePlaceable(target);
+            ReviveRulesEngineTests.ReleaseBody(target);
             _observedActor = OBJECT_INVALID;
             _observedTarget = OBJECT_INVALID;
         }
@@ -176,10 +267,19 @@ public static class PairedRangedConversionEngineTests
             return document.RootElement.Clone();
         }).ToArray();
         var hits = events.Where(e => e.GetProperty("type").GetString() == "damage").ToArray();
+        var attack = events.Single(e => e.GetProperty("type").GetString() == "attack");
+        ctx.AssertEqual("critical", attack.GetProperty("result").GetString(), "The seeded real native roll exercises critical resource timing");
         ctx.AssertEqual(conversionPercent == 100 ? 1 : 2, hits.Length, "The recorder contains exactly the projectile's native damage portions");
         ctx.Assert(hits.All(e => e.GetProperty("source_kind").GetString() == "autoattack" &&
                                  e.GetProperty("source_name").GetString() == nameof(SkillType.TwinPistol)),
             "Both delayed portions retain their captured Twin Pistol ordinary attack attribution");
+        if (lethalConverted)
+        {
+            ctx.Assert(hits[0].GetProperty("damage").TryGetProperty("physical", out var physical) && physical.GetInt32() == launchDamage &&
+                       hits[1].GetProperty("damage").TryGetProperty("force", out _),
+                "The physical recording precedes the lethal converted Force recording");
+            ctx.AssertEqual(1, hits[0].GetProperty("hp_after").GetInt32(), "The physical share leaves the target alive for Force");
+        }
         File.Delete(writer.EventsPath);
         File.Delete(writer.SummaryPath);
         Impacts.Clear();

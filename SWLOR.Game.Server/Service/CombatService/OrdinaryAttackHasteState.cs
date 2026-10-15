@@ -47,4 +47,13 @@ public sealed class OrdinaryAttackHasteState
         Expires = default;
         // Equipment, combat and stance transitions never reset the grant cooldown.
     }
+
+    public void Reset()
+    {
+        Clear();
+        _target = default;
+        _grantReady = default;
+        _hits.Clear();
+        _hitOrder.Clear();
+    }
 }

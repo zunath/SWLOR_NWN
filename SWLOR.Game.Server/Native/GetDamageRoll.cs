@@ -66,7 +66,8 @@ namespace SWLOR.Game.Server.Native
 
         internal static int ResolveWeaponDamage(void* thisPtr, void* pTarget, int bOffHand,
             int bCritical, int bSneakAttack = 0, int bDeathAttack = 0, int bForceMax = 0,
-            Action<Action> convertedDamageScheduler = null)
+            Action<Action> convertedDamageScheduler = null,
+            Action<Action> weaponImpactScheduler = null)
         {
             return ServerManager.Executor.ExecuteInScriptContext(() =>
             {
@@ -169,7 +170,7 @@ namespace SWLOR.Game.Server.Native
                     attackerAttack, attackerStat, critical, weaponDeltaCap, attackType, damageFlags, bOffHand, defender, weaponSkillType,
                     isLandedAttack,
                     out totalDamage,
-                    out var effectiveCritical, convertedDamageScheduler);
+                    out var effectiveCritical, convertedDamageScheduler, weaponImpactScheduler);
 
                 if (shot != null)
                 {
@@ -188,26 +189,36 @@ namespace SWLOR.Game.Server.Native
 
                 if (isLandedAttack)
                 {
-                    using var damageDerivedHealing = Combat.BeginDamageDerivedHealing(attacker.m_idSelf, defender.m_idSelf);
+                    var attackerId = attacker.m_idSelf;
+                    var defenderId = defender.m_idSelf;
+                    var weaponId = weapon?.m_idSelf ?? OBJECT_INVALID;
+                    var creatureTarget = defender.m_nObjectType == (int)ObjectType.Creature;
+                    var damageableTarget = defender.m_bPlotObject == 0;
+                    var rolledDamage = totalDamage;
+                    var rolledType = damageProfile.DamageType;
+                    var nativeDamageApplication = weaponImpactScheduler == null;
 
-                    if (defender.m_nObjectType == (int)ObjectType.Creature)
+                    void ApplyWeaponHitEffects()
                     {
-                        if (totalDamage > 0)
+                        if (!GetIsObjectValid(attackerId) || !GetIsObjectValid(defenderId)) return;
+                        using var damageDerivedHealing = Combat.BeginDamageDerivedHealing(attackerId, defenderId);
+                        if (creatureTarget)
                         {
-                            Combat.SendTemporaryHitPointDamageFeedback(attacker.m_idSelf, defender.m_idSelf, totalDamage);
+                            if (rolledDamage > 0)
+                                Combat.SendTemporaryHitPointDamageFeedback(attackerId, defenderId, rolledDamage);
+                            Combat.ApplyCriticalHitEffects(attackerId, defenderId, rolledDamage, effectiveCritical, true, weaponSkillType);
                         }
-
-                        Combat.ApplyCriticalHitEffects(attacker.m_idSelf, defender.m_idSelf, totalDamage, effectiveCritical, true, weaponSkillType);
+                        if (rolledDamage > 0 && damageableTarget)
+                        {
+                            // Native weapon damage needs a pending registration; managed projectile
+                            // effects restore the captured attribution around their actual application.
+                            if (nativeDamageApplication && CombatRecorder.IsRecording)
+                                CombatRecorder.ExpectWeaponDamage(attackerId, defenderId, rolledDamage, weaponSkillType);
+                            PublishDamageDealtEvent(attackerId, defenderId, weaponId, rolledDamage, weaponSkillType, rolledType);
+                        }
                     }
-
-                    if (totalDamage > 0 && defender.m_bPlotObject == 0)
-                    {
-                        if (CombatRecorder.IsRecording)
-                            CombatRecorder.ExpectWeaponDamage(attacker.m_idSelf, defender.m_idSelf, totalDamage, weaponSkillType);
-
-                        var weaponId = weapon?.m_idSelf ?? OBJECT_INVALID;
-                        PublishDamageDealtEvent(attacker.m_idSelf, defender.m_idSelf, weaponId, totalDamage, weaponSkillType, damageProfile.DamageType);
-                    }
+                    if (weaponImpactScheduler == null) ApplyWeaponHitEffects();
+                    else weaponImpactScheduler(ApplyWeaponHitEffects);
                 }
 
                 ProfilerPlugin.PopPerfScope();
@@ -261,7 +272,8 @@ namespace SWLOR.Game.Server.Native
             WeaponDamageProfile damageProfile, void* pAttackData, int attackerAttack,
             int attackerStat, int critical, int weaponDeltaCap, uint attackType, uint damageFlags,
             int bOffHand, CNWSObject targetObject, SkillType skillType, bool isLandedAttack,
-            out int totalDamage, out int effectiveCritical, Action<Action> convertedDamageScheduler)
+            out int totalDamage, out int effectiveCritical, Action<Action> convertedDamageScheduler,
+            Action<Action> weaponImpactScheduler)
         {
             var physicalDamage = 0;
             effectiveCritical = critical;
@@ -296,16 +308,17 @@ namespace SWLOR.Game.Server.Native
 
             if (isLandedAttack && damage > 0 && targetObject.m_nObjectType == (int)ObjectType.Creature)
             {
-                StatusEffect.NotifyPreDamageStatusEffects(
-                    attacker.m_idSelf,
-                    targetObject.m_idSelf,
-                    damage,
-                    damageProfile.DamageType);
-                Combat.ApplyDamageReflectionEffects(
-                    attacker.m_idSelf,
-                    targetObject.m_idSelf,
-                    damage,
-                    damageProfile.DamageType);
+                var attackerId = attacker.m_idSelf;
+                var defenderId = targetObject.m_idSelf;
+                var rolledType = damageProfile.DamageType;
+                void ApplyPreDamageEffects()
+                {
+                    if (!GetIsObjectValid(attackerId) || !GetIsObjectValid(defenderId)) return;
+                    StatusEffect.NotifyPreDamageStatusEffects(attackerId, defenderId, damage, rolledType);
+                    Combat.ApplyDamageReflectionEffects(attackerId, defenderId, damage, rolledType);
+                }
+                if (weaponImpactScheduler == null) ApplyPreDamageEffects();
+                else weaponImpactScheduler(ApplyPreDamageEffects);
             }
 
             if (damageProfile.DamageType.IsPhysicalDamageType())

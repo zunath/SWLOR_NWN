@@ -1,4 +1,5 @@
 using NWN.Native.API;
+using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.NWN.API.NWScript.Enum;
 
@@ -10,9 +11,11 @@ namespace SWLOR.Game.Server.Native
         public static void Apply(uint source, uint target, int damage, CombatDamageType damageType)
         {
             if (damage <= 0 || !GetIsObjectValid(target)) return;
+            var attribution = CombatRecorder.CaptureScope();
             AssignCommand(source, () =>
             {
                 if (!GetIsObjectValid(target) || GetIsDead(target)) return;
+                using var recorderScope = CombatRecorder.BeginAttribution(attribution);
                 // Match NWNX Damage::DealDamage's final combat-effect payload. The ordinary
                 // resolver has already applied immunity, resistance, reduction and Guard.
                 // Borrow the VM-owned effect; its managed owner retains destruction responsibility.

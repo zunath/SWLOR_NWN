@@ -5,6 +5,7 @@ using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Service.FrameProfilerService;
 using SWLOR.Game.Server.Service.TelegraphService;
 using SWLOR.NWN.API.Engine;
+using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.Game.Server.Service
@@ -429,7 +430,7 @@ namespace SWLOR.Game.Server.Service
         {
             foreach (var player in ObjectSnapshot.Players())
             {
-                UpdateShaderForPlayer(player);
+                UpdateShaderForPlayer(DMPresence.GetControlledCreature(player));
             }
         }
 
@@ -463,8 +464,9 @@ namespace SWLOR.Game.Server.Service
 
             foreach (var player in ObjectSnapshot.Players())
             {
-                if (GetArea(player) == area)
-                    UpdateShaderForPlayer(player);
+                var viewer = DMPresence.GetControlledCreature(player);
+                if (GetArea(viewer) == area)
+                    UpdateShaderForPlayer(viewer);
             }
         }
 
@@ -483,6 +485,29 @@ namespace SWLOR.Game.Server.Service
             // Resend every slot after an area change rather than trusting values sent before it.
             _sentShaderStates.Remove(player);
             UpdateShaderForPlayer(player);
+        }
+
+        /// <summary>
+        /// Possession moves a DM's client to another object, so the uniforms recorded as sent to that object are
+        /// out of date. Resend every slot once the possession has settled.
+        /// </summary>
+        [NWNEventHandler(ScriptName.OnDMPossessBefore)]
+        [NWNEventHandler(ScriptName.OnDMPossessFullPowerBefore)]
+        public static void ResendShaderStateOnDMPossess()
+        {
+            var target = StringToObject(EventsPlugin.GetEventData("TARGET"));
+            var viewer = GetIsObjectValid(target)
+                ? target
+                : GetMaster(OBJECT_SELF);
+
+            if (!GetIsObjectValid(viewer))
+                return;
+
+            DelayCommand(0.1f, () =>
+            {
+                _sentShaderStates.Remove(viewer);
+                UpdateShaderForPlayer(viewer);
+            });
         }
 
         [NWNEventHandler(ScriptName.OnModuleExit)]

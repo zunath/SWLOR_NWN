@@ -143,6 +143,22 @@ namespace SWLOR.CombatSim.Tests.Engine
         }
 
         [Test]
+        public void TurningAStanceOff_CountsTowardItsMinimumInterval()
+        {
+            var (simulation, caster) = Spawn(new[] { "ConduitTraining" },
+                TestCombatants.Use("ConduitStance1", AbilityTarget.Self, minIntervalSeconds: 60f));
+            SimulationClock.RunUntil(simulation, () => caster.Statuses.ContainsKey("ConduitStanceStatusEffect"), LimitSeconds,
+                "the stance to go up");
+            SimulationClock.RunUntil(simulation, () => !caster.Statuses.ContainsKey("ConduitStanceStatusEffect"), 120.0,
+                "the stance to be turned off once its interval has passed");
+            var offAt = simulation.Now;
+
+            SimulationClock.RunUntil(simulation, offAt + 50);
+
+            caster.Statuses.Should().NotContainKey("ConduitStanceStatusEffect", "turning it off started a new 60-second interval");
+        }
+
+        [Test]
         public void AnUnaffordableUse_LeavesAnActiveStatusOn()
         {
             // A Capstone recast shorter than Infinite Conduit's 45 seconds lets it be used again while active.

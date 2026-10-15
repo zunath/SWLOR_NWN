@@ -656,6 +656,8 @@ namespace SWLOR.CombatSim.Engine
                 // leaves it on.
                 if (effect?.Kind == EffectKind.SelfStatus && caster.Statuses.Remove(effect.Key))
                 {
+                    // Still a use, for the scenario's MinIntervalSeconds.
+                    caster.LastUsedAt[use.Feat] = _now;
                     caster.NextActionAt = _now + caster.Spec.ReactionSeconds;
                     caster.IsStarved = starved;
                     return;

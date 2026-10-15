@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 using SWLOR.Game.Server.EngineTests.Framework;
 using SWLOR.Game.Server.Enumeration;
@@ -58,28 +59,37 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             }
         }
 
-        [EngineTest("A missed ordinary Unarmed roll consumes its weave and preserves Opening", Category = "MeleeTechnique", TimeoutSeconds = 30f)]
+        [EngineTest("Missed ordinary Unarmed, melee and ranged rolls each consume one weave without spending Opening", Category = "MeleeTechnique", TimeoutSeconds = 60f)]
         public static async Task NativeMissedWeave(EngineTestContext ctx)
         {
-            var (caster, target) = await CreateFixture(ctx);
-            ctx.SetNPCPerkLevel(caster, PerkType.Jab, 4);
-            ctx.SetNPCPerkLevel(caster, PerkType.FlowingForm, 1);
-            ctx.SetNPCPerkLevel(caster, PerkType.PalmStrike, 1);
-            Combat.SetAbilityHitResolutionOverride(true);
-            Combat.SetAutoAttackHitResolutionOverride(false);
-            try
+            foreach (var weapon in new string[] { null, "b_longsword", "b_pistol" })
             {
-                await Cast(ctx, caster, target, FeatType.Jab4);
-                ctx.AssertEqual(16, MeleeTechnique.GetPendingWeavePower(caster, target), "rank-four opener arms exactly one weave");
-                var hitPoints = GetCurrentHitPoints(target);
-                await ctx.ExecuteInCreatureContextAsync(caster, () => ActionAttack(target));
-                await ctx.WaitUntilAsync(() => MeleeTechnique.GetPendingWeavePower(caster, target) == 0, 4.5f, "a real missed native ordinary roll to spend its weave");
-                ctx.AssertEqual(MeleeTechniqueStage.Opening, MeleeTechnique.GetSetupStage(caster, target), "miss does not consume Opening");
-                ctx.AssertEqual(hitPoints, GetCurrentHitPoints(target), "missed weaving does not create a free hit");
-                await Cast(ctx, caster, target, FeatType.PalmStrike1);
-                ctx.AssertEqual(MeleeTechniqueStage.Finish, MeleeTechnique.GetSetupStage(caster, target), "bridge works after the missed weave");
+                var (caster, target) = await CreateFixture(ctx);
+                ctx.SetNPCPerkLevel(caster, PerkType.Jab, 4);
+                ctx.SetNPCPerkLevel(caster, PerkType.FlowingForm, 1);
+                ctx.SetNPCPerkLevel(caster, PerkType.PalmStrike, 1);
+                Combat.SetAbilityHitResolutionOverride(true);
+                Combat.SetAutoAttackHitResolutionOverride(false);
+                try
+                {
+                    await Cast(ctx, caster, target, FeatType.Jab4);
+                    ctx.AssertEqual(16, MeleeTechnique.GetPendingWeavePower(caster, target), "rank-four opener arms exactly one weave");
+                    if (weapon != null)
+                        await ctx.EquipItemAsync(caster, weapon, InventorySlot.RightHand);
+                    ctx.AssertEqual(MeleeTechniqueStage.Opening, MeleeTechnique.GetSetupStage(caster, target), "the native roll begins with retained same-target setup");
+                    var hitPoints = GetCurrentHitPoints(target);
+                    await ctx.ExecuteInCreatureContextAsync(caster, () => ActionAttack(target));
+                    await ctx.WaitUntilAsync(() => MeleeTechnique.GetPendingWeavePower(caster, target) == 0, 4.5f, "a real missed native ordinary roll to spend its weave");
+                    ctx.AssertEqual(MeleeTechniqueStage.Opening, MeleeTechnique.GetSetupStage(caster, target), "miss does not consume Opening");
+                    ctx.AssertEqual(hitPoints, GetCurrentHitPoints(target), "missed weaving does not create a free hit");
+                    if (weapon == null)
+                    {
+                        await Cast(ctx, caster, target, FeatType.PalmStrike1);
+                        ctx.AssertEqual(MeleeTechniqueStage.Finish, MeleeTechnique.GetSetupStage(caster, target), "bridge works after the missed weave");
+                    }
+                }
+                finally { ResetOverrides(caster); }
             }
-            finally { ResetOverrides(caster); }
         }
 
         [EngineTest("Rattled is caster-owned and multiple brawlers apply the strongest ACC penalty", Category = "MeleeTechnique", TimeoutSeconds = 35f)]
@@ -115,8 +125,10 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 ctx.AssertEqual(MeleeTechniqueStage.Distraction, MeleeTechnique.GetSetupStage(second, target), "other brawler can still spend setup");
                 ctx.AssertEqual(10, Stat.GetStatAdjustment(target, StatType.OrdinaryWeaponAccuracyPenalty), "remaining source preserves its penalty");
                 await ctx.EquipItemAsync(second, "b_pistol", InventorySlot.RightHand);
-                ctx.AssertEqual(MeleeTechniqueStage.None, MeleeTechnique.GetSetupStage(second, target), "equipment change clears the other owner's setup");
-                ctx.Assert(!StatusEffect.HasStatusEffect(target, typeof(RattledStatusEffect), second), "invalid grip removes only that owner's remaining source");
+                ctx.AssertEqual(MeleeTechniqueStage.Distraction, MeleeTechnique.GetSetupStage(second, target), "a ranged weapon swap retains the other owner's Rattled setup");
+                ctx.Assert(StatusEffect.HasStatusEffect(target, typeof(RattledStatusEffect), second), "weapon swaps retain the caster-owned debuff");
+                await ctx.WaitUntilAsync(() => !StatusEffect.HasStatusEffect(target, typeof(RattledStatusEffect), second), 9f, "the original Rattled duration to expire without refreshing on swap");
+                ctx.AssertEqual(MeleeTechniqueStage.None, MeleeTechnique.GetSetupStage(second, target), "expired Rattled cannot remain banked after a swap");
             }
             finally
             {
@@ -148,13 +160,17 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             finally { ResetOverrides(caster); }
         }
 
-        [EngineTest("Payback ignores periodic and temporary-HP-only damage then discounts one paid Brawler activation", Category = "MeleeTechnique", TimeoutSeconds = 35f)]
+        [EngineTest("Payback works without gloves and discounts one nonhostile ability from another skill", Category = "MeleeTechnique", TimeoutSeconds = 35f)]
         public static async Task DirectDamageDiscount(EngineTestContext ctx)
         {
             var (caster, attacker) = await CreateFixture(ctx);
             ctx.SetNPCPerkLevel(caster, PerkType.Payback, 1);
-            ctx.SetNPCPerkLevel(caster, PerkType.DirtyJab, 1);
-            var ability = Ability.GetAbilityDetail(FeatType.DirtyJab1);
+            ctx.SetNPCPerkLevel(caster, PerkType.BloodFrenzy, 1);
+            ctx.SetNPCPerkLevel(caster, PerkType.Provoke, 1);
+            await ctx.EquipItemAsync(caster, "b_longsword", InventorySlot.RightHand);
+            ctx.Assert(!EquipmentPredicates.HasUnarmedGrip(caster), "Payback begins without an Unarmed grip");
+            var ability = Ability.GetAbilityDetail(FeatType.BloodFrenzyBurst);
+            var cost = ability.Requirements.OfType<AbilityRequirementStamina>().Single().RequiredSTM;
             await ctx.ExecuteInCreatureContextAsync(attacker, () =>
             {
                 StatusEffect.NotifyPreDamageStatusEffects(attacker, caster, 5, CombatDamageType.Physical, CombatDamageDeliveryType.DamageOverTime);
@@ -193,21 +209,30 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             ctx.AssertEqual(baselineHP - 10, GetCurrentHitPoints(caster), "twenty-five damage consumes the remaining fifteen temporary HP and ten real HP");
             ctx.AssertEqual(0, TemporaryHitPointEffects.GetRemaining(caster), "spillover consumes the temporary pool");
             await ctx.WaitUntilAsync(() => MeleeTechnique.GetStaminaDiscount(caster, ability, 3, false) == 2, 3f, "real direct hostile HP damage to charge Payback");
-            await ctx.EquipItemAsync(caster, "t_pglove", InventorySlot.LeftHand);
-            ctx.AssertEqual(2, MeleeTechnique.GetStaminaDiscount(caster, ability, 3, false), "valid-grip equipment changes preserve the independent Payback charge");
+            await ctx.EquipItemAsync(caster, "b_pistol", InventorySlot.RightHand);
+            ctx.AssertEqual(2, MeleeTechnique.GetStaminaDiscount(caster, ability, 3, false), "a melee-to-ranged swap preserves the independent Payback charge");
             var stamina = Stat.GetCurrentStamina(caster);
             Combat.SetAbilityHitResolutionOverride(true);
             Combat.SetAutoAttackHitResolutionOverride(false);
             try
             {
-                await Cast(ctx, caster, attacker, FeatType.DirtyJab1);
-                ctx.AssertEqual(stamina - 1, Stat.GetCurrentStamina(caster), "three-stamina attack pays one with its single discount");
+                await Cast(ctx, caster, attacker, FeatType.Provoke1);
+                ctx.AssertEqual(stamina, Stat.GetCurrentStamina(caster), "a zero-stamina action still costs zero");
+                ctx.AssertEqual(2, MeleeTechnique.GetStaminaDiscount(caster, ability, cost, false), "a zero-stamina action does not consume Payback");
+                await Cast(ctx, caster, caster, FeatType.BloodFrenzyBurst);
+                ctx.AssertEqual(stamina - cost + 2, Stat.GetCurrentStamina(caster), "the nonhostile Vibroblade activation receives exactly one two-stamina discount");
                 ctx.AssertEqual(0, MeleeTechnique.GetStaminaDiscount(caster, ability, 3, false), "paid activation consumes charge");
+                await ctx.ExecuteInCreatureContextAsync(attacker, () =>
+                {
+                    StatusEffect.NotifyPreDamageStatusEffects(attacker, caster, 5, CombatDamageType.Physical);
+                    ApplyEffectToObject(DurationType.Instant, EffectDamage(5), caster);
+                });
+                ctx.AssertEqual(0, MeleeTechnique.GetStaminaDiscount(caster, ability, cost, false), "another hit cannot bypass the preserved eighteen-second trigger gate");
             }
             finally { ResetOverrides(caster); }
         }
 
-        [EngineTest("Both Standard and Force-sensitive players use Unarmed, and weapon swaps remove its stance", Category = "MeleeTechnique", TimeoutSeconds = 50f)]
+        [EngineTest("Both character types use Unarmed and its stances and resistances work with other weapons", Category = "MeleeTechnique", TimeoutSeconds = 50f)]
         public static async Task CharacterTypesAndStanceEquipment(EngineTestContext ctx)
         {
             using var standard = await PlayerAbilityFixture.CreateAsync(ctx, -0.5f);
@@ -227,6 +252,10 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 {
                     record.Skills[SkillType.Unarmed].Rank = 50;
                     record.Skills[SkillType.Armor].Rank = 40;
+                    record.Skills[SkillType.Vibroblade].Rank = 50;
+                    record.Perks[PerkType.BruiserStance] = 1;
+                    record.Perks[PerkType.RootedTechnique] = 1;
+                    record.Perks[PerkType.HardKnocks] = 1;
                     record.Perks[PerkType.Jab] = 1;
                     record.Perks[PerkType.FlowStance] = 1;
                 });
@@ -247,8 +276,18 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 ctx.Assert(StatusEffect.HasStatusEffect(standard.Creature, typeof(FlowStanceStatusEffect)), "valid grip activates Flow Stance");
                 await ctx.EquipItemAsync(standard.Creature, "ec_shield", InventorySlot.LeftHand);
                 ctx.Assert(!EquipmentPredicates.HasUnarmedGrip(standard.Creature), "shield fails full Unarmed grip");
-                ctx.Assert(!StatusEffect.HasStatusEffect(standard.Creature, typeof(FlowStanceStatusEffect)), "actual equip event removes equipment-bound stance benefits");
-                ctx.AssertEqual(MeleeTechniqueStage.None, MeleeTechnique.GetSetupStage(standard.Creature, target), "stance and equipment changes leave no banked setup");
+                ctx.Assert(StatusEffect.HasStatusEffect(standard.Creature, typeof(FlowStanceStatusEffect)), "the actual shield equip event retains Flow Stance");
+                ctx.AssertEqual(MeleeTechniqueStage.None, MeleeTechnique.GetSetupStage(standard.Creature, target), "activating the stance resets the earlier setup");
+                await ctx.EquipItemAsync(standard.Creature, "b_longsword", InventorySlot.RightHand);
+                ctx.AssertEqual(15, Stat.GetStatAdjustment(standard.Creature, StatType.MobilityResistance), "Rooted Technique remains unconditional with a sword and shield");
+                ctx.AssertEqual(15, Stat.GetStatAdjustment(standard.Creature, StatType.TraumaResistance), "Hard Knocks remains unconditional with a sword and shield");
+                ctx.Assert(!string.IsNullOrEmpty(MeleeTechnique.ValidateActivation(standard.Creature, Ability.GetAbilityDetail(FeatType.Jab1))), "active fist strikes still require Power Gloves");
+                await Cast(ctx, standard.Creature, standard.Creature, FeatType.BruiserStance1);
+                ctx.Assert(StatusEffect.HasStatusEffect(standard.Creature, typeof(BruiserStanceStatusEffect)), "Bruiser Stance activates with another weapon class");
+                ctx.Assert(!StatusEffect.HasStatusEffect(standard.Creature, typeof(FlowStanceStatusEffect)), "changing stances still removes the previous stance");
+                Recast.ReduceRecastDelay(standard.Creature, RecastGroup.FlowStance, 100f);
+                await Cast(ctx, standard.Creature, standard.Creature, FeatType.FlowStance1);
+                ctx.Assert(StatusEffect.HasStatusEffect(standard.Creature, typeof(FlowStanceStatusEffect)), "Flow Stance activates without Power Gloves");
             }
             finally
             {
@@ -284,6 +323,8 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                         record.Perks[PerkType.PalmStrike] = 1;
                         record.Perks[PerkType.FinishingCombination] = 1;
                         record.Perks[PerkType.FlowStance] = 1;
+                        record.Skills[SkillType.Pistol].Rank = 50;
+                        record.Perks[PerkType.QuickDraw] = 1;
                     });
                     await ctx.EquipItemAsync(caster, "t_pglove", InventorySlot.RightHand);
                     await Cast(ctx, caster, caster, FeatType.FlowStance1);
@@ -304,16 +345,19 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                     ctx.AssertEqual(movement + (fullSequence ? 0 : 15), Stat.GetStatAdjustment(caster, StatType.MovementSpeedPercentAdjustment), "movement window budget");
                     ctx.AssertEqual(haste + (fullSequence ? 15 : 0), Stat.GetStatAdjustment(caster, StatType.AttackDelayReductionPercent), "haste window budget");
                     var windowGrantedAt = DateTime.UtcNow;
-                    await ctx.EquipItemAsync(caster, "t_pglove", InventorySlot.LeftHand);
-                    ctx.Assert(EquipmentPredicates.HasUnarmedGrip(caster), "adding an off-hand Power Glove retains a valid grip");
-                    ctx.Assert(StatusEffect.HasStatusEffect(caster, typeof(FlowStanceStatusEffect)), "valid equipment changes retain the stance itself");
-                    ctx.Assert(!StatusEffect.HasStatusEffect(caster, typeof(SlipAwayStatusEffect)) &&
-                               !StatusEffect.HasStatusEffect(caster, typeof(PressForwardStatusEffect)), "valid-grip equipment changes immediately clear either earned window");
-                    ctx.AssertEqual(evasion, Stat.GetStatAdjustment(caster, StatType.EvasionPercentAdjustment), "equipment change removes earned evasion");
-                    ctx.AssertEqual(movement, Stat.GetStatAdjustment(caster, StatType.MovementSpeedPercentAdjustment), "equipment change removes earned movement");
-                    ctx.AssertEqual(haste, Stat.GetStatAdjustment(caster, StatType.AttackDelayReductionPercent), "equipment change removes earned haste");
+                    await ctx.EquipItemAsync(caster, "b_pistol", InventorySlot.RightHand);
+                    ctx.Assert(!EquipmentPredicates.HasUnarmedGrip(caster), "the window regression swaps to a ranged weapon");
+                    ctx.Assert(StatusEffect.HasStatusEffect(caster, typeof(FlowStanceStatusEffect)), "weapon changes retain the stance itself");
+                    ctx.AssertEqual(!fullSequence, StatusEffect.HasStatusEffect(caster, typeof(SlipAwayStatusEffect)), "swapping retains the earned evasion window");
+                    ctx.AssertEqual(fullSequence, StatusEffect.HasStatusEffect(caster, typeof(PressForwardStatusEffect)), "swapping retains the earned haste window");
+                    await Cast(ctx, caster, target, FeatType.QuickDraw1);
+                    ctx.AssertEqual(!fullSequence, StatusEffect.HasStatusEffect(caster, typeof(SlipAwayStatusEffect)), "another skill's same-target cast retains Slip Away");
+                    ctx.AssertEqual(fullSequence, StatusEffect.HasStatusEffect(caster, typeof(PressForwardStatusEffect)), "another skill's same-target cast retains Press Forward");
                     if (!fullSequence)
                     {
+                        await ctx.WaitUntilAsync(() => !StatusEffect.HasStatusEffect(caster, typeof(SlipAwayStatusEffect)), 8f, "the original six-second window to expire despite the swap and other skill's cast");
+                        ctx.Assert(DateTime.UtcNow < windowGrantedAt.AddSeconds(8), "swaps and unrelated abilities cannot refresh the original window expiry");
+                        await ctx.EquipItemAsync(caster, "t_pglove", InventorySlot.RightHand);
                         await RepeatShortFinisher();
                         ctx.Assert(!StatusEffect.HasStatusEffect(caster, typeof(SlipAwayStatusEffect)), "a fresh paid finisher cannot bypass the retained twelve-second trigger gate");
                         var remaining = (float)(windowGrantedAt.AddSeconds(12.1) - DateTime.UtcNow).TotalSeconds;
@@ -355,6 +399,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                     ctx.SetNPCPerkLevel(caster, PerkType.Jab, 4);
                     ctx.SetNPCPerkLevel(caster, PerkType.FlowingForm, 1);
                     ctx.SetNPCPerkLevel(caster, PerkType.SoulStrike, 1);
+                    ctx.SetNPCPerkLevel(caster, PerkType.MeasuredTechnique, 1);
                     CreaturePlugin.AddFeat(caster, FeatType.SoulStrike1);
                     var deliveryTarget = sameTarget ? target : ctx.SpawnCreature("nw_rat001", 1f, 1f);
                     ctx.MakeHostile(deliveryTarget);
@@ -381,6 +426,8 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                         ctx.AssertEqual(0, MeleeTechnique.PrepareOrdinaryAttempt(caster, deliveryTarget,
                             SkillType.Unarmed, delivery != null, attackIndex),
                             "the queued attempt never receives ordinary accuracy");
+                        ctx.AssertEqual(sameTarget ? 5 : 0, MeleeTechnique.GetAbilityAccuracy(caster, deliveryTarget, delivery),
+                            "the queued Force ability gets setup accuracy only against the caster's own enemy");
                         ctx.AssertEqual(0, MeleeTechnique.TakeOrdinaryPower(caster, deliveryTarget,
                             SkillType.Unarmed, attackIndex, true),
                             "the excluded queued attempt cannot receive ordinary weave power even if it lands");
@@ -453,7 +500,150 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             });
         }
 
-        [EngineTest("Technique profiles replace deterministically and cannot retain another weapon skill's benefits", Category = "MeleeTechnique", TimeoutSeconds = 40f)]
+        [EngineTest("Unarmed setup bonuses follow melee and ranged swaps and other skill abilities", Category = "MeleeTechnique", TimeoutSeconds = 60f)]
+        public static async Task CrossWeaponSetupBonuses(EngineTestContext ctx)
+        {
+            Combat.SetAbilityHitResolutionOverride(true);
+            Combat.SetAutoAttackHitResolutionOverride(false);
+            try
+            {
+                foreach (var (weapon, skill, feat, perk) in new[]
+                {
+                    ("b_longsword", SkillType.Vibroblade, FeatType.RendingStrike1, PerkType.RendingStrike),
+                    ("b_pistol", SkillType.Pistol, FeatType.QuickDraw1, PerkType.QuickDraw)
+                })
+                {
+                    var (caster, target) = await CreateFixture(ctx);
+                    var other = ctx.SpawnCreature("nw_rat001", 2f, 1f);
+                    ctx.MakeHostile(other);
+                    ApplyEffectToObject(DurationType.Temporary, EffectCutsceneParalyze(), other, 30f);
+                    ctx.SetNPCPerkLevel(caster, PerkType.Jab, 4);
+                    ctx.SetNPCPerkLevel(caster, PerkType.FlowingForm, 1);
+                    ctx.SetNPCPerkLevel(caster, PerkType.MeasuredTechnique, 1);
+                    ctx.SetNPCPerkLevel(caster, perk, 1);
+                    await Cast(ctx, caster, target, FeatType.Jab4);
+                    await ctx.EquipItemAsync(caster, weapon, InventorySlot.RightHand);
+                    ctx.AssertEqual(MeleeTechniqueStage.Opening, MeleeTechnique.GetSetupStage(caster, target), "a different weapon class retains Opening");
+                    ctx.AssertEqual(16, MeleeTechnique.GetPendingWeavePower(caster, target), "a swap cannot spend or remove the one ordinary weave");
+                    var ability = Ability.GetAbilityDetail(feat);
+                    ctx.AssertEqual(5, MeleeTechnique.GetAbilityAccuracy(caster, target, ability), "Measured Technique applies to another skill's hostile ability");
+                    ctx.AssertEqual(0, MeleeTechnique.GetAbilityAccuracy(caster, other, ability), "another enemy receives no setup accuracy");
+                    ctx.AssertEqual(0, MeleeTechnique.GetAbilityAccuracy(other, target, ability), "another caster cannot borrow the setup accuracy");
+                    await Cast(ctx, caster, target, feat);
+                    ctx.AssertEqual(MeleeTechniqueStage.Opening, MeleeTechnique.GetSetupStage(caster, target), "a real same-target cast from another skill preserves Opening");
+                    ctx.AssertEqual(16, MeleeTechnique.GetPendingWeavePower(caster, target), "the other skill's cast cannot consume the ordinary weave");
+
+                    var area = new AbilityDetail { IsHostileAbility = true, IsAreaAbility = true, SkillType = SkillType.Force };
+                    MeleeTechnique.BeginPaidActivation(caster, OBJECT_INVALID, area);
+                    MeleeTechnique.BeginPaidActivation(caster, caster, area);
+                    ctx.AssertEqual(MeleeTechniqueStage.Opening, MeleeTechnique.GetSetupStage(caster, target), "ground and self-centered hostile casts do not select a different enemy");
+                    ctx.AssertEqual(5, MeleeTechnique.GetAbilityAccuracy(caster, target, area), "the area impact on the setup enemy receives accuracy");
+                    ctx.AssertEqual(0, MeleeTechnique.GetAbilityAccuracy(caster, other, area), "other area recipients receive no setup accuracy");
+                    const int attackIndex = 23;
+                    ctx.AssertEqual(3, MeleeTechnique.PrepareOrdinaryAttempt(caster, target, skill, false, attackIndex), "ordinary accuracy follows the source-owned enemy with either weapon");
+                    ctx.AssertEqual(16, MeleeTechnique.TakeOrdinaryPower(caster, target, skill, attackIndex, true), "the new weapon receives the opener's single weave budget");
+                    ctx.AssertEqual(0, MeleeTechnique.TakeOrdinaryPower(caster, target, skill, attackIndex, true), "duplicate or off-hand callbacks cannot pay the weave twice");
+                    ctx.AssertEqual(3, MeleeTechnique.PrepareOrdinaryAttempt(caster, target, skill, false, attackIndex + 1), "ordinary accuracy persists until setup expires");
+                    ctx.AssertEqual(0, MeleeTechnique.TakeOrdinaryPower(caster, target, skill, attackIndex + 1, true), "a second ordinary attack cannot earn another weave");
+
+                    Recast.ReduceRecastDelay(caster, ability.RecastGroup, 100f);
+                    await Cast(ctx, caster, other, feat);
+                    ctx.AssertEqual(MeleeTechniqueStage.None, MeleeTechnique.GetSetupStage(caster, target), "an actual hostile cast selecting another enemy clears the original setup");
+                    ctx.AssertEqual(0, MeleeTechnique.GetAbilityAccuracy(caster, target, ability), "target transfer removes the old accuracy benefit");
+                    await ctx.EquipItemAsync(caster, "t_pglove", InventorySlot.RightHand);
+                    Recast.ReduceRecastDelay(caster, RecastGroup.UnarmedOpener, 100f);
+                    await Cast(ctx, caster, target, FeatType.Jab4);
+                    var establishedAt = DateTime.UtcNow;
+                    await ctx.EquipItemAsync(caster, weapon, InventorySlot.RightHand);
+                    await ctx.WaitUntilAsync(() => MeleeTechnique.GetSetupStage(caster, target) == MeleeTechniqueStage.None, 7f, "the original six-second Opening to expire after a weapon swap");
+                    ctx.Assert(DateTime.UtcNow < establishedAt.AddSeconds(7), "the swap cannot refresh Opening's original expiry");
+                    ctx.AssertEqual(0, MeleeTechnique.GetAbilityAccuracy(caster, target, ability), "expired setup cannot grant another skill accuracy");
+                    ResetOverrides(caster);
+                    Combat.SetAbilityHitResolutionOverride(true);
+                    Combat.SetAutoAttackHitResolutionOverride(false);
+                }
+            }
+            finally { Combat.SetAbilityHitResolutionOverride(null); Combat.SetAutoAttackHitResolutionOverride(null); }
+        }
+
+        [EngineTest("Measured Technique captures five accuracy for both a spender and Perfect Form against Opening", Category = "MeleeTechnique", TimeoutSeconds = 25f)]
+        public static async Task CapturedSpenderAccuracy(EngineTestContext ctx)
+        {
+            foreach (var (feat, perk, expectedAfter) in new[]
+            {
+                (FeatType.PalmStrike1, PerkType.PalmStrike, MeleeTechniqueStage.Finish),
+                (FeatType.PerfectForm1, PerkType.PerfectForm, MeleeTechniqueStage.None)
+            })
+            {
+                var (caster, target) = await CreateFixture(ctx);
+                ctx.SetNPCPerkLevel(caster, PerkType.Jab, 1);
+                ctx.SetNPCPerkLevel(caster, perk, 1);
+                ctx.SetNPCPerkLevel(caster, PerkType.FlowingForm, 1);
+                ctx.SetNPCPerkLevel(caster, PerkType.MeasuredTechnique, 1);
+                var ability = Ability.GetAbilityDetail(feat);
+                var originalImpact = ability.ImpactAction;
+                var capturedAccuracy = -1;
+                var consumedStage = MeleeTechniqueStage.Opening;
+                Combat.SetAbilityHitResolutionOverride(true);
+                Combat.SetAutoAttackHitResolutionOverride(false);
+                try
+                {
+                    ability.ImpactAction = (source, enemy, level, location) =>
+                    {
+                        if (source == caster)
+                        {
+                            capturedAccuracy = MeleeTechnique.GetAbilityAccuracy(source, enemy, ability);
+                            consumedStage = MeleeTechnique.GetSetupStage(source, enemy);
+                        }
+                        originalImpact(source, enemy, level, location);
+                    };
+                    await Cast(ctx, caster, target, FeatType.Jab1);
+                    await ctx.DelaySecondsAsync(1.05f);
+                    await Cast(ctx, caster, target, feat);
+                    ctx.AssertEqual(MeleeTechniqueStage.None, consumedStage, "the paid technique has cleared its setup before the captured impact");
+                    ctx.AssertEqual(5, capturedAccuracy, "the captured impact keeps exactly five accuracy even when its consumed stage is None");
+                    ctx.AssertEqual(expectedAfter, MeleeTechnique.GetSetupStage(caster, target), "only the actual bridge creates Finish; Perfect Form cannot promote Opening");
+                }
+                finally
+                {
+                    ability.ImpactAction = originalImpact;
+                    ResetOverrides(caster);
+                }
+            }
+        }
+
+        [EngineTest("Payback retains its original eight-second expiry and eighteen-second trigger gate across swaps", Category = "MeleeTechnique", TimeoutSeconds = 35f)]
+        public static async Task CrossWeaponPaybackExpiry(EngineTestContext ctx)
+        {
+            var (caster, attacker) = await CreateFixture(ctx);
+            ctx.SetNPCPerkLevel(caster, PerkType.Payback, 1);
+            await ctx.EquipItemAsync(caster, "b_longsword", InventorySlot.RightHand);
+            var ability = Ability.GetAbilityDetail(FeatType.BloodFrenzyBurst);
+            var triggeredAt = DateTime.UtcNow;
+            await DirectHit();
+            await ctx.WaitUntilAsync(() => MeleeTechnique.GetStaminaDiscount(caster, ability, 5, false) == 2, 3f, "direct HP loss without gloves grants Payback");
+            await ctx.EquipItemAsync(caster, "b_pistol", InventorySlot.RightHand);
+            ctx.AssertEqual(2, MeleeTechnique.GetStaminaDiscount(caster, ability, 5, false), "ranged equipment retains the unused charge");
+            var remaining = (float)(triggeredAt.AddSeconds(8.2) - DateTime.UtcNow).TotalSeconds;
+            if (remaining > 0)
+                await ctx.DelaySecondsAsync(remaining);
+            ctx.AssertEqual(0, MeleeTechnique.GetStaminaDiscount(caster, ability, 5, false), "the charge expires eight seconds from its original damage trigger");
+            await DirectHit();
+            ctx.AssertEqual(0, MeleeTechnique.GetStaminaDiscount(caster, ability, 5, false), "expiry and swaps cannot reset the eighteen-second cooldown");
+            remaining = (float)(triggeredAt.AddSeconds(18.2) - DateTime.UtcNow).TotalSeconds;
+            if (remaining > 0)
+                await ctx.DelaySecondsAsync(remaining);
+            await DirectHit();
+            await ctx.WaitUntilAsync(() => MeleeTechnique.GetStaminaDiscount(caster, ability, 5, false) == 2, 3f, "a new real HP hit can grant the next charge after the original cooldown");
+
+            async Task DirectHit() => await ctx.ExecuteInCreatureContextAsync(attacker, () =>
+            {
+                StatusEffect.NotifyPreDamageStatusEffects(attacker, caster, 5, CombatDamageType.Physical);
+                ApplyEffectToObject(DurationType.Instant, EffectDamage(5), caster);
+            });
+        }
+
+        [EngineTest("Technique profile hot reload cleans presentation and retains independent reaction gates", Category = "MeleeTechnique", TimeoutSeconds = 40f)]
         public static async Task ProfileOwnership(EngineTestContext ctx)
         {
             var (caster, target) = await CreateFixture(ctx);
@@ -467,15 +657,14 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             Combat.SetAutoAttackHitResolutionOverride(false);
             try
             {
-                // Passive damage reactions must discover the profile before any technique is cast.
-                await DirectHit();
-                await ctx.WaitUntilAsync(() => MeleeTechnique.GetStaminaDiscount(caster, discountedAbility, 3, false) == 2,
-                    3f, "the equipped weapon profile to grant its passive discount before an active cast");
                 await Cast(ctx, caster, caster, FeatType.FlowStance1);
                 await Cast(ctx, caster, target, FeatType.Jab4);
                 await ctx.DelaySecondsAsync(1.05f);
                 await Cast(ctx, caster, target, FeatType.FinishingCombination1);
                 ctx.Assert(StatusEffect.HasStatusEffect(caster, typeof(SlipAwayStatusEffect)), "the original profile owns its earned window");
+                await DirectHit();
+                await ctx.WaitUntilAsync(() => MeleeTechnique.GetStaminaDiscount(caster, discountedAbility, 3, false) == 2,
+                    3f, "the profile has a real unused discount before replacement");
 
                 UnarmedTechniqueProfile.Register();
                 ctx.Assert(!StatusEffect.HasStatusEffect(caster, typeof(SlipAwayStatusEffect)), "replacing a profile immediately removes its tracked presentation");
@@ -493,23 +682,11 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 Recast.ReduceRecastDelay(caster, RecastGroup.UnarmedOpener, 100f);
                 await Cast(ctx, caster, target, FeatType.Jab4);
                 ctx.AssertEqual(MeleeTechniqueStage.Opening, MeleeTechnique.GetSetupStage(caster, target), "the replacement profile can create fresh setup");
-                MeleeTechnique.RegisterProfile(SkillType.Vibroblade, new MeleeTechniqueProfile
-                {
-                    HasValidEquipment = _ => true,
-                    EquipmentError = "Equip a vibroblade.",
-                    SetupMarkerFactory = _ => new OpeningStatusEffect(),
-                    OpeningFinisherWindowFactory = (evasion, movement) => new SlipAwayStatusEffect(evasion, movement),
-                    FinishFinisherWindowFactory = haste => new PressForwardStatusEffect(haste),
-                    StaminaDiscountMarkerFactory = () => new PaybackStatusEffect(),
-                    RetaliationMarkerFactory = () => new RetaliationStatusEffect()
-                });
                 await ctx.EquipItemAsync(caster, "b_longsword", InventorySlot.RightHand);
-                ctx.AssertEqual(SkillType.Vibroblade, Skill.GetSkillTypeByBaseItem(GetBaseItemType(GetItemInSlot(InventorySlot.RightHand, caster))), "fixture equips the other registered weapon skill");
-                ctx.AssertEqual(string.Empty, MeleeTechnique.ValidateActivation(caster,
-                    new AbilityDetail { SkillType = SkillType.Vibroblade, MeleeTechnique = new MeleeTechniqueDetail() }),
-                    "the new weapon has its own valid technique profile");
-                ctx.AssertEqual(MeleeTechniqueStage.None, MeleeTechnique.GetSetupStage(caster, target), "a valid different profile cannot keep the old enemy's setup");
-                ctx.Assert(!StatusEffect.HasStatusEffect(caster, typeof(OpeningStatusEffect)), "the other weapon skill removes the tracked setup marker");
+                ctx.AssertEqual(SkillType.Vibroblade, Skill.GetSkillTypeByBaseItem(GetBaseItemType(GetItemInSlot(InventorySlot.RightHand, caster))), "fixture equips another weapon skill");
+                ctx.Assert(!string.IsNullOrEmpty(MeleeTechnique.ValidateActivation(caster, discountedAbility)), "fist activation fails its grip check with a sword");
+                ctx.AssertEqual(MeleeTechniqueStage.Opening, MeleeTechnique.GetSetupStage(caster, target), "the weapon swap preserves the source-owned setup");
+                ctx.Assert(StatusEffect.HasStatusEffect(caster, typeof(OpeningStatusEffect)), "the swap retains the tracked setup marker");
                 await ctx.EquipItemAsync(caster, "t_pglove", InventorySlot.RightHand);
                 await DirectHit();
                 ctx.AssertEqual(0, MeleeTechnique.GetStaminaDiscount(caster, discountedAbility, 3, false), "profile and weapon changes preserve the eighteen-second damage-reaction gate");
@@ -521,7 +698,6 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             }
             finally
             {
-                MeleeTechnique.UnregisterProfile(SkillType.Vibroblade);
                 UnarmedTechniqueProfile.Register();
                 ResetOverrides(caster);
             }

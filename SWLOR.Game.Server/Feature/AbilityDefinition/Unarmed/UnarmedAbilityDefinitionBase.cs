@@ -64,9 +64,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Unarmed
         {
             ConfigureToggle(builder, statusType);
             builder.SkillType(SkillType.Unarmed)
-                .MeleeTechnique(new MeleeTechniqueDetail { ClearSetup = true })
-                .UsesImmediateAuthoredAnimation()
-                .HasCustomValidation((activator, target, level, location) => ValidateGrip(activator));
+                .UsesImmediateAuthoredAnimation();
         }
 
         private static string ValidateGrip(uint creature) => EquipmentPredicates.HasUnarmedGrip(creature)

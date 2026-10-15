@@ -183,6 +183,8 @@ namespace SWLOR.Game.Server.Native
                 var attackerAccuracy = Stat.GetAccuracyNative(attacker, weapon, abilitySkillType, accuracyAbility);
                 if (queuedAbility == null)
                     attackerAccuracy += techniqueAccuracy - Stat.GetStatAdjustment(attacker.m_idSelf, StatType.OrdinaryWeaponAccuracyPenalty);
+                else
+                    attackerAccuracy += MeleeTechnique.GetAbilityAccuracy(attacker.m_idSelf, targetObject.m_idSelf, queuedAbility);
                 attackerAccuracy = Combat.ApplyStatusSourceAccuracyModifiers(
                     attacker.m_idSelf,
                     defender.m_idSelf,

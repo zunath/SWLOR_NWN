@@ -12,6 +12,7 @@ using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.QuestService;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.Game.Server.Service.StatService;
+using SWLOR.Game.Server.Service.StatusEffectService;
 using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.Game.Server.Tests.Perks;
@@ -221,8 +222,34 @@ public class UnarmedProgressionTests
         {
             Assert.That(stance.IsHostileAbility || stance.RequiresTarget, Is.False);
             Assert.That(stance.ActivationDelay(0, 0, 0), Is.EqualTo(2));
-            Assert.That(stance.MeleeTechnique.ClearSetup, Is.True);
+            Assert.That(stance.MeleeTechnique, Is.Null, "Stances must not enter the weapon-profile validation path.");
+            Assert.That(stance.CustomValidation, Is.Null, "Stances do not require Power Gloves.");
         }
+        Assert.That(flow, Is.Not.InstanceOf<IEquipmentBoundStatusEffect>());
+        Assert.That(bruiser, Is.Not.InstanceOf<IEquipmentBoundStatusEffect>());
+    }
+
+    [Test]
+    public void SetupAccuracyResistancesAndPaybackUseWeaponIndependentPayloads()
+    {
+        var perks = new UnarmedPerkDefinition().BuildPerks();
+        Dictionary<StatType, int> Stats(PerkType perk) => perks[perk].PerkLevels[1].StatBonuses
+            .ToDictionary(bonus => bonus.Stat, bonus => bonus.Calculate(uint.MaxValue));
+        var measured = Stats(PerkType.MeasuredTechnique);
+        var payback = Stats(PerkType.Payback);
+        Assert.Multiple(() =>
+        {
+            Assert.That(Stats(PerkType.RootedTechnique)[StatType.MobilityResistance], Is.EqualTo(15));
+            Assert.That(Stats(PerkType.HardKnocks)[StatType.TraumaResistance], Is.EqualTo(15));
+            Assert.That(measured[StatType.TechniqueSetupAbilityAccuracy], Is.EqualTo(5));
+            Assert.That(measured.ContainsKey(StatType.TechniqueConditionalAccuracy), Is.False);
+            Assert.That(payback[StatType.DirectHostileDamageNextAbilityStaminaDiscount], Is.EqualTo(2));
+            Assert.That(payback[StatType.DirectHostileDamageNextAbilityDiscountDurationSeconds], Is.EqualTo(8));
+            Assert.That(payback[StatType.DirectHostileDamageNextAbilityDiscountCooldownSeconds], Is.EqualTo(18));
+            Assert.That(payback[StatType.TechniquePresentationSkillType], Is.EqualTo((int)SkillType.Unarmed));
+            Assert.That(payback.ContainsKey(StatType.DirectHostileDamageNextTechniqueStaminaDiscount), Is.False);
+            Assert.That(payback.ContainsKey(StatType.TechniqueLine), Is.False);
+        });
     }
 
     [Test]

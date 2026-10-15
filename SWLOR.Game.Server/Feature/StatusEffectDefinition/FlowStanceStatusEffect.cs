@@ -1,18 +1,15 @@
-using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.StatService;
 using SWLOR.Game.Server.Service.StatusEffectService;
 using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
 {
-    public sealed class FlowStanceStatusEffect : StatusEffectBase, IEquipmentBoundStatusEffect
+    public sealed class FlowStanceStatusEffect : StatusEffectBase
     {
         public override string Name => "Flow Stance";
         public override EffectIconType Icon => EffectIconType.FlowStanceStatusEffect;
         public override StatusEffectSourceType SourceType => StatusEffectSourceType.Stance;
         public override StatusEffectCategory Categories => StatusEffectCategory.Buff;
-
-        public bool HasValidEquipment(uint creature) => EquipmentPredicates.HasUnarmedGrip(creature);
 
         public FlowStanceStatusEffect()
         {

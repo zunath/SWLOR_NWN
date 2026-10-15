@@ -36,7 +36,8 @@ namespace SWLOR.Game.Server.Service
         public static void UnregisterProfile(SkillType skill)
         {
             Profiles.Remove(skill);
-            foreach (var (creature, owner) in Owners.Where(pair => pair.Value.ProfileSkill == skill))
+            foreach (var (creature, owner) in Owners.Where(pair =>
+                         pair.Value.ProfileSkill == skill || pair.Value.DiscountProfileSkill == skill))
             {
                 ClearBenefits(creature);
                 owner.Profile = null;
@@ -89,18 +90,28 @@ namespace SWLOR.Game.Server.Service
 
             var owner = GetOwner(creature);
             Refresh(creature, owner);
-            if (owner.Reactions.WindowTarget != 0 && owner.Reactions.WindowTarget != target)
+            var selectedEnemy = IsValidEnemy(creature, target);
+            if (selectedEnemy && owner.Reactions.WindowTarget != 0 && owner.Reactions.WindowTarget != target)
                 ClearReactiveWindows(creature, owner);
+            if (selectedEnemy && owner.Sequence.Stage != MeleeTechniqueStage.None && owner.Sequence.Target != target)
+                ClearSetup(creature);
             OrdinaryAttempts.Remove(creature);
             Activations.Remove(creature);
             var now = DateTime.UtcNow;
             owner.LastHostileActivity = now;
 
-            if (detail == null || owner.Profile == null || owner.ProfileSkill != ability.SkillType)
-            {
-                ClearSetup(creature);
+            // Other skills can use the earned opening without replacing or cancelling its source.
+            if (detail == null)
                 return;
-            }
+            if (!Profiles.TryGetValue(ability.SkillType, out var profile))
+                return;
+            var setupAccuracy = owner.Sequence.Matches(target, now) &&
+                                owner.Sequence.Stage is MeleeTechniqueStage.Opening or MeleeTechniqueStage.Finish
+                ? GetLineStat(creature, owner.Line, StatType.TechniqueSetupAbilityAccuracy) : 0;
+            if (owner.Profile != profile || owner.ProfileSkill != ability.SkillType)
+                ClearSetup(creature);
+            owner.Profile = profile;
+            owner.ProfileSkill = ability.SkillType;
 
             var matching = owner.Line == detail.Line && owner.Sequence.Matches(target, now);
             var stage = matching && (detail.ConsumedStages & owner.Sequence.Stage) != 0
@@ -123,8 +134,8 @@ namespace SWLOR.Game.Server.Service
                 Target = target,
                 Stage = stage,
                 ConditionalPower = conditionalPower,
-                ConditionalAccuracy = stage == MeleeTechniqueStage.None ? 0 :
-                    GetLineStat(creature, detail.Line, StatType.TechniqueConditionalAccuracy),
+                ConditionalAccuracy = setupAccuracy + (stage == MeleeTechniqueStage.None ? 0 :
+                    GetLineStat(creature, detail.Line, StatType.TechniqueConditionalAccuracy)),
                 Weapon = main,
                 OffHand = off,
                 Area = GetArea(creature),
@@ -143,6 +154,18 @@ namespace SWLOR.Game.Server.Service
 
         public static int GetConditionalAccuracy(uint creature, uint target) =>
             TryGetActivation(creature, target, out var activation) ? activation.ConditionalAccuracy : 0;
+
+        /// <summary>Enemy-bound accuracy follows the setup, not the current weapon or ability skill.</summary>
+        public static int GetAbilityAccuracy(uint creature, uint target, AbilityDetail ability)
+        {
+            if (ability == null || !ability.IsHostileAbility)
+                return 0;
+            if (TryGetActivation(creature, target, out var activation) && activation.Ability == ability)
+                return activation.ConditionalAccuracy;
+            var stage = GetSetupStage(creature, target);
+            return stage is MeleeTechniqueStage.Opening or MeleeTechniqueStage.Finish
+                ? GetLineStat(creature, Owners[creature].Line, StatType.TechniqueSetupAbilityAccuracy) : 0;
+        }
 
         public static MeleeTechniqueStage GetSetupStage(uint creature, uint target)
         {
@@ -222,10 +245,7 @@ namespace SWLOR.Game.Server.Service
                     activation.Profile.SetupMarkerFactory(detail.CreatedStage), duration);
             }
             owner.Line = detail.Line;
-            owner.Skill = summary.SkillType;
             owner.Area = activation.Area;
-            owner.MainHand = activation.Weapon;
-            owner.OffHand = activation.OffHand;
             owner.SourceOwnedStatusType = status?.GetType();
             owner.OrdinaryAccuracy = detail.OrdinaryAccuracyBonus +
                 (status == null ? 0 : GetLineStat(creature, detail.Line, StatType.TechniqueDebuffTargetOrdinaryAccuracy));
@@ -271,7 +291,7 @@ namespace SWLOR.Game.Server.Service
                 ClearReactiveWindows(creature, owner);
             if (owner.Sequence.Stage == MeleeTechniqueStage.None)
                 return 0;
-            if (skill != owner.Skill || !owner.Sequence.Matches(target, DateTime.UtcNow))
+            if (!owner.Sequence.Matches(target, DateTime.UtcNow))
             {
                 ClearSetup(creature);
                 return 0;
@@ -307,10 +327,11 @@ namespace SWLOR.Game.Server.Service
 
         public static int GetStaminaDiscount(uint creature, AbilityDetail ability, int cost, bool consume)
         {
-            if (cost <= 0 || ability?.MeleeTechnique == null || !Owners.TryGetValue(creature, out var owner))
+            if (cost <= 0 || ability == null || !Owners.TryGetValue(creature, out var owner))
                 return 0;
             Refresh(creature, owner);
-            if (owner.Profile == null || owner.ProfileSkill != ability.SkillType || owner.DiscountLine != ability.MeleeTechnique.Line)
+            if (!owner.DiscountAnySkill && (ability.MeleeTechnique == null || owner.Profile == null ||
+                owner.ProfileSkill != ability.SkillType || owner.DiscountLine != ability.MeleeTechnique.Line))
                 return 0;
             var amount = consume ? owner.Resources.TakeDiscount(cost, DateTime.UtcNow) :
                 Math.Min(cost, owner.Resources.GetDiscount(DateTime.UtcNow));
@@ -327,12 +348,17 @@ namespace SWLOR.Game.Server.Service
         {
             if (deliveryType != CombatDamageDeliveryType.Direct || attacker == defender ||
                 !GetIsObjectValid(defender) || !GetIsObjectValid(attacker) ||
-                !GetIsReactionTypeHostile(attacker, defender) ||
-                !TryGetEquippedProfile(defender, out var skill, out var profile))
+                !GetIsReactionTypeHostile(attacker, defender))
+                return;
+            var hasRetaliationSetup = Owners.TryGetValue(defender, out var owner) &&
+                                      owner.Sequence.Stage == MeleeTechniqueStage.Distraction;
+            if (!hasRetaliationSetup &&
+                Stat.GetStatAdjustment(defender, StatType.DirectHostileDamageNextAbilityStaminaDiscount) <= 0 &&
+                Stat.GetStatAdjustment(defender, StatType.DirectHostileDamageNextTechniqueStaminaDiscount) <= 0)
                 return;
             // Native GetCurrentHitPoints includes temporary HP; subtract its pool so absorbed hits cannot arm HP-damage reactions.
             DirectDamage[defender] = new DirectDamageSnapshot(attacker,
-                Math.Max(0, GetCurrentHitPoints(defender) - TemporaryHitPointEffects.GetRemaining(defender)), DateTime.UtcNow, profile, skill);
+                Math.Max(0, GetCurrentHitPoints(defender) - TemporaryHitPointEffects.GetRemaining(defender)), DateTime.UtcNow);
         }
 
         [NWNEventHandler(ScriptName.OnCreatureDamagedAfter)]
@@ -344,8 +370,7 @@ namespace SWLOR.Game.Server.Service
                 (DateTime.UtcNow - snapshot.CapturedAt).TotalSeconds > 1 || GetIsDead(creature))
                 return;
             var hp = Math.Max(0, GetCurrentHitPoints(creature) - TemporaryHitPointEffects.GetRemaining(creature));
-            if (hp >= snapshot.HitPoints || !TryGetEquippedProfile(creature, out var skill, out var profile) ||
-                profile != snapshot.Profile || skill != snapshot.Skill || !GetIsReactionTypeHostile(snapshot.Attacker, creature))
+            if (hp >= snapshot.HitPoints || !GetIsReactionTypeHostile(snapshot.Attacker, creature))
                 return;
 
             var owner = GetOwner(creature);
@@ -358,17 +383,36 @@ namespace SWLOR.Game.Server.Service
                     GetLineStat(creature, owner.Line, StatType.TechniqueSetupRetaliationCooldownSeconds), DateTime.UtcNow))
                 owner.RetaliationStatusType = ApplyOwnedEffect(creature, owner.Profile.RetaliationMarkerFactory(),
                     (float)Math.Max(0, (owner.Sequence.ExpiresAt - DateTime.UtcNow).TotalSeconds));
-            foreach (var source in Stat.GetStatSources(creature, StatType.DirectHostileDamageNextTechniqueStaminaDiscount))
+            foreach (var source in Stat.GetStatSources(creature, StatType.DirectHostileDamageNextAbilityStaminaDiscount)
+                         .Concat(Stat.GetStatSources(creature, StatType.DirectHostileDamageNextTechniqueStaminaDiscount)))
             {
                 var line = (MeleeTechniqueLine)source[StatType.TechniqueLine];
-                if (line == MeleeTechniqueLine.None || !owner.Resources.TryGrantDiscount(
-                    source[StatType.DirectHostileDamageNextTechniqueStaminaDiscount],
-                    source[StatType.DirectHostileDamageNextTechniqueDiscountDurationSeconds],
-                    source[StatType.DirectHostileDamageNextTechniqueDiscountCooldownSeconds], DateTime.UtcNow))
+                var anySkill = source[StatType.DirectHostileDamageNextAbilityStaminaDiscount] > 0;
+                MeleeTechniqueProfile profile;
+                SkillType skill;
+                if (anySkill)
+                {
+                    skill = (SkillType)source[StatType.TechniquePresentationSkillType];
+                    if (!Profiles.TryGetValue(skill, out profile))
+                        continue;
+                }
+                else if (!TryGetEquippedProfile(creature, out skill, out profile))
+                    continue;
+                if ((!anySkill && line == MeleeTechniqueLine.None) || !owner.Resources.TryGrantDiscount(
+                    source[anySkill ? StatType.DirectHostileDamageNextAbilityStaminaDiscount : StatType.DirectHostileDamageNextTechniqueStaminaDiscount],
+                    source[anySkill ? StatType.DirectHostileDamageNextAbilityDiscountDurationSeconds : StatType.DirectHostileDamageNextTechniqueDiscountDurationSeconds],
+                    source[anySkill ? StatType.DirectHostileDamageNextAbilityDiscountCooldownSeconds : StatType.DirectHostileDamageNextTechniqueDiscountCooldownSeconds], DateTime.UtcNow))
                     continue;
                 owner.DiscountLine = line;
-                owner.DiscountStatusType = ApplyOwnedEffect(creature, owner.Profile.StaminaDiscountMarkerFactory(),
-                    source[StatType.DirectHostileDamageNextTechniqueDiscountDurationSeconds]);
+                owner.DiscountAnySkill = anySkill;
+                owner.DiscountProfileSkill = skill;
+                if (!anySkill)
+                {
+                    owner.Profile = profile;
+                    owner.ProfileSkill = skill;
+                }
+                owner.DiscountStatusType = ApplyOwnedEffect(creature, profile.StaminaDiscountMarkerFactory(),
+                    source[anySkill ? StatType.DirectHostileDamageNextAbilityDiscountDurationSeconds : StatType.DirectHostileDamageNextTechniqueDiscountDurationSeconds]);
                 break;
             }
         }
@@ -413,6 +457,8 @@ namespace SWLOR.Game.Server.Service
                 ClearReactiveWindows(creature, owner);
                 RemoveOwnedEffect(creature, owner.DiscountStatusType);
                 owner.DiscountStatusType = null;
+                owner.DiscountProfileSkill = SkillType.Invalid;
+                owner.DiscountAnySkill = false;
             }
         }
 
@@ -425,12 +471,9 @@ namespace SWLOR.Game.Server.Service
         private static void OnEquipmentChanged(uint creature)
         {
             StatusEffect.RemoveInvalidEquipmentEffects(creature);
-            ClearSetup(creature);
-            if (Owners.TryGetValue(creature, out var owner))
-                ClearReactiveWindows(creature, owner);
+            // A cast still cannot change weapons mid-impact. Already earned benefits retain
+            // their original target, expiry and cooldown when equipment changes.
             Activations.Remove(creature);
-            if (owner != null)
-                BindCurrentProfile(creature, owner);
         }
 
         [NWNEventHandler(ScriptName.OnAreaExit)]
@@ -489,7 +532,7 @@ namespace SWLOR.Game.Server.Service
         private static void Refresh(uint creature, OwnerState owner)
         {
             var combatEnded = (DateTime.UtcNow - owner.LastHostileActivity).TotalSeconds > 30 && !Combat.HasRecentHostileCombatActivity(creature);
-            if (!GetIsObjectValid(creature) || GetIsDead(creature) || !BindCurrentProfile(creature, owner) || combatEnded)
+            if (!GetIsObjectValid(creature) || GetIsDead(creature) || combatEnded)
             {
                 ClearBenefits(creature);
                 return;
@@ -503,7 +546,7 @@ namespace SWLOR.Game.Server.Service
                 return;
             if (!owner.Sequence.Matches(owner.Sequence.Target, DateTime.UtcNow) ||
                 !IsValidEnemy(creature, owner.Sequence.Target) ||
-                !IsGripSnapshotValid(creature, owner.Profile, owner.ProfileSkill, owner.MainHand, owner.OffHand, owner.Area) ||
+                GetArea(creature) != owner.Area ||
                 owner.SourceOwnedStatusType != null && !StatusEffect.HasStatusEffect(owner.Sequence.Target, owner.SourceOwnedStatusType, creature))
                 ClearSetup(creature);
         }
@@ -534,18 +577,6 @@ namespace SWLOR.Game.Server.Service
                 return false;
             skill = Skill.GetSkillTypeByBaseItem(GetBaseItemType(weapon));
             return Profiles.TryGetValue(skill, out profile) && profile.IsValid && profile.HasValidEquipment(creature);
-        }
-
-        private static bool BindCurrentProfile(uint creature, OwnerState owner)
-        {
-            var valid = TryGetEquippedProfile(creature, out var skill, out var profile);
-            if (!valid || owner.Profile != profile || owner.ProfileSkill != skill)
-            {
-                ClearBenefits(creature);
-                owner.Profile = valid ? profile : null;
-                owner.ProfileSkill = valid ? skill : SkillType.Invalid;
-            }
-            return valid;
         }
 
         private static Type ApplyOwnedEffect(uint creature, IStatusEffect effect, float duration)
@@ -579,11 +610,10 @@ namespace SWLOR.Game.Server.Service
             public MeleeTechniqueLine Line { get; set; }
             public MeleeTechniqueLine WindowLine { get; set; }
             public MeleeTechniqueLine DiscountLine { get; set; }
-            public SkillType Skill { get; set; }
+            public SkillType DiscountProfileSkill { get; set; } = SkillType.Invalid;
+            public bool DiscountAnySkill { get; set; }
             public int OrdinaryAccuracy { get; set; }
             public Type SourceOwnedStatusType { get; set; }
-            public uint MainHand { get; set; }
-            public uint OffHand { get; set; }
             public uint Area { get; set; }
             public DateTime LastHostileActivity { get; set; }
         }
@@ -605,7 +635,6 @@ namespace SWLOR.Game.Server.Service
         }
 
         private sealed record OrdinaryAttempt(uint Target, SkillType Skill, int AttackIndex, int Power);
-        private sealed record DirectDamageSnapshot(uint Attacker, int HitPoints, DateTime CapturedAt,
-            MeleeTechniqueProfile Profile, SkillType Skill);
+        private sealed record DirectDamageSnapshot(uint Attacker, int HitPoints, DateTime CapturedAt);
     }
 }

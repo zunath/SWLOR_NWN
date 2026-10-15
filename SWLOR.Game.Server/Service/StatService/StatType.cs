@@ -6267,6 +6267,24 @@ namespace SWLOR.Game.Server.Service.StatService
         [StatType(StatTypeCategory.NonBeneficial, StatTypeAggregation.Maximum)]
         TechniqueSetupRetaliationCooldownSeconds = 1122,
 
+        /// <summary>Ability ACC against the owner's current Opening or Finish target, with any skill.</summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        TechniqueSetupAbilityAccuracy = 1155,
+
+        /// <summary>One stamina discount earned from direct hostile HP damage, usable by any ability.</summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        DirectHostileDamageNextAbilityStaminaDiscount = 1156,
+
+        [StatType(StatTypeCategory.NonBeneficial, StatTypeAggregation.Maximum)]
+        DirectHostileDamageNextAbilityDiscountDurationSeconds = 1157,
+
+        [StatType(StatTypeCategory.NonBeneficial, StatTypeAggregation.Maximum)]
+        DirectHostileDamageNextAbilityDiscountCooldownSeconds = 1158,
+
+        /// <summary>Registered content profile supplying reaction presentation, independent of equipped weapons.</summary>
+        [StatType(StatTypeCategory.NonBeneficial, StatTypeAggregation.Maximum)]
+        TechniquePresentationSkillType = 1159,
+
     }
 
     public class StatTypeAttribute : Attribute

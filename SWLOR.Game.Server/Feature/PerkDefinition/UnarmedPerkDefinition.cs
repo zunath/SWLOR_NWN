@@ -46,7 +46,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.Jab1)
-                .Description("Deals weapon DMG + 8. On hit, grants Opening against this enemy for 4 seconds. Opening gives +3 ordinary Unarmed ACC and sets up either follow-up attack.")
+                .Description("Deals weapon DMG + 8. On hit, grants Opening against this enemy for 4 seconds. Opening gives +3 ordinary weapon ACC against this enemy with any weapon and sets up either follow-up attack.")
                 .IncreasesStat(StatType.TechniqueLine, 1)
                 .IncreasesStat(StatType.TechniqueWeavePower, 4)
                 .Price(2)
@@ -54,7 +54,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.Jab2)
-                .Description("Deals weapon DMG + 18. On hit, grants Opening against this enemy for 4 seconds. Opening gives +3 ordinary Unarmed ACC and sets up either follow-up attack.")
+                .Description("Deals weapon DMG + 18. On hit, grants Opening against this enemy for 4 seconds. Opening gives +3 ordinary weapon ACC against this enemy with any weapon and sets up either follow-up attack.")
                 .IncreasesStat(StatType.TechniqueLine, 1)
                 .IncreasesStat(StatType.TechniqueWeavePower, 8)
                 .Price(2)
@@ -62,7 +62,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.Jab3)
-                .Description("Deals weapon DMG + 28. On hit, grants Opening against this enemy for 4 seconds. Opening gives +3 ordinary Unarmed ACC and sets up either follow-up attack.")
+                .Description("Deals weapon DMG + 28. On hit, grants Opening against this enemy for 4 seconds. Opening gives +3 ordinary weapon ACC against this enemy with any weapon and sets up either follow-up attack.")
                 .IncreasesStat(StatType.TechniqueLine, 1)
                 .IncreasesStat(StatType.TechniqueWeavePower, 12)
                 .Price(3)
@@ -70,7 +70,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.Jab4)
-                .Description("Deals weapon DMG + 38. On hit, grants Opening against this enemy for 4 seconds. Opening gives +3 ordinary Unarmed ACC and sets up either follow-up attack.")
+                .Description("Deals weapon DMG + 38. On hit, grants Opening against this enemy for 4 seconds. Opening gives +3 ordinary weapon ACC against this enemy with any weapon and sets up either follow-up attack.")
                 .IncreasesStat(StatType.TechniqueLine, 1)
                 .IncreasesStat(StatType.TechniqueWeavePower, 16)
                 .Price(5)
@@ -85,7 +85,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.FlowingFormTrait)
-                .Description("Extends Opening and Finish from 4 to 6 seconds. During Opening, your first ordinary Unarmed attempt against that enemy gains +4/8/12/16 power by Jab rank. One bonus per opener, consumed even on a miss.")
+                .Description("Extends Opening and Finish from 4 to 6 seconds. During Opening, your next ordinary weapon attempt against that enemy gains +4/8/12/16 power by Jab rank, with any weapon. One bonus per opener, consumed even on a miss.")
                 .IncreasesStat(StatType.TechniqueLine, 1)
                 .IncreasesStat(StatType.TechniqueWindowExtensionSeconds, 2)
                 .IncreasesStat(StatType.TechniqueWeaveEnabled, 1)
@@ -102,21 +102,21 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.PalmStrike1)
-                .Description("Deals weapon DMG + 12. Spends Opening at activation. If the sequenced strike lands, grants Finish for 4 seconds; Finish gives +3 ordinary Unarmed ACC.")
+                .Description("Deals weapon DMG + 12. Spends Opening at activation. If the sequenced strike lands, grants Finish for 4 seconds; Finish gives +3 ordinary weapon ACC against this enemy with any weapon.")
                 .Price(2)
                 .RequirementSkill(SkillType.Unarmed, 8)
                 .RequirementMustHavePerk(PerkType.Jab)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.PalmStrike2)
-                .Description("Deals weapon DMG + 24. Spends Opening at activation. If the sequenced strike lands, grants Finish for 4 seconds; Finish gives +3 ordinary Unarmed ACC.")
+                .Description("Deals weapon DMG + 24. Spends Opening at activation. If the sequenced strike lands, grants Finish for 4 seconds; Finish gives +3 ordinary weapon ACC against this enemy with any weapon.")
                 .Price(4)
                 .RequirementSkill(SkillType.Unarmed, 22)
                 .RequirementMustHavePerk(PerkType.Jab)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.PalmStrike3)
-                .Description("Deals weapon DMG + 36. Spends Opening at activation. If the sequenced strike lands, grants Finish for 4 seconds; Finish gives +3 ordinary Unarmed ACC.")
+                .Description("Deals weapon DMG + 36. Spends Opening at activation. If the sequenced strike lands, grants Finish for 4 seconds; Finish gives +3 ordinary weapon ACC against this enemy with any weapon.")
                 .Price(4)
                 .RequirementSkill(SkillType.Unarmed, 45)
                 .RequirementMustHavePerk(PerkType.Jab);
@@ -164,9 +164,9 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.MeasuredTechniqueTrait)
-                .Description("Gain +5 ACC when Palm Strike spends Opening, Finishing Combination spends Opening/Finish, or Perfect Form spends Finish.")
+                .Description("While your Opening or Finish is active, gain +5 ability ACC against its enemy with any skill. This also applies to the ability that spends the setup.")
                 .IncreasesStat(StatType.TechniqueLine, 1)
-                .IncreasesStat(StatType.TechniqueConditionalAccuracy, 5)
+                .IncreasesStat(StatType.TechniqueSetupAbilityAccuracy, 5)
                 .Price(4)
                 .RequirementSkill(SkillType.Unarmed, 15)
                 .RequirementMustHavePerk(PerkType.PalmStrike);
@@ -201,7 +201,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.FlowStance1)
-                .Description("While active, a landed Finishing Combination spending Opening grants Slip Away: +20% Evasion and +15% movement speed for 6 seconds. A landed Finishing Combination or Perfect Form spending Finish instead grants Press Forward: +15% Haste for 6 seconds. These windows are mutually exclusive and share a 12-second trigger cooldown. Stance, equipment, combat or enemy changes clear the window. No ordinary damage penalty.")
+                .Description("While active, a landed Finishing Combination spending Opening grants Slip Away: +20% Evasion and +15% movement speed for 6 seconds. A landed Finishing Combination or Perfect Form spending Finish instead grants Press Forward: +15% Haste for 6 seconds. These windows are mutually exclusive and share a 12-second trigger cooldown. Weapon swaps and unrelated hostile skills against the same enemy preserve the window. Stance, combat or enemy changes clear it. No ordinary damage penalty.")
                 .Price(4)
                 .RequirementSkill(SkillType.Unarmed, 20);
         }
@@ -231,8 +231,8 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.RootedTechniqueTrait)
-                .Description("Gain +15 Mobility Resistance while using the valid Power Gloves grip.")
-                .IncreasesStat(StatType.MobilityResistance, creature => EquipmentPredicates.HasUnarmedGrip(creature) ? 15 : 0)
+                .Description("Gain +15 Mobility Resistance.")
+                .IncreasesStat(StatType.MobilityResistance, 15)
                 .Price(2)
                 .RequirementSkill(SkillType.Unarmed, 35);
         }
@@ -245,7 +245,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.PerfectForm1)
-                .Description("Deals weapon DMG + 45 to one enemy. Spending Finish adds +15 power. Practiced Form and Measured Technique apply only with Finish.")
+                .Description("Deals weapon DMG + 45 to one enemy. Spending Finish adds +15 power. Practiced Form applies only with Finish.")
                 .Price(6)
                 .RequirementSkill(SkillType.Unarmed, 50)
                 .RequirementQuest(UnarmedMasteryQuestDefinition.PerfectFormMasteryQuestId)
@@ -291,7 +291,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.DirtyFightingTrait)
-                .Description("Extends your Rattled from 6 to 8 seconds. Gain +3 ordinary Unarmed ACC against the enemy affected by your Rattled.")
+                .Description("Extends your Rattled from 6 to 8 seconds. Gain +3 ordinary weapon ACC against the enemy affected by your Rattled, with any weapon.")
                 .IncreasesStat(StatType.TechniqueLine, 2)
                 .IncreasesStat(StatType.TechniqueWindowExtensionSeconds, 2)
                 .IncreasesStat(StatType.TechniqueDebuffTargetOrdinaryAccuracy, 3)
@@ -370,8 +370,8 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.HardKnocksTrait)
-                .Description("Gain +15 Trauma Resistance while using the valid Power Gloves grip.")
-                .IncreasesStat(StatType.TraumaResistance, creature => EquipmentPredicates.HasUnarmedGrip(creature) ? 15 : 0)
+                .Description("Gain +15 Trauma Resistance.")
+                .IncreasesStat(StatType.TraumaResistance, 15)
                 .Price(4)
                 .RequirementSkill(SkillType.Unarmed, 15);
         }
@@ -403,7 +403,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.BruiserStance1)
-                .Description("Increases Physical Defense by 10%. A landed Dirty Jab braces you against its enemy for 4 seconds. The first direct hostile hit from that enemy that damages real HP arms Retaliation: +8 total power on the next Uppercut or Haymaker spending your own Rattled before it expires. One grant per opener, with an 18-second grant cooldown. The bonus is spent on paid activation, including a miss. Stance, equipment, combat or enemy changes clear the bonus. No ordinary damage penalty.")
+                .Description("Increases Physical Defense by 10%, with any equipment. A landed Dirty Jab braces you against its enemy for 4 seconds. The first direct hostile hit from that enemy that damages real HP arms Retaliation: +8 total power on the next Uppercut or Haymaker spending your own Rattled before it expires. One grant per opener, with an 18-second grant cooldown. The bonus is spent on paid activation, including a miss. Weapon swaps and unrelated hostile skills against the same enemy preserve it. Stance, combat or enemy changes clear it. No ordinary damage penalty.")
                 .Price(4)
                 .RequirementSkill(SkillType.Unarmed, 20);
         }
@@ -433,11 +433,11 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.PaybackTrait)
-                .Description("Positive direct hostile HP damage makes your next positive-cost Brawler activation cost 2 less STM. One charge, lasts 8 seconds, triggers at most once per 18 seconds.")
-                .IncreasesStat(StatType.TechniqueLine, 2)
-                .IncreasesStat(StatType.DirectHostileDamageNextTechniqueStaminaDiscount, 2)
-                .IncreasesStat(StatType.DirectHostileDamageNextTechniqueDiscountDurationSeconds, 8)
-                .IncreasesStat(StatType.DirectHostileDamageNextTechniqueDiscountCooldownSeconds, 18)
+                .Description("Direct hostile damage to real HP makes your next ability with a positive STM cost cost 2 less STM, from any skill and with any equipment. One charge, lasts 8 seconds, triggers at most once per 18 seconds.")
+                .IncreasesStat(StatType.DirectHostileDamageNextAbilityStaminaDiscount, 2)
+                .IncreasesStat(StatType.DirectHostileDamageNextAbilityDiscountDurationSeconds, 8)
+                .IncreasesStat(StatType.DirectHostileDamageNextAbilityDiscountCooldownSeconds, 18)
+                .IncreasesStat(StatType.TechniquePresentationSkillType, (int)SkillType.Unarmed)
                 .Price(2)
                 .RequirementSkill(SkillType.Unarmed, 35);
         }

@@ -2629,7 +2629,7 @@ namespace SWLOR.Game.Server.Service
                     // feeding it here made a level 40 enemy resolve ability accuracy as rank 11.
                     -1,
                     damageAbility,
-                    trackedImpact?.Ability.MeleeTechnique == null ? 0 : MeleeTechnique.GetConditionalAccuracy(activator, target)))
+                    MeleeTechnique.GetAbilityAccuracy(activator, target, trackedImpact?.Ability)))
             {
                 SendCombatImpactResultMessage(activator, target, trackedImpact?.Ability, 4, hitRate);
                 if (awardsCombatPoints)

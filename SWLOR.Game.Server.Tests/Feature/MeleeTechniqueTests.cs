@@ -112,6 +112,21 @@ public class MeleeTechniqueTests
         resource.TryGrantDiscount(2, 8, 18, Start.AddSeconds(8)).Should().BeFalse();
     }
 
+    [TestCase(1, 1)]
+    [TestCase(2, 2)]
+    [TestCase(7, 2)]
+    public void AnyPositivePaymentSpendsOneWholeDiscountCharge(int cost, int expectedDiscount)
+    {
+        var resource = new TechniqueResourceState();
+        resource.TryGrantDiscount(2, 8, 18, Start).Should().BeTrue();
+        resource.GetDiscount(Start.AddSeconds(1)).Should().Be(2);
+        resource.GetDiscount(Start.AddSeconds(1)).Should().Be(2, "eligibility previews cannot consume the charge");
+        resource.TakeDiscount(cost, Start.AddSeconds(1)).Should().Be(expectedDiscount);
+        resource.TakeDiscount(20, Start.AddSeconds(1)).Should().Be(0,
+            "a payment below the charge value cannot bank the unused remainder for another ability");
+        resource.TryGrantDiscount(2, 8, 18, Start.AddSeconds(17)).Should().BeFalse();
+    }
+
     [Test]
     public void BothLinesAndBothFinisherHitsShareOneRefundGate()
     {

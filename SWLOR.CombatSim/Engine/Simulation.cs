@@ -629,15 +629,6 @@ namespace SWLOR.CombatSim.Engine
                 if (target == null || !ConditionHolds(caster, use, effect, target))
                     continue;
 
-                // Stances and self buffs toggle (ToggleSelfStatus): using one that is active turns it off at once,
-                // spending nothing and starting no recast.
-                if (effect?.Kind == EffectKind.SelfStatus && caster.Statuses.Remove(effect.Key))
-                {
-                    caster.NextActionAt = _now + caster.Spec.ReactionSeconds;
-                    caster.IsStarved = starved;
-                    return;
-                }
-
                 var fp = _rules.GetFpCost(info);
                 var stm = _rules.GetStmCost(info);
                 if (caster.Fp < fp || caster.Stm < stm)
@@ -658,6 +649,16 @@ namespace SWLOR.CombatSim.Engine
                             : _now + window;
                     }
                     continue;
+                }
+
+                // Stances and self buffs toggle (ToggleSelfStatus): using one that is active turns it off at once,
+                // spending nothing and starting no recast. The game checks the costs first, so an unaffordable use
+                // leaves it on.
+                if (effect?.Kind == EffectKind.SelfStatus && caster.Statuses.Remove(effect.Key))
+                {
+                    caster.NextActionAt = _now + caster.Spec.ReactionSeconds;
+                    caster.IsStarved = starved;
+                    return;
                 }
 
                 StartCast(caster, use, info, effect, target, fp, stm);

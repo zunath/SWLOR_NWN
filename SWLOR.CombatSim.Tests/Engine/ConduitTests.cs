@@ -140,6 +140,24 @@ namespace SWLOR.CombatSim.Tests.Engine
         }
 
         [Test]
+        public void AnUnaffordableUse_LeavesAnActiveStatusOn()
+        {
+            // A Capstone recast shorter than Infinite Conduit's 45 seconds lets it be used again while active.
+            var rules = RuleSets.Current();
+            rules.RecastOverrides["Capstone"] = 10f;
+            var (simulation, caster) = Spawn(new[] { "ConduitTraining" }, rules, TestCombatants.Use("InfiniteConduit1", AbilityTarget.Self));
+            SimulationClock.RunUntil(simulation, () => caster.Statuses.ContainsKey("InfiniteConduitStatusEffect"), LimitSeconds,
+                "Infinite Conduit to go up");
+            var upAt = simulation.Now;
+
+            caster.Stm = 0;
+            SimulationClock.RunUntil(simulation, upAt + 30);
+
+            caster.Statuses.Should().ContainKey("InfiniteConduitStatusEffect",
+                "the game checks its 15 STM before the toggle, so a use it can't afford doesn't turn it off");
+        }
+
+        [Test]
         public void ASelfStatus_MustTargetItsCaster()
         {
             var scenario = TestScenarios.TwoTeams(false,
@@ -164,7 +182,10 @@ namespace SWLOR.CombatSim.Tests.Engine
         private static void UseAbilities(Simulation simulation, Combatant caster, int count) =>
             SimulationClock.RunUntil(simulation, () => caster.Stats.AbilitiesUsed >= count, LimitSeconds, $"{count} abilities to be used");
 
-        private (Simulation Simulation, Combatant Caster) Spawn(string[] perks, params AbilityUseSpec[] abilities)
+        private (Simulation Simulation, Combatant Caster) Spawn(string[] perks, params AbilityUseSpec[] abilities) =>
+            Spawn(perks, RuleSets.Current(), abilities);
+
+        private (Simulation Simulation, Combatant Caster) Spawn(string[] perks, RuleSet rules, params AbilityUseSpec[] abilities)
         {
             // Large pools with no regeneration, so every point restored is Conduit's.
             var caster = new CombatantSpec
@@ -178,7 +199,7 @@ namespace SWLOR.CombatSim.Tests.Engine
             };
             var simulation = TestScenarios.Spawn(
                 TestScenarios.TwoTeams(false, new[] { caster }, new[] { TestCombatants.Dummy("Enemy", true) }),
-                RuleSets.Current(),
+                rules,
                 _catalog);
             return (simulation, simulation.Get("Caster"));
         }

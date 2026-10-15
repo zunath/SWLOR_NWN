@@ -74,7 +74,7 @@
         },
         "CostValue": {
           "type": "word",
-          "value": 12
+          "value": 17
         },
         "Param1": {
           "type": "byte",
@@ -105,7 +105,7 @@
         },
         "CostValue": {
           "type": "word",
-          "value": 14
+          "value": 18
         },
         "Param1": {
           "type": "byte",
@@ -194,6 +194,37 @@
         },
         "CostTable": {
           "type": "byte",
+          "value": 37
+        },
+        "CostValue": {
+          "type": "word",
+          "value": 29
+        },
+        "Param1": {
+          "type": "byte",
+          "value": 255
+        },
+        "Param1Value": {
+          "type": "byte",
+          "value": 0
+        },
+        "PropertyName": {
+          "type": "word",
+          "value": 90
+        },
+        "Subtype": {
+          "type": "word",
+          "value": 0
+        }
+      },
+      {
+        "__struct_id": 0,
+        "ChanceAppear": {
+          "type": "byte",
+          "value": 100
+        },
+        "CostTable": {
+          "type": "byte",
           "value": 48
         },
         "CostValue": {
@@ -234,6 +265,26 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "duel_grip"
+  },
+  "VarTable": {
+    "type": "list",
+    "value": [
+      {
+        "__struct_id": 0,
+        "Name": {
+          "type": "cexostring",
+          "value": "ITEM_STATS_REVISION"
+        },
+        "Type": {
+          "type": "dword",
+          "value": 1
+        },
+        "Value": {
+          "type": "int",
+          "value": 1
+        }
+      }
+    ]
   },
   "xModelPart1": {
     "type": "word",

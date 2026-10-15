@@ -170,7 +170,7 @@
         },
         "CostValue": {
           "type": "word",
-          "value": 20
+          "value": 30
         },
         "Param1": {
           "type": "byte",
@@ -201,7 +201,7 @@
         },
         "CostValue": {
           "type": "word",
-          "value": 30
+          "value": 103
         },
         "Param1": {
           "type": "byte",
@@ -218,6 +218,37 @@
         "Subtype": {
           "type": "word",
           "value": 0
+        }
+      },
+      {
+        "__struct_id": 0,
+        "ChanceAppear": {
+          "type": "byte",
+          "value": 100
+        },
+        "CostTable": {
+          "type": "byte",
+          "value": 35
+        },
+        "CostValue": {
+          "type": "word",
+          "value": 25
+        },
+        "Param1": {
+          "type": "byte",
+          "value": 255
+        },
+        "Param1Value": {
+          "type": "byte",
+          "value": 0
+        },
+        "PropertyName": {
+          "type": "word",
+          "value": 94
+        },
+        "Subtype": {
+          "type": "word",
+          "value": 2
         }
       },
       {
@@ -268,6 +299,26 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "decurioncmddb"
+  },
+  "VarTable": {
+    "type": "list",
+    "value": [
+      {
+        "__struct_id": 0,
+        "Name": {
+          "type": "cexostring",
+          "value": "ITEM_STATS_REVISION"
+        },
+        "Type": {
+          "type": "dword",
+          "value": 1
+        },
+        "Value": {
+          "type": "int",
+          "value": 1
+        }
+      }
+    ]
   },
   "xArmorPart_Belt": {
     "type": "word",

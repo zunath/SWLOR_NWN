@@ -74,7 +74,7 @@
         },
         "CostValue": {
           "type": "word",
-          "value": 12
+          "value": 17
         },
         "Param1": {
           "type": "byte",
@@ -105,7 +105,7 @@
         },
         "CostValue": {
           "type": "word",
-          "value": 14
+          "value": 18
         },
         "Param1": {
           "type": "byte",
@@ -136,7 +136,7 @@
         },
         "CostValue": {
           "type": "word",
-          "value": 16
+          "value": 30
         },
         "Param1": {
           "type": "byte",
@@ -234,6 +234,26 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "redvein_wraps"
+  },
+  "VarTable": {
+    "type": "list",
+    "value": [
+      {
+        "__struct_id": 0,
+        "Name": {
+          "type": "cexostring",
+          "value": "ITEM_STATS_REVISION"
+        },
+        "Type": {
+          "type": "dword",
+          "value": 1
+        },
+        "Value": {
+          "type": "int",
+          "value": 1
+        }
+      }
+    ]
   },
   "xModelPart1": {
     "type": "word",

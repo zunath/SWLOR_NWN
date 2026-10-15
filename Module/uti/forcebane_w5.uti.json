@@ -96,7 +96,7 @@
         },
         "CostValue": {
           "type": "word",
-          "value": 12
+          "value": 8
         },
         "Param1": {
           "type": "byte",
@@ -127,7 +127,7 @@
         },
         "CostValue": {
           "type": "word",
-          "value": 28
+          "value": 64
         },
         "Param1": {
           "type": "byte",
@@ -158,7 +158,7 @@
         },
         "CostValue": {
           "type": "word",
-          "value": 20
+          "value": 17
         },
         "Param1": {
           "type": "byte",
@@ -189,7 +189,7 @@
         },
         "CostValue": {
           "type": "word",
-          "value": 15
+          "value": 11
         },
         "Param1": {
           "type": "byte",
@@ -256,6 +256,26 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "forcebane_w5"
+  },
+  "VarTable": {
+    "type": "list",
+    "value": [
+      {
+        "__struct_id": 0,
+        "Name": {
+          "type": "cexostring",
+          "value": "ITEM_STATS_REVISION"
+        },
+        "Type": {
+          "type": "dword",
+          "value": 1
+        },
+        "Value": {
+          "type": "int",
+          "value": 1
+        }
+      }
+    ]
   },
   "xModelPart1": {
     "type": "word",

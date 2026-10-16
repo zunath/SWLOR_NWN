@@ -78,7 +78,7 @@
         },
         "CostValue": {
           "type": "word",
-          "value": 12
+          "value": 13
         },
         "Param1": {
           "type": "byte",
@@ -109,7 +109,7 @@
         },
         "CostValue": {
           "type": "word",
-          "value": 13
+          "value": 20
         },
         "Param1": {
           "type": "byte",
@@ -171,7 +171,7 @@
         },
         "CostValue": {
           "type": "word",
-          "value": 14
+          "value": 74
         },
         "Param1": {
           "type": "byte",
@@ -238,6 +238,26 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "galewalk_boots"
+  },
+  "VarTable": {
+    "type": "list",
+    "value": [
+      {
+        "__struct_id": 0,
+        "Name": {
+          "type": "cexostring",
+          "value": "ITEM_STATS_REVISION"
+        },
+        "Type": {
+          "type": "dword",
+          "value": 1
+        },
+        "Value": {
+          "type": "int",
+          "value": 1
+        }
+      }
+    ]
   },
   "xModelPart1": {
     "type": "word",

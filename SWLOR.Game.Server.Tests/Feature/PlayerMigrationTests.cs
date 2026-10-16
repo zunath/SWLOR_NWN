@@ -291,10 +291,42 @@ public class PlayerMigrationTests
         ApplyWithFile(migration, Load, save, () => fileVersion, _ => { });
     }
 
-    private static void ApplyWithFile(IPlayerMigration migration, Func<Player> load, Action<Player> save,
+    private static bool ApplyWithFile(IPlayerMigration migration, Func<Player> load, Action<Player> save,
         Func<int> loadFileVersion, Action<int> saveFileVersion) =>
-        typeof(Migration).GetMethod("ApplyPlayerMigration", BindingFlags.NonPublic | BindingFlags.Static)!
-            .Invoke(null, new object[] { migration, 0u, load, save, loadFileVersion, saveFileVersion });
+        (bool)typeof(Migration).GetMethod("ApplyPlayerMigration", BindingFlags.NonPublic | BindingFlags.Static)!
+            .Invoke(null, new object[] { migration, 0u, load, save, loadFileVersion, saveFileVersion })!;
+
+    [TestCase(21)]
+    [TestCase(22)]
+    public void DeferredEquipmentRepairAllowsLoginWithoutCompletingEitherCheckpoint(int databaseVersion)
+    {
+        var saved = PlayerJson(databaseVersion);
+        var fileVersion = 21;
+        var blocked = true;
+        var runs = 0;
+        var recordRuns = 0;
+        var migration = new TestMigration(22, () =>
+        {
+            runs++;
+            if (blocked) throw new PlayerMigrationDeferredException("Free inventory space before retrying.");
+        }, _ => recordRuns++);
+        bool Run() => ApplyWithFile(migration, () => saved.ToObject<Player>()!,
+            player => saved = JObject.FromObject(player), () => fileVersion, version => fileVersion = version);
+
+        Run().Should().BeFalse("the login runner must stop pending migrations without booting the player");
+        Run().Should().BeFalse();
+        fileVersion.Should().Be(21);
+        saved.Should().BeEquivalentTo(PlayerJson(databaseVersion));
+        recordRuns.Should().Be(0);
+
+        blocked = false;
+        Run().Should().BeTrue();
+        Run().Should().BeTrue();
+        fileVersion.Should().Be(22);
+        saved["Version"]!.Value<int>().Should().Be(22);
+        runs.Should().Be(3, "the completed repair must not run again");
+        recordRuns.Should().Be(databaseVersion == 21 ? 1 : 0);
+    }
 
     /// <summary>
     /// Replays file changes after an old BIC is restored without granting a second database reward.

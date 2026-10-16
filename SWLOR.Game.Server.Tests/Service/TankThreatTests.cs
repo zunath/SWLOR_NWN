@@ -92,7 +92,7 @@ public class TankThreatTests
         (2 * 6).Should().BeLessThanOrEqualTo(recovery);
     }
 
-    // Chiro level-50 weapons: Bible Equipment - Weapons rows 34, 66, 111, 345, 439.
+    // Chiro level-50 weapons: Bible Equipment - Weapons rows 38, 73, 118, 370, 471.
     // Equal MGT/VIT 20, skill 50, attack/defense 128; no crits, food or gear regen.
     // Matching offensive build uses Berserker's real +25% Attack and +15% delay reduction.
     [TestCase(typeof(BastionStanceStatusEffect), "HeavyVibroblade.EarthshatterAbilityDefinition", FeatType.Earthshatter1, 44, 300, 20, 1, 20)]

@@ -97,11 +97,13 @@ namespace SWLOR.Game.Server.Feature
             var rpPoints = dbPlayer.RoleplayProgress.RPPoints;
             var oocMessages = dbPlayer.RoleplayProgress.OOCMessagesSinceLastDistribution;
             var penaltySteps = dbPlayer.RoleplayProgress.PendingOOCPenaltySteps;
-            var penaltyPercentPerMessage = ApplicationSettings.Get().RoleplayXPOOCPenaltyPercent;
+            var settings = ApplicationSettings.Get();
+            var penaltyPercentPerMessage = settings.RoleplayXPOOCPenaltyEnabled ? settings.RoleplayXPOOCPenaltyPercent : 0;
             xp = OOCAllowance.ApplyPenalty(xp, penaltySteps, penaltyPercentPerMessage);
 
             dbPlayer.RoleplayProgress.RPPoints = 0;
-            dbPlayer.RoleplayProgress.PendingOOCPenaltySteps = 0;
+            if (settings.RoleplayXPOOCPenaltyEnabled)
+                dbPlayer.RoleplayProgress.PendingOOCPenaltySteps = 0;
             dbPlayer.RoleplayProgress.OOCMessagesSinceLastDistribution = 0;
             dbPlayer.RoleplayProgress.TotalRPExpGained += (ulong)xp;
             dbPlayer.UnallocatedXP += xp;
@@ -199,7 +201,8 @@ namespace SWLOR.Game.Server.Feature
                 context,
                 settings.RoleplayXPDailyOOCAllowance,
                 settings.RoleplayXPDMPresentOOCAllowance,
-                settings.RoleplayXPEventAreaOOCAllowance);
+                settings.RoleplayXPEventAreaOOCAllowance,
+                settings.RoleplayXPOOCPenaltyEnabled);
             DB.Set(dbPlayer);
 
             LogOOCMessage(player, dbPlayer, now, channel, message, context, previousPenaltySteps, settings);
@@ -231,6 +234,7 @@ namespace SWLOR.Game.Server.Feature
         private static void LogOOCMessage(uint player, Player dbPlayer, DateTime now, ChatChannel channel,
             string message, OOCMessageContext context, int previousPenaltySteps, ApplicationSettings settings)
         {
+            var penaltyPercentPerMessage = settings.RoleplayXPOOCPenaltyEnabled ? settings.RoleplayXPOOCPenaltyPercent : 0;
             Log.WriteStructured(
                 LogGroup.RoleplayXP,
                 "RP XP OOC message recorded: PlayerId={PlayerId} CharacterName={CharacterName} AccountName={AccountName} CDKey={CDKey} OccurredUtc={OccurredUtc:O} Channel={Channel} AreaResref={AreaResref} Context={Context} OOCMessagesSinceLastDistribution={OOCMessagesSinceLastDistribution} DailyOOCMessageCount={DailyOOCMessageCount} DailyDMPresentOOCMessageCount={DailyDMPresentOOCMessageCount} DailyEventAreaOOCMessageCount={DailyEventAreaOOCMessageCount} DailyAllowance={DailyAllowance} DMPresentAllowance={DMPresentAllowance} EventAreaAllowance={EventAreaAllowance} PreviousOOCPenaltySteps={PreviousOOCPenaltySteps} PendingOOCPenaltySteps={PendingOOCPenaltySteps} OOCPenaltyPercentPerMessage={OOCPenaltyPercentPerMessage} NextAwardOOCPenaltyPercent={NextAwardOOCPenaltyPercent} Message={Message}",
@@ -241,8 +245,8 @@ namespace SWLOR.Game.Server.Feature
                 dbPlayer.RoleplayProgress.DailyEventAreaOOCMessageCount, settings.RoleplayXPDailyOOCAllowance,
                 settings.RoleplayXPDMPresentOOCAllowance, settings.RoleplayXPEventAreaOOCAllowance,
                 previousPenaltySteps, dbPlayer.RoleplayProgress.PendingOOCPenaltySteps,
-                settings.RoleplayXPOOCPenaltyPercent,
-                Math.Clamp(dbPlayer.RoleplayProgress.PendingOOCPenaltySteps * settings.RoleplayXPOOCPenaltyPercent, 0, 100), message);
+                penaltyPercentPerMessage,
+                Math.Clamp(dbPlayer.RoleplayProgress.PendingOOCPenaltySteps * penaltyPercentPerMessage, 0, 100), message);
         }
 
         private static string RefreshRPMessageTimestamp(uint player, DateTime now)
@@ -266,20 +270,9 @@ namespace SWLOR.Game.Server.Feature
                 ? OOCMessageContext.EventArea
                 : OOCMessageContext.Standard;
 
-            for (var pc = GetFirstPC(); GetIsObjectValid(pc); pc = GetNextPC())
-            {
-                if (!GetIsDM(pc) && !GetIsDMPossessed(pc))
-                    continue;
-
-                var possessed = Communication.GetDMPossessedCreature(pc);
-                if (GetArea(pc) == area ||
-                    (GetIsObjectValid(possessed) && GetArea(possessed) == area))
-                {
-                    return context | OOCMessageContext.DMPresent;
-                }
-            }
-
-            return context;
+            return DMPresence.IsDMPresentInArea(area)
+                ? context | OOCMessageContext.DMPresent
+                : context;
         }
 
         /// <summary>

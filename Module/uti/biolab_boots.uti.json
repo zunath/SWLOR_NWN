@@ -1,0 +1,319 @@
+{
+  "__data_type": "UTI ",
+  "AddCost": {
+    "type": "dword",
+    "value": 273
+  },
+  "BaseItem": {
+    "type": "int",
+    "value": 26
+  },
+  "Charges": {
+    "type": "byte",
+    "value": 0
+  },
+  "Comment": {
+    "type": "cexostring",
+    "value": "1"
+  },
+  "Cost": {
+    "type": "dword",
+    "value": 274
+  },
+  "Cursed": {
+    "type": "byte",
+    "value": 0
+  },
+  "DescIdentified": {
+    "type": "cexolocstring",
+    "value": {
+      "0": "Sealed laboratory boots from the station's research wing. They guard against Force attacks and help the wearer recover Force energy."
+    }
+  },
+  "Description": {
+    "type": "cexolocstring",
+    "value": {
+      "0": "Sealed laboratory boots from the station's research wing. They guard against Force attacks and help the wearer recover Force energy."
+    }
+  },
+  "Identified": {
+    "type": "byte",
+    "value": 1
+  },
+  "LocalizedName": {
+    "type": "cexolocstring",
+    "value": {
+      "0": "Biolab Boots"
+    }
+  },
+  "ModelPart1": {
+    "type": "byte",
+    "value": 23
+  },
+  "ModelPart2": {
+    "type": "byte",
+    "value": 44
+  },
+  "ModelPart3": {
+    "type": "byte",
+    "value": 13
+  },
+  "PaletteID": {
+    "type": "byte",
+    "value": 15
+  },
+  "Plot": {
+    "type": "byte",
+    "value": 0
+  },
+  "PropertiesList": {
+    "type": "list",
+    "value": [
+      {
+        "__struct_id": 0,
+        "ChanceAppear": {
+          "type": "byte",
+          "value": 100
+        },
+        "CostTable": {
+          "type": "byte",
+          "value": 35
+        },
+        "CostValue": {
+          "type": "word",
+          "value": 14
+        },
+        "Param1": {
+          "type": "byte",
+          "value": 255
+        },
+        "Param1Value": {
+          "type": "byte",
+          "value": 0
+        },
+        "PropertyName": {
+          "type": "word",
+          "value": 94
+        },
+        "Subtype": {
+          "type": "word",
+          "value": 2
+        }
+      },
+      {
+        "__struct_id": 0,
+        "ChanceAppear": {
+          "type": "byte",
+          "value": 100
+        },
+        "CostTable": {
+          "type": "byte",
+          "value": 35
+        },
+        "CostValue": {
+          "type": "word",
+          "value": 6
+        },
+        "Param1": {
+          "type": "byte",
+          "value": 255
+        },
+        "Param1Value": {
+          "type": "byte",
+          "value": 0
+        },
+        "PropertyName": {
+          "type": "word",
+          "value": 94
+        },
+        "Subtype": {
+          "type": "word",
+          "value": 1
+        }
+      },
+      {
+        "__struct_id": 0,
+        "ChanceAppear": {
+          "type": "byte",
+          "value": 100
+        },
+        "CostTable": {
+          "type": "byte",
+          "value": 37
+        },
+        "CostValue": {
+          "type": "word",
+          "value": 22
+        },
+        "Param1": {
+          "type": "byte",
+          "value": 255
+        },
+        "Param1Value": {
+          "type": "byte",
+          "value": 0
+        },
+        "PropertyName": {
+          "type": "word",
+          "value": 90
+        },
+        "Subtype": {
+          "type": "word",
+          "value": 0
+        }
+      },
+      {
+        "__struct_id": 0,
+        "ChanceAppear": {
+          "type": "byte",
+          "value": 100
+        },
+        "CostTable": {
+          "type": "byte",
+          "value": 38
+        },
+        "CostValue": {
+          "type": "word",
+          "value": 4
+        },
+        "Param1": {
+          "type": "byte",
+          "value": 255
+        },
+        "Param1Value": {
+          "type": "byte",
+          "value": 0
+        },
+        "PropertyName": {
+          "type": "word",
+          "value": 91
+        },
+        "Subtype": {
+          "type": "word",
+          "value": 0
+        }
+      },
+      {
+        "__struct_id": 0,
+        "ChanceAppear": {
+          "type": "byte",
+          "value": 100
+        },
+        "CostTable": {
+          "type": "byte",
+          "value": 45
+        },
+        "CostValue": {
+          "type": "word",
+          "value": 1
+        },
+        "Param1": {
+          "type": "byte",
+          "value": 255
+        },
+        "Param1Value": {
+          "type": "byte",
+          "value": 0
+        },
+        "PropertyName": {
+          "type": "word",
+          "value": 119
+        },
+        "Subtype": {
+          "type": "word",
+          "value": 0
+        }
+      },
+      {
+        "__struct_id": 0,
+        "ChanceAppear": {
+          "type": "byte",
+          "value": 100
+        },
+        "CostTable": {
+          "type": "byte",
+          "value": 45
+        },
+        "CostValue": {
+          "type": "word",
+          "value": 1
+        },
+        "Param1": {
+          "type": "byte",
+          "value": 255
+        },
+        "Param1Value": {
+          "type": "byte",
+          "value": 0
+        },
+        "PropertyName": {
+          "type": "word",
+          "value": 112
+        },
+        "Subtype": {
+          "type": "word",
+          "value": 0
+        }
+      },
+      {
+        "__struct_id": 0,
+        "ChanceAppear": {
+          "type": "byte",
+          "value": 100
+        },
+        "CostTable": {
+          "type": "byte",
+          "value": 48
+        },
+        "CostValue": {
+          "type": "word",
+          "value": 25
+        },
+        "Param1": {
+          "type": "byte",
+          "value": 255
+        },
+        "Param1Value": {
+          "type": "byte",
+          "value": 0
+        },
+        "PropertyName": {
+          "type": "word",
+          "value": 131
+        },
+        "Subtype": {
+          "type": "word",
+          "value": 6
+        }
+      }
+    ]
+  },
+  "StackSize": {
+    "type": "word",
+    "value": 1
+  },
+  "Stolen": {
+    "type": "byte",
+    "value": 0
+  },
+  "Tag": {
+    "type": "cexostring",
+    "value": "biolab_boots"
+  },
+  "TemplateResRef": {
+    "type": "resref",
+    "value": "biolab_boots"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 23
+  },
+  "xModelPart2": {
+    "type": "word",
+    "value": 44
+  },
+  "xModelPart3": {
+    "type": "word",
+    "value": 13
+  }
+}

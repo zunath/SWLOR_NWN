@@ -1,0 +1,409 @@
+{
+  "__data_type": "UTI ",
+  "AddCost": {
+    "type": "dword",
+    "value": 547
+  },
+  "ArmorPart_Belt": {
+    "type": "byte",
+    "value": 0
+  },
+  "ArmorPart_LBicep": {
+    "type": "byte",
+    "value": 105
+  },
+  "ArmorPart_LFArm": {
+    "type": "byte",
+    "value": 75
+  },
+  "ArmorPart_LFoot": {
+    "type": "byte",
+    "value": 75
+  },
+  "ArmorPart_LHand": {
+    "type": "byte",
+    "value": 75
+  },
+  "ArmorPart_LShin": {
+    "type": "byte",
+    "value": 75
+  },
+  "ArmorPart_LShoul": {
+    "type": "byte",
+    "value": 9
+  },
+  "ArmorPart_LThigh": {
+    "type": "byte",
+    "value": 75
+  },
+  "ArmorPart_Neck": {
+    "type": "byte",
+    "value": 1
+  },
+  "ArmorPart_Pelvis": {
+    "type": "byte",
+    "value": 75
+  },
+  "ArmorPart_RBicep": {
+    "type": "byte",
+    "value": 105
+  },
+  "ArmorPart_RFArm": {
+    "type": "byte",
+    "value": 75
+  },
+  "ArmorPart_RFoot": {
+    "type": "byte",
+    "value": 75
+  },
+  "ArmorPart_RHand": {
+    "type": "byte",
+    "value": 75
+  },
+  "ArmorPart_RShin": {
+    "type": "byte",
+    "value": 75
+  },
+  "ArmorPart_RShoul": {
+    "type": "byte",
+    "value": 9
+  },
+  "ArmorPart_RThigh": {
+    "type": "byte",
+    "value": 75
+  },
+  "ArmorPart_Robe": {
+    "type": "byte",
+    "value": 0
+  },
+  "ArmorPart_Torso": {
+    "type": "byte",
+    "value": 75
+  },
+  "BaseItem": {
+    "type": "int",
+    "value": 16
+  },
+  "Charges": {
+    "type": "byte",
+    "value": 0
+  },
+  "Cloth1Color": {
+    "type": "byte",
+    "value": 23
+  },
+  "Cloth2Color": {
+    "type": "byte",
+    "value": 50
+  },
+  "Comment": {
+    "type": "cexostring",
+    "value": "1"
+  },
+  "Cost": {
+    "type": "dword",
+    "value": 548
+  },
+  "Cursed": {
+    "type": "byte",
+    "value": 0
+  },
+  "DescIdentified": {
+    "type": "cexolocstring",
+    "value": {
+      "0": "Plated body armor worn by the station's containment teams when the outbreak began. It absorbs heavy blows and steadies the wearer's strikes."
+    }
+  },
+  "Description": {
+    "type": "cexolocstring",
+    "value": {
+      "0": "Plated body armor worn by the station's containment teams when the outbreak began. It absorbs heavy blows and steadies the wearer's strikes."
+    }
+  },
+  "Identified": {
+    "type": "byte",
+    "value": 1
+  },
+  "Leather1Color": {
+    "type": "byte",
+    "value": 23
+  },
+  "Leather2Color": {
+    "type": "byte",
+    "value": 89
+  },
+  "LocalizedName": {
+    "type": "cexolocstring",
+    "value": {
+      "0": "Containment Armor"
+    }
+  },
+  "Metal1Color": {
+    "type": "byte",
+    "value": 66
+  },
+  "Metal2Color": {
+    "type": "byte",
+    "value": 66
+  },
+  "PaletteID": {
+    "type": "byte",
+    "value": 8
+  },
+  "Plot": {
+    "type": "byte",
+    "value": 0
+  },
+  "PropertiesList": {
+    "type": "list",
+    "value": [
+      {
+        "__struct_id": 0,
+        "ChanceAppear": {
+          "type": "byte",
+          "value": 100
+        },
+        "CostTable": {
+          "type": "byte",
+          "value": 35
+        },
+        "CostValue": {
+          "type": "word",
+          "value": 13
+        },
+        "Param1": {
+          "type": "byte",
+          "value": 255
+        },
+        "Param1Value": {
+          "type": "byte",
+          "value": 0
+        },
+        "PropertyName": {
+          "type": "word",
+          "value": 94
+        },
+        "Subtype": {
+          "type": "word",
+          "value": 2
+        }
+      },
+      {
+        "__struct_id": 0,
+        "ChanceAppear": {
+          "type": "byte",
+          "value": 100
+        },
+        "CostTable": {
+          "type": "byte",
+          "value": 35
+        },
+        "CostValue": {
+          "type": "word",
+          "value": 17
+        },
+        "Param1": {
+          "type": "byte",
+          "value": 255
+        },
+        "Param1Value": {
+          "type": "byte",
+          "value": 0
+        },
+        "PropertyName": {
+          "type": "word",
+          "value": 94
+        },
+        "Subtype": {
+          "type": "word",
+          "value": 1
+        }
+      },
+      {
+        "__struct_id": 0,
+        "ChanceAppear": {
+          "type": "byte",
+          "value": 100
+        },
+        "CostTable": {
+          "type": "byte",
+          "value": 37
+        },
+        "CostValue": {
+          "type": "word",
+          "value": 68
+        },
+        "Param1": {
+          "type": "byte",
+          "value": 255
+        },
+        "Param1Value": {
+          "type": "byte",
+          "value": 0
+        },
+        "PropertyName": {
+          "type": "word",
+          "value": 90
+        },
+        "Subtype": {
+          "type": "word",
+          "value": 0
+        }
+      },
+      {
+        "__struct_id": 0,
+        "ChanceAppear": {
+          "type": "byte",
+          "value": 100
+        },
+        "CostTable": {
+          "type": "byte",
+          "value": 45
+        },
+        "CostValue": {
+          "type": "word",
+          "value": 1
+        },
+        "Param1": {
+          "type": "byte",
+          "value": 255
+        },
+        "Param1Value": {
+          "type": "byte",
+          "value": 0
+        },
+        "PropertyName": {
+          "type": "word",
+          "value": 111
+        },
+        "Subtype": {
+          "type": "word",
+          "value": 0
+        }
+      },
+      {
+        "__struct_id": 0,
+        "ChanceAppear": {
+          "type": "byte",
+          "value": 100
+        },
+        "CostTable": {
+          "type": "byte",
+          "value": 48
+        },
+        "CostValue": {
+          "type": "word",
+          "value": 25
+        },
+        "Param1": {
+          "type": "byte",
+          "value": 255
+        },
+        "Param1Value": {
+          "type": "byte",
+          "value": 0
+        },
+        "PropertyName": {
+          "type": "word",
+          "value": 131
+        },
+        "Subtype": {
+          "type": "word",
+          "value": 6
+        }
+      }
+    ]
+  },
+  "StackSize": {
+    "type": "word",
+    "value": 1
+  },
+  "Stolen": {
+    "type": "byte",
+    "value": 0
+  },
+  "Tag": {
+    "type": "cexostring",
+    "value": "cnt_armor"
+  },
+  "TemplateResRef": {
+    "type": "resref",
+    "value": "cnt_armor"
+  },
+  "xArmorPart_Belt": {
+    "type": "word",
+    "value": 0
+  },
+  "xArmorPart_LBice": {
+    "type": "word",
+    "value": 105
+  },
+  "xArmorPart_LFArm": {
+    "type": "word",
+    "value": 75
+  },
+  "xArmorPart_LFoot": {
+    "type": "word",
+    "value": 75
+  },
+  "xArmorPart_LHand": {
+    "type": "word",
+    "value": 75
+  },
+  "xArmorPart_LShin": {
+    "type": "word",
+    "value": 75
+  },
+  "xArmorPart_LShou": {
+    "type": "word",
+    "value": 9
+  },
+  "xArmorPart_LThig": {
+    "type": "word",
+    "value": 75
+  },
+  "xArmorPart_Neck": {
+    "type": "word",
+    "value": 1
+  },
+  "xArmorPart_Pelvi": {
+    "type": "word",
+    "value": 75
+  },
+  "xArmorPart_RBice": {
+    "type": "word",
+    "value": 105
+  },
+  "xArmorPart_RFArm": {
+    "type": "word",
+    "value": 75
+  },
+  "xArmorPart_RFoot": {
+    "type": "word",
+    "value": 75
+  },
+  "xArmorPart_RHand": {
+    "type": "word",
+    "value": 75
+  },
+  "xArmorPart_RShin": {
+    "type": "word",
+    "value": 75
+  },
+  "xArmorPart_RShou": {
+    "type": "word",
+    "value": 9
+  },
+  "xArmorPart_RThig": {
+    "type": "word",
+    "value": 75
+  },
+  "xArmorPart_Robe": {
+    "type": "word",
+    "value": 0
+  },
+  "xArmorPart_Torso": {
+    "type": "word",
+    "value": 75
+  }
+}

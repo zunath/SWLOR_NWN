@@ -59,8 +59,15 @@ namespace SWLOR.CombatSim.Engine
             StatType.HeavyVibrobladeOffenseHitPointSpendStaminaRestoreBasePercent,
             StatType.HeavyVibrobladeOffenseHitPointSpendStaminaRestoreCooldownSeconds,
             StatType.HeavyVibrobladeOffenseHitPointSpendStaminaRestoreScalingAbility,
-            StatType.HeavyVibrobladeOffenseHitPointSpendStaminaRestoreMaximumPercent
+            StatType.HeavyVibrobladeOffenseHitPointSpendStaminaRestoreMaximumPercent,
+            StatType.AbilityStaminaCostFPRestorePercentSkillType,
+            StatType.AbilityStaminaCostFPRestorePercent,
+            StatType.AbilityFPCostStaminaRestorePercentSkillType,
+            StatType.AbilityFPCostStaminaRestorePercent
         };
+
+        // Combat's MaximumCrossResourceRestorePercent: Conduit never returns more than this share of a cost.
+        private const int MaximumCrossResourceRestorePercent = 95;
 
         private readonly ScenarioSpec _scenario;
         private readonly RuleSet _rules;
@@ -307,7 +314,11 @@ namespace SWLOR.CombatSim.Engine
 
             // Shields ending now are gone before regeneration, heals over time and zone pulses read anyone's HP.
             foreach (var combatant in _combatants)
+            {
                 combatant.TemporaryHp.RemoveAll(p => p.ExpiresAt <= _now || p.Amount <= 0);
+                foreach (var key in combatant.Statuses.Where(s => s.Value.ExpiresAt <= _now).Select(s => s.Key).ToList())
+                    combatant.Statuses.Remove(key);
+            }
 
             foreach (var combatant in _combatants.ToList())
             {
@@ -408,6 +419,9 @@ namespace SWLOR.CombatSim.Engine
                 throw new InvalidDataException(isRevive
                     ? $"'{use.Feat}' revives, so its Target must be DeadAlly."
                     : $"'{use.Feat}' does not revive, so it cannot target a DeadAlly.");
+
+            if (effect?.Kind == EffectKind.SelfStatus && use.Target != AbilityTarget.Self)
+                throw new InvalidDataException($"'{use.Feat}' puts a status on its caster, so its Target must be Self.");
 
             var isFriendlySingleTarget = effect != null && !isRevive && !IsPartyEffect(effect);
             if (isFriendlySingleTarget && use.Target == AbilityTarget.Enemy)
@@ -599,6 +613,9 @@ namespace SWLOR.CombatSim.Engine
                 if (use.MinIntervalSeconds > 0 && caster.LastUsedAt.TryGetValue(use.Feat, out var lastUsedAt) && _now < lastUsedAt + use.MinIntervalSeconds)
                     continue;
 
+                if (info.IsHostile && _now + 1e-9 < caster.HostileAbilityReadyAt)
+                    continue;
+
                 // Queueing another weapon ability would replace the one waiting for a hit.
                 if (info.IsQueuedWeapon && caster.QueuedWeaponAbility != null)
                     continue;
@@ -634,6 +651,18 @@ namespace SWLOR.CombatSim.Engine
                     continue;
                 }
 
+                // Stances and self buffs toggle (ToggleSelfStatus): using one that is active turns it off at once,
+                // spending nothing and starting no recast. The game checks the costs first, so an unaffordable use
+                // leaves it on.
+                if (effect?.Kind == EffectKind.SelfStatus && caster.Statuses.Remove(effect.Key))
+                {
+                    // Still a use, for the scenario's MinIntervalSeconds.
+                    caster.LastUsedAt[use.Feat] = _now;
+                    caster.NextActionAt = _now + caster.Spec.ReactionSeconds;
+                    caster.IsStarved = starved;
+                    return;
+                }
+
                 StartCast(caster, use, info, effect, target, fp, stm);
                 // Settling for a cheaper ability still counts as not affording the one wanted first.
                 caster.IsStarved = starved;
@@ -659,6 +688,8 @@ namespace SWLOR.CombatSim.Engine
             };
 
             caster.NextActionAt = _now + info.CastSeconds + info.ImpactDelaySeconds + caster.Spec.ReactionSeconds;
+            if (info.IsHostile)
+                caster.HostileAbilityReadyAt = _now + _rules.HostileAbilityDelaySeconds;
             // The game stops the attack for an ability and resumes it 0.1s after the impact, or after queueing a weapon
             // ability (QueueWeaponAbility), so a swing due now cannot carry the ability queued with it.
             caster.NextAttackAt = Math.Max(caster.NextAttackAt, _now + info.CastSeconds + info.ImpactDelaySeconds + ResumeAttackDelaySeconds);
@@ -717,10 +748,7 @@ namespace SWLOR.CombatSim.Engine
                     return;
                 }
 
-                caster.Fp -= cast.FpCost;
-                caster.Stm -= cast.StmCost;
-                caster.Stats.FpSpent += cast.FpCost;
-                caster.Stats.StmSpent += cast.StmCost;
+                PayCosts(caster, cast);
                 caster.Stats.AbilitiesUsed++;
                 caster.RecastReadyAt[cast.Ability.RecastGroup] = _now + _rules.GetRecastSeconds(cast.Ability);
                 caster.LastUsedAt[cast.Use.Feat] = _now;
@@ -844,8 +872,68 @@ namespace SWLOR.CombatSim.Engine
                 case EffectKind.Revive:
                     Revive(caster, target, effect);
                     break;
+                case EffectKind.SelfStatus:
+                    var isStance = StatusStats.IsStance(effect.StatusType);
+                    // One stance at a time, as the game's RemoveOtherStanceStatuses does.
+                    if (isStance)
+                    {
+                        foreach (var key in caster.Statuses.Where(s => s.Value.IsStance).Select(s => s.Key).ToList())
+                            caster.Statuses.Remove(key);
+                    }
+
+                    caster.Statuses[effect.Key] = new ActiveStatus
+                    {
+                        Stats = StatusStats.Get(effect.StatusType),
+                        ExpiresAt = effect.DurationSeconds > 0 ? _now + effect.DurationSeconds : double.PositiveInfinity,
+                        IsStance = isStance
+                    };
+                    break;
             }
         }
+
+        /// <summary>
+        /// Pays a cast's costs in the order the ability lists them, each followed by Conduit's restore of the other
+        /// resource, as the game's requirements do: an FP-first ability returns STM before its STM cost makes room for it.
+        /// </summary>
+        private void PayCosts(Combatant caster, PendingCast cast)
+        {
+            if (cast.Ability.PaysFpFirst)
+            {
+                PayFp(caster, cast);
+                PayStamina(caster, cast);
+            }
+            else
+            {
+                PayStamina(caster, cast);
+                PayFp(caster, cast);
+            }
+        }
+
+        // Conduit, as Combat's FP-cost stamina restore and stamina-cost FP restore do it, rounded down.
+        private void PayFp(Combatant caster, PendingCast cast)
+        {
+            caster.Fp -= cast.FpCost;
+            caster.Stats.FpSpent += cast.FpCost;
+            if (cast.FpCost > 0 && IsRestoreSkill(caster, StatType.AbilityFPCostStaminaRestorePercentSkillType, cast.Ability.SkillType))
+                RestoreStamina(caster, CrossResourceRestore(cast.FpCost, caster.GetStat(StatType.AbilityFPCostStaminaRestorePercent)), true);
+        }
+
+        private void PayStamina(Combatant caster, PendingCast cast)
+        {
+            caster.Stm -= cast.StmCost;
+            caster.Stats.StmSpent += cast.StmCost;
+            if (cast.StmCost > 0 && IsRestoreSkill(caster, StatType.AbilityStaminaCostFPRestorePercentSkillType, cast.Ability.SkillType))
+                RestoreFp(caster, CrossResourceRestore(cast.StmCost, caster.GetStat(StatType.AbilityStaminaCostFPRestorePercent)), true);
+        }
+
+        private static bool IsRestoreSkill(Combatant caster, StatType skillStat, SkillType skill)
+        {
+            var required = caster.GetStat(skillStat);
+            return required > 0 && (int)skill == required;
+        }
+
+        private static int CrossResourceRestore(int cost, int percent) =>
+            percent <= 0 ? 0 : cost * Math.Min(percent, MaximumCrossResourceRestorePercent) / 100;
 
         private void TriggerConvergence(Combatant caster)
         {
@@ -901,6 +989,7 @@ namespace SWLOR.CombatSim.Engine
                 EffectKind.PartyHealOverTime => caster.GetZone(effect.Key) == null,
                 EffectKind.TemporaryHp => target.TemporaryHp.All(p => p.Key != effect.Key),
                 EffectKind.PartyTemporaryHp => target.TemporaryHp.All(p => p.Key != effect.Key),
+                EffectKind.SelfStatus => !target.Statuses.ContainsKey(effect.Key),
                 _ => true
             };
         }
@@ -1387,7 +1476,12 @@ namespace SWLOR.CombatSim.Engine
             target.Hp = 0;
             target.Casting = null;
             target.QueuedWeaponAbility = null;
+            // Statuses end at death; a revived caster takes its stance up again.
+            target.Statuses.Clear();
             target.KilledByPlayer = killer != null && IsPlayerVersusPlayer(killer, target);
+            // Death ends PvP combat, as the game's PvpCombat.EndOnDeath does, so a revive starts a new one.
+            target.PvpCombatStartedAt = double.NegativeInfinity;
+            target.LastPvpActivityAt = double.NegativeInfinity;
             target.TemporaryHp.Clear();
             target.DamageReductions.Clear();
             target.HealsOverTime.Clear();

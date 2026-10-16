@@ -34,7 +34,8 @@ namespace SWLOR.Game.Server.Service
         public static void SetIsManifested(uint dm, bool isManifested)
         {
             dm = GetDM(dm);
-            if (!GetIsDM(dm))
+            // A possessing DM's avatar no longer passes GetIsDM.
+            if (!IsControlledByDM(dm))
                 return;
 
             var server = NWNXLib.g_pAppManager.m_pServerExoApp;
@@ -46,13 +47,26 @@ namespace SWLOR.Game.Server.Service
             if (!isManifested)
                 creature.PacifyCreature();
 
-            // The server never tells the DM's client about the change itself. The login state message runs the
-            // client's own Appear/Disappear handler, which fades the avatar on the DM's screen like the native button.
-            var player = server.GetClientObjectByObjectId(dm);
-            if (player != null)
-                server.GetNWSMessage().SendServerToPlayerDungeonMasterLoginState(player, 1, isManifested ? 1 : 0);
+            RefreshAvatarFade(dm);
 
             Log.Write(LogGroup.DM, $"{DescribeDM(dm)} {(isManifested ? "appeared" : "disappeared")} in {GetResRef(GetArea(dm))}.");
+        }
+
+        /// <summary>
+        /// Fades the DM's avatar on their own screen, or shows it, to match whether players can see it. Nothing is
+        /// sent while the DM possesses a creature, so call this again once they return to their avatar.
+        /// </summary>
+        /// <param name="dm">The DM avatar or the creature they possess.</param>
+        public static void RefreshAvatarFade(uint dm)
+        {
+            dm = GetDM(dm);
+            var server = NWNXLib.g_pAppManager.m_pServerExoApp;
+            // The server never tells the DM's client about the change itself. The login state message runs the
+            // client's own Appear/Disappear handler, which fades the avatar on the DM's screen like the native button.
+            // The client applies it to whatever the DM controls, and this lookup finds no client while they possess one.
+            var player = server.GetClientObjectByObjectId(dm);
+            if (player != null)
+                server.GetNWSMessage().SendServerToPlayerDungeonMasterLoginState(player, 1, GetIsManifested(dm) ? 1 : 0);
         }
 
         /// <summary>
@@ -110,7 +124,9 @@ namespace SWLOR.Game.Server.Service
         public static string DescribeDM(uint dm)
         {
             dm = GetDM(dm);
-            return $"{GetName(dm)} ({GetPCPlayerName(dm)}) [{GetPCPublicCDKey(dm)}]";
+            // The account and CD key resolve from what the DM controls, which is the possessed creature while possessing.
+            var controlled = GetControlledCreature(dm);
+            return $"{GetName(dm)} ({GetPCPlayerName(controlled)}) [{GetPCPublicCDKey(controlled)}]";
         }
 
         /// <summary>

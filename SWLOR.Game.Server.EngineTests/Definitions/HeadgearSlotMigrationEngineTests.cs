@@ -110,7 +110,7 @@ public static partial class MigrationEngineTests
             stm = Stat.GetMaxStamina(player);
             fixture.Update(record => { record.FP = fp; record.Stamina = stm; });
 
-            if (!statsFirst) HeadgearSlotMigration.MigrateObject(player);
+            if (statsFirst) Invoke("LootStatRevisionMigration", "MigrateItem", visor);
             new _22_ReviseLootStats().Migrate(player);
             ctx.Assert(!HeadgearSlotMigration.MigrateObject(player), "Repeated login conversion makes no change");
             ctx.Assert(!LootStatRevisionMigration.MigrateObject(player), "Loot revision retry makes no change");

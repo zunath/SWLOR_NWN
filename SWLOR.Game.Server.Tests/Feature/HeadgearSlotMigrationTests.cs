@@ -137,7 +137,7 @@ public class HeadgearSlotMigrationTests
         ((JObject)droid["Inventory"]!).Properties().Should().HaveCount(2);
         var stowed = ((JObject)droid["Inventory"]!).Properties().Single(x => x.Name != "old-id");
         var idLocal = Children(Read(stowed.Value.Value<string>()!), "VarTable").Single(x => (string)Value(x, "Name") == "DROID_ITEM_ID");
-        Value(idLocal, "Value").Should().Be(stowed.Name);
+        stowed.Name.Should().Be("DROID_RESTORE_ITEM:" + (int)InventorySlot.Head + ":" + Value(idLocal, "Value"));
         Value(Read(stowed.Value.Value<string>()!), "UUID").Should().Be("visor-uuid");
         Value(Read(droid["SerializedCPU"]!.Value<string>()!), "BaseItem").Should().Be((int)BaseItem.Helmet);
         droid["UnknownState"]!.Value<int>().Should().Be(42);

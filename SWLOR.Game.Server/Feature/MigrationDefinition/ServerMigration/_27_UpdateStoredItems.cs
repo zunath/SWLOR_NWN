@@ -39,10 +39,8 @@ public sealed class _27_UpdateStoredItems : IServerMigration
             MigrateItem(item.Resref, item.Data, value => item.Data = value, item.IconResref, value => item.IconResref = value));
         changed += MigrateRecords<MarketItem>(progress, item =>
         {
-            var rootWasHeadgear = StoredObjectData.IsLegacyHeadgearRoot(item.Data);
-            var itemChanged = MigrateItem(item.Resref, item.Data, value => item.Data = value, item.IconResref, value => item.IconResref = value);
-            if (rootWasHeadgear && itemChanged) item.Category = MarketCategoryType.Helmet;
-            return itemChanged;
+            return MigrateItem(item.Resref, item.Data, value => item.Data = value, item.IconResref, value => item.IconResref = value,
+                () => item.Category = MarketCategoryType.Helmet);
         });
         changed += MigrateRecords<WorldPropertyCategory>(progress, category =>
         {
@@ -96,10 +94,15 @@ public sealed class _27_UpdateStoredItems : IServerMigration
         return changed;
     }
 
-    private static bool MigrateItem(string resref, string data, Action<string> setData, string icon, Action<string> setIcon)
+    private static bool MigrateItem(string resref, string data, Action<string> setData, string icon, Action<string> setIcon, Action convertedHeadgear = null)
     {
-        var changed = MigrateData(data, setData);
-        var updatedIcon = ItemIconMigration.GetUpdatedIcon(resref, icon);
+        string headgearIcon = null;
+        var changed = MigrateData(data, setData, convertedHeadgear: item =>
+        {
+            headgearIcon = Item.GetIconResref(item);
+            convertedHeadgear?.Invoke();
+        });
+        var updatedIcon = headgearIcon ?? ItemIconMigration.GetUpdatedIcon(resref, icon);
         if (updatedIcon == icon)
             return changed;
         setIcon(updatedIcon);
@@ -124,9 +127,9 @@ public sealed class _27_UpdateStoredItems : IServerMigration
         return changed;
     }
 
-    private static bool MigrateData(string data, Action<string> setData, bool repairHeadgear = true)
+    private static bool MigrateData(string data, Action<string> setData, bool repairHeadgear = true, Action<uint> convertedHeadgear = null)
     {
-        if (!LootStatRevisionMigration.MigrateStoredObjectData(data, out var migrated, repairHeadgear))
+        if (!LootStatRevisionMigration.MigrateStoredObjectData(data, out var migrated, repairHeadgear, convertedHeadgear))
             return false;
         setData(migrated);
         return true;

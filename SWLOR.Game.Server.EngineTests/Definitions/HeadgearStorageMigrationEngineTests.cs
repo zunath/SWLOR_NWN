@@ -30,10 +30,16 @@ public static partial class MigrationEngineTests
         string correctHelmet = null;
         string savedBag = null;
         string ordinaryArmor = null;
+        string helmetIcon = null;
+        string legacyIcon = null;
         await ctx.ExecuteInCreatureContextAsync(owner, () =>
         {
             correctHelmet = ObjectPlugin.Serialize(item);
+            helmetIcon = Item.GetIconResref(item);
             StampLegacyVisor(item);
+            legacyIcon = Item.GetIconResref(item);
+            ctx.Assert(legacyIcon != helmetIcon, "The fixture begins with a distinct armor icon");
+            ctx.Log($"Stored headgear icon: {legacyIcon} -> {helmetIcon}");
             saved = ObjectPlugin.Serialize(item);
             StampLegacyVisor(nested);
             savedBag = ObjectPlugin.Serialize(bag);
@@ -48,7 +54,10 @@ public static partial class MigrationEngineTests
             var cleanups = new List<Action>();
             void Add<T>(T record, Func<T, IEnumerable<string>> payloads) where T : EntityBase
             {
-                var before = StorageMetadata(JObject.FromObject(record));
+                var before = JObject.FromObject(record);
+                foreach (var icon in before.Descendants().OfType<JProperty>().Where(x => x.Name == "IconResref" &&
+                    x.Parent is JObject holder && (string)holder["Data"] == saved)) icon.Value = helmetIcon;
+                before = StorageMetadata(before);
                 if (record is MarketItem) before[nameof(MarketItem.Category)] = (int)MarketCategoryType.Helmet;
                 DB.Set(record);
                 cleanups.Add(() => DB.Delete<T>(record.Id));
@@ -58,6 +67,7 @@ public static partial class MigrationEngineTests
                     ctx.Assert(JToken.DeepEquals(before, StorageMetadata(JObject.FromObject(current))), $"{typeof(T).Name} ownership, quantities and metadata survive");
                     if (current is MarketItem market)
                     {
+                        ctx.AssertEqual(helmetIcon, market.IconResref, "Converted market listing displays the native helmet icon");
                         var matches = DB.Search(new DBQuery<MarketItem>()
                             .AddFieldSearch(nameof(MarketItem.PlayerId), market.PlayerId, false)
                             .AddFieldSearch(nameof(MarketItem.Category), new[] { (int)MarketCategoryType.Helmet })
@@ -81,8 +91,8 @@ public static partial class MigrationEngineTests
             try
             {
                 for (var index = 0; index < 55; index++)
-                    Add(new InventoryItem { Data = saved, PlayerId = "stored-owner", StorageId = "GLOBAL_BANK", Quantity = 1, Name = "Custom bank label" }, x => new[] { x.Data });
-                Add(new MarketItem { Data = saved, PlayerId = "stored-owner", Price = 123, Quantity = 1, Name = "Custom market label", Category = MarketCategoryType.Armor }, x => new[] { x.Data });
+                    Add(new InventoryItem { Data = saved, PlayerId = "stored-owner", StorageId = "GLOBAL_BANK", Quantity = 1, Name = "Custom bank label", IconResref = legacyIcon }, x => new[] { x.Data });
+                Add(new MarketItem { Data = saved, PlayerId = "stored-owner", Price = 123, Quantity = 1, Name = "Custom market label", Category = MarketCategoryType.Armor, IconResref = legacyIcon }, x => new[] { x.Data });
                 foreach (var (data, category, shouldChange) in new[]
                 {
                     (correctHelmet, MarketCategoryType.Helmet, false),

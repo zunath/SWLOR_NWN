@@ -57,6 +57,10 @@ public static class LootStatRevisionMigration
             if (!Droid.IsDroid(obj) && (!GetIsPC(obj) || GetIsDM(obj) || GetIsDMPossessed(obj)))
                 return false;
             pools = CapturePools(obj);
+            // Establish safe storage before revising any equipped properties.
+            // A full inventory can abort login without leaving DB-only deltas.
+            if (repairHeadgear)
+                changed |= HeadgearSlotMigration.ConvertItem(GetItemInSlot(InventorySlot.Chest, obj));
             for (var slot = 0; slot < NumberOfInventorySlots; slot++)
                 changed |= MigrateObject(GetItemInSlot((InventorySlot)slot, obj), visited, reviseStats, repairHeadgear, updateArtwork);
             if (GetIsPC(obj))
@@ -64,11 +68,11 @@ public static class LootStatRevisionMigration
         }
         else if (objectType == ObjectType.Item)
         {
-            // Revise the counted properties before native unequip removes them.
-            // The same item visit performs both independent, idempotent changes.
+            // Direct acquisition follows the same ordering: storage failure must
+            // precede any property revision or persisted wearer-stat difference.
             if (updateArtwork) changed |= ItemIconMigration.MigrateItem(obj);
-            if (reviseStats) changed |= MigrateItem(obj);
             if (repairHeadgear) changed |= HeadgearSlotMigration.ConvertItem(obj);
+            if (reviseStats) changed |= MigrateItem(obj);
             changed |= MigrateObject(GetSummonedDroid(obj), visited, reviseStats, repairHeadgear, updateArtwork);
             var original = GetLocalString(obj, ConstructedDroidVariable);
             var migrated = HeadgearSlotMigration.MigrateDroid(original, data =>
@@ -130,10 +134,10 @@ public static class LootStatRevisionMigration
     public static bool MigrateSerializedObject(string original, out string migrated)
         => MigrateSerializedObject(original, out migrated, true, true);
 
-    internal static bool MigrateStoredObjectData(string original, out string migrated, bool repairHeadgear = true)
-        => MigrateSerializedObject(original, out migrated, true, repairHeadgear, true);
+    internal static bool MigrateStoredObjectData(string original, out string migrated, bool repairHeadgear = true, Action<uint> convertedHeadgear = null)
+        => MigrateSerializedObject(original, out migrated, true, repairHeadgear, true, convertedHeadgear);
 
-    private static bool MigrateSerializedObject(string original, out string migrated, bool reviseStats, bool repairHeadgear, bool updateArtwork = false)
+    private static bool MigrateSerializedObject(string original, out string migrated, bool reviseStats, bool repairHeadgear, bool updateArtwork = false, Action<uint> convertedHeadgear = null)
     {
         migrated = original;
         if (string.IsNullOrWhiteSpace(original))
@@ -144,8 +148,11 @@ public static class LootStatRevisionMigration
         var obj = MigrationObject.Deserialize(inventory?.PrepareForNativeLoad(null) ?? original);
         try
         {
+            var legacyRoot = repairHeadgear && GetObjectType(obj) == ObjectType.Item &&
+                HeadgearSlotMigration.IsLegacyHeadgear(GetResRef(obj), GetBaseItemType(obj));
             if (!MigrateObject(obj, new HashSet<uint>(), reviseStats, repairHeadgear, updateArtwork))
                 return false;
+            if (legacyRoot) convertedHeadgear?.Invoke(obj);
             migrated = MigrationObject.Serialize(obj, original);
             if (inventory != null)
                 migrated = inventory.CopyMigratedInventory(migrated);

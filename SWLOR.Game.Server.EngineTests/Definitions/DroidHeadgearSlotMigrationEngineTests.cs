@@ -17,7 +17,13 @@ public static partial class DroidInventoryEngineTests
     [EngineTest("Migration repairs saved droid chest visor after loot revision through two resummons", Category = "DroidInventory", TimeoutSeconds = 90)]
     public static Task HeadgearSavedStatsFirst(EngineTestContext ctx) => VerifySavedHeadgear(ctx, true);
 
-    private static async Task VerifySavedHeadgear(EngineTestContext ctx, bool statsFirst)
+    [EngineTest("Migration restores saved droid chest visor into a free head slot across two resummons", Category = "DroidInventory", TimeoutSeconds = 90)]
+    public static Task HeadgearSavedFreeHead(EngineTestContext ctx) => VerifySavedHeadgear(ctx, true, false);
+
+    [EngineTest("Migration leaves denied saved droid headgear carried across two resummons", Category = "DroidInventory", TimeoutSeconds = 90)]
+    public static Task HeadgearSavedDeniedHead(EngineTestContext ctx) => VerifySavedHeadgear(ctx, true, false, true);
+
+    private static async Task VerifySavedHeadgear(EngineTestContext ctx, bool statsFirst, bool occupied = true, bool denyEquip = false)
     {
         var owner = ctx.SpawnCreature("civilian");
         await ctx.WaitFrameAsync();
@@ -35,12 +41,16 @@ public static partial class DroidInventoryEngineTests
                 AddItemProperty(DurationType.Permanent, ItemPropertyLimitUseByRace(RacialType.Droid), item);
             SetLocalString(head, "DROID_ITEM_ID", "collision");
             SetLocalString(visor, "DROID_ITEM_ID", "collision");
-            Droid.SaveConstructedDroid(controller, new ConstructedDroid
+            if (denyEquip) AddItemProperty(DurationType.Permanent,
+                ItemPropertyCustom(ItemPropertyType.RequiresSkill, (int)SWLOR.Game.Server.Service.SkillService.SkillType.Rifle, 50), visor);
+            var archive = new ConstructedDroid
             {
                 Name = "Headgear fixture",
-                EquippedItems = { [InventorySlot.Chest] = ObjectPlugin.Serialize(visor), [InventorySlot.Head] = ObjectPlugin.Serialize(head) },
+                EquippedItems = { [InventorySlot.Chest] = ObjectPlugin.Serialize(visor) },
                 Inventory = { ["collision"] = ObjectPlugin.Serialize(carried) },
-            });
+            };
+            if (occupied) archive.EquippedItems[InventorySlot.Head] = ObjectPlugin.Serialize(head);
+            Droid.SaveConstructedDroid(controller, archive);
             DestroyObject(visor);
             DestroyObject(carried);
             DestroyObject(head);
@@ -50,23 +60,32 @@ public static partial class DroidInventoryEngineTests
             ctx.Assert(!HeadgearSlotMigration.MigrateObject(controller), "Controller retry is stable");
             var saved = Droid.LoadConstructedDroid(controller);
             ctx.Assert(!saved.EquippedItems.ContainsKey(InventorySlot.Chest), "No saved chest visor remains");
-            ctx.Assert(saved.EquippedItems.ContainsKey(InventorySlot.Head), "Existing saved helmet is preserved");
+            ctx.AssertEqual(occupied, saved.EquippedItems.ContainsKey(InventorySlot.Head), "Existing saved helmet is preserved");
             ctx.AssertEqual(2, saved.Inventory.Count, "Both carried and stowed copies are retained despite colliding historical IDs");
         });
         await ctx.DelaySecondsAsync(0.3f);
         var droid = await Spawn(ctx, owner, controller);
+        var deniedAttack = SkinAttack(droid);
         try
         {
             for (var cycle = 0; cycle <= 2; cycle++)
             {
                 visor = MigrationEngineTests.FindHeadgear(droid, "ruptorvanecr");
                 head = GetItemInSlot(InventorySlot.Head, droid);
-                ctx.AssertEqual("charm_cowl", GetResRef(head), "The original head slot is preserved after summon");
+                ctx.AssertEqual(occupied ? "charm_cowl" : denyEquip ? "" : "ruptorvanecr", GetResRef(head), "Summon preserves an occupied head or restores the migrated visor when usable");
                 ctx.AssertEqual(OBJECT_INVALID, GetItemInSlot(InventorySlot.Chest, droid), "The chest slot is clear");
-                ctx.AssertEqual(3, Items(droid).Count(), "Exactly three items survive each save/reload cycle");
+                ctx.AssertEqual(occupied ? 3 : 2, Items(droid).Count(), "Every original item survives each save/reload cycle exactly once");
                 ctx.AssertEqual(droid, GetItemPossessor(visor), "The droid owns the converted copy");
                 MigrationEngineTests.AssertVisorCustomization(ctx, visor, uuid);
                 MigrationEngineTests.AssertRevisedLoot(ctx, visor, MigrationEngineTests.VisorEnhancements);
+                if (denyEquip)
+                {
+                    ctx.AssertEqual(deniedAttack, SkinAttack(droid), "Denied headgear grants no stats after reload");
+                    if (cycle == 2) break;
+                    await Dismiss(ctx, owner, droid);
+                    droid = await Spawn(ctx, owner, controller);
+                    continue;
+                }
                 await Unequip(ctx, droid, head);
                 var baseline = SkinAttack(droid);
                 await Equip(ctx, droid, visor, InventorySlot.Head);

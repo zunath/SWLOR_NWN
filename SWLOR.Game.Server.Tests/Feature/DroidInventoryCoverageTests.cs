@@ -15,6 +15,8 @@ public class DroidInventoryCoverageTests
     [TestCase(nameof(DroidInventoryEngineTests.LootRevisionPlayerDroid))]
     [TestCase(nameof(DroidInventoryEngineTests.HeadgearSavedSlotFirst))]
     [TestCase(nameof(DroidInventoryEngineTests.HeadgearSavedStatsFirst))]
+    [TestCase(nameof(DroidInventoryEngineTests.HeadgearSavedFreeHead))]
+    [TestCase(nameof(DroidInventoryEngineTests.HeadgearSavedDeniedHead))]
     [TestCase(nameof(DroidInventoryEngineTests.HeadgearSummonedDroid))]
     [TestCase(nameof(DroidInventoryEngineTests.HeadgearSummonedDroidOccupiedHead))]
     public void EquipmentPersistenceScenariosKeepBothDiscoveryLabels(string scenario)

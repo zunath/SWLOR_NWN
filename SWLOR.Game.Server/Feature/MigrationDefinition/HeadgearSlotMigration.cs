@@ -128,21 +128,23 @@ public static class HeadgearSlotMigration
                 if (originalItem == migrated) continue;
                 if (moveChest)
                 {
-                    // Saved equipment cannot run validation. Stow it and let
-                    // the normal droid equip path decide whether it is usable.
+                    // The existing pending-restore path tries Head on summon;
+                    // occupied slots or validation failure leave it carried.
                     if (droid["Inventory"] is not JObject inventory)
                     {
                         inventory = new JObject();
                         droid["Inventory"] = inventory;
                     }
                     var id = StoredObjectData.ReadRootString(migrated, "DROID_ITEM_ID");
-                    if (string.IsNullOrWhiteSpace(id) || inventory.Property(id) != null)
+                    if (string.IsNullOrWhiteSpace(id) || inventory.Property(id) != null ||
+                        inventory.Property(Droid.GetPendingItemRestoreKey(InventorySlot.Head, id)) != null)
                     {
                         id = Guid.NewGuid().ToString();
                         migrated = StoredObjectData.SetRootString(migrated, "DROID_ITEM_ID", id);
                     }
-                    inventory[id] = migrated;
-                    movedInventoryIds.Add(id);
+                    var restoreKey = Droid.GetPendingItemRestoreKey(InventorySlot.Head, id);
+                    inventory[restoreKey] = migrated;
+                    movedInventoryIds.Add(restoreKey);
                     entry.Remove();
                 }
                 else entry.Value = migrated;

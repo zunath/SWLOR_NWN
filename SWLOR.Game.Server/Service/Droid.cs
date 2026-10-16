@@ -850,6 +850,8 @@ namespace SWLOR.Game.Server.Service
             });
         }
 
+        internal static string GetPendingItemRestoreKey(InventorySlot slot, string id) => PendingItemRestorePrefix + (int)slot + ":" + id;
+
         private static void RestoreDroidItem(uint droid, ConstructedDroid constructedDroid, string serialized,
             InventorySlot slot, string id = null, uint item = OBJECT_INVALID)
         {
@@ -857,7 +859,7 @@ namespace SWLOR.Game.Server.Service
                 item = ObjectPlugin.Deserialize(serialized);
 
             id ??= GetIsObjectValid(item) ? GetDroidItemId(item) : Guid.NewGuid().ToString();
-            var retryKey = PendingItemRestorePrefix + (int)slot + ":" + id;
+            var retryKey = GetPendingItemRestoreKey(slot, id);
             if (GetIsObjectValid(item))
                 SetLocalString(item, DroidItemId, id);
 

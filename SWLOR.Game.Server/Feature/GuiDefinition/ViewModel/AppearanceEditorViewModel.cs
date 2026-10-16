@@ -2144,8 +2144,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         private void SendScaleMessage(string message)
         {
-            var owner = GetIsDMPossessed(Player) ? GetMaster(Player) : Player;
-            SendMessageToPC(owner, message);
+            // Messages to a possessing DM's avatar are dropped, so they go to the creature the DM controls.
+            DMPresence.SendMessage(Player, message);
         }
 
         public Action OnSelectColorCategory() => () =>

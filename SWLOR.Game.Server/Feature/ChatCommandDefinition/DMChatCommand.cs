@@ -67,6 +67,9 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
             DMTools();
             MusicWindow();
             Broadcast();
+            AreaShout();
+            CommsFilter();
+            DMSettings();
             SetScale();
             GetScale();
             ShipStats();
@@ -1148,6 +1151,106 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                     {
                         _ = SendDMShoutWebhookAsync(user, url, authorName, message);
                     }
+                });
+        }
+
+        private void AreaShout()
+        {
+            _builder.Create("areashout", "ashout")
+                .Description("Shouts a message to everyone in your current area only.")
+                .Permissions(AuthorizationLevel.DM, AuthorizationLevel.Admin)
+                .Validate((user, args) =>
+                {
+                    if (args.Length <= 0)
+                        return "Please enter a message.";
+
+                    if (!GetIsObjectValid(GetArea(user)))
+                        return "You are not in an area.";
+
+                    return string.Empty;
+                })
+                .Action((user, target, location, args) =>
+                {
+                    var message = string.Join(" ", args);
+                    foreach (var recipient in GetAreaShoutRecipients(user))
+                        ChatPlugin.SendMessage(ChatChannel.DMShout, message, user, recipient);
+
+                    Log.Write(LogGroup.DM, $"{DMPresence.DescribeDM(user)} shouted to {GetResRef(GetArea(user))}: {message}");
+                });
+        }
+
+        /// <summary>
+        /// Returns the speaker and everyone whose controlled creature is in the speaker's area. A possessing DM is
+        /// addressed through the creature they possess, because chat sent to their avatar is dropped.
+        /// </summary>
+        /// <param name="speaker">The creature shouting.</param>
+        private static List<uint> GetAreaShoutRecipients(uint speaker)
+        {
+            var area = GetArea(speaker);
+            var recipients = new List<uint> { speaker };
+            for (var player = GetFirstPC(); GetIsObjectValid(player); player = GetNextPC())
+            {
+                var controlled = DMPresence.GetControlledCreature(player);
+                if (GetArea(controlled) == area && !recipients.Contains(controlled))
+                    recipients.Add(controlled);
+            }
+
+            return recipients;
+        }
+
+        private void CommsFilter()
+        {
+            const string Usage = "Usage: /commsfilter [all|mine]";
+
+            _builder.Create("commsfilter")
+                .Description("Chooses whose Comms you see as a DM: 'all' for every party, or 'mine' for only your own party (none while you are not in one). Omit the option to switch between them.")
+                .Permissions(AuthorizationLevel.DM, AuthorizationLevel.Admin)
+                .Validate((user, args) =>
+                {
+                    if (!GetIsDM(user) && !GetIsDMPossessed(user))
+                        return "Only a DM avatar, or a creature a DM possesses, receives other parties' Comms.";
+
+                    if (args.Length > 1 || args.Length == 1 && args[0].ToLower() is not ("all" or "mine"))
+                        return Usage;
+
+                    return string.Empty;
+                })
+                .Action((user, target, location, args) =>
+                {
+                    DMCommsFilter filter;
+                    if (args.Length == 0)
+                        filter = DMPreference.Get(user).CommsFilter == DMCommsFilter.AllParties
+                            ? DMCommsFilter.OwnParty
+                            : DMCommsFilter.AllParties;
+                    else
+                        filter = args[0].ToLower() == "mine"
+                            ? DMCommsFilter.OwnParty
+                            : DMCommsFilter.AllParties;
+
+                    if (!DMPreference.Update(user, preferences => preferences.CommsFilter = filter))
+                    {
+                        SendMessageToPC(user, ColorToken.Red("Your Comms filter could not be saved."));
+                        return;
+                    }
+
+                    SendMessageToPC(user, filter == DMCommsFilter.AllParties
+                        ? "Comms filter: showing every party's Comms."
+                        : "Comms filter: showing only your own party's Comms. You see none while you are not in a party.");
+                });
+        }
+
+        private void DMSettings()
+        {
+            _builder.Create("dmsettings")
+                .Description("Toggles the DM Settings window: emote style, Comms filter, helmet and cloak.")
+                .Permissions(AuthorizationLevel.DM, AuthorizationLevel.Admin)
+                .Validate((user, args) =>
+                    GetIsDM(user) || GetIsDMPossessed(user)
+                        ? string.Empty
+                        : "Only a DM avatar, or a creature a DM possesses, has DM settings.")
+                .Action((user, target, location, args) =>
+                {
+                    DMPresence.ToggleWindow(user, GuiWindowType.DMSettings);
                 });
         }
 

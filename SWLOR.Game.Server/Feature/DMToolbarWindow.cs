@@ -65,6 +65,33 @@ namespace SWLOR.Game.Server.Feature
         }
 
         /// <summary>
+        /// Reopens an open DM Settings window on whatever the DM controls next, so it shows that creature's helmet
+        /// and cloak and its changes reach the server.
+        /// </summary>
+        [NWNEventHandler(ScriptName.OnDMPossessBefore)]
+        [NWNEventHandler(ScriptName.OnDMPossessFullPowerBefore)]
+        public static void MoveSettingsOnPossession()
+        {
+            // Possessing starts on the avatar; returning to it starts on the possessed creature. Afterwards the avatar
+            // no longer reports as a DM, so the DM is identified here.
+            var current = OBJECT_SELF;
+            if (!GetIsDM(current) && !GetIsDMPossessed(current))
+                return;
+
+            // NUI windows belong to the client, so the object the DM controls right now finds it.
+            if (!Gui.IsWindowOpen(current, GuiWindowType.DMSettings))
+                return;
+
+            var dm = DMPresence.GetDM(current);
+            // Possession has not settled while the event runs, so follow it on the next tick.
+            DelayCommand(0.1f, () =>
+            {
+                DMPresence.CloseWindow(dm, GuiWindowType.DMSettings);
+                DMPresence.ShowWindow(dm, GuiWindowType.DMSettings);
+            });
+        }
+
+        /// <summary>
         /// DM windows stay open across area changes, so ones that list the current area's objects refresh here.
         /// A DM possessing a creature changes areas through that creature.
         /// </summary>

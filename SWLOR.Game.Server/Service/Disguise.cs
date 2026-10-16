@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using Newtonsoft.Json;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Feature.GuiDefinition.RefreshEvent;
@@ -37,6 +38,10 @@ namespace SWLOR.Game.Server.Service
                 return;
 
             ApplyAppearance(player, activeDisguise);
+
+            Log.WriteStructured(LogGroup.PlayerName,
+                "Disguise reapplied on login: PlayerId={PlayerId} PlayerName={PlayerName} DisguiseId={DisguiseId} PrivateName={PrivateName} Descriptor={Descriptor}",
+                GetObjectUUID(player), GetName(player), activeDisguise.Id, activeDisguise.PrivateName, activeDisguise.Descriptor);
         }
 
         public static string BuildIdentityKey(string disguiseId)
@@ -189,7 +194,12 @@ namespace SWLOR.Game.Server.Service
             var slotLimit = GetDisguiseSlotLimit(player, dbPlayer);
 
             if (usedSlots >= slotLimit)
+            {
+                Log.WriteStructured(LogGroup.PlayerName,
+                    "Disguise creation rejected: PlayerId={PlayerId} PlayerName={PlayerName} UsedSlots={UsedSlots} SlotLimit={SlotLimit}",
+                    playerId, GetName(player), usedSlots, slotLimit);
                 return null;
+            }
 
             var portraitInternalId = ResolvePortraitInternalId(player);
             var disguise = new PlayerDisguise
@@ -207,7 +217,7 @@ namespace SWLOR.Game.Server.Service
 
             Log.WriteStructured(
                 LogGroup.PlayerName,
-                "Disguise created: PlayerId={PlayerId} PlayerName={PlayerName} DisguiseId={DisguiseId} PrivateName={PrivateName} Descriptor={Descriptor} BiographyLength={BiographyLength} PortraitInternalId={PortraitInternalId} SoundSetId={SoundSetId} ScrambleAccountId={ScrambleAccountId}",
+                "Disguise created: PlayerId={PlayerId} PlayerName={PlayerName} DisguiseId={DisguiseId} PrivateName={PrivateName} Descriptor={Descriptor} BiographyLength={BiographyLength} PortraitInternalId={PortraitInternalId} SoundSetId={SoundSetId} ScrambleAccountId={ScrambleAccountId} Biography={Biography}",
                 playerId,
                 GetName(player),
                 disguise.Id,
@@ -216,7 +226,8 @@ namespace SWLOR.Game.Server.Service
                 disguise.Biography.Length,
                 disguise.PortraitInternalId,
                 disguise.SoundSetId,
-                disguise.ScrambleAccountId);
+                disguise.ScrambleAccountId,
+                JsonConvert.SerializeObject(disguise.Biography));
 
             return disguise;
         }
@@ -232,24 +243,34 @@ namespace SWLOR.Game.Server.Service
             bool scrambleAccountId)
         {
             var playerId = GetObjectUUID(player);
+            SaveDisguiseResult Reject(string reason)
+            {
+                Log.WriteStructured(LogGroup.PlayerName,
+                    "Disguise customization rejected: PlayerId={PlayerId} PlayerName={PlayerName} DisguiseId={DisguiseId} Reason={Reason} PrivateName={PrivateName} Descriptor={Descriptor} Biography={Biography} PortraitInternalId={PortraitInternalId} SoundSetId={SoundSetId} ScrambleAccountId={ScrambleAccountId}",
+                    playerId, GetName(player), disguiseId, reason, JsonConvert.SerializeObject(privateName ?? string.Empty),
+                    JsonConvert.SerializeObject(descriptor ?? string.Empty), JsonConvert.SerializeObject(biography ?? string.Empty),
+                    portraitInternalId, soundSetId, scrambleAccountId);
+                return SaveDisguiseResult.Failure(reason);
+            }
+
             var disguise = DB.Get<PlayerDisguise>(disguiseId);
             if (disguise == null || disguise.PlayerId != playerId)
-                return SaveDisguiseResult.Failure("Unable to locate that disguise.");
+                return Reject("Unable to locate that disguise.");
 
             if (disguise.IsRetired)
-                return SaveDisguiseResult.Failure("Retired disguises cannot be edited.");
+                return Reject("Retired disguises cannot be edited.");
 
             var privateNameError = ValidatePrivateName(privateName);
             if (!string.IsNullOrWhiteSpace(privateNameError))
-                return SaveDisguiseResult.Failure(privateNameError);
+                return Reject(privateNameError);
 
             var descriptorError = PlayerName.ValidateKnownNameInput(descriptor);
             if (!string.IsNullOrWhiteSpace(descriptorError))
-                return SaveDisguiseResult.Failure(descriptorError);
+                return Reject(descriptorError);
 
             biography ??= string.Empty;
             if (biography.Length > MaxBiographyLength)
-                return SaveDisguiseResult.Failure($"Disguise biographies may be no longer than {MaxBiographyLength} characters.");
+                return Reject($"Disguise biographies may be no longer than {MaxBiographyLength} characters.");
 
             portraitInternalId = Math.Clamp(portraitInternalId, 1, GetMaxPortraitCount());
             soundSetId = ResolveSoundSetId(soundSetId);
@@ -271,7 +292,7 @@ namespace SWLOR.Game.Server.Service
 
             Log.WriteStructured(
                 LogGroup.PlayerName,
-                "Disguise saved: PlayerId={PlayerId} PlayerName={PlayerName} DisguiseId={DisguiseId} PreviousPrivateName={PreviousPrivateName} PrivateName={PrivateName} PreviousDescriptor={PreviousDescriptor} Descriptor={Descriptor} PreviousBiographyLength={PreviousBiographyLength} BiographyLength={BiographyLength} PreviousPortraitInternalId={PreviousPortraitInternalId} PortraitInternalId={PortraitInternalId} PreviousSoundSetId={PreviousSoundSetId} SoundSetId={SoundSetId} PreviousScrambleAccountId={PreviousScrambleAccountId} ScrambleAccountId={ScrambleAccountId}",
+                "Disguise saved: PlayerId={PlayerId} PlayerName={PlayerName} DisguiseId={DisguiseId} PreviousPrivateName={PreviousPrivateName} PrivateName={PrivateName} PreviousDescriptor={PreviousDescriptor} Descriptor={Descriptor} PreviousBiographyLength={PreviousBiographyLength} BiographyLength={BiographyLength} PreviousPortraitInternalId={PreviousPortraitInternalId} PortraitInternalId={PortraitInternalId} PreviousSoundSetId={PreviousSoundSetId} SoundSetId={SoundSetId} PreviousScrambleAccountId={PreviousScrambleAccountId} ScrambleAccountId={ScrambleAccountId} PreviousBiography={PreviousBiography} Biography={Biography}",
                 playerId,
                 GetName(player),
                 disguise.Id,
@@ -286,7 +307,9 @@ namespace SWLOR.Game.Server.Service
                 previousSoundSetId,
                 disguise.SoundSetId,
                 previousScrambleAccountId,
-                disguise.ScrambleAccountId);
+                disguise.ScrambleAccountId,
+                JsonConvert.SerializeObject(previousBiography),
+                JsonConvert.SerializeObject(disguise.Biography));
 
             if (IsActiveDisguise(player, disguise.Id))
             {
@@ -300,6 +323,14 @@ namespace SWLOR.Game.Server.Service
         public static ActivateDisguiseResult Activate(uint player, string disguiseId)
         {
             var playerId = GetObjectUUID(player);
+            ActivateDisguiseResult Reject(string reason)
+            {
+                Log.WriteStructured(LogGroup.PlayerName,
+                    "Disguise activation rejected: PlayerId={PlayerId} PlayerName={PlayerName} DisguiseId={DisguiseId} Reason={Reason}",
+                    playerId, GetName(player), disguiseId, reason);
+                return ActivateDisguiseResult.Failure(reason);
+            }
+
             var dbPlayer = DB.Get<Player>(playerId);
             var disguise = DB.Get<PlayerDisguise>(disguiseId);
 
@@ -308,7 +339,7 @@ namespace SWLOR.Game.Server.Service
                 disguise.PlayerId != playerId ||
                 disguise.IsRetired)
             {
-                return ActivateDisguiseResult.Failure("Unable to activate that disguise.");
+                return Reject("Unable to activate that disguise.");
             }
 
             // Re-activating the disguise that is already active is a harmless no-op. Return early so
@@ -317,12 +348,15 @@ namespace SWLOR.Game.Server.Service
             {
                 ApplyAppearance(player, disguise);
                 RefreshDisguiseDisplay(player);
+                Log.WriteStructured(LogGroup.PlayerName,
+                    "Active disguise reapplied: PlayerId={PlayerId} PlayerName={PlayerName} DisguiseId={DisguiseId} PrivateName={PrivateName} Descriptor={Descriptor}",
+                    playerId, GetName(player), disguise.Id, disguise.PrivateName, disguise.Descriptor);
                 return ActivateDisguiseResult.Success();
             }
 
             var delayError = ValidateActivationDelay(player, playerId);
             if (!string.IsNullOrWhiteSpace(delayError))
-                return ActivateDisguiseResult.Failure(delayError);
+                return Reject(delayError);
 
             var previousDisguiseId = dbPlayer.ActiveDisguiseId;
 
@@ -368,6 +402,9 @@ namespace SWLOR.Game.Server.Service
             if (dbPlayer == null ||
                 string.IsNullOrWhiteSpace(dbPlayer.ActiveDisguiseId))
             {
+                Log.WriteStructured(LogGroup.PlayerName,
+                    "Disguise deactivation rejected: PlayerId={PlayerId} PlayerName={PlayerName} Reason={Reason}",
+                    playerId, GetName(player), "No active disguise.");
                 return false;
             }
 
@@ -419,6 +456,9 @@ namespace SWLOR.Game.Server.Service
                 disguise.PlayerId != playerId ||
                 disguise.IsRetired)
             {
+                Log.WriteStructured(LogGroup.PlayerName,
+                    "Disguise retirement rejected: PlayerId={PlayerId} PlayerName={PlayerName} DisguiseId={DisguiseId} Reason={Reason}",
+                    playerId, GetName(player), disguiseId, "Disguise not found, not owned, or already retired.");
                 return false;
             }
 
@@ -449,6 +489,9 @@ namespace SWLOR.Game.Server.Service
                 disguise.PlayerId != playerId ||
                 !disguise.IsRetired)
             {
+                Log.WriteStructured(LogGroup.PlayerName,
+                    "Disguise restoration rejected: PlayerId={PlayerId} PlayerName={PlayerName} DisguiseId={DisguiseId} Reason={Reason}",
+                    playerId, GetName(player), disguiseId, "Disguise not found, not owned, or not retired.");
                 return false;
             }
 
@@ -474,20 +517,28 @@ namespace SWLOR.Game.Server.Service
             DisguisePaymentMethod paymentMethod)
         {
             var playerId = GetObjectUUID(player);
+            DeleteRetiredDisguiseResult Reject(DeleteRetiredDisguiseResult reason)
+            {
+                Log.WriteStructured(LogGroup.PlayerName,
+                    "Disguise deletion rejected: PlayerId={PlayerId} PlayerName={PlayerName} DisguiseId={DisguiseId} PaymentMethod={PaymentMethod} Reason={Reason}",
+                    playerId, GetName(player), disguiseId, paymentMethod.ToString(), reason.ToString());
+                return reason;
+            }
+
             var dbPlayer = DB.Get<Player>(playerId);
             var disguise = DB.Get<PlayerDisguise>(disguiseId);
 
             if (disguise == null)
-                return DeleteRetiredDisguiseResult.NotFound;
+                return Reject(DeleteRetiredDisguiseResult.NotFound);
 
             if (disguise.PlayerId != playerId)
-                return DeleteRetiredDisguiseResult.NotOwner;
+                return Reject(DeleteRetiredDisguiseResult.NotOwner);
 
             if (!disguise.IsRetired)
-                return DeleteRetiredDisguiseResult.NotRetired;
+                return Reject(DeleteRetiredDisguiseResult.NotRetired);
 
             if (dbPlayer != null && dbPlayer.ActiveDisguiseId == disguise.Id)
-                return DeleteRetiredDisguiseResult.IsActive;
+                return Reject(DeleteRetiredDisguiseResult.IsActive);
 
             var amount = 0;
             switch (paymentMethod)
@@ -495,21 +546,21 @@ namespace SWLOR.Game.Server.Service
                 case DisguisePaymentMethod.Credits:
                     amount = WipeCreditCost;
                     if (GetGold(player) < amount)
-                        return DeleteRetiredDisguiseResult.InsufficientCredits;
+                        return Reject(DeleteRetiredDisguiseResult.InsufficientCredits);
 
                     TakeGoldFromCreature(amount, player, true);
                     break;
                 case DisguisePaymentMethod.RoleplayXP:
                     amount = WipeRoleplayXPCost;
                     if (dbPlayer == null || dbPlayer.UnallocatedXP < amount)
-                        return DeleteRetiredDisguiseResult.InsufficientRoleplayXP;
+                        return Reject(DeleteRetiredDisguiseResult.InsufficientRoleplayXP);
 
                     dbPlayer.UnallocatedXP -= amount;
                     DB.Set(dbPlayer);
                     Gui.PublishRefreshEvent(player, new RPXPRefreshEvent());
                     break;
                 default:
-                    return DeleteRetiredDisguiseResult.InvalidPaymentMethod;
+                    return Reject(DeleteRetiredDisguiseResult.InvalidPaymentMethod);
             }
 
             var identityKey = BuildIdentityKey(disguise.Id);
@@ -517,7 +568,7 @@ namespace SWLOR.Game.Server.Service
 
             Log.WriteStructured(
                 LogGroup.PlayerName,
-                "Retired disguise deleted: PlayerId={PlayerId} PlayerName={PlayerName} PublicCDKey={PublicCDKey} DisguiseId={DisguiseId} PrivateName={PrivateName} Descriptor={Descriptor} PaymentMethod={PaymentMethod} PaymentAmount={PaymentAmount} RemovedKnownNameReferences={RemovedKnownNameReferences}",
+                "Retired disguise deleted: PlayerId={PlayerId} PlayerName={PlayerName} PublicCDKey={PublicCDKey} DisguiseId={DisguiseId} PrivateName={PrivateName} Descriptor={Descriptor} PaymentMethod={PaymentMethod} PaymentAmount={PaymentAmount} RemovedKnownNameReferences={RemovedKnownNameReferences} Biography={Biography} PortraitInternalId={PortraitInternalId} SoundSetId={SoundSetId} ScrambleAccountId={ScrambleAccountId}",
                 playerId,
                 GetName(player),
                 GetPCPublicCDKey(player),
@@ -526,14 +577,23 @@ namespace SWLOR.Game.Server.Service
                 disguise.Descriptor,
                 paymentMethod.ToString(),
                 amount,
-                removedKnownNames);
+                removedKnownNames,
+                JsonConvert.SerializeObject(disguise.Biography ?? string.Empty),
+                disguise.PortraitInternalId,
+                disguise.SoundSetId,
+                disguise.ScrambleAccountId);
 
             DB.Delete<PlayerDisguise>(disguise.Id);
             return DeleteRetiredDisguiseResult.Success;
         }
 
-        public static int ResetActivationCooldowns(uint player)
+        public static int ResetActivationCooldowns(uint player, uint actor = OBJECT_INVALID)
         {
+            if (!GetIsObjectValid(actor))
+                actor = player;
+
+            actor = DMPresence.GetDM(actor);
+
             var playerId = GetObjectUUID(player);
             var resetCount = 0;
             var offset = 0;
@@ -550,8 +610,14 @@ namespace SWLOR.Game.Server.Service
                     if (!disguise.DateLastActivated.HasValue)
                         continue;
 
+                    var previousDateLastActivated = disguise.DateLastActivated.Value;
                     disguise.DateLastActivated = null;
                     DB.Set(disguise);
+
+                    Log.WriteStructured(LogGroup.PlayerName,
+                        "Disguise activation cooldown reset: PlayerId={PlayerId} PlayerName={PlayerName} DisguiseId={DisguiseId} PrivateName={PrivateName} Descriptor={Descriptor} PreviousDateLastActivated={PreviousDateLastActivated} ActorPlayerId={ActorPlayerId} ActorName={ActorName}",
+                        playerId, GetName(player), disguise.Id, disguise.PrivateName, disguise.Descriptor, previousDateLastActivated,
+                        GetObjectUUID(actor), GetName(actor));
                     resetCount++;
                 }
 

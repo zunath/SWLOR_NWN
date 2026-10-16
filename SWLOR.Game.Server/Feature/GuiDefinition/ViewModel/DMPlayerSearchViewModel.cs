@@ -24,7 +24,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         private static readonly GuiColor OnlineColor = new(0, 200, 0);
         private static readonly GuiColor OfflineColor = new(150, 150, 150);
-        private static readonly GuiColor DescriptorColor = new(224, 220, 192);
+        private static readonly GuiColor DescriptorColor = new(255, 255, 255);
         private static readonly GuiColor DisguisedDescriptorColor = new(255, 127, 0);
 
         private List<DMPlayerSearchResult> _results = new();

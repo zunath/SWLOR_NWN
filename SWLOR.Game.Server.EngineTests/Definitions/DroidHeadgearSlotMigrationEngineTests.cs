@@ -31,10 +31,14 @@ public static partial class DroidInventoryEngineTests
         var owner = ctx.SpawnCreature("civilian");
         await ctx.WaitFrameAsync();
         var controller = await CreateController(ctx, owner);
+        var cleanDroid = await Spawn(ctx, owner, controller);
+        var cleanAttack = SkinAttack(cleanDroid);
+        await Dismiss(ctx, owner, cleanDroid);
         var visor = await CreateLoot(ctx, owner, "ruptorvanecr");
         var carried = await CreateLoot(ctx, owner, "thermlancercr");
         var head = await CreateLoot(ctx, owner, "charm_cowl");
         var uuid = GetObjectUUID(visor);
+        var carriedUuid = GetObjectUUID(carried);
         await ctx.ExecuteInCreatureContextAsync(owner, () =>
         {
             MigrationEngineTests.StampLegacyVisor(visor);
@@ -73,7 +77,6 @@ public static partial class DroidInventoryEngineTests
         });
         await ctx.DelaySecondsAsync(0.3f);
         var droid = await Spawn(ctx, owner, controller);
-        var deniedAttack = SkinAttack(droid);
         try
         {
             for (var cycle = 0; cycle <= 2; cycle++)
@@ -84,11 +87,15 @@ public static partial class DroidInventoryEngineTests
                 ctx.AssertEqual(OBJECT_INVALID, GetItemInSlot(InventorySlot.Chest, droid), "The chest slot is clear");
                 ctx.AssertEqual(occupied ? 3 : 2, Items(droid).Count(), "Every original item survives each save/reload cycle exactly once");
                 ctx.AssertEqual(droid, GetItemPossessor(visor), "The droid owns the converted copy");
+                carried = MigrationEngineTests.FindHeadgear(droid, "thermlancercr");
+                ctx.AssertEqual("thermlancercr", GetResRef(carried), "The colliding-ID carried copy retains its resref");
+                ctx.AssertEqual(carriedUuid, GetObjectUUID(carried), "The colliding-ID carried copy retains its identity");
+                ctx.AssertEqual(droid, GetItemPossessor(carried), "The droid still owns the original carried copy");
                 MigrationEngineTests.AssertVisorCustomization(ctx, visor, uuid);
                 MigrationEngineTests.AssertRevisedLoot(ctx, visor, MigrationEngineTests.VisorEnhancements);
                 if (denyEquip)
                 {
-                    ctx.AssertEqual(deniedAttack, SkinAttack(droid), "Denied headgear grants no stats after reload");
+                    ctx.AssertEqual(cleanAttack, SkinAttack(droid), "Denied headgear grants no stats compared with the clean droid before any visor was saved");
                     if (cycle == 2) break;
                     await Dismiss(ctx, owner, droid);
                     droid = await Spawn(ctx, owner, controller);

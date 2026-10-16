@@ -5,6 +5,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.Service.MigrationService;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Item;
@@ -47,7 +48,8 @@ public static class HeadgearSlotMigration
         {
             // Native unequip fires the normal stat-removal event once, while the
             // item still has its old base and properties. Reserve space first.
-            if (equipped) PlayerEquipmentStorage.Unequip(owner, item, InventorySlot.Chest);
+            if (equipped && !PlayerEquipmentStorage.TryUnequip(owner, item, InventorySlot.Chest))
+                throw new PlayerMigrationDeferredException("Free inventory space, then reconnect to complete your equipment update.");
             ItemPlugin.SetBaseItemType(item, BaseItem.Helmet);
             if (GetItemAppearance(item, ItemAppearanceType.SimpleModel, 0) <= 0)
                 ItemPlugin.SetItemAppearance(item, ItemAppearanceType.SimpleModel, 0, LegacyHeadgear[GetResRef(item)]);

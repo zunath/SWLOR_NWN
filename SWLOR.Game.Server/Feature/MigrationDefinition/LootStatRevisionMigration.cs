@@ -58,7 +58,7 @@ public static class LootStatRevisionMigration
                 return false;
             pools = CapturePools(obj);
             // Establish safe storage before revising any equipped properties.
-            // A full inventory can abort login without leaving DB-only deltas.
+            // A full inventory defers migration without leaving DB-only deltas.
             if (repairHeadgear)
                 changed |= HeadgearSlotMigration.ConvertItem(GetItemInSlot(InventorySlot.Chest, obj));
             for (var slot = 0; slot < NumberOfInventorySlots; slot++)

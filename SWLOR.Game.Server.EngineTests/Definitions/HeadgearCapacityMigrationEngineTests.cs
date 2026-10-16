@@ -1,4 +1,5 @@
 using System;
+using System.Reflection;
 using System.Threading.Tasks;
 using NWNXLib = NWN.Native.API.NWNXLib;
 using SWLOR.Game.Server.EngineTests.Framework;
@@ -13,7 +14,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions;
 
 public static partial class MigrationEngineTests
 {
-    [EngineTest("Full inventory aborts visor migration before any item stat revision and retries without drift", Category = HeadgearCategory, TimeoutSeconds = 90)]
+    [EngineTest("Full inventory defers visor migration without blocking login or advancing checkpoints and retries without drift", Category = HeadgearCategory, TimeoutSeconds = 90)]
     public static async Task HeadgearCapacityFailureIsAtomic(EngineTestContext ctx)
     {
         using var fixture = await PlayerAbilityFixture.CreateAsync(ctx);
@@ -43,6 +44,14 @@ public static partial class MigrationEngineTests
         var repository = NWNXLib.g_pAppManager.m_pServerExoApp.GetGameObject(player).AsNWSCreature().m_pcItemRepository;
         var height = repository.m_nHeight;
         var scalable = repository.m_bScalable;
+        var fileVersion = 21;
+        var record = DB.Get<Player>(fixture.Id);
+        record.Version = 21;
+        DB.Set(record);
+        var apply = typeof(Migration).GetMethod("ApplyPlayerMigration", BindingFlags.Static | BindingFlags.NonPublic);
+        bool ApplyMigration() => (bool)apply.Invoke(null, new object[] { new _22_ReviseLootStats(), player,
+            (Func<Player>)(() => DB.Get<Player>(fixture.Id)), (Action<Player>)(updated => DB.Set(updated)),
+            (Func<int>)(() => fileVersion), (Action<int>)(version => fileVersion = version) });
         try
         {
             repository.m_nHeight = 0;
@@ -51,11 +60,9 @@ public static partial class MigrationEngineTests
             {
                 for (var attempt = 0; attempt < 2; attempt++)
                 {
-                    try { new _22_ReviseLootStats().Migrate(player); ctx.Fail("The blocked inventory must reject migration"); }
-                    catch (InvalidOperationException error)
-                    {
-                        ctx.Assert(error.Message.Contains("no safe space"), "Failure comes from the native storage preflight");
-                    }
+                    ctx.Assert(!ApplyMigration(), "The actual login migration path defers without propagating an exception or booting the player");
+                    ctx.AssertEqual(21, fileVersion, "Deferred repair leaves the character checkpoint pending");
+                    ctx.AssertEqual(21, DB.Get<Player>(fixture.Id).Version, "Deferred repair leaves the database checkpoint pending");
                     ctx.AssertEqual(totals, ReadEquipmentTotals(player), "Failed login attempts leave all persisted equipment totals unchanged");
                     ctx.AssertEqual(visorProperties, DescribeProperties(visor), "Failed migration leaves visor properties unchanged");
                     ctx.AssertEqual(headProperties, DescribeProperties(head), "An earlier equipment slot is not revised before chest storage succeeds");
@@ -67,7 +74,13 @@ public static partial class MigrationEngineTests
             });
         }
         finally { repository.m_nHeight = height; repository.m_bScalable = scalable; }
-        await ctx.ExecuteInCreatureContextAsync(player, () => new _22_ReviseLootStats().Migrate(player));
+        await ctx.ExecuteInCreatureContextAsync(player, () =>
+        {
+            ctx.Assert(ApplyMigration(), "Freeing inventory space lets the pending login migration complete");
+            ctx.AssertEqual(22, fileVersion, "Successful repair advances the character checkpoint");
+            ctx.AssertEqual(22, DB.Get<Player>(fixture.Id).Version, "Successful repair advances the database checkpoint");
+            ctx.Assert(ApplyMigration(), "A completed login migration is a no-op");
+        });
         ctx.AssertEqual(BaseItem.Helmet, GetBaseItemType(visor), "Retry converts the visor after storage becomes available");
         AssertRevisedLoot(ctx, visor, VisorEnhancements);
         var expectedAttack = baseline.Attack + SumProperty(head, ItemPropertyType.Attack, 0);

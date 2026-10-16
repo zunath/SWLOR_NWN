@@ -554,7 +554,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                         new ArticleBlock("Ability Details",
                             "Ability descriptions show the FP cost, STM cost, recast time, and what the ability does."),
                         new ArticleBlock("Cooldowns",
-                            "If an ability is still cooling down, the game tells you how long to wait before you can use it again."),
+                            "If an ability is still cooling down, the game tells you how long to wait before you can use it again. Hostile abilities also share a 0.5-second wait after each one. A hostile ability you use during that wait goes off as soon as it ends, and if you use several, only the last one goes off. Healing, support, and other abilities that aren't hostile don't wait."),
                         new ArticleBlock("Recast Groups",
                             "Some abilities share a cooldown group. Using one ability in that group can make the other abilities in the same group wait too.")
                     },

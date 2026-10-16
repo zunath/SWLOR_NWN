@@ -4,6 +4,7 @@ using System.Reflection;
 using System.Threading.Tasks;
 using SWLOR.Game.Server.EngineTests.Framework;
 using SWLOR.Game.Server.Entity;
+using SWLOR.Game.Server.Feature;
 using SWLOR.Game.Server.Native;
 using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.PerkService;
@@ -121,6 +122,16 @@ public static class TwinPistolEquipmentEngineTests
             var equipped = DB.Get<Player>(player.Id);
             ctx.AssertEqual(hp + 7, equipped.MaxHP, "The real item's HP bonus is added exactly once");
             ctx.AssertEqual(stamina + 9, equipped.MaxStamina, "The real item's Stamina bonus is added exactly once");
+            await ctx.ExecuteInCreatureContextAsync(actor, () =>
+            {
+                EquipmentStats.ApplyItemStats(actor, spare, true);
+                EquipmentStats.ApplyItemStats(actor, spare, false);
+                EquipmentStats.ApplyStatAmount(actor, spare, ItemPropertyType.HPBonus, -1, 7, true);
+                EquipmentStats.ApplyStatAmount(actor, spare, ItemPropertyType.Stamina, -1, 9, true);
+            });
+            var afterRevision = DB.Get<Player>(player.Id);
+            ctx.AssertEqual(hp + 7, afterRevision.MaxHP, "Shared equipment revision helpers never add companion HP");
+            ctx.AssertEqual(stamina + 9, afterRevision.MaxStamina, "Shared equipment revision helpers never add companion Stamina");
             await ctx.ExecuteInCreatureContextAsync(actor, () => ActionUnequipItem(cycle % 2 == 0 ? spare : main));
             await WaitForRemovedPair(ctx, actor, main, spare);
             var removed = DB.Get<Player>(player.Id);

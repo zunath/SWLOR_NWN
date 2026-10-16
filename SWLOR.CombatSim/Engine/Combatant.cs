@@ -1,4 +1,5 @@
 using SWLOR.CombatSim.Scenario;
+using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.StatService;
 
 namespace SWLOR.CombatSim.Engine
@@ -42,6 +43,9 @@ namespace SWLOR.CombatSim.Engine
         /// <summary>When each ability (by feat name) was last used, for <see cref="AbilityUseSpec.MinIntervalSeconds"/>.</summary>
         public Dictionary<string, double> LastUsedAt { get; } = new();
 
+        /// <summary>When the next hostile ability can be used, for <see cref="Rules.RuleSet.HostileAbilityDelaySeconds"/>.</summary>
+        public double HostileAbilityReadyAt { get; set; }
+
         public PendingCast Casting { get; set; }
         public double NextActionAt { get; set; }
         public double NextAttackAt { get; set; }
@@ -82,8 +86,21 @@ namespace SWLOR.CombatSim.Engine
         public float OutgoingHealingPercent => Spec.OutgoingHealingPercent + GetStat(StatType.OutgoingAbilityHealingPercentAdjustment);
         public float HealingReceivedPercent => Spec.HealingReceivedPercent + GetStat(StatType.HealingReceivedPercentAdjustment);
 
-        /// <summary>The combined bonus the combatant's perks give to a stat the simulator reads.</summary>
-        public int GetStat(StatType stat) => _perkStats.TryGetValue(stat, out var value) ? value : 0;
+        /// <summary>Statuses on the combatant that carry stats, such as a stance, by key; a held status never expires.</summary>
+        public Dictionary<string, ActiveStatus> Statuses { get; } = new();
+
+        /// <summary>The combined bonus the combatant's perks and statuses give to a stat the simulator reads.</summary>
+        public int GetStat(StatType stat)
+        {
+            var total = _perkStats.TryGetValue(stat, out var value) ? value : 0;
+            foreach (var status in Statuses.Values)
+            {
+                if (status.Stats.TryGetValue(stat, out var bonus))
+                    total = Stat.AggregateStatAdjustment(stat, total, bonus);
+            }
+
+            return total;
+        }
 
         /// <summary>The most recent healing schedule of the caster's zone with this key, or null when none is active.</summary>
         public PartyPulseInstance GetZone(string key) =>

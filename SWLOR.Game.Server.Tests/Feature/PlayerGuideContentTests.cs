@@ -8,6 +8,7 @@ using NUnit.Framework;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Feature.GuiDefinition.ViewModel;
 using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.StatusEffectService;
 
@@ -263,6 +264,17 @@ public class PlayerGuideContentTests
 
         text.Should().Contain("activated ability damage, healing, and temporary HP");
         text.Should().Contain("does not reduce cooldowns");
+    }
+
+    [Test]
+    public void AbilitiesTopic_PublishesTheHostileAbilityDelay()
+    {
+        var topic = GetTopics().Single(topic => GetString(topic, "Name") == "Abilities");
+        var text = string.Join("\n", GetAllText(topic));
+
+        text.Should().Contain($"share a {HostileAbilityDelay.Seconds.ToString(CultureInfo.InvariantCulture)}-second wait after each one");
+        text.Should().Contain("goes off as soon as it ends");
+        text.Should().Contain("aren't hostile don't wait");
     }
 
     [Test]

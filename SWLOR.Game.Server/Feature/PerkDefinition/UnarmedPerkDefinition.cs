@@ -245,7 +245,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.PerfectForm1)
-                .Description("Deals weapon DMG + 45 to one enemy. Spending Finish adds +15 power. Practiced Form applies only with Finish.")
+                .Description("Deals weapon DMG + 45 to one enemy. Spending Finish adds +70 power. Practiced Form applies only with Finish.")
                 .Price(6)
                 .RequirementSkill(SkillType.Unarmed, 50)
                 .RequirementQuest(UnarmedMasteryQuestDefinition.PerfectFormMasteryQuestId)
@@ -450,7 +450,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.Haymaker1)
-                .Description("Deals weapon DMG + 40 to one enemy. Spending your Rattled against its enemy adds +20 power; Heavy Blows also applies.")
+                .Description("Deals weapon DMG + 40 to one enemy. Spending your Rattled against its enemy adds +80 power; Heavy Blows also applies.")
                 .Price(6)
                 .RequirementSkill(SkillType.Unarmed, 50)
                 .RequirementQuest(UnarmedMasteryQuestDefinition.HaymakerMasteryQuestId)

@@ -22,11 +22,11 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Unarmed
                 {
                     Line = MeleeTechniqueLine.Brawler,
                     ConsumedStages = MeleeTechniqueStage.Distraction,
-                    DistractionPower = 20,
+                    DistractionPower = 80,
                     RefundEligible = true,
                 },
                 40,
-                15,
+                12,
                 activationDelay: 2f);
 
             return builder.Build();

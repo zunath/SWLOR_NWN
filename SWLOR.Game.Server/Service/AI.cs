@@ -591,11 +591,9 @@ namespace SWLOR.Game.Server.Service
 
             for (var player = GetFirstPC(); GetIsObjectValid(player); player = GetNextPC())
             {
-                if (GetIsDM(player))
-                    continue;
-
                 if (GetArea(player) == GetArea(creature) &&
-                    GetIsEnemy(player, creature))
+                    GetIsEnemy(player, creature) &&
+                    !DMPresence.IsControlledByDM(player))
                 {
                     return true;
                 }

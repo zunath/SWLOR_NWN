@@ -420,16 +420,18 @@ public class RoleplayXPOOCPenaltyTests
     }
 
     [Test]
-    public void RoleplayXP_ClearsPendingPenaltyWhenAwardIsGranted()
+    [TestCase(false, 3)]
+    [TestCase(true, 6)]
+    public void OOCTracking_OnlyAccruesPenaltiesWhenEnabled(bool penaltiesEnabled, int expectedSteps)
     {
-        var roleplayXpSource = ReadServerSource("Feature", "RoleplayXP.cs");
-        var awardMethod = ExtractMethod(roleplayXpSource, "private static void ProcessPlayerRoleplayXP(uint player)");
+        var progress = new RoleplayProgress { PendingOOCPenaltySteps = 3 };
+        for (var index = 0; index < 3; index++)
+            OOCAllowance.RecordOOCMessage(progress, Morning, OOCMessageContext.Standard, 0, 0, 0, penaltiesEnabled);
 
-        awardMethod.Should().Contain("xp = OOCAllowance.ApplyPenalty(xp, penaltySteps, penaltyPercentPerMessage);");
-        awardMethod.Should().Contain("var penaltySteps = dbPlayer.RoleplayProgress.PendingOOCPenaltySteps;");
-        awardMethod.Should().Contain("var penaltyPercentPerMessage = ApplicationSettings.Get().RoleplayXPOOCPenaltyPercent;");
-        awardMethod.Should().Contain("dbPlayer.RoleplayProgress.PendingOOCPenaltySteps = 0;");
-        roleplayXpSource.Should().NotContain("SetLocalInt(player, RPTickVariable, -");
+        progress.OOCMessageCount.Should().Be(3);
+        progress.OOCMessagesSinceLastDistribution.Should().Be(3);
+        progress.DailyOOCMessageCount.Should().Be(3);
+        progress.PendingOOCPenaltySteps.Should().Be(expectedSteps);
     }
 
     [Test]

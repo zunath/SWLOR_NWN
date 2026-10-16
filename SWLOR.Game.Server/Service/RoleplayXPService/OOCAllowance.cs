@@ -27,6 +27,7 @@ namespace SWLOR.Game.Server.Service.RoleplayXPService
         /// <summary>
         /// Records an OOC message. Event-area allowance is used first, then DM-present allowance,
         /// then the daily allowance. A null event-area allowance means OOC in event areas is unlimited.
+        /// Disabled penalties still record counts and allowances without adding penalty steps.
         /// </summary>
         public static void RecordOOCMessage(
             RoleplayProgress progress,
@@ -34,7 +35,8 @@ namespace SWLOR.Game.Server.Service.RoleplayXPService
             OOCMessageContext context,
             int dailyAllowance,
             int dmPresentAllowance,
-            int? eventAreaAllowance)
+            int? eventAreaAllowance,
+            bool penaltiesEnabled = true)
         {
             var allowanceDay = GetAllowanceDay(utcNow);
             if (progress.OOCAllowanceDay != allowanceDay)
@@ -67,7 +69,7 @@ namespace SWLOR.Game.Server.Service.RoleplayXPService
             }
 
             progress.DailyOOCMessageCount++;
-            if (progress.DailyOOCMessageCount > dailyAllowance)
+            if (penaltiesEnabled && progress.DailyOOCMessageCount > dailyAllowance)
             {
                 progress.PendingOOCPenaltySteps = Math.Min(MaxPenaltySteps, progress.PendingOOCPenaltySteps + 1);
             }

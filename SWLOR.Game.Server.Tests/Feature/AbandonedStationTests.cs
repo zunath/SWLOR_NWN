@@ -94,14 +94,45 @@ public class AbandonedStationTests
         .ToHashSet();
 
     [Test]
-    public void Station_IsReachedOnlyByShipFromViscaraOrbit()
+    public void Station_IsReachedOnlyThroughItsOwnSpaceDock()
     {
         foreach (var area in StationAreas)
             Local(Load("git", area), "PLANET_TYPE_ID")!.Value.GetInt32().Should().Be((int)PlanetType.Viscara, area);
 
-        var docks = List(Load("git", Main), "WaypointList").Where(w => Text(w, "Tag") == "STARSHIP_DOCKPOINT").ToArray();
-        docks.Should().ContainSingle("pilots land in the docking bay from Viscara orbit");
+        var landingPoints = List(Load("git", Main), "WaypointList");
+        landingPoints.Should().NotContain(w => Text(w, "Tag") == "STARSHIP_DOCKPOINT",
+            "the station must not appear in Viscara's planetary docking menu");
+        var docks = landingPoints.Where(w => Text(w, "Tag") == "ABANDONED_STATION_DOCK_LANDING").ToArray();
+        docks.Should().ContainSingle("the station has its own arrival point in the docking bay");
         Value(docks[0], "LocalizedName").GetProperty("0").GetString().Should().Be("Abandoned Station");
+
+        var orbit = Load("git", "viscaraorbit");
+        var placeables = List(orbit, "Placeable List");
+        var station = placeables.Single(p => Text(p, "Tag") == "ABANDONED_STATION");
+        Number(station, "Appearance").Should().Be(31477);
+        var dock = placeables.Single(p => Text(p, "Tag") == "ABANDONED_STATION_DOCK");
+        Text(dock, "OnUsed").Should().Be("generic_convo");
+        Number(dock, "Useable").Should().Be(1);
+        Number(dock, "Plot").Should().Be(1);
+        Local(dock, "CONVERSATION")!.Value.GetString().Should().Be("StarportDockDialog");
+        Local(dock, "PLANET_TYPE_ID")!.Value.GetInt32().Should().Be((int)PlanetType.Viscara);
+        Local(dock, "STARPORT_LANDING_WAYPOINT_TAG")!.Value.GetString().Should().Be(Text(docks[0], "Tag"));
+        var departure = List(orbit, "WaypointList").Single(w => Text(w, "Tag") ==
+            Local(dock, "STARPORT_TELEPORT_WAYPOINT")!.Value.GetString());
+        Distance(Position(station), Position(dock)).Should().BeInRange(5, 20);
+        Distance(Position(dock), Position(departure)).Should().BeInRange(2, 8);
+        var planetaryDock = placeables.Single(p => Text(p, "Tag") == "spc_dock" &&
+            Local(p, "PLANET_TYPE_ID")!.Value.GetInt32() == (int)PlanetType.Viscara);
+        Local(planetaryDock, "STARPORT_LANDING_WAYPOINT_TAG").Should().BeNull();
+        Distance(Position(dock), Position(planetaryDock)).Should().BeGreaterThan(30);
+        foreach (var existing in placeables.Where(p => Text(p, "Tag") is not
+                     ("ABANDONED_STATION" or "ABANDONED_STATION_DOCK")))
+        {
+            Distance(Position(station), Position(existing)).Should().BeGreaterThan(150,
+                $"the station must occupy open space away from {Text(existing, "Tag")}");
+            Distance(Position(dock), Position(existing)).Should().BeGreaterThan(150,
+                "the station's docking marker must also remain separate from existing objects");
+        }
 
         // No shuttle, door, trigger or conversation outside the station sends players in.
         var outsideReferences = Directory.EnumerateFiles(Path.Combine(Root, "Module", "git"), "*.git.json")
@@ -115,16 +146,40 @@ public class AbandonedStationTests
     }
 
     [Test]
-    public void EscapePod_ReturnsStrandedPlayersToVeles()
+    public void EscapePod_RequiresConfirmationBeforeReturningPlayersToVeles()
     {
         var pod = List(Load("git", Main), "Placeable List").Single(p => Text(p, "Tag") == "aban_shuttle_exit");
         Value(pod, "LocName").GetProperty("0").GetString().Should().Be("Escape Pod");
-        Text(pod, "OnUsed").Should().Be("teleport");
+        Text(pod, "OnUsed").Should().Be("dialog_start");
+        Text(pod, "Conversation").Should().Be("aban_escape_pod");
         Number(pod, "Useable").Should().Be(1);
         Number(pod, "Plot").Should().Be(1);
         Local(pod, "DESTINATION")!.Value.GetString().Should().Be("ABAN_STATION_EXIT_LANDING");
         List(Load("git", "velesinterior"), "WaypointList").Count(w => Text(w, "Tag") == "ABAN_STATION_EXIT_LANDING")
             .Should().Be(1, "the pod lands at the Veles starport on Viscara");
+
+        using var document = JsonDocument.Parse(File.ReadAllText(Path.Combine(Root,
+            "SWLOR.Game.Server", "ConversationData", "aban_escape_pod.conversation.json")));
+        var graph = document.RootElement;
+        var prompt = graph.GetProperty("Nodes").GetProperty("entry-00000");
+        prompt.GetProperty("OnEnterActions").GetArrayLength().Should().Be(0,
+            "opening the confirmation must not launch the pod");
+        prompt.GetProperty("Text")[0].GetProperty("Text").GetString().Should().Contain("Veles starport");
+        prompt.GetProperty("Choices").EnumerateArray().Select(c => c.GetProperty("ChoiceId").GetString())
+            .Should().Equal("launch", "cancel");
+        var choices = graph.GetProperty("Choices");
+        var launch = choices.GetProperty("launch");
+        launch.GetProperty("IsAutomatic").GetBoolean().Should().BeFalse();
+        launch.GetProperty("EndsConversation").GetBoolean().Should().BeTrue();
+        var actions = launch.GetProperty("Actions");
+        actions.GetArrayLength().Should().Be(1);
+        actions[0].GetProperty("Key").GetString().Should().Be("action-teleport-out-of-combat");
+        actions[0].GetProperty("Arguments")[0].GetString().Should().Be("ABAN_STATION_EXIT_LANDING");
+        var cancel = choices.GetProperty("cancel");
+        cancel.GetProperty("IsAutomatic").GetBoolean().Should().BeFalse();
+        cancel.GetProperty("EndsConversation").GetBoolean().Should().BeTrue();
+        cancel.GetProperty("Actions").GetArrayLength().Should().Be(0,
+            "cancelling must leave the player on the station");
     }
 
     [Test]

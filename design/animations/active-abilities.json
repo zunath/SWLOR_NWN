@@ -4455,7 +4455,7 @@
     "InternalName": "sw_condstn",
     "Category": "Saberstaff",
     "Type": "Stance",
-    "Description": "While active, Saberstaff abilities restore FP equal to 25% of STM spent and Force abilities restore STM equal to 25% of FP spent, but Attack and Force Attack are reduced by 10%.",
+    "Description": "While active, Saberstaff abilities restore FP equal to 40% of STM spent and Force abilities restore STM equal to 40% of FP spent, but Attack and Force Attack are reduced by 10%.",
     "Reference": "",
     "BibleAnimationRow": 255,
     "PerkId": "ConduitStance",

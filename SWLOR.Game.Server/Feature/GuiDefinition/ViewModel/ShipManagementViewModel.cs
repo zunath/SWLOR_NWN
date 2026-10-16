@@ -596,33 +596,23 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         private List<PlayerShip> GetMyShips()
         {
-            var playerId = GetObjectUUID(Player);
-            var query = new DBQuery<PlayerShip>()
-                .AddFieldSearch(nameof(PlayerShip.OwnerPlayerId), playerId, false);
-            return DB.Search(query).ToList();
+            return PlayerShipAccess.GetOwnedShips(GetObjectUUID(Player));
         }
 
         private List<PlayerShip> GetOtherShips()
         {
-            var playerId = GetObjectUUID(Player);
+            return PlayerShipAccess.GetSharedShips(GetObjectUUID(Player));
+        }
+
+        /// <summary>
+        /// Duplicate records resolve like Property.HasPropertyPermission. A missing record grants no access.
+        /// </summary>
+        private WorldPropertyPermission GetShipPermission(string propertyId)
+        {
             var permissionQuery = new DBQuery<WorldPropertyPermission>()
-                .AddFieldSearch(nameof(WorldPropertyPermission.PlayerId), playerId, false);
-            var permissionCount = (int)DB.SearchCount(permissionQuery);
-            var propertyIds = DB.Search(permissionQuery.AddPaging(permissionCount, 0))
-                .Select(s => s.PropertyId)
-                .ToList();
-
-            if (propertyIds.Count <= 0)
-                return new List<PlayerShip>();
-
-            var shipQuery = new DBQuery<PlayerShip>()
-                .AddFieldSearch(nameof(PlayerShip.PropertyId), propertyIds);
-
-            var ships = DB.Search(shipQuery)
-                .Where(x => x.OwnerPlayerId != playerId)
-                .ToList();
-
-            return ships;
+                .AddFieldSearch(nameof(WorldPropertyPermission.PlayerId), GetObjectUUID(Player), false)
+                .AddFieldSearch(nameof(WorldPropertyPermission.PropertyId), propertyId, false);
+            return DB.Search(permissionQuery).FirstOrDefault();
         }
 
         private int CalculateRepairBill(PlayerShip ship)
@@ -711,8 +701,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         private void LoadShip()
         {
-            var playerId = GetObjectUUID(Player);
-
             if (SelectedShipIndex <= -1)
             {
                 ShipName = "[Select a Ship]";
@@ -816,10 +804,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 var shipDetail = Space.GetShipDetailByItemTag(ship.Status.ItemTag);
                 var property = DB.Get<WorldProperty>(ship.PropertyId);
 
-                var permissionQuery = new DBQuery<WorldPropertyPermission>()
-                    .AddFieldSearch(nameof(WorldPropertyPermission.PlayerId), playerId, false)
-                    .AddFieldSearch(nameof(WorldPropertyPermission.PropertyId), ship.PropertyId, false);
-                var permission = DB.Search(permissionQuery).Single();
+                var permission = GetShipPermission(ship.PropertyId);
+                var hasAccess = permission != null;
                 var currentLocation = GetShipLocation(property, out var isDockInstanceLoading);
                 var isAtCurrentLocation = currentLocation == GetArea(Player);
                 var isInSpace = property.Positions.ContainsKey(PropertyLocationType.CurrentPosition);
@@ -1227,10 +1213,10 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     Configuration8Tooltip = string.Empty;
                 }
 
-                IsBoardShipEnabled = isAtCurrentLocation;
-                IsNameEnabled = permission.Permissions[PropertyPermissionType.RenameProperty] && isAtCurrentLocation;
-                IsRefitEnabled = permission.Permissions[PropertyPermissionType.RefitShip] && isAtCurrentLocation;
-                IsPermissionsEnabled = permission.GrantPermissions.Any(x => x.Value) && isAtCurrentLocation;
+                IsBoardShipEnabled = hasAccess && isAtCurrentLocation;
+                IsNameEnabled = hasAccess && permission.Permissions.GetValueOrDefault(PropertyPermissionType.RenameProperty) && isAtCurrentLocation;
+                IsRefitEnabled = hasAccess && permission.Permissions.GetValueOrDefault(PropertyPermissionType.RefitShip) && isAtCurrentLocation;
+                IsPermissionsEnabled = hasAccess && permission.GrantPermissions.Any(x => x.Value) && isAtCurrentLocation;
                 ShipLocation = isInSpace
                     ? "In Space"
                     : isDockInstanceLoading
@@ -1334,9 +1320,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 var playerId = GetObjectUUID(Player);
                 var query = new DBQuery<PlayerShip>()
                     .AddFieldSearch(nameof(PlayerShip.OwnerPlayerId), playerId, false);
-                var dbPlayerShips = DB.Search(query).ToList();
+                var registeredShipCount = (int)DB.SearchCount(query);
 
-                if (dbPlayerShips.Count >= Space.MaxRegisteredShips)
+                if (registeredShipCount >= Space.MaxRegisteredShips)
                 {
                     FloatingTextStringOnCreature($"You may only have {Space.MaxRegisteredShips} ships registered at a time.", Player, false);
                     return;
@@ -1384,7 +1370,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 DB.Set(ship);
 
                 // Update the UI with the new ship details.
-                ShipCountRegistered = $"Ships: {dbPlayerShips.Count + 1} / {Space.MaxRegisteredShips}";
+                ShipCountRegistered = $"Ships: {registeredShipCount + 1} / {Space.MaxRegisteredShips}";
                 _shipIds.Add(ship.Id);
                 ShipNames.Add(property.CustomName);
                 ShipToggles.Add(false);
@@ -1850,6 +1836,15 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         {
             var shipId = _shipIds[SelectedShipIndex];
             var dbShip = DB.Get<PlayerShip>(shipId);
+
+            // Access can be revoked after the ship was selected.
+            if (GetShipPermission(dbShip.PropertyId) == null)
+            {
+                FloatingTextStringOnCreature("You do not have permission to access that property.", Player, false);
+                LoadShip();
+                return;
+            }
+
             var shipDetail = Space.GetShipDetailByItemTag(dbShip.Status.ItemTag);
             if (!Property.TryResolveEnterableInstance(Player, dbShip.PropertyId, out var instance))
                 return;

@@ -165,6 +165,9 @@ public static class MimicryLoadoutEngineTests
         model.OnClickManage()();
         model.OnClickDeleteBuild()();
         AssertBar(ctx, model, TechniquesViewModel.DeleteBarPartial, "Delete asks for confirmation in the toolbar");
+        ctx.Assert(!model.DeleteBuildText.Contains("Unsaved"), "a clean preview needs no unsaved-changes warning");
+        RemoveFromPreview(model, Trait);
+        ctx.Assert(model.DeleteBuildText.Contains("Unsaved changes are lost."), "editing the preview during the confirmation adds the warning");
         model.OnClickCancelManage()();
         AssertBar(ctx, model, TechniquesViewModel.BuildBarPartial, "Cancel closes the delete confirmation");
         await ctx.WaitFrameAsync();

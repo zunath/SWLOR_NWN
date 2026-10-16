@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Feature.GuiDefinition.Payload;
 using SWLOR.Game.Server.Feature.GuiDefinition.RefreshEvent;
 using SWLOR.Game.Server.Service;
@@ -26,6 +27,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         private List<string> _loadoutIds = new();
         private string _selectedLoadoutId;
         private bool _settingSelection;
+        private string _buildBar = BuildBarPartial;
 
         public GuiBindingList<GuiComboEntry> LoadoutOptions { get => Get<GuiBindingList<GuiComboEntry>>(); set => Set(value); }
         public int SelectedLoadoutIndex { get => Get<int>(); set => Set(value); }
@@ -161,7 +163,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         protected override void Initialize(TechniquesPayload initialPayload)
         {
             // Opening the window clears group layouts, so the build bar is assigned on every open.
-            ChangePartialView(BuildBarElement, BuildBarPartial);
+            ShowBuildBar(BuildBarPartial);
 
             SelectedDetails = NoSelectionText;
             IsEquipEnabled = false;
@@ -503,6 +505,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 $"Equipped: {active.Name}" + (MimicryLoadouts.Matches(active.Techniques, record.EquippedTechniques) ? "" : " (Modified)");
             PreviewTitle = $"Preview: {selected.Name}" + (IsDirty ? " (unsaved)" : "");
             CanRevert = IsDirty || IsEquippedCopyModified(record);
+            if (_buildBar == DeleteBarPartial)
+                RefreshDeletePrompt(selected);
             if (!Mimicry.ValidateLoadout(record, _draft, out var error))
             {
                 StatusText = error;
@@ -561,7 +565,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             CanDeleteBuild = record.MimicryLoadouts.Count > 1;
             ManageText = "Rename or delete this build.";
             ManageColor = GuiColor.White;
-            ChangePartialView(BuildBarElement, ManageBarPartial);
+            ShowBuildBar(ManageBarPartial);
             // Input values sent before their control is on screen can be dropped (NuiLayoutRules R7).
             BuildNameText = record.MimicryLoadouts.First(x => x.Id == _selectedLoadoutId).Name;
         };
@@ -582,11 +586,16 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         public Action OnClickDeleteBuild() => () =>
         {
-            var name = Record.MimicryLoadouts.First(x => x.Id == _selectedLoadoutId).Name;
-            DeleteBuildText = $"Delete \"{name}\"? Equipped techniques stay equipped." +
-                              (IsDirty ? " Unsaved changes are lost." : "");
-            ChangePartialView(BuildBarElement, DeleteBarPartial);
+            RefreshDeletePrompt(Record.MimicryLoadouts.First(x => x.Id == _selectedLoadoutId));
+            ShowBuildBar(DeleteBarPartial);
         };
+
+        // The preview stays editable during the confirmation, so RefreshStatus keeps this current.
+        private void RefreshDeletePrompt(MimicryLoadout selected)
+        {
+            DeleteBuildText = $"Delete \"{selected.Name}\"? Equipped techniques stay equipped." +
+                              (IsDirty ? " Unsaved changes are lost." : "");
+        }
 
         public Action OnClickConfirmDeleteBuild() => () =>
         {
@@ -607,9 +616,15 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         private void CloseManage()
         {
-            ChangePartialView(BuildBarElement, BuildBarPartial);
+            ShowBuildBar(BuildBarPartial);
             // Also re-sends the dropdown selection after the swap.
             RefreshLoadouts();
+        }
+
+        private void ShowBuildBar(string partial)
+        {
+            _buildBar = partial;
+            ChangePartialView(BuildBarElement, partial);
         }
 
         private void ConfirmDraftChange(Action proceed)

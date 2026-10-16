@@ -178,6 +178,19 @@ namespace SWLOR.Game.Server.Service
             return $"{canonicalName} [{Disguise.GetDisplayDescriptor(target)}]";
         }
 
+        /// <summary>Server-only identity snapshot for correlating messages with disguise history.</summary>
+        public static string GetAuditIdentity(uint target)
+        {
+            var name = GetAuditName(target);
+            if (!GetIsObjectValid(target) || !GetIsPC(target) || GetIsDM(target) || GetIsDMPossessed(target))
+                return name;
+
+            var playerId = GetObjectUUID(target);
+            var disguise = Disguise.GetActiveDisguise(target);
+            var identityKey = disguise == null ? playerId : Disguise.BuildIdentityKey(disguise.Id);
+            return $"{name} [PlayerId={playerId} IdentityKey={identityKey} Disguised={disguise != null} DisguiseId={disguise?.Id ?? "none"} DisguiseName={disguise?.PrivateName ?? "none"}]";
+        }
+
         public static void SendChatMessageWithChatNameOverride(uint observer, uint target, Action sendMessage)
         {
             ApplyChatNameOverride(observer, target);

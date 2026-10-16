@@ -103,6 +103,7 @@ namespace SWLOR.Game.Server.Service.CombatRecorderService
             writer.WriteStartObject(propertyName);
             writer.WriteNumber("total_effective", totals.Values.Sum(total => total.Effective));
             writer.WriteNumber("total_overheal", totals.Values.Sum(total => total.Overheal));
+            writer.WriteNumber("total_pvp_reduced", totals.Values.Sum(total => total.PvpReduced));
             writer.WriteStartObject("by_source");
             foreach (var (label, total) in totals.OrderByDescending(pair => pair.Value.Effective).ThenBy(pair => pair.Key, StringComparer.Ordinal))
             {
@@ -111,6 +112,7 @@ namespace SWLOR.Game.Server.Service.CombatRecorderService
                 writer.WriteNumber("requested", total.Requested);
                 writer.WriteNumber("effective", total.Effective);
                 writer.WriteNumber("overheal", total.Overheal);
+                writer.WriteNumber("pvp_reduced", total.PvpReduced);
                 writer.WriteEndObject();
             }
             writer.WriteEndObject();

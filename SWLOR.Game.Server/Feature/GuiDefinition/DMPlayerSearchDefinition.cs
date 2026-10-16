@@ -56,7 +56,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                                     .AddOption("Offline", (int)DMPlayerSearchScope.Offline)
                                     .AddOption("Online and Offline", (int)DMPlayerSearchScope.All)
                                     .BindSelectedIndex(model => model.SelectedScope)
-                                    .SetTooltip("Offline characters are only listed when you enter search text")
                                     .SetWidth(220f)
                                     .SetHeight(ButtonHeight);
 

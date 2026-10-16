@@ -35,8 +35,10 @@ public static partial class MigrationEngineTests
                 foreach (var phase in new[] { MigrationExecutionType.PostDatabaseLoad, MigrationExecutionType.PostCacheLoad })
                 {
                     var pending = ((IEnumerable<IServerMigration>)getMigrations.Invoke(null, new object[] { phase })).ToArray();
-                    var expected = phase == MigrationExecutionType.PostDatabaseLoad ? new int[0] :
-                        new[] { 23, 24, 25, 26 }.Where(version => version > checkpoint).ToArray();
+                    var targetedRepairs = phase == MigrationExecutionType.PostDatabaseLoad
+                        ? new[] { 27 }
+                        : new[] { 23, 24, 25, 26, 27 };
+                    var expected = targetedRepairs.Where(version => version > checkpoint).ToArray();
                     ctx.Assert(pending.Select(migration => migration.Version).SequenceEqual(expected),
                         $"Checkpoint {checkpoint}, phase {phase}: only the pending targeted repairs are selected");
                     ctx.Assert(!pending.Any(migration => migration is _22_CombatSystemReplacement or StoredItemSchemaMigration),

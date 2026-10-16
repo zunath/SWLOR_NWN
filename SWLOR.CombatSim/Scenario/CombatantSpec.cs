@@ -34,7 +34,8 @@ namespace SWLOR.CombatSim.Scenario
 
         /// <summary>
         /// PerkType names, with ":level" for perks with several levels. Their Force Convergence, outgoing and received
-        /// healing and heal-triggered stamina bonuses are read from the game's perk definitions and added to the values above.
+        /// healing, heal-triggered stamina and Conduit resource restores are read from the game's perk definitions and
+        /// added to the values above.
         /// </summary>
         public List<string> Perks { get; set; } = new();
 

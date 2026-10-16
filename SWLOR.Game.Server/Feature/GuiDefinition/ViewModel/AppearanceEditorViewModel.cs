@@ -1936,33 +1936,14 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         private void LoadDMArmorDisplay()
         {
-            // Worn items hold the current state. A DM avatar's saved preference covers an empty slot.
-            var preferences = GetIsDM(_target) ? DMPreference.Get(_target) : null;
-            var helmet = GetItemInSlot(InventorySlot.Head, _target);
-            var cloak = GetItemInSlot(InventorySlot.Cloak, _target);
-            ShowHelmet = GetIsObjectValid(helmet)
-                ? HelmetModelRenderer.IsShownByOwner(helmet)
-                : preferences?.ShowHelmet ?? true;
-            ShowCloak = GetIsObjectValid(cloak)
-                ? GetHiddenWhenEquipped(cloak) == 0
-                : preferences?.ShowCloak ?? true;
+            var (showHelmet, showCloak) = ArmorDisplay.GetDMArmorDisplay(_target);
+            ShowHelmet = showHelmet;
+            ShowCloak = showCloak;
         }
 
         private void ApplyDMArmorDisplay()
         {
-            // A DM avatar's choice also covers items equipped later; a possessed creature's stays on its items.
-            if (GetIsDM(_target))
-            {
-                var showHelmet = ShowHelmet;
-                var showCloak = ShowCloak;
-                DMPreference.Update(_target, preferences =>
-                {
-                    preferences.ShowHelmet = showHelmet;
-                    preferences.ShowCloak = showCloak;
-                });
-            }
-
-            UpdateArmorDisplay();
+            ArmorDisplay.SetDMArmorDisplay(_target, ShowHelmet, ShowCloak);
         }
 
         private void LoadItemParts()
@@ -3527,18 +3508,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         private void UpdateArmorDisplay()
         {
-            var helmet = GetItemInSlot(InventorySlot.Head, _target);
-            if (GetIsObjectValid(helmet))
-            {
-                HelmetModelRenderer.SetShownByOwner(helmet, ShowHelmet);
-            }
-
-            var cloak = GetItemInSlot(InventorySlot.Cloak, _target);
-            if (GetIsObjectValid(cloak))
-            {
-                SetHiddenWhenEquipped(cloak, !ShowCloak);
-            }
-            TintMapService.RefreshAfterColorChange(_target);
+            ArmorDisplay.Apply(_target, ShowHelmet, ShowCloak);
         }
 
         public void Refresh(EquipItemRefreshEvent payload)

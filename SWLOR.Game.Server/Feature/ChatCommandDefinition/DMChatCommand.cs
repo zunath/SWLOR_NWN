@@ -69,6 +69,7 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
             Broadcast();
             AreaShout();
             CommsFilter();
+            DMSettings();
             SetScale();
             GetScale();
             ShipStats();
@@ -1235,6 +1236,21 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                     SendMessageToPC(user, filter == DMCommsFilter.AllParties
                         ? "Comms filter: showing every party's Comms."
                         : "Comms filter: showing only your own party's Comms. You see none while you are not in a party.");
+                });
+        }
+
+        private void DMSettings()
+        {
+            _builder.Create("dmsettings")
+                .Description("Toggles the DM Settings window: emote style, Comms filter, helmet and cloak.")
+                .Permissions(AuthorizationLevel.DM, AuthorizationLevel.Admin)
+                .Validate((user, args) =>
+                    GetIsDM(user) || GetIsDMPossessed(user)
+                        ? string.Empty
+                        : "Only a DM avatar, or a creature a DM possesses, has DM settings.")
+                .Action((user, target, location, args) =>
+                {
+                    DMPresence.ToggleWindow(user, GuiWindowType.DMSettings);
                 });
         }
 

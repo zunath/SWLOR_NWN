@@ -28,6 +28,10 @@ public class AppearanceEditorSettingsTests
         var methods = string.Concat(CSharpSyntaxTree.ParseText(source).GetRoot().DescendantNodes()
             .OfType<MethodDeclarationSyntax>().Where(node => names.Contains(node.Identifier.Text))
             .Select(node => node.ToFullString()));
+        var armorDisplaySource = File.ReadAllText(Path.Combine(directory.FullName,
+            "SWLOR.Game.Server", "Feature", "ArmorDisplay.cs"));
+        var getDMArmorDisplay = CSharpSyntaxTree.ParseText(armorDisplaySource).GetRoot().DescendantNodes()
+            .OfType<MethodDeclarationSyntax>().Single(node => node.Identifier.Text == "GetDMArmorDisplay").ToFullString();
         var harness = $$"""
             using System;
             using System.Linq.Expressions;
@@ -80,6 +84,10 @@ public class AppearanceEditorSettingsTests
                     return Record as T;
                 }
                 public static void Set(Player player) => Writes++;
+            }
+            public static class ArmorDisplay
+            {
+                {{getDMArmorDisplay}}
             }
             public static class HelmetModelRenderer
             {

@@ -89,9 +89,9 @@ namespace SWLOR.Game.Server.Service
             dbPlayer.UnknownDisplayName = sanitizedName;
             DB.Set(dbPlayer);
 
-            Log.WriteStructured(LogGroup.PlayerName,
-                "Base descriptor changed: PlayerId={PlayerId} PlayerName={PlayerName} IdentityKey={IdentityKey} PreviousDescriptor={PreviousDescriptor} Descriptor={Descriptor}",
-                playerId, GetName(player), Disguise.GetIdentityKey(player), previousDescriptor, sanitizedName);
+            Log.WriteStructured(LogGroup.PublicDescriptors,
+                "Base descriptor changed: PlayerId={PlayerId} PlayerName={PlayerName} IdentityKey={IdentityKey} ActiveIdentityKey={ActiveIdentityKey} PreviousDescriptor={PreviousDescriptor} Descriptor={Descriptor}",
+                playerId, GetName(player), playerId, Disguise.GetIdentityKey(player), previousDescriptor, sanitizedName);
 
             PlayerName.RefreshNameOverridesForPlayer(player);
         }
@@ -120,9 +120,9 @@ namespace SWLOR.Game.Server.Service
             dbPlayer.UnknownDisplayName = generatedDisplayName;
             DB.Set(dbPlayer);
 
-            Log.WriteStructured(LogGroup.PlayerName,
-                "Base descriptor generated: PlayerId={PlayerId} PlayerName={PlayerName} IdentityKey={IdentityKey} PreviousDescriptor={PreviousDescriptor} Descriptor={Descriptor}",
-                playerId, GetName(player), Disguise.GetIdentityKey(player), previousDescriptor, generatedDisplayName);
+            Log.WriteStructured(LogGroup.PublicDescriptors,
+                "Base descriptor generated: PlayerId={PlayerId} PlayerName={PlayerName} IdentityKey={IdentityKey} ActiveIdentityKey={ActiveIdentityKey} PreviousDescriptor={PreviousDescriptor} Descriptor={Descriptor}",
+                playerId, GetName(player), playerId, Disguise.GetIdentityKey(player), previousDescriptor, generatedDisplayName);
             return true;
         }
 

@@ -311,7 +311,16 @@ namespace SWLOR.Game.Server.Service
                 JsonConvert.SerializeObject(previousBiography),
                 JsonConvert.SerializeObject(disguise.Biography));
 
-            if (IsActiveDisguise(player, disguise.Id))
+            var isActive = IsActiveDisguise(player, disguise.Id);
+            if (!string.Equals(previousDescriptor, disguise.Descriptor, StringComparison.Ordinal))
+            {
+                Log.WriteStructured(LogGroup.PublicDescriptors,
+                    "Disguise public descriptor changed: PlayerId={PlayerId} PlayerName={PlayerName} DisguiseId={DisguiseId} IdentityKey={IdentityKey} PreviousDescriptor={PreviousDescriptor} Descriptor={Descriptor} IsActive={IsActive}",
+                    playerId, GetName(player), disguise.Id, BuildIdentityKey(disguise.Id),
+                    previousDescriptor, disguise.Descriptor, isActive);
+            }
+
+            if (isActive)
             {
                 ApplyAppearance(player, disguise);
                 RefreshDisguiseDisplay(player);

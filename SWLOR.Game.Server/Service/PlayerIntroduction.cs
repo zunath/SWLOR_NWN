@@ -106,7 +106,7 @@ namespace SWLOR.Game.Server.Service
                     ? knownName
                     : string.Empty;
                 PlayerName.SetKnownName(observer, offer.Presenter, offer.Name);
-                Log.WriteStructured(LogGroup.PlayerName,
+                Log.WriteStructured(LogGroup.PrivateNames,
                     "Player identity name change: Action={Action} ObserverPlayerId={ObserverPlayerId} ObserverName={ObserverName} TargetPlayerId={TargetPlayerId} TargetName={TargetName} IdentityKey={IdentityKey} PreviousName={PreviousName} Name={Name}",
                     "introduction-accepted", GetObjectUUID(observer), PlayerName.GetAuditName(observer),
                     offer.PresenterPlayerId, PlayerName.GetAuditName(offer.Presenter), offer.IdentityKey,

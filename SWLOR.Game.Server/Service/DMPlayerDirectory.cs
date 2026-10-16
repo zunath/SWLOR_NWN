@@ -242,12 +242,16 @@ namespace SWLOR.Game.Server.Service
         {
             var playerId = GetObjectUUID(player);
             var dbPlayer = DB.Get<Player>(playerId);
+            var activeDisguise = Disguise.GetActiveDisguise(dbPlayer);
 
             return new DMPlayerSearchResult(
                 playerId,
                 true,
                 GetName(player),
                 Disguise.GetDisplayDescriptor(player),
+                activeDisguise != null,
+                DMDisguiseText.Describe(activeDisguise),
+                PlayerDescriptor.GetUnknownDisplayName(player),
                 GetPCPlayerName(player),
                 GetPCPublicCDKey(player),
                 GetName(GetArea(player)),
@@ -262,21 +266,25 @@ namespace SWLOR.Game.Server.Service
             var locationName = GetIsObjectValid(area)
                 ? GetName(area)
                 : dbPlayer.LocationAreaResref ?? string.Empty;
+            var activeDisguise = Disguise.GetActiveDisguise(dbPlayer);
 
             return new DMPlayerSearchResult(
                 dbPlayer.Id,
                 false,
                 dbPlayer.Name,
-                GetOfflineDescriptor(dbPlayer),
+                GetOfflineDescriptor(dbPlayer, activeDisguise),
+                activeDisguise != null,
+                DMDisguiseText.Describe(activeDisguise),
+                PlayerDescriptor.GetUnknownDisplayName(dbPlayer),
                 dbPlayer.AccountName ?? string.Empty,
                 dbPlayer.CDKey ?? string.Empty,
                 locationName,
                 dbPlayer.LastLoginDate);
         }
 
-        private static string GetOfflineDescriptor(Player dbPlayer)
+        private static string GetOfflineDescriptor(Player dbPlayer, PlayerDisguise activeDisguise)
         {
-            var disguiseDescriptor = Disguise.GetActiveDisguise(dbPlayer)?.Descriptor;
+            var disguiseDescriptor = activeDisguise?.Descriptor;
             return string.IsNullOrWhiteSpace(disguiseDescriptor)
                 ? PlayerDescriptor.GetUnknownDisplayName(dbPlayer)
                 : disguiseDescriptor;

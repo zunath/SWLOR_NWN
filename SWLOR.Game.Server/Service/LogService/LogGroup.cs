@@ -53,7 +53,11 @@ namespace SWLOR.Game.Server.Service.LogService
         [LogGroup("Performance", ServerEnvironmentType.All)]
         Performance,
         [LogGroup("ItemTrash", ServerEnvironmentType.All)]
-        ItemTrash
+        ItemTrash,
+        [LogGroup("PrivateNames", ServerEnvironmentType.All)]
+        PrivateNames,
+        [LogGroup("PublicDescriptors", ServerEnvironmentType.All)]
+        PublicDescriptors
     }
 
     public class LogGroupAttribute : Attribute

@@ -347,6 +347,9 @@ public static partial class MigrationEngineTests
 
     internal static void StampLegacyLoot(uint item, Dictionary<(ItemPropertyType, int), int> enhancements)
     {
+        if (RareLootStatRevisionCatalog.Changes.TryGetValue(GetResRef(item), out var corrections))
+            foreach (var change in corrections)
+                RemoveMatching(item, change.Type, change.Subtype);
         // Rebuild the item as it shipped before the revision, with any crafted enhancement merged in.
         foreach (var change in LootStatRevisionCatalog.Changes[GetResRef(item)])
         {
@@ -356,12 +359,21 @@ public static partial class MigrationEngineTests
                 AddItemProperty(DurationType.Permanent, ItemPropertyCustom(change.Type, LootSubtype(change), legacy), item);
         }
         DeleteLocalInt(item, LootStatRevisionMigration.RevisionVariable);
+        DeleteLocalInt(item, RareLootStatRevisionCatalog.RevisionVariable);
     }
 
     internal static void AssertRevisedLoot(EngineTestContext ctx, uint item, Dictionary<(ItemPropertyType, int), int> enhancements)
     {
         var resref = GetResRef(item);
-        foreach (var change in LootStatRevisionCatalog.Changes[resref])
+        var final = LootStatRevisionCatalog.Changes[resref].ToDictionary(x => (x.Type, x.Subtype));
+        if (RareLootStatRevisionCatalog.Changes.TryGetValue(resref, out var corrections))
+        {
+            foreach (var change in corrections)
+                final[(change.Type, change.Subtype)] = change;
+            ctx.AssertEqual(RareLootStatRevisionCatalog.CurrentRevision,
+                GetLocalInt(item, RareLootStatRevisionCatalog.RevisionVariable), $"{resref} is marked as corrected");
+        }
+        foreach (var change in final.Values)
         {
             var expected = change.Current + enhancements.GetValueOrDefault((change.Type, change.Subtype));
             ctx.AssertEqual(expected, SumProperty(item, change.Type, change.Subtype), $"{resref} {change.Type} is revised");

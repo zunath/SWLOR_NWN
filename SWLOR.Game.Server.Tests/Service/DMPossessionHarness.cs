@@ -53,6 +53,15 @@ internal sealed class DMPossessionHarness
                 Masters[creature] = character;
             }
 
+            public static void Release(uint character)
+            {
+                var index = Players.FindIndex(player => player.Character == character);
+                var creature = Players[index].Controlled;
+                Players[index] = (character, character, Players[index].HasDMPrivileges);
+                AssociateTypes.Remove(creature);
+                Masters.Remove(creature);
+            }
+
             public static uint ReceivingPlayer(uint obj)
             {
                 var index = FindController(obj);
@@ -80,6 +89,20 @@ internal sealed class DMPossessionHarness
             public static uint GetArea(uint obj) => Areas.TryGetValue(obj, out var area) ? area : OBJECT_INVALID;
             public static float GetDistanceBetween(uint first, uint second) => 0f;
             public static string GetObjectUUID(uint obj) => obj.ToString();
+
+            public static string GetPCPublicCDKey(uint obj)
+            {
+                var player = ReceivingPlayer(obj);
+                return player == OBJECT_INVALID ? string.Empty : "KEY" + player;
+            }
+
+            public static string GetPCPlayerName(uint obj)
+            {
+                var player = ReceivingPlayer(obj);
+                return player == OBJECT_INVALID ? string.Empty : "account" + player;
+            }
+
+            public static string GetName(uint obj) => "Name" + obj;
 
             public static void SendMessageToPC(uint obj, string message)
             {
@@ -152,6 +175,14 @@ internal sealed class DMPossessionHarness
             .ToFullString();
 
     /// <summary>
+    /// Returns the source of a production field declaration, by the name of the field it declares.
+    /// </summary>
+    public static string Field(string relativePath, string name) =>
+        ParseServerFile(relativePath).DescendantNodes().OfType<FieldDeclarationSyntax>()
+            .Single(field => field.Declaration.Variables.Any(variable => variable.Identifier.ValueText == name))
+            .ToFullString();
+
+    /// <summary>
     /// Returns the source of a production type declaration, such as an enum, by name.
     /// </summary>
     public static string Type(string relativePath, string name) =>
@@ -190,6 +221,11 @@ internal sealed class DMPossessionHarness
         CallWorld("Possess", character, creature, associateType);
         Place(creature, creatureArea);
     }
+
+    /// <summary>
+    /// Returns a possessing player's control to their own character.
+    /// </summary>
+    public void Release(uint character) => CallWorld("Release", character);
 
     public void Place(uint obj, uint area)
     {

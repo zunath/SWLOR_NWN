@@ -314,7 +314,7 @@ public class LightsaberWorkbenchTests
         staffColors.Should().HaveCount(40);
         curvedColors.Should().HaveCount(14, "legacy curved emitters keep their original model slots");
 
-        straightColors.Select(c => c.StraightTopValue).Should().Contain(new[] { 191, 192, 193 });
+        straightColors.Select(c => c.StraightTopValue).Should().Contain(new[] { 191, 192, 193, 194 });
         straightColors.Select(c => c.StraightTopValue).Should().NotContain(new[] { 71, 72, 73, 74 });
         curvedColors.Select(c => c.CurvedTopValue).Should().Contain(new[] { 71, 72, 73, 74 });
 
@@ -420,7 +420,7 @@ public class LightsaberWorkbenchTests
 
     [TestCase(BaseItem.Lightsaber, "", "ui_lsc_", new[] { 11, 12, 13, 14, 15, 21, 22, 23, 24, 51, 52, 53, 54, 55 })]
     [TestCase(BaseItem.Lightsaber, "shoto - ", "ui_lst_", new[] { 131, 132, 133, 134, 135, 141, 142, 143, 144, 161, 171, 172, 173, 174, 175 })]
-    [TestCase(BaseItem.Lightsaber, "crossguard - ", "ui_lst_", new[] { 191, 192, 193, 75, 81, 82, 83, 84, 91, 111, 112, 113, 114, 115 })]
+    [TestCase(BaseItem.Lightsaber, "crossguard - ", "ui_lst_", new[] { 194, 192, 193, 75, 81, 82, 83, 84, 191, 111, 112, 113, 114, 115 })]
     [TestCase(BaseItem.Saberstaff, "", "ui_lsc_", new[] { 11, 12, 13, 14, 25, 21, 22, 23, 24, 51, 52, 53, 54, 143 })]
     [TestCase(BaseItem.Saberstaff, "shoto - ", "ui_sst_", new[] { 61, 62, 63, 64, 71, 72, 73, 74, 81, 82, 83, 84, 93 })]
     [TestCase(BaseItem.Saberstaff, "pike - ", "ui_sst_", new[] { 101, 102, 103, 104, 111, 112, 113, 114, 121, 122, 123, 124, 133 })]

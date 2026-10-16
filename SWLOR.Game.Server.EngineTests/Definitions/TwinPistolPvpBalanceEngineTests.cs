@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using SWLOR.Game.Server.EngineTests.Framework;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Feature;
+using SWLOR.Game.Server.Feature.AbilityDefinition;
 using SWLOR.Game.Server.Feature.StatusEffectDefinition;
 using SWLOR.Game.Server.Native;
 using SWLOR.Game.Server.Service;
@@ -162,7 +163,7 @@ public static class TwinPistolPvpBalanceEngineTests
         double? playerSeconds = null)
     {
         var health = 0;
-        var capturedDamage = 0;
+        RangedWeaponAttackContext.Roll captured = null;
         await ctx.ExecuteInCreatureContextAsync(actor, () =>
         {
             ResetShot(ctx, actor, target);
@@ -173,14 +174,244 @@ public static class TwinPistolPvpBalanceEngineTests
             var shot = RangedWeaponAttackContext.GetRoll(actor, target, 0);
             ctx.Assert(shot is { Ordinary: true, Completed: true } && shot.Damage > 0,
                 "The production resolver captured a positive ordinary companion payload");
-            capturedDamage = shot.Damage;
-            ctx.Assert(health > capturedDamage, "The native player/NPC target survives the complete projectile");
+            captured = shot;
+            ctx.Assert(health > shot.Damage * 2, "The native target survives even a mature final PvP payload");
         });
-        await WaitFrames(ctx, () => health - GetCurrentHitPoints(target) == capturedDamage,
-            "the captured ordinary projectile to remove exact native HP", 2f);
-        ctx.AssertEqual(capturedDamage, health - GetCurrentHitPoints(target),
+        await WaitFrames(ctx, () => GetCurrentHitPoints(target) < health,
+            "the ordinary projectile's target-owned incoming stage and native HP delivery", 2f);
+        ctx.AssertEqual(captured.Damage, health - GetCurrentHitPoints(target),
             "Physical application does not apply the already captured PvP ramp again");
-        return capturedDamage;
+        return health - GetCurrentHitPoints(target);
+    }
+
+    [EngineTest("Discarded companion arrivals preserve PvP clocks fatal saves low-HP shields redirects and finite DR", Category = "TwinPistolPvpCombat", TimeoutSeconds = 100f)]
+    public static async Task DiscardedArrivalPreservesIncomingState(EngineTestContext ctx)
+    {
+        using var attacker = await PlayerAbilityFixture.CreateAsync(ctx, -.5f);
+        using var defender = await PlayerAbilityFixture.CreateAsync(ctx, 10f);
+        var actor = attacker.Creature;
+        var area = GetArea(actor);
+        var originalPvp = AreaPlugin.GetPVPSetting(area);
+        var protector = ctx.SpawnCreature("nw_rat001", 12f);
+        var launchedAt = 0L;
+        var diedAt = 0L;
+        var flightMilliseconds = 0f;
+        await ctx.DelaySecondsAsync(1f);
+        try
+        {
+            AreaPlugin.SetPVPSetting(area, PvPSetting.FullPvP);
+            var (main, companion) = await PrepareAttacker(ctx, attacker);
+            await PreparePlayer(ctx, defender.Creature, hostile: true);
+            await ctx.ExecuteInCreatureContextAsync(actor, () =>
+            {
+                PrepareNpc(ctx, protector);
+                foreach (var weapon in new[] { main, companion })
+                    ReplaceProperty(weapon, ItemPropertyType.DMG, ItemPropertyCustom(ItemPropertyType.DMG, -1, 80));
+                ResetShot(ctx, actor, defender.Creature);
+                PvpCombat.EndForTesting(actor);
+                PvpCombat.EndForTesting(defender.Creature);
+                ctx.SeedRandom(1);
+                launchedAt = Environment.TickCount64;
+                flightMilliseconds = PairedRangedPresentation.FlightSeconds(GetDistanceBetween(actor, defender.Creature)) * 1000f;
+                LaunchCompanion(ctx, actor, defender.Creature, companion);
+                ctx.Assert(!PvpCombat.IsInPvpCombat(actor) && !PvpCombat.IsInPvpCombat(defender.Creature),
+                    "A completed launch roll creates no PvP activity before projectile arrival");
+                AssignCommand(GetModule(), () =>
+                {
+                    ApplyEffectToObject(DurationType.Instant, EffectDeath(), defender.Creature);
+                    if (GetIsDead(defender.Creature)) diedAt = Environment.TickCount64;
+                });
+            });
+            await WaitFrames(ctx, () => GetIsDead(defender.Creature), "the module-owned target death before the pending arrival", 1f);
+            ctx.Assert(diedAt > 0 && diedAt < launchedAt + flightMilliseconds,
+                "The player target actually dies before the captured projectile deadline");
+            await ctx.DelaySecondsAsync(.6f);
+            ctx.Assert(!PvpCombat.IsInPvpCombat(actor), "A dead-target discarded projectile never starts its living attacker's PvP clock");
+
+            var quiet = await QuietArena.CreateAsync(ctx);
+            var anchor = quiet.Spawn("nw_rat001", 0f, 0f);
+            var departure = GetLocation(anchor);
+            foreach (var channel in new[] { "fatal", "lowHP", "redirect", "finiteDR" })
+                await VerifyDiscardedProtection(ctx, actor, companion, protector, departure, channel);
+        }
+        finally
+        {
+            Cleanup(actor, defender.Creature);
+            TemporaryStatModifier.Clear(protector);
+            ReviveRulesEngineTests.DestroyCorpsePlaceable(defender.Creature);
+            ReviveRulesEngineTests.ReleaseBody(defender.Creature);
+            AreaPlugin.SetPVPSetting(area, originalPvp);
+        }
+    }
+
+    [EngineTest("A fresh rotation NPC has no reactive incoming stages and its companion raw payload equals delivered HP", Category = "TwinPistolPvpCombat", TimeoutSeconds = 45f)]
+    public static async Task NeutralRotationTargetKeepsCapturedDamage(EngineTestContext ctx)
+    {
+        using var player = await PlayerAbilityFixture.CreateAsync(ctx, -.5f);
+        var actor = player.Creature;
+        var target = ctx.SpawnCreature("nw_rat001", 10f);
+        await ctx.DelaySecondsAsync(1f);
+        try
+        {
+            var (main, companion) = await PrepareAttacker(ctx, player);
+            var raw = 0;
+            var health = 0;
+            RangedWeaponAttackContext.Roll shot = null;
+            await ctx.ExecuteInCreatureContextAsync(actor, () =>
+            {
+                SuppressAi(target);
+                ctx.SuppressNPCNaturalRegen(target);
+                Stat.SetNPCMaxHitPoints(target, 30000, true);
+                TemporaryStatModifier.Add(target, StatType.PhysicalDefense,
+                    94 - Stat.GetDefense(target, CombatDamageType.Physical, AbilityType.Vitality), 30f);
+                TemporaryStatModifier.Add(target, StatType.Evasion, 134 - Stat.GetEvasion(target, SkillType.Invalid), 30f);
+                ApplyEffectToObject(DurationType.Temporary, EffectCutsceneImmobilize(), target, 30f);
+                SetCommandable(false, target);
+                ctx.MakeHostile(target);
+                foreach (var weapon in new[] { main, companion })
+                    ReplaceProperty(weapon, ItemPropertyType.DMG, ItemPropertyCustom(ItemPropertyType.DMG, -1, 22));
+                foreach (var stat in new[] { StatType.Guard, StatType.DamageTakenRedirectToStatusSourcePercent,
+                             StatType.DamageTakenShareToStatusSourcePercent, StatType.FatalDamageTemporaryHPPercent,
+                             StatType.LowHPTemporaryHPPercent, StatType.DamageTakenFlatAdjustment,
+                             StatType.DamageTakenPercentAdjustment, StatType.IncomingPhysicalToForceConversionPercent })
+                    ctx.AssertEqual(0, Stat.GetStatAdjustment(target, stat), $"The fresh rotation target has no {stat}");
+                for (var effect = GetFirstEffect(target); GetIsEffectValid(effect); effect = GetNextEffect(target))
+                    ctx.Assert(GetEffectType(effect) is not EffectTypeScript.DamageReduction and not EffectTypeScript.DamageResistance,
+                        "The fresh rotation target has no finite native physical absorption effects");
+                ctx.AssertEqual(94, Stat.GetDefense(target, CombatDamageType.Physical, AbilityType.Vitality), "Actual rotation defense");
+                ctx.AssertEqual(134, Stat.GetEvasion(target, SkillType.Invalid), "Actual rotation evasion");
+                ctx.AssertEqual(30000, GetMaxHitPoints(target), "Actual native rotation HP budget");
+                ctx.AssertEqual(0, TemporaryHitPointEffects.GetRemaining(target), "The fresh rotation target has no reactive shield");
+                ResetShot(ctx, actor, target);
+                PvpCombat.EndForTesting(actor);
+                health = GetCurrentHitPoints(target);
+                ctx.SeedRandom(1);
+                LaunchCompanion(ctx, actor, target, companion);
+                shot = RangedWeaponAttackContext.GetRoll(actor, target, 0);
+                raw = shot.Damage;
+                ctx.Assert(raw > 0, "The native companion produces a positive pre-incoming payload");
+                ctx.AssertEqual(health, GetCurrentHitPoints(target), "The pending neutral payload removes no HP at launch");
+            });
+            await WaitFrames(ctx, () => GetCurrentHitPoints(target) < health, "neutral companion arrival", 2f);
+            ctx.AssertEqual(raw, shot.Damage, "The neutral incoming finalizer preserves its captured raw damage");
+            ctx.AssertEqual(raw, health - GetCurrentHitPoints(target), "Native HP delivery equals raw and finalized damage exactly once");
+            ctx.Assert(!PvpCombat.IsInPvpCombat(actor), "An unowned NPC target creates no PvP clock");
+            ctx.Log($"Neutral rotation NPC: HP30000, DEF94, EVA134, Guard0, redirect/share/fatal/lowHP/flat0, no native DR/resistance; raw={raw}, final={shot.Damage}, delivered={health - GetCurrentHitPoints(target)}. Qualified neutral-target equivalence only.");
+        }
+        finally
+        {
+            Cleanup(actor);
+            TemporaryStatModifier.Clear(target);
+        }
+    }
+
+    private static async Task VerifyDiscardedProtection(EngineTestContext ctx, uint actor, uint companion,
+        uint protector, Location departure, string channel)
+    {
+        var target = ctx.SpawnCreature("nw_rat001", 10f);
+        await ctx.DelaySecondsAsync(1f);
+        await ctx.ExecuteInCreatureContextAsync(actor, () => PrepareNpc(ctx, target));
+        var baseline = await OrdinaryDamage(ctx, actor, target, companion);
+        ctx.Assert(baseline > 5, "The measured native payload is large enough to exercise finite absorption and low-HP protection");
+        var origin = GetLocation(target);
+        var initialHP = 0;
+        var protectorHP = GetCurrentHitPoints(protector);
+        try
+        {
+            await ctx.ExecuteInCreatureContextAsync(actor, () =>
+            {
+                ResetShot(ctx, actor, target);
+                if (channel == "fatal")
+                {
+                    TemporaryStatModifier.Add(target, StatType.FatalDamageTemporaryHPPercent, 20, 30f);
+                    TemporaryStatModifier.Add(target, StatType.FatalDamageTemporaryHPDurationSeconds, 30, 30f);
+                    TemporaryStatModifier.Add(target, StatType.FatalDamageTemporaryHPCooldownSeconds, 30, 30f);
+                    ObjectPlugin.SetCurrentHitPoints(target, 1);
+                }
+                else if (channel == "lowHP")
+                {
+                    // Calibrated actual damage makes this hit fatal precisely at the configured
+                    // threshold, with enough real shield capacity to survive the arriving hit.
+                    Stat.SetNPCMaxHitPoints(target, baseline * 5, true);
+                    ObjectPlugin.SetCurrentHitPoints(target, baseline);
+                    TemporaryStatModifier.Add(target, StatType.LowHPTemporaryHPThresholdPercent, 20, 30f);
+                    TemporaryStatModifier.Add(target, StatType.LowHPTemporaryHPPercent, 50, 30f);
+                    TemporaryStatModifier.Add(target, StatType.LowHPTemporaryHPDurationSeconds, 30, 30f);
+                    TemporaryStatModifier.Add(target, StatType.LowHPTemporaryHPCooldownSeconds, 30, 30f);
+                }
+                else if (channel == "redirect")
+                    ctx.Assert(StatusEffect.ApplyStatusEffect(protector, target, new ForceIntercept1StatusEffect(), 30f),
+                        "A real one-use source-owned redirect is active");
+                else
+                    ApplyEffectToObject(DurationType.Temporary, EffectDamageReduction(9999, DamagePower.PlusOne, 5), target, 30f);
+                initialHP = GetCurrentHitPoints(target);
+                ctx.SeedRandom(1);
+                var launchedAt = Environment.TickCount64;
+                var flight = PairedRangedPresentation.FlightSeconds(GetDistanceBetween(actor, target));
+                LaunchCompanion(ctx, actor, target, companion);
+                ctx.AssertEqual(initialHP, GetCurrentHitPoints(target), "Pending damage does not change target HP");
+                ctx.AssertEqual(0, TemporaryHitPointEffects.GetRemaining(target), "Pending damage grants no fatal/low-HP shield or spends its cooldown");
+                ctx.AssertEqual(protectorHP, GetCurrentHitPoints(protector), "Pending damage does not damage the redirect protector");
+                if (channel == "redirect") ctx.Assert(StatusEffect.GetStatusEffect<ForceIntercept1StatusEffect>(target) != null,
+                    "The pending projectile does not consume its one-use redirect");
+                ObjectPlugin.AddToArea(target, GetAreaFromLocation(departure), GetPositionFromLocation(departure));
+                ctx.Assert(GetArea(target) == GetAreaFromLocation(departure) && GetArea(target) != GetArea(actor),
+                    "The target actually leaves the captured launch area synchronously");
+                ctx.Assert(Environment.TickCount64 < launchedAt + flight * 1000f, "Actual departure precedes the projectile deadline");
+            });
+            await ctx.DelaySecondsAsync(.6f);
+            ctx.AssertEqual(initialHP, GetCurrentHitPoints(target), "Discarded damage leaves target HP untouched");
+            ctx.AssertEqual(0, TemporaryHitPointEffects.GetRemaining(target), "Discarded damage consumes no protection trigger");
+            ctx.AssertEqual(protectorHP, GetCurrentHitPoints(protector), "Discarded damage leaves the protector untouched");
+            if (channel == "redirect") ctx.Assert(StatusEffect.GetStatusEffect<ForceIntercept1StatusEffect>(target) != null,
+                "The discarded hit leaves the real one-use redirect available");
+            RangedWeaponAttackContext.Roll arriving = null;
+            await ctx.ExecuteInCreatureContextAsync(actor, () =>
+            {
+                ObjectPlugin.AddToArea(target, GetAreaFromLocation(origin), GetPositionFromLocation(origin));
+                ctx.AssertEqual(GetArea(actor), GetArea(target), "The same protected target returns for an actual valid hit");
+                ClearAllActions();
+                RangedWeaponAttackContext.Clear(actor);
+                ctx.SeedRandom(1);
+                LaunchCompanion(ctx, actor, target, companion);
+                arriving = RangedWeaponAttackContext.GetRoll(actor, target, 0);
+                ctx.AssertEqual(0, TemporaryHitPointEffects.GetRemaining(target), "Even the valid retry leaves protection untouched until arrival");
+            });
+            await ctx.DelaySecondsAsync(.6f);
+            ctx.Assert(!GetIsDead(target), "The same target survives the valid arrival");
+            if (channel is "fatal" or "lowHP")
+            {
+                ctx.Assert(TemporaryHitPointEffects.GetRemaining(target) > 0,
+                    "The valid arrival can still trigger the protection cooldown that the discarded shot did not consume");
+                if (channel == "fatal") ctx.AssertEqual(0, arriving.Damage, "A successful fatal save finalizes this incoming damage to zero");
+            }
+            else if (channel == "redirect")
+            {
+                ctx.Assert(StatusEffect.GetStatusEffect<ForceIntercept1StatusEffect>(target) == null, "Only the actual arriving hit consumes the one-use redirect");
+                ctx.AssertEqual(baseline, initialHP - GetCurrentHitPoints(target) + protectorHP - GetCurrentHitPoints(protector),
+                    "The valid redirect splits one captured payload across target and protector exactly once");
+            }
+            else
+            {
+                ctx.AssertEqual(baseline - 5, initialHP - GetCurrentHitPoints(target),
+                    "The discarded projectile left the full finite five-point DR budget for the first valid arrival");
+                var before = GetCurrentHitPoints(target);
+                await ctx.ExecuteInCreatureContextAsync(actor, () =>
+                {
+                    RangedWeaponAttackContext.Clear(actor);
+                    ctx.SeedRandom(1);
+                    LaunchCompanion(ctx, actor, target, companion);
+                });
+                await WaitFrames(ctx, () => GetCurrentHitPoints(target) < before, "the post-budget native physical hit", 2f);
+                ctx.AssertEqual(baseline, before - GetCurrentHitPoints(target), "One valid hit consumes the finite DR budget, so the next hit lands in full");
+            }
+            ctx.Log($"Discard/valid incoming-state control {channel}: measured raw={baseline}, finalized retry={arriving.Damage}.");
+        }
+        finally
+        {
+            StatusEffect.RemoveStatusEffect<ForceIntercept1StatusEffect>(target);
+            TemporaryStatModifier.Clear(target);
+        }
     }
 
     private static async Task<int> ActivatedDamage(EngineTestContext ctx, uint actor, uint target, uint companion,

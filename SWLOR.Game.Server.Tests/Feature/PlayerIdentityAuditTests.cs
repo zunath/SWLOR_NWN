@@ -43,6 +43,8 @@ public class PlayerIdentityAuditTests
         var setNameAction = ExtractAction("SetKnownName");
         var forgetNameAction = ExtractAction("ForgetKnownName");
         var acceptIntroduction = ExtractMethod("Service", "PlayerIntroduction.cs", "Accept");
+        var setDescriptor = ExtractMethod("Service", "PlayerDescriptor.cs", "SetUnknownDisplayName");
+        var getIdentityKey = ExtractMethod("Service", "Disguise.cs", "GetIdentityKey");
         var source = $$"""
             using System;
             using System.Collections.Generic;
@@ -84,22 +86,27 @@ public class PlayerIdentityAuditTests
                     => AuditWorld.KnownNames[(observer, target)] = name;
                 public static void ForgetKnownName(uint observer, uint target)
                     => AuditWorld.KnownNames.Remove((observer, target));
+                public static void RefreshNameOverridesForPlayer(uint player) { }
+            }
+            public sealed class Player
+            {
+                public string Id, UnknownDisplayName;
+            }
+            public static class DB
+            {
+                public static readonly Dictionary<string, Player> Players = new();
+                public static T Get<T>(string id) where T : class => Players.GetValueOrDefault(id) as T;
+                public static void Set(Player player) => Players[player.Id] = player;
             }
             public static class PlayerDescriptor
             {
-                public static string BaseDescriptor = "Old Base Descriptor";
-                public static void SetUnknownDisplayName(uint player, string name)
-                {
-                    BaseDescriptor = name;
-                    var row = AuditWorld.Players[player];
-                    AuditWorld.Players[player] = (row.Name, "Current Disguise Descriptor", row.IsPc, row.IsDm, row.Valid);
-                }
-                public static string GetUnknownDisplayName(uint player) => BaseDescriptor;
+                {{setDescriptor}}
+                public static string GetUnknownDisplayName(uint player) => DB.Get<Player>(GetObjectUUID(player)).UnknownDisplayName;
             }
             public static class Disguise
             {
                 public static readonly Dictionary<uint, PlayerDisguise> Active = new();
-                public static string GetIdentityKey(uint player) => $"identity-{player}";
+                {{getIdentityKey}}
                 public static string GetDisplayDescriptor(uint player) => AuditWorld.Players[player].Descriptor;
                 public static PlayerDisguise GetActiveDisguise(uint player) => Active.GetValueOrDefault(player);
                 public static string BuildIdentityKey(string disguiseId) => $"disguise:{disguiseId}";
@@ -157,7 +164,7 @@ public class PlayerIdentityAuditTests
             public sealed class IntroductionOffer
             {
                 public uint Presenter = 2;
-                public string PresenterPlayerId = "2", IdentityKey = "identity-2", Name = "Introduced label";
+                public string PresenterPlayerId = "2", IdentityKey = "2", Name = "Introduced label";
                 public string ValidateIdentityAndConsent(string playerId, string identityKey, string currentName, string approvedName) => "";
             }
             public sealed class IntroductionInbox
@@ -236,7 +243,8 @@ public class PlayerIdentityAuditTests
                     AuditWorld.ValidationError = "";
                     AuditWorld.DmPossessed.Clear();
                     Disguise.Active.Clear();
-                    PlayerDescriptor.BaseDescriptor = "Old Base Descriptor";
+                    DB.Players.Clear();
+                    DB.Set(new Player { Id = "1", UnknownDisplayName = "Old Base Descriptor" });
                     AuditWorld.Players[1] = ("Canonical Speaker", "A Seedy Individual", true, false, true);
                     AuditWorld.Players[2] = ("Canonical Listener", "A Quiet Twi'lek", true, false, true);
                 }
@@ -431,22 +439,24 @@ public class PlayerIdentityAuditTests
         RunChat(1, 0, "ServerMessage", "Server notification").Should().BeEmpty();
     }
 
-    [Test]
-    public void SelfNameChange_LogsPreviousBaseDescriptorAndNewValueAfterMutation()
+    [TestCase(false)]
+    [TestCase(true)]
+    public void SelfNameChange_WritesOneBaseDescriptorEventWithSeparateActiveIdentity(bool disguised)
     {
         ResetNameState();
+        if (disguised)
+            SetDisguise(1, "self-mask", "Self disguise");
         var logs = RunNameAction(forget: false, user: 1, target: 1, args: ["New description"]);
 
         logs.Should().ContainSingle();
         logs[0][0].ToString().Should().Be(nameof(LogGroup.PublicDescriptors));
-        AssertStructuredField(logs[0], "Action", "unknown-name-set");
-        AssertStructuredField(logs[0], "ObserverPlayerId", "1");
-        AssertStructuredField(logs[0], "ObserverName", "Canonical Speaker [Current Disguise Descriptor]");
-        AssertStructuredField(logs[0], "TargetPlayerId", "1");
-        AssertStructuredField(logs[0], "TargetName", "Canonical Speaker [Current Disguise Descriptor]");
+        logs[0][1].ToString().Should().StartWith("Base descriptor changed:");
+        AssertStructuredField(logs[0], "PlayerId", "1");
+        AssertStructuredField(logs[0], "PlayerName", "Canonical Speaker");
         AssertStructuredField(logs[0], "IdentityKey", "1");
-        AssertStructuredField(logs[0], "PreviousName", "Old Base Descriptor");
-        AssertStructuredField(logs[0], "Name", "New description");
+        AssertStructuredField(logs[0], "ActiveIdentityKey", disguised ? "disguise:self-mask" : "1");
+        AssertStructuredField(logs[0], "PreviousDescriptor", "Old Base Descriptor");
+        AssertStructuredField(logs[0], "Descriptor", "New description");
     }
 
     [Test]
@@ -460,7 +470,7 @@ public class PlayerIdentityAuditTests
         AssertStructuredField(setLogs[0], "Action", "name-set");
         AssertStructuredField(setLogs[0], "ObserverName", "Canonical Speaker [A Seedy Individual]");
         AssertStructuredField(setLogs[0], "TargetName", "Canonical Listener [A Quiet Twi'lek]");
-        AssertStructuredField(setLogs[0], "IdentityKey", "identity-2");
+        AssertStructuredField(setLogs[0], "IdentityKey", "2");
         AssertStructuredField(setLogs[0], "PreviousName", "Old private label");
         AssertStructuredField(setLogs[0], "Name", "New private label");
 
@@ -468,7 +478,7 @@ public class PlayerIdentityAuditTests
         forgetLogs.Should().ContainSingle();
         forgetLogs[0][0].ToString().Should().Be(nameof(LogGroup.PrivateNames));
         AssertStructuredField(forgetLogs[0], "Action", "name-forget");
-        AssertStructuredField(forgetLogs[0], "IdentityKey", "identity-2");
+        AssertStructuredField(forgetLogs[0], "IdentityKey", "2");
         AssertStructuredField(forgetLogs[0], "PreviousName", "New private label");
         AssertStructuredField(forgetLogs[0], "Name", string.Empty);
     }
@@ -493,7 +503,7 @@ public class PlayerIdentityAuditTests
         AssertStructuredField(logs[0], "Action", "introduction-accepted");
         AssertStructuredField(logs[0], "ObserverPlayerId", "1");
         AssertStructuredField(logs[0], "TargetPlayerId", "2");
-        AssertStructuredField(logs[0], "IdentityKey", "identity-2");
+        AssertStructuredField(logs[0], "IdentityKey", "2");
         AssertStructuredField(logs[0], "PreviousName", "Previous label");
         AssertStructuredField(logs[0], "Name", "Introduced label");
     }

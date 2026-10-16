@@ -578,20 +578,7 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                     var name = PlayerName.SanitizeKnownName(rawName);
                     if (target == user)
                     {
-                        var previousDescriptor = PlayerDescriptor.GetUnknownDisplayName(user);
                         PlayerDescriptor.SetUnknownDisplayName(user, name);
-
-                        Log.WriteStructured(
-                            LogGroup.PublicDescriptors,
-                            "Player identity name change: Action={Action} ObserverPlayerId={ObserverPlayerId} ObserverName={ObserverName} TargetPlayerId={TargetPlayerId} TargetName={TargetName} IdentityKey={IdentityKey} PreviousName={PreviousName} Name={Name}",
-                            "unknown-name-set",
-                            GetObjectUUID(user),
-                            PlayerName.GetAuditName(user),
-                            GetObjectUUID(target),
-                            PlayerName.GetAuditName(target),
-                            GetObjectUUID(target),
-                            previousDescriptor,
-                            name);
                         SendMessageToPC(user, ColorToken.Green($"Public description set to '{name}'. Players who have not labeled your current identity will see this in gray."));
                         return;
                     }

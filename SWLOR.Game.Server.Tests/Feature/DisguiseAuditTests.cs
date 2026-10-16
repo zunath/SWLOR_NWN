@@ -325,7 +325,8 @@ public class DisguiseAuditTests
         GroupOf(records[0]).Should().Be("PublicDescriptors");
         Field(records[0], "PlayerId").Should().Be("owner-id");
         Field(records[0], "PlayerName").Should().Be("Canonical Player");
-        Field(records[0], "IdentityKey").Should().BeOfType<string>().Which.Should().StartWith("disguise:");
+        Field(records[0], "IdentityKey").Should().Be("owner-id");
+        Field(records[0], "ActiveIdentityKey").Should().BeOfType<string>().Which.Should().StartWith("disguise:");
         Field(records[0], "PreviousDescriptor").Should().Be("A Generated Human");
         Field(records[0], "Descriptor").Should().Be("New base descriptor");
     }
@@ -339,6 +340,7 @@ public class DisguiseAuditTests
         ((string)records[0][0]).Should().StartWith("Base descriptor generated:");
         Field(records[0], "PlayerId").Should().Be("owner-id");
         Field(records[0], "IdentityKey").Should().Be("owner-id");
+        Field(records[0], "ActiveIdentityKey").Should().Be("owner-id");
         Field(records[0], "PreviousDescriptor").Should().Be("");
         Field(records[0], "Descriptor").Should().Be("A Generated Human");
     }

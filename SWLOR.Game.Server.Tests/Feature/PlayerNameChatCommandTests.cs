@@ -57,10 +57,9 @@ public class PlayerNameChatCommandTests
         source.Should().Contain("PlayerName.ForgetKnownName(user, target);");
         source.Should().Contain("Log.WriteStructured(");
         source.Should().Contain("LogGroup.PrivateNames");
-        source.Should().Contain("LogGroup.PublicDescriptors");
+        source.Should().NotContain("LogGroup.PublicDescriptors");
         source.Should().NotContain("LogGroup.PlayerName");
         source.Should().Contain("\"name-set\"");
-        source.Should().Contain("\"unknown-name-set\"");
         source.Should().Contain("\"name-forget\"");
         source.Should().Contain("ObserverPlayerId={ObserverPlayerId}");
         source.Should().Contain("TargetPlayerId={TargetPlayerId}");

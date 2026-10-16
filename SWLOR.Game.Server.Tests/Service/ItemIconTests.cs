@@ -111,7 +111,7 @@ public class ItemIconTests
         File.ReadAllText(Path.Combine(migrations, "PlayerMigration", "_19_UpdateItemIcons.cs"))
             .Should().Contain("ItemIconMigration.MigrateObject(player)");
         File.ReadAllText(Path.Combine(migrations, "ServerMigration", "_27_UpdateStoredItems.cs"))
-            .Should().Contain("ItemIconMigration.MigrateSerializedObject").And.NotContain("StoredItemDataMigration.Migrate()");
+            .Should().Contain("LootStatRevisionMigration.MigrateStoredObjectData").And.NotContain("StoredItemDataMigration.Migrate()");
         File.ReadAllText(Path.Combine(migrations, "PlayerMigration", "_14_MigrateResistanceItemProperties.cs"))
             .Should().NotContain("ItemIconMigration");
         File.ReadAllText(Path.Combine(migrations, "ServerMigration", "StoredItemDataMigration.cs"))

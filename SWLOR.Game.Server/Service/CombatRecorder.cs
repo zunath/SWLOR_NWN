@@ -39,6 +39,9 @@ namespace SWLOR.Game.Server.Service
         private static readonly List<CombatRecordPendingDamage> _pendingDamage = new();
         private static readonly Dictionary<(uint Target, string Key), (int SourceId, CombatRecordAttribution Attribution)> _temporaryHitPointGrants = new();
         private static readonly Dictionary<uint, uint> _lastDamageSources = new();
+        // One frame per heal the native hook is applying, innermost last, so a heal nested inside
+        // another on the same target keeps its own PvP reduction.
+        private static readonly List<(uint Target, int PvpReduced)> _healApplications = new();
         private static readonly List<CombatRecordDamageApplication> _damageApplications = new();
         private static readonly List<CombatRecordEvent> _heldEvents = new();
         private static readonly List<CombatRecordWriter> _unfinishedWriters = new();
@@ -124,6 +127,7 @@ namespace SWLOR.Game.Server.Service
             _heldInsertIndex = -1;
             _deathFrames.Clear();
             _awaitingHeal.Clear();
+            _healApplications.Clear();
             _isInHealingReaction = false;
 
             var directory = CombatRecordFileNames.GetDirectory(ApplicationSettings.Get().LogDirectory);
@@ -355,6 +359,7 @@ namespace SWLOR.Game.Server.Service
 
             var awaiting = _awaitingHeal.ToArray();
             _awaitingHeal.Clear();
+            _healApplications.Clear();
             foreach (var recordEvent in awaiting)
                 Enqueue(recordEvent);
         }
@@ -1196,9 +1201,47 @@ namespace SWLOR.Game.Server.Service
         #region Healing and temporary HP
 
         /// <summary>
+        /// Notes how much the PvP healing reduction took off the heal now being applied to
+        /// <paramref name="target"/>, so the heal is recorded with the cut instead of as overheal.
+        /// </summary>
+        public static void RecordPvpHealingReduced(uint target, int requested, int reduced)
+        {
+            for (var index = _healApplications.Count - 1; index >= 0; index--)
+            {
+                if (_healApplications[index].Target != target)
+                    continue;
+
+                _healApplications[index] = (target, Math.Max(0, requested - reduced));
+                return;
+            }
+        }
+
+        /// <summary>Opens the frame for a heal the native hook is about to apply to <paramref name="target"/>.</summary>
+        public static void BeginHealApplication(uint target)
+        {
+            _healApplications.Add((target, 0));
+        }
+
+        /// <summary>Closes the innermost frame for <paramref name="target"/> and returns its PvP reduction.</summary>
+        public static int EndHealApplication(uint target)
+        {
+            for (var index = _healApplications.Count - 1; index >= 0; index--)
+            {
+                if (_healApplications[index].Target != target)
+                    continue;
+
+                var pvpReduced = _healApplications[index].PvpReduced;
+                _healApplications.RemoveAt(index);
+                return pvpReduced;
+            }
+
+            return 0;
+        }
+
+        /// <summary>
         /// Called by the native heal hook after the engine applied a heal effect.
         /// </summary>
-        internal static void RecordHealingApplied(uint creator, uint target, int requested, int hitPointsBefore, int hitPointsAfter, int maxHitPoints)
+        internal static void RecordHealingApplied(uint creator, uint target, int requested, int hitPointsBefore, int hitPointsAfter, int maxHitPoints, int pvpReduced = 0)
         {
             // A heal reacting to a hit still in progress ends what that hit left.
             var application = FindDamageApplication(target);
@@ -1215,16 +1258,18 @@ namespace SWLOR.Game.Server.Service
             if (attribution.Kind == CombatRecordSourceKind.Setup)
                 return;
 
+            // The cut is not overheal: the heal only ever asked for what was left of it.
             Enqueue(CombatRecordEvent.Healing(
                 GetParticipantId(attribution.Actor),
                 GetParticipantId(target),
                 attribution.Kind,
                 attribution.Name,
                 attribution.Code,
-                requested,
+                Math.Max(0, requested - pvpReduced),
                 hitPointsBefore,
                 hitPointsAfter,
-                maxHitPoints));
+                maxHitPoints,
+                pvpReduced));
 
             ReleaseAwaitingHealFor(target);
         }

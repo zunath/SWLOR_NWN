@@ -147,6 +147,7 @@ namespace SWLOR.Game.Server.Service.CombatRecorderService
                     writer.WriteNumber("requested", e.Value0);
                     writer.WriteNumber("effective", e.Value1);
                     writer.WriteNumber("overheal", Math.Max(0, e.Value0 - e.Value1));
+                    writer.WriteNumber("pvp_reduced", e.Value5);
                     writer.WriteNumber("hp_before", e.Value2);
                     writer.WriteNumber("hp_after", e.Value3);
                     writer.WriteNumber("max_hp", e.Value4);

@@ -165,17 +165,31 @@ namespace SWLOR.Game.Server.Native
                 LogFailure(nameof(OnApplyHeal), ex);
             }
 
-            var result = _originalApplyHeal(effectListHandler, pObject, pEffect, bLoadingGame);
+            // The PvP healing reduction runs inside this call and writes its cut into this heal's frame.
+            var targetId = target?.m_idSelf ?? OBJECT_INVALID;
+            if (target != null)
+                CombatRecorder.BeginHealApplication(targetId);
+            int result;
+            var pvpReduced = 0;
+            try
+            {
+                result = _originalApplyHeal(effectListHandler, pObject, pEffect, bLoadingGame);
+            }
+            finally
+            {
+                if (target != null)
+                    pvpReduced = CombatRecorder.EndHealApplication(targetId);
+            }
+
             if (target == null)
                 return result;
 
             try
             {
-                var targetId = target.m_idSelf;
                 var hitPointsAfter = target.GetCurrentHitPoints(1);
                 ServerManager.Executor.ExecuteInScriptContext(() =>
                     CombatRecorder.RecordHealingApplied(
-                        creator, targetId, requested, hitPointsBefore, hitPointsAfter, GetMaxHitPoints(targetId)));
+                        creator, targetId, requested, hitPointsBefore, hitPointsAfter, GetMaxHitPoints(targetId), pvpReduced));
             }
             catch (Exception ex)
             {

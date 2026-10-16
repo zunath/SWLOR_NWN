@@ -166,8 +166,17 @@ public static class LootStatRevisionMigration
 
     private static bool MigrateItem(uint item)
     {
-        if (!LootStatRevisionCatalog.Changes.TryGetValue(GetResRef(item), out var changes) ||
-            GetLocalInt(item, RevisionVariable) >= CurrentRevision)
+        var changed = ApplyRevision(item, LootStatRevisionCatalog.Changes, RevisionVariable, CurrentRevision);
+        changed |= ApplyRevision(item, RareLootStatRevisionCatalog.Changes,
+            RareLootStatRevisionCatalog.RevisionVariable, RareLootStatRevisionCatalog.CurrentRevision);
+        return changed;
+    }
+
+    private static bool ApplyRevision(uint item, IReadOnlyDictionary<string, LootStatChange[]> catalog,
+        string revisionVariable, int revision)
+    {
+        if (!catalog.TryGetValue(GetResRef(item), out var changes) ||
+            GetLocalInt(item, revisionVariable) >= revision)
             return false;
 
         // An equipped item's stats are already counted on its wearer (a player's record or a droid's
@@ -181,7 +190,7 @@ public static class LootStatRevisionMigration
                 EquipmentStats.ApplyStatAmount(wearer, item, change.Type, PropertySubtype(change),
                     Math.Abs(difference), difference > 0);
         }
-        SetLocalInt(item, RevisionVariable, CurrentRevision);
+        SetLocalInt(item, revisionVariable, revision);
 
         if (GetIsObjectValid(wearer))
             Stat.RefreshCombatReadinessEquipment(wearer);

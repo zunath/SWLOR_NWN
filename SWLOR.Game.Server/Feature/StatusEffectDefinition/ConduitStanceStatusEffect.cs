@@ -15,9 +15,9 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
         public ConduitStanceStatusEffect()
         {
             StatGroup.Stats[StatType.AbilityStaminaCostFPRestorePercentSkillType] = (int)SkillType.Saberstaff;
-            StatGroup.Stats[StatType.AbilityStaminaCostFPRestorePercent] = 25;
+            StatGroup.Stats[StatType.AbilityStaminaCostFPRestorePercent] = 40;
             StatGroup.Stats[StatType.AbilityFPCostStaminaRestorePercentSkillType] = (int)SkillType.Force;
-            StatGroup.Stats[StatType.AbilityFPCostStaminaRestorePercent] = 25;
+            StatGroup.Stats[StatType.AbilityFPCostStaminaRestorePercent] = 40;
             StatGroup.Stats[StatType.AttackPercentAdjustment] = -10;
             StatGroup.Stats[StatType.ForceAttackPercentAdjustment] = -10;
         }

@@ -7,6 +7,9 @@ namespace SWLOR.CombatSim.Effects
         PartyHealOverTime,
         TemporaryHp,
         PartyTemporaryHp,
-        Revive
+        Revive,
+
+        /// <summary>A status on the caster whose stats apply while it lasts, such as a stance.</summary>
+        SelfStatus
     }
 }

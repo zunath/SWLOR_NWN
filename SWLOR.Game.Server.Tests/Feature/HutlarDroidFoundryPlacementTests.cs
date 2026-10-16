@@ -15,6 +15,28 @@ public class HutlarDroidFoundryPlacementTests
     private const string OutpostDoor = "HUT_FDY_OUTPOST_DOOR";
     private const string OverseerTable = "HUTLAR_FOUNDRY_OVERSEER";
 
+    // The tilesets' own door-transition groups: zsf01 "Transiton" and tsw01 "Door_Trans".
+    private static readonly Dictionary<string, int> TransitionTiles = new()
+    {
+        ["zsf01"] = 37,
+        ["tsw01"] = 174,
+    };
+
+    // Set pieces that read as a way out or as another setting: zsf01 StairsDOWN/StairsUP, tsw01 Treasure01/02,
+    // Camp, CampWall, Portal, Chessboard and StairsDown/StairsUp.
+    private static readonly Dictionary<string, int[]> OffThemeTiles = new()
+    {
+        ["zsf01"] = new[] { 38, 39 },
+        ["tsw01"] = new[] { 147, 109, 139, 170, 171, 172, 173, 71, 72 },
+    };
+
+    // Lab, cockpit and washroom props, floor puddles and splats that the generator's palettes placed.
+    private static readonly string[] OffThemeProps =
+    {
+        "_mdrn_pl_contr01", "_mdrn_pl_divider", "_mdrn_pl_clntnke", "_mdrn_pl_cryotk2", "_mdrn_pl_conso23",
+        "_mdrn_pl_hwall33", "_mdrn_pl_lghtpl3", "_mdrn_pl_cageirn", "zep_splat005", "zep_water001",
+    };
+
     private static readonly (string Resref, string Name, string SpawnTable, string[] Roster)[] Floors =
     {
         ("hut_fdy_intake", "Hutlar - Droid Foundry Intake", "HUTLAR_FOUNDRY_INTAKE",
@@ -109,7 +131,7 @@ public class HutlarDroidFoundryPlacementTests
                 .ToArray();
             var spawns = waypoints.Where(w => Text(w, "Tag") == spawnTable || Text(w, "Tag") == OverseerTable).ToArray();
 
-            waypoints.Count(w => Text(w, "Tag") == spawnTable).Should().BeGreaterThanOrEqualTo(20, $"{resref} needs open-zone enemy density");
+            waypoints.Count(w => Text(w, "Tag") == spawnTable).Should().BeGreaterThanOrEqualTo(40, $"{resref} needs open-zone enemy density");
             waypoints.Count(w => Text(w, "Tag") == OverseerTable).Should().Be(resref == "hut_fdy_core" ? 1 : 0);
             waypoints.Count(w => Text(w, "Tag") == "STUCK_WAYPOINT").Should().Be(1);
             foreach (var spawn in spawns)
@@ -142,6 +164,12 @@ public class HutlarDroidFoundryPlacementTests
         AssertDoorLink(Tagged(core, "Door List", "PG_hut_fdy_core_DOOR_ENT_1"), assembly, "PG_hut_fdy_assembly_EXIT_1", 2);
         AssertDoorLink(Tagged(core, "Door List", "PG_hut_fdy_core_DOOR_EXIT_1"), outpost, OutpostDoor, 1);
 
+        // The Outpost's north deck is only reachable through its stair doors.
+        Text(Tagged(outpost, "Door List", "HUT_OUTPOST_STAIRS_UP"), "LinkedTo").Should().Be("HUT_OUTPOST_STAIRS_DOWN");
+        Text(Tagged(outpost, "Door List", "HUT_OUTPOST_STAIRS_DOWN"), "LinkedTo").Should().Be("HUT_OUTPOST_STAIRS_UP");
+        List(outpost, "Door List").Where(d => Text(d, "Tag").StartsWith("HUT_OUTPOST_STAIRS"))
+            .Should().OnlyContain(d => Number(d, "LinkedToFlags") == 1 && Number(d, "Locked") == 0);
+
         var testSiteEntrance = List(Load("git", "hutlar_testsite"), "Placeable List")
             .Single(p => Local(p, "DESTINATION")?.GetString() == "H_CloneBase_Entry");
         Text(testSiteEntrance, "OnUsed").Should().Be("teleport", "the Cloning Test Site is the only way into the Outpost");
@@ -155,6 +183,35 @@ public class HutlarDroidFoundryPlacementTests
         Number(outpostExit, "Plot").Should().Be(1, "players must not be able to destroy the Outpost's only exit");
         Local(outpostExit, "DESTINATION")!.Value.GetString().Should().Be("H_CloneBase_Exit");
         Local(outpostExit, "TELEPORT_PARTY_MEMBERS")!.Value.GetInt32().Should().Be(0);
+    }
+
+    [Test]
+    public void Travel_TransitionDoorsOpenOntoTransitionTiles()
+    {
+        // A door opens when players arrive or leave through it, so the tile behind it is always seen.
+        AssertTransitionTileBehind(Outpost, OutpostDoor);
+        AssertTransitionTileBehind("hut_fdy_intake", "PG_hut_fdy_intake_DOOR_ENT_1");
+        AssertTransitionTileBehind("hut_fdy_intake", "PG_hut_fdy_intake_DOOR_EXIT_1");
+        AssertTransitionTileBehind("hut_fdy_core", "PG_hut_fdy_core_DOOR_ENT_1");
+        AssertTransitionTileBehind("hut_fdy_core", "PG_hut_fdy_core_DOOR_EXIT_1");
+    }
+
+    [Test]
+    public void Floors_HaveNoDeadEndStairsOrOffThemeSetPieces()
+    {
+        foreach (var (resref, _, _, _) in Floors)
+        {
+            var area = Load("are", resref);
+            var git = Load("git", resref);
+            var tileset = Text(area, "Tileset");
+            var tiles = List(area, "Tile_List").Select(t => (int)Number(t, "Tile_ID")).ToArray();
+
+            tiles.Should().NotContain(OffThemeTiles[tileset], $"{resref} must not show stairs or set pieces that lead nowhere");
+            tiles.Count(id => id == TransitionTiles[tileset]).Should().Be(
+                List(git, "Door List").Count(d => Text(d, "LinkedTo") != "" && TileBehind(area, d) == TransitionTiles[tileset]),
+                $"{resref} transition tiles belong only behind transition doors");
+            List(git, "Placeable List").Select(p => Text(p, "TemplateResRef")).Should().NotContain(OffThemeProps, resref);
+        }
     }
 
     [Test]
@@ -207,5 +264,38 @@ public class HutlarDroidFoundryPlacementTests
         Local(placeable, "DESTINATION")!.Value.GetString().Should().Be(destination);
         Local(placeable, "TELEPORT_PARTY_MEMBERS")!.Value.GetInt32().Should().Be(0);
         List(targetArea, "WaypointList").Count(w => Text(w, "Tag") == destination).Should().Be(1);
+    }
+
+    private static ((int X, int Y) Front, int TileX, int TileY) Behind(JsonElement door)
+    {
+        var bearing = Number(door, "Bearing");
+        var front = ((int)Math.Round(Math.Sin(bearing)), (int)Math.Round(-Math.Cos(bearing)));
+        var (x, y) = Position(door);
+        return (front, (int)Math.Floor((x - front.Item1 * 5) / 10), (int)Math.Floor((y - front.Item2 * 5) / 10));
+    }
+
+    private static int TileBehind(JsonElement area, JsonElement door)
+    {
+        var (_, tileX, tileY) = Behind(door);
+        return (int)Number(List(area, "Tile_List")[tileX + tileY * (int)Number(area, "Width")], "Tile_ID");
+    }
+
+    private static void AssertTransitionTileBehind(string resref, string doorTag)
+    {
+        var area = Load("are", resref);
+        var git = Load("git", resref);
+        var door = Tagged(git, "Door List", doorTag);
+        var (front, tileX, tileY) = Behind(door);
+        var tile = List(area, "Tile_List")[tileX + tileY * (int)Number(area, "Width")];
+
+        Number(tile, "Tile_ID").Should().Be(TransitionTiles[Text(area, "Tileset")], $"{doorTag} must not open onto a room");
+        // Both transition tiles have their only doorway on the west edge; each orientation step turns it 90 degrees counter-clockwise.
+        var doorway = (-1, 0);
+        for (var turn = 0; turn < (int)Number(tile, "Tile_Orientation"); turn++)
+            doorway = (-doorway.Item2, doorway.Item1);
+        doorway.Should().Be(front, $"the transition tile's doorway must meet {doorTag}");
+        List(git, "Placeable List").Should().NotContain(
+            p => (int)Math.Floor(Position(p).X / 10) == tileX && (int)Math.Floor(Position(p).Y / 10) == tileY,
+            $"nothing may be left floating behind {doorTag}");
     }
 }

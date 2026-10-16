@@ -401,7 +401,7 @@ public class WeatherTests
         Method("AdjustWeather").Should().Contain("GetFirstArea()").And.Contain("GetNextArea()")
             .And.NotContain("GetFirstPC()");
         var heartbeat = Method("OnModuleHeartbeat");
-        heartbeat.Should().Contain("ApplyWeatherDamage(player, now)").And.Contain("new HashSet<uint>()")
+        heartbeat.Should().Contain("ApplyWeatherDamage(viewer, now)").And.Contain("new HashSet<uint>()")
             .And.Contain("now.AddMinutes(1)").And.Contain("_exposures.Remove(player)");
         Source().Should().NotContain("GetTimeHour()").And.NotContain("DelayCommand(")
             .And.NotContain("GetMaster(");

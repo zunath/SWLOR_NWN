@@ -281,7 +281,7 @@ namespace SWLOR.Game.Server.Service
 
             foreach (var nearby in GetNearbyPlayers(activator, WitnessRadius))
             {
-                if (!GetIsDM(nearby))
+                if (!DMPresence.IsControlledByDM(nearby))
                 {
                     TryRecordWitness(activator, nearby, techniqueFeat, techniqueDetail);
                     TryRecordAnalysis(activator, nearby);

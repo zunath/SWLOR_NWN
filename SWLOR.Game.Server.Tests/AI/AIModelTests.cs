@@ -1151,7 +1151,7 @@ public class AIModelTests
         leashBody.Should().Contain("if (!ShouldUseCombatLeash(creature))");
         policyBody.Should().Contain("GetAIFlag(creature).HasFlag(AIFlag.ReturnHome)");
         policyBody.Should().Contain("for (var player = GetFirstPC(); GetIsObjectValid(player); player = GetNextPC())");
-        policyBody.Should().Contain("if (GetIsDM(player))");
+        policyBody.Should().Contain("!DMPresence.IsControlledByDM(player)");
         policyBody.Should().Contain("GetArea(player) == GetArea(creature)");
         policyBody.Should().Contain("GetIsEnemy(player, creature)");
         policyBody.Should().NotContain("IsNearActiveCombatTarget");

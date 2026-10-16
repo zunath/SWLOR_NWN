@@ -1,7 +1,7 @@
 namespace SWLOR.CombatSim.Effects
 {
     /// <summary>
-    /// What a healing, shielding or revive ability does when it lands. Magnitudes mirror the
+    /// What a healing, shielding, revive or self-status ability does when it lands. Magnitudes mirror the
     /// ability's impact code in SWLOR.Game.Server; costs and timings come from <see cref="Data.AbilityCatalog"/>.
     /// </summary>
     public sealed class AbilityEffect
@@ -27,7 +27,12 @@ namespace SWLOR.CombatSim.Effects
 
         public int Ticks { get; init; }
         public float TickSeconds { get; init; }
+
+        /// <summary>How long the effect lasts; for a self status, 0 means the rest of the fight, as a held stance does.</summary>
         public float DurationSeconds { get; init; }
+
+        /// <summary>The game's status effect a self status applies; its stats are read from the status definition.</summary>
+        public Type StatusType { get; init; }
 
         /// <summary>Effects sharing a key replace each other instead of stacking.</summary>
         public string Key { get; init; }

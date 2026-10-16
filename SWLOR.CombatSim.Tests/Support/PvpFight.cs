@@ -53,6 +53,23 @@ namespace SWLOR.CombatSim.Tests.Support
             Hit(seconds);
         }
 
+        /// <summary>The attacker kills the target at the given second.</summary>
+        public void KillTargetAt(int second)
+        {
+            EnsureSpawned();
+            SimulationClock.Set(_simulation, second);
+            _simulation.ApplyDamage(_attacker, _target, _target.Hp + _target.TemporaryHpTotal + 1);
+        }
+
+        /// <summary>Brings the dead target back at the given second, standing in for a revive without its heal.</summary>
+        public void ReviveTargetAt(int second)
+        {
+            EnsureSpawned();
+            SimulationClock.Set(_simulation, second);
+            _target.IsDead = false;
+            _target.Hp = 1;
+        }
+
         /// <summary>Heals the wounded target at the given second and returns the HP actually gained.</summary>
         public double HealAt(int second, HealKind kind = HealKind.InstantAbility, int amount = 1000)
         {

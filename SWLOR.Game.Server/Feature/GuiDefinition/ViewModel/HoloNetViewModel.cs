@@ -62,7 +62,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     return;
                 }
 
-                var auditAuthorName = $"{PlayerName.GetAuditName(player)} ({GetPCPlayerName(player)}) [{GetPCPublicCDKey(player)}]";
+                var auditAuthorName = $"{PlayerName.GetAuditIdentity(player)} ({GetPCPlayerName(player)}) [{GetPCPublicCDKey(player)}]";
                 AssignCommand(player, () => TakeGoldFromCreature(BroadcastPrice, player, true));
 
                 var playerId = GetObjectUUID(player);

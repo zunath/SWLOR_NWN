@@ -153,11 +153,13 @@ namespace SWLOR.Game.Server.Native
                 PairedRangedPresentation.OnCompanionLaunch(actor, target.m_idSelf, landed);
                 if (!landed) return;
                 var queued = UsePerkFeat.HasQueuedWeaponAbility(actor, SkillType.TwinPistol, round.m_nCurrentAttack);
-                var impactActions = new List<Action>();
+                var impactActions = new List<Action<int>>();
                 var convertedDamage = new List<Action>();
+                Func<int> resolveDamageTaken = null;
                 GetDamageRoll.ResolveWeaponDamage((void*)creature.m_pStats.Pointer, (void*)target.Pointer, 0,
                     data.m_nAttackResult == 3 ? 1 : 0, convertedDamageScheduler: convertedDamage.Add,
-                    weaponImpactScheduler: impactActions.Add);
+                    weaponImpactScheduler: impactActions.Add,
+                    damageTakenResolverCapture: resolution => resolveDamageTaken = resolution);
                 var targetId = target.m_idSelf;
                 var weaponId = profile.Weapon;
                 var launchArea = GetArea(actor);
@@ -182,14 +184,17 @@ namespace SWLOR.Game.Server.Native
                     var attribution = CombatRecorder.CaptureAttackAttribution(actor);
                     AssignCommand(GetModule(), () => DelayCommand(travel, () =>
                     {
-                        if (!GetIsObjectValid(targetId) || GetIsDead(targetId) || GetArea(targetId) != launchArea) return;
+                        if (!GetIsObjectValid(actor) || !GetIsObjectValid(targetId) || GetIsDead(targetId) ||
+                            GetArea(targetId) != launchArea) return;
                         using var recorderScope = CombatRecorder.BeginAttribution(attribution);
+                        var resolvedDamage = resolveDamageTaken?.Invoke() ?? damage;
+                        shot.Damage = resolvedDamage;
                         CombatPoint.RecordWeaponAttackPoint(actor, targetId, weaponId, skill);
                         Ability.RecordLeadershipWeaponHit(actor, targetId);
                         Loot.RecordWeaponHitFindBonuses(actor, targetId);
                         TwinPistolMastery.RecordOrdinaryHit(actor, targetId, true);
-                        foreach (var applyImpact in impactActions) applyImpact();
-                        ResolvedCombatDamage.Apply(actor, targetId, damage, damageType);
+                        foreach (var applyImpact in impactActions) applyImpact(resolvedDamage);
+                        ResolvedCombatDamage.Apply(actor, targetId, resolvedDamage, damageType);
                         foreach (var applyConvertedDamage in convertedDamage) applyConvertedDamage();
                     }));
                 }

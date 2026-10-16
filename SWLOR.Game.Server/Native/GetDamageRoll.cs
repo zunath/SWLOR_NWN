@@ -67,7 +67,8 @@ namespace SWLOR.Game.Server.Native
         internal static int ResolveWeaponDamage(void* thisPtr, void* pTarget, int bOffHand,
             int bCritical, int bSneakAttack = 0, int bDeathAttack = 0, int bForceMax = 0,
             Action<Action> convertedDamageScheduler = null,
-            Action<Action> weaponImpactScheduler = null)
+            Action<Action<int>> weaponImpactScheduler = null,
+            Action<Func<int>> damageTakenResolverCapture = null)
         {
             return ServerManager.Executor.ExecuteInScriptContext(() =>
             {
@@ -170,7 +171,7 @@ namespace SWLOR.Game.Server.Native
                     attackerAttack, attackerStat, critical, weaponDeltaCap, attackType, damageFlags, bOffHand, defender, weaponSkillType,
                     isLandedAttack,
                     out totalDamage,
-                    out var effectiveCritical, convertedDamageScheduler, weaponImpactScheduler);
+                    out var effectiveCritical, convertedDamageScheduler, weaponImpactScheduler, damageTakenResolverCapture);
 
                 if (shot != null)
                 {
@@ -183,14 +184,14 @@ namespace SWLOR.Game.Server.Native
                         var rollId = shot.Id;
                         var nativeTwinPistol = weaponSkillType == SkillType.TwinPistol &&
                                                !RangedWeaponAttackContext.IsSimulated(attackerId);
-                        void RecordOrdinaryHit()
+                        void RecordOrdinaryHit(int _)
                         {
                             PairedRangedTraits.RecordOrdinaryHit(attackerId, defenderId, rollId);
                             OrdinaryAttackTraits.RecordHit(attackerId, defenderId, rollId);
                             if (nativeTwinPistol)
                                 TwinPistolMastery.RecordOrdinaryHit(attackerId, defenderId, false);
                         }
-                        if (weaponImpactScheduler == null) RecordOrdinaryHit();
+                        if (weaponImpactScheduler == null) RecordOrdinaryHit(totalDamage);
                         else weaponImpactScheduler(RecordOrdinaryHit);
                     }
                     shot.Completed = true;
@@ -203,11 +204,10 @@ namespace SWLOR.Game.Server.Native
                     var weaponId = weapon?.m_idSelf ?? OBJECT_INVALID;
                     var creatureTarget = defender.m_nObjectType == (int)ObjectType.Creature;
                     var damageableTarget = defender.m_bPlotObject == 0;
-                    var rolledDamage = totalDamage;
                     var rolledType = damageProfile.DamageType;
                     var nativeDamageApplication = weaponImpactScheduler == null;
 
-                    void ApplyWeaponHitEffects()
+                    void ApplyWeaponHitEffects(int rolledDamage)
                     {
                         if (!GetIsObjectValid(attackerId) || !GetIsObjectValid(defenderId)) return;
                         using var damageDerivedHealing = Combat.BeginDamageDerivedHealing(attackerId, defenderId);
@@ -226,7 +226,7 @@ namespace SWLOR.Game.Server.Native
                             PublishDamageDealtEvent(attackerId, defenderId, weaponId, rolledDamage, weaponSkillType, rolledType);
                         }
                     }
-                    if (weaponImpactScheduler == null) ApplyWeaponHitEffects();
+                    if (weaponImpactScheduler == null) ApplyWeaponHitEffects(totalDamage);
                     else weaponImpactScheduler(ApplyWeaponHitEffects);
                 }
 
@@ -282,7 +282,7 @@ namespace SWLOR.Game.Server.Native
             int attackerStat, int critical, int weaponDeltaCap, uint attackType, uint damageFlags,
             int bOffHand, CNWSObject targetObject, SkillType skillType, bool isLandedAttack,
             out int totalDamage, out int effectiveCritical, Action<Action> convertedDamageScheduler,
-            Action<Action> weaponImpactScheduler)
+            Action<Action<int>> weaponImpactScheduler, Action<Func<int>> damageTakenResolverCapture)
         {
             var physicalDamage = 0;
             effectiveCritical = critical;
@@ -296,7 +296,7 @@ namespace SWLOR.Game.Server.Native
 
             var damage = CalculateTargetSpecificDamage(pTarget, attacker, damageProfile,
                 attackerAttack, attackerStat, critical, weaponDeltaCap, attackType, damageFlags, bOffHand, skillType,
-                isLandedAttack, out effectiveCritical, convertedDamageScheduler);
+                isLandedAttack, out effectiveCritical, convertedDamageScheduler, damageTakenResolverCapture);
 
             if (targetObject.m_nObjectType != (int)ObjectType.Creature)
             {
@@ -320,13 +320,13 @@ namespace SWLOR.Game.Server.Native
                 var attackerId = attacker.m_idSelf;
                 var defenderId = targetObject.m_idSelf;
                 var rolledType = damageProfile.DamageType;
-                void ApplyPreDamageEffects()
+                void ApplyPreDamageEffects(int resolvedDamage)
                 {
-                    if (!GetIsObjectValid(attackerId) || !GetIsObjectValid(defenderId)) return;
-                    StatusEffect.NotifyPreDamageStatusEffects(attackerId, defenderId, damage, rolledType);
-                    Combat.ApplyDamageReflectionEffects(attackerId, defenderId, damage, rolledType);
+                    if (resolvedDamage <= 0 || !GetIsObjectValid(attackerId) || !GetIsObjectValid(defenderId)) return;
+                    StatusEffect.NotifyPreDamageStatusEffects(attackerId, defenderId, resolvedDamage, rolledType);
+                    Combat.ApplyDamageReflectionEffects(attackerId, defenderId, resolvedDamage, rolledType);
                 }
-                if (weaponImpactScheduler == null) ApplyPreDamageEffects();
+                if (weaponImpactScheduler == null) ApplyPreDamageEffects(damage);
                 else weaponImpactScheduler(ApplyPreDamageEffects);
             }
 
@@ -540,7 +540,8 @@ namespace SWLOR.Game.Server.Native
         private static int CalculateTargetSpecificDamage(void* pTarget, CNWSCreature attacker,
             WeaponDamageProfile damageProfile, int attackerAttack,
             int attackerStat, int critical, int weaponDeltaCap, uint attackType, uint damageFlags, int bOffHand, SkillType skillType,
-            bool isLandedAttack, out int effectiveCritical, Action<Action> convertedDamageScheduler)
+            bool isLandedAttack, out int effectiveCritical, Action<Action> convertedDamageScheduler,
+            Action<Func<int>> damageTakenResolverCapture)
         {
             effectiveCritical = critical;
             var targetObject = CNWSObject.FromPointer(pTarget);
@@ -550,7 +551,7 @@ namespace SWLOR.Game.Server.Native
                 case (int)ObjectType.Creature:
                     return CalculateCreatureDamage(pTarget, attacker, damageProfile, attackerAttack,
                         attackerStat, critical, weaponDeltaCap, attackType, damageFlags, bOffHand, skillType,
-                        isLandedAttack, out effectiveCritical, convertedDamageScheduler);
+                        isLandedAttack, out effectiveCritical, convertedDamageScheduler, damageTakenResolverCapture);
 
                 case (int)ObjectType.Placeable:
                     var plc = CNWSPlaceable.FromPointer(pTarget);
@@ -570,7 +571,8 @@ namespace SWLOR.Game.Server.Native
         private static int CalculateCreatureDamage(void* pTarget, CNWSCreature attacker, WeaponDamageProfile damageProfile,
             int attackerAttack, int attackerStat, int critical, int weaponDeltaCap,
             uint attackType, uint damageFlags, int bOffHand, SkillType skillType,
-            bool isLandedAttack, out int effectiveCritical, Action<Action> convertedDamageScheduler)
+            bool isLandedAttack, out int effectiveCritical, Action<Action> convertedDamageScheduler,
+            Action<Func<int>> damageTakenResolverCapture)
         {
             effectiveCritical = critical;
             var target = CNWSCreature.FromPointer(pTarget);
@@ -681,7 +683,45 @@ namespace SWLOR.Game.Server.Native
                 damage *= ElectricalDroidMultiplier;
             }
 
-            // Apply NWN damage mechanics for physical damage only
+            if (damageTakenResolverCapture != null)
+            {
+                damageTakenResolverCapture(CaptureDamageTakenResolution(attacker.m_idSelf, target.m_idSelf,
+                    damage, damageType, damageFlags, damagePower, attackType, isLandedAttack,
+                    targetStatusDamageAdjustment, guardedHitBonuses.EnmityBonus));
+                return damage;
+            }
+
+            return ApplyCreatureDamageTaken(attacker, target, damage, damageType, damageFlags, damagePower,
+                attackType, isLandedAttack, targetStatusDamageAdjustment, guardedHitBonuses.EnmityBonus);
+        }
+
+        // Only managed IDs and launch values enter the delayed closure. Native wrappers are
+        // reacquired at impact, after the caller has validated the projectile's target and area.
+        private static Func<int> CaptureDamageTakenResolution(uint attackerId, uint defenderId,
+            int damage, CombatDamageType damageType, uint damageFlags, byte damagePower, uint attackType,
+            bool isLandedAttack, int targetStatusDamageAdjustment, int guardedHitEnmityBonus)
+        {
+            var resolved = false;
+            var result = 0;
+            return () =>
+            {
+                if (resolved) return result;
+                resolved = true;
+                var attacker = NWNXLib.g_pAppManager.m_pServerExoApp.GetGameObject(attackerId)?.AsNWSCreature();
+                var defender = NWNXLib.g_pAppManager.m_pServerExoApp.GetGameObject(defenderId)?.AsNWSCreature();
+                if (attacker == null || defender == null) return result;
+                result = ApplyCreatureDamageTaken(attacker, defender, damage, damageType, damageFlags, damagePower,
+                    attackType, isLandedAttack, targetStatusDamageAdjustment, guardedHitEnmityBonus);
+                return result;
+            };
+        }
+
+        private static int ApplyCreatureDamageTaken(CNWSCreature attacker, CNWSCreature target,
+            int damage, CombatDamageType damageType, uint damageFlags, byte damagePower, uint attackType,
+            bool isLandedAttack, int targetStatusDamageAdjustment, int guardedHitEnmityBonus)
+        {
+            // Native physical effects can have finite absorption budgets. Resolve those,
+            // Guard reactions and the shared damage-taken pipeline at the same impact boundary.
             if (damageType.IsPhysicalDamageType())
             {
                 var bRangedAttack = attackType == (uint)AttackType.Ranged ? 1 : 0;
@@ -714,7 +754,7 @@ namespace SWLOR.Game.Server.Native
                 Combat.ApplyNextAttackGuardedHitEnmityBonus(
                     attacker.m_idSelf,
                     target.m_idSelf,
-                    guardedHitBonuses.EnmityBonus);
+                    guardedHitEnmityBonus);
             }
             return damage;
         }

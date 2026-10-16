@@ -155,6 +155,32 @@ public class HeadgearSlotMigrationTests
         migrated.Should().Be(original);
     }
 
+    [TestCase(false)]
+    [TestCase(true)]
+    public void PendingChestRestoresAreRetargetedWithoutDuplicatingOrLosingTheSavedCopy(bool missingId)
+    {
+        var legacy = Encode(Visor(id: missingId ? null : "legacy-id"));
+        var oldKey = "DROID_RESTORE_ITEM:" + (int)InventorySlot.Chest + ":legacy-id";
+        var archive = new JObject { ["Inventory"] = new JObject { [oldKey] = legacy }, ["UnknownState"] = 42 };
+        var visits = 0;
+        Func<string, string> repair = data =>
+        {
+            if (!string.IsNullOrWhiteSpace(data)) visits++;
+            return HeadgearSlotMigration.MigrateSerializedObject(data, out var converted) ? converted : data;
+        };
+        var method = typeof(HeadgearSlotMigration).GetMethod("MigrateDroid", BindingFlags.Static | BindingFlags.NonPublic)!;
+        var migrated = (string)method.Invoke(null, new object[] { archive.ToString(), repair, true })!;
+        visits.Should().Be(1, "retargeting a pending entry must not migrate it a second time");
+        var result = JObject.Parse(migrated);
+        var item = ((JObject)result["Inventory"]!).Properties().Should().ContainSingle().Subject;
+        item.Name.Should().StartWith("DROID_RESTORE_ITEM:" + (int)InventorySlot.Head + ":");
+        var saved = Read(item.Value.Value<string>()!);
+        Value(saved, "BaseItem").Should().Be((int)BaseItem.Helmet);
+        Value(saved, "UUID").Should().Be("visor-uuid");
+        result["UnknownState"]!.Value<int>().Should().Be(42);
+        method.Invoke(null, new object[] { migrated, repair, true }).Should().Be(migrated);
+    }
+
     // Build raw GFF fixtures with the established writer and inspect with the independent formats reader.
     private static readonly Type Document = typeof(HeadgearSlotMigration).Assembly.GetType("SWLOR.Game.Server.Feature.MigrationDefinition.StoredObjectData")!;
     private static readonly Type NodeType = Document.GetNestedType("Node", BindingFlags.NonPublic)!;

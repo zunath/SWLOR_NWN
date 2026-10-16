@@ -23,7 +23,10 @@ public static partial class DroidInventoryEngineTests
     [EngineTest("Migration leaves denied saved droid headgear carried across two resummons", Category = "DroidInventory", TimeoutSeconds = 90)]
     public static Task HeadgearSavedDeniedHead(EngineTestContext ctx) => VerifySavedHeadgear(ctx, true, false, true);
 
-    private static async Task VerifySavedHeadgear(EngineTestContext ctx, bool statsFirst, bool occupied = true, bool denyEquip = false)
+    [EngineTest("Migration retargets pending droid chest visor restores to the head slot across two resummons", Category = "DroidInventory", TimeoutSeconds = 90)]
+    public static Task HeadgearSavedPendingChest(EngineTestContext ctx) => VerifySavedHeadgear(ctx, true, false, false, true);
+
+    private static async Task VerifySavedHeadgear(EngineTestContext ctx, bool statsFirst, bool occupied = true, bool denyEquip = false, bool pendingChest = false)
     {
         var owner = ctx.SpawnCreature("civilian");
         await ctx.WaitFrameAsync();
@@ -50,6 +53,11 @@ public static partial class DroidInventoryEngineTests
                 Inventory = { ["collision"] = ObjectPlugin.Serialize(carried) },
             };
             if (occupied) archive.EquippedItems[InventorySlot.Head] = ObjectPlugin.Serialize(head);
+            if (pendingChest)
+            {
+                archive.EquippedItems.Remove(InventorySlot.Chest);
+                archive.Inventory["DROID_RESTORE_ITEM:" + (int)InventorySlot.Chest + ":collision"] = ObjectPlugin.Serialize(visor);
+            }
             Droid.SaveConstructedDroid(controller, archive);
             DestroyObject(visor);
             DestroyObject(carried);

@@ -121,8 +121,9 @@ public static class HeadgearSlotMigration
                 // Capture the legacy root before conversion; nested gear must
                 // not move its containing bag out of an equipment slot.
                 var originalItem = (string)entry.Value;
-                var moveChest = repairHeadgear && field == "EquippedItems" &&
-                    (entry.Name == "Chest" || entry.Name == ((int)InventorySlot.Chest).ToString()) &&
+                var moveChest = repairHeadgear &&
+                    (field == "EquippedItems" && (entry.Name == "Chest" || entry.Name == ((int)InventorySlot.Chest).ToString()) ||
+                     field == "Inventory" && entry.Name.StartsWith(Droid.GetPendingItemRestoreKey(InventorySlot.Chest, ""), StringComparison.Ordinal)) &&
                     StoredObjectData.IsLegacyHeadgearRoot(originalItem);
                 var migrated = migrateItem(originalItem);
                 if (originalItem == migrated) continue;

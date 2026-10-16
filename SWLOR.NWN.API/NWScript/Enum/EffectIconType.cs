@@ -489,6 +489,12 @@ namespace SWLOR.NWN.API.NWScript.Enum
         SlipAwayStatusEffect = 486,
         PressForwardStatusEffect = 487,
         RetaliationStatusEffect = 488,
+        PvpCombatStatusEffect = 479,
+        PvpHealingReduction1StatusEffect = 480,
+        PvpHealingReduction2StatusEffect = 481,
+        PvpHealingReduction3StatusEffect = 482,
+        PvpHealingReduction4StatusEffect = 483,
+        PvpHealingReduction5StatusEffect = 484,
         // End custom status effect icons
 
         // Retain the legacy name for the same icon row.

@@ -27,27 +27,27 @@ namespace SWLOR.CombatSim.Tests.Engine
         [TestCase(270, 180)]
         [TestCase(300, 200)]
         [TestCase(900, 200)]
-        public void TunedPvp_DamageGainsTwentyPercentEveryThirtySecondsFromThreeMinutes_UpToDouble(int secondsOfCombat, double expected)
+        public void Current_DamageGainsTwentyPercentEveryThirtySecondsFromThreeMinutes_UpToDouble(int secondsOfCombat, double expected)
         {
-            var fight = new PvpFight(_catalog, RuleSets.TunedPvp());
+            var fight = new PvpFight(_catalog, RuleSets.Current());
             fight.FightUntil(secondsOfCombat);
 
             fight.DamageAt(secondsOfCombat).Should().BeApproximately(expected, Tolerance);
         }
 
         [Test]
-        public void TunedPvp_TheBackstopIsAppliedBeforeTheTargetsDamageReduction()
+        public void Current_TheBackstopIsAppliedBeforeTheTargetsDamageReduction()
         {
-            var fight = new PvpFight(_catalog, RuleSets.TunedPvp()) { TargetDamageReductionPercent = 10f };
+            var fight = new PvpFight(_catalog, RuleSets.Current()) { TargetDamageReductionPercent = 10f };
             fight.FightUntil(360);
 
             fight.DamageAt(360).Should().BeApproximately(100 * 2.0 * 0.9, Tolerance);
         }
 
         [Test]
-        public void TunedPvp_NoBackstopWhenTheScenarioIsNotPvp()
+        public void Current_NoBackstopWhenTheScenarioIsNotPvp()
         {
-            var fight = new PvpFight(_catalog, RuleSets.TunedPvp()) { IsPvp = false };
+            var fight = new PvpFight(_catalog, RuleSets.Current()) { IsPvp = false };
 
             fight.FightUntil(420);
 
@@ -55,9 +55,9 @@ namespace SWLOR.CombatSim.Tests.Engine
         }
 
         [Test]
-        public void TunedPvp_NoBackstopWhenTheAttackerIsAnNpc()
+        public void Current_NoBackstopWhenTheAttackerIsAnNpc()
         {
-            var fight = new PvpFight(_catalog, RuleSets.TunedPvp()) { AttackerIsNpc = true };
+            var fight = new PvpFight(_catalog, RuleSets.Current()) { AttackerIsNpc = true };
 
             fight.FightUntil(420);
 
@@ -65,9 +65,9 @@ namespace SWLOR.CombatSim.Tests.Engine
         }
 
         [Test]
-        public void TunedPvp_NoBackstopWhenTheTargetIsAnNpc()
+        public void Current_NoBackstopWhenTheTargetIsAnNpc()
         {
-            var fight = new PvpFight(_catalog, RuleSets.TunedPvp()) { TargetIsNpc = true };
+            var fight = new PvpFight(_catalog, RuleSets.Current()) { TargetIsNpc = true };
 
             fight.FightUntil(420);
 
@@ -75,7 +75,6 @@ namespace SWLOR.CombatSim.Tests.Engine
         }
 
         [TestCase("pre-tuning")]
-        [TestCase("current")]
         public void RuleSetsWithoutPvpRules_HaveNoBackstop(string ruleSetName)
         {
             var fight = new PvpFight(_catalog, RuleSets.Get(ruleSetName));
@@ -86,9 +85,9 @@ namespace SWLOR.CombatSim.Tests.Engine
         }
 
         [Test]
-        public void TunedPvp_TheBackstopClockRestartsAfterThePvpCombatLapses()
+        public void Current_TheBackstopClockRestartsAfterThePvpCombatLapses()
         {
-            var fight = new PvpFight(_catalog, RuleSets.TunedPvp());
+            var fight = new PvpFight(_catalog, RuleSets.Current());
             fight.FightUntil(360);
             fight.DamageAt(360).Should().BeApproximately(200, Tolerance);
 

@@ -23,6 +23,8 @@ conversion, fitting and export helpers in the process tooling.
 
 ## Choose and author
 
+For local image-to-GLB generation, follow the guide's [TRELLIS.2 workflow](../../../SWLOR.Game.Server/Readmes/BlasterModelImport.md#generate-local-weapon-sources-with-trellis2); preflight the local runtime and keep all per-model sources in ignored staging.
+
 - Resolve the requested slot from the catalog, assets and blueprint users. A
   shared slot replacement changes persisted items too. Ask only if intent cannot
   be inferred. Choose another modern pistol for a new model unless asked to revise

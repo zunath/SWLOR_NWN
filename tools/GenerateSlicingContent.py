@@ -299,6 +299,33 @@ def weapon_skill_requirement(template: dict, required_rank: int) -> dict:
     return requirement
 
 
+# Reviewed reward budgets; regeneration must keep normalized damage and migration checkpoints.
+REVISED_WEAPON_STATS = {
+    "slw_bastiontal": (15, 10, 3),
+    "slw_blackroute": (28, 6, 2),
+    "slw_coldchamber": (17, 9, 3),
+    "slw_crosswind": (10, 3, 1),
+    "slw_deaddrop": (33, 9, 3),
+    "slw_debtmarker": (15, 6, 2),
+    "slw_gloamknife": (21, 12, 4),
+    "slw_lastwitness": (22, 12, 4),
+    "slw_sealknife": (15, 6, 2),
+    "slw_sidewinder": (11, 3, 1),
+    "slw_vaultbreak": (41, 12, 4),
+    "slw_viperclaw": (10, 4, 1),
+    "stw_ghostline": (39, 13, 4),
+    "stw_groundloop": (6, 1, 1),
+    "stw_longwatch": (29, 7, 2),
+    "stw_nulllattice": (35, 9, 3),
+    "stw_orbitshear": (13, 9, 3),
+    "stw_phasereturn": (8, 3, 1),
+    "stw_quietcarb": (17, 3, 1),
+    "stw_relaybreak": (15, 6, 2),
+    "stw_surveycoil": (8, 1, 1),
+    "stw_zerostate": (22, 12, 4),
+}
+
+
 def make_weapons() -> None:
     attack = [1, 3, 6, 9, 12]
     readiness = [1, 1, 2, 3, 4]
@@ -310,12 +337,23 @@ def make_weapons() -> None:
             "field handling without relying on unstable random modifications."
         )
         item = configure_item(template, resref, name, description)
-        properties = [prop(93, 34, weapon_damage(template_resref, tier))]
+        revised = REVISED_WEAPON_STATS.get(resref)
+        damage, attack_bonus, readiness_bonus = revised or (
+            weapon_damage(template_resref, tier),
+            attack[tier - 1] + (1 if exceptional and tier > 1 else 0),
+            readiness[tier - 1],
+        )
+        properties = [prop(93, 34, damage)]
         properties.extend(preserve_weapon_scaffolding(template))
-        properties.append(prop(111, 45, attack[tier - 1] + (1 if exceptional and tier > 1 else 0)))
-        properties.append(prop(118, 42, readiness[tier - 1]))
+        properties.append(prop(111, 45, attack_bonus))
+        properties.append(prop(118, 42, readiness_bonus))
         properties.append(weapon_skill_requirement(template, level_for_tier(tier, exceptional)))
         item["PropertiesList"]["value"] = properties
+        if revised:
+            revisions = [local_int("ITEM_STATS_REVISION", 1)]
+            if resref not in ("stw_groundloop", "stw_surveycoil"):
+                revisions.append(local_int("RARE_LOOT_STATS_REVISION", 1))
+            item["VarTable"] = {"type": "list", "value": revisions}
         item["AddCost"]["value"] = 100 * tier
         item["Cost"]["value"] = 100 * tier
         save(UTI / f"{resref}.uti.json", item)

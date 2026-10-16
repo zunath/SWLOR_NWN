@@ -606,11 +606,11 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition
             List<(ItemProperty Property, int SubType, int Index)> damageTypeProperties)
         {
             if (LegacyEnhancementDamageTypesBySubType.TryGetValue(enhancement.SubType, out var legacyDamageType))
-                return legacyDamageType;
+                return ToWeaponDamageType(legacyDamageType);
 
             var pairedDamageType = damageTypeProperties.FirstOrDefault(x => x.Index == enhancement.Index + 1);
             if (TryGetCharacterDamageType(pairedDamageType.SubType, out var damageType))
-                return damageType;
+                return ToWeaponDamageType(damageType);
 
             return CombatDamageType.Physical;
         }
@@ -647,7 +647,7 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition
             }
 
             if (damageTypeProperties.Count <= 1 &&
-                damageTypeProperties.All(x => TryGetCharacterDamageType(x.SubType, out var damageType) && !damageType.IsPhysicalDamageType()))
+                damageTypeProperties.All(x => TryGetCharacterDamageType(x.SubType, out var damageType) && damageType.IsElementalDamageType()))
             {
                 return false;
             }
@@ -726,32 +726,20 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition
 
                 if (elementalDamageType != CombatDamageType.Invalid)
                     return elementalDamageType;
-
-                if (typedDamageAmounts.ContainsKey(CombatDamageType.Force))
-                    return CombatDamageType.Force;
             }
 
-            var selectedType = CombatDamageType.Physical;
             foreach (var property in damageTypeProperties)
             {
-                if (!TryGetCharacterDamageType(property.SubType, out var damageType))
-                    continue;
-
-                if (selectedType.IsElementalDamageType())
-                    continue;
-
-                if (damageType.IsElementalDamageType())
-                {
-                    selectedType = damageType;
-                }
-                else if (selectedType.IsPhysicalDamageType() && damageType == CombatDamageType.Force)
-                {
-                    selectedType = CombatDamageType.Force;
-                }
+                if (TryGetCharacterDamageType(property.SubType, out var damageType) && damageType.IsElementalDamageType())
+                    return damageType;
             }
 
-            return selectedType;
+            return CombatDamageType.Physical;
         }
+
+        // Only elements retype weapon damage, and iprp_c_dmgtype has no Force row; Force conversion belongs to Imbuement Stance.
+        private static CombatDamageType ToWeaponDamageType(CombatDamageType damageType) =>
+            damageType.IsElementalDamageType() ? damageType : CombatDamageType.Physical;
 
         private static bool TryGetCharacterDamageType(int damageTypeId, out CombatDamageType damageType)
         {

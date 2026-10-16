@@ -103,12 +103,17 @@ public class DisguiseAuditTests
                         .Where(value => value is not PlayerDisguise disguise || disguise.PlayerId == query.OwnerId)
                         .Skip(query.Offset).Take(query.Count).ToArray();
             }
-            public enum LogGroup { PlayerName }
+            public enum LogGroup { PlayerName, PublicDescriptors }
             public static class Log
             {
                 public static readonly List<object[]> Records = new();
+                public static readonly Dictionary<object[], string> Groups = new();
                 public static void WriteStructured(LogGroup group, string template, params object[] values)
-                    => Records.Add(new object[] { template }.Concat(values).ToArray());
+                {
+                    var record = new object[] { template }.Concat(values).ToArray();
+                    Records.Add(record);
+                    Groups[record] = group.ToString();
+                }
             }
             public static class UtilPlugin { public static string StripColors(string value) => value; }
             public static class Gui { public static void PublishRefreshEvent(uint player, object refresh) { } }
@@ -148,6 +153,7 @@ public class DisguiseAuditTests
                 {
                     DB.Records.Clear();
                     Log.Records.Clear();
+                    Log.Groups.Clear();
                     DB.Set(new Player { Id = "owner-id" });
                 }
                 public static object[][] Lifecycle()
@@ -192,6 +198,15 @@ public class DisguiseAuditTests
                     PlayerDescriptor.EnsureUnknownDisplayName(1);
                     return Log.Records.ToArray();
                 }
+                public static object[][] UnchangedDisguiseDescriptor()
+                {
+                    Reset();
+                    var disguise = Disguise.CreateDisguise(1);
+                    Log.Records.Clear();
+                    Disguise.SaveDisguise(1, disguise.Id, "Changed private name", disguise.Descriptor, "Changed biography", 20, 21, true);
+                    return Log.Records.ToArray();
+                }
+                public static string GroupOf(object[] record) => Log.Groups[record];
                 public static object[][] RejectedSave()
                 {
                     Reset();
@@ -247,7 +262,8 @@ public class DisguiseAuditTests
     {
         var records = Run("Lifecycle");
         records.Select(record => ((string)record[0]).Split(':')[0]).Should().Equal(
-            "Disguise created", "Disguise saved", "Disguise activated", "Disguise saved",
+            "Disguise created", "Disguise saved", "Disguise public descriptor changed", "Disguise activated", "Disguise saved",
+            "Disguise public descriptor changed",
             "Disguise reapplied on login", "Disguise activation cooldown reset", "Disguise deactivated",
             "Disguise retired", "Disguise restored", "Disguise retired", "Retired disguise deleted");
         var disguiseId = Field(records[0], "DisguiseId");
@@ -256,17 +272,21 @@ public class DisguiseAuditTests
             Field(record, "PlayerId").Should().Be("owner-id");
             Field(record, "PlayerName").Should().Be("Canonical Player");
             Field(record, "DisguiseId").Should().Be(disguiseId);
+            GroupOf(record).Should().Be(((string)record[0]).StartsWith("Disguise public descriptor changed:")
+                ? "PublicDescriptors" : "PlayerName");
         }
-        Field(records[4], "Descriptor").Should().Be("New descriptor");
-        Field(records[5], "PreviousDateLastActivated").Should().BeOfType<DateTime>();
-        Field(records[5], "ActorPlayerId").Should().Be("staff-id");
-        Field(records[5], "ActorName").Should().Be("Staff Actor");
+        var reapplied = records.Single(record => ((string)record[0]).StartsWith("Disguise reapplied on login:"));
+        Field(reapplied, "Descriptor").Should().Be("New descriptor");
+        var reset = records.Single(record => ((string)record[0]).StartsWith("Disguise activation cooldown reset:"));
+        Field(reset, "PreviousDateLastActivated").Should().BeOfType<DateTime>();
+        Field(reset, "ActorPlayerId").Should().Be("staff-id");
+        Field(reset, "ActorName").Should().Be("Staff Actor");
     }
 
     [Test]
     public void Customization_RetainsEveryPreviousAndNewValueIncludingSameLengthBiographyEdits()
     {
-        var save = Run("Lifecycle")[3];
+        var save = Run("Lifecycle").Last(record => ((string)record[0]).StartsWith("Disguise saved:"));
         Field(save, "PreviousPrivateName").Should().Be("Old mask");
         Field(save, "PrivateName").Should().Be("New mask");
         Field(save, "PreviousDescriptor").Should().Be("Old descriptor");
@@ -302,6 +322,7 @@ public class DisguiseAuditTests
     {
         var records = Run("DescriptorChanges");
         records.Should().ContainSingle();
+        GroupOf(records[0]).Should().Be("PublicDescriptors");
         Field(records[0], "PlayerId").Should().Be("owner-id");
         Field(records[0], "PlayerName").Should().Be("Canonical Player");
         Field(records[0], "IdentityKey").Should().BeOfType<string>().Which.Should().StartWith("disguise:");
@@ -314,6 +335,7 @@ public class DisguiseAuditTests
     {
         var records = Run("Generation");
         records.Should().ContainSingle();
+        GroupOf(records[0]).Should().Be("PublicDescriptors");
         ((string)records[0][0]).Should().StartWith("Base descriptor generated:");
         Field(records[0], "PlayerId").Should().Be("owner-id");
         Field(records[0], "IdentityKey").Should().Be("owner-id");
@@ -375,7 +397,32 @@ public class DisguiseAuditTests
         Field(records[0], "ActorName").Should().Be("Staff Actor");
     }
 
+    [Test]
+    public void DisguiseDescriptorEdits_WritePublicHistoryWithTheIdentityAndActiveState()
+    {
+        var records = Run("Lifecycle").Where(record => GroupOf(record) == "PublicDescriptors").ToArray();
+        records.Should().HaveCount(2);
+        Field(records[0], "PreviousDescriptor").Should().Be("Base descriptor");
+        Field(records[0], "Descriptor").Should().Be("Old descriptor");
+        Field(records[0], "IsActive").Should().Be(false);
+        Field(records[1], "PreviousDescriptor").Should().Be("Old descriptor");
+        Field(records[1], "Descriptor").Should().Be("New descriptor");
+        Field(records[1], "IsActive").Should().Be(true);
+        foreach (var record in records)
+            Field(record, "IdentityKey").Should().Be($"disguise:{Field(record, "DisguiseId")}");
+    }
+
+    [Test]
+    public void OtherDisguiseCustomization_DoesNotWriteAPublicDescriptorChange()
+    {
+        var records = Run("UnchangedDisguiseDescriptor");
+        records.Should().ContainSingle();
+        GroupOf(records[0]).Should().Be("PlayerName");
+    }
+
     private object[][] Run(string method) => (object[][])_harness.GetMethod(method)!.Invoke(null, null)!;
+
+    private string GroupOf(object[] record) => (string)_harness.GetMethod("GroupOf")!.Invoke(null, [record])!;
 
     private static object Field(object[] record, string name)
     {

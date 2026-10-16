@@ -582,7 +582,7 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                         PlayerDescriptor.SetUnknownDisplayName(user, name);
 
                         Log.WriteStructured(
-                            LogGroup.PlayerName,
+                            LogGroup.PublicDescriptors,
                             "Player identity name change: Action={Action} ObserverPlayerId={ObserverPlayerId} ObserverName={ObserverName} TargetPlayerId={TargetPlayerId} TargetName={TargetName} IdentityKey={IdentityKey} PreviousName={PreviousName} Name={Name}",
                             "unknown-name-set",
                             GetObjectUUID(user),
@@ -610,7 +610,7 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                     PlayerName.SetKnownName(user, target, name);
 
                     Log.WriteStructured(
-                        LogGroup.PlayerName,
+                        LogGroup.PrivateNames,
                         "Player identity name change: Action={Action} ObserverPlayerId={ObserverPlayerId} ObserverName={ObserverName} TargetPlayerId={TargetPlayerId} TargetName={TargetName} IdentityKey={IdentityKey} PreviousName={PreviousName} Name={Name}",
                         "name-set",
                         GetObjectUUID(user),
@@ -664,7 +664,7 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                     var identityKey = Disguise.GetIdentityKey(target);
                     PlayerName.ForgetKnownName(user, target);
                     Log.WriteStructured(
-                        LogGroup.PlayerName,
+                        LogGroup.PrivateNames,
                         "Player identity name change: Action={Action} ObserverPlayerId={ObserverPlayerId} ObserverName={ObserverName} TargetPlayerId={TargetPlayerId} TargetName={TargetName} IdentityKey={IdentityKey} PreviousName={PreviousName} Name={Name}",
                         "name-forget",
                         GetObjectUUID(user),

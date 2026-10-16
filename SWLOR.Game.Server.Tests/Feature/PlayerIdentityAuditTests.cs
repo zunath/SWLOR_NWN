@@ -6,6 +6,8 @@ using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using NUnit.Framework;
 using SWLOR.Game.Server.Core.NWNX.Enum;
+using SWLOR.Game.Server.Enumeration;
+using SWLOR.Game.Server.Service.LogService;
 
 namespace SWLOR.Game.Server.Tests.Feature;
 
@@ -16,6 +18,7 @@ public class PlayerIdentityAuditTests
     private MethodInfo _runConnection = null!;
     private MethodInfo _runNameAction = null!;
     private MethodInfo _runHoloNet = null!;
+    private MethodInfo _runIntroduction = null!;
 
     private static IEnumerable<ChatChannel> RegularChatChannels => Enum.GetValues<ChatChannel>()
         .Where(channel => channel != ChatChannel.ServerMessage &&
@@ -39,6 +42,7 @@ public class PlayerIdentityAuditTests
                                  call.ArgumentList.Arguments[0].ToString() == "LogGroup.Chat");
         var setNameAction = ExtractAction("SetKnownName");
         var forgetNameAction = ExtractAction("ForgetKnownName");
+        var acceptIntroduction = ExtractMethod("Service", "PlayerIntroduction.cs", "Accept");
         var source = $$"""
             using System;
             using System.Collections.Generic;
@@ -113,7 +117,7 @@ public class PlayerIdentityAuditTests
                 public const string OnModuleExit = "exit";
                 public const string OnNWNXChat = "chat";
             }
-            public enum LogGroup { Connection, Chat, PlayerName }
+            public enum LogGroup { Connection, Chat, PlayerName, PrivateNames, PublicDescriptors }
             public static class Log
             {
                 public static readonly List<string> Messages = new();
@@ -148,6 +152,30 @@ public class PlayerIdentityAuditTests
                 {{connect}}
                 {{disconnect}}
                 {{chat}}
+            }
+
+            public sealed class IntroductionOffer
+            {
+                public uint Presenter = 2;
+                public string PresenterPlayerId = "2", IdentityKey = "identity-2", Name = "Introduced label";
+                public string ValidateIdentityAndConsent(string playerId, string identityKey, string currentName, string approvedName) => "";
+            }
+            public sealed class IntroductionInbox
+            {
+                public string Accept(string observerId, Guid offerId, DateTime now,
+                    Func<IntroductionOffer, string> validate, Action<IntroductionOffer> remember)
+                {
+                    var offer = new IntroductionOffer();
+                    var error = validate(offer);
+                    if (string.IsNullOrEmpty(error)) remember(offer);
+                    return error;
+                }
+            }
+            public static class PlayerIntroduction
+            {
+                private static readonly IntroductionInbox Inbox = new();
+                private static bool IsCurrentIdentity(IntroductionOffer offer) => true;
+                {{acceptIntroduction}}
             }
 
             public static class NameActionHarness
@@ -193,6 +221,12 @@ public class PlayerIdentityAuditTests
                 }
                 public static object[][] RunNameAction(bool forget, uint user, uint target, string[] args)
                     => NameActionHarness.Run(forget ? NameActionHarness.ForgetName : NameActionHarness.SetName, user, target, args);
+                public static object[][] RunIntroduction()
+                {
+                    Log.StructuredMessages.Clear();
+                    PlayerIntroduction.Accept(1, Guid.NewGuid(), "Introduced label");
+                    return Log.StructuredMessages.ToArray();
+                }
                 public static void SetKnownName(uint observer, uint target, string name)
                     => AuditWorld.KnownNames[(observer, target)] = name;
                 public static void SetValidationError(string error) => AuditWorld.ValidationError = error;
@@ -234,6 +268,7 @@ public class PlayerIdentityAuditTests
         _runConnection = assembly.GetType("AuditHarness")!.GetMethod("RunConnection")!;
         _runNameAction = assembly.GetType("AuditHarness")!.GetMethod("RunNameAction")!;
         _runHoloNet = assembly.GetType("AuditHarness")!.GetMethod("RunHoloNet")!;
+        _runIntroduction = assembly.GetType("AuditHarness")!.GetMethod("RunIntroduction")!;
         assembly.GetType("AuditHarness")!.GetMethod("SetPlayer")!.Invoke(null,
             [1u, "Canonical Speaker", "A Seedy Individual", true, false, true]);
         assembly.GetType("AuditHarness")!.GetMethod("SetPlayer")!.Invoke(null,
@@ -403,6 +438,7 @@ public class PlayerIdentityAuditTests
         var logs = RunNameAction(forget: false, user: 1, target: 1, args: ["New description"]);
 
         logs.Should().ContainSingle();
+        logs[0][0].ToString().Should().Be(nameof(LogGroup.PublicDescriptors));
         AssertStructuredField(logs[0], "Action", "unknown-name-set");
         AssertStructuredField(logs[0], "ObserverPlayerId", "1");
         AssertStructuredField(logs[0], "ObserverName", "Canonical Speaker [Current Disguise Descriptor]");
@@ -420,6 +456,7 @@ public class PlayerIdentityAuditTests
         SetKnownName(1, 2, "Old private label");
         var setLogs = RunNameAction(forget: false, user: 1, target: 2, args: ["New private label"]);
         setLogs.Should().ContainSingle();
+        setLogs[0][0].ToString().Should().Be(nameof(LogGroup.PrivateNames));
         AssertStructuredField(setLogs[0], "Action", "name-set");
         AssertStructuredField(setLogs[0], "ObserverName", "Canonical Speaker [A Seedy Individual]");
         AssertStructuredField(setLogs[0], "TargetName", "Canonical Listener [A Quiet Twi'lek]");
@@ -429,6 +466,7 @@ public class PlayerIdentityAuditTests
 
         var forgetLogs = RunNameAction(forget: true, user: 1, target: 2, args: []);
         forgetLogs.Should().ContainSingle();
+        forgetLogs[0][0].ToString().Should().Be(nameof(LogGroup.PrivateNames));
         AssertStructuredField(forgetLogs[0], "Action", "name-forget");
         AssertStructuredField(forgetLogs[0], "IdentityKey", "identity-2");
         AssertStructuredField(forgetLogs[0], "PreviousName", "New private label");
@@ -442,6 +480,31 @@ public class PlayerIdentityAuditTests
         SetValidationError("Invalid");
 
         RunNameAction(forget: false, user: 1, target: 2, args: ["bad"]).Should().BeEmpty();
+    }
+
+    [Test]
+    public void RememberedIntroduction_WritesOnlyThePrivateNameLog()
+    {
+        SetKnownName(1, 2, "Previous label");
+        var logs = (object[][])_runIntroduction.Invoke(null, null)!;
+
+        logs.Should().ContainSingle();
+        logs[0][0].ToString().Should().Be(nameof(LogGroup.PrivateNames));
+        AssertStructuredField(logs[0], "Action", "introduction-accepted");
+        AssertStructuredField(logs[0], "ObserverPlayerId", "1");
+        AssertStructuredField(logs[0], "TargetPlayerId", "2");
+        AssertStructuredField(logs[0], "IdentityKey", "identity-2");
+        AssertStructuredField(logs[0], "PreviousName", "Previous label");
+        AssertStructuredField(logs[0], "Name", "Introduced label");
+    }
+
+    [TestCase(LogGroup.PrivateNames, "PrivateNames")]
+    [TestCase(LogGroup.PublicDescriptors, "PublicDescriptors")]
+    public void DedicatedIdentityLogs_HaveSeparateDestinationsInEveryEnvironment(LogGroup group, string loggerName)
+    {
+        var settings = typeof(LogGroup).GetField(group.ToString())!.GetCustomAttribute<LogGroupAttribute>()!;
+        settings.LoggerName.Should().Be(loggerName).And.NotBe(nameof(LogGroup.PlayerName));
+        settings.Environment.Should().Be(ServerEnvironmentType.All);
     }
 
     private string[] RunChat(uint sender, uint target, string channelName, string message)

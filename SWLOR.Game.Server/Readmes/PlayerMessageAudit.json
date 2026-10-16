@@ -1219,28 +1219,35 @@
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/AppearanceEditorViewModel.cs",
-    "Line": 2205,
+    "Line": 1947,
+    "Member": "ApplyDMArmorDisplay",
+    "Delivery": "Retained",
+    "Call": "DMPresence.SendMessage(Player, ColorToken.Red(\"Your helmet and cloak setting could not be saved.\"))"
+  },
+  {
+    "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/AppearanceEditorViewModel.cs",
+    "Line": 2206,
     "Member": "SendScaleMessage",
     "Delivery": "Retained",
     "Call": "DMPresence.SendMessage(Player, message)"
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/AppearanceEditorViewModel.cs",
-    "Line": 2688,
+    "Line": 2689,
     "Member": "OnClickGoToPart",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(Player, ColorToken.Red($\"Part #{PartNumberText?.Trim()} is not in this list.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/AppearanceEditorViewModel.cs",
-    "Line": 2750,
+    "Line": 2751,
     "Member": "OnClickSaveSettings",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(_target, ColorToken.Green(\"Appearance settings saved successfully.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/AppearanceEditorViewModel.cs",
-    "Line": 3366,
+    "Line": 3367,
     "Member": "OnClickApplyArmorPartNumber",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(Player, ColorToken.Red($\"Part #{ArmorPartNumberText?.Trim()} is not available for this slot.\"))"

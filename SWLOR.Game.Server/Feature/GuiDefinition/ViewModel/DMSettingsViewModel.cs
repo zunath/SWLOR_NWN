@@ -93,7 +93,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     break;
                 case nameof(ShowHelmet):
                 case nameof(ShowCloak):
-                    ArmorDisplay.SetDMArmorDisplay(controlled, ShowHelmet, ShowCloak);
+                    saved = ArmorDisplay.SetDMArmorDisplay(controlled, ShowHelmet, ShowCloak);
                     break;
                 default:
                     return;

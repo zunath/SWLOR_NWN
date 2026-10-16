@@ -95,12 +95,14 @@ namespace SWLOR.Game.Server.Feature
         /// <param name="creature">A DM avatar or the creature a DM possesses.</param>
         /// <param name="showHelmet">true to show the helmet.</param>
         /// <param name="showCloak">true to show the cloak.</param>
-        public static void SetDMArmorDisplay(uint creature, bool showHelmet, bool showCloak)
+        /// <returns>false when a DM avatar's choice could not be saved for items equipped later.</returns>
+        public static bool SetDMArmorDisplay(uint creature, bool showHelmet, bool showCloak)
         {
             // A DM avatar's choice also covers items equipped later; a possessed creature's stays on its items.
+            var saved = true;
             if (GetIsDM(creature))
             {
-                DMPreference.Update(creature, preferences =>
+                saved = DMPreference.Update(creature, preferences =>
                 {
                     preferences.ShowHelmet = showHelmet;
                     preferences.ShowCloak = showCloak;
@@ -108,6 +110,7 @@ namespace SWLOR.Game.Server.Feature
             }
 
             Apply(creature, showHelmet, showCloak);
+            return saved;
         }
     }
 }

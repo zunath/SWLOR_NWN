@@ -71,10 +71,15 @@ public class DMSettingsWindowTests
             public static class ArmorDisplay
             {
                 public static readonly Dictionary<uint, (bool Helmet, bool Cloak)> Worn = new();
+                public static bool SaveFails;
                 public static (bool ShowHelmet, bool ShowCloak) GetDMArmorDisplay(uint creature) =>
                     Worn.TryGetValue(creature, out var worn) ? worn : (true, true);
-                public static void SetDMArmorDisplay(uint creature, bool showHelmet, bool showCloak) =>
+                public static bool SetDMArmorDisplay(uint creature, bool showHelmet, bool showCloak)
+                {
+                    // Like production, the worn items change even when the avatar's preference cannot be saved.
                     Worn[creature] = (showHelmet, showCloak);
+                    return !SaveFails;
+                }
             }
 
             public static class ColorToken { public static string Red(string text) => text; }
@@ -124,6 +129,8 @@ public class DMSettingsWindowTests
                 public static object Read(object settings, string propertyName) =>
                     typeof(Settings).GetProperty(propertyName)!.GetValue(settings);
                 public static void Wear(uint creature, bool helmet, bool cloak) => ArmorDisplay.Worn[creature] = (helmet, cloak);
+                public static void FailArmorDisplaySaves() => ArmorDisplay.SaveFails = true;
+                public static int MessagesSent() => DMPresence.Sent.Count;
                 public static (bool, bool) Worn(uint creature) => ArmorDisplay.GetDMArmorDisplay(creature);
                 public static string Saved(uint player, string field)
                 {
@@ -141,6 +148,7 @@ public class DMSettingsWindowTests
         ((IDictionary)_harness.GetField("DB", "Records")).Clear();
         ((IDictionary)_harness.GetField("ArmorDisplay", "Worn")).Clear();
         ((IList)_harness.GetField("DMPresence", "Sent")).Clear();
+        _harness.SetField("ArmorDisplay", "SaveFails", false);
     }
 
     [Test]
@@ -189,6 +197,18 @@ public class DMSettingsWindowTests
         Read(reopened, nameof(DMSettingsViewModel.EmoteStyleIndex)).Should().Be(DMSettingsViewModel.RegularEmoteIndex);
         Read(reopened, nameof(DMSettingsViewModel.ShowHelmet)).Should().Be(false);
         Read(reopened, nameof(DMSettingsViewModel.ShowCloak)).Should().Be(true);
+    }
+
+    [Test]
+    public void FailedHelmetAndCloakSaveIsReported()
+    {
+        _harness.AddPlayer(DM, isDM: true);
+        var settings = Open(DM);
+        _harness.Invoke("Driver", "FailArmorDisplaySaves");
+
+        Change(settings, nameof(DMSettingsViewModel.ShowCloak), false);
+
+        _harness.Invoke<int>("Driver", "MessagesSent").Should().Be(1, "the DM learns the choice will not last");
     }
 
     [Test]

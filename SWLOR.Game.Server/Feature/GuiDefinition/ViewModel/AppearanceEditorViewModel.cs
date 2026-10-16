@@ -1943,7 +1943,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         private void ApplyDMArmorDisplay()
         {
-            ArmorDisplay.SetDMArmorDisplay(_target, ShowHelmet, ShowCloak);
+            if (!ArmorDisplay.SetDMArmorDisplay(_target, ShowHelmet, ShowCloak))
+                DMPresence.SendMessage(Player, ColorToken.Red("Your helmet and cloak setting could not be saved."));
         }
 
         private void LoadItemParts()

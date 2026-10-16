@@ -1222,7 +1222,7 @@
     "Line": 2205,
     "Member": "SendScaleMessage",
     "Delivery": "Retained",
-    "Call": "SendMessageToPC(owner, message)"
+    "Call": "DMPresence.SendMessage(Player, message)"
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/AppearanceEditorViewModel.cs",

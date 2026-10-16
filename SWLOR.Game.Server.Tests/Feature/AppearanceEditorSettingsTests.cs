@@ -5,6 +5,7 @@ using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using NUnit.Framework;
 using SWLOR.Game.Server.Feature.GuiDefinition.ViewModel;
+using SWLOR.Game.Server.Tests.Service;
 
 namespace SWLOR.Game.Server.Tests.Feature;
 
@@ -32,6 +33,8 @@ public class AppearanceEditorSettingsTests
             "SWLOR.Game.Server", "Feature", "ArmorDisplay.cs"));
         var getDMArmorDisplay = CSharpSyntaxTree.ParseText(armorDisplaySource).GetRoot().DescendantNodes()
             .OfType<MethodDeclarationSyntax>().Single(node => node.Identifier.Text == "GetDMArmorDisplay").ToFullString();
+        var dmPresence = DMPossessionHarness.Method("Service/DMPresence.cs", "GetControlledCreature") +
+                         DMPossessionHarness.Method("Service/DMPresence.cs", "SendMessage");
         var harness = $$"""
             using System;
             using System.Linq.Expressions;
@@ -47,7 +50,8 @@ public class AppearanceEditorSettingsTests
                 public static float Height, Head;
                 public static uint Recipient;
                 public static string Message;
-                public static bool GetIsPC(uint creature) => creature == 2 && TargetPC;
+                // The window owner (1) is what the viewer controls; a possessing DM's avatar (3) is not a PC.
+                public static bool GetIsPC(uint creature) => creature == 1 || creature == 2 && TargetPC;
                 public static bool GetIsDM(uint creature) => creature == 1 ? ViewerDM : TargetDM;
                 public static bool GetIsDMPossessed(uint creature) => creature == 1 ? ViewerPossessed : TargetPossessed;
                 public static uint GetMaster(uint creature) => 3;
@@ -96,6 +100,11 @@ public class AppearanceEditorSettingsTests
                 public static bool IsShownByOwner(uint helmet) => HelmetShown;
             }
             public static class ColorToken { public static string Green(string text) => text; }
+            public static class PlayerPlugin { public static uint GetGameObject(uint player) => player; }
+            public static class DMPresence
+            {
+                {{dmPresence}}
+            }
             public class Harness
             {
                 private uint _target = 2;
@@ -262,7 +271,7 @@ public class AppearanceEditorSettingsTests
         string operation, float expected, string message, bool possessed)
     {
         var result = AdjustScale(operation, possessed, 1f);
-        result.Recipient.Should().Be(possessed ? 3u : 1u);
+        result.Recipient.Should().Be(1u, "a possessing DM's avatar receives no messages");
         result.Message.Should().StartWith(message);
         (operation.Contains("Head") ? result.Head : result.Height).Should().BeApproximately(expected, 0.0001f);
     }
@@ -279,7 +288,7 @@ public class AppearanceEditorSettingsTests
         string operation, float limit, bool possessed)
     {
         var result = AdjustScale(operation, possessed, limit);
-        result.Recipient.Should().Be(possessed ? 3u : 1u);
+        result.Recipient.Should().Be(1u, "a possessing DM's avatar receives no messages");
         result.Message.Should().Contain("any further");
         result.Head.Should().Be(limit);
         result.Height.Should().Be(limit);

@@ -387,7 +387,7 @@ public class AppearanceEditorLayoutTests
     {
         var armor = AppearanceEditorDefinition.BuildEditorPanel(AppearanceEditorViewModel.EditorArmorPartial);
         ReadProperty<NuiScrollbars>(armor, "Scrollbars").Should().Be(NuiScrollbars.Auto);
-        var combos = Walk(armor).OfType<GuiComboBox<AppearanceEditorViewModel>>().ToArray();
+        var combos = ArmorPartCombos(armor);
         combos.Should().HaveCount(19);
         foreach (var combo in combos)
         {
@@ -492,10 +492,12 @@ public class AppearanceEditorLayoutTests
     public void SettingsKeepScaleButtonsAvailableWithoutPlayerPreferenceControls()
     {
         var settings = _partials[AppearanceEditorViewModel.SettingsPartial];
-        foreach (var widget in Walk(settings).Where(widget =>
-                     widget is GuiCheckBox<AppearanceEditorViewModel> || widget.Id == "ae_settings_save"))
+        // DMs toggle their avatar's or possessed creature's helmet and cloak; only players save preferences.
+        foreach (var widget in Walk(settings).OfType<GuiCheckBox<AppearanceEditorViewModel>>())
             PathTo(settings, widget).Should().Contain(ancestor =>
-                ReadProperty<string>(ancestor, "IsVisibleBindName") == nameof(AppearanceEditorViewModel.IsPlayerSettingsVisible));
+                ReadProperty<string>(ancestor, "IsVisibleBindName") == nameof(AppearanceEditorViewModel.IsArmorDisplayVisible));
+        PathTo(settings, Walk(settings).Single(widget => widget.Id == "ae_settings_save")).Should().Contain(ancestor =>
+            ReadProperty<string>(ancestor, "IsVisibleBindName") == nameof(AppearanceEditorViewModel.IsPlayerSettingsVisible));
 
         foreach (var id in new[] { "ae_height_increase", "ae_height_decrease", "ae_head_increase", "ae_head_decrease" })
         {
@@ -599,7 +601,7 @@ public class AppearanceEditorLayoutTests
     public void RuntimeArmorRetainsAllPartOptionsAndAll120SwatchRegions()
     {
         var armor = AppearanceEditorDefinition.BuildEditorPanel(AppearanceEditorViewModel.EditorArmorPartial);
-        var combos = Walk(armor).OfType<GuiComboBox<AppearanceEditorViewModel>>().ToArray();
+        var combos = ArmorPartCombos(armor);
         combos.Should().HaveCount(19);
         var options = combos.Select(combo => ReadProperty<string>(combo, "OptionsBindName")).ToArray();
         options.Should().OnlyHaveUniqueItems();
@@ -618,6 +620,41 @@ public class AppearanceEditorLayoutTests
             .Select(entry => entry.Value).ToArray();
         regionBindings.Should().BeEquivalentTo(expectedRegions);
     }
+
+    [Test]
+    public void ArmorPartNumberEntryOffersEverySlotOnce()
+    {
+        var armor = AppearanceEditorDefinition.BuildEditorPanel(AppearanceEditorViewModel.EditorArmorPartial);
+        var slot = Walk(armor).OfType<GuiComboBox<AppearanceEditorViewModel>>().Single(combo => combo.Id == ArmorPartSlotId);
+        ReadProperty<string>(slot, "SelectedIndexBindName").Should().Be(nameof(AppearanceEditorViewModel.ArmorPartNumberSlot));
+        var slotValues = ReadProperty<IEnumerable<GuiComboEntry>>(slot, "Options").Select(option => option.Value).ToArray();
+        slotValues.Should().BeEquivalentTo(Enumerable.Range(0, (int)AppearanceArmor.Num));
+
+        var row = PathTo(armor, slot).OfType<GuiRow<AppearanceEditorViewModel>>().Last();
+        row.DeclaredHeight.Should().Be(40f);
+        Walk(row).OfType<GuiTextEdit<AppearanceEditorViewModel>>().Single().Id.Should().Be("ae_armor_part_number");
+        Walk(row).OfType<GuiButton<AppearanceEditorViewModel>>().Single().Events.Values
+            .Should().ContainSingle(action => action.Method.Name.Contains(nameof(AppearanceEditorViewModel.OnClickApplyArmorPartNumber)));
+    }
+
+    [Test]
+    public void PartListOffersGoToPartBeneathPreviousAndNext()
+    {
+        var main = AppearanceEditorDefinition.BuildEditorPanel(AppearanceEditorViewModel.EditorMainPartial);
+        var entry = Walk(main).Single(widget => widget.Id == "ae_part_number");
+        var go = Walk(main).Single(widget => widget.Id == "ae_go_to_part");
+        var row = PathTo(main, entry).OfType<GuiRow<AppearanceEditorViewModel>>().Last();
+        PathTo(main, go).Should().Contain(row);
+        row.DeclaredHeight.Should().Be(40f);
+        row.Elements.Should().OnlyContain(widget => Width(widget) == 0f,
+            "the entry and button share the panel width like Previous and Next");
+    }
+
+    private const string ArmorPartSlotId = "ae_armor_part_slot";
+
+    // The per-slot part dropdowns, excluding the slot picker of the part-number entry.
+    private static GuiComboBox<AppearanceEditorViewModel>[] ArmorPartCombos(IGuiWidget armor) =>
+        Walk(armor).OfType<GuiComboBox<AppearanceEditorViewModel>>().Where(combo => combo.Id != ArmorPartSlotId).ToArray();
 
     private static IReadOnlyDictionary<string, string> EventSnapshot(IGuiWidget root) => Walk(root)
         .SelectMany(widget => widget.Events.Select(entry => new KeyValuePair<string, string>(

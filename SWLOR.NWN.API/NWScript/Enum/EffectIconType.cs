@@ -479,6 +479,12 @@ namespace SWLOR.NWN.API.NWScript.Enum
         BloodFrenzyStatusEffect = 476,
         SoulAscensionBurstStatusEffect = 477,
         ChallengeEnmityStatusEffect = 478,
+        PvpCombatStatusEffect = 479,
+        PvpHealingReduction1StatusEffect = 480,
+        PvpHealingReduction2StatusEffect = 481,
+        PvpHealingReduction3StatusEffect = 482,
+        PvpHealingReduction4StatusEffect = 483,
+        PvpHealingReduction5StatusEffect = 484,
         // End custom status effect icons
 
         // Retain the legacy name for the same icon row.

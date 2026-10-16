@@ -1401,13 +1401,7 @@ public static class ItemIconMigration
             var changed = false;
             if (GetObjectType(current) == ObjectType.Item)
             {
-                var oldModel = GetItemAppearance(current, ItemAppearanceType.SimpleModel, 0);
-                var newModel = GetUpdatedModel(GetResRef(current), (int)GetBaseItemType(current), oldModel);
-                if (oldModel != newModel)
-                {
-                    ItemPlugin.SetItemAppearance(current, ItemAppearanceType.SimpleModel, 0, newModel);
-                    changed = true;
-                }
+                changed |= MigrateItem(current);
                 changed |= MigrateDroidInventory(current);
             }
             if (GetObjectType(current) == ObjectType.Creature)
@@ -1419,6 +1413,15 @@ public static class ItemIconMigration
             return changed;
         }
         return Visit(obj);
+    }
+
+    internal static bool MigrateItem(uint item)
+    {
+        var oldModel = GetItemAppearance(item, ItemAppearanceType.SimpleModel, 0);
+        var newModel = GetUpdatedModel(GetResRef(item), (int)GetBaseItemType(item), oldModel);
+        if (oldModel == newModel) return false;
+        ItemPlugin.SetItemAppearance(item, ItemAppearanceType.SimpleModel, 0, newModel);
+        return true;
     }
 
     public static bool MigrateSerializedObject(string serialized, out string updated)

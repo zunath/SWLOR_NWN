@@ -5,6 +5,7 @@ using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Service.FrameProfilerService;
 using SWLOR.Game.Server.Service.TelegraphService;
 using SWLOR.NWN.API.Engine;
+using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.Game.Server.Service
@@ -362,10 +363,13 @@ namespace SWLOR.Game.Server.Service
             return degrees * ((float)Math.PI / 180f);
         }
 
-        private static TelegraphColorType DetermineTelegraphColorType(uint player, uint telegrapher, bool isHostile)
+        // partyMember is the avatar behind a creature a DM possesses, which keeps the DM's party membership.
+        private static TelegraphColorType DetermineTelegraphColorType(uint player, uint partyMember, uint telegrapher, bool isHostile)
         {
             var isOwnTelegraph = player == telegrapher;
-            var isPartyMemberTelegraph = !isOwnTelegraph && Party.IsInParty(player, telegrapher);
+            var isPartyMemberTelegraph = !isOwnTelegraph &&
+                (Party.IsInParty(player, telegrapher) ||
+                 (partyMember != player && Party.IsInParty(partyMember, telegrapher)));
 
             return SelectTelegraphColorType(isOwnTelegraph, isPartyMemberTelegraph, isHostile);
         }
@@ -429,7 +433,7 @@ namespace SWLOR.Game.Server.Service
         {
             foreach (var player in ObjectSnapshot.Players())
             {
-                UpdateShaderForPlayer(player);
+                UpdateShaderForPlayer(DMPresence.GetControlledCreature(player));
             }
         }
 
@@ -443,10 +447,14 @@ namespace SWLOR.Game.Server.Service
         {
             foreach (var player in players.Distinct())
             {
-                if (!GetIsObjectValid(player) || (!GetIsPC(player) && !GetIsDM(player)))
+                if (!GetIsObjectValid(player))
                     continue;
 
-                UpdateShaderForPlayer(player);
+                var viewer = DMPresence.GetControlledCreature(player);
+                if (!GetIsPC(viewer) && !GetIsDM(viewer))
+                    continue;
+
+                UpdateShaderForPlayer(viewer);
             }
         }
 
@@ -463,8 +471,9 @@ namespace SWLOR.Game.Server.Service
 
             foreach (var player in ObjectSnapshot.Players())
             {
-                if (GetArea(player) == area)
-                    UpdateShaderForPlayer(player);
+                var viewer = DMPresence.GetControlledCreature(player);
+                if (GetArea(viewer) == area)
+                    UpdateShaderForPlayer(viewer);
             }
         }
 
@@ -483,6 +492,29 @@ namespace SWLOR.Game.Server.Service
             // Resend every slot after an area change rather than trusting values sent before it.
             _sentShaderStates.Remove(player);
             UpdateShaderForPlayer(player);
+        }
+
+        /// <summary>
+        /// Possession moves a DM's client to another object, so the uniforms recorded as sent to that object are
+        /// out of date. Resend every slot once the possession has settled.
+        /// </summary>
+        [NWNEventHandler(ScriptName.OnDMPossessBefore)]
+        [NWNEventHandler(ScriptName.OnDMPossessFullPowerBefore)]
+        public static void ResendShaderStateOnDMPossess()
+        {
+            var target = StringToObject(EventsPlugin.GetEventData("TARGET"));
+            var viewer = GetIsObjectValid(target)
+                ? target
+                : GetMaster(OBJECT_SELF);
+
+            if (!GetIsObjectValid(viewer))
+                return;
+
+            DelayCommand(0.1f, () =>
+            {
+                _sentShaderStates.Remove(viewer);
+                UpdateShaderForPlayer(viewer);
+            });
         }
 
         [NWNEventHandler(ScriptName.OnModuleExit)]
@@ -524,6 +556,7 @@ namespace SWLOR.Game.Server.Service
             }
 
             var telegraphs = SelectTelegraphsForRendering(_telegraphsByArea[area].Values);
+            var partyMember = DMPresence.GetDM(player);
 
             var i = 0;
             foreach (var telegraph in telegraphs)
@@ -532,7 +565,7 @@ namespace SWLOR.Game.Server.Service
                 var position = data.Position;
                 var size = data.Size;
 
-                var colorType = DetermineTelegraphColorType(player, data.Creator, data.IsHostile);
+                var colorType = DetermineTelegraphColorType(player, partyMember, data.Creator, data.IsHostile);
                 var packed = PackTelegraphData(data.Shape, colorType, size, data.Rotation);
 
                 if (sent.PackedData[i] != packed)

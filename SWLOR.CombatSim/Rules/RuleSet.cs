@@ -41,6 +41,9 @@ namespace SWLOR.CombatSim.Rules
         /// <summary>Bloodlust's stamina restore shrinks with the HP actually lost, instead of paying in full.</summary>
         public bool ScaleHitPointSpendRestoreToHitPointsLost { get; set; }
 
+        /// <summary>Seconds a hostile ability makes the caster wait before their next hostile ability; 0 means no wait.</summary>
+        public float HostileAbilityDelaySeconds { get; set; }
+
         public ReviveRule Revives { get; set; } = ReviveRule.Unrestricted;
         public float PveReviveLockoutSeconds { get; set; } = 300f;
         public float PvpReviveDamageWindowSeconds { get; set; } = 15f;
@@ -129,6 +132,7 @@ namespace SWLOR.CombatSim.Rules
             // A bound keeps every adjusted cost a sensible whole number.
             Between(nameof(FpCostMultiplier), FpCostMultiplier, 0, MaximumCostMultiplier);
             Between(nameof(StmCostMultiplier), StmCostMultiplier, 0, MaximumCostMultiplier);
+            AtLeast(nameof(HostileAbilityDelaySeconds), HostileAbilityDelaySeconds, 0);
 
             if (!Enum.IsDefined(Revives))
                 problems.Add($"{nameof(Revives)} must be one of {string.Join(", ", Enum.GetNames<ReviveRule>())}");

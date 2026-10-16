@@ -1,6 +1,8 @@
 using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.CombatSim.Rules;
+using SWLOR.Game.Server.Service.AbilityService;
+using SWLOR.Game.Server.Service.PvpCombatService;
 
 namespace SWLOR.CombatSim.Tests.Rules
 {
@@ -93,12 +95,12 @@ namespace SWLOR.CombatSim.Tests.Rules
         [Test]
         public void Load_ReadsBackAPresetWrittenAsJson()
         {
-            var path = WriteRules("tuned-pvp.json", Newtonsoft.Json.JsonConvert.SerializeObject(RuleSets.TunedPvp()));
+            var path = WriteRules("current.json", Newtonsoft.Json.JsonConvert.SerializeObject(RuleSets.Current()));
 
             var rules = RuleSets.Load(path);
 
-            rules.Name.Should().Be(RuleSets.TunedPvpName);
-            rules.PvpHealingRamp.Should().HaveCount(RuleSets.TunedPvp().PvpHealingRamp.Count);
+            rules.Name.Should().Be(RuleSets.CurrentName);
+            rules.PvpHealingRamp.Should().HaveCount(RuleSets.Current().PvpHealingRamp.Count);
         }
 
         private string WriteRules(string name, string json)
@@ -109,14 +111,13 @@ namespace SWLOR.CombatSim.Tests.Rules
         }
 
         [Test]
-        public void Names_ListTheThreePresets()
+        public void Names_ListThePresets()
         {
-            RuleSets.Names.Should().Equal("pre-tuning", "current", "tuned-pvp");
+            RuleSets.Names.Should().Equal("pre-tuning", "current");
         }
 
         [TestCase("Pre-Tuning")]
         [TestCase("CURRENT")]
-        [TestCase("Tuned-PVP")]
         public void Get_FindsPresetsRegardlessOfCase(string name)
         {
             RuleSets.Get(name).Name.Should().Be(name.ToLowerInvariant());
@@ -127,7 +128,7 @@ namespace SWLOR.CombatSim.Tests.Rules
         {
             var act = () => RuleSets.Get("nonexistent");
 
-            act.Should().Throw<ArgumentException>().WithMessage("*nonexistent*pre-tuning*current*tuned-pvp*");
+            act.Should().Throw<ArgumentException>().WithMessage("*nonexistent*pre-tuning*current*");
         }
 
         [Test]
@@ -150,6 +151,7 @@ namespace SWLOR.CombatSim.Tests.Rules
             rules.ConvergenceDurationSeconds.Should().Be(30f);
             rules.HarmonyInstantHealsOnly.Should().BeFalse();
             rules.HarmonyCooldownSeconds.Should().Be(0f);
+            rules.HostileAbilityDelaySeconds.Should().Be(0f);
             rules.FpCostMultiplier.Should().Be(1f / 1.2f);
             rules.StmCostMultiplier.Should().Be(1f);
             rules.Revives.Should().Be(ReviveRule.Unrestricted);
@@ -176,12 +178,13 @@ namespace SWLOR.CombatSim.Tests.Rules
             rules.Revives.Should().Be(ReviveRule.BlockedInPvpLimitedInPve);
             rules.RefuseHitPointCostsAtOneHitPoint.Should().BeTrue();
             rules.ScaleHitPointSpendRestoreToHitPointsLost.Should().BeTrue();
+            rules.HostileAbilityDelaySeconds.Should().Be(HostileAbilityDelay.Seconds);
         }
 
         [Test]
-        public void Current_HasNoPvpHealingOrDamageRules()
+        public void PreTuning_HasNoPvpHealingOrDamageRules()
         {
-            var rules = RuleSets.Current();
+            var rules = RuleSets.PreTuning();
 
             rules.PvpHealingMultiplier.Should().Be(1f);
             rules.PvpTemporaryHpMultiplier.Should().Be(1f);
@@ -190,23 +193,21 @@ namespace SWLOR.CombatSim.Tests.Rules
         }
 
         [Test]
-        public void TunedPvp_IsCurrentPlusThePvpRules()
+        public void Current_TakesThePvpRulesFromTheGame()
         {
             var current = RuleSets.Current();
-            var tunedPvp = RuleSets.TunedPvp();
 
-            tunedPvp.ForceAffinityHealingCap.Should().Be(current.ForceAffinityHealingCap);
-            tunedPvp.TemporaryHpCapPercent.Should().Be(current.TemporaryHpCapPercent);
-            tunedPvp.ConvergenceDurationSeconds.Should().Be(current.ConvergenceDurationSeconds);
-            tunedPvp.FpCostMultiplier.Should().Be(current.FpCostMultiplier);
-            tunedPvp.Revives.Should().Be(current.Revives);
-
-            tunedPvp.PvpHealingMultiplier.Should().Be(1f);
-            tunedPvp.PvpTemporaryHpMultiplier.Should().Be(1f);
-            tunedPvp.PvpHealingRamp.Select(s => (s.AtSeconds, s.Percent))
+            current.PvpHealingMultiplier.Should().Be(1f, "there is no flat PvP healing cut");
+            current.PvpTemporaryHpMultiplier.Should().Be(1f, "shields are not cut");
+            current.PvpCombatWindowSeconds.Should().Be(PvpCombatRules.CombatWindowSeconds);
+            current.PvpHealingRamp.Select(s => (s.AtSeconds, s.Percent))
                 .Should().Equal((120f, 10f), (150f, 20f), (180f, 30f), (210f, 45f), (240f, 60f));
-            tunedPvp.PvpDamageBackstop.Select(s => (s.AtSeconds, s.Percent))
+            current.PvpDamageBackstop.Select(s => (s.AtSeconds, s.Percent))
                 .Should().Equal((180f, 20f), (210f, 40f), (240f, 60f), (270f, 80f), (300f, 100f));
+            current.PvpHealingRamp.Select(s => (s.AtSeconds, (int)s.Percent)).Should().Equal(
+                PvpCombatRules.HealingReductionSteps.Select(step => (step.AtSeconds, step.Percent)));
+            current.PvpDamageBackstop.Select(s => (s.AtSeconds, (int)s.Percent)).Should().Equal(
+                PvpCombatRules.DamageIncreaseSteps.Select(step => (step.AtSeconds, step.Percent)));
         }
     }
 }

@@ -79,6 +79,7 @@ namespace SWLOR.Game.Server.Service
         private static readonly Dictionary<uint, DateTime> _lastHostileAbilityAttemptActivity = new();
         private static readonly Dictionary<uint, DateTime> _lastHostileIncomingActivity = new();
         private static readonly HashSet<uint> _firstCombatAttackConsumed = new();
+        // Short-window activity queries must preserve the timestamps used by idle-readiness callbacks.
         private static readonly Dictionary<uint, DateTime> _lastAttackActivity = new();
         private static readonly Dictionary<uint, DateTime> _lastCombatAbilityUse = new();
         private static readonly Dictionary<(uint, uint), SuppressionAbilityUseState> _pendingSuppressionAbilityUses = new();
@@ -3410,11 +3411,7 @@ namespace SWLOR.Game.Server.Service
             if (!_lastAttackActivity.TryGetValue(creature, out var lastAttack))
                 return false;
 
-            var isRecent = (DateTime.UtcNow - lastAttack).TotalSeconds <= windowSeconds;
-            if (!isRecent)
-                _lastAttackActivity.Remove(creature);
-
-            return isRecent;
+            return (DateTime.UtcNow - lastAttack).TotalSeconds <= windowSeconds;
         }
 
         public static DateTime GetLastOffensiveActivityAt(uint creature)
@@ -9920,8 +9917,7 @@ namespace SWLOR.Game.Server.Service
             ReconcileOverwatchStatus(creature);
             ScheduleIdleReadinessRefresh(creature);
 
-            if (Stat.GetStatAdjustment(creature, StatType.OpeningAutoAttackSkillType) <= 0 ||
-                Stat.GetStatAdjustment(creature, StatType.OpeningAutoAttackIdleSeconds) <= 0)
+            if (Stat.GetStatAdjustment(creature, StatType.OpeningAutoAttackIdleSeconds) <= 0)
                 StatusEffect.RemoveStatusEffect(creature, typeof(OpeningAttackReadyStatusEffect), false);
             if (!HasConfiguredIdleSkillAbilityChannel(creature))
                 StatusEffect.RemoveStatusEffect(creature, typeof(IdleSkillAbilityReadyStatusEffect), false);
@@ -10960,11 +10956,7 @@ namespace SWLOR.Game.Server.Service
             if (!_lastCombatAbilityUse.TryGetValue(activator, out var lastUse))
                 return false;
 
-            var isRecent = (DateTime.UtcNow - lastUse).TotalSeconds <= windowSeconds;
-            if (!isRecent)
-                _lastCombatAbilityUse.Remove(activator);
-
-            return isRecent;
+            return (DateTime.UtcNow - lastUse).TotalSeconds <= windowSeconds;
         }
 
         public static bool IsUsingAbility(uint creature)
@@ -11085,9 +11077,8 @@ namespace SWLOR.Game.Server.Service
                 ? double.MaxValue
                 : (DateTime.UtcNow - lastActivity).TotalSeconds;
 
-            var openingSkill = GetSkillTypeFromStat(Stat.GetStatAdjustment(creature, StatType.OpeningAutoAttackSkillType));
             var openingSeconds = Stat.GetStatAdjustment(creature, StatType.OpeningAutoAttackIdleSeconds);
-            if (openingSkill != SkillType.Invalid && openingSeconds > 0 && elapsed >= openingSeconds &&
+            if (openingSeconds > 0 && elapsed >= openingSeconds &&
                 !StatusEffect.HasStatusEffect(creature, typeof(OpeningAttackReadyStatusEffect)))
             {
                 StatusEffect.ApplyStatusEffect(creature, creature, new OpeningAttackReadyStatusEffect(), -1);
@@ -11121,11 +11112,26 @@ namespace SWLOR.Game.Server.Service
                 .Distinct();
             foreach (var delay in delays)
             {
-                DelayCommand(delay, () =>
+                void RefreshWhenReady()
                 {
-                    if (GetIsObjectValid(creature) && GetLastCompletedOffensiveActivityAt(creature) == scheduledActivity)
-                        RefreshIdleReadiness(creature);
-                });
+                    if (!GetIsObjectValid(creature) || GetLastCompletedOffensiveActivityAt(creature) != scheduledActivity)
+                        return;
+
+                    var remaining = scheduledActivity == default
+                        ? 0
+                        : delay - (DateTime.UtcNow - scheduledActivity).TotalSeconds;
+                    if (remaining > 0)
+                    {
+                        DelayCommand((float)Math.Max(0.1, remaining), RefreshWhenReady);
+                        return;
+                    }
+
+                    RefreshIdleReadiness(creature);
+                }
+
+                // Native attack hooks may run without a current script object. Give the
+                // callback a valid owner and recheck the wall-clock deadline when it fires.
+                AssignCommand(creature, () => DelayCommand(delay, RefreshWhenReady));
             }
         }
 

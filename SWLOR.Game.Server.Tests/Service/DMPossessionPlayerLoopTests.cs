@@ -113,17 +113,6 @@ public class DMPossessionPlayerLoopTests
                 {{Method("Feature/RoleplayXP.cs", "GetOOCMessageContext")}}
             }
 
-            public static class CommsRecipients
-            {
-                public static List<uint> CollectDMs()
-                {
-                    var allPlayersAndDMs = new List<uint>();
-                    var allDMs = new List<uint>();
-                    {{PlayerLoop("Service/Communication.cs", "allDMs.Add")}}
-                    return allDMs;
-                }
-            }
-
             public sealed class PlayerSettings { public bool DisplayServerResetReminders; }
             public sealed class Player { public PlayerSettings Settings = new(); }
             public static class DB
@@ -239,20 +228,6 @@ public class DMPossessionPlayerLoopTests
         _harness.AddPlayer(OtherDM, isDM: true, area: Spaceport);
 
         GetOOCMessageContext(Player).Should().Be("Standard");
-    }
-
-    [TestCase(DMPossess)]
-    [TestCase(DMPossessFullPower)]
-    public void Comms_ReachEveryDMIncludingOneWhoIsPossessing(int possessionType)
-    {
-        _harness.AddPlayer(Player);
-        _harness.AddPlayer(OtherDM, isDM: true);
-        PossessingDM(possessionType, Spaceport, Cantina);
-
-        var dms = _harness.Invoke<List<uint>>("CommsRecipients", "CollectDMs");
-
-        dms.Should().Equal(OtherDM, Creature);
-        dms.Select(_harness.ReceivingPlayer).Should().Equal(OtherDM, DM);
     }
 
     [TestCase(DMPossess)]

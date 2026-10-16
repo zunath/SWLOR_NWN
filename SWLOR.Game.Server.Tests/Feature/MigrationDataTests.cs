@@ -39,13 +39,15 @@ public class MigrationDataTests
     }
 
     [Test]
-    public void PlayerMigrationsHaveUniqueVersions()
+    public void PlayerMigrationsHaveUniqueVersionsAndOneCombinedItemUpdate()
     {
         var migrations = ServerAssembly.GetTypes()
             .Where(type => !type.IsAbstract && !type.IsInterface && typeof(IPlayerMigration).IsAssignableFrom(type))
             .Select(type => (IPlayerMigration)Activator.CreateInstance(type)!).ToArray();
         migrations.Select(migration => migration.Version).Should().OnlyHaveUniqueItems();
         new _17_RemoveWeaponStatOverrides().Version.Should().BeGreaterThan(new _16_RetireForceWeaponEnhancements().Version);
+        migrations.Where(migration => migration.Version >= 22).Select(migration => migration.GetType())
+            .Should().BeEquivalentTo(new[] { typeof(_22_ReviseLootStats) });
     }
 
     [Test]

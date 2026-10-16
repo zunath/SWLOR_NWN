@@ -347,7 +347,12 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                 {
                     var curStyle = Communication.GetEmoteStyle(user);
                     var newStyle = curStyle == EmoteStyle.Novel ? EmoteStyle.Regular : EmoteStyle.Novel;
-                    Communication.SetEmoteStyle(user, newStyle);
+                    if (!Communication.SetEmoteStyle(user, newStyle))
+                    {
+                        SendMessageToPC(user, ColorToken.Red("Your emote style could not be saved."));
+                        return;
+                    }
+
                     SendMessageToPC(user, $"Toggled emote style to {newStyle}.");
                 });
         }

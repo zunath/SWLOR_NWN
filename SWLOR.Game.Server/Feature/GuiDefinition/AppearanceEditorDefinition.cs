@@ -250,6 +250,22 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                                     .BindOnClicked(model => model.OnNextPart());
                             });
 
+                            col2.AddRow(row2 =>
+                            {
+                                row2.SetHeight(40f);
+                                row2.AddTextEdit()
+                                    .SetId("ae_part_number")
+                                    .SetPlaceholder("Part #")
+                                    .SetMaxLength(5)
+                                    .BindValue(model => model.PartNumberText);
+
+                                row2.AddButton()
+                                    .SetId("ae_go_to_part")
+                                    .SetText("Go to Part")
+                                    .SetTooltip("Selects the part with the number you typed.")
+                                    .BindOnClicked(model => model.OnClickGoToPart());
+                            });
+
                         });
                     });
                 });
@@ -830,6 +846,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
 
                         BuildCustomTintEditor(col);
 
+                        col.AddRow(BuildArmorPartNumberEntry);
+
                         col.AddRow(row =>
                         {
                             BuildParts(row);
@@ -843,6 +861,46 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                 });
 
             });
+        }
+
+        // Picks an armor part by number instead of scrolling a slot's long list.
+        private static void BuildArmorPartNumberEntry(GuiRow<AppearanceEditorViewModel> row)
+        {
+            row.SetHeight(40f);
+            row.AddComboBox()
+                .SetId("ae_armor_part_slot")
+                .AddOption("Neck", (int)AppearanceArmor.Neck)
+                .AddOption("Chest", (int)AppearanceArmor.Torso)
+                .AddOption("Belt", (int)AppearanceArmor.Belt)
+                .AddOption("Pelvis", (int)AppearanceArmor.Pelvis)
+                .AddOption("Robe", (int)AppearanceArmor.Robe)
+                .AddOption("Left Shoulder", (int)AppearanceArmor.LeftShoulder)
+                .AddOption("Right Shoulder", (int)AppearanceArmor.RightShoulder)
+                .AddOption("Left Bicep", (int)AppearanceArmor.LeftBicep)
+                .AddOption("Right Bicep", (int)AppearanceArmor.RightBicep)
+                .AddOption("Left Forearm", (int)AppearanceArmor.LeftForearm)
+                .AddOption("Right Forearm", (int)AppearanceArmor.RightForearm)
+                .AddOption("Left Hand", (int)AppearanceArmor.LeftHand)
+                .AddOption("Right Hand", (int)AppearanceArmor.RightHand)
+                .AddOption("Left Thigh", (int)AppearanceArmor.LeftThigh)
+                .AddOption("Right Thigh", (int)AppearanceArmor.RightThigh)
+                .AddOption("Left Shin", (int)AppearanceArmor.LeftShin)
+                .AddOption("Right Shin", (int)AppearanceArmor.RightShin)
+                .AddOption("Left Foot", (int)AppearanceArmor.LeftFoot)
+                .AddOption("Right Foot", (int)AppearanceArmor.RightFoot)
+                .BindSelectedIndex(model => model.ArmorPartNumberSlot);
+
+            row.AddTextEdit()
+                .SetId("ae_armor_part_number")
+                .SetPlaceholder("Part #")
+                .SetMaxLength(4)
+                .BindValue(model => model.ArmorPartNumberText);
+
+            row.AddButton()
+                .SetId("ae_armor_part_apply")
+                .SetText("Set Part")
+                .SetTooltip("Changes the chosen slot to the part number you typed.")
+                .BindOnClicked(model => model.OnClickApplyArmorPartNumber());
         }
 
         private void CreateGlobalColorSwatch(
@@ -980,7 +1038,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
             {
                 col.AddRow(row =>
                 {
-                    row.BindIsVisible(model => model.IsPlayerSettingsVisible);
+                    row.BindIsVisible(model => model.IsArmorDisplayVisible);
                     row.AddSpacer();
                     row.AddCheckBox()
                         .SetText("Show Helmet")
@@ -990,7 +1048,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                 });
                 col.AddRow(row =>
                 {
-                    row.BindIsVisible(model => model.IsPlayerSettingsVisible);
+                    row.BindIsVisible(model => model.IsArmorDisplayVisible);
                     row.AddSpacer();
                     row.AddCheckBox()
                         .SetText("Show Cloak")

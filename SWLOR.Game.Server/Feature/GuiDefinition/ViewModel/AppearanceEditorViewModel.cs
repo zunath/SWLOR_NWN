@@ -65,6 +65,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         private static readonly Dictionary<AppearanceType, IArmorAppearanceDefinition> _armorAppearances = new();
         private static readonly Dictionary<BaseItem, IWeaponAppearanceDefinition> _weaponAppearances = new();
         private Dictionary<int, int> _partIdToIndex = new();
+        private bool _isDMArmorDisplay;
         private IReadOnlyList<TintMapMaterialSelection> _tintMapSelections = Array.Empty<TintMapMaterialSelection>();
         private bool _loadingTintColor;
         private bool _applyingTintColor;
@@ -335,6 +336,30 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         public bool ShowCloak
         {
             get => Get<bool>();
+            set => Set(value);
+        }
+
+        public bool IsArmorDisplayVisible
+        {
+            get => Get<bool>();
+            set => Set(value);
+        }
+
+        public string PartNumberText
+        {
+            get => Get<string>();
+            set => Set(value);
+        }
+
+        public int ArmorPartNumberSlot
+        {
+            get => Get<int>();
+            set => Set(value);
+        }
+
+        public string ArmorPartNumberText
+        {
+            get => Get<string>();
             set => Set(value);
         }
 
@@ -954,8 +979,14 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             LoadTintMapEditor();
             InitializeSettings();
             ColorTargetText = string.Empty;
+            PartNumberText = string.Empty;
+            ArmorPartNumberText = string.Empty;
+            ArmorPartNumberSlot = (int)AppearanceArmor.Torso;
             LoadItemTypeEditor();
 
+            WatchOnClient(model => model.PartNumberText);
+            WatchOnClient(model => model.ArmorPartNumberSlot);
+            WatchOnClient(model => model.ArmorPartNumberText);
             WatchOnClient(model => model.EditorTabToggleValue);
             WatchOnClient(model => model.SettingsTabToggleValue);
             WatchOnClient(model => model.SelectedColorCategoryIndex);
@@ -973,11 +1004,14 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         {
             IsPlayerSettingsVisible = GetIsPC(_target) && !GetIsDM(_target) && !GetIsDMPossessed(_target);
             IsSettingsVisible = IsPlayerSettingsVisible || GetIsDM(Player) || GetIsDMPossessed(Player);
+            // A DM shows or hides their avatar's or possessed creature's helmet and cloak at once, with no Save.
+            _isDMArmorDisplay = GetIsDM(_target) || GetIsDMPossessed(_target);
+            IsArmorDisplayVisible = IsPlayerSettingsVisible || _isDMArmorDisplay;
             ShowHelmet = true;
             ShowCloak = true;
             LoadSettings();
 
-            if (IsPlayerSettingsVisible)
+            if (IsArmorDisplayVisible)
             {
                 WatchOnClient(model => model.ShowHelmet);
                 WatchOnClient(model => model.ShowCloak);
@@ -1367,6 +1401,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         protected override void OnClientPropertyUpdated(string propertyName)
         {
+            if (_isDMArmorDisplay && propertyName is nameof(ShowHelmet) or nameof(ShowCloak))
+                ApplyDMArmorDisplay();
+
             if (_tintComponentCorrection == propertyName)
             {
                 _tintComponentCorrection = null;
@@ -1877,6 +1914,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         private void LoadSettings()
         {
+            if (_isDMArmorDisplay)
+            {
+                LoadDMArmorDisplay();
+                return;
+            }
+
             if (!GetIsPC(_target) || GetIsDM(_target) || GetIsDMPossessed(_target))
                 return;
 
@@ -1887,6 +1930,37 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             ShowHelmet = dbPlayer.Settings.ShowHelmet;
             ShowCloak = dbPlayer.Settings.ShowCloak;
+        }
+
+        private void LoadDMArmorDisplay()
+        {
+            // Worn items hold the current state. A DM avatar's saved preference covers an empty slot.
+            var preferences = GetIsDM(_target) ? DMPreference.Get(_target) : null;
+            var helmet = GetItemInSlot(InventorySlot.Head, _target);
+            var cloak = GetItemInSlot(InventorySlot.Cloak, _target);
+            ShowHelmet = GetIsObjectValid(helmet)
+                ? HelmetModelRenderer.IsShownByOwner(helmet)
+                : preferences?.ShowHelmet ?? true;
+            ShowCloak = GetIsObjectValid(cloak)
+                ? GetHiddenWhenEquipped(cloak) == 0
+                : preferences?.ShowCloak ?? true;
+        }
+
+        private void ApplyDMArmorDisplay()
+        {
+            // A DM avatar's choice also covers items equipped later; a possessed creature's stays on its items.
+            if (GetIsDM(_target))
+            {
+                var showHelmet = ShowHelmet;
+                var showCloak = ShowCloak;
+                DMPreference.Update(_target, preferences =>
+                {
+                    preferences.ShowHelmet = showHelmet;
+                    preferences.ShowCloak = showCloak;
+                });
+            }
+
+            UpdateArmorDisplay();
         }
 
         private void LoadItemParts()
@@ -2623,6 +2697,31 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             LoadPart();
         };
 
+        public Action OnClickGoToPart() => () =>
+        {
+            if (!TryParsePartNumber(PartNumberText, out var partId) ||
+                !_partIdToIndex.TryGetValue(partId, out var index))
+            {
+                SendMessageToPC(Player, ColorToken.Red($"Part #{PartNumberText?.Trim()} is not in this list."));
+                return;
+            }
+
+            if (SelectedPartIndex >= 0 && SelectedPartIndex < PartSelected.Count)
+                PartSelected[SelectedPartIndex] = false;
+            SelectedPartIndex = index;
+            PartSelected[index] = true;
+            LoadPart();
+        };
+
+        private static bool TryParsePartNumber(string text, out int partId)
+        {
+            text = text?.Trim() ?? string.Empty;
+            if (text.StartsWith("#"))
+                text = text[1..];
+
+            return int.TryParse(text, out partId);
+        }
+
         public Action OnClickOutfits() => () =>
         {
             Gui.TogglePlayerWindow(_target, GuiWindowType.Outfits);
@@ -3263,6 +3362,69 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             AdjustArmorPart(partType, adjustBy);
         };
+
+        public Action OnClickApplyArmorPartNumber() => () =>
+        {
+            if (!IsEquipmentSelected || SelectedItemTypeIndex != 0)
+                return;
+
+            ToggleItemEquippedFlags();
+            if (DoesNotHaveItemEquipped)
+                return;
+
+            var partType = (AppearanceArmor)ArmorPartNumberSlot;
+            var (options, select) = GetArmorPartBinding(partType);
+            if (options == null)
+                return;
+
+            if (!TryParsePartNumber(ArmorPartNumberText, out var partId) ||
+                options.All(option => option.Value != partId))
+            {
+                SendMessageToPC(Player, ColorToken.Red($"Part #{ArmorPartNumberText?.Trim()} is not available for this slot."));
+                return;
+            }
+
+            // Select it quietly, then apply it the way the arrow buttons do.
+            var wasSkippingAdjustment = _skipAdjustArmorPart;
+            _skipAdjustArmorPart = true;
+            try
+            {
+                select(partId);
+            }
+            finally
+            {
+                _skipAdjustArmorPart = wasSkippingAdjustment;
+            }
+
+            AdjustArmorPart(partType, 0);
+        };
+
+        private (GuiBindingList<GuiComboEntry> Options, Action<int> Select) GetArmorPartBinding(AppearanceArmor partType)
+        {
+            return partType switch
+            {
+                AppearanceArmor.RightFoot => (RightFootOptions, value => RightFootSelection = value),
+                AppearanceArmor.LeftFoot => (LeftFootOptions, value => LeftFootSelection = value),
+                AppearanceArmor.RightShin => (RightShinOptions, value => RightShinSelection = value),
+                AppearanceArmor.LeftShin => (LeftShinOptions, value => LeftShinSelection = value),
+                AppearanceArmor.LeftThigh => (LeftThighOptions, value => LeftThighSelection = value),
+                AppearanceArmor.RightThigh => (RightThighOptions, value => RightThighSelection = value),
+                AppearanceArmor.Pelvis => (PelvisOptions, value => PelvisSelection = value),
+                AppearanceArmor.Torso => (ChestOptions, value => ChestSelection = value),
+                AppearanceArmor.Belt => (BeltOptions, value => BeltSelection = value),
+                AppearanceArmor.Neck => (NeckOptions, value => NeckSelection = value),
+                AppearanceArmor.RightForearm => (RightForearmOptions, value => RightForearmSelection = value),
+                AppearanceArmor.LeftForearm => (LeftForearmOptions, value => LeftForearmSelection = value),
+                AppearanceArmor.RightBicep => (RightBicepOptions, value => RightBicepSelection = value),
+                AppearanceArmor.LeftBicep => (LeftBicepOptions, value => LeftBicepSelection = value),
+                AppearanceArmor.RightShoulder => (RightShoulderOptions, value => RightShoulderSelection = value),
+                AppearanceArmor.LeftShoulder => (LeftShoulderOptions, value => LeftShoulderSelection = value),
+                AppearanceArmor.RightHand => (RightHandOptions, value => RightHandSelection = value),
+                AppearanceArmor.LeftHand => (LeftHandOptions, value => LeftHandSelection = value),
+                AppearanceArmor.Robe => (RobeOptions, value => RobeSelection = value),
+                _ => (null, null)
+            };
+        }
 
         private void CopyColors(uint item, ColorTarget copyToTarget, ColorTarget copyFromTarget)
         {

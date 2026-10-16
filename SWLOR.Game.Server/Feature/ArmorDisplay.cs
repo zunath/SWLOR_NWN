@@ -17,18 +17,33 @@ namespace SWLOR.Game.Server.Feature
             var player = GetPCItemLastEquippedBy();
             var item = GetPCItemLastEquipped();
 
-            if (!GetIsPC(player) || GetIsDM(player)) return;
+            // A creature a DM possesses keeps whatever its own items are set to.
+            if (!GetIsPC(player) || GetIsDMPossessed(player)) return;
             var itemType = GetBaseItemType(item);
+            if (itemType != BaseItem.Helmet && itemType != BaseItem.Cloak) return;
 
-            var playerId = GetObjectUUID(player);
-            var dbPlayer = DB.Get<Player>(playerId) ?? new Player(playerId);
+            bool showHelmet, showCloak;
+            if (GetIsDM(player))
+            {
+                var preferences = DMPreference.Get(player);
+                showHelmet = preferences.ShowHelmet;
+                showCloak = preferences.ShowCloak;
+            }
+            else
+            {
+                var playerId = GetObjectUUID(player);
+                var dbPlayer = DB.Get<Player>(playerId) ?? new Player(playerId);
+                showHelmet = dbPlayer.Settings.ShowHelmet;
+                showCloak = dbPlayer.Settings.ShowCloak;
+            }
+
             if (itemType == BaseItem.Helmet)
             {
-                HelmetModelRenderer.SetShownByOwner(item, dbPlayer.Settings.ShowHelmet);
+                HelmetModelRenderer.SetShownByOwner(item, showHelmet);
             }
-            else if (itemType == BaseItem.Cloak)
+            else
             {
-                SetHiddenWhenEquipped(item, !dbPlayer.Settings.ShowCloak);
+                SetHiddenWhenEquipped(item, !showCloak);
             }
         }
     }

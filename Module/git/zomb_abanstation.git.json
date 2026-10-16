@@ -73919,7 +73919,7 @@
         },
         "Useable": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Will": {
           "type": "byte",
@@ -74144,7 +74144,7 @@
         },
         "Useable": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Will": {
           "type": "byte",
@@ -245550,7 +245550,7 @@
         },
         "Conversation": {
           "type": "resref",
-          "value": ""
+          "value": "aban_escape_pod"
         },
         "CurrentHP": {
           "type": "short",
@@ -245668,7 +245668,7 @@
         },
         "OnUsed": {
           "type": "resref",
-          "value": "teleport"
+          "value": "dialog_start"
         },
         "OnUserDefined": {
           "type": "resref",
@@ -252507,6 +252507,21 @@
           "type": "int",
           "value": 1
         }
+      },
+      {
+        "__struct_id": 0,
+        "Name": {
+          "type": "cexostring",
+          "value": "MAP_KEY_ITEM_ID"
+        },
+        "Type": {
+          "type": "dword",
+          "value": 1
+        },
+        "Value": {
+          "type": "int",
+          "value": 277
+        }
       }
     ]
   },
@@ -253398,7 +253413,7 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "STARSHIP_DOCKPOINT"
+          "value": "ABANDONED_STATION_DOCK_LANDING"
         },
         "TemplateResRef": {
           "type": "resref",
@@ -253837,7 +253852,7 @@
         },
         "XPosition": {
           "type": "float",
-          "value": 114.72
+          "value": 115.0
         },
         "YOrientation": {
           "type": "float",
@@ -253845,7 +253860,7 @@
         },
         "YPosition": {
           "type": "float",
-          "value": 25.0
+          "value": 23.5
         },
         "ZPosition": {
           "type": "float",

@@ -7,6 +7,8 @@ namespace SWLOR.Game.Server.Feature
 {
     public static class TrashCan
     {
+        private const string OwnerVariable = "TRASH_OWNER";
+
         /// <summary>
         /// When a player attempts to drop an item, prevent them from doing so and send a message to use the trash can.
         /// DMs are exempt from this rule.
@@ -30,6 +32,7 @@ namespace SWLOR.Game.Server.Feature
         public static void AlertPlayer()
         {
             var player = GetLastOpenedBy();
+            SetLocalObject(OBJECT_SELF, OwnerVariable, player);
             FloatingTextStringOnCreature("Any item placed inside this trash can will be destroyed permanently.", player, false);
         }
 
@@ -40,8 +43,13 @@ namespace SWLOR.Game.Server.Feature
         public static void CleanUp()
         {
             var container = OBJECT_SELF;
+            var player = GetLastClosedBy();
+            if (!GetIsObjectValid(player))
+                player = GetLocalObject(container, OwnerVariable);
+
             for (var item = GetFirstItemInInventory(container); GetIsObjectValid(item); item = GetNextItemInInventory(container))
             {
+                ItemTrash.Audit(player, item, "trash-close");
                 DestroyObject(item);
             }
 
@@ -59,6 +67,11 @@ namespace SWLOR.Game.Server.Feature
 
             if (type != DisturbType.Added) return;
 
+            var player = GetLastDisturbed();
+            if (!GetIsObjectValid(player))
+                player = GetLocalObject(OBJECT_SELF, OwnerVariable);
+
+            ItemTrash.Audit(player, item, "trash-added");
             DestroyObject(item);
         }
     }

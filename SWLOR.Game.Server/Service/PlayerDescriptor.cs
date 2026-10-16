@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Service.DBService;
+using SWLOR.Game.Server.Service.LogService;
 using AbilityType = SWLOR.NWN.API.NWScript.Enum.AbilityType;
 using AppearanceType = SWLOR.NWN.API.NWScript.Enum.AppearanceType;
 
@@ -84,8 +85,13 @@ namespace SWLOR.Game.Server.Service
             var sanitizedName = PlayerName.SanitizeKnownName(name);
             var playerId = GetObjectUUID(player);
             var dbPlayer = DB.Get<Player>(playerId);
+            var previousDescriptor = dbPlayer.UnknownDisplayName ?? string.Empty;
             dbPlayer.UnknownDisplayName = sanitizedName;
             DB.Set(dbPlayer);
+
+            Log.WriteStructured(LogGroup.PlayerName,
+                "Base descriptor changed: PlayerId={PlayerId} PlayerName={PlayerName} IdentityKey={IdentityKey} PreviousDescriptor={PreviousDescriptor} Descriptor={Descriptor}",
+                playerId, GetName(player), Disguise.GetIdentityKey(player), previousDescriptor, sanitizedName);
 
             PlayerName.RefreshNameOverridesForPlayer(player);
         }
@@ -110,8 +116,13 @@ namespace SWLOR.Game.Server.Service
             if (string.IsNullOrWhiteSpace(generatedDisplayName))
                 return false;
 
+            var previousDescriptor = dbPlayer.UnknownDisplayName ?? string.Empty;
             dbPlayer.UnknownDisplayName = generatedDisplayName;
             DB.Set(dbPlayer);
+
+            Log.WriteStructured(LogGroup.PlayerName,
+                "Base descriptor generated: PlayerId={PlayerId} PlayerName={PlayerName} IdentityKey={IdentityKey} PreviousDescriptor={PreviousDescriptor} Descriptor={Descriptor}",
+                playerId, GetName(player), Disguise.GetIdentityKey(player), previousDescriptor, generatedDisplayName);
             return true;
         }
 

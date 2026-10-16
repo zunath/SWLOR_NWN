@@ -94,6 +94,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
 
                                 header.AddLabel()
                                     .SetText("Descriptor")
+                                    .SetTooltip("Orange descriptors are disguises. Select the character to see the disguise.")
                                     .SetHorizontalAlign(NuiHorizontalAlign.Left)
                                     .SetWidth(150f)
                                     .SetHeight(20f);
@@ -129,6 +130,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                                         cell.SetWidth(150f);
                                         cell.AddLabel()
                                             .BindText(model => model.ResultDescriptors)
+                                            .BindColor(model => model.ResultDescriptorColors)
                                             .SetHorizontalAlign(NuiHorizontalAlign.Left);
                                     });
 

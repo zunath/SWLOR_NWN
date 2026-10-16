@@ -9,6 +9,12 @@ namespace SWLOR.Game.Server.Service.DMToolService
         public bool IsOnline { get; }
         public string Name { get; }
         public string Descriptor { get; }
+        public bool IsDisguised { get; }
+        /// <summary>
+        /// The worn disguise as <see cref="DMDisguiseText.Describe"/> shows it.
+        /// </summary>
+        public string Disguise { get; }
+        public string UndisguisedDescriptor { get; }
         public string AccountName { get; }
         public string CDKey { get; }
         public string LocationName { get; }
@@ -19,6 +25,9 @@ namespace SWLOR.Game.Server.Service.DMToolService
             bool isOnline,
             string name,
             string descriptor,
+            bool isDisguised,
+            string disguise,
+            string undisguisedDescriptor,
             string accountName,
             string cdKey,
             string locationName,
@@ -28,6 +37,9 @@ namespace SWLOR.Game.Server.Service.DMToolService
             IsOnline = isOnline;
             Name = name;
             Descriptor = descriptor;
+            IsDisguised = isDisguised;
+            Disguise = disguise;
+            UndisguisedDescriptor = undisguisedDescriptor;
             AccountName = accountName;
             CDKey = cdKey;
             LocationName = locationName;

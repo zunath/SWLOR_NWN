@@ -33,6 +33,7 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
 
                 .AddSpawn(ObjectType.Creature, "abs_zresearch")
                 .WithFrequency(20)
+                .RandomlyWalks()
                 .ReturnsHome()
 
                 .AddSpawn(ObjectType.Creature, "abs_rakghoul")
@@ -42,6 +43,7 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
 
                 .AddSpawn(ObjectType.Creature, "abs_zguard")
                 .WithFrequency(15)
+                .RandomlyWalks()
                 .ReturnsHome()
 
                 .AddSpawn(ObjectType.Creature, "abs_zchief")
@@ -61,6 +63,7 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
 
                 .AddSpawn(ObjectType.Creature, "abs_zgenetic")
                 .WithFrequency(25)
+                .RandomlyWalks()
                 .ReturnsHome()
 
                 .AddSpawn(ObjectType.Creature, "abs_zsubject")
@@ -70,6 +73,7 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
 
                 .AddSpawn(ObjectType.Creature, "abs_rakbrute")
                 .WithFrequency(15)
+                .RandomlyWalks()
                 .ReturnsHome()
 
                 .AddSpawn(ObjectType.Creature, "abs_subzero")
@@ -84,6 +88,7 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
             _builder.Create("ABANDONED_STATION_RANCOR", "Abandoned Station - Rancor Containment")
                 .AddSpawn(ObjectType.Creature, "abs_zrancor")
                 .WithFrequency(1)
+                .RandomlyWalks()
                 .ReturnsHome()
                 .RespawnDelay(20, 40);
         }
@@ -93,11 +98,13 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
             _builder.Create("ABANDONED_STATION_CHAMBERS", "Abandoned Station - Director's Chambers")
                 .AddSpawn(ObjectType.Creature, "abs_rakalpha")
                 .WithFrequency(1)
+                .RandomlyWalks()
                 .ReturnsHome();
 
             _builder.Create("ABANDONED_STATION_DIRECTOR", "Abandoned Station - Station Director")
                 .AddSpawn(ObjectType.Creature, "abs_zdirector")
                 .WithFrequency(1)
+                .RandomlyWalks()
                 .ReturnsHome()
                 .RespawnDelay(15, 30);
         }

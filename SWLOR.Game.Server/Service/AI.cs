@@ -436,16 +436,23 @@ namespace SWLOR.Game.Server.Service
                 return;
             }
 
+            var currentAction = GetCurrentAction(self);
             if (IsInConversation(self) ||
                 GetIsInCombat(self) ||
-                GetCurrentAction(self) == ActionType.RandomWalk ||
-                GetCurrentAction(self) == ActionType.MoveToPoint)
+                (currentAction == ActionType.RandomWalk && !isOutsideHomeRadius) ||
+                currentAction == ActionType.MoveToPoint)
                 return;
 
             // Return Home flag
             if (isOutsideHomeRadius)
             {
-                AssignCommand(self, () => ActionForceMoveToLocation(homeLocation));
+                AssignCommand(self, () =>
+                {
+                    if (currentAction == ActionType.RandomWalk)
+                        ClearAllActions();
+
+                    ActionForceMoveToLocation(homeLocation);
+                });
             }
             // Randomly walk flag
             else if(aiFlags.HasFlag(AIFlag.RandomWalk) &&

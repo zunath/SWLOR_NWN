@@ -1,4 +1,5 @@
 using FluentAssertions;
+using Newtonsoft.Json;
 using NUnit.Framework;
 using SWLOR.Game.Server;
 using SWLOR.Game.Server.Entity;
@@ -131,6 +132,7 @@ public class RoleplayXPOOCPenaltyTests
         progress.DailyOOCMessageCount.Should().Be(OOCAllowance.DefaultDailyAllowance);
         progress.PendingOOCPenaltySteps.Should().Be(0);
         progress.OOCMessageCount.Should().Be((ulong)OOCAllowance.DefaultDailyAllowance);
+        progress.OOCMessagesSinceLastDistribution.Should().Be((ulong)OOCAllowance.DefaultDailyAllowance);
     }
 
     [Test]
@@ -183,6 +185,7 @@ public class RoleplayXPOOCPenaltyTests
         progress.DailyEventAreaOOCMessageCount.Should().Be(0);
         progress.PendingOOCPenaltySteps.Should().Be(0);
         progress.OOCMessageCount.Should().Be(500);
+        progress.OOCMessagesSinceLastDistribution.Should().Be(500);
     }
 
     [Test]
@@ -246,6 +249,22 @@ public class RoleplayXPOOCPenaltyTests
         progress.DailyDMPresentOOCMessageCount.Should().Be(0);
         progress.DailyEventAreaOOCMessageCount.Should().Be(0);
         progress.PendingOOCPenaltySteps.Should().Be(1, "unspent penalties apply to the next award, not the next day");
+        progress.OOCMessagesSinceLastDistribution.Should().Be(28, "the daily reset does not start a new distribution period");
+    }
+
+    [Test]
+    public void LegacyRoleplayProgress_StartsNewDistributionCountWithoutReusingLifetimeTotal()
+    {
+        var progress = JsonConvert.DeserializeObject<RoleplayProgress>(
+            "{\"OOCMessageCount\":1000,\"PendingOOCPenaltySteps\":3}")!;
+
+        progress.OOCMessagesSinceLastDistribution.Should().Be(0);
+        Record(progress, Morning, OOCMessageContext.EventArea);
+        var reloaded = JsonConvert.DeserializeObject<RoleplayProgress>(JsonConvert.SerializeObject(progress))!;
+
+        reloaded.OOCMessageCount.Should().Be(1001);
+        reloaded.OOCMessagesSinceLastDistribution.Should().Be(1);
+        reloaded.PendingOOCPenaltySteps.Should().Be(3);
     }
 
     [Test]
@@ -401,16 +420,18 @@ public class RoleplayXPOOCPenaltyTests
     }
 
     [Test]
-    public void RoleplayXP_ClearsPendingPenaltyWhenAwardIsGranted()
+    [TestCase(false, 3)]
+    [TestCase(true, 6)]
+    public void OOCTracking_OnlyAccruesPenaltiesWhenEnabled(bool penaltiesEnabled, int expectedSteps)
     {
-        var roleplayXpSource = ReadServerSource("Feature", "RoleplayXP.cs");
-        var awardMethod = ExtractMethod(roleplayXpSource, "private static void ProcessPlayerRoleplayXP(uint player)");
+        var progress = new RoleplayProgress { PendingOOCPenaltySteps = 3 };
+        for (var index = 0; index < 3; index++)
+            OOCAllowance.RecordOOCMessage(progress, Morning, OOCMessageContext.Standard, 0, 0, 0, penaltiesEnabled);
 
-        awardMethod.Should().Contain("xp = OOCAllowance.ApplyPenalty(");
-        awardMethod.Should().Contain("dbPlayer.RoleplayProgress.PendingOOCPenaltySteps,");
-        awardMethod.Should().Contain("ApplicationSettings.Get().RoleplayXPOOCPenaltyPercent);");
-        awardMethod.Should().Contain("dbPlayer.RoleplayProgress.PendingOOCPenaltySteps = 0;");
-        roleplayXpSource.Should().NotContain("SetLocalInt(player, RPTickVariable, -");
+        progress.OOCMessageCount.Should().Be(3);
+        progress.OOCMessagesSinceLastDistribution.Should().Be(3);
+        progress.DailyOOCMessageCount.Should().Be(3);
+        progress.PendingOOCPenaltySteps.Should().Be(expectedSteps);
     }
 
     [Test]

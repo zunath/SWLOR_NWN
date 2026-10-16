@@ -42,8 +42,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
                 .IsSingleTargetAbility()
                 .IsHealingAbility()
                 .RequiresTarget()
-                .HasCustomValidation((activator, target, _, _) =>
-                    AbilityTargeting.ValidateFriendlyTarget(activator, target, requireDead: true))
+                .HasCustomValidation(ValidateRevive)
+                .IsInterruptedByDamage()
                 .HasImpactAction(Resuscitation1ImpactAction)
                 .IsCastedAbility()
                 .BreaksStealth()
@@ -67,8 +67,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
                 .IsSingleTargetAbility()
                 .IsHealingAbility()
                 .RequiresTarget()
-                .HasCustomValidation((activator, target, _, _) =>
-                    AbilityTargeting.ValidateFriendlyTarget(activator, target, requireDead: true))
+                .HasCustomValidation(ValidateRevive)
+                .IsInterruptedByDamage()
                 .HasImpactAction(Resuscitation2ImpactAction)
                 .IsCastedAbility()
                 .BreaksStealth()
@@ -76,13 +76,24 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
                 .RequirementItem("med_supplies");
         }
 
+        private static string ValidateRevive(uint activator, uint target, int level, Location targetLocation)
+        {
+            var targetDenial = AbilityTargeting.ValidateFriendlyTarget(activator, target, requireDead: true);
+            return string.IsNullOrEmpty(targetDenial)
+                ? ReviveRules.ValidateResuscitation(activator, target)
+                : targetDenial;
+        }
+
         private static void Resuscitation1ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
             if (!GetIsObjectValid(target))
                 return;
 
+            ReviveRules.RecordResuscitation(activator, target);
             var playResurrectionVisual = Ability.CaptureSuccessfulImpactVisualEffect(activator);
             ApplyEffectToObject(DurationType.Instant, EffectResurrection(), target);
+            if (CombatRecorder.IsRecording)
+                CombatRecorder.RecordResurrection(target);
             FirstAidTreatmentAdjustments.ApplyTraumaMedicRiders(activator, target);
             DelayCommand(0.1f, () =>
             {
@@ -99,13 +110,17 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
             if (!GetIsObjectValid(target))
                 return;
 
+            ReviveRules.RecordResuscitation(activator, target);
             var playResurrectionVisual = Ability.CaptureSuccessfulImpactVisualEffect(activator);
             ApplyEffectToObject(DurationType.Instant, EffectResurrection(), target);
+            if (CombatRecorder.IsRecording)
+                CombatRecorder.RecordResurrection(target);
             FirstAidTreatmentAdjustments.ApplyTraumaMedicRiders(activator, target);
             // Resurrection is not settled until after the current engine command finishes.
             // Healing in the same tick is silently discarded because the target is still dead.
             DelayCommand(0.1f, () =>
             {
+                using var recorderScope = CombatRecorder.BeginAbilityFeatAttribution(activator, FeatType.Resuscitation2);
                 AbilityEffectScaling.ApplyActivatedScaledHeal(activator, target, 20);
                 Ability.ReapplyAuraEffectsForCreature(target);
                 if (GetIsObjectValid(target) && !GetIsDead(target) && GetCurrentHitPoints(target) > 0)

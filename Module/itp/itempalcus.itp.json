@@ -2314,6 +2314,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Biolab Coat"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "biolab_tunic"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Bombardment Harness"
                     },
                     "RESREF": {
@@ -2440,6 +2451,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "infconduit_w2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Containment Armor"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cnt_armor"
                     }
                   },
                   {
@@ -2765,6 +2787,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Director's Field Coat"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "director_coat"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "DLAR-001"
                     },
                     "RESREF": {
@@ -3045,6 +3078,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "for_tunic"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Gantry Coveralls"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "gantry_tunic"
                     }
                   },
                   {
@@ -4112,6 +4156,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Biolab Hood"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "biolab_cap"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Blast Deflector Visor"
                     },
                     "RESREF": {
@@ -4315,6 +4370,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "com_cap"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Containment Helmet"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cnt_helmet"
                     }
                   },
                   {
@@ -5096,6 +5162,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "adamguard_w5"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Gantry Cap"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "gantry_cap"
                     }
                   },
                   {
@@ -8185,6 +8262,17 @@
                           "RESREF": {
                             "type": "resref",
                             "value": "ch_shield"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Containment Shield"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "cnt_shield"
                           }
                         },
                         {
@@ -25587,6 +25675,17 @@
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
+                            "value": "Biolab Belt"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "biolab_belt"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
                             "value": "Bitehunter's Sash"
                           },
                           "RESREF": {
@@ -25702,6 +25801,17 @@
                           "RESREF": {
                             "type": "resref",
                             "value": "com_belt"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Containment Belt"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "cnt_belt"
                           }
                         },
                         {
@@ -26340,6 +26450,17 @@
                           "RESREF": {
                             "type": "resref",
                             "value": "frontier_belt"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Gantry Belt"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "gantry_belt"
                           }
                         },
                         {
@@ -27385,6 +27506,17 @@
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
+                            "value": "Biolab Boots"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "biolab_boots"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
                             "value": "Black-Market Boots"
                           },
                           "RESREF": {
@@ -27511,6 +27643,17 @@
                           "RESREF": {
                             "type": "resref",
                             "value": "infconduit_l8"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Containment Leggings"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "cnt_leggings"
                           }
                         },
                         {
@@ -28193,6 +28336,17 @@
                           "RESREF": {
                             "type": "resref",
                             "value": "sabstorm_l8"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Gantry Boots"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "gantry_boots"
                           }
                         },
                         {
@@ -29100,6 +29254,17 @@
                           "RESREF": {
                             "type": "resref",
                             "value": "ch_bracer"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Containment Bracer"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "cnt_bracer"
                           }
                         },
                         {
@@ -30266,6 +30431,17 @@
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
+                            "value": "Biolab Cloak"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "biolab_cloak"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
                             "value": "Blastwave Mantle"
                           },
                           "RESREF": {
@@ -30348,6 +30524,17 @@
                           "RESREF": {
                             "type": "resref",
                             "value": "emcocktail_l3"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Containment Cloak"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "cnt_cloak"
                           }
                         },
                         {
@@ -30981,6 +31168,17 @@
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
+                            "value": "Gantry Cloak"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "gantry_cloak"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
                             "value": "Gloamweave Mantle"
                           },
                           "RESREF": {
@@ -31360,6 +31558,17 @@
                           "RESREF": {
                             "type": "resref",
                             "value": "qk_cloak"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Rancor-Hide Mantle"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "rancorhide_cloak"
                           }
                         },
                         {
@@ -31943,6 +32152,17 @@
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
+                            "value": "Biolab Gloves"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "biolab_gloves"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
                             "value": "Bled-Dry Gloves"
                           },
                           "RESREF": {
@@ -32443,6 +32663,17 @@
                           "RESREF": {
                             "type": "resref",
                             "value": "thermdet_l1"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Gantry Gloves"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "gantry_gloves"
                           }
                         },
                         {
@@ -50424,6 +50655,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Quarantine Seal"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "quar_seal"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Quasiwood"
                     },
                     "RESREF": {
@@ -56027,6 +56269,17 @@
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
+                            "value": "Biolab Necklace"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "biolab_neck"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
                             "value": "Broken Charm"
                           },
                           "RESREF": {
@@ -56087,6 +56340,17 @@
                           "RESREF": {
                             "type": "resref",
                             "value": "deccommand_l7"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Containment Necklace"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "cnt_neck"
                           }
                         },
                         {
@@ -56736,6 +57000,17 @@
                           "RESREF": {
                             "type": "resref",
                             "value": "frontier_necklac"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Gantry Necklace"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "gantry_neck"
                           }
                         },
                         {
@@ -57638,6 +57913,17 @@
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
+                            "value": "Biolab Ring"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "biolab_ring"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
                             "value": "Blood-Pact Ring"
                           },
                           "RESREF": {
@@ -57753,6 +58039,17 @@
                           "RESREF": {
                             "type": "resref",
                             "value": "infconduit_l6"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Containment Ring"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "cnt_ring"
                           }
                         },
                         {
@@ -58100,6 +58397,17 @@
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
+                            "value": "Director's Signet"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "director_signet"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
                             "value": "DLRG-001"
                           },
                           "RESREF": {
@@ -58424,6 +58732,17 @@
                           "RESREF": {
                             "type": "resref",
                             "value": "frontier_ring"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Gantry Ring"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "gantry_ring"
                           }
                         },
                         {
@@ -62527,6 +62846,50 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Blueprint: Biolab Belt"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "bp_biobelt"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Blueprint: Biolab Cloak"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "bp_biocloak"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Blueprint: Biolab Necklace"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "bp_bioneck"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Blueprint: Biolab Ring"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "bp_bioring"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Blueprint: Bitter Fen Tea"
                     },
                     "RESREF": {
@@ -63049,6 +63412,50 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "bpstructure0430"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Blueprint: Containment Belt"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "bp_cntbelt"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Blueprint: Containment Cloak"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "bp_cntcloak"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Blueprint: Containment Necklace"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "bp_cntneck"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Blueprint: Containment Ring"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "bp_cntring"
                     }
                   },
                   {
@@ -63621,6 +64028,50 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "bpfxdiverter"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Blueprint: Gantry Belt"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "bp_gantbelt"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Blueprint: Gantry Cloak"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "bp_gantcloak"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Blueprint: Gantry Necklace"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "bp_gantneck"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Blueprint: Gantry Ring"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "bp_gantring"
                     }
                   },
                   {
@@ -69996,7 +70447,7 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Instruction Disc: Shadowflow Stance"
+                      "value": "Instruction Disc: Shadowflow"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -71277,6 +71728,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "map_033"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Viscara - Abandoned Station Map"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "map_277"
                     }
                   },
                   {
@@ -76457,6 +76919,17 @@
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
+                            "value": "Containment Knife"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "cnt_knife"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
                             "value": "Dantari Iron Knife"
                           },
                           "RESREF": {
@@ -77045,6 +77518,17 @@
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
+                            "value": "Containment Great Sword"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "cnt_gswd"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
                             "value": "Delta Great Sword"
                           },
                           "RESREF": {
@@ -77237,6 +77721,17 @@
                           "RESREF": {
                             "type": "resref",
                             "value": "raider_gswd"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Rancor-Bone Cleaver"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "rancorbone_gswd"
                           }
                         },
                         {
@@ -77561,6 +78056,17 @@
                           "RESREF": {
                             "type": "resref",
                             "value": "chi_longsword"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Containment Longsword"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "cnt_longsword"
                           }
                         },
                         {
@@ -78512,6 +79018,17 @@
                           "RESREF": {
                             "type": "resref",
                             "value": "brawl_wraps"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Containment Katar"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "cnt_katar"
                           }
                         },
                         {
@@ -81819,6 +82336,28 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Containment Staff"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cnt_staff"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Containment Twin Blade"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cnt_twinblade"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Crosswind Twin Blade"
                     },
                     "RESREF": {
@@ -83803,6 +84342,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Containment Spear"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cnt_spear"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Dantari Hunter Spear"
                     },
                     "RESREF": {
@@ -84587,6 +85137,17 @@
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
+                            "value": "Containment Pistol"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "cnt_pistol"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
                             "value": "Dac's Custom Pistol"
                           },
                           "RESREF": {
@@ -85329,6 +85890,17 @@
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
+                            "value": "Containment Rifle"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "cnt_rifle"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
                             "value": "Delta Rifle"
                           },
                           "RESREF": {
@@ -85885,6 +86457,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "chi_shuriken"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Containment Shuriken"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cnt_shuriken"
                     }
                   },
                   {

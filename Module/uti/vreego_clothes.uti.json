@@ -110,11 +110,15 @@
   },
   "DescIdentified": {
     "type": "cexolocstring",
-    "value": {}
+    "value": {
+      "0": "Vreego's clothes have well-used fastenings and pockets repaired from the inside. The practical work remains unobtrusive, letting a familiar outfit keep its place without pretending it has never earned it."
+    }
   },
   "Description": {
     "type": "cexolocstring",
-    "value": {}
+    "value": {
+      "0": "Vreego's clothes have well-used fastenings and pockets repaired from the inside. The practical work remains unobtrusive, letting a familiar outfit keep its place without pretending it has never earned it."
+    }
   },
   "Identified": {
     "type": "byte",

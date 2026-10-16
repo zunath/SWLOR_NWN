@@ -54,6 +54,8 @@ namespace SWLOR.Game.Server.Service.StatusEffectService
 
         public virtual string CanApply(uint creature) { return string.Empty; }
 
+        public virtual bool CanRefreshInPlace(IStatusEffect active) => false;
+
         public bool HasCleanseType(StatusEffectCleanseType cleanseType)
         {
             return (CleanseTypes & cleanseType) == cleanseType;
@@ -72,18 +74,32 @@ namespace SWLOR.Game.Server.Service.StatusEffectService
 
         public void ApplyEffect(uint source, uint creature, int durationTicks, float durationSeconds = 0f, DateTime? tickAnchor = null)
         {
+            RestartDuration(durationTicks, durationSeconds, tickAnchor);
+            Source = source;
+            if (CombatRecorder.IsRecording)
+                CombatRecorder.RecordStatusApplied(source, creature, this, GetRemainingDurationSeconds(DateTime.UtcNow), _isPermanent, false);
+
+            using var recorderAttribution = CombatRecorder.BeginStatusEffectAttribution(source, creature, this);
+            Apply(creature, durationTicks);
+        }
+
+        /// <summary>
+        /// Starts the duration and tick schedule over exactly as a fresh application does, without
+        /// running Apply.
+        /// </summary>
+        public void RestartDuration(int durationTicks, float durationSeconds = 0f, DateTime? tickAnchor = null)
+        {
             _isPermanent = durationTicks < 0;
 
             _lastRun = tickAnchor ?? DateTime.UtcNow;
             _durationTicks = durationTicks;
+            _durationAdjustmentSeconds = 0f;
             if (!_isPermanent && durationSeconds > 0f)
             {
                 _durationAdjustmentSeconds = durationSeconds - durationTicks * Math.Max(1f, Frequency);
                 if (tickAnchor.HasValue)
                     SetDurationSeconds(durationSeconds);
             }
-            Source = source;
-            Apply(creature, durationTicks);
         }
 
         /// <summary>Updates a reconnected creature's handle without changing the granting ability.</summary>
@@ -143,7 +159,11 @@ namespace SWLOR.Game.Server.Service.StatusEffectService
         protected virtual void Remove(uint creature) { }
         public void RemoveEffect(uint creature, bool isReplacement = false)
         {
+            if (CombatRecorder.IsRecording)
+                CombatRecorder.RecordStatusRemoved(creature, this, isReplacement);
+
             IsBeingReplaced = isReplacement;
+            using var recorderAttribution = CombatRecorder.BeginStatusEffectAttribution(Source, creature, this);
             try
             {
                 Remove(creature);
@@ -197,6 +217,7 @@ namespace SWLOR.Game.Server.Service.StatusEffectService
                 SecondsSinceNaturalExpiration = 0f;
             }
 
+            using var recorderAttribution = CombatRecorder.BeginStatusEffectAttribution(Source, creature, this);
             Tick(creature);
         }
 
@@ -234,6 +255,7 @@ namespace SWLOR.Game.Server.Service.StatusEffectService
         protected virtual void OnHit(uint creature, uint target, int damage) { }
         public void OnHitEffect(uint creature, uint target, int damage)
         {
+            using var recorderAttribution = CombatRecorder.BeginStatusEffectAttribution(Source, creature, this);
             OnHit(creature, target, damage);
         }
 
@@ -257,6 +279,7 @@ namespace SWLOR.Game.Server.Service.StatusEffectService
             CombatDamageType damageType,
             CombatDamageDeliveryType deliveryType = CombatDamageDeliveryType.Direct)
         {
+            using var recorderAttribution = CombatRecorder.BeginStatusEffectAttribution(Source, attacker, this);
             OnDamageDealt(attacker, defender, damage, damageType, deliveryType);
         }
 
@@ -280,6 +303,7 @@ namespace SWLOR.Game.Server.Service.StatusEffectService
             CombatDamageType damageType,
             CombatDamageDeliveryType deliveryType = CombatDamageDeliveryType.Direct)
         {
+            using var recorderAttribution = CombatRecorder.BeginStatusEffectAttribution(Source, defender, this);
             OnDamageTaken(defender, attacker, damage, damageType, deliveryType);
         }
 

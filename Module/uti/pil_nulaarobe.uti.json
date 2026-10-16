@@ -110,11 +110,15 @@
   },
   "DescIdentified": {
     "type": "cexolocstring",
-    "value": {}
+    "value": {
+      "0": "Nulaa's robes have been fitted to settle cleanly at the wrists and around the feet. The careful cut leaves less fabric to think about, allowing a familiar garment to fade into the background of its wearer's attention."
+    }
   },
   "Description": {
     "type": "cexolocstring",
-    "value": {}
+    "value": {
+      "0": "Nulaa's robes have been fitted to settle cleanly at the wrists and around the feet. The careful cut leaves less fabric to think about, allowing a familiar garment to fade into the background of its wearer's attention."
+    }
   },
   "Identified": {
     "type": "byte",

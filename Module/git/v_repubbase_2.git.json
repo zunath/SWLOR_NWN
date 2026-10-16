@@ -339,12 +339,14 @@
               },
               "DescIdentified": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "This Republic office uniform is neater at the collar than at the cuffs. Its quiet wear belongs to datapads, requisitions, and the machinery of an army that continues working after the gunfire moves elsewhere."
+                }
               },
               "Description": {
                 "type": "cexolocstring",
                 "value": {
-                  "0": ""
+                  "0": "This Republic office uniform is neater at the collar than at the cuffs. Its quiet wear belongs to datapads, requisitions, and the machinery of an army that continues working after the gunfire moves elsewhere."
                 }
               },
               "Identified": {
@@ -951,6 +953,37 @@
                     "Subtype": {
                       "type": "word",
                       "value": 0
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "ChanceAppear": {
+                      "type": "byte",
+                      "value": 100
+                    },
+                    "CostTable": {
+                      "type": "byte",
+                      "value": 14
+                    },
+                    "CostValue": {
+                      "type": "word",
+                      "value": 1
+                    },
+                    "Param1": {
+                      "type": "byte",
+                      "value": 255
+                    },
+                    "Param1Value": {
+                      "type": "byte",
+                      "value": 0
+                    },
+                    "PropertyName": {
+                      "type": "word",
+                      "value": 61
+                    },
+                    "Subtype": {
+                      "type": "word",
+                      "value": 2
                     }
                   }
                 ]
@@ -1739,12 +1772,14 @@
               },
               "DescIdentified": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "This portside outfit has discreet fastenings and a collar that can be worn several ways. Its flexibility suits a smuggler who would rather change their appearance than explain why the last dockmaster remembers them."
+                }
               },
               "Description": {
                 "type": "cexolocstring",
                 "value": {
-                  "0": ""
+                  "0": "This portside outfit has discreet fastenings and a collar that can be worn several ways. Its flexibility suits a smuggler who would rather change their appearance than explain why the last dockmaster remembers them."
                 }
               },
               "Identified": {
@@ -2866,11 +2901,15 @@
               },
               "DescIdentified": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "Angular plates cover a workmanlike harness in the familiar Mandalorian style. Its fittings are made to be opened for maintenance, with the expectation that their owner will know how to close them again."
+                }
               },
               "Description": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "Angular plates cover a workmanlike harness in the familiar Mandalorian style. Its fittings are made to be opened for maintenance, with the expectation that their owner will know how to close them again."
+                }
               },
               "Identified": {
                 "type": "byte",
@@ -4213,11 +4252,15 @@
               },
               "DescIdentified": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "Angular plates cover a workmanlike harness in the familiar Mandalorian style. Its fittings are made to be opened for maintenance, with the expectation that their owner will know how to close them again."
+                }
               },
               "Description": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "Angular plates cover a workmanlike harness in the familiar Mandalorian style. Its fittings are made to be opened for maintenance, with the expectation that their owner will know how to close them again."
+                }
               },
               "Identified": {
                 "type": "byte",
@@ -5358,11 +5401,15 @@
               },
               "DescIdentified": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "Angular plates cover a workmanlike harness in the familiar Mandalorian style. Its fittings are made to be opened for maintenance, with the expectation that their owner will know how to close them again."
+                }
               },
               "Description": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "Angular plates cover a workmanlike harness in the familiar Mandalorian style. Its fittings are made to be opened for maintenance, with the expectation that their owner will know how to close them again."
+                }
               },
               "Identified": {
                 "type": "byte",
@@ -6385,12 +6432,14 @@
               },
               "DescIdentified": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "Chi-Med's clothes have been fitted with small adjustments rather than dramatic alterations. A loosened tie here and a reinforced pocket there turn an ordinary outfit into something its owner would recognize by touch."
+                }
               },
               "Description": {
                 "type": "cexolocstring",
                 "value": {
-                  "0": ""
+                  "0": "Chi-Med's clothes have been fitted with small adjustments rather than dramatic alterations. A loosened tie here and a reinforced pocket there turn an ordinary outfit into something its owner would recognize by touch."
                 }
               },
               "Identified": {
@@ -7106,12 +7155,14 @@
               },
               "DescIdentified": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "White fabric gives this Republic uniform a crisp, unmistakable appearance. A close inspection reveals the stubborn little marks of service that survive even the most determined efforts at regulation presentation."
+                }
               },
               "Description": {
                 "type": "cexolocstring",
                 "value": {
-                  "0": ""
+                  "0": "White fabric gives this Republic uniform a crisp, unmistakable appearance. A close inspection reveals the stubborn little marks of service that survive even the most determined efforts at regulation presentation."
                 }
               },
               "Identified": {
@@ -15429,11 +15480,15 @@
               },
               "DescIdentified": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "Substantial panels and a broad load-bearing fit distinguish this Republic gunner's armor. The less visible fittings are arranged around long service beside heavy equipment, where an awkward strap soon stops being a small annoyance."
+                }
               },
               "Description": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "Substantial panels and a broad load-bearing fit distinguish this Republic gunner's armor. The less visible fittings are arranged around long service beside heavy equipment, where an awkward strap soon stops being a small annoyance."
+                }
               },
               "Identified": {
                 "type": "byte",
@@ -17231,12 +17286,14 @@
               },
               "DescIdentified": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "Muted green panels break up the outline of this working outfit. A hunter could wear it among brush or in a crowded port without looking as though they had dressed exclusively for either place."
+                }
               },
               "Description": {
                 "type": "cexolocstring",
                 "value": {
-                  "0": ""
+                  "0": "Muted green panels break up the outline of this working outfit. A hunter could wear it among brush or in a crowded port without looking as though they had dressed exclusively for either place."
                 }
               },
               "Identified": {

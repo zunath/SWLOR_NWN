@@ -21,10 +21,7 @@ namespace SWLOR.Game.Server.Feature
 
             if (type == ObjectType.Creature)
             {
-                for (var item = GetFirstItemInInventory(obj); GetIsObjectValid(item); item = GetNextItemInInventory(obj))
-                {
-                    SetDroppableFlag(item, false);
-                }
+                MakeInventoryUndroppable(obj);
             }
 
             // Track DM-spawned placeables so the DM tools NUI can list non-native objects.
@@ -34,10 +31,32 @@ namespace SWLOR.Game.Server.Feature
                 if (GetIsDMPossessed(dm))
                     dm = GetMaster(dm);
 
-                SetLocalInt(obj, "DM_SPAWNED_PLACEABLE", 1);
-                SetLocalString(obj, "DM_SPAWNED_BY", GetObjectUUID(dm));
-                SetLocalString(obj, "DM_SPAWNED_BY_NAME", GetName(dm));
+                MarkDMSpawnedPlaceable(dm, obj);
             }
+        }
+
+        /// <summary>
+        /// Keeps a DM-spawned creature's inventory from dropping as loot.
+        /// </summary>
+        /// <param name="creature">The spawned creature.</param>
+        public static void MakeInventoryUndroppable(uint creature)
+        {
+            for (var item = GetFirstItemInInventory(creature); GetIsObjectValid(item); item = GetNextItemInInventory(creature))
+            {
+                SetDroppableFlag(item, false);
+            }
+        }
+
+        /// <summary>
+        /// Records which DM spawned a placeable so the DM tools window can list it.
+        /// </summary>
+        /// <param name="dm">The DM who spawned the placeable.</param>
+        /// <param name="placeable">The spawned placeable.</param>
+        public static void MarkDMSpawnedPlaceable(uint dm, uint placeable)
+        {
+            SetLocalInt(placeable, "DM_SPAWNED_PLACEABLE", 1);
+            SetLocalString(placeable, "DM_SPAWNED_BY", GetObjectUUID(dm));
+            SetLocalString(placeable, "DM_SPAWNED_BY_NAME", GetName(dm));
         }
 
         [NWNEventHandler(ScriptName.OnDMGiveXPBefore)]

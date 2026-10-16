@@ -26,12 +26,14 @@
   },
   "DescIdentified": {
     "type": "cexolocstring",
-    "value": {}
+    "value": {
+      "0": "Small handling marks gather around the place where Gogen's hand rests on this staff. The rest has been kept simple, its unshowy finish made familiar by habit rather than ceremony."
+    }
   },
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": ""
+      "0": "Small handling marks gather around the place where Gogen's hand rests on this staff. The rest has been kept simple, its unshowy finish made familiar by habit rather than ceremony."
     }
   },
   "Identified": {

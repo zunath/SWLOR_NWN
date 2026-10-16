@@ -471,13 +471,13 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                         new ArticleBlock("How Affinity Changes",
                             "Owning any rank of a Light-aligned perk contributes +1 Light affinity. Owning any rank of a Dark-aligned perk contributes -1 Dark affinity. Additional ranks of the same perk do not contribute additional affinity. Refunding the perk removes its contribution. Universal Force perks do not change affinity."),
                         new ArticleBlock("Magnitude",
-                            "Each point toward a power's side increases that power's damage, healing, shields, regeneration, or drain magnitude by 5 percent. Each point toward the opposing side reduces it by 5 percent. The multiplier is limited to 50 percent at full opposition and 150 percent at full alignment."),
+                            "Each point toward a power's side increases that power's damage, healing, shields, regeneration, or drain magnitude by 5 percent. Each point toward the opposing side reduces it by 5 percent. The multiplier is limited to 50 percent at full opposition and 150 percent at full alignment. Healing, shields, and regeneration stop at 125 percent, so alignment past +5 no longer raises them."),
                         new ArticleBlock("Hit Chance",
                             "Affinity also changes the hit chance of detrimental Light and Dark Force powers. Divide affinity toward the power's side by two and round down to a whole percentage point: +3 matching affinity grants +1 percentage point, while 3 points toward the opposing side applies -2 percentage points. At +10 Light, Light powers gain +5% hit chance and Dark powers suffer -5%. At -10 Dark, Dark powers gain +5% and Light powers suffer -5%. These are percentage-point adjustments: a 70% chance with a +5 adjustment becomes 75%. The final chance shown in the combat log already includes this adjustment."),
                         new ArticleBlock("Universal Powers and Durations",
                             "Universal Force powers use their normal Willpower scaling but neither gain nor lose magnitude or hit chance from affinity. Force Affinity does not change effect duration. Status resistance and explicit duration modifiers can still change a duration."),
                         new ArticleBlock("Example: +6 Light",
-                            "At +6 Light, a Light power uses 130% magnitude and gains +3% hit chance. A Dark power uses 70% magnitude and suffers -3% hit chance. A Universal power remains at 100% magnitude with no affinity hit adjustment.")
+                            "At +6 Light, a Light damage power uses 130% magnitude, a Light heal or shield uses 125%, and Light powers gain +3% hit chance. A Dark power uses 70% magnitude and suffers -3% hit chance. A Universal power remains at 100% magnitude with no affinity hit adjustment.")
                     },
                     new[]
                     {
@@ -554,7 +554,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                         new ArticleBlock("Ability Details",
                             "Ability descriptions show the FP cost, STM cost, recast time, and what the ability does."),
                         new ArticleBlock("Cooldowns",
-                            "If an ability is still cooling down, the game tells you how long to wait before you can use it again."),
+                            "If an ability is still cooling down, the game tells you how long to wait before you can use it again. Hostile abilities also share a 0.5-second wait after each one. A hostile ability you use during that wait goes off as soon as it ends, and if you use several, only the last one goes off. Healing, support, and other abilities that aren't hostile don't wait."),
                         new ArticleBlock("Recast Groups",
                             "Some abilities share a cooldown group. Using one ability in that group can make the other abilities in the same group wait too.")
                     },
@@ -613,7 +613,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                         new ArticleBlock("Social",
                             "Improves XP gain and leadership capabilities. It also improves guild point acquisition, quest credit rewards, XP debt reduction on death, and reduces ship repair bills."),
                         new ArticleBlock("Resource Scaling and Regeneration",
-                            "Each Willpower point adds 3 maximum FP. Every 2 Might points add 3 maximum STM. Natural HP, FP, and STM regeneration occurs every 30 seconds; the Character Sheet shows the amount restored by each natural-regeneration tick.")
+                            "Each Willpower point adds 3 maximum FP. Every 2 Might points add 3 maximum STM. Natural HP and FP regeneration occurs every 30 seconds. STM regenerates continuously, a fifth of its 30-second amount every 6 seconds. The Character Sheet shows how much of each is restored per 30 seconds.")
                     },
                     new[]
                     {
@@ -677,7 +677,33 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                         new QuestionAnswer("Why can't I rest?", "You may be in combat, too close to enemies, near a party member in combat, or outside a dungeon safe-rest location."),
                         new QuestionAnswer("What is subdual?", "A PvP defeat setting that replaces normal death with 60 seconds knocked down and a 5 minute accuracy, evasion, and movement penalty.")
                     },
-                    new[] { "XP Debt", "Skills", "Attributes", "Combat Basics", "Useful Windows" }),
+                    new[] { "XP Debt", "Skills", "Attributes", "Combat Basics", "PvP Combat", "Useful Windows" }),
+
+                new(
+                    "PvP Combat",
+                    "Combat",
+                    "How long fights between players wind down: the PvP combat timer, the healing reduction, the damage increase, and shorter hard crowd control.",
+                    "Long PvP fights",
+                    new[]
+                    {
+                        new ArticleBlock("PvP Combat Timer",
+                            "You enter PvP combat when you deal damage to, or take damage from, another player or a player's pet. Players who are only nearby don't count. The timer starts at the first hit and only resets after 30 seconds without PvP damage dealt or taken; switching targets, hiding briefly, or a fresh healer arriving does not reset it. A status icon counts down to the next step, and each step prints a line in your combat log."),
+                        new ArticleBlock("Healing Reduction",
+                            "From 2:00 of PvP combat, healing you receive drops by 10%, then 20% at 2:30, 30% at 3:00, 45% at 3:30, and 60% from 4:00 on, where it stays. It covers every way HP comes back: heals, heals over time, lifesteal, consumables, resting, and natural regeneration. FP and STM recovery are not affected, and shields (temporary HP) are not reduced."),
+                        new ArticleBlock("Damage Increase",
+                            "From 3:00 of PvP combat, damage players and their pets deal to you rises by 20%, then 40% at 3:30, 60% at 4:00, 80% at 4:30, and doubles (+100%) from 5:00 on. It follows how long you have been in PvP combat, not your attacker's timer, so NPCs take normal damage from you and players who just joined the fight take normal damage."),
+                        new ArticleBlock("Hard Crowd Control",
+                            "Hard crowd control that a player or a player's pet applies to another player lasts half as long, at least one second."),
+                        new ArticleBlock("When It Ends",
+                            "PvP combat ends 30 seconds after the last PvP damage dealt or taken, or when you die or are subdued. Healing and damage return to normal at once."),
+                    },
+                    new[]
+                    {
+                        new QuestionAnswer("Why are my heals weaker?", "You have been in PvP combat for 2 minutes or more. Healing you receive drops in steps, down to 60% less from 4:00 on."),
+                        new QuestionAnswer("Why am I taking more damage from players?", "You have been in PvP combat for 3 minutes or more. Damage players and their pets deal to you rises in steps, up to double from 5:00 on."),
+                        new QuestionAnswer("How do I reset it?", "Go 30 seconds without dealing or taking damage from another player or a player's pet.")
+                    },
+                    new[] { "Combat Basics", "Death & Recovery", StatusEffectGuideTopics.TopicName }),
 
                 new(
                     "Combat Basics",
@@ -1079,7 +1105,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                         new ArticleBlock("Boarding",
                             "Be within 15 meters of your departure terminal when boarding is called. If you miss the shuttle, your ticket remains valid and rolls over to the next scheduled departure."),
                         new ArticleBlock("Refunds and Transit",
-                            "Before boarding, you may refund the ticket at its departure starport. Only the fare is returned; transportation tax is not refunded. Ticketed and in-transit journeys persist through logout and server restart, and an in-transit character is delivered correctly on return."),
+                            "Before boarding, you may refund the ticket at any starport flights terminal, then book a new flight from that terminal. Only the fare is returned; transportation tax is not refunded. Ticketed and in-transit journeys persist through logout and server restart, and an in-transit character is delivered correctly on return."),
                         new ArticleBlock("Taxi Destinations",
                             "Local taxi travel requires the Taxi Hailing Device key item. Visit a taxi terminal and register its location, then use terminals to travel to registered destinations in the same region for the displayed credit fare.")
                     },

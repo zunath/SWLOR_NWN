@@ -339,12 +339,14 @@
               },
               "DescIdentified": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "This Republic office uniform is neater at the collar than at the cuffs. Its quiet wear belongs to datapads, requisitions, and the machinery of an army that continues working after the gunfire moves elsewhere."
+                }
               },
               "Description": {
                 "type": "cexolocstring",
                 "value": {
-                  "0": ""
+                  "0": "This Republic office uniform is neater at the collar than at the cuffs. Its quiet wear belongs to datapads, requisitions, and the machinery of an army that continues working after the gunfire moves elsewhere."
                 }
               },
               "Identified": {

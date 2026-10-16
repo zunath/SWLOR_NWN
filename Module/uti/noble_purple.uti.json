@@ -110,11 +110,15 @@
   },
   "DescIdentified": {
     "type": "cexolocstring",
-    "value": {}
+    "value": {
+      "0": "Deep purple folds give this noble outfit a deliberately commanding presence. Its interior is less theatrical: fine seams and discreet fastenings that spare an important guest the indignity of struggling with their own clothes."
+    }
   },
   "Description": {
     "type": "cexolocstring",
-    "value": {}
+    "value": {
+      "0": "Deep purple folds give this noble outfit a deliberately commanding presence. Its interior is less theatrical: fine seams and discreet fastenings that spare an important guest the indignity of struggling with their own clothes."
+    }
   },
   "Identified": {
     "type": "byte",

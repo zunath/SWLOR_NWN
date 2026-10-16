@@ -4,6 +4,7 @@ using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Feature;
 using SWLOR.Game.Server.Feature.AbilityDefinition;
 using SWLOR.Game.Server.Service.AbilityService;
+using SWLOR.Game.Server.Service.CombatRecorderService;
 using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.LogService;
 using SWLOR.Game.Server.Service.PerkService;
@@ -259,10 +260,12 @@ namespace SWLOR.Game.Server.Service
         /// Retains the originating ability and cast sequence for recurring impacts without
         /// consuming another activation's pending bonuses or replacing its impact tracker.
         /// </summary>
-        public static Action CaptureRepeatedAbilityImpact(uint activator, Action impactAction, int baseDamage = 0)
+        public static Action CaptureRepeatedAbilityImpact(
+            uint activator, Action impactAction, int baseDamage = 0, bool requiresLivingActivator = true)
         {
             ArgumentNullException.ThrowIfNull(impactAction);
-            var applyImpact = CaptureRepeatedAbilityImpact<Action>(activator, action => action(), baseDamage);
+            var applyImpact = CaptureRepeatedAbilityImpact<Action>(
+                activator, action => action(), baseDamage, requiresLivingActivator);
             return () => applyImpact(impactAction);
         }
 
@@ -270,7 +273,8 @@ namespace SWLOR.Game.Server.Service
         /// Captures one cast's recurring impact context while allowing each delayed impact
         /// to retain its own target or payload. Bonuses are consumed only when an impact lands.
         /// </summary>
-        public static Action<T> CaptureRepeatedAbilityImpact<T>(uint activator, Action<T> impactAction, int baseDamage = 0)
+        public static Action<T> CaptureRepeatedAbilityImpact<T>(
+            uint activator, Action<T> impactAction, int baseDamage = 0, bool requiresLivingActivator = true)
         {
             ArgumentNullException.ThrowIfNull(impactAction);
             // Scheduled damage belongs to this cast. Resolve its armed bonuses now so
@@ -284,9 +288,10 @@ namespace SWLOR.Game.Server.Service
             var sequence = originatingImpact.Sequence;
             return payload =>
             {
-                if (!GetIsObjectValid(activator) || GetCurrentHitPoints(activator) <= 0)
+                if (!GetIsObjectValid(activator) || requiresLivingActivator && GetCurrentHitPoints(activator) <= 0)
                     return;
 
+                using var recorderAttribution = CombatRecorder.BeginAbilityAttribution(activator, ability);
                 var previousImpact = GetTrackedAbilityImpact(activator);
                 BeginAbilityImpact(activator, ability, 0, 0, countsAsAttackAttempt: false, sequence: sequence,
                     triggeringWeaponDamage: originatingImpact.TriggeringWeaponDamage,
@@ -299,6 +304,8 @@ namespace SWLOR.Game.Server.Service
                     var summary = EndAbilityImpact(activator);
                     originatingImpact.CompleteRepeatedDamageBonusImpact(summary.ImpactedTargetCount > 0);
                     completed = true;
+                    if (CombatRecorder.IsRecording)
+                        CombatRecorder.RecordRecurringAbilityImpact(activator, ability, summary);
                     Combat.ApplyAbilityImpactEffects(activator, summary);
                 }
                 finally
@@ -332,6 +339,7 @@ namespace SWLOR.Game.Server.Service
                     if (!GetIsObjectValid(activator) || GetCurrentHitPoints(activator) <= 0)
                         return;
 
+                    using var recorderAttribution = CombatRecorder.BeginAbilityAttribution(activator, originatingImpact.Ability);
                     var previousImpact = GetTrackedAbilityImpact(activator);
                     try
                     {
@@ -357,6 +365,8 @@ namespace SWLOR.Game.Server.Service
                         {
                             _trackedAbilityImpacts[activator] = batchImpact;
                             var summary = EndAbilityImpact(activator);
+                            if (CombatRecorder.IsRecording)
+                                CombatRecorder.RecordRecurringAbilityImpact(activator, originatingImpact.Ability, summary);
                             Combat.ApplyAbilityImpactEffects(activator, summary);
                         }
                     }
@@ -526,6 +536,29 @@ namespace SWLOR.Game.Server.Service
             return Perk.GetForceAffinityMagnitudeMultiplier(
                 activator,
                 trackedImpact.Ability.EffectiveLevelPerkType);
+        }
+
+        public static float GetActiveForceAffinityRestorativeMagnitudeMultiplier(uint activator)
+        {
+            var trackedImpact = GetTrackedAbilityImpact(activator);
+            if (trackedImpact?.Ability?.SkillType != SkillType.Force)
+                return 1f;
+
+            return Perk.GetForceAffinityRestorativeMagnitudeMultiplier(
+                activator,
+                trackedImpact.Ability.EffectiveLevelPerkType);
+        }
+
+        public static int ApplyActiveForceAffinityRestorativeMagnitude(uint activator, int amount)
+        {
+            var trackedImpact = GetTrackedAbilityImpact(activator);
+            if (trackedImpact?.Ability?.SkillType != SkillType.Force)
+                return amount;
+
+            return Perk.ApplyForceAffinityRestorativeMagnitude(
+                activator,
+                trackedImpact.Ability.EffectiveLevelPerkType,
+                amount);
         }
 
         public static int ApplyActiveForceAffinityMagnitude(uint activator, int amount)
@@ -918,6 +951,55 @@ namespace SWLOR.Game.Server.Service
         private static void RemoveAuraEffect(uint source, uint recipient, Type type, bool sendsWornOffMessage = false)
         {
             StatusEffect.RemoveStatusEffect(recipient, type, source, sendsWornOffMessage);
+            RestoreStrongestAuraEffect(recipient, type, source);
+        }
+
+        /// <summary>
+        /// A stronger source replaces weaker copies of the same aura on a recipient. Once a source's copy
+        /// is removed, the strongest other source still covering the recipient applies its copy again.
+        /// </summary>
+        private static void RestoreStrongestAuraEffect(uint recipient, Type type, uint removedSource)
+        {
+            if (!GetIsObjectValid(recipient) || GetIsDead(recipient) || StatusEffect.HasStatusEffect(recipient, type))
+                return;
+
+            var strongestSource = OBJECT_INVALID;
+            PlayerAuraDetail strongestDetail = null;
+            var strongestSocial = int.MinValue;
+            foreach (var (source, playerAura) in _playerAuras)
+            {
+                if (source == removedSource)
+                    continue;
+
+                var detail = playerAura.Auras.FirstOrDefault(x => x.StatusEffect == type);
+                if (detail == null || !IsAuraRecipient(source, playerAura, detail, recipient))
+                    continue;
+
+                var social = GetAuraSourceSocial(source);
+                if (social <= strongestSocial)
+                    continue;
+
+                strongestSource = source;
+                strongestDetail = detail;
+                strongestSocial = social;
+            }
+
+            if (strongestDetail != null)
+                ApplyAuraEffect(strongestSource, recipient, type, strongestDetail.SuccessfulImpactVisualEffect);
+        }
+
+        private static bool IsAuraRecipient(uint source, PlayerAura playerAura, PlayerAuraDetail detail, uint recipient)
+        {
+            if (detail.TargetsSelf && source == recipient)
+                return true;
+
+            if (detail.TargetsParty && playerAura.PartyMembersInRange.Contains(recipient) && Party.IsInParty(source, recipient))
+                return true;
+
+            return detail.TargetsEnemies &&
+                   playerAura.CreaturesInRange.Contains(recipient) &&
+                   !GetIsDMPossessed(recipient) && !GetIsDM(recipient) &&
+                   (GetIsEnemy(source, recipient) || GetIsEnemy(recipient, source));
         }
 
         private static bool HasEqualOrStrongerAuraEffect(uint source, uint recipient, Type type)
@@ -1150,6 +1232,8 @@ namespace SWLOR.Game.Server.Service
         /// <param name="target">The creature to remove from all aura ranges.</param>
         public static void RemoveCreatureFromAllAuraRanges(uint target)
         {
+            // Leave every range first so removing one aura copy cannot restore another source's copy.
+            var removedEffects = new List<(uint Leader, Type StatusEffect)>();
             foreach (var (leader, playerAura) in _playerAuras)
             {
                 if (playerAura.PartyMembersInRange.Remove(target))
@@ -1157,7 +1241,7 @@ namespace SWLOR.Game.Server.Service
                     foreach (var aura in playerAura.Auras)
                     {
                         if (aura.TargetsParty)
-                            RemoveAuraEffect(leader, target, aura.StatusEffect);
+                            removedEffects.Add((leader, aura.StatusEffect));
                     }
                 }
 
@@ -1166,9 +1250,14 @@ namespace SWLOR.Game.Server.Service
                     foreach (var aura in playerAura.Auras)
                     {
                         if (aura.TargetsEnemies)
-                            RemoveAuraEffect(leader, target, aura.StatusEffect);
+                            removedEffects.Add((leader, aura.StatusEffect));
                     }
                 }
+            }
+
+            foreach (var (leader, statusEffect) in removedEffects)
+            {
+                RemoveAuraEffect(leader, target, statusEffect);
             }
         }
 
@@ -1195,6 +1284,60 @@ namespace SWLOR.Game.Server.Service
                 {
                     if (aura.TargetsParty)
                         RemoveAuraEffect(leader, target, aura.StatusEffect);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Enrolls a creature that just joined a party in the party auras it is already standing in,
+        /// and enrolls the party members already standing in its own aura. The aura enter event only
+        /// fires on entry, so without this they would wait until they leave and re-enter the aura.
+        /// </summary>
+        /// <param name="member">The creature that joined the party.</param>
+        public static void EnrollPartyMemberInAuraRanges(uint member)
+        {
+            var area = GetArea(member);
+            if (!GetIsObjectValid(area))
+                return;
+
+            foreach (var aoe in ObjectSnapshot.InArea(area, ObjectType.AreaOfEffect))
+            {
+                var leader = GetAreaOfEffectCreator(aoe);
+                if (leader != member && !Party.IsInParty(leader, member))
+                    continue;
+
+                if (GetEventScript(aoe, EventScript.AreaOfEffect_OnObjectEnter) != ScriptName.OnAuraEnter)
+                    continue;
+
+                var creaturesInside = ObjectSnapshot.Capture(
+                    () => GetFirstInPersistentObject(aoe),
+                    () => GetNextInPersistentObject(aoe),
+                    GetIsObjectValid);
+
+                foreach (var creature in creaturesInside)
+                {
+                    if (creature == leader || GetIsDead(creature))
+                        continue;
+
+                    if (leader == member ? Party.IsInParty(leader, creature) : creature == member)
+                        AddPartyMemberToAuraRange(leader, creature);
+                }
+            }
+        }
+
+        private static void AddPartyMemberToAuraRange(uint leader, uint member)
+        {
+            if (!_playerAuras.ContainsKey(leader))
+                _playerAuras.Add(leader, new PlayerAura());
+
+            if (!_playerAuras[leader].PartyMembersInRange.Contains(member))
+                _playerAuras[leader].PartyMembersInRange.Add(member);
+
+            foreach (var detail in _playerAuras[leader].Auras)
+            {
+                if (detail.TargetsParty)
+                {
+                    ApplyAuraEffect(leader, member, detail.StatusEffect, detail.SuccessfulImpactVisualEffect);
                 }
             }
         }
@@ -1335,16 +1478,7 @@ namespace SWLOR.Game.Server.Service
             // Party Members
             if (Party.IsInParty(self, entering))
             {
-                if (!_playerAuras[self].PartyMembersInRange.Contains(entering))
-                    _playerAuras[self].PartyMembersInRange.Add(entering);
-
-                foreach (var detail in _playerAuras[self].Auras)
-                {
-                    if (detail.TargetsParty)
-                    {
-                        ApplyAuraEffect(self, entering, detail.StatusEffect, detail.SuccessfulImpactVisualEffect);
-                    }
-                }
+                AddPartyMemberToAuraRange(self, entering);
             }
 
             // Enemies
@@ -2741,6 +2875,9 @@ namespace SWLOR.Game.Server.Service
             if (!GetIsObjectValid(activator) || !GetIsObjectValid(target) || ability == null)
                 return;
 
+            if (CombatRecorder.IsRecording)
+                CombatRecorder.RecordAttack(activator, target, attackResultType, hitRate, ability.Name);
+
             Messaging.SendMessageNearbyToPlayers(
                 target,
                 receiver => Combat.BuildAbilityCombatLogMessage(
@@ -2838,7 +2975,10 @@ namespace SWLOR.Game.Server.Service
             trackedImpact.DarkForceConversionApplied = true;
 
             if (fpRestore > 0)
+            {
+                using var recorderAttribution = CombatRecorder.BeginStatTriggerAttribution(activator, StatType.DarkForceDamageFPRestore);
                 Stat.RestoreFP(activator, fpRestore);
+            }
 
             var lowTargetThresholdPercent = Stat.GetStatAdjustment(activator, StatType.DarkForceDamageLowTargetHPThresholdPercent);
             var lowTargetHPCostPercent = Stat.GetStatAdjustment(activator, StatType.DarkForceDamageLowTargetHPCostPercent);
@@ -2857,7 +2997,11 @@ namespace SWLOR.Game.Server.Service
             var hpCost = Math.Max(1, GetMaxHitPoints(activator) * hpCostPercent / 100);
             hpCost = Math.Min(hpCost, Math.Max(0, GetCurrentHitPoints(activator) - 1));
             if (hpCost > 0)
+            {
+                if (CombatRecorder.IsRecording)
+                    CombatRecorder.ExpectHitPointCost(activator, hpCost);
                 AssignCommand(activator, () => ApplyEffectToObject(DurationType.Instant, EffectDamage(hpCost), activator));
+            }
         }
 
         private static int CalculateUnscaledCombatImpactDamage(
@@ -3675,7 +3819,8 @@ namespace SWLOR.Game.Server.Service
                     Ability = ability,
                     SkillType = ability.SkillType,
                     IsAreaAbility = ability.IsAreaAbility,
-                    IsSingleTargetAbility = ability.IsSingleTargetAbility
+                    IsSingleTargetAbility = ability.IsSingleTargetAbility,
+                    ImpactedTargets = _impactedTargets
                 };
             }
 
@@ -3779,7 +3924,8 @@ namespace SWLOR.Game.Server.Service
                     target,
                     damage,
                     damageType,
-                    combatDamageType));
+                    combatDamageType,
+                    CombatRecorder.CaptureScope()));
             }
 
             public void FlushDamageEffects(uint activator)
@@ -3792,11 +3938,14 @@ namespace SWLOR.Game.Server.Service
 
                 AssignCommand(activator, () =>
                 {
+                    using var recorderAttribution = CombatRecorder.BeginAbilityAttribution(activator, Ability);
                     foreach (var effect in effects)
                     {
                         if (!GetIsObjectValid(effect.Target))
                             continue;
 
+                        // Damage queued under a nested scope, such as a status rider, lands under it.
+                        using var effectAttribution = CombatRecorder.BeginAttribution(effect.RecorderAttribution);
                         var isDirectAbilityDamage = effect.CombatDamageType != CombatDamageType.Invalid;
                         if (isDirectAbilityDamage)
                         {
@@ -3833,18 +3982,21 @@ namespace SWLOR.Game.Server.Service
                 uint target,
                 int damage,
                 DamageType damageType,
-                CombatDamageType combatDamageType)
+                CombatDamageType combatDamageType,
+                CombatRecordAttribution recorderAttribution)
             {
                 Target = target;
                 Damage = damage;
                 DamageType = damageType;
                 CombatDamageType = combatDamageType;
+                RecorderAttribution = recorderAttribution;
             }
 
             public uint Target { get; }
             public int Damage { get; }
             public DamageType DamageType { get; }
             public CombatDamageType CombatDamageType { get; }
+            public CombatRecordAttribution RecorderAttribution { get; }
         }
     }
 }

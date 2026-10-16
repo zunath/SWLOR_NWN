@@ -106,11 +106,11 @@ public class ItemIconTests
         File.Exists(Path.Combine(server, "Service", "ItemIconAppearance.cs")).Should().BeFalse();
         File.Exists(Path.Combine(server, "Feature", "ShipItemIconCompatibility.cs")).Should().BeFalse();
         new _19_UpdateItemIcons().Version.Should().Be(19);
-        new _27_UpdateItemIcons().Version.Should().Be(27);
-        new _27_UpdateItemIcons().ExecutionType.Should().Be(MigrationExecutionType.PostCacheLoad);
+        new _27_UpdateStoredItems().Version.Should().Be(27);
+        new _27_UpdateStoredItems().ExecutionType.Should().Be(MigrationExecutionType.PostCacheLoad);
         File.ReadAllText(Path.Combine(migrations, "PlayerMigration", "_19_UpdateItemIcons.cs"))
             .Should().Contain("ItemIconMigration.MigrateObject(player)");
-        File.ReadAllText(Path.Combine(migrations, "ServerMigration", "_27_UpdateItemIcons.cs"))
+        File.ReadAllText(Path.Combine(migrations, "ServerMigration", "_27_UpdateStoredItems.cs"))
             .Should().Contain("ItemIconMigration.MigrateSerializedObject").And.NotContain("StoredItemDataMigration.Migrate()");
         File.ReadAllText(Path.Combine(migrations, "PlayerMigration", "_14_MigrateResistanceItemProperties.cs"))
             .Should().NotContain("ItemIconMigration");
@@ -141,8 +141,23 @@ public class ItemIconTests
         BitConverter.ToUInt16(bytes, 14).Should().Be((ushort)size);
         bytes[16].Should().Be(32);
         bytes[17].Should().Be(8, "classic NWN requires bottom-left TGA origin");
-        for (var index = 18 + bytes[0] + 3; index < 18 + bytes[0] + size * size * 4; index += 4)
-            bytes[index].Should().Be(255);
+        var offset = 18 + bytes[0];
+        if (size == 64)
+        {
+            var opaquePixels = 0;
+            for (var y = 0; y < size; y++)
+            for (var x = 0; x < size; x++)
+            {
+                var alpha = bytes[offset + (y * size + x) * 4 + 3];
+                if (Math.Min(Math.Min(x, y), Math.Min(size - 1 - x, size - 1 - y)) < 6)
+                    alpha.Should().Be(0, "inventory artwork must have no baked-in frame or matte");
+                if (alpha > 0) opaquePixels++;
+            }
+            opaquePixels.Should().BeGreaterThan(100, "the item artwork must survive background removal");
+        }
+        else
+            for (var index = offset + 3; index < offset + size * size * 4; index += 4)
+                bytes[index].Should().Be(255);
     }
 
     private static List<Dictionary<string, string>> ReadCsv(string name)

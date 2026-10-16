@@ -13,40 +13,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
             var window = _builder.CreateWindow(GuiWindowType.ExamineItem)
                 .SetIsResizable(true)
                 .SetIsCollapsible(true)
-                .SetInitialGeometry(0, 0, 430f, 460f)
-                .BindTitle(model => model.WindowTitle)
-                .DefinePartialView(ExamineItemViewModel.ContentPartial, host =>
-                    host.AddColumn(col =>
-                        col.AddRow(row =>
-                            row.AddGroup(panel =>
-                            {
-                                panel.SetShowBorder(false)
-                                    .SetScrollbars(NuiScrollbars.None);
-
-                                panel.AddColumn(body =>
-                                {
-                                    body.AddRow(row =>
-                                        row.AddLabel()
-                                            .BindText(model => model.Weight)
-                                            .SetHorizontalAlign(NuiHorizontalAlign.Left)
-                                            .SetHeight(26f));
-
-                                    body.AddRow(row =>
-                                        row.AddLabel()
-                                            .SetText("Description")
-                                            .SetHeight(26f));
-
-                                    body.AddRow(row => row.AddPartialView(ExamineItemViewModel.DescriptionElement).SetHeight(230f));
-
-                                    body.AddRow(row =>
-                                        row.AddLabel()
-                                            .SetText("Item Properties")
-                                            .SetHeight(26f));
-
-                                    body.AddRow(row => row.AddPartialView(ExamineItemViewModel.PropertiesElement).SetHeight(160f));
-                                });
-                            })
-                                .SetWidth(390f))));
+                .SetInitialGeometry(0, 0, 440f, 480f)
+                .BindTitle(model => model.WindowTitle);
+            // The view model builds the content per item, sized to its text.
             window.AddStandardLayout(layout =>
                 layout.SetContentPartialElement(ExamineItemViewModel.ContentElement));
             var result = _builder.Build();

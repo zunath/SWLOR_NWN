@@ -26,11 +26,15 @@
   },
   "DescIdentified": {
     "type": "cexolocstring",
-    "value": {}
+    "value": {
+      "0": "The seams of this bracer are dressed so closely that the fastening almost disappears into its outline. Its refined finish offers a craftsman a rare piece of work they need not immediately improve upon."
+    }
   },
   "Description": {
     "type": "cexolocstring",
-    "value": {}
+    "value": {
+      "0": "The seams of this bracer are dressed so closely that the fastening almost disappears into its outline. Its refined finish offers a craftsman a rare piece of work they need not immediately improve upon."
+    }
   },
   "Identified": {
     "type": "byte",

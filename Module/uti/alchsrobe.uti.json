@@ -110,12 +110,14 @@
   },
   "DescIdentified": {
     "type": "cexolocstring",
-    "value": {}
+    "value": {
+      "0": "The folds of Alch's robe fall around a lining that has been renewed more recently than the outside. It is a private improvement, noticeable chiefly to the person expected to wear it through another long day."
+    }
   },
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": ""
+      "0": "The folds of Alch's robe fall around a lining that has been renewed more recently than the outside. It is a private improvement, noticeable chiefly to the person expected to wear it through another long day."
     }
   },
   "Identified": {

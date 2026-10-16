@@ -4,6 +4,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Runtime.CompilerServices;
 using SWLOR.Game.Server.Properties;
+using SWLOR.Game.Server.Service.FrameProfilerService;
 using SWLOR.Game.Server.Service.GuiService.Component;
 using SWLOR.NWN.API.Engine;
 
@@ -189,6 +190,7 @@ namespace SWLOR.Game.Server.Service.GuiService
             if (Player == 0 || WindowToken <= 0)
                 return;
 
+            FrameProfiler.Count(FrameMetric.GuiBindSend);
             var value = _propertyValues[propertyName].Value;
             var json = _converter.ToJson(value);
 

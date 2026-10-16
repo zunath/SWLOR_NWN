@@ -1,0 +1,10 @@
+{
+  "source_commit": "b7f7aa86687ec69e54bd8a9fb90d40c85a4a6fb8",
+  "source_files_sha256": {
+    "xmasset/offline_client.py": "4f82ba4eacd3bd90c6c8e04d419486c3db05b79bbd9bb2e49a249e5cab3f0a83",
+    "xmasset/private_desktop.py": "94fa4081d882fc269538e112efb02802507fe172f7a9afb7470641ed8145cbe2",
+    "client/native_frames.py": "9cfee82c6da31884bb2bd58210b12da69962376c7f35eba3f321f3f7566567fc"
+  },
+  "adaptation": "Removed Xenomech configuration and visible launch paths. Added SWLOR-owned temporary profiles, mandatory silence, hardlink/reparse rejection, CLI staging/building, evidence delivery and cleanup.",
+  "source_project": "Xenomech"
+}

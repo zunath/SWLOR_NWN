@@ -2,6 +2,7 @@ using NWN.Native.API;
 using SWLOR.Game.Server.Core.Extensions;
 using SWLOR.Game.Server.Extension;
 using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.Service.FrameProfilerService;
 using SWLOR.Game.Server.Service.LogService;
 using SWLOR.NWN.API.NWNX;
 
@@ -57,6 +58,7 @@ namespace SWLOR.Game.Server.Core
             foreach (var (action, name) in ServerManager.Scripts.GetConditionalScripts(script))
             {
                 ProfilerPlugin.PushPerfScope(OBJECT_SELF, name);
+                var profile = FrameProfiler.EnterManaged();
                 try
                 {
                     var actionResult = action.Invoke();
@@ -65,6 +67,7 @@ namespace SWLOR.Game.Server.Core
                 }
                 finally
                 {
+                    FrameProfiler.ExitManaged(FrameMetric.Script, profile, name);
                     ProfilerPlugin.PopPerfScope();
                 }
             }
@@ -76,9 +79,11 @@ namespace SWLOR.Game.Server.Core
         {
             foreach (var (action, name) in ServerManager.Scripts.GetActionScripts(script))
             {
+                var profile = 0L;
                 try
                 {
                     ProfilerPlugin.PushPerfScope(OBJECT_SELF, name);
+                    profile = FrameProfiler.EnterManaged();
                     action();
                 }
                 catch (Exception ex)
@@ -87,6 +92,7 @@ namespace SWLOR.Game.Server.Core
                 }
                 finally
                 {
+                    FrameProfiler.ExitManaged(FrameMetric.Script, profile, name);
                     ProfilerPlugin.PopPerfScope();
                 }
             }
@@ -98,12 +104,14 @@ namespace SWLOR.Game.Server.Core
         {
             var oldObjectSelf = ServerManager.Bootstrapper.ClosureManager.ObjectSelf;
             var spBefore = PushScriptContext(objectId, scriptEventId);
+            var profile = FrameProfiler.EnterManaged();
             try
             {
                 action();
             }
             finally
             {
+                FrameProfiler.ExitManaged(FrameMetric.NativeHook, profile);
                 var spAfter = PopScriptContext();
                 ServerManager.Bootstrapper.ClosureManager.ObjectSelf = oldObjectSelf;
                 if (spAfter != spBefore)
@@ -116,6 +124,7 @@ namespace SWLOR.Game.Server.Core
         {
             var oldObjectSelf = ServerManager.Bootstrapper.ClosureManager.ObjectSelf;
             var spBefore = PushScriptContext(objectId, scriptEventId);
+            var profile = FrameProfiler.EnterManaged();
 
             try
             {
@@ -123,6 +132,7 @@ namespace SWLOR.Game.Server.Core
             }
             finally
             {
+                FrameProfiler.ExitManaged(FrameMetric.NativeHook, profile);
                 var spAfter = PopScriptContext();
                 ServerManager.Bootstrapper.ClosureManager.ObjectSelf = oldObjectSelf;
                 if (spAfter != spBefore)

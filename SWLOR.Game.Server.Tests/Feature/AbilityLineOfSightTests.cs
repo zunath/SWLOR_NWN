@@ -74,7 +74,7 @@ public class AbilityLineOfSightTests
         var canUseIndex = completeBody.IndexOf(
             "if (!Ability.CanUseAbility(activator, target, feat, effectivePerkLevel, targetLocation))",
             StringComparison.Ordinal);
-        var costIndex = completeBody.IndexOf("ApplyRequirementEffects(activator, ability);", StringComparison.Ordinal);
+        var costIndex = completeBody.IndexOf("ApplyRequirementEffects(activator, ability, feat);", StringComparison.Ordinal);
         var impactIndex = completeBody.IndexOf(
             "ExecuteAbilityImpact(",
             StringComparison.Ordinal);

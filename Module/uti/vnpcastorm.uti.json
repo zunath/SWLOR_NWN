@@ -110,12 +110,14 @@
   },
   "DescIdentified": {
     "type": "cexolocstring",
-    "value": {}
+    "value": {
+      "0": "Branching patterns cross the dark fittings of this Sith Stormcaller armor. They catch the light in fragments rather than a single gleam, lending even its still outline an unsettled quality."
+    }
   },
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": ""
+      "0": "Branching patterns cross the dark fittings of this Sith Stormcaller armor. They catch the light in fragments rather than a single gleam, lending even its still outline an unsettled quality."
     }
   },
   "Identified": {

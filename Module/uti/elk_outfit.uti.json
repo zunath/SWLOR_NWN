@@ -110,12 +110,14 @@
   },
   "DescIdentified": {
     "type": "cexolocstring",
-    "value": {}
+    "value": {
+      "0": "Elk's clothes show small repairs at the cuffs and a more substantial renewal inside the pockets. Their priorities are clear: keep the useful parts sound and let the rest acquire its own character."
+    }
   },
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": ""
+      "0": "Elk's clothes show small repairs at the cuffs and a more substantial renewal inside the pockets. Their priorities are clear: keep the useful parts sound and let the rest acquire its own character."
     }
   },
   "Identified": {

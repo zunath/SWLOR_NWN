@@ -25,16 +25,15 @@
     "value": 0
   },
   "DescIdentified": {
-    "id": 56620,
     "type": "cexolocstring",
     "value": {
-      "0": ""
+      "0": "Fine marks are hidden beneath the turned-back cuffs of these gloves. They were made for a wearer's own contemplation, not for the audience that impressive clothing sometimes gathers."
     }
   },
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": ""
+      "0": "Fine marks are hidden beneath the turned-back cuffs of these gloves. They were made for a wearer's own contemplation, not for the audience that impressive clothing sometimes gathers."
     }
   },
   "Identified": {

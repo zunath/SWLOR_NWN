@@ -110,12 +110,14 @@
   },
   "DescIdentified": {
     "type": "cexolocstring",
-    "value": {}
+    "value": {
+      "0": "Plain panels and accessible bindings give this Jedi initiate's armor a modest finish. Its construction leaves room for training and adjustment, asking the wearer to grow accustomed to responsibility before taking comfort in the appearance of rank."
+    }
   },
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": ""
+      "0": "Plain panels and accessible bindings give this Jedi initiate's armor a modest finish. Its construction leaves room for training and adjustment, asking the wearer to grow accustomed to responsibility before taking comfort in the appearance of rank."
     }
   },
   "Identified": {

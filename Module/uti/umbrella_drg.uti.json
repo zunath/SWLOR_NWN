@@ -26,12 +26,14 @@
   },
   "DescIdentified": {
     "type": "cexolocstring",
-    "value": {}
+    "value": {
+      "0": "A dragon winds across this umbrella's canopy, its shape broken into neat sections when the ribs fold shut. Opened in a rainy street, it lends an ordinary journey a little unnecessary grandeur."
+    }
   },
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": ""
+      "0": "A dragon winds across this umbrella's canopy, its shape broken into neat sections when the ribs fold shut. Opened in a rainy street, it lends an ordinary journey a little unnecessary grandeur."
     }
   },
   "Identified": {

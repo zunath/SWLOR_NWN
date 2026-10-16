@@ -137,6 +137,17 @@ namespace SWLOR.Game.Server.Service
                 : assignedDisplayName;
         }
 
+        /// <summary>
+        /// Same as <see cref="GetUnknownDisplayNameByPlayerId"/>, for a player record already loaded.
+        /// </summary>
+        public static string GetUnknownDisplayName(Player dbPlayer)
+        {
+            var assignedDisplayName = PlayerName.SanitizeKnownName(dbPlayer?.UnknownDisplayName);
+            return string.IsNullOrWhiteSpace(assignedDisplayName)
+                ? DefaultUnknownDisplayName
+                : assignedDisplayName;
+        }
+
         public static string GetUnknownDisplayNameByPlayerId(string targetPlayerId)
         {
             var assignedDisplayName = GetAssignedUnknownDisplayNameByPlayerId(targetPlayerId);

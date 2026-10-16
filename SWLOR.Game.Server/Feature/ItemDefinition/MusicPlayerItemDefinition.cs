@@ -23,7 +23,13 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
             _builder.Create(Music.MusicPlayerTag)
                 .ApplyAction((user, item, target, location, itemPropertyIndex) =>
                 {
-                    Gui.TogglePlayerWindow(user, GuiWindowType.MusicPicker, new MusicPickerPayload(MusicPickerMode.Personal, musicPlayer: item));
+                    var payload = new MusicPickerPayload(MusicPickerMode.Personal, musicPlayer: item);
+
+                    // DMs share one picker window across possession changes, as with jukeboxes and the toolbar.
+                    if (GetIsDM(user) || GetIsDMPossessed(user))
+                        DMPresence.ToggleWindow(user, GuiWindowType.MusicPicker, payload);
+                    else
+                        Gui.TogglePlayerWindow(user, GuiWindowType.MusicPicker, payload);
                 });
         }
     }

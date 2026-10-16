@@ -655,12 +655,12 @@ public class GeneratedWeaponPerkBehaviorTests
         nativeAttackSource[beginSwing..endSwing].Should().Contain("try");
         nativeAttackSource[resolveAttack..endSwing].Should().Contain("finally");
         statusEffectSource.Should().Contain(
-            "statusEffect is not ILimitedAttackDelayReductionStatusEffect");
+            "statusEffect is ILimitedAttackDelayReductionStatusEffect");
         statusEffectSource.Should().Contain(
-            "statusEffect is not ILimitedAttackNoDelayStatusEffect");
+            "statusEffect is ILimitedAttackNoDelayStatusEffect");
         statusEffectSource.Should().Contain("_nativeAttackSwingDepth.Remove(attacker);");
         statusEffectSource.Should().Contain(
-            "deferredEffects.Add(() => ApplyStatusEffectInternal(",
+            "deferredEffects.Add(() => ApplyAndProfileStatusEffect(",
             "a speed effect granted by a precomputed roll must become active only after the swing ends");
     }
 
@@ -873,9 +873,9 @@ public class GeneratedWeaponPerkBehaviorTests
         AssertSourceStat("TwinBladePerkDefinition.cs", StatType.SkillDamageBleedingTargetStaminaRestoreCooldownSeconds, "4");
 
         AssertSourceStat("SaberstaffPerkDefinition.cs", StatType.AbilityStaminaCostFPRestorePercentSkillType, "(int)SkillType.Saberstaff");
-        AssertSourceStat("SaberstaffPerkDefinition.cs", StatType.AbilityStaminaCostFPRestorePercent, "35");
+        AssertSourceStat("SaberstaffPerkDefinition.cs", StatType.AbilityStaminaCostFPRestorePercent, "20");
         AssertSourceStat("SaberstaffPerkDefinition.cs", StatType.AbilityFPCostStaminaRestorePercentSkillType, "(int)SkillType.Force");
-        AssertSourceStat("SaberstaffPerkDefinition.cs", StatType.AbilityFPCostStaminaRestorePercent, "35");
+        AssertSourceStat("SaberstaffPerkDefinition.cs", StatType.AbilityFPCostStaminaRestorePercent, "20");
         AssertSourceStat("SaberstaffPerkDefinition.cs", StatType.RestoredFPForceAttackPercentAdjustment, "8");
         AssertSourceStat("SaberstaffPerkDefinition.cs", StatType.RestoredFPForceAttackDurationSeconds, "30");
         AssertSourceStat("SaberstaffPerkDefinition.cs", StatType.RestoredStaminaAttackPercentAdjustment, "8");
@@ -1005,7 +1005,7 @@ public class GeneratedWeaponPerkBehaviorTests
         AssertStatusStat(assassins, StatType.PoisonDamageDealtPercentAdjustment, 20);
         AssertStatusStat(assassins, StatType.AttackPercentAdjustment, -10);
 
-        var shadowflow = new ShadowflowStanceStatusEffect();
+        var shadowflow = new ShadowflowStatusEffect();
         AssertStatusStat(shadowflow, StatType.AutoAttackHamstringSkillType, (int)SkillType.Invalid);
         AssertStatusStat(shadowflow, StatType.AutoAttackHamstringDurationSeconds, 18);
         AssertStatusStat(shadowflow, StatType.DefensePercentAdjustment, -20);
@@ -1052,6 +1052,10 @@ public class GeneratedWeaponPerkBehaviorTests
         AssertStatusStat(infiniteConduit, StatType.AbilityFPCostStaminaRestorePercent, 50);
         AssertStatusStat(infiniteConduit, StatType.HighFPAndStaminaAbilityDamageBonusThresholdPercent, 70);
         AssertStatusStat(infiniteConduit, StatType.HighFPAndStaminaAbilityDamageBonus, 20);
+
+        var conduitStance = new ConduitStanceStatusEffect();
+        AssertStatusStat(conduitStance, StatType.AbilityStaminaCostFPRestorePercent, 40);
+        AssertStatusStat(conduitStance, StatType.AbilityFPCostStaminaRestorePercent, 40);
 
         var restoredForcePointsForceAttack = new ForceLensForceAttackStatusEffect(8);
         AssertStatusStat(restoredForcePointsForceAttack, StatType.ForceAttackPercentAdjustment, 8);
@@ -1230,7 +1234,7 @@ public class GeneratedWeaponPerkBehaviorTests
             AssertFeatSpellTargeting(featRows, spellRows, feat, "****", "1", "M", "0x03", "0");
         }
 
-        var shadowflow = new ShadowflowStanceAbilityDefinition().BuildAbilities()[FeatType.ShadowflowStance1];
+        var shadowflow = new ShadowflowAbilityDefinition().BuildAbilities()[FeatType.ShadowflowStance1];
         shadowflow.IsHostileAbility.Should().BeFalse();
         shadowflow.RequiresTarget.Should().BeFalse();
 

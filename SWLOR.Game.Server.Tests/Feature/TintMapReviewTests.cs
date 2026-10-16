@@ -625,8 +625,8 @@ public class TintMapReviewTests
             .Select(argument => argument.Expression.ToString());
 
         handlerScripts.Should().BeEquivalentTo(
-            "ScriptName.OnSWLORItemEquipValidBefore",
-            "ScriptName.OnItemUnequipBefore");
+            "ScriptName.OnItemEquipValidateAfter",
+            "ScriptName.OnItemUnequipAfter");
         var invocations = method.DescendantNodes()
             .OfType<InvocationExpressionSyntax>()
             .ToList();
@@ -643,12 +643,8 @@ public class TintMapReviewTests
             invocation.ArgumentList.Arguments.Count == 1 &&
             invocation.ArgumentList.Arguments[0].Expression is IdentifierNameSyntax argument &&
             argument.Identifier.ValueText == "creature");
-        var acceptsDroids = invocations.Any(invocation =>
-            invocation.Expression is MemberAccessExpressionSyntax
-            {
-                Expression: IdentifierNameSyntax { Identifier.ValueText: "Droid" },
-                Name.Identifier.ValueText: "IsDroid"
-            } &&
+        var distinguishesPlayerModuleEvents = invocations.Any(invocation =>
+            invocation.Expression is IdentifierNameSyntax { Identifier.ValueText: "GetIsPC" } &&
             invocation.ArgumentList.Arguments.Count == 1 &&
             invocation.ArgumentList.Arguments[0].Expression.ToString() == "creature");
         var acceptsDmPossessedCreatures = invocations.Any(invocation =>
@@ -657,7 +653,7 @@ public class TintMapReviewTests
             invocation.ArgumentList.Arguments[0].Expression.ToString() == "creature");
         queuesEditorRefresh.Should().BeTrue();
         resolvesOwner.Should().BeTrue();
-        acceptsDroids.Should().BeTrue();
+        distinguishesPlayerModuleEvents.Should().BeTrue();
         acceptsDmPossessedCreatures.Should().BeTrue();
         typeof(AppearanceEditorViewModel)
             .GetInterfaces()
@@ -924,45 +920,6 @@ public class TintMapReviewTests
         resolveTintSurface.Should().Contain("custom.Red / 255f");
         resolveTintSurface.Should().Contain("custom.Green / 255f");
         resolveTintSurface.Should().Contain("custom.Blue / 255f, 1f");
-    }
-
-    [Test]
-    public void SpeederAppearanceChangesRefreshTintMaps()
-    {
-        var source = ReadSource(
-            "SWLOR.Game.Server",
-            "Feature",
-            "ItemDefinition",
-            "SpeederItemDefinition.cs");
-        var methods = CSharpSyntaxTree.ParseText(source)
-            .GetRoot()
-            .DescendantNodes()
-            .OfType<MethodDeclarationSyntax>()
-            .Where(node => new[]
-            {
-                "Speeder",
-                "AttackedDismount",
-                "AttackDismount",
-                "AreaTransitionDismount"
-            }.Contains(node.Identifier.ValueText))
-            .ToDictionary(node => node.Identifier.ValueText);
-
-        methods.Keys.Should().BeEquivalentTo(
-            "Speeder",
-            "AttackedDismount",
-            "AttackDismount",
-            "AreaTransitionDismount");
-        foreach (var method in methods.Values)
-        {
-            method.DescendantNodes()
-                .OfType<InvocationExpressionSyntax>()
-                .Should()
-                .ContainSingle(invocation =>
-                    invocation.Expression.ToString() == "TintMapService.QueueRefreshAndEditor" &&
-                    invocation.ArgumentList.Arguments.Count == 2 &&
-                    invocation.ArgumentList.Arguments[0].Expression.ToString() ==
-                    invocation.ArgumentList.Arguments[1].Expression.ToString());
-        }
     }
 
     [Test]

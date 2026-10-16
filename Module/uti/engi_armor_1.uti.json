@@ -110,11 +110,15 @@
   },
   "DescIdentified": {
     "type": "cexolocstring",
-    "value": {}
+    "value": {
+      "0": "A straightforward workshop tunic with seams that show the maker's careful first decisions. A few extra stitches reinforce the pockets, where tools have a habit of teaching an apprentice what a pattern book omitted."
+    }
   },
   "Description": {
     "type": "cexolocstring",
-    "value": {}
+    "value": {
+      "0": "A straightforward workshop tunic with seams that show the maker's careful first decisions. A few extra stitches reinforce the pockets, where tools have a habit of teaching an apprentice what a pattern book omitted."
+    }
   },
   "Identified": {
     "type": "byte",

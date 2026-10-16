@@ -205,7 +205,10 @@ namespace SWLOR.Game.Server.Service.GuiService
                     {
                         var dataModelInstance = Activator.CreateInstance<T>();
                         return new GuiPlayerWindow(dataModelInstance);
-                    });
+                    })
+                {
+                    KeepsOpenOnAreaChange = _activeWindow.KeepsOpenOnAreaChange
+                };
             }
 
             foreach (var finding in layoutFindings)
@@ -261,7 +264,7 @@ namespace SWLOR.Game.Server.Service.GuiService
                 var dataModelInstance = Activator.CreateInstance<T>();
                 return new GuiPlayerWindow(dataModelInstance);
             });
-
+            constructedWindow.KeepsOpenOnAreaChange = _activeWindow.KeepsOpenOnAreaChange;
 
             return constructedWindow;
         }

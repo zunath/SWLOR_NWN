@@ -110,11 +110,15 @@
   },
   "DescIdentified": {
     "type": "cexolocstring",
-    "value": {}
+    "value": {
+      "0": "A black captain's outfit with an upright collar and restrained trim. Its carefully fitted shoulders make a useful first impression on passengers who would like to believe somebody understands the next unexplained vibration."
+    }
   },
   "Description": {
     "type": "cexolocstring",
-    "value": {}
+    "value": {
+      "0": "A black captain's outfit with an upright collar and restrained trim. Its carefully fitted shoulders make a useful first impression on passengers who would like to believe somebody understands the next unexplained vibration."
+    }
   },
   "Identified": {
     "type": "byte",

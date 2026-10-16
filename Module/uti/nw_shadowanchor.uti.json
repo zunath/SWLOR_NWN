@@ -110,11 +110,15 @@
   },
   "DescIdentified": {
     "type": "cexolocstring",
-    "value": {}
+    "value": {
+      "0": "Shadow's outfit is restrained enough to pass through a port without providing much for a witness to recall. Its interior has received considerably more attention than the anonymous outer cut would lead one to expect."
+    }
   },
   "Description": {
     "type": "cexolocstring",
-    "value": {}
+    "value": {
+      "0": "Shadow's outfit is restrained enough to pass through a port without providing much for a witness to recall. Its interior has received considerably more attention than the anonymous outer cut would lead one to expect."
+    }
   },
   "Identified": {
     "type": "byte",

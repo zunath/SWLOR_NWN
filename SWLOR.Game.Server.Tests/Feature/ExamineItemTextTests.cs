@@ -86,6 +86,16 @@ public class ExamineItemTextTests
         runs.Should().NotContain(run => char.IsLowSurrogate(run.Text[0]) || char.IsHighSurrogate(run.Text[run.Text.Length - 1]));
     }
 
+    [Test]
+    public void SpaceThatForcesAWrap_DoesNotIndentTheNextLine()
+    {
+        var runs = ExamineItemText.Wrap("WWWWW WWWWW", 74f);
+
+        runs.Should().HaveCount(2);
+        runs[1].X.Should().Be(0);
+        runs[1].Text.Should().Be("WWWWW");
+    }
+
     [TestCase(null)]
     [TestCase("")]
     [TestCase("Plain description\nwith <ordinary> text.")]

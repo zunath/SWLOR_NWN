@@ -110,12 +110,14 @@
   },
   "DescIdentified": {
     "type": "cexolocstring",
-    "value": {}
+    "value": {
+      "0": "Quiet layers of cloth temper the firmer outline of this Jedi sage's armor. Its carefully seated fittings leave a scholarly appearance without insisting that study always takes place somewhere sheltered."
+    }
   },
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": ""
+      "0": "Quiet layers of cloth temper the firmer outline of this Jedi sage's armor. Its carefully seated fittings leave a scholarly appearance without insisting that study always takes place somewhere sheltered."
     }
   },
   "Identified": {

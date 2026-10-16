@@ -132,7 +132,7 @@ public static class TwinPistolFatalSaveEngineTests
             await ctx.ExecuteInCreatureContextAsync(actor, () =>
             {
                 TemporaryStatModifier.Clear(actor);
-                ApplyEffectToObject(DurationType.Instant, EffectDeath(), actor);
+                AssignCommand(GetModule(), () => ApplyEffectToObject(DurationType.Instant, EffectDeath(), actor));
             });
             await WaitFrames(ctx, () => GetIsDead(actor) && _deathEvents == 1,
                 "a real committed native death after the survivor assertions", 1f);

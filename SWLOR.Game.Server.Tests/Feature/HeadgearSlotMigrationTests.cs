@@ -52,8 +52,10 @@ public class HeadgearSlotMigrationTests
         }
         HeadgearSlotMigration.IsLegacyHeadgear("piston_gaunt", BaseItem.Armor).Should().BeFalse();
         HeadgearSlotMigration.IsLegacyHeadgear("ordinary_armor", BaseItem.Armor).Should().BeFalse();
-        new _23_RepairHeadgearSlots().Version.Should().Be(23);
-        new _31_RepairHeadgearSlots().Version.Should().Be(31);
+        new _22_ReviseLootStats().Version.Should().Be(22);
+        new _30_ReviseLootStats().Version.Should().Be(30);
+        typeof(_22_ReviseLootStats).Assembly.GetType("SWLOR.Game.Server.Feature.MigrationDefinition.PlayerMigration._23_RepairHeadgearSlots").Should().BeNull();
+        typeof(_30_ReviseLootStats).Assembly.GetType("SWLOR.Game.Server.Feature.MigrationDefinition.ServerMigration._31_RepairHeadgearSlots").Should().BeNull();
     }
 
     [TestCase(0)]
@@ -116,6 +118,16 @@ public class HeadgearSlotMigrationTests
             ["UnknownState"] = 42, ["EquippedItems"] = new JObject { [chestKey] = visor, ["Head"] = helmet },
             ["Inventory"] = new JObject { ["old-id"] = visor }, ["SerializedCPU"] = visor,
         };
+        var visits = new List<string>();
+        Func<string, string> repair = data =>
+        {
+            if (!string.IsNullOrWhiteSpace(data)) visits.Add(data);
+            return HeadgearSlotMigration.MigrateSerializedObject(data, out var converted) ? converted : data;
+        };
+        typeof(HeadgearSlotMigration).GetMethod("MigrateDroid", BindingFlags.Static | BindingFlags.NonPublic)!
+            .Invoke(null, new object[] { original.ToString(), repair, true });
+        visits.Should().HaveCount(4, "each original component, equipped item and carried item is migrated once");
+        visits.Count(data => data == visor).Should().Be(3, "stowing the chest copy must not visit it a second time");
         var controller = Encode(Node(0, List("VarTable", Node(0, Text("Name", "CONSTRUCTED_DROID"),
             Scalar(4, "Type", 3), Text("Value", original.ToString())))));
         HeadgearSlotMigration.MigrateSerializedObject(controller, out var migrated).Should().BeTrue();

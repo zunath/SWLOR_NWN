@@ -44,9 +44,9 @@ public static partial class DroidInventoryEngineTests
             DestroyObject(visor);
             DestroyObject(carried);
             DestroyObject(head);
-            if (statsFirst) LootStatRevisionMigration.MigrateObject(controller);
-            ctx.Assert(HeadgearSlotMigration.MigrateObject(controller), "A genuinely legacy controller is repaired");
-            if (!statsFirst) LootStatRevisionMigration.MigrateObject(controller);
+            if (!statsFirst)
+                ctx.Assert(HeadgearSlotMigration.MigrateObject(controller), "Independent compatibility repair works before stat revision");
+            ctx.Assert(LootStatRevisionMigration.MigrateObject(controller), "The combined unreleased migration repairs a genuinely legacy controller");
             ctx.Assert(!HeadgearSlotMigration.MigrateObject(controller), "Controller retry is stable");
             var saved = Droid.LoadConstructedDroid(controller);
             ctx.Assert(!saved.EquippedItems.ContainsKey(InventorySlot.Chest), "No saved chest visor remains");
@@ -128,8 +128,7 @@ public static partial class DroidInventoryEngineTests
             SetCurrentHitPoints(droid, hp);
             SetLocalInt(droid, "FP", fp);
             SetLocalInt(droid, "STAMINA", stamina);
-            ctx.Assert(HeadgearSlotMigration.MigrateObject(droid), "Live legacy droid equipment converts");
-            LootStatRevisionMigration.MigrateObject(droid);
+            ctx.Assert(LootStatRevisionMigration.MigrateObject(droid), "The combined unreleased migration revises live droid stats and slots");
             if (occupied)
                 ctx.AssertEqual("charm_cowl", GetResRef(GetItemInSlot(InventorySlot.Head, droid)), "The droid keeps its existing helmet");
             else

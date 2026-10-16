@@ -110,9 +110,8 @@ public static partial class MigrationEngineTests
             stm = Stat.GetMaxStamina(player);
             fixture.Update(record => { record.FP = fp; record.Stamina = stm; });
 
-            if (statsFirst) LootStatRevisionMigration.MigrateObject(player);
-            new _23_RepairHeadgearSlots().Migrate(player);
-            if (!statsFirst) LootStatRevisionMigration.MigrateObject(player);
+            if (!statsFirst) HeadgearSlotMigration.MigrateObject(player);
+            new _22_ReviseLootStats().Migrate(player);
             ctx.Assert(!HeadgearSlotMigration.MigrateObject(player), "Repeated login conversion makes no change");
             ctx.Assert(!LootStatRevisionMigration.MigrateObject(player), "Loot revision retry makes no change");
             AssertVisorCustomization(ctx, visor, uuid);
@@ -147,7 +146,7 @@ public static partial class MigrationEngineTests
             await ctx.WaitUntilAsync(() => !GetIsObjectValid(visor), 5f, "deposited visor to leave the live inventory");
             await ctx.ExecuteInCreatureContextAsync(player, () =>
             {
-                new _31_RepairHeadgearSlots().Migrate();
+                new _30_ReviseLootStats().Migrate();
                 Bank.WithdrawItem(player, stored.Id);
             });
             await ctx.WaitFrameAsync();
@@ -276,7 +275,6 @@ public static partial class MigrationEngineTests
         await ctx.WaitUntilAsync(() => bags.Values.All(bag => !GetIsObjectValid(bag)), 5f, "the legacy containers to be stored");
         await ctx.ExecuteInCreatureContextAsync(player, () =>
         {
-            new _31_RepairHeadgearSlots().Migrate();
             new _30_ReviseLootStats().Migrate();
             foreach (var stored in records.Values)
             {

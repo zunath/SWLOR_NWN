@@ -1,12 +1,9 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using Newtonsoft.Json;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.Bioware;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.DroidService;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
@@ -19,6 +16,7 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition;
 /// property shifts by the blueprint difference, so crafted enhancements merged into it are kept.
 /// Revised blueprints carry the revision local, which also marks every migrated item. Droids are covered
 /// both as saved controller data and as summoned creatures, whose items are saved back onto the controller.
+/// The same item visit repairs legacy headgear slots before the unreleased migration is checkpointed.
 /// </summary>
 public static class LootStatRevisionMigration
 {
@@ -29,8 +27,8 @@ public static class LootStatRevisionMigration
     [NWNEventHandler(ScriptName.OnModuleAcquire)]
     public static void OnAcquire()
     {
-        var owner = GetModuleItemAcquiredBy();
         var item = GetModuleItemAcquired();
+        var owner = GetItemPossessor(item);
         if (GetIsPC(owner) && !GetIsDM(owner) && !GetIsDMPossessed(owner))
             MigrateObject(item);
         else if (Droid.IsDroid(owner) && MigrateObject(item))
@@ -41,51 +39,60 @@ public static class LootStatRevisionMigration
     /// Revises a player's equipped and carried items and their summoned droid, a summoned droid,
     /// an item, or a container and its contents.
     /// </summary>
-    public static bool MigrateObject(uint obj)
+    public static bool MigrateObject(uint obj) => MigrateObject(obj, new HashSet<uint>(), true, true);
+
+    internal static bool MigrateHeadgear(uint obj) => MigrateObject(obj, new HashSet<uint>(), false, true);
+
+    private static bool MigrateObject(uint obj, HashSet<uint> visited, bool reviseStats, bool repairHeadgear)
     {
-        if (!GetIsObjectValid(obj))
+        if (!GetIsObjectValid(obj) || !visited.Add(obj))
             return false;
 
         var objectType = GetObjectType(obj);
+        var pools = (HP: 0, FP: 0, Stamina: 0);
+        var changed = false;
         if (objectType == ObjectType.Creature)
         {
-            if (Droid.IsDroid(obj))
-                return MigrateSummonedDroid(obj);
             // Stored DM creatures, DM-possessed creatures and live NPCs keep their authored gear.
-            if (!GetIsPC(obj) || GetIsDM(obj) || GetIsDMPossessed(obj))
+            if (!Droid.IsDroid(obj) && (!GetIsPC(obj) || GetIsDM(obj) || GetIsDMPossessed(obj)))
                 return false;
-            return MigratePlayer(obj);
+            pools = CapturePools(obj);
+            for (var slot = 0; slot < NumberOfInventorySlots; slot++)
+                changed |= MigrateObject(GetItemInSlot((InventorySlot)slot, obj), visited, reviseStats, repairHeadgear);
+            if (GetIsPC(obj))
+                changed |= MigrateObject(Droid.GetDroid(obj), visited, reviseStats, repairHeadgear);
         }
-
-        var changed = false;
-        if (objectType == ObjectType.Item)
+        else if (objectType == ObjectType.Item)
         {
-            changed |= MigrateItem(obj);
-            changed |= MigrateConstructedDroid(obj);
+            // Revise the counted properties before native unequip removes them.
+            // The same item visit performs both independent, idempotent changes.
+            if (reviseStats) changed |= MigrateItem(obj);
+            if (repairHeadgear) changed |= HeadgearSlotMigration.ConvertItem(obj);
+            changed |= MigrateObject(GetSummonedDroid(obj), visited, reviseStats, repairHeadgear);
+            var original = GetLocalString(obj, ConstructedDroidVariable);
+            var migrated = HeadgearSlotMigration.MigrateDroid(original, data =>
+                MigrateSerializedObject(data, out var result, reviseStats, repairHeadgear) ? result : data, repairHeadgear);
+            if (original != migrated)
+            {
+                SetLocalString(obj, ConstructedDroidVariable, migrated);
+                changed = true;
+            }
         }
-        changed |= MigrateContents(obj);
-        return changed;
-    }
-
-    private static bool MigratePlayer(uint player)
-    {
-        var pools = CapturePools(player);
-        var changed = false;
-        for (var slot = 0; slot < NumberOfInventorySlots; slot++)
-            changed |= MigrateObject(GetItemInSlot((InventorySlot)slot, player));
-        changed |= MigrateSummonedDroid(Droid.GetDroid(player));
-        changed |= MigrateContents(player);
-        if (changed)
-            RestorePools(player, pools);
-        return changed;
-    }
-
-    private static bool MigrateContents(uint obj)
-    {
-        var changed = false;
         if (GetHasInventory(obj))
+        {
+            // Conversion can stow equipment in a recovery bag. Snapshot before
+            // recursing and visit each native item once, regardless of its slot.
+            var contents = new List<uint>();
             for (var item = GetFirstItemInInventory(obj); GetIsObjectValid(item); item = GetNextItemInInventory(obj))
-                changed |= MigrateObject(item);
+                contents.Add(item);
+            foreach (var item in contents)
+                changed |= MigrateObject(item, visited, reviseStats, repairHeadgear);
+        }
+        if (changed && objectType == ObjectType.Creature)
+        {
+            RestorePools(obj, pools);
+            if (Droid.IsDroid(obj)) Droid.SaveItemSnapshot(obj);
+        }
         return changed;
     }
 
@@ -96,29 +103,36 @@ public static class LootStatRevisionMigration
     private static (int HP, int FP, int Stamina) CapturePools(uint creature)
     {
         var dbPlayer = GetIsPC(creature) ? DB.Get<Player>(GetObjectUUID(creature)) : null;
-        return (ObjectPlugin.GetCurrentHitPoints(creature), dbPlayer?.FP ?? 0, dbPlayer?.Stamina ?? 0);
+        return (ObjectPlugin.GetCurrentHitPoints(creature), Stat.GetCurrentFP(creature, dbPlayer), Stat.GetCurrentStamina(creature, dbPlayer));
     }
 
     /// <summary>Gives back any HP, FP or STM lost to an intermediate cap, never above the final maximum.</summary>
     private static void RestorePools(uint creature, (int HP, int FP, int Stamina) pools)
     {
-        if (ObjectPlugin.GetCurrentHitPoints(creature) < pools.HP)
-            SetCurrentHitPoints(creature, Math.Min(pools.HP, GetMaxHitPoints(creature)));
+        SetCurrentHitPoints(creature, Math.Min(pools.HP, GetMaxHitPoints(creature)));
 
         if (!GetIsPC(creature))
+        {
+            SetLocalInt(creature, "FP", Math.Min(pools.FP, Stat.GetMaxFP(creature)));
+            SetLocalInt(creature, "STAMINA", Math.Min(pools.Stamina, Stat.GetMaxStamina(creature)));
             return;
+        }
         var dbPlayer = DB.Get<Player>(GetObjectUUID(creature));
         if (dbPlayer == null)
             return;
-        if (dbPlayer.FP < pools.FP)
-            dbPlayer.FP = Math.Min(pools.FP, Stat.GetMaxFP(creature, dbPlayer));
-        if (dbPlayer.Stamina < pools.Stamina)
-            dbPlayer.Stamina = Math.Min(pools.Stamina, Stat.GetMaxStamina(creature, dbPlayer));
+        dbPlayer.FP = Math.Min(pools.FP, Stat.GetMaxFP(creature, dbPlayer));
+        dbPlayer.Stamina = Math.Min(pools.Stamina, Stat.GetMaxStamina(creature, dbPlayer));
         DB.Set(dbPlayer);
     }
 
     /// <summary>Preserves saved identities and unchanged payloads, releasing every temporary native object.</summary>
     public static bool MigrateSerializedObject(string original, out string migrated)
+        => MigrateSerializedObject(original, out migrated, true, true);
+
+    internal static bool MigrateOutfit(string original, out string migrated)
+        => MigrateSerializedObject(original, out migrated, true, false);
+
+    private static bool MigrateSerializedObject(string original, out string migrated, bool reviseStats, bool repairHeadgear)
     {
         migrated = original;
         if (string.IsNullOrWhiteSpace(original))
@@ -129,7 +143,7 @@ public static class LootStatRevisionMigration
         var obj = MigrationObject.Deserialize(inventory?.PrepareForNativeLoad(null) ?? original);
         try
         {
-            if (!MigrateObject(obj))
+            if (!MigrateObject(obj, new HashSet<uint>(), reviseStats, repairHeadgear))
                 return false;
             migrated = MigrationObject.Serialize(obj, original);
             if (inventory != null)
@@ -210,77 +224,10 @@ public static class LootStatRevisionMigration
         return OBJECT_INVALID;
     }
 
-    /// <summary>
-    /// Revises a summoned droid's equipped and carried items, then saves them onto its controller.
-    /// The droid's next snapshot rebuilds the controller's item lists from what it holds, so the
-    /// live items must be revised rather than only the saved copies.
-    /// </summary>
-    private static bool MigrateSummonedDroid(uint droid)
-    {
-        if (!GetIsObjectValid(droid) || !Droid.IsDroid(droid))
-            return false;
-
-        var pools = CapturePools(droid);
-        var changed = false;
-        for (var slot = 0; slot < NumberOfInventorySlots; slot++)
-            changed |= MigrateItem(GetItemInSlot((InventorySlot)slot, droid));
-        changed |= MigrateContents(droid);
-        if (!changed)
-            return false;
-        RestorePools(droid, pools);
-        Droid.SaveItemSnapshot(droid);
-        return true;
-    }
-
-    private static bool MigrateConstructedDroid(uint controller)
-    {
-        if (string.IsNullOrWhiteSpace(GetLocalString(controller, ConstructedDroidVariable)))
-            return false;
-
-        // A summoned droid owns the live copies of the controller's items.
-        var changed = MigrateSummonedDroid(GetSummonedDroid(controller));
-        var droid = JsonConvert.DeserializeObject<ConstructedDroid>(GetLocalString(controller, ConstructedDroidVariable));
-        if (droid == null)
-            return changed;
-
-        var savedChanged = MigrateField(droid.SerializedCPU, value => droid.SerializedCPU = value);
-        savedChanged |= MigrateField(droid.SerializedHead, value => droid.SerializedHead = value);
-        savedChanged |= MigrateField(droid.SerializedBody, value => droid.SerializedBody = value);
-        savedChanged |= MigrateField(droid.SerializedArms, value => droid.SerializedArms = value);
-        savedChanged |= MigrateField(droid.SerializedLegs, value => droid.SerializedLegs = value);
-        savedChanged |= MigrateDictionary(droid.EquippedItems);
-        savedChanged |= MigrateDictionary(droid.Inventory);
-        if (savedChanged)
-            SetLocalString(controller, ConstructedDroidVariable, JsonConvert.SerializeObject(droid));
-        return changed || savedChanged;
-    }
-
     private static uint GetSummonedDroid(uint controller)
     {
         var droid = Droid.GetDroid(GetItemPossessor(controller));
         return GetIsObjectValid(droid) && Droid.GetControllerItem(droid) == controller ? droid : OBJECT_INVALID;
     }
 
-    private static bool MigrateField(string data, Action<string> setData)
-    {
-        if (!MigrateSerializedObject(data, out var migrated))
-            return false;
-        setData(migrated);
-        return true;
-    }
-
-    private static bool MigrateDictionary<TKey>(Dictionary<TKey, string> items)
-    {
-        if (items == null)
-            return false;
-        var changed = false;
-        foreach (var key in items.Keys.ToList())
-        {
-            if (!MigrateSerializedObject(items[key], out var migrated))
-                continue;
-            items[key] = migrated;
-            changed = true;
-        }
-        return changed;
-    }
 }

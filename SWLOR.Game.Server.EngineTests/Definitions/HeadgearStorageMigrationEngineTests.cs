@@ -72,7 +72,7 @@ public static partial class MigrationEngineTests
                         {
                             ctx.AssertEqual(BaseItem.Helmet, GetBaseItemType(restored), $"{typeof(T).Name} legacy armor becomes headgear");
                             ctx.AssertEqual("fixture-crafter", GetLocalString(restored, "CRAFTED_BY"), "Stored crafting identity survives");
-                            ctx.AssertEqual(34, SumProperty(restored, ItemPropertyType.Attack, 0), "Slot conversion itself does not rebalance Attack");
+                            ctx.AssertEqual(10, SumProperty(restored, ItemPropertyType.Attack, 0), "One stored item visit applies the existing loot delta and preserves crafted Attack");
                         }
                         finally { Invoke("MigrationObject", "DestroyTemporaryObject", restored); }
                     }
@@ -114,7 +114,7 @@ public static partial class MigrationEngineTests
                 Add(new QuestContractDelivery { PlayerId = "stored-owner", Items = { new QuestContractItem { Data = saved, StackSize = 1, Name = "Custom delivery" } } }, x => x.Items.Select(y => y.Data));
                 for (var run = 0; run < 2; run++)
                 {
-                    new _31_RepairHeadgearSlots().Migrate();
+                    new _30_ReviseLootStats().Migrate();
                     foreach (var check in checks) check();
                 }
             }

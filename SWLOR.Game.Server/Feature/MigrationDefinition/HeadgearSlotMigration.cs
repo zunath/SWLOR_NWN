@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Service;
 using SWLOR.NWN.API.NWNX;
@@ -30,61 +29,12 @@ public static class HeadgearSlotMigration
     public static bool IsLegacyHeadgear(string resref, BaseItem baseItem) =>
         baseItem == BaseItem.Armor && resref != null && LegacyHeadgear.ContainsKey(resref);
 
-    [NWNEventHandler(ScriptName.OnModuleAcquire)]
-    public static void OnAcquire()
-    {
-        var item = GetModuleItemAcquired();
-        var owner = GetItemPossessor(item);
-        if (!IsPlayer(owner) && !Droid.IsDroid(owner)) return;
-        if (MigrateObject(item) && Droid.IsDroid(owner)) Droid.SaveItemSnapshot(owner);
-    }
-
     /// <summary>Traverses equipped, carried and nested items, plus controller-backed and summoned droid inventories.</summary>
-    public static bool MigrateObject(uint obj) => MigrateObject(obj, new HashSet<uint>());
+    public static bool MigrateObject(uint obj) => LootStatRevisionMigration.MigrateHeadgear(obj);
 
     private static bool IsPlayer(uint obj) => GetIsPC(obj) && !GetIsDM(obj) && !GetIsDMPossessed(obj);
 
-    private static bool MigrateObject(uint obj, HashSet<uint> visited)
-    {
-        if (!GetIsObjectValid(obj) || !visited.Add(obj)) return false;
-        var changed = false;
-        var type = GetObjectType(obj);
-        if (type == ObjectType.Creature)
-        {
-            if (!IsPlayer(obj) && !Droid.IsDroid(obj)) return false;
-            for (var slot = 0; slot < NumberOfInventorySlots; slot++)
-                changed |= MigrateObject(GetItemInSlot((InventorySlot)slot, obj), visited);
-            if (IsPlayer(obj)) changed |= MigrateObject(Droid.GetDroid(obj), visited);
-        }
-        else if (type == ObjectType.Item)
-        {
-            changed |= ConvertItem(obj);
-            var droid = Droid.GetDroid(GetItemPossessor(obj));
-            if (GetIsObjectValid(droid) && Droid.GetControllerItem(droid) == obj)
-                changed |= MigrateObject(droid, visited);
-            var original = GetLocalString(obj, "CONSTRUCTED_DROID");
-            var migrated = MigrateDroid(original);
-            if (original != migrated)
-            {
-                SetLocalString(obj, "CONSTRUCTED_DROID", migrated);
-                changed = true;
-            }
-        }
-
-        // Unequipping can move an item into a recovery bag. Snapshot enumeration
-        // and track objects so its equipment contribution cannot be removed twice.
-        if (GetHasInventory(obj))
-        {
-            var items = new List<uint>();
-            for (var item = GetFirstItemInInventory(obj); GetIsObjectValid(item); item = GetNextItemInInventory(obj))
-                items.Add(item);
-            foreach (var item in items) changed |= MigrateObject(item, visited);
-        }
-        if (changed && type == ObjectType.Creature && Droid.IsDroid(obj)) Droid.SaveItemSnapshot(obj);
-        return changed;
-    }
-
-    private static bool ConvertItem(uint item)
+    internal static bool ConvertItem(uint item)
     {
         if (!IsLegacyHeadgear(GetResRef(item), GetBaseItemType(item))) return false;
         var owner = GetItemPossessor(item);
@@ -146,14 +96,18 @@ public static class HeadgearSlotMigration
         return migrated != original;
     }
 
-    internal static string MigrateDroid(string original)
+    internal static string MigrateDroid(string original, Func<string, string> migrateItem = null, bool repairHeadgear = true)
     {
         if (string.IsNullOrWhiteSpace(original)) return original;
+        migrateItem ??= data => MigrateSerializedObject(data, out var migrated) ? migrated : data;
         var droid = JObject.Parse(original);
         var changed = false;
+        var movedInventoryIds = new HashSet<string>(StringComparer.Ordinal);
         foreach (var field in new[] { "SerializedCPU", "SerializedHead", "SerializedBody", "SerializedArms", "SerializedLegs" })
         {
-            if (!MigrateSerializedObject((string)droid[field], out var migrated)) continue;
+            var data = (string)droid[field];
+            var migrated = migrateItem(data);
+            if (data == migrated) continue;
             droid[field] = migrated;
             changed = true;
         }
@@ -162,13 +116,16 @@ public static class HeadgearSlotMigration
             if (droid[field] is not JObject items) continue;
             foreach (var entry in items.Properties().ToArray())
             {
+                // A chest item stowed earlier in this pass is already migrated.
+                if (field == "Inventory" && movedInventoryIds.Contains(entry.Name)) continue;
                 // Capture the legacy root before conversion; nested gear must
                 // not move its containing bag out of an equipment slot.
                 var originalItem = (string)entry.Value;
-                var moveChest = field == "EquippedItems" &&
+                var moveChest = repairHeadgear && field == "EquippedItems" &&
                     (entry.Name == "Chest" || entry.Name == ((int)InventorySlot.Chest).ToString()) &&
                     StoredObjectData.IsLegacyHeadgearRoot(originalItem);
-                if (!MigrateSerializedObject(originalItem, out var migrated)) continue;
+                var migrated = migrateItem(originalItem);
+                if (originalItem == migrated) continue;
                 if (moveChest)
                 {
                     // Saved equipment cannot run validation. Stow it and let
@@ -185,6 +142,7 @@ public static class HeadgearSlotMigration
                         migrated = StoredObjectData.SetRootString(migrated, "DROID_ITEM_ID", id);
                     }
                     inventory[id] = migrated;
+                    movedInventoryIds.Add(id);
                     entry.Remove();
                 }
                 else entry.Value = migrated;

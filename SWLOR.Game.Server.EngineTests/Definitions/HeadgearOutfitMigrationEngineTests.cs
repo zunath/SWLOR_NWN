@@ -5,6 +5,7 @@ using SWLOR.Game.Server.EngineTests.Framework;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Feature.AppearanceDefinition.ItemAppearance;
 using SWLOR.Game.Server.Feature.GuiDefinition.ViewModel;
+using SWLOR.Game.Server.Feature.MigrationDefinition;
 using SWLOR.Game.Server.Feature.MigrationDefinition.ServerMigration;
 using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.GuiService.Component;
@@ -35,8 +36,12 @@ public static partial class MigrationEngineTests
             {
                 DB.Set(outfit);
                 DB.Set(bank);
-                new _31_RepairHeadgearSlots().Migrate();
-                ctx.AssertEqual(LegacyHeadgearFixtures.Ruptor, DB.Get<PlayerOutfit>(outfit.Id).Data, "Cosmetic legacy template is byte-for-byte unchanged");
+                new _30_ReviseLootStats().Migrate();
+                var template = Deserialize(ctx, DB.Get<PlayerOutfit>(outfit.Id).Data);
+                ctx.AssertEqual(BaseItem.Armor, GetBaseItemType(template), "Cosmetic legacy template retains its armor type through the merged migration");
+                ctx.AssertEqual(156, GetItemAppearance(template, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.Torso), "Cosmetic legacy template retains its historical torso");
+                ctx.AssertEqual(LootStatRevisionMigration.CurrentRevision, GetLocalInt(template, LootStatRevisionMigration.RevisionVariable), "The existing loot revision still processes the outfit in the same record pass");
+                Invoke("MigrationObject", "DestroyTemporaryObject", template);
                 var converted = Deserialize(ctx, DB.Get<InventoryItem>(bank.Id).Data);
                 ctx.AssertEqual(BaseItem.Helmet, GetBaseItemType(converted), "The same legacy payload in actual storage is converted");
                 Invoke("MigrationObject", "DestroyTemporaryObject", converted);
@@ -55,7 +60,7 @@ public static partial class MigrationEngineTests
                     var view = BindOutfit();
                     view.OnClickStoreOutfit()();
                     view.OnModalConfirmClick()();
-                    new _31_RepairHeadgearSlots().Migrate();
+                    new _30_ReviseLootStats().Migrate();
                     EquippedItemAppearance.Set(chest, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.Torso, model + 2);
                     EquippedItemAppearance.Set(chest, ItemAppearanceType.ArmorColor, 0, color + 2);
                     LoadOutfit(BindOutfit());

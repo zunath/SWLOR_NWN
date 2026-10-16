@@ -6,12 +6,13 @@ using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.DBService;
 using SWLOR.Game.Server.Service.LogService;
 using SWLOR.Game.Server.Service.MigrationService;
+using SWLOR.Game.Server.Service.PlayerMarketService;
 using SWLOR.Game.Server.Service.QuestContractService;
 using SWLOR.Game.Server.Service.SpaceService;
 
 namespace SWLOR.Game.Server.Feature.MigrationDefinition.ServerMigration;
 
-/// <summary>Moves stored loot (banks, market, property storage, research, ships, contracts) onto the revised loot stats.</summary>
+/// <summary>Revises stored loot stats and repairs legacy headgear in the same pass over persistent records.</summary>
 public sealed class _30_ReviseLootStats : IServerMigration
 {
     public int Version => 30;
@@ -31,10 +32,23 @@ public sealed class _30_ReviseLootStats : IServerMigration
             ServerMigrationProgress.CountRecords<QuestContractDelivery>());
         var changed = 0;
         changed += MigrateEntities<InventoryItem>(progress, x => x.Data, (x, value) => x.Data = value);
-        changed += MigrateEntities<MarketItem>(progress, x => x.Data, (x, value) => x.Data = value);
+        changed += MigrateRecords<MarketItem>(progress, item =>
+        {
+            var rootWasHeadgear = StoredObjectData.IsLegacyHeadgearRoot(item.Data);
+            if (!MigrateField(item.Data, value => item.Data = value)) return false;
+            if (rootWasHeadgear) item.Category = MarketCategoryType.Helmet;
+            return true;
+        });
         changed += MigrateEntities<WorldProperty>(progress, x => x.SerializedItem, (x, value) => x.SerializedItem = value);
         changed += MigrateEntities<ResearchJob>(progress, x => x.SerializedItem, (x, value) => x.SerializedItem = value);
-        changed += MigrateEntities<PlayerOutfit>(progress, x => x.Data, (x, value) => x.Data = value);
+        // Outfit data is a cosmetic chest template. Revise its loot properties,
+        // but retain Armor because ApplyOutfit requires an armor template.
+        changed += MigrateRecords<PlayerOutfit>(progress, outfit =>
+        {
+            if (!LootStatRevisionMigration.MigrateOutfit(outfit.Data, out var migrated)) return false;
+            outfit.Data = migrated;
+            return true;
+        });
         changed += MigrateRecords<WorldPropertyCategory>(progress, category =>
         {
             var categoryChanged = false;
@@ -53,7 +67,7 @@ public sealed class _30_ReviseLootStats : IServerMigration
         });
         changed += MigrateRecords<QuestContract>(progress, contract => MigrateContractItems(contract.RewardItems));
         changed += MigrateRecords<QuestContractDelivery>(progress, delivery => MigrateContractItems(delivery.Items));
-        Log.Write(LogGroup.Migration, $"Migration #{Version}: Revised loot stats in {changed} stored records.", true);
+        Log.Write(LogGroup.Migration, $"Migration #{Version}: Revised loot stats and equipment slots in {changed} stored records.", true);
     }
 
     private static int MigrateEntities<T>(ServerMigrationProgress progress, Func<T, string> getData, Action<T, string> setData) where T : EntityBase

@@ -137,6 +137,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                 });
             });
             AddDetailRow(col, "Descriptor", model => model.Descriptor);
+            AddDetailRow(col, "Disguise", model => model.WornDisguise);
+            AddDetailRow(col, "Real descriptor", model => model.UndisguisedDescriptor);
             AddDetailRow(col, "True name", model => model.TrueName);
             AddDetailRow(col, "Account", model => model.AccountName);
             AddDetailRow(col, "Public CD key", model => model.PublicCDKey);

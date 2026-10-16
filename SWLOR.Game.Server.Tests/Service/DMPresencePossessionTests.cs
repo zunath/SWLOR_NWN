@@ -28,6 +28,8 @@ public class DMPresencePossessionTests
                 {{Method("Service/DMPresence.cs", "IsControlledByDM")}}
                 {{Method("Service/DMPresence.cs", "IsDMPresentInArea")}}
                 {{Method("Service/DMPresence.cs", "SendMessage")}}
+                {{Method("Service/DMPresence.cs", "GetDM")}}
+                {{Method("Service/DMPresence.cs", "DescribeDM")}}
             }
             """);
     }
@@ -94,6 +96,16 @@ public class DMPresencePossessionTests
         _harness.Invoke("DMPresence", "SendMessage", DM, "Restarting soon.");
 
         _harness.Messages.Should().Equal((DM, "Restarting soon."));
+    }
+
+    [TestCase(DMPossess)]
+    [TestCase(DMPossessFullPower)]
+    public void DescribeDM_KeepsTheAccountAndCDKeyOfAPossessingDM(int possessionType)
+    {
+        PossessingDM(possessionType);
+
+        _harness.Invoke<string>("DMPresence", "DescribeDM", DM).Should().Be("Name1 (account1) [KEY1]");
+        _harness.Invoke<string>("DMPresence", "DescribeDM", Creature).Should().Be("Name1 (account1) [KEY1]");
     }
 
     [TestCase(DMPossess)]

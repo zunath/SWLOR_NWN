@@ -509,6 +509,8 @@ function Get-CustomFeatSpellRows([object[]]$abilityRows, [hashtable]$existing) {
 
 function Split-IconWords([string]$text) {
     $clean = $text -replace "'", "" -replace "[^A-Za-z0-9]+", " "
+    # Keep the PvP acronym together instead of treating its final P as a stop word.
+    $clean = $clean -creplace "\bPvP\b", "Pvp"
     $matches = [regex]::Matches($clean, "[A-Z]+(?=[A-Z][a-z]|\d|$)|[A-Z]?[a-z]+|\d+")
     return @(
         $matches |

@@ -116,7 +116,7 @@ public static class TwinPistolCompanionArrivalEngineTests
                     sampledConverging = StatusEffect.GetStatusEffect<ConvergingFireStatusEffect>(actor) != null;
                     sampledAt = Environment.TickCount64;
                 }));
-                DiscardTarget(target, outcome, departure);
+                DiscardTarget(ctx, actor, target, outcome, departure, launchedAt, flight);
             });
             await WaitFrames(ctx, () => sampledAt > 0, "the native half-flight reward sample");
             ctx.Assert(sampledAt < launchedAt + flight * 1000f,
@@ -153,7 +153,14 @@ public static class TwinPistolCompanionArrivalEngineTests
         var (target, main, companion) = await Prepare(ctx, player);
         var departure = outcome == "area" ? await DepartureLocation(ctx) : null;
         var nextTarget = outcome is "replacement" or "death" or "area" ? ctx.SpawnCreature("nw_rat001", 10f, 1f) : OBJECT_INVALID;
-        if (GetIsObjectValid(nextTarget)) await ctx.DelaySecondsAsync(1f);
+        if (GetIsObjectValid(nextTarget))
+        {
+            // Do not let the newly spawned Defender attack the already-hostile original
+            // target while its delayed spawn initialization settles.
+            ctx.MakeHostile(nextTarget);
+            SetCommandable(false, nextTarget);
+            await ctx.DelaySecondsAsync(1f);
+        }
         var health = GetCurrentHitPoints(target);
         var stamina = Stat.GetCurrentStamina(actor);
         var paidStamina = 0;
@@ -225,7 +232,7 @@ public static class TwinPistolCompanionArrivalEngineTests
                 }
                 else if (outcome == "reset") UsePerkFeat.ClearQueuedAbility(actor);
                 else if (outcome == "gear") CreaturePlugin.RunUnequip(actor, main);
-                else DiscardTarget(target, outcome, departure);
+                else DiscardTarget(ctx, actor, target, outcome, departure, launchedAt, flight);
             });
             await WaitFrames(ctx, () => sampledAt > 0, "the native half-flight queued sample");
             ctx.Assert(sampledAt < launchedAt + flight * 1000f, "The queued state is sampled before the captured projectile arrival deadline");
@@ -294,10 +301,15 @@ public static class TwinPistolCompanionArrivalEngineTests
             using var document = JsonDocument.Parse(line);
             return document.RootElement.Clone();
         }).ToArray();
+        var recordedActor = events.First(e => e.GetProperty("type").GetString() == "ability_queued")
+            .GetProperty("caster").GetInt32();
         var impactCount = outcome is "arrival" or "death" or "area" ? 1 : 0;
-        ctx.AssertEqual(impactCount, events.Count(e => e.GetProperty("type").GetString() == "ability_impact"),
+        ctx.AssertEqual(impactCount, events.Count(e => e.GetProperty("type").GetString() == "ability_impact" &&
+                                                     e.GetProperty("caster").GetInt32() == recordedActor),
             "The recorder observes exactly the valid arriving queued impact");
-        var damageEvents = events.Where(e => e.GetProperty("type").GetString() == "damage").ToArray();
+        var damageEvents = events.Where(e => e.GetProperty("type").GetString() == "damage" &&
+                                            e.GetProperty("source").ValueKind == JsonValueKind.Number &&
+                                            e.GetProperty("source").GetInt32() == recordedActor).ToArray();
         ctx.AssertEqual(impactCount, damageEvents.Length, "The recorder contains no ordinary leak or canceled projectile payload");
         ctx.Assert(damageEvents.All(e => e.GetProperty("source_kind").GetString() == "ability" &&
                                        e.GetProperty("source_name").GetString() == "Headshot I"),
@@ -397,10 +409,28 @@ public static class TwinPistolCompanionArrivalEngineTests
         return GetLocation(anchor);
     }
 
-    private static void DiscardTarget(uint target, string outcome, SWLOR.NWN.API.Engine.Location departure)
+    private static void DiscardTarget(EngineTestContext ctx, uint actor, uint target, string outcome,
+        SWLOR.NWN.API.Engine.Location departure, long launchedAt, float flight)
     {
-        if (outcome == "death") ApplyEffectToObject(DurationType.Instant, EffectDeath(), target);
-        else if (outcome == "area") AssignCommand(target, () => JumpToLocation(departure));
+        if (outcome == "death")
+            AssignCommand(GetModule(), () => ApplyEffectToObject(DurationType.Instant, EffectDeath(), target));
+        else if (outcome == "area")
+        {
+            var launchArea = GetArea(actor);
+            var destinationArea = GetAreaFromLocation(departure);
+            ctx.Assert(GetIsObjectValid(destinationArea) && destinationArea != launchArea,
+                "The private departure destination is a distinct actual area");
+            // The target is paralyzed and uncommandable. Move it through the native object
+            // API, as the weather fixture does, independently of its command state.
+            ObjectPlugin.AddToArea(target, destinationArea, GetPositionFromLocation(departure));
+            ctx.AssertEqual(destinationArea, GetArea(target), "The native target transfer reaches the destination area synchronously");
+            ctx.Assert(GetArea(target) != launchArea, "The actual target area differs from the captured launch area");
+            var transferredAt = Environment.TickCount64;
+            ctx.Assert(transferredAt < launchedAt + flight * 1000f,
+                "The target actually leaves before the captured projectile arrival deadline");
+            ctx.Log($"Departure fixture: launchArea={launchArea:X}, targetArea={GetArea(target):X}, " +
+                    $"transferMs={transferredAt - launchedAt}, flightMs={flight * 1000f}");
+        }
     }
 
     private static void ReplaceProperty(uint weapon, ItemPropertyType type, ItemProperty replacement)

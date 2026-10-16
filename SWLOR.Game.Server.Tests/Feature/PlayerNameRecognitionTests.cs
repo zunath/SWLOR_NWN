@@ -615,6 +615,7 @@ public class PlayerNameRecognitionTests
         saveMethod.Should().Contain("PreviousPrivateName={PreviousPrivateName} PrivateName={PrivateName}");
         saveMethod.Should().Contain("PreviousDescriptor={PreviousDescriptor} Descriptor={Descriptor}");
         saveMethod.Should().Contain("PreviousBiographyLength={PreviousBiographyLength} BiographyLength={BiographyLength}");
+        saveMethod.Should().Contain("PreviousBiography={PreviousBiography} Biography={Biography}");
         saveMethod.Should().Contain("PreviousPortraitInternalId={PreviousPortraitInternalId} PortraitInternalId={PortraitInternalId}");
         saveMethod.Should().Contain("PreviousSoundSetId={PreviousSoundSetId} SoundSetId={SoundSetId}");
         saveMethod.Should().Contain("PreviousScrambleAccountId={PreviousScrambleAccountId} ScrambleAccountId={ScrambleAccountId}");
@@ -718,7 +719,7 @@ public class PlayerNameRecognitionTests
         disguiseSource.Should().Contain("There is a {delayMinutes}-minute delay between disguise activations.");
         disguiseSource.Should().Contain("Deactivation is available immediately.");
         disguiseSource.Should().Contain("DateLastActivated = DateTime.UtcNow");
-        disguiseSource.Should().Contain("public static int ResetActivationCooldowns(uint player)");
+        disguiseSource.Should().Contain("public static int ResetActivationCooldowns(uint player, uint actor = OBJECT_INVALID)");
         disguiseSource.Should().Contain("disguise.DateLastActivated = null;");
         disguiseSource.Should().Contain("public static bool Unretire");
         disguiseSource.Should().Contain("disguise.DateRetired = null;");
@@ -728,7 +729,7 @@ public class PlayerNameRecognitionTests
         disguiseSource.Should().Contain("new DisguiseChangedRefreshEvent()");
         new DMChatCommand().BuildChatCommands()["resetcooldowns"].Description.Should().Contain("disguise");
         dmChatCommandSource.Should().Contain("AbilityCooldownVisual.ClearAllRecastDelays(target);");
-        dmChatCommandSource.Should().Contain("Disguise.ResetActivationCooldowns(target);");
+        dmChatCommandSource.Should().Contain("Disguise.ResetActivationCooldowns(target, user);");
 
         activateResultSource.Should().Contain("public bool IsSuccessful");
         activateResultSource.Should().Contain("public string ErrorMessage");

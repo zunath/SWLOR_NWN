@@ -164,6 +164,12 @@ public class HutlarDroidFoundryPlacementTests
         AssertDoorLink(Tagged(core, "Door List", "PG_hut_fdy_core_DOOR_ENT_1"), assembly, "PG_hut_fdy_assembly_EXIT_1", 2);
         AssertDoorLink(Tagged(core, "Door List", "PG_hut_fdy_core_DOOR_EXIT_1"), outpost, OutpostDoor, 1);
 
+        // The Outpost's north deck is only reachable through its stair doors.
+        Text(Tagged(outpost, "Door List", "HUT_OUTPOST_STAIRS_UP"), "LinkedTo").Should().Be("HUT_OUTPOST_STAIRS_DOWN");
+        Text(Tagged(outpost, "Door List", "HUT_OUTPOST_STAIRS_DOWN"), "LinkedTo").Should().Be("HUT_OUTPOST_STAIRS_UP");
+        List(outpost, "Door List").Where(d => Text(d, "Tag").StartsWith("HUT_OUTPOST_STAIRS"))
+            .Should().OnlyContain(d => Number(d, "LinkedToFlags") == 1 && Number(d, "Locked") == 0);
+
         var testSiteEntrance = List(Load("git", "hutlar_testsite"), "Placeable List")
             .Single(p => Local(p, "DESTINATION")?.GetString() == "H_CloneBase_Entry");
         Text(testSiteEntrance, "OnUsed").Should().Be("teleport", "the Cloning Test Site is the only way into the Outpost");

@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+using System.Reflection;
 using System.Threading.Tasks;
 using SWLOR.Game.Server.EngineTests.Framework;
 using SWLOR.Game.Server.Service.AbilityService;
@@ -11,6 +13,33 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
 {
     public static class RifleIdleReadinessEngineTests
     {
+        [EngineTest("Despawned combat creatures release retained offensive activity", Category = "RifleIdleReadiness", TimeoutSeconds = 35f)]
+        public static async Task DespawnedCreaturesReleaseActivity(EngineTestContext ctx)
+        {
+            var attacks = (Dictionary<uint, DateTime>)typeof(Combat)
+                .GetField("_lastAttackActivity", BindingFlags.NonPublic | BindingFlags.Static).GetValue(null);
+            var abilities = (Dictionary<uint, DateTime>)typeof(Combat)
+                .GetField("_lastCombatAbilityUse", BindingFlags.NonPublic | BindingFlags.Static).GetValue(null);
+            for (var cycle = 1; cycle <= 2; cycle++)
+            {
+                var creature = ctx.SpawnCreature("nw_bandit001");
+                await ctx.WaitFrameAsync();
+                await ctx.ExecuteInCreatureContextAsync(creature, () =>
+                {
+                    Combat.TrackAttackActivity(creature);
+                    Combat.TrackQueuedWeaponAbilityUse(creature, Ability.GetAbilityDetail(FeatType.Headshot1));
+                });
+                ctx.Assert(attacks.ContainsKey(creature) && abilities.ContainsKey(creature),
+                    "the live combat creature has both offensive activity records");
+                DestroyObject(creature);
+                await ctx.WaitUntilAsync(() => !GetIsObjectValid(creature), 3f,
+                    "the creature to despawn without dying");
+                await ctx.WaitUntilAsync(() => !attacks.ContainsKey(creature) && !abilities.ContainsKey(creature),
+                    12f, "the real module heartbeat to remove the despawned creature's activity records");
+                ctx.Log($"Despawn cycle {cycle}: both retained activity records were removed by the module heartbeat.");
+            }
+        }
+
         [EngineTest("Rifle idle bonuses and readiness return while an enemy keeps attacking", Category = "RifleIdleReadiness", TimeoutSeconds = 60f)]
         public static async Task ReadinessDuringIncomingAttacks(EngineTestContext ctx)
         {

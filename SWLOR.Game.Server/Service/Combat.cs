@@ -2693,6 +2693,22 @@ namespace SWLOR.Game.Server.Service
             RemoveStatTriggerCooldowns(creature);
         }
 
+        [NWNEventHandler(ScriptName.OnModuleHeartbeat)]
+        public static void PurgeInvalidOffensiveActivity()
+        {
+            // Area despawns destroy creatures without firing death or player-exit events.
+            var invalidCreatures = _lastAttackActivity.Keys
+                .Concat(_lastCombatAbilityUse.Keys)
+                .Distinct()
+                .Where(creature => !GetIsObjectValid(creature))
+                .ToList();
+            foreach (var creature in invalidCreatures)
+            {
+                _lastAttackActivity.Remove(creature);
+                _lastCombatAbilityUse.Remove(creature);
+            }
+        }
+
         public static void ApplyDefeatedEnemyEffects(uint creature, uint defeated = OBJECT_INVALID)
         {
             if (!GetIsObjectValid(creature) || GetIsDead(creature))

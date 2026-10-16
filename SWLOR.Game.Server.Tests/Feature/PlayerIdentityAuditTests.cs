@@ -5,6 +5,7 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using NUnit.Framework;
+using SWLOR.Game.Server.Core.NWNX.Enum;
 
 namespace SWLOR.Game.Server.Tests.Feature;
 
@@ -14,6 +15,11 @@ public class PlayerIdentityAuditTests
     private MethodInfo _getAuditName = null!;
     private MethodInfo _runConnection = null!;
     private MethodInfo _runNameAction = null!;
+    private MethodInfo _runHoloNet = null!;
+
+    private static IEnumerable<ChatChannel> RegularChatChannels => Enum.GetValues<ChatChannel>()
+        .Where(channel => channel != ChatChannel.ServerMessage &&
+                          channel != ChatChannel.PlayerTell && channel != ChatChannel.DMTell);
 
     [OneTimeSetUp]
     public void CompileAuditHarness()
@@ -22,6 +28,14 @@ public class PlayerIdentityAuditTests
         var connect = ExtractMethod("Feature", "Auditing.cs", "AuditClientConnection");
         var disconnect = ExtractMethod("Feature", "Auditing.cs", "AuditClientDisconnection");
         var chat = ExtractMethod("Feature", "Auditing.cs", "AuditChatMessages");
+        var holoNet = CSharpSyntaxTree.ParseText(ExtractMethod("Feature/GuiDefinition/ViewModel",
+            "HoloNetViewModel.cs", "SubmitBroadcastAsync")).GetRoot();
+        var holoNetAuthor = holoNet.DescendantNodes().OfType<LocalDeclarationStatementSyntax>()
+            .Single(statement => statement.Declaration.Variables.Any(variable => variable.Identifier.ValueText == "auditAuthorName"));
+        var holoNetLog = holoNet.DescendantNodes().OfType<ExpressionStatementSyntax>()
+            .Single(statement => statement.Expression is InvocationExpressionSyntax call &&
+                                 call.Expression.ToString() == "Log.Write" &&
+                                 call.ArgumentList.Arguments[0].ToString() == "LogGroup.Chat");
         var setNameAction = ExtractAction("SetKnownName");
         var forgetNameAction = ExtractAction("ForgetKnownName");
         var source = $$"""
@@ -33,12 +47,14 @@ public class PlayerIdentityAuditTests
             {
                 public static readonly Dictionary<uint, (string Name, string Descriptor, bool IsPc, bool IsDm, bool Valid)> Players = new();
                 public static readonly Dictionary<(uint Observer, uint Target), string> KnownNames = new();
+                public static readonly HashSet<uint> DmPossessed = new();
                 public static string ValidationError = "";
                 public static uint EnteringObject, ExitingObject;
                 public static string GetName(uint player) => Players.TryGetValue(player, out var row) ? row.Name : "invalid";
                 public static bool GetIsObjectValid(uint player) => Players.TryGetValue(player, out var row) && row.Valid;
                 public static bool GetIsPC(uint player) => Players.TryGetValue(player, out var row) && row.IsPc;
                 public static bool GetIsDM(uint player) => Players.TryGetValue(player, out var row) && row.IsDm;
+                public static bool GetIsDMPossessed(uint player) => DmPossessed.Contains(player);
                 public static uint GetEnteringObject() => EnteringObject;
                 public static uint GetExitingObject() => ExitingObject;
                 public static string GetPCIPAddress(uint player) => $"ip-{player}";
@@ -80,7 +96,7 @@ public class PlayerIdentityAuditTests
                 public static string GetDisplayDescriptor(uint player) => AuditWorld.Players[player].Descriptor;
             }
 
-            public enum ChatChannel { ServerMessage, DMTell, PlayerTell, Talk, Party }
+            public enum ChatChannel { {{string.Join(", ", Enum.GetNames<ChatChannel>())}} }
             [AttributeUsage(AttributeTargets.Method)] public sealed class NWNEventHandlerAttribute : Attribute
             {
                 public NWNEventHandlerAttribute(string eventName) { }
@@ -162,6 +178,13 @@ public class PlayerIdentityAuditTests
                     else Auditing.AuditClientDisconnection();
                     return Log.Messages.ToArray();
                 }
+                public static string[] RunHoloNet(uint player, string message)
+                {
+                    Log.Messages.Clear();
+                    {{holoNetAuthor}}
+                    {{holoNetLog}}
+                    return Log.Messages.ToArray();
+                }
                 public static object[][] RunNameAction(bool forget, uint user, uint target, string[] args)
                     => NameActionHarness.Run(forget ? NameActionHarness.ForgetName : NameActionHarness.SetName, user, target, args);
                 public static void SetKnownName(uint observer, uint target, string name)
@@ -171,12 +194,19 @@ public class PlayerIdentityAuditTests
                 {
                     AuditWorld.KnownNames.Clear();
                     AuditWorld.ValidationError = "";
+                    AuditWorld.DmPossessed.Clear();
                     PlayerDescriptor.BaseDescriptor = "Old Base Descriptor";
                     AuditWorld.Players[1] = ("Canonical Speaker", "A Seedy Individual", true, false, true);
                     AuditWorld.Players[2] = ("Canonical Listener", "A Quiet Twi'lek", true, false, true);
                 }
                 public static void SetPlayer(uint id, string name, string descriptor, bool isPc, bool isDm, bool valid = true)
                     => AuditWorld.Players[id] = (name, descriptor, isPc, isDm, valid);
+                public static void SetDescriptor(uint id, string descriptor)
+                {
+                    var row = AuditWorld.Players[id];
+                    AuditWorld.Players[id] = (row.Name, descriptor, row.IsPc, row.IsDm, row.Valid);
+                }
+                public static void SetDMPossessed(uint id) => AuditWorld.DmPossessed.Add(id);
             }
             """;
 
@@ -194,6 +224,7 @@ public class PlayerIdentityAuditTests
         _getAuditName = assembly.GetType("AuditHarness")!.GetMethod("GetAuditName")!;
         _runConnection = assembly.GetType("AuditHarness")!.GetMethod("RunConnection")!;
         _runNameAction = assembly.GetType("AuditHarness")!.GetMethod("RunNameAction")!;
+        _runHoloNet = assembly.GetType("AuditHarness")!.GetMethod("RunHoloNet")!;
         assembly.GetType("AuditHarness")!.GetMethod("SetPlayer")!.Invoke(null,
             [1u, "Canonical Speaker", "A Seedy Individual", true, false, true]);
         assembly.GetType("AuditHarness")!.GetMethod("SetPlayer")!.Invoke(null,
@@ -220,16 +251,17 @@ public class PlayerIdentityAuditTests
             .Invoke(null, null);
     }
 
-    [Test]
-    public void ChatAudit_RetainsCanonicalCredentialsAndAddsSpeakerDescriptor()
+    [TestCaseSource(nameof(RegularChatChannels))]
+    public void ChatAudit_RetainsCanonicalCredentialsAndAddsSpeakerDescriptor(ChatChannel channel)
     {
-        var output = RunChat(1, 0, "Talk", "I saw A Seedy Individual near the docks.");
+        var output = RunChat(1, 0, channel.ToString(), "I saw A Seedy Individual near the docks.");
 
         output.Should().ContainSingle();
         output[0].Should().Contain("Canonical Speaker [A Seedy Individual]")
             .And.Contain("account-1")
             .And.Contain("cdk-1")
             .And.Contain("ip-1")
+            .And.Contain($" - {channel}:")
             .And.Contain("I saw A Seedy Individual near the docks.");
     }
 
@@ -247,10 +279,11 @@ public class PlayerIdentityAuditTests
             .And.Contain(expectedText);
     }
 
-    [Test]
-    public void TellAudit_RecordsCurrentDescriptorsForBothCanonicalParticipants()
+    [TestCase(ChatChannel.PlayerTell)]
+    [TestCase(ChatChannel.DMTell)]
+    public void TellAudit_RecordsCurrentDescriptorsForBothCanonicalParticipants(ChatChannel channel)
     {
-        var output = RunChat(1, 2, "PlayerTell", "Are you the one I met?");
+        var output = RunChat(1, 2, channel.ToString(), "Are you the one I met?");
 
         output.Should().ContainSingle();
         output[0].Should().Contain("Canonical Speaker [A Seedy Individual]")
@@ -258,7 +291,61 @@ public class PlayerIdentityAuditTests
             .And.Contain("account-1")
             .And.Contain("account-2")
             .And.Contain("cdk-1")
-            .And.Contain("cdk-2");
+            .And.Contain("cdk-2")
+            .And.Contain("ip-1")
+            .And.Contain("ip-2")
+            .And.Contain($" - {channel} (SENT TO ")
+            .And.Contain("Are you the one I met?");
+    }
+
+    [Test]
+    public void ChatAudit_UsesCurrentDescriptorsAfterIdentityChangesInsteadOfPrivateLabels()
+    {
+        SetKnownName(1, 2, "Private listener label");
+        SetKnownName(2, 1, "Private speaker label");
+        RunChat(1, 2, "PlayerTell", "Before changing disguises").Single()
+            .Should().Contain("Canonical Speaker [A Seedy Individual]")
+            .And.Contain("Canonical Listener [A Quiet Twi'lek]");
+
+        SetDescriptor(1, "A Masked Human");
+        SetDescriptor(2, "A Hooded Traveler");
+        var output = RunChat(1, 2, "PlayerTell", "After changing disguises");
+
+        output.Should().ContainSingle();
+        output[0].Should().Contain("Canonical Speaker [A Masked Human]")
+            .And.Contain("Canonical Listener [A Hooded Traveler]")
+            .And.NotContain("A Seedy Individual")
+            .And.NotContain("A Quiet Twi'lek")
+            .And.NotContain("Private listener label")
+            .And.NotContain("Private speaker label");
+    }
+
+    [Test]
+    public void HoloNetAudit_RetainsCanonicalAuthorAndCurrentDescriptor()
+    {
+        SetDescriptor(1, "A Masked Human");
+        var output = (string[])_runHoloNet.Invoke(null, [1u, "Looking for a mechanic."])!;
+
+        output.Should().ContainSingle();
+        output[0].Should().Be("Chat:Canonical Speaker [A Masked Human] (account-1) [cdk-1] submitted HoloNet broadcast: Looking for a mechanic.");
+    }
+
+    [Test]
+    public void ChatAudit_PreservesPossessedNpcNameWithoutAddingPlayerDescriptor()
+    {
+        _run.DeclaringType!.Assembly.GetType("AuditHarness")!.GetMethod("SetPlayer")!
+            .Invoke(null, [5u, "Renamed NPC", "Not a player descriptor", true, false, true]);
+        _run.DeclaringType!.Assembly.GetType("AuditHarness")!.GetMethod("SetDMPossessed")!
+            .Invoke(null, [5u]);
+
+        RunChat(5, 0, "DMTalk", "NPC dialogue").Single().Should().Contain("Chat:Renamed NPC - ")
+            .And.NotContain("Not a player descriptor");
+    }
+
+    [Test]
+    public void ChatAudit_DoesNotLogServerMessages()
+    {
+        RunChat(1, 0, "ServerMessage", "Server notification").Should().BeEmpty();
     }
 
     [Test]
@@ -322,6 +409,10 @@ public class PlayerIdentityAuditTests
     private void SetKnownName(uint observer, uint target, string name)
         => _runNameAction.DeclaringType!.Assembly.GetType("AuditHarness")!.GetMethod("SetKnownName")!
             .Invoke(null, [observer, target, name]);
+
+    private void SetDescriptor(uint player, string descriptor)
+        => _run.DeclaringType!.Assembly.GetType("AuditHarness")!.GetMethod("SetDescriptor")!
+            .Invoke(null, [player, descriptor]);
 
     private void ResetNameState()
         => _runNameAction.DeclaringType!.Assembly.GetType("AuditHarness")!.GetMethod("ResetNameState")!.Invoke(null, null);

@@ -7,6 +7,7 @@ using SWLOR.Game.Server.Feature.AbilityDefinition;
 using SWLOR.Game.Server.Feature.GuiDefinition.Payload;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.DBService;
+using SWLOR.Game.Server.Service.DMToolService;
 using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.GuiService.Component;
 using SWLOR.Game.Server.Service.PerkService;
@@ -174,6 +175,18 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         }
 
         public string Descriptor
+        {
+            get => Get<string>();
+            set => Set(value);
+        }
+
+        public string WornDisguise
+        {
+            get => Get<string>();
+            set => Set(value);
+        }
+
+        public string UndisguisedDescriptor
         {
             get => Get<string>();
             set => Set(value);
@@ -393,7 +406,10 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             CharacterType = GetClassByPosition(1, _target) == ClassType.ForceSensitive
                 ? "Force Sensitive" : "Standard";
             Credits = GetGold(_target).ToString("N0");
-            Descriptor = GetIsPC(_target) && !GetIsDM(_target) ? Disguise.GetDisplayDescriptor(_target) : "N/A";
+            var isPlayerCharacter = GetIsPC(_target) && !GetIsDM(_target);
+            Descriptor = isPlayerCharacter ? Disguise.GetDisplayDescriptor(_target) : "N/A";
+            WornDisguise = isPlayerCharacter ? DMDisguiseText.Describe(Disguise.GetActiveDisguise(_target)) : "N/A";
+            UndisguisedDescriptor = isPlayerCharacter ? PlayerDescriptor.GetUnknownDisplayName(_target) : "N/A";
             TrueName = GetName(_target);
             AccountName = GetPCPlayerName(_target);
             PublicCDKey = GetPCPublicCDKey(_target);

@@ -43,7 +43,7 @@ public static class LootStatRevisionMigration
 
     internal static bool MigrateHeadgear(uint obj) => MigrateObject(obj, new HashSet<uint>(), false, true);
 
-    private static bool MigrateObject(uint obj, HashSet<uint> visited, bool reviseStats, bool repairHeadgear)
+    private static bool MigrateObject(uint obj, HashSet<uint> visited, bool reviseStats, bool repairHeadgear, bool updateArtwork = false)
     {
         if (!GetIsObjectValid(obj) || !visited.Add(obj))
             return false;
@@ -58,20 +58,21 @@ public static class LootStatRevisionMigration
                 return false;
             pools = CapturePools(obj);
             for (var slot = 0; slot < NumberOfInventorySlots; slot++)
-                changed |= MigrateObject(GetItemInSlot((InventorySlot)slot, obj), visited, reviseStats, repairHeadgear);
+                changed |= MigrateObject(GetItemInSlot((InventorySlot)slot, obj), visited, reviseStats, repairHeadgear, updateArtwork);
             if (GetIsPC(obj))
-                changed |= MigrateObject(Droid.GetDroid(obj), visited, reviseStats, repairHeadgear);
+                changed |= MigrateObject(Droid.GetDroid(obj), visited, reviseStats, repairHeadgear, updateArtwork);
         }
         else if (objectType == ObjectType.Item)
         {
             // Revise the counted properties before native unequip removes them.
             // The same item visit performs both independent, idempotent changes.
+            if (updateArtwork) changed |= ItemIconMigration.MigrateItem(obj);
             if (reviseStats) changed |= MigrateItem(obj);
             if (repairHeadgear) changed |= HeadgearSlotMigration.ConvertItem(obj);
-            changed |= MigrateObject(GetSummonedDroid(obj), visited, reviseStats, repairHeadgear);
+            changed |= MigrateObject(GetSummonedDroid(obj), visited, reviseStats, repairHeadgear, updateArtwork);
             var original = GetLocalString(obj, ConstructedDroidVariable);
             var migrated = HeadgearSlotMigration.MigrateDroid(original, data =>
-                MigrateSerializedObject(data, out var result, reviseStats, repairHeadgear) ? result : data, repairHeadgear);
+                MigrateSerializedObject(data, out var result, reviseStats, repairHeadgear, updateArtwork) ? result : data, repairHeadgear);
             if (original != migrated)
             {
                 SetLocalString(obj, ConstructedDroidVariable, migrated);
@@ -86,7 +87,7 @@ public static class LootStatRevisionMigration
             for (var item = GetFirstItemInInventory(obj); GetIsObjectValid(item); item = GetNextItemInInventory(obj))
                 contents.Add(item);
             foreach (var item in contents)
-                changed |= MigrateObject(item, visited, reviseStats, repairHeadgear);
+                changed |= MigrateObject(item, visited, reviseStats, repairHeadgear, updateArtwork);
         }
         if (changed && objectType == ObjectType.Creature)
         {
@@ -129,21 +130,21 @@ public static class LootStatRevisionMigration
     public static bool MigrateSerializedObject(string original, out string migrated)
         => MigrateSerializedObject(original, out migrated, true, true);
 
-    internal static bool MigrateOutfit(string original, out string migrated)
-        => MigrateSerializedObject(original, out migrated, true, false);
+    internal static bool MigrateStoredObjectData(string original, out string migrated, bool repairHeadgear = true)
+        => MigrateSerializedObject(original, out migrated, true, repairHeadgear, true);
 
-    private static bool MigrateSerializedObject(string original, out string migrated, bool reviseStats, bool repairHeadgear)
+    private static bool MigrateSerializedObject(string original, out string migrated, bool reviseStats, bool repairHeadgear, bool updateArtwork = false)
     {
         migrated = original;
         if (string.IsNullOrWhiteSpace(original))
             return false;
         if (StoredObjectData.IsCreatureData(original))
-            return false;
+            return updateArtwork && ItemIconMigration.MigrateSerializedObject(original, out migrated);
         var inventory = StoredObjectData.ReadInventory(original);
         var obj = MigrationObject.Deserialize(inventory?.PrepareForNativeLoad(null) ?? original);
         try
         {
-            if (!MigrateObject(obj, new HashSet<uint>(), reviseStats, repairHeadgear))
+            if (!MigrateObject(obj, new HashSet<uint>(), reviseStats, repairHeadgear, updateArtwork))
                 return false;
             migrated = MigrationObject.Serialize(obj, original);
             if (inventory != null)

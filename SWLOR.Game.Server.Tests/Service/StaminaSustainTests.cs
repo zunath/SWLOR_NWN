@@ -83,7 +83,7 @@ public class StaminaSustainTests
             var remainder = 0;
             var deferred = seconds + 1;
             // Conduit model: WIL 20 => 70 FP; a 6-FP Force cast every 24s restores
-            // floor(6 * .35)=2 STM. Each 8-STM arc restores floor(8 * .35)=2 FP.
+            // floor(6 * .20)=1 STM. Each 8-STM arc restores floor(8 * .20)=1 FP.
             // Both pools must fund their actual costs; neither conversion triggers itself.
             var fp = 70;
             for (var time = 0; time < seconds; time++)
@@ -99,7 +99,7 @@ public class StaminaSustainTests
                 if (conduit && time % 24 == 0 && fp >= 6)
                 {
                     fp -= 6;
-                    current = Math.Min(maximum, current + 2);
+                    current = Math.Min(maximum, current + 1);
                 }
                 foreach (var (ability, interval, count, refund) in rotation)
                 {
@@ -124,7 +124,7 @@ public class StaminaSustainTests
                         critical |= random.NextDouble() < 0.10;
                     }
                     if (critical) current = Math.Min(maximum, current + Combat.CalculateAbilityHitStaminaRestore(cost, 0, refund));
-                    if (conduit) fp = Math.Min(70, fp + cost * 35 / 100);
+                    if (conduit) fp = Math.Min(70, fp + cost * 20 / 100);
                 }
             }
             stamina += current;

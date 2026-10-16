@@ -603,11 +603,28 @@ public class PropertyOnDemandLoadingTests
         commandBody.Should().Contain("GetObjectUUID(dm)");
         commandBody.IndexOf("Log.WriteStructured(", StringComparison.Ordinal)
             .Should().BeLessThan(commandBody.IndexOf("DMPresence.ToggleWindow(", StringComparison.Ordinal));
-        // The same path as the DM toolbar's Admin Tools button, so the two never open separate copies.
+        // Opened like the other DM windows, so it follows the DM through possession.
         commandBody.Should().Contain("DMPresence.ToggleWindow(user, GuiWindowType.PropertyDiagnostics);");
         commandBody.Should().NotContain("Gui.TogglePlayerWindow(");
         staffDefinitionSource.Should().NotContain("OnClickPropertyDiagnostics");
         staffViewModelSource.Should().NotContain("GuiWindowType.PropertyDiagnostics");
+
+        // The chat command is the only way in; the DM Admin Tools window does not list it.
+        var adminToolsDefinitionSource = File.ReadAllText(Path.Combine(
+            root.FullName,
+            "SWLOR.Game.Server",
+            "Feature",
+            "GuiDefinition",
+            "DMAdminToolsDefinition.cs"));
+        var adminToolsViewModelSource = File.ReadAllText(Path.Combine(
+            root.FullName,
+            "SWLOR.Game.Server",
+            "Feature",
+            "GuiDefinition",
+            "ViewModel",
+            "DMAdminToolsViewModel.cs"));
+        adminToolsDefinitionSource.Should().NotContain("Property Diagnostics");
+        adminToolsViewModelSource.Should().NotContain("GuiWindowType.PropertyDiagnostics");
     }
 
     private static string ExtractMethod(string source, string signature)

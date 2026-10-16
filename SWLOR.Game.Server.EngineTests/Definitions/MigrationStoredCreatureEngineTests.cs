@@ -26,8 +26,9 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 SetName(spare, "Stowed fixture weapon");
                 var saved = ObjectPlugin.Serialize(owner);
                 var document = Invoke("StoredObjectData", "ReadCreature", saved);
+                // Reflection does not fill optional parameters: no temporary appearance, no replaced items.
                 var prepared = (string)document.GetType().GetMethod("PrepareForNativeLoad")
-                    .Invoke(document, new object[] { null });
+                    .Invoke(document, new object[] { null, null });
                 var loaded = Deserialize(ctx, prepared);
                 var equipped = GetItemInSlot(InventorySlot.RightHand, loaded);
                 ctx.Assert(GetIsObjectValid(equipped), "The fixture starts equipped");

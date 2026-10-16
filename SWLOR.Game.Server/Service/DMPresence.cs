@@ -37,11 +37,21 @@ namespace SWLOR.Game.Server.Service
             if (!GetIsDM(dm))
                 return;
 
-            var creature = NWNXLib.g_pAppManager.m_pServerExoApp.GetCreatureByGameObjectID(dm);
+            var server = NWNXLib.g_pAppManager.m_pServerExoApp;
+            var creature = server.GetCreatureByGameObjectID(dm);
             if (creature?.m_pStats == null)
                 return;
 
             creature.m_pStats.m_bDMManifested = isManifested ? 1 : 0;
+            if (!isManifested)
+                creature.PacifyCreature();
+
+            // The server never tells the DM's client about the change itself. The login state message runs the
+            // client's own Appear/Disappear handler, which fades the avatar on the DM's screen like the native button.
+            var player = server.GetClientObjectByObjectId(dm);
+            if (player != null)
+                server.GetNWSMessage().SendServerToPlayerDungeonMasterLoginState(player, 1, isManifested ? 1 : 0);
+
             Log.Write(LogGroup.DM, $"{DescribeDM(dm)} {(isManifested ? "appeared" : "disappeared")} in {GetResRef(GetArea(dm))}.");
         }
 

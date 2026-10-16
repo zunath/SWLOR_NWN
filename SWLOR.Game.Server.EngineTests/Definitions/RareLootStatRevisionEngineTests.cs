@@ -36,7 +36,7 @@ public static partial class MigrationEngineTests
             await EquipAsync(ctx, player, weapon, InventorySlot.RightHand);
             await ctx.ExecuteInCreatureContextAsync(player, () =>
             {
-                new _23_ReviseRareLootStats().Migrate(player);
+                new _22_ReviseLootStats().Migrate(player);
                 AssertRevisedLoot(ctx, weapon, new() { [(ItemPropertyType.Attack, 0)] = 5 });
                 ctx.AssertEqual(22, SumProperty(weapon, ItemPropertyType.DMG, 0), "DMG stays normalized");
                 ctx.AssertEqual(baseline + 17, DB.Get<Player>(GetObjectUUID(player)).Attack,
@@ -104,7 +104,7 @@ public static partial class MigrationEngineTests
             for (var cycle = 1; cycle <= 2; cycle++)
                 await ctx.ExecuteInCreatureContextAsync(owner, () =>
                 {
-                    new _28_ReviseRareLootStats().Migrate();
+                    new _27_UpdateStoredItems().Migrate();
                     var saved = DB.Get<InventoryItem>(record.Id);
                     var restored = Deserialize(ctx, saved.Data);
                     AssertRevisedLoot(ctx, restored, new() { [(ItemPropertyType.Attack, 0)] = 5 });

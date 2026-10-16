@@ -21,11 +21,9 @@ public sealed class _27_UpdateStoredItems : IServerMigration
     public int Version => 27;
     public MigrationExecutionType ExecutionType => MigrationExecutionType.PostCacheLoad;
 
-    public void Migrate() => MigrateStoredItems(Version);
-
-    internal static void MigrateStoredItems(int version)
+    public void Migrate()
     {
-        var progress = new ServerMigrationProgress(version,
+        var progress = new ServerMigrationProgress(Version,
             ServerMigrationProgress.CountRecords<InventoryItem>(),
             ServerMigrationProgress.CountRecords<MarketItem>(),
             ServerMigrationProgress.CountRecords<WorldPropertyCategory>(),
@@ -67,7 +65,7 @@ public sealed class _27_UpdateStoredItems : IServerMigration
         });
         changed += MigrateRecords<QuestContract>(progress, contract => MigrateContractItems(contract.RewardItems));
         changed += MigrateRecords<QuestContractDelivery>(progress, delivery => MigrateContractItems(delivery.Items));
-        Log.Write(LogGroup.Migration, $"Migration #{version}: Updated item artwork, loot stats and equipment slots in {changed} stored records.", true);
+        Log.Write(LogGroup.Migration, $"Migration #{Version}: Updated item artwork, loot stats and equipment slots in {changed} stored records.", true);
     }
 
     private static int MigrateRecords<T>(ServerMigrationProgress progress, Func<T, bool> migrate) where T : EntityBase

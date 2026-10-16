@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using SWLOR.Game.Server.EngineTests.Framework;
@@ -20,6 +21,7 @@ public static partial class MigrationEngineTests
     {
         using var fixture = await PlayerAbilityFixture.CreateAsync(ctx);
         var player = fixture.Creature;
+        CreaturePlugin.AddFeat(player, FeatType.WeaponProficiencyExotic);
         var baseline = DB.Get<Player>(GetObjectUUID(player)).Attack;
         foreach (var alreadyRebalanced in new[] { false, true })
         {
@@ -28,7 +30,8 @@ public static partial class MigrationEngineTests
             {
                 StampRareLootBeforeCorrection(weapon, alreadyRebalanced);
                 RemoveRequirement(weapon);
-                Craft.ApplyCraftedItemProperty(weapon, ItemPropertyCustom(ItemPropertyType.Attack, -1, 5));
+                ctx.AssertEqual(alreadyRebalanced ? 8 : 17, SumProperty(weapon, ItemPropertyType.Attack, 0),
+                    "The legacy fixture includes exactly one merged +5 Attack enhancement");
             });
             await EquipAsync(ctx, player, weapon, InventorySlot.RightHand);
             await ctx.ExecuteInCreatureContextAsync(player, () =>
@@ -62,7 +65,7 @@ public static partial class MigrationEngineTests
                 await ctx.WaitFrameAsync();
                 // Locate the reacquired item and verify the inventory did not gain a duplicate.
                 weapon = GetFirstItemInInventory(player);
-                var matching = new System.Collections.Generic.List<uint>();
+                var matching = new List<uint>();
                 for (var item = weapon; GetIsObjectValid(item); item = GetNextItemInInventory(player))
                     if (GetResRef(item) == "stw_zerostate") matching.Add(item);
                 ctx.AssertEqual(1, matching.Count, "Reload keeps exactly one weapon");
@@ -92,7 +95,7 @@ public static partial class MigrationEngineTests
         await ctx.ExecuteInCreatureContextAsync(owner, () =>
         {
             StampRareLootBeforeCorrection(weapon, true);
-            Craft.ApplyCraftedItemProperty(weapon, ItemPropertyCustom(ItemPropertyType.Attack, -1, 5));
+            ctx.AssertEqual(8, SumProperty(weapon, ItemPropertyType.Attack, 0), "The saved fixture starts at revised Attack 3 plus enhancement 5");
             record = new InventoryItem { Data = ObjectPlugin.Serialize(weapon), Name = "Saved Zero-State", Quantity = 1 };
             DB.Set(record);
         });
@@ -119,13 +122,18 @@ public static partial class MigrationEngineTests
 
     private static void StampRareLootBeforeCorrection(uint item, bool alreadyRebalanced)
     {
-        StampLegacyLoot(item, NoEnhancements);
+        var enhancements = new Dictionary<(ItemPropertyType, int), int>
+        {
+            [(ItemPropertyType.Attack, 0)] = 5,
+        };
+        StampLegacyLoot(item, enhancements);
         if (!alreadyRebalanced)
             return;
         foreach (var change in LootStatRevisionCatalog.Changes[GetResRef(item)])
         {
             RemoveMatching(item, change.Type, change.Subtype);
-            AddItemProperty(DurationType.Permanent, ItemPropertyCustom(change.Type, LootSubtype(change), change.Current), item);
+            AddItemProperty(DurationType.Permanent, ItemPropertyCustom(change.Type, LootSubtype(change),
+                change.Current + enhancements.GetValueOrDefault((change.Type, change.Subtype))), item);
         }
         SetLocalInt(item, LootStatRevisionMigration.RevisionVariable, LootStatRevisionMigration.CurrentRevision);
     }

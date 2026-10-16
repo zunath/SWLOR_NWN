@@ -1,3 +1,4 @@
+using System.Reflection;
 using System.Text.Json;
 using FluentAssertions;
 using NUnit.Framework;
@@ -51,6 +52,46 @@ public class AbandonedStationRewardTests
         .OrderBy(v => Text(v, "Name"))
         .Select(v => Value(v, "Value").GetString()!)
         .ToArray();
+
+    [Test]
+    public void StationMap_DropsFromEnemiesOnEveryFloorAndUnlocksAllFloors()
+    {
+        var mapType = KeyItemType.ViscaraAbandonedStationMap;
+        var mapResref = $"map_{(int)mapType}";
+        var map = Load("uti", mapResref);
+        var metadata = typeof(KeyItemType).GetField(nameof(KeyItemType.ViscaraAbandonedStationMap))!
+            .GetCustomAttribute<KeyItemAttribute>()!;
+        metadata.Category.Should().Be(KeyItemCategoryType.Maps);
+        metadata.IsActive.Should().BeTrue();
+        Text(map, "Tag").Should().Be("KEY_ITEM");
+        Value(map, "LocalizedName").GetProperty("0").GetString().Should().Be(metadata.Name);
+        Value(map, "DescIdentified").GetProperty("0").GetString().Should().Be(metadata.Description);
+        Value(map, "VarTable").EnumerateArray().Single(v => Text(v, "Name") == "KEY_ITEM_ID")
+            .GetProperty("Value").GetProperty("value").GetInt32().Should().Be((int)mapType);
+
+        var rares = new AbandonedStationLootTableDefinition().BuildLootTables()["STATION_RARES"];
+        var drop = rares.Should().ContainSingle(item => item.Resref == mapResref).Subject;
+        rares.IsRare.Should().BeTrue();
+        drop.Weight.Should().BeGreaterThan(0);
+        drop.MaxQuantity.Should().Be(1);
+        drop.IsRare.Should().BeTrue();
+
+        var spawns = new AbandonedStationSpawnDefinition().BuildSpawnTables();
+        foreach (var (area, table) in new[]
+        {
+            ("zomb_abanstation", "ABANDONED_STATION_MAIN"),
+            ("zomb_abanstatio2", "ABANDONED_STATION_RESTRICTED"),
+            ("zomb_abanstatio3", "ABANDONED_STATION_CHAMBERS")
+        })
+        {
+            Value(Load("git", area), "VarTable").EnumerateArray().Single(v => Text(v, "Name") == "MAP_KEY_ITEM_ID")
+                .GetProperty("Value").GetProperty("value").GetInt32().Should().Be((int)mapType);
+            spawns[table].Spawns.Should().Contain(spawn => LootLocals(Load("utc", spawn.Resref))
+                .Any(loot => loot.StartsWith("STATION_RARES,") &&
+                             int.Parse(loot.Split(',')[1]) > 0 && int.Parse(loot.Split(',')[2]) > 0),
+                $"enemies on {area} must be able to drop the map");
+        }
+    }
 
     [Test]
     public void NamedRares_SpawnAsWeightedRareEntriesInTheirFloorTable()

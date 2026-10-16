@@ -433,6 +433,9 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
 
 			_builder.Create("NARSHADDAA_GREAT_ARKANIAN_DRAGON_RARES")
 				.IsRare()
+				.AddItem("bp_arkhelm", 2, 1, true)
+				.AddItem("bp_arkward", 2, 1, true)
+				.AddItem("bp_arkforce", 2, 1, true)
 				.AddItem("fnote_2044", 2, 1, true)
 				.AddItem("chiro_shard", 1, 1, true)
 				.AddItem("emerald", 1, 1, true)

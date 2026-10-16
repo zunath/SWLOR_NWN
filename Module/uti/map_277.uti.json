@@ -27,13 +27,13 @@
   "DescIdentified": {
     "type": "cexolocstring",
     "value": {
-      "0": "Map of the Main Level, Restricted Level, and Director's Chambers of the Abandoned Station."
+      "0": "Map of the Abandoned Station in orbit over Viscara."
     }
   },
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "Map of the Main Level, Restricted Level, and Director's Chambers of the Abandoned Station."
+      "0": "Map of the Abandoned Station in orbit over Viscara."
     }
   },
   "Identified": {
@@ -43,7 +43,7 @@
   "LocalizedName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Abandoned Station Map"
+      "0": "Viscara - Abandoned Station Map"
     }
   },
   "ModelPart1": {

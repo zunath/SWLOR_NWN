@@ -13,9 +13,9 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
     public static partial class MigrationEngineTests
     {
         /// <summary>
-        /// Verifies that migration preserves every nonphysical weapon damage type.
+        /// Verifies that migration preserves elemental weapon damage types and converts legacy Force damage to Physical.
         /// </summary>
-        [EngineTest("Migration preserves every nonphysical weapon damage type", Category = "MigrationDamageType")]
+        [EngineTest("Migration preserves elemental weapon damage types and converts Force to Physical", Category = "MigrationDamageType")]
         public static async Task NonphysicalWeaponDamageTypes(EngineTestContext ctx)
         {
             var owner = ctx.SpawnCreature("nw_rat001");
@@ -30,12 +30,13 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                     var saved = LegacyPropertyFixture(ctx, weapon, ItemPropertyType.DMG, (int)damageType, 34, 6);
                     ctx.AssertEqual(6, PropertyValue(saved, ItemPropertyType.DMG, (int)damageType), "Legacy typed damage fixture");
 
+                    var expected = MigratedWeaponDamageType(damageType);
                     var migrated = MigrateSerialized(ctx, saved);
                     ctx.AssertEqual(5, PropertyValue(migrated, ItemPropertyType.DMG), "Converted weapon damage");
-                    AssertDamageType(ctx, migrated, damageType);
+                    AssertDamageType(ctx, migrated, expected);
                     var retried = MigrateSerialized(ctx, migrated);
                     ctx.AssertEqual(5, PropertyValue(retried, ItemPropertyType.DMG), "Retry does not rescale damage");
-                    AssertDamageType(ctx, retried, damageType);
+                    AssertDamageType(ctx, retried, expected);
                     ctx.AssertEqual(false, (bool)Invoke("SerializedItemWeaponDamageTypeMigration", "MigrateObject", retried),
                         "A canonical saved weapon needs no further damage-property conversion");
                 });
@@ -44,9 +45,9 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
         }
 
         /// <summary>
-        /// Verifies that migration preserves nonphysical enhancement and blueprint damage types.
+        /// Verifies that migration preserves elemental enhancement and blueprint damage types and converts Force to Physical.
         /// </summary>
-        [EngineTest("Migration preserves nonphysical enhancement and blueprint damage types", Category = "MigrationDamageType")]
+        [EngineTest("Migration preserves elemental enhancement and blueprint damage types and converts Force to Physical", Category = "MigrationDamageType")]
         public static async Task NonphysicalEnhancementDamageTypes(EngineTestContext ctx)
         {
             var owner = ctx.SpawnCreature("nw_rat001");
@@ -55,7 +56,9 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             foreach (var damageType in new[] { CombatDamageType.Force, CombatDamageType.Fire,
                          CombatDamageType.Poison, CombatDamageType.Electrical, CombatDamageType.Ice })
             {
-                var item = await CreateItemAsync(ctx, owner, blueprint ? "blueprint" : "wen_dmg_phy1", owner);
+                // Legacy Force enhancements came from the wen_dmg_for blueprints, which now carry plain DMG.
+                var enhancementResref = damageType == CombatDamageType.Force ? "wen_dmg_for1" : "wen_dmg_phy1";
+                var item = await CreateItemAsync(ctx, owner, blueprint ? "blueprint" : enhancementResref, owner);
                 if (blueprint)
                 {
                     // Empty blueprints have no saved property to use as a native template.
@@ -69,12 +72,13 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                         SetLocalInt(item, "BLUEPRINT_RECIPE_ID", 1);
                     var saved = LegacyPropertyFixture(ctx, item, ItemPropertyType.WeaponEnhancement, (int)damageType + 17, 45, 3);
                     ctx.AssertEqual(3, PropertyValue(saved, ItemPropertyType.WeaponEnhancement, (int)damageType + 17), "Saved legacy enhancement fixture");
+                    var expected = MigratedWeaponDamageType(damageType);
                     var migrated = MigrateSerialized(ctx, saved);
                     ctx.AssertEqual(3, PropertyValue(migrated, ItemPropertyType.WeaponEnhancement, (int)EnhancementSubType.DMG), "Enhancement damage amount");
-                    AssertDamageType(ctx, migrated, damageType);
+                    AssertDamageType(ctx, migrated, expected);
                     var retried = MigrateSerialized(ctx, migrated);
                     ctx.AssertEqual(3, PropertyValue(retried, ItemPropertyType.WeaponEnhancement, (int)EnhancementSubType.DMG), "Retry enhancement damage amount");
-                    AssertDamageType(ctx, retried, damageType);
+                    AssertDamageType(ctx, retried, expected);
                     ctx.AssertEqual(false, (bool)Invoke("SerializedItemWeaponDamageTypeMigration", "MigrateObject", retried),
                         "A canonical saved enhancement needs no further damage-property conversion");
                 });
@@ -156,8 +160,14 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             for (var ip = GetFirstItemProperty(item); GetIsItemPropertyValid(ip); ip = GetNextItemProperty(item))
                 if (GetItemPropertyType(ip) == ItemPropertyType.WeaponDamageType)
                     types.Add(GetItemPropertySubType(ip));
-            ctx.Assert(types.SequenceEqual(new[] { (int)expected }),
-                $"Expected exactly one {expected} damage-type property; found {string.Join(", ", types)}.");
+            // Physical damage is the default and carries no damage-type property.
+            var expectedTypes = expected == CombatDamageType.Physical ? new int[0] : new[] { (int)expected };
+            ctx.Assert(types.SequenceEqual(expectedTypes),
+                $"Expected {(expected == CombatDamageType.Physical ? "no" : $"exactly one {expected}")} damage-type property; found {string.Join(", ", types)}.");
         }
+
+        // Only elements retype weapon damage; Force conversion belongs to Imbuement Stance.
+        private static CombatDamageType MigratedWeaponDamageType(CombatDamageType legacy) =>
+            legacy.IsElementalDamageType() ? legacy : CombatDamageType.Physical;
     }
 }

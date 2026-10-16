@@ -426,6 +426,9 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
 			_builder.Create("NARSHADDAA_GREAT_ARKANIAN_DRAGON_TROPHY")
 				.AddItem("ark_dragon_troph", 100);
 
+			_builder.Create("NARSHADDAA_GREAT_ARKANIAN_DRAGON_SCALES")
+				.AddItem("ark_drg_scales", 100, 3);
+
 			_builder.Create("NARSHADDAA_GREAT_ARKANIAN_DRAGON_GEMS")
 				.AddItem("emerald", 100, 1, true)
 				.AddItem("diamond", 100, 1, true)

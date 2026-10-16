@@ -96,7 +96,7 @@
         },
         "CostValue": {
           "type": "word",
-          "value": 14
+          "value": 12
         },
         "Param1": {
           "type": "byte",
@@ -127,7 +127,7 @@
         },
         "CostValue": {
           "type": "word",
-          "value": 18
+          "value": 20
         },
         "Param1": {
           "type": "byte",
@@ -158,7 +158,7 @@
         },
         "CostValue": {
           "type": "word",
-          "value": 24
+          "value": 74
         },
         "Param1": {
           "type": "byte",
@@ -256,6 +256,26 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "pitkeeper_mask"
+  },
+  "VarTable": {
+    "type": "list",
+    "value": [
+      {
+        "__struct_id": 0,
+        "Name": {
+          "type": "cexostring",
+          "value": "ITEM_STATS_REVISION"
+        },
+        "Type": {
+          "type": "dword",
+          "value": 1
+        },
+        "Value": {
+          "type": "int",
+          "value": 1
+        }
+      }
+    ]
   },
   "xModelPart1": {
     "type": "word",

@@ -846,7 +846,7 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                     DB.Set(dbPlayer);
                     Gui.PublishRefreshEvent(target, new PerkRefundCooldownResetRefreshEvent());
                     AbilityCooldownVisual.ClearAllRecastDelays(target);
-                    Disguise.ResetActivationCooldowns(target);
+                    Disguise.ResetActivationCooldowns(target, user);
 
                     SendMessageToPC(user, $"You have reset all of {targetName}'s cooldowns.");
                     SendMessageToPC(target, "A DM has reset all of your cooldowns.");
@@ -1141,7 +1141,7 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                     var url = _appSettings.DMShoutWebhookUrl;
 
                     for (var onlinePlayer = GetFirstPC(); GetIsObjectValid(onlinePlayer); onlinePlayer = GetNextPC())
-                        ChatPlugin.SendMessage(ChatChannel.DMShout, message, user, onlinePlayer);
+                        ChatPlugin.SendMessage(ChatChannel.DMShout, message, user, DMPresence.GetControlledCreature(onlinePlayer));
 
                     var authorName = $"{GetName(user)} ({GetPCPlayerName(user)}) [{GetPCPublicCDKey(user)}]";
                     if (!string.IsNullOrWhiteSpace(url))

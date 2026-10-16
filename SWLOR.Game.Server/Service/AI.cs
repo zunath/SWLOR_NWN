@@ -436,16 +436,23 @@ namespace SWLOR.Game.Server.Service
                 return;
             }
 
+            var currentAction = GetCurrentAction(self);
             if (IsInConversation(self) ||
                 GetIsInCombat(self) ||
-                GetCurrentAction(self) == ActionType.RandomWalk ||
-                GetCurrentAction(self) == ActionType.MoveToPoint)
+                (currentAction == ActionType.RandomWalk && !isOutsideHomeRadius) ||
+                currentAction == ActionType.MoveToPoint)
                 return;
 
             // Return Home flag
             if (isOutsideHomeRadius)
             {
-                AssignCommand(self, () => ActionForceMoveToLocation(homeLocation));
+                AssignCommand(self, () =>
+                {
+                    if (currentAction == ActionType.RandomWalk)
+                        ClearAllActions();
+
+                    ActionForceMoveToLocation(homeLocation);
+                });
             }
             // Randomly walk flag
             else if(aiFlags.HasFlag(AIFlag.RandomWalk) &&
@@ -591,11 +598,9 @@ namespace SWLOR.Game.Server.Service
 
             for (var player = GetFirstPC(); GetIsObjectValid(player); player = GetNextPC())
             {
-                if (GetIsDM(player))
-                    continue;
-
                 if (GetArea(player) == GetArea(creature) &&
-                    GetIsEnemy(player, creature))
+                    GetIsEnemy(player, creature) &&
+                    !DMPresence.IsControlledByDM(player))
                 {
                     return true;
                 }

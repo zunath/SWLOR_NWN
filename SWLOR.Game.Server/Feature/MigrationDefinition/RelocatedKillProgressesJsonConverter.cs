@@ -7,7 +7,7 @@ using SWLOR.Game.Server.Service.NPCService;
 namespace SWLOR.Game.Server.Feature.MigrationDefinition;
 
 /// <summary>
-/// Reads quest kill counters saved under a relocated dungeon's former enum names, such as a record restored after migration 28.
+/// Reads quest kill counters saved under a relocated dungeon's former enum names, such as a record restored after server migration 27.
 /// </summary>
 public sealed class RelocatedKillProgressesJsonConverter : JsonConverter<Dictionary<NPCGroupType, int>>
 {

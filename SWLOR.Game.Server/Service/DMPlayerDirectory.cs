@@ -114,7 +114,7 @@ namespace SWLOR.Game.Server.Service
             var players = new List<uint>();
             for (var player = GetFirstPC(); GetIsObjectValid(player); player = GetNextPC())
             {
-                if (GetIsDM(player) || GetIsDMPossessed(player))
+                if (DMPresence.IsControlledByDM(player))
                     continue;
 
                 players.Add(player);

@@ -100,11 +100,11 @@ namespace SWLOR.Toolset.Tests.Items
             var section = OpenArmorSection(OpenStore());
 
             var defense = section.Groups.Single(group => group.Group == ItemStatGroup.Defense);
-            defense.Cells.Single(cell => cell.Label == "Physical Defense").Number.Should().Be(26);
-            defense.Cells.Single(cell => cell.Label == "Force Defense").Number.Should().Be(21);
+            defense.Cells.Single(cell => cell.Label == "Physical Defense").Number.Should().Be(27);
+            defense.Cells.Single(cell => cell.Label == "Force Defense").Number.Should().Be(22);
 
             var vitals = section.Groups.Single(group => group.Group == ItemStatGroup.Vitals);
-            vitals.Cells.Single(cell => cell.Label == "HP").Number.Should().Be(92);
+            vitals.Cells.Single(cell => cell.Label == "HP").Number.Should().Be(93);
             vitals.Cells.Single(cell => cell.Label == "STM Regen").Number.Should().Be(1);
 
             var resistance = section.Groups.Single(group => group.Group == ItemStatGroup.Resistance);
@@ -159,13 +159,13 @@ namespace SWLOR.Toolset.Tests.Items
                 .Single(group => group.Group == ItemStatGroup.Defense)
                 .Cells.Single(cell => cell.Label == "Physical Defense");
 
-            physicalDefense.Number = 26.5m;
-            physicalDefense.Number.Should().Be(26);
-            store.GetPropertyValue(94, 1).Should().Be(26);
+            physicalDefense.Number = 27.5m;
+            physicalDefense.Number.Should().Be(27);
+            store.GetPropertyValue(94, 1).Should().Be(27);
 
             physicalDefense.Number = physicalDefense.Maximum + 1m;
-            physicalDefense.Number.Should().Be(26);
-            store.GetPropertyValue(94, 1).Should().Be(26);
+            physicalDefense.Number.Should().Be(27);
+            store.GetPropertyValue(94, 1).Should().Be(27);
         }
 
         [Test]
@@ -572,8 +572,8 @@ namespace SWLOR.Toolset.Tests.Items
 
             physicalDefense.Number = 99;
 
-            physicalDefense.Number.Should().Be(26);
-            store.GetPropertyValue(94, 1).Should().Be(26);
+            physicalDefense.Number.Should().Be(27);
+            store.GetPropertyValue(94, 1).Should().Be(27);
             editCount.Should().Be(0);
         }
 

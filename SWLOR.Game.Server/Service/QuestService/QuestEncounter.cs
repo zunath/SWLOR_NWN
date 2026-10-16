@@ -473,10 +473,11 @@ namespace SWLOR.Game.Server.Service.QuestService
         {
             for (var player = GetFirstPC(); GetIsObjectValid(player); player = GetNextPC())
             {
-                if (GetArea(player) != GetArea(encounterCreature)) continue;
-                if (GetDistanceBetween(player, encounterCreature) > ParticipantCreditRange) continue;
+                var receiver = DMPresence.GetControlledCreature(player);
+                if (GetArea(receiver) != GetArea(encounterCreature)) continue;
+                if (GetDistanceBetween(receiver, encounterCreature) > ParticipantCreditRange) continue;
 
-                SendMessageToPC(player, message);
+                SendMessageToPC(receiver, message);
             }
         }
     }

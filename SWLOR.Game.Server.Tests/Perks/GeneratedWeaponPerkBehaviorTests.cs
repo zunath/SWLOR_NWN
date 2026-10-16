@@ -873,9 +873,9 @@ public class GeneratedWeaponPerkBehaviorTests
         AssertSourceStat("TwinBladePerkDefinition.cs", StatType.SkillDamageBleedingTargetStaminaRestoreCooldownSeconds, "4");
 
         AssertSourceStat("SaberstaffPerkDefinition.cs", StatType.AbilityStaminaCostFPRestorePercentSkillType, "(int)SkillType.Saberstaff");
-        AssertSourceStat("SaberstaffPerkDefinition.cs", StatType.AbilityStaminaCostFPRestorePercent, "35");
+        AssertSourceStat("SaberstaffPerkDefinition.cs", StatType.AbilityStaminaCostFPRestorePercent, "20");
         AssertSourceStat("SaberstaffPerkDefinition.cs", StatType.AbilityFPCostStaminaRestorePercentSkillType, "(int)SkillType.Force");
-        AssertSourceStat("SaberstaffPerkDefinition.cs", StatType.AbilityFPCostStaminaRestorePercent, "35");
+        AssertSourceStat("SaberstaffPerkDefinition.cs", StatType.AbilityFPCostStaminaRestorePercent, "20");
         AssertSourceStat("SaberstaffPerkDefinition.cs", StatType.RestoredFPForceAttackPercentAdjustment, "8");
         AssertSourceStat("SaberstaffPerkDefinition.cs", StatType.RestoredFPForceAttackDurationSeconds, "30");
         AssertSourceStat("SaberstaffPerkDefinition.cs", StatType.RestoredStaminaAttackPercentAdjustment, "8");
@@ -1052,6 +1052,10 @@ public class GeneratedWeaponPerkBehaviorTests
         AssertStatusStat(infiniteConduit, StatType.AbilityFPCostStaminaRestorePercent, 50);
         AssertStatusStat(infiniteConduit, StatType.HighFPAndStaminaAbilityDamageBonusThresholdPercent, 70);
         AssertStatusStat(infiniteConduit, StatType.HighFPAndStaminaAbilityDamageBonus, 20);
+
+        var conduitStance = new ConduitStanceStatusEffect();
+        AssertStatusStat(conduitStance, StatType.AbilityStaminaCostFPRestorePercent, 40);
+        AssertStatusStat(conduitStance, StatType.AbilityFPCostStaminaRestorePercent, 40);
 
         var restoredForcePointsForceAttack = new ForceLensForceAttackStatusEffect(8);
         AssertStatusStat(restoredForcePointsForceAttack, StatType.ForceAttackPercentAdjustment, 8);

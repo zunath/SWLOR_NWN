@@ -117,10 +117,16 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         public Action OnDeleteCreature() => () =>
         {
             var index = NuiGetEventArrayIndex();
-            SelectedCreatureIndex = index;
+            if (index < 0 || index >= _creatureIds.Count)
+                return;
 
-            DB.Delete<DMCreature>(_creatureIds[SelectedCreatureIndex]);
-            Search();
+            SelectedCreatureIndex = index;
+            var creatureId = _creatureIds[index];
+            ShowModal($"Delete {CreatureNames[index]}? This cannot be undone.", () =>
+            {
+                DB.Delete<DMCreature>(creatureId);
+                Search();
+            });
         };
 
         private void Search()

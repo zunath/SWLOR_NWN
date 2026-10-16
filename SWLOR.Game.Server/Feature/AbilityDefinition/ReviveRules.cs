@@ -32,7 +32,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
         /// <summary>Records when a player died and whether a player, or a player's pet or droid, dealt the killing blow.</summary>
         public static void RecordPlayerDeath(uint deceased, uint killer)
         {
-            SetLocalBool(deceased, KilledByPlayerVariable, IsPlayerControlled(killer));
+            SetLocalBool(deceased, KilledByPlayerVariable, PvpCombat.IsPlayerControlled(killer));
             _deathAt[GetObjectUUID(deceased)] = DateTime.UtcNow;
         }
 
@@ -42,7 +42,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
             if (!GetIsObjectValid(master) || string.IsNullOrWhiteSpace(beastId))
                 return;
 
-            SetLocalBool(master, BeastKilledByPlayerVariable + beastId, IsPlayerControlled(killer));
+            SetLocalBool(master, BeastKilledByPlayerVariable + beastId, PvpCombat.IsPlayerControlled(killer));
             _deathAt[BeastDeathKey(master, beastId)] = DateTime.UtcNow;
         }
 
@@ -52,7 +52,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
             if (!string.IsNullOrEmpty(pvpDenial))
                 return pvpDenial;
 
-            if (IsPlayer(body) &&
+            if (PvpCombat.IsPlayer(body) &&
                 IsMidFight(caster, body) &&
                 IsWithinMidFightLockout(GetLastMidFightRevive(body), DateTime.UtcNow))
             {
@@ -71,7 +71,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
         /// <summary>Starts the 5-minute mid-fight lockout when a player is revived while a fight is still going.</summary>
         public static void RecordResuscitation(uint caster, uint body)
         {
-            if (IsPlayer(body) && IsMidFight(caster, body))
+            if (PvpCombat.IsPlayer(body) && IsMidFight(caster, body))
                 _lastMidFightReviveAt[GetObjectUUID(body)] = DateTime.UtcNow;
         }
 
@@ -174,19 +174,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                 (int)CreatureType.IsAlive,
                 1);
             return GetIsObjectValid(enemy) && GetDistanceBetween(center, enemy) <= MidFightRangeMeters;
-        }
-
-        private static bool IsPlayer(uint creature)
-        {
-            return GetIsPC(creature) && !GetIsDM(creature) && !GetIsDMPossessed(creature);
-        }
-
-        private static bool IsPlayerControlled(uint creature)
-        {
-            if (!GetIsObjectValid(creature))
-                return false;
-
-            return IsPlayer(creature) || IsPlayer(GetMaster(creature));
         }
     }
 }

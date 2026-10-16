@@ -85,6 +85,7 @@ namespace SWLOR.CombatSim.Data
                 SkillRequirement = skillRequirement,
                 FP = detail.Requirements.OfType<AbilityRequirementFP>().Sum(r => r.RequiredFP),
                 STM = detail.Requirements.OfType<AbilityRequirementStamina>().Sum(r => r.RequiredSTM),
+                PaysFpFirst = PaysFpFirst(detail),
                 RecastSeconds = recast ?? 0f,
                 CastSeconds = cast ?? 0f,
                 ImpactDelaySeconds = detail.ImpactDelay,
@@ -96,6 +97,15 @@ namespace SWLOR.CombatSim.Data
                 IsHealing = detail.IsHealingAbility,
                 ForceAffinity = perk?.ForceAffinityType?.ToString() ?? string.Empty
             };
+        }
+
+        // The game pays requirements in the order the ability lists them (UsePerkFeat.ApplyRequirementEffects).
+        private static bool PaysFpFirst(AbilityDetail detail)
+        {
+            var requirements = detail.Requirements.ToList();
+            var fp = requirements.FindIndex(r => r is AbilityRequirementFP);
+            var stamina = requirements.FindIndex(r => r is AbilityRequirementStamina);
+            return fp >= 0 && (stamina < 0 || fp < stamina);
         }
 
         private static float? TryEvaluate(Func<float> evaluate)

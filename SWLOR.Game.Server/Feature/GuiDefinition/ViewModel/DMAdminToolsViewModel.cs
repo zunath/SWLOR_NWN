@@ -38,11 +38,5 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             if (CanUse(Player))
                 DMPresence.ToggleWindow(Player, GuiWindowType.ManageBans);
         };
-
-        public Action OnClickPropertyDiagnostics() => () =>
-        {
-            if (CanUse(Player))
-                DMPresence.ToggleWindow(Player, GuiWindowType.PropertyDiagnostics);
-        };
     }
 }

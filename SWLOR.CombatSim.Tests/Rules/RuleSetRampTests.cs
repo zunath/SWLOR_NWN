@@ -11,7 +11,7 @@ namespace SWLOR.CombatSim.Tests.Rules
         [TestCase(250, 60f)]
         public void GetStepPercent_UsesTheHighestStepReached_WhateverOrderTheStepsAreListedIn(double seconds, float expected)
         {
-            var reversed = RuleSets.TunedPvp().PvpHealingRamp.AsEnumerable().Reverse().ToList();
+            var reversed = RuleSets.Current().PvpHealingRamp.AsEnumerable().Reverse().ToList();
 
             RuleSet.GetStepPercent(reversed, seconds).Should().Be(expected);
         }
@@ -32,9 +32,9 @@ namespace SWLOR.CombatSim.Tests.Rules
         [TestCase(239.9, 45f)]
         [TestCase(240, 60f)]
         [TestCase(3600, 60f)]
-        public void GetStepPercent_UsesTheLatestStepReached_ForTheTunedPvpHealingRamp(double seconds, float expected)
+        public void GetStepPercent_UsesTheLatestStepReached_ForTheCurrentHealingRamp(double seconds, float expected)
         {
-            RuleSet.GetStepPercent(RuleSets.TunedPvp().PvpHealingRamp, seconds).Should().Be(expected);
+            RuleSet.GetStepPercent(RuleSets.Current().PvpHealingRamp, seconds).Should().Be(expected);
         }
 
         [TestCase(179.9, 0f)]
@@ -44,9 +44,9 @@ namespace SWLOR.CombatSim.Tests.Rules
         [TestCase(270, 80f)]
         [TestCase(300, 100f)]
         [TestCase(900, 100f)]
-        public void GetStepPercent_UsesTheLatestStepReached_ForTheTunedPvpDamageBackstop(double seconds, float expected)
+        public void GetStepPercent_UsesTheLatestStepReached_ForTheCurrentDamageBackstop(double seconds, float expected)
         {
-            RuleSet.GetStepPercent(RuleSets.TunedPvp().PvpDamageBackstop, seconds).Should().Be(expected);
+            RuleSet.GetStepPercent(RuleSets.Current().PvpDamageBackstop, seconds).Should().Be(expected);
         }
     }
 }

@@ -42,8 +42,12 @@ namespace SWLOR.Game.Server.Feature
             // Let fatal-damage protection settle without canceling a replacement cast.
             DelayCommand(0f, () =>
             {
-                if (GetIsObjectValid(actor) && UsePerkFeat.GetActiveAbilityActivationId(actor) == activationId)
-                    ClearCombat(actor);
+                if (!GetIsObjectValid(actor) || UsePerkFeat.GetActiveAbilityActivationId(actor) != activationId)
+                    return;
+                if (GetIsDead(actor) || GetCurrentHitPoints(actor) <= 0)
+                    ClearCombat(actor, CombatRecordInterruptCause.Died);
+                else if (!string.IsNullOrWhiteSpace(activationId))
+                    TwinPistolAbility.Cancel(actor);
             });
         }
 

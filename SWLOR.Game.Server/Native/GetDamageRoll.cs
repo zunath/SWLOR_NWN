@@ -178,11 +178,20 @@ namespace SWLOR.Game.Server.Native
                     shot.DamageType = damageProfile.DamageType;
                     if (shot.Ordinary && !shot.Completed && isLandedAttack)
                     {
-                        PairedRangedTraits.RecordOrdinaryHit(attacker.m_idSelf, defender.m_idSelf, shot.Id);
-                        OrdinaryAttackTraits.RecordHit(attacker.m_idSelf, defender.m_idSelf, shot.Id);
-                        if (weaponSkillType == SkillType.TwinPistol &&
-                            !RangedWeaponAttackContext.IsSimulated(attacker.m_idSelf))
-                            TwinPistolMastery.RecordOrdinaryHit(attacker.m_idSelf, defender.m_idSelf, false);
+                        var attackerId = attacker.m_idSelf;
+                        var defenderId = defender.m_idSelf;
+                        var rollId = shot.Id;
+                        var nativeTwinPistol = weaponSkillType == SkillType.TwinPistol &&
+                                               !RangedWeaponAttackContext.IsSimulated(attackerId);
+                        void RecordOrdinaryHit()
+                        {
+                            PairedRangedTraits.RecordOrdinaryHit(attackerId, defenderId, rollId);
+                            OrdinaryAttackTraits.RecordHit(attackerId, defenderId, rollId);
+                            if (nativeTwinPistol)
+                                TwinPistolMastery.RecordOrdinaryHit(attackerId, defenderId, false);
+                        }
+                        if (weaponImpactScheduler == null) RecordOrdinaryHit();
+                        else weaponImpactScheduler(RecordOrdinaryHit);
                     }
                     shot.Completed = true;
                 }

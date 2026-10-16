@@ -158,30 +158,36 @@ namespace SWLOR.Game.Server.Native
                 GetDamageRoll.ResolveWeaponDamage((void*)creature.m_pStats.Pointer, (void*)target.Pointer, 0,
                     data.m_nAttackResult == 3 ? 1 : 0, convertedDamageScheduler: convertedDamage.Add,
                     weaponImpactScheduler: impactActions.Add);
+                var targetId = target.m_idSelf;
+                var weaponId = profile.Weapon;
+                var launchArea = GetArea(actor);
+                var travel = PairedRangedPresentation.FlightSeconds(GetDistanceBetween(actor, targetId));
                 if (queued)
                 {
-                    Ability.RecordLeadershipWeaponHit(actor, target.m_idSelf);
-                    Loot.RecordWeaponHitFindBonuses(actor, target.m_idSelf);
-                    UsePerkFeat.ResolveQueuedWeaponAbilityHit(actor, target.m_idSelf, profile.Weapon);
+                    var applyQueuedHit = UsePerkFeat.CaptureQueuedWeaponAbilityHit(actor, targetId, weaponId, () =>
+                    {
+                        Ability.RecordLeadershipWeaponHit(actor, targetId);
+                        Loot.RecordWeaponHitFindBonuses(actor, targetId);
+                    });
+                    if (applyQueuedHit != null)
+                        AssignCommand(GetModule(), () => DelayCommand(travel, applyQueuedHit));
                     return;
                 }
                 var shot = RangedWeaponAttackContext.GetRoll(actor, target.m_idSelf, round.m_nCurrentAttack);
-                CombatPoint.RecordWeaponAttackPoint(actor, target.m_idSelf, profile.Weapon, profile.Skill);
-                Ability.RecordLeadershipWeaponHit(actor, target.m_idSelf);
-                Loot.RecordWeaponHitFindBonuses(actor, target.m_idSelf);
-                TwinPistolMastery.RecordOrdinaryHit(actor, target.m_idSelf, true);
                 if (shot != null && (shot.Damage > 0 || impactActions.Count > 0 || convertedDamage.Count > 0))
                 {
-                    var launchArea = GetArea(actor);
-                    var targetId = target.m_idSelf;
                     var damage = shot.Damage;
                     var damageType = shot.DamageType;
+                    var skill = profile.Skill;
                     var attribution = CombatRecorder.CaptureAttackAttribution(actor);
-                    var travel = PairedRangedPresentation.FlightSeconds(GetDistanceBetween(actor, targetId));
                     AssignCommand(GetModule(), () => DelayCommand(travel, () =>
                     {
                         if (!GetIsObjectValid(targetId) || GetIsDead(targetId) || GetArea(targetId) != launchArea) return;
                         using var recorderScope = CombatRecorder.BeginAttribution(attribution);
+                        CombatPoint.RecordWeaponAttackPoint(actor, targetId, weaponId, skill);
+                        Ability.RecordLeadershipWeaponHit(actor, targetId);
+                        Loot.RecordWeaponHitFindBonuses(actor, targetId);
+                        TwinPistolMastery.RecordOrdinaryHit(actor, targetId, true);
                         foreach (var applyImpact in impactActions) applyImpact();
                         ResolvedCombatDamage.Apply(actor, targetId, damage, damageType);
                         foreach (var applyConvertedDamage in convertedDamage) applyConvertedDamage();

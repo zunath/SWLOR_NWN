@@ -1411,11 +1411,49 @@ namespace SWLOR.Game.Server.Feature
 
         /// <summary>Shared native/scripted weapon-hit entry point; the reserved launcher owns the ability.</summary>
         public static void ResolveQueuedWeaponAbilityHit(uint activator, uint target, uint item)
+            => ResolveQueuedWeaponAbilityHitCore(activator, target, item, null, null, null);
+
+        /// <summary>Captures one launched replacement without allowing its arrival to consume a later queue.</summary>
+        public static Action CaptureQueuedWeaponAbilityHit(uint activator, uint target, uint item, Action beforeImpact = null)
+        {
+            if (!GetIsObjectValid(activator) ||
+                !_queuedWeaponAttacks.TryGetValue(activator, out var reservation)) return null;
+            var abilityId = GetLocalString(activator, ActiveAbilityIdName);
+            if (string.IsNullOrWhiteSpace(abilityId)) return null;
+            var launchArea = GetArea(activator);
+            return () =>
+            {
+                if (!_queuedWeaponAttacks.TryGetValue(activator, out var currentReservation) ||
+                    !ReferenceEquals(currentReservation, reservation)) return;
+                if (!GetIsObjectValid(activator))
+                {
+                    _queuedWeaponAttacks.Remove(activator);
+                    return;
+                }
+                if (GetLocalString(activator, ActiveAbilityIdName) != abilityId) return;
+                if (GetIsDead(activator) || GetCurrentHitPoints(activator) <= 0 || GetArea(activator) != launchArea ||
+                    !GetIsObjectValid(target) || GetIsDead(target) || GetArea(target) != launchArea)
+                {
+                    // The readied ability remains available after a discarded projectile,
+                    // but its old launcher must not reserve every later attack.
+                    _queuedWeaponAttacks.Remove(activator);
+                    return;
+                }
+                ResolveQueuedWeaponAbilityHitCore(activator, target, item, abilityId, reservation, beforeImpact);
+            };
+        }
+
+        private static void ResolveQueuedWeaponAbilityHitCore(uint activator, uint target, uint item,
+            string expectedAbilityId, QueuedWeaponAttackReservation expectedReservation, Action beforeImpact)
         {
             if (!GetIsObjectValid(activator)) return;
+            if (expectedAbilityId != null && GetLocalString(activator, ActiveAbilityIdName) != expectedAbilityId) return;
 
             var targetLocation = GetLocation(target);
 
+            if (expectedReservation != null &&
+                (!_queuedWeaponAttacks.TryGetValue(activator, out var currentReservation) ||
+                 !ReferenceEquals(currentReservation, expectedReservation))) return;
             if (_queuedWeaponAttacks.TryGetValue(activator, out var reservation))
             {
                 if (reservation.Weapon != item &&
@@ -1439,6 +1477,7 @@ namespace SWLOR.Game.Server.Feature
             if (!Combat.CanItemTriggerWeaponAbility(item, abilityDetail.SkillType))
                 return;
 
+            beforeImpact?.Invoke();
             HandleStealthBreaking(activator, abilityDetail);
             var impactEnded = false;
             using var recorderAttribution = CombatRecorder.BeginAbilityAttribution(activator, abilityDetail, activeWeaponAbility);

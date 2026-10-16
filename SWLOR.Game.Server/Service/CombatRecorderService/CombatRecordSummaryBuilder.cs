@@ -168,12 +168,12 @@ namespace SWLOR.Game.Server.Service.CombatRecorderService
         {
             var label = CombatRecordSourceLabel.Format(e.SourceKind, e.SourceName, e.SourceCode);
             if (e.ActorId > 0)
-                AddHealing(GetParticipant(e.ActorId).HealingDone, label, e.Value0, e.Value1);
-            AddHealing(GetParticipant(e.TargetId).HealingReceived, label, e.Value0, e.Value1);
+                AddHealing(GetParticipant(e.ActorId).HealingDone, label, e.Value0, e.Value1, e.Value5);
+            AddHealing(GetParticipant(e.TargetId).HealingReceived, label, e.Value0, e.Value1, e.Value5);
         }
 
         private static void AddHealing(
-            Dictionary<string, CombatRecordHealingTotals> totals, string label, int requested, int effective)
+            Dictionary<string, CombatRecordHealingTotals> totals, string label, int requested, int effective, int pvpReduced)
         {
             if (!totals.TryGetValue(label, out var healing))
             {
@@ -184,6 +184,7 @@ namespace SWLOR.Game.Server.Service.CombatRecorderService
             healing.Count++;
             healing.Requested += requested;
             healing.Effective += effective;
+            healing.PvpReduced += pvpReduced;
         }
 
         private void AddResource(in CombatRecordEvent e)

@@ -846,7 +846,7 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                     DB.Set(dbPlayer);
                     Gui.PublishRefreshEvent(target, new PerkRefundCooldownResetRefreshEvent());
                     AbilityCooldownVisual.ClearAllRecastDelays(target);
-                    Disguise.ResetActivationCooldowns(target);
+                    Disguise.ResetActivationCooldowns(target, user);
 
                     SendMessageToPC(user, $"You have reset all of {targetName}'s cooldowns.");
                     SendMessageToPC(target, "A DM has reset all of your cooldowns.");

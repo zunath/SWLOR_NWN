@@ -25,6 +25,7 @@ public class PlayerIdentityAuditTests
     public void CompileAuditHarness()
     {
         var getAuditName = ExtractMethod("Service", "PlayerName.cs", "GetAuditName");
+        var getAuditIdentity = ExtractMethod("Service", "PlayerName.cs", "GetAuditIdentity");
         var connect = ExtractMethod("Feature", "Auditing.cs", "AuditClientConnection");
         var disconnect = ExtractMethod("Feature", "Auditing.cs", "AuditClientDisconnection");
         var chat = ExtractMethod("Feature", "Auditing.cs", "AuditChatMessages");
@@ -68,6 +69,7 @@ public class PlayerIdentityAuditTests
             public static class PlayerName
             {
                 {{getAuditName}}
+                {{getAuditIdentity}}
                 public static string InputError => AuditWorld.ValidationError;
                 public static string ValidateKnownNameInput(string name) => InputError;
                 public static string ValidateKnownNameAssignment(uint observer, uint target, string name) => InputError;
@@ -92,9 +94,13 @@ public class PlayerIdentityAuditTests
             }
             public static class Disguise
             {
+                public static readonly Dictionary<uint, PlayerDisguise> Active = new();
                 public static string GetIdentityKey(uint player) => $"identity-{player}";
                 public static string GetDisplayDescriptor(uint player) => AuditWorld.Players[player].Descriptor;
+                public static PlayerDisguise GetActiveDisguise(uint player) => Active.GetValueOrDefault(player);
+                public static string BuildIdentityKey(string disguiseId) => $"disguise:{disguiseId}";
             }
+            public sealed class PlayerDisguise { public string Id, PrivateName; }
 
             public enum ChatChannel { {{string.Join(", ", Enum.GetNames<ChatChannel>())}} }
             [AttributeUsage(AttributeTargets.Method)] public sealed class NWNEventHandlerAttribute : Attribute
@@ -195,6 +201,7 @@ public class PlayerIdentityAuditTests
                     AuditWorld.KnownNames.Clear();
                     AuditWorld.ValidationError = "";
                     AuditWorld.DmPossessed.Clear();
+                    Disguise.Active.Clear();
                     PlayerDescriptor.BaseDescriptor = "Old Base Descriptor";
                     AuditWorld.Players[1] = ("Canonical Speaker", "A Seedy Individual", true, false, true);
                     AuditWorld.Players[2] = ("Canonical Listener", "A Quiet Twi'lek", true, false, true);
@@ -207,6 +214,8 @@ public class PlayerIdentityAuditTests
                     AuditWorld.Players[id] = (row.Name, descriptor, row.IsPc, row.IsDm, row.Valid);
                 }
                 public static void SetDMPossessed(uint id) => AuditWorld.DmPossessed.Add(id);
+                public static void SetDisguise(uint player, string id, string name)
+                    => Disguise.Active[player] = new PlayerDisguise { Id = id, PrivateName = name };
             }
             """;
 
@@ -254,6 +263,7 @@ public class PlayerIdentityAuditTests
     [TestCaseSource(nameof(RegularChatChannels))]
     public void ChatAudit_RetainsCanonicalCredentialsAndAddsSpeakerDescriptor(ChatChannel channel)
     {
+        SetDisguise(1, "speaker-mask", "Smuggler");
         var output = RunChat(1, 0, channel.ToString(), "I saw A Seedy Individual near the docks.");
 
         output.Should().ContainSingle();
@@ -261,6 +271,7 @@ public class PlayerIdentityAuditTests
             .And.Contain("account-1")
             .And.Contain("cdk-1")
             .And.Contain("ip-1")
+            .And.Contain("PlayerId=1 IdentityKey=disguise:speaker-mask Disguised=True DisguiseId=speaker-mask DisguiseName=Smuggler")
             .And.Contain($" - {channel}:")
             .And.Contain("I saw A Seedy Individual near the docks.");
     }
@@ -283,6 +294,8 @@ public class PlayerIdentityAuditTests
     [TestCase(ChatChannel.DMTell)]
     public void TellAudit_RecordsCurrentDescriptorsForBothCanonicalParticipants(ChatChannel channel)
     {
+        SetDisguise(1, "speaker-mask", "Smuggler");
+        SetDisguise(2, "listener-mask", "Merchant");
         var output = RunChat(1, 2, channel.ToString(), "Are you the one I met?");
 
         output.Should().ContainSingle();
@@ -294,6 +307,8 @@ public class PlayerIdentityAuditTests
             .And.Contain("cdk-2")
             .And.Contain("ip-1")
             .And.Contain("ip-2")
+            .And.Contain("PlayerId=1 IdentityKey=disguise:speaker-mask Disguised=True DisguiseId=speaker-mask DisguiseName=Smuggler")
+            .And.Contain("PlayerId=2 IdentityKey=disguise:listener-mask Disguised=True DisguiseId=listener-mask DisguiseName=Merchant")
             .And.Contain($" - {channel} (SENT TO ")
             .And.Contain("Are you the one I met?");
     }
@@ -324,10 +339,43 @@ public class PlayerIdentityAuditTests
     public void HoloNetAudit_RetainsCanonicalAuthorAndCurrentDescriptor()
     {
         SetDescriptor(1, "A Masked Human");
+        SetDisguise(1, "broadcast-mask", "Broadcaster");
         var output = (string[])_runHoloNet.Invoke(null, [1u, "Looking for a mechanic."])!;
 
         output.Should().ContainSingle();
-        output[0].Should().Be("Chat:Canonical Speaker [A Masked Human] (account-1) [cdk-1] submitted HoloNet broadcast: Looking for a mechanic.");
+        output[0].Should().Contain("Chat:Canonical Speaker [A Masked Human]")
+            .And.Contain("PlayerId=1 IdentityKey=disguise:broadcast-mask Disguised=True DisguiseId=broadcast-mask DisguiseName=Broadcaster")
+            .And.EndWith("(account-1) [cdk-1] submitted HoloNet broadcast: Looking for a mechanic.");
+    }
+
+    [Test]
+    public void ChatAudit_DistinguishesDisguisesThatShareADescriptor()
+    {
+        SetDisguise(1, "first-mask", "First disguise");
+        var first = RunChat(1, 0, "PlayerTalk", "First message").Single();
+        SetDisguise(1, "second-mask", "Second disguise");
+        var second = RunChat(1, 0, "PlayerTalk", "Second message").Single();
+
+        first.Should().Contain("Canonical Speaker [A Seedy Individual]")
+            .And.Contain("IdentityKey=disguise:first-mask");
+        second.Should().Contain("Canonical Speaker [A Seedy Individual]")
+            .And.Contain("IdentityKey=disguise:second-mask").And.NotContain("first-mask");
+    }
+
+    [Test]
+    public void ChatAudit_RecordsCommandsWithTheCurrentDisguiseIdentity()
+    {
+        SetDisguise(1, "command-mask", "Command disguise");
+        RunChat(1, 0, "PlayerTalk", "/name A hooded traveler").Single().Should()
+            .Contain("DisguiseId=command-mask").And.Contain("PlayerId=1")
+            .And.EndWith("PlayerTalk: /name A hooded traveler");
+    }
+
+    [Test]
+    public void ChatAudit_IdentifiesUndisguisedPlayersExplicitly()
+    {
+        RunChat(1, 0, "PlayerTalk", "No disguise").Single().Should()
+            .Contain("PlayerId=1 IdentityKey=1 Disguised=False DisguiseId=none DisguiseName=none");
     }
 
     [Test]
@@ -413,6 +461,10 @@ public class PlayerIdentityAuditTests
     private void SetDescriptor(uint player, string descriptor)
         => _run.DeclaringType!.Assembly.GetType("AuditHarness")!.GetMethod("SetDescriptor")!
             .Invoke(null, [player, descriptor]);
+
+    private void SetDisguise(uint player, string disguiseId, string privateName)
+        => _run.DeclaringType!.Assembly.GetType("AuditHarness")!.GetMethod("SetDisguise")!
+            .Invoke(null, [player, disguiseId, privateName]);
 
     private void ResetNameState()
         => _runNameAction.DeclaringType!.Assembly.GetType("AuditHarness")!.GetMethod("ResetNameState")!.Invoke(null, null);

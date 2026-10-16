@@ -44,6 +44,39 @@ function parseCsv(text) {
   return rows.filter(r => r.length > 1).map(r => Object.fromEntries(headers.map((h, i) => [h, r[i] ?? ''])));
 }
 const manifest = parseCsv(readFileSync(new URL('../SWLOR.Game.Server/Readmes/CombatUpgradeBiblePerkManifest.csv', import.meta.url), 'utf8'));
+function capstoneFromRow(row, setupName) {
+  const description = row.Description.replace(/\s+/g, ' ');
+  const power = description.match(/^Deals weapon DMG \+\s*(\d+) to one enemy\. Spending (Finish|your Rattled against its enemy) adds \+\s*(\d+) power[.;]/);
+  assert.ok(power, `${row.PerkName}: unsupported capstone power description`);
+  assert.equal(power[2], setupName, `${row.PerkName}: unexpected setup requirement`);
+  assert.match(row.STM, /^\d+(?:\.0)?$/, `${row.PerkName}: STM must be a positive integer`);
+  const seconds = (text, field) => {
+    const match = text.match(/^(\d+(?:\.\d+)?) seconds?$/);
+    assert.ok(match, `${row.PerkName}: ${field} must be expressed in seconds`);
+    const value = Number(match[1]);
+    assert.ok(value > 0, `${row.PerkName}: ${field} must be positive`);
+    return value;
+  };
+  const cost = Number(row.STM);
+  assert.ok(Number.isInteger(cost) && cost > 0, `${row.PerkName}: STM must be a positive integer`);
+  assert.match(row.Notes, /\bOne impact\b/, `${row.PerkName}: this analysis requires a single impact`);
+  return {
+    name: row.PerkName, basePower: Number(power[1]), setupPower: Number(power[3]), cost,
+    castSeconds: seconds(row.CastingTime, 'CastingTime'),
+    recastSeconds: seconds(row.CooldownTime, 'CooldownTime'),
+    source: { manifest: 'SWLOR.Game.Server/Readmes/CombatUpgradeBiblePerkManifest.csv', tab: row.Tab, row: Number(row.Row) }
+  };
+}
+const capstoneRows = Object.fromEntries([
+  ['martialArtist', 'Perfect Form', 'Finish'],
+  ['brawler', 'Haymaker', 'your Rattled against its enemy']
+].map(([build, name, setupName]) => {
+  const rows = manifest.filter(row => row.Tab === 'Unarmed' && row.PerkName === name);
+  assert.equal(rows.length, 1, `Expected one current Bible capstone row for ${name}`);
+  return [build, { row: rows[0], setupName }];
+}));
+const capstones = Object.fromEntries(Object.entries(capstoneRows).map(([build, { row, setupName }]) =>
+  [build, capstoneFromRow(row, setupName)]));
 for (const prefix of ['Doublehand', 'Dual Wield']) {
   const armorRows = manifest.filter(r => r.Tab === 'Armor' && r.PerkName.startsWith(`${prefix} `));
   assert.equal(armorRows.length, 3, `${prefix} comparison requires all three Armor ranks`);
@@ -111,16 +144,19 @@ function partitions(build, id, damage, qualified = false, reversal = false) {
     if (id === 'bridge') return [damage + 36 + (qualified ? 12 : 0)];
     if (id === 'utility') return Array(2).fill(Math.floor(damage / 2) + 14 +
       (qualified ? (qualified === 'opening' ? 4 : 8) + 6 : 0));
-    return [damage + 45 + (qualified ? 15 + 12 : 0)];
+    return capstonePartitions(capstones[build], damage, qualified);
   }
   if (build === 'brawler') {
     if (id === 'opener') return [damage + 38];
     if (id === 'bridge') return [damage + 36 + (qualified ? 16 + 12 : 0)];
     if (id === 'utility') return [damage + 30];
-    return [damage + 40 + (qualified ? 20 + 12 : 0)];
+    return capstonePartitions(capstones[build], damage, qualified);
   }
   const spec = katar[id];
   return [damage + spec.power + (spec.control ? 12 + (reversal ? 20 : 0) : 0)];
+}
+function capstonePartitions(spec, damage, qualified) {
+  return [damage + spec.basePower + (qualified ? spec.setupPower + 12 : 0)];
 }
 function impactPowers(build, id, damage, qualified = false, reversal = false) {
   // Only Practiced Form is a single partitioned activation budget. The engine's
@@ -365,15 +401,32 @@ assert.equal(hitChance(0.85, 5), 0.87);
 assert.equal(hitChance(0.95, 5), 0.95);
 assert.deepEqual(partitions('martialArtist', 'utility', 31, true), [43, 43]);
 assert.deepEqual(partitions('martialArtist', 'utility', 19, true), [37, 37]);
-assert.equal(partitions('martialArtist', 'capstone', 31, true)[0], 103);
-assert.equal(partitions('brawler', 'capstone', 31, true)[0], 103);
 assert.equal(ABILITY_RANK_BONUS, 7);
 assert.deepEqual(impactPowers('martialArtist', 'utility', 31, true), [50, 50]);
 assert.deepEqual(impactPowers('martialArtist', 'utility', 19, true), [44, 44]);
 assert.deepEqual(partitions('martialArtist', 'utility', 31, 'opening'), [39, 39]);
 assert.deepEqual(impactPowers('martialArtist', 'utility', 31, 'opening'), [46, 46]);
-assert.equal(impactPowers('martialArtist', 'capstone', 31, true)[0], 110);
-assert.equal(impactPowers('brawler', 'capstone', 31, true)[0], 110);
+for (const [build, spec] of Object.entries(capstones)) {
+  assert.deepEqual(partitions(build, 'capstone', 31), [31 + spec.basePower], 'Unsequenced capstones gain neither setup nor Form power');
+  assert.equal(partitions(build, 'capstone', 31, true)[0] - partitions(build, 'capstone', 31)[0],
+    spec.setupPower + 12, 'The setup and Form budgets apply once to the single impact');
+  assert.equal(impactPowers(build, 'capstone', 31, true)[0],
+    31 + spec.basePower + spec.setupPower + 12 + ABILITY_RANK_BONUS);
+
+  const { row, setupName } = capstoneRows[build];
+  const changed = capstoneFromRow({ ...row,
+    Description: `Deals weapon DMG + ${spec.basePower + 3} to one enemy. Spending ${setupName} adds +${spec.setupPower + 5} power.`,
+    STM: String(spec.cost + 2), CastingTime: `${spec.castSeconds + 0.5} seconds`, CooldownTime: `${spec.recastSeconds + 1} seconds`
+  }, setupName);
+  assert.equal(capstonePartitions(changed, 31, true)[0] - capstonePartitions(spec, 31, true)[0], 8,
+    'Changing manifest powers must change the reported capstone total');
+  assert.equal(changed.cost, spec.cost + 2);
+  assert.equal(changed.castSeconds, spec.castSeconds + 0.5);
+  assert.equal(changed.recastSeconds, spec.recastSeconds + 1);
+  assert.throws(() => capstoneFromRow({ ...row, Description: 'Unrecognized power formula' }, setupName), /unsupported capstone power/);
+  assert.throws(() => capstoneFromRow({ ...row, STM: '-' }, setupName), /STM must be a positive integer/);
+  assert.throws(() => capstoneFromRow({ ...row, CastingTime: 'instant' }, setupName), /CastingTime must be expressed in seconds/);
+}
 assert.equal(meanDamage(31), 26.85);
 assert.ok(Math.abs(meanDamage(31, 1, 0, ABILITY_CRIT) - 26.425) < 1e-10);
 assert.equal(trial({ resource: 'low', incomingDamageRate: 0 }, 'brawler', 1).generatedDiscounts, 0);
@@ -431,6 +484,7 @@ const openingPowerChecks = Object.fromEntries(['single', 'dual'].map(loadout => 
   return [loadout, {
     adjustedMainD: d,
     engineRankBonusPerImpact: ABILITY_RANK_BONUS,
+    capstoneActivations: capstones,
     ordinaryWeave: [d + 16],
     authored: powers(partitions),
     impact: powers(impactPowers),
@@ -439,13 +493,14 @@ const openingPowerChecks = Object.fromEntries(['single', 'dual'].map(loadout => 
   }];
 }));
 const summary = {
-  method: 'Seeded discrete ordinary/ability hit trials with expected critical damage; finite120sSTM; fixed30s ordered/weave rotation versus Katar cooldown priorities; offensive ceiling before engine/animation/avoidance/CC value; capstones excluded',
+  method: 'Seeded discrete ordinary/ability hit trials with expected critical damage; finite120sSTM; fixed30s ordered/weave rotation versus Katar cooldown priorities; offensive ceiling before engine/animation/avoidance/CC value; capstones excluded from all simulated DPS rotations',
   samplesPerBuildCase: samples,
   prices: { line: 60, armor: 9, comparisonTotalSP: 69, purchasesPerLine: 18, distinctPerksPerNewLine: 10 },
   defaults: { h: 0.85, ext: 0, ratio: 1, delta: 0, resource: 'geared', incomingDamageRate: 0.5,
     reversalUptime: 0.5, martialStance: true, martialHaste: 15, martialWindow: 6,
     brawlerStance: true, katarStance: false, rotation: 'sequence' },
   assumptions: [
+    'Capstone opening-power checks use current Bible manifest base/setup power, STM, cast and recast values. Their totals include Form and rank bonuses, exclude Retaliation and external boosts, and do not contribute to any simulated DPS row.',
     'One hostile target remains in range; no target/equipment/area interruptions.',
     'Main-hand weapon D19/Delay220 at rank50; single +60% rounds once to D31; dual has two D19 ordinary attacks and Dual Wield III.',
     'All activated powers use captured main D; the two finisher impacts partition D with floor(D/2), and split Form12 as six each.',

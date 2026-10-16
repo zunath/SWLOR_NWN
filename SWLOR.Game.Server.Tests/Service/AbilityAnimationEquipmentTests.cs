@@ -73,6 +73,45 @@ public class AbilityAnimationEquipmentTests
     public void AuthoredMotionRequiresTheCorrectGripAndOffHand(Requirement requirement, Grip mainHand, Grip offHand, bool expected) =>
         AbilityAnimationEquipment.IsCompatible(requirement, mainHand, offHand).Should().Be(expected);
 
+    [TestCase(1)]
+    [TestCase(2)]
+    [TestCase(3)]
+    [TestCase(4)]
+    [TestCase(5)]
+    public void PowerGlovePairRetainsEveryAuthoredUnarmedClip(int creatureSize)
+    {
+        var rows = Test2daHelper.Read2da(new FileInfo(Path.Combine(RepositoryRoot(), "SWLOR_Haks/sw_2da/baseitems.2da")));
+        Grip ReadGrip(BaseItem item)
+        {
+            var row = rows[(int)item];
+            int? Read(string column) => int.TryParse(row[column], out var value) ? value : null;
+            return AbilityAnimationEquipment.ResolveGrip(item, Read("WeaponWield"), Read("WeaponSize"), Read("WeaponType"), creatureSize);
+        }
+
+        var mainHand = ReadGrip(BaseItem.PowerGlove);
+        var offHand = ReadGrip(BaseItem.CompanionPowerGlove);
+        var entries = ActiveAbilityAnimationCatalog.Entries.Where(entry => entry.Category == "Unarmed").ToArray();
+        var abilities = typeof(IAbilityListDefinition).Assembly.GetTypes()
+            .Where(type => !type.IsAbstract && typeof(IAbilityListDefinition).IsAssignableFrom(type) &&
+                type.Namespace == "SWLOR.Game.Server.Feature.AbilityDefinition.Unarmed")
+            .SelectMany(type => ((IAbilityListDefinition)Activator.CreateInstance(type)!).BuildAbilities())
+            .ToDictionary(pair => pair.Key, pair => pair.Value);
+        AbilityAnimationBinding.Apply(abilities, entries);
+
+        entries.Should().NotBeEmpty();
+        foreach (var entry in entries)
+        foreach (var feat in entry.Feats)
+        {
+            var ability = abilities[feat];
+            var compatible = AbilityAnimationEquipment.IsCompatible(ability.AnimationEquipmentRequirement, mainHand, offHand);
+            compatible.Should().BeTrue($"{feat} must accept the real glove and its nonweapon cosmetic companion");
+            var clip = ability.UsesAuthoredImpactAnimation
+                ? AbilityAnimationBinding.ImpactClip(ability, true, compatible)
+                : AbilityAnimationBinding.ActivationClip(ability, true, 0f, compatible);
+            clip.Should().BeSameAs(entry.Clip, feat.ToString());
+        }
+    }
+
     [Test]
     public void ManifestAndCatalogExplicitlyAgreeOnEveryEquipmentRequirement()
     {

@@ -6,6 +6,7 @@ using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.EngineTests.Framework;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Native;
+using SWLOR.Game.Server.Service.AnimationService;
 using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
@@ -21,6 +22,37 @@ public static class PowerGlovePairEngineTests
 {
     private static uint _observedAttacker = OBJECT_INVALID;
     private static readonly List<(uint Weapon, DateTime Time)> Hits = new();
+
+    [EngineTest("One owned Power Glove and its cosmetic hand retain authored strike and capstone playback", Category = "PowerGloveAnimationRoute", TimeoutSeconds = 35f)]
+    public static async Task PairedHandsRetainAuthoredAnimations(EngineTestContext ctx)
+    {
+        using var player = await PlayerAbilityFixture.CreateAsync(ctx);
+        player.Update(record => record.Skills[SkillType.Unarmed].Rank = 50);
+        var actor = player.Creature;
+        var main = await EquipMain(ctx, actor);
+        ctx.Track(main);
+        var companion = await WaitForPair(ctx, actor, main);
+        ctx.AssertEqual(BaseItem.PowerGlove, GetBaseItemType(main), "The equipped main hand is the real native Power Glove");
+        AssertCosmeticCompanion(ctx, companion);
+        ctx.Assert(AbilityAnimationEquipment.IsCompatible(AnimationEquipmentRequirement.Unarmed, actor),
+            "Both native base541 and cosmetic base543 resolve as an Unarmed grip");
+        foreach (var feat in new[] { FeatType.Jab1, FeatType.PerfectForm1, FeatType.Haymaker1 })
+        {
+            var ability = Ability.GetAbilityDetail(feat);
+            var clip = AbilityAnimationBinding.ImpactClip(ability, actor);
+            ctx.Assert(clip != null && ReferenceEquals(ability.AuthoredImpactAnimation, clip),
+                $"The actual equipped pair retains {feat}'s authored impact clip");
+            string token = null;
+            await ctx.ExecuteInCreatureContextAsync(actor, () =>
+                token = NamedAnimation.Play(actor, clip, equipmentRequirement: ability.AnimationEquipmentRequirement));
+            ctx.Assert(!string.IsNullOrEmpty(token), $"The live equipment check permits {feat}'s named playback");
+            await ctx.DelaySecondsAsync(clip.Duration + NamedAnimationPlayback.ExitGraceSeconds + .2f);
+            ctx.Assert(!NamedAnimation.StopIfCurrent(actor, token), $"{feat}'s playback releases its ownership after the authored exit");
+            ctx.AssertEqual(main, GetItemInSlot(InventorySlot.RightHand, actor), "Playback preserves the original real glove");
+            ctx.AssertEqual(companion, GetItemInSlot(InventorySlot.LeftHand, actor), "Playback preserves the same generated hand");
+            ctx.Log($"{feat}: live base541/543 route selected {clip.Name}, duration {clip.Duration}s, then released playback.");
+        }
+    }
 
     [EngineTest("One owned Power Glove generates a cosmetic hand with no duplicate stats or economy item", Category = "PowerGlovePair", TimeoutSeconds = 45f)]
     public static async Task OneOwnedItemAndOneStatProfile(EngineTestContext ctx)

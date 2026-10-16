@@ -5916,7 +5916,7 @@
     "InternalName": "sw_jab",
     "Category": "Unarmed",
     "Type": "Combat",
-    "Description": "Deals weapon DMG + 38. On hit, grants Opening against this enemy for 4 seconds. Opening gives +3 ordinary Unarmed ACC and sets up either follow-up attack.",
+    "Description": "Deals weapon DMG + 38. On hit, grants Opening against this enemy for 4 seconds. Opening gives +3 ordinary weapon ACC against this enemy with any weapon and sets up either follow-up attack.",
     "Reference": "",
     "PerkId": "Jab",
     "Feats": [
@@ -5941,7 +5941,7 @@
     "InternalName": "sw_palmstr",
     "Category": "Unarmed",
     "Type": "Combat",
-    "Description": "Deals weapon DMG + 36. Spends Opening at activation. If the sequenced strike lands, grants Finish for 4 seconds; Finish gives +3 ordinary Unarmed ACC.",
+    "Description": "Deals weapon DMG + 36. Spends Opening at activation. If the sequenced strike lands, grants Finish for 4 seconds; Finish gives +3 ordinary weapon ACC against this enemy with any weapon.",
     "Reference": "",
     "PerkId": "PalmStrike",
     "Feats": [
@@ -5988,7 +5988,7 @@
     "InternalName": "sw_flowst",
     "Category": "Unarmed",
     "Type": "Stance",
-    "Description": "While active, gain +10% Haste and +8% Evasion, but ordinary Unarmed damage is reduced by 20%. Activated damage is unchanged.",
+    "Description": "While active, a landed Finishing Combination spending Opening grants Slip Away: +20% Evasion and +15% movement speed for 6 seconds. A landed Finishing Combination or Perfect Form spending Finish instead grants Press Forward: +15% Haste for 6 seconds. These windows are mutually exclusive and share a 12-second trigger cooldown. Weapon swaps and unrelated hostile skills against the same enemy preserve the window. Stance, combat or enemy changes clear it. No ordinary damage penalty.",
     "Reference": "",
     "PerkId": "FlowStance",
     "Feats": [
@@ -6010,7 +6010,7 @@
     "InternalName": "sw_perfform",
     "Category": "Unarmed",
     "Type": "Combat",
-    "Description": "Deals weapon DMG + 45 to one enemy. Spending Finish adds +15 power. Practiced Form and Measured Technique apply only with Finish.",
+    "Description": "Deals weapon DMG + 45 to one enemy. Spending Finish adds +70 power. Practiced Form applies only with Finish.",
     "Reference": "",
     "PerkId": "PerfectForm",
     "Feats": [
@@ -6104,7 +6104,7 @@
     "InternalName": "sw_bruisst",
     "Category": "Unarmed",
     "Type": "Stance",
-    "Description": "While active, gain +10% Physical Defense, but ordinary Unarmed damage is reduced by 5%. Activated damage is unchanged.",
+    "Description": "Increases Physical Defense by 10%, with any equipment. A landed Dirty Jab braces you against its enemy for 4 seconds. The first direct hostile hit from that enemy that damages real HP arms Retaliation: +8 total power on the next Uppercut or Haymaker spending your own Rattled before it expires. One grant per opener, with an 18-second grant cooldown. The bonus is spent on paid activation, including a miss. Weapon swaps and unrelated hostile skills against the same enemy preserve it. Stance, combat or enemy changes clear it. No ordinary damage penalty.",
     "Reference": "",
     "PerkId": "BruiserStance",
     "Feats": [
@@ -6126,7 +6126,7 @@
     "InternalName": "sw_haymaker",
     "Category": "Unarmed",
     "Type": "Combat",
-    "Description": "Deals weapon DMG + 40 to one enemy. Spending your Rattled against its enemy adds +20 power; Heavy Blows also applies.",
+    "Description": "Deals weapon DMG + 40 to one enemy. Spending your Rattled against its enemy adds +80 power; Heavy Blows also applies.",
     "Reference": "",
     "PerkId": "Haymaker",
     "Feats": [

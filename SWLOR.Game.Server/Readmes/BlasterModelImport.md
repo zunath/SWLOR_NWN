@@ -30,6 +30,194 @@ A middle slot uses `wbwsh_m_NNN.mdl` and `iwbwsh_m_NNN.dds` in
 The example weapons use empty top/bottom parts 11. Texture resrefs must be unique,
 meaningful and fit NWN's 16-character limit, including map suffixes.
 
+## Generate local weapon sources with TRELLIS.2
+
+`tools/GenerateWeaponModels.py` runs the retained
+`tools/workflows/trellis2_weapon.json` image-to-GLB workflow against an already
+running local ComfyUI instance. It uses Python's standard library, requires no
+Xenomech checkout, and does not call Meshy or paid APIs. It does not install,
+restart, or stop ComfyUI. The default endpoint is `http://127.0.0.1:8000`;
+`--url` accepts another loopback HTTP endpoint. External API nodes are rejected.
+
+Use a compatible ComfyUI build with the TRELLIS.2 and mesh processing nodes;
+preflight checks their current input names, links and model choices. The tested
+runtime reports ComfyUI 0.38.0 and includes these nodes in its core installation.
+Its configured model search paths must contain:
+
+- `diffusion_models/trellis_2_int8_convrot.safetensors`
+- `vae/trellis_2_shape_vae_bf16.safetensors`
+- `vae/trellis_2_texture_vae_bf16.safetensors`
+- `clip_vision/dino_v3_L_naf_fp32.safetensors`
+- `background_removal/birefnet.safetensors`
+
+Create concept images and a schema-1 manifest outside Git, for example in a
+new temporary directory. Paths in `image` are relative to the manifest, or
+absolute. Explicitly Git-ignored staging is also accepted. Do not commit input
+images, per-weapon manifests, prompt journals, GLBs or generated reports.
+
+```json
+{
+  "schema_version": 1,
+  "assets": [
+    {
+      "id": "spear_field",
+      "image": "concepts/spear_field.png",
+      "seed": 123,
+      "shape_resolution": 512,
+      "texture_size": 1024,
+      "target_faces": 6000
+    }
+  ]
+}
+```
+
+Shape resolution accepts 512 or 1024; 512 bypasses the shape upsampling stage.
+Texture size independently accepts 512 or 1024. Seed is required; default shape,
+texture and target-face budgets are 512, 1024 and 6000. Face count is a decimator
+target, not a guarantee about the final mesh. Choose budgets from the weapon's
+silhouette and source quality, then inspect the result before fitting.
+
+```powershell
+python -B tools/GenerateWeaponModels.py "$env:TEMP/weapon-sources/manifest.json" `
+  --output "$env:TEMP/weapon-sources/generated" --preflight
+# After the read-only preflight succeeds:
+python -B tools/GenerateWeaponModels.py "$env:TEMP/weapon-sources/manifest.json" `
+  --output "$env:TEMP/weapon-sources/generated" --timeout 1800
+```
+
+The runner holds one local GPU-owner lock, waits for an empty ComfyUI queue,
+and finishes one owned prompt before submitting the next. It never clears the
+queue or interrupts someone else's job. Each asset has a fixed persisted deadline,
+including queue wait; restarting cannot extend it. The prompt and unique recovery
+token are journaled before submission. Repeat the identical command to collect a
+known job or reconcile a lost response against queue/history. If that cannot
+identify exactly one job, the runner stops; inspect its journals and ComfyUI
+history before deciding what happened. Do not delete the journal or blindly
+resubmit. An expired running job remains owned by its recorded prompt ID and
+can be collected once complete. A failed job stops the batch.
+
+Each asset folder contains `source.glb`, unchanged embedded PBR image bytes,
+`generation.json` with hashes/material bindings/channel metadata, and local
+prompt/submission/history records. Base color uses sRGB; packed metallic/roughness
+uses linear B/G channels. The workflow bakes an actual OpenGL tangent normal map
+from the high-poly remesh into the decimated mesh's UVs and includes it in GLB
+`normalTexture`; it does not invent normal detail from color. Preserve those UVs,
+material subsets and authored normals during subsequent export. The workflow
+version and required live node schemas are checked before any submission.
+
+Generated sources still require geometry/material inspection, uniform fitting to
+the native hand and slot, DDS conversion, compilation, matching inventory artwork,
+and actual NWN screenshots. Generation or preflight success does not establish
+usable topology, correct grip, orientation or native rendering. Use the GLB
+adapter below, then complete native verification. Focused runner tests use no GPU:
+
+```powershell
+python -B -m unittest discover -s tools/tests -p test_generate_weapon_models.py
+```
+
+### Inspect, fit and package a generated GLB
+
+`tools/TrellisWeaponExport.py` runs `inspect` and `export` inside Blender 4.0;
+`package` uses ordinary Python with NumPy, NWN Crunch EE and the installed NWN:EE
+compiler. Every output directory must be empty and outside the repository.
+The adapter reads `baseitems.2da` from the initialized HAK submodule; pass `--repo`
+when the intended checkout differs from the tool's own checkout.
+
+Create a separate local fit manifest. Inspection requires only `schema_version`,
+and each asset's `asset`, `source`, `sha256` and `base_item`. Export additionally
+requires the measured transform, native resource names, texture budget, attachment
+review and icon canvas shown below. These values illustrate the schema, not an
+approved fit or a free appearance slot; replace them from the inspected source
+and audited consumers. `sha256` binds the complete self-contained GLB.
+
+```json
+{
+  "schema_version": 1,
+  "assets": [{
+    "asset": "spear_field", "source": "generated/spear_field/source.glb",
+    "sha256": "<source-sha256>", "base_item": 58,
+    "model": "wplss_t_081", "texture": "spear_field", "texture_size": 1024,
+    "scale": 1.0, "orientation": [[1,0,0],[0,1,0],[0,0,1]],
+    "source_grip": [0,0,0], "target_grip": [0,0,0], "icon_size": [32,128],
+    "attachment": {
+      "review_notes": "Replace with measured hand, blade/edge and shared-slot findings",
+      "axis_pairs": [
+        {"source": [0,1,0], "target": [0,1,0]},
+        {"source": [1,0,0], "target": [1,0,0]}
+      ]
+    }
+  }]
+}
+```
+
+```powershell
+$blender = 'C:/Program Files/Blender Foundation/Blender 4.0/blender.exe'
+& $blender -b --factory-startup --python-exit-code 1 `
+  --python tools/TrellisWeaponExport.py -- --mode inspect `
+  --manifest "$env:TEMP/weapon-sources/fit.json" --output "$env:TEMP/weapon-sources/inspect"
+# After inspecting axes/materials and replacing the illustrative fit values:
+& $blender -b --factory-startup --python-exit-code 1 `
+  --python tools/TrellisWeaponExport.py -- --mode export `
+  --manifest "$env:TEMP/weapon-sources/fit.json" --output "$env:TEMP/weapon-sources/export"
+python -B tools/TrellisWeaponExport.py --mode package `
+  --export "$env:TEMP/weapon-sources/export" --output "$env:TEMP/weapon-sources/package" `
+  --crunch '<local-nwn_crunch.exe>' --nwmain '<installed-nwmain.exe>'
+```
+
+Transforms use Blender's imported world coordinates, after glTF axis conversion:
+`target_grip + orientation * scale * (point - source_grip)`. Use uniform scale,
+a proper rotation and two independent reviewed axis pairs. Audit every native
+B/M/T consumer before replacing shared resources: ModelPart1 is bottom, 2 middle,
+3 top. Optional `aliases` copies a whole resource to explicitly audited model IDs;
+`parts` entries have `model`, `plane_y`, `clip_side` (`above`/`below`) and optional
+`aliases` for complementary uncapped splits. Optional top-level `empty_parts`
+entries require `model`, `base_item` and `icon_size`; only declare ends proven safe
+to empty. The tool checks family/name collisions, not the full consumer graph.
+
+`icon_size` is the measured native power-of-two canvas, not just inventory cells.
+For example, a 2-by-5 logical area occupies 64-by-160 artwork in a 64-by-256 canvas;
+the adapter pads transparently without stretching it. Source material subsets,
+UV seams and authored corner normals are retained. Unsupported material features
+fail explicitly. A double-sided source is rejected unless the fit explicitly sets
+`double_sided_policy` to `closed_surface` and its shells pass the closure/winding
+and enclosed-cavity checks; inspect the resulting culling and shading too.
+
+Inspection produces component/material reports, axis views and a local scene.
+Export produces ASCII models, MTRs, TGA intermediates, icon previews and a local
+`source_basis.npz` whose hash is bound into `export_manifest.json`. Package verifies
+those hashes and compiles MDLs first. Its reusable `tools/TrellisWeaponNormals.py`
+helper then matches native triangles, including barycentric matches for splits,
+and reprojects baked source normals into the actual compiled normal/tangent/sign
+basis before DDS compression. This accounts for glTF UV orientation and native
+handedness without applying SWTOR channel unpacking. UV ownership conflicts and
+unrepresentable negative tangent Z fail explicitly; they are never silently clamped.
+The same package command above performs this step; keep the source-basis file
+beside the export until packaging finishes. Package reports retain the matching,
+quantization and map-hash evidence alongside directed corner and dependency checks.
+The default `normal_basis_policy: "reproject"` remains strict and rejects ambiguous
+interpolated tangent handedness. An explicitly reviewed asset may instead select
+`normal_basis_policy: "authored_tangents"`: after compilation, the helper patches
+only existing, uniquely owned tangent/sign streams. It preserves compiler normals,
+positions, UVs, indices, materials and the staged normal TGA, and uses NWN's smooth
+handedness interpolation followed by its sign threshold. Mixed-sign triangle
+shading is undefined in glTF; this policy does not recover the high-poly normal
+field or promise identical glTF shading. Reports bind the source GLB and immutable
+basis hashes and record mixed-sign faces, byte preservation and encoding error.
+Both policies require close native shading review, including seams and highlights.
+
+Only the reviewed `package/runtime_resources` belong in the HAK. Local geometry
+repairs must preserve or reproject their baked normal field before this final
+source-to-native conversion; unit tangent checks alone do not establish matching shading.
+Keep repair inputs, manifests and proof reports local, and verify hand contact,
+attack poses, shared joins, ground appearance and inventory in NWN before adoption.
+
+Run the committed adapter and shared converter tests inside Blender so geometry
+and image checks execute as well as the pure Python checks:
+
+```powershell
+& $blender -b --factory-startup --python-exit-code 1 --python tools/tests/test_trellis_weapon_export.py
+& $blender -b --factory-startup --python-exit-code 1 --python tools/tests/test_import_blaster_model.py
+```
 ## Import a rigid, opaque GR2 blaster
 
 Use Blender **4.0** and the pinned SWTOR-Slicers GR2 importer **4.2.1**:

@@ -4,7 +4,11 @@ using FluentAssertions;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
+using Newtonsoft.Json;
 using NUnit.Framework;
+using Serilog;
+using Serilog.Events;
+using Serilog.Formatting.Display;
 
 namespace SWLOR.Game.Server.Tests.Feature;
 
@@ -31,10 +35,13 @@ public class DisguiseAuditTests
         var descriptorMethods = descriptorSource.DescendantNodes().OfType<MethodDeclarationSyntax>()
             .Where(method => method.Identifier.ValueText is "SetUnknownDisplayName" or "EnsureUnknownDisplayName")
             .Select(method => method.WithAttributeLists(default).ToFullString());
+        var getDm = ReadSource("Service/DMPresence.cs").DescendantNodes().OfType<MethodDeclarationSyntax>()
+            .Single(method => method.Identifier.ValueText == "GetDM");
         var source = $$"""
             using System;
             using System.Collections.Generic;
             using System.Linq;
+            using Newtonsoft.Json;
             using static World;
 
             public sealed class IndexedAttribute : Attribute { }
@@ -57,11 +64,13 @@ public class DisguiseAuditTests
                 public const uint OBJECT_INVALID = 0x7f000000;
                 public static uint EnteringObject = 1;
                 public static string Name = "Canonical Player";
-                public static bool GetIsObjectValid(uint player) => player is 1 or 2;
+                public static bool GetIsObjectValid(uint player) => player is 1 or 2 or 3;
                 public static bool GetIsPC(uint player) => player == 1;
                 public static bool GetIsDM(uint player) => false;
-                public static string GetObjectUUID(uint player) => player == 2 ? "staff-id" : "owner-id";
-                public static string GetName(uint player) => player == 2 ? "Staff Actor" : Name;
+                public static bool GetIsDMPossessed(uint player) => player == 3;
+                public static uint GetMaster(uint player) => player == 3 ? 2u : OBJECT_INVALID;
+                public static string GetObjectUUID(uint player) => player == 3 ? "possessed-id" : player == 2 ? "staff-id" : "owner-id";
+                public static string GetName(uint player) => player == 3 ? "Possessed NPC" : player == 2 ? "Staff Actor" : Name;
                 public static uint GetEnteringObject() => EnteringObject;
                 public static string GetPCPublicCDKey(uint player) => "public-cd-key";
                 public static int GetGold(uint player) => 100000;
@@ -104,6 +113,7 @@ public class DisguiseAuditTests
             public static class UtilPlugin { public static string StripColors(string value) => value; }
             public static class Gui { public static void PublishRefreshEvent(uint player, object refresh) { } }
             public sealed class RPXPRefreshEvent { }
+            public static class DMPresence { {{getDm}} }
             public static class PlayerName
             {
                 public static string SanitizeKnownName(string name) => name.Trim();
@@ -191,6 +201,24 @@ public class DisguiseAuditTests
                         throw new Exception("Invalid save accepted");
                     return Log.Records.ToArray();
                 }
+                public static object[][] MultilineRejectedSave()
+                {
+                    Reset();
+                    var disguise = Disguise.CreateDisguise(1);
+                    Log.Records.Clear();
+                    Disguise.SaveDisguise(1, disguise.Id, "Invalid\n" + new string('x', 40),
+                        "Descriptor\r\n2026-01-01 forged event", "Biography\r\nForged event", 20, 21, true);
+                    return Log.Records.ToArray();
+                }
+                public static object[][] PossessedReset()
+                {
+                    Reset();
+                    var disguise = Disguise.CreateDisguise(1);
+                    Disguise.Activate(1, disguise.Id);
+                    Log.Records.Clear();
+                    Disguise.ResetActivationCooldowns(1, 3);
+                    return Log.Records.ToArray();
+                }
                 public static object[][] RejectedLifecycle()
                 {
                     Reset();
@@ -204,7 +232,8 @@ public class DisguiseAuditTests
             }
             """;
         var references = ((string)AppContext.GetData("TRUSTED_PLATFORM_ASSEMBLIES")!)
-            .Split(Path.PathSeparator).Select(path => MetadataReference.CreateFromFile(path));
+            .Split(Path.PathSeparator).Append(typeof(JsonConvert).Assembly.Location).Distinct()
+            .Select(path => MetadataReference.CreateFromFile(path));
         var compilation = CSharpCompilation.Create("DisguiseAuditHarness", [CSharpSyntaxTree.ParseText(source)],
             references, new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary));
         using var stream = new MemoryStream();
@@ -242,8 +271,8 @@ public class DisguiseAuditTests
         Field(save, "PrivateName").Should().Be("New mask");
         Field(save, "PreviousDescriptor").Should().Be("Old descriptor");
         Field(save, "Descriptor").Should().Be("New descriptor");
-        Field(save, "PreviousBiography").Should().Be("Old\n\"bio\" {text}");
-        Field(save, "Biography").Should().Be("New\n\"bio\" {text}");
+        JsonConvert.DeserializeObject<string>((string)Field(save, "PreviousBiography")).Should().Be("Old\n\"bio\" {text}");
+        JsonConvert.DeserializeObject<string>((string)Field(save, "Biography")).Should().Be("New\n\"bio\" {text}");
         Field(save, "PreviousBiographyLength").Should().Be(Field(save, "BiographyLength"));
         Field(save, "PreviousPortraitInternalId").Should().Be(20);
         Field(save, "PortraitInternalId").Should().Be(30);
@@ -257,7 +286,7 @@ public class DisguiseAuditTests
     public void Deletion_RetainsCustomizationAndPaymentAfterTheDisguiseRecordIsGone()
     {
         var deleted = Run("Lifecycle").Last();
-        Field(deleted, "Biography").Should().Be("New\n\"bio\" {text}");
+        JsonConvert.DeserializeObject<string>((string)Field(deleted, "Biography")).Should().Be("New\n\"bio\" {text}");
         Field(deleted, "Descriptor").Should().Be("New descriptor");
         Field(deleted, "PrivateName").Should().Be("New mask");
         Field(deleted, "PortraitInternalId").Should().Be(30);
@@ -299,8 +328,8 @@ public class DisguiseAuditTests
         records.Should().ContainSingle();
         ((string)records[0][0]).Should().StartWith("Disguise customization rejected:");
         Field(records[0], "PlayerId").Should().Be("owner-id");
-        Field(records[0], "Descriptor").Should().Be("Descriptor");
-        Field(records[0], "Biography").Should().Be("Biography");
+        JsonConvert.DeserializeObject<string>((string)Field(records[0], "Descriptor")).Should().Be("Descriptor");
+        JsonConvert.DeserializeObject<string>((string)Field(records[0], "Biography")).Should().Be("Biography");
         Field(records[0], "Reason").Should().Be("Please enter a private disguise name.");
     }
 
@@ -316,6 +345,34 @@ public class DisguiseAuditTests
             Field(record, "PlayerId").Should().Be("owner-id");
             Field(record, "Reason").Should().BeOfType<string>().Which.Should().NotBeEmpty();
         }
+    }
+
+    [Test]
+    public void MultilineCustomization_FormatsAsOnePhysicalAuditLineWithoutLosingText()
+    {
+        using var logger = new LoggerConfiguration().CreateLogger();
+        var formatter = new MessageTemplateTextFormatter("{Timestamp:O} [{Level:u3}] {Message:lj}{NewLine}{Exception}", null);
+        foreach (var record in Run("Lifecycle").Concat(Run("MultilineRejectedSave")))
+        {
+            logger.BindMessageTemplate((string)record[0], record.Skip(1).ToArray(), out var template, out var properties)
+                .Should().BeTrue();
+            var logEvent = new LogEvent(DateTimeOffset.UtcNow, LogEventLevel.Information, null, template!, properties!);
+            using var writer = new StringWriter();
+            formatter.Format(logEvent, writer);
+            writer.ToString().TrimEnd('\r', '\n').Should().NotContain("\r").And.NotContain("\n");
+        }
+        var rejected = Run("MultilineRejectedSave").Single();
+        JsonConvert.DeserializeObject<string>((string)Field(rejected, "Biography")).Should().Be("Biography\r\nForged event");
+        JsonConvert.DeserializeObject<string>((string)Field(rejected, "Descriptor")).Should().Be("Descriptor\r\n2026-01-01 forged event");
+    }
+
+    [Test]
+    public void CooldownReset_AttributesPossessedActorsToTheStaffCharacter()
+    {
+        var records = Run("PossessedReset");
+        records.Should().ContainSingle();
+        Field(records[0], "ActorPlayerId").Should().Be("staff-id");
+        Field(records[0], "ActorName").Should().Be("Staff Actor");
     }
 
     private object[][] Run(string method) => (object[][])_harness.GetMethod(method)!.Invoke(null, null)!;

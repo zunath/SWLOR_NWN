@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using Newtonsoft.Json;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Feature.GuiDefinition.RefreshEvent;
@@ -226,7 +227,7 @@ namespace SWLOR.Game.Server.Service
                 disguise.PortraitInternalId,
                 disguise.SoundSetId,
                 disguise.ScrambleAccountId,
-                disguise.Biography);
+                JsonConvert.SerializeObject(disguise.Biography));
 
             return disguise;
         }
@@ -246,7 +247,8 @@ namespace SWLOR.Game.Server.Service
             {
                 Log.WriteStructured(LogGroup.PlayerName,
                     "Disguise customization rejected: PlayerId={PlayerId} PlayerName={PlayerName} DisguiseId={DisguiseId} Reason={Reason} PrivateName={PrivateName} Descriptor={Descriptor} Biography={Biography} PortraitInternalId={PortraitInternalId} SoundSetId={SoundSetId} ScrambleAccountId={ScrambleAccountId}",
-                    playerId, GetName(player), disguiseId, reason, privateName, descriptor, biography ?? string.Empty,
+                    playerId, GetName(player), disguiseId, reason, JsonConvert.SerializeObject(privateName ?? string.Empty),
+                    JsonConvert.SerializeObject(descriptor ?? string.Empty), JsonConvert.SerializeObject(biography ?? string.Empty),
                     portraitInternalId, soundSetId, scrambleAccountId);
                 return SaveDisguiseResult.Failure(reason);
             }
@@ -306,8 +308,8 @@ namespace SWLOR.Game.Server.Service
                 disguise.SoundSetId,
                 previousScrambleAccountId,
                 disguise.ScrambleAccountId,
-                previousBiography,
-                disguise.Biography);
+                JsonConvert.SerializeObject(previousBiography),
+                JsonConvert.SerializeObject(disguise.Biography));
 
             if (IsActiveDisguise(player, disguise.Id))
             {
@@ -576,7 +578,7 @@ namespace SWLOR.Game.Server.Service
                 paymentMethod.ToString(),
                 amount,
                 removedKnownNames,
-                disguise.Biography ?? string.Empty,
+                JsonConvert.SerializeObject(disguise.Biography ?? string.Empty),
                 disguise.PortraitInternalId,
                 disguise.SoundSetId,
                 disguise.ScrambleAccountId);
@@ -589,6 +591,8 @@ namespace SWLOR.Game.Server.Service
         {
             if (!GetIsObjectValid(actor))
                 actor = player;
+
+            actor = DMPresence.GetDM(actor);
 
             var playerId = GetObjectUUID(player);
             var resetCount = 0;

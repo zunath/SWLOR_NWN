@@ -5,15 +5,16 @@ using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.DBService;
 using SWLOR.Game.Server.Service.LogService;
 using SWLOR.Game.Server.Service.MigrationService;
+using SWLOR.Game.Server.Service.PlayerMarketService;
 using SWLOR.Game.Server.Service.QuestContractService;
 using SWLOR.Game.Server.Service.SpaceService;
 
 namespace SWLOR.Game.Server.Feature.MigrationDefinition.ServerMigration;
 
 /// <summary>
-/// Updates item artwork and moves loot onto the revised loot stats across every stored item (banks, market,
+/// Updates item artwork, loot stats and legacy headgear slots across every stored item (banks, market,
 /// property storage, research, outfits, saved creatures, ships, contracts) in one pass. Each stored object
-/// is loaded and saved once for both updates. Player records are updated by <see cref="_27_UpdatePlayerRecords"/>.
+/// is loaded and saved once, with one item traversal. Player records are updated by <see cref="_27_UpdatePlayerRecords"/>.
 /// </summary>
 public sealed class _27_UpdateStoredItems : IServerMigration
 {
@@ -37,7 +38,10 @@ public sealed class _27_UpdateStoredItems : IServerMigration
         changed += MigrateRecords<InventoryItem>(progress, item =>
             MigrateItem(item.Resref, item.Data, value => item.Data = value, item.IconResref, value => item.IconResref = value));
         changed += MigrateRecords<MarketItem>(progress, item =>
-            MigrateItem(item.Resref, item.Data, value => item.Data = value, item.IconResref, value => item.IconResref = value));
+        {
+            return MigrateItem(item.Resref, item.Data, value => item.Data = value, item.IconResref, value => item.IconResref = value,
+                () => item.Category = MarketCategoryType.Helmet);
+        });
         changed += MigrateRecords<WorldPropertyCategory>(progress, category =>
         {
             var categoryChanged = false;
@@ -48,7 +52,8 @@ public sealed class _27_UpdateStoredItems : IServerMigration
         });
         changed += MigrateRecords<WorldProperty>(progress, property => MigrateData(property.SerializedItem, value => property.SerializedItem = value));
         changed += MigrateRecords<ResearchJob>(progress, job => MigrateData(job.SerializedItem, value => job.SerializedItem = value));
-        changed += MigrateRecords<PlayerOutfit>(progress, outfit => MigrateData(outfit.Data, value => outfit.Data = value));
+        // Cosmetic chest templates retain Armor so ApplyOutfit can still load them.
+        changed += MigrateRecords<PlayerOutfit>(progress, outfit => MigrateData(outfit.Data, value => outfit.Data = value, repairHeadgear: false));
         changed += MigrateRecords<DMCreature>(progress, creature => MigrateData(creature.Data, value => creature.Data = value));
         changed += MigrateRecords<PlayerShip>(progress, ship =>
         {
@@ -60,7 +65,7 @@ public sealed class _27_UpdateStoredItems : IServerMigration
         });
         changed += MigrateRecords<QuestContract>(progress, contract => MigrateContractItems(contract.RewardItems));
         changed += MigrateRecords<QuestContractDelivery>(progress, delivery => MigrateContractItems(delivery.Items));
-        Log.Write(LogGroup.Migration, $"Migration #{Version}: Updated item artwork and loot stats in {changed} stored records.", true);
+        Log.Write(LogGroup.Migration, $"Migration #{Version}: Updated item artwork, loot stats and equipment slots in {changed} stored records.", true);
     }
 
     private static int MigrateRecords<T>(ServerMigrationProgress progress, Func<T, bool> migrate) where T : EntityBase
@@ -89,10 +94,15 @@ public sealed class _27_UpdateStoredItems : IServerMigration
         return changed;
     }
 
-    private static bool MigrateItem(string resref, string data, Action<string> setData, string icon, Action<string> setIcon)
+    private static bool MigrateItem(string resref, string data, Action<string> setData, string icon, Action<string> setIcon, Action convertedHeadgear = null)
     {
-        var changed = MigrateData(data, setData);
-        var updatedIcon = ItemIconMigration.GetUpdatedIcon(resref, icon);
+        string headgearIcon = null;
+        var changed = MigrateData(data, setData, convertedHeadgear: item =>
+        {
+            headgearIcon = Item.GetIconResref(item);
+            convertedHeadgear?.Invoke();
+        });
+        var updatedIcon = headgearIcon ?? ItemIconMigration.GetUpdatedIcon(resref, icon);
         if (updatedIcon == icon)
             return changed;
         setIcon(updatedIcon);
@@ -117,38 +127,15 @@ public sealed class _27_UpdateStoredItems : IServerMigration
         return changed;
     }
 
-    private static bool MigrateData(string data, Action<string> setData)
+    private static bool MigrateData(string data, Action<string> setData, bool repairHeadgear = true, Action<uint> convertedHeadgear = null)
     {
-        if (!MigrateSerializedObject(data, out var migrated))
+        if (!LootStatRevisionMigration.MigrateStoredObjectData(data, out var migrated, repairHeadgear, convertedHeadgear))
             return false;
         setData(migrated);
         return true;
     }
 
-    /// <summary>Loads a stored object once, applies both updates, and saves it only when either changed it.</summary>
+    /// <summary>Loads a stored object once and applies artwork, loot stats and headgear repair in one item traversal.</summary>
     public static bool MigrateSerializedObject(string serialized, out string migrated)
-    {
-        // Saved creatures keep their authored gear, so only their artwork changes.
-        if (string.IsNullOrWhiteSpace(serialized) || StoredObjectData.IsCreatureData(serialized))
-            return ItemIconMigration.MigrateSerializedObject(serialized, out migrated);
-
-        migrated = serialized;
-        var inventory = StoredObjectData.ReadInventory(serialized);
-        var obj = MigrationObject.Deserialize(inventory?.PrepareForNativeLoad(null) ?? serialized);
-        try
-        {
-            var changed = ItemIconMigration.MigrateObject(obj);
-            changed |= LootStatRevisionMigration.MigrateObject(obj);
-            if (!changed)
-                return false;
-            migrated = MigrationObject.Serialize(obj, serialized);
-            if (inventory != null)
-                migrated = inventory.CopyMigratedInventory(migrated);
-            return true;
-        }
-        finally
-        {
-            MigrationObject.DestroyTemporaryObject(obj);
-        }
-    }
+        => LootStatRevisionMigration.MigrateStoredObjectData(serialized, out migrated);
 }

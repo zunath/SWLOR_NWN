@@ -62,6 +62,7 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
 
             page.AddResponse(ColorToken.Red("CONFIRM DESTROY ITEM"), () =>
             {
+                ItemTrash.Audit(Player, model.Item, "destroy-item-confirmed");
                 DestroyObject(model.Item);
                 Close();
             });

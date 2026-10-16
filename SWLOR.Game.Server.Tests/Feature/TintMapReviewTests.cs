@@ -625,8 +625,8 @@ public class TintMapReviewTests
             .Select(argument => argument.Expression.ToString());
 
         handlerScripts.Should().BeEquivalentTo(
-            "ScriptName.OnSWLORItemEquipValidBefore",
-            "ScriptName.OnItemUnequipBefore");
+            "ScriptName.OnItemEquipValidateAfter",
+            "ScriptName.OnItemUnequipAfter");
         var invocations = method.DescendantNodes()
             .OfType<InvocationExpressionSyntax>()
             .ToList();
@@ -643,12 +643,8 @@ public class TintMapReviewTests
             invocation.ArgumentList.Arguments.Count == 1 &&
             invocation.ArgumentList.Arguments[0].Expression is IdentifierNameSyntax argument &&
             argument.Identifier.ValueText == "creature");
-        var acceptsDroids = invocations.Any(invocation =>
-            invocation.Expression is MemberAccessExpressionSyntax
-            {
-                Expression: IdentifierNameSyntax { Identifier.ValueText: "Droid" },
-                Name.Identifier.ValueText: "IsDroid"
-            } &&
+        var distinguishesPlayerModuleEvents = invocations.Any(invocation =>
+            invocation.Expression is IdentifierNameSyntax { Identifier.ValueText: "GetIsPC" } &&
             invocation.ArgumentList.Arguments.Count == 1 &&
             invocation.ArgumentList.Arguments[0].Expression.ToString() == "creature");
         var acceptsDmPossessedCreatures = invocations.Any(invocation =>
@@ -657,7 +653,7 @@ public class TintMapReviewTests
             invocation.ArgumentList.Arguments[0].Expression.ToString() == "creature");
         queuesEditorRefresh.Should().BeTrue();
         resolvesOwner.Should().BeTrue();
-        acceptsDroids.Should().BeTrue();
+        distinguishesPlayerModuleEvents.Should().BeTrue();
         acceptsDmPossessedCreatures.Should().BeTrue();
         typeof(AppearanceEditorViewModel)
             .GetInterfaces()

@@ -30,6 +30,7 @@ namespace SWLOR.Game.Server
         public bool EngineTestShutdownOnCompletion { get; }
         public string EngineTestArenaResref { get; }
 
+        public bool RoleplayXPOOCPenaltyEnabled { get; }
         public int RoleplayXPDailyOOCAllowance { get; }
         public int RoleplayXPDMPresentOOCAllowance { get; }
 
@@ -39,6 +40,10 @@ namespace SWLOR.Game.Server
         public int? RoleplayXPEventAreaOOCAllowance { get; }
         public int RoleplayXPOOCPenaltyPercent { get; }
         public string RoleplayXPOOCDetectionFile { get; }
+
+        public bool FrameProfilerEnabled { get; }
+        public double FrameProfilerSlowFrameMilliseconds { get; }
+        public double FrameProfilerSummarySeconds { get; }
 
         private static ApplicationSettings _settings;
         public static ApplicationSettings Get()
@@ -67,6 +72,7 @@ namespace SWLOR.Game.Server
             EngineTestShutdownOnCompletion = ParseBool(Environment.GetEnvironmentVariable("SWLOR_ENGINE_TEST_SHUTDOWN"), true);
             EngineTestArenaResref = Environment.GetEnvironmentVariable("SWLOR_ENGINE_TEST_ARENA_RESREF");
 
+            RoleplayXPOOCPenaltyEnabled = ParseBool(Environment.GetEnvironmentVariable("SWLOR_RPXP_OOC_PENALTY_ENABLED"), false);
             RoleplayXPDailyOOCAllowance = ParseNonNegativeInt(
                 Environment.GetEnvironmentVariable("SWLOR_RPXP_OOC_DAILY_ALLOWANCE"), OOCAllowance.DefaultDailyAllowance);
             RoleplayXPDMPresentOOCAllowance = ParseNonNegativeInt(
@@ -79,6 +85,10 @@ namespace SWLOR.Game.Server
             RoleplayXPOOCDetectionFile = string.IsNullOrWhiteSpace(oocDetectionFile)
                 ? OOCDetectionLoader.DefaultFilePath
                 : oocDetectionFile.Trim();
+
+            FrameProfilerEnabled = ParseBool(Environment.GetEnvironmentVariable("SWLOR_FRAME_PROFILER_ENABLED"), false);
+            FrameProfilerSlowFrameMilliseconds = ParseFloat(Environment.GetEnvironmentVariable("SWLOR_FRAME_PROFILER_SLOW_FRAME_MS"), 50f);
+            FrameProfilerSummarySeconds = Math.Max(1f, ParseFloat(Environment.GetEnvironmentVariable("SWLOR_FRAME_PROFILER_SUMMARY_SECONDS"), 60f));
 
             var environment = Environment.GetEnvironmentVariable("SWLOR_ENVIRONMENT")?.Trim().ToLower() ?? string.Empty;
             if (environment == "prod" || environment == "production")

@@ -7,6 +7,7 @@ using SWLOR.Game.Server.Feature.AbilityDefinition;
 using SWLOR.Game.Server.Feature.GuiDefinition.Payload;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.DBService;
+using SWLOR.Game.Server.Service.DMToolService;
 using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.GuiService.Component;
 using SWLOR.Game.Server.Service.PerkService;
@@ -48,8 +49,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             // The NWNX examine hook cannot skip the native data packet. Close its panel
             // after that packet, then route subsequent attempts through the disabled-panel event.
             SetGuiPanelDisabled(dm, GuiPanel.ExamineCreature, true, target);
-            Gui.ClosePlayerWindow(dm, GuiWindowType.DMPlayerExamine);
-            Gui.TogglePlayerWindow(dm, GuiWindowType.DMPlayerExamine, payload);
+            // A possessing DM examines as the creature; DMPresence opens the window on it under the DM avatar.
+            DMPresence.CloseWindow(dm, GuiWindowType.DMPlayerExamine);
+            DMPresence.ToggleWindow(dm, GuiWindowType.DMPlayerExamine, payload);
         }
 
         private string _playerId;
@@ -173,6 +175,18 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         }
 
         public string Descriptor
+        {
+            get => Get<string>();
+            set => Set(value);
+        }
+
+        public string WornDisguise
+        {
+            get => Get<string>();
+            set => Set(value);
+        }
+
+        public string UndisguisedDescriptor
         {
             get => Get<string>();
             set => Set(value);
@@ -392,7 +406,10 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             CharacterType = GetClassByPosition(1, _target) == ClassType.ForceSensitive
                 ? "Force Sensitive" : "Standard";
             Credits = GetGold(_target).ToString("N0");
-            Descriptor = GetIsPC(_target) && !GetIsDM(_target) ? Disguise.GetDisplayDescriptor(_target) : "N/A";
+            var isPlayerCharacter = GetIsPC(_target) && !GetIsDM(_target);
+            Descriptor = isPlayerCharacter ? Disguise.GetDisplayDescriptor(_target) : "N/A";
+            WornDisguise = isPlayerCharacter ? DMDisguiseText.Describe(Disguise.GetActiveDisguise(_target)) : "N/A";
+            UndisguisedDescriptor = isPlayerCharacter ? PlayerDescriptor.GetUnknownDisplayName(_target) : "N/A";
             TrueName = GetName(_target);
             AccountName = GetPCPlayerName(_target);
             PublicCDKey = GetPCPublicCDKey(_target);
@@ -596,14 +613,16 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             if (_noteIds.Count > MaxNotes)
                 return;
 
+            // While possessing, the window is shown on the creature; the note belongs to the DM.
+            var dm = DMPresence.GetDM(Player);
             var dbNote = new PlayerNote
             {
                 PlayerId = _playerId,
                 Name = "New Note",
                 Text = string.Empty,
                 IsDMNote = true,
-                DMCreatorCDKey = GetPCPublicCDKey(Player),
-                DMCreatorName = GetName(Player)
+                DMCreatorCDKey = GetPCPublicCDKey(dm),
+                DMCreatorName = GetName(dm)
             };
 
             DB.Set(dbNote);

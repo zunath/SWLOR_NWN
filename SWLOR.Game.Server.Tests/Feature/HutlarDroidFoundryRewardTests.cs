@@ -162,4 +162,30 @@ public class HutlarDroidFoundryRewardTests
             "HUTLAR_FOUNDRY_GEAR,100,2",
         });
     }
+
+    [Test]
+    public void FloorAndOverseerLoot_AreTierFiveSalvageAndDroidEngineeringGems()
+    {
+        var loot = new HutlarLootTableDefinition().BuildLootTables();
+        foreach (var floor in new[] { "HUTLAR_FOUNDRY_INTAKE", "HUTLAR_FOUNDRY_ASSEMBLY", "HUTLAR_FOUNDRY_CORE" })
+            loot[floor].Select(i => i.Resref).Should().BeSubsetOf(new[] { "elec_high", "ref_jasioclase", "ref_gostian", "nw_it_gold001" },
+                $"{floor} drops tier 5 salvage and credits, not low-tier scrap");
+
+        var rares = loot["HUTLAR_FOUNDRY_RARES"];
+        rares.IsRare.Should().BeTrue();
+        rares.Should().OnlyContain(i => i.IsRare);
+        rares.Select(i => i.Resref).Should().Contain(new[] { "emerald", "diamond", "zinsiam", "lockbox_t5", "map_276" });
+
+        // A Loot Boss carries premium gem and resource tables, including what its premium recipes consume.
+        loot["HUTLAR_FOUNDRY_OVERSEER_SHARD"].Select(i => i.Resref).Should().Equal("chiro_shard");
+        loot["HUTLAR_FOUNDRY_OVERSEER_SALVAGE"].Should().Contain(i => i.Resref == "ref_arkoxit" && i.IsRare);
+        loot["HUTLAR_FOUNDRY_OVERSEER_GEMS"].Select(i => i.Resref).Should().BeEquivalentTo(new[] { "diamond", "zinsiam", "emerald" });
+        LootLocals(Load("utc", "fdy_overseer")).Should().Contain(new[]
+        {
+            "HUTLAR_FOUNDRY_OVERSEER_GEMS,100,1",
+            "HUTLAR_FOUNDRY_OVERSEER_SHARD,100,1",
+            "HUTLAR_FOUNDRY_OVERSEER_SALVAGE,100,6",
+            "HUTLAR_FOUNDRY_OVERSEER_CREDITS,100,1",
+        });
+    }
 }

@@ -1,0 +1,87 @@
+{
+  "Id": "aban_escape_pod",
+  "Title": "Escape Pod",
+  "EntryPoints": [
+    {
+      "TargetNodeId": "entry-00000",
+      "Conditions": []
+    }
+  ],
+  "Nodes": {
+    "entry-00000": {
+      "Id": "entry-00000",
+      "SpeakerName": "",
+      "SpeakerTag": "",
+      "PortraitResref": "",
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Text": [
+        {
+          "Text": "Launch the escape pod? It will take you to the Veles starport on Viscara, leaving the Abandoned Station behind.",
+          "Style": 0,
+          "Color": null
+        }
+      ],
+      "OnEnterActions": [],
+      "Choices": [
+        {
+          "ChoiceId": "launch",
+          "Conditions": []
+        },
+        {
+          "ChoiceId": "cancel",
+          "Conditions": []
+        }
+      ]
+    }
+  },
+  "Choices": {
+    "launch": {
+      "Id": "launch",
+      "Text": {
+        "Text": "Launch the escape pod.",
+        "Style": 4,
+        "Color": null
+      },
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Actions": [
+        {
+          "Key": "action-teleport-out-of-combat",
+          "Arguments": [
+            "ABAN_STATION_EXIT_LANDING"
+          ]
+        }
+      ],
+      "Next": [],
+      "EndsConversation": true,
+      "IsAutomatic": false
+    },
+    "cancel": {
+      "Id": "cancel",
+      "Text": {
+        "Text": "Cancel. Stay on the station.",
+        "Style": 4,
+        "Color": null
+      },
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Actions": [],
+      "Next": [],
+      "EndsConversation": true,
+      "IsAutomatic": false
+    }
+  }
+}

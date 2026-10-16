@@ -6,6 +6,7 @@ using SWLOR.Game.Server.Core.NWNX.Enum;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Feature.AbilityDefinition;
 using SWLOR.Game.Server.Feature.StatusEffectDefinition;
+using SWLOR.Game.Server.Service.CombatRecorderService;
 using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.DBService;
 using SWLOR.Game.Server.Service.PerkService;
@@ -22,7 +23,7 @@ namespace SWLOR.Game.Server.Service
     /// <summary>
     /// Tracks player-placed traps: per-owner capacity, minimum spacing between any two live traps,
     /// an arming delay, a proximity trigger, and a lifetime cap. Trap strength is snapshotted from
-    /// the owner's stats at placement time.
+    /// the owner's Trap Bonus at placement time; active traps retain their originating cast context.
     /// </summary>
     public static class Traps
     {
@@ -62,6 +63,7 @@ namespace SWLOR.Game.Server.Service
             public bool IsConcealed { get; init; }
             public VisualEffect SuccessfulImpactVisualEffect { get; init; }
             public HashSet<uint> DetectedBy { get; } = new();
+            public CombatRecordAttribution PlacedBy { get; init; }
         }
 
         private static readonly Dictionary<uint, List<TrapRecord>> _trapsByOwner = new();
@@ -99,7 +101,8 @@ namespace SWLOR.Game.Server.Service
             {
                 Owner = owner,
                 Location = location,
-                SuccessfulImpactVisualEffect = Ability.GetSuccessfulImpactVisualEffect(owner)
+                SuccessfulImpactVisualEffect = Ability.GetSuccessfulImpactVisualEffect(owner),
+                PlacedBy = CombatRecorder.CaptureScope()
             };
             record.Marker = DeviceAbilityEffects.CreateTemporaryFieldEngineerMarker(
                 location,
@@ -114,7 +117,10 @@ namespace SWLOR.Game.Server.Service
             }
 
             RegisterTrap(record, ownerTraps);
-            ScheduleArming(record, snapshotDamage, damageType, statusEffect, statusDurationSeconds, triggerVisualEffect);
+            var trigger = Ability.CaptureRepeatedAbilityImpact(owner, () => ApplyTrapImpact(
+                record, snapshotDamage, damageType, statusEffect, statusDurationSeconds, triggerVisualEffect),
+                snapshotDamage, requiresLivingActivator: false);
+            ScheduleArming(record, trigger);
 
             return true;
         }
@@ -141,7 +147,8 @@ namespace SWLOR.Game.Server.Service
                 Owner = owner,
                 Location = location,
                 Tier = tier,
-                IsConcealed = true
+                IsConcealed = true,
+                PlacedBy = CombatRecorder.CaptureScope()
             };
             record.Marker = CreateObject(ObjectType.Placeable, ConcealedTrapResref, location, false, ConcealedTrapResref);
             if (!GetIsObjectValid(record.Marker))
@@ -161,11 +168,11 @@ namespace SWLOR.Game.Server.Service
 
             ScheduleArming(
                 record,
-                snapshotDamage,
+                () => ApplyTrapImpact(record, snapshotDamage,
                 CombatDamageType.Physical,
                 typeof(BleedStatusEffect),
                 KitTrapStatusDurationSeconds,
-                VisualEffect.Vfx_Com_Blood_Spark_Medium);
+                VisualEffect.Vfx_Com_Blood_Spark_Medium));
 
             return true;
         }
@@ -210,22 +217,14 @@ namespace SWLOR.Game.Server.Service
         // Trapcraft III/IV shorten the time before a placed trap goes live.
         private static void ScheduleArming(
             TrapRecord record,
-            int damage,
-            CombatDamageType damageType,
-            Type statusEffect,
-            int statusDurationSeconds,
-            VisualEffect triggerVisualEffect)
+            Action trigger)
         {
             var placementSpeed = Math.Clamp(Stat.GetStatAdjustment(record.Owner, StatType.TrapPlacementSpeedPercent), 0, 90);
             var armingDelay = ArmingDelaySeconds * (100 - placementSpeed) / 100f;
 
             DelayCommand(armingDelay, () => RunProximityChecks(
                 record,
-                damage,
-                damageType,
-                statusEffect,
-                statusDurationSeconds,
-                triggerVisualEffect,
+                trigger,
                 LifetimeSeconds - armingDelay));
         }
 
@@ -261,11 +260,7 @@ namespace SWLOR.Game.Server.Service
 
         private static void RunProximityChecks(
             TrapRecord record,
-            int damage,
-            CombatDamageType damageType,
-            Type statusEffect,
-            int statusDurationSeconds,
-            VisualEffect triggerVisualEffect,
+            Action trigger,
             float remainingSeconds)
         {
             if (!record.IsLive)
@@ -298,30 +293,39 @@ namespace SWLOR.Game.Server.Service
                         : TrapTriggerXP;
                     Skill.GiveSkillXP(record.Owner, SkillType.Espionage, xp, false, false);
                 }
-                CombatAreaPulses.ApplyCombatPulse(
-                    record.Owner,
-                    record.Location,
-                    SkillType.Espionage,
-                    damage,
-                    BlastRadiusMeters,
-                    statusEffect,
-                    statusDurationSeconds,
-                    damageType,
-                    targetVisualEffect: record.SuccessfulImpactVisualEffect != VisualEffect.None
-                        ? record.SuccessfulImpactVisualEffect
-                        : triggerVisualEffect,
-                    areaVisualEffect: VisualEffect.Vfx_Fnf_Smoke_Puff);
+                trigger();
                 return;
             }
 
             DelayCommand(ProximityCheckIntervalSeconds, () => RunProximityChecks(
                 record,
+                trigger,
+                remainingSeconds - ProximityCheckIntervalSeconds));
+        }
+
+        private static void ApplyTrapImpact(
+            TrapRecord record,
+            int damage,
+            CombatDamageType damageType,
+            Type statusEffect,
+            int statusDurationSeconds,
+            VisualEffect triggerVisualEffect)
+        {
+            using var recorderAttribution = CombatRecorder.BeginTrapAttribution(record.Owner, record.PlacedBy);
+            CombatAreaPulses.ApplyCombatPulse(
+                record.Owner,
+                record.Location,
+                SkillType.Espionage,
                 damage,
-                damageType,
+                BlastRadiusMeters,
                 statusEffect,
                 statusDurationSeconds,
-                triggerVisualEffect,
-                remainingSeconds - ProximityCheckIntervalSeconds));
+                damageType,
+                targetVisualEffect: record.SuccessfulImpactVisualEffect != VisualEffect.None
+                    ? record.SuccessfulImpactVisualEffect
+                    : triggerVisualEffect,
+                areaVisualEffect: VisualEffect.Vfx_Fnf_Smoke_Puff,
+                combatImpactDamageAbility: AbilityType.Perception);
         }
 
         /// <summary>
@@ -336,8 +340,8 @@ namespace SWLOR.Game.Server.Service
             for (var player = GetFirstPC(); GetIsObjectValid(player); player = GetNextPC())
             {
                 if (record.DetectedBy.Contains(player) ||
-                    GetIsDM(player) ||
-                    GetArea(player) != GetAreaFromLocation(record.Location))
+                    GetArea(player) != GetAreaFromLocation(record.Location) ||
+                    DMPresence.IsControlledByDM(player))
                 {
                     continue;
                 }
@@ -448,11 +452,13 @@ namespace SWLOR.Game.Server.Service
 
         private static void TriggerOnDisarmFailure(TrapRecord record, uint victim)
         {
-            var damage = KitTrapDamageByTier[record.Tier - 1];
+            // This hit skips the damage modifiers, so a player's trap applies the PvP ramp and PvP combat here.
+            var damage = PvpCombat.ApplyDamageIncrease(victim, record.Owner, KitTrapDamageByTier[record.Tier - 1], true);
             Deactivate(record);
 
             AssignCommand(record.Owner, () =>
             {
+                using var recorderAttribution = CombatRecorder.BeginTrapAttribution(record.Owner, record.PlacedBy);
                 ApplyEffectToObject(
                     DurationType.Instant,
                     EffectDamage(damage, DamageType.Piercing),

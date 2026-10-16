@@ -11,21 +11,38 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
         private const int ScalingCapStat = 26;
         private const float DirectEffectMaximumStatBonus = 0.25f;
 
+        /// <param name="isRestorative">True for heals and shields, whose affinity bonus is capped at +25%.</param>
         public static int ScaleDirectEffect(
             int baseAmount,
             int stat,
             float maximumBonusPercent = DirectEffectMaximumStatBonus,
-            uint source = OBJECT_INVALID)
+            uint source = OBJECT_INVALID,
+            bool isRestorative = false)
         {
             if (baseAmount <= 0 || maximumBonusPercent <= 0f)
-                return ApplyActiveForceAffinityMagnitude(source, baseAmount);
+                return ApplySourceForceAffinity(source, baseAmount, isRestorative);
 
             var progress = GetScalingProgress(stat);
             if (progress <= 0f)
-                return ApplyActiveForceAffinityMagnitude(source, baseAmount);
+                return ApplySourceForceAffinity(source, baseAmount, isRestorative);
 
             var bonus = (int)Math.Ceiling(baseAmount * maximumBonusPercent * progress);
-            return ApplyActiveForceAffinityMagnitude(source, baseAmount + bonus);
+            return ApplySourceForceAffinity(source, baseAmount + bonus, isRestorative);
+        }
+
+        private static int ApplySourceForceAffinity(uint source, int amount, bool isRestorative)
+        {
+            return isRestorative
+                ? ApplyActiveForceAffinityRestorativeMagnitude(source, amount)
+                : ApplyActiveForceAffinityMagnitude(source, amount);
+        }
+
+        public static int ApplyActiveForceAffinityRestorativeMagnitude(uint source, int amount)
+        {
+            if (source == 0 || source == OBJECT_INVALID || !GetIsObjectValid(source) || amount <= 0)
+                return amount;
+
+            return Ability.ApplyActiveForceAffinityRestorativeMagnitude(source, amount);
         }
 
         public static int ApplyActiveForceAffinityMagnitude(uint source, int amount)
@@ -86,7 +103,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
             var amount = CalculateScaledPercentOfMaxHP(source, target, percent, scalingAbility, multiplier);
             amount = Stat.ApplyOutgoingAbilityHealingAdjustment(source, amount);
             amount = Ability.ApplyCombatReadinessToActivatedAbilityMagnitude(source, amount);
-            amount = Stat.ApplyHealingReceivedAdjustment(target, amount);
+            amount = Stat.ApplyHealingReceivedAdjustment(target, amount, isInstantAbilityHeal: true);
             ApplyEffectToObject(DurationType.Instant, EffectHeal(amount), target);
             ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Healing_M), target);
         }
@@ -103,7 +120,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
 
             var baseAmount = Math.Max(1, (int)Math.Ceiling(GetMaxHitPoints(target) * (percent / 100f) * multiplier));
             var scalingSource = GetIsObjectValid(source) ? source : target;
-            return ScaleDirectEffect(baseAmount, GetAbilityScore(scalingSource, scalingAbility), source: source);
+            return ScaleDirectEffect(baseAmount, GetAbilityScore(scalingSource, scalingAbility), source: source, isRestorative: true);
         }
 
         public static void ApplyTemporaryHPPercent(

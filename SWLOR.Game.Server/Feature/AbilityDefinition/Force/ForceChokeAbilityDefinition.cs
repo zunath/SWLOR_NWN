@@ -40,12 +40,12 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
 
         private static void ForceChoke3(AbilityBuilder builder)
         {
-            ConfigureForceChoke(builder, FeatType.ForceChoke3, "Force Choke III", 3, 4, 30, 24);
+            ConfigureForceChoke(builder, FeatType.ForceChoke3, "Force Choke III", 3, 5, 30, 24);
         }
 
         private static void ForceChoke4(AbilityBuilder builder)
         {
-            ConfigureForceChoke(builder, FeatType.ForceChoke4, "Force Choke IV", 4, 5, 30, 34);
+            ConfigureForceChoke(builder, FeatType.ForceChoke4, "Force Choke IV", 4, 6, 30, 34);
         }
 
         private static void ConfigureForceChoke(
@@ -106,8 +106,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
 
         private static void ApplyForceChokeEffects(uint activator, uint target, int immobilizeSeconds, int totalDamage)
         {
-            AssignCommand(target, () => ClearAllActions());
-            AssignCommand(target, () => ActionPlayAnimation(Animation.ForceChoke));
+            ActionInterruption.ClearActions(target, () => ActionPlayAnimation(Animation.ForceChoke));
             ApplyForceDamageOverTime(activator, target, immobilizeSeconds, totalDamage);
         }
 

@@ -27,15 +27,21 @@ public class PlayerNameRecognitionTests
         disabledExamine.Should().Contain("ShowExamineWindow(GetLastGuiEventPlayer(), GetLastGuiEventObject())");
         disabledExamine.Should().NotContain("Gui.TogglePlayerWindow");
         examine.Should().Contain("if (!GetIsDM(dm) && !GetIsDMPossessed(dm))");
-        examine.Should().Contain("Gui.TogglePlayerWindow");
+        // DMPresence keeps the window under the DM avatar while a possessing DM examines as the creature.
+        examine.Should().Contain("DMPresence.ToggleWindow(dm, GuiWindowType.DMPlayerExamine, payload);");
         examine.IndexOf("return;", StringComparison.Ordinal).Should()
-            .BeLessThan(examine.IndexOf("Gui.TogglePlayerWindow", StringComparison.Ordinal));
+            .BeLessThan(examine.IndexOf("DMPresence.ToggleWindow", StringComparison.Ordinal));
         initialize.Should().Contain("_target = initialPayload.Target;");
         initialize.Should().Contain("LoadTargetDetails();");
-        details.Should().Contain("Descriptor = GetIsPC(_target) && !GetIsDM(_target) ? Disguise.GetDisplayDescriptor(_target) : \"N/A\";");
+        details.Should().Contain("var isPlayerCharacter = GetIsPC(_target) && !GetIsDM(_target);");
+        details.Should().Contain("Descriptor = isPlayerCharacter ? Disguise.GetDisplayDescriptor(_target) : \"N/A\";");
+        details.Should().Contain("WornDisguise = isPlayerCharacter ? DMDisguiseText.Describe(Disguise.GetActiveDisguise(_target)) : \"N/A\";");
+        details.Should().Contain("UndisguisedDescriptor = isPlayerCharacter ? PlayerDescriptor.GetUnknownDisplayName(_target) : \"N/A\";");
         details.Should().Contain("TrueName = GetName(_target);");
         details.Should().Contain("AccountName = GetPCPlayerName(_target);");
         definition.Should().Contain("AddDetailRow(col, \"Descriptor\", model => model.Descriptor);");
+        definition.Should().Contain("AddDetailRow(col, \"Disguise\", model => model.WornDisguise);");
+        definition.Should().Contain("AddDetailRow(col, \"Real descriptor\", model => model.UndisguisedDescriptor);");
         definition.Should().Contain("AddDetailRow(col, \"True name\", model => model.TrueName);");
         definition.Should().Contain("AddDetailRow(col, \"Account\", model => model.AccountName);");
     }
@@ -110,6 +116,39 @@ public class PlayerNameRecognitionTests
     }
 
     [Test]
+    public void PlayerNameOverrides_ShowDisguiseMarkerOnlyToDMObservers()
+    {
+        var root = FindRepositoryRoot();
+        var source = File.ReadAllText(Path.Combine(
+            root.FullName,
+            "SWLOR.Game.Server",
+            "Service",
+            "PlayerName.cs"));
+        var staffSuffixMethod = ExtractMethod(source, "private static string GetStaffNameOverrideSuffix(uint player)");
+        var suffixMethod = ExtractMethod(source, "private static string GetNameOverrideSuffix(uint player, bool isUnknown = false)");
+        var trueNameMethod = ExtractMethod(source, "private static void ApplyTrueNameOverride(uint observer, uint target)");
+        var chatMethod = ExtractMethod(source, "private static void ApplyChatNameOverride(uint observer, uint target)");
+        var playerObserverMethod = ExtractMethod(source, "private static void ApplyNameOverride(uint observer, uint target)");
+        var playerMethod = ExtractMethod(source, "private static void ApplyNameOverridesForPlayer(uint player)");
+        var restoreMethod = ExtractMethod(source, "private static void RestoreNameOverride(uint observer, uint target)");
+
+        staffSuffixMethod.Should().Contain("GetNameOverrideSuffix(player)");
+        staffSuffixMethod.Should().Contain("Disguise.GetActiveDisguise(player) != null ? StaffDisguiseMarker : string.Empty");
+        suffixMethod.Should().NotContain("Disguise");
+        trueNameMethod.Should().Contain("GetStaffNameOverrideSuffix(target)");
+        chatMethod.Should().Contain("var suffix = GetIsDM(observer) || GetIsDMPossessed(observer)");
+        chatMethod.Should().Contain("? GetStaffNameOverrideSuffix(target)");
+        chatMethod.Should().Contain(": GetNameOverrideSuffix(target, isUnknown);");
+
+        // Player observers, including the disguised player looking at their own name, never get the marker.
+        playerObserverMethod.Should().NotContain("GetStaffNameOverrideSuffix");
+        playerMethod.Should().NotContain("GetStaffNameOverrideSuffix");
+        restoreMethod.Should().NotContain("GetStaffNameOverrideSuffix");
+        System.Text.RegularExpressions.Regex.Matches(source, @"GetStaffNameOverrideSuffix\(").Count.Should().Be(3);
+        System.Text.RegularExpressions.Regex.Matches(source, @"StaffDisguiseMarker").Count.Should().Be(2);
+    }
+
+    [Test]
     public void PlayerNameOverrides_SkipRedundantSelfIteration()
     {
         var root = FindRepositoryRoot();
@@ -168,7 +207,7 @@ public class PlayerNameRecognitionTests
     }
 
     [Test]
-    public void KnownNameStorage_CachesObserverRecordsDuringScriptContext()
+    public void KnownNameStorage_CachesObserverRecordsUntilKnownNamesChange()
     {
         var root = FindRepositoryRoot();
         var source = File.ReadAllText(Path.Combine(
@@ -180,9 +219,14 @@ public class PlayerNameRecognitionTests
         var findMethod = ExtractMethod(source, "private static PlayerKnownName FindKnownNames(string observerId)");
         var getMethod = ExtractMethod(source, "private static PlayerKnownName GetKnownNames(uint observer, bool createIfMissing)");
 
+        var exitHandler = ExtractMethod(source, "public static void ReleaseKnownNamesOnExit()");
+
         source.Should().Contain("private static readonly Dictionary<string, PlayerKnownName> KnownNamesByObserverId");
-        staticConstructor.Should().Contain("ServerManager.OnScriptContextEnd += KnownNamesByObserverId.Clear;");
+        staticConstructor.Should().NotContain("KnownNamesByObserverId.Clear");
+        findMethod.Should().Contain("DB.GetWriteVersion<PlayerKnownName>()");
+        findMethod.Should().Contain("KnownNamesByObserverId.Clear();");
         findMethod.Should().Contain("KnownNamesByObserverId.TryGetValue(observerId, out var dbKnownNames)");
+        exitHandler.Should().Contain("KnownNamesByObserverId.Remove(observerId);");
         findMethod.Should().Contain("DB.Search(new DBQuery<PlayerKnownName>()");
         findMethod.Should().Contain("KnownNamesByObserverId[observerId] = dbKnownNames;");
         getMethod.Should().Contain("KnownNamesByObserverId[observerId] = dbKnownNames;");
@@ -362,14 +406,14 @@ public class PlayerNameRecognitionTests
 
         var nameOverrideMethod = ExtractMethod(source, "private static void ApplyNameOverride(uint observer, uint target)");
         nameOverrideMethod.Should().Contain("UnknownNamePrefix");
-        nameOverrideMethod.Should().Contain("UnknownNameSuffix");
+        nameOverrideMethod.Should().Contain("GetNameOverrideSuffix(target, isUnknown)");
         nameOverrideMethod.Should().Contain("RenamePlugin.SetPCNameOverride(target, displayName, prefix, suffix, PlayerNameOverrideType.Default, observer);");
         nameOverrideMethod.Should().NotContain("SetCreatureNameOverride");
 
         var applyPlayerMethod = ExtractMethod(source, "private static void ApplyNameOverridesForPlayer(uint player)");
         applyPlayerMethod.Should().Contain("var ownDisplayName = ShouldShowOwnDescriptor(player)");
         applyPlayerMethod.Should().Contain("BuildDisplayNameWithDescriptor(GetName(player), unknownDisplayName)");
-        applyPlayerMethod.Should().Contain("RenamePlugin.SetPCNameOverride(player, ownDisplayName, string.Empty, string.Empty, PlayerNameOverrideType.Default, player);");
+        applyPlayerMethod.Should().Contain("RenamePlugin.SetPCNameOverride(player, ownDisplayName, string.Empty, GetNameOverrideSuffix(player), PlayerNameOverrideType.Default, player);");
 
         var resolveDisplayMethod = ExtractMethod(source, "private static string ResolveDisplayName(uint observer, uint target, out bool isUnknown)");
         resolveDisplayMethod.Should().Contain("ShouldShowDescriptorForNamedPlayers(observer)");
@@ -538,7 +582,7 @@ public class PlayerNameRecognitionTests
         viewModelSource.Should().Contain("public bool ShowDescriptorsForNamedPlayers");
         viewModelSource.Should().Contain("public bool ShowOwnDescriptor");
         viewModelSource.Should().Contain("public bool ScrambleAccountName");
-        viewModelSource.Should().Contain("public bool IsIdentitySelected");
+        viewModelSource.Should().Contain(".AddTab(1, IdentityPartial)");
         viewModelSource.Should().Contain("ShowDescriptorsForNamedPlayers = dbPlayer.Settings.ShowDescriptorsForNamedPlayers ?? true;");
         viewModelSource.Should().Contain("ShowOwnDescriptor = dbPlayer.Settings.ShowOwnDescriptor ?? true;");
         viewModelSource.Should().Contain("ScrambleAccountName = dbPlayer.Settings.ScrambleAccountName ?? true;");
@@ -609,6 +653,7 @@ public class PlayerNameRecognitionTests
         saveMethod.Should().Contain("PreviousPrivateName={PreviousPrivateName} PrivateName={PrivateName}");
         saveMethod.Should().Contain("PreviousDescriptor={PreviousDescriptor} Descriptor={Descriptor}");
         saveMethod.Should().Contain("PreviousBiographyLength={PreviousBiographyLength} BiographyLength={BiographyLength}");
+        saveMethod.Should().Contain("PreviousBiography={PreviousBiography} Biography={Biography}");
         saveMethod.Should().Contain("PreviousPortraitInternalId={PreviousPortraitInternalId} PortraitInternalId={PortraitInternalId}");
         saveMethod.Should().Contain("PreviousSoundSetId={PreviousSoundSetId} SoundSetId={SoundSetId}");
         saveMethod.Should().Contain("PreviousScrambleAccountId={PreviousScrambleAccountId} ScrambleAccountId={ScrambleAccountId}");
@@ -712,7 +757,7 @@ public class PlayerNameRecognitionTests
         disguiseSource.Should().Contain("There is a {delayMinutes}-minute delay between disguise activations.");
         disguiseSource.Should().Contain("Deactivation is available immediately.");
         disguiseSource.Should().Contain("DateLastActivated = DateTime.UtcNow");
-        disguiseSource.Should().Contain("public static int ResetActivationCooldowns(uint player)");
+        disguiseSource.Should().Contain("public static int ResetActivationCooldowns(uint player, uint actor = OBJECT_INVALID)");
         disguiseSource.Should().Contain("disguise.DateLastActivated = null;");
         disguiseSource.Should().Contain("public static bool Unretire");
         disguiseSource.Should().Contain("disguise.DateRetired = null;");
@@ -722,7 +767,7 @@ public class PlayerNameRecognitionTests
         disguiseSource.Should().Contain("new DisguiseChangedRefreshEvent()");
         new DMChatCommand().BuildChatCommands()["resetcooldowns"].Description.Should().Contain("disguise");
         dmChatCommandSource.Should().Contain("AbilityCooldownVisual.ClearAllRecastDelays(target);");
-        dmChatCommandSource.Should().Contain("Disguise.ResetActivationCooldowns(target);");
+        dmChatCommandSource.Should().Contain("Disguise.ResetActivationCooldowns(target, user);");
 
         activateResultSource.Should().Contain("public bool IsSuccessful");
         activateResultSource.Should().Contain("public string ErrorMessage");

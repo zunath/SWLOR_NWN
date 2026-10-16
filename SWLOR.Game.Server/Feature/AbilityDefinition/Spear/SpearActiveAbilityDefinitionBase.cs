@@ -48,7 +48,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Spear
                         return;
                     }
 
-                    AssignCommand(attackTarget, () => ClearAllActions());
+                    ActionInterruption.ClearActions(attackTarget);
                     Ability.ApplyCombatImpact(activator, attackTarget, GetLocation(attackTarget), skill, baseDamage, duration, statusEffect, false, statusEffectFactory: statusEffectFactory);
                 })
                 .IsCastedAbility()

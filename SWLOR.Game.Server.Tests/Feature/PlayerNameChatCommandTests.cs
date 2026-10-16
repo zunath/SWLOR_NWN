@@ -9,6 +9,18 @@ namespace SWLOR.Game.Server.Tests.Feature;
 public class PlayerNameChatCommandTests
 {
     [Test]
+    public void AfkCommand_IsAvailableToAllPlayerAccountsWithoutTargeting()
+    {
+        var command = new CharacterChatCommand().BuildChatCommands()["afk"];
+
+        command.Authorization.Should().Be(AuthorizationLevel.All);
+        command.RequiresTarget.Should().BeFalse();
+        command.AllowsLocationTarget.Should().BeFalse();
+        command.DoAction.Should().NotBeNull();
+        command.ValidateArguments.Should().NotBeNull();
+    }
+
+    [Test]
     public void NameCommands_AreAvailableToStaffAuthorizedPlayerAccounts()
     {
         var commands = new CharacterChatCommand().BuildChatCommands();
@@ -44,9 +56,10 @@ public class PlayerNameChatCommandTests
         source.Should().Contain("PlayerDescriptor.SetUnknownDisplayName(user, name);");
         source.Should().Contain("PlayerName.ForgetKnownName(user, target);");
         source.Should().Contain("Log.WriteStructured(");
-        source.Should().Contain("LogGroup.PlayerName");
+        source.Should().Contain("LogGroup.PrivateNames");
+        source.Should().NotContain("LogGroup.PublicDescriptors");
+        source.Should().NotContain("LogGroup.PlayerName");
         source.Should().Contain("\"name-set\"");
-        source.Should().Contain("\"unknown-name-set\"");
         source.Should().Contain("\"name-forget\"");
         source.Should().Contain("ObserverPlayerId={ObserverPlayerId}");
         source.Should().Contain("TargetPlayerId={TargetPlayerId}");

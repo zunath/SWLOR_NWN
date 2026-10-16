@@ -79,8 +79,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                  var dbCreature = new DMCreature(GetName(creature), GetTag(creature), serialized);
                  DB.Set(dbCreature);
 
-                 DeleteLocalObject(Player, "DMCM_CREATURE_TO_SPAWN");
-
                  Search();
              });
 
@@ -91,13 +89,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var index = NuiGetEventArrayIndex();
             SelectedCreatureIndex = index;
 
-            var dbCreature = DB.Get<DMCreature>(_creatureIds[SelectedCreatureIndex]);
-            var deserialized = ObjectPlugin.Deserialize(dbCreature.Data);
-
-            SetLocalObject(Player, "DMCM_CREATURE_TO_SPAWN", deserialized);
-
-            EnterTargetingMode(Player);
-            SendMessageToPC(Player, "Please click on a location to spawn " + CreatureNames[SelectedCreatureIndex]);
+            EnterSpawnTargeting(ObjectType.All);
         };
 
         public Action OnCreateCreature() => () =>
@@ -105,46 +97,37 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var index = NuiGetEventArrayIndex();
             SelectedCreatureIndex = index;
 
+            EnterSpawnTargeting(ObjectType.Tile);
+        };
+
+        // Goes through the Targeting service, so a later targeting request (such as the DM Creator's) replaces this
+        // one instead of both answering the same click.
+        private void EnterSpawnTargeting(ObjectType objectType)
+        {
             var dbCreature = DB.Get<DMCreature>(_creatureIds[SelectedCreatureIndex]);
             var deserialized = ObjectPlugin.Deserialize(dbCreature.Data);
+            var player = Player;
 
-            SetLocalObject(Player, "DMCM_CREATURE_TO_SPAWN", deserialized);
-
-            EnterTargetingMode(Player, ObjectType.Tile);
-            SendMessageToPC(Player, "Please click on a location to spawn " + CreatureNames[SelectedCreatureIndex]);
-        };
+            Targeting.EnterTargetingMode(player, objectType,
+                "Please click on a location to spawn " + CreatureNames[SelectedCreatureIndex],
+                _ => CopyObject(deserialized, Location(GetArea(player), GetTargetingModeSelectedPosition(), 0.0f)),
+                allowsLocationTarget: true);
+        }
 
         public Action OnDeleteCreature() => () =>
         {
             var index = NuiGetEventArrayIndex();
+            if (index < 0 || index >= _creatureIds.Count)
+                return;
+
             SelectedCreatureIndex = index;
-
-            DB.Delete<DMCreature>(_creatureIds[SelectedCreatureIndex]);
-            Search();
+            var creatureId = _creatureIds[index];
+            ShowModal($"Delete {CreatureNames[index]}? This cannot be undone.", () =>
+            {
+                DB.Delete<DMCreature>(creatureId);
+                Search();
+            });
         };
-
-        [NWNEventHandler(ScriptName.OnModulePlayerTarget)]
-        public static void RunTargetedLocationAction()
-        {
-            var player = GetLastPlayerToSelectTarget();
-            var target = GetTargetingModeSelectedObject();
-            var targetedLocation = GetTargetingModeSelectedPosition();
-
-            if (!GetIsObjectValid(target) && targetedLocation == Vector3())
-            {
-                return;
-            }
-
-            if (!GetIsObjectValid(GetLocalObject(player, "DMCM_CREATURE_TO_SPAWN")))
-            {
-                return;
-            }
-
-            var location = Location(GetArea(player), targetedLocation, 0.0f);
-            var deserialized = GetLocalObject(player, "DMCM_CREATURE_TO_SPAWN");
-            CopyObject(deserialized, location);
-            DeleteLocalObject(player, "DMCM_CREATURE_TO_SPAWN");
-        }
 
         private void Search()
         {

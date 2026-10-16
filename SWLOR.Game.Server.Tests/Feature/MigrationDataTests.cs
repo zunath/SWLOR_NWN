@@ -32,16 +32,22 @@ public class MigrationDataTests
         new StoredItemSchemaMigration().ExecutionType.Should().Be(MigrationExecutionType.PostCacheLoad);
         new _24_RemoveWeaponStatOverrides().Version.Should().BeGreaterThan(new _23_RetireForceWeaponEnhancements().Version);
         new _24_RemoveWeaponStatOverrides().ExecutionType.Should().Be(MigrationExecutionType.PostCacheLoad);
+        migrations.Where(migration => migration.Version >= 27).Select(migration => migration.GetType())
+            .Should().BeEquivalentTo(new[] { typeof(_27_UpdatePlayerRecords), typeof(_27_UpdateStoredItems) });
+        new _27_UpdatePlayerRecords().ExecutionType.Should().Be(MigrationExecutionType.PostDatabaseLoad);
+        new _27_UpdateStoredItems().ExecutionType.Should().Be(MigrationExecutionType.PostCacheLoad);
     }
 
     [Test]
-    public void PlayerMigrationsHaveUniqueVersions()
+    public void PlayerMigrationsHaveUniqueVersionsAndOneCombinedItemUpdate()
     {
         var migrations = ServerAssembly.GetTypes()
             .Where(type => !type.IsAbstract && !type.IsInterface && typeof(IPlayerMigration).IsAssignableFrom(type))
             .Select(type => (IPlayerMigration)Activator.CreateInstance(type)!).ToArray();
         migrations.Select(migration => migration.Version).Should().OnlyHaveUniqueItems();
         new _17_RemoveWeaponStatOverrides().Version.Should().BeGreaterThan(new _16_RetireForceWeaponEnhancements().Version);
+        migrations.Where(migration => migration.Version >= 22).Select(migration => migration.GetType())
+            .Should().BeEquivalentTo(new[] { typeof(_22_ReviseLootStats) });
     }
 
     [Test]
@@ -52,7 +58,7 @@ public class MigrationDataTests
         var executed = false;
         type.GetMethod("Run")!.Invoke(state, new object[]
         {
-            new _27_UpdateItemIcons(), (Action<IServerMigration>)(_ => executed = true)
+            new _27_UpdateStoredItems(), (Action<IServerMigration>)(_ => executed = true)
         });
         executed.Should().BeTrue();
         type.GetProperty("CompletedVersion")!.GetValue(state).Should().Be(27);

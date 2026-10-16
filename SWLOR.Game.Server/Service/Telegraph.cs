@@ -2,8 +2,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
 using SWLOR.Game.Server.Core;
+using SWLOR.Game.Server.Service.FrameProfilerService;
 using SWLOR.Game.Server.Service.TelegraphService;
 using SWLOR.NWN.API.Engine;
+using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.Game.Server.Service
@@ -18,6 +20,7 @@ namespace SWLOR.Game.Server.Service
 
         private static readonly Dictionary<uint, Dictionary<string, ActiveTelegraph>> _telegraphsByArea = new();
         private static readonly Dictionary<string, ActiveTelegraph> _allTelegraphs = new();
+        private static readonly Dictionary<uint, TelegraphShaderState> _sentShaderStates = new();
 
         /// <summary>
         /// Creates a new telegraph effect at the specified location.
@@ -360,10 +363,13 @@ namespace SWLOR.Game.Server.Service
             return degrees * ((float)Math.PI / 180f);
         }
 
-        private static TelegraphColorType DetermineTelegraphColorType(uint player, uint telegrapher, bool isHostile)
+        // partyMember is the avatar behind a creature a DM possesses, which keeps the DM's party membership.
+        private static TelegraphColorType DetermineTelegraphColorType(uint player, uint partyMember, uint telegrapher, bool isHostile)
         {
             var isOwnTelegraph = player == telegrapher;
-            var isPartyMemberTelegraph = !isOwnTelegraph && Party.IsInParty(player, telegrapher);
+            var isPartyMemberTelegraph = !isOwnTelegraph &&
+                (Party.IsInParty(player, telegrapher) ||
+                 (partyMember != player && Party.IsInParty(partyMember, telegrapher)));
 
             return SelectTelegraphColorType(isOwnTelegraph, isPartyMemberTelegraph, isHostile);
         }
@@ -427,7 +433,7 @@ namespace SWLOR.Game.Server.Service
         {
             foreach (var player in ObjectSnapshot.Players())
             {
-                UpdateShaderForPlayer(player);
+                UpdateShaderForPlayer(DMPresence.GetControlledCreature(player));
             }
         }
 
@@ -441,10 +447,14 @@ namespace SWLOR.Game.Server.Service
         {
             foreach (var player in players.Distinct())
             {
-                if (!GetIsObjectValid(player) || (!GetIsPC(player) && !GetIsDM(player)))
+                if (!GetIsObjectValid(player))
                     continue;
 
-                UpdateShaderForPlayer(player);
+                var viewer = DMPresence.GetControlledCreature(player);
+                if (!GetIsPC(viewer) && !GetIsDM(viewer))
+                    continue;
+
+                UpdateShaderForPlayer(viewer);
             }
         }
 
@@ -461,8 +471,9 @@ namespace SWLOR.Game.Server.Service
 
             foreach (var player in ObjectSnapshot.Players())
             {
-                if (GetArea(player) == area)
-                    UpdateShaderForPlayer(player);
+                var viewer = DMPresence.GetControlledCreature(player);
+                if (GetArea(viewer) == area)
+                    UpdateShaderForPlayer(viewer);
             }
         }
 
@@ -478,7 +489,38 @@ namespace SWLOR.Game.Server.Service
             if (!GetIsPC(player) && !GetIsDM(player))
                 return;
 
+            // Resend every slot after an area change rather than trusting values sent before it.
+            _sentShaderStates.Remove(player);
             UpdateShaderForPlayer(player);
+        }
+
+        /// <summary>
+        /// Possession moves a DM's client to another object, so the uniforms recorded as sent to that object are
+        /// out of date. Resend every slot once the possession has settled.
+        /// </summary>
+        [NWNEventHandler(ScriptName.OnDMPossessBefore)]
+        [NWNEventHandler(ScriptName.OnDMPossessFullPowerBefore)]
+        public static void ResendShaderStateOnDMPossess()
+        {
+            var target = StringToObject(EventsPlugin.GetEventData("TARGET"));
+            var viewer = GetIsObjectValid(target)
+                ? target
+                : GetMaster(OBJECT_SELF);
+
+            if (!GetIsObjectValid(viewer))
+                return;
+
+            DelayCommand(0.1f, () =>
+            {
+                _sentShaderStates.Remove(viewer);
+                UpdateShaderForPlayer(viewer);
+            });
+        }
+
+        [NWNEventHandler(ScriptName.OnModuleExit)]
+        public static void ForgetShaderStateOnExit()
+        {
+            _sentShaderStates.Remove(GetExitingObject());
         }
 
         /// <summary>
@@ -487,14 +529,34 @@ namespace SWLOR.Game.Server.Service
         /// <param name="player">Player to update shaders for</param>
         private static void UpdateShaderForPlayer(uint player)
         {
+            var profile = FrameProfiler.Start();
+            try
+            {
+                UpdateShaderSlotsForPlayer(player);
+            }
+            finally
+            {
+                FrameProfiler.Stop(FrameMetric.TelegraphPlayerUpdate, profile);
+            }
+        }
+
+        private static void UpdateShaderSlotsForPlayer(uint player)
+        {
+            if (!_sentShaderStates.TryGetValue(player, out var sent))
+            {
+                sent = new TelegraphShaderState();
+                _sentShaderStates[player] = sent;
+            }
+
             var area = GetArea(player);
             if (!_telegraphsByArea.ContainsKey(area))
             {
-                ResetTelegraphShaderSlots(player, 0);
+                ResetTelegraphShaderSlots(player, sent, 0);
                 return;
             }
 
             var telegraphs = SelectTelegraphsForRendering(_telegraphsByArea[area].Values);
+            var partyMember = DMPresence.GetDM(player);
 
             var i = 0;
             foreach (var telegraph in telegraphs)
@@ -503,26 +565,36 @@ namespace SWLOR.Game.Server.Service
                 var position = data.Position;
                 var size = data.Size;
 
-                var colorType = DetermineTelegraphColorType(player, data.Creator, data.IsHostile);
+                var colorType = DetermineTelegraphColorType(player, partyMember, data.Creator, data.IsHostile);
                 var packed = PackTelegraphData(data.Shape, colorType, size, data.Rotation);
 
-                SetShaderUniformInt(
-                    player,
-                    ShaderUniformType.Type1 + i,
-                    packed);
+                if (sent.PackedData[i] != packed)
+                {
+                    SetShaderUniformInt(
+                        player,
+                        ShaderUniformType.Type1 + i,
+                        packed);
+                    sent.PackedData[i] = packed;
+                    FrameProfiler.Count(FrameMetric.TelegraphUniform);
+                }
 
-                SetShaderUniformVec(
-                    player,
-                    ShaderUniformType.Type1 + i,
-                    position.X,
-                    position.Y,
-                    position.Z,
-                    0f);
+                if (sent.Positions[i] != position)
+                {
+                    SetShaderUniformVec(
+                        player,
+                        ShaderUniformType.Type1 + i,
+                        position.X,
+                        position.Y,
+                        position.Z,
+                        0f);
+                    sent.Positions[i] = position;
+                    FrameProfiler.Count(FrameMetric.TelegraphUniform);
+                }
 
                 i++;
             }
 
-            ResetTelegraphShaderSlots(player, telegraphs.Length);
+            ResetTelegraphShaderSlots(player, sent, telegraphs.Length);
         }
 
         private static ActiveTelegraph[] SelectTelegraphsForRendering(IEnumerable<ActiveTelegraph> telegraphs)
@@ -533,12 +605,17 @@ namespace SWLOR.Game.Server.Service
                 .ToArray();
         }
 
-        private static void ResetTelegraphShaderSlots(uint player, int startIndex)
+        private static void ResetTelegraphShaderSlots(uint player, TelegraphShaderState sent, int startIndex)
         {
             for (var x = startIndex; x < MaxRenderCount; ++x)
             {
+                if (sent.PackedData[x] == (int)TelegraphType.None)
+                    continue;
+
                 var uniformIndex = ShaderUniformType.Type1 + x;
                 SetShaderUniformInt(player, uniformIndex, (int)TelegraphType.None);
+                sent.PackedData[x] = (int)TelegraphType.None;
+                FrameProfiler.Count(FrameMetric.TelegraphUniform);
             }
         }
 

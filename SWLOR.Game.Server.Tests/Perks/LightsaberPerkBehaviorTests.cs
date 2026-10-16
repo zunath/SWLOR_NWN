@@ -87,7 +87,7 @@ public class LightsaberPerkBehaviorTests
         source.Should().Contain("new SaberWardStatusEffect(conversionPercent, defensePercent, forceDefensePercent)");
         source.Should().Contain("SelfStatusEffectsToReplace = new[] { typeof(PerfectAegisStatusEffect) }");
         source.Should().Contain("Build(builder, FeatType.SaberWard1, \"Saber Ward I\", 1, 8, 3, 2, 15, 3, 4)");
-        source.Should().Contain("Build(builder, FeatType.SaberWard4, \"Saber Ward IV\", 4, 38, 12, 5, 30, 6, 9)");
+        source.Should().Contain("Build(builder, FeatType.SaberWard4, \"Saber Ward IV\", 4, 38, 12, 6, 30, 6, 9)");
     }
 
     [Test]

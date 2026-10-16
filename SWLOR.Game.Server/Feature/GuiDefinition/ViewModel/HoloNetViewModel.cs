@@ -62,7 +62,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     return;
                 }
 
-                var auditAuthorName = $"{PlayerName.GetAuditName(player)} ({GetPCPlayerName(player)}) [{GetPCPublicCDKey(player)}]";
+                var auditAuthorName = $"{PlayerName.GetAuditIdentity(player)} ({GetPCPlayerName(player)}) [{GetPCPublicCDKey(player)}]";
                 AssignCommand(player, () => TakeGoldFromCreature(BroadcastPrice, player, true));
 
                 var playerId = GetObjectUUID(player);
@@ -86,8 +86,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
                 for (var onlinePlayer = GetFirstPC(); GetIsObjectValid(onlinePlayer); onlinePlayer = GetNextPC())
                 {
-                    var displayName = PlayerName.GetChatDisplayName(onlinePlayer, player);
-                    SendMessageToPC(onlinePlayer, ColorToken.Custom(displayName + " broadcasts a new HoloNet message: ", 0, 180, 255) + ColorToken.White(message));
+                    var receiver = DMPresence.GetControlledCreature(onlinePlayer);
+                    var displayName = PlayerName.GetChatDisplayName(receiver, player);
+                    SendMessageToPC(receiver, ColorToken.Custom(displayName + " broadcasts a new HoloNet message: ", 0, 180, 255) + ColorToken.White(message));
                 }
             }
             catch (Exception ex)

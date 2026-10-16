@@ -844,10 +844,13 @@ namespace SWLOR.Game.Server.Service
             {
                 DelayCommand(4f, () =>
                 {
+                    using var recorderAttribution = CombatRecorder.BeginSetupAttribution(droid);
                     ApplyEffectToObject(DurationType.Instant, EffectHeal(GetMaxHitPoints(droid)), droid);
                 });
             });
         }
+
+        internal static string GetPendingItemRestoreKey(InventorySlot slot, string id) => PendingItemRestorePrefix + (int)slot + ":" + id;
 
         private static void RestoreDroidItem(uint droid, ConstructedDroid constructedDroid, string serialized,
             InventorySlot slot, string id = null, uint item = OBJECT_INVALID)
@@ -856,7 +859,7 @@ namespace SWLOR.Game.Server.Service
                 item = ObjectPlugin.Deserialize(serialized);
 
             id ??= GetIsObjectValid(item) ? GetDroidItemId(item) : Guid.NewGuid().ToString();
-            var retryKey = PendingItemRestorePrefix + (int)slot + ":" + id;
+            var retryKey = GetPendingItemRestoreKey(slot, id);
             if (GetIsObjectValid(item))
                 SetLocalString(item, DroidItemId, id);
 
@@ -1043,7 +1046,11 @@ namespace SWLOR.Game.Server.Service
             return generatedItems;
         }
 
-        private static void SaveItemSnapshot(uint droid)
+        /// <summary>
+        /// Saves the droid's equipped and carried items onto its controller, keeping pending restore and return entries.
+        /// </summary>
+        /// <param name="droid">The droid whose items are saved.</param>
+        public static void SaveItemSnapshot(uint droid)
         {
             if (!IsDroid(droid) || GetLocalBool(droid, DroidIsSpawning))
                 return;

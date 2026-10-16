@@ -830,7 +830,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             if (!GetIsObjectValid(item))
                 return false;
 
-            if (GetItemCursedFlag(item) || GetPlotFlag(item))
+            // NPC gear is often undroppable, so a DM may restyle their avatar's or a possessed creature's anyway.
+            var isDMTarget = GetIsDM(_target) || GetIsDMPossessed(_target);
+            if (!isDMTarget && (GetItemCursedFlag(item) || GetPlotFlag(item)))
                 return false;
 
             // Armors must have parts that are publicly available.

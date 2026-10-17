@@ -295,6 +295,21 @@ class Stack:
     def save(self) -> None:
         self.state_path.write_text(json.dumps(self.state, indent=2) + '\n', 'utf-8')
 
+    def ensure_owner(self, require_reservation: bool = True) -> None:
+        """Refuse to act when the project name is no longer this run's.
+
+        Containers are found by project name, so after a released name is reused by
+        another run, a stale run directory would otherwise drive that run's stack.
+        """
+        holder = reservation_holder(self.project)
+        if holder is None:
+            if require_reservation:
+                raise LiveStackError(f'Project {self.project} has no reservation; this run was torn down.')
+            return
+        if os.path.normcase(holder) != os.path.normcase(str(self.run_dir)):
+            raise LiveStackError(f'Project {self.project} is now reserved by run {holder}; '
+                                 f'refusing to act on it from {self.run_dir}.')
+
     def compose(self, *arguments: str, client: bool = False, check: bool = True, capture: bool = False,
                 timeout: float = 600) -> subprocess.CompletedProcess:
         command = ['docker', 'compose', '-p', self.project, '-f', str(COMPOSE_FILE),
@@ -468,9 +483,16 @@ def create(options) -> Stack:
             vault.mkdir(parents=True)
             shutil.copyfile(character, vault / character.name.lower())
             make_private(vault / character.name.lower(), 0o600)
+            stack.state['character']['sha256'] = sha256(vault / character.name.lower())
         else:
             shutil.copyfile(dm_avatar, stack.profile / 'dmvault' / dm_avatar.name.lower())
             make_private(stack.profile / 'dmvault' / dm_avatar.name.lower(), 0o600)
+            stack.state['dm_avatar']['sha256'] = sha256(stack.profile / 'dmvault' / dm_avatar.name.lower())
+        # The base env file may hold secrets: run from a private copy, keep only its digest.
+        shutil.copyfile(server_env, run_dir / 'server.env')
+        make_private(run_dir / 'server.env', 0o600)
+        stack.state['inputs']['server_env_file_sha256'] = sha256(run_dir / 'server.env')
+        stack.save()
         (stack.profile / 'nwn.ini').write_text(CLIENT_ALIASES, 'utf-8')
         (stack.profile / 'nwnplayer.ini').write_text(CLIENT_PLAYER_INI, 'utf-8')
         (stack.profile / 'settings.tml').write_text(client_settings_text, 'utf-8')
@@ -480,7 +502,7 @@ def create(options) -> Stack:
             'SWLOR_LIVE_SERVER_IMAGE': state['server_image'],
             'SWLOR_LIVE_CLIENT_IMAGE': state['client_image'],
             'SWLOR_LIVE_PREPARE_HOME': (SERVER_DOCKER_DIR / 'prepare-server-home.sh').as_posix(),
-            'SWLOR_LIVE_SERVER_ENV_FILE': server_env.resolve().as_posix(),
+            'SWLOR_LIVE_SERVER_ENV_FILE': (run_dir / 'server.env').as_posix(),
             'SWLOR_LIVE_SERVER_NAME': f'SWLOR live check {project}',
             'SWLOR_LIVE_MODULE_DIR': (run_dir / 'module').as_posix(),
             'SWLOR_LIVE_MODULE_NAME': module.stem,
@@ -697,7 +719,11 @@ def capture(stack: Stack, label: str) -> Path:
     path = stack.evidence / f'{label}.png'
     if not path.is_file():
         raise LiveStackError(f'The capture {path} was not written.')
-    log(f'{path} sha256={sha256(path)}')
+    digest = sha256(path)
+    # A durable record next to the images, so a replaced PNG can be told from the original.
+    with (stack.evidence / 'captures.jsonl').open('a', encoding='utf-8') as manifest:
+        manifest.write(json.dumps({'label': label, 'file': path.name, 'utc': utc_now(), 'sha256': digest}) + '\n')
+    log(f'{path} sha256={digest}')
     return path
 
 
@@ -762,11 +788,8 @@ def return_home_ownership(stack: Stack) -> None:
 
 def destroy(stack: Stack) -> dict:
     """Boot the player, remove the project's Docker resources, then the key, profile and home."""
-    holder = reservation_holder(stack.project)
-    if holder and os.path.normcase(holder) != os.path.normcase(str(stack.run_dir)):
-        # The name was released and reused: this run no longer owns anything under it.
-        raise LiveStackError(f'Project {stack.project} is now reserved by run {holder}; '
-                             f'refusing to tear it down from {stack.run_dir}.')
+    # A rerun after a partial teardown may find the reservation already released.
+    stack.ensure_owner(require_reservation=False)
     report = {'project': stack.project, 'utc': utc_now()}
     errors = []
     try:
@@ -821,7 +844,7 @@ def destroy(stack: Stack) -> dict:
     report['reservation_removed'] = False
     if not any(resources.values()):
         # Kept while any project resource remains so down can be rerun.
-        for name in ('compose.env', 'server-extra.env'):
+        for name in ('compose.env', 'server-extra.env', 'server.env'):
             (stack.run_dir / name).unlink(missing_ok=True)
         report['reservation_removed'] = release_project(stack.project)
         if not report['reservation_removed']:

@@ -87,13 +87,20 @@ def main(argv: list[str] | None = None) -> int:
                         f'python tools/NwnLiveClient.py down "{stack.run_dir}"')
                 else:
                     log('Start-up failed; tearing the stack down')
-                    destroy(stack)
+                    report = destroy(stack)
+                    if not report['clean']:
+                        for error in report['errors'] or ['Resources or copies remain; see cleanup.json.']:
+                            log(f'Teardown problem: {error}')
+                        log(f'Retry with: python tools/NwnLiveClient.py down "{stack.run_dir}"')
                 raise
             log(f'Ready. Run directory: {stack.run_dir}')
             log(f'Tear down with: python tools/NwnLiveClient.py down "{stack.run_dir}"')
             return 0
 
         stack = Stack(options.run_dir)
+        if options.command != 'down':
+            # down checks this itself and also accepts an already released reservation.
+            stack.ensure_owner()
         if options.command == 'play':
             play(stack, options.settle)
         elif options.command == 'ui':

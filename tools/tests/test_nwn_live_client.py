@@ -152,6 +152,18 @@ class LiveClientHelperTests(unittest.TestCase):
                 stack.destroy(stale)
         boot.assert_not_called()
 
+    def test_live_commands_need_this_runs_reservation(self):
+        run_dir = self.root / 'run'
+        run_dir.mkdir()
+        (run_dir / 'state.json').write_text('{"project": "swlor-live-own"}', 'utf-8')
+        own = stack.Stack(run_dir)
+        with patch.object(stack, 'reservation_holder', return_value=str(run_dir)):
+            own.ensure_owner()
+        with patch.object(stack, 'reservation_holder', return_value=None):
+            own.ensure_owner(require_reservation=False)
+            with self.assertRaisesRegex(LiveStackError, 'has no reservation'):
+                own.ensure_owner()
+
     def test_build_digest_changes_with_content_and_names(self):
         build = self.root / 'build'
         build.mkdir()

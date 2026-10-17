@@ -118,7 +118,7 @@ public static class RareLootStatRevisionCatalog
             ["guardmst_w3"] = new LootStatChange[] { new(ItemPropertyType.Attack, 0, 8, 12) },
             ["guardmst_w4"] = new LootStatChange[] { new(ItemPropertyType.Attack, 0, 8, 12) },
             ["gunsling_rig"] = new LootStatChange[] { new(ItemPropertyType.Attack, 0, 5, 11) },
-            ["hexweave"] = new LootStatChange[] { new(ItemPropertyType.Attack, 0, 5, 11) },
+            ["hexweave"] = new LootStatChange[] { new(ItemPropertyType.Attack, 0, 5, 8) },
             ["holdline_l5"] = new LootStatChange[] { new(ItemPropertyType.Evasion, 0, 5, 8) },
             ["holdline_l6"] = new LootStatChange[] { new(ItemPropertyType.Evasion, 0, 5, 8) },
             ["holdline_l8"] = new LootStatChange[] { new(ItemPropertyType.Attack, 0, 5, 12) },

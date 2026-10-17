@@ -48,8 +48,12 @@ public static partial class MigrationEngineTests
                 ItemPlugin.SetBaseItemType(item, BaseItem.Helmet);
                 ItemPlugin.SetItemAppearance(item, SWLOR.NWN.API.NWScript.Enum.Item.ItemAppearanceType.SimpleModel, 0, 223);
             }
-            legacyIcon = Item.GetIconResref(item);
-            ctx.Assert(legacyIcon != helmetIcon, "The fixture begins with a distinct armor icon");
+            // NUI cannot render PLTs and can return the same fallback for both
+            // helmet models. Seed stale record metadata explicitly in that case.
+            legacyIcon = alreadyHelmet ? "ihelm_223" : Item.GetIconResref(item);
+            if (alreadyHelmet)
+                ctx.AssertEqual(223, GetItemAppearance(item, ItemAppearanceType.SimpleModel, 0), "The saved helmet actually starts with the reserved model");
+            ctx.Assert(legacyIcon != helmetIcon, "The saved record starts with stale icon metadata");
             ctx.Log($"Stored headgear icon: {legacyIcon} -> {helmetIcon}");
             saved = ObjectPlugin.Serialize(item);
             StampLegacyVisor(nested);

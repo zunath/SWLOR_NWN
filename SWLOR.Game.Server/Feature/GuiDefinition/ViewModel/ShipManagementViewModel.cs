@@ -615,9 +615,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             return DB.Search(permissionQuery).FirstOrDefault();
         }
 
-        private static bool CanBoardShip(WorldPropertyPermission permission)
+        private bool CanBoardShip(string propertyId)
         {
-            return permission != null && permission.Permissions.GetValueOrDefault(PropertyPermissionType.EnterProperty);
+            return Property.HasPropertyPermission(Player, propertyId, PropertyPermissionType.EnterProperty);
         }
 
         private int CalculateRepairBill(PlayerShip ship)
@@ -1218,7 +1218,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     Configuration8Tooltip = string.Empty;
                 }
 
-                IsBoardShipEnabled = CanBoardShip(permission) && isAtCurrentLocation;
+                IsBoardShipEnabled = CanBoardShip(ship.PropertyId) && isAtCurrentLocation;
                 IsNameEnabled = hasAccess && permission.Permissions.GetValueOrDefault(PropertyPermissionType.RenameProperty) && isAtCurrentLocation;
                 IsRefitEnabled = hasAccess && permission.Permissions.GetValueOrDefault(PropertyPermissionType.RefitShip) && isAtCurrentLocation;
                 IsPermissionsEnabled = hasAccess && permission.GrantPermissions.Any(x => x.Value) && isAtCurrentLocation;
@@ -1843,7 +1843,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var dbShip = DB.Get<PlayerShip>(shipId);
 
             // Access can be revoked after the ship was selected.
-            if (!CanBoardShip(GetShipPermission(dbShip.PropertyId)))
+            if (!CanBoardShip(dbShip.PropertyId))
             {
                 FloatingTextStringOnCreature("You do not have permission to access that property.", Player, false);
                 LoadShip();

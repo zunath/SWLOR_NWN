@@ -576,7 +576,12 @@ def reservation(project: str) -> tuple[str, str] | None:
     owner = run(['docker', 'container', 'inspect', '-f', '{{.Id}} {{index .Config.Labels "swlor.live.run_dir"}}',
                  reservation_name(project)], check=False, capture=True, timeout=60)
     if owner.returncode != 0:
-        return None
+        # Only Docker's own not-found answer means there is no reservation; anything else
+        # (an unreachable daemon, a permission error) must not be read as absence.
+        if b'No such' in owner.stderr:
+            return None
+        raise LiveStackError(f'Could not inspect the {reservation_name(project)} reservation: '
+                             + owner.stderr.decode('utf-8', 'replace').strip())
     container_id, _, run_dir = owner.stdout.decode('utf-8', 'replace').strip().partition(' ')
     return container_id, run_dir
 

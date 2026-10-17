@@ -172,6 +172,15 @@ class LiveClientHelperTests(unittest.TestCase):
         with patch.object(stack, 'run', side_effect=[mine, denied]):
             self.assertFalse(stack.release_project('swlor-live-lock', self.root))
 
+    def test_reservation_lookup_failure_is_not_read_as_absence(self):
+        missing = subprocess.CompletedProcess([], 1, b'', b'Error: No such container: swlor-live-x-reservation')
+        with patch.object(stack, 'run', return_value=missing):
+            self.assertIsNone(stack.reservation('swlor-live-x'))
+        unreachable = subprocess.CompletedProcess([], 1, b'', b'error during connect: daemon is not running')
+        with patch.object(stack, 'run', return_value=unreachable):
+            with self.assertRaisesRegex(LiveStackError, 'Could not inspect'):
+                stack.reservation('swlor-live-x')
+
     def test_input_checks_treat_read_errors_as_changes(self):
         def vanished():
             raise FileNotFoundError('sw_tile.hak')

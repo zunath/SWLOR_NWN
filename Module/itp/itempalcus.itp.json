@@ -9112,6 +9112,16 @@
                       "type": "resref",
                       "value": "abs_rakalpha_wp"
                     }
+                  },                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Colicoid Alpha Attack"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "abs_colalpha_wp"
+                    }
                   },
                   {
                     "__struct_id": 0,
@@ -9122,6 +9132,16 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "abs_rakghoul_wp"
+                    }
+                  },                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Colicoid Attack"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "abs_colicoid_wp"
                     }
                   },
                   {
@@ -9134,6 +9154,16 @@
                       "type": "resref",
                       "value": "abs_rakbrute_wp"
                     }
+                  },                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Colicoid Brute Attack"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "abs_colbrute_wp"
+                    }
                   },
                   {
                     "__struct_id": 0,
@@ -9144,6 +9174,16 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "abs_rakstalk_wp"
+                    }
+                  },                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Colicoid Stalker Attack"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "abs_colstalk_wp"
                     }
                   },
                   {
@@ -9419,6 +9459,16 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "abs_subzero_wp"
+                    }
+                  },                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Subject Zero Attack"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "abs_colzero_wp"
                     }
                   },
                   {
@@ -17833,6 +17883,16 @@
                       "type": "resref",
                       "value": "abs_rakalpha_sk"
                     }
+                  },                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Colicoid Alpha Stat Skin"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "abs_colalpha_sk"
+                    }
                   },
                   {
                     "__struct_id": 0,
@@ -17843,6 +17903,16 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "abs_rakbrute_sk"
+                    }
+                  },                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Colicoid Brute Stat Skin"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "abs_colbrute_sk"
                     }
                   },
                   {
@@ -17855,6 +17925,16 @@
                       "type": "resref",
                       "value": "abs_rakstalk_sk"
                     }
+                  },                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Colicoid Stalker Stat Skin"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "abs_colstalk_sk"
+                    }
                   },
                   {
                     "__struct_id": 0,
@@ -17865,6 +17945,16 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "abs_rakghoul_sk"
+                    }
+                  },                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Colicoid Stat Skin"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "abs_colicoid_sk"
                     }
                   },
                   {
@@ -18987,6 +19077,16 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "abs_subzero_sk"
+                    }
+                  },                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Subject Zero Stat Skin"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "abs_colzero_sk"
                     }
                   },
                   {

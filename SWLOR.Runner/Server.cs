@@ -1,4 +1,4 @@
-﻿using Ductus.FluentDocker.Services;
+using Ductus.FluentDocker.Services;
 using Ductus.FluentDocker.Builders;
 using Ductus.FluentDocker.Commands;
 using Ductus.FluentDocker.Extensions;
@@ -28,8 +28,8 @@ namespace SWLOR.Runner
             Console.WriteLine($"Starting server");
             RegisterEvents();
 
-            var debugServerPath = Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, "..\\..\\..\\..\\"));
-            var dockerComposePath = debugServerPath + "debugserver/docker-compose.yml";
+            var debugServerPath = Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, "..", "..", "..", ".."));
+            var dockerComposePath = Path.Combine(debugServerPath, "debugserver", "docker-compose.yml");
 
             using (_service = new Builder()
                        .UseContainer()
@@ -61,7 +61,7 @@ namespace SWLOR.Runner
                             _containerLineCounts[container.Name].LineCount = lines.Count;
                         }
 
-                        if (container.Name == ServerContainerName &&
+                        if (OperatingSystem.IsWindows() && container.Name == ServerContainerName &&
                             !_isDebuggerRunning &&
                             container.State == ServiceRunningState.Running)
                         {

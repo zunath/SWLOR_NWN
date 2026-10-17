@@ -1,72 +1,64 @@
 # Star Wars: Legends of the Old Republic
-Server-side C# code used in the Neverwinter Nights Star Wars: Legends of the Old Republic module.
 
-Game: Neverwinter Nights: Enhanced Edition
+SWLOR is a Neverwinter Nights: Enhanced Edition persistent world. This repository contains its C# server, module content, and desktop toolset.
 
-Website: https://starwarsnwn.com/
+[Website](https://starwarsnwn.com/) · [Discord](https://discord.gg/MyQAM6m)
 
-Discord: https://discord.gg/MyQAM6m
+## Toolset users and content contributors
 
-Forums: https://forums.starwarsnwn.com/
+Download **SWLOR Toolset** from [Releases](https://github.com/zunath/SWLOR_NWN/releases/latest): the Windows installer or portable ZIP, or the Linux x64 AppImage or portable tar.gz. Choose an application asset rather than GitHub's source-code ZIP. On Linux, make the AppImage executable with `chmod +x *.AppImage`, then open it. Ubuntu 24.04 is the tested Linux baseline; use X11 or Wayland with XWayland.
 
-# Project Description
+1. Install and open SWLOR Toolset.
+2. Select **Create SWLOR workspace** and choose a folder for your work.
+3. Optionally select **Locate Neverwinter Nights** for base-game models and tiles.
+4. Edit, save, and run **Tools → Run Validation**.
+5. Use **File → Export Contribution** and send the ZIP to your SWLOR maintainer for review.
 
-This project contains the C# source code used on the Star Wars: Legends of the Old Republic server. 
+Git, Python, Visual Studio, Docker, and the .NET SDK are not required for the installed toolset. The first workspace downloads SWLOR assets separately; later workspaces reuse them. Application updates preserve your editable files. **Help → Check for Updates** updates an installed Windows copy or Linux AppImage. Portable archives are updated by downloading a newer archive.
 
-It serves as a replacement for NWScript and handles most server features and functions. This is possible by using the NWNX_DotNet plugin for NWNX.
+Conversations need a matching server build before they can be tested in game. Exporting a contribution lets the maintainer build and test the reviewed changes together.
 
-Refer to the quick start guide below and be sure to post any issues on our forums. The link to the forums is above.
+The standalone downloads become available after the first toolset release is published. Until then, use the source setup below. See the [toolset guide](SWLOR.Toolset/README.md) for details.
 
-# Prerequisites: 
+## Source developers
 
-Git: https://git-scm.com/downloads
-  
-Docker: https://www.docker.com/products/docker-desktop/
-  
-Visual Studio 2022: https://www.visualstudio.com/downloads/
+Install [Git](https://git-scm.com/downloads) and a stable [.NET 10 SDK](https://dotnet.microsoft.com/download/dotnet/10.0). Use an IDE that supports that SDK if you want code editing or debugging. Docker Engine with Compose on Linux, or Docker Desktop on Windows, is needed only to run a local server; NWN:EE supplies base-game assets and the game client.
 
-.NET 10 SDK: [Download .NET 10](https://dotnet.microsoft.com/en-us/download/dotnet/10.0)
+Fork this repository, then clone your fork:
 
-Neverwinter Nights: https://store.steampowered.com/app/704450/Neverwinter_Nights_Enhanced_Edition/
+```powershell
+git clone --recursive https://github.com/<your_username>/SWLOR_NWN.git
+```
 
-# Installation:
+Double-click **Setup.cmd** inside the checkout. It initializes the pinned asset submodule and builds the toolset. No IDE setup or startup-project selection is needed.
 
-1. Fork this repo.
+- **CheckSetup.cmd** checks the source prerequisites without changing submodules, native tools, or containers. The small .NET checker builds on its first run.
+- **StartToolset.cmd** builds and opens the editor from source.
+- **Setup.cmd -Profile Server** checks Docker and builds the local server launcher.
+- **StartServer.cmd** packs the module, prepares this checkout's local server files, and runs the server. The first run can take a while. Press Ctrl+C to stop it.
 
-2. At command line: ``git clone --recursive https://github.com/<your_username>/SWLOR_NWN.git``
+On Linux, install these source-tool dependencies on Ubuntu 24.04:
 
-3. Run SWLOR_NWN/Module/PackModule.cmd to generate the Star Wars LOR v2.mod file.
-  
-4. Open SWLOR.Game.Server.sln with Visual Studio
-  
-5. Right click on SWLOR.Runner within Visual Studio and select "Set as Startup Project"
-  
-6. Click the green run button at the top of Visual Studio. Note that this will take a while the first time you do it.
+```bash
+sudo apt-get install libpcre3 libsqlite3-0 libfontconfig1 libx11-6 libxrandr2 libxfixes3 libxi6 libxcursor1 libice6 libsm6 libglib2.0-0t64 libgl1 libgl1-mesa-dri
+./Setup.sh
+./StartToolset.sh
+```
 
-# Troubleshooting
+`./CheckSetup.sh`, `./Setup.sh --profile Server`, and `./StartServer.sh` provide the same checks and server workflow. Setup downloads checksum-verified Linux NWN utilities into the user's cache; it does not require PowerShell. Both platforms use the same .NET setup command; Python is not required. For direct invocation from the repository root, use `dotnet run --project scripts/SWLOR.ContributorSetup -p:RunPostBuildEvent=Never -- --mode Check --profile Server`.
 
-**'TLK does not exist' error:**
+Builds always disable automatic deployment. The server shortcut explicitly invokes the existing pack/deploy pipeline. Existing local configuration is preserved.
 
-This happens because you didn't clone with the --recursive command. Redo step 2.
+## Troubleshooting
 
-**'Type initializer for Ductus.FluentDocker.Extensions.CommandExtensions threw an exception' error:**
+**Missing assets or TLK:** run Setup.cmd or ./Setup.sh. It initializes the exact SWLOR_Haks revision pinned by the parent repository.
 
-You need to install docker.
+**SDK not found:** install a stable .NET 10 SDK and reopen your terminal or IDE. global.json selects the latest installed .NET 10 feature band.
 
-**'Missing required HAK file' error on login**
+**Docker unavailable:** start Docker Engine with Compose on Linux, or Docker Desktop with Linux containers on Windows. Run ./CheckSetup.sh --profile Server or CheckSetup.cmd -Profile Server.
 
-Copy the files in the hak directory to your NWN play directory. Alternatively, edit nwn.ini to point to the debugserver/hak folder.
+**Missing HAK/TLK when joining a local server:** point your NWN profile's HAK and TLK aliases at this checkout's debugserver/hak and debugserver/tlk directories, or copy those built files into your profile.
 
-**'Missing required TLK file' error on login**
+**Contributor import conflict:** the target file has changed since the contributor's snapshot. A maintainer must review and merge it; imports never silently overwrite that newer work.
 
-Copy the sw_tlk.tlk file in the tlk directory to your NWN play directory. Alternatively, edit nwn.ini to point to the debugserver/tlk folder.
-
-**'Unable to load module' error**
-
-Delete all docker containers and images, then delete all files in the debugserver/modules, debugserver/tlk, and debugserver/hak folders. Then rerun the application.
-
-# Getting Help
-
-If you need help with anything related to Star Wars: Legends of the Old Republic please feel free to contact us on our Discord here: https://discord.gg/MyQAM6m
-
-For NWNX and Docker related issues please look for help in the NWNX Discord channel here: https://discord.gg/m2hJPDE
+Ask for help on [Discord](https://discord.gg/MyQAM6m), including the setup error or the toolset's Output messages. Avoid deleting unrelated Docker containers, images, or game profiles.

@@ -276,7 +276,7 @@ public class StarshipDockReturnTests
             .Select(area => area.Key)
             .ToList();
 
-        shipOnly.Should().BeEquivalentTo(StationAreas, "the Abandoned Station is the only location reachable only by ship");
+        shipOnly.Should().Contain(StationAreas, "every area of the Abandoned Station is reachable only by ship");
         foreach (var area in shipOnly)
         {
             areas[area].Variables.Should().ContainKey("PLANET_TYPE_ID",

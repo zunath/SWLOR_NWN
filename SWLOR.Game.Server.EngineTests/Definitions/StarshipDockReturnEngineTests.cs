@@ -69,9 +69,6 @@ public static class StarshipDockReturnEngineTests
                 }
             };
             DB.Set(ship);
-            var dbPlayer = DB.Get<Player>(actor.Id);
-            dbPlayer.ActiveShipId = ship.Id;
-            DB.Set(dbPlayer);
 
             var created = DB.Get<WorldProperty>(property.Id).Positions;
             AssertAt(ctx, created[PropertyLocationType.LastNPCDockPosition], GetWaypointByTag(planet.LandingWaypointTag), "a new ship's safe dock is its planet's starport");
@@ -80,7 +77,7 @@ public static class StarshipDockReturnEngineTests
             for (var cycle = 1; cycle <= 2; cycle++)
             {
                 // A regular starport becomes the safe dock, and a restart leaves the ship there.
-                await Dock(ctx, actor, viscaraDock, $"[NPC] {velesDock.Name}");
+                await Dock(ctx, actor, ship, viscaraDock, $"[NPC] {velesDock.Name}");
                 var positions = DB.Get<WorldProperty>(property.Id).Positions;
                 AssertAt(ctx, positions[PropertyLocationType.DockPosition], velesDock.Location, $"cycle {cycle}: the menu docks the ship at Veles");
                 AssertAt(ctx, positions[PropertyLocationType.LastNPCDockPosition], velesDock.Location, $"cycle {cycle}: Veles becomes the safe dock");
@@ -93,7 +90,7 @@ public static class StarshipDockReturnEngineTests
                 await AssertShipWindow(ctx, actor, viscaraOrbit, velesDock.Location, GetName(veles), true, $"cycle {cycle}: docked at Veles");
 
                 // The station never becomes the safe dock.
-                await Dock(ctx, actor, stationDock, $"[NPC] {GetName(stationLanding)}");
+                await Dock(ctx, actor, ship, stationDock, $"[NPC] {GetName(stationLanding)}");
                 positions = DB.Get<WorldProperty>(property.Id).Positions;
                 AssertAt(ctx, positions[PropertyLocationType.DockPosition], stationLanding, $"cycle {cycle}: the menu docks the ship at the station");
                 AssertAt(ctx, positions[PropertyLocationType.SpacePosition], stationOrbit, $"cycle {cycle}: the ship launches from the station's orbit");
@@ -244,8 +241,12 @@ public static class StarshipDockReturnEngineTests
         return OBJECT_INVALID;
     }
 
-    private static async Task Dock(EngineTestContext ctx, PlayerAbilityFixture actor, uint dock, string response)
+    private static async Task Dock(EngineTestContext ctx, PlayerAbilityFixture actor, PlayerShip ship, uint dock, string response)
     {
+        // Players dock while piloting the ship in space; docking exits space mode and clears the active ship.
+        var dbPlayer = DB.Get<Player>(actor.Id);
+        dbPlayer.ActiveShipId = ship.Id;
+        DB.Set(dbPlayer);
         Gui.ClosePlayerWindow(actor.Creature, GuiWindowType.Conversation);
         await ctx.ExecuteInCreatureContextAsync(actor.Creature, () => ConversationMenu.Start(actor.Creature, dock, DockMenu));
         await ctx.WaitUntilAsync(() => Gui.IsWindowOpen(actor.Creature, GuiWindowType.Conversation), 8f, $"the {GetName(dock)} dock menu opens");

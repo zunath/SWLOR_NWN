@@ -35,6 +35,8 @@ def compile_models(compiler, resources, output, names):
         binary.mkdir()
         try:
             CleanModels.run(compiler, staging, "compile", models, binary, "compile.log", [resources])
+        except RuntimeError as error:
+            raise RuntimeError(f"Compilation failed; see {output / 'compile.log'}") from error
         finally:
             if (staging / "compile.log").exists():
                 shutil.copyfile(staging / "compile.log", output / "compile.log")

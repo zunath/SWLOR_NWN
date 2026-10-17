@@ -794,6 +794,8 @@ Historical bank repacking records the current audit compiler separately in
 `validation_compiler_sha256` and checks current tool fingerprints without
 relaxing resource hashes. Cross-compiler motion revisions preserve the original
 rig and unselected native components, remapping only candidate animation IDs.
+New compiler proofs track MTR contents and unresolved material lookups so
+material-only edits invalidate no-op runs, model caches, and checkpoints.
 The adapter fills omitted static identity rotations in temporary ASCII inputs
 because v4.4.2 otherwise emits non-unit quaternions for those defaults. The bank
 reader supports both compiler layouts and relocates parent offsets without

@@ -1,6 +1,7 @@
 """Publication guards for staged model compilation."""
 from pathlib import Path
 import struct
+import re
 import sys
 import tempfile
 import unittest
@@ -27,6 +28,21 @@ class ModelCompilationTests(unittest.TestCase):
                 compiler.compile_models(None, root, output, [])
             self.assertEqual([], list(output.glob("*.mdl")))
             self.assertEqual("batch diagnostics", (output / "compile.log").read_text())
+
+    def test_compiler_error_points_to_the_retained_output_log(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            (root / "sample.mdl").write_text("newmodel sample")
+            output = root / "output"
+            def fail(executable, staging, command, models, binary, log, resources):
+                (staging / log).write_text("compiler failure diagnostics")
+                raise RuntimeError(f"compiler error; see {staging / log}")
+            with patch.object(compiler.CleanModels, "find_compiler", return_value=Path("compiler.exe")), \
+                 patch.object(compiler.CleanModels, "run", side_effect=fail), \
+                 self.assertRaisesRegex(RuntimeError, re.escape(str(output / "compile.log"))):
+                compiler.compile_models(None, root, output, ["sample"])
+            self.assertEqual("compiler failure diagnostics", (output / "compile.log").read_text())
+            self.assertEqual([], list(output.glob("*.mdl")))
 
     def test_existing_output_and_invalid_resrefs_are_rejected_before_compilation(self):
         with tempfile.TemporaryDirectory() as directory:

@@ -529,10 +529,12 @@ If it does not, inspect resource discovery and load precedence before redrawing
 artwork or changing item stats/appearance IDs.
 
 NWN:EE Windows x64 build **8193.37-17 / 26c6e573** has a second, separate issue:
-`CNWCItem::UpdateIcons` checks only TGA resource type 3 for each composite part.
-Without a same-named TGA in any loaded resource layer, it replaces that part's
+`CNWCItem::UpdateIcons` checks only TGA resource type 3 for each composite part
+and for complete (simple) item icons such as shields.
+Without a same-named TGA in any loaded resource layer, it replaces the requested
 resref with the base item's generic icon, even when the requested DDS exists.
-The Basic Pistol's native slot 201 and Part #111 demonstrate this fallback.
+The Basic Pistol's native slot 201 and Part #111 demonstrate this fallback;
+simple shield slots 57–60 also fall back when their icons are DDS-only.
 The artwork can be unique and correctly packed while the displayed icon is wrong.
 
 Keep new/replacement artwork DDS-only. Native inventory discovery requires a
@@ -544,15 +546,16 @@ persisted weapon appearances. Broader engine background is available in the
 ### Optional Windows client compatibility patch
 
 `tools/PatchDdsInventoryIcons.py` creates a separate client executable for the
-verified build. At the original composite-part lookup call, it preserves the TGA
-check, then tries DDS resource type 2033 for the **same resref** before allowing
-the original generic-icon fallback. Existing TGA icons and genuinely missing
+verified build. At the original composite-part and simple-icon lookup calls, it
+preserves the TGA check, then tries DDS resource type 2033 for the **same resref**
+before allowing the original generic-icon fallback. Existing TGA icons and genuinely missing
 resources retain their old behavior. No TGA resources are added or fabricated.
 
 The tool validates the complete source SHA-256, refuses other builds and previously
 modified binaries, and refuses to overwrite either the source or an existing
-output. It preserves the entry point and original code apart from that call,
-adds a readable/executable section with Windows unwind metadata, and recalculates
+output. It validates both lookup call sites and preserves the entry point and
+original code apart from those two calls; generic fallback and PLT lookups are
+unchanged. It adds a readable/executable section with Windows unwind metadata, and recalculates
 the PE checksum. It does not patch a running process, replace Steam's executable,
 change the server or distribute a game binary through Git/NWSync.
 
@@ -577,10 +580,11 @@ python -m unittest discover -s tools/tests -p test_dds_inventory_client_patch.py
 ```
 
 These tests execute the original and patched lookup instructions with a simulated
-resource index, reproduce the fallback for the two reported slots, cover every
-shipped DDS pistol icon, and check native DDS format recognition, preserved TGA
-behavior, missing-resource fallback, PE integrity and unwind metadata. They do
-not exercise the GPU or inventory window; record live client verification separately.
+resource index, reproduce the fallback for the reported pistol and shield slots,
+cover every shipped DDS pistol icon, and check native DDS format recognition, preserved TGA
+behavior, missing-resource fallback, unchanged generic/PLT calls, PE integrity and
+unwind metadata. They do not exercise the GPU or inventory window; record live
+client verification separately.
 
 ## Hand fit
 

@@ -32,8 +32,6 @@ public static partial class MigrationEngineTests
             var properties = DescribeProperties(item);
             var identity = GetObjectUUID(item);
             new _19_UpdateItemIcons().Migrate(owner);
-            ctx.AssertEqual(88, GetItemAppearance(item, ItemAppearanceType.SimpleModel, 0), "The earlier checkpoint does not walk items separately");
-            new _22_ReviseLootStats().Migrate(owner);
             ctx.AssertEqual(ItemIconMigration.GetUpdatedModel("aen_hp1", (int)GetBaseItemType(item), 88), GetItemAppearance(item, ItemAppearanceType.SimpleModel, 0), "Uses its reviewed enhancement artwork");
             ctx.AssertEqual(identity, GetObjectUUID(item), "The original native object is retained");
             ctx.AssertEqual("Custom vitality enhancement", GetName(item), "Custom name is retained");

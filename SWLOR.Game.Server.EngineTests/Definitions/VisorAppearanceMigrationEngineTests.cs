@@ -1,4 +1,6 @@
+using System;
 using System.Linq;
+using System.Reflection;
 using System.Threading.Tasks;
 using SWLOR.Game.Server.EngineTests.Framework;
 using SWLOR.Game.Server.Entity;
@@ -6,6 +8,7 @@ using SWLOR.Game.Server.Feature.MigrationDefinition;
 using SWLOR.Game.Server.Feature.MigrationDefinition.PlayerMigration;
 using SWLOR.Game.Server.Feature.MigrationDefinition.ServerMigration;
 using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.Service.MigrationService;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Item;
@@ -14,7 +17,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions;
 
 public static partial class MigrationEngineTests
 {
-    [EngineTest("Combined player item migration repairs worn and nested visor models and artwork before two bank reloads", Category = HeadgearCategory, TimeoutSeconds = 90)]
+    [EngineTest("Player migration 24 repairs version 23 worn and nested visors and artwork before two bank reloads", Category = HeadgearCategory, TimeoutSeconds = 90)]
     public static async Task ReservedVisorModelsAndArtwork(EngineTestContext ctx)
     {
         using var fixture = await PlayerAbilityFixture.CreateAsync(ctx);
@@ -42,10 +45,35 @@ public static partial class MigrationEngineTests
         var totals = ReadEquipmentTotals(player);
         await ctx.ExecuteInCreatureContextAsync(player, () =>
         {
+            const string checkpointVariable = "PLAYER_MIGRATION_VERSION";
+            var record = DB.Get<Player>(fixture.Id);
+            record.Version = 23;
+            DB.Set(record);
+            SetLocalInt(player, checkpointVariable, 23);
+            var fileVersion = 23;
+            var fileSaves = 0;
+            string savedCharacter = null;
+            var pending = typeof(_24_UpdateItemAppearances).Assembly.GetTypes()
+                .Where(type => !type.IsAbstract && !type.IsInterface && typeof(IPlayerMigration).IsAssignableFrom(type))
+                .Select(type => (IPlayerMigration)Activator.CreateInstance(type))
+                .Where(migration => migration.Version > Math.Min(record.Version, fileVersion)).ToArray();
+            ctx.AssertEqual(1, pending.Length, "A released version 23 character has exactly one pending item migration");
+            ctx.AssertEqual(24, pending.Single().Version, "The reserved model repair has a checkpoint newer than the released version");
+            var apply = typeof(Migration).GetMethod("ApplyPlayerMigration", BindingFlags.Static | BindingFlags.NonPublic);
+            bool ApplyMigration() => (bool)apply.Invoke(null, new object[] { pending.Single(), player,
+                (Func<Player>)(() => DB.Get<Player>(fixture.Id)), (Action<Player>)(updated => DB.Set(updated)),
+                (Func<int>)(() => fileVersion), (Action<int>)(version =>
+                {
+                    SetLocalInt(player, checkpointVariable, version);
+                    savedCharacter = ObjectPlugin.Serialize(player);
+                    fileVersion = version;
+                    fileSaves++;
+                }) });
             ctx.AssertEqual(223, GetItemAppearance(visor, ItemAppearanceType.SimpleModel, 0), "Fixture reproduces the shipped reserved helmet model");
-            new _19_UpdateItemIcons().Migrate(player);
-            ctx.AssertEqual(88, GetItemAppearance(material, ItemAppearanceType.SimpleModel, 0), "The earlier checkpoint does not perform another artwork traversal");
-            new _22_ReviseLootStats().Migrate(player);
+            ctx.Assert(ApplyMigration(), "The actual player migration checkpoint path repairs a version 23 character");
+            ctx.AssertEqual(24, DB.Get<Player>(fixture.Id).Version, "The database checkpoint advances after repair");
+            ctx.AssertEqual(24, fileVersion, "The character checkpoint advances after repair");
+            ctx.AssertEqual(24, (int)Invoke("StoredObjectData", "ReadRootInteger", savedCharacter, checkpointVariable), "The saved character contains the new checkpoint");
             ctx.AssertEqual(110, GetItemAppearance(visor, ItemAppearanceType.SimpleModel, 0), "The combined player migration repairs the worn helmet");
             ctx.AssertEqual(110, GetItemAppearance(nested, ItemAppearanceType.SimpleModel, 0), "The same traversal repairs nested headgear");
             ctx.AssertEqual(33, GetItemAppearance(custom, ItemAppearanceType.SimpleModel, 0), "Valid customized visor models survive");
@@ -53,6 +81,8 @@ public static partial class MigrationEngineTests
                 GetItemAppearance(material, ItemAppearanceType.SimpleModel, 0), "The same traversal updates other item artwork");
             ctx.AssertEqual(visor, GetItemInSlot(InventorySlot.Head, player), "Appearance repair keeps the same item equipped");
             ctx.AssertEqual(totals, ReadEquipmentTotals(player), "Appearance-only repair leaves equipment totals unchanged");
+            ctx.Assert(ApplyMigration(), "A completed migration retry succeeds without walking items again");
+            ctx.AssertEqual(1, fileSaves, "The completed item migration is not repeated or saved twice");
             ctx.Assert(!LootStatRevisionMigration.MigratePlayerItems(player), "A combined migration retry is stable");
         });
         for (var cycle = 1; cycle <= 2; cycle++)
@@ -69,7 +99,7 @@ public static partial class MigrationEngineTests
             await ctx.WaitUntilAsync(() => !GetIsObjectValid(visor), 5f, "the saved visor to leave live inventory");
             await ctx.ExecuteInCreatureContextAsync(player, () =>
             {
-                new _27_UpdateStoredItems().Migrate();
+                new _28_CorrectStoredEquipmentTypes().Migrate();
                 Bank.WithdrawItem(player, stored.Id);
             });
             await ctx.WaitFrameAsync();

@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Core;
 using SWLOR.NWN.API.NWNX;
+using NWNXLib = NWN.Native.API.NWNXLib;
 
 namespace SWLOR.Game.Server.Service
 {
@@ -106,6 +107,36 @@ namespace SWLOR.Game.Server.Service
         {
             var creature = GetExitingObject();
             RemoveCreatureFromParty(creature);
+        }
+
+        /// <summary>
+        /// Takes a player out of their party, as leaving or being kicked through the native party controls does.
+        /// Script-driven removal skips the NWNX party events, so the caches are updated here instead.
+        /// </summary>
+        /// <param name="player">The player leaving or being removed.</param>
+        public static void RemoveFromCurrentParty(uint player)
+        {
+            RemoveFromParty(player);
+            RemoveCreatureFromParty(player);
+        }
+
+        /// <summary>
+        /// Hands party leadership to another member, as the native party controls do.
+        /// </summary>
+        /// <param name="currentLeader">The party's current leader.</param>
+        /// <param name="newLeader">The member who becomes leader.</param>
+        /// <returns>true if the engine accepted the transfer.</returns>
+        public static bool TransferLeadership(uint currentLeader, uint newLeader)
+        {
+            var creature = NWNXLib.g_pAppManager.m_pServerExoApp.GetCreatureByGameObjectID(currentLeader);
+            var faction = creature?.GetFaction();
+            if (faction == null || faction.TransferLeadership(newLeader, currentLeader) == 0)
+                return false;
+
+            if (_creatureToParty.TryGetValue(newLeader, out var partyId))
+                _partyLeaders[partyId] = newLeader;
+
+            return true;
         }
 
         /// <summary>

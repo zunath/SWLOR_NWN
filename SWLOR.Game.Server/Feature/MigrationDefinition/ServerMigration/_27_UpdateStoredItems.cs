@@ -63,7 +63,7 @@ public sealed class _27_UpdateStoredItems : IServerMigration
         changed += pass.Process<MarketItem>(item =>
         {
             return MigrateItem(converter, item.Resref, item.Data, value => item.Data = value, item.IconResref, value => item.IconResref = value,
-                converted => item.Category = converted.Category);
+                listing => item.Category = listing.Category);
         });
         changed += pass.Process<WorldPropertyCategory>(category =>
         {
@@ -92,15 +92,15 @@ public sealed class _27_UpdateStoredItems : IServerMigration
     }
 
     private static bool MigrateItem(IStoredItemConverter converter, string resref, string data, Action<string> setData,
-        string icon, Action<string> setIcon, Action<ConvertedEquipment> convertedHeadgear = null)
+        string icon, Action<string> setIcon, Action<RootListing> rootChanged = null)
     {
-        string headgearIcon = null;
-        var changed = MigrateData(converter, data, setData, convertedHeadgear: converted =>
+        string rootIcon = null;
+        var changed = MigrateData(converter, data, setData, rootChanged: listing =>
         {
-            headgearIcon = converted.IconResref;
-            convertedHeadgear?.Invoke(converted);
+            rootIcon = listing.IconResref;
+            rootChanged?.Invoke(listing);
         });
-        var updatedIcon = headgearIcon ?? ItemIconMigration.GetUpdatedIcon(resref, icon);
+        var updatedIcon = rootIcon ?? ItemIconMigration.GetUpdatedIcon(resref, icon);
         if (updatedIcon == icon)
             return changed;
         setIcon(updatedIcon);
@@ -126,9 +126,9 @@ public sealed class _27_UpdateStoredItems : IServerMigration
     }
 
     private static bool MigrateData(IStoredItemConverter converter, string data, Action<string> setData,
-        bool repairHeadgear = true, Action<ConvertedEquipment> convertedHeadgear = null)
+        bool repairHeadgear = true, Action<RootListing> rootChanged = null)
     {
-        if (!converter.MigrateStoredObjectData(data, out var migrated, repairHeadgear, convertedHeadgear))
+        if (!converter.MigrateStoredObjectData(data, out var migrated, repairHeadgear, rootChanged))
             return false;
         setData(migrated);
         return true;

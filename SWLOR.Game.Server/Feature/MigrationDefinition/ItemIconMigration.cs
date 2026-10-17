@@ -1422,9 +1422,10 @@ public static class ItemIconMigration
 
     internal static bool MigrateItem(uint item)
     {
+        var changed = ItemAppearanceCatalogMigration.ConvertItem(item);
         var oldModel = GetItemAppearance(item, ItemAppearanceType.SimpleModel, 0);
         var newModel = GetUpdatedModel(GetResRef(item), (int)GetBaseItemType(item), oldModel);
-        if (oldModel == newModel) return false;
+        if (oldModel == newModel) return changed;
         ItemPlugin.SetItemAppearance(item, ItemAppearanceType.SimpleModel, 0, newModel);
         return true;
     }

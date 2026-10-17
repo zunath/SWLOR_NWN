@@ -7,6 +7,7 @@ using Newtonsoft.Json;
 using SWLOR.Game.Server.EngineTests.Framework;
 using SWLOR.Game.Server.Feature.MigrationDefinition;
 using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.DroidService;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.Game.Server.Core.NWNX.Enum;
@@ -26,12 +27,14 @@ public static partial class MigrationEngineTests
     /// both results load into the engine, and everything the engine reads back is compared. The production-copy
     /// parity check holds few of these legacy kinds, so this covers each rule the offline sweep mirrors.
     /// </summary>
-    [EngineTest("Offline stored-item sweep saves what the engine sweep saves for every legacy item kind", Category = OfflineMigrationCategory, TimeoutSeconds = 240f)]
+    [EngineTest("Offline stored-item sweep saves what the engine sweep saves for every legacy item kind", Category = OfflineMigrationCategory, TimeoutSeconds = 400f)]
     public static async Task OfflineStoredItemSweepMatchesEngine(EngineTestContext ctx)
     {
         var owner = ctx.SpawnCreature("civilian");
         var savedCreature = ctx.SpawnCreature("civilian", 2f);
         await ctx.WaitFrameAsync();
+        // Fixtures whose saved root converts, so both sweeps must report its refreshed listing.
+        var rootConversions = new HashSet<string> { "legacy Ruptor visor", "legacy Thermal visor" };
         var fixtures = new List<(string Label, string Data, bool RepairHeadgear)>
         {
             ("legacy Ruptor visor", LegacyHeadgearFixtures.Ruptor, true),
@@ -49,7 +52,39 @@ public static partial class MigrationEngineTests
                 if (LootStatRevisionCatalog.Changes.ContainsKey(resref))
                     StampLegacyLoot(item, NoEnhancements);
                 fixtures.Add(($"legacy {resref}", ObjectPlugin.Serialize(item), true));
+                rootConversions.Add($"legacy {resref}");
                 DestroyObject(item);
+            });
+        }
+
+        foreach (var resref in ItemAppearanceCatalogMigration.Revisions.Keys)
+        {
+            var item = await CreateItemAsync(ctx, owner, resref, owner);
+            await ctx.ExecuteInCreatureContextAsync(owner, () =>
+            {
+                StampLegacyAppearance(ctx, item);
+                fixtures.Add(($"legacy appearance {resref}", ObjectPlugin.Serialize(item), true));
+                rootConversions.Add($"legacy appearance {resref}");
+                DestroyObject(item);
+            });
+        }
+
+        // Shipped breastplates: retired Ice Defense beside an Ice Resistance enhancement, the same copy after
+        // losing the retired property, Ice Defense the combat replacement already converted, and no Ice at all.
+        var arkanianEnhancements = new Dictionary<(ItemPropertyType, int), int>
+        {
+            [(ItemPropertyType.HPBonus, 0)] = 40,
+            [(ItemPropertyType.Defense, (int)CombatDamageType.Physical)] = 3,
+        };
+        foreach (var (iceDefense, iceResistance) in new[] { (30, 5), (0, 5), (0, 30), (0, 0) })
+        {
+            var armor = await CreateItemAsync(ctx, owner, "ark_armor", owner);
+            await ctx.ExecuteInCreatureContextAsync(owner, () =>
+            {
+                StampLegacyArkanianArmor(armor, arkanianEnhancements, iceDefense, iceResistance);
+                fixtures.Add(($"legacy Arkanian breastplate (Ice Defense {iceDefense}, Ice Resistance {iceResistance})",
+                    ObjectPlugin.Serialize(armor), true));
+                DestroyObject(armor);
             });
         }
 
@@ -90,9 +125,7 @@ public static partial class MigrationEngineTests
                 Inventory = { ["spare-visor"] = LegacyHeadgearFixtures.Thermal, ["spare-gloves"] = legacyGloves },
             }));
             fixtures.Add(("legacy loot with crafted enhancements", legacyGloves, true));
-            var buffedData = ObjectPlugin.Serialize(buffedGloves);
-            ctx.Log("Temporary bonus fixture: " + buffedData);
-            fixtures.Add(("legacy loot with a temporary Attack bonus", buffedData, true));
+            fixtures.Add(("legacy loot with a temporary Attack bonus", ObjectPlugin.Serialize(buffedGloves), true));
             fixtures.Add(("legacy artwork", ObjectPlugin.Serialize(artwork), true));
             fixtures.Add((CurrentLootLabel, ObjectPlugin.Serialize(current), true));
             fixtures.Add(("container with legacy contents", ObjectPlugin.Serialize(bag), true));
@@ -100,41 +133,55 @@ public static partial class MigrationEngineTests
             fixtures.Add(("saved creature carrying legacy items", ObjectPlugin.Serialize(savedCreature), true));
         });
 
+        // Every fixture is checked before the test reports, so one run lists every difference.
+        var failures = new List<string>();
         foreach (var (label, data, repairHeadgear) in fixtures)
         {
             await ctx.ExecuteInCreatureContextAsync(owner, () =>
             {
-                var engine = ConvertStoredItem("EngineStoredItemConverter", data, repairHeadgear);
-                var offline = ConvertStoredItem("OfflineStoredItemConverter", data, repairHeadgear);
-                if (label.StartsWith("saved creature"))
-                    ctx.Log($"{label} results: engine {engine.Migrated} offline {offline.Migrated}");
-                ctx.AssertEqual(label != CurrentLootLabel, engine.Changed, $"{label}: the fixture is legacy data the engine sweep changes");
-                ctx.AssertEqual(engine.Changed, offline.Changed, $"{label}: both sweeps agree whether it changes");
-                ctx.AssertEqual(engine.Converted, offline.Converted, $"{label}: both sweeps report the same listing icon and market category");
-                ctx.AssertEqual(DescribeStoredObject(ctx, engine.Migrated), DescribeStoredObject(ctx, offline.Migrated),
-                    $"{label}: the engine reads the same object from both results");
-                ctx.Assert(!ConvertStoredItem("EngineStoredItemConverter", offline.Migrated, repairHeadgear).Changed,
-                    $"{label}: the engine sweep finds nothing left to change in the offline result");
-                ctx.Assert(!ConvertStoredItem("OfflineStoredItemConverter", offline.Migrated, repairHeadgear).Changed,
-                    $"{label}: the offline sweep is idempotent");
+                void Check(bool condition, string message)
+                {
+                    if (!condition) failures.Add($"{label}: {message}");
+                }
+                try
+                {
+                    var engine = ConvertStoredItem("EngineStoredItemConverter", data, repairHeadgear);
+                    var offline = ConvertStoredItem("OfflineStoredItemConverter", data, repairHeadgear);
+                    Check(engine.Changed == (label != CurrentLootLabel), $"the engine sweep changed it: {engine.Changed}");
+                    Check(engine.Changed == offline.Changed, $"engine changed {engine.Changed}, offline changed {offline.Changed}");
+                    Check(engine.Listing == offline.Listing, $"engine listing '{engine.Listing}', offline listing '{offline.Listing}'");
+                    Check(rootConversions.Contains(label) == (engine.Listing.Length > 0), $"reported listing '{engine.Listing}'");
+                    var engineObject = DescribeStoredObject(ctx, engine.Migrated);
+                    var offlineObject = DescribeStoredObject(ctx, offline.Migrated);
+                    Check(engineObject == offlineObject, $"the engine reads different objects:\n  engine:  {engineObject}\n  offline: {offlineObject}");
+                    Check(!ConvertStoredItem("EngineStoredItemConverter", offline.Migrated, repairHeadgear).Changed,
+                        "the engine sweep finds more to change in the offline result");
+                    Check(!ConvertStoredItem("OfflineStoredItemConverter", offline.Migrated, repairHeadgear).Changed,
+                        "the offline sweep is not idempotent");
+                }
+                catch (Exception ex)
+                {
+                    failures.Add($"{label}: {ex.GetBaseException().Message}");
+                }
             });
             await ctx.WaitFrameAsync();
         }
+        ctx.Assert(failures.Count == 0, $"{failures.Count} of {fixtures.Count} fixtures differ:\n" + string.Join("\n", failures));
     }
 
-    private static (bool Changed, string Migrated, string Converted) ConvertStoredItem(string converterName, string data, bool repairHeadgear)
+    private static (bool Changed, string Migrated, string Listing) ConvertStoredItem(string converterName, string data, bool repairHeadgear)
     {
         var converter = OfflineMigrationAssembly.GetType("SWLOR.Game.Server.Feature.MigrationDefinition." + converterName);
-        var convertedType = OfflineMigrationAssembly.GetType("SWLOR.Game.Server.Feature.MigrationDefinition.ConvertedEquipment");
-        var converted = new List<object>();
-        var capture = typeof(MigrationEngineTests).GetMethod(nameof(CaptureConvertedEquipment), BindingFlags.NonPublic | BindingFlags.Static)
-            .MakeGenericMethod(convertedType).Invoke(null, new object[] { converted });
+        var listingType = OfflineMigrationAssembly.GetType("SWLOR.Game.Server.Feature.MigrationDefinition.RootListing");
+        var listings = new List<object>();
+        var capture = typeof(MigrationEngineTests).GetMethod(nameof(CaptureRootListing), BindingFlags.NonPublic | BindingFlags.Static)
+            .MakeGenericMethod(listingType).Invoke(null, new object[] { listings });
         var arguments = new[] { data, null, repairHeadgear, capture };
         var changed = (bool)converter.GetMethod("MigrateStoredObjectData").Invoke(converter.GetField("Instance").GetValue(null), arguments);
-        return (changed, (string)arguments[1], string.Join("; ", converted));
+        return (changed, (string)arguments[1], string.Join("; ", listings));
     }
 
-    private static Action<T> CaptureConvertedEquipment<T>(List<object> sink) => value => sink.Add(value);
+    private static Action<T> CaptureRootListing<T>(List<object> sink) => value => sink.Add(value);
 
     /// <summary>Loads saved data and describes what the engine reads, including nested and droid-saved items.</summary>
     private static string DescribeStoredObject(EngineTestContext ctx, string data)

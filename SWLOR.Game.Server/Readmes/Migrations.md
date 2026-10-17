@@ -41,6 +41,7 @@ A server migration that only reads and writes database records can also implemen
 - Write new GFF data the way the engine saves it: a property built with `ItemPropertyCustom` and -1 arguments saves Subtype 65535 and Param1Value 255, item properties are numbered by list index, and locals use struct type 0.
 - Before marking a migration offline-capable, check parity on a production copy: run the engine pass on one copy and the runner on another, then compare the decoded records. The engine also re-saves older items in the current format (new default fields, reset orientation, reordered locals); those differences are expected.
 - The server still runs the migration at boot when the runner is not used, so its engine path keeps its tests.
+- A change to an engine rule of an offline-capable migration (a new catalog, property type or conversion) changes its offline rule in the same commit, and adds the legacy kind to the `OfflineStoredItemSweepMatchesEngine` engine test (filter `OfflineMigration`), which compares both passes in the engine.
 
 ## Enum renames
 

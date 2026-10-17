@@ -6,9 +6,12 @@ using Newtonsoft.Json;
 using NUnit.Framework;
 using SWLOR.Game.Server.Feature.MigrationDefinition;
 using SWLOR.Game.Server.Feature.MigrationDefinition.ServerMigration;
+using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.DroidService;
 using SWLOR.Game.Server.Service.MigrationService;
 using SWLOR.Game.Server.Service.PlayerMarketService;
+using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.NWN.API.NWScript.Enum.Item;
 using SWLOR.NWN.Formats.Gff;
 using SWLOR.NWN.Formats.TwoDA;
@@ -24,7 +27,7 @@ public class OfflineStoredItemMigrationTests
     private static readonly Assembly ServerAssembly = typeof(HeadgearSlotMigration).Assembly;
     private static readonly Type Document = ServerAssembly.GetType("SWLOR.Game.Server.Feature.MigrationDefinition.StoredObjectData")!;
     private static readonly Type NodeType = Document.GetNestedType("Node", BindingFlags.NonPublic)!;
-    private static readonly Type ConvertedType = ServerAssembly.GetType("SWLOR.Game.Server.Feature.MigrationDefinition.ConvertedEquipment")!;
+    private static readonly Type ListingType = ServerAssembly.GetType("SWLOR.Game.Server.Feature.MigrationDefinition.RootListing")!;
 
     [Test]
     public void LootRevision_ShiftsEachCatalogStatAndSavesPropertiesTheWayTheEngineDoes()
@@ -165,24 +168,109 @@ public class OfflineStoredItemMigrationTests
             table.GetValue((int)type, "CostTableResRef").Should().Be(costTable.ToString(), $"{type} saves its itempropdef.2da cost table");
 
         var catalogTypes = new[] { LootStatRevisionCatalog.Changes, RareLootStatRevisionCatalog.Changes,
-                EquipmentTypeStatRevisionCatalog.Changes, FoundryLootStatRevisionCatalog.Changes }
+                EquipmentTypeStatRevisionCatalog.Changes, FoundryLootStatRevisionCatalog.Changes, ArkanianArmorStatRevisionCatalog.Changes }
             .SelectMany(catalog => catalog.Values).SelectMany(changes => changes).Select(change => change.Type).Distinct();
         costTables.Keys.Should().Contain(catalogTypes);
+        costTables.Keys.Should().Contain(ItemPropertyType.Resistance, "the Arkanian revision rebuilds Ice Resistance");
     }
 
     [Test]
-    public void ConvertedEquipmentIcons_FollowBaseItemIconRules()
+    public void RootIcons_FollowBaseItemIconRulesAndCoverEveryConversion()
     {
         var table = TwoDAReader.Read(Path.Combine(FindRepositoryRoot(), "SWLOR_Haks", "sw_2da", "baseitems.2da"));
-        // Item.GetIconResref: helmets are not simple models and use DefaultIcon; gloves are simple models named by ItemClass.
-        table.GetValue((int)BaseItem.Helmet, "ModelType").Should().NotBe("0");
-        table.GetValue((int)BaseItem.Helmet, "DefaultIcon").Should().Be("ihelm");
-        table.GetValue((int)BaseItem.Gloves, "ModelType").Should().Be("0");
-        table.GetValue((int)BaseItem.Gloves, "ItemClass").Should().Be("it_glove");
-        EquipmentTypeMigration.Corrections.Values.Where(c => c.Type == BaseItem.Gloves).Select(c => c.Model).Distinct()
-            .Should().BeSubsetOf(new[] { 126, 176 }, "the offline icon table covers every glove model a correction produces");
-        EquipmentTypeMigration.Corrections.Values.Select(c => c.Type).Distinct()
-            .Should().BeSubsetOf(new[] { BaseItem.Helmet, BaseItem.Gloves, BaseItem.Cloak });
+        var rootIcons = (IReadOnlyDictionary<BaseItem, string>)Document
+            .GetProperty("RootIcons", BindingFlags.NonPublic | BindingFlags.Static)!.GetValue(null)!;
+        var simpleIcons = (IReadOnlyDictionary<(BaseItem BaseItem, int Model), string>)Document
+            .GetProperty("SimpleModelRootIcons", BindingFlags.NonPublic | BindingFlags.Static)!.GetValue(null)!;
+        // Item.GetIconResref: cloaks use iit_cloak, other types that are not simple models use DefaultIcon,
+        // and simple models are named i<ItemClass>_<model>.
+        foreach (var (baseItem, icon) in rootIcons)
+        {
+            table.GetValue((int)baseItem, "ModelType").Should().NotBe("0", $"{baseItem}'s icon does not depend on its model");
+            if (baseItem != BaseItem.Cloak)
+                table.GetValue((int)baseItem, "DefaultIcon").Should().Be(icon);
+        }
+        foreach (var ((baseItem, model), icon) in simpleIcons)
+        {
+            table.GetValue((int)baseItem, "ModelType").Should().Be("0");
+            icon.Should().Be($"i{table.GetValue((int)baseItem, "ItemClass")}_{model:000}".ToLowerInvariant());
+        }
+
+        bool Covered(BaseItem baseItem, int model) => rootIcons.ContainsKey(baseItem) || simpleIcons.ContainsKey((baseItem, model));
+        foreach (var correction in EquipmentTypeMigration.Corrections.Values)
+            Covered(correction.Type, correction.Model).Should().BeTrue($"{correction.Type} {correction.Model} has an offline icon");
+        foreach (var (resref, revision) in ItemAppearanceCatalogMigration.Revisions)
+            Covered(revision.BaseItem, revision.Current[0]).Should().BeTrue($"{resref} has an offline icon");
+        foreach (var baseItem in rootIcons.Keys.Concat(simpleIcons.Keys.Select(key => key.BaseItem)))
+            PlayerMarket.GetBaseItemMarketCategory(baseItem).Should().NotBeNull($"{baseItem} has a base-item market category");
+    }
+
+    [Test]
+    public void AppearanceCatalog_MovesUneditedWeaponPartsAndRefreshesTheListing()
+    {
+        // proto_knife: middle part 14 -> 21; bottom and top parts are unchanged.
+        var original = Encode(Item("proto_knife", BaseItem.Dagger, 11, Scalar(0, "ModelPart2", 14), Scalar(0, "ModelPart3", 11)));
+
+        Migrate(original, out var migrated, true, out var converted).Should().BeTrue();
+
+        var root = Read(migrated);
+        (Int(root, "ModelPart1"), Int(root, "ModelPart2"), Int(root, "xModelPart2"), Int(root, "ModelPart3")).Should().Be((11, 21, 21, 11));
+        converted.Should().ContainSingle().Which.Should().Be(("iwswdg", MarketCategoryType.Vibroknife));
+
+        var customized = Encode(Item("proto_knife", BaseItem.Dagger, 11, Scalar(0, "ModelPart2", 15), Scalar(0, "ModelPart3", 11)));
+        Migrate(customized, out var unchanged, true, out _).Should().BeFalse("a part changed from the shipped appearance marks a customized copy");
+        unchanged.Should().BeSameAs(customized);
+    }
+
+    [Test]
+    public void AppearanceCatalog_MovesArmorAndSimpleModelParts()
+    {
+        var revision = ItemAppearanceCatalogMigration.Revisions["asc_chn_tunic"];
+        string[] labels = { "RFoot", "LFoot", "RShin", "LShin", "LThigh", "RThigh", "Pelvis", "Torso", "Belt", "Neck",
+            "RFArm", "LFArm", "RBicep", "LBicep", "RShoul", "LShoul", "RHand", "LHand", "Robe" };
+        var armor = Encode(Item("asc_chn_tunic", BaseItem.Armor, null,
+            labels.Select((label, index) => Scalar(0, "ArmorPart_" + label, revision.Previous[index])).ToArray()));
+
+        Migrate(armor, out var migratedArmor, true, out var armorListing).Should().BeTrue();
+
+        var tunic = Read(migratedArmor);
+        labels.Select(label => Int(tunic, "ArmorPart_" + label)).Should().Equal(revision.Current);
+        Int(tunic, "xArmorPart_Torso").Should().Be(171);
+        armorListing.Should().ContainSingle().Which.Should().Be(("iit_chest", MarketCategoryType.Armor));
+
+        Migrate(Encode(Item("redcircle_star", BaseItem.Shuriken, 62)), out var star, true, out var starListing).Should().BeTrue();
+        (Int(Read(star), "ModelPart1"), Int(Read(star), "xModelPart1")).Should().Be((42, 42));
+        starListing.Should().ContainSingle().Which.Should().Be(("iwthsh_042", MarketCategoryType.Throwing));
+    }
+
+    [TestCase(30, 5, 35)]
+    [TestCase(0, 5, 35)]
+    [TestCase(0, 30, 30)]
+    [TestCase(0, 0, 30)]
+    public void ArkanianArmor_ReplacesRetiredIceDefenseWithIceResistance(int iceDefense, int iceResistance, int expectedResistance)
+    {
+        var shipped = ArkanianArmorStatRevisionCatalog.Changes["ark_armor"];
+        var properties = shipped.Where(change => change.Previous > 0)
+            .Select(change => Property(change.Type, change.Subtype, 0, change.Previous)).ToList();
+        if (iceDefense > 0) properties.Add(Property(ItemPropertyType.Defense, (int)CombatDamageType.Ice, 35, iceDefense));
+        if (iceResistance > 0) properties.Add(Property(ItemPropertyType.Resistance, (int)ResistanceType.Ice, 54, iceResistance));
+        var original = Encode(Item("ark_armor", BaseItem.Armor, null, properties.ToArray<object>()));
+
+        Migrate(original, out var migrated, true, out _).Should().BeTrue();
+
+        var saved = Children(Read(migrated), "PropertiesList").ToList();
+        int Total(ItemPropertyType type, int subtype) => saved
+            .Where(p => Int(p, "PropertyName") == (int)type && Int(p, "Subtype") == subtype)
+            .Sum(p => Int(p, "CostValue"));
+        foreach (var change in shipped)
+            Total(change.Type, change.Subtype == 0 && change.Type is not (ItemPropertyType.Defense or ItemPropertyType.RequiresSkill)
+                ? ushort.MaxValue : change.Subtype).Should().Be(change.Current, $"{change.Type} {change.Subtype} is revised");
+        Total(ItemPropertyType.Defense, (int)CombatDamageType.Ice).Should().Be(0, "the retired Ice Defense is removed");
+        Total(ItemPropertyType.Resistance, (int)ResistanceType.Ice).Should().Be(expectedResistance);
+        saved.Single(p => Int(p, "PropertyName") == (int)ItemPropertyType.RequiresSkill)
+            .Should().Match<GffStruct>(p => Int(p, "Subtype") == (int)SkillType.Armor && Int(p, "CostTable") == 48);
+        Locals(Read(migrated)).Should().Contain((ArkanianArmorStatRevisionCatalog.RevisionVariable, ArkanianArmorStatRevisionCatalog.CurrentRevision));
+        Migrate(migrated, out _, true, out _).Should().BeFalse();
     }
 
     [Test]
@@ -206,12 +294,12 @@ public class OfflineStoredItemMigrationTests
     {
         var sink = new List<object>();
         var capture = typeof(OfflineStoredItemMigrationTests).GetMethod(nameof(Capture), BindingFlags.NonPublic | BindingFlags.Static)!
-            .MakeGenericMethod(ConvertedType).Invoke(null, new object[] { sink });
+            .MakeGenericMethod(ListingType).Invoke(null, new object[] { sink });
         var arguments = new[] { original, null, repairHeadgear, capture };
         var changed = (bool)Document.GetMethod("MigrateStoredItemOffline", BindingFlags.NonPublic | BindingFlags.Static)!.Invoke(null, arguments)!;
         migrated = (string)arguments[1]!;
-        converted = sink.Select(value => ((string)ConvertedType.GetProperty("IconResref")!.GetValue(value)!,
-            (MarketCategoryType)ConvertedType.GetProperty("Category")!.GetValue(value)!)).ToList();
+        converted = sink.Select(value => ((string)ListingType.GetProperty("IconResref")!.GetValue(value)!,
+            (MarketCategoryType)ListingType.GetProperty("Category")!.GetValue(value)!)).ToList();
         return changed;
     }
 

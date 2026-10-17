@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.NWN.API.NWScript.Enum.Item;
 
 namespace SWLOR.Game.Server.Feature.MigrationDefinition;
@@ -12,8 +13,9 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition;
 /// <summary>
 /// The stored-item sweep applied to saved GFF with no game engine, for offline runs. Each rule
 /// mirrors its native counterpart on an unequipped item: <see cref="HeadgearSlotMigration.ConvertItem"/>,
-/// <see cref="EquipmentTypeMigration.ConvertItem"/>, <see cref="ItemIconMigration.MigrateItem"/> and
-/// <see cref="LootStatRevisionMigration"/>'s stat revision, in the same order. Fields the sweep does not
+/// <see cref="EquipmentTypeMigration.ConvertItem"/>, <see cref="ItemIconMigration.MigrateItem"/> (with
+/// <see cref="ItemAppearanceCatalogMigration.ConvertItem"/>) and <see cref="LootStatRevisionMigration"/>'s stat
+/// revision, in the same order. Fields the sweep does not
 /// change keep their saved bytes. New properties and locals are written the way the engine saves them.
 /// </summary>
 internal sealed partial class StoredObjectData
@@ -31,10 +33,13 @@ internal sealed partial class StoredObjectData
         [ItemPropertyType.ForceAttack] = 45,
         [ItemPropertyType.Evasion] = 41,
         [ItemPropertyType.CombatReadiness] = 42,
+        [ItemPropertyType.STMRegen] = 45,
+        [ItemPropertyType.RequiresSkill] = 48,
+        [ItemPropertyType.Resistance] = 54,
     };
 
     /// <summary>Offline counterpart of <see cref="LootStatRevisionMigration.MigrateStoredObjectData"/>.</summary>
-    internal static bool MigrateStoredItemOffline(string original, out string migrated, bool repairHeadgear, Action<ConvertedEquipment> converted)
+    internal static bool MigrateStoredItemOffline(string original, out string migrated, bool repairHeadgear, Action<RootListing> rootChanged)
     {
         migrated = original;
         if (string.IsNullOrWhiteSpace(original))
@@ -53,11 +58,12 @@ internal sealed partial class StoredObjectData
         var refreshRootMetadata = repairHeadgear &&
             (HeadgearSlotMigration.IsLegacyHeadgear(resref, baseItem) ||
              HeadgearSlotMigration.GetCorrectedModel(resref, baseItem, model) != model ||
-             EquipmentTypeMigration.IsLegacyEquipment(resref, baseItem));
+             EquipmentTypeMigration.IsLegacyEquipment(resref, baseItem)) ||
+            IsLegacyAppearance(root);
         if (!MigrateItemOffline(root, repairHeadgear, new HashSet<Node>()))
             return false;
         if (refreshRootMetadata)
-            converted?.Invoke(GetConvertedEquipment(root));
+            rootChanged?.Invoke(GetRootListing(root));
         migrated = document.Serialize();
         return true;
     }
@@ -160,11 +166,86 @@ internal sealed partial class StoredObjectData
 
     private static bool UpdateArtwork(Node item)
     {
+        var changed = ConvertAppearance(item);
         var current = ReadSimpleModel(item);
         var updated = ItemIconMigration.GetUpdatedModel(ReadResRef(item), (int)ReadBaseItem(item), current);
-        if (updated == current) return false;
+        if (updated == current) return changed;
         WriteSimpleModel(item, updated);
         return true;
+    }
+
+    // AppearanceArmor order.
+    private static readonly string[] ArmorPartLabels =
+    {
+        "RFoot", "LFoot", "RShin", "LShin", "LThigh", "RThigh", "Pelvis", "Torso", "Belt", "Neck",
+        "RFArm", "LFArm", "RBicep", "LBicep", "RShoul", "LShoul", "RHand", "LHand", "Robe",
+    };
+
+    /// <summary>Mirrors <see cref="ItemAppearanceCatalogMigration.IsLegacyAppearance"/>.</summary>
+    private static bool IsLegacyAppearance(Node item)
+    {
+        if (!TryGetAppearanceRevision(item, out var revision))
+            return false;
+        var parts = ReadAppearanceParts(item, revision.Previous.Length);
+        return Enumerable.Range(0, parts.Length)
+            .All(index => revision.Current[index] == revision.Previous[index] || parts[index] == revision.Previous[index]);
+    }
+
+    /// <summary>Mirrors <see cref="ItemAppearanceCatalogMigration.ConvertItem"/> on an unequipped item.</summary>
+    private static bool ConvertAppearance(Node item)
+    {
+        if (!IsLegacyAppearance(item))
+            return false;
+        var revision = ItemAppearanceCatalogMigration.Revisions[ReadResRef(item)];
+        for (var index = 0; index < revision.Current.Length; index++)
+            if (revision.Current[index] != revision.Previous[index])
+                WritePart(item, PartLabel(revision.Current.Length, index), revision.Current[index]);
+        return true;
+    }
+
+    private static bool TryGetAppearanceRevision(Node item, out (BaseItem BaseItem, int[] Previous, int[] Current) revision)
+    {
+        revision = default;
+        var resref = ReadResRef(item);
+        return resref != null && ItemAppearanceCatalogMigration.Revisions.TryGetValue(resref, out revision) &&
+               revision.BaseItem == ReadBaseItem(item);
+    }
+
+    /// <summary>
+    /// <see cref="ItemAppearanceCatalogMigration.ReadParts"/> from saved fields: a weapon part (model * 10 + color)
+    /// is its saved model part, armor parts are the armor part fields, and anything else uses simple models.
+    /// </summary>
+    private static int[] ReadAppearanceParts(Node item, int count) =>
+        Enumerable.Range(0, count).Select(index => ReadPart(item, PartLabel(count, index))).ToArray();
+
+    private static string PartLabel(int count, int index) => count == ArmorPartLabels.Length
+        ? "ArmorPart_" + ArmorPartLabels[index]
+        : "ModelPart" + (index + 1);
+
+    // GFF labels hold 16 characters, so long extended part names are saved truncated.
+    private static string ExtendedLabel(string label) => ("x" + label).Length > 16 ? ("x" + label).Substring(0, 16) : "x" + label;
+
+    /// <summary>The extended part field wins over the byte-sized one, as when the engine loads an item.</summary>
+    private static int ReadPart(Node item, string label)
+    {
+        var extended = item.Fields.SingleOrDefault(x => x.Name == ExtendedLabel(label));
+        if (extended != null) return ReadScalar(extended);
+        var part = item.Fields.SingleOrDefault(x => x.Name == label);
+        return part == null ? 0 : ReadScalar(part);
+    }
+
+    /// <summary>Saves both the byte-sized and the extended part fields, as the engine does.</summary>
+    private static void WritePart(Node item, string label, int value)
+    {
+        void Set(uint type, string name, int data)
+        {
+            var field = MakeField(type, name, BitConverter.GetBytes(data));
+            var index = item.Fields.FindIndex(x => x.Name == name);
+            if (index >= 0) item.Fields[index] = field;
+            else item.Fields.Add(field);
+        }
+        Set(0, label, value & byte.MaxValue);
+        Set(2, ExtendedLabel(label), value);
     }
 
     /// <summary>Mirrors <c>LootStatRevisionMigration.MigrateItem</c>.</summary>
@@ -186,27 +267,41 @@ internal sealed partial class StoredObjectData
         }
         changed |= ApplyRevision(item, FoundryLootStatRevisionCatalog.Changes,
             FoundryLootStatRevisionCatalog.RevisionVariable, FoundryLootStatRevisionCatalog.CurrentRevision);
+        changed |= ApplyRevision(item, ArkanianArmorStatRevisionCatalog.Changes,
+            ArkanianArmorStatRevisionCatalog.RevisionVariable, ArkanianArmorStatRevisionCatalog.CurrentRevision,
+            current => ReviseIceProtection(current, ArkanianArmorStatRevisionCatalog.IceResistance));
         return changed;
     }
 
-    private static bool ApplyRevision(Node item, IReadOnlyDictionary<string, LootStatChange[]> catalog, string revisionVariable, int revision)
+    private static bool ApplyRevision(Node item, IReadOnlyDictionary<string, LootStatChange[]> catalog, string revisionVariable, int revision,
+        Func<Node, IEnumerable<LootStatChange>> itemChanges = null)
     {
-        if (!catalog.TryGetValue(ReadResRef(item), out var changes) || ReadLocalInteger(item, revisionVariable) >= revision)
+        if (!catalog.TryGetValue(ReadResRef(item), out var catalogChanges) || ReadLocalInteger(item, revisionVariable) >= revision)
             return false;
+        // Item-specific changes read the item before any change applies.
+        var changes = itemChanges == null ? catalogChanges : catalogChanges.Concat(itemChanges(item)).ToArray();
         foreach (var change in changes)
             ApplyChange(item, change);
         WriteLocalInteger(item, revisionVariable, revision);
         return true;
     }
 
+    /// <summary>Mirrors <c>LootStatRevisionMigration.ReviseIceProtection</c>.</summary>
+    private static IEnumerable<LootStatChange> ReviseIceProtection(Node item, int baseResistance)
+    {
+        var defense = ReadTotal(item, ItemPropertyType.Defense, (int)CombatDamageType.Ice).Total;
+        var resistance = ReadTotal(item, ItemPropertyType.Resistance, (int)ResistanceType.Ice).Total;
+        if (defense > 0)
+            yield return new LootStatChange(ItemPropertyType.Defense, (int)CombatDamageType.Ice, defense, 0);
+        var missingBase = defense > 0 ? defense : resistance < baseResistance ? baseResistance : 0;
+        yield return new LootStatChange(ItemPropertyType.Resistance, (int)ResistanceType.Ice, resistance, resistance + missingBase);
+    }
+
     /// <summary>Shifts one property by the blueprint difference, as <c>LootStatRevisionMigration.ApplyChange</c> does.</summary>
     private static void ApplyChange(Node item, LootStatChange change)
     {
+        var (total, matches) = ReadTotal(item, change.Type, change.Subtype);
         var properties = item.Fields.SingleOrDefault(x => x.Name == "PropertiesList" && x.Type == 15);
-        var matches = properties?.Children.Where(property =>
-            ReadInteger(property, "PropertyName") == (int)change.Type &&
-            (change.Type != ItemPropertyType.Defense || ReadInteger(property, "Subtype") == change.Subtype)).ToList() ?? new List<Node>();
-        var total = matches.Sum(property => ReadInteger(property, "CostValue"));
         var revised = Math.Max(0, total - change.Previous + change.Current);
         if (revised == total && matches.Count <= 1)
             return;
@@ -218,16 +313,33 @@ internal sealed partial class StoredObjectData
         }
         properties.Children.RemoveAll(matches.Contains);
         if (revised > 0)
-            properties.Children.Add(NewProperty(change, revised));
+            properties.Children.Add(NewProperty(change,
+                change.Type == ItemPropertyType.Resistance ? Resistance.EncodeItemPropertyCostTableValue(revised) : revised));
         NumberListElements(properties);
     }
+
+    /// <summary>Mirrors <c>LootStatRevisionMigration.ReadTotal</c>; saved property lists hold only permanent properties.</summary>
+    private static (int Total, List<Node> Matches) ReadTotal(Node item, ItemPropertyType type, int subtype)
+    {
+        var properties = item.Fields.SingleOrDefault(x => x.Name == "PropertiesList" && x.Type == 15);
+        var matches = properties?.Children.Where(property =>
+            ReadInteger(property, "PropertyName") == (int)type &&
+            (!HasSubtype(type) || ReadInteger(property, "Subtype") == subtype)).ToList() ?? new List<Node>();
+        var total = matches.Sum(property => type == ItemPropertyType.Resistance
+            ? Resistance.DecodeItemPropertyCostTableValue(ReadInteger(property, "CostValue"))
+            : ReadInteger(property, "CostValue"));
+        return (total, matches);
+    }
+
+    private static bool HasSubtype(ItemPropertyType type) =>
+        type is ItemPropertyType.Defense or ItemPropertyType.Resistance or ItemPropertyType.RequiresSkill;
 
     /// <summary>The property ItemPropertyCustom(type, subtype or -1, value, -1) saves as.</summary>
     private static Node NewProperty(LootStatChange change, int value)
     {
         if (!RevisedPropertyCostTables.TryGetValue(change.Type, out var costTable))
             throw new InvalidOperationException($"No cost table is known for revised property type {change.Type}.");
-        var subtype = change.Type == ItemPropertyType.Defense ? change.Subtype : ushort.MaxValue;
+        var subtype = HasSubtype(change.Type) ? change.Subtype : ushort.MaxValue;
         return new Node
         {
             Fields = new List<Field>
@@ -246,22 +358,43 @@ internal sealed partial class StoredObjectData
         };
     }
 
-    private static ConvertedEquipment GetConvertedEquipment(Node root)
+    /// <summary>
+    /// <see cref="Item.GetIconResref"/> for every root type a conversion produces. Helmets, cloaks, armor and
+    /// composite weapons are not simple models, so their icon depends only on the base item; gloves and
+    /// shuriken are simple models whose icon is named by model. Checked against the engine by
+    /// <c>OfflineStoredItemSweepMatchesEngine</c>.
+    /// </summary>
+    internal static IReadOnlyDictionary<BaseItem, string> RootIcons { get; } = new Dictionary<BaseItem, string>
+    {
+        [BaseItem.Helmet] = "ihelm",
+        [BaseItem.Cloak] = "iit_cloak",
+        [BaseItem.Armor] = "iit_chest",
+        [BaseItem.Longsword] = "iwswls",
+        [BaseItem.GreatSword] = "iwswgs",
+        [BaseItem.Dagger] = "iwswdg",
+        [BaseItem.ShortSpear] = "iwplss",
+        [BaseItem.QuarterStaff] = "iwdbqs",
+        [BaseItem.Rifle] = "iwbwxl",
+        [BaseItem.Sling] = "iwbwsh",
+    };
+
+    internal static IReadOnlyDictionary<(BaseItem BaseItem, int Model), string> SimpleModelRootIcons { get; } =
+        new Dictionary<(BaseItem, int), string>
+        {
+            [(BaseItem.Gloves, 126)] = "iit_glove_126",
+            [(BaseItem.Gloves, 176)] = "iit_glove_176",
+            [(BaseItem.Shuriken, 42)] = "iwthsh_042",
+        };
+
+    private static RootListing GetRootListing(Node root)
     {
         var baseItem = ReadBaseItem(root);
         var model = ReadSimpleModel(root);
-        // Item.GetIconResref for every type a conversion produces: helmets and cloaks
-        // use one icon; gloves are simple models with an iit_glove_<model> icon.
-        var icon = baseItem switch
-        {
-            BaseItem.Helmet => "ihelm",
-            BaseItem.Cloak => "iit_cloak",
-            BaseItem.Gloves when model is 126 or 176 => $"iit_glove_{model:000}",
-            _ => throw new InvalidOperationException($"No offline icon is known for converted base item {baseItem} with model {model}.")
-        };
+        if (!RootIcons.TryGetValue(baseItem, out var icon) && !SimpleModelRootIcons.TryGetValue((baseItem, model), out icon))
+            throw new InvalidOperationException($"No offline icon is known for converted base item {baseItem} with model {model}.");
         var category = PlayerMarket.GetBaseItemMarketCategory(baseItem)
             ?? throw new InvalidOperationException($"Converted base item {baseItem} has no base-item market category.");
-        return new ConvertedEquipment(icon, category);
+        return new RootListing(icon, category);
     }
 
     private static string ReadResRef(Node item)
@@ -289,28 +422,10 @@ internal sealed partial class StoredObjectData
         field.Data = BitConverter.GetBytes(value);
     }
 
-    /// <summary>GetItemAppearance(SimpleModel, 0): the extended model part wins over the byte-sized one.</summary>
-    private static int ReadSimpleModel(Node item)
-    {
-        var extended = item.Fields.SingleOrDefault(x => x.Name == "xModelPart1");
-        if (extended != null) return ReadScalar(extended);
-        var model = item.Fields.SingleOrDefault(x => x.Name == "ModelPart1");
-        return model == null ? 0 : ReadScalar(model);
-    }
+    /// <summary>GetItemAppearance(SimpleModel, 0).</summary>
+    private static int ReadSimpleModel(Node item) => ReadPart(item, "ModelPart1");
 
-    /// <summary>Saves both model part fields, as the engine does.</summary>
-    private static void WriteSimpleModel(Node item, int model)
-    {
-        void Set(uint type, string name, int value)
-        {
-            var field = MakeField(type, name, BitConverter.GetBytes(value));
-            var index = item.Fields.FindIndex(x => x.Name == name);
-            if (index >= 0) item.Fields[index] = field;
-            else item.Fields.Add(field);
-        }
-        Set(0, "ModelPart1", model & byte.MaxValue);
-        Set(2, "xModelPart1", model);
-    }
+    private static void WriteSimpleModel(Node item, int model) => WritePart(item, "ModelPart1", model);
 
     /// <summary>The first local with this name and NWN variable type (1 integer, 3 string), as GetLocal* reads it.</summary>
     private static Node FindLocal(Node item, string name, int variableType)

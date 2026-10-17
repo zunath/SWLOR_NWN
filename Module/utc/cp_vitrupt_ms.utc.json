@@ -126,7 +126,7 @@
   },
   "Comment": {
     "type": "cexostring",
-    "value": "Vital Rupture master in Viscara - Militia Command Room."
+    "value": "Viral Cascade master in Viscara - Militia Command Room."
   },
   "Con": {
     "type": "byte",
@@ -386,7 +386,7 @@
   "FirstName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Vital Rupture Master"
+      "0": "Viral Cascade Master"
     }
   },
   "fortbonus": {

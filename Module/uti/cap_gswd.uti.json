@@ -47,11 +47,11 @@
   },
   "ModelPart1": {
     "type": "byte",
-    "value": 71
+    "value": 72
   },
   "ModelPart2": {
     "type": "byte",
-    "value": 51
+    "value": 41
   },
   "ModelPart3": {
     "type": "byte",
@@ -212,11 +212,11 @@
   },
   "xModelPart1": {
     "type": "word",
-    "value": 71
+    "value": 72
   },
   "xModelPart2": {
     "type": "word",
-    "value": 51
+    "value": 41
   },
   "xModelPart3": {
     "type": "word",

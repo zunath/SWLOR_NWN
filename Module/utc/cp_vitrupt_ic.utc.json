@@ -126,7 +126,7 @@
   },
   "Comment": {
     "type": "cexostring",
-    "value": "Vital Rupture inner circle member in Viscara - Veles Militia Annex."
+    "value": "Viral Cascade inner circle member in Viscara - Veles Militia Annex."
   },
   "Con": {
     "type": "byte",
@@ -365,7 +365,7 @@
   "FirstName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Vital Rupture Inner Circle"
+      "0": "Viral Cascade Inner Circle"
     }
   },
   "fortbonus": {

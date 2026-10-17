@@ -98,6 +98,14 @@ case "$action" in
         xdotool type --clearmodifiers --delay 120 -- "$1"
         sleep 1
         ;;
+    pixel)
+        # Prints "R G B" of one pixel; used to tell the loading screen from the game. Not logged.
+        [ $# -eq 2 ] || die "Usage: pixel X Y"
+        point "$1" "$2"; w=$(window)
+        import -window "$w" -crop "1x1+$1+$2" -depth 8 txt:- | tr -d ' ' \
+            | sed -n 's/^[0-9]*,[0-9]*:(\([0-9]*\),\([0-9]*\),\([0-9]*\).*/\1 \2 \3/p' | head -n 1
+        exit 0
+        ;;
     capture)
         [ $# -eq 1 ] || die "Usage: capture LABEL"
         [[ "$1" =~ ^[A-Za-z0-9][A-Za-z0-9._-]{0,79}$ ]] || die "Labels use letters, digits, '.', '_' and '-'"

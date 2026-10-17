@@ -91,6 +91,23 @@ class LiveClientHelperTests(unittest.TestCase):
         struct.pack_into('<3I', bad_list, 68, 15, 0, 0)
         with self.assertRaisesRegex(LiveStackError, 'list reference'):
             stack.validate_bic(self.write('badlist.bic', bytes(bad_list)))
+        # A struct field pointing back at the top-level struct, and a field of unknown type.
+        cyclic = bytearray(good)
+        struct.pack_into('<3I', cyclic, 68, 14, 0, 0)
+        with self.assertRaisesRegex(LiveStackError, 'refers back'):
+            stack.validate_bic(self.write('cyclic.bic', bytes(cyclic)))
+        unknown = bytearray(good)
+        struct.pack_into('<I', unknown, 68, 16)
+        with self.assertRaisesRegex(LiveStackError, 'unknown type'):
+            stack.validate_bic(self.write('unknown.bic', bytes(unknown)))
+
+    def test_loading_screen_frame_is_recognized(self):
+        # Pixel values sampled from real loading-screen and in-game captures.
+        loading = {'gold': (198, 125, 33), 'panel': (0, 29, 49), 'bar': (8, 44, 66)}
+        self.assertTrue(stack.is_loading_screen(loading))
+        self.assertFalse(stack.is_loading_screen({'gold': (0, 0, 0), 'panel': (0, 0, 0), 'bar': (0, 0, 0)}))
+        # A gold-coloured floor in the game view alone is not the loading screen.
+        self.assertFalse(stack.is_loading_screen({'gold': (198, 125, 33), 'panel': (0, 0, 0), 'bar': (0, 0, 0)}))
 
     def test_stack_environment_is_never_production(self):
         base = self.write('swlor.env', b'NWN_MODULE="x"\nSWLOR_ENVIRONMENT=dev\n')

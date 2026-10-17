@@ -130,6 +130,8 @@ def _read_gff_string(path: Path, data: bytes, label: str) -> str | None:
 
     def child_structs(field_type: int, field_data: int) -> list[int]:
         """Check a field's payload; return the structs it refers to."""
+        if field_type > 15:
+            raise LiveStackError(f'{path} is damaged: it has a field of unknown type {field_type}.')
         # 64-bit values and doubles live in the field data; strings, localized strings and void
         # data carry a 4-byte length; resrefs a 1-byte length; structs and lists index other tables.
         if field_type in (6, 7, 9) and not within(field_data, 8, field_data_size):
@@ -160,15 +162,29 @@ def _read_gff_string(path: Path, data: bytes, label: str) -> str | None:
             return members
         return []
 
-    # Check every struct reachable from the top level once; the visited set stops cycles.
-    visited, pending = set(), [0]
-    while pending:
-        index = pending.pop()
-        if index in visited:
-            continue
-        visited.add(index)
-        for field_type, _, field_data in struct_fields(index):
-            pending.extend(child_structs(field_type, field_data))
+    # Walk every struct reachable from the top level, as the repository's GffReader does: a
+    # struct may be shared (checked once), but one that refers back to a struct still being
+    # read is a cycle, and nesting deeper than 128 levels is refused.
+    finished, active = set(), set()
+    path_stack = [(0, None)]
+    while path_stack:
+        index, children = path_stack[-1]
+        if children is None:
+            if len(path_stack) > 128:
+                raise LiveStackError(f'{path} is damaged: its structs nest more than 128 levels deep.')
+            active.add(index)
+            children = iter([child for field_type, _, field_data in struct_fields(index)
+                             for child in child_structs(field_type, field_data)])
+            path_stack[-1] = (index, children)
+        child = next(children, None)
+        if child is None:
+            path_stack.pop()
+            active.discard(index)
+            finished.add(index)
+        elif child in active:
+            raise LiveStackError(f'{path} is damaged: struct {child} refers back to itself.')
+        elif child not in finished:
+            path_stack.append((child, None))
 
     for field_type, label_index, field_data in struct_fields(0):
         start = label_offset + label_index * 16
@@ -844,9 +860,8 @@ def start(stack: Stack, server_timeout: float) -> None:
     stack.ensure_owner()
     start_client(stack, Path(stack.state['cdkey_source']))
     record_image_ids(stack, ('client',))
-    # The module-load marker comes before the rest of start-up, so confirm the server survived it.
-    if not stack.running('swlor-server'):
-        raise LiveStackError('The server container stopped after loading the module. See the server logs.')
+    # The module-load marker comes before the rest of start-up, so confirm the stack survived it.
+    require_running(stack, 'after start-up')
 
 
 def record_image_ids(stack: Stack, services: tuple[str, ...]) -> None:
@@ -943,10 +958,7 @@ def verify_public_cdkey(stack: Stack, timeout: float = 300) -> None:
             if not stack.running('client') or stack.joined_players() <= 0:
                 raise LiveStackError('The client connected and then stopped or disconnected.')
             return
-        if not stack.running('swlor-server'):
-            raise LiveStackError('The server container stopped before the client connected. See the server logs.')
-        if not stack.running('client'):
-            raise LiveStackError('The client stopped before it connected to the server.')
+        require_running(stack, 'before the client connected')
         time.sleep(2)
     raise LiveStackError(f'The client did not connect to the server within {timeout:.0f}s.')
 
@@ -983,9 +995,7 @@ def play(stack: Stack, settle: float, timeout: float = 600) -> None:
         # up waits for the connection, so a missing one here means it dropped.
         if stack.joined_players() <= 0:
             raise LiveStackError('The client is not connected to the server; see the client and server logs.')
-        for service in ('swlor-server', 'client'):
-            if not stack.running(service):
-                raise LiveStackError(f'The {service} container stopped before the character entered.')
+        require_running(stack, 'before the character entered')
         now = time.monotonic()
         if now >= deadline:
             raise LiveStackError(f'The character did not enter within {timeout:.0f}s. '
@@ -1010,10 +1020,8 @@ def play(stack: Stack, settle: float, timeout: float = 600) -> None:
         # An OnModuleEnter handler can boot the character right after the entry is logged.
         if stack.joined_players() <= 0:
             raise LiveStackError('The character entered but was disconnected. See the server and app logs.')
-        # A crashed server cannot log the leave, so check both containers as well.
-        for service in ('swlor-server', 'client'):
-            if not stack.running(service):
-                raise LiveStackError(f'The {service} container stopped while the area was settling.')
+        # A crashed server cannot log the leave, so check the containers as well.
+        require_running(stack, 'while the area was settling')
         if time.monotonic() - quiet_since >= settle:
             break
         if time.monotonic() >= deadline:
@@ -1022,7 +1030,42 @@ def play(stack: Stack, settle: float, timeout: float = 600) -> None:
         if current != tips:
             tips, quiet_since = current, time.monotonic()
         time.sleep(1)
-    log('Settled. Inspect each capture: a slow first render can still show the loading screen.')
+    # On a busy machine the client can keep showing the loading screen well after the server
+    # has placed the character, so also wait until the loading-screen frame is gone.
+    while showing_loading_screen(stack):
+        if time.monotonic() >= deadline:
+            raise LiveStackError('The client is still showing the loading screen.')
+        require_running(stack, 'while the area was loading')
+        time.sleep(5)
+    log('Settled. Inspect each capture before relying on it.')
+
+
+# Pixels on SWLOR's loading-screen frame at 1280x720: its gold border and two blue panels.
+# The game view and character select are black at all three points behind their UI.
+LOADING_FRAME_POINTS = {'gold': (20, 300), 'panel': (500, 680), 'bar': (900, 700)}
+
+
+def is_loading_screen(samples: dict[str, tuple[int, int, int]]) -> bool:
+    red, green, blue = samples['gold']
+    gold = red > 150 and 80 < green < 170 and blue < 80
+    return gold and all(b > r + 20 and b > 30 for r, _, b in (samples['panel'], samples['bar']))
+
+
+def showing_loading_screen(stack: Stack) -> bool:
+    samples = {}
+    for name, (x, y) in LOADING_FRAME_POINTS.items():
+        values = stack.ui('pixel', str(x), str(y)).split()[-3:]
+        if len(values) != 3 or not all(value.isdigit() for value in values):
+            raise LiveStackError(f'Could not read the client screen at ({x},{y}).')
+        samples[name] = tuple(int(value) for value in values)
+    return is_loading_screen(samples)
+
+
+def require_running(stack: Stack, when: str) -> None:
+    """Fail when Redis, the server or the client container is no longer running."""
+    for service in ('redis', 'swlor-server', 'client'):
+        if not stack.running(service):
+            raise LiveStackError(f'The {service} container stopped {when}. See the evidence logs.')
 
 
 def capture(stack: Stack, label: str) -> Path:

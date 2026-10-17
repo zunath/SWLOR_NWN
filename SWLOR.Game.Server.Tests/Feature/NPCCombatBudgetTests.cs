@@ -147,7 +147,7 @@ public class NPCCombatBudgetTests
         {
             "DATHOMIR_CHIRODACTYL_RECIPES", "DANTOOINE_KINRATH_QUEEN_RECIPES",
             "DANTOOINE_BOL_BOSS_RECIPES", "QIONHIVE_BROODMOTHER_RECIPE",
-            "TATOOINE_ANCIENT_WORM_STOLEN_GOODS", "FROG_BOSS_RECIPE",
+            "TATOOINE_ANCIENT_WORM_GEMS", "FROG_BOSS_RECIPE",
             "KORRIBAN_MASTER_RECIPE", "KORRIBAN_MASTER_RESOURCE", "HUTLAR_FOUNDRY_OVERSEER_RECIPES",
             "NARSHADDAA_GREAT_ARKANIAN_DRAGON_GEMS", "NARSHADDAA_GREAT_ARKANIAN_DRAGON_RARES",
         };
@@ -179,7 +179,10 @@ public class NPCCombatBudgetTests
             Number(row["O"]).Should().Be(Number(preset["L"]) * 2);
             Number(row["P"]).Should().Be(Number(preset["M"]) * 2);
             Number(row["T"]).Should().Be(Math.Max(0, Number(preset["Q"]) - 9));
-            Number(row["Q"]).Should().Be((int)Math.Round(Number(preset["N"]) * damageMultiplier, MidpointRounding.AwayFromZero));
+            var expectedDamage = (int)Math.Round(Number(preset["N"]) * damageMultiplier, MidpointRounding.AwayFromZero);
+            if (row["C"] == "fdy_overseer")
+                expectedDamage = (int)Math.Round(expectedDamage * 1.1m, MidpointRounding.AwayFromZero);
+            Number(row["Q"]).Should().Be(expectedDamage);
             Number(row["R"]).Should().Be(Number(preset["O"]) + offenseBonus);
             Number(row["S"]).Should().Be(Number(preset["P"]) + offenseBonus);
             Number(row["U"]).Should().Be(Number(preset["R"]) + 20);

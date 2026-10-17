@@ -189,6 +189,8 @@ public static class LootStatRevisionMigration
             SetLocalInt(item, EquipmentTypeStatRevisionCatalog.RevisionVariable, EquipmentTypeStatRevisionCatalog.CurrentRevision);
             changed = true;
         }
+        changed |= ApplyRevision(item, FoundryLootStatRevisionCatalog.Changes,
+            FoundryLootStatRevisionCatalog.RevisionVariable, FoundryLootStatRevisionCatalog.CurrentRevision);
         return changed;
     }
 

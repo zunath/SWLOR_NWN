@@ -63,6 +63,7 @@ public static partial class MigrationEngineTests
         var controller = await CreateItemAsync(ctx, owner, Droid.DroidControlItemResref, owner);
         var creatureGloves = await CreateItemAsync(ctx, savedCreature, RevisedGloves, savedCreature);
         var creatureArtwork = await CreateItemAsync(ctx, savedCreature, "aen_hp1", savedCreature);
+        var creaturePistol = await CreateItemAsync(ctx, savedCreature, "b_pistol", savedCreature);
         await ctx.ExecuteInCreatureContextAsync(owner, () =>
         {
             StampLegacyLoot(gloves, GloveEnhancements);
@@ -75,6 +76,12 @@ public static partial class MigrationEngineTests
             ItemPlugin.SetItemAppearance(nestedArtwork, ItemAppearanceType.SimpleModel, 0, 88);
             StampLegacyLoot(creatureGloves, GloveEnhancements);
             ItemPlugin.SetItemAppearance(creatureArtwork, ItemAppearanceType.SimpleModel, 0, 88);
+            // A pistol saved with arrow ammunition from its legacy bow base item. The engine path re-saves
+            // creature items after loading them, so loading the offline result must yield the same pistol.
+            ItemPlugin.SetBaseItemType(creaturePistol, BaseItem.Pistol);
+            RemoveMatching(creaturePistol, ItemPropertyType.UnlimitedAmmunition, 0);
+            AddItemProperty(DurationType.Permanent, ItemPropertyCustom(ItemPropertyType.UnlimitedAmmunition, 0, 1), creaturePistol);
+            ItemPlugin.SetBaseItemType(creaturePistol, BaseItem.Sling);
             var legacyGloves = ObjectPlugin.Serialize(gloves);
             SetLocalString(controller, "CONSTRUCTED_DROID", JsonConvert.SerializeObject(new ConstructedDroid
             {
@@ -99,6 +106,8 @@ public static partial class MigrationEngineTests
             {
                 var engine = ConvertStoredItem("EngineStoredItemConverter", data, repairHeadgear);
                 var offline = ConvertStoredItem("OfflineStoredItemConverter", data, repairHeadgear);
+                if (label.StartsWith("saved creature"))
+                    ctx.Log($"{label} results: engine {engine.Migrated} offline {offline.Migrated}");
                 ctx.AssertEqual(label != CurrentLootLabel, engine.Changed, $"{label}: the fixture is legacy data the engine sweep changes");
                 ctx.AssertEqual(engine.Changed, offline.Changed, $"{label}: both sweeps agree whether it changes");
                 ctx.AssertEqual(engine.Converted, offline.Converted, $"{label}: both sweeps report the same listing icon and market category");

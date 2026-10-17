@@ -392,6 +392,8 @@ def create(options) -> Stack:
     max_seconds = int(options.max_minutes * 60)
     if not 300 <= max_seconds <= 12 * 3600:
         raise LiveStackError('--max-minutes must be between 5 and 720.')
+    if options.settle < 0:
+        raise LiveStackError('--settle cannot be negative.')
     client_settings_text = client_settings(options.player_name)
     state = {
         'project': project, 'run_dir': str(run_dir), 'mode': mode, 'player_name': options.player_name,
@@ -409,6 +411,9 @@ def create(options) -> Stack:
 
     created_dir = not run_dir.exists()
     try:
+        # The run holds a CD key and a character: keep it private to the caller on POSIX hosts.
+        run_dir.mkdir(parents=True, exist_ok=True)
+        make_private(run_dir, 0o700)
         for sub in ('home/logs', 'home/app_logs', 'profile/logs', 'profile/dmvault', 'evidence', 'bin'):
             (run_dir / sub).mkdir(parents=True, exist_ok=True)
         (run_dir / 'state.json').write_text(json.dumps(state, indent=2) + '\n', 'utf-8')
@@ -421,9 +426,11 @@ def create(options) -> Stack:
         if mode == 'player':
             vault = stack.home / 'servervault' / public_key
             vault.mkdir(parents=True)
-            shutil.copy2(character, vault / character.name.lower())
+            shutil.copyfile(character, vault / character.name.lower())
+            make_private(vault / character.name.lower(), 0o600)
         else:
-            shutil.copy2(dm_avatar, stack.profile / 'dmvault' / dm_avatar.name.lower())
+            shutil.copyfile(dm_avatar, stack.profile / 'dmvault' / dm_avatar.name.lower())
+            make_private(stack.profile / 'dmvault' / dm_avatar.name.lower(), 0o600)
         (stack.profile / 'nwn.ini').write_text(CLIENT_ALIASES, 'utf-8')
         (stack.profile / 'nwnplayer.ini').write_text(CLIENT_PLAYER_INI, 'utf-8')
         (stack.profile / 'settings.tml').write_text(client_settings_text, 'utf-8')
@@ -518,7 +525,11 @@ def seed_player(stack: Stack, uuid: str) -> None:
 
 def start_client(stack: Stack, cdkey: Path) -> None:
     target = stack.profile / 'cdkey.ini'
-    shutil.copyfile(cdkey, target)
+    target.unlink(missing_ok=True)
+    # Create the copy owner-only before writing the key into it.
+    descriptor = os.open(target, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600)
+    with os.fdopen(descriptor, 'wb') as copy:
+        copy.write(cdkey.read_bytes())
     log('Starting the client')
     stack.compose('up', '-d', '--no-deps', '--no-build', 'client', client=True, timeout=300)
     stack.state['client_started_utc'] = utc_now()
@@ -544,6 +555,8 @@ def play(stack: Stack, settle: float, timeout: float = 600) -> None:
     and character select can take minutes to appear while the client loads the haks.
     Clicking Play before then does nothing, so click every 20 seconds until the entry.
     """
+    if settle < 0:
+        raise LiveStackError('--settle cannot be negative.')
     entered = module_entries(stack)
     deadline = time.monotonic() + timeout
     next_click = 0.0
@@ -615,6 +628,12 @@ def remove_tree(path: Path) -> None:
     shutil.rmtree(path, onexc=retry)
 
 
+def make_private(path: Path, mode: int) -> None:
+    """Owner-only permissions on POSIX hosts; Windows ACLs already limit the user's temp folder."""
+    if os.name == 'posix':
+        os.chmod(path, mode)
+
+
 def host_user() -> str:
     """The caller's UID:GID on Linux and macOS hosts; Docker Desktop on Windows maps any UID."""
     return f'{os.getuid()}:{os.getgid()}' if hasattr(os, 'getuid') else '1000:1000'
@@ -652,21 +671,26 @@ def destroy(stack: Stack) -> dict:
             errors.append('compose down failed: ' + result.stderr.decode('utf-8', 'replace').strip())
 
     (stack.profile / 'cdkey.ini').unlink(missing_ok=True)
-    try:
-        return_home_ownership(stack)
-    except LiveStackError as error:
-        errors.append(str(error))
-    for source, name in ((stack.profile / 'logs', 'client-logs'), (stack.home / 'logs', 'server-logs'),
-                         (stack.home / 'app_logs', 'server-app-logs')):
-        if source.is_dir() and any(source.iterdir()):
-            shutil.copytree(source, stack.evidence / name, dirs_exist_ok=True)
-    for path in (stack.profile, stack.home, stack.run_dir / 'dotnet', stack.run_dir / 'bin'):
+    if project_resources(stack.project)['containers']:
+        # A surviving container still uses the bind mounts; keep them, and compose.env so down can be rerun.
+        errors.append('Containers remain after compose down; the profile, home and build were kept. '
+                      'Fix the containers, then run down again.')
+    else:
         try:
-            remove_tree(path)
-        except OSError as error:
-            errors.append(f'Could not remove {path}: {error}')
-    for name in ('compose.env', 'server-extra.env'):
-        (stack.run_dir / name).unlink(missing_ok=True)
+            return_home_ownership(stack)
+        except LiveStackError as error:
+            errors.append(str(error))
+        for source, name in ((stack.profile / 'logs', 'client-logs'), (stack.home / 'logs', 'server-logs'),
+                             (stack.home / 'app_logs', 'server-app-logs')):
+            if source.is_dir() and any(source.iterdir()):
+                shutil.copytree(source, stack.evidence / name, dirs_exist_ok=True)
+        for path in (stack.profile, stack.home, stack.run_dir / 'dotnet', stack.run_dir / 'bin'):
+            try:
+                remove_tree(path)
+            except OSError as error:
+                errors.append(f'Could not remove {path}: {error}')
+        for name in ('compose.env', 'server-extra.env'):
+            (stack.run_dir / name).unlink(missing_ok=True)
 
     resources = project_resources(stack.project)
     leftovers = [str(path) for pattern in ('cdkey.ini', '*.bic') for path in stack.run_dir.rglob(pattern)]

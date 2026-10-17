@@ -63,6 +63,7 @@ public class CombatUpgradeBibleSyncTests
         "Katar",
         "Staff",
         "Pistol",
+        "Twin Pistol",
         "Rifle",
         "Throwing"
     };
@@ -251,6 +252,7 @@ public class CombatUpgradeBibleSyncTests
         ["Mimicry"] = SkillType.Mimicry,
         ["Piloting"] = SkillType.Piloting,
         ["Pistol"] = SkillType.Pistol,
+        ["Twin Pistol"] = SkillType.TwinPistol,
         ["Rifle"] = SkillType.Rifle,
         ["Saberstaff"] = SkillType.Saberstaff,
         ["Spear"] = SkillType.Spear,
@@ -581,8 +583,9 @@ public class CombatUpgradeBibleSyncTests
             .ToArray();
         var failures = new List<string>();
 
-        if (styleGroups.Length != 24)
-            failures.Add($"Expected 24 weapon style progressions, found {styleGroups.Length}.");
+        var expectedStyleCount = WeaponTabs.Count * 2;
+        if (styleGroups.Length != expectedStyleCount)
+            failures.Add($"Expected {expectedStyleCount} weapon style progressions, found {styleGroups.Length}.");
 
         foreach (var group in styleGroups)
         {
@@ -2037,7 +2040,9 @@ public class CombatUpgradeBibleSyncTests
                 Regex.IsMatch(
                     description,
                     $@"{escapedX}\s*m\s*(?:x|by)\s*{escapedY}\s*m\s+line\b",
-                    RegexOptions.CultureInvariant),
+                    RegexOptions.CultureInvariant) ||
+                Regex.IsMatch(description, $@"\b{escapedX}\s*m\s+away\b", RegexOptions.CultureInvariant) &&
+                Regex.IsMatch(description, $@"\b{escapedY}\s*m[- ]wide\s+travel\s+line\b", RegexOptions.CultureInvariant),
             _ => true
         };
 
@@ -2897,6 +2902,8 @@ public class CombatUpgradeBibleSyncTests
             ("Piloting", "Shipwright") => PerkCategoryType.Piloting,
             ("Pistol", "Gambler") => PerkCategoryType.PistolGunslinger,
             ("Pistol", "Skirmisher") => PerkCategoryType.PistolSkirmisher,
+            ("Twin Pistol", "Barrage") => PerkCategoryType.TwinPistolBarrage,
+            ("Twin Pistol", "Crossfire") => PerkCategoryType.TwinPistolCrossfire,
             ("Rifle", "Marksman") => PerkCategoryType.RifleMarksman,
             ("Rifle", "Suppression") => PerkCategoryType.RiflePacification,
             ("Saberstaff", "Conduit") => PerkCategoryType.SaberstaffConduit,

@@ -3622,6 +3622,25 @@
                 "type": "word",
                 "value": 42
               }
+            },
+            {
+              "__struct_id": 108,
+              "Infinite": {
+                "type": "byte",
+                "value": 1
+              },
+              "InventoryRes": {
+                "type": "resref",
+                "value": "b_twinpistol"
+              },
+              "Repos_PosX": {
+                "type": "word",
+                "value": 0
+              },
+              "Repos_Posy": {
+                "type": "word",
+                "value": 45
+              }
             }
           ]
         }

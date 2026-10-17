@@ -2838,5 +2838,115 @@
       "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
     ],
     "ProjectPath": "design/animations/vibroblade/DefensiveStance.swlanim"
+  },
+  {
+    "Name": "TwinPistolCycle",
+    "AnimationName": "sw_twinpisto",
+    "Duration": 1.05,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/twin-pistol/TwinPistolCycle.swlanim"
+  },
+  {
+    "Name": "PairedVolley",
+    "AnimationName": "sw_pairvol",
+    "Duration": 1.05,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/twin-pistol/PairedVolley.swlanim"
+  },
+  {
+    "Name": "FocusedBurst",
+    "AnimationName": "sw_focusbrst",
+    "Duration": 1.05,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/twin-pistol/FocusedBurst.swlanim"
+  },
+  {
+    "Name": "ControlledBurst",
+    "AnimationName": "sw_ctrlbrst",
+    "Duration": 1.05,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/twin-pistol/ControlledBurst.swlanim"
+  },
+  {
+    "Name": "AkimboStance",
+    "AnimationName": "sw_akimbo",
+    "Duration": 2,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/twin-pistol/AkimboStance.swlanim"
+  },
+  {
+    "Name": "TwinSuns",
+    "AnimationName": "sw_twinsuns",
+    "Duration": 2,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/twin-pistol/TwinSuns.swlanim"
+  },
+  {
+    "Name": "BlasterSlide",
+    "AnimationName": "sw_blstslide",
+    "Duration": 1.05,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/twin-pistol/BlasterSlide.swlanim"
+  },
+  {
+    "Name": "GrappleShot",
+    "AnimationName": "sw_grapshot",
+    "Duration": 1.05,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/twin-pistol/GrappleShot.swlanim"
+  },
+  {
+    "Name": "PistolRush",
+    "AnimationName": "sw_pistrush",
+    "Duration": 1.05,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/twin-pistol/PistolRush.swlanim"
+  },
+  {
+    "Name": "CrossfireStance",
+    "AnimationName": "sw_crossst",
+    "Duration": 2,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/twin-pistol/CrossfireStance.swlanim"
+  },
+  {
+    "Name": "FinalSalvo",
+    "AnimationName": "sw_finsalvo",
+    "Duration": 2,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/twin-pistol/FinalSalvo.swlanim"
   }
 ]

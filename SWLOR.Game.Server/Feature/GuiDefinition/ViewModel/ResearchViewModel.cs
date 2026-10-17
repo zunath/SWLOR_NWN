@@ -451,7 +451,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             void AddGuaranteedBonus(int tier)
             {
-                var bonus = _blueprintBonuses.PickBonus(recipe.EnhancementType, tier, recipe.IsItemIntendedForCrafting);
+                var bonus = _blueprintBonuses.PickBonus(recipe.EnhancementType, tier, recipe.IsItemIntendedForCrafting,
+                    recipe.AllowedEnhancements);
+                if (bonus == null) return;
                 ItemProperty ip;
 
                 switch (recipe.EnhancementType)

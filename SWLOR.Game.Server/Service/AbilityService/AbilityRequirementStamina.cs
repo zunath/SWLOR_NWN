@@ -77,6 +77,12 @@ namespace SWLOR.Game.Server.Service.AbilityService
             adjustment += consumeNextAdjustment
                 ? Combat.ConsumeNextAbilityStaminaCostAdjustment(player, ability.EffectiveLevelPerkType)
                 : Combat.GetNextAbilityStaminaCostAdjustment(player, ability.EffectiveLevelPerkType);
+            if (abilitySkillType == SkillType.TwinPistol)
+            {
+                adjustment += PairedRangedTraits.GetAbilityStaminaCostAdjustment(player);
+                if (consumeNextAdjustment)
+                    PairedRangedTraits.ConsumeAbilityStaminaDiscount(player);
+            }
             return Math.Max(0, requiredSTM + adjustment);
         }
     }

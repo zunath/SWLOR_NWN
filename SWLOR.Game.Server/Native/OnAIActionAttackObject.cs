@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using NWN.Native.API;
 using SWLOR.Game.Server.Core;
+using SWLOR.Game.Server.Feature;
 using SWLOR.Game.Server.Service;
 using NWNX.NET;
 using SWLOR.Game.Server.Service.LogService;
@@ -80,6 +81,10 @@ namespace SWLOR.Game.Server.Native
                 var pCreature = CNWSCreature.FromPointer(creature);
                 var pNode = CNWSObjectActionNode.FromPointer(node);
                 var pArea = pCreature.GetArea();
+                PairedRangedTraits.RecordTargetChange(pCreature.m_idSelf, (uint)pNode.m_pParameter[0]);
+                PairedRangedTraits.Reconcile(pCreature.m_idSelf);
+                OrdinaryAttackTraits.RecordTargetChange(pCreature.m_idSelf, (uint)pNode.m_pParameter[0]);
+                OrdinaryAttackTraits.Reconcile(pCreature.m_idSelf);
                 var attackSkillType = Combat.GetEquippedWeaponSkillType(pCreature.m_idSelf);
                 var isPlayerCreature = pCreature.m_bPlayerCharacter == 1;
                 var usesRangedWeapon = isPlayerCreature
@@ -115,6 +120,16 @@ namespace SWLOR.Game.Server.Native
                     Combat.ClearAttackSwingDebt(pCreature.m_idSelf);
 
                     pCreature.ChangeAttackTarget(pNode, OBJECT_INVALID);
+                    return ACTION_FAILED;
+                }
+
+                var equipmentError = TwinPistolEquipmentValidation.GetUnusableEquipmentError(pCreature.m_idSelf);
+                if (!string.IsNullOrEmpty(equipmentError))
+                {
+                    PairedRangedAttackCycle.Cancel(pCreature.m_idSelf);
+                    Combat.ClearAttackSwingDebt(pCreature.m_idSelf);
+                    pCreature.ChangeAttackTarget(pNode, OBJECT_INVALID);
+                    SendMessageToPC(pCreature.m_idSelf, ColorToken.Red(equipmentError));
                     return ACTION_FAILED;
                 }
 
@@ -430,6 +445,9 @@ namespace SWLOR.Game.Server.Native
                 // and pathing. At resolution time, prefer the weapon for the actual main-hand or
                 // off-hand swing so skill-scoped limited effects consume the correct charge.
                 var isDualWieldCycle = !usesRangedWeapon && EquipmentPredicates.HasDualWield(pCreature.m_idSelf);
+                var isTwinPistolCycle = TwinPistolEquipment.IsActivePair(pCreature.m_idSelf);
+                PairedRangedTraits.RecordTargetChange(pCreature.m_idSelf, oidAttackTarget);
+                OrdinaryAttackTraits.RecordTargetChange(pCreature.m_idSelf, oidAttackTarget);
                 var currentWeaponAttackType = isDualWieldCycle
                     ? WEAPON_ATTACK_TYPE_MAINHAND
                     : pCombatRound.GetWeaponAttackType();
@@ -437,11 +455,11 @@ namespace SWLOR.Game.Server.Native
                     currentWeaponAttackType);
                 if (currentAttackWeapon != null)
                 {
-                    attackSkillType = SWLOR.Game.Server.Service.Skill.GetSkillTypeByBaseItem(
-                        (SWLOR.NWN.API.NWScript.Enum.Item.BaseItem)currentAttackWeapon.m_nBaseItem);
+                    attackSkillType = SWLOR.Game.Server.Service.Skill.GetWeaponSkill(pCreature.m_idSelf, currentAttackWeapon.m_idSelf);
                 }
                 var mainSkill = attackSkillType;
                 var offSkill = SkillType.Invalid;
+                if (isTwinPistolCycle) offSkill = SkillType.TwinPistol;
                 if (isDualWieldCycle)
                 {
                     var offWeapon = pCombatRound.GetCurrentAttackWeapon(WEAPON_ATTACK_TYPE_OFFHAND);
@@ -661,7 +679,7 @@ namespace SWLOR.Game.Server.Native
                                                         effectiveDelayWithoutLimitedReduction,
                                                         limitedDelayReductionRemainingAttacks,
                                                         limitedNoDelayRemainingAttacks,
-                                                        isDualWieldCycle ? 2 : 1,
+                                                        isDualWieldCycle || isTwinPistolCycle ? 2 : 1,
                                                         WeaponAttackTiming.GetLimitedBudget(pCreature.m_idSelf, attackSkillType, mainSkill, offSkill, false),
                                                         WeaponAttackTiming.GetLimitedBudget(pCreature.m_idSelf, attackSkillType, mainSkill, offSkill, true),
                                                         temporaryNoDelayBudget);
@@ -671,7 +689,7 @@ namespace SWLOR.Game.Server.Native
                                                         nAttacks = WeaponAttackCycle.PrepareDualWieldAttacks(
                                                             pCreature.m_pcCombatRound, nAttacks);
                                                     }
-                                                    else if (nAttacks > 1)
+                                                    else if (!isTwinPistolCycle && nAttacks > 1)
                                                     {
                                                         if (nWeaponAttackType == WEAPON_ATTACK_TYPE_OFFHAND)
                                                         {
@@ -684,7 +702,12 @@ namespace SWLOR.Game.Server.Native
                                                     }
                                                 }
 
-                                                if (isDualWieldCycle && nAttacks >= 2)
+                                                if (isTwinPistolCycle)
+                                                {
+                                                    PairedRangedAttackCycle.Resolve(pCreature, oidTarget, nAttacks,
+                                                        Combat.CalculateAttackSwingDelay(effectiveAttackDelay));
+                                                }
+                                                else if (isDualWieldCycle && nAttacks >= 2)
                                                 {
                                                     WeaponAttackCycle.ResolveDualWield(pCreature, oidTarget, nAttacks,
                                                         Combat.CalculateAttackSwingDelay(effectiveAttackDelay));

@@ -78,6 +78,11 @@ namespace SWLOR.Game.Server.Native
         [UnmanagedCallersOnly]
         private static void OnResolveAttackRoll(void* thisPtr, void* pTarget)
         {
+            ResolveWeaponRoll(thisPtr, pTarget);
+        }
+
+        internal static void ResolveWeaponRoll(void* thisPtr, void* pTarget)
+        {
             ServerManager.Executor.ExecuteInScriptContext(() =>
             {
 
@@ -121,15 +126,23 @@ namespace SWLOR.Game.Server.Native
 
                 var pAttackData = pCombatRound.GetAttack(pCombatRound.m_nCurrentAttack);
                 // This API accepts WeaponAttackType, not a boolean off-hand flag.
-                var weapon = pCombatRound.GetCurrentAttackWeapon(pCombatRound.GetWeaponAttackType());
+                var weapon = RangedWeaponAttackContext.GetWeapon(attacker.m_idSelf,
+                    pCombatRound.GetCurrentAttackWeapon(pCombatRound.GetWeaponAttackType()));
                 var weaponSkillType = weapon == null
                     ? SkillType.Invalid
-                    : SWLOR.Game.Server.Service.Skill.GetSkillTypeByBaseItem((BaseItem)weapon.m_nBaseItem);
+                    : SWLOR.Game.Server.Service.Skill.GetWeaponSkill(attacker.m_idSelf, weapon.m_idSelf);
                 using (CombatRecorder.BeginStatTriggerAttribution(attacker.m_idSelf, StatType.StanceHostileAutoAttackFPCost))
                     GetDamageRoll.PrepareForceConversionStanceAttack(attacker, targetObject, weaponSkillType);
                 var abilitySkillType = UsePerkFeat.TryGetQueuedWeaponAbility(attacker.m_idSelf, weaponSkillType, out var queuedAbility, attacker.m_pcCombatRound.m_nCurrentAttack)
                     ? Combat.GetAbilitySkillType(attacker.m_idSelf, queuedAbility)
                     : weaponSkillType;
+                var shot = RangedWeaponAttackContext.BeginRoll(attacker.m_idSelf,
+                    weapon?.m_idSelf ?? OBJECT_INVALID, targetObject.m_idSelf, pCombatRound.m_nCurrentAttack);
+                shot.Ordinary = queuedAbility == null;
+                if (shot.Ordinary)
+                    shot.Bonuses = PairedRangedTraits.RecordOrdinaryAttempt(attacker.m_idSelf, targetObject.m_idSelf,
+                        shot.Id, RangedWeaponAttackContext.IsSimulated(attacker.m_idSelf) ||
+                                 pCombatRound.GetWeaponAttackType() == 2);
 
                 if (targetObject.m_nObjectType != (int)ObjectType.Creature)
                 {
@@ -167,7 +180,12 @@ namespace SWLOR.Game.Server.Native
                 var accuracyAbility = queuedAbility == null
                     ? AbilityType.Invalid
                     : Combat.GetQueuedAbilityAccuracyAbilityType(attacker.m_idSelf, abilitySkillType);
-                var attackerAccuracy = Stat.GetAccuracyNative(attacker, weapon, abilitySkillType, accuracyAbility);
+                var capturedOrdinaryAccuracy = queuedAbility == null
+                    ? RangedWeaponAttackContext.GetProfile(attacker.m_idSelf)?.NativeAccuracy : null;
+                var attackerAccuracy = capturedOrdinaryAccuracy ??
+                    Stat.GetAccuracyNative(attacker, weapon, abilitySkillType, accuracyAbility);
+                if (shot.Ordinary)
+                    attackerAccuracy += shot.Bonuses.AccuracyAdjustment;
                 attackerAccuracy = Combat.ApplyStatusSourceAccuracyModifiers(
                     attacker.m_idSelf,
                     defender.m_idSelf,
@@ -259,6 +277,7 @@ namespace SWLOR.Game.Server.Native
                 var autoAttackCycleCriticalRate =
                     Combat.PrepareAutoAttackCycleCriticalRate(attacker.m_idSelf, weaponSkillType);
                 var isHit = Combat.GetAutoAttackHitResolutionOverride() ?? attackRoll <= hitRate;
+                var accuracyEvasionMiss = !isHit;
 
                 Log.Write(LogGroup.Attack, $"attackerAccuracy = {attackerAccuracy}, modifiers = {accuracyModifiers}, defenderEvasion = {defenderEvasion}");
                 Log.Write(LogGroup.Attack, $"Hit Rate: {hitRate}, Roll = {attackRoll}");
@@ -358,6 +377,8 @@ namespace SWLOR.Game.Server.Native
                 else
                 {
                     Combat.TrackAvoidedAttack(defender.m_idSelf, attacker.m_idSelf);
+                    if (accuracyEvasionMiss && GetIsReactionTypeHostile(attacker.m_idSelf, defender.m_idSelf))
+                        PairedRangedTraits.RecordAccuracyEvasionMiss(defender.m_idSelf);
                     Combat.TrackAttackActivity(attacker.m_idSelf);
 
                     if (deflected)
@@ -398,6 +419,15 @@ namespace SWLOR.Game.Server.Native
                 var queuedWeaponAbilityWillResolve =
                     IsSuccessfulAttackResult(pAttackData.m_nAttackResult) &&
                     UsePerkFeat.HasQueuedWeaponAbility(attacker.m_idSelf, weaponSkillType, attacker.m_pcCombatRound.m_nCurrentAttack);
+                if (!queuedWeaponAbilityWillResolve && !shot.Ordinary)
+                {
+                    // An avoided roll did not consume the readied ability. It still
+                    // consumes an ordinary attempted-shot charge, including Twin Suns.
+                    shot.Ordinary = true;
+                    shot.Bonuses = PairedRangedTraits.RecordOrdinaryAttempt(attacker.m_idSelf, targetObject.m_idSelf,
+                        shot.Id, RangedWeaponAttackContext.IsSimulated(attacker.m_idSelf) ||
+                                 pCombatRound.GetWeaponAttackType() == 2);
+                }
                 if (queuedWeaponAbilityWillResolve)
                 {
                     UsePerkFeat.ReserveQueuedWeaponAbilityAttack(
@@ -611,7 +641,7 @@ namespace SWLOR.Game.Server.Native
         {
             var skillType = weapon == null
                 ? SkillType.Invalid
-                : SWLOR.Game.Server.Service.Skill.GetSkillTypeByBaseItem((BaseItem)weapon.m_nBaseItem);
+                : SWLOR.Game.Server.Service.Skill.GetWeaponSkill(attacker.m_idSelf, weapon.m_idSelf);
 
             if (attacker.m_bPlayerCharacter == 1 && !GetIsDMPossessed(attacker.m_idSelf))
             {

@@ -630,6 +630,11 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 var type = GetItemPropertyType(ip);
                 if (type == typeIP)
                 {
+                    if (!recipe.AllowsEnhancement((EnhancementSubType)GetItemPropertySubType(ip)))
+                    {
+                        FloatingTextStringOnCreature("This recipe accepts only weapon-profile enhancements such as DMG and Accuracy.", Player, false);
+                        return false;
+                    }
                     foundIp = true;
                 }
 
@@ -638,8 +643,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     enhancementLevel = GetItemPropertyCostTableValue(ip);
                 }
 
-                if(foundIp && enhancementLevel > -1)
-                    break;
+                // Inspect every enhancement in a kit before it can be removed from inventory.
+                if (foundIp && enhancementLevel > -1 && recipe.AllowedEnhancements == null) break;
             }
 
             if (!foundIp || enhancementLevel == -1)
@@ -1287,6 +1292,19 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 return;
             }
 
+            var recipe = Craft.GetRecipe(_recipe);
+            var outputProperties = _itemPropertiesEnhancement1.Concat(_itemPropertiesEnhancement2)
+                .Concat(_itemPropertiesEnhancement3).Concat(_itemPropertiesEnhancement4)
+                .Concat(_itemPropertiesEnhancement5).Concat(_itemPropertiesEnhancement6)
+                .Concat(_itemPropertiesEnhancement7).Concat(_itemPropertiesEnhancement8)
+                .Concat(_hasBlueprint ? _activeBlueprint.GuaranteedBonuses : Enumerable.Empty<ItemProperty>());
+            if (outputProperties.Any(ip => !recipe.AllowsOutputProperty(GetItemPropertyType(ip))))
+            {
+                StatusText = "This recipe accepts only weapon-profile enhancements such as DMG and Accuracy.";
+                StatusColor = GuiColor.Red;
+                return;
+            }
+
             if (ProcessBlueprintRequirements() && ProcessComponents())
             {
                 SwitchToCraftMode();
@@ -1487,7 +1505,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 else if (recipe.Level >= 21 && recipe.Level <= 40 && tier > 2)
                     tier = 2;
 
-                var bonus = _blueprintBonuses.PickBonus(recipe.EnhancementType, tier, recipe.IsItemIntendedForCrafting);
+                var bonus = _blueprintBonuses.PickBonus(recipe.EnhancementType, tier, recipe.IsItemIntendedForCrafting,
+                    recipe.AllowedEnhancements);
                 if (bonus == null)
                     continue;
 

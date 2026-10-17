@@ -26,13 +26,26 @@ public class AbilityImpactVisualEffectTests
             .Where(type => !type.IsAbstract && typeof(IAbilityListDefinition).IsAssignableFrom(type)).ToArray();
         var built = new Dictionary<string, Dictionary<FeatType, AbilityDetail>>();
         var usedEffects = new HashSet<VisualEffect>();
+        var nativeReference = File.ReadAllLines(Path.Combine(root, "SWLOR.Game.Server", "Readmes", "VisualEffectReference.csv"));
 
         foreach (var entry in manifest.RootElement.EnumerateArray())
         {
             var id = entry.GetProperty("Id").GetString()!;
-            var enumName = id == "ShieldBash" ? "Vfx_Imp_Shield_Bash" : "Vfx_Ability_" + id;
+            var declaresNativeEffect = entry.TryGetProperty("NativeImpactVisualEffect", out var nativeEffect);
+            var enumName = declaresNativeEffect ? nativeEffect.GetString()! :
+                id == "ShieldBash" ? "Vfx_Imp_Shield_Bash" : "Vfx_Ability_" + id;
             Enum.TryParse<VisualEffect>(enumName, out var expected).Should().BeTrue($"{id} must have a stable effect reference");
-            usedEffects.Add(expected).Should().BeTrue($"{id} should have its own effect, shared only across ranks");
+            Enum.IsDefined(expected).Should().BeTrue($"{id} must reference a declared effect enum");
+            expected.Should().NotBe(VisualEffect.None);
+            if (declaresNativeEffect)
+            {
+                enumName.Should().NotStartWith("Vfx_Ability_", "authored effects retain their unique resource contract");
+                nativeReference.Should().Contain(line => Regex.IsMatch(line,
+                    $@"^(COM|IMP|FNF),[^,]+,{Regex.Escape(enumName)},{(int)expected},"),
+                    $"{id} must select its native impact enum and numeric row from the visual reference guide");
+            }
+            else
+                usedEffects.Add(expected).Should().BeTrue($"{id} should have its own authored effect, shared only across ranks");
             var definitions = entry.GetProperty("DefinitionFiles").EnumerateArray()
                 .Select(file => Path.ChangeExtension(file.GetString()!, null).Replace('/', '.').Replace('\\', '.')).ToArray();
             foreach (var definition in definitions)
@@ -86,6 +99,9 @@ public class AbilityImpactVisualEffectTests
             foreach (var model in models)
             {
                 model.Length.Should().BeLessThanOrEqualTo(16);
+                // Native model resources ship in NWN's base archives; authored effects must
+                // remain compiled and present in our HAK source.
+                if (declaresNativeEffect) continue;
                 var path = Path.Combine(root, "SWLOR_Haks", "sw_vfx", model + ".mdl");
                 File.Exists(path).Should().BeTrue($"{id} needs compiled model {model}");
                 var bytes = File.ReadAllBytes(path);

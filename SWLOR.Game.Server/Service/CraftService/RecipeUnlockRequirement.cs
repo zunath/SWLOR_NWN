@@ -5,6 +5,7 @@ namespace SWLOR.Game.Server.Service.CraftService
     public class RecipeUnlockRequirement: IRecipeRequirement
     {
         private readonly RecipeType _recipe;
+        public RecipeType Recipe => _recipe;
         public RecipeUnlockRequirement(RecipeType recipe)
         {
             _recipe = recipe;

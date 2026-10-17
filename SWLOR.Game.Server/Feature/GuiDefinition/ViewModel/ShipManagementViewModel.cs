@@ -17,6 +17,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 {
     public class ShipManagementViewModel : GuiViewModelBase<ShipManagementViewModel, ShipManagementPayload>
     {
+        public const string BoardingOutOfCombatVariable = "SHIP_BOARDING_OUT_OF_COMBAT";
+
         private const string _blank = "Blank";
 
         private int SelectedShipIndex { get; set; }
@@ -1848,6 +1850,13 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         public Action OnClickBoardShip() => () =>
         {
+            if (GetLocalBool(TetherObject, BoardingOutOfCombatVariable) &&
+                (GetIsInCombat(Player) || Enmity.HasEnmity(Player)))
+            {
+                SendMessageToPC(Player, "You are in combat.");
+                return;
+            }
+
             var shipId = _shipIds[SelectedShipIndex];
             var dbShip = DB.Get<PlayerShip>(shipId);
             var shipDetail = Space.GetShipDetailByItemTag(dbShip.Status.ItemTag);

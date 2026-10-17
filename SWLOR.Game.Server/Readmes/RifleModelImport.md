@@ -58,7 +58,7 @@ The normal blue channel is not part of the decoded normal vector.
 Compress maps with the documented NWN Crunch channel presets; icons use DXT5
 DDS with alpha and no mipmaps (`-fileformat dds -unflip -yflip -DXT5 -dxtQuality uber -gamma 2.2 -mipMode None`). Native CResDDS cannot decode uncompressed RGBA DDS. Replace the matching old icon TGA so it cannot override
 the DDS. Compile staged ASCII models with `tools/CompileBlasterModels.py` and the
-installed NWN:EE executable. It accepts `wbwxl` resrefs as well as pistol resrefs.
+CleanModels CLI installed as described in the blaster guide. It accepts `wbwxl` resrefs as well as pistol resrefs.
 Keep `CompileModels: false` when packing HAKs. Validate native-reader geometry,
 normals, material bindings, texture dependencies and compiled triangle corners.
 Do not make validation depend on local source manifests.

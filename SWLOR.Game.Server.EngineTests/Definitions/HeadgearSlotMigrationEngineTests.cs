@@ -50,7 +50,7 @@ public static partial class MigrationEngineTests
                 ctx.AssertEqual(OBJECT_INVALID, GetItemInSlot(InventorySlot.Chest, owner), "The old chest slot is clear");
                 ctx.AssertEqual(uuid, GetObjectUUID(visor), "Native fixture identity survives in place");
                 ctx.AssertEqual(properties, DescribeProperties(visor), "Slot compatibility alone preserves every historical property");
-                ctx.AssertEqual(HeadgearSlotMigration.LegacyHeadgear[GetResRef(visor)], GetItemAppearance(visor, ItemAppearanceType.SimpleModel, 0), "Missing historical helmet model uses the corrected blueprint model");
+                ctx.AssertEqual(223, GetItemAppearance(visor, ItemAppearanceType.SimpleModel, 0), "Missing historical helmet model uses the corrected blueprint model");
                 ctx.AssertEqual(attack, Stat.GetNPCSkinStats(GetItemInSlot(InventorySlot.CreatureArmor, owner)).Attack, "Moving slots neither doubles nor drops the equipment contribution");
                 ctx.Assert(!HeadgearSlotMigration.MigrateObject(visor), "Historical native fixture conversion is idempotent");
             });

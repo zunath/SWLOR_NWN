@@ -75,6 +75,14 @@ public static partial class MigrationEngineTests
     {
         using var fixture = await PlayerAbilityFixture.CreateAsync(ctx);
         var player = fixture.Creature;
+        await ctx.ExecuteInCreatureContextAsync(player, () =>
+        {
+            // Keep the complete HP budget below the one-level fixture's native cap.
+            var record = DB.Get<Player>(GetObjectUUID(player));
+            Stat.AdjustPlayerMaxHP(record, player, 100 - record.MaxHP);
+            DB.Set(record);
+            SetCurrentHitPoints(player, 100);
+        });
         var enhancements = new Dictionary<(ItemPropertyType, int), int>
         {
             [(ItemPropertyType.HPBonus, 0)] = 40,
@@ -108,7 +116,7 @@ public static partial class MigrationEngineTests
                 }
             });
             var baseline = ReadEquipmentTotals(player);
-            var baselineHp = baseline.MaxHP;
+            var baselineHp = GetMaxHitPoints(player);
             var baselineAttack = baseline.Attack;
             await EquipAsync(ctx, player, item, InventorySlot.Arms);
             await ctx.ExecuteInCreatureContextAsync(player, () =>
@@ -116,6 +124,7 @@ public static partial class MigrationEngineTests
                 new _22_ReviseLootStats().Migrate(player);
                 AssertRevisedLoot(ctx, item, enhancements);
                 ctx.AssertEqual(baselineHp + 100, GetMaxHitPoints(player), "Equipped HP includes the corrected base and enhancement once");
+                ctx.AssertEqual(baseline.MaxHP + 100, ReadEquipmentTotals(player).MaxHP, "The persisted HP budget matches the equipment change");
                 ctx.AssertEqual(baselineAttack + 13, DB.Get<Player>(GetObjectUUID(player)).Attack, "Legacy Attack is corrected in the same item visit");
                 ctx.Assert(!LootStatRevisionMigration.MigrateObject(player), "Retrying the existing migration is stable");
             });
@@ -124,6 +133,7 @@ public static partial class MigrationEngineTests
             {
                 await UnequipAsync(ctx, player, item);
                 ctx.AssertEqual(baselineHp, GetMaxHitPoints(player), "Unequipping removes exactly the corrected HP");
+                ctx.AssertEqual(baseline.MaxHP, ReadEquipmentTotals(player).MaxHP, "Unequipping restores the persisted HP budget");
                 ctx.AssertEqual(baselineAttack, DB.Get<Player>(GetObjectUUID(player)).Attack, "Unequipping removes exactly the corrected Attack");
                 string saved = null;
                 string identity = null;

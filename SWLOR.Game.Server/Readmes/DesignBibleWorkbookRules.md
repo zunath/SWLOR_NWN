@@ -2,6 +2,13 @@
 
 These rules apply when editing any Design Bible workbook.
 
+## Editing The File
+
+- Never edit a workbook with `openpyxl` or any library that rewrites the whole file. It drops cached formula results and silently breaks formula-backed tabs and tests such as `NPCEnemyBalanceAuditTests`.
+- Edit only the target cells at the zip/XML level (for example `<c r="G31" s="..." t="inlineStr"><is><t>TEXT</t></is></c>`) and copy every other zip entry byte-for-byte.
+- Separate branches that edit the same workbook cannot be merged; keep one request's workbook edits on one branch.
+- After editing `design/bible/SWLOR Design Bible.xlsx`, run `powershell -ExecutionPolicy Bypass -File tools/UpdateCombatUpgradeAudit.ps1 -RefreshLocalBible`. It regenerates shared artifacts, so run it only in your own worktree.
+
 ## Human Readability
 
 - Size columns and rows so a human can read the meaningful cell contents without manually resizing the sheet.

@@ -1,6 +1,6 @@
 ---
 name: swlor-beast-generation
-description: Add or modify SWLOR beast data from design Bible/source TSV through generated C# definitions, BeastType enum, DNA subtype/TLK assets, haks submodule files, and validation. Use when adding a new tamable or incubation beast, adding a beast mutation path, choosing model/portrait/sound IDs, updating Beast Levels/Bible docs, updating DNA subtype labels, regenerating beast definitions, or repairing SWLOR beast generator output in C:\Projects\SWLOR_NWN.
+description: Add or modify SWLOR beast data from design Bible/source TSV through generated C# definitions, BeastType enum, DNA subtype/TLK assets, haks submodule files, and validation. Use when adding a new tamable or incubation beast, adding a beast mutation path, choosing model/portrait/sound IDs, updating Beast Levels/Bible docs, updating DNA subtype labels, regenerating beast definitions, or repairing SWLOR beast generator output.
 ---
 
 # SWLOR Beast Generation

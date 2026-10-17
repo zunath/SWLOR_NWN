@@ -1,6 +1,6 @@
-﻿---
+---
 name: swlor-rare-spawn-generation
-description: Use when adding or modifying SWLOR weighted rare spawn-table enemies, named elite variants, Bible-backed NPC stats, unique rare loot tables/items, module UTC/UTI assets, spawn definition wiring, and focused validation in C:\Projects\SWLOR_NWN.
+description: Use when adding or modifying SWLOR weighted rare spawn-table enemies, named elite variants, Bible-backed NPC stats, unique rare loot tables/items, module UTC/UTI assets, spawn definition wiring, and focused validation.
 ---
 
 # SWLOR Rare Spawn Generation

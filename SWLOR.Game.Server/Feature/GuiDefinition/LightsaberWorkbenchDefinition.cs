@@ -1,6 +1,7 @@
 using SWLOR.Game.Server.Core.Beamdog;
 using SWLOR.Game.Server.Feature.GuiDefinition.ViewModel;
 using SWLOR.Game.Server.Service.GuiService;
+using SWLOR.NWN.API.NWScript.Enum.Item.Property;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition
 {
@@ -98,6 +99,46 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                             .SetHeight(16f)
                             .SetWidth(200f)
                             .SetHorizontalAlign(NuiHorizontalAlign.Center);
+                        row.AddSpacer();
+                    });
+
+                    col.AddRow(row =>
+                    {
+                        row.AddSpacer();
+                        row.AddLabel()
+                            .SetText("Light Color")
+                            .SetHeight(20f)
+                            .SetWidth(260f)
+                            .SetHorizontalAlign(NuiHorizontalAlign.Center);
+                        row.AddSpacer();
+                    });
+
+                    col.AddRow(row =>
+                    {
+                        row.AddSpacer();
+                        row.AddComboBox()
+                            .AddOption("Blue", (int)LightColor.Blue)
+                            .AddOption("Yellow", (int)LightColor.Yellow)
+                            .AddOption("Purple", (int)LightColor.Purple)
+                            .AddOption("Red", (int)LightColor.Red)
+                            .AddOption("Green", (int)LightColor.Green)
+                            .AddOption("Orange", (int)LightColor.Orange)
+                            .AddOption("White", (int)LightColor.White)
+                            .BindSelectedIndex(model => model.SelectedLightColor)
+                            .SetHeight(32f)
+                            .SetWidth(220f);
+                        row.AddSpacer();
+                    });
+
+                    col.AddRow(row =>
+                    {
+                        row.AddSpacer();
+                        row.AddComboBox()
+                            .AddOption("Dim (5m)", 0)
+                            .AddOption("Normal (15m)", 1)
+                            .BindSelectedIndex(model => model.SelectedLightBrightnessIndex)
+                            .SetHeight(32f)
+                            .SetWidth(220f);
                         row.AddSpacer();
                     });
 

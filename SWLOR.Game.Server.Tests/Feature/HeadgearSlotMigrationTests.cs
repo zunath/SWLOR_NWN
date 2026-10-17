@@ -46,6 +46,7 @@ public class HeadgearSlotMigrationTests
             using var blueprint = JsonDocument.Parse(File.ReadAllText(Path.Combine(directory!.FullName, "Module", "uti", resref + ".uti.json")));
             blueprint.RootElement.GetProperty("BaseItem").GetProperty("value").GetInt32().Should().Be((int)BaseItem.Helmet);
             blueprint.RootElement.GetProperty("ModelPart1").GetProperty("value").GetInt32().Should().Be(model);
+            model.Should().BeLessThan(256, "the archived-copy migration stores the model in a byte field");
             HeadgearSlotMigration.IsLegacyHeadgear(resref, BaseItem.Armor).Should().BeTrue();
             HeadgearSlotMigration.IsLegacyHeadgear(resref, BaseItem.Helmet).Should().BeFalse();
             HeadgearSlotMigration.IsLegacyHeadgear(resref, BaseItem.Gloves).Should().BeFalse();
@@ -69,7 +70,7 @@ public class HeadgearSlotMigrationTests
         var before = Read(original);
         var after = Read(migrated);
         Value(after, "BaseItem").Should().Be((int)BaseItem.Helmet);
-        Value(after, "ModelPart1").Should().Be((byte)(existingModel > 0 ? existingModel : 223));
+        Value(after, "ModelPart1").Should().Be((byte)(existingModel > 0 ? existingModel : HeadgearSlotMigration.LegacyHeadgear["ruptorvanecr"]));
         after.Fields.Where(x => x.Label is not "BaseItem" and not "ModelPart1")
             .Should().BeEquivalentTo(before.Fields.Where(x => x.Label is not "BaseItem" and not "ModelPart1"));
         HeadgearSlotMigration.MigrateSerializedObject(migrated, out var retry).Should().BeFalse();

@@ -2,7 +2,7 @@
 
 Read before adding or changing a server or player migration, or any change to persisted data.
 
-Sections: How migrations run · One migration per release · One pass per data set · Server before player · Testing
+Sections: How migrations run · One migration per release · One pass per data set · Server before player · Enum renames · Testing
 
 ## How migrations run
 
@@ -32,6 +32,15 @@ Large data sets are loaded and saved once per release, with every change for tha
 ## Server before player
 
 Prefer server migrations: they run once at boot over every stored record, including players who are offline. Use a player migration only for data that exists only on the character file or live object (equipped and carried items, character-file locals), and keep it to that data.
+
+## Enum renames
+
+Renaming an enum member (required by `CodingStandards.md`, "Renames") always comes with migration code that moves old data to the new member.
+
+- Map each old name to its new member in a rename table, and rewrite raw records before they deserialize. The reference is `RelocatedDungeonEnumMigration`, which `_27_UpdatePlayerRecords` applies to raw Player JSON in its `PostDatabaseLoad` pass.
+- Cover every place the old name can live: dictionaries keyed by the enum on `Player` and other entities, item and character locals, serialized item or object data, and stored strings such as search fields.
+- Add the rewrite to the release's existing migration and pass ("One migration per release", "One pass per data set").
+- Test from a legacy record that still uses the old name, and assert the entry survives under the new one.
 
 ## Testing
 

@@ -807,6 +807,8 @@ def verify_public_cdkey(stack: Stack, timeout: float = 300) -> None:
             if not stack.running('client') or stack.joined_players() <= 0:
                 raise LiveStackError('The client connected and then stopped or disconnected.')
             return
+        if not stack.running('swlor-server'):
+            raise LiveStackError('The server container stopped before the client connected. See the server logs.')
         if not stack.running('client'):
             raise LiveStackError('The client stopped before it connected to the server.')
         time.sleep(2)
@@ -1008,7 +1010,28 @@ def destroy(stack: Stack) -> dict:
         errors.append(unconfirmed_boot_message)
 
     (stack.profile / 'cdkey.ini').unlink(missing_ok=True)
-    if project_resources(stack.project)['containers']:
+    containers_remain = bool(project_resources(stack.project)['containers'])
+    # The shared inputs are judged at the run boundary: the moment no project container remains.
+    # That verdict is saved before any cleanup and reused by reruns, so a deployment after the
+    # run ended is never held against it.
+    checks = stack.state.get('end_of_run_checks')
+    if checks is None:
+        checks = {
+            'hak_folder_unchanged': unchanged(lambda: hak_manifest(Path(stack.state['inputs']['hak_dir'])),
+                                              stack.state['inputs'].get('hak_manifest')),
+            'client_build_unchanged': unchanged(
+                lambda: client_build(Path(stack.state['inputs']['client_install'])),
+                stack.state['inputs'].get('client_build')),
+        }
+        if not containers_remain:
+            stack.state['end_of_run_checks'] = checks
+            stack.save()
+    report.update(checks)
+    if not checks['hak_folder_unchanged']:
+        errors.append('The shared hak folder changed during the run; captures may mix asset versions. Recapture.')
+    if not checks['client_build_unchanged']:
+        errors.append('The client install changed during the run (for example a Steam update). Recapture.')
+    if containers_remain:
         # A surviving container may still use the bind mounts; keep them, and compose.env so down can be rerun.
         if owns_project:
             errors.append('Containers remain after compose down; the profile, home and build were kept. '
@@ -1041,26 +1064,6 @@ def destroy(stack: Stack) -> dict:
                 remove_tree(path)
             except OSError as error:
                 errors.append(f'Could not remove {path}: {error}')
-
-    # The shared inputs are judged once, at the first teardown; a rerun must not hold a later
-    # deployment against a run that had already ended.
-    checks = stack.state.get('end_of_run_checks')
-    if checks is None:
-        checks = {
-            'hak_folder_unchanged': unchanged(lambda: hak_manifest(Path(stack.state['inputs']['hak_dir'])),
-                                              stack.state['inputs'].get('hak_manifest')),
-            'client_build_unchanged': unchanged(
-                lambda: client_build(Path(stack.state['inputs']['client_install'])),
-                stack.state['inputs'].get('client_build')),
-        }
-        # The run has ended only once no project container remains; until then keep rechecking.
-        if not project_resources(stack.project)['containers']:
-            stack.state['end_of_run_checks'] = checks
-    report.update(checks)
-    if not checks['hak_folder_unchanged']:
-        errors.append('The shared hak folder changed during the run; captures may mix asset versions. Recapture.')
-    if not checks['client_build_unchanged']:
-        errors.append('The client install changed during the run (for example a Steam update). Recapture.')
 
     resources = project_resources(stack.project)
     report['reservation_removed'] = not owns_project

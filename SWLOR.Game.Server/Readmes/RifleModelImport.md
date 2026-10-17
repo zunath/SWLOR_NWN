@@ -6,6 +6,8 @@ normal-map decoding and material export with the [blaster converter](BlasterMode
 but uses rifle attachment coordinates, material validation and inventory dimensions.
 Keep original archives, extracted files, manifests, scenes and review images in
 ignored `.tmp/rifle/` staging. Only finished MDL, MTR and DDS resources belong in HAKs.
+Delete each intermediate once used and empty the staging folder after the finished
+resources are committed (see [AgentEnvironment.md](AgentEnvironment.md), "Disk hygiene").
 
 Rifles are base item **7**, item class **WBwXl**. The appearance editor ID is
 `color * 100 + model`; the native middle part is `model * 10 + color`.

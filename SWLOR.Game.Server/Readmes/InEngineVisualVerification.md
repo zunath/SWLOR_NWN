@@ -1,14 +1,18 @@
 # In-engine visual verification
 
-The single shared procedure for every agent. Read it before any NWN client visual verification.
+The shared procedure for NWN client evidence. Read it before verifying any change.
 
-Visual changes need inspection in the actual NWN:EE client, **running in the background through the isolated private-desktop launcher**, before handoff. This covers NPC and object placements, models, textures, equipment, VFX, and in-game UI. Inspect every changed placement and the relevant appearances or states of other changes. Show the screenshots to the user and describe the validation in the pull request. Static previews, coordinate audits, builds, and tests supplement this evidence; they do not prove the in-game result.
+**Every change needs evidence from the actual NWN:EE client before handoff, unless the user explicitly says otherwise.** Show the screenshots to the user and describe the validation in the pull request. Static previews, coordinate audits, builds, and tests supplement this evidence; they never replace it. Pick the route by what produces the change:
 
-Sections: Hard rules · Run the launcher · Build a faithful fixture · Capture · Client traps · Public access · Evidence and cleanup
+- **Offline launcher** (most of this guide): anything the module and haks render without the C# server, such as placements, models, textures, equipment, VFX, and areas. Inspect every changed placement and the relevant appearances or states.
+- **Live server** ("Server behavior" below): anything the C# server produces, such as combat, abilities, NUI windows, conversations, chat commands, migrations, and economy behavior.
+- A change with no in-game surface (toolset app, CLI, docs, agent rules) has nothing to capture; say so in the handoff.
+
+Sections: Hard rules · Run the launcher · Build a faithful fixture · Capture · Server behavior · Client traps · Public access · Evidence and cleanup
 
 ## Hard rules
 
-1. **Use only the repository launcher**, `python tools/VerifyNwnVisuals.py` (backed by `tools/nwn_visual_check/`). Never launch `nwmain.exe` directly, write your own launcher or AppContainer/desktop code, or copy helpers from another repository. If the launcher fails, report the error and mark the affected items unverified. There is no visible fallback.
+1. **Use only the established procedures**: the repository launcher, `python tools/VerifyNwnVisuals.py` (backed by `tools/nwn_visual_check/`), for offline captures, and the containerized client in "Server behavior" for live checks. Never launch the Windows `nwmain.exe` directly, write your own launcher or AppContainer/desktop code, or copy helpers from another repository. If a procedure fails, report the error and mark the affected items unverified. There is no visible fallback.
 2. **No focus or real input.** Never call `SetForegroundWindow` or `SetCursorPos`, send real mouse or keyboard events, switch desktops, or show the client window. Script camera and movement in the fixture's NWScript probe.
 3. **Silence belongs to the isolated profile.** The launcher zeroes all four volume channels and disables splash and intro movies, which play audio even at zero volume. Never change the user's `settings.tml`, Windows mixer, or audio devices. If sound is heard, stop the owned run and fix its profile.
 4. **Own only your process.** Record the launcher's client PID and confirm it exits on success or failure. Never terminate `nwmain.exe` by name; another agent or the user may be running a client.
@@ -52,13 +56,25 @@ Read source JSON in its actual encoding (the module IFO uses a legacy encoding),
 - Log the subject's `GetPosition` and `GetFacing` at capture and compare them with the authored data. The engine moves creatures off blocked coordinates; an adjusted spawn does not verify the requested one. Correct the source and recapture.
 - Capture at least a clear close view and a contextual overview for each moved NPC or object. Keep the native PNGs; contact sheets may resize copies but must link the originals. Do not edit away clipping or obstacles.
 
+## Server behavior
+
+The offline launcher cannot run C#, so server behavior needs a private server with a client connected to it. Engine tests (`EngineTesting.md`) supplement this; they are not client evidence.
+
+- **Server:** your own `docker compose -p <unique name>` stack outside the repository, on a unique host port, with `NWN_PUBLICSERVER=0`, empty webhooks and passwords, a tmpfs Redis, the repacked module, read-only hak and TLK mounts, and a build from your worktree. Test-only driver code stays environment-gated and is never committed.
+- **Development stack only, never production:** block the master server so other sessions' CD-key use cannot lock you out (`[masterserver.key-authentication] mode = "if-reachable"` plus `extra_hosts` mapping `nwmaster2.beamdog.net`, `nwn.beamdog.net`, and `api.nwn.beamdog.net` to `127.0.0.1`), and blank `NWN_NWSYNCURL` and `NWN_NWSYNCHASH`.
+- **Character:** set `NWN_SERVERVAULT=1` and copy the test `.bic` into `servervault/<public key>/`. On a fresh database, seed the Player record on module load.
+- **Client:** the Linux client (`bin/linux-x86/nwmain-linux` from the Steam install) in a Docker/Xvfb container with its own profile: all volumes at zero, HAK and TLK aliases pointing at the deployed haks, and a copied `cdkey.ini` that you delete afterwards. Input sent inside the container's virtual display (`xdotool`) never reaches the user's desktop. Play at character select is at (742,591) at 1280x720. DM checks launch with `-dmc +connect <ip>:<port> +password <pw>`, `NWN_DMPASSWORD` on the server, and the DM character in the profile's `dmvault`.
+- **Test conditions:** live areas spawn hostiles. Clear creatures from the test areas and wait until the character is out of combat before acting; log combat state with each step.
+- **Teardown:** boot the character before stopping the client (a killed client holds its CD key for 60 seconds), then `docker compose -p <name> down --volumes`, and delete the profile and the copied key.
+- The client container files are not yet committed to the repository. If you cannot build the container, report the affected items as unverified.
+
 ## Client traps
 
-- Offline `+TestNewModule` runs need no CD key. Never copy the user's credentials.
-- `-dmc` ignores `+TestNewModule` and plays the intro movies; do not add it.
+- Offline `+TestNewModule` runs need no CD key. Never copy the user's credentials into an offline profile.
+- `-dmc` ignores `+TestNewModule` and plays the intro movies; do not add it to offline runs.
 - Do not resize the client window; a DPI-unaware resize at 150% scaling produced black captures.
 - Do not capture during area loads or transitions or in a tight loop; both have frozen the client.
-- A logged-in client on a live NWNX server is a separate workflow; attempt it only when asked. It needs the user to click Play at character selection; never inject input to bypass that. Offline captures do not establish live server or NUI behavior; server-side tests are in `EngineTesting.md`.
+- Offline captures do not establish server or NUI behavior.
 
 ## Public access
 

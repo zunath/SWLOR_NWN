@@ -28,6 +28,7 @@ public static class QuickCastEngineTests
         ctx.SetResources(player, 100, 100);
         fixture.Update(record => record.Stamina = 50);
         SetLocalInt(player, Stat.SuppressNaturalRegenVariable, 1);
+        var expectedStamina = 50 - 7 + GameMath.PercentOf(Stat.GetMaxStamina(player), 18);
         await ctx.ExecuteInCreatureContextAsync(player, () =>
             ctx.Assert(!QuickCast.TryCast(player, FeatType.AutoCastPowerCell3, out _), "default-off setting rejects alias"));
         fixture.Update(record => record.Settings.SelfQuickCastEnabled = true);
@@ -37,7 +38,7 @@ public static class QuickCastEngineTests
         await ctx.ExecuteInCreatureContextAsync(player, () => UseNativeFeat(player, FeatType.AutoCastPowerCell3));
         await ctx.WaitUntilAsync(() => StatusEffect.HasStatusEffect<Feature.StatusEffectDefinition.PowerCell3StatusEffect>(player) &&
                                       !Activity.IsBusy(player), 8f, "self-targeted Power Cell impact");
-        ctx.AssertEqual(61, Stat.GetCurrentStamina(player), "seven stamina cost and eighteen percent restoration");
+        ctx.AssertEqual(expectedStamina, Stat.GetCurrentStamina(player), "seven stamina cost and eighteen percent restoration");
         await ctx.ExecuteInCreatureContextAsync(player, () =>
             ctx.Assert(!QuickCast.TryCast(player, FeatType.AutoCastPowerCell3, out _), "normal cooldown blocks repeated cast"));
         fixture.Update(record => record.Settings.SelfQuickCastEnabled = false);

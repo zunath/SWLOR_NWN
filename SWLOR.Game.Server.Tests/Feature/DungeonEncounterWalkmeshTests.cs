@@ -109,6 +109,45 @@ public class DungeonEncounterWalkmeshTests
         }
     }
 
+    [Test]
+    public void FightClubBackrooms_UsesTwentyFixedGeneralSpawnsOnClearFloor()
+    {
+        var root = FindRoot();
+        using var git = JsonDocument.Parse(File.ReadAllText(Path.Combine(root, "Module", "git", "pw_sc_emfbackr.git.json")));
+        var area = git.RootElement;
+        area.GetProperty("VarTable").GetProperty("value").EnumerateArray()
+            .Should().NotContain(v => Text(v, "Name") == "CREATURE_SPAWN_TABLE_ID",
+                "random area positions can select inaccessible floor outside the backrooms");
+        var spawns = area.GetProperty("WaypointList").GetProperty("value").EnumerateArray()
+            .Where(w => Text(w, "Tag") == "CAPSTONE_SMUGGLERS_MOON_FIGHT_CLUB_BACKROOMS").ToArray();
+        spawns.Should().HaveCount(20, "the 16 by 16 area previously received twenty random general spawns");
+        spawns.Select(w => (Number(w, "XPosition"), Number(w, "YPosition"))).Should().OnlyHaveUniqueItems();
+
+        var floor = ReadWalkableFloor(root, "pw_sc_emfbackr", "sw_t_office");
+        var appearances = TwoDAReader.Read(Path.Combine(root, "SWLOR_Haks", "sw_2da", "placeables.2da"));
+        var meshes = Directory.EnumerateFiles(Path.Combine(root, "SWLOR_Haks"), "*.pwk", SearchOption.AllDirectories)
+            .ToDictionary(Path.GetFileNameWithoutExtension, StringComparer.OrdinalIgnoreCase);
+        var scenery = area.GetProperty("Placeable List").GetProperty("value").EnumerateArray()
+            .Select(p => (Model: appearances.GetValue((int)Number(p, "Appearance"), "ModelName"), Placeable: p))
+            .Where(p => meshes.ContainsKey(p.Model))
+            .SelectMany(p => ReadCollisionBounds(meshes[p.Model], Matrix4x4.CreateRotationZ(Number(p.Placeable, "Bearing"))
+                * Matrix4x4.CreateTranslation(Number(p.Placeable, "X"), Number(p.Placeable, "Y"), Number(p.Placeable, "Z"))))
+            .ToArray();
+
+        foreach (var spawn in spawns)
+        {
+            var position = new Vector3(Number(spawn, "XPosition"), Number(spawn, "YPosition"), Number(spawn, "ZPosition"));
+            var body = Enumerable.Range(0, 16).Select(i => position + new Vector3(
+                .75f * MathF.Cos(i * MathF.PI / 8), .75f * MathF.Sin(i * MathF.PI / 8), 0)).Prepend(position);
+            foreach (var sample in body)
+            {
+                floor.Any(t => Covers(t, sample)).Should().BeTrue($"the backroom spawn at {position} needs walkable floor at {sample}");
+                scenery.Any(bounds => Inside(bounds, sample)).Should().BeFalse(
+                    $"the backroom spawn at {position} must clear scenery at {sample}");
+            }
+        }
+    }
+
     // Qion Test Site, Forge Caverns and Canyon Range use base-game tiles whose walkmeshes are not in the repository.
     [TestCase("pw_sc_jedihalls", "sw_t_office")]
     [TestCase("pw_sc_cryptdeep", "sw_t_alienruin")]

@@ -1393,25 +1393,88 @@ namespace SWLOR.Game.Server.Service
                     property.Positions.Remove(PropertyLocationType.CurrentPosition);
                 }
 
-                // In the event this starship was docked at a deleted player starport,
-                // it needs to be relocated to the NPC starport found on the planet
-                var dockPosition = property.Positions[PropertyLocationType.DockPosition];
-                if (!string.IsNullOrWhiteSpace(dockPosition.InstancePropertyId))
-                {
-                    var dbStarport = DB.Get<WorldProperty>(dockPosition.InstancePropertyId);
-                    if (dbStarport == null)
-                    {
-                        // The PC starport no longer exists (probably destroyed by the previous cleanup)
-                        // Luckily we track the last NPC starport they visited so we can simply replace
-                        // their docked position with it.
-                        property.Positions[PropertyLocationType.DockPosition] = property.Positions[PropertyLocationType.LastNPCDockPosition];
-
-                        Log.Write(LogGroup.Property, $"Starship '{property.CustomName}' ({property.Id}) was docked at a non-existent player starport. It has been relocated to the last NPC dock position at '{property.Positions[PropertyLocationType.LastNPCDockPosition].AreaResref}'.");
-                    }
-                }
+                ReturnStarshipToSafeDock(property);
 
                 DB.Set(property);
             }
+        }
+
+        /// <summary>
+        /// Starships left in a ship-only location, at a player starport that no longer exists (probably destroyed
+        /// by the previous cleanup), or without a dock return to the last regular starport they docked at.
+        /// </summary>
+        /// <param name="property">The starship property to update.</param>
+        private static void ReturnStarshipToSafeDock(WorldProperty property)
+        {
+            static bool IsShipOnlyArea(string areaResref) =>
+                StarshipDockReturn.IsShipOnlyArea(Area.GetAreaByResref(areaResref));
+
+            if (StarshipDockReturn.RepairSafeDock(property.Positions, IsShipOnlyArea, GetPlanetStarport))
+            {
+                Log.Write(LogGroup.Property, $"Starship '{property.CustomName}' ({property.Id}) had a ship-only location recorded as its last NPC dock. It has been replaced with the planet's starport at '{property.Positions[PropertyLocationType.LastNPCDockPosition].AreaResref}'.");
+            }
+
+            property.Positions.TryGetValue(PropertyLocationType.DockPosition, out var previousDock);
+            var result = StarshipDockReturn.ReturnToSafeDock(
+                property.Positions,
+                IsShipOnlyArea,
+                starportId => DB.Exists<WorldProperty>(starportId),
+                GetPlanetStarport);
+
+            var destination = property.Positions.TryGetValue(PropertyLocationType.DockPosition, out var dock)
+                ? dock.AreaResref
+                : string.Empty;
+            switch (result)
+            {
+                case StarshipDockReturnResult.ReturnedFromShipOnlyLocation:
+                    Log.Write(LogGroup.Property, $"Starship '{property.CustomName}' ({property.Id}) was docked at the ship-only location '{previousDock?.AreaResref}'. It has been returned to the last NPC dock position at '{destination}'.");
+                    break;
+                case StarshipDockReturnResult.ReturnedFromMissingStarport:
+                    Log.Write(LogGroup.Property, $"Starship '{property.CustomName}' ({property.Id}) was docked at a non-existent player starport. It has been relocated to the last NPC dock position at '{destination}'.");
+                    break;
+                case StarshipDockReturnResult.RestoredMissingDock:
+                    Log.Write(LogGroup.Property, $"Starship '{property.CustomName}' ({property.Id}) had no dock position. It has been placed at the last NPC dock position at '{destination}'.");
+                    break;
+                case StarshipDockReturnResult.ReturnedToPlanetStarport:
+                    Log.Write(LogGroup.Property, $"Starship '{property.CustomName}' ({property.Id}) was docked at the ship-only location '{previousDock?.AreaResref}' without a last NPC dock position. It has been returned to the planet's starport at '{destination}'.");
+                    break;
+                case StarshipDockReturnResult.NoSafeDock:
+                    Log.Write(LogGroup.Error, $"Starship '{property.CustomName}' ({property.Id}) needs to return to its last NPC dock position but none could be found. Dock position: '{previousDock?.AreaResref}{previousDock?.InstancePropertyId}'.");
+                    break;
+            }
+        }
+
+        /// <summary>
+        /// Retrieves the NPC starport landing and orbit of the planet an area belongs to.
+        /// </summary>
+        /// <param name="areaResref">The resref of the area.</param>
+        /// <returns>The planet's landing and orbit locations, or null if the area has no planet or its waypoints are missing.</returns>
+        private static (PropertyLocation Landing, PropertyLocation Orbit)? GetPlanetStarport(string areaResref)
+        {
+            var planetType = Planet.GetPlanetType(Area.GetAreaByResref(areaResref));
+            if (planetType == PlanetType.Invalid)
+                return null;
+
+            var planet = Planet.GetPlanetByType(planetType);
+            var landingWaypoint = GetWaypointByTag(planet.LandingWaypointTag);
+            var orbitWaypoint = GetWaypointByTag(planet.SpaceOrbitWaypointTag);
+            if (!GetIsObjectValid(landingWaypoint) || !GetIsObjectValid(orbitWaypoint))
+                return null;
+
+            return (ToPropertyLocation(landingWaypoint), ToPropertyLocation(orbitWaypoint));
+        }
+
+        private static PropertyLocation ToPropertyLocation(uint waypoint)
+        {
+            var position = GetPosition(waypoint);
+            return new PropertyLocation
+            {
+                AreaResref = GetResRef(GetArea(waypoint)),
+                X = position.X,
+                Y = position.Y,
+                Z = position.Z,
+                Orientation = GetFacing(waypoint)
+            };
         }
 
         /// <summary>
@@ -2407,6 +2470,10 @@ namespace SWLOR.Game.Server.Service
             var npcLandingOrientation = GetFacing(npcLandingWaypoint);
             var npcLandingArea = GetArea(npcLandingWaypoint);
             var npcLandingResref = GetResRef(npcLandingArea);
+            var npcOrbitWaypoint = GetWaypointByTag(planet.SpaceOrbitWaypointTag);
+            var npcOrbitPosition = GetPosition(npcOrbitWaypoint);
+            var npcOrbitOrientation = GetFacing(npcOrbitWaypoint);
+            var npcOrbitResref = GetResRef(GetArea(npcOrbitWaypoint));
 
             var playerId = GetObjectUUID(player);
             var propertyName = "Starship";
@@ -2420,6 +2487,15 @@ namespace SWLOR.Game.Server.Service
                     Z = npcLandingPosition.Z,
                     Orientation = npcLandingOrientation,
                     AreaResref = npcLandingResref
+                };
+
+                property.Positions[PropertyLocationType.LastNPCSpacePosition] = new PropertyLocation
+                {
+                    X = npcOrbitPosition.X,
+                    Y = npcOrbitPosition.Y,
+                    Z = npcOrbitPosition.Z,
+                    Orientation = npcOrbitOrientation,
+                    AreaResref = npcOrbitResref
                 };
 
                 property.Positions[PropertyLocationType.DockPosition] = new PropertyLocation

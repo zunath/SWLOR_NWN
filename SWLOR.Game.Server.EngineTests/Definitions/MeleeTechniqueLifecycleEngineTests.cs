@@ -1,3 +1,4 @@
+using System.Linq;
 using System.Threading.Tasks;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.EngineTests.Framework;
@@ -16,9 +17,26 @@ namespace SWLOR.Game.Server.EngineTests.Definitions;
 
 public static class MeleeTechniqueLifecycleEngineTests
 {
-    [EngineTest("Player subdual clears other fighters' setup, Flow and counter references before immediate revival", Category = "MeleeTechnique", TimeoutSeconds = 45f)]
+    private static uint _watchedVictim = OBJECT_INVALID;
+    private static Action _deathObserver;
+    private static long _heartbeatGeneration;
+
+    [NWNEventHandler(ScriptName.OnModuleDeath)]
+    public static void ObservePlayerDeath()
+    {
+        if (_deathObserver != null && GetLastPlayerDied() == _watchedVictim)
+            _deathObserver();
+    }
+
+    [NWNEventHandler(ScriptName.OnModuleHeartbeat)]
+    public static void ObserveHeartbeat() => _heartbeatGeneration++;
+
+    [EngineTest("Player subdual clears other fighters' setup, Flow and counter references in the native death event", Category = "MeleeTechnique", TimeoutSeconds = 45f)]
     public static async Task PlayerSubdualClearsTargetReferences(EngineTestContext context)
     {
+        AssertObserverOrder(context, ScriptName.OnModuleDeath, ObservePlayerDeath,
+            Death.OnPlayerDeath, MeleeTechnique.OnPlayerDeath);
+        AssertObserverOrder(context, ScriptName.OnModuleHeartbeat, ObserveHeartbeat, MeleeTechnique.RefreshAll);
         using var killer = await PlayerAbilityFixture.CreateAsync(context, -0.5f);
         using var victim = await PlayerAbilityFixture.CreateAsync(context, 1f);
         var counterOwner = context.SpawnCreature("nw_bandit001", -1f, 1f);
@@ -83,30 +101,70 @@ public static class MeleeTechniqueLifecycleEngineTests
             context.Assert(StatusEffect.HasStatusEffect<RetaliationStatusEffect>(counterOwner), "The victim is the counter's live damaging opponent.");
             context.AssertEqual(killer.Creature, GetLastHostileActor(victim.Creature), "The native hostile actor is the player whose subdual setting governs this death.");
 
+            var deathObserved = false;
+            Exception deathFailure = null;
+            long heartbeatBeforeDeath = 0;
+            _deathObserver = () =>
+            {
+                if (deathObserved) return;
+                try
+                {
+                    context.AssertEqual(heartbeatBeforeDeath, _heartbeatGeneration,
+                        "No module heartbeat may refresh technique state between the killing effect and the death observer.");
+                    context.Assert(StatusEffect.HasStatusEffect<SubdualPenaltyStatusEffect>(victim.Creature),
+                        "The real module death handler has applied the subdual penalty before the observer.");
+                    context.Assert(!GetIsDead(victim.Creature), "Subdual revives the player immediately in the same area.");
+                    context.AssertEqual(context.Arena, GetArea(victim.Creature), "The victim did not leave the area to clear references.");
+                    // Read markers inside the native event, before any technique getter can refresh lazily.
+                    context.Assert(!StatusEffect.HasStatusEffect<SlipAwayStatusEffect>(killer.Creature), "Player death clears another fighter's earned Flow window.");
+                    context.Assert(!StatusEffect.HasStatusEffect<OpeningStatusEffect>(counterOwner), "Player death clears another fighter's unspent setup.");
+                    context.Assert(!StatusEffect.HasStatusEffect<RetaliationStatusEffect>(counterOwner), "Player death clears another fighter's counter marker.");
+                    context.Assert(StatusEffect.HasStatusEffect<FlowStanceStatusEffect>(killer.Creature), "The living fighter keeps its stance.");
+                    context.Assert(StatusEffect.HasStatusEffect<BruiserStanceStatusEffect>(counterOwner), "The living counter owner keeps its stance.");
+                    context.AssertEqual(MeleeTechniqueStage.None, MeleeTechnique.GetSetupStage(counterOwner, victim.Creature), "Setup cannot survive immediate subdual revival.");
+                    context.AssertEqual(0, MeleeTechnique.GetPendingRetaliationPower(counterOwner, victim.Creature), "The old counter cannot be spent on the revived player.");
+                }
+                catch (Exception exception)
+                {
+                    // ScriptExecutor logs and swallows event-handler exceptions; report this one through the test task.
+                    deathFailure = exception;
+                }
+                finally
+                {
+                    deathObserved = true;
+                }
+            };
             // The source is a real player with subdual enabled; only the native death event invokes cleanup.
             await context.ExecuteInCreatureContextAsync(killer.Creature, () =>
             {
+                _watchedVictim = victim.Creature;
+                heartbeatBeforeDeath = _heartbeatGeneration;
                 ApplyEffectToObject(DurationType.Instant, EffectDeath(), victim.Creature);
-                context.Assert(StatusEffect.HasStatusEffect<SubdualPenaltyStatusEffect>(victim.Creature),
-                    "The native module death handler completes subdual synchronously before the killing action returns.");
-                context.Assert(!GetIsDead(victim.Creature), "Subdual revives the player immediately in the same area.");
-                context.AssertEqual(context.Arena, GetArea(victim.Creature), "The victim did not leave the area to clear references.");
-                // No yield or technique getter may let heartbeat or lazy refresh hide a missing death handler.
-                context.Assert(!StatusEffect.HasStatusEffect<SlipAwayStatusEffect>(killer.Creature), "Player death clears another fighter's earned Flow window.");
-                context.Assert(!StatusEffect.HasStatusEffect<OpeningStatusEffect>(counterOwner), "Player death clears another fighter's unspent setup.");
-                context.Assert(!StatusEffect.HasStatusEffect<RetaliationStatusEffect>(counterOwner), "Player death clears another fighter's counter marker.");
-                context.Assert(StatusEffect.HasStatusEffect<FlowStanceStatusEffect>(killer.Creature), "The living fighter keeps its stance.");
-                context.Assert(StatusEffect.HasStatusEffect<BruiserStanceStatusEffect>(counterOwner), "The living counter owner keeps its stance.");
-                context.AssertEqual(MeleeTechniqueStage.None, MeleeTechnique.GetSetupStage(counterOwner, victim.Creature), "Setup cannot survive immediate subdual revival.");
-                context.AssertEqual(0, MeleeTechnique.GetPendingRetaliationPower(counterOwner, victim.Creature), "The old counter cannot be spent on the revived player.");
             });
+            await context.WaitUntilAsync(() => deathObserved, 3f, "the watched player's actual module death event");
+            if (deathFailure != null) throw deathFailure;
         }
         finally
         {
+            _deathObserver = null;
+            _watchedVictim = OBJECT_INVALID;
             Combat.SetAbilityHitResolutionOverride(null);
             Combat.SetAutoAttackHitResolutionOverride(null);
             AssignCommand(killer.Creature, () => ClearAllActions());
             AssignCommand(counterOwner, () => ClearAllActions());
+        }
+    }
+
+    private static void AssertObserverOrder(EngineTestContext context, string script, Action observer, params Action[] prerequisites)
+    {
+        var handlers = ServerManager.Scripts.GetActionScripts(script).Select(entry => entry.Action).ToList();
+        var observerIndex = handlers.IndexOf(observer);
+        context.Assert(observerIndex >= 0, $"{observer.Method.Name} is registered for {script}.");
+        foreach (var prerequisite in prerequisites)
+        {
+            var prerequisiteIndex = handlers.IndexOf(prerequisite);
+            context.Assert(prerequisiteIndex >= 0 && prerequisiteIndex < observerIndex,
+                $"{script}: {observer.Method.Name} at index {observerIndex} must run after {prerequisite.Method.DeclaringType?.Name}.{prerequisite.Method.Name} at index {prerequisiteIndex}.");
         }
     }
 

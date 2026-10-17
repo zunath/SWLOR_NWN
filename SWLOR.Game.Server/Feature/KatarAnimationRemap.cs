@@ -67,7 +67,7 @@ namespace SWLOR.Game.Server.Feature
             QueuedAttackAnimation.RestoreEquipmentAnimations += RestoreCurrentEquipmentAnimations;
         }
 
-        private static void RestoreCurrentEquipmentAnimations(uint creature) =>
+        internal static void RestoreCurrentEquipmentAnimations(uint creature) =>
             SyncKatarRemapState(creature, forceRefresh: true);
 
         /// <summary>Synchronizes saved animation state after synchronous equipment changes.</summary>
@@ -102,11 +102,19 @@ namespace SWLOR.Game.Server.Feature
                 return;
 
             SyncKatarRemapState(player);
+            // Module equip events can expose the old slots. Read both hands again
+            // after the transition, using current equipment rather than captured items.
+            AssignCommand(GetModule(), () => DelayCommand(0.1f, () =>
+            {
+                if (GetIsObjectValid(player))
+                    SyncKatarRemapState(player);
+            }));
         }
 
         // Determines whether remaps should be active right now and applies/restores exactly once per state change.
         private static void SyncKatarRemapState(uint creature, bool forceRefresh = false)
         {
+            Grip.Refresh(creature, forceRefresh);
             var rightHand = GetItemInSlot(InventorySlot.RightHand, creature);
             var leftHand = GetItemInSlot(InventorySlot.LeftHand, creature);
             BaseItem? rightHandBaseItem = GetIsObjectValid(rightHand) ? GetBaseItemType(rightHand) : null;

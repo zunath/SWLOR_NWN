@@ -4,6 +4,7 @@ using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 using NWN.Native.API;
+using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.EngineTests.Framework;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Feature.GuiDefinition.ViewModel;
@@ -158,6 +159,8 @@ public static class AbandonedStationDockMasterEngineTests
                 stationContext.Cleanup();
             }
             await ctx.WaitFrameAsync();
+            if (ownsStationSpawns)
+                ctx.Assert(!GetIsObjectValid(GetObjectByTag("aban_dockmaster")), "station cleanup destroys the previous dock master before another visit");
             if (ship != null) DB.Delete<PlayerShip>(ship.Id);
             if (property != null) Property.DeleteProperty(property);
             if (GetIsObjectValid(interior)) DestroyArea(interior);
@@ -176,15 +179,31 @@ public static class AbandonedStationDockMasterEngineTests
                 queue.Remove(pending);
         queuedByArea.Remove(station);
 
-        // Exercise the normal area's despawn cleanup immediately, including prop cleanup
-        // and resource timers. Only this test-owned area's deadline is advanced.
-        var deadlines = (Dictionary<uint, DateTime>)SpawnState("_queuedAreaDespawns");
-        deadlines[station] = DateTime.MinValue;
-        typeof(Spawn).GetMethod("ProcessDespawnAreas", BindingFlags.Static | BindingFlags.NonPublic).Invoke(null, null);
+        // A synthetic client does not complete native area player-count bookkeeping,
+        // so the normal timed despawn gate is unsuitable for fixture teardown.
+        // This visit required an empty spawn state before creating these objects.
         var active = (IDictionary)SpawnState("_activeSpawnsByArea");
-        ctx.Assert(!active.Contains(station) || ((IList)active[station]).Count == 0, "station cleanup removes every active spawn");
+        if (active.Contains(station))
+        {
+            foreach (var spawn in ((IList)active[station]).Cast<object>().ToArray())
+            {
+                var obj = (uint)spawn.GetType().GetProperty("SpawnObject").GetValue(spawn);
+                if (!GetIsObjectValid(obj)) continue;
+                ExecuteScript(ScriptName.OnSpawnDespawn, obj);
+                DestroyObject(obj);
+            }
+            active.Remove(station);
+        }
+
+        var spawnIds = (IList)((IDictionary)SpawnState("_allSpawnsByArea"))[station];
+        var resources = (IList)SpawnState("_queuedResourceDespawns");
+        foreach (var resource in resources.Cast<object>().ToArray())
+            if (spawnIds.Contains(resource.GetType().GetProperty("SpawnDetailId").GetValue(resource)))
+                resources.Remove(resource);
+        var deadlines = (Dictionary<uint, DateTime>)SpawnState("_queuedAreaDespawns");
+        deadlines.Remove(station);
+        ctx.Assert(!active.Contains(station), "station cleanup removes every active spawn");
         ctx.Assert(!queuedByArea.Contains(station) && !deadlines.ContainsKey(station), "station cleanup resets its spawn and despawn queues");
-        active.Remove(station);
     }
 
     private static CNWSPlayer GetClient(PlayerAbilityFixture actor) =>

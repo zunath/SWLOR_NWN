@@ -1,107 +1,58 @@
 # Agent Rules
 
-This is the shared rule set for every coding agent. Codex reads it directly; Claude Code imports it through `CLAUDE.md`. Put cross-agent rules here, never in an agent-specific file.
-
-Keep this file short. Codex stops reading project instructions at 32 KiB, and every line here competes for attention on every task. Put deep, topic-specific rules in `SWLOR.Game.Server/Readmes/` and add a one-line "read X before Y" pointer here.
+Shared rules for every coding agent (Codex reads this file; Claude Code imports it through `CLAUDE.md`). This file stays thin: rules that apply to every task, then pointers to the guides that hold the details. Add new rules to the owning guide and keep at most one line here. `Readmes/` means `SWLOR.Game.Server/Readmes/`.
 
 ## Project
 
-SWLOR (Star Wars: Legends of the Old Republic) is a live Neverwinter Nights: Enhanced Edition persistent world. Server logic is C# on .NET 10, hosted through NWNX DotNet. Changes reach real players.
+SWLOR is a live Neverwinter Nights: Enhanced Edition persistent world. Server logic is C# on .NET 10 through NWNX DotNet. Changes reach real players, and the repository is public.
 
-- `SWLOR.Game.Server/` - the game server. `Core/` wraps NWScript and NWNX, `Service/` holds the static game services (`Combat`, `Stat`, `Ability`, `Perk`, `Quest`, ...), `Entity/` holds Redis-persisted data models, `Feature/` holds content definitions built with builders (abilities, perks, items, recipes, quests, GUI windows, spawns), `ConversationData/` holds dialogue graphs, `Readmes/` holds system docs.
-- `SWLOR.Game.Server.Tests/` - NUnit tests for pure logic and data. `SWLOR.Game.Server.EngineTests/` - `[EngineTest]` tests that run inside a live server; see `SWLOR.Game.Server/Readmes/EngineTesting.md`.
-- `SWLOR.Toolset*/`, `SWLOR.NWN.Formats*/` - the module editor and NWN file-format libraries. `SWLOR.CLI/`, `SWLOR.Runner/`, `SWLOR.Web/`, `SWLOR.Admin/`, `SWLOR.BackgroundServices/` - tooling and supporting apps.
-- `Module/` - module content as JSON (areas, blueprints, stores). `SWLOR_Haks/` - git submodule with 2DAs, TLK, models, textures, icons. `design/bible/` - Design Bible workbooks, the source of truth for balance and descriptions. `tools/` - generators and audit scripts.
-
-Before writing code in an unfamiliar area, find two or three existing examples of the same kind of thing and follow them. Never call a method you have not confirmed exists; search for it first.
+- `SWLOR.Game.Server/`: `Core/` NWScript and NWNX wrappers, `Service/` static game services, `Entity/` Redis models, `Feature/` builder-based content, `ConversationData/` dialogue graphs, `Readmes/` guides. Tests: `SWLOR.Game.Server.Tests/` (NUnit) and `SWLOR.Game.Server.EngineTests/` (in-engine).
+- `Module/` module JSON; `SWLOR_Haks/` submodule (2DA, TLK, models, textures, icons); `design/bible/` Design Bible workbooks (source of truth for balance and descriptions); `tools/` generators and audits; `SWLOR.Toolset*/` module editor.
 
 ## How to Work
 
-- **Do what was asked, all of it, and nothing else.** Work every item in a request until it is fixed and verified. If one item is genuinely blocked, say why for that item and finish the rest. Do not change shared code, unrelated systems, or behavior the user did not mention without asking first.
-- **Check instead of assuming.** If a fact can be looked up in the repo (a path, a stat cap, a column, an enum value, an existing helper, how a similar feature works), look it up. Do not guess and do not fill gaps with plausible-sounding values.
-- **Ask only for real decisions.** When a choice genuinely belongs to the user, ask once with a recommended option. When there is an obvious conventional choice, take it and mention it.
-- **Do not loop.** If the same approach fails twice, stop and change approach or report the blocker with the evidence. Do not retry the same command or edit hoping for a different result.
-- **Deploy steps are not code problems.** Module JSON changes need a module repack; 2DA, TLK, model, and icon changes need a hak rebuild; C# needs a server deploy. When a committed fix just has not been deployed, say which step is missing instead of coding a workaround.
-- **Replace by adding, not repurposing.** When a stat, item property, 2DA row, TLK string, or enum value needs replacing, add a new one and leave the old definition untouched (hide it from builders only if asked).
-- **Report honestly.** "Done" means built, tested, and verified. If something failed, was skipped, or was not verified, say so plainly with the reason.
+- **Do what was asked, all of it, and nothing else.** Work every item until it is fixed and verified; if one is blocked, say why and finish the rest. Follow-up chores (deploy steps, keeping the repo's Design Bible in sync, cleanup) are part of the job; the owner uploads Bible changes to Google, never agents. Ask before changing shared code, unrelated systems, or behavior the user did not mention; report unrequested defects instead of fixing them.
+- **Check instead of assuming.** Look up paths, values, helpers, and how similar features work before using them. Balance numbers come from the Design Bible or code, never extrapolation. For a bug report, find the exact reported object first (search for the label in the screenshot).
+- **Follow existing standards; ask before departing from them.** A new tier, a new direction, or a value outside the established standards (enemy stats, item stats, crafting requirements, and similar) needs the user's approval first.
+- Ask only for real decisions, once, with a recommendation. If an approach fails twice, change approach or report the blocker with evidence.
+- **Deploy steps are not code problems.** Module JSON needs a repack, hak data needs a hak rebuild, C# needs a server deploy. Check what is deployed before changing code for stale in-game behavior.
+- **Report honestly.** "Done" means built, tested, and verified with client evidence. State anything failed, skipped, or unverified, with the reason.
 
 ## Response Style
 
-- Keep responses short and direct. Lead with the result.
-- No preamble, no restating the request, no closing summary, no recap of a diff the user can read.
-- Do not narrate steps, tools, or reasoning that did not change the outcome. Report what the user needs to act on.
-- Plain language. No marketing tone, filler adjectives, enthusiasm, or praise.
-- Prefer a short paragraph or a few bullets. Use a table only to compare several values across several rows.
-- When the user asks for an explanation (new skills, perk structure, design changes), give it; terse does not mean omitting what was asked for.
+- Short and direct; lead with the result. No preamble, restating, narration of steps, closing summary, or recap of a diff the user can read. Plain language, no filler or praise.
+- A short paragraph or a few bullets; tables only to compare values across rows. Give full explanations when asked.
 
-## Git and Pull Requests
+## Every Task
 
-- Start each request on a new feature branch from up-to-date `origin/master` unless the user names a different base. Never commit directly to `master`, and never mix one request's work into another request's branch.
-- Before handing off, `git status` must be clean: no stray local edits, generated files, or scratch files left in the repo. Put scratch files in a temp directory outside the repo.
-- Use one branch and one pull request per request. Add follow-ups as new commits on the same branch. Open a second pull request only for a required submodule companion. Separate branches that edit the Design Bible `.xlsx` cannot be merged.
-- When a parent pull request changes a submodule pointer (usually `SWLOR_Haks`), push the submodule branch, open its companion pull request against the branch matching the parent's base, and link the two pull requests in both descriptions. A pushed submodule branch alone is not a complete handoff.
-- Addressing review findings means **resolving the review threads**, not just replying. After the fix is pushed, or after replying with a concrete reason the finding does not apply, resolve each thread with `gh api graphql` and the `resolveReviewThread` mutation. This applies to bot reviewers (CodeRabbit, Codex connector) too. Before calling pull request work done, confirm zero unresolved threads on the parent and every companion pull request.
+- **Client evidence:** every change with an in-game effect needs NWN client evidence through the established procedure unless the user explicitly waives it; a change with no in-game surface (toolset app, CLI, docs, agent rules) says so in the handoff instead (`Readmes/InEngineVisualVerification.md`).
+- **Tests:** build once with `-p:RunPostBuildEvent=Never -v q -clp:ErrorsOnly`, then `dotnet test <project> --no-build --filter "FullyQualifiedName~<Class>"` for the tests that guard the change. Run the full suite only when asked or the change is broad. Report the filters you ran.
+- **Shared machine:** several Claude and Codex sessions run at once. Work in your own worktree and branch, never stash, reset, or run repo-wide generators in a shared checkout, and stop only processes you started (`Readmes/AgentEnvironment.md`).
+- **Clean up as you go:** delete generated files (renders, models, textures, HAK and module copies, client profiles, containers) once nothing needs them, without being asked. Keep only the evidence the user needs.
+- **Token economy:** never read a whole `Module/` JSON file (some reach 25 MB); search instead. Read only the guide sections you need, and keep command output small.
+- **Pull requests:** one branch and pull request per request, from up-to-date `origin/master`. Request a Codex review (`@codex review`) and keep fixing until it finds nothing; never wait on a rate-limited CodeRabbit; resolve every thread (`Readmes/PullRequests.md`).
+- **Public repository:** keep secrets and anti-abuse specifics out of commits, pull requests, and player-facing text.
 
-## Build and Test
+## Guides
 
-- Visual changes require actual NWN client screenshot evidence before handoff. Every agent, including Codex/GPT and Claude, must first read and follow `SWLOR.Game.Server/Readmes/InEngineVisualVerification.md`, the single shared procedure for the repository's isolated, silent background launcher.
-- Always pass `-p:RunPostBuildEvent=Never` when building. Without it, building `SWLOR.Game.Server` runs a slow deploy to the local NWN install.
-- Build once, then run only the relevant tests without rebuilding:
-  - `dotnet build SWLOR.Game.Server.Tests\SWLOR.Game.Server.Tests.csproj -p:RunPostBuildEvent=Never`
-  - `dotnet test SWLOR.Game.Server.Tests\SWLOR.Game.Server.Tests.csproj --no-build --filter "FullyQualifiedName~<TestClass>|FullyQualifiedName~<OtherTestClass>"`
-- Never run the full unfiltered suite unless the user asks or the change is genuinely broad (shared services, combat/stat infrastructure, enum or 2DA-wide edits, generator output). A localized change is verified by the tests that guard it. Say which test filters you ran.
-- Migration and persistence changes require in-engine use/change, save, and reload coverage with repeated cycles and ownership/quantity checks. Migration tests must start with legacy data and run the actual conversion first. Read the persistence and migration coverage section in `SWLOR.Game.Server/Readmes/EngineTesting.md` first. Droid item changes must run the `DroidInventory` engine filter.
-- Many tests read `SWLOR_Haks`. In a git worktree the submodule may be uninitialized or a stale plain copy; check `git submodule status` before treating 2DA, TLK, or icon test failures as real.
-- Some tests rewrite tracked files as a side effect (for example `CombatUpgradeBibleImplementationReview.csv`). Review that diff; do not commit it by accident.
-- Do not start background jobs, watchers, dev servers, or detached processes unless the user asks or the task strictly requires one. Use foreground commands with bounded timeouts. If a long-lived process is necessary, track its PID, stop it before handing off, and report the cleanup.
-- Deploy tooling: `Module\PackModule.cmd` repacks the module and `SWLOR_Haks\BuildHaks.cmd` rebuilds haks (needs `nwn_erf` on PATH). The user normally runs these. Run the server locally with `dotnet run --project SWLOR.Runner`.
-- Do not add task-specific README files or writeups for routine work unless the user asks. Implementation notes and validation results go in the pull request description.
+Read the guide before working in its area. `Readmes/README.md` lists every guide.
 
-## Code Conventions
+- Writing code, Module JSON, StatType design, TLK and 2DA data: `Readmes/CodingStandards.md`
+- Items, enemies, loot, balance, dungeons, ship access, phenotypes: `Readmes/ContentStandards.md`
+- Migrations and persistence: `Readmes/Migrations.md`
+- Pull requests and code review: `Readmes/PullRequests.md`
+- Worktrees, haks submodule, git network, disk hygiene, builds, local deploy: `Readmes/AgentEnvironment.md`
+- Client evidence (offline and live server): `Readmes/InEngineVisualVerification.md`
+- Engine tests: `Readmes/EngineTesting.md`
+- Active abilities and targeting: `Readmes/AbilityTargeting.md`. Icons: `Readmes/IconStandards.md` (key items: `Readmes/KeyItemIconStandards.md`). VFX: `Readmes/VisualEffectSelection.md`
+- Quests: `Readmes/QuestContentValidation.md`. Conversations: `Readmes/Conversations.md`. Player names: `Readmes/PlayerIdentity.md`. Player messages: `Readmes/PlayerFeedback.md`
+- Item models (helmet model 223 is reserved): `Readmes/ItemAppearanceRules.md`. Item blueprints and pickers: `Readmes/EconomyRestrictedItems.md`. Creature HP: `Readmes/NpcHitPoints.md`
+- NUI windows: `Readmes/NuiLayoutRules.md`, `Readmes/GuiWindowAuthoring.md`
+- Design Bible workbooks (never edit with `openpyxl`): `Readmes/DesignBibleWorkbookRules.md`
+- Module editor: `SWLOR.Toolset/README.md`
 
-- New code puts one type per file, in a folder that matches its namespace and feature.
-- `[NWNEventHandler]` and `ExecuteScript` script names are constants in `SWLOR.Game.Server/Core/ScriptName.cs`, never inline string literals.
-- `DB.Search` returns at most 50 rows when the query has no `AddPaging`. Any query meant to load a complete set must call `AddPaging(<cap>, 0)`.
-- Do not use internal initiative, milestone, or phase labels (such as `CombatUpgrade`) in new identifiers, filenames, namespaces, or comments. Use domain terms that describe the gameplay system.
-- When an ability applies `EffectDamage` with `ApplyEffectToObject`, wrap it in `AssignCommand(source, () => ApplyEffectToObject(...))` so the damage appears in the player's combat log.
-- Player-facing chat commands use `.Permissions(AuthorizationLevel.All)`. `AuthorizationLevel.Player` alone silently rejects DM and admin accounts with the generic "Invalid chat command" message.
-- Builder-facing toolset dropdowns and pickers must never show 2DA placeholder rows (`DELETED`, `USER`, `UNUSED`, `INVALID*`, `Padding`, numbered `NULL` slots, and similar). Route 2DA options through `TwoDaChoicePolicy`, declare required columns in `TwoDaLookupTables`, fail closed when validity cannot be proven, and add regression coverage for each new 2DA-backed option source.
+## Skills and Read-Only Areas
 
-## Stat-Driven Gameplay
-
-- Shared combat, ability, and status-effect code must not special-case specific perks or perk-specific status-effect classes. Model perk-driven behavior as `StatType` adjustments that shared systems read. Direct perk checks are only for ownership, unlock, purchase, UI, or progression gates.
-- Declare `StatType` classification, polarity, and category with `StatTypeAttribute` on the enum entry, not with `if`/`switch` lists elsewhere.
-- Attack Deflection, Shield Deflection, and Guard are separate mechanics. Attack and Shield Deflection are attack-roll outcomes that negate the hit and do not stack with each other. Guard is a damage-stage outcome that reduces damage and raises enmity. Never implement one with another's state, stats, logs, or triggers.
-
-## Content Rules
-
-- **Saber loot:** training sabers, training saberstaves, lightsabers, and saberstaves must never appear in regular loot tables, including rare, boss, chest, and steal tables. Their acquisition belongs to the dedicated progression/crafting systems. Validate loot by blueprint base item type, not display name.
-- **Conversations:** authored dialogue lives only in `SWLOR.Game.Server/ConversationData/*.conversation.json`. Edit those graphs directly; never create DLG sources or regenerate graphs from legacy files. `Module/dlg/dmfi_universal.dlg.json` and the empty `Module/dlg/x0_skill_ctrap.dlg.json` base-game crafting override are the native exceptions. Preserve NPC `Conversation` IDs and route through `dialog_start`. Read `SWLOR.Game.Server/Readmes/Conversations.md` first.
-- **Player identity:** player-facing surfaces never show raw character names, account names, or CD keys; they go through the `PlayerName` service. Read `SWLOR.Game.Server/Readmes/PlayerIdentity.md` before touching any surface that displays a player.
-- **Economy-restricted items:** NPC-only and unobtainable items must stay out of player search and economy surfaces. `Item.IsEconomyRestricted` is the only classifier; never hardcode resref lists. Read `SWLOR.Game.Server/Readmes/EconomyRestrictedItems.md` before adding item blueprints or item pickers.
-- **NPC hit points:** a stat skin's `NPCHP` is the final maximum HP. Never write it to UTC `HitPoints` or pass it to `ObjectPlugin.SetMaxHitPoints`; NWN adds Vitality, Toughness, and Epic Toughness on top. Set `CurrentHitPoints`/`MaxHitPoints` to `NPCHP` and `HitPoints` to `NPCHP` minus those bonuses, apply runtime budgets only through `Stat.SetNPCMaxHitPoints` after Vitality is final, and run `powershell -ExecutionPolicy Bypass -File tools/NormalizeNpcHitPoints.ps1` after adding or restatting creatures.
-- **Rebuild-era changes:** do not write one-off migrations just to remove or refund deleted perks, blueprints, or skills; the planned full character rebuild handles character-build data.
-
-## Design Bible
-
-- Read `SWLOR.Game.Server/Readmes/DesignBibleWorkbookRules.md` before editing any Design Bible workbook.
-- Never edit a workbook with `openpyxl` or any library that rewrites the whole file. It drops cached formula results and silently breaks formula-backed tabs and tests such as `NPCEnemyBalanceAuditTests`. Edit target cells at the zip/XML level (`<c r="G31" s="..." t="inlineStr"><is><t>TEXT</t></is></c>`) and copy every other zip entry byte-for-byte.
-- After editing `design/bible/SWLOR Design Bible.xlsx`, run `powershell -ExecutionPolicy Bypass -File tools/UpdateCombatUpgradeAudit.ps1 -RefreshLocalBible`.
-
-## TLK and 2DA
-
-- New custom TLK strings take the first empty slot or gap in `SWLOR_Haks/sw_tlk/sw_tlk.tlk.json` before appending at the end. Regenerate `sw_tlk.tlk` after editing the JSON.
-- 2DA references to custom TLK entries use `16777216 + tlkId` (entry `50003` is `16827219`). Raw IDs are only valid for base-game `dialog.tlk`. When moving or adding an entry, update every reference.
-- `RecastGroup` short names are player-facing and at most 14 characters. Choose a meaningful label; never auto-truncate, and make generators fail when one is missing.
-
-## Abilities
-
-- Each distinct ability gets its own `*AbilityDefinition.cs` file and matching `IAbilityListDefinition` class named for it. Ranks of one ability share its file; unrelated abilities never share a file.
-- Read `SWLOR.Game.Server/Readmes/AbilityTargeting.md` before adding or changing an active ability, its targeting metadata, or its native feat/spell rows.
-- **Icons:** read `SWLOR.Game.Server/Readmes/IconStandards.md` first. Icon resrefs are meaningful abbreviations within 16 characters, with no hash or generator suffixes. After changing an icon referenced by `feat.2da` or `spells.2da`, run `powershell -ExecutionPolicy Bypass -File tools/GenerateCooldownIcons.ps1 -Force` (ImageMagick output only). After changing any gameplay icon or manifest entry, run `powershell -ExecutionPolicy Bypass -File tools/UpdateGameplayIconStandards.ps1 -AuditOnly` and fix every failure.
-- **VFX:** choose perk, ability, status-effect, trap, and creature VFX from `SWLOR.Game.Server/Readmes/VisualEffectSelection.md` and `VisualEffectReference.csv` by gameplay moment, colors, and location, not by constant name. Use the CSV `CSharpEnum` value: `BEAM` with `EffectBeam`, `FNF` for location bursts, `IMP`/`COM` for impacts, `DUR` for persistent auras, `EYES` only when the eye cue is intended.
-
-## Agent Skills and Read-Only Areas
-
-- Skills live in `.codex/skills/` and are mirrored to `.claude/skills/`. Edit only `.codex/skills/`, then run `powershell -ExecutionPolicy Bypass -File tools/SyncAgentSkills.ps1` (`-CheckOnly` to verify). `agents/openai.yaml` files are Codex-only and not mirrored. Keep skill text agent-neutral.
-- The Unified solution (`C:\Projects\unified`) is read-only reference material. Never change it.
+- Skills live in `.codex/skills/` and are mirrored to `.claude/skills/`. Edit only `.codex/skills/`, then run `powershell -ExecutionPolicy Bypass -File tools/SyncAgentSkills.ps1`. Keep skill text agent-neutral.
+- Shared rules go in this file or its guides, never in `CLAUDE.md` or agent memory.
+- `C:\Projects\unified` is read-only reference material. Never change it.

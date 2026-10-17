@@ -1,3 +1,6 @@
+using System.Collections.Generic;
+using SWLOR.Game.Server.Service.PlayerListService;
+
 namespace SWLOR.Game.Server.Entity
 {
     public class PlayerDisguise: EntityBase
@@ -14,6 +17,7 @@ namespace SWLOR.Game.Server.Entity
             DateRetired = null;
             DateLastActivated = null;
             ScrambleAccountId = true;
+            PlayerListFlags = new List<PlayerListFlagType>();
         }
 
         [Indexed]
@@ -29,5 +33,6 @@ namespace SWLOR.Game.Server.Entity
         public bool ScrambleAccountId { get; set; }
         public DateTime? DateRetired { get; set; }
         public DateTime? DateLastActivated { get; set; }
+        public List<PlayerListFlagType> PlayerListFlags { get; set; }
     }
 }

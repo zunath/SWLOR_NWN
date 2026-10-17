@@ -1,6 +1,8 @@
 using System.Text.Json;
 using FluentAssertions;
 using NUnit.Framework;
+using SWLOR.Game.Server.Feature.AppearanceDefinition.ItemAppearance;
+using SWLOR.Game.Server.Feature.MigrationDefinition;
 
 namespace SWLOR.Game.Server.Tests.Feature;
 
@@ -13,21 +15,46 @@ public class HelmetAppearanceTests
     public void DarthRevanMaskModel_IsUsedOnlyByDarthRevansMask()
     {
         var users = new List<string>();
-        foreach (var path in Directory.EnumerateFiles(Path.Combine(Root(), "Module", "uti"), "*.uti.json"))
+        var module = Path.Combine(Root(), "Module");
+        foreach (var path in Directory.EnumerateFiles(module, "*.json", SearchOption.AllDirectories))
         {
-            using var json = JsonDocument.Parse(File.ReadAllText(path).TrimStart('﻿'));
-            var data = json.RootElement;
-            if (data.GetProperty("BaseItem").GetProperty("value").GetInt32() != HelmetBaseItem) continue;
-
-            var model = data.TryGetProperty("xModelPart1", out var extended)
-                ? extended.GetProperty("value").GetInt32()
-                : data.GetProperty("ModelPart1").GetProperty("value").GetInt32();
-            if (model == DarthRevanMaskModel)
-                users.Add(Path.GetFileName(path).Replace(".uti.json", ""));
+            var text = File.ReadAllText(path).TrimStart('﻿');
+            if (!text.Contains("\"BaseItem\"")) continue;
+            using var json = JsonDocument.Parse(text);
+            FindReservedHelmets(json.RootElement, Path.GetRelativePath(module, path).Replace('\\', '/'), users);
         }
 
-        users.Should().BeEquivalentTo(new[] { "revan_mask" },
+        users.Should().BeEquivalentTo(new[] { "uti/revan_mask.uti.json" },
             "helmet 223 is Darth Revan's mask and hood, not a generic visor appearance");
+    }
+
+    [Test]
+    public void PlayerAppearanceChoicesAndMigrationFallbacks_ExcludeDarthRevanMask()
+    {
+        new GeneralArmorAppearanceDefinition().Helmet.Should().NotContain(DarthRevanMaskModel);
+        new DroidArmorAppearanceDefinition().Helmet.Should().NotContain(DarthRevanMaskModel);
+        HeadgearSlotMigration.LegacyHeadgear.Values.Should().NotContain(DarthRevanMaskModel);
+    }
+
+    private static void FindReservedHelmets(JsonElement data, string location, List<string> users)
+    {
+        if (data.ValueKind == JsonValueKind.Object)
+        {
+            if (data.TryGetProperty("BaseItem", out var baseItem) &&
+                baseItem.GetProperty("value").GetInt32() == HelmetBaseItem &&
+                new[] { "ModelPart1", "xModelPart1" }.Any(field =>
+                    data.TryGetProperty(field, out var model) && model.GetProperty("value").GetInt32() == DarthRevanMaskModel))
+                users.Add(location);
+
+            foreach (var field in data.EnumerateObject())
+                FindReservedHelmets(field.Value, location + "/" + field.Name, users);
+        }
+        else if (data.ValueKind == JsonValueKind.Array)
+        {
+            var index = 0;
+            foreach (var child in data.EnumerateArray())
+                FindReservedHelmets(child, location + "/" + index++, users);
+        }
     }
 
     private static string Root()

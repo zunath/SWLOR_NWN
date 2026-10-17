@@ -21,6 +21,34 @@ public class ApartmentLayoutTests
     }
 
     [Test]
+    public void MissingFurnishedSmallMap_IsUnavailableForRentButPreservesExistingLeases()
+    {
+        var layouts = new ApartmentLayoutDefinition().Build();
+        var legacyLayout = layouts[PropertyLayoutType.ApartmentSmallStyleFurnished];
+
+        layouts.Where(entry => !entry.Value.IsAvailableForRent).Select(entry => entry.Key)
+            .Should().Equal(PropertyLayoutType.ApartmentSmallStyleFurnished);
+        legacyLayout.AreaInstanceResref.Should().Be("playerap_s_fur");
+        legacyLayout.StructureLimit.Should().Be(30);
+        legacyLayout.ItemStorageLimit.Should().Be(25);
+        legacyLayout.InitialPrice.Should().Be(7000);
+        legacyLayout.PricePerDay.Should().Be(300);
+    }
+
+    [TestCase(PropertyLayoutType.ApartmentSmallStyleUnfurnished, "v_apartment_s00")]
+    [TestCase(PropertyLayoutType.ApartmentMediumStyleUnfurnished, "v_apartment_m00")]
+    [TestCase(PropertyLayoutType.ApartmentMediumStyleFurnished, "v_apartment_m01")]
+    public void RentableStarWarsLayouts_UseTheirAuthoredMaps(PropertyLayoutType layoutType, string resref)
+    {
+        var layout = new ApartmentLayoutDefinition().Build()[layoutType];
+
+        layout.IsAvailableForRent.Should().BeTrue();
+        layout.AreaInstanceResref.Should().Be(resref);
+        using var area = Load("are", resref);
+        Text(area.RootElement, "Tileset").Should().Be("udp2");
+    }
+
+    [Test]
     public void ApartmentTemplates_AreRegisteredAndHaveCompleteResources()
     {
         using var module = Load("ifo", "module");

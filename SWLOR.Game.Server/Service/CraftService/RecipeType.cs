@@ -3470,9 +3470,9 @@ namespace SWLOR.Game.Server.Service.CraftService
         SongDiscStormtroopers = 6275,
         SongDiscThemeLando = 6276,
         SongDiscLandoCalrissian = 6277,
-        BasicPowerGlove = 6278,
-        FieldPowerGlove = 6279,
-        TitanPowerGlove = 6280,
+        BasicPowerGlove = 6310,
+        FieldPowerGlove = 6311,
+        TitanPowerGlove = 6312,
         VeteranPowerGlove = 6281,
         DeltaPowerGlove = 6282,
         PrimePowerGlove = 6283,
@@ -3480,5 +3480,8 @@ namespace SWLOR.Game.Server.Service.CraftService
         AscendantPowerGlove = 6285,
         OphidianPowerGlove = 6286,
         ChiroPowerGlove = 6287,
+        ArkanianDragonHelm = 6278,
+        ArkanianDragonWardRing = 6279,
+        ArkanianDragonForceRing = 6280,
     }
 }

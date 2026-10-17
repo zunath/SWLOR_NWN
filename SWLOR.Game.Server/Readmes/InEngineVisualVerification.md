@@ -86,6 +86,11 @@ exposes `nwn_visual_check.module.pack_hak(source, output, tools)` for current so
 HAK folders. Do not point `--sources` at the entire production module or an arbitrary
 directory: it must contain only the fixture resources intended for that review.
 
+Preserve the HAK repository's `*.set text eol=crlf` rule when staging tilesets,
+including files read directly from Git objects. LF-only SET files can overrun the
+native loader's stack buffer (`0xc0000409`) before the module starts. The source
+module/HAK builders reject invalid SET line endings before packing.
+
 The command copies module/HAK/TLK inputs into a fresh, key-free temporary profile,
 sets every sound channel to zero, disables splash/movies and background pausing,
 selects an unused non-default port, then launches the client with a bounded lifetime

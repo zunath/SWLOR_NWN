@@ -3,6 +3,7 @@ using System.Text.Json;
 using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Game.Server.Enumeration;
+using SWLOR.Game.Server.Feature.GuiDefinition.ViewModel;
 using SWLOR.Game.Server.Feature.LootTableDefinition;
 using SWLOR.Game.Server.Feature.QuestDefinition;
 using SWLOR.Game.Server.Feature.SpawnDefinition;
@@ -146,6 +147,55 @@ public class AbandonedStationTests
     }
 
     [Test]
+    public void DockMaster_ProvidesShipAccessAndIsNeutralToStationEnemies()
+    {
+        var main = Load("git", Main);
+        var master = List(main, "Creature List").Single(c => Text(c, "Tag") == "aban_dockmaster");
+        Text(master, "TemplateResRef").Should().Be("spc_dockhand");
+        Text(master, "ScriptDialogue").Should().Be("dialog_start");
+        Local(master, "CONVERSATION")!.Value.GetString().Should().Be("StarportDialog");
+        Local(master, ShipManagementViewModel.BoardingOutOfCombatVariable)!.Value.GetInt32().Should().Be(1,
+            "the docking bay must not provide an escape while enemies are targeting the player");
+        Number(master, "Plot").Should().Be(1);
+
+        var landing = List(main, "WaypointList").Single(w => Text(w, "Tag") ==
+            Local(master, "STARPORT_LANDING_WAYPOINT")!.Value.GetString());
+        Text(landing, "Tag").Should().Be("ABANDONED_STATION_DOCK_LANDING");
+        Distance(Position(master), Position(landing)).Should().BeLessThan(5, "the dock master serves the station's docking bay");
+        var departureTag = Local(master, "STARPORT_TELEPORT_WAYPOINT")!.Value.GetString();
+        var orbit = Load("git", "viscaraorbit");
+        List(orbit, "WaypointList").Should().ContainSingle(w => Text(w, "Tag") == departureTag);
+        var spaceDock = List(orbit, "Placeable List").Single(p => Text(p, "Tag") == "ABANDONED_STATION_DOCK");
+        Local(spaceDock, "STARPORT_TELEPORT_WAYPOINT")!.Value.GetString().Should().Be(departureTag);
+
+        var factions = Load("fac", "repute");
+        var masterFaction = (int)Number(master, "FactionID");
+        Text(List(factions, "FactionList")[masterFaction], "FactionName").Should().Be("Neutral");
+        var enemyFactions = new AbandonedStationSpawnDefinition().BuildSpawnTables().Values
+            .SelectMany(t => t.Spawns).Select(s => (int)Number(Load("utc", s.Resref), "FactionID")).Distinct();
+        foreach (var enemyFaction in enemyFactions)
+        {
+            foreach (var (source, target) in new[] { (masterFaction, enemyFaction), (enemyFaction, masterFaction) })
+                Number(List(factions, "RepList").Single(r => Number(r, "FactionID1") == source &&
+                    Number(r, "FactionID2") == target), "FactionRep").Should().BeGreaterThanOrEqualTo(50,
+                    "the dock master and every station enemy must be non-hostile in both directions");
+        }
+    }
+
+    [Test]
+    public void DockMaster_HasALocalStandardDockhandStore()
+    {
+        var main = Load("git", Main);
+        var store = List(main, "StoreList").Single(s => Text(s, "Tag") == "dockhand_store");
+        Text(store, "ResRef").Should().Be("dockhand_store");
+        var blueprint = Load("utm", "dockhand_store");
+        JsonSerializer.Serialize(Value(store, "StoreList")).Should().Be(JsonSerializer.Serialize(Value(blueprint, "StoreList")),
+            "the station offers the standard dockhand inventory");
+        var master = List(main, "Creature List").Single(c => Text(c, "Tag") == "aban_dockmaster");
+        Distance(Position(store), Position(master)).Should().BeLessThan(2);
+    }
+
+    [Test]
     public void EscapePod_RequiresConfirmationBeforeReturningPlayersToVeles()
     {
         var pod = List(Load("git", Main), "Placeable List").Single(p => Text(p, "Tag") == "aban_shuttle_exit");
@@ -284,6 +334,34 @@ public class AbandonedStationTests
         new HarvestingLootTableDefinition().BuildLootTables().Should().ContainKey("SUPPLY_CRATE_3");
     }
 
+    [TestCase("ABANDONED_STATION_MAIN", "abs_colicoid", "abs_rakghoul")]
+    [TestCase("ABANDONED_STATION_RESTRICTED", "abs_colstalk", "abs_rakstalk")]
+    [TestCase("ABANDONED_STATION_RESTRICTED", "abs_colbrute", "abs_rakbrute")]
+    [TestCase("ABANDONED_STATION_RESTRICTED", "abs_colzero", "abs_subzero")]
+    [TestCase("ABANDONED_STATION_CHAMBERS", "abs_colalpha", "abs_rakalpha")]
+    public void Colicoids_ReplaceEventRakghoulsWithoutChangingEncounterBudgets(string table, string replacement, string original)
+    {
+        var tables = new AbandonedStationSpawnDefinition().BuildSpawnTables();
+        tables[table].Spawns.Should().ContainSingle(spawn => spawn.Resref == replacement);
+        tables.Values.SelectMany(t => t.Spawns).Should().NotContain(spawn => spawn.Resref == original,
+            "Rakghouls are reserved for events");
+
+        var colicoid = Load("utc", replacement);
+        var reference = Load("utc", "colicoidexp");
+        var previous = Load("utc", original);
+        foreach (var field in new[] { "Appearance_Type", "PortraitId", "SoundSetFile", "Race" })
+            Number(colicoid, field).Should().Be(Number(reference, field), $"{replacement} matches the established Colicoid blueprint");
+        foreach (var field in new[] { "HitPoints", "CurrentHitPoints", "MaxHitPoints", "ChallengeRating" })
+            Number(colicoid, field).Should().Be(Number(previous, field), replacement);
+        Value(colicoid, "FeatList").GetRawText().Should().Be(Value(previous, "FeatList").GetRawText());
+        Value(colicoid, "VarTable").GetRawText().Should().Be(Value(previous, "VarTable").GetRawText(),
+            "loot and station quest credit stay unchanged");
+        foreach (var suffix in new[] { "_sk", "_wp" })
+            Value(Load("uti", replacement + suffix), "PropertiesList").GetRawText().Should()
+                .Be(Value(Load("uti", original + suffix), "PropertiesList").GetRawText(),
+                    "the new equipment preserves the existing combat stats");
+    }
+
     [Test]
     public void PutThemToRest_IsASmallRepeatableKillQuestFromTelford()
     {
@@ -306,6 +384,8 @@ public class AbandonedStationTests
         Text(telford, "Conversation").Should().Be("zomb_telconv");
         var graph = File.ReadAllText(Path.Combine(Root, "SWLOR.Game.Server", "ConversationData", "zomb_telconv.conversation.json"));
         graph.Should().Contain("action-accept-quest").And.Contain("action-advance-quest").And.Contain(QuestId);
+        graph.Should().Contain("Colicoid").And.NotContain("rakghoul");
+        quest.States[1].JournalText.Should().Contain("Colicoid").And.NotContain("rakghoul");
         graph.Should().NotContain("action-teleport", "the station is reached by ship, not by Telford's shuttle");
     }
 

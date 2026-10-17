@@ -284,6 +284,34 @@ public class AbandonedStationTests
         new HarvestingLootTableDefinition().BuildLootTables().Should().ContainKey("SUPPLY_CRATE_3");
     }
 
+    [TestCase("ABANDONED_STATION_MAIN", "abs_colicoid", "abs_rakghoul")]
+    [TestCase("ABANDONED_STATION_RESTRICTED", "abs_colstalk", "abs_rakstalk")]
+    [TestCase("ABANDONED_STATION_RESTRICTED", "abs_colbrute", "abs_rakbrute")]
+    [TestCase("ABANDONED_STATION_RESTRICTED", "abs_colzero", "abs_subzero")]
+    [TestCase("ABANDONED_STATION_CHAMBERS", "abs_colalpha", "abs_rakalpha")]
+    public void Colicoids_ReplaceEventRakghoulsWithoutChangingEncounterBudgets(string table, string replacement, string original)
+    {
+        var tables = new AbandonedStationSpawnDefinition().BuildSpawnTables();
+        tables[table].Spawns.Should().ContainSingle(spawn => spawn.Resref == replacement);
+        tables.Values.SelectMany(t => t.Spawns).Should().NotContain(spawn => spawn.Resref == original,
+            "Rakghouls are reserved for events");
+
+        var colicoid = Load("utc", replacement);
+        var reference = Load("utc", "colicoidexp");
+        var previous = Load("utc", original);
+        foreach (var field in new[] { "Appearance_Type", "PortraitId", "SoundSetFile", "Race" })
+            Number(colicoid, field).Should().Be(Number(reference, field), $"{replacement} matches the established Colicoid blueprint");
+        foreach (var field in new[] { "HitPoints", "CurrentHitPoints", "MaxHitPoints", "ChallengeRating" })
+            Number(colicoid, field).Should().Be(Number(previous, field), replacement);
+        Value(colicoid, "FeatList").GetRawText().Should().Be(Value(previous, "FeatList").GetRawText());
+        Value(colicoid, "VarTable").GetRawText().Should().Be(Value(previous, "VarTable").GetRawText(),
+            "loot and station quest credit stay unchanged");
+        foreach (var suffix in new[] { "_sk", "_wp" })
+            Value(Load("uti", replacement + suffix), "PropertiesList").GetRawText().Should()
+                .Be(Value(Load("uti", original + suffix), "PropertiesList").GetRawText(),
+                    "the new equipment preserves the existing combat stats");
+    }
+
     [Test]
     public void PutThemToRest_IsASmallRepeatableKillQuestFromTelford()
     {
@@ -306,6 +334,8 @@ public class AbandonedStationTests
         Text(telford, "Conversation").Should().Be("zomb_telconv");
         var graph = File.ReadAllText(Path.Combine(Root, "SWLOR.Game.Server", "ConversationData", "zomb_telconv.conversation.json"));
         graph.Should().Contain("action-accept-quest").And.Contain("action-advance-quest").And.Contain(QuestId);
+        graph.Should().Contain("Colicoid").And.NotContain("rakghoul");
+        quest.States[1].JournalText.Should().Contain("Colicoid").And.NotContain("rakghoul");
         graph.Should().NotContain("action-teleport", "the station is reached by ship, not by Telford's shuttle");
     }
 

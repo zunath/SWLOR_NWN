@@ -173,6 +173,9 @@ def _read_gff_string(path: Path, data: bytes, label: str) -> str | None:
             if not within(field_data, 1, field_data_size) or not within(
                     field_data + 1, data[field_data_offset + field_data], field_data_size):
                 raise damaged('a resref value')
+            # Resource names are at most 16 characters, as GffReader enforces.
+            if data[field_data_offset + field_data] > 16:
+                raise LiveStackError(f'{path} is damaged: a resref is longer than 16 characters.')
         if field_type == 14:
             if field_data >= struct_count:
                 raise damaged('a struct reference')

@@ -143,6 +143,12 @@ class LiveClientHelperTests(unittest.TestCase):
             with self.assertRaisesRegex(LiveStackError, 'localized string'):
                 stack.validate_bic(self.write(f'{name}.bic', gff([('FirstName', 12, payload), uuid])))
 
+    def test_resrefs_are_at_most_sixteen_characters(self):
+        uuid = ('UUID', 'a27c0f71-93de-4dcb-aa02-0047c02e6b2d')
+        stack.validate_bic(self.write('ok.bic', gff([('Portrait', 11, bytes([16]) + b'p' * 16), uuid])))
+        with self.assertRaisesRegex(LiveStackError, 'longer than 16'):
+            stack.validate_bic(self.write('long.bic', gff([('Portrait', 11, bytes([17]) + b'p' * 17), uuid])))
+
     def test_entry_on_the_current_connection_is_detected(self):
         home = self.root / 'home'
         (home / 'app_logs' / 'Connection').mkdir(parents=True)

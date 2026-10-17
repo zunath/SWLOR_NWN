@@ -44,6 +44,16 @@ For local image-to-GLB generation, follow the guide's [TRELLIS.2 workflow](../..
   For later edits, work from the committed MDL, MTR and DDS maps; do not require
   the original import files or procedural builder.
 
+## Composite melee parts
+
+Composite melee replacements must contain usable bottom, middle and top models.
+A whole weapon in one slot with empty companion MDLs does not preserve the
+appearance editor's independent part choices. Preserve the native IDs, audit
+shared slots, cap or cover cuts with common connectors, and check every new
+part combination against the same joint envelopes. Verify mixed assemblies
+in the NWN client using SWLOR assets. Native simple-model items such as shuriken
+keep their single-model format.
+
 ## Fit and review
 
 - Fit the grip with uniform scale and preserve natural proportions. Keep approved

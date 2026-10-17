@@ -154,6 +154,20 @@ class TrellisWeaponExportTests(unittest.TestCase):
         for metal, expected in [(0,.2), (.5,1.1/3), (1,1.6/3)]:
             self.assertAlmostEqual(exporter.metallic_to_specularity(metal),expected)
 
+    def test_texture_samplers_reject_unsupported_wrapping_filtering_and_indices(self):
+        doc=copy.deepcopy(self.document);doc['textures']=[{'source':0,'sampler':0}]
+        doc['samplers']=[{'wrapS':10497,'wrapT':10497,'magFilter':9729,'minFilter':9987}]
+        exporter.validate_glb_geometry(doc)
+        for key,value in [('wrapS',33071),('wrapT',33648),('magFilter',9728),('minFilter',9984),('extensions',{'custom':{}})]:
+            invalid=copy.deepcopy(doc);invalid['samplers'][0][key]=value
+            with self.subTest(key=key), self.assertRaisesRegex(ValueError,'sampler'):
+                exporter.validate_glb_geometry(invalid)
+        for index in (-1,1,False):
+            invalid=copy.deepcopy(doc);invalid['textures'][0]['sampler']=index
+            with self.subTest(index=index), self.assertRaisesRegex(ValueError,'sampler index'):
+                exporter.validate_glb_geometry(invalid)
+        doc.pop('samplers');doc['textures'][0].pop('sampler');exporter.validate_glb_geometry(doc)
+
     def test_vertex_color_and_morphs_cannot_be_silently_dropped(self):
         for change in ('COLOR_0','JOINTS_0','TEXCOORD_1'):
             doc = copy.deepcopy(self.document); doc['meshes'][0]['primitives'][0]['attributes'][change]=3
@@ -302,6 +316,35 @@ class NativeWeaponNormalTests(unittest.TestCase):
             np.testing.assert_array_equal(actual,pixels[::-1]);self.helper.write_tga(path,original,actual)
             self.assertEqual(path.read_bytes(),original)
 
+
+    def test_normal_padding_fills_the_entire_mip_footprint_without_changing_coverage(self):
+        pixels=np.zeros((3,21,4),dtype=np.uint8);pixels[...,3]=77
+        coverage=np.zeros((3,21),bool);coverage[1,0]=coverage[1,20]=True
+        pixels[1,0,:3]=[255,128,128];pixels[1,20,:3]=[128,255,128]
+        result=self.helper.pad_native_normals(pixels,coverage)
+        np.testing.assert_array_equal(result[coverage],pixels[coverage]);np.testing.assert_array_equal(result[...,3],77)
+        np.testing.assert_array_equal(result[0,1,:3],pixels[1,0,:3]);np.testing.assert_array_equal(result[0,19,:3],pixels[1,20,:3])
+        self.assertTrue(np.all(np.any(result[...,:3]!=0,axis=-1)))
+        with self.assertRaisesRegex(ValueError,'covered texels'):
+            self.helper.pad_native_normals(pixels,np.zeros_like(coverage))
+
+    def test_reprojection_replaces_source_basis_padding_through_the_last_mip(self):
+        positions=np.array([[[0.,0.,0.],[1.,0.,0.],[0.,1.,0.]]]);uv=np.array([[[.4,.4],[.6,.4],[.4,.6]]])
+        source={'positions':positions,'uv':uv,'normals':np.array([[[0.,0.,1.]]*3]),
+                'tangents':np.array([[[1.,0.,0.]]*3]),'signs':np.ones((1,3))}
+        target={**source,'tangents':np.array([[[0.,1.,0.]]*3])}
+        with tempfile.TemporaryDirectory() as temporary:
+            path=Path(temporary)/'source.tga';out=Path(temporary)/'native.tga';header=bytearray(18)
+            header[2]=2;struct.pack_into('<HH',header,12,64,64);header[16]=24
+            color=np.array([204,128,230],np.uint8);pixels=np.broadcast_to(color,(64,64,3)).copy()
+            path.write_bytes(header+pixels[...,::-1].tobytes());report=self.helper.reproject_texture(source,[target],path,out)
+            _,result=self.helper.read_tga(out);native=result[29,29,:3].copy()
+            self.assertFalse(np.array_equal(native,color));self.assertEqual(report['covered_texels']+report['dilated_texels'],64*64)
+            mip=result[...,:3].astype(float)
+            while True:
+                np.testing.assert_allclose(mip,np.broadcast_to(native,mip.shape))
+                if mip.shape[0]==1:break
+                mip=mip.reshape(mip.shape[0]//2,2,mip.shape[1]//2,2,3).mean(axis=(1,3))
 
     def authored_fixture(self):
         p=np.array([[[0.,0.,0.],[1.,0.,0.],[0.,1.,0.]]]);n=np.array([[[0.,0.,1.]]*3]);t=np.array([[[1.,0.,0.]]*3])

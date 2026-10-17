@@ -196,7 +196,11 @@ coverage and family/name collisions, not the full consumer graph.
 For example, a 2-by-5 logical area occupies 64-by-160 artwork in a 64-by-256 canvas;
 the adapter pads transparently without stretching it. Source material subsets,
 UV seams and authored corner normals are retained. Unsupported material features
-fail explicitly. A double-sided source is rejected unless the fit explicitly sets
+fail explicitly. Samplers support repeat wrapping, linear magnification and
+trilinear minification; clamp, mirror and other explicit filters are rejected.
+Normal reprojection fills all unused RGB texels from native-frame coverage before
+mip generation, preserving covered texels and alpha. This removes untouched
+source-frame padding from every mip footprint. A double-sided source is rejected unless the fit explicitly sets
 `double_sided_policy` to `closed_surface` and its shells pass the closure/winding
 and enclosed-cavity checks; inspect the resulting culling and shading too.
 

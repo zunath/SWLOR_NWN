@@ -169,6 +169,29 @@ def match_faces(source,target):
     return result
 
 
+def pad_native_normals(pixels, coverage):
+    """Fill every unused texel from the nearest native-frame texel in Manhattan distance.
+
+    Full coverage prevents any mip footprint from mixing in untouched source-frame RGB.
+    Covered texels and alpha are immutable; no wrapped neighbors or extra dependencies.
+    """
+    height,width=coverage.shape
+    if pixels.shape[:2]!=(height,width) or not coverage.any():raise ValueError('Native normal padding needs covered texels')
+    xs=np.broadcast_to(np.arange(width),(height,width));ys=np.broadcast_to(np.arange(height)[:,None],(height,width))
+    left=np.maximum.accumulate(np.where(coverage,xs,-width),axis=1)
+    right=np.minimum.accumulate(np.where(coverage,xs,2*width)[:,::-1],axis=1)[:,::-1]
+    owner_x=np.where(xs-left<=right-xs,left,right).clip(0,width-1);owner_y=ys.copy()
+    distance=np.abs(xs-owner_x);distance[~coverage.any(axis=1)]=height+width+1
+    for rows,previous in [(range(1,height),-1),(range(height-2,-1,-1),1)]:
+        for y in rows:
+            closer=distance[y+previous]+1<distance[y]
+            distance[y,closer]=distance[y+previous,closer]+1
+            owner_x[y,closer]=owner_x[y+previous,closer];owner_y[y,closer]=owner_y[y+previous,closer]
+    if not coverage[owner_y,owner_x].all():raise ValueError('Incomplete native normal padding')
+    result=pixels.copy();empty=~coverage;result[empty,:3]=pixels[owner_y[empty],owner_x[empty],:3]
+    return result
+
+
 def reproject_texture(source,meshes,input_path,output_path):
     original,pixels=read_tga(input_path);height,width=pixels.shape[:2];result=pixels.copy();coverage=np.zeros((height,width),bool);changed=0;overlap=0;max_error=0.;matched=0
     for mesh in meshes:
@@ -187,20 +210,10 @@ def reproject_texture(source,meshes,input_path,output_path):
             result[y,x,:3]=encoded;coverage[y,x]=True;changed+=len(x);decoded=unit(encoded/127.5-1);max_error=max(max_error,float(np.degrees(np.arccos(np.clip(np.sum(decoded*mapped,axis=-1),-1,1))).max()))
     if overlap:raise ValueError(f'Conflicting native normal UV ownership at {overlap} texels in {input_path.name}')
     if matched==0 or not coverage.any():raise ValueError('No native UV surface for '+input_path.name)
-    # Native mip filtering must sample the reprojected island border too.
-    filled=coverage.copy()
-    for _ in range(8):
-        fresh=np.zeros_like(filled)
-        for dy,dx in [(-1,0),(1,0),(0,-1),(0,1)]:
-            mask=np.roll(filled,(dy,dx),(0,1))&~filled&~fresh
-            if dy==-1:mask[-1]=False
-            if dy==1:mask[0]=False
-            if dx==-1:mask[:,-1]=False
-            if dx==1:mask[:,0]=False
-            result[mask,:3]=np.roll(result,(dy,dx),(0,1))[mask,:3];fresh|=mask
-        filled|=fresh
+    # No untouched source-frame texels may contribute to any generated mip level.
+    result=pad_native_normals(result,coverage);filled=np.ones_like(coverage)
     write_tga(output_path,original,result)
-    return {'source_tga_sha256':hashlib.sha256(original).hexdigest(),'reprojected_tga_sha256':hashlib.sha256(output_path.read_bytes()).hexdigest(),'native_triangles_matched':matched,'covered_texels':int(coverage.sum()),'dilated_texels':int((filled&~coverage).sum()),'conflicting_uv_texels':overlap,'max_quantization_error_degrees':max_error,'negative_z_clamped':False}
+    return {'source_tga_sha256':hashlib.sha256(original).hexdigest(),'reprojected_tga_sha256':hashlib.sha256(output_path.read_bytes()).hexdigest(),'native_triangles_matched':matched,'covered_texels':int(coverage.sum()),'dilated_texels':int((filled&~coverage).sum()),'padding':'full_texture_nearest_manhattan','conflicting_uv_texels':overlap,'max_quantization_error_degrees':max_error,'negative_z_clamped':False}
 
 
 def preserve_authored_tangents(path,sources):

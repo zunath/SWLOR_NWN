@@ -148,7 +148,22 @@ def normalize_normal(normal):
     return normalized
 
 
+def validate_texture_samplers(doc):
+    for texture in doc.get('textures',[]):
+        if 'sampler' not in texture:continue
+        index=texture['sampler'];samplers=doc.get('samplers',[])
+        if type(index) is not int or not 0<=index<len(samplers):raise ValueError('Invalid texture sampler index')
+        sampler=samplers[index]
+        if sampler.get('extensions'):raise ValueError('Texture sampler extensions require explicit conversion')
+        # NWN material exports use repeat wrapping, linear magnification and trilinear minification.
+        expected={'wrapS':10497,'wrapT':10497,'magFilter':9729,'minFilter':9987}
+        for key,value in expected.items():
+            if key in sampler and (type(sampler[key]) is not int or sampler[key]!=value):
+                raise ValueError('Unsupported texture sampler '+key+'; explicit conversion required')
+
+
 def validate_glb_geometry(doc, allow_double_sided=False):
+    validate_texture_samplers(doc)
     if doc.get('animations') or doc.get('skins') or doc.get('extensionsRequired'):
         raise ValueError('Animated/skinned/extended GLBs require a different importer')
     if not doc.get('meshes') or not doc.get('materials'):
@@ -196,6 +211,7 @@ def image_bytes(doc, binary, index, source):
 
 
 def read_image(doc, binary, texture_info, source, cache):
+    validate_texture_samplers(doc)
     if texture_info.get('texCoord',0) != 0 or texture_info.get('extensions'):
         raise ValueError('Nondefault texture UV sets/transforms need explicit support')
     texture = doc['textures'][texture_info['index']]

@@ -1,5 +1,7 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Threading.Tasks;
 using SWLOR.Game.Server.EngineTests.Framework;
 using SWLOR.Game.Server.Entity;
@@ -7,6 +9,7 @@ using SWLOR.Game.Server.Feature.MigrationDefinition;
 using SWLOR.Game.Server.Feature.MigrationDefinition.PlayerMigration;
 using SWLOR.Game.Server.Feature.MigrationDefinition.ServerMigration;
 using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.Service.MigrationService;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Item;
@@ -15,7 +18,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions;
 
 public static partial class MigrationEngineTests
 {
-    [EngineTest("Foundry legacy drops and salvage gear migrate together in the existing stored-item pass",
+    [EngineTest("Foundry checkpointed legacy drops and salvage gear migrate together in the existing stored-item pass",
         Category = LootCategory, TimeoutSeconds = 120f)]
     public static async Task FoundryLootStoredCorrection(EngineTestContext ctx)
     {
@@ -23,6 +26,8 @@ public static partial class MigrationEngineTests
         var records = new List<InventoryItem>();
         var identities = new Dictionary<string, string>();
         var enhancements = new Dictionary<(ItemPropertyType, int), int> { [(ItemPropertyType.HPBonus, 0)] = 40 };
+        var config = DB.Get<ServerConfiguration>("SWLOR_CONFIG");
+        var originalVersion = config.MigrationVersion;
         try
         {
             foreach (var resref in new[] { "grapple_bracer", "conveyor_treads", "line_visor", "riveted_mantle", "quality_signet",
@@ -43,7 +48,27 @@ public static partial class MigrationEngineTests
             for (var cycle = 1; cycle <= 2; cycle++)
                 await ctx.ExecuteInCreatureContextAsync(owner, () =>
                 {
-                    new _27_UpdateStoredItems().Migrate();
+                    if (cycle == 1)
+                    {
+                        config.MigrationVersion = 27;
+                        DB.Set(config);
+                        var originalPayloads = records.ToDictionary(record => record.Id, record => record.Data);
+                        new _29_CorrectStoredFoundryLoot().Migrate();
+                        foreach (var record in records)
+                            ctx.AssertEqual(originalPayloads[record.Id], DB.Get<InventoryItem>(record.Id).Data,
+                                "The new checkpoint does not add a pass when stored migration 28 is pending");
+                    }
+                    config.MigrationVersion = cycle == 1 ? 28 : 27;
+                    DB.Set(config);
+                    var pending = (IEnumerable<IServerMigration>)typeof(Migration)
+                        .GetMethod("GetMigrations", BindingFlags.NonPublic | BindingFlags.Static)
+                        .Invoke(null, new object[] { MigrationExecutionType.PostCacheLoad });
+                    ctx.Assert(pending.Select(migration => migration.Version)
+                        .SequenceEqual(cycle == 1 ? new[] { 29 } : new[] { 28, 29 }),
+                        "Production version gates schedule the required stored-item checkpoint");
+                    Migration.AfterCacheLoaded();
+                    ctx.AssertEqual(29, DB.Get<ServerConfiguration>("SWLOR_CONFIG").MigrationVersion,
+                        "The stored-item correction advances the server checkpoint");
                     foreach (var record in records)
                     {
                         var saved = DB.Get<InventoryItem>(record.Id);
@@ -66,6 +91,8 @@ public static partial class MigrationEngineTests
         {
             foreach (var record in records)
                 DB.Delete<InventoryItem>(record.Id);
+            config.MigrationVersion = originalVersion;
+            DB.Set(config);
         }
     }
 
@@ -95,6 +122,7 @@ public static partial class MigrationEngineTests
             var item = await CreateItemAsync(ctx, player, "grapple_bracer", player);
             await ctx.ExecuteInCreatureContextAsync(player, () =>
             {
+                DeleteLocalInt(player, FoundryLootStatRevisionCatalog.RevisionVariable);
                 StampLegacyLoot(item, enhancements);
                 if (revision >= 1)
                     RestoreRevision(LootStatRevisionCatalog.Changes["grapple_bracer"], LootStatRevisionMigration.RevisionVariable);
@@ -121,7 +149,33 @@ public static partial class MigrationEngineTests
             await EquipAsync(ctx, player, item, InventorySlot.Arms);
             await ctx.ExecuteInCreatureContextAsync(player, () =>
             {
-                new _22_ReviseLootStats().Migrate(player);
+                var record = DB.Get<Player>(GetObjectUUID(player));
+                record.Version = 24;
+                DB.Set(record);
+                SetLocalInt(player, "PLAYER_MIGRATION_VERSION", 24);
+                var fileVersion = 24;
+                var fileSaves = 0;
+                var pending = typeof(_25_CorrectFoundryLoot).Assembly.GetTypes()
+                    .Where(type => !type.IsAbstract && !type.IsInterface && typeof(IPlayerMigration).IsAssignableFrom(type))
+                    .Select(type => (IPlayerMigration)Activator.CreateInstance(type))
+                    .Where(migration => migration.Version > Math.Min(record.Version, fileVersion)).ToArray();
+                ctx.AssertEqual(25, pending.Single().Version, "Already-checkpointed characters still receive the Foundry correction");
+                var apply = typeof(Migration).GetMethod("ApplyPlayerMigration", BindingFlags.NonPublic | BindingFlags.Static);
+                bool ApplyMigration() => (bool)apply.Invoke(null, new object[] { pending.Single(), player,
+                    (Func<Player>)(() => DB.Get<Player>(GetObjectUUID(player))), (Action<Player>)(updated => DB.Set(updated)),
+                    (Func<int>)(() => fileVersion), (Action<int>)(version =>
+                    {
+                        SetLocalInt(player, "PLAYER_MIGRATION_VERSION", version);
+                        var saved = ObjectPlugin.Serialize(player);
+                        ctx.AssertEqual(version, (int)Invoke("StoredObjectData", "ReadRootInteger", saved, "PLAYER_MIGRATION_VERSION"),
+                            "The saved character contains the completed checkpoint");
+                        fileVersion = version;
+                        fileSaves++;
+                    }) });
+                ctx.Assert(ApplyMigration(), "The actual player checkpoint path converts the legacy equipment");
+                ctx.AssertEqual(25, DB.Get<Player>(GetObjectUUID(player)).Version, "The player database checkpoint advances");
+                ctx.Assert(ApplyMigration(), "Retrying the completed checkpoint succeeds");
+                ctx.AssertEqual(1, fileSaves, "A completed checkpoint does not revisit or save the items twice");
                 AssertRevisedLoot(ctx, item, enhancements);
                 ctx.AssertEqual(baselineHp + 100, GetMaxHitPoints(player), "Equipped HP includes the corrected base and enhancement once");
                 ctx.AssertEqual(baseline.MaxHP + 100, ReadEquipmentTotals(player).MaxHP, "The persisted HP budget matches the equipment change");
@@ -170,5 +224,20 @@ public static partial class MigrationEngineTests
             DestroyObject(item);
             await ctx.WaitFrameAsync();
         }
+
+        await ctx.ExecuteInCreatureContextAsync(player, () =>
+        {
+            DeleteLocalInt(player, FoundryLootStatRevisionCatalog.RevisionVariable);
+            new _22_ReviseLootStats().Migrate(player);
+        });
+        var canary = await CreateItemAsync(ctx, player, "grapple_bracer", player);
+        await ctx.ExecuteInCreatureContextAsync(player, () =>
+        {
+            // A deliberately unmarked carried item reveals an unnecessary second traversal.
+            StampLegacyLoot(canary, enhancements);
+            new _25_CorrectFoundryLoot().Migrate(player);
+            ctx.AssertEqual(58, SumProperty(canary, ItemPropertyType.HPBonus, 0),
+                "The Foundry checkpoint skips the item pass already completed by migration 22");
+        });
     }
 }

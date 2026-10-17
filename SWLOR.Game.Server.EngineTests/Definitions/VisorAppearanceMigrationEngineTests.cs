@@ -56,11 +56,11 @@ public static partial class MigrationEngineTests
             var pending = typeof(_24_UpdateItemAppearances).Assembly.GetTypes()
                 .Where(type => !type.IsAbstract && !type.IsInterface && typeof(IPlayerMigration).IsAssignableFrom(type))
                 .Select(type => (IPlayerMigration)Activator.CreateInstance(type))
-                .Where(migration => migration.Version > Math.Min(record.Version, fileVersion)).ToArray();
-            ctx.AssertEqual(1, pending.Length, "A released version 23 character has exactly one pending item migration");
-            ctx.AssertEqual(24, pending.Single().Version, "The reserved model repair has a checkpoint newer than the released version");
+                .Where(migration => migration.Version > Math.Min(record.Version, fileVersion)).OrderBy(migration => migration.Version).ToArray();
+            ctx.Assert(pending.Select(migration => migration.Version).SequenceEqual(new[] { 24, 25 }),
+                "A released version 23 character receives the appearance and Foundry checkpoints");
             var apply = typeof(Migration).GetMethod("ApplyPlayerMigration", BindingFlags.Static | BindingFlags.NonPublic);
-            bool ApplyMigration() => (bool)apply.Invoke(null, new object[] { pending.Single(), player,
+            bool ApplyMigration(IPlayerMigration migration) => (bool)apply.Invoke(null, new object[] { migration, player,
                 (Func<Player>)(() => DB.Get<Player>(fixture.Id)), (Action<Player>)(updated => DB.Set(updated)),
                 (Func<int>)(() => fileVersion), (Action<int>)(version =>
                 {
@@ -70,10 +70,11 @@ public static partial class MigrationEngineTests
                     fileSaves++;
                 }) });
             ctx.AssertEqual(223, GetItemAppearance(visor, ItemAppearanceType.SimpleModel, 0), "Fixture reproduces the shipped reserved helmet model");
-            ctx.Assert(ApplyMigration(), "The actual player migration checkpoint path repairs a version 23 character");
-            ctx.AssertEqual(24, DB.Get<Player>(fixture.Id).Version, "The database checkpoint advances after repair");
-            ctx.AssertEqual(24, fileVersion, "The character checkpoint advances after repair");
-            ctx.AssertEqual(24, (int)Invoke("StoredObjectData", "ReadRootInteger", savedCharacter, checkpointVariable), "The saved character contains the new checkpoint");
+            foreach (var migration in pending)
+                ctx.Assert(ApplyMigration(migration), "The actual player migration checkpoint path repairs a version 23 character");
+            ctx.AssertEqual(25, DB.Get<Player>(fixture.Id).Version, "The database checkpoint advances after repair");
+            ctx.AssertEqual(25, fileVersion, "The character checkpoint advances after repair");
+            ctx.AssertEqual(25, (int)Invoke("StoredObjectData", "ReadRootInteger", savedCharacter, checkpointVariable), "The saved character contains the new checkpoint");
             ctx.AssertEqual(110, GetItemAppearance(visor, ItemAppearanceType.SimpleModel, 0), "The combined player migration repairs the worn helmet");
             ctx.AssertEqual(110, GetItemAppearance(nested, ItemAppearanceType.SimpleModel, 0), "The same traversal repairs nested headgear");
             ctx.AssertEqual(33, GetItemAppearance(custom, ItemAppearanceType.SimpleModel, 0), "Valid customized visor models survive");
@@ -81,8 +82,9 @@ public static partial class MigrationEngineTests
                 GetItemAppearance(material, ItemAppearanceType.SimpleModel, 0), "The same traversal updates other item artwork");
             ctx.AssertEqual(visor, GetItemInSlot(InventorySlot.Head, player), "Appearance repair keeps the same item equipped");
             ctx.AssertEqual(totals, ReadEquipmentTotals(player), "Appearance-only repair leaves equipment totals unchanged");
-            ctx.Assert(ApplyMigration(), "A completed migration retry succeeds without walking items again");
-            ctx.AssertEqual(1, fileSaves, "The completed item migration is not repeated or saved twice");
+            foreach (var migration in pending)
+                ctx.Assert(ApplyMigration(migration), "A completed migration retry succeeds without walking items again");
+            ctx.AssertEqual(2, fileSaves, "Each completed checkpoint is saved once");
             ctx.Assert(!LootStatRevisionMigration.MigratePlayerItems(player), "A combined migration retry is stable");
         });
         for (var cycle = 1; cycle <= 2; cycle++)

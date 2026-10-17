@@ -33,12 +33,14 @@ public class MigrationDataTests
         new _24_RemoveWeaponStatOverrides().Version.Should().BeGreaterThan(new _23_RetireForceWeaponEnhancements().Version);
         new _24_RemoveWeaponStatOverrides().ExecutionType.Should().Be(MigrationExecutionType.PostCacheLoad);
         migrations.Where(migration => migration.Version >= 27).Select(migration => migration.GetType())
-            .Should().BeEquivalentTo(new[] { typeof(_27_UpdatePlayerRecords), typeof(_27_UpdateStoredItems), typeof(_28_CorrectStoredEquipmentTypes) });
+            .Should().BeEquivalentTo(new[] { typeof(_27_UpdatePlayerRecords), typeof(_27_UpdateStoredItems), typeof(_28_CorrectStoredEquipmentTypes), typeof(_29_CorrectStoredFoundryLoot) });
         new _27_UpdatePlayerRecords().ExecutionType.Should().Be(MigrationExecutionType.PostDatabaseLoad);
         new _27_UpdateStoredItems().ExecutionType.Should().Be(MigrationExecutionType.PostCacheLoad);
         migrations.Where(migration => migration.Version > 27).Select(migration => migration.GetType())
-            .Should().BeEquivalentTo(new[] { typeof(_28_CorrectStoredEquipmentTypes) }, "stored items checkpointed at 27 still need the pending combined item pass");
+            .Should().BeEquivalentTo(new[] { typeof(_28_CorrectStoredEquipmentTypes), typeof(_29_CorrectStoredFoundryLoot) });
         new _28_CorrectStoredEquipmentTypes().ExecutionType.Should().Be(MigrationExecutionType.PostCacheLoad);
+        new _29_CorrectStoredFoundryLoot().ExecutionType.Should().Be(MigrationExecutionType.PostCacheLoad);
+        new _29_CorrectStoredFoundryLoot().Version.Should().BeGreaterThan(new _28_CorrectStoredEquipmentTypes().Version);
     }
 
     [Test]
@@ -50,9 +52,9 @@ public class MigrationDataTests
         migrations.Select(migration => migration.Version).Should().OnlyHaveUniqueItems();
         new _17_RemoveWeaponStatOverrides().Version.Should().BeGreaterThan(new _16_RetireForceWeaponEnhancements().Version);
         migrations.Where(migration => migration.Version >= 22).Select(migration => migration.GetType())
-            .Should().BeEquivalentTo(new[] { typeof(_22_ReviseLootStats), typeof(_23_CorrectEquipmentTypes), typeof(_24_UpdateItemAppearances) });
-        migrations.Where(migration => migration.Version > 23).Select(migration => migration.GetType())
-            .Should().BeEquivalentTo(new[] { typeof(_24_UpdateItemAppearances) }, "characters checkpointed at 23 need exactly one pending item migration");
+            .Should().BeEquivalentTo(new[] { typeof(_22_ReviseLootStats), typeof(_23_CorrectEquipmentTypes), typeof(_24_UpdateItemAppearances), typeof(_25_CorrectFoundryLoot) });
+        migrations.Where(migration => migration.Version > 24).Select(migration => migration.GetType())
+            .Should().BeEquivalentTo(new[] { typeof(_25_CorrectFoundryLoot) }, "already-checkpointed characters still need the Foundry correction");
     }
 
     [Test]

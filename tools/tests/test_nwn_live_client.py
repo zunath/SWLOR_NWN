@@ -81,6 +81,11 @@ class LiveClientHelperTests(unittest.TestCase):
         struct.pack_into('<I', stray, 8 + 4 * 4, len(good) + 100)
         with self.assertRaisesRegex(LiveStackError, 'label table'):
             stack.validate_bic(self.write('stray.bic', bytes(stray)))
+        # The Tag field (first field entry, at offset 68) pointing outside the field data.
+        bad_tag = bytearray(good)
+        struct.pack_into('<I', bad_tag, 68 + 8, 100000)
+        with self.assertRaisesRegex(LiveStackError, 'field value'):
+            stack.validate_bic(self.write('badtag.bic', bytes(bad_tag)))
 
     def test_rejects_non_gff(self):
         with self.assertRaises(LiveStackError):
@@ -156,11 +161,13 @@ class LiveClientHelperTests(unittest.TestCase):
             return subprocess.CompletedProcess([], code, out, b'Conflict. The container name is already in use')
 
         with patch.object(stack, 'run', side_effect=[completed(0)]) as docker:
-            stack.reserve_project('swlor-live-lock', self.root / 'first', 'image:tag')
-        self.assertEqual(docker.call_args.args[0][:4], ['docker', 'create', '--name', 'swlor-live-lock-reservation'])
+            stack.reserve_project('swlor-live-lock', self.root / 'first', 'image:tag', 7200)
+        command = docker.call_args.args[0]
+        self.assertEqual(command[:5], ['docker', 'run', '-d', '--name', 'swlor-live-lock-reservation'])
+        self.assertEqual(command[-2:], ['image:tag', '10800'])
         with patch.object(stack, 'run', side_effect=[completed(1), completed(0, b'0123abcd C:\\runs\\first\n')]):
             with self.assertRaisesRegex(LiveStackError, r'reserved by run C:\\runs\\first'):
-                stack.reserve_project('swlor-live-lock', self.root / 'second', 'image:tag')
+                stack.reserve_project('swlor-live-lock', self.root / 'second', 'image:tag', 7200)
 
     def test_down_refuses_a_project_reserved_by_another_run(self):
         run_dir = self.root / 'stale-run'
@@ -184,7 +191,7 @@ class LiveClientHelperTests(unittest.TestCase):
         mine = completed(0, b'0123abcd ' + str(self.root).encode() + b'\n')
         with patch.object(stack, 'run', side_effect=[mine, completed(0), completed(1)]) as docker:
             self.assertTrue(stack.release_project('swlor-live-lock', self.root))
-        self.assertEqual(docker.call_args_list[1].args[0], ['docker', 'rm', '0123abcd'])
+        self.assertEqual(docker.call_args_list[1].args[0], ['docker', 'rm', '--force', '0123abcd'])
 
     def test_release_failure_is_not_read_as_removal(self):
         mine = subprocess.CompletedProcess([], 0, b'0123abcd ' + str(self.root).encode() + b'\n', b'')

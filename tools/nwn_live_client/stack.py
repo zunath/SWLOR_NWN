@@ -94,17 +94,39 @@ def _read_gff_string(path: Path, data: bytes, label: str) -> str | None:
         return 0 <= offset and 0 <= length and offset + length <= limit
 
     (struct_offset, struct_count, field_offset, field_total, label_offset, label_count, field_data_offset,
-     field_data_size, field_indices_offset, field_indices_size, _, _) = struct.unpack_from('<12I', data, 8)
+     field_data_size, field_indices_offset, field_indices_size, list_indices_offset,
+     list_indices_size) = struct.unpack_from('<12I', data, 8)
     # Every table the top-level struct can reach must lie inside the file.
     for name, offset, length in (('the struct table', struct_offset, struct_count * 12),
                                  ('the field table', field_offset, field_total * 12),
                                  ('the label table', label_offset, label_count * 16),
                                  ('the field data', field_data_offset, field_data_size),
-                                 ('the field indices', field_indices_offset, field_indices_size)):
+                                 ('the field indices', field_indices_offset, field_indices_size),
+                                 ('the list indices', list_indices_offset, list_indices_size)):
         if not within(offset, length, len(data)):
             raise damaged(name)
     if struct_count < 1:
         raise damaged('the top-level struct')
+
+    def check_field_payload(field_type: int, field_data: int) -> None:
+        # 64-bit values and doubles live in the field data; strings, resrefs, localized
+        # strings and void data carry a length prefix; structs and lists index other tables.
+        if field_type in (6, 7, 9) and not within(field_data, 8, field_data_size):
+            raise damaged('a 64-bit field value')
+        if field_type in (10, 12, 13):
+            if not within(field_data, 4, field_data_size):
+                raise damaged('a field value')
+            size = struct.unpack_from('<I', data, field_data_offset + field_data)[0]
+            if not within(field_data + 4, size, field_data_size):
+                raise damaged('a field value')
+        if field_type == 11:
+            if not within(field_data, 1, field_data_size) or not within(
+                    field_data + 1, data[field_data_offset + field_data], field_data_size):
+                raise damaged('a resref value')
+        if field_type == 14 and field_data >= struct_count:
+            raise damaged('a struct reference')
+        if field_type == 15 and not within(field_data, 4, list_indices_size):
+            raise damaged('a list reference')
     _, struct_data, field_count = struct.unpack_from('<3I', data, struct_offset)
     if field_count == 1:
         indices = [struct_data]
@@ -118,6 +140,7 @@ def _read_gff_string(path: Path, data: bytes, label: str) -> str | None:
         field_type, label_index, field_data = struct.unpack_from('<3I', data, field_offset + index * 12)
         if label_index >= label_count:
             raise damaged('a field label')
+        check_field_payload(field_type, field_data)
         start = label_offset + label_index * 16
         if data[start:start + 16].rstrip(b'\0').decode('ascii', 'replace') != label:
             continue
@@ -529,7 +552,7 @@ def create(options) -> Stack:
     else:
         state['dm_avatar'] = {'source': str(dm_avatar), 'file': dm_avatar.name.lower()}
 
-    reserve_project(project, run_dir, state['server_image'])
+    reserve_project(project, run_dir, state['server_image'], max_seconds)
     try:
         # Exclusive creation claims the directory: a concurrent run choosing it fails here.
         run_dir.parent.mkdir(parents=True, exist_ok=True)
@@ -606,6 +629,8 @@ def create(options) -> Stack:
         (stack.profile / 'nwn.ini').write_text(CLIENT_ALIASES, 'utf-8')
         (stack.profile / 'nwnplayer.ini').write_text(CLIENT_PLAYER_INI, 'utf-8')
         (stack.profile / 'settings.tml').write_text(client_settings_text, 'utf-8')
+        stack.state['inputs']['client_profile_sha256'] = {
+            name: sha256(stack.profile / name) for name in ('nwn.ini', 'nwnplayer.ini', 'settings.tml')}
         (run_dir / 'server-extra.env').write_text(render_env_file(extra_env), 'utf-8')
         (run_dir / 'compose.env').write_text(render_env_file({
             'SWLOR_LIVE_RUN_DIR': run_dir.as_posix(),
@@ -662,15 +687,16 @@ def reservation_name(project: str) -> str:
     return project + '-reservation'
 
 
-def reserve_project(project: str, run_dir: Path, image: str) -> None:
+def reserve_project(project: str, run_dir: Path, image: str, lifetime_seconds: int) -> None:
     """Claim the project name daemon-wide, for every user and temp folder sharing this Docker.
 
-    The claim is a created, never-started container: the daemon reserves container names
-    atomically, so a second run asking for the same name is refused. It uses no CPU or memory.
+    The claim is a container that only sleeps: the daemon reserves container names
+    atomically, so a second run asking for the same name is refused, and a running container
+    is not removed by docker container prune. It sleeps for the run's lifetime plus an hour.
     """
-    result = run(['docker', 'create', '--name', reservation_name(project), '--network', 'none',
-                  '--label', f'swlor.live.run_dir={run_dir}', '--entrypoint', 'true', image],
-                 check=False, capture=True, timeout=120)
+    result = run(['docker', 'run', '-d', '--name', reservation_name(project), '--network', 'none',
+                  '--label', f'swlor.live.run_dir={run_dir}', '--entrypoint', 'sleep', image,
+                  str(lifetime_seconds + 3600)], check=False, capture=True, timeout=120)
     if result.returncode != 0:
         holder = reservation_holder(project)
         if not holder:
@@ -717,7 +743,7 @@ def release_project(project: str, run_dir: Path) -> bool:
     container_id, holder = found
     if not same_path(holder, str(run_dir)):
         return True
-    removal = run(['docker', 'rm', container_id], check=False, capture=True, timeout=60)
+    removal = run(['docker', 'rm', '--force', container_id], check=False, capture=True, timeout=60)
     # Only a completed removal or Docker's own "no such container" proves it is gone; an
     # unreachable daemon also fails, and must not be read as success.
     return removal.returncode == 0 or b'No such container' in removal.stderr
@@ -836,6 +862,7 @@ def start_client(stack: Stack, cdkey: Path) -> None:
         copy.write(cdkey.read_bytes())
     log('Starting the client')
     stack.compose('up', '-d', '--no-deps', '--no-build', 'client', client=True, timeout=300)
+    record_image_ids(stack, ('client',))
     stack.state['client_started_utc'] = utc_now()
     stack.save()
     stack.ui('wait-window', '180', timeout=240)
@@ -1030,6 +1057,24 @@ def unchanged(current, recorded) -> bool:
         return False
 
 
+def shared_input_checks(stack: Stack) -> dict[str, bool]:
+    """Whether the shared hak folder and client install still match what the run started with."""
+    return {
+        'hak_folder_unchanged': unchanged(lambda: hak_manifest(Path(stack.state['inputs']['hak_dir'])),
+                                          stack.state['inputs'].get('hak_manifest')),
+        'client_build_unchanged': unchanged(lambda: client_build(Path(stack.state['inputs']['client_install'])),
+                                            stack.state['inputs'].get('client_build')),
+    }
+
+
+def record_end_of_run_checks(stack: Stack) -> dict[str, bool]:
+    """Judge the shared inputs once, at the run boundary, and save the verdict for every rerun."""
+    if stack.state.get('end_of_run_checks') is None:
+        stack.state['end_of_run_checks'] = shared_input_checks(stack)
+        stack.save()
+    return stack.state['end_of_run_checks']
+
+
 def destroy(stack: Stack) -> dict:
     """Boot the player, remove the project's Docker resources, then the key, profile and home."""
     # The reservation is released only once this run's Docker resources are gone, so a rerun
@@ -1039,7 +1084,8 @@ def destroy(stack: Stack) -> dict:
     # Evidence lost by an earlier teardown cannot be recovered; keep reporting it.
     lost_evidence = stack.state.setdefault('lost_evidence', [])
     errors = list(lost_evidence)
-    unconfirmed_boot_message = 'The player was not confirmed booted; the CD key may stay held for 60 seconds.'
+    unconfirmed_boot_message = ('The player was not confirmed booted; the CD key may stay held for up to '
+                                '5 minutes (this stack\'s net.udp.window.timeout).')
     if owns_project:
         try:
             report['player_booted'] = boot_players(stack)
@@ -1054,15 +1100,27 @@ def destroy(stack: Stack) -> dict:
             for service in ('swlor-server', 'client'):
                 logs = stack.compose('logs', '--no-color', '--no-log-prefix', service, client=service == 'client',
                                      check=False, capture=True, timeout=120)
-                try:
-                    (stack.evidence / f'{service}-container.log').write_bytes(logs.stdout + logs.stderr)
-                except OSError as error:
-                    errors.append(f'Could not keep the {service} output in the evidence: {error}')
+                problem = None
+                if logs.returncode != 0:
+                    problem = logs.stderr.decode('utf-8', 'replace').strip() or f'exit {logs.returncode}'
+                else:
+                    try:
+                        (stack.evidence / f'{service}-container.log').write_bytes(logs.stdout)
+                    except OSError as error:
+                        problem = str(error)
+                if problem:
+                    # compose down removes the only copy, so this loss is permanent.
+                    lost_evidence.append(f'Could not keep the {service} container output: {problem}')
+                    errors.append(lost_evidence[-1])
+            stack.save()
             stack.compose('stop', '-t', '30', 'client', client=True, check=False, capture=True, timeout=120)
             result = stack.compose('down', '--volumes', '--remove-orphans', '--timeout', '60', client=True,
                                    check=False, capture=True, timeout=600)
             if result.returncode != 0:
                 errors.append('compose down failed: ' + result.stderr.decode('utf-8', 'replace').strip())
+            else:
+                # The containers are gone: judge the shared inputs now, before another Docker call can fail.
+                record_end_of_run_checks(stack)
     elif stack.joined_players() > 0:
         # Without ownership the player cannot be kicked, so the boot stays unconfirmed for good.
         stack.state['unconfirmed_boot'] = True
@@ -1074,21 +1132,10 @@ def destroy(stack: Stack) -> dict:
 
     (stack.profile / 'cdkey.ini').unlink(missing_ok=True)
     containers_remain = bool(project_resources(stack.project)['containers'])
-    # The shared inputs are judged at the run boundary: the moment no project container remains.
-    # That verdict is saved before any cleanup and reused by reruns, so a deployment after the
-    # run ended is never held against it.
-    checks = stack.state.get('end_of_run_checks')
-    if checks is None:
-        checks = {
-            'hak_folder_unchanged': unchanged(lambda: hak_manifest(Path(stack.state['inputs']['hak_dir'])),
-                                              stack.state['inputs'].get('hak_manifest')),
-            'client_build_unchanged': unchanged(
-                lambda: client_build(Path(stack.state['inputs']['client_install'])),
-                stack.state['inputs'].get('client_build')),
-        }
-        if not containers_remain:
-            stack.state['end_of_run_checks'] = checks
-            stack.save()
+    # Saved verdicts come from the run boundary; while containers remain the run has not ended,
+    # so judge again without saving.
+    checks = stack.state.get('end_of_run_checks') or (
+        shared_input_checks(stack) if containers_remain else record_end_of_run_checks(stack))
     report.update(checks)
     if not checks['hak_folder_unchanged']:
         errors.append('The shared hak folder changed during the run; captures may mix asset versions. Recapture.')

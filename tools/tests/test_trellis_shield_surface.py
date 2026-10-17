@@ -187,6 +187,104 @@ class ShieldSurfaceTests(unittest.TestCase):
             self.assertEqual(source.read_bytes(),original)
             with np.load(source,allow_pickle=False) as data:np.testing.assert_array_equal(data['vertices'],vertices)
 
+    def test_probe_cleanup_attempts_every_path_retries_and_preserves_first_error(self):
+        spec=importlib.util.spec_from_file_location('shield_probe_cleanup',TOOLS/'trellis2_shield_nodes/__init__.py')
+        bridge=importlib.util.module_from_spec(spec);spec.loader.exec_module(bridge)
+        real_unlink=Path.unlink;real_rmdir=Path.rmdir
+        for failure in ('file','directory'):
+            for persistent in (False,True):
+                with self.subTest(failure=failure,persistent=persistent),tempfile.TemporaryDirectory() as temporary:
+                    parent=Path(temporary)/'created-parent';cache=parent/'cache';probe=cache/'.swlor-preflight-known'
+                    probe_file=probe/'write-test';calls=[];first=PermissionError('first cleanup failure');counts={'file':0,'directory':0}
+                    def unlink(path,*args,**kwargs):
+                        calls.append(('unlink',path));counts['file']+=1
+                        if failure=='file' and (persistent or counts['file']==1):raise first
+                        return real_unlink(path,*args,**kwargs)
+                    def rmdir(path,*args,**kwargs):
+                        calls.append(('rmdir',path))
+                        if path==probe:
+                            counts['directory']+=1
+                            if failure=='directory' and (persistent or counts['directory']==1):raise first
+                        return real_rmdir(path,*args,**kwargs)
+                    with patch.object(bridge.uuid,'uuid4',return_value=SimpleNamespace(hex='known')),patch.object(Path,'unlink',new=unlink),patch.object(Path,'rmdir',new=rmdir):
+                        with self.assertRaises(PermissionError) as raised:bridge.probe_cache_access(cache,[cache,parent])
+                    self.assertIs(raised.exception,first)
+                    first_pass=[('unlink',probe_file),('rmdir',probe),('rmdir',cache),('rmdir',parent)]
+                    self.assertEqual(calls,first_pass+(first_pass if failure=='file' else first_pass[1:]))
+                    self.assertEqual(parent.exists(),persistent)
+
+    def test_cache_key_frames_array_boundaries_dtype_shape_and_payload(self):
+        spec=importlib.util.spec_from_file_location('shield_framed_cache',TOOLS/'trellis2_shield_nodes/__init__.py')
+        bridge=importlib.util.module_from_spec(spec);spec.loader.exec_module(bridge)
+        vertices,faces=box()
+        moved_vertices=np.concatenate((vertices,faces[:1].view(np.float32)),axis=0)
+        moved_faces=faces[1:].copy()
+        self.assertTrue(np.isfinite(moved_vertices).all())
+        self.assertEqual(vertices.tobytes()+faces.tobytes(),moved_vertices.tobytes()+moved_faces.tobytes())
+        key=bridge.surface_cache_key(vertices,faces,.003,{'build':'same'})
+        variants=[(moved_vertices,moved_faces),(vertices.reshape(-1),faces),(vertices.view(np.int32),faces)]
+        for v,f in variants:
+            self.assertNotEqual(key,bridge.surface_cache_key(v,f,.003,{'build':'same'}))
+        self.assertEqual(key,bridge.surface_cache_key(np.asfortranarray(vertices),faces.copy(),.003,{'build':'same'}))
+
+    def test_output_report_and_temporary_paths_must_all_be_fresh_before_loading(self):
+        vertices,faces=box()
+        for suffix,directory in (('.npz',False),('.json',False),('.npz.part',False),('.json.part',False),('.npz',True),('.json',True)):
+            with self.subTest(suffix=suffix,directory=directory),tempfile.TemporaryDirectory() as temporary:
+                root=Path(temporary);source=root/'input.npz';np.savez(source,vertices=vertices,faces=faces)
+                output=root/'surface.npz';occupied=root/('surface'+suffix)
+                if directory:occupied.mkdir();(occupied/'sentinel').write_bytes(b'caller-owned')
+                else:occupied.write_bytes(b'caller-owned')
+                before={p.relative_to(root):p.read_bytes() for p in root.rglob('*') if p.is_file()}
+                with patch.object(surface.np,'savez') as write:
+                    with self.assertRaisesRegex(FileExistsError,'fresh surface'):surface.publish_surface(output,vertices,faces,{})
+                    write.assert_not_called()
+                argv=['blender','--','voxel',str(source),str(output)]
+                with patch.object(surface.sys,'argv',argv),patch.object(surface.np,'load') as load,patch.object(surface,'voxel_surface') as voxel:
+                    with self.assertRaisesRegex(FileExistsError,'fresh surface'):surface.main()
+                    load.assert_not_called();voxel.assert_not_called()
+                self.assertEqual({p.relative_to(root):p.read_bytes() for p in root.rglob('*') if p.is_file()},before)
+                self.assertEqual(occupied.is_dir(),directory)
+
+    def test_dangling_sidecar_entry_is_occupied_even_when_exists_is_false(self):
+        vertices,faces=box()
+        with tempfile.TemporaryDirectory() as temporary:
+            output=Path(temporary)/'surface.npz';sidecar=output.with_suffix('.json')
+            self.assertFalse(sidecar.exists())
+            real_lexists=surface.os.path.lexists
+            with patch.object(surface.os.path,'lexists',side_effect=lambda path:Path(path)==sidecar or real_lexists(path)),patch.object(surface.np,'savez') as write:
+                with self.assertRaises(FileExistsError):surface.publish_surface(output,vertices,faces,{})
+                write.assert_not_called()
+            self.assertFalse(any(Path(temporary).iterdir()))
+
+    def test_temporary_file_races_do_not_truncate_caller_files(self):
+        vertices,faces=box();real_open=Path.open
+        for suffix in ('.npz.part','.json.part'):
+            with self.subTest(suffix=suffix),tempfile.TemporaryDirectory() as temporary:
+                output=Path(temporary)/'surface.npz';occupied=Path(temporary)/('surface'+suffix)
+                def collide(path,mode='r',*args,**kwargs):
+                    if path==occupied:
+                        with real_open(path,'wb') as stream:stream.write(b'late caller-owned temp')
+                    return real_open(path,mode,*args,**kwargs)
+                with patch.object(Path,'open',new=collide):
+                    with self.assertRaises(FileExistsError):surface.publish_surface(output,vertices,faces,{})
+                self.assertEqual(occupied.read_bytes(),b'late caller-owned temp')
+                self.assertFalse(output.with_suffix('.json').exists())
+
+    def test_final_publication_races_do_not_replace_caller_outputs_or_reports(self):
+        vertices,faces=box();real_publish=surface.durable_publish
+        for suffix in ('.npz','.json'):
+            with self.subTest(suffix=suffix),tempfile.TemporaryDirectory() as temporary:
+                output=Path(temporary)/'surface.npz';occupied=output.with_suffix(suffix)
+                def collide(source,target):
+                    if target==occupied:target.write_bytes(b'late caller-owned destination')
+                    return real_publish(source,target)
+                with patch.object(surface,'durable_publish',side_effect=collide):
+                    with self.assertRaises(FileExistsError):surface.publish_surface(output,vertices,faces,{})
+                self.assertEqual(occupied.read_bytes(),b'late caller-owned destination')
+                if suffix=='.json':
+                    with np.load(output,allow_pickle=False) as data:np.testing.assert_array_equal(data['vertices'],vertices)
+
     def test_blender_replacement_changes_surface_and_comfy_cache_identities(self):
         spec=importlib.util.spec_from_file_location('shield_build_bridge',TOOLS/'trellis2_shield_nodes/__init__.py')
         bridge=importlib.util.module_from_spec(spec);spec.loader.exec_module(bridge)
@@ -213,7 +311,7 @@ class ShieldSurfaceTests(unittest.TestCase):
 
     def test_surface_publication_flushes_payloads_before_durable_renames(self):
         vertices,faces=box();events=[]
-        real_fsync=surface.os.fsync;real_replace=surface.durable_replace
+        real_fsync=surface.os.fsync;real_replace=surface.durable_publish
         def sync(descriptor):
             events.append('fsync');return real_fsync(descriptor)
         def replace(source,target):
@@ -226,7 +324,7 @@ class ShieldSurfaceTests(unittest.TestCase):
                 report=json.loads(source.read_text())
                 self.assertEqual(report['output_sha256'],hashlib.sha256(target.with_suffix('.npz').read_bytes()).hexdigest())
             return real_replace(source,target)
-        with tempfile.TemporaryDirectory() as temporary,patch.object(surface.os,'fsync',side_effect=sync),patch.object(surface,'durable_replace',side_effect=replace):
+        with tempfile.TemporaryDirectory() as temporary,patch.object(surface.os,'fsync',side_effect=sync),patch.object(surface,'durable_publish',side_effect=replace):
             output=Path(temporary)/'published.npz'
             report=surface.publish_surface(output,vertices,faces,{'input_sha256':'source'})
             self.assertEqual([event for event in events if event!='fsync'],['.npz','.json'])

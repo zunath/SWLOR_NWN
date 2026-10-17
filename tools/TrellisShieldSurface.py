@@ -160,18 +160,19 @@ def decimate_surface(vertices, faces, target_faces=3500):
     return output_vertices,output_faces,report
 
 
-def durable_replace(source,target):
-    """Use the generation runner's established durable publication algorithm."""
+def durable_publish(source,target):
+    """Durably publish a fresh destination without replacing an occupied path."""
     if os.name=='nt':
         import ctypes
         from ctypes import wintypes
         move=ctypes.WinDLL('kernel32',use_last_error=True).MoveFileExW
         move.argtypes=[wintypes.LPCWSTR,wintypes.LPCWSTR,wintypes.DWORD]
         move.restype=wintypes.BOOL
-        if not move(str(source.absolute()),str(target.absolute()),0x1|0x8):
+        if not move(str(source.absolute()),str(target.absolute()),0x8):
             raise ctypes.WinError(ctypes.get_last_error())
     else:
-        os.replace(source,target)
+        os.link(source,target)
+        source.unlink()
         descriptor=os.open(target.parent,os.O_RDONLY|getattr(os,'O_DIRECTORY',0))
         try:os.fsync(descriptor)
         finally:os.close(descriptor)
@@ -181,20 +182,27 @@ def require_npz_output(output):
     if output.suffix.lower()!='.npz':raise ValueError('Shield surface output must use the .npz suffix')
 
 
-def publish_surface(output,vertices,faces,report):
+def require_fresh_output(output):
     require_npz_output(output)
+    report=output.with_suffix('.json')
+    for path in (output,report,output.with_suffix(output.suffix+'.part'),report.with_suffix('.json.part')):
+        if os.path.lexists(path):raise FileExistsError('Use fresh surface output/report paths: '+str(path))
+
+
+def publish_surface(output,vertices,faces,report):
+    require_fresh_output(output)
     output.parent.mkdir(parents=True,exist_ok=True)
     temporary=output.with_suffix(output.suffix+'.part')
-    with temporary.open('wb') as stream:
+    with temporary.open('xb') as stream:
         np.savez(stream,vertices=vertices,faces=faces)
         stream.flush();os.fsync(stream.fileno())
-    durable_replace(temporary,output)
+    durable_publish(temporary,output)
     report=dict(report,output_sha256=hashlib.sha256(output.read_bytes()).hexdigest())
     report_path=output.with_suffix('.json');temporary_report=report_path.with_suffix('.json.part')
-    with temporary_report.open('w',encoding='utf-8') as stream:
+    with temporary_report.open('x',encoding='utf-8') as stream:
         json.dump(report,stream,indent=2);stream.write('\n')
         stream.flush();os.fsync(stream.fileno())
-    durable_replace(temporary_report,report_path)
+    durable_publish(temporary_report,report_path)
     return report
 
 
@@ -205,8 +213,7 @@ def main():
     parser.add_argument('--voxel-size',type=float,default=.003)
     parser.add_argument('--target-faces',type=int,default=3500)
     args=parser.parse_args(sys.argv[sys.argv.index('--')+1:])
-    require_npz_output(args.output)
-    if args.output.exists():raise FileExistsError('Use a fresh output: '+str(args.output))
+    require_fresh_output(args.output)
     with np.load(args.input,allow_pickle=False) as source:
         if set(source.files)!={'vertices','faces'}:raise ValueError('Expected geometry-only NPZ; do not discard authored attributes')
         vertices,faces=arrays(source['vertices'],source['faces'])

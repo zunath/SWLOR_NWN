@@ -38,7 +38,7 @@ def blender_identity(executable):
 
 
 def probe_cache_access(cache,missing):
-    """Exercise directory/file creation and removal, retaining no probe paths."""
+    """Exercise cache access and best-effort cleanup, reporting removal failures."""
     created=[];probe_file=None
     try:
         for directory in reversed(missing):
@@ -52,8 +52,21 @@ def probe_cache_access(cache,missing):
         with candidate.open('xb') as stream:
             probe_file=candidate;stream.write(b'SWLOR shield cache preflight\n')
     finally:
-        if probe_file is not None:probe_file.unlink()
-        for directory in reversed(created):directory.rmdir()
+        pending=([(probe_file,False)] if probe_file is not None else [])+[(path,True) for path in reversed(created)]
+        first_error=None
+        for attempt in range(2):
+            failed=[]
+            for path,is_directory in pending:
+                try:
+                    if is_directory:path.rmdir()
+                    else:path.unlink()
+                except FileNotFoundError:pass
+                except OSError as error:
+                    if first_error is None:first_error=error
+                    failed.append((path,is_directory))
+            pending=failed
+            if not pending:break
+        if first_error is not None:raise first_error
 
 
 def settings():
@@ -101,8 +114,16 @@ def cached_entry(path):
 
 def surface_cache_key(vertices,faces,voxel_size,runtime):
     digest=hashlib.sha256()
-    for part in (vertices.tobytes(),faces.tobytes(),str(voxel_size).encode(),SURFACE_SCRIPT.read_bytes(),json.dumps(runtime,sort_keys=True).encode()):
-        digest.update(part)
+    def field(name,payload):
+        for part in (name.encode(),payload):
+            digest.update(len(part).to_bytes(8,'big'));digest.update(part)
+    for name,array in (('vertices',vertices),('faces',faces)):
+        field(name+'.dtype',array.dtype.str.encode())
+        field(name+'.shape',json.dumps(array.shape).encode())
+        field(name+'.data',array.tobytes(order='C'))
+    field('voxel_size',str(voxel_size).encode())
+    field('surface_script',SURFACE_SCRIPT.read_bytes())
+    field('runtime',json.dumps(runtime,sort_keys=True).encode())
     return digest.hexdigest()
 
 

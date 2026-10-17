@@ -3,6 +3,7 @@ using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
+using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.EngineTests.Framework;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Feature.StatusEffectDefinition;
@@ -15,6 +16,7 @@ using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.Game.Server.Service.StatService;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.NWN.API.NWScript.Enum.Creature;
 using SWLOR.NWN.API.NWScript.Enum.Item;
 
 namespace SWLOR.Game.Server.EngineTests.Definitions;
@@ -50,6 +52,7 @@ public static class UnarmedMasteryEngineTests
         {
             record.Skills[SkillType.Unarmed].Rank = 50;
             record.Skills[SkillType.Spear].Rank = 35;
+            record.Skills[SkillType.Pistol].Rank = 50;
             record.Perks[PerkType.DirtyJab] = 1;
             record.Perks[PerkType.Uppercut] = 1;
             record.Perks[PerkType.LowKick] = 1;
@@ -79,6 +82,9 @@ public static class UnarmedMasteryEngineTests
             context.AssertEqual(MeleeTechniqueStage.None, MeleeTechnique.GetSetupStage(owner.Creature, target), "The independent heavy trial begins without Rattled.");
             // The civilian-derived player fixture is plot-protected until a damage-taking test opts in.
             SetPlotFlag(owner.Creature, false);
+            SetEventScript(owner.Creature, EventScript.Creature_OnDamaged, ScriptName.OnPlayerDamaged);
+            context.AssertEqual(ScriptName.OnPlayerDamaged, GetEventScript(owner.Creature, EventScript.Creature_OnDamaged),
+                "The fixture uses the connected player damage event rather than its cloned NPC event.");
             // Match the normal native player levels used by damage-taking PvP fixtures.
             CreaturePlugin.SetClassByPosition(owner.Creature, 0, ClassType.Standard);
             await context.ExecuteInCreatureContextAsync(owner.Creature, () =>
@@ -90,6 +96,9 @@ public static class UnarmedMasteryEngineTests
             var counterHitPoints = GetCurrentHitPoints(owner.Creature);
             context.Assert(counterHitPoints > 5, "The player has enough real HP to survive the counter setup hit.");
             StatusEffect.ApplyStatusEffect(owner.Creature, owner.Creature, new BruiserStanceStatusEffect(), -1);
+            await context.EquipItemAsync(owner.Creature, "b_pistol", InventorySlot.RightHand);
+            context.AssertEqual(SkillType.Pistol, Skill.GetSkillTypeByBaseItem(GetBaseItemType(GetItemInSlot(InventorySlot.RightHand, owner.Creature))),
+                "A different weapon skill is equipped when the player earns the counter.");
             await context.ExecuteInCreatureContextAsync(target, () =>
             {
                 StatusEffect.NotifyPreDamageStatusEffects(target, owner.Creature, 5, CombatDamageType.Physical);
@@ -98,7 +107,10 @@ public static class UnarmedMasteryEngineTests
             context.Assert(GetCurrentHitPoints(owner.Creature) < counterHitPoints && !GetIsDead(owner.Creature),
                 "The counter setup hit removes real player HP without killing the fixture.");
             await context.WaitUntilAsync(() => MeleeTechnique.GetPendingRetaliationPower(owner.Creature, target) == 24,
-                2f, "direct hostile HP loss arms the optional counter before a free heavy strike");
+                2f, "the real player damage event arms the optional counter while a pistol is equipped");
+            await context.EquipItemAsync(owner.Creature, "t_pglove", InventorySlot.RightHand);
+            context.AssertEqual(24, MeleeTechnique.GetPendingRetaliationPower(owner.Creature, target),
+                "The counter survives switching back to Power Gloves before the free heavy strike.");
             // Exercise the native avoided-attack callback with the owned perk's real stat source.
             await context.ExecuteInCreatureContextAsync(owner.Creature, () => Combat.TrackAvoidedAttack(owner.Creature, target));
             context.AssertEqual(-4, Combat.GetNextSkillAbilityStaminaCostAdjustment(owner.Creature, SkillType.Unarmed, true), "Opportunist's Flow applies its global discount while Power Gloves are equipped.");

@@ -377,6 +377,7 @@ namespace SWLOR.Game.Server.Service
         }
 
         [NWNEventHandler(ScriptName.OnCreatureDamagedAfter)]
+        [NWNEventHandler(ScriptName.OnPlayerDamaged)]
         public static void OnDirectDamageApplied()
         {
             var creature = OBJECT_SELF;
@@ -541,6 +542,14 @@ namespace SWLOR.Game.Server.Service
         {
             ClearBenefits(OBJECT_SELF);
             ClearTargetReferences(OBJECT_SELF);
+        }
+
+        [NWNEventHandler(ScriptName.OnModuleDeath)]
+        public static void OnPlayerDeath()
+        {
+            var creature = GetLastPlayerDied();
+            ClearBenefits(creature);
+            ClearTargetReferences(creature);
         }
 
         [NWNEventHandler(ScriptName.OnModuleHeartbeat)]

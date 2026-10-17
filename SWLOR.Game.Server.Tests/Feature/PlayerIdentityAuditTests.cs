@@ -156,8 +156,11 @@ public class PlayerIdentityAuditTests
             public static class DMPresence
             {
                 public static readonly Dictionary<uint, uint> Masters = new();
+                public static readonly Dictionary<uint, uint> Controlled = new();
                 public static uint GetDM(uint actor)
                     => AuditWorld.GetIsDMPossessed(actor) && Masters.TryGetValue(actor, out var dm) ? dm : actor;
+                public static uint GetControlledCreature(uint actor)
+                    => Controlled.TryGetValue(actor, out var creature) ? creature : actor;
             }
 
             public static class Auditing
@@ -249,6 +252,7 @@ public class PlayerIdentityAuditTests
                     AuditWorld.ValidationError = "";
                     AuditWorld.DmPossessed.Clear();
                     DMPresence.Masters.Clear();
+                    DMPresence.Controlled.Clear();
                     Disguise.Active.Clear();
                     DB.Players.Clear();
                     DB.Set(new Player { Id = "1", UnknownDisplayName = "Old Base Descriptor" });
@@ -267,6 +271,7 @@ public class PlayerIdentityAuditTests
                 {
                     AuditWorld.DmPossessed.Add(creature);
                     DMPresence.Masters[creature] = dm;
+                    DMPresence.Controlled[dm] = creature;
                 }
                 public static void SetDisguise(uint player, string id, string name)
                     => Disguise.Active[player] = new PlayerDisguise { Id = id, PrivateName = name };
@@ -384,6 +389,21 @@ public class PlayerIdentityAuditTests
             .And.Contain("account-7")
             .And.Contain("cdk-7")
             .And.Contain("ip-7");
+    }
+
+    [Test]
+    public void TellAudit_ReadsAPossessingDMSendersConnectionFromTheCreature()
+    {
+        var harness = _run.DeclaringType!.Assembly.GetType("AuditHarness")!;
+        harness.GetMethod("SetPlayer")!.Invoke(null, [8u, "Staff Sender", "", false, true, true]);
+        harness.GetMethod("SetPlayer")!.Invoke(null, [9u, "Possessed Speaker", "", true, false, true]);
+        harness.GetMethod("SetPossessedBy")!.Invoke(null, [9u, 8u]);
+
+        var output = RunChat(8, 2, "DMTell", "Sent from the avatar");
+
+        output.Should().ContainSingle();
+        output[0].Should().StartWith("Chat:Staff Sender - account-9 - cdk-9 - ip-9 - DMTell")
+            .And.NotContain("account-8");
     }
 
     [Test]

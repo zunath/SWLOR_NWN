@@ -5673,7 +5673,7 @@
                     },
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Vital Rupture Specialist"
+                      "value": "Viral Cascade Specialist"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -16697,7 +16697,7 @@
                     },
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Vital Rupture Adept"
+                      "value": "Viral Cascade Adept"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -16716,7 +16716,7 @@
                     },
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Vital Rupture Inner Circle"
+                      "value": "Viral Cascade Inner Circle"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -16735,7 +16735,7 @@
                     },
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Vital Rupture Master"
+                      "value": "Viral Cascade Master"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -16754,7 +16754,7 @@
                     },
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Vital Rupture Warden"
+                      "value": "Viral Cascade Warden"
                     },
                     "RESREF": {
                       "type": "resref",

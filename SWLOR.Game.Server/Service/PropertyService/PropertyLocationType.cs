@@ -8,5 +8,6 @@ namespace SWLOR.Game.Server.Service.PropertyService
         SpacePosition = 3,
         CurrentPosition = 4,
         LastNPCDockPosition = 5,
+        LastNPCSpacePosition = 6,
     }
 }

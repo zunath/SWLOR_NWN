@@ -1,7 +1,9 @@
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using SWLOR.Game.Server.EngineTests.Framework;
 using SWLOR.Game.Server.Entity;
+using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Service.PropertyService;
 
 namespace SWLOR.Game.Server.EngineTests.Definitions;
@@ -36,15 +38,33 @@ public static class PropertyDeletionEngineTests
         }
     }
 
-    [EngineTest("Retrieving a player starport relocates docked ships and skips deleted ones", Category = "PropertyDeletion")]
+    [EngineTest("Retrieving a player starport returns docked ships to their safe dock and orbit and skips deleted ones", Category = "PropertyDeletion")]
     public static async Task StarportRetrievalSkipsDeletedShips(EngineTestContext ctx)
     {
-        var city = CreateCity();
+        // A real Viscara area, so a ship with no safe dock can fall back to the planet's starport.
+        var city = CreateCity("velesinterior");
         var (building, interior) = CreateStarport(city, listInCity: true);
+        var (otherBuilding, otherInterior) = CreateStarport(city, listInCity: true);
         var ship = CreateDockedShip(interior);
-        interior.ChildPropertyIds[PropertyChildType.Starship] = new List<string> { Guid.NewGuid().ToString(), ship.Id };
+        // A stale entry: the ship has since docked and registered at another starport.
+        var dockedElsewhere = CreateDockedShip(otherInterior);
+        // Registered before safe orbits were recorded; its safe dock is in an area with no known planet.
+        var withoutSafeOrbit = CreateDockedShip(interior);
+        withoutSafeOrbit.Positions.Remove(PropertyLocationType.LastNPCSpacePosition);
+        DB.Set(withoutSafeOrbit);
+        var withoutSafeDock = CreateDockedShip(interior);
+        withoutSafeDock.Positions.Remove(PropertyLocationType.LastNPCDockPosition);
+        withoutSafeDock.Positions.Remove(PropertyLocationType.LastNPCSpacePosition);
+        DB.Set(withoutSafeDock);
+        interior.ChildPropertyIds[PropertyChildType.Starship] = new List<string>
+        {
+            Guid.NewGuid().ToString(), withoutSafeDock.Id, dockedElsewhere.Id, withoutSafeOrbit.Id, ship.Id
+        };
         DB.Set(interior);
-        var created = new List<WorldProperty> { city, building, interior, ship };
+        var created = new List<WorldProperty>
+        {
+            city, building, interior, otherBuilding, otherInterior, ship, dockedElsewhere, withoutSafeOrbit, withoutSafeDock
+        };
 
         try
         {
@@ -56,8 +76,35 @@ public static class PropertyDeletionEngineTests
                 "docked ship no longer points at the retrieved starport");
             ctx.AssertEqual("npc_dock", dbShip.Positions[PropertyLocationType.DockPosition].AreaResref,
                 "docked ship returns to its last NPC dock");
+            ctx.AssertEqual("npc_orbit", dbShip.Positions[PropertyLocationType.SpacePosition].AreaResref,
+                "docked ship launches from its last NPC dock's orbit");
             ctx.AssertEqual(0, dbShip.ChildPropertyIds[PropertyChildType.RegisteredStarport].Count,
                 "docked ship's starport registration is cleared");
+
+            var dbWithoutSafeOrbit = DB.Get<WorldProperty>(withoutSafeOrbit.Id);
+            ctx.AssertEqual("npc_dock", dbWithoutSafeOrbit.Positions[PropertyLocationType.DockPosition].AreaResref,
+                "a ship without a recorded safe orbit still returns to its last NPC dock");
+            ctx.AssertEqual("starport_orbit", dbWithoutSafeOrbit.Positions[PropertyLocationType.SpacePosition].AreaResref,
+                "a ship without a recorded safe orbit whose safe dock has no known planet keeps its orbit");
+
+            var viscara = Planet.GetPlanetByType(PlanetType.Viscara);
+            var velesLanding = GetResRef(GetArea(GetWaypointByTag(viscara.LandingWaypointTag)));
+            var viscaraOrbit = GetResRef(GetArea(GetWaypointByTag(viscara.SpaceOrbitWaypointTag)));
+            var dbWithoutSafeDock = DB.Get<WorldProperty>(withoutSafeDock.Id);
+            ctx.AssertEqual(velesLanding, dbWithoutSafeDock.Positions[PropertyLocationType.DockPosition].AreaResref,
+                "a ship with no safe dock goes to the starport of the city's planet");
+            ctx.AssertEqual(viscaraOrbit, dbWithoutSafeDock.Positions[PropertyLocationType.SpacePosition].AreaResref,
+                "a ship with no safe dock launches from that planet's orbit");
+            ctx.AssertEqual(velesLanding, dbWithoutSafeDock.Positions[PropertyLocationType.LastNPCDockPosition].AreaResref,
+                "the planet's starport becomes the safe dock");
+            ctx.AssertEqual(0, dbWithoutSafeDock.ChildPropertyIds[PropertyChildType.RegisteredStarport].Count,
+                "a ship with no safe dock loses its registration at the retrieved starport");
+
+            var dbDockedElsewhere = DB.Get<WorldProperty>(dockedElsewhere.Id);
+            ctx.AssertEqual(otherInterior.Id, dbDockedElsewhere.Positions[PropertyLocationType.DockPosition].InstancePropertyId,
+                "a ship docked at another starport stays there");
+            ctx.Assert(dbDockedElsewhere.ChildPropertyIds[PropertyChildType.RegisteredStarport].SequenceEqual(new[] { otherInterior.Id }),
+                "a ship docked at another starport keeps that starport's registration");
         }
         finally
         {
@@ -99,9 +146,9 @@ public static class PropertyDeletionEngineTests
         await ctx.ExecuteInCreatureContextAsync(creature, action);
     }
 
-    private static WorldProperty CreateCity()
+    private static WorldProperty CreateCity(string areaResref = CityAreaResref)
     {
-        return CreateProperty(PropertyType.City, CityAreaResref);
+        return CreateProperty(PropertyType.City, areaResref);
     }
 
     private static (WorldProperty Building, WorldProperty Interior) CreateStarport(WorldProperty city, bool listInCity)
@@ -129,7 +176,9 @@ public static class PropertyDeletionEngineTests
         var ship = CreateProperty(PropertyType.Starship, string.Empty);
         ship.ChildPropertyIds[PropertyChildType.RegisteredStarport] = new List<string> { starport.Id };
         ship.Positions[PropertyLocationType.DockPosition] = new PropertyLocation { InstancePropertyId = starport.Id };
+        ship.Positions[PropertyLocationType.SpacePosition] = new PropertyLocation { AreaResref = "starport_orbit" };
         ship.Positions[PropertyLocationType.LastNPCDockPosition] = new PropertyLocation { AreaResref = "npc_dock" };
+        ship.Positions[PropertyLocationType.LastNPCSpacePosition] = new PropertyLocation { AreaResref = "npc_orbit" };
         DB.Set(ship);
         return ship;
     }

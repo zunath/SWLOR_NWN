@@ -160,15 +160,15 @@ namespace SWLOR.Game.Server.Service.NPCService
         Viscara_Invincible_InnerCircle = 75,
         [NPCGroup("Invincible Master")]
         Viscara_Invincible_Master = 76,
-        [NPCGroup("Vital Rupture Adepts")]
+        [NPCGroup("Viral Cascade Adepts")]
         Viscara_VitalRupture_Adept = 77,
-        [NPCGroup("Vital Rupture Specialists")]
+        [NPCGroup("Viral Cascade Specialists")]
         Viscara_VitalRupture_Specialist = 78,
-        [NPCGroup("Vital Rupture Warden")]
+        [NPCGroup("Viral Cascade Warden")]
         Viscara_VitalRupture_Warden = 79,
-        [NPCGroup("Vital Rupture Inner Circle")]
+        [NPCGroup("Viral Cascade Inner Circle")]
         Viscara_VitalRupture_InnerCircle = 80,
-        [NPCGroup("Vital Rupture Master")]
+        [NPCGroup("Viral Cascade Master")]
         Viscara_VitalRupture_Master = 81,
         [NPCGroup("Systemic Shutdown Adepts")]
         Viscara_SystemicShutdown_Adept = 82,

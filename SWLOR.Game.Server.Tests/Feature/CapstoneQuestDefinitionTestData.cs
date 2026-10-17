@@ -2855,7 +2855,7 @@ internal static class CapstoneQuestDefinitionTestData
             FeatType.Invincible1),
         new Line(
             "vital_rupture",
-            "Vital Rupture",
+            "Viral Cascade",
             PerkType.ViralCascade,
             AchievementType.VitalRupture,
             new QuestGiver("Mikka Varn", "cq_vitrupt", "cq_vitrupt"),

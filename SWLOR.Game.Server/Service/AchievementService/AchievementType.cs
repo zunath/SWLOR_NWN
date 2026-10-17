@@ -392,7 +392,7 @@ namespace SWLOR.Game.Server.Service.AchievementService
         BloodFrenzy = 141,
         [Achievement("Invincible", "Completed the Invincible capstone quest line.", true)]
         Invincible = 142,
-        [Achievement("Vital Rupture", "Completed the Vital Rupture capstone quest line.", true)]
+        [Achievement("Viral Cascade", "Completed the Viral Cascade capstone quest line.", true)]
         VitalRupture = 143,
         [Achievement("Systemic Shutdown", "Completed the Systemic Shutdown capstone quest line.", true)]
         SystemicShutdown = 144,

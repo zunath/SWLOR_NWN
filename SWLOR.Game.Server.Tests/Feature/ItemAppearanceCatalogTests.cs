@@ -64,13 +64,14 @@ public class ItemAppearanceCatalogTests
     {
         var catalogs = LoadCatalogs();
         var moduleRoot = Path.Combine(FindRepositoryRoot().FullName, "Module");
+        var playerBlueprints = LoadPlayerBlueprintResrefs(moduleRoot, catalogs);
         var checkedCounts = new SortedDictionary<BaseItem, int>();
         var violations = new SortedDictionary<BaseItem, List<string>>();
 
         foreach (var file in Directory.EnumerateFiles(moduleRoot, "*.json", SearchOption.AllDirectories))
         {
             var folder = Path.GetFileName(Path.GetDirectoryName(file));
-            if (folder is "uti" or "itp" or "utc")
+            if (folder is "uti" or "itp")
                 continue;
 
             var text = File.ReadAllText(file);
@@ -79,7 +80,9 @@ public class ItemAppearanceCatalogTests
                 !text.Contains("ModelPart1", StringComparison.Ordinal) && !text.Contains("ArmorPart_Torso", StringComparison.Ordinal))
                 continue;
 
-            foreach (var item in FindEmbeddedItems(JToken.Parse(text)))
+            // Copies of NPC-only items, and of items with no blueprint, are outside the editor's scope.
+            foreach (var item in FindEmbeddedItems(JToken.Parse(text))
+                         .Where(x => playerBlueprints.Contains(x["TemplateResRef"]?["value"]?.Value<string>() ?? string.Empty)))
                 Audit(item, $"{folder}/{Path.GetFileName(file)}: {item["TemplateResRef"]?["value"]}", catalogs, checkedCounts, violations);
         }
 
@@ -87,7 +90,20 @@ public class ItemAppearanceCatalogTests
         FailOnViolations("embedded item copies", checkedCounts, violations);
     }
 
-    // Creature equipment and inventory are NPC gear, not items players are given.
+    private static HashSet<string> LoadPlayerBlueprintResrefs(string moduleRoot, Catalogs catalogs)
+    {
+        var resrefs = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+        foreach (var file in Directory.EnumerateFiles(Path.Combine(moduleRoot, "uti"), "*.uti.json"))
+        {
+            var blueprint = JObject.Parse(File.ReadAllText(file));
+            var baseItem = (BaseItem)(blueprint["BaseItem"]?["value"]?.Value<int>() ?? -1);
+            if (IsCoveredByEditor(baseItem, catalogs.Weapons) && !IsExcluded(blueprint, baseItem, out _))
+                resrefs.Add(Path.GetFileName(file).Replace(".uti.json", ""));
+        }
+
+        return resrefs;
+    }
+
     private static IEnumerable<JObject> FindEmbeddedItems(JToken token)
     {
         if (token is JObject container)
@@ -95,7 +111,7 @@ public class ItemAppearanceCatalogTests
             if (container.ContainsKey("TemplateResRef") && container.ContainsKey("BaseItem"))
                 yield return container;
 
-            foreach (var property in container.Properties().Where(x => x.Name != "Creature List"))
+            foreach (var property in container.Properties())
                 foreach (var nested in FindEmbeddedItems(property.Value))
                     yield return nested;
         }

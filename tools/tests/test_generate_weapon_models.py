@@ -2,6 +2,7 @@
 import importlib.util
 import json
 from pathlib import Path
+import stat
 import struct
 import subprocess
 import tempfile
@@ -13,6 +14,13 @@ ROOT = Path(__file__).resolve().parents[2]
 spec = importlib.util.spec_from_file_location('generator', ROOT / 'tools/GenerateWeaponModels.py')
 generator = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(generator)
+
+
+def tracked_file_path(descriptor, paths):
+    # POSIX directory sync may reuse a descriptor from a closed, renamed artifact.
+    if not stat.S_ISREG(generator.os.fstat(descriptor).st_mode):
+        return None
+    return paths.get(descriptor)
 
 
 def glb():
@@ -512,7 +520,7 @@ class WeaponGenerationTests(unittest.TestCase):
             descriptors[stream.fileno()] = path
             return stream
         def sync_file(fd):
-            path = descriptors.get(fd)
+            path = tracked_file_path(fd, descriptors)
             if path and path.name.endswith(('.glb.tmp', '.png.tmp', '.jpg.tmp')):
                 self.assertGreater(path.stat().st_size, 0)  # Python buffering was flushed.
                 events.append(('sync', path.name))
@@ -530,6 +538,20 @@ class WeaponGenerationTests(unittest.TestCase):
             self.run_asset(FakeAPI(self.output))
         self.assertEqual(events[-1], ('publish', 'generation.json'))
 
+    def test_artifact_sync_tracking_ignores_directory_descriptor_reuse(self):
+        temporary = self.folder / 'source.glb.tmp'
+        with temporary.open('wb') as stream:
+            descriptor = stream.fileno()
+            paths = {descriptor: temporary}
+            self.assertEqual(tracked_file_path(descriptor, paths), temporary)
+        temporary.rename(self.folder / 'source.glb')
+        self.assertFalse(temporary.exists())
+        # Model the same numeric descriptor being allocated to the parent directory
+        # after rename. This exercises POSIX reuse deterministically on Windows too.
+        with patch.object(generator.os, 'fstat', return_value=self.folder.stat()) as fstat:
+            self.assertIsNone(tracked_file_path(descriptor, paths))
+        fstat.assert_called_once_with(descriptor)
+
     def test_artifact_fsync_failure_never_publishes_completion(self):
         opened = Path.open
         fsync = generator.os.fsync
@@ -542,7 +564,7 @@ class WeaponGenerationTests(unittest.TestCase):
                     descriptors[stream.fileno()] = path
                     return stream
                 def sync_file(fd):
-                    path = descriptors.get(fd)
+                    path = tracked_file_path(fd, descriptors)
                     if path and path.name == name:
                         raise OSError('artifact sync failed')
                     fsync(fd)

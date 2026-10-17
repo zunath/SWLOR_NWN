@@ -3,6 +3,7 @@ import copy
 import hashlib
 import importlib.util
 import json
+import re
 from pathlib import Path
 import struct
 import tempfile
@@ -364,6 +365,59 @@ class TrellisWeaponExportTests(unittest.TestCase):
         finally:
             for ob in objects:bpy.data.objects.remove(ob,do_unlink=True)
             for mat in materials:bpy.data.materials.remove(mat)
+
+    def test_alias_keeps_same_name_material_even_when_alias_has_another_valid_material(self):
+        helpers=exporter.load_module('alias_test_importer',ROOT/'tools/ImportBlasterModel.py')
+        primary='wdbsw_m_011';alias='wdbsw_m_021';path=self.root/(primary+'.mdl')
+        mesh=([(-1,0,0),(1,0,0),(0,1,0)],[(0,0),(1,0),(.5,1)],[(0,1,2)],[(0,0,1)]*3)
+        helpers.write_mdl(path,primary,primary,[mesh])
+        source=path.read_text().replace('newmodel '+primary,'newmodel '+primary+' # retain '+primary)
+        source+='# bitmap, material, mesh and controller data for '+primary+' remain authored\n'
+        (self.root/(primary+'.mtr')).write_text('texture0 original_albedo\ntexture1 original_normal\n')
+        (self.root/(alias+'.mtr')).write_text('texture0 unrelated_albedo\ntexture1 unrelated_normal\n')
+        result=exporter.alias_model_identifiers(source,primary,alias)
+        (self.root/(alias+'.mdl')).write_text(result)
+        for statement in ('newmodel','setsupermodel','beginmodelgeom','node dummy','endmodelgeom','donemodel'):
+            self.assertIn(statement+' '+alias,result)
+        self.assertIn('  parent '+alias+'\n',result);self.assertIn('  parent NULL\n',result)
+        self.assertIn('  bitmap '+primary+'\n',result);self.assertIn('  materialname '+primary+'\n',result)
+        material=re.search(r'^\s*materialname\s+(\S+)',result,re.M)[1]
+        self.assertIn('texture0 original_albedo',(self.root/(material+'.mtr')).read_text())
+        self.assertNotIn('unrelated_albedo',(self.root/(material+'.mtr')).read_text())
+        self.assertIn('# retain '+primary,result)
+        self.assertEqual(source.splitlines()[-1],result.splitlines()[-1])
+        # The full generated mesh payload, including its label and controllers,
+        # stays byte-identical apart from the one parent reference.
+        original_mesh=source[source.index('node trimesh'):source.index('endmodelgeom')]
+        aliased_mesh=result[result.index('node trimesh'):result.index('endmodelgeom')]
+        self.assertEqual(aliased_mesh.replace('  parent '+alias+'\n','  parent '+primary+'\n'),original_mesh)
+
+    @unittest.skipUnless(HAS_BLENDER,'Run Blender 4.0 for coplanar split ownership')
+    def test_split_assigns_whole_coplanar_face_to_above_once(self):
+        mesh=([(-1,0,0),(1,0,0),(0,0,1)],[(0,0),(1,0),(.5,1)],[(0,1,2)],[(0,-1,0)]*3)
+        above=exporter.clip_mesh_y(mesh,0,'above');below=exporter.clip_mesh_y(mesh,0,'below')
+        self.assertEqual(len(above[2]),1);self.assertEqual(below,([],[],[],[]))
+        actual=[(above[0][i],above[1][i],above[3][i]) for i in above[2][0]]
+        expected=[(mesh[0][i],mesh[1][i],mesh[3][i]) for i in mesh[2][0]]
+        self.assertTrue(any(actual==expected[shift:]+expected[:shift] for shift in range(3)))
+        a,b,c=[exporter.Vector(above[0][i]) for i in above[2][0]]
+        self.assertEqual(tuple((b-a).cross(c-a)),(0,-2,0))
+
+    @unittest.skipUnless(HAS_BLENDER,'Run Blender 4.0 for bounded coplanar ownership')
+    def test_bounded_middle_owns_lower_plane_and_top_owns_upper_plane(self):
+        vertices=[];uvs=[];faces=[];normals=[]
+        for y in (-1,-.5,0,.5):
+            first=len(vertices);vertices.extend([(-1,y,0),(1,y,0),(0,y,1)])
+            uvs.extend([(0,0),(1,0),(.5,1)]);normals.extend([(0,-1,0)]*3);faces.append((first,first+1,first+2))
+        mesh=(vertices,uvs,faces,normals)
+        parts=[exporter.clip_part_mesh(mesh,part) for part in (
+            {'clip_max_y':-.5},{'clip_min_y':-.5,'clip_max_y':.5},{'clip_min_y':.5})]
+        self.assertEqual([[part[0][face[0]][1] for face in part[2]] for part in parts],[[-1],[-.5,0],[.5]])
+        self.assertEqual(sum(len(part[2]) for part in parts),len(faces))
+        for part in parts:
+            for position,uv,normal in zip(part[0],part[1],part[3]):
+                original=vertices.index(position)
+                self.assertEqual(uv,uvs[original]);self.assertEqual(normal,normals[original])
 
     @unittest.skipUnless(HAS_BLENDER,'Run Blender 4.0 for split geometry')
     def test_split_keeps_shared_seam_uv_normals_winding_and_area(self):

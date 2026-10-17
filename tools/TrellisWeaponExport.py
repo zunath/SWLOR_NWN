@@ -566,6 +566,9 @@ def clip_mesh_y(mesh, plane, side, normalize_normals=True):
         return lookup[key]
     for face in faces:
         polygon=[(Vector(vertices[i]),Vector(uvs[i]),Vector(normals[i])) for i in face];clipped=[]
+        # Shared-plane faces belong to the above part only. Keep on-plane corners
+        # inclusive for crossing faces so both parts retain the same seam data.
+        if side=='below' and all(distance(corner)==0 for corner in polygon):continue
         for a,b in zip(polygon,polygon[1:]+polygon[:1]):
             ina=distance(a)>=0;inb=distance(b)>=0
             if ina and inb:clipped.append(b)
@@ -657,6 +660,13 @@ def pad_icon(path, size):
     im.colorspace_settings.name='Non-Color'
     im.pixels.foreach_set(padded.ravel());im.filepath_raw=str(path);im.file_format='TARGA_RAW';im.save()
     bpy.data.images.remove(im)
+
+
+def alias_model_identifiers(text, primary, alias):
+    """Rename generated ASCII model identity without changing mesh/material data."""
+    fields=r'(?:newmodel|setsupermodel|beginmodelgeom|endmodelgeom|donemodel|parent|node[ \t]+dummy)'
+    pattern=r'^([ \t]*'+fields+r'[ \t]+)'+re.escape(primary)+r'(?=[ \t\r\n]|$)'
+    return re.sub(pattern,lambda match:match[1]+alias,text,flags=re.M)
 
 
 def export_one(config,source,repo,out,mode,helpers,icon_size):
@@ -757,7 +767,7 @@ def export_one(config,source,repo,out,mode,helpers,icon_size):
             for alias in targets:
                 validate_model_name(alias,config['_item_class'],config['_model_type'])
                 text=(resources/(primary+'.mdl')).read_text()
-                text=re.sub(r'(?<![a-z0-9_])'+re.escape(primary)+r'(?![a-z0-9_])',alias,text)
+                text=alias_model_identifiers(text,primary,alias)
                 (resources/(alias+'.mdl')).write_text(text,encoding='ascii')
                 (resources/('i'+alias+'.tga')).write_bytes((resources/('i'+primary+'.tga')).read_bytes())
         report['aliases']=config.get('aliases',[])

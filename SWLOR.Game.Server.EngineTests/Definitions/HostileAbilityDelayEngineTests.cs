@@ -169,6 +169,15 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
         // Frame checks can read an ability's time up to a frame late.
         private const double FrameTolerance = 0.1;
 
+        // Either ability's time can be read a frame late, so the gap can be a frame short or long.
+        private static void AssertGapIsTheDelay(EngineTestContext ctx, double gap, string what)
+        {
+            ctx.Assert(gap >= HostileAbilityDelay.Seconds - FrameTolerance,
+                $"{what} {gap:0.000}s after Rib Breaker, inside the {HostileAbilityDelay.Seconds}s delay");
+            ctx.Assert(gap <= HostileAbilityDelay.Seconds + FrameTolerance,
+                $"{what} {gap:0.000}s after Rib Breaker, well after the {HostileAbilityDelay.Seconds}s delay ended");
+        }
+
         // Watches every frame for each ability's recast and its own completed impact, so a weapon swing's
         // damage can't stand in for an ability's.
         private static async Task AssertStaffAbilitiesLandApartAsync(EngineTestContext ctx, uint player, Func<Task> press)
@@ -250,11 +259,9 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
 
                 // Rib Breaker is pressed first, so Slam is the one held: the gaps are signed.
                 var gap = (slamAt.Value - ribBreakerAt.Value).TotalSeconds;
-                ctx.Assert(gap >= HostileAbilityDelay.Seconds - FrameTolerance,
-                    $"Slam went off {gap:0.000}s after Rib Breaker, inside the {HostileAbilityDelay.Seconds}s delay");
+                AssertGapIsTheDelay(ctx, gap, "Slam went off");
                 var impactGap = (slamImpactAt.Value - ribBreakerImpactAt.Value).TotalSeconds;
-                ctx.Assert(impactGap >= HostileAbilityDelay.Seconds - FrameTolerance,
-                    $"Slam hit {impactGap:0.000}s after Rib Breaker, inside the {HostileAbilityDelay.Seconds}s delay");
+                AssertGapIsTheDelay(ctx, impactGap, "Slam hit");
             }
             finally
             {

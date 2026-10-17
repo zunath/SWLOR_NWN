@@ -175,6 +175,12 @@ namespace SWLOR.Game.Server.Service.PerkService
 
         [PerkCategory("Espionage - Tradecraft", true)]
         EspionageTradecraft = 60,
+
+        [PerkCategory("Unarmed - Martial Artist", true)]
+        UnarmedMartialArtist = 61,
+
+        [PerkCategory("Unarmed - Brawler", true)]
+        UnarmedBrawler = 62,
     }
 
     public class PerkCategoryAttribute : Attribute

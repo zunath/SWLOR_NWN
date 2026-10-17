@@ -739,6 +739,27 @@ namespace SWLOR.Game.Server.Service.PerkService
 
         Doublehand = 803,
 
-        // IDs 650 and 804+ are free.
+        Jab = 804,
+        FlowingForm = 805,
+        PalmStrike = 806,
+        PracticedForm = 807,
+        MeasuredTechnique = 808,
+        FinishingCombination = 809,
+        FlowStance = 810,
+        ControlledBreathing = 811,
+        RootedTechnique = 812,
+        PerfectForm = 813,
+        DirtyJab = 814,
+        DirtyFighting = 815,
+        Uppercut = 816,
+        HeavyBlows = 817,
+        HardKnocks = 818,
+        LowKick = 819,
+        BruiserStance = 820,
+        CatchYourBreath = 821,
+        Payback = 822,
+        Haymaker = 823,
+
+        // IDs 650 and 824+ are free.
     }
 }

@@ -9,7 +9,7 @@ param(
     [string]$StatusEffectPath = "SWLOR.Game.Server\Feature\StatusEffectDefinition",
     [string]$TlkJsonPath = "SWLOR_Haks\sw_tlk\sw_tlk.tlk.json",
     [int]$GeneratedFeatStart = 2000,
-    [int]$GeneratedFeatEnd = 2899,
+    [int]$GeneratedFeatEnd = 3195,
     [int]$CustomFeatStart = 1116,
     [int]$CustomSpellStart = 1000,
     [int]$StatusEffectIconStart = 141,
@@ -644,6 +644,7 @@ function Get-StatusSemanticCategory([string]$className, [string]$name, [string]$
 
 function Get-AbilityRows([string]$path, [int]$startRow, [int]$endRow) {
     $rows = @()
+    $seenIcons = [System.Collections.Generic.HashSet[string]]::new([System.StringComparer]::OrdinalIgnoreCase)
     foreach ($line in Get-Content -Path $path) {
         if ([string]::IsNullOrWhiteSpace($line)) { continue }
         $parts = $line -split "\s+"
@@ -652,6 +653,11 @@ function Get-AbilityRows([string]$path, [int]$startRow, [int]$endRow) {
         $row = 0
         if (![int]::TryParse($parts[0], [ref]$row)) { continue }
         if ($row -lt $startRow -or $row -gt $endRow -or $parts[1] -eq "****") { continue }
+        if ($parts[1].EndsWith("Trait", [System.StringComparison]::Ordinal)) { continue }
+        if (!$parts[4].StartsWith("ife_", [System.StringComparison]::OrdinalIgnoreCase)) { continue }
+        # Ranks of one ability share artwork. Manifest one family, while passive
+        # traits are classified separately by Get-CustomFeatSpellRows.
+        if (!$seenIcons.Add($parts[4])) { continue }
 
         $rank = Get-RankFromText $parts[1]
         $rows += [pscustomobject]@{

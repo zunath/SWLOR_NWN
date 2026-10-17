@@ -991,6 +991,7 @@ namespace SWLOR.Game.Server.Service
         {
             var itemType = GetBaseItemType(item);
             return itemType != BaseItem.CreatureBludgeonWeapon &&
+                   itemType != BaseItem.CompanionPowerGlove &&
                    itemType != BaseItem.CreaturePierceWeapon &&
                    itemType != BaseItem.CreatureSlashPierceWeapon &&
                    itemType != BaseItem.CreatureSlashWeapon &&

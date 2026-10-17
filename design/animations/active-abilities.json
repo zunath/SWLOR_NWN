@@ -5907,5 +5907,237 @@
       "SWLOR.Game.Server/Feature/AbilityDefinition/Vibroknife/VolatileCompoundAbilityDefinition.cs"
     ],
     "CurrentPlayback": "DoubleStrike"
+  },
+  {
+    "Id": "Jab",
+    "EquipmentRequirement": "Unarmed",
+    "Name": "Jab",
+    "DisplayName": "Jab",
+    "InternalName": "sw_jab",
+    "Category": "Unarmed",
+    "Type": "Combat",
+    "Description": "Deals weapon DMG + 38. On hit, grants Opening against this enemy for 4 seconds. Opening gives +3 ordinary weapon ACC against this enemy with any weapon and sets up either follow-up attack.",
+    "Reference": "",
+    "PerkId": "Jab",
+    "Feats": [
+      "Jab1",
+      "Jab2",
+      "Jab3",
+      "Jab4"
+    ],
+    "DefinitionFiles": [
+      "SWLOR.Game.Server/Feature/AbilityDefinition/Unarmed/JabAbilityDefinition.cs"
+    ],
+    "CurrentPlayback": "DoubleStrike",
+    "SourceAnimation": "nwstab",
+    "Profile": "Equipped unarmed technique",
+    "Duration": 0.75
+  },
+  {
+    "Id": "PalmStrike",
+    "EquipmentRequirement": "Unarmed",
+    "Name": "Palm Strike",
+    "DisplayName": "Palm Strike",
+    "InternalName": "sw_palmstr",
+    "Category": "Unarmed",
+    "Type": "Combat",
+    "Description": "Deals weapon DMG + 36. Spends Opening at activation. If the sequenced strike lands, grants Finish for 4 seconds; Finish gives +3 ordinary weapon ACC against this enemy with any weapon.",
+    "Reference": "",
+    "PerkId": "PalmStrike",
+    "Feats": [
+      "PalmStrike1",
+      "PalmStrike2",
+      "PalmStrike3"
+    ],
+    "DefinitionFiles": [
+      "SWLOR.Game.Server/Feature/AbilityDefinition/Unarmed/PalmStrikeAbilityDefinition.cs"
+    ],
+    "CurrentPlayback": "DoubleStrike",
+    "SourceAnimation": "nwstab",
+    "Profile": "Equipped unarmed technique",
+    "Duration": 0.85
+  },
+  {
+    "Id": "FinishingCombination",
+    "EquipmentRequirement": "Unarmed",
+    "Name": "Finishing Combination",
+    "DisplayName": "Finishing Combination",
+    "InternalName": "sw_fincombo",
+    "Category": "Unarmed",
+    "Type": "Combat",
+    "Description": "Two strikes at one enemy, each floor(0.50 x weapon DMG) + 14. Spend Opening for +4 power per strike, or Finish for +8 per strike.",
+    "Reference": "",
+    "PerkId": "FinishingCombination",
+    "Feats": [
+      "FinishingCombination1",
+      "FinishingCombination2"
+    ],
+    "DefinitionFiles": [
+      "SWLOR.Game.Server/Feature/AbilityDefinition/Unarmed/FinishingCombinationAbilityDefinition.cs"
+    ],
+    "CurrentPlayback": "DoubleStrike",
+    "SourceAnimation": "nwslashr",
+    "Profile": "Equipped unarmed technique",
+    "Duration": 1.15
+  },
+  {
+    "Id": "FlowStance",
+    "EquipmentRequirement": "Unarmed",
+    "Name": "Flow Stance",
+    "DisplayName": "Flow Stance",
+    "InternalName": "sw_flowst",
+    "Category": "Unarmed",
+    "Type": "Stance",
+    "Description": "While active, a landed Finishing Combination spending Opening grants Slip Away: +20% Evasion and +15% movement speed for 6 seconds. A landed Finishing Combination or Perfect Form spending Finish instead grants Press Forward: +15% Haste for 6 seconds. These windows are mutually exclusive and share a 12-second trigger cooldown. Weapon swaps and unrelated hostile skills against the same enemy preserve the window. Stance, combat or enemy changes clear it. No ordinary damage penalty.",
+    "Reference": "",
+    "PerkId": "FlowStance",
+    "Feats": [
+      "FlowStance1"
+    ],
+    "DefinitionFiles": [
+      "SWLOR.Game.Server/Feature/AbilityDefinition/Unarmed/FlowStanceAbilityDefinition.cs"
+    ],
+    "CurrentPlayback": "DoubleStrike",
+    "SourceAnimation": "nwreadyr",
+    "Profile": "Equipped unarmed technique",
+    "Duration": 1.8
+  },
+  {
+    "Id": "PerfectForm",
+    "EquipmentRequirement": "Unarmed",
+    "Name": "Perfect Form",
+    "DisplayName": "Perfect Form",
+    "InternalName": "sw_perfform",
+    "Category": "Unarmed",
+    "Type": "Combat",
+    "Description": "Deals weapon DMG + 45 to one enemy. Spending Finish adds +70 power. Practiced Form applies only with Finish.",
+    "Reference": "",
+    "PerkId": "PerfectForm",
+    "Feats": [
+      "PerfectForm1"
+    ],
+    "DefinitionFiles": [
+      "SWLOR.Game.Server/Feature/AbilityDefinition/Unarmed/PerfectFormAbilityDefinition.cs"
+    ],
+    "CurrentPlayback": "DoubleStrike",
+    "SourceAnimation": "nwcloseh",
+    "Profile": "Equipped unarmed technique",
+    "Duration": 1.8
+  },
+  {
+    "Id": "DirtyJab",
+    "EquipmentRequirement": "Unarmed",
+    "Name": "Dirty Jab",
+    "DisplayName": "Dirty Jab",
+    "InternalName": "sw_dirtyjab",
+    "Category": "Unarmed",
+    "Type": "Combat",
+    "Description": "Deals weapon DMG + 38. On hit, applies your Rattled for 6 seconds, reducing this enemy's ordinary weapon ACC by 10.",
+    "Reference": "",
+    "PerkId": "DirtyJab",
+    "Feats": [
+      "DirtyJab1",
+      "DirtyJab2",
+      "DirtyJab3",
+      "DirtyJab4"
+    ],
+    "DefinitionFiles": [
+      "SWLOR.Game.Server/Feature/AbilityDefinition/Unarmed/DirtyJabAbilityDefinition.cs"
+    ],
+    "CurrentPlayback": "DoubleStrike",
+    "SourceAnimation": "nwclosel",
+    "Profile": "Equipped unarmed technique",
+    "Duration": 0.8
+  },
+  {
+    "Id": "Uppercut",
+    "EquipmentRequirement": "Unarmed",
+    "Name": "Uppercut",
+    "DisplayName": "Uppercut",
+    "InternalName": "sw_uppercut",
+    "Category": "Unarmed",
+    "Type": "Combat",
+    "Description": "One committed strike, weapon DMG + 36. Spending your Rattled against its enemy adds +16 power.",
+    "Reference": "",
+    "PerkId": "Uppercut",
+    "Feats": [
+      "Uppercut1",
+      "Uppercut2",
+      "Uppercut3"
+    ],
+    "DefinitionFiles": [
+      "SWLOR.Game.Server/Feature/AbilityDefinition/Unarmed/UppercutAbilityDefinition.cs"
+    ],
+    "CurrentPlayback": "DoubleStrike",
+    "SourceAnimation": "nwcloseh",
+    "Profile": "Equipped unarmed technique",
+    "Duration": 1.25
+  },
+  {
+    "Id": "LowKick",
+    "EquipmentRequirement": "Unarmed",
+    "Name": "Low Kick",
+    "DisplayName": "Low Kick",
+    "InternalName": "sw_lowkick",
+    "Category": "Unarmed",
+    "Type": "Combat",
+    "Description": "Deals weapon DMG + 30. On hit, this enemy deals 10% less ordinary physical damage for 8 seconds.",
+    "Reference": "",
+    "PerkId": "LowKick",
+    "Feats": [
+      "LowKick1",
+      "LowKick2"
+    ],
+    "DefinitionFiles": [
+      "SWLOR.Game.Server/Feature/AbilityDefinition/Unarmed/LowKickAbilityDefinition.cs"
+    ],
+    "CurrentPlayback": "DoubleStrike",
+    "SourceAnimation": "nwkickr",
+    "Profile": "Equipped unarmed technique",
+    "Duration": 1.0
+  },
+  {
+    "Id": "BruiserStance",
+    "EquipmentRequirement": "Unarmed",
+    "Name": "Bruiser Stance",
+    "DisplayName": "Bruiser Stance",
+    "InternalName": "sw_bruisst",
+    "Category": "Unarmed",
+    "Type": "Stance",
+    "Description": "Increases Physical Defense by 10%, with any equipment. A landed Dirty Jab braces you against its enemy for 4 seconds. The first direct hostile hit from that enemy that damages real HP arms Retaliation: +8 total power on the next Uppercut or Haymaker spending your own Rattled before it expires. One grant per opener, with an 18-second grant cooldown. The bonus is spent on paid activation, including a miss. Weapon swaps and unrelated hostile skills against the same enemy preserve it. Stance, combat or enemy changes clear it. No ordinary damage penalty.",
+    "Reference": "",
+    "PerkId": "BruiserStance",
+    "Feats": [
+      "BruiserStance1"
+    ],
+    "DefinitionFiles": [
+      "SWLOR.Game.Server/Feature/AbilityDefinition/Unarmed/BruiserStanceAbilityDefinition.cs"
+    ],
+    "CurrentPlayback": "DoubleStrike",
+    "SourceAnimation": "nwreadyr",
+    "Profile": "Equipped unarmed technique",
+    "Duration": 1.8
+  },
+  {
+    "Id": "Haymaker",
+    "EquipmentRequirement": "Unarmed",
+    "Name": "Haymaker",
+    "DisplayName": "Haymaker",
+    "InternalName": "sw_haymaker",
+    "Category": "Unarmed",
+    "Type": "Combat",
+    "Description": "Deals weapon DMG + 40 to one enemy. Spending your Rattled against its enemy adds +80 power; Heavy Blows also applies.",
+    "Reference": "",
+    "PerkId": "Haymaker",
+    "Feats": [
+      "Haymaker1"
+    ],
+    "DefinitionFiles": [
+      "SWLOR.Game.Server/Feature/AbilityDefinition/Unarmed/HaymakerAbilityDefinition.cs"
+    ],
+    "CurrentPlayback": "DoubleStrike",
+    "SourceAnimation": "nwslasho",
+    "Profile": "Equipped unarmed technique",
+    "Duration": 1.9
   }
 ]

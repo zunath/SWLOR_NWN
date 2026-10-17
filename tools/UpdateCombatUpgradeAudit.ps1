@@ -742,7 +742,7 @@ if ($RefreshBible -and $RefreshLocalBible) {
 
 $sheetTabs = @(
     "Armor", "Vibroblade", "Vibroknife", "Lightsaber", "Heavy Vibroblade", "Spear",
-    "Twin Blade", "Saberstaff", "Katar", "Staff", "Pistol", "Rifle", "Throwing",
+    "Twin Blade", "Saberstaff", "Katar", "Unarmed", "Staff", "Pistol", "Rifle", "Throwing",
     "Force", "Devices", "Beast Mastery", "Piloting", "Leadership", "First Aid",
     "Espionage", "Smithery", "Engineering", "Fabrication", "Research", "Agriculture", "Gathering",
     "Mimicry"

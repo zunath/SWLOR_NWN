@@ -289,5 +289,15 @@ public static class ActiveAbilityAnimationCatalog
         new("ViralCascade", "Viral Cascade", "Vibroknife", AuthoredAnimation.ViralCascade, new FeatType[] { FeatType.ViralCascade1 }, EquipmentRequirement: AnimationEquipmentRequirement.OneHanded),
         new("VirulentBlade", "Virulent Blade", "Vibroknife", AuthoredAnimation.VirulentBlade, new FeatType[] { FeatType.VirulentBlade1, FeatType.VirulentBlade2, FeatType.VirulentBlade3 }, EquipmentRequirement: AnimationEquipmentRequirement.OneHanded),
         new("VolatileCompound", "Volatile Compound", "Vibroknife", AuthoredAnimation.VolatileCompound, new FeatType[] { FeatType.VolatileCompound1, FeatType.VolatileCompound2 }, EquipmentRequirement: AnimationEquipmentRequirement.OneHanded),
+        new("Jab", "Jab", "Unarmed", AuthoredAnimation.Jab, new FeatType[] { FeatType.Jab1, FeatType.Jab2, FeatType.Jab3, FeatType.Jab4 }, EquipmentRequirement: AnimationEquipmentRequirement.Unarmed),
+        new("PalmStrike", "Palm Strike", "Unarmed", AuthoredAnimation.PalmStrike, new FeatType[] { FeatType.PalmStrike1, FeatType.PalmStrike2, FeatType.PalmStrike3 }, EquipmentRequirement: AnimationEquipmentRequirement.Unarmed),
+        new("FinishingCombination", "Finishing Combination", "Unarmed", AuthoredAnimation.FinishingCombination, new FeatType[] { FeatType.FinishingCombination1, FeatType.FinishingCombination2 }, EquipmentRequirement: AnimationEquipmentRequirement.Unarmed),
+        new("FlowStance", "Flow Stance", "Unarmed", AuthoredAnimation.FlowStance, new FeatType[] { FeatType.FlowStance1 }, EquipmentRequirement: AnimationEquipmentRequirement.Unarmed),
+        new("PerfectForm", "Perfect Form", "Unarmed", AuthoredAnimation.PerfectForm, new FeatType[] { FeatType.PerfectForm1 }, EquipmentRequirement: AnimationEquipmentRequirement.Unarmed),
+        new("DirtyJab", "Dirty Jab", "Unarmed", AuthoredAnimation.DirtyJab, new FeatType[] { FeatType.DirtyJab1, FeatType.DirtyJab2, FeatType.DirtyJab3, FeatType.DirtyJab4 }, EquipmentRequirement: AnimationEquipmentRequirement.Unarmed),
+        new("Uppercut", "Uppercut", "Unarmed", AuthoredAnimation.Uppercut, new FeatType[] { FeatType.Uppercut1, FeatType.Uppercut2, FeatType.Uppercut3 }, EquipmentRequirement: AnimationEquipmentRequirement.Unarmed),
+        new("LowKick", "Low Kick", "Unarmed", AuthoredAnimation.LowKick, new FeatType[] { FeatType.LowKick1, FeatType.LowKick2 }, EquipmentRequirement: AnimationEquipmentRequirement.Unarmed),
+        new("BruiserStance", "Bruiser Stance", "Unarmed", AuthoredAnimation.BruiserStance, new FeatType[] { FeatType.BruiserStance1 }, EquipmentRequirement: AnimationEquipmentRequirement.Unarmed),
+        new("Haymaker", "Haymaker", "Unarmed", AuthoredAnimation.Haymaker, new FeatType[] { FeatType.Haymaker1 }, EquipmentRequirement: AnimationEquipmentRequirement.Unarmed),
     };
 }

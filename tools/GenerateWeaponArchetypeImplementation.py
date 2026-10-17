@@ -77,6 +77,7 @@ WEAPON_TABS = {
     "Pistol",
     "Rifle",
     "Throwing",
+    "Unarmed",
 }
 
 BESPOKE_WEAPON_TABS = {
@@ -87,6 +88,9 @@ BESPOKE_WEAPON_TABS = {
     # reflection) that this description-driven generator cannot express. Do not
     # regenerate it here or the hand-written mechanics are lost.
     "Lightsaber",
+    # Enemy-bound technique metadata, captured setup and optional ordinary-attack
+    # weaving are hand-authored; this description-driven generator must preserve them.
+    "Unarmed",
 }
 
 GENERATED_WEAPON_TABS = WEAPON_TABS - BESPOKE_WEAPON_TABS
@@ -109,6 +113,7 @@ SKILL_BY_TAB = {
     "Pistol": "Pistol",
     "Rifle": "Rifle",
     "Throwing": "Throwing",
+    "Unarmed": "Unarmed",
 }
 
 CATEGORY_BY_STYLE = {

@@ -115,13 +115,24 @@ namespace SWLOR.Game.Server.Native
                 var attackerStats = attacker.m_pStats;
 
                 var pCombatRound = attacker.m_pcCombatRound;
-                UsePerkFeat.BeginWeaponAttackRoll(attacker.m_idSelf);
 
                 Log.Write(LogGroup.Attack, "Attacker: " + attacker.GetFirstName().GetSimple(0) + ", defender " + targetObject.GetFirstName().GetSimple(0));
 
                 var pAttackData = pCombatRound.GetAttack(pCombatRound.m_nCurrentAttack);
                 // This API accepts WeaponAttackType, not a boolean off-hand flag.
                 var weapon = pCombatRound.GetCurrentAttackWeapon(pCombatRound.GetWeaponAttackType());
+                // Committed ranged projectiles retain their original resolution semantics.
+                if (pAttackData.m_bRangedAttack == 0 && !WeaponAttackEligibility.IsAllowed(
+                        attacker.m_idSelf, weapon?.m_idSelf ?? OBJECT_INVALID, WeaponAttackPhase.Resolve))
+                {
+                    pAttackData.m_nAttackResult = AttackResultMiss;
+                    pAttackData.m_nMissedBy = DefaultMissedBy;
+                    pAttackData.m_nToHitMod = DefaultToHitMod;
+                    pAttackData.m_nToHitRoll = DefaultToHitRoll;
+                    ProfilerPlugin.PopPerfScope();
+                    return;
+                }
+                UsePerkFeat.BeginWeaponAttackRoll(attacker.m_idSelf);
                 var weaponSkillType = weapon == null
                     ? SkillType.Invalid
                     : SWLOR.Game.Server.Service.Skill.GetSkillTypeByBaseItem((BaseItem)weapon.m_nBaseItem);
@@ -130,6 +141,9 @@ namespace SWLOR.Game.Server.Native
                 var abilitySkillType = UsePerkFeat.TryGetQueuedWeaponAbility(attacker.m_idSelf, weaponSkillType, out var queuedAbility, attacker.m_pcCombatRound.m_nCurrentAttack)
                     ? Combat.GetAbilitySkillType(attacker.m_idSelf, queuedAbility)
                     : weaponSkillType;
+                var techniqueAccuracy = MeleeTechnique.PrepareOrdinaryAttempt(
+                    attacker.m_idSelf, targetObject.m_idSelf, weaponSkillType, queuedAbility != null,
+                    pCombatRound.m_nCurrentAttack);
 
                 if (targetObject.m_nObjectType != (int)ObjectType.Creature)
                 {
@@ -168,6 +182,10 @@ namespace SWLOR.Game.Server.Native
                     ? AbilityType.Invalid
                     : Combat.GetQueuedAbilityAccuracyAbilityType(attacker.m_idSelf, abilitySkillType);
                 var attackerAccuracy = Stat.GetAccuracyNative(attacker, weapon, abilitySkillType, accuracyAbility);
+                if (queuedAbility == null)
+                    attackerAccuracy += techniqueAccuracy - Stat.GetStatAdjustment(attacker.m_idSelf, StatType.OrdinaryWeaponAccuracyPenalty);
+                else
+                    attackerAccuracy += MeleeTechnique.GetAbilityAccuracy(attacker.m_idSelf, targetObject.m_idSelf, queuedAbility);
                 attackerAccuracy = Combat.ApplyStatusSourceAccuracyModifiers(
                     attacker.m_idSelf,
                     defender.m_idSelf,

@@ -144,6 +144,8 @@ namespace SWLOR.Game.Server.Service.CraftService
         LocationMusicDiscs = 69,
         [RecipeCategory("Ambient Music Discs", true)]
         AmbientMusicDiscs = 70,
+        [RecipeCategory("Power Glove", true)]
+        PowerGlove = 71,
     }
 
     public class RecipeCategoryAttribute : Attribute

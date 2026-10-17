@@ -1836,12 +1836,23 @@ namespace SWLOR.Game.Server.Service
             if (GetStatusEffectSourceType(statusEffectType) != StatusEffectSourceType.Stance)
                 return;
 
+            MeleeTechnique.OnStanceChanged(creature);
+
             RemoveStatusEffectBySourceType(
                 creature,
                 StatusEffectSourceType.Stance,
                 sendsWornOffMessage,
                 statusEffectType,
                 removeNativeEffect);
+        }
+
+        public static void RemoveInvalidEquipmentEffects(uint creature)
+        {
+            foreach (var effect in GetCreatureStatusEffects(creature).GetAllEffects().ToArray())
+            {
+                if (effect is IEquipmentBoundStatusEffect equipmentBound && !equipmentBound.HasValidEquipment(creature))
+                    RemoveStatusEffect(creature, effect.GetType(), effect.Source, false);
+            }
         }
 
         /// <summary>
@@ -2076,6 +2087,8 @@ namespace SWLOR.Game.Server.Service
 
         private static void NotifyStatusEffectRemoved(uint creature, IStatusEffect statusEffect)
         {
+            if (statusEffect.SourceType == StatusEffectSourceType.Stance)
+                MeleeTechnique.OnStanceChanged(creature);
             if (statusEffect is IStatusEffectRemovedHandler handler)
                 handler.AfterRemoved(creature);
         }
@@ -2349,6 +2362,7 @@ namespace SWLOR.Game.Server.Service
             {
                 effect.OnBeforeDamageTaken(defender, attacker, damage, damageType, deliveryType);
             }
+            MeleeTechnique.PrepareDirectDamage(attacker, defender, deliveryType);
         }
 
         /// <summary>

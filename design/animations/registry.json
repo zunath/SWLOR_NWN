@@ -2838,5 +2838,105 @@
       "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
     ],
     "ProjectPath": "design/animations/vibroblade/DefensiveStance.swlanim"
+  },
+  {
+    "Name": "Jab",
+    "AnimationName": "sw_jab",
+    "Duration": 0.75,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/unarmed/Jab.swlanim"
+  },
+  {
+    "Name": "PalmStrike",
+    "AnimationName": "sw_palmstr",
+    "Duration": 0.85,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/unarmed/PalmStrike.swlanim"
+  },
+  {
+    "Name": "FinishingCombination",
+    "AnimationName": "sw_fincombo",
+    "Duration": 1.15,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/unarmed/FinishingCombination.swlanim"
+  },
+  {
+    "Name": "FlowStance",
+    "AnimationName": "sw_flowst",
+    "Duration": 1.8,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/unarmed/FlowStance.swlanim"
+  },
+  {
+    "Name": "PerfectForm",
+    "AnimationName": "sw_perfform",
+    "Duration": 1.8,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/unarmed/PerfectForm.swlanim"
+  },
+  {
+    "Name": "DirtyJab",
+    "AnimationName": "sw_dirtyjab",
+    "Duration": 0.8,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/unarmed/DirtyJab.swlanim"
+  },
+  {
+    "Name": "Uppercut",
+    "AnimationName": "sw_uppercut",
+    "Duration": 1.25,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/unarmed/Uppercut.swlanim"
+  },
+  {
+    "Name": "LowKick",
+    "AnimationName": "sw_lowkick",
+    "Duration": 1,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/unarmed/LowKick.swlanim"
+  },
+  {
+    "Name": "BruiserStance",
+    "AnimationName": "sw_bruisst",
+    "Duration": 1.8,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/unarmed/BruiserStance.swlanim"
+  },
+  {
+    "Name": "Haymaker",
+    "AnimationName": "sw_haymaker",
+    "Duration": 1.9,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/unarmed/Haymaker.swlanim"
   }
 ]

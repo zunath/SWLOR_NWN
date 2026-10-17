@@ -19,6 +19,21 @@ namespace SWLOR.Game.Server.Feature
             var item = StringToObject(EventsPlugin.GetEventData("ITEM"));
             var slot = (InventorySlot)Convert.ToInt32(EventsPlugin.GetEventData("SLOT"));
 
+            // The internal appearance carrier never dispatches gameplay equipment hooks.
+            if (GetBaseItemType(item) == BaseItem.CompanionPowerGlove)
+            {
+                var main = GetItemInSlot(InventorySlot.RightHand, creature);
+                var left = GetItemInSlot(InventorySlot.LeftHand, creature);
+                var authorized = PowerGloveEquipment.IsChanging(creature) &&
+                                 PowerGloveEquipment.IsLinkedPair(creature, main, item);
+                if (string.IsNullOrWhiteSpace(GetPowerGloveEquipmentError(GetBaseItemType(item), slot,
+                        GetIsObjectValid(main) ? GetBaseItemType(main) : null,
+                        GetIsObjectValid(left) ? GetBaseItemType(left) : null, authorized)))
+                    return;
+                EventsPlugin.SkipEvent();
+                return;
+            }
+
             var originalBaseItem = GetBaseItemType(item);
             PistolBaseItemCompatibility.Normalize(item);
             var canonicalSlot = PistolBaseItemCompatibility.GetCanonicalInventorySlot(
@@ -38,6 +53,14 @@ namespace SWLOR.Game.Server.Feature
                 !GetIsDMPossessed(creature);
             var canUseItem = Item.CanEquip(creature, item);
             var isRingSwappingPositions = IsRingSwappingPositions(creature, item, slot);
+            var mainHand = GetItemInSlot(InventorySlot.RightHand, creature);
+            var offHand = GetItemInSlot(InventorySlot.LeftHand, creature);
+            canUseItem = GetPowerGloveEquipmentError(GetBaseItemType(item), slot,
+                GetIsObjectValid(mainHand) ? GetBaseItemType(mainHand) : null,
+                GetIsObjectValid(offHand) ? GetBaseItemType(offHand) : null,
+                existingError: canUseItem);
+            if (PowerGloveEquipment.IsPairItem(item) && Droid.IsDroid(creature))
+                canUseItem = "Constructed droids cannot equip Power Gloves.";
 
             if (isRestrictedActor)
             {
@@ -79,6 +102,29 @@ namespace SWLOR.Game.Server.Feature
             }
 
             EventsPlugin.SkipEvent();
+        }
+
+        /// <summary>One real Power Glove owns both hands; only its generated cosmetic may occupy the left.</summary>
+        public static string GetPowerGloveEquipmentError(
+            BaseItem itemType,
+            InventorySlot slot,
+            BaseItem? rightHandType,
+            BaseItem? leftHandType,
+            bool isAuthorizedCompanion = false,
+            string existingError = "")
+        {
+            if (itemType == BaseItem.CompanionPowerGlove)
+                return isAuthorizedCompanion && slot == InventorySlot.LeftHand &&
+                       rightHandType == BaseItem.PowerGlove && !leftHandType.HasValue
+                    ? string.Empty : "The other Power Glove hand cannot be equipped separately.";
+            if (!string.IsNullOrWhiteSpace(existingError)) return existingError;
+            if (itemType == BaseItem.PowerGlove && slot != InventorySlot.RightHand)
+                return "Power Gloves may only be equipped in the right hand.";
+            if (itemType == BaseItem.PowerGlove && leftHandType.HasValue)
+                return "Power Gloves require both hands. Remove the left-hand item first.";
+            if (slot == InventorySlot.LeftHand && rightHandType == BaseItem.PowerGlove)
+                return "Power Gloves already occupy both hands.";
+            return string.Empty;
         }
 
         /// <summary>
@@ -239,6 +285,7 @@ namespace SWLOR.Game.Server.Feature
 
         private static void RunUnequipTriggers(uint player, uint item)
         {
+            if (PowerGloveEquipment.IsGeneratedCompanion(item)) return;
             var slot = Item.GetItemSlot(player, item);
 
             foreach (var (perkType, actionList) in Perk.GetAllUnequipTriggers())

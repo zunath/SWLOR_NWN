@@ -6198,6 +6198,100 @@ namespace SWLOR.Game.Server.Service.StatService
         [StatType(StatTypeCategory.NonBeneficial)]
         HealingReceivedStaminaRestoreCooldownSeconds = 1099,
 
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        TechniqueWindowExtensionSeconds = 1100,
+
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        TechniqueWeavePower = 1101,
+
+        [StatType(StatTypeCategory.BeneficialWhenPositive, StatTypeAggregation.Maximum)]
+        TechniqueWeaveEnabled = 1102,
+
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        TechniqueConditionalPower = 1103,
+
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        TechniqueConditionalAccuracy = 1104,
+
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        TechniqueRefundStamina = 1105,
+
+        [StatType(StatTypeCategory.NonBeneficial, StatTypeAggregation.Maximum)]
+        TechniqueRefundCooldownSeconds = 1106,
+
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        TechniqueDebuffTargetOrdinaryAccuracy = 1107,
+
+        /// <summary>Positive ordinary attack ACC penalty; multiple sources use the strongest.</summary>
+        [StatType(StatTypeCategory.BeneficialWhenNegative, StatTypeAggregation.Maximum)]
+        OrdinaryWeaponAccuracyPenalty = 1108,
+
+        /// <summary>Positive ordinary Physical damage penalty; multiple sources use the strongest.</summary>
+        [StatType(StatTypeCategory.BeneficialWhenNegative, StatTypeAggregation.Maximum)]
+        OrdinaryPhysicalDamagePenaltyPercent = 1109,
+
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        OrdinarySkillDamagePercentAdjustment = 1110,
+
+        [StatType(StatTypeCategory.NonBeneficial, StatTypeAggregation.Maximum)]
+        OrdinarySkillDamagePercentAdjustmentSkillType = 1111,
+
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        DirectHostileDamageNextTechniqueStaminaDiscount = 1112,
+
+        [StatType(StatTypeCategory.NonBeneficial, StatTypeAggregation.Maximum)]
+        DirectHostileDamageNextTechniqueDiscountDurationSeconds = 1113,
+
+        [StatType(StatTypeCategory.NonBeneficial, StatTypeAggregation.Maximum)]
+        DirectHostileDamageNextTechniqueDiscountCooldownSeconds = 1114,
+
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        TechniqueOpeningFinisherEvasionPercent = 1115,
+
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        TechniqueOpeningFinisherMovementSpeedPercent = 1116,
+
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        TechniqueFinishFinisherHastePercent = 1117,
+
+        [StatType(StatTypeCategory.BeneficialWhenPositive, StatTypeAggregation.Maximum)]
+        TechniqueFinisherWindowDurationSeconds = 1118,
+
+        [StatType(StatTypeCategory.NonBeneficial, StatTypeAggregation.Maximum)]
+        TechniqueFinisherWindowCooldownSeconds = 1119,
+
+        [StatType(StatTypeCategory.BeneficialWhenPositive, StatTypeAggregation.Maximum)]
+        TechniqueSetupBraceWindowSeconds = 1120,
+
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        TechniqueSetupRetaliationPower = 1121,
+
+        [StatType(StatTypeCategory.NonBeneficial, StatTypeAggregation.Maximum)]
+        TechniqueSetupRetaliationCooldownSeconds = 1122,
+
+        /// <summary>Ability ACC against the owner's current Opening or Finish target, with any skill.</summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        TechniqueSetupAbilityAccuracy = 1155,
+
+        /// <summary>One stamina discount earned from direct hostile HP damage, usable by any ability.</summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        DirectHostileDamageNextAbilityStaminaDiscount = 1156,
+
+        [StatType(StatTypeCategory.NonBeneficial, StatTypeAggregation.Maximum)]
+        DirectHostileDamageNextAbilityDiscountDurationSeconds = 1157,
+
+        [StatType(StatTypeCategory.NonBeneficial, StatTypeAggregation.Maximum)]
+        DirectHostileDamageNextAbilityDiscountCooldownSeconds = 1158,
+
+        /// <summary>Registered content profile supplying reaction presentation, independent of equipped weapons.</summary>
+        [StatType(StatTypeCategory.NonBeneficial, StatTypeAggregation.Maximum)]
+        TechniquePresentationSkillType = 1159,
+
+        /// <summary>Sequence line selector belonging to the same source as its technique payload.</summary>
+        [StatType(StatTypeCategory.NonBeneficial, StatTypeAggregation.Maximum)]
+        TechniqueLine = 1160,
+
+
     }
 
     public class StatTypeAttribute : Attribute

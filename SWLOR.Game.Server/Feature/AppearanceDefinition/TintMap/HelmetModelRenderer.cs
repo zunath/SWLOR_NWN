@@ -121,11 +121,21 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
             var appearance = nativeCreature.m_cAppearance;
             if (head == originalHead)
             {
-                Release(GetItemInSlot(InventorySlot.Head, creature));
+                var equippedHelmet = GetItemInSlot(InventorySlot.Head, creature);
+                // Native appearance updates can restore the canonical head before the
+                // render-only hidden flag is released. Remember the projection before
+                // releasing it so the normal helmet attachment is rebuilt as well.
+                var wasProjected = IsRenderedHead(appearance.m_nHeadVariation) ||
+                                   BaseHeadScales.ContainsKey(creature) ||
+                                   GetLocalInt(equippedHelmet, RenderHeadHiddenVariable) != 0;
+                Release(equippedHelmet);
                 RestoreHeadScale(creature);
-                // Leave unsupported appearances entirely native. Restore only an appearance
-                // that we previously projected; this also honors the native hidden-item flag.
-                if (!IsRenderedHead(appearance.m_nHeadVariation))
+                var nativeHeadItem = GetIsObjectValid(equippedHelmet) && GetHiddenWhenEquipped(equippedHelmet) == 0
+                    ? equippedHelmet
+                    : OBJECT_INVALID;
+                // A non-tintable helmet also needs an equipment refresh when the owner
+                // hides or shows it; its canonical head alone cannot detect that change.
+                if (!wasProjected && appearance.m_oidHeadItem == nativeHeadItem)
                     return;
                 nativeCreature.UpdateAppearanceForEquippedItems();
                 appearance.m_nHeadVariation = originalHead;

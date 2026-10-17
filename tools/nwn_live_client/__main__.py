@@ -87,10 +87,16 @@ def main(argv: list[str] | None = None) -> int:
                         f'python tools/NwnLiveClient.py down "{stack.run_dir}"')
                 else:
                     log('Start-up failed; tearing the stack down')
-                    report = destroy(stack)
-                    if not report['clean']:
-                        for error in report['errors'] or ['Resources or copies remain; see cleanup.json.']:
-                            log(f'Teardown problem: {error}')
+                    try:
+                        report = destroy(stack)
+                        problems = [] if report['clean'] else (
+                            report['errors'] or ['Resources or copies remain; see cleanup.json.'])
+                    except Exception as error:
+                        # Keep the start-up error as the one raised; teardown's own failure is reported here.
+                        problems = [f'Automatic teardown failed: {error}']
+                    for problem in problems:
+                        log(f'Teardown problem: {problem}')
+                    if problems:
                         log(f'Retry with: python tools/NwnLiveClient.py down "{stack.run_dir}"')
                 raise
             log(f'Ready. Run directory: {stack.run_dir}')

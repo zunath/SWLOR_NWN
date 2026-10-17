@@ -295,8 +295,8 @@ class Stack:
     def save(self) -> None:
         self.state_path.write_text(json.dumps(self.state, indent=2) + '\n', 'utf-8')
 
-    def ensure_owner(self, require_reservation: bool = True) -> None:
-        """Refuse to act when the project name is no longer this run's.
+    def ensure_owner(self, require_reservation: bool = True) -> bool:
+        """Refuse to act when the project name is no longer this run's; True when this run holds it.
 
         Containers are found by project name, so after a released name is reused by
         another run, a stale run directory would otherwise drive that run's stack.
@@ -305,10 +305,11 @@ class Stack:
         if holder is None:
             if require_reservation:
                 raise LiveStackError(f'Project {self.project} has no reservation; this run was torn down.')
-            return
-        if os.path.normcase(holder) != os.path.normcase(str(self.run_dir)):
+            return False
+        if not same_path(holder, str(self.run_dir)):
             raise LiveStackError(f'Project {self.project} is now reserved by run {holder}; '
                                  f'refusing to act on it from {self.run_dir}.')
+        return True
 
     def compose(self, *arguments: str, client: bool = False, check: bool = True, capture: bool = False,
                 timeout: float = 600) -> subprocess.CompletedProcess:
@@ -445,10 +446,10 @@ def create(options) -> Stack:
         run_dir.parent.mkdir(parents=True, exist_ok=True)
         run_dir.mkdir()
     except FileExistsError:
-        release_project(project)
+        release_project(project, run_dir)
         raise LiveStackError(f'The run directory was created by another run: {run_dir}') from None
     except BaseException:
-        release_project(project)
+        release_project(project, run_dir)
         raise
     try:
         # The run holds a CD key and a character: keep it private to the caller.
@@ -519,7 +520,7 @@ def create(options) -> Stack:
         }), 'utf-8')
     except BaseException:
         remove_tree(run_dir)
-        release_project(project)
+        release_project(project, run_dir)
         raise
     log(f'Run directory {run_dir} (project {project})')
     return stack
@@ -547,19 +548,40 @@ def reserve_project(project: str, run_dir: Path, image: str) -> None:
                              f'down on that run (docker rm {reservation_name(project)} only once it is gone).')
 
 
-def reservation_holder(project: str) -> str | None:
-    """The run directory recorded on the project's reservation, or None when there is none."""
-    owner = run(['docker', 'container', 'inspect', '-f', '{{index .Config.Labels "swlor.live.run_dir"}}',
+def reservation(project: str) -> tuple[str, str] | None:
+    """The reservation container's immutable ID and recorded run directory, or None."""
+    owner = run(['docker', 'container', 'inspect', '-f', '{{.Id}} {{index .Config.Labels "swlor.live.run_dir"}}',
                  reservation_name(project)], check=False, capture=True, timeout=60)
     if owner.returncode != 0:
         return None
-    return owner.stdout.decode('utf-8', 'replace').strip() or None
+    container_id, _, run_dir = owner.stdout.decode('utf-8', 'replace').strip().partition(' ')
+    return container_id, run_dir
 
 
-def release_project(project: str) -> bool:
-    """Remove the project reservation; True when it no longer exists."""
-    run(['docker', 'rm', reservation_name(project)], check=False, capture=True, timeout=60)
-    return run(['docker', 'container', 'inspect', reservation_name(project)], check=False, capture=True,
+def reservation_holder(project: str) -> str | None:
+    """The run directory recorded on the project's reservation, or None when there is none."""
+    found = reservation(project)
+    return found[1] or None if found else None
+
+
+def same_path(first: str, second: str) -> bool:
+    return os.path.normcase(first) == os.path.normcase(second)
+
+
+def release_project(project: str, run_dir: Path) -> bool:
+    """Remove this run's reservation by ID; True when no reservation of this run remains.
+
+    Removing by ID after checking the owner means a reservation another run created under
+    the same name in the meantime is never removed.
+    """
+    found = reservation(project)
+    if found is None:
+        return True
+    container_id, holder = found
+    if not same_path(holder, str(run_dir)):
+        return True
+    run(['docker', 'rm', container_id], check=False, capture=True, timeout=60)
+    return run(['docker', 'container', 'inspect', container_id], check=False, capture=True,
                timeout=60).returncode != 0
 
 
@@ -788,26 +810,31 @@ def return_home_ownership(stack: Stack) -> None:
 
 def destroy(stack: Stack) -> dict:
     """Boot the player, remove the project's Docker resources, then the key, profile and home."""
-    # A rerun after a partial teardown may find the reservation already released.
-    stack.ensure_owner(require_reservation=False)
-    report = {'project': stack.project, 'utc': utc_now()}
+    # The reservation is released only once this run's Docker resources are gone, so a rerun
+    # that finds none must leave Docker alone: anything under the name now belongs to another run.
+    owns_project = stack.ensure_owner(require_reservation=False)
+    report = {'project': stack.project, 'utc': utc_now(), 'player_booted': True}
     errors = []
-    try:
-        report['player_booted'] = boot_players(stack)
-    except LiveStackError as error:
-        report['player_booted'] = False
-        errors.append(str(error))
-    if not report['player_booted']:
-        errors.append('The player was not confirmed booted; the CD key may stay held for 60 seconds.')
-    if (stack.run_dir / 'compose.env').is_file():
-        stack.compose('stop', '-t', '30', 'client', client=True, check=False, capture=True, timeout=120)
-        result = stack.compose('down', '--volumes', '--remove-orphans', '--timeout', '60', client=True,
-                               check=False, capture=True, timeout=600)
-        if result.returncode != 0:
-            errors.append('compose down failed: ' + result.stderr.decode('utf-8', 'replace').strip())
+    if owns_project:
+        try:
+            report['player_booted'] = boot_players(stack)
+        except LiveStackError as error:
+            report['player_booted'] = False
+            errors.append(str(error))
+        if not report['player_booted']:
+            errors.append('The player was not confirmed booted; the CD key may stay held for 60 seconds.')
+        if (stack.run_dir / 'compose.env').is_file():
+            stack.compose('stop', '-t', '30', 'client', client=True, check=False, capture=True, timeout=120)
+            result = stack.compose('down', '--volumes', '--remove-orphans', '--timeout', '60', client=True,
+                                   check=False, capture=True, timeout=600)
+            if result.returncode != 0:
+                errors.append('compose down failed: ' + result.stderr.decode('utf-8', 'replace').strip())
+
+    def own_resources() -> dict[str, list[str]]:
+        return project_resources(stack.project) if owns_project else {'containers': [], 'volumes': [], 'networks': []}
 
     (stack.profile / 'cdkey.ini').unlink(missing_ok=True)
-    if project_resources(stack.project)['containers']:
+    if own_resources()['containers']:
         # A surviving container still uses the bind mounts; keep them, and compose.env so down can be rerun.
         errors.append('Containers remain after compose down; the profile, home and build were kept. '
                       'Fix the containers, then run down again.')
@@ -840,13 +867,13 @@ def destroy(stack: Stack) -> dict:
     if not report['hak_folder_unchanged']:
         errors.append('The shared hak folder changed during the run; captures may mix asset versions. Recapture.')
 
-    resources = project_resources(stack.project)
+    resources = own_resources()
     report['reservation_removed'] = False
     if not any(resources.values()):
         # Kept while any project resource remains so down can be rerun.
         for name in ('compose.env', 'server-extra.env', 'server.env'):
             (stack.run_dir / name).unlink(missing_ok=True)
-        report['reservation_removed'] = release_project(stack.project)
+        report['reservation_removed'] = release_project(stack.project, stack.run_dir)
         if not report['reservation_removed']:
             errors.append(f'Could not remove the {reservation_name(stack.project)} reservation container.')
     leftovers = [str(path) for pattern in ('cdkey.ini', '*.bic') for path in stack.run_dir.rglob(pattern)]

@@ -137,7 +137,7 @@ class LiveClientHelperTests(unittest.TestCase):
         with patch.object(stack, 'run', side_effect=[completed(0)]) as docker:
             stack.reserve_project('swlor-live-lock', self.root / 'first', 'image:tag')
         self.assertEqual(docker.call_args.args[0][:4], ['docker', 'create', '--name', 'swlor-live-lock-reservation'])
-        with patch.object(stack, 'run', side_effect=[completed(1), completed(0, b'C:\\runs\\first\n')]):
+        with patch.object(stack, 'run', side_effect=[completed(1), completed(0, b'0123abcd C:\\runs\\first\n')]):
             with self.assertRaisesRegex(LiveStackError, r'reserved by run C:\\runs\\first'):
                 stack.reserve_project('swlor-live-lock', self.root / 'second', 'image:tag')
 
@@ -151,6 +151,19 @@ class LiveClientHelperTests(unittest.TestCase):
             with self.assertRaisesRegex(LiveStackError, 'now reserved by run'):
                 stack.destroy(stale)
         boot.assert_not_called()
+
+    def test_release_removes_only_this_runs_reservation_by_id(self):
+        def completed(code, out=b''):
+            return subprocess.CompletedProcess([], code, out, b'')
+
+        other = completed(0, b'0123abcd C:\\runs\\new-run\n')
+        with patch.object(stack, 'run', side_effect=[other]) as docker:
+            self.assertTrue(stack.release_project('swlor-live-lock', Path('C:/runs/stale-run')))
+        self.assertEqual(docker.call_count, 1)
+        mine = completed(0, b'0123abcd ' + str(self.root).encode() + b'\n')
+        with patch.object(stack, 'run', side_effect=[mine, completed(0), completed(1)]) as docker:
+            self.assertTrue(stack.release_project('swlor-live-lock', self.root))
+        self.assertEqual(docker.call_args_list[1].args[0], ['docker', 'rm', '0123abcd'])
 
     def test_live_commands_need_this_runs_reservation(self):
         run_dir = self.root / 'run'

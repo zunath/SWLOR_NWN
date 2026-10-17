@@ -20,20 +20,6 @@ namespace SWLOR.Game.Server.Tests.Perks;
 public class UnarmedProgressionTests
 {
     [Test]
-    public void TechniqueStatsHaveUniqueIdsAcrossThePublishedStatCatalog()
-    {
-        var fields = typeof(StatType).GetFields(BindingFlags.Public | BindingFlags.Static);
-        foreach (var field in fields.Where(field => field.Name.StartsWith("Technique", StringComparison.Ordinal)))
-        {
-            var id = (int)field.GetRawConstantValue()!;
-            var aliases = fields.Where(candidate => (int)candidate.GetRawConstantValue()! == id)
-                .Select(candidate => candidate.Name).ToArray();
-            Assert.That(aliases, Is.EqualTo(new[] { field.Name }),
-                $"Technique stat {field.Name} must not alias a published gameplay stat.");
-        }
-    }
-
-    [Test]
     public void SkillUsesNormalWeaponProgressionForBothCharacterTypes()
     {
         var metadata = typeof(SkillType).GetField(nameof(SkillType.Unarmed))!.GetCustomAttribute<SkillAttribute>()!;

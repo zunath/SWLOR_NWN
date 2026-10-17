@@ -790,6 +790,10 @@ The shared adapter uses CleanModels v4.4.2 from cleanmodels-qt v1.1.7; it does n
 patch or run the legacy compiler. `CLEANMODELS` selects a custom install path.
 The new compiler hash invalidates generation caches; existing shipped assets
 retain their original compiler provenance until explicitly regenerated and validated.
+Historical bank repacking records the current audit compiler separately in
+`validation_compiler_sha256` and checks current tool fingerprints without
+relaxing resource hashes. Cross-compiler motion revisions preserve the original
+rig and unselected native components, remapping only candidate animation IDs.
 The adapter fills omitted static identity rotations in temporary ASCII inputs
 because v4.4.2 otherwise emits non-unit quaternions for those defaults. The bank
 reader supports both compiler layouts and relocates parent offsets without

@@ -443,16 +443,17 @@ with approximately 121 minutes for the preceding full rebuild. This is a no-op
 measurement, not a changed-build benchmark. All 3,256 compiled outputs remained
 byte-identical when adopting the validated build cache.
 
-The legacy model compiler adds inverse local translations without composing
+Models built with the legacy compiler could add inverse local translations without composing
 their rotations. A rotated skin beneath a translated parent therefore receives
 incorrect inverse bone translations; robe 116 was displaced by roughly 1.7m
-on human bodies. Compilation corrects a mesh only when every used binding
+on human bodies. Compilation previously corrected a mesh only when every used binding
 matches that compiler calculation, using `inverse(boneWorld) * meshWorld`.
 Unrelated authored inverse bindings remain intact. The repair covers all 40
 source variants of robe 116 and their generated RGB roots. Regression coverage
 includes an actual compiled rotated mesh, its skinned vertex positions, and a
 scan of the complete robe catalog; preserving old inverse-bind bytes alone is
-not sufficient to prove correct placement.
+not sufficient to prove correct placement. CleanModels composes these transforms
+directly; the current adapter does not apply that legacy postcompile repair.
 
 Robe 236's torso coverings (`coat_top` / `coat_top2`) originally used dangly
 meshes despite having zero constraints on every
@@ -783,7 +784,16 @@ Leaving converted MDLs in text format makes the client compile them while
 loading creatures. The tint asset audit rejects active tint models in this
 format.
 
-Use `SWLOR_Haks/tools/CompileModels.py` before packaging changed model folders.
+Install the pinned CleanModels CLI with `SWLOR_Haks/tools/SetupModelCompiler.ps1`,
+then use `SWLOR_Haks/tools/CompileModels.py` before packaging changed model folders.
+The shared adapter uses CleanModels v4.4.2 from cleanmodels-qt v1.1.7; it does not
+patch or run the legacy compiler. `CLEANMODELS` selects a custom install path.
+The new compiler hash invalidates generation caches; existing shipped assets
+retain their original compiler provenance until explicitly regenerated and validated.
+The adapter fills omitted static identity rotations in temporary ASCII inputs
+because v4.4.2 otherwise emits non-unit quaternions for those defaults. The bank
+reader supports both compiler layouts and relocates parent offsets without
+changing controller or event bytes.
 Select individual resources with repeated `--model <resref>` arguments, or a
 branch's changes with `--since <HAK-base-commit>`. Supply `--game-data
 "<NWN>/data"` for stock supermodels. The default run stages and validates;
@@ -794,9 +804,9 @@ Legacy sources may need `--repair-legacy-inputs` for omitted neutral UV data or
 an unused final constraint. Each repair is recorded. The explicit
 `--allow-missing-supermodels` option retains unresolved supermodel names while
 compiling the local hierarchy as NWN does; it rejects any skin bone that would
-require the missing model. Compile-only vertex tags prevent the old compiler
-from merging different skin weights, and authored normals and vertex colors
-are restored in the binary data when the compiler would discard them.
+require the missing model. CleanModels preserves authored skin weights, normals,
+and vertex colors directly; the adapter no longer tags UVs, patches vertex
+arrays, or repairs legacy compiler skin bindings after compilation.
 
 Validation must inspect the binary geometry, UVs, skin weights, vertex colors,
 node transforms, and material bindings. A decompile-only comparison is

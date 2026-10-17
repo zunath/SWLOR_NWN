@@ -75,6 +75,7 @@ Before writing code in an unfamiliar area, find two or three existing examples o
 
 ## Content Rules
 
+- **Model compilation:** use CleanModels v4.4.2 bundled with cleanmodels-qt v1.1.7, installed by `SWLOR_Haks/tools/SetupModelCompiler.ps1`. Use the shared compile helpers; never run `nwnmdlcomp.exe` or the NWN game to compile models.
 - **Item appearances:** read `SWLOR.Game.Server/Readmes/ItemAppearanceRules.md` before choosing or changing item models. Helmet model 223 is Revan's mask and hood and must never be assigned to player equipment.
 - **Saber loot:** training sabers, training saberstaves, lightsabers, and saberstaves must never appear in regular loot tables, including rare, boss, chest, and steal tables. Their acquisition belongs to the dedicated progression/crafting systems. Validate loot by blueprint base item type, not display name.
 - **Conversations:** authored dialogue lives only in `SWLOR.Game.Server/ConversationData/*.conversation.json`. Edit those graphs directly; never create DLG sources or regenerate graphs from legacy files. `Module/dlg/dmfi_universal.dlg.json` and the empty `Module/dlg/x0_skill_ctrap.dlg.json` base-game crafting override are the native exceptions. Preserve NPC `Conversation` IDs and route through `dialog_start`. Read `SWLOR.Game.Server/Readmes/Conversations.md` first.

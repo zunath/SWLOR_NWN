@@ -93,6 +93,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             {
                 var layout = Property.GetLayoutByType(layoutType);
 
+                if (!layout.IsAvailableForRent)
+                    continue;
+
                 layoutNames.Add(layout.Name);
                 layoutToggles.Add(false);
                 _layoutTypes.Add(layoutType);

@@ -51,6 +51,8 @@ public class OfflineStoredItemMigrationTests
         Locals(Read(migrated)).Should().Equal(
             (LootStatRevisionMigration.RevisionVariable, LootStatRevisionMigration.CurrentRevision),
             (RareLootStatRevisionCatalog.RevisionVariable, RareLootStatRevisionCatalog.CurrentRevision));
+        Children(Read(migrated), "VarTable").Select(variable => variable.Type).Should().OnlyContain(type => type == 0,
+            "the engine saves every local with struct type 0");
 
         Migrate(migrated, out var rerun, true, out _).Should().BeFalse("revision locals make the sweep idempotent");
         rerun.Should().BeSameAs(migrated);

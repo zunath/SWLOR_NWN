@@ -350,7 +350,6 @@ internal sealed partial class StoredObjectData
                 MakeField(5, "Value", BitConverter.GetBytes(value)),
             }
         });
-        NumberListElements(variables);
     }
 
     private static string ReadText(Node variable)
@@ -362,7 +361,7 @@ internal sealed partial class StoredObjectData
     private static void WriteText(Node variable, string text)
         => variable.Fields.Single(x => x.Name == "Value" && x.Type == 10).Data = StringData(text);
 
-    /// <summary>The engine saves list elements with their index as the struct type.</summary>
+    /// <summary>The engine saves item properties with their index as the struct type (locals all use 0).</summary>
     private static void NumberListElements(Field list)
     {
         for (var index = 0; index < list.Children.Count; index++)

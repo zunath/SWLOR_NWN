@@ -2,7 +2,7 @@
 
 Read before adding or changing a server or player migration, or any change to persisted data.
 
-Sections: How migrations run · One migration per release · One pass per data set · Server before player · Enum renames · Testing
+Sections: How migrations run · One migration per release · One pass per data set · Server before player · Offline migrations · Enum renames · Testing
 
 ## How migrations run
 
@@ -32,6 +32,15 @@ Large data sets are loaded and saved once per release, with every change for tha
 ## Server before player
 
 Prefer server migrations: they run once at boot over every stored record, including players who are offline. Use a player migration only for data that exists only on the character file or live object (equipped and carried items, character-file locals), and keep it to that data.
+
+## Offline migrations
+
+A server migration that only reads and writes database records can also implement `IOfflineServerMigration`, so `SWLOR.CLI --migrateOffline` applies it to a stopped server's database instead of the server running it at boot (`SWLOR.CLI/Readmes/README_OfflineMigrations.md`). Stored-item sweeps gain the most: the engine pass loads every stored item into the game one at a time, while the offline pass edits saved GFF in parallel.
+
+- `MigrateOffline` must save the same records as `Migrate` with no NWScript, NWNX or engine calls. Share the record list between the two passes (`_27_UpdateStoredItems.Sweep`) and keep each offline item rule beside the engine rule it mirrors (`StoredObjectData.OfflineItemSweep.cs`).
+- Write new GFF data the way the engine saves it: a property built with `ItemPropertyCustom` and -1 arguments saves Subtype 65535 and Param1Value 255, item properties are numbered by list index, and locals use struct type 0.
+- Before marking a migration offline-capable, check parity on a production copy: run the engine pass on one copy and the runner on another, then compare the decoded records. The engine also re-saves older items in the current format (new default fields, reset orientation, reordered locals); those differences are expected.
+- The server still runs the migration at boot when the runner is not used, so its engine path keeps its tests.
 
 ## Enum renames
 

@@ -136,6 +136,11 @@ to stay green forever.
 application layer. Shared libraries and the game server must remain independently reusable. See
 [LICENSE-NOTICE.md](LICENSE-NOTICE.md).
 
+**Builder-facing dropdowns and pickers never show 2DA placeholder rows** (`DELETED`, `USER`,
+`UNUSED`, `INVALID*`, `Padding`, numbered `NULL` slots, and similar). Route 2DA options through
+`TwoDaChoicePolicy`, declare required columns in `TwoDaLookupTables`, fail closed when validity
+cannot be proven, and add regression coverage for each new 2DA-backed option source.
+
 **Corpus gates are the real safety net.** Several tests run against all 438+ module areas — GFF
 round-trip, scene assembly, tile adjacency, matcher soundness, paint idempotency. They exist because
 this domain is full of rules that look right in isolation and are wrong against real data. Do not

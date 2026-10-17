@@ -5,7 +5,9 @@ for agent-assisted work. Commit only the finished model, compressed texture maps
 definition and inventory icon for each weapon. Keep GR2/DDS inputs, Blender
 scenes, per-model builders, manifests and review artifacts in ignored local
 staging such as `.tmp/blaster/`. The normal game/HAK build uses the committed game
-resources directly; it must not require those authoring files.
+resources directly; it must not require those authoring files. Delete each
+intermediate once used and empty the staging folder after the finished resources
+are committed (see [AgentEnvironment.md](AgentEnvironment.md), "Disk hygiene").
 
 ## Slots and existing replacements
 

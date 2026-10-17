@@ -18,6 +18,8 @@ or registration stubs as an automatic workaround for native lookup failures.
 Keep imported GR2/DDS inputs, manifests, Blender files, per-model authoring scripts,
 fit data, previews and reports in ignored local staging such as `.tmp/blaster/`.
 Do not add them to Git for reproducibility or make validation/builds depend on them.
+Delete each intermediate as soon as no later step needs it, and empty the staging
+folder once the finished resources are committed; do not wait to be asked.
 The finished MDL and maps are the starting point for later edits. Retain reusable
 conversion, fitting and export helpers in the process tooling.
 

@@ -5,6 +5,7 @@ using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Extension;
 using SWLOR.Game.Server.Service.KeyItemService;
 using SWLOR.Game.Server.Service.MusicService;
+using SWLOR.Game.Server.Service.PropertyService;
 using SWLOR.NWN.API.NWNX;
 
 namespace SWLOR.Game.Server.Service
@@ -215,26 +216,31 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>
-        /// Retrieves the player ID of the owner of a jukebox structure: the owner of the top-level
-        /// property it sits in, such as the city, apartment or ship. Structures keep the owner they
-        /// were placed under, so a city's current mayor is only recorded on the city itself.
+        /// Retrieves the player ID of the owner of the property containing a jukebox structure.
+        /// Stop at the containing interior so a house uses its owner's collection instead of the
+        /// city's mayor. Structures retain their original owner, so use the containing property's owner.
         /// Jukeboxes placed in the world rather than in a property have no owner.
         /// </summary>
         /// <param name="jukebox">The jukebox placeable</param>
         /// <returns>The owner's player ID, or an empty string if the jukebox has no owner.</returns>
         public static string GetJukeboxOwnerId(uint jukebox)
         {
-            var propertyId = Property.GetPropertyId(jukebox);
+            return ResolveJukeboxOwnerId(Property.GetPropertyId(jukebox), DB.Get<WorldProperty>);
+        }
+
+        private static string ResolveJukeboxOwnerId(string propertyId, Func<string, WorldProperty> getProperty)
+        {
             if (string.IsNullOrWhiteSpace(propertyId))
                 return string.Empty;
 
-            var property = DB.Get<WorldProperty>(propertyId);
+            var property = getProperty(propertyId);
             var visited = new HashSet<string>();
             while (property != null &&
+                   property.PropertyType == PropertyType.Structure &&
                    visited.Add(property.Id) &&
                    !string.IsNullOrWhiteSpace(property.ParentPropertyId))
             {
-                var parent = DB.Get<WorldProperty>(property.ParentPropertyId);
+                var parent = getProperty(property.ParentPropertyId);
                 if (parent == null)
                     break;
 

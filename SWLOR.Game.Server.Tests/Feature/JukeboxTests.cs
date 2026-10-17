@@ -3,17 +3,102 @@ using System.Text.Json;
 using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Game.Server.Core;
+using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Feature.GuiDefinition;
 using SWLOR.Game.Server.Feature.GuiDefinition.ViewModel;
 using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.GuiService.Component;
 using SWLOR.Game.Server.Service.MusicService;
+using SWLOR.Game.Server.Service.PropertyService;
 
 namespace SWLOR.Game.Server.Tests.Feature;
 
 public class JukeboxTests
 {
     private static readonly HashSet<int> JukeboxAppearances = [6937, 7639, 31806, 31807, 31808, 31809, 31810];
+
+    [TestCase(PropertyType.House)]
+    [TestCase(PropertyType.Apartment)]
+    [TestCase(PropertyType.Starship)]
+    [TestCase(PropertyType.Cantina)]
+    public void InteriorJukebox_UsesCurrentInteriorOwnerWithoutFollowingTheCity(PropertyType interiorType)
+    {
+        var jukebox = new WorldProperty
+        {
+            PropertyType = PropertyType.Structure,
+            OwnerPlayerId = "previous-owner",
+            ParentPropertyId = "interior"
+        };
+        var interior = new WorldProperty
+        {
+            PropertyType = interiorType,
+            OwnerPlayerId = "house-owner",
+            ParentPropertyId = "building"
+        };
+        var building = new WorldProperty
+        {
+            PropertyType = PropertyType.Structure,
+            OwnerPlayerId = "mayor",
+            ParentPropertyId = "city"
+        };
+        var city = new WorldProperty { PropertyType = PropertyType.City, OwnerPlayerId = "mayor" };
+        var properties = new Dictionary<string, WorldProperty>
+        {
+            [jukebox.Id] = jukebox, ["interior"] = interior, ["building"] = building, ["city"] = city
+        };
+        var reads = new List<string>();
+
+        ResolveOwner(jukebox.Id, id => { reads.Add(id); return properties[id]; }).Should().Be("house-owner");
+        reads.Should().Equal(jukebox.Id, "interior");
+
+        interior.OwnerPlayerId = "new-house-owner";
+        ResolveOwner(jukebox.Id, id => properties[id]).Should().Be("new-house-owner");
+    }
+
+    [Test]
+    public void CityJukebox_UsesCurrentMayorInsteadOfItsRecordedOwner()
+    {
+        var jukebox = new WorldProperty
+        {
+            PropertyType = PropertyType.Structure,
+            OwnerPlayerId = "previous-mayor",
+            ParentPropertyId = "city"
+        };
+        var city = new WorldProperty
+        {
+            PropertyType = PropertyType.City,
+            OwnerPlayerId = "current-mayor",
+            ParentPropertyId = "area-resref"
+        };
+        var properties = new Dictionary<string, WorldProperty> { [jukebox.Id] = jukebox, ["city"] = city };
+
+        ResolveOwner(jukebox.Id, id => properties[id]).Should().Be("current-mayor");
+    }
+
+    [TestCase(null)]
+    [TestCase("")]
+    [TestCase(" ")]
+    public void UnownedWorldJukebox_HasNoCollectionOwner(string propertyId)
+    {
+        ResolveOwner(propertyId, _ => throw new AssertionException("An unowned jukebox must not query properties."))
+            .Should().BeEmpty();
+    }
+
+    [Test]
+    public void MissingJukeboxProperty_HasNoCollectionOwner()
+    {
+        ResolveOwner("missing-property", _ => null!).Should().BeEmpty();
+    }
+
+    [Test]
+    public void UnownedInterior_DoesNotFallBackToTheMayor()
+    {
+        var jukebox = new WorldProperty { PropertyType = PropertyType.Structure, ParentPropertyId = "interior" };
+        var interior = new WorldProperty { PropertyType = PropertyType.House, ParentPropertyId = "building" };
+        var properties = new Dictionary<string, WorldProperty> { [jukebox.Id] = jukebox, ["interior"] = interior };
+
+        ResolveOwner(jukebox.Id, id => properties[id]).Should().BeEmpty();
+    }
 
     [TestCase("utp")]
     [TestCase("git")]
@@ -88,6 +173,11 @@ public class JukeboxTests
         Walk(authored.PartialViews[MusicPickerViewModel.PersonalContentPartial])
             .Should().ContainSingle(widget => widget is GuiCheckBox<MusicPickerViewModel>);
     }
+
+    private static string ResolveOwner(string propertyId, Func<string, WorldProperty> getProperty) =>
+        (string)typeof(Server.Service.Music)
+            .GetMethod("ResolveJukeboxOwnerId", BindingFlags.Static | BindingFlags.NonPublic)!
+            .Invoke(null, new object[] { propertyId, getProperty })!;
 
     private static IEnumerable<IGuiWidget> Walk(IGuiWidget widget) =>
         new[] { widget }.Concat(widget.Elements.SelectMany(Walk));

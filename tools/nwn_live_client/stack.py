@@ -804,6 +804,8 @@ def verify_public_cdkey(stack: Stack, timeout: float = 300) -> None:
             if keys[-1] != stack.state['public_cdkey']:
                 raise LiveStackError(f'The client connected with public CD key {keys[-1]}, not the '
                                      f'--public-cdkey given ({stack.state["public_cdkey"]}).')
+            if not stack.running('client') or stack.joined_players() <= 0:
+                raise LiveStackError('The client connected and then stopped or disconnected.')
             return
         if not stack.running('client'):
             raise LiveStackError('The client stopped before it connected to the server.')
@@ -840,6 +842,12 @@ def play(stack: Stack, settle: float, timeout: float = 600) -> None:
     if already_in:
         log('The character already entered on this connection; not clicking Play again.')
     while not already_in and module_entries(stack) <= entered:
+        # up waits for the connection, so a missing one here means it dropped.
+        if stack.joined_players() <= 0:
+            raise LiveStackError('The client is not connected to the server; see the client and server logs.')
+        for service in ('swlor-server', 'client'):
+            if not stack.running(service):
+                raise LiveStackError(f'The {service} container stopped before the character entered.')
         now = time.monotonic()
         if now >= deadline:
             raise LiveStackError(f'The character did not enter within {timeout:.0f}s. '
@@ -990,6 +998,10 @@ def destroy(stack: Stack) -> dict:
                                    check=False, capture=True, timeout=600)
             if result.returncode != 0:
                 errors.append('compose down failed: ' + result.stderr.decode('utf-8', 'replace').strip())
+    elif stack.joined_players() > 0:
+        # Without ownership the player cannot be kicked, so the boot stays unconfirmed for good.
+        stack.state['unconfirmed_boot'] = True
+        stack.save()
     if stack.state.get('unconfirmed_boot'):
         # Kept across reruns: a later down cannot undo a boot that was never confirmed.
         report['player_booted'] = False

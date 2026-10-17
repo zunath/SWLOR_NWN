@@ -19,8 +19,8 @@ public static partial class MigrationEngineTests
     [EngineTest("Non-ship artwork refresh preserves crafted enhancement state", Category = "ItemIcons")]
     public static async Task EnhancementArtworkPreservesCraftedState(EngineTestContext ctx)
     {
-        var owner = ctx.SpawnCreature("civilian");
-        await ctx.WaitFrameAsync();
+        using var fixture = await PlayerAbilityFixture.CreateAsync(ctx);
+        var owner = fixture.Creature;
         var item = await CreateItemAsync(ctx, owner, "aen_hp1", owner);
         await ctx.ExecuteInCreatureContextAsync(owner, () =>
         {

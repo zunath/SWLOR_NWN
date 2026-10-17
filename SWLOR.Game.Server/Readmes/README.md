@@ -1,183 +1,52 @@
-# SWLOR.Game.Server Documentation
+# SWLOR.Game.Server Guides
 
-This folder contains comprehensive documentation for the SWLOR.Game.Server project, focusing on the various systems and patterns used throughout the codebase.
+One line per guide. Rule guides are required reading before working in their area; the root `AGENTS.md` points to each one under Guides.
 
-## Available Documentation
+## Rules and procedures
 
-### [InEngineVisualVerification.md](InEngineVisualVerification.md)
-Required NWN client screenshot evidence for visual changes, including the isolated background client workflow, public-path checks, capture provenance, reporting, and cleanup.
+- [CodingStandards.md](CodingStandards.md): code conventions, Module JSON editing, StatType design, TLK and 2DA data.
+- [ContentStandards.md](ContentStandards.md): balance standards, item generation, loot, phenotypes, ship-access locations.
+- [Migrations.md](Migrations.md): one migration per release, one pass per data set, server before player.
+- [PullRequests.md](PullRequests.md): branches, the Codex review loop, review threads, public text.
+- [AgentEnvironment.md](AgentEnvironment.md): worktrees and the `SWLOR_Haks` submodule, git network fixes, shared-machine and disk hygiene, builds, local deploy.
+- [InEngineVisualVerification.md](InEngineVisualVerification.md): required NWN client evidence for every change, offline and on a live server.
+- [EngineTesting.md](EngineTesting.md): `[EngineTest]` in-engine tests, including persistence and migration coverage.
+- [AbilityTargeting.md](AbilityTargeting.md): active ability targeting, native feat/spell rows, quick-cast variants.
+- [IconStandards.md](IconStandards.md): gameplay icon color, uniqueness, rank badges, generation, audits.
+- [KeyItemIconStandards.md](KeyItemIconStandards.md): key item (`iki_`) icon format and placement.
+- [VisualEffectSelection.md](VisualEffectSelection.md) and [VisualEffectReference.csv](VisualEffectReference.csv): choosing VFX by gameplay moment.
+- [Conversations.md](Conversations.md): authored dialogue graphs in `ConversationData/`.
+- [PlayerIdentity.md](PlayerIdentity.md): showing player names through the `PlayerName` service.
+- [PlayerFeedback.md](PlayerFeedback.md): which player messages stay enabled in Production.
+- [ItemAppearanceRules.md](ItemAppearanceRules.md): choosing item models; reserved helmet model 223.
+- [EconomyRestrictedItems.md](EconomyRestrictedItems.md): keeping NPC-only and unobtainable items out of player economy surfaces.
+- [NpcHitPoints.md](NpcHitPoints.md): creature HP, stat skins, and the 16-bit HP limit.
+- [NuiLayoutRules.md](NuiLayoutRules.md) and [GuiWindowAuthoring.md](GuiWindowAuthoring.md): NUI layout rules and building a window end to end.
+- [DesignBibleWorkbookRules.md](DesignBibleWorkbookRules.md): editing Design Bible workbooks safely.
+- [QuestContentValidation.md](QuestContentValidation.md): the quest audit and what it enforces.
 
-### [Builders.md](Builders.md)
-Comprehensive documentation of all builder classes in the SWLOR.Game.Server project. This includes:
+## Architecture reference
 
-- **16 different builders** covering all major game systems
-- **Detailed usage examples** for each builder
-- **Key methods and parameters** for each builder
-- **Best practices** and common patterns
-- **Real-world examples** from the codebase
+- [ProjectStructure.md](ProjectStructure.md): solution layout and build setup.
+- [CoreSystems.md](CoreSystems.md): NWScript/NWNX wrappers, async, GUI framework.
+- [Services.md](Services.md): the static game services.
+- [Entities.md](Entities.md): Redis-persisted entities and queries.
+- [Features.md](Features.md) and [Builders.md](Builders.md): content definitions and their builders.
+- [AbilityDefinitions.md](AbilityDefinitions.md): ability definitions in practice.
+- [DualWieldCombat.md](DualWieldCombat.md): dual-wield and double-weapon attack timing.
+- [Weather.md](Weather.md): the weather service.
+- [Deployment.md](Deployment.md): Docker, environments, monitoring.
 
-Builders documented include:
-- AbilityBuilder - For creating player abilities and combat skills
-- PerkBuilder - For creating player perks and skill trees
-- ChatCommandBuilder - For creating in-game chat commands
-- RecipeBuilder - For creating crafting recipes
-- BeastBuilder - For creating beast companion configurations
-- ItemBuilder - For creating item use configurations
-- QuestBuilder - For creating quest configurations
-- ShipBuilder - For creating ship configurations
-- DialogBuilder - For creating NPC conversations
-- SnippetBuilder - For creating conditional dialog options
-- PropertyLayoutBuilder - For creating property layouts
-- FishingLocationBuilder - For creating fishing locations
-- ShipModuleBuilder - For creating ship modules
-- SpaceObjectBuilder - For creating space objects
-- LootTableBuilder - For creating loot tables
+## Content pipelines
 
-### [AbilityDefinitions.md](AbilityDefinitions.md)
-Detailed documentation specifically for ability definitions and how they use the builder pattern. This includes:
+- [BlasterModelImport.md](BlasterModelImport.md) and [RifleModelImport.md](RifleModelImport.md): weapon model import and fitting.
+- [TintMapRendering.md](TintMapRendering.md): tint material rendering.
+- [MimicryBalance.md](MimicryBalance.md): the Mimicry technique balance model.
 
-- **Directory structure** of ability definitions
-- **Main ability types**: Casted and Weapon abilities
-- **Common patterns** and best practices
-- **Impact action examples** with real code
-- **Integration** with other game systems
-- **Testing guidelines** for new abilities
+## Plans, audits, and data
 
-### [IconStandards.md](IconStandards.md)
-Standards for gameplay icon color, uniqueness, rank display, and audit/generation expectations. This includes:
+- [PlayerRecognitionAndDisguisesPlan.md](PlayerRecognitionAndDisguisesPlan.md), [BeastMutationExpansionPlan.md](BeastMutationExpansionPlan.md), [VelesTradeConcourse.md](VelesTradeConcourse.md): feature plans.
+- [WeatherAreaAudit.md](WeatherAreaAudit.md): per-area weather audit.
+- [GameplayIconManifest.csv](GameplayIconManifest.csv), [CombatUpgradeBiblePerkManifest.csv](CombatUpgradeBiblePerkManifest.csv), [PlayerMessageAudit.json](PlayerMessageAudit.json): data read by tools and tests.
 
-- **Semantic color categories** for abilities and status effects
-- **Global uniqueness rules** for gameplay icons
-- **Conditional numeric rank badge requirements**
-- **Generator and audit enforcement expectations**
-
-### [VisualEffectSelection.md](VisualEffectSelection.md)
-Guidance and generated reference data for choosing NWN visual effects for perks, abilities, status effects, and scripted gameplay feedback. This includes:
-
-- **Group selection rules** for beam, combat, duration, eyes, fire-and-forget, and impact VFX
-- **Ability implementation patterns** for activation, target, area, marker, and beam visuals
-- **VisualEffectReference.csv** with C# enum names, NWScript constants, visual tags, colors, locations, source pages, and screenshot URLs
-
-### [PlayerRecognitionAndDisguisesPlan.md](PlayerRecognitionAndDisguisesPlan.md)
-Plan for observer-specific known names, long-running-world migration, combat-log considerations, and a follow-up disguise system.
-
-### [Services.md](Services.md)
-Comprehensive documentation of the Service layer, which handles the core business logic and game mechanics. This includes:
-
-- **30+ different services** covering all major game systems
-- **Service patterns** and integration methods
-- **Cross-service communication** examples
-- **Error handling** and performance considerations
-- **Testing strategies** for services
-
-### [Entities.md](Entities.md)
-Detailed documentation of the Entity layer, which represents the data models and database entities. This includes:
-
-- **Core entities** like Character, Account, PCPerk, PCQuest
-- **Entity relationships** and data access patterns
-- **CRUD operations** and query patterns
-- **Validation** and business rule enforcement
-- **Performance considerations** and caching strategies
-
-### [CoreSystems.md](CoreSystems.md)
-Documentation of the Core systems that provide fundamental functionality and abstractions. This includes:
-
-- **NWScript system** for NWN engine abstractions
-- **NWNX plugin system** for extended functionality
-- **Async system** for asynchronous programming
-- **Beamdog GUI system** for user interfaces
-- **Extension methods** and utility patterns
-
-### [Features.md](Features.md)
-Comprehensive documentation of the Feature layer, which contains game-specific content and implementations. This includes:
-
-- **Feature categories** like abilities, items, quests, perks
-- **Definition interfaces** and builder pattern usage
-- **Feature organization** and naming conventions
-- **Implementation patterns** and best practices
-- **Integration** with services and entities
-
-### [Deployment.md](Deployment.md)
-Comprehensive documentation for deploying and running the SWLOR.Game.Server project. This includes:
-
-- **Docker configuration** and container setup
-- **Environment management** (Development, Test, Production)
-- **Monitoring and logging** with Grafana and Serilog
-- **Security considerations** and best practices
-- **Troubleshooting** and common issues
-- **Scaling strategies** and performance optimization
-- **Backup and recovery** procedures
-
-
-
-### [ProjectStructure.md](ProjectStructure.md)
-Detailed documentation of the overall project structure and development setup. This includes:
-
-- **Project organization** and architecture layers
-- **Build configuration** and dependencies
-- **Development setup** and prerequisites
-- **Application configuration** and environment management
-- **Development workflow** and best practices
-- **Deployment** and monitoring strategies
-
-## Purpose
-
-This documentation serves several purposes:
-
-1. **Onboarding** - Help new developers understand the codebase structure
-2. **Reference** - Provide quick access to builder patterns and usage
-3. **Best Practices** - Document established patterns and conventions
-4. **Examples** - Show real-world usage from the actual codebase
-
-## Target Audience
-
-- **New developers** joining the SWLOR project
-- **Existing developers** looking for reference material
-- **Contributors** wanting to understand the codebase patterns
-- **Maintainers** needing to understand system interactions
-
-## How to Use This Documentation
-
-### For New Developers
-1. Start with [Builders.md](Builders.md) to understand the core patterns
-2. Read [AbilityDefinitions.md](AbilityDefinitions.md) to see how builders are used in practice
-3. Use the examples as templates for your own implementations
-
-### For Reference
-- Use the search function to find specific builders or patterns
-- Follow the links between documents for related information
-- Use the code examples as starting points for your implementations
-
-### For Contributing
-- Follow the documented patterns when adding new features
-- Use the provided examples as templates
-- Maintain consistency with existing code style and patterns
-
-## Contributing to Documentation
-
-When adding new documentation:
-
-1. **Follow the existing format** - Use the same structure and style
-2. **Include real examples** - Use actual code from the codebase
-3. **Update this README** - Add new documents to this list
-4. **Cross-reference** - Link related documentation together
-
-## Related Resources
-
-- **Code Comments** - Many builders have detailed XML documentation
-- **Interface Definitions** - Check the interfaces for additional context
-- **Test Files** - Look for unit tests that demonstrate builder usage
-- **Example Implementations** - Browse the Feature/ directory for real examples
-
-## Maintenance
-
-This documentation should be updated when:
-
-- New builders are added to the codebase
-- Existing builders have significant changes
-- New patterns emerge in the codebase
-- Examples become outdated due to code changes
-
----
-
-*This documentation is maintained as part of the SWLOR.Game.Server project and should be kept up-to-date with the codebase.*
+When adding a guide, add one line here and, for a rule guide, one line under Guides in `AGENTS.md`.

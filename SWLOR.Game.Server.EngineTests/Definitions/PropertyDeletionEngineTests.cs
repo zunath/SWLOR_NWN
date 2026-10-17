@@ -36,15 +36,26 @@ public static class PropertyDeletionEngineTests
         }
     }
 
-    [EngineTest("Retrieving a player starport relocates docked ships and skips deleted ones", Category = "PropertyDeletion")]
+    [EngineTest("Retrieving a player starport returns docked ships to their safe dock and orbit and skips deleted ones", Category = "PropertyDeletion")]
     public static async Task StarportRetrievalSkipsDeletedShips(EngineTestContext ctx)
     {
         var city = CreateCity();
         var (building, interior) = CreateStarport(city, listInCity: true);
         var ship = CreateDockedShip(interior);
-        interior.ChildPropertyIds[PropertyChildType.Starship] = new List<string> { Guid.NewGuid().ToString(), ship.Id };
+        // Registered before safe orbits were recorded.
+        var withoutSafeOrbit = CreateDockedShip(interior);
+        withoutSafeOrbit.Positions.Remove(PropertyLocationType.LastNPCSpacePosition);
+        DB.Set(withoutSafeOrbit);
+        var withoutSafeDock = CreateDockedShip(interior);
+        withoutSafeDock.Positions.Remove(PropertyLocationType.LastNPCDockPosition);
+        withoutSafeDock.Positions.Remove(PropertyLocationType.LastNPCSpacePosition);
+        DB.Set(withoutSafeDock);
+        interior.ChildPropertyIds[PropertyChildType.Starship] = new List<string>
+        {
+            Guid.NewGuid().ToString(), withoutSafeDock.Id, withoutSafeOrbit.Id, ship.Id
+        };
         DB.Set(interior);
-        var created = new List<WorldProperty> { city, building, interior, ship };
+        var created = new List<WorldProperty> { city, building, interior, ship, withoutSafeOrbit, withoutSafeDock };
 
         try
         {
@@ -56,8 +67,22 @@ public static class PropertyDeletionEngineTests
                 "docked ship no longer points at the retrieved starport");
             ctx.AssertEqual("npc_dock", dbShip.Positions[PropertyLocationType.DockPosition].AreaResref,
                 "docked ship returns to its last NPC dock");
+            ctx.AssertEqual("npc_orbit", dbShip.Positions[PropertyLocationType.SpacePosition].AreaResref,
+                "docked ship launches from its last NPC dock's orbit");
             ctx.AssertEqual(0, dbShip.ChildPropertyIds[PropertyChildType.RegisteredStarport].Count,
                 "docked ship's starport registration is cleared");
+
+            var dbWithoutSafeOrbit = DB.Get<WorldProperty>(withoutSafeOrbit.Id);
+            ctx.AssertEqual("npc_dock", dbWithoutSafeOrbit.Positions[PropertyLocationType.DockPosition].AreaResref,
+                "a ship without a recorded safe orbit still returns to its last NPC dock");
+            ctx.AssertEqual("starport_orbit", dbWithoutSafeOrbit.Positions[PropertyLocationType.SpacePosition].AreaResref,
+                "a ship without a recorded safe orbit keeps its orbit");
+
+            var dbWithoutSafeDock = DB.Get<WorldProperty>(withoutSafeDock.Id);
+            ctx.AssertEqual(interior.Id, dbWithoutSafeDock.Positions[PropertyLocationType.DockPosition].InstancePropertyId,
+                "a ship with no safe dock is left in place, and the ships after it are still relocated");
+            ctx.AssertEqual(0, dbWithoutSafeDock.ChildPropertyIds[PropertyChildType.RegisteredStarport].Count,
+                "a ship with no safe dock still loses its starport registration");
         }
         finally
         {
@@ -129,7 +154,9 @@ public static class PropertyDeletionEngineTests
         var ship = CreateProperty(PropertyType.Starship, string.Empty);
         ship.ChildPropertyIds[PropertyChildType.RegisteredStarport] = new List<string> { starport.Id };
         ship.Positions[PropertyLocationType.DockPosition] = new PropertyLocation { InstancePropertyId = starport.Id };
+        ship.Positions[PropertyLocationType.SpacePosition] = new PropertyLocation { AreaResref = "starport_orbit" };
         ship.Positions[PropertyLocationType.LastNPCDockPosition] = new PropertyLocation { AreaResref = "npc_dock" };
+        ship.Positions[PropertyLocationType.LastNPCSpacePosition] = new PropertyLocation { AreaResref = "npc_orbit" };
         DB.Set(ship);
         return ship;
     }

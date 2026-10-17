@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Entity;
-using SWLOR.Game.Server.Service.LogService;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWScript.Enum;
 
@@ -189,10 +188,11 @@ namespace SWLOR.Game.Server.Service.PropertyService
                         if (dbStarship.ChildPropertyIds.ContainsKey(PropertyChildType.RegisteredStarport))
                             dbStarship.ChildPropertyIds[PropertyChildType.RegisteredStarport].Clear();
 
-                        dbStarship.Positions[PropertyLocationType.DockPosition] = dbStarship.Positions[PropertyLocationType.LastNPCDockPosition];
+                        // Returns the ship to its last NPC dock and that dock's orbit, so it launches from the
+                        // starport it is docked at rather than from the retrieved starport's orbit.
+                        Property.ReturnStarshipToSafeDock(dbStarship, dbInterior.Id);
 
                         DB.Set(dbStarship);
-                        Log.Write(LogGroup.Property, $"Starship '{dbStarship.CustomName}' ({dbStarship.Id}) has been relocated to the last NPC dock it visited because the starport '{dbInterior.CustomName}' ({dbInterior.Id}) has been retrieved.");
                     }
                 }
 

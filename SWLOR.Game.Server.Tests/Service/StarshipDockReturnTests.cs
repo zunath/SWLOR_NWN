@@ -136,6 +136,36 @@ public class StarshipDockReturnTests
     }
 
     [Test]
+    public void ShipAtRetrievedPlayerStarport_ReturnsWhileShipsAtOtherStarportsStay()
+    {
+        // Property.ReturnStarshipToSafeDock treats a starport being retrieved as gone, though it still exists.
+        const string otherStarportId = "other-starport";
+        Func<string, bool> starportExists = id => id != PlayerStarportId && id == otherStarportId;
+        var retrieved = new Dictionary<PropertyLocationType, PropertyLocation>
+        {
+            [PropertyLocationType.DockPosition] = AtStarport(PlayerStarportId),
+            [PropertyLocationType.SpacePosition] = At(StationOrbit, 6f),
+            [PropertyLocationType.LastNPCDockPosition] = At(Tatooine, 7f),
+            [PropertyLocationType.LastNPCSpacePosition] = At(TatooineOrbit, 8f),
+        };
+        var otherDock = AtStarport(otherStarportId);
+        var other = new Dictionary<PropertyLocationType, PropertyLocation>
+        {
+            [PropertyLocationType.DockPosition] = otherDock,
+            [PropertyLocationType.LastNPCDockPosition] = At(Tatooine, 7f),
+        };
+
+        StarshipDockReturn.ReturnToSafeDock(retrieved, IsShipOnly, starportExists, ViscaraStarport)
+            .Should().Be(StarshipDockReturnResult.ReturnedFromMissingStarport);
+        StarshipDockReturn.ReturnToSafeDock(other, IsShipOnly, starportExists, ViscaraStarport)
+            .Should().Be(StarshipDockReturnResult.Unchanged);
+
+        ShouldBeAt(retrieved[PropertyLocationType.DockPosition], retrieved[PropertyLocationType.LastNPCDockPosition]);
+        ShouldBeAt(retrieved[PropertyLocationType.SpacePosition], retrieved[PropertyLocationType.LastNPCSpacePosition]);
+        other[PropertyLocationType.DockPosition].Should().BeSameAs(otherDock);
+    }
+
+    [Test]
     public void ShipWithoutSafeOrbit_ReturnsToSafeDockAndKeepsItsOrbit()
     {
         // Ships that have not docked at a regular starport since safe orbits were recorded.

@@ -18,10 +18,51 @@ public class JukeboxTests
     private static readonly HashSet<int> JukeboxAppearances = [6937, 7639, 31806, 31807, 31808, 31809, 31810];
 
     [TestCase(PropertyType.House)]
+    [TestCase(PropertyType.Cantina)]
+    [TestCase(PropertyType.CityHall)]
+    [TestCase(PropertyType.Bank)]
+    [TestCase(PropertyType.MedicalCenter)]
+    [TestCase(PropertyType.Starport)]
+    [TestCase(PropertyType.Lab)]
+    public void CityInteriorJukebox_UsesPlayersCollectionDespiteInheritedMayorOwnership(PropertyType interiorType)
+    {
+        var jukebox = new WorldProperty
+        {
+            PropertyType = PropertyType.Structure,
+            OwnerPlayerId = "founding-mayor",
+            ParentPropertyId = "interior"
+        };
+        var interior = new WorldProperty
+        {
+            PropertyType = interiorType,
+            OwnerPlayerId = "founding-mayor",
+            ParentPropertyId = "building"
+        };
+        var building = new WorldProperty
+        {
+            PropertyType = PropertyType.Structure,
+            OwnerPlayerId = "founding-mayor",
+            ParentPropertyId = "city"
+        };
+        var city = new WorldProperty { PropertyType = PropertyType.City, OwnerPlayerId = "founding-mayor" };
+        var properties = new Dictionary<string, WorldProperty>
+        {
+            [jukebox.Id] = jukebox, ["interior"] = interior, ["building"] = building, ["city"] = city
+        };
+        var reads = new List<string>();
+
+        ResolveOwner(jukebox.Id, id => { reads.Add(id); return properties[id]; }).Should().BeEmpty(
+            "city-created interiors record the mayor as owner, so the picker must fall back to the user");
+        reads.Should().Equal(jukebox.Id, "interior", "building", "city");
+
+        city.OwnerPlayerId = "current-mayor";
+        ResolveOwner(jukebox.Id, id => properties[id]).Should().BeEmpty(
+            "an election must not switch an interior jukebox to either mayor's collection");
+    }
+
     [TestCase(PropertyType.Apartment)]
     [TestCase(PropertyType.Starship)]
-    [TestCase(PropertyType.Cantina)]
-    public void InteriorJukebox_UsesCurrentInteriorOwnerWithoutFollowingTheCity(PropertyType interiorType)
+    public void PrivatePropertyJukebox_UsesCurrentOwner(PropertyType propertyType)
     {
         var jukebox = new WorldProperty
         {
@@ -29,30 +70,12 @@ public class JukeboxTests
             OwnerPlayerId = "previous-owner",
             ParentPropertyId = "interior"
         };
-        var interior = new WorldProperty
-        {
-            PropertyType = interiorType,
-            OwnerPlayerId = "house-owner",
-            ParentPropertyId = "building"
-        };
-        var building = new WorldProperty
-        {
-            PropertyType = PropertyType.Structure,
-            OwnerPlayerId = "mayor",
-            ParentPropertyId = "city"
-        };
-        var city = new WorldProperty { PropertyType = PropertyType.City, OwnerPlayerId = "mayor" };
-        var properties = new Dictionary<string, WorldProperty>
-        {
-            [jukebox.Id] = jukebox, ["interior"] = interior, ["building"] = building, ["city"] = city
-        };
-        var reads = new List<string>();
+        var interior = new WorldProperty { PropertyType = propertyType, OwnerPlayerId = "current-owner" };
+        var properties = new Dictionary<string, WorldProperty> { [jukebox.Id] = jukebox, ["interior"] = interior };
 
-        ResolveOwner(jukebox.Id, id => { reads.Add(id); return properties[id]; }).Should().Be("house-owner");
-        reads.Should().Equal(jukebox.Id, "interior");
-
-        interior.OwnerPlayerId = "new-house-owner";
-        ResolveOwner(jukebox.Id, id => properties[id]).Should().Be("new-house-owner");
+        ResolveOwner(jukebox.Id, id => properties[id]).Should().Be("current-owner");
+        interior.OwnerPlayerId = "new-owner";
+        ResolveOwner(jukebox.Id, id => properties[id]).Should().Be("new-owner");
     }
 
     [Test]
@@ -95,7 +118,12 @@ public class JukeboxTests
     {
         var jukebox = new WorldProperty { PropertyType = PropertyType.Structure, ParentPropertyId = "interior" };
         var interior = new WorldProperty { PropertyType = PropertyType.House, ParentPropertyId = "building" };
-        var properties = new Dictionary<string, WorldProperty> { [jukebox.Id] = jukebox, ["interior"] = interior };
+        var building = new WorldProperty { PropertyType = PropertyType.Structure, ParentPropertyId = "city" };
+        var city = new WorldProperty { PropertyType = PropertyType.City, OwnerPlayerId = "mayor" };
+        var properties = new Dictionary<string, WorldProperty>
+        {
+            [jukebox.Id] = jukebox, ["interior"] = interior, ["building"] = building, ["city"] = city
+        };
 
         ResolveOwner(jukebox.Id, id => properties[id]).Should().BeEmpty();
     }

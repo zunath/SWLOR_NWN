@@ -17623,7 +17623,7 @@
               },
               "ArmorPart_Pelvis": {
                 "type": "byte",
-                "value": 3
+                "value": 81
               },
               "ArmorPart_RBicep": {
                 "type": "byte",
@@ -17712,7 +17712,7 @@
               "LocalizedName": {
                 "type": "cexolocstring",
                 "value": {
-                  "0": "Gambler Blue"
+                  "0": "Sharene's Outfit"
                 }
               },
               "Metal1Color": {
@@ -17741,11 +17741,31 @@
               },
               "Tag": {
                 "type": "cexostring",
-                "value": "Gambler_blue"
+                "value": "sharene_outfit"
               },
               "TemplateResRef": {
                 "type": "resref",
-                "value": "gambler_blue"
+                "value": "sharene_outfit"
+              },
+              "VarTable": {
+                "type": "list",
+                "value": [
+                  {
+                    "__struct_id": 0,
+                    "Name": {
+                      "type": "cexostring",
+                      "value": "NO_ECONOMY"
+                    },
+                    "Type": {
+                      "type": "dword",
+                      "value": 1
+                    },
+                    "Value": {
+                      "type": "int",
+                      "value": 1
+                    }
+                  }
+                ]
               },
               "xArmorPart_Belt": {
                 "type": "word",
@@ -17785,7 +17805,7 @@
               },
               "xArmorPart_Pelvi": {
                 "type": "word",
-                "value": 3
+                "value": 81
               },
               "xArmorPart_RBice": {
                 "type": "word",

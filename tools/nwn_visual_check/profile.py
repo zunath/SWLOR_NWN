@@ -104,7 +104,7 @@ def create_profile():
         if port == 5121 or port < 1024:
             raise RuntimeError('No permitted embedded server port')
         (profile / 'settings.tml').write_text(SETTINGS.format(port=port))
-        for folder in ('modules','hak','tlk'):
+        for folder in ('modules','hak','tlk','screenshots'):
             (profile / folder).mkdir()
         return profile
     except BaseException as error:

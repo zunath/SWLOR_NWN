@@ -58,6 +58,21 @@ public class ItemIconTests
     }
 
     [Test]
+    public void ArchivedCreatureArtwork_RepairsReservedVisorsWithoutChangingAuthoredEquipment()
+    {
+        foreach (var visor in HeadgearSlotMigration.LegacyHeadgear.Where(item => item.Value == 110))
+        {
+            ItemIconMigration.GetUpdatedModel(visor.Key.ToUpperInvariant(), 17, 223).Should().Be(110);
+            ItemIconMigration.GetUpdatedModel(visor.Key, 17, 110).Should().Be(110);
+            ItemIconMigration.GetUpdatedModel(visor.Key, 17, 33).Should().Be(33);
+            ItemIconMigration.GetUpdatedModel(visor.Key, 16, 223).Should().Be(223);
+        }
+        ItemIconMigration.GetUpdatedModel("revan_mask", 17, 223).Should().Be(223);
+        ItemIconMigration.GetUpdatedModel("charm_cowl", 17, 223).Should().Be(223);
+        ItemIconMigration.GetUpdatedModel(null!, 17, 223).Should().Be(223);
+    }
+
+    [Test]
     public void OriginalItemArtwork_IsCompleteUniqueAndUsesGameTgaLayout()
     {
         var itemIcons = ReadCsv("ItemIconBindings.csv").Select(row => row["ActionIcon"]).ToHashSet();

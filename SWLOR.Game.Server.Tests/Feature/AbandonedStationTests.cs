@@ -299,8 +299,8 @@ public class AbandonedStationTests
         var colicoid = Load("utc", replacement);
         var reference = Load("utc", "colicoidexp");
         var previous = Load("utc", original);
-        foreach (var field in new[] { "Appearance_Type", "PortraitId", "SoundSetFile" })
-            Number(colicoid, field).Should().Be(Number(reference, field), $"{replacement} uses the existing Colicoid assets");
+        foreach (var field in new[] { "Appearance_Type", "PortraitId", "SoundSetFile", "Race" })
+            Number(colicoid, field).Should().Be(Number(reference, field), $"{replacement} matches the established Colicoid blueprint");
         foreach (var field in new[] { "HitPoints", "CurrentHitPoints", "MaxHitPoints", "ChallengeRating" })
             Number(colicoid, field).Should().Be(Number(previous, field), replacement);
         Value(colicoid, "FeatList").GetRawText().Should().Be(Value(previous, "FeatList").GetRawText());

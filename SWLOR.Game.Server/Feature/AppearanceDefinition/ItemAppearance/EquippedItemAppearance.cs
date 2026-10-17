@@ -60,6 +60,7 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.ItemAppearance
             var message = server.GetNWSMessage();
             var players = server.GetPlayerList();
             var refreshedClient = false;
+            var detachedHelmetRefresh = false;
             foreach (var player in players)
             {
                 var lastUpdate = player.GetLastUpdateObject(creature);
@@ -67,6 +68,13 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.ItemAppearance
                     continue;
 
                 var appearance = lastUpdate.m_cAppearance;
+                if (headItem && appearance.m_oidHeadItem == item && nativeCreature.m_cAppearance.m_oidHeadItem != item)
+                {
+                    // Let the creature update detach the native helmet before deleting
+                    // its client item. Deleting an attached helmet also masks its head.
+                    detachedHelmetRefresh = true;
+                    continue;
+                }
                 var handItem = appearance.m_oidLeftHandItem == item || appearance.m_oidRightHandItem == item;
                 var cloakItem = appearance.m_oidCloakItem == item;
                 var changed = headItem;
@@ -116,12 +124,52 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.ItemAppearance
             TintMapService.ApplyCurrentColors(creature, resetShaderOverrides);
             Droid.UpdateEquippedItemSnapshot(creature, item);
 
+            if (detachedHelmetRefresh)
+                DelayCommand(QuickbarRefreshDelaySeconds, () => RefreshDetachedHelmet(creature, item, resetShaderOverrides));
+
             if (refreshedClient && GetIsPC(creature))
                 DelayCommand(QuickbarRefreshDelaySeconds, () => RestoreQuickbarReferences(creature, item));
 
             if (refreshedClient && (GetItemInSlot(InventorySlot.RightHand, creature) == item ||
                                     GetItemInSlot(InventorySlot.LeftHand, creature) == item))
                 DelayCommand(QuickbarRefreshDelaySeconds, () => RefreshHandAppearance(creature, item));
+        }
+
+        private static void RefreshDetachedHelmet(uint creature, uint item, bool resetShaderOverrides)
+        {
+            if (!GetIsObjectValid(creature) || !GetIsObjectValid(item) || GetItemInSlot(InventorySlot.Head, creature) != item)
+                return;
+
+            var server = NWNXLib.g_pAppManager.m_pServerExoApp;
+            var nativeCreature = server.GetGameObject(creature)?.AsNWSCreature();
+            if (nativeCreature == null)
+                return;
+            if (nativeCreature.m_cAppearance.m_oidHeadItem == item)
+            {
+                // A later click selected a native helmet again. Refresh that current state.
+                Refresh(creature, item, resetShaderOverrides);
+                return;
+            }
+
+            var refreshedClient = false;
+            foreach (var player in server.GetPlayerList())
+            {
+                var appearance = player.GetLastUpdateObject(creature)?.m_cAppearance;
+                if (appearance == null || appearance.m_oidHeadItem == item)
+                    continue;
+
+                RefreshInventorySlot(player, player.m_pInventoryGUI, creature, item, true);
+                RefreshInventorySlot(player, player.m_pOtherInventoryGUI, creature, item, true);
+                server.GetNWSMessage().SendServerPlayerItemUpdate_DestroyItem(player, item);
+                refreshedClient = true;
+            }
+
+            if (!refreshedClient)
+                return;
+            server.SetForceUpdate();
+            TintMapService.ApplyCurrentColors(creature, resetShaderOverrides);
+            if (GetIsPC(creature))
+                DelayCommand(QuickbarRefreshDelaySeconds, () => RestoreQuickbarReferences(creature, item));
         }
 
         private static unsafe void RefreshInventorySlot(CNWSPlayer player, CNWSPlayerInventoryGUI gui, uint creature, uint item, bool clearIcon)

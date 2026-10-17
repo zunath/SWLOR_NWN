@@ -6,11 +6,12 @@ namespace SWLOR.Game.Server.Tests.Feature;
 
 public class HelmetRenderingTransitionTests
 {
-    [TestCase(true, false, false)]
-    [TestCase(true, true, false)]
-    [TestCase(true, true, true)]
-    [TestCase(false, false, false)]
-    public void RefreshDeliversNativeHelmetAttachmentChanges(bool projected, bool projectionAlreadyApplied, bool observerAlreadyProjected)
+    [TestCase(true, false, false, false)]
+    [TestCase(true, true, false, false)]
+    [TestCase(true, true, true, false)]
+    [TestCase(false, false, false, false)]
+    [TestCase(true, false, false, true)]
+    public void RefreshDeliversNativeHelmetAttachmentChanges(bool projected, bool projectionAlreadyApplied, bool observerAlreadyProjected, bool unequipBeforeDelay)
     {
         var harness = DMPossessionHarness.Compile($$"""
             using static Engine;
@@ -18,6 +19,7 @@ public class HelmetRenderingTransitionTests
             {
                 private const float QuickbarRefreshDelaySeconds = .2f;
                 {{DMPossessionHarness.Method("Feature/AppearanceDefinition/ItemAppearance/EquippedItemAppearance.cs", "Refresh")}}
+                {{DMPossessionHarness.Method("Feature/AppearanceDefinition/ItemAppearance/EquippedItemAppearance.cs", "RefreshDetachedHelmet")}}
                 private static void RefreshInventorySlot(Player player, object gui, uint creature, uint item, bool clearIcon)
                 {
                     if (clearIcon) Transport.InventoryRefreshes++;
@@ -64,7 +66,12 @@ public class HelmetRenderingTransitionTests
             {
                 public int Destroyed;
                 public int InventoryRefreshes;
-                public void SendServerPlayerItemUpdate_DestroyItem(Player player, uint item) => Destroyed++;
+                public void SendServerPlayerItemUpdate_DestroyItem(Player player, uint item)
+                {
+                    if (Projected && player.m_cAppearance.m_oidHeadItem == item)
+                        throw new Exception("Deleting a still-attached client helmet masks the generated head.");
+                    Destroyed++;
+                }
             }
             public static class RobeAppearance { public static void RemoveUnavailableRobe(uint creature, uint item) { } }
             public static class NeckAppearance { public static void RemoveUnavailableNeck(uint creature, uint item) { } }
@@ -87,13 +94,14 @@ public class HelmetRenderingTransitionTests
                 public static Creature Wearer = new();
                 public static Player Observer = new();
                 public static Message Transport = new();
-                public static bool Hidden, Projected;
-                public static uint GetItemInSlot(InventorySlot slot, uint creature) => slot == InventorySlot.Head ? 2u : OBJECT_INVALID;
-                public static void DelayCommand(float seconds, Action action) { }
+                public static bool Hidden, Projected, Worn = true;
+                public static List<Action> Delayed = new();
+                public static uint GetItemInSlot(InventorySlot slot, uint creature) => slot == InventorySlot.Head && Worn ? 2u : OBJECT_INVALID;
+                public static void DelayCommand(float seconds, Action action) => Delayed.Add(action);
             }
             public static class Regression
             {
-                public static void Run(bool projected, bool projectionAlreadyApplied, bool observerAlreadyProjected)
+                public static void Run(bool projected, bool projectionAlreadyApplied, bool observerAlreadyProjected, bool unequipBeforeDelay)
                 {
                     Projected = projected;
                     if (projectionAlreadyApplied) HelmetModelRenderer.Apply(1, null);
@@ -107,13 +115,17 @@ public class HelmetRenderingTransitionTests
                         clientAttachment = Wearer.m_cAppearance.m_oidHeadItem;
                     if (clientAttachment != (projected ? OBJECT_INVALID : 2))
                         throw new Exception("The client never received the native helmet detach.");
-                    if (Transport.Destroyed != 1 || Transport.InventoryRefreshes != 2)
+                    Observer.m_cAppearance.m_oidHeadItem = Wearer.m_cAppearance.m_oidHeadItem;
+                    if (unequipBeforeDelay) Worn = false;
+                    foreach (var action in Delayed.ToArray()) action();
+                    if (Transport.Destroyed != (unequipBeforeDelay ? 0 : 1) ||
+                        Transport.InventoryRefreshes != (unequipBeforeDelay ? 0 : 2))
                         throw new Exception("The helmet item and both inventory views must still refresh.");
                 }
             }
             """);
 
-        var run = () => harness.Invoke("Regression", "Run", projected, projectionAlreadyApplied, observerAlreadyProjected);
+        var run = () => harness.Invoke("Regression", "Run", projected, projectionAlreadyApplied, observerAlreadyProjected, unequipBeforeDelay);
         run.Should().NotThrow();
     }
 

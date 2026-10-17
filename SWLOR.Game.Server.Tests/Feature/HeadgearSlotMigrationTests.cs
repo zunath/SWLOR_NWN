@@ -69,7 +69,7 @@ public class HeadgearSlotMigrationTests
         var before = Read(original);
         var after = Read(migrated);
         Value(after, "BaseItem").Should().Be((int)BaseItem.Helmet);
-        Value(after, "ModelPart1").Should().Be((byte)(existingModel > 0 ? existingModel : 223));
+        Value(after, "ModelPart1").Should().Be((byte)(existingModel > 0 ? existingModel : 110));
         after.Fields.Where(x => x.Label is not "BaseItem" and not "ModelPart1")
             .Should().BeEquivalentTo(before.Fields.Where(x => x.Label is not "BaseItem" and not "ModelPart1"));
         HeadgearSlotMigration.MigrateSerializedObject(migrated, out var retry).Should().BeFalse();

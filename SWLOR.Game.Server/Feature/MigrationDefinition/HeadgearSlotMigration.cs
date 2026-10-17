@@ -20,11 +20,11 @@ public static class HeadgearSlotMigration
     public static IReadOnlyDictionary<string, int> LegacyHeadgear { get; } =
         new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase)
         {
-            ["beaconmarkscr"] = 223, ["charm_cowl"] = 33, ["chemslingercr"] = 223,
-            ["dunedeadeyecr"] = 223, ["enclavesentlcr"] = 223, ["flameweavercr"] = 223,
-            ["markahungercr"] = 223, ["precision_optic"] = 223, ["quillstalkercr"] = 223,
-            ["rite_crown"] = 11, ["ruptorvanecr"] = 223, ["siege_optics"] = 223,
-            ["thermlancercr"] = 223,
+            ["beaconmarkscr"] = 110, ["charm_cowl"] = 33, ["chemslingercr"] = 110,
+            ["dunedeadeyecr"] = 110, ["enclavesentlcr"] = 110, ["flameweavercr"] = 110,
+            ["markahungercr"] = 110, ["precision_optic"] = 110, ["quillstalkercr"] = 110,
+            ["rite_crown"] = 11, ["ruptorvanecr"] = 110, ["siege_optics"] = 110,
+            ["thermlancercr"] = 110,
         };
 
     public static bool IsLegacyHeadgear(string resref, BaseItem baseItem) =>

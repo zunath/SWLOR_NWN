@@ -1999,8 +1999,13 @@ public class TintMapReviewTests
                 var row = rows.Single(columns => columns[1] == model);
                 row[2].Should().Be(material, "thigh 15 uses a different palette and must not supply this part");
                 row[3].Should().Be("2,3,6,7");
-                File.Exists(Path.Combine(FindRepositoryRoot().FullName, "SWLOR_Haks",
-                    side == 'l' ? "sw_pt_lthigh" : "sw_pt_rthigh", model + ".mdl")).Should().BeTrue();
+                var modelPath = Path.Combine(FindRepositoryRoot().FullName, "SWLOR_Haks",
+                    side == 'l' ? "sw_pt_lthigh" : "sw_pt_rthigh", model + ".mdl");
+                var modelBytes = File.ReadAllBytes(modelPath);
+                // These retained stock single-mesh models store the 64-byte material name
+                // at byte 784, separately from their model name and legacy thigh-15 bitmap.
+                System.Text.Encoding.ASCII.GetString(modelBytes, 784, 64).TrimEnd('\0')
+                    .Should().Be(material, $"{model} must render through its own converted palette");
             }
         }
     }

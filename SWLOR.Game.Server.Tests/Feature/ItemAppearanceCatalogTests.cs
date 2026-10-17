@@ -37,47 +37,113 @@ public class ItemAppearanceCatalogTests
         new("Robe", "ArmorPart_Robe", a => a.Robe),
     };
 
+    private sealed record Catalogs(
+        IReadOnlyList<BaseArmorAppearanceDefinition> Armor,
+        IReadOnlyDictionary<BaseItem, WeaponAppearanceBaseDefinition> Weapons);
+
     [Test]
     public void PlayerItemBlueprints_UseOnlyAppearancesFromTheAppearanceEditorCatalog()
     {
-        var armorCatalogs = LoadArmorCatalogs();
-        var weaponCatalogs = LoadWeaponCatalogs();
+        var catalogs = LoadCatalogs();
         var checkedCounts = new SortedDictionary<BaseItem, int>();
         var violations = new SortedDictionary<BaseItem, List<string>>();
 
         foreach (var file in Directory.EnumerateFiles(
                      Path.Combine(FindRepositoryRoot().FullName, "Module", "uti"), "*.uti.json"))
-        {
-            var blueprint = JObject.Parse(File.ReadAllText(file));
-            var baseItem = (BaseItem)(blueprint["BaseItem"]?["value"]?.Value<int>() ?? -1);
-            if (!IsCoveredByEditor(baseItem, weaponCatalogs) || IsExcluded(blueprint, baseItem, out var name))
-                continue;
-
-            var problems = baseItem switch
-            {
-                BaseItem.Armor => FindArmorProblems(blueprint, armorCatalogs),
-                BaseItem.Helmet => FindModelProblems(blueprint, armorCatalogs, a => a.Helmet),
-                BaseItem.Cloak => FindModelProblems(blueprint, armorCatalogs, a => a.Cloak),
-                _ => FindWeaponProblems(blueprint, weaponCatalogs[baseItem])
-            };
-
-            checkedCounts[baseItem] = checkedCounts.GetValueOrDefault(baseItem) + 1;
-            if (problems.Count == 0)
-                continue;
-
-            if (!violations.TryGetValue(baseItem, out var list))
-                violations[baseItem] = list = new List<string>();
-            list.Add($"{Path.GetFileName(file).Replace(".uti.json", "")} ({name}): {string.Join(", ", problems)}");
-        }
+            Audit(JObject.Parse(File.ReadAllText(file)), Path.GetFileName(file).Replace(".uti.json", ""),
+                catalogs, checkedCounts, violations);
 
         foreach (var required in new[] { BaseItem.Armor, BaseItem.Helmet, BaseItem.Cloak, BaseItem.ShortSpear, BaseItem.Longsword })
             checkedCounts.Should().ContainKey(required, "blueprints of every audited kind must be discovered");
 
+        FailOnViolations("blueprints", checkedCounts, violations);
+    }
+
+    [Test]
+    public void PlayerItemsPlacedInAreasAndStores_UseOnlyAppearancesFromTheAppearanceEditorCatalog()
+    {
+        var catalogs = LoadCatalogs();
+        var moduleRoot = Path.Combine(FindRepositoryRoot().FullName, "Module");
+        var checkedCounts = new SortedDictionary<BaseItem, int>();
+        var violations = new SortedDictionary<BaseItem, List<string>>();
+
+        foreach (var file in Directory.EnumerateFiles(moduleRoot, "*.json", SearchOption.AllDirectories))
+        {
+            var folder = Path.GetFileName(Path.GetDirectoryName(file));
+            if (folder is "uti" or "itp" or "utc")
+                continue;
+
+            var text = File.ReadAllText(file);
+            if (!text.Contains("\"TemplateResRef\"", StringComparison.Ordinal) ||
+                !text.Contains("\"BaseItem\"", StringComparison.Ordinal) ||
+                !text.Contains("ModelPart1", StringComparison.Ordinal) && !text.Contains("ArmorPart_Torso", StringComparison.Ordinal))
+                continue;
+
+            foreach (var item in FindEmbeddedItems(JToken.Parse(text)))
+                Audit(item, $"{folder}/{Path.GetFileName(file)}: {item["TemplateResRef"]?["value"]}", catalogs, checkedCounts, violations);
+        }
+
+        checkedCounts.Should().NotBeEmpty("area and store item copies must be discovered");
+        FailOnViolations("embedded item copies", checkedCounts, violations);
+    }
+
+    // Creature equipment and inventory are NPC gear, not items players are given.
+    private static IEnumerable<JObject> FindEmbeddedItems(JToken token)
+    {
+        if (token is JObject container)
+        {
+            if (container.ContainsKey("TemplateResRef") && container.ContainsKey("BaseItem"))
+                yield return container;
+
+            foreach (var property in container.Properties().Where(x => x.Name != "Creature List"))
+                foreach (var nested in FindEmbeddedItems(property.Value))
+                    yield return nested;
+        }
+        else if (token is JArray array)
+        {
+            foreach (var nested in array.SelectMany(FindEmbeddedItems))
+                yield return nested;
+        }
+    }
+
+    private static void Audit(
+        JObject item,
+        string label,
+        Catalogs catalogs,
+        SortedDictionary<BaseItem, int> checkedCounts,
+        SortedDictionary<BaseItem, List<string>> violations)
+    {
+        var baseItem = (BaseItem)(item["BaseItem"]?["value"]?.Value<int>() ?? -1);
+        if (!IsCoveredByEditor(baseItem, catalogs.Weapons) || IsExcluded(item, baseItem, out var name))
+            return;
+
+        var problems = baseItem switch
+        {
+            BaseItem.Armor => FindArmorProblems(item, catalogs.Armor),
+            BaseItem.Helmet => FindModelProblems(item, catalogs.Armor, a => a.Helmet),
+            BaseItem.Cloak => FindModelProblems(item, catalogs.Armor, a => a.Cloak),
+            _ => FindWeaponProblems(item, catalogs.Weapons[baseItem])
+        };
+
+        checkedCounts[baseItem] = checkedCounts.GetValueOrDefault(baseItem) + 1;
+        if (problems.Count == 0)
+            return;
+
+        if (!violations.TryGetValue(baseItem, out var list))
+            violations[baseItem] = list = new List<string>();
+        list.Add($"{label} ({name}): {string.Join(", ", problems)}");
+    }
+
+    private static void FailOnViolations(
+        string subject,
+        SortedDictionary<BaseItem, int> checkedCounts,
+        SortedDictionary<BaseItem, List<string>> violations)
+    {
         if (violations.Count == 0)
             return;
 
         var report = string.Join("\n", violations.Select(group =>
-            $"{group.Key}: {group.Value.Count} of {checkedCounts[group.Key]} blueprints\n  " +
+            $"{group.Key}: {group.Value.Count} of {checkedCounts[group.Key]} {subject}\n  " +
             string.Join("\n  ", group.Value)));
         Assert.Fail("Player items may only use appearances selectable in the appearance editor:\n" + report);
     }
@@ -162,11 +228,12 @@ public class ItemAppearanceCatalogTests
         return problems;
     }
 
-    // The word-sized "x" twin holds values above 255; GFF labels cap at 16 characters, so long names are clipped.
+    // The word-sized "x" twin is authoritative when present; GFF labels cap at 16 characters, so long names are clipped.
     private static int ReadPart(JObject blueprint, string field) =>
-        Math.Max(
-            blueprint[field]?["value"]?.Value<int>() ?? 0,
-            blueprint["x" + (field.Length > 15 ? field[..15] : field)]?["value"]?.Value<int>() ?? 0);
+        blueprint["x" + (field.Length > 15 ? field[..15] : field)]?["value"]?.Value<int>() ??
+        blueprint[field]?["value"]?.Value<int>() ?? 0;
+
+    private static Catalogs LoadCatalogs() => new(LoadArmorCatalogs(), LoadWeaponCatalogs());
 
     private static IReadOnlyList<BaseArmorAppearanceDefinition> LoadArmorCatalogs()
     {

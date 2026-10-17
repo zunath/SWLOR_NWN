@@ -106,6 +106,8 @@ def _read_gff_string(path: Path, data: bytes, label: str) -> str | None:
             raise damaged(name)
     if struct_count < 1:
         raise damaged('the top-level struct')
+    if struct.unpack_from('<I', data, struct_offset)[0] != 0xFFFFFFFF:
+        raise LiveStackError(f'{path} is damaged: its top-level struct has the wrong type.')
 
     def struct_fields(index: int) -> list[tuple[int, int, int]]:
         """(type, label index, data) of every field of a struct, with its table entries checked."""
@@ -170,7 +172,7 @@ def _read_gff_string(path: Path, data: bytes, label: str) -> str | None:
     while path_stack:
         index, children = path_stack[-1]
         if children is None:
-            if len(path_stack) > 128:
+            if len(path_stack) - 1 > 128:
                 raise LiveStackError(f'{path} is damaged: its structs nest more than 128 levels deep.')
             active.add(index)
             children = iter([child for field_type, _, field_data in struct_fields(index)
@@ -1022,21 +1024,17 @@ def play(stack: Stack, settle: float, timeout: float = 600) -> None:
             raise LiveStackError('The character entered but was disconnected. See the server and app logs.')
         # A crashed server cannot log the leave, so check the containers as well.
         require_running(stack, 'while the area was settling')
-        if time.monotonic() - quiet_since >= settle:
-            break
-        if time.monotonic() >= deadline:
-            raise LiveStackError('Area transitions did not settle.')
         current = loading_tips(stack)
         if current != tips:
             tips, quiet_since = current, time.monotonic()
-        time.sleep(1)
-    # On a busy machine the client can keep showing the loading screen well after the server
-    # has placed the character, so also wait until the loading-screen frame is gone.
-    while showing_loading_screen(stack):
+        # Settled means a full quiet period since the last transition began and, because a busy
+        # machine can keep the loading screen up after the server placed the character, the
+        # loading-screen frame gone from the client screen.
+        if time.monotonic() - quiet_since >= settle and not showing_loading_screen(stack):
+            break
         if time.monotonic() >= deadline:
-            raise LiveStackError('The client is still showing the loading screen.')
-        require_running(stack, 'while the area was loading')
-        time.sleep(5)
+            raise LiveStackError('Area transitions or the loading screen did not settle.')
+        time.sleep(1)
     log('Settled. Inspect each capture before relying on it.')
 
 
@@ -1204,7 +1202,7 @@ def destroy(stack: Stack) -> dict:
                     lost_evidence.append(f'Could not confirm the {service} container stopped before its output '
                                          'was saved; shutdown messages may be missing.')
                     errors.append(lost_evidence[-1])
-            for service in ('swlor-server', 'client'):
+            for service in ('swlor-server', 'client', 'redis'):
                 logs = stack.compose('logs', '--no-color', '--no-log-prefix', service, client=service == 'client',
                                      check=False, capture=True, timeout=120)
                 problem = None

@@ -100,6 +100,11 @@ class LiveClientHelperTests(unittest.TestCase):
         struct.pack_into('<I', unknown, 68, 16)
         with self.assertRaisesRegex(LiveStackError, 'unknown type'):
             stack.validate_bic(self.write('unknown.bic', bytes(unknown)))
+        # The top-level struct (at offset 56) must have type 0xFFFFFFFF.
+        root = bytearray(good)
+        struct.pack_into('<I', root, 56, 0)
+        with self.assertRaisesRegex(LiveStackError, 'wrong type'):
+            stack.validate_bic(self.write('root.bic', bytes(root)))
 
     def test_loading_screen_frame_is_recognized(self):
         # Pixel values sampled from real loading-screen and in-game captures.

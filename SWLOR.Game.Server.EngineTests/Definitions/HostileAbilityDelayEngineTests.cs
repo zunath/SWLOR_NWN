@@ -1,9 +1,13 @@
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using SWLOR.Game.Server.EngineTests.Framework;
 using SWLOR.Game.Server.Feature;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
+using SWLOR.Game.Server.Service.PerkService;
+using SWLOR.Game.Server.Service.SkillService;
+using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.Game.Server.EngineTests.Definitions
@@ -106,6 +110,120 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 ctx.Log($"Innervate went off {waited:0.000}s after Force Touch.");
                 ctx.Assert(waited < HostileAbilityDelay.Seconds,
                     $"Innervate went off {waited:0.000}s after Force Touch; a heal must not wait for the hostile delay");
+            }
+            finally
+            {
+                Combat.SetAbilityHitResolutionOverride(null);
+            }
+        }
+
+        [EngineTest("A player's Rib Breaker and Slam pressed a frame apart land half a second apart", Category = "HostileAbilityDelay", TimeoutSeconds = 60f)]
+        public static async Task PlayerWeaponAbilitiesPressedTogether_LandHalfASecondApart(EngineTestContext ctx)
+        {
+            using var fixture = await PlayerAbilityFixture.CreateAsync(ctx);
+            var player = fixture.Creature;
+            var target = await SetUpStaffPlayerAsync(ctx, fixture);
+            await AssertStaffAbilitiesLandApartAsync(ctx, player, target, async () =>
+            {
+                await UseAbilityAsync(ctx, player, target, FeatType.RibBreaker1);
+                await ctx.WaitFrameAsync();
+                await UseAbilityAsync(ctx, player, target, FeatType.Slam1);
+            });
+        }
+
+        [EngineTest("A player's Rib Breaker and Slam used through the feat event land half a second apart", Category = "HostileAbilityDelay", TimeoutSeconds = 60f)]
+        public static async Task PlayerWeaponAbilitiesThroughTheFeatEvent_LandHalfASecondApart(EngineTestContext ctx)
+        {
+            using var fixture = await PlayerAbilityFixture.CreateAsync(ctx);
+            var player = fixture.Creature;
+            var target = await SetUpStaffPlayerAsync(ctx, fixture);
+            CreaturePlugin.AddFeat(player, FeatType.RibBreaker1);
+            CreaturePlugin.AddFeat(player, FeatType.Slam1);
+            // The second press arrives a couple of frames later, as a client's would.
+            await AssertStaffAbilitiesLandApartAsync(ctx, player, target, async () =>
+            {
+                AssignCommand(player, () => ActionUseFeat(FeatType.RibBreaker1, target));
+                await ctx.WaitFrameAsync();
+                await ctx.WaitFrameAsync();
+                AssignCommand(player, () => ActionUseFeat(FeatType.Slam1, target));
+            });
+        }
+
+        private static async Task<uint> SetUpStaffPlayerAsync(EngineTestContext ctx, PlayerAbilityFixture fixture)
+        {
+            var player = fixture.Creature;
+            fixture.Update(record =>
+            {
+                record.Skills[SkillType.Staff].Rank = 50;
+                record.Perks[PerkType.RibBreaker] = 1;
+                record.Perks[PerkType.Slam] = 1;
+            });
+            await ctx.EquipItemAsync(player, "nw_wdbqs001", InventorySlot.RightHand);
+            var target = ctx.SpawnCreature("nw_rat001", 2f);
+            await ctx.WaitFrameAsync();
+            SetAILevel(target, AILevel.VeryLow);
+            ctx.MakeHostile(target);
+            ApplyEffectToObject(DurationType.Temporary, EffectTemporaryHitpoints(5000), target, 120f);
+            return target;
+        }
+
+        // Frame checks can read an ability's time up to a frame late.
+        private const double FrameTolerance = 0.1;
+
+        // Watches every frame for each ability's recast and each drop in the target's HP.
+        private static async Task AssertStaffAbilitiesLandApartAsync(EngineTestContext ctx, uint player, uint target, Func<Task> press)
+        {
+            Combat.SetAbilityHitResolutionOverride(true);
+            try
+            {
+                var startedAt = DateTime.UtcNow;
+                var lastHitPoints = GetCurrentHitPoints(target);
+                DateTime? ribBreakerAt = null;
+                DateTime? slamAt = null;
+                var hits = new List<string>();
+                var hitTimes = new List<DateTime>();
+
+                void Observe()
+                {
+                    var now = DateTime.UtcNow;
+                    if (ribBreakerAt == null && IsOnRecast(player, RecastGroup.RibBreaker))
+                        ribBreakerAt = now;
+                    if (slamAt == null && IsOnRecast(player, RecastGroup.Slam))
+                        slamAt = now;
+                    var hitPoints = GetCurrentHitPoints(target);
+                    if (hitPoints < lastHitPoints)
+                    {
+                        hits.Add($"-{lastHitPoints - hitPoints} at {(now - startedAt).TotalSeconds:0.000}s");
+                        hitTimes.Add(now);
+                    }
+                    lastHitPoints = hitPoints;
+                }
+
+                async Task ObserveAsync()
+                {
+                    var deadline = DateTime.UtcNow.AddSeconds(3);
+                    while (DateTime.UtcNow <= deadline)
+                    {
+                        await ctx.WaitFrameAsync();
+                        Observe();
+                    }
+                }
+
+                // The watch runs alongside the presses so neither ability's time is read late.
+                var observing = ObserveAsync();
+                await press();
+                await observing;
+
+                ctx.Log($"Rib Breaker went off at {(ribBreakerAt - startedAt)?.TotalSeconds:0.000}s, Slam at {(slamAt - startedAt)?.TotalSeconds:0.000}s; target hits: {string.Join(", ", hits)}");
+                ctx.Assert(ribBreakerAt != null, "Rib Breaker went off");
+                ctx.Assert(slamAt != null, "Slam went off");
+                var gap = Math.Abs((slamAt.Value - ribBreakerAt.Value).TotalSeconds);
+                ctx.Assert(gap >= HostileAbilityDelay.Seconds - FrameTolerance,
+                    $"Slam went off {gap:0.000}s after Rib Breaker, inside the {HostileAbilityDelay.Seconds}s delay");
+                ctx.Assert(hitTimes.Count >= 2, $"Both abilities hit the target: {string.Join(", ", hits)}");
+                var damageGap = (hitTimes[hitTimes.Count - 1] - hitTimes[0]).TotalSeconds;
+                ctx.Assert(damageGap >= HostileAbilityDelay.Seconds - FrameTolerance,
+                    $"The hits landed {damageGap:0.000}s apart, inside the {HostileAbilityDelay.Seconds}s delay");
             }
             finally
             {

@@ -1,3 +1,4 @@
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -12,6 +13,7 @@ using SWLOR.Game.Server.Service.KeyItemService;
 using SWLOR.Game.Server.Service.PropertyService;
 using SWLOR.Game.Server.Service.SpaceService;
 using SWLOR.NWN.API;
+using ObjectType = SWLOR.NWN.API.NWScript.Enum.ObjectType;
 
 namespace SWLOR.Game.Server.EngineTests.Definitions;
 
@@ -19,6 +21,13 @@ public static class AbandonedStationDockMasterEngineTests
 {
     [EngineTest("Abandoned Station dock master opens its shop and boards a docked ship", Category = "DockMasterBoarding", TimeoutSeconds = 90f)]
     public static async Task ShopAndBoarding(EngineTestContext ctx)
+    {
+        await VisitStation(ctx);
+        await VisitStation(ctx);
+        ctx.SetResultDetail("Two fresh station visits passed native NPC dialogue, stocked shop, ship listing, actual property loading and boarding, and mutual nonhostility with every spawned station enemy. Both visits removed their station spawns and reset the spawn queues. Headless boarding omits the network client handshake and rendered UI.");
+    }
+
+    private static async Task VisitStation(EngineTestContext ctx)
     {
         var station = Area.GetAreaByResref("zomb_abanstation");
         ctx.Assert(GetIsObjectValid(station), "the packed production module contains the station");
@@ -32,11 +41,17 @@ public static class AbandonedStationDockMasterEngineTests
         WorldProperty property = null;
         PlayerShip ship = null;
         var interior = OBJECT_INVALID;
+        var ownsStationSpawns = false;
         Dictionary<string, Dictionary<GuiWindowType, GuiPlayerWindow>> windows = null;
         try
         {
             actor = await PlayerAbilityFixture.CreateAsync(stationContext);
             windows = InstallWindows(actor);
+            var active = (IDictionary)SpawnState("_activeSpawnsByArea");
+            var queued = (IDictionary)SpawnState("_queuedSpawnsByArea");
+            ctx.Assert(!active.Contains(station) || ((IList)active[station]).Count == 0, "each visit starts without active station spawns");
+            ctx.Assert(!queued.Contains(station) || ((IList)queued[station]).Count == 0, "each visit starts without queued station spawns");
+            ownsStationSpawns = true;
             // The live spawn service serializes placed creatures at boot and recreates
             // them on player entry. The headless fixture does not raise that native event.
             NWNXLib.g_pAppManager.m_pServerExoApp.GetGameObject(station).AsNWSArea().m_oidLastEntered = actor.Creature;
@@ -63,11 +78,16 @@ public static class AbandonedStationDockMasterEngineTests
             };
             DB.Set(ship);
 
-            // Inspect an actual dungeon spawn, preserving its authored faction.
-            var enemy = GetObjectByTag("abs_rakghoul");
-            ctx.Assert(GetIsObjectValid(enemy), "the production station enemy spawns on player entry");
-            ctx.AssertEqual(station, GetArea(enemy), "the live enemy is on the station");
-            ctx.Assert(!GetIsEnemy(dockMaster, enemy) && !GetIsEnemy(enemy, dockMaster), "the live station enemy and dock master are mutually nonhostile");
+            // Inspect actual dungeon spawns without depending on a random table selecting a Rakghoul.
+            var enemyCount = 0;
+            for (var enemy = GetFirstObjectInArea(station); GetIsObjectValid(enemy); enemy = GetNextObjectInArea(station))
+            {
+                if (GetObjectType(enemy) != ObjectType.Creature ||
+                    !GetResRef(enemy).StartsWith("abs_", StringComparison.Ordinal)) continue;
+                enemyCount++;
+                ctx.Assert(!GetIsEnemy(dockMaster, enemy) && !GetIsEnemy(enemy, dockMaster), "every live station enemy and dock master are mutually nonhostile");
+            }
+            ctx.Assert(enemyCount > 0, "player entry produces station enemies for the native faction check");
 
             var store = GetNearestObjectByTag("dockhand_store", dockMaster);
             ctx.Assert(GetIsObjectValid(store), "the authored dockhand store exists");
@@ -116,7 +136,6 @@ public static class AbandonedStationDockMasterEngineTests
             }
             ctx.AssertEqual(property.Id, Property.GetPropertyId(GetArea(actor.Creature)), "boarding enters the correct owned ship");
             ctx.Assert(!Gui.IsWindowOpen(actor.Creature, GuiWindowType.ShipManagement), "successful boarding closes the management window");
-            ctx.SetResultDetail("Packed station NPC and both waypoints loaded; live Rakghoul faction is nonhostile both ways; authored menu opened its stocked native shop and ship management; the real property loader and boarding action entered the owned ship. Headless area transfer omits the network client handshake and rendered UI.");
         }
         finally
         {
@@ -130,12 +149,42 @@ public static class AbandonedStationDockMasterEngineTests
                 }
                 actor.Dispose();
             }
-            stationContext.Cleanup();
+            try
+            {
+                if (ownsStationSpawns) ResetStationSpawns(ctx, station);
+            }
+            finally
+            {
+                stationContext.Cleanup();
+            }
             await ctx.WaitFrameAsync();
             if (ship != null) DB.Delete<PlayerShip>(ship.Id);
             if (property != null) Property.DeleteProperty(property);
             if (GetIsObjectValid(interior)) DestroyArea(interior);
         }
+    }
+
+    private static object SpawnState(string name) =>
+        typeof(Spawn).GetField(name, BindingFlags.Static | BindingFlags.NonPublic).GetValue(null);
+
+    private static void ResetStationSpawns(EngineTestContext ctx, uint station)
+    {
+        var queuedByArea = (IDictionary)SpawnState("_queuedSpawnsByArea");
+        var queue = (IList)SpawnState("_queuedSpawns");
+        if (queuedByArea.Contains(station))
+            foreach (var pending in ((IList)queuedByArea[station]).Cast<object>().ToArray())
+                queue.Remove(pending);
+        queuedByArea.Remove(station);
+
+        // Exercise the normal area's despawn cleanup immediately, including prop cleanup
+        // and resource timers. Only this test-owned area's deadline is advanced.
+        var deadlines = (Dictionary<uint, DateTime>)SpawnState("_queuedAreaDespawns");
+        deadlines[station] = DateTime.MinValue;
+        typeof(Spawn).GetMethod("ProcessDespawnAreas", BindingFlags.Static | BindingFlags.NonPublic).Invoke(null, null);
+        var active = (IDictionary)SpawnState("_activeSpawnsByArea");
+        ctx.Assert(!active.Contains(station) || ((IList)active[station]).Count == 0, "station cleanup removes every active spawn");
+        ctx.Assert(!queuedByArea.Contains(station) && !deadlines.ContainsKey(station), "station cleanup resets its spawn and despawn queues");
+        active.Remove(station);
     }
 
     private static CNWSPlayer GetClient(PlayerAbilityFixture actor) =>

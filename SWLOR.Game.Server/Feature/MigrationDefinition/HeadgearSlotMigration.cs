@@ -12,7 +12,7 @@ using SWLOR.NWN.API.NWScript.Enum.Item;
 
 namespace SWLOR.Game.Server.Feature.MigrationDefinition;
 
-/// <summary>Repairs the chest-slot headgear shipped before the blueprint correction, without replacing items or revising their stats.</summary>
+/// <summary>Repairs legacy headgear slots and reserved visor models without replacing items or revising their stats.</summary>
 public static class HeadgearSlotMigration
 {
     // 8382511cf changed these exact crafted resrefs from Armor to Helmet. The
@@ -30,6 +30,12 @@ public static class HeadgearSlotMigration
     public static bool IsLegacyHeadgear(string resref, BaseItem baseItem) =>
         baseItem == BaseItem.Armor && resref != null && LegacyHeadgear.ContainsKey(resref);
 
+    public static int GetCorrectedModel(string resref, BaseItem baseItem, int model) =>
+        resref != null && LegacyHeadgear.TryGetValue(resref, out var fallback) &&
+        (baseItem == BaseItem.Armor || baseItem == BaseItem.Helmet) &&
+        (baseItem == BaseItem.Armor && model <= 0 || model == 223 && fallback == 110)
+            ? fallback : model;
+
     /// <summary>Traverses equipped, carried and nested items, plus controller-backed and summoned droid inventories.</summary>
     public static bool MigrateObject(uint obj) => LootStatRevisionMigration.MigrateHeadgear(obj);
 
@@ -37,7 +43,17 @@ public static class HeadgearSlotMigration
 
     internal static bool ConvertItem(uint item)
     {
-        if (!IsLegacyHeadgear(GetResRef(item), GetBaseItemType(item))) return false;
+        var resref = GetResRef(item);
+        var baseItem = GetBaseItemType(item);
+        if (baseItem == BaseItem.Helmet)
+        {
+            var model = GetItemAppearance(item, ItemAppearanceType.SimpleModel, 0);
+            var corrected = GetCorrectedModel(resref, baseItem, model);
+            if (corrected == model) return false;
+            ItemPlugin.SetItemAppearance(item, ItemAppearanceType.SimpleModel, 0, corrected, updateCreatureAppearance: true);
+            return true;
+        }
+        if (!IsLegacyHeadgear(resref, baseItem)) return false;
         var owner = GetItemPossessor(item);
         var equipped = GetObjectType(owner) == ObjectType.Creature && GetItemInSlot(InventorySlot.Chest, owner) == item;
         var record = IsPlayer(owner) ? DB.Get<Player>(GetObjectUUID(owner)) : null;
@@ -51,8 +67,10 @@ public static class HeadgearSlotMigration
             if (equipped && !PlayerEquipmentStorage.TryUnequip(owner, item, InventorySlot.Chest))
                 throw new PlayerMigrationDeferredException("Free inventory space, then reconnect to complete your equipment update.");
             ItemPlugin.SetBaseItemType(item, BaseItem.Helmet);
-            if (GetItemAppearance(item, ItemAppearanceType.SimpleModel, 0) <= 0)
-                ItemPlugin.SetItemAppearance(item, ItemAppearanceType.SimpleModel, 0, LegacyHeadgear[GetResRef(item)]);
+            var model = GetItemAppearance(item, ItemAppearanceType.SimpleModel, 0);
+            var corrected = GetCorrectedModel(resref, baseItem, model);
+            if (corrected != model)
+                ItemPlugin.SetItemAppearance(item, ItemAppearanceType.SimpleModel, 0, corrected);
 
             // Never swap out the player's existing helmet. A failed validation
             // leaves this same object in its reserved owned inventory location.

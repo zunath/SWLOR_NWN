@@ -24,6 +24,9 @@ or migration that assigns item models.
   `HeadgearSlotMigrationTests`. Follow `InEngineVisualVerification.md` for actual client
   screenshots. Migration behavior also requires the engine coverage in `EngineTesting.md`.
 
-Blueprint corrections require a module repack and deployment. Migration fallback changes
-also require a C# server deployment. Repacking a blueprint does not restyle existing saved
-items; the headgear slot migration uses the fallback only for legacy armor with no model.
+Blueprint corrections require a module repack and deployment. Migration changes also require
+a C# server deployment. The unreleased player migration 22 and stored-item migration 27
+repair model 223 on the affected visors during their existing combined item visit, including
+saved root icons. Valid custom models and the reserved NPC prop remain untouched. Migration
+19 retains its checkpoint without a separate artwork pass; wearable type corrections also
+belong to the combined pass. Do not add another item traversal or migration for these fixes.

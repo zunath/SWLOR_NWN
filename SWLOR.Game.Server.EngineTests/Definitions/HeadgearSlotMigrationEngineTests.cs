@@ -200,7 +200,7 @@ public static partial class MigrationEngineTests
         ctx.AssertEqual(42, GetLocalInt(visor, "CUSTOM_INT"), "Integer local survives");
         ctx.AssertEqual(1.25f, GetLocalFloat(visor, "CUSTOM_FLOAT"), "Float local survives");
         ctx.AssertEqual(7, GetItemAppearance(visor, ItemAppearanceType.ArmorColor, 0), "Custom color survives");
-        ctx.Assert(GetItemAppearance(visor, ItemAppearanceType.SimpleModel, 0) > 0, "Converted headgear has a model");
+        ctx.AssertEqual(110, GetItemAppearance(visor, ItemAppearanceType.SimpleModel, 0), "Converted visor retains the standard model");
         ctx.AssertEqual(9, SumProperty(visor, ItemPropertyType.FP, 0), "Custom FP property survives");
         ctx.AssertEqual(11, SumProperty(visor, ItemPropertyType.Stamina, 0), "Custom stamina property survives");
     }

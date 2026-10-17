@@ -109,7 +109,9 @@ public class ItemIconTests
         new _27_UpdateStoredItems().Version.Should().Be(27);
         new _27_UpdateStoredItems().ExecutionType.Should().Be(MigrationExecutionType.PostCacheLoad);
         File.ReadAllText(Path.Combine(migrations, "PlayerMigration", "_19_UpdateItemIcons.cs"))
-            .Should().Contain("ItemIconMigration.MigrateObject(player)");
+            .Should().NotContain("MigrateObject(player)");
+        File.ReadAllText(Path.Combine(migrations, "PlayerMigration", "_22_ReviseLootStats.cs"))
+            .Should().Contain("LootStatRevisionMigration.MigratePlayerItems(player)");
         File.ReadAllText(Path.Combine(migrations, "ServerMigration", "_27_UpdateStoredItems.cs"))
             .Should().Contain("LootStatRevisionMigration.MigrateStoredObjectData").And.NotContain("StoredItemDataMigration.Migrate()");
         File.ReadAllText(Path.Combine(migrations, "PlayerMigration", "_14_MigrateResistanceItemProperties.cs"))

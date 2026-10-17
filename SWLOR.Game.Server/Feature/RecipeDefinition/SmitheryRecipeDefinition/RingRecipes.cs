@@ -425,6 +425,42 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Component("ref_plagionite", 5)
                 .Component("ref_keromber", 5);
 
+            // Arkanian Dragon Ward Ring
+            _builder.Create(RecipeType.ArkanianDragonWardRing, SkillType.Smithery)
+                .Category(RecipeCategoryType.Ring)
+                .Resref("ark_ward_ring")
+                .Level(52)
+                .Quantity(1)
+                .RequirementUnlocked()
+                .EnhancementSlots(RecipeEnhancementType.Armor, 2)
+                .ResearchCostModifier(0.2f)
+                .Component("ref_arkoxit", 2)
+                .Component("ref_jasioclase", 10)
+                .Component("ark_drg_scales", 5)
+                .Component("chiro_shard", 2)
+                .Component("ark_dragon_troph", 1)
+                .Component("ref_scordspar", 5)
+                .Component("ref_plagionite", 5)
+                .Component("ref_keromber", 5);
+
+            // Arkanian Dragon Force Ring
+            _builder.Create(RecipeType.ArkanianDragonForceRing, SkillType.Smithery)
+                .Category(RecipeCategoryType.Ring)
+                .Resref("ark_force_ring")
+                .Level(52)
+                .Quantity(1)
+                .RequirementUnlocked()
+                .EnhancementSlots(RecipeEnhancementType.Armor, 2)
+                .ResearchCostModifier(0.2f)
+                .Component("ref_arkoxit", 2)
+                .Component("ref_jasioclase", 10)
+                .Component("ark_drg_scales", 5)
+                .Component("chiro_shard", 2)
+                .Component("ark_dragon_troph", 1)
+                .Component("ref_scordspar", 5)
+                .Component("ref_plagionite", 5)
+                .Component("ref_keromber", 5);
+
             // Magus Ring
             _builder.Create(RecipeType.MagusRing, SkillType.Smithery)
                 .Category(RecipeCategoryType.Ring)

@@ -68,9 +68,11 @@ namespace SWLOR.Game.Server.Feature.PropertyLayoutDefinition
                 .PricePerDay(200)
                 .AreaInstance("v_apartment_s00");
 
+            // The furnished Star Wars map was never supplied. Retain the fallback only for existing leases.
 			_builder.Create(PropertyLayoutType.ApartmentSmallStyleFurnished)
                 .PropertyType(PropertyType.Apartment)
                 .Name("Player Apartment: Small - Furnished")
+                .UnavailableForRent()
                 .StructureLimit(30)
                 .ItemStorageLimit(25)
                 .BuildingLimit(0)

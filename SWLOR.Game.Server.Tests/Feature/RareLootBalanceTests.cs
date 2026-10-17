@@ -2,8 +2,10 @@ using System.Text.Json;
 using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Game.Server.Feature.MigrationDefinition;
+using SWLOR.Game.Server.Feature.LootTableDefinition;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.CraftService;
+using SWLOR.Game.Server.Service.LootService;
 using SWLOR.NWN.API.NWScript.Enum.Item;
 
 namespace SWLOR.Game.Server.Tests.Feature;
@@ -136,6 +138,36 @@ public class RareLootBalanceTests
                 (baseAttack + rare.Amount(offense)) * (1 + rare.Amount(ItemPropertyType.CombatReadiness) / 100.0);
             (magnitude / comparisons.Max()).Should().BeInRange(0.99, 1.20,
                 $"{resref} should compete with enhanced crafting without an excessive ability-damage premium");
+        }
+    }
+
+    [Test]
+    public void FoundryWearables_FitCapstoneDungeonDropsForTheSameEquipmentSlot()
+    {
+        var capstoneGear = typeof(ILootTableDefinition).Assembly.GetTypes()
+            .Where(type => typeof(ILootTableDefinition).IsAssignableFrom(type) && !type.IsAbstract && !type.IsInterface)
+            .SelectMany(type => ((ILootTableDefinition)Activator.CreateInstance(type)!).BuildLootTables())
+            .Where(pair => pair.Key.StartsWith("CAPSTONE_"))
+            .SelectMany(pair => pair.Value)
+            .Select(item => item.Resref).Distinct()
+            .Where(resref => File.Exists(Path.Combine(Root, "Module", "uti", resref + ".uti.json")))
+            .Select(Read).Where(item => item.Level == 45).ToList();
+        capstoneGear.Should().NotBeEmpty();
+
+        var foundryGear = new HutlarLootTableDefinition().BuildLootTables()
+            .Where(pair => pair.Key.StartsWith("HUTLAR_FOUNDRY_"))
+            .SelectMany(pair => pair.Value).Select(item => item.Resref)
+            .Concat(new[] { "sorting_harness", "assembly_gaunt", "nullfield_collar" })
+            .Distinct().Where(resref => File.Exists(Path.Combine(Root, "Module", "uti", resref + ".uti.json")))
+            .Select(resref => (Resref: resref, Item: Read(resref)))
+            .Where(entry => entry.Item.Level is >= 40 and <= 45 && Units(entry.Item) > 0).ToList();
+        foundryGear.Count.Should().BeGreaterThan(30, "the regular armor pool, named drops and salvage recipes are all covered");
+        foreach (var (resref, item) in foundryGear)
+        {
+            var peers = capstoneGear.Where(peer => peer.BaseItem == item.BaseItem).ToList();
+            peers.Should().NotBeEmpty(resref);
+            Units(item).Should().BeLessThanOrEqualTo(peers.Max(Units) + 0.001,
+                $"{resref} must stay within the capstone dungeon budget for its slot");
         }
     }
 

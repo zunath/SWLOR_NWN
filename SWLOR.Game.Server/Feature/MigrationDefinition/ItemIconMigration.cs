@@ -13,7 +13,7 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition;
 /// <summary>Updates reviewed inventory artwork in place, including saved nested inventories.</summary>
 public static class ItemIconMigration
 {
-    // Fixed legacy appearances for player migration 19 and server migration 27.
+    // Fixed legacy appearances for the combined player and stored-item migrations.
     private static readonly Dictionary<string, (int BaseItem, int OldModel, int NewModel, string OldIcon, string NewIcon)> Models =
         new(StringComparer.OrdinalIgnoreCase)
         {
@@ -1379,9 +1379,14 @@ public static class ItemIconMigration
     /// <summary>Converts recognized pre-update appearances; leaves customized models intact.</summary>
     public static int GetUpdatedModel(string resref, int baseItem, int currentModel)
     {
-        return resref != null && Models.TryGetValue(resref, out var model) &&
+        var updated = resref != null && Models.TryGetValue(resref, out var model) &&
                model.BaseItem == baseItem && model.OldModel == currentModel
             ? model.NewModel : currentModel;
+        // Creature archives use this artwork-only pass to preserve authored stats
+        // and equipment slots. Repair reserved helmet models in that same visit.
+        return baseItem == (int)BaseItem.Helmet
+            ? HeadgearSlotMigration.GetCorrectedModel(resref, BaseItem.Helmet, updated)
+            : updated;
     }
 
     /// <summary>Updates only recognized legacy icon metadata on stored item records.</summary>

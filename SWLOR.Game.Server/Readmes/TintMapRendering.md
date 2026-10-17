@@ -26,6 +26,19 @@ explicit authoring requires `--game-data`. The client draws every cloak mesh wit
 the `cloakmodel.TEXTURE` PLT, even where its bitmap names the model, another PLT,
 or nothing that exists (model 007's only visible mesh is the `cala_cloak` skin), so
 every mesh is bound. Authoring refuses a mesh naming a real TGA, DDS, or MTR.
+Cloak palette alpha is reflection coverage only when the native cloak has an
+environment map. Otherwise it controls binary cutout coverage, including the
+Mantle's invisible Cloth 2 preset 61. The shared material uses the opaque pass:
+`fs_cloaktint` discards palette alpha below 0.5 and keeps the remaining pixels
+opaque, independently of the wearer's material fade. This matches the repository's
+punch-through cutoff; fractional palette alpha does not request blended rendering.
+These cloaks must not acquire metal reflection from alpha. Exact RGB tints retain
+neutral-reference palette coverage for every layer on cutout cloaks; reflective
+cloaks keep nonmetal RGB opaque and use reference alpha only for metal reflection.
+The cloak shader enables `FORCE_ALLOW_DISCARD` before `inc_standard`: the opaque
+white placeholder otherwise lets NWN suppress the cutout even when palette alpha
+is zero. The GPU regression checks composited pixels around the cutoff with
+blending enabled and disabled, in both native `NO_DISCARD` modes.
 
 Authored MTRs can inherit a same-name DDS/TGA without declaring `texture0`.
 `TintMapMaterialSources.json` records that input as `implicitTexture0`.
@@ -473,6 +486,24 @@ repair. `python -B -m unittest discover -s SWLOR_Haks/tools -p "TestBoundRobePan
 checks all 72 panel bindings and compiled vertex placement through movement,
 skills and idle. Rebuild `sw_pt_robe` and `sw_pt_root`; confirmation of the native
 client's animation transitions remains an in-game check.
+
+Normal-body robe 236 uses the generated `p??200` roots, whether or not the
+item has custom RGB. Its lower panels originally weighted separate coat helpers.
+Authored ability clips such as Force Leap animate the body but omit those helpers,
+so the legs could spread while the skirt retained its previous pose.
+`RobeSkirtBindings.py` maps the three skirts' waist weights to `pelvis_g`, middle
+weights to the corresponding thigh, and distal weights to the shin. It preserves
+the authored skinned rest shape, including the female models' nonstandard inverse
+binds, and merges duplicate palette entries without changing total vertex weight.
+Only those skin tables change; geometry, body traversal, animation IDs, materials,
+upper panels and sleeves remain unchanged. The RGB generator applies this policy
+after its native conversion audit so regeneration retains the fix.
+
+Run `python -B SWLOR_Haks/tools/RobeSkirtBindings.py --apply` to repair the existing
+catalog, or `--check` to verify it. `TestRobeSkirtBindings.py` reconstructs the
+legacy bindings from the original native robe and checks every variant's rest
+shape, byte preservation, idempotence and movement during body-only leg poses.
+Rebuild/install `sw_pt_root.hak`; no module repack or C# deploy is required.
 
 The catalog audit extends this treatment to every visible static attachment
 under a body bone, including nested belts, chest ornaments and leg coverings.

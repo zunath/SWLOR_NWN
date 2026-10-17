@@ -11,6 +11,7 @@ namespace SWLOR.Game.Server.Service.PropertyService
         public int InitialPrice { get; set; }
         public int PricePerDay { get; set; }
         public string AreaInstanceResref { get; set; }
+        public bool IsAvailableForRent { get; set; } = true;
 
         public Action<uint> OnSpawnAction { get; set; }
         public Action<uint, PropertyUpgradeType, int> OnCityUpgradeAction { get; set; }

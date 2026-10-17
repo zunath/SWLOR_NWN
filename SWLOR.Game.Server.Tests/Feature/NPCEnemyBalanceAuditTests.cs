@@ -175,9 +175,9 @@ public class NPCEnemyBalanceAuditTests
         new("bulwark", "bulwark_sk", "bulwark_wp", 50, 3296, 34, 34, 34, 42, 24, 139, 46, 21, 2, 9, 75, 44, 76, 23),
         new("slagborn", "slagborn_sk", "slagborn_wp", 50, 2441, 42, 34, 24, 34, 34, 152, 26, 24, 2, 11, 71, 41, 94, 23),
         new("demolisherzr9", "demolisherzr9_sk", "demolisherzr9_wp", 50, 2197, 24, 42, 24, 34, 34, 132, 33, 24, 2, 14, 69, 41, 89, 23),
-        new("fdy_sorter", "fdy_sorter_sk", "fdy_sorter_wp", 45, 2114, 39, 32, 23, 32, 32, 138, 24, 22, 2, 10, 44, 28, 85, 23),
-        new("fdy_foreman", "fdy_foreman_sk", "fdy_foreman_wp", 50, 2197, 24, 42, 24, 34, 34, 132, 33, 24, 2, 14, 69, 41, 89, 25),
-        new("fdy_inspector", "fdy_inspector_sk", "fdy_inspector_wp", 55, 2371, 26, 37, 45, 26, 37, 101, 130, 22, 24, 14, 70, 46, 78, 25),
+        new("fdy_sorter", "fdy_sorter_sk", "fdy_sorter_wp", 45, 2114, 39, 32, 23, 32, 32, 138, 24, 22, 2, 10, 44, 28, 94, 23),
+        new("fdy_foreman", "fdy_foreman_sk", "fdy_foreman_wp", 50, 2197, 24, 42, 24, 34, 34, 132, 33, 24, 2, 14, 69, 41, 98, 25),
+        new("fdy_inspector", "fdy_inspector_sk", "fdy_inspector_wp", 55, 2371, 26, 37, 45, 26, 37, 101, 130, 22, 24, 14, 70, 46, 86, 25),
         new("abs_zchief", "abs_zchief_sk", "abs_zchief_wp", 24, 960, 27, 22, 16, 22, 22, 80, 14, 15, 2, 5, 12, 10, 48, 24),
         new("abs_subzero", "abs_subzero_sk", "abs_subzero_wp", 28, 979, 17, 24, 29, 17, 24, 55, 71, 12, 14, 8, 10, 14, 42, 24),
         new("overwatch", "overwatch_sk", "overwatch_wp", 50, 2197, 24, 42, 24, 34, 34, 132, 33, 24, 2, 14, 69, 41, 89, 23),
@@ -667,6 +667,20 @@ public class NPCEnemyBalanceAuditTests
         }
 
         return bytes.ToArray();
+    }
+
+    [Test]
+    public void SiegeDroid_Uses900FinalHitPoints()
+    {
+        var root = FindRepositoryRoot();
+        using var creature = ReadJson(root, "Module", "utc", "fdy_siege.utc.json");
+        using var skin = ReadJson(root, "Module", "uti", "fdy_siege_sk.uti.json");
+
+        GetEquippedResref(creature.RootElement, CreatureArmorSlot).Should().Be("fdy_siege_sk");
+        GetItemPropertyCost(skin.RootElement, ItemPropertyNPCHP).Should().Be(900);
+        GetInt(creature.RootElement, "CurrentHitPoints").Should().Be(900);
+        GetInt(creature.RootElement, "MaxHitPoints").Should().Be(900);
+        GetInt(creature.RootElement, "HitPoints").Should().Be(GetExpectedNpcBaseHitPoints(creature.RootElement, 900));
     }
 
     [Test]

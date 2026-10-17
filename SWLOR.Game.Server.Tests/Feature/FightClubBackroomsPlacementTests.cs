@@ -32,8 +32,10 @@ public class FightClubBackroomsPlacementTests
     {
         using var backrooms = LoadModuleJson("git", BackroomsAreaFile);
 
-        GetLocalString(backrooms.RootElement, "CREATURE_SPAWN_TABLE_ID")
-            .Should().Be("CAPSTONE_SMUGGLERS_MOON_FIGHT_CLUB_BACKROOMS");
+        GetOptionalLocalString(backrooms.RootElement, "CREATURE_SPAWN_TABLE_ID").Should().BeEmpty();
+        backrooms.RootElement.GetProperty("WaypointList").GetProperty("value").EnumerateArray()
+            .Count(waypoint => GetString(waypoint, "Tag") == "CAPSTONE_SMUGGLERS_MOON_FIGHT_CLUB_BACKROOMS")
+            .Should().Be(20);
         GetLocalInt(backrooms.RootElement, "IS_DUNGEON").Should().Be(1);
 
         backrooms.RootElement

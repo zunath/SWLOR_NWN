@@ -708,7 +708,7 @@
         },
         "Value": {
           "type": "cexostring",
-          "value": "HUTLAR_FOUNDRY_OVERSEER_SHARD,100,1"
+          "value": "HUTLAR_FOUNDRY_OVERSEER_SALVAGE,100,6"
         }
       },
       {
@@ -723,21 +723,6 @@
         },
         "Value": {
           "type": "cexostring",
-          "value": "HUTLAR_FOUNDRY_OVERSEER_SALVAGE,100,6"
-        }
-      },
-      {
-        "__struct_id": 0,
-        "Name": {
-          "type": "cexostring",
-          "value": "LOOT_TABLE_9"
-        },
-        "Type": {
-          "type": "dword",
-          "value": 3
-        },
-        "Value": {
-          "type": "cexostring",
           "value": "HUTLAR_FOUNDRY_OVERSEER_CREDITS,100,1"
         }
       },
@@ -745,7 +730,7 @@
         "__struct_id": 0,
         "Name": {
           "type": "cexostring",
-          "value": "LOOT_TABLE_10"
+          "value": "LOOT_TABLE_9"
         },
         "Type": {
           "type": "dword",

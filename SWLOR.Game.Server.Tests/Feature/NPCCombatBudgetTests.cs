@@ -179,7 +179,10 @@ public class NPCCombatBudgetTests
             Number(row["O"]).Should().Be(Number(preset["L"]) * 2);
             Number(row["P"]).Should().Be(Number(preset["M"]) * 2);
             Number(row["T"]).Should().Be(Math.Max(0, Number(preset["Q"]) - 9));
-            Number(row["Q"]).Should().Be((int)Math.Round(Number(preset["N"]) * damageMultiplier, MidpointRounding.AwayFromZero));
+            var expectedDamage = (int)Math.Round(Number(preset["N"]) * damageMultiplier, MidpointRounding.AwayFromZero);
+            if (row["C"] == "fdy_overseer")
+                expectedDamage = (int)Math.Round(expectedDamage * 1.1m, MidpointRounding.AwayFromZero);
+            Number(row["Q"]).Should().Be(expectedDamage);
             Number(row["R"]).Should().Be(Number(preset["O"]) + offenseBonus);
             Number(row["S"]).Should().Be(Number(preset["P"]) + offenseBonus);
             Number(row["U"]).Should().Be(Number(preset["R"]) + 20);

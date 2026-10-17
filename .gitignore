@@ -292,3 +292,12 @@ Module/ncs/.script-staleness-cache.json
 # Packed modules are generated from Module source files; keep them out of Git and LFS.
 *.[mM][oO][dD]
 *.[bB][aA][cC][kK][uU][pP][mM][oO][dD]
+
+# SWLOR Discord bot local deployment credentials and runtime configuration
+/SWLOR.DiscordBot/bot.json
+/SWLOR.DiscordBot/secrets/*
+!/SWLOR.DiscordBot/secrets/*.example
+
+# Project-wide ignores above include Docker development files by default; retain this bot's packaging.
+!/SWLOR.DiscordBot/Dockerfile
+!/SWLOR.DiscordBot/.dockerignore

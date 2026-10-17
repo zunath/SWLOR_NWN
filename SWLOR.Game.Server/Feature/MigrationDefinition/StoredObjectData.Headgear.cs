@@ -27,19 +27,30 @@ internal sealed partial class StoredObjectData
         {
             if (!visited.Add(node)) return false;
             var changed = false;
-            if (IsLegacyHeadgear(node))
+            var legacyHeadgear = IsLegacyHeadgear(node);
+            if (legacyHeadgear)
             {
                 node.Fields.Single(x => x.Name == "BaseItem").Data = BitConverter.GetBytes((int)BaseItem.Helmet);
+                changed = true;
+            }
+            var resref = node.Fields.SingleOrDefault(x => x.Name == "TemplateResRef" && x.Type == 11);
+            var baseItem = node.Fields.SingleOrDefault(x => x.Name == "BaseItem" && x.Type == 5);
+            if (resref != null && baseItem != null)
+            {
                 var model = node.Fields.SingleOrDefault(x => x.Name == "ModelPart1");
-                if (model == null || ReadScalar(model) <= 0)
+                var extended = node.Fields.SingleOrDefault(x => x.Name == "xModelPart1");
+                var current = extended != null ? (int)ReadScalar(extended) : model == null ? 0 : (int)ReadScalar(model);
+                var corrected = HeadgearSlotMigration.GetCorrectedModel(Encoding.ASCII.GetString(resref.Data.AsSpan(1)),
+                    legacyHeadgear ? BaseItem.Armor : (BaseItem)ReadScalar(baseItem), current);
+                if (corrected != current)
                 {
-                    var resref = node.Fields.Single(x => x.Name == "TemplateResRef");
-                    var field = MakeField(0, "ModelPart1", BitConverter.GetBytes(HeadgearSlotMigration.LegacyHeadgear[
-                        Encoding.ASCII.GetString(resref.Data.AsSpan(1))]));
+                    var field = MakeField(0, "ModelPart1", BitConverter.GetBytes(corrected));
                     if (model == null) node.Fields.Add(field);
                     else node.Fields[node.Fields.IndexOf(model)] = field;
+                    if (extended != null)
+                        node.Fields[node.Fields.IndexOf(extended)] = MakeField(2, "xModelPart1", BitConverter.GetBytes(corrected));
+                    changed = true;
                 }
-                changed = true;
             }
             var variables = node.Fields.SingleOrDefault(x => x.Name == "VarTable" && x.Type == 15);
             if (variables != null)

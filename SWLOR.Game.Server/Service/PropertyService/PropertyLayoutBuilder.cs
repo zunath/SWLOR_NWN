@@ -135,6 +135,17 @@ namespace SWLOR.Game.Server.Service.PropertyService
         }
 
         /// <summary>
+        /// Hides a layout from new rentals while retaining its definition for existing leases.
+        /// </summary>
+        /// <returns>A PropertyLayoutBuilder with the configured options.</returns>
+        public PropertyLayoutBuilder UnavailableForRent()
+        {
+            _currentLayout.IsAvailableForRent = false;
+
+            return this;
+        }
+
+        /// <summary>
         /// Runs an action when the layout is spawned into the world.
         /// </summary>
         /// <param name="action">The action to perform upon spawning into the world.</param>

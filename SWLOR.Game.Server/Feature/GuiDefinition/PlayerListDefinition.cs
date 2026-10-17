@@ -22,7 +22,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
         private const float NameColumnWidth = 140f;
         private const float FlagColumnWidth = 28f;
         private const float FlagIconSize = 20f;
-        private const float FlagToggleWidth = 96f;
+        // The flag icons are 32x32; beside each toggle they show at full size, matching the button height.
+        private const float FlagToggleIconSize = 32f;
+        private const float FlagToggleWidth = 88f;
 
         public GuiConstructedWindow BuildWindow()
         {
@@ -102,8 +104,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                 .SetResref(definition.IconResref)
                 .SetTooltip(definition.Description)
                 .SetAspect(NuiAspect.Fit)
-                .SetWidth(FlagIconSize)
-                .SetHeight(FlagIconSize);
+                .SetWidth(FlagToggleIconSize)
+                .SetHeight(FlagToggleIconSize);
 
             row.AddToggleButton()
                 .SetText(definition.Name)

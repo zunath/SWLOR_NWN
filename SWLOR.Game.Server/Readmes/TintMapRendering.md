@@ -30,6 +30,9 @@ Cloak palette alpha is reflection coverage only when the native cloak has an
 environment map. Otherwise it controls opacity, including the Mantle's invisible
 Cloth 2 preset 61. `fs_cloaktint` discards fully transparent pixels and leaves
 opaque dyes visible; these cloaks must not acquire metal reflection from alpha.
+The cloak shader enables `FORCE_ALLOW_DISCARD` before `inc_standard`: the opaque
+white placeholder otherwise lets NWN suppress the cutout even when palette alpha
+is zero. The GPU regression covers both native `NO_DISCARD` modes.
 
 Authored MTRs can inherit a same-name DDS/TGA without declaring `texture0`.
 `TintMapMaterialSources.json` records that input as `implicitTexture0`.

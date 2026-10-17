@@ -5,6 +5,7 @@ using System.Xml.Linq;
 using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.Service.CombatService;
 
 namespace SWLOR.Game.Server.Tests.Feature;
 
@@ -148,6 +149,7 @@ public class NPCCombatBudgetTests
             "DANTOOINE_BOL_BOSS_RECIPES", "QIONHIVE_BROODMOTHER_RECIPE",
             "TATOOINE_ANCIENT_WORM_STOLEN_GOODS", "FROG_BOSS_RECIPE",
             "KORRIBAN_MASTER_RECIPE", "KORRIBAN_MASTER_RESOURCE", "HUTLAR_FOUNDRY_OVERSEER_RECIPES",
+            "NARSHADDAA_GREAT_ARKANIAN_DRAGON_GEMS", "NARSHADDAA_GREAT_ARKANIAN_DRAGON_RARES",
         };
         var presets = ReadRows(root, "Enemy Stat Presets").ToDictionary(r => r["A"]);
         var count = 0;
@@ -167,6 +169,16 @@ public class NPCCombatBudgetTests
             var level = Number(row["D"]);
             var preset = presets[$"{level}|Boss|{row["F"]}"];
             Number(row["N"]).Should().Be(Number(preset["K"]) * 3);
+            if (row["C"] == "garkaniandragon")
+            {
+                Int(utc.RootElement, "HitPoints").Should().Be(15375,
+                    "the dragon's base HP must exclude its 12 native Vitality HP");
+                Int(utc.RootElement, "MaxHitPoints").Should().Be(15387);
+                Int(utc.RootElement, "CurrentHitPoints").Should().Be(15387);
+            }
+            Number(row["O"]).Should().Be(Number(preset["L"]) * 2);
+            Number(row["P"]).Should().Be(Number(preset["M"]) * 2);
+            Number(row["T"]).Should().Be(Math.Max(0, Number(preset["Q"]) - 9));
             Number(row["Q"]).Should().Be((int)Math.Round(Number(preset["N"]) * damageMultiplier, MidpointRounding.AwayFromZero));
             Number(row["R"]).Should().Be(Number(preset["O"]) + offenseBonus);
             Number(row["S"]).Should().Be(Number(preset["P"]) + offenseBonus);
@@ -182,7 +194,36 @@ public class NPCCombatBudgetTests
             }
             count++;
         }
-        count.Should().Be(14, "all existing premium loot families must receive the group encounter budget");
+        count.Should().Be(15, "all existing premium loot families, including the Great Arkanian Dragon and Foundry Overseer, must receive the group encounter budget");
+    }
+
+    [TestCase("E", "W", "AE", ResistanceType.Fire, -10)]
+    [TestCase("I", "AA", "AI", ResistanceType.Mind, -15)]
+    [TestCase("L", "AD", "AL", ResistanceType.Disruption, -10)]
+    public void GreatArkanianDragon_PreservesBeastPackageWeaknesses(
+        string packageColumn, string resistanceColumn, string adjustmentColumn,
+        ResistanceType resistanceType, int expectedWeakness)
+    {
+        var root = FindRoot();
+        var dragon = ReadRows(root, "World NPCs").Single(r => r["C"] == "garkaniandragon");
+        var packageKey = $"{Number(dragon["D"])}|{dragon["E"]}|{dragon["G"]}";
+        packageKey.Should().Be("48|Boss|Beast");
+        var package = ReadRows(root, "Enemy Resistance Packages").Single(r => r["A"] == packageKey);
+        var weakness = Number(package[packageColumn]);
+        weakness.Should().Be(expectedWeakness, "the reviewed Beast package defines the dragon's weaknesses");
+        Number(dragon[adjustmentColumn]).Should().Be(weakness,
+            "the resistance formula clamps the base package to zero before applying the authored adjustment");
+        Number(dragon[resistanceColumn]).Should().Be(weakness,
+            "the adjusted combat budget must retain the Beast package weakness");
+
+        using var utc = ReadAsset(root, "utc", dragon["C"]);
+        using var skin = ReadAsset(root, "uti", Equipment(utc.RootElement)[SkinSlot]);
+        var property = skin.RootElement.GetProperty("PropertiesList").GetProperty("value").EnumerateArray()
+            .Single(p => Int(p, "PropertyName") == 133 && Int(p, "Subtype") == (int)resistanceType);
+        Int(property, "CostTable").Should().Be(54);
+        Int(property, "CostValue").Should().Be(Resistance.EncodeItemPropertyCostTableValue(weakness));
+        Resistance.DecodeItemPropertyCostTableValue(Int(property, "CostValue")).Should().Be(weakness,
+            "the equipped stat skin must apply the source package weakness at runtime");
     }
 
     [Test]

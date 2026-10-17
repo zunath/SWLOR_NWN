@@ -139,6 +139,7 @@ public class WeatherTests
         resolve.Invoke(null, new object[] { "Mon Cala - Coral Isles - Inner" }).Should().Be(PlanetType.MonCala);
         resolve.Invoke(null, new object[] { "CZ-220 - Main Deck" }).Should().Be(PlanetType.CZ220);
         resolve.Invoke(null, new object[] { "Smuggler's Moon Station - Corridors" }).Should().Be(PlanetType.SmugglersMoonStation);
+        resolve.Invoke(null, new object[] { "Eshan City - The Silver Gate District" }).Should().Be(PlanetType.Eshan);
         Planet.GetPlanetTypeByAreaResref("canyon_001").Should().Be(PlanetType.Tatooine);
         Method("GetAreaClimate").Should().Contain("Planet.GetPlanetType(area)").And.Contain("ResolveClimate");
     }
@@ -167,6 +168,7 @@ public class WeatherTests
 
     [TestCase(PlanetType.Tatooine, WeatherStorm.Sand, WeatherHazard.Sand)]
     [TestCase(PlanetType.Hutlar, WeatherStorm.Snow, WeatherHazard.Snow)]
+    [TestCase(PlanetType.Eshan, WeatherStorm.Snow, WeatherHazard.Snow)]
     public void RegionalStorms_StartInStrongWind_AndClearWhenWindDrops(PlanetType planet, WeatherStorm storm, WeatherHazard hazard)
     {
         var climate = WeatherPlanetDefinitions.GetPlanetClimates()[planet];
@@ -176,6 +178,27 @@ public class WeatherTests
         var cleared = WeatherConditions.Create(6, 8, 8, climate, 0, 0, 0, true, storm, NoRoll);
         cleared.Storm.Should().Be(WeatherStorm.None);
         cleared.GetHazard(false).Should().Be(WeatherHazard.None);
+    }
+
+    [Test]
+    public void Eshan_CalmWeatherUsesItsAuthoredColdDescription()
+    {
+        var climate = WeatherPlanetDefinitions.GetPlanetClimates()[PlanetType.Eshan];
+        var conditions = WeatherConditions.Create(10, 1, 1, climate, 0, 0, 0, true, WeatherStorm.None, NoRoll);
+
+        conditions.Heat.Should().Be(3);
+        conditions.GetFeedback(climate, false, false).Should().Be(climate.ColdMildText);
+        climate.ColdMildText.Should().Contain("Eshan");
+    }
+
+    [Test]
+    public void Eshan_SnowstormsNeverCombineWithRain()
+    {
+        var climate = WeatherPlanetDefinitions.GetPlanetClimates()[PlanetType.Eshan];
+        var conditions = WeatherConditions.Create(10, 7, 9, climate, 0, 0, 0, true, WeatherStorm.None, _ => 0);
+
+        conditions.Storm.Should().Be(WeatherStorm.Snow);
+        conditions.Precipitation.Should().Be(Precipitation.Snow);
     }
 
     [Test]

@@ -232,6 +232,24 @@ def node_schemas(api, graphs):
     return info
 
 
+def linked_types_compatible(received, expected):
+    """Match ComfyUI's default (non-strict) validate_node_input semantics.
+
+    https://github.com/Comfy-Org/ComfyUI/blob/v0.38.0/comfy_execution/validation.py
+    """
+    if not received != expected:
+        return True
+    if received in ('*', 'COMFY_MATCHTYPE_V3') or expected in ('*', 'COMFY_MATCHTYPE_V3'):
+        return True
+    if isinstance(received, list) and expected == 'COMBO':
+        return True
+    if not isinstance(received, str) or not isinstance(expected, str):
+        return False
+    received_types = {kind.strip() for kind in received.split(',')}
+    expected_types = {kind.strip() for kind in expected.split(',')}
+    return '*' in received_types or '*' in expected_types or bool(received_types & expected_types)
+
+
 def preflight(graph, info):
     """Fail on node/input drift and missing model files before consuming GPU time."""
     for key, node in graph.items():
@@ -267,6 +285,10 @@ def preflight(graph, info):
                 upstream, slot = str(value[0]), value[1]
                 if upstream not in graph or type(slot) is not int or slot < 0 or slot >= len(info[graph[upstream]['class_type']]['output']):
                     raise ValueError(f'Invalid link {key}.{name}')
+                received = info[graph[upstream]['class_type']]['output'][slot]
+                expected = allowed[name][0]
+                if not linked_types_compatible(received, expected):
+                    raise ValueError(f'Incompatible link {key}.{name}: {received!r} output to {expected!r} input')
             elif name in allowed:
                 definition = allowed[name]
                 choices = definition[0] if isinstance(definition[0], list) else None
@@ -345,6 +367,26 @@ def extract_glb(data, folder):
             'mesh_count': len(doc['meshes'])}
 
 
+def terminal_history(history):
+    status = history.get('status', {}) if history else {}
+    return status.get('completed') or status.get('status_str') == 'error'
+
+
+def validate_history_owner(history, state):
+    """Raw Comfy history may omit prompt metadata; validate every available owner."""
+    if 'prompt' not in history:
+        return
+    prompt = history['prompt']
+    if not isinstance(prompt, list) or len(prompt) < 2 or prompt[1] != state['prompt_id']:
+        raise ValueError('Saved/returned history belongs to a different prompt')
+    if len(prompt) >= 4:
+        extra = prompt[3]
+        if not isinstance(extra, dict):
+            raise ValueError('Saved/returned history has invalid ownership metadata')
+        if 'swlor_token' in extra and extra['swlor_token'] != state['token']:
+            raise ValueError('Saved/returned history belongs to a different submission token')
+
+
 def run_asset(api, template, asset, image, folder, timeout, identity):
     # One immutable snapshot owns the fingerprint, uploaded bytes and result hash.
     image_data = image.read_bytes()
@@ -402,10 +444,17 @@ def run_asset(api, template, asset, image, folder, timeout, identity):
             raise RuntimeError('Prompt rejected/uncertain; retained response, no automatic retry')
         state.update(prompt_id=response['prompt_id'], status='submitted')
         write_json(path, state)
+    history_path = folder / 'history.json'
+    saved_history = read_json(history_path) if history_path.exists() else None
+    if not terminal_history(saved_history):
+        saved_history = None
     while True:
-        history = api.get('/history/' + urllib.parse.quote(state['prompt_id'])).get(state['prompt_id'])
-        if history and (history.get('status', {}).get('completed') or history.get('status', {}).get('status_str') == 'error'):
-            write_json(folder / 'history.json', history)
+        history = saved_history if saved_history is not None else api.get(
+            '/history/' + urllib.parse.quote(state['prompt_id'])).get(state['prompt_id'])
+        if terminal_history(history):
+            validate_history_owner(history, state)
+            if saved_history is None:
+                write_json(history_path, history)
             if history['status']['status_str'] != 'success':
                 raise RuntimeError('Owned generation failed; see history.json; not resubmitted')
             break

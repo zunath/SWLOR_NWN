@@ -188,6 +188,68 @@ class WeaponGenerationTests(unittest.TestCase):
         self.assertEqual(api.posts, 1)
         self.assertEqual(generator.read_json(self.output / 'submission.json')['deadline_unix'], deadline)
 
+    def test_saved_success_recollects_after_download_failure_and_comfy_restart(self):
+        api = FakeAPI(self.output)
+        with patch.object(api, 'request', side_effect=TimeoutError('download interrupted')):
+            with self.assertRaisesRegex(TimeoutError, 'download interrupted'):
+                self.run_asset(api)
+        journal = (self.output / 'submission.json').read_bytes()
+        history = (self.output / 'history.json').read_bytes()
+        deadline = generator.read_json(self.output / 'submission.json')['deadline_unix']
+        # Restarted Comfy has no in-memory history, but its output file remains.
+        with patch.object(api, 'get', side_effect=AssertionError('Do not require volatile server history')), patch.object(
+                generator.time, 'time', return_value=deadline + 120):
+            result = self.run_asset(api)
+        self.assertEqual(result['prompt_id'], 'owned');self.assertEqual(api.posts, 1)
+        self.assertEqual(len(api.uploads), 1)
+        self.assertEqual((self.output / 'submission.json').read_bytes(), journal)
+        self.assertEqual((self.output / 'history.json').read_bytes(), history)
+        self.assertEqual((self.output / 'source.glb').read_bytes(), glb())
+
+    def test_saved_terminal_error_remains_failure_after_comfy_restart(self):
+        api = FakeAPI(self.output, fail=True)
+        with self.assertRaisesRegex(RuntimeError, 'Owned generation failed'):
+            self.run_asset(api)
+        journal = (self.output / 'submission.json').read_bytes()
+        deadline = generator.read_json(self.output / 'submission.json')['deadline_unix']
+        with patch.object(api, 'get', side_effect=AssertionError('Do not require volatile server history')), patch.object(
+                api, 'request', side_effect=AssertionError('Failed job has no output to collect')), patch.object(
+                generator.time, 'time', return_value=deadline + 120):
+            with self.assertRaisesRegex(RuntimeError, 'Owned generation failed'):
+                self.run_asset(api)
+        self.assertEqual(api.posts, 1);self.assertEqual(len(api.uploads), 1)
+        self.assertEqual((self.output / 'submission.json').read_bytes(), journal)
+
+    def test_saved_history_rejects_mismatched_prompt_id_or_submission_token(self):
+        api = FakeAPI(self.output)
+        with patch.object(api, 'request', side_effect=TimeoutError('download interrupted')):
+            with self.assertRaises(TimeoutError):
+                self.run_asset(api)
+        path = self.output / 'history.json';original = path.read_bytes()
+        for field in ('prompt_id', 'token'):
+            with self.subTest(field=field):
+                history = json.loads(original)
+                if field == 'prompt_id':history['prompt'][1] = 'another-prompt'
+                else:history['prompt'][3]['swlor_token'] = 'another-token'
+                generator.write_json(path, history)
+                with patch.object(api, 'get', side_effect=AssertionError('Unexpected API read')), patch.object(
+                        api, 'request', side_effect=AssertionError('Wrong-owned output must not be downloaded')):
+                    with self.assertRaisesRegex(ValueError, 'different prompt|different submission token'):
+                        self.run_asset(api)
+                self.assertFalse((self.output / 'generation.json').exists())
+        self.assertEqual(api.posts, 1)
+
+    def test_saved_raw_history_without_prompt_metadata_remains_readable(self):
+        api = FakeAPI(self.output)
+        with patch.object(api, 'request', side_effect=TimeoutError('download interrupted')):
+            with self.assertRaises(TimeoutError):
+                self.run_asset(api)
+        path = self.output / 'history.json';history = generator.read_json(path);history.pop('prompt')
+        generator.write_json(path, history)
+        with patch.object(api, 'get', side_effect=AssertionError('Unexpected API read')):
+            self.assertEqual(self.run_asset(api)['prompt_id'], 'owned')
+        self.assertEqual(api.posts, 1)
+
     def test_uncertain_missing_prompt_is_not_resubmitted(self):
         api = FakeAPI(self.output, lost=True)
         with self.assertRaises(TimeoutError): self.run_asset(api)
@@ -244,6 +306,41 @@ class WeaponGenerationTests(unittest.TestCase):
         graph['1']['inputs'] = {'renamed': 'available'}
         with self.assertRaisesRegex(ValueError, 'missing'): generator.preflight(graph, info)
         with self.assertRaisesRegex(ValueError, 'Missing'): generator.preflight(graph, {})
+
+    def test_linked_type_compatibility_matches_comfy_union_and_wildcard_rules(self):
+        cases = [('IMAGE', 'MODEL', False), ('MODEL', 'MODEL', True),
+                 ('IMAGE, MODEL', 'MODEL,LATENT', True), ('IMAGE,MODEL', 'LATENT', False),
+                 ('IMAGE,MODEL', 'MODEL', True), ('IMAGE', 'MODEL,*', True),
+                 ('*', 'MODEL', True), ('IMAGE', '*', True),
+                 ('COMFY_MATCHTYPE_V3', 'MODEL', True), ('IMAGE', 'COMFY_MATCHTYPE_V3', True),
+                 (['first', 'second'], 'COMBO', True), (['first'], ['first'], True),
+                 (['first'], ['second'], False), ('COMBO', ['first'], False)]
+        for received, expected, valid in cases:
+            with self.subTest(received=received, expected=expected):
+                graph = {'1': {'class_type': 'Producer', 'inputs': {}},
+                         '2': {'class_type': 'Consumer', 'inputs': {'value': ['1', 0]}}}
+                info = {'Producer': {'input': {'required': {}}, 'output': [received]},
+                        'Consumer': {'input': {'required': {'value': [expected]}}}}
+                if valid:
+                    generator.preflight(graph, info)
+                else:
+                    with self.assertRaisesRegex(ValueError, 'Incompatible link'):
+                        generator.preflight(graph, info)
+
+    def test_link_type_schema_drift_blocks_fresh_and_prepared_jobs_before_upload(self):
+        self.output = self.folder / self.asset['id']
+        api = FakeAPI(self.output)
+        graph = generator.build_graph(self.template, self.asset)
+        sampler = next(node for node in graph.values() if node['class_type'] == 'KSampler')
+        upstream, slot = sampler['inputs']['model']
+        api.schemas['KSampler']['input']['required']['model'] = ['MODEL']
+        # The node and slot still exist, but their live output type changed.
+        api.schemas[graph[upstream]['class_type']]['output'][slot] = 'IMAGE'
+        for _ in range(2):
+            with self.assertRaisesRegex(ValueError, "Incompatible link .*IMAGE.*MODEL"):
+                self.invoke_main(api)
+            self.assertEqual(api.uploads, []);self.assertEqual(api.posts, 0)
+            self.assertEqual(generator.read_json(self.output / 'submission.json')['status'], 'prepared')
 
     def test_external_api_nodes_and_dynamic_input_drift_refused(self):
         graph = {'1': {'class_type': 'Remote', 'inputs': {}}}

@@ -30,6 +30,12 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
         public static void Apply(uint creature)
         {
             var body = NeckAppearance.GetBodyModel(creature);
+            if (string.IsNullOrEmpty(body))
+            {
+                foreach (var part in Parts)
+                    Projections.Remove((creature, part));
+                return;
+            }
             var armor = GetItemInSlot(InventorySlot.Chest, creature);
             var server = NWNXLib.g_pAppManager.m_pServerExoApp;
             var native = server.GetCreatureByGameObjectID(creature);

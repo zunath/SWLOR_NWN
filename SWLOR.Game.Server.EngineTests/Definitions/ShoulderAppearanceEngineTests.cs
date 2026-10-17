@@ -15,6 +15,18 @@ namespace SWLOR.Game.Server.EngineTests.Definitions;
 
 public static class ShoulderAppearanceEngineTests
 {
+    [EngineTest("Non-modular creatures skip shoulder body-part projection", Category = "Shoulder", TimeoutSeconds = 30f)]
+    public static async Task NonModularCreatureShoulders(EngineTestContext ctx)
+    {
+        var creature = ctx.SpawnCreature("nw_rat001");
+        await ctx.ExecuteInCreatureContextAsync(creature, () =>
+        {
+            ctx.Assert(string.IsNullOrEmpty(NeckAppearance.GetBodyModel(creature)), "The fixture has no modular body skeleton");
+            ShoulderModelRenderer.Apply(creature);
+            ctx.Assert(GetIsObjectValid(creature), "Shoulder projection leaves the non-modular creature intact");
+        });
+    }
+
     [EngineTest("Shoulder packets follow robe skeletons and retain authored armor", Category = "Shoulder", TimeoutSeconds = 60f)]
     public static async Task EquippedShoulderPackets(EngineTestContext ctx)
     {

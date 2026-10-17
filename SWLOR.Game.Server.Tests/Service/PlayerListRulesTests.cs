@@ -247,7 +247,7 @@ public class PlayerListRulesTests
     private static string FindRepositoryRoot()
     {
         var directory = new DirectoryInfo(TestContext.CurrentContext.TestDirectory);
-        while (directory != null && !Directory.Exists(Path.Combine(directory.FullName, "Module")))
+        while (directory != null && !File.Exists(Path.Combine(directory.FullName, "SWLOR.Game.Server.sln")))
             directory = directory.Parent;
         return directory?.FullName ?? throw new DirectoryNotFoundException("Could not locate repository root.");
     }

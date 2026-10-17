@@ -188,9 +188,26 @@ public class StarshipDockReturnTests
     }
 
     [Test]
-    public void ShipWithoutSafeOrbit_ReturnsToSafeDockAndKeepsItsOrbit()
+    public void ShipWithoutSafeOrbit_ReturnsToSafeDockAndItsPlanetsOrbit()
     {
         // Ships that have not docked at a regular starport since safe orbits were recorded.
+        var positions = DockedAtStationAfterTatooine();
+        positions.Remove(PropertyLocationType.LastNPCSpacePosition);
+        var tatooineOrbit = At(TatooineOrbit, 9f);
+        (PropertyLocation Landing, PropertyLocation Orbit)? PlanetStarport(string areaResref) =>
+            areaResref == Tatooine ? (At(Tatooine, 7f), tatooineOrbit) : ViscaraStarport(areaResref);
+
+        StarshipDockReturn.ReturnToSafeDock(positions, IsShipOnly, _ => true, PlanetStarport)
+            .Should().Be(StarshipDockReturnResult.ReturnedFromShipOnlyLocation);
+
+        positions[PropertyLocationType.DockPosition].AreaResref.Should().Be(Tatooine);
+        ShouldBeAt(positions[PropertyLocationType.SpacePosition], tatooineOrbit);
+        ShouldBeAt(positions[PropertyLocationType.LastNPCSpacePosition], tatooineOrbit);
+    }
+
+    [Test]
+    public void ShipWithoutSafeOrbitOnAnUnknownPlanet_ReturnsToSafeDockAndKeepsItsOrbit()
+    {
         var positions = DockedAtStationAfterTatooine();
         positions.Remove(PropertyLocationType.LastNPCSpacePosition);
         var orbit = positions[PropertyLocationType.SpacePosition];
@@ -199,6 +216,7 @@ public class StarshipDockReturnTests
 
         positions[PropertyLocationType.DockPosition].AreaResref.Should().Be(Tatooine);
         positions[PropertyLocationType.SpacePosition].Should().BeSameAs(orbit);
+        positions.Should().NotContainKey(PropertyLocationType.LastNPCSpacePosition);
     }
 
     [Test]

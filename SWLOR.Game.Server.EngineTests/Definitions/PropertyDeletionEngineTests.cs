@@ -48,7 +48,7 @@ public static class PropertyDeletionEngineTests
         var ship = CreateDockedShip(interior);
         // A stale entry: the ship has since docked and registered at another starport.
         var dockedElsewhere = CreateDockedShip(otherInterior);
-        // Registered before safe orbits were recorded.
+        // Registered before safe orbits were recorded; its safe dock is in an area with no known planet.
         var withoutSafeOrbit = CreateDockedShip(interior);
         withoutSafeOrbit.Positions.Remove(PropertyLocationType.LastNPCSpacePosition);
         DB.Set(withoutSafeOrbit);
@@ -85,7 +85,7 @@ public static class PropertyDeletionEngineTests
             ctx.AssertEqual("npc_dock", dbWithoutSafeOrbit.Positions[PropertyLocationType.DockPosition].AreaResref,
                 "a ship without a recorded safe orbit still returns to its last NPC dock");
             ctx.AssertEqual("starport_orbit", dbWithoutSafeOrbit.Positions[PropertyLocationType.SpacePosition].AreaResref,
-                "a ship without a recorded safe orbit keeps its orbit");
+                "a ship without a recorded safe orbit whose safe dock has no known planet keeps its orbit");
 
             var viscara = Planet.GetPlanetByType(PlanetType.Viscara);
             var velesLanding = GetResRef(GetArea(GetWaypointByTag(viscara.LandingWaypointTag)));

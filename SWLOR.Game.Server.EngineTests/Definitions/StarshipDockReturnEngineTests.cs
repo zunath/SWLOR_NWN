@@ -150,6 +150,7 @@ public static class StarshipDockReturnEngineTests
         var stationLanding = GetLocation(GetWaypointByTag("ABANDONED_STATION_DOCK_LANDING"));
         var stationOrbit = GetLocation(GetWaypointByTag("Abandoned_Station_Orbit"));
         var tatooineLanding = GetWaypointByTag(Planet.GetPlanetByType(PlanetType.Tatooine).LandingWaypointTag);
+        var tatooineOrbit = GetWaypointByTag(Planet.GetPlanetByType(PlanetType.Tatooine).SpaceOrbitWaypointTag);
 
         // Docked at the station before it was marked, so the station was also recorded as the safe dock.
         var stranded = CreateShip(new()
@@ -191,6 +192,8 @@ public static class StarshipDockReturnEngineTests
 
                 positions = DB.Get<WorldProperty>(missingDock.Id).Positions;
                 AssertAt(ctx, positions[PropertyLocationType.DockPosition], tatooineLanding, $"restart {restart}: a ship without a dock gets its safe dock");
+                AssertAt(ctx, positions[PropertyLocationType.SpacePosition], tatooineOrbit, $"restart {restart}: a safe dock without a recorded orbit uses its planet's orbit");
+                AssertAt(ctx, positions[PropertyLocationType.LastNPCSpacePosition], tatooineOrbit, $"restart {restart}: that orbit is saved as the safe orbit");
 
                 ctx.Assert(!DB.Get<WorldProperty>(unrecoverable.Id).Positions.ContainsKey(PropertyLocationType.DockPosition),
                     $"restart {restart}: a ship with no dock information is reported and left alone without stopping the cleanup");

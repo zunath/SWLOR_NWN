@@ -1,5 +1,8 @@
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.NWN.API.NWScript.Enum;
+using System.Reflection;
+using SWLOR.Game.Server.Service.CombatService;
+using SWLOR.Game.Server.Service.SkillService;
 
 namespace SWLOR.CombatSim.Data
 {
@@ -95,8 +98,20 @@ namespace SWLOR.CombatSim.Data
                 IsHostile = detail.IsHostileAbility,
                 IsAimed = detail.RequiresTarget || detail.RequiresLocationTarget,
                 IsHealing = detail.IsHealingAbility,
-                ForceAffinity = perk?.ForceAffinityType?.ToString() ?? string.Empty
+                ForceAffinity = perk?.ForceAffinityType?.ToString() ?? string.Empty,
+                TwinPistol = ReadTwinSpec(detail)
             };
+        }
+
+        private static TwinPistolAbilitySpec ReadTwinSpec(AbilityDetail detail)
+        {
+            if (detail.SkillType != SkillType.TwinPistol || !detail.IsHostileAbility) return null;
+            // ConfigurePairAttack captures the authored immutable payload in its impact delegate.
+            // Fail closed if the implementation changes; never substitute stale copied numbers.
+            var closure = detail.ImpactAction?.Target;
+            var payload = closure?.GetType().GetFields(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic)
+                .SingleOrDefault(field => field.FieldType == typeof(TwinPistolAbilitySpec))?.GetValue(closure);
+            return payload as TwinPistolAbilitySpec ?? throw new InvalidDataException($"Cannot read the production Twin Pistol payload for {detail.Name}.");
         }
 
         // The game pays requirements in the order the ability lists them (UsePerkFeat.ApplyRequirementEffects).

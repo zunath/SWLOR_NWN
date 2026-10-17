@@ -37,5 +37,6 @@ namespace SWLOR.CombatSim.Data
         public bool IsAimed { get; init; }
         public bool IsHealing { get; init; }
         public string ForceAffinity { get; init; }
+        public SWLOR.Game.Server.Service.CombatService.TwinPistolAbilitySpec TwinPistol { get; init; }
     }
 }

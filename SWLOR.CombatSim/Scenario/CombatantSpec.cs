@@ -43,6 +43,12 @@ namespace SWLOR.CombatSim.Scenario
         public float ReactionSeconds { get; set; } = 1f;
 
         public AutoAttackSpec AutoAttack { get; set; }
+        public WeaponLoadoutSpec WeaponLoadout { get; set; }
+        public int Defense { get; set; } = 94;
+        public int Evasion { get; set; } = 134;
+        public int Vitality { get; set; } = 26;
+        /// <summary>Ordinary weapon deflection/concealment assumption. Never applied to activated abilities or treated as an accuracy miss.</summary>
+        public int WeaponAvoidancePercent { get; set; }
         public List<AbilityUseSpec> Abilities { get; set; } = new();
 
         public const float MaximumPercentBonus = 1000f;
@@ -59,6 +65,8 @@ namespace SWLOR.CombatSim.Scenario
         public List<string> GetProblems()
         {
             var problems = new List<string>();
+            if (Defense is < 1 or > 10000 || Evasion is < 0 or > 10000 || Vitality is < 0 or > 255 || WeaponAvoidancePercent is < 0 or > 100)
+                problems.Add("Defense, Evasion, Vitality or WeaponAvoidancePercent is outside its supported range");
 
             void WholeNumber(string name, float value)
             {

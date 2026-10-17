@@ -26,6 +26,7 @@ namespace SWLOR.CombatSim.Engine
         public int TeamIndex { get; }
         public CombatantSpec Spec { get; }
         public CombatantStats Stats { get; } = new();
+        public WeaponTraitState WeaponTraits { get; } = new();
 
         public bool IsDead { get; set; }
         public double DiedAt { get; set; }

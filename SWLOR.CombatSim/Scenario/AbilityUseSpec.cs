@@ -28,5 +28,13 @@ namespace SWLOR.CombatSim.Scenario
 
         /// <summary>Damage for hostile abilities. Healing and shield magnitudes come from the effect catalog.</summary>
         public DamageSpec Damage { get; set; }
+        /// <summary>Measured/assumed successful travel for a Twin movement action. Null refuses that action.</summary>
+        public float? MovementMeters { get; set; }
+        /// <summary>Unbuffed travel, supplied by the scenario; movement speed applies, terrain/pathfinding is not simulated.</summary>
+        public float MovementSeconds { get; set; }
+        /// <summary>Number of enemies actually inside the authored Rush line, capped by the server spec.</summary>
+        public int LineTargets { get; set; } = 1;
+        /// <summary>Optional rotation condition for a Flow spender.</summary>
+        public int MinimumFlow { get; set; }
     }
 }

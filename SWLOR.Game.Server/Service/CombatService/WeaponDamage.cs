@@ -10,8 +10,10 @@ namespace SWLOR.Game.Server.Service.CombatService
     {
         public const int NaturalSingleWeaponPercent = 20;
 
+        // Spears are two-handed despite their legacy equipment classification.
         public static bool IsSingleWeaponType(BaseItem type) =>
-            Item.OneHandedMeleeItemTypes.Contains(type) || Item.PistolBaseItemTypes.Contains(type) ||
+            Item.OneHandedMeleeItemTypes.Contains(type) && !Item.SpearBaseItemTypes.Contains(type) ||
+            Item.PistolBaseItemTypes.Contains(type) ||
             Item.ThrowingWeaponBaseItemTypes.Contains(type);
 
         public static bool ReceivesNaturalSingleWeaponBonus(uint creature) =>

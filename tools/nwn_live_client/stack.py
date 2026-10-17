@@ -79,6 +79,13 @@ def read_gff_string(path: Path, label: str) -> str | None:
     data = path.read_bytes()
     if len(data) < 56 or data[4:8] != b'V3.2':
         raise LiveStackError(f'{path} is not a GFF V3.2 file.')
+    try:
+        return _read_gff_string(path, data, label)
+    except struct.error as error:
+        raise LiveStackError(f'{path} is damaged: {error}.') from None
+
+
+def _read_gff_string(path: Path, data: bytes, label: str) -> str | None:
     (struct_offset, _, field_offset, _, label_offset, _, field_data_offset, _,
      field_indices_offset, _, _, _) = struct.unpack_from('<12I', data, 8)
     _, struct_data, field_count = struct.unpack_from('<3I', data, struct_offset)
@@ -227,6 +234,17 @@ def main_checkout() -> Path:
 
 
 DEFAULT_MODULE = 'Star Wars LOR v2.mod'
+
+
+def repository_roots() -> set[Path]:
+    """This checkout, the main checkout, and every linked worktree of the repository."""
+    roots = {REPO_ROOT, main_checkout()}
+    try:
+        listing = output(['git', '-C', str(REPO_ROOT), 'worktree', 'list', '--porcelain'], timeout=60)
+    except LiveStackError:
+        return roots
+    roots.update(Path(line[len('worktree '):]) for line in listing.splitlines() if line.startswith('worktree '))
+    return roots
 
 
 def deploy_home() -> Path | None:
@@ -423,7 +441,7 @@ def create(options) -> Stack:
         raise LiveStackError(f'Compose project {project} already has Docker resources.')
     run_dir = Path(options.run_dir) if options.run_dir else Path(tempfile.gettempdir()) / 'swlor-live' / project
     run_dir = run_dir.resolve()
-    for root in {REPO_ROOT, main_checkout()}:
+    for root in repository_roots():
         if is_within(run_dir, root):
             raise LiveStackError(f'The run directory must be outside the repository: {run_dir}')
     if run_dir.exists():
@@ -551,7 +569,12 @@ def create(options) -> Stack:
         except OSError as cleanup_error:
             log(f'Could not remove {run_dir} after the failed preparation: {cleanup_error}')
         finally:
-            if not release_project(project, run_dir):
+            try:
+                released = release_project(project, run_dir)
+            except LiveStackError as release_error:
+                log(str(release_error))
+                released = False
+            if not released:
                 log(f'Could not release the {reservation_name(project)} reservation; remove it with docker rm.')
         raise
     log(f'Run directory {run_dir} (project {project})')
@@ -673,6 +696,9 @@ def start(stack: Stack, server_timeout: float) -> None:
     stack.ensure_owner()
     start_client(stack, Path(stack.state['cdkey_source']))
     record_image_ids(stack, ('client',))
+    # The module-load marker comes before the rest of start-up, so confirm the server survived it.
+    if not stack.running('swlor-server'):
+        raise LiveStackError('The server container stopped after loading the module. See the server logs.')
 
 
 def record_image_ids(stack: Stack, services: tuple[str, ...]) -> None:
@@ -900,7 +926,9 @@ def destroy(stack: Stack) -> dict:
     # that finds none must leave Docker alone: anything under the name now belongs to another run.
     owns_project = stack.ensure_owner(require_reservation=False)
     report = {'project': stack.project, 'utc': utc_now(), 'player_booted': True}
-    errors = []
+    # Evidence lost by an earlier teardown cannot be recovered; keep reporting it.
+    lost_evidence = stack.state.setdefault('lost_evidence', [])
+    errors = list(lost_evidence)
     if owns_project:
         try:
             report['player_booted'] = boot_players(stack)
@@ -940,7 +968,8 @@ def destroy(stack: Stack) -> dict:
                 if source.is_dir() and any(source.iterdir()):
                     shutil.copytree(source, stack.evidence / name, dirs_exist_ok=True)
             except (OSError, shutil.Error) as error:
-                errors.append(f'Could not keep {name} in the evidence: {error}')
+                lost_evidence.append(f'Could not keep {name} in the evidence: {error}')
+                errors.append(lost_evidence[-1])
         for path in (stack.profile, stack.home, stack.run_dir / 'dotnet', stack.run_dir / 'module',
                      stack.run_dir / 'tlk', stack.run_dir / 'bin'):
             try:

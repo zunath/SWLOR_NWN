@@ -64,6 +64,11 @@ class LiveClientHelperTests(unittest.TestCase):
         with self.assertRaises(LiveStackError):
             stack.character_uuid(path)
 
+    def test_truncated_gff_is_a_cli_error(self):
+        whole = gff([('Tag', ''), ('UUID', 'a27c0f71-93de-4dcb-aa02-0047c02e6b2d')])
+        with self.assertRaisesRegex(LiveStackError, 'damaged'):
+            stack.read_gff_string(self.write('cut.bic', whole[:70]), 'UUID')
+
     def test_rejects_non_gff(self):
         with self.assertRaises(LiveStackError):
             stack.read_gff_string(self.write('bad.bic', b'not a gff' * 10), 'UUID')

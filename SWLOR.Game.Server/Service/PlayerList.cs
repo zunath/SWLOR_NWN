@@ -121,6 +121,8 @@ namespace SWLOR.Game.Server.Service
             viewer = DMPresence.GetDM(viewer);
             var viewerIsDM = DMPresence.IsControlledByDM(viewer);
             var viewerSubject = subjects.FirstOrDefault(subject => subject.Player == viewer);
+            var showOwnDescriptor = viewerIsDM || PlayerName.ShouldShowOwnDescriptor(viewer);
+            var showNamedDescriptors = viewerIsDM || PlayerName.ShouldShowDescriptorForNamedPlayers(viewer);
             var entries = new List<PlayerListEntry>();
 
             foreach (var subject in subjects)
@@ -129,11 +131,14 @@ namespace SWLOR.Game.Server.Service
                     continue;
 
                 var relation = BuildRelation(viewer, viewerIsDM, viewerSubject, subject);
+                var name = ResolveName(viewer, viewerIsDM, subject);
+                var showsDescriptor = PlayerListRules.ShowsDescriptor(viewerIsDM, relation.TargetIsSelf,
+                    !string.IsNullOrEmpty(name), showOwnDescriptor, showNamedDescriptors);
                 entries.Add(new PlayerListEntry
                 {
                     Player = subject.Player,
-                    Name = ResolveName(viewer, viewerIsDM, subject),
-                    Descriptor = subject.Descriptor,
+                    Name = name,
+                    Descriptor = showsDescriptor ? subject.Descriptor : string.Empty,
                     IsDisguised = viewerIsDM && subject.IsDisguised,
                     Flags = subject.Flags,
                     Relation = relation,

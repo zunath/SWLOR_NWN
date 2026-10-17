@@ -70,11 +70,12 @@ namespace SWLOR.Game.Server.Feature
                 var senderIPAddress = GetPCIPAddress(sender);
                 var senderCDKey = GetPCPublicCDKey(sender);
                 var senderAccount = GetPCPlayerName(sender);
-                var senderPCName = PlayerName.GetAuditIdentity(sender);
+                // A possessing DM sends and receives tells as the creature; record the DM behind it.
+                var senderPCName = PlayerName.GetAuditIdentity(DMPresence.GetDM(sender));
                 var receiverIPAddress = GetPCIPAddress(receiver);
                 var receiverCDKey = GetPCPublicCDKey(receiver);
                 var receiverAccount = GetPCPlayerName(receiver);
-                var receiverPCName = PlayerName.GetAuditIdentity(receiver);
+                var receiverPCName = PlayerName.GetAuditIdentity(DMPresence.GetDM(receiver));
 
                 var logMessage = $"{senderPCName} - {senderAccount} - {senderCDKey} - {senderIPAddress} - {chatChannel} (SENT TO {receiverPCName} - {receiverAccount} - {receiverCDKey} - {receiverIPAddress}): {message}";
                 return logMessage;

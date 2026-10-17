@@ -96,6 +96,29 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 ctx.Assert(PlayerListRules.MatchesSearch("testn", named.Name, named.Descriptor), "the assigned name is searchable");
                 ctx.Assert(!PlayerListRules.MatchesSearch(GetName(other.Creature), named.Name, named.Descriptor),
                     "the character's real name is not searchable");
+
+                // The cached Settings values last for one script context.
+                viewer.Update(record =>
+                {
+                    record.Settings.ShowDescriptorsForNamedPlayers = false;
+                    record.Settings.ShowOwnDescriptor = false;
+                });
+                await ctx.WaitFrameAsync();
+                var hidden = FindEntry(ctx, viewer.Creature, other.Creature);
+                ctx.AssertEqual(string.Empty, hidden.Descriptor, "a hidden descriptor is not shown beside an assigned name");
+                var descriptorWord = Disguise.GetDisplayDescriptor(other.Creature).Split(' ').Last();
+                ctx.Assert(!PlayerListRules.MatchesSearch(descriptorWord, hidden.Name, hidden.Descriptor),
+                    $"a hidden descriptor is not searchable ('{descriptorWord}')");
+                ctx.AssertEqual(string.Empty, FindEntry(ctx, viewer.Creature, viewer.Creature).Descriptor,
+                    "the viewer's own descriptor follows their setting");
+                viewer.Update(record =>
+                {
+                    record.Settings.ShowDescriptorsForNamedPlayers = true;
+                    record.Settings.ShowOwnDescriptor = true;
+                });
+                await ctx.WaitFrameAsync();
+                ctx.AssertEqual(Disguise.GetDisplayDescriptor(other.Creature), FindEntry(ctx, viewer.Creature, other.Creature).Descriptor,
+                    "turning the setting back on shows the descriptor again");
             }
             finally
             {

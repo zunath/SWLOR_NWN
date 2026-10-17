@@ -19,6 +19,22 @@ namespace SWLOR.Game.Server.Service.PlayerListService
             return !subjectIsDM || viewerIsDM;
         }
 
+        /// <summary>
+        /// Whether a row shows its public descriptor. Staff always see it, and so does everyone for players
+        /// they have not named. Players who hide descriptors in Settings see none beside their own name or a
+        /// name they assigned.
+        /// </summary>
+        public static bool ShowsDescriptor(bool viewerIsDM, bool isSelf, bool isNamed, bool showOwnDescriptor, bool showNamedDescriptors)
+        {
+            if (viewerIsDM)
+                return true;
+
+            if (isSelf)
+                return showOwnDescriptor;
+
+            return !isNamed || showNamedDescriptors;
+        }
+
         public static PlayerListActions Evaluate(PlayerListRelation relation)
         {
             return new PlayerListActions

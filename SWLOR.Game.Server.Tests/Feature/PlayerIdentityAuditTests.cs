@@ -153,6 +153,12 @@ public class PlayerIdentityAuditTests
                 public static string GetMessage() => Message;
             }
             public static class Communication { public const string SuppressChatAuditVariable = "suppress"; }
+            public static class DMPresence
+            {
+                public static readonly Dictionary<uint, uint> Masters = new();
+                public static uint GetDM(uint actor)
+                    => AuditWorld.GetIsDMPossessed(actor) && Masters.TryGetValue(actor, out var dm) ? dm : actor;
+            }
 
             public static class Auditing
             {
@@ -242,6 +248,7 @@ public class PlayerIdentityAuditTests
                     AuditWorld.KnownNames.Clear();
                     AuditWorld.ValidationError = "";
                     AuditWorld.DmPossessed.Clear();
+                    DMPresence.Masters.Clear();
                     Disguise.Active.Clear();
                     DB.Players.Clear();
                     DB.Set(new Player { Id = "1", UnknownDisplayName = "Old Base Descriptor" });
@@ -256,6 +263,11 @@ public class PlayerIdentityAuditTests
                     AuditWorld.Players[id] = (row.Name, descriptor, row.IsPc, row.IsDm, row.Valid);
                 }
                 public static void SetDMPossessed(uint id) => AuditWorld.DmPossessed.Add(id);
+                public static void SetPossessedBy(uint creature, uint dm)
+                {
+                    AuditWorld.DmPossessed.Add(creature);
+                    DMPresence.Masters[creature] = dm;
+                }
                 public static void SetDisguise(uint player, string id, string name)
                     => Disguise.Active[player] = new PlayerDisguise { Id = id, PrivateName = name };
             }
@@ -354,6 +366,24 @@ public class PlayerIdentityAuditTests
             .And.Contain("PlayerId=2 IdentityKey=disguise:listener-mask Disguised=True DisguiseId=listener-mask DisguiseName=Merchant")
             .And.Contain($" - {channel} (SENT TO ")
             .And.Contain("Are you the one I met?");
+    }
+
+    [Test]
+    public void TellAudit_RecordsThePossessingDMRatherThanTheCreature()
+    {
+        var harness = _run.DeclaringType!.Assembly.GetType("AuditHarness")!;
+        harness.GetMethod("SetPlayer")!.Invoke(null, [6u, "Staff Listener", "", false, true, true]);
+        harness.GetMethod("SetPlayer")!.Invoke(null, [7u, "Possessed NPC", "", true, false, true]);
+        harness.GetMethod("SetPossessedBy")!.Invoke(null, [7u, 6u]);
+
+        var output = RunChat(1, 7, "DMTell", "Staff check in");
+
+        output.Should().ContainSingle();
+        output[0].Should().Contain("(SENT TO Staff Listener")
+            .And.NotContain("Possessed NPC")
+            .And.Contain("account-7")
+            .And.Contain("cdk-7")
+            .And.Contain("ip-7");
     }
 
     [Test]

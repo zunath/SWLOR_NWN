@@ -54,6 +54,19 @@ public class PlayerListRulesTests
     }
 
     [Test]
+    public void Descriptors_FollowThePlayersSettingsExceptForStaffAndUnnamedPlayers()
+    {
+        PlayerListRules.ShowsDescriptor(viewerIsDM: false, isSelf: true, isNamed: true, showOwnDescriptor: false, showNamedDescriptors: true)
+            .Should().BeFalse("players can hide their own descriptor");
+        PlayerListRules.ShowsDescriptor(false, true, true, true, false).Should().BeTrue();
+        PlayerListRules.ShowsDescriptor(false, false, true, true, false)
+            .Should().BeFalse("players can hide descriptors beside names they assigned");
+        PlayerListRules.ShowsDescriptor(false, false, false, true, false)
+            .Should().BeTrue("an unnamed player is only identifiable by their descriptor");
+        PlayerListRules.ShowsDescriptor(true, false, true, false, false).Should().BeTrue("staff always see descriptors");
+    }
+
+    [Test]
     public void NoSelection_DisablesTargetedActionsButKeepsLeaveParty()
     {
         var actions = PlayerListRules.Evaluate(new PlayerListRelation { ViewerIsInParty = true });

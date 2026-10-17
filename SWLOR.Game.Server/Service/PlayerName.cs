@@ -842,7 +842,7 @@ namespace SWLOR.Game.Server.Service
                    !GetIsDMPossessed(observer);
         }
 
-        private static bool ShouldShowDescriptorForNamedPlayers(uint observer)
+        public static bool ShouldShowDescriptorForNamedPlayers(uint observer)
         {
             if (!GetIsObjectValid(observer) ||
                 !GetIsPC(observer) ||
@@ -865,7 +865,7 @@ namespace SWLOR.Game.Server.Service
             return setting;
         }
 
-        private static bool ShouldShowOwnDescriptor(uint player)
+        public static bool ShouldShowOwnDescriptor(uint player)
         {
             if (!GetIsObjectValid(player) ||
                 !GetIsPC(player) ||

@@ -195,6 +195,20 @@ normalizes only at the end. Neither clipping mode caps cuts automatically; autho
 connectors or closed ends before native qualification. The tool checks output
 coverage and family/name collisions, not the full consumer graph.
 
+Before choosing cuts, inspect world-transformed native geometry for the full PR
+delta and the unchanged selectable parts in each affected appearance catalog.
+Do not infer universal compatibility from three nonempty models or new-only
+joint envelopes. Staff roles illustrate the difference: stock 01x-04x use bottom
+for the central grip (Y -0.3 to 0.9), middle for both adjacent end bands (-0.6 to
+-0.3 and 0.9 to 1.2), and top for both terminal sections (-0.8 to -0.6 and 1.2 to
+1.4). Stock 05x has an authentic lower/center/upper partition. A paired-band role
+therefore needs both disconnected sections within its native component; a generic
+two-plane split does not fit every family. Inspect legacy whole-weapon, blank,
+shifted-origin and differently partitioned exceptions separately. Empty axial
+slabs can disprove a fit, while continuous axial coverage does not prove surface
+contact, material continuity or visible compatibility. Confirm representative
+mixed assemblies in the native client and state the remaining limits explicitly.
+
 `icon_size` is the measured native power-of-two canvas, not just inventory cells.
 For example, a 2-by-5 logical area occupies 64-by-160 artwork in a 64-by-256 canvas;
 the adapter pads transparently without stretching it. Source material subsets,

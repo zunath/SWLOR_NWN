@@ -54,6 +54,14 @@ part combination against the same joint envelopes. Verify mixed assemblies
 in the NWN client using SWLOR assets. Native simple-model items such as shuriken
 keep their single-model format.
 
+Audit the full PR's changed MDLs against the selectable appearance catalogs,
+including unchanged old parts. Blueprint usage and new-only join checks do not
+establish backward compatibility. Component roles vary: stock staff 01x-04x use
+bottom=center grip, middle=both end bands, top=both terminal tips; stock 05x uses
+a different lower/center/upper split. Match the intended legacy convention before
+cutting, and record incompatible whole-weapon, blank or shifted legacy slots.
+Axial coverage is a failure screen, not proof of three-dimensional fit.
+
 ## Fit and review
 
 - Fit the grip with uniform scale and preserve natural proportions. Keep approved

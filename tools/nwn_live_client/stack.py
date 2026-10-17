@@ -108,6 +108,8 @@ def _read_gff_string(path: Path, data: bytes, label: str) -> str | None:
                                  ('the list indices', list_indices_offset, list_indices_size)):
         if not within(offset, length, len(data)):
             raise damaged(name)
+    if field_indices_size % 4 or list_indices_size % 4:
+        raise LiveStackError(f'{path} is damaged: an index table is not a whole number of 32-bit entries.')
     if struct_count < 1:
         raise damaged('the top-level struct')
     if struct.unpack_from('<I', data, struct_offset)[0] != 0xFFFFFFFF:
@@ -638,7 +640,7 @@ def create(options) -> Stack:
     else:
         state['dm_avatar'] = {'source': str(dm_avatar), 'file': dm_avatar.name.lower()}
 
-    reserve_project(project, run_dir, state['server_image'], max_seconds)
+    reserve_project(project, run_dir, state['server_image'])
     try:
         # Exclusive creation claims the directory: a concurrent run choosing it fails here.
         run_dir.parent.mkdir(parents=True, exist_ok=True)
@@ -695,7 +697,7 @@ def create(options) -> Stack:
         if shared_deploy_manifest(module, tlk_dir, hak_dir) != shared_before:
             raise LiveStackError('The deployed module, TLK or haks changed while the run was being prepared. '
                                  'Wait for the deployment to finish, then run up again.')
-        stack.state['inputs']['hak_manifest'] = hak_manifest(hak_dir)
+        stack.state['inputs']['hak_manifest'] = shared_before['hak']
         stack.state['inputs']['client_build'] = client_build(install)
         stack.save()
         (stack.home / 'settings.tml').write_text(settings_text, 'utf-8')
@@ -786,16 +788,17 @@ def reservation_name(project: str) -> str:
     return project + '-reservation'
 
 
-def reserve_project(project: str, run_dir: Path, image: str, lifetime_seconds: int) -> None:
+def reserve_project(project: str, run_dir: Path, image: str) -> None:
     """Claim the project name daemon-wide, for every user and temp folder sharing this Docker.
 
     The claim is a container that only sleeps: the daemon reserves container names
     atomically, so a second run asking for the same name is refused, and a running container
-    is not removed by docker container prune. It sleeps for the run's lifetime plus an hour.
+    is not removed by docker container prune. It sleeps until down removes it (about 400 KiB
+    of memory, no CPU), so it outlives every other resource of the project.
     """
     result = run(['docker', 'run', '-d', '--name', reservation_name(project), '--network', 'none',
-                  '--label', f'swlor.live.run_dir={run_dir}', '--entrypoint', 'sleep', image,
-                  str(lifetime_seconds + 3600)], check=False, capture=True, timeout=120)
+                  '--label', f'swlor.live.run_dir={run_dir}', '--entrypoint', 'sleep', image, 'infinity'],
+                 check=False, capture=True, timeout=120)
     if result.returncode != 0:
         holder = reservation_holder(project)
         if not holder:
@@ -1119,6 +1122,11 @@ def capture(stack: Stack, label: str) -> Path:
     path = stack.evidence / f'{label}.png'
     if not path.is_file():
         raise LiveStackError(f'The capture {path} was not written.')
+    try:
+        require_running(stack, 'during the capture')
+    except LiveStackError:
+        path.unlink(missing_ok=True)
+        raise
     digest = sha256(path)
     # A durable record next to the images, so a replaced PNG can be told from the original.
     with (stack.evidence / 'captures.jsonl').open('a', encoding='utf-8') as manifest:
@@ -1256,6 +1264,7 @@ def destroy(stack: Stack) -> dict:
                     break
                 time.sleep(1)
             stop('swlor-server', '60')
+            booted = booted or stack.joined_players() <= 0
             stop('redis', '30')
             for service in ('swlor-server', 'client', 'redis'):
                 existing = stack.compose('ps', '-a', '-q', service, client=service == 'client', check=False,

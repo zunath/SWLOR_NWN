@@ -104,6 +104,11 @@ class LiveClientHelperTests(unittest.TestCase):
         struct.pack_into('<I', unknown, 68, 16)
         with self.assertRaisesRegex(LiveStackError, 'unknown type'):
             stack.validate_bic(self.write('unknown.bic', bytes(unknown)))
+        # Field-index byte count (header field 10) that is not a multiple of four.
+        misaligned = bytearray(good)
+        struct.pack_into('<I', misaligned, 8 + 9 * 4, 7)
+        with self.assertRaisesRegex(LiveStackError, '32-bit'):
+            stack.validate_bic(self.write('misaligned.bic', bytes(misaligned)))
         # The top-level struct (at offset 56) must have type 0xFFFFFFFF.
         root = bytearray(good)
         struct.pack_into('<I', root, 56, 0)
@@ -249,13 +254,13 @@ class LiveClientHelperTests(unittest.TestCase):
             return subprocess.CompletedProcess([], code, out, b'Conflict. The container name is already in use')
 
         with patch.object(stack, 'run', side_effect=[completed(0)]) as docker:
-            stack.reserve_project('swlor-live-lock', self.root / 'first', 'image:tag', 7200)
+            stack.reserve_project('swlor-live-lock', self.root / 'first', 'image:tag')
         command = docker.call_args.args[0]
         self.assertEqual(command[:5], ['docker', 'run', '-d', '--name', 'swlor-live-lock-reservation'])
-        self.assertEqual(command[-2:], ['image:tag', '10800'])
+        self.assertEqual(command[-2:], ['image:tag', 'infinity'])
         with patch.object(stack, 'run', side_effect=[completed(1), completed(0, b'0123abcd C:\\runs\\first\n')]):
             with self.assertRaisesRegex(LiveStackError, r'reserved by run C:\\runs\\first'):
-                stack.reserve_project('swlor-live-lock', self.root / 'second', 'image:tag', 7200)
+                stack.reserve_project('swlor-live-lock', self.root / 'second', 'image:tag')
 
     def test_down_refuses_a_project_reserved_by_another_run(self):
         run_dir = self.root / 'stale-run'

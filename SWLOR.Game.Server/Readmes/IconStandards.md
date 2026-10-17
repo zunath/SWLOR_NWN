@@ -2,6 +2,15 @@
 
 Gameplay icons must communicate what an effect does before the player reads a tooltip. These standards apply to ability, feat, spell, status-effect, and other gameplay-facing icons. Environment textures, portraits, item appearance textures, and non-gameplay art are outside this standard.
 
+Sections: Semantic Color · Every Applied Status Effect Carries an Icon · Stat-Configured Icons · Force Alignment Marker · Uniqueness · Rank Display · Framing · Artwork Quality · Generation Approach · Source Of Truth · Enforcement (commands)
+
+Required for every icon change:
+
+- Icon resrefs are meaningful abbreviations of at most 16 characters, with no hash or generator suffixes.
+- After changing an icon referenced by `feat.2da` or `spells.2da`, run `tools/GenerateCooldownIcons.ps1 -Force`.
+- After changing any gameplay icon or manifest entry, run `tools/UpdateGameplayIconStandards.ps1 -AuditOnly` and fix every failure.
+- The regenerating modes of `UpdateGameplayIconStandards.ps1` rewrite the manifest, `effecticons.2da`, `EffectIconType.cs`, and status-effect code together. Run them only in your own worktree and review the whole diff.
+
 ## Semantic Color
 
 Icons use semantic color on the frame, glow, optional rank badge, or other outer accent. The center artwork may retain discipline flavor, such as Force, Devices, Beastmaster, weapon, medical, command, or elemental identity.

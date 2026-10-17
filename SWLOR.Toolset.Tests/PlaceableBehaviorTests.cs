@@ -548,6 +548,10 @@ namespace SWLOR.Toolset.Tests
                 .Display.Should().Be("Asteroid - Ardanium - Strip Mining");
             lootOptions.Single(option => option.Value == "CAPSTONE_ABSDEF_WD_RARES")
                 .Display.Should().Be("Capstone - Absolute Defense - Warden Rare Drops");
+            lootOptions.Single(option => option.Value == "CAPSTONE_VITRUPT_WD_RARES")
+                .Display.Should().Be("Capstone - Viral Cascade - Warden Rare Drops");
+            lootOptions.Single(option => option.Value == "CAPSTONE_VITRUPT_RARES")
+                .Display.Should().Be("Capstone - Viral Cascade - Rare Drops");
             lootOptions.Should().OnlyContain(option =>
                 option.Details == option.Value,
                 "builders see friendly labels while the exact identifier remains available as metadata");

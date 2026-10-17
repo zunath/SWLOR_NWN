@@ -184,6 +184,27 @@ public sealed partial class QuestConversationTests
         audited.Should().BeGreaterThanOrEqualTo(3);
     }
 
+    [Test]
+    public void AncientSandworm_CorpseDoesNotDuplicatePersonalQuestCargo()
+    {
+        var directory = new DirectoryInfo(TestContext.CurrentContext.TestDirectory);
+        while (directory != null && !Directory.Exists(Path.Combine(directory.FullName, "Module", "utc")))
+            directory = directory.Parent;
+        directory.Should().NotBeNull();
+        var blueprint = JObject.Parse(File.ReadAllText(Path.Combine(directory!.FullName,
+            "Module", "utc", "ancientsandwor.utc.json")));
+        var locals = blueprint["VarTable"]!["value"]!
+            .Where(local => local["Name"]!["value"]!.Value<string>()!.StartsWith("LOOT_TABLE_"))
+            .ToDictionary(local => local["Name"]!["value"]!.Value<string>()!,
+                local => local["Value"]!["value"]!.Value<string>()!);
+
+        locals.Keys.Order().Should().Equal(Enumerable.Range(1, locals.Count).Select(index => $"LOOT_TABLE_{index}"));
+        locals.Values.Should().Contain("MUSIC_DISCS_BOSS,5,1");
+        locals.Values.Should().NotContain(value => value.Contains("STOLEN_GOODS"));
+        new SWLOR.Game.Server.Feature.LootTableDefinition.TatooineLootTableDefinition().BuildLootTables()
+            .Values.SelectMany(table => table).Should().NotContain(item => item.Resref == "stolen_goods");
+    }
+
     [TestCase("alchemized_frog")]
     [TestCase("nar_great_arkanian_dragon")]
     [TestCase("smuggler_favor")]

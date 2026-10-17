@@ -258,13 +258,13 @@ namespace SWLOR.Game.Server.Service.KeyItemService
         CapstoneInvincibleScoredChallengeBadge = 122,
         [KeyItem(KeyItemCategoryType.QuestItems, "Invincible Captain's Challenge Chit", true, "A captain's encrypted challenge chit recovered in the Veles Militia Annex during the Invincible trial.")]
         CapstoneInvincibleCaptainsChallengeChit = 123,
-        [KeyItem(KeyItemCategoryType.QuestItems, "Vital Rupture Veles Drill Ledger", true, "A militia drill ledger recovered in the Veles Militia Annex during the Vital Rupture trial.")]
+        [KeyItem(KeyItemCategoryType.QuestItems, "Viral Cascade Veles Drill Ledger", true, "A militia drill ledger recovered in the Veles Militia Annex during the Viral Cascade trial.")]
         CapstoneVitalRuptureVelesDrillLedger = 124,
-        [KeyItem(KeyItemCategoryType.QuestItems, "Vital Rupture Militia Range Relay", true, "A battered range-control relay recovered in the Veles Militia Annex during the Vital Rupture trial.")]
+        [KeyItem(KeyItemCategoryType.QuestItems, "Viral Cascade Militia Range Relay", true, "A battered range-control relay recovered in the Veles Militia Annex during the Viral Cascade trial.")]
         CapstoneVitalRuptureMilitiaRangeRelay = 125,
-        [KeyItem(KeyItemCategoryType.QuestItems, "Vital Rupture Scored Challenge Badge", true, "A scarred militia challenge badge recovered in the Veles Militia Annex during the Vital Rupture trial.")]
+        [KeyItem(KeyItemCategoryType.QuestItems, "Viral Cascade Scored Challenge Badge", true, "A scarred militia challenge badge recovered in the Veles Militia Annex during the Viral Cascade trial.")]
         CapstoneVitalRuptureScoredChallengeBadge = 126,
-        [KeyItem(KeyItemCategoryType.QuestItems, "Vital Rupture Captain's Challenge Chit", true, "A captain's encrypted challenge chit recovered in the Veles Militia Annex during the Vital Rupture trial.")]
+        [KeyItem(KeyItemCategoryType.QuestItems, "Viral Cascade Captain's Challenge Chit", true, "A captain's encrypted challenge chit recovered in the Veles Militia Annex during the Viral Cascade trial.")]
         CapstoneVitalRuptureCaptainsChallengeChit = 127,
         [KeyItem(KeyItemCategoryType.QuestItems, "Systemic Shutdown Veles Drill Ledger", true, "A militia drill ledger recovered in the Veles Militia Annex during the Systemic Shutdown trial.")]
         CapstoneSystemicShutdownVelesDrillLedger = 128,

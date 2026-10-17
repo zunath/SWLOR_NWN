@@ -474,6 +474,18 @@ checks all 72 panel bindings and compiled vertex placement through movement,
 skills and idle. Rebuild `sw_pt_robe` and `sw_pt_root`; confirmation of the native
 client's animation transitions remains an in-game check.
 
+Large-body (phenotype 22) robe 236 variants also need the coat animation
+hierarchy. Their old parents were either missing or ordinary body roots without
+coat joints, and their native animation IDs did not match the coat library.
+`SWLOR_Haks/tools/RestoreRobeClothParents.py --robe 236 --apply` connects each of
+the eight variants to its existing normal-body robe and remaps geometry and
+local-animation part IDs to that parent. Only those IDs and the supermodel name
+change; mesh data, skin weights, inverse bindings, transforms, and animation
+controllers remain byte-identical. `TestRobeClothParents.py` checks the inherited
+idle, walking, running, and sitting coat tracks and the binary preservation.
+Rebuild `sw_pt_robe.hak` after this repair.
+
+
 The catalog audit extends this treatment to every visible static attachment
 under a body bone, including nested belts, chest ornaments and leg coverings.
 It scans all 7,171 native attachments and RGB roots by mesh flags and hierarchy,

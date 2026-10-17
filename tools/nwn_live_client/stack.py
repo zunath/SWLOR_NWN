@@ -294,7 +294,15 @@ class Stack:
         self.evidence = self.run_dir / 'evidence'
 
     def save(self) -> None:
-        self.state_path.write_text(json.dumps(self.state, indent=2) + '\n', 'utf-8')
+        # Write then replace, so an interrupted save never leaves a half-written recovery record.
+        temporary = self.state_path.with_name('state.json.tmp')
+        temporary.write_text(json.dumps(self.state, indent=2) + '\n', 'utf-8')
+        os.replace(temporary, self.state_path)
+
+    def compose_command(self, *arguments: str) -> str:
+        """The full Compose command line for this run, for recovery instructions."""
+        return (f'docker compose -p {self.project} -f "{COMPOSE_FILE}" --env-file "{self.run_dir / "compose.env"}" '
+                f'--profile client ' + ' '.join(arguments))
 
     def ensure_owner(self, require_reservation: bool = True) -> bool:
         """Refuse to act when the project name is no longer this run's; True when this run holds it.
@@ -630,12 +638,16 @@ def hak_manifest(hak_dir: Path) -> dict[str, list[int]]:
 def start(stack: Stack, server_timeout: float) -> None:
     """Start Redis and the server, seed the Player record, then start the client."""
     ensure_client_image(stack.state['client_image'])
+    # The reservation is a stopped container, so a prune during preparation could free the
+    # name for another run: confirm it is still this run's before touching the project.
+    stack.ensure_owner()
     log('Starting Redis and the server')
     stack.compose('up', '-d', '--no-build', timeout=900)
     wait_for_server(stack, server_timeout)
     uuid = stack.state.get('character', {}).get('uuid')
     if uuid:
         seed_player(stack, uuid)
+    stack.ensure_owner()
     start_client(stack, Path(stack.state['cdkey_source']))
 
 
@@ -771,8 +783,12 @@ def capture(stack: Stack, label: str) -> Path:
 
 def boot_players(stack: Stack, timeout: float = 30) -> bool:
     """Kick the player through the server console so the CD key is released cleanly."""
-    if stack.joined_players() <= 0 or not stack.running('swlor-server'):
+    if stack.joined_players() <= 0:
         return True
+    if not stack.running('swlor-server'):
+        # A server that died with the player joined cannot release the CD key cleanly.
+        log('The server is not running, so the player could not be booted.')
+        return False
     stack.console(f'kick {stack.state["player_name"]}')
     deadline = time.monotonic() + timeout
     while time.monotonic() < deadline:
@@ -871,7 +887,8 @@ def destroy(stack: Stack) -> dict:
             # these containers cannot be proven: leave them and their possible mounts alone.
             errors.append(f'Project {stack.project} has containers but no reservation; they were not touched '
                           'and the profile, home and build were kept. Confirm they belong to this run, remove '
-                          f'them with docker compose -p {stack.project} down, then run down again.')
+                          f'them with: {stack.compose_command("down", "--volumes", "--remove-orphans")} '
+                          '-- then run down again.')
     else:
         try:
             return_home_ownership(stack)
@@ -902,7 +919,9 @@ def destroy(stack: Stack) -> dict:
                 lambda: client_build(Path(stack.state['inputs']['client_install'])),
                 stack.state['inputs'].get('client_build')),
         }
-        stack.state['end_of_run_checks'] = checks
+        # The run has ended only once no project container remains; until then keep rechecking.
+        if not project_resources(stack.project)['containers']:
+            stack.state['end_of_run_checks'] = checks
     report.update(checks)
     if not checks['hak_folder_unchanged']:
         errors.append('The shared hak folder changed during the run; captures may mix asset versions. Recapture.')

@@ -5,6 +5,7 @@ import subprocess
 import sys
 import tempfile
 import unittest
+from types import SimpleNamespace
 from unittest.mock import patch
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
@@ -183,6 +184,22 @@ class LiveClientHelperTests(unittest.TestCase):
         for value in (float('nan'), float('inf'), -1.0):
             with self.assertRaisesRegex(LiveStackError, 'finite'):
                 stack.play(object(), value)
+
+    def test_joined_player_on_a_stopped_server_counts_as_unbooted(self):
+        crashed = SimpleNamespace(joined_players=lambda: 1, running=lambda service: False)
+        self.assertFalse(stack.boot_players(crashed))
+        empty = SimpleNamespace(joined_players=lambda: 0, running=lambda service: False)
+        self.assertTrue(stack.boot_players(empty))
+
+    def test_state_is_replaced_atomically(self):
+        run_dir = self.root / 'run'
+        run_dir.mkdir()
+        (run_dir / 'state.json').write_text('{"project": "swlor-live-save"}', 'utf-8')
+        saved = stack.Stack(run_dir)
+        saved.state['marker'] = 1
+        saved.save()
+        self.assertEqual(stack.Stack(run_dir).state['marker'], 1)
+        self.assertFalse((run_dir / 'state.json.tmp').exists())
 
     def test_live_commands_need_this_runs_reservation(self):
         run_dir = self.root / 'run'

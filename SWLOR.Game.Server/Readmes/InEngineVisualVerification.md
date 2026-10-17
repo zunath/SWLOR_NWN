@@ -2,7 +2,7 @@
 
 The shared procedure for NWN client evidence. Read it before verifying any change.
 
-**Every change needs evidence from the actual NWN:EE client before handoff, unless the user explicitly says otherwise.** Show the screenshots to the user and describe the validation in the pull request. Static previews, coordinate audits, builds, and tests supplement this evidence; they never replace it. Pick the route by what produces the change:
+**Every change with an in-game effect needs evidence from the actual NWN:EE client before handoff, unless the user explicitly says otherwise.** A change with no in-game surface is the only exception (see the last route below). Show the screenshots to the user and describe the validation in the pull request. Static previews, coordinate audits, builds, and tests supplement this evidence; they never replace it. Pick the route by what produces the change:
 
 - **Offline launcher** (most of this guide): anything the module and haks render without the C# server, such as placements, models, textures, equipment, VFX, and areas. Inspect every changed placement and the relevant appearances or states.
 - **Live server** ("Server behavior" below): anything the C# server produces, such as combat, abilities, NUI windows, conversations, chat commands, migrations, and economy behavior.

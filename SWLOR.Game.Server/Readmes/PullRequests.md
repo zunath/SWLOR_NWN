@@ -27,9 +27,9 @@ Every pull request gets a Codex review, repeated until it finds nothing.
 Addressing a finding means fixing it or answering it with a concrete reason it does not apply, then resolving its thread. This applies to bot reviewers too. Never resolve a thread just to hide it.
 
 ```bash
-gh api graphql -f query='query($o:String!,$r:String!,$n:Int!){repository(owner:$o,name:$r){pullRequest(number:$n){reviewThreads(first:100){nodes{id isResolved path}}}}}' -f o=zunath -f r=SWLOR_NWN -F n=<pr>
+gh api graphql --paginate -f query='query($o:String!,$r:String!,$n:Int!,$endCursor:String){repository(owner:$o,name:$r){pullRequest(number:$n){reviewThreads(first:100,after:$endCursor){nodes{id isResolved path} pageInfo{hasNextPage endCursor}}}}}' -f o=zunath -f r=SWLOR_NWN -F n=<pr>
 gh api graphql -f query='mutation($id:ID!){resolveReviewThread(input:{threadId:$id}){thread{isResolved}}}' -f id=<thread id>
-gh api repos/zunath/SWLOR_NWN/pulls/<pr>/reviews --jq '.[] | {user: .user.login, state, body}'
+gh api --paginate repos/zunath/SWLOR_NWN/pulls/<pr>/reviews --jq '.[] | {user: .user.login, state, body}'
 ```
 
 The last command catches findings Codex put in a review body instead of a thread. Body findings cannot be resolved; answer them with a pull request comment naming the fix commit or the reason. For haks companion pull requests, use `-f r=SWLOR_Haks` and `repos/zunath/SWLOR_Haks/...`.

@@ -31,7 +31,7 @@ Sections: Code · Module JSON · Stat-driven gameplay · Haks, TLK, and 2DA
 ## Haks, TLK, and 2DA
 
 - Replace by adding: a replaced stat, item property, 2DA row, TLK string, or enum value gets a new definition, and the old one stays untouched (hidden from builders only if asked).
-- New custom TLK strings take the first placeholder slot in `SWLOR_Haks/sw_tlk/sw_tlk.tlk.json` before appending at the end. Never set an entry's text to empty: `nwn_tlk` drops it and every later strref shifts. Regenerate `sw_tlk.tlk` after editing the JSON and confirm the entry count is unchanged.
+- New custom TLK strings take the first placeholder slot in `SWLOR_Haks/sw_tlk/sw_tlk.tlk.json` before appending at the end. Never set an entry's text to empty: `nwn_tlk` drops it and every later strref shifts. Regenerate `sw_tlk.tlk` after editing the JSON and round-trip it: the entry count stays the same when you filled placeholders and grows by exactly the number of entries you appended, and every other entry's text is unchanged.
 - Never delete a 2DA row; retire it in place. Row indices are referenced by enums and other data.
 - 2DA references to custom TLK entries use `16777216 + tlkId` (entry `50003` is `16827219`). Raw IDs are only valid for base-game `dialog.tlk`. When moving or adding an entry, update every reference.
 - `RecastGroup` short names are player-facing and at most 14 characters. Choose a meaningful label; never auto-truncate, and make generators fail when one is missing.

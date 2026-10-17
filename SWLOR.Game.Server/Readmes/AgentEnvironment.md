@@ -8,7 +8,19 @@ Sections: Worktrees and the haks submodule · Git network · Shared machine · D
 
 Do each request in its own worktree and branch. `SWLOR_Haks` is a 27 GB submodule that a new worktree leaves uninitialized, so 2DA, TLK, icon, Bible, and toolset tests fail with missing-directory errors that have nothing to do with the change. `git submodule status` shows `-` when it is missing and `+` when it is at the wrong commit.
 
-Most tests only need `sw_2da`, `sw_tlk`, and `sw_ability`. A sparse submodule worktree takes about 15 seconds. From the outer worktree root, with `<main>` the main checkout (`C:\Projects\SWLOR_NWN`) and `<wt>` this worktree's absolute path:
+Most tests only need `sw_2da`, `sw_tlk`, and `sw_ability`. A sparse submodule worktree takes about 15 seconds. With `<main>` the main checkout (`C:\Projects\SWLOR_NWN`) and `<wt>` this worktree's absolute path:
+
+One-time setup: per-worktree config needs `extensions.worktreeConfig` on the shared submodule repository. If `git -C <main>/SWLOR_Haks config --get extensions.worktreeConfig` does not print `true`, move the main checkout's `core.worktree` into its own per-worktree config first, as Git requires:
+
+```bash
+wt_main=$(git -C <main>/SWLOR_Haks config --local --get core.worktree)
+git -C <main>/SWLOR_Haks config extensions.worktreeConfig true
+git -C <main>/SWLOR_Haks config --worktree core.worktree "$wt_main"
+git -C <main>/SWLOR_Haks config --local --unset core.worktree
+git -C <main>/SWLOR_Haks rev-parse --show-toplevel   # must still print <main>/SWLOR_Haks
+```
+
+Then, from the outer worktree root:
 
 ```bash
 sha=$(git rev-parse HEAD:SWLOR_Haks)
@@ -19,7 +31,7 @@ git -C <wt>/SWLOR_Haks sparse-checkout set --cone sw_2da sw_tlk sw_ability
 git -C <wt>/SWLOR_Haks checkout --detach $sha
 ```
 
-- The `config --worktree core.worktree` step is required. The shared submodule config carries a `core.worktree` that every linked worktree inherits; without the override, checkout writes into the wrong directory. Never run `git config core.worktree` without `--worktree`: that rewrites the shared value for every checkout.
+- The `config --worktree core.worktree` step is required. The shared submodule config can carry a `core.worktree` (this machine's still does) that every linked worktree inherits; without the override, checkout writes into the wrong directory. Never run `git config core.worktree` without `--worktree`: that rewrites the shared value for every checkout.
 - Add folders with `sparse-checkout add <folder>` when a task needs models, textures, or other hak content. A full checkout (`git sparse-checkout disable`) writes about 161,000 files and takes over ten minutes.
 - To change hak content, create a branch in the submodule worktree (`git -C SWLOR_Haks switch -c <branch>`), commit there first, then commit the pointer bump in the outer worktree. Push with `git -C SWLOR_Haks push origin <branch>`.
 - After merging or rebasing onto a commit that moves the pointer, update the submodule worktree to the new pointer before trusting hak-dependent test results.
@@ -49,12 +61,12 @@ Graphics and model work (renders, Blender files, exported meshes and textures, G
 - Keep everything a task generates in one task-owned directory outside the repository (your scratchpad, or `C:\Temp\<task>\`) so nothing is scattered.
 - Delete each intermediate as soon as no later step needs it: superseded renders and exports, rejected variants, unpacked archives, copied HAKs and modules after the run that used them.
 - At handoff, delete everything else the task generated except the evidence the user needs (final screenshots and reports), and state what was kept and its size.
-- Remove Docker containers, volumes, and images you created (`docker compose -p <your project> down --volumes`), never another session's.
+- Remove Docker containers, volumes, and images you created (`docker compose -p <your project> down --volumes --rmi local`, plus `docker image rm` for any image you built and tagged yourself), never another session's.
 
 ## Builds and local deploy
 
 - The newest SDK on the machine is a .NET 11 preview whose persistent MSBuild server can get stuck: every build fails in a few seconds with "Build FAILED. 0 Warning(s) 0 Error(s)". Run `dotnet build-server shutdown --msbuild` and rebuild, or bypass it with `MSBUILDUSESERVER=0`.
-- Always build with `-p:RunPostBuildEvent=Never` unless you mean to deploy. Run the local server with `dotnet run --project SWLOR.Runner`.
-- Building `SWLOR.Game.Server` without `-p:RunPostBuildEvent=Never` deploys to the `debugserver/` folder of the checkout being built. A worktree build therefore deploys to the worktree's own `debugserver/`, not the main checkout's, which is what the local server runs.
+- Always build with `-p:RunPostBuildEvent=Never` unless you mean to deploy. - Building `SWLOR.Game.Server` without `-p:RunPostBuildEvent=Never` deploys to the `debugserver/` folder of the checkout being built, and `dotnet run --project SWLOR.Runner` runs that same checkout's `debugserver/`. A worktree build and Runner therefore use the worktree's own `debugserver/`; a server already running from the main checkout uses the main checkout's. Deploy to the one you are testing.
+- Runner always uses the compose project `debugserver` (container `debugserver-swlor-server-1`), so Runner servers from different checkouts collide. Check that none is running before starting one, or use your own compose project and port for parallel work.
 - Module JSON changes need `Module\PackModule.cmd`. Hak changes need `SWLOR_Haks\BuildHaks.cmd`, which needs `nwn_erf` on PATH; when it is missing, report the hak rebuild as an outstanding deploy step instead of retrying.
 - When an in-game check of a hak-dependent change fails, compare the deployed `.hak` size and timestamp against the expected build before debugging code.

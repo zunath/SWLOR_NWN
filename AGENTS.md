@@ -25,7 +25,7 @@ SWLOR is a live Neverwinter Nights: Enhanced Edition persistent world. Server lo
 
 ## Every Task
 
-- **Client evidence:** every change needs NWN client evidence through the established procedure unless the user explicitly waives it (`Readmes/InEngineVisualVerification.md`).
+- **Client evidence:** every change with an in-game effect needs NWN client evidence through the established procedure unless the user explicitly waives it; a change with no in-game surface (toolset app, CLI, docs, agent rules) says so in the handoff instead (`Readmes/InEngineVisualVerification.md`).
 - **Tests:** build once with `-p:RunPostBuildEvent=Never -v q -clp:ErrorsOnly`, then `dotnet test <project> --no-build --filter "FullyQualifiedName~<Class>"` for the tests that guard the change. Run the full suite only when asked or the change is broad. Report the filters you ran.
 - **Shared machine:** several Claude and Codex sessions run at once. Work in your own worktree and branch, never stash, reset, or run repo-wide generators in a shared checkout, and stop only processes you started (`Readmes/AgentEnvironment.md`).
 - **Clean up as you go:** delete generated files (renders, models, textures, HAK and module copies, client profiles, containers) once nothing needs them, without being asked. Keep only the evidence the user needs.
@@ -44,8 +44,8 @@ Read the guide before working in its area. `Readmes/README.md` lists every guide
 - Worktrees, haks submodule, git network, disk hygiene, builds, local deploy: `Readmes/AgentEnvironment.md`
 - Client evidence (offline and live server): `Readmes/InEngineVisualVerification.md`
 - Engine tests: `Readmes/EngineTesting.md`
-- Active abilities and targeting: `Readmes/AbilityTargeting.md`. Icons: `Readmes/IconStandards.md`. VFX: `Readmes/VisualEffectSelection.md`
-- Conversations: `Readmes/Conversations.md`. Player names: `Readmes/PlayerIdentity.md`. Player messages: `Readmes/PlayerFeedback.md`
+- Active abilities and targeting: `Readmes/AbilityTargeting.md`. Icons: `Readmes/IconStandards.md` (key items: `Readmes/KeyItemIconStandards.md`). VFX: `Readmes/VisualEffectSelection.md`
+- Quests: `Readmes/QuestContentValidation.md`. Conversations: `Readmes/Conversations.md`. Player names: `Readmes/PlayerIdentity.md`. Player messages: `Readmes/PlayerFeedback.md`
 - Item models (helmet model 223 is reserved): `Readmes/ItemAppearanceRules.md`. Item blueprints and pickers: `Readmes/EconomyRestrictedItems.md`. Creature HP: `Readmes/NpcHitPoints.md`
 - NUI windows: `Readmes/NuiLayoutRules.md`, `Readmes/GuiWindowAuthoring.md`
 - Design Bible workbooks (never edit with `openpyxl`): `Readmes/DesignBibleWorkbookRules.md`

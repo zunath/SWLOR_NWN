@@ -1,6 +1,6 @@
 # SWLOR.Game.Server Guides
 
-One line per guide. Rule guides are required reading before working in their area; the root `AGENTS.md` lists the same set under Topic Guides.
+One line per guide. Rule guides are required reading before working in their area; the root `AGENTS.md` points to each one under Guides.
 
 ## Rules and procedures
 
@@ -49,4 +49,4 @@ One line per guide. Rule guides are required reading before working in their are
 - [WeatherAreaAudit.md](WeatherAreaAudit.md): per-area weather audit.
 - [GameplayIconManifest.csv](GameplayIconManifest.csv), [CombatUpgradeBiblePerkManifest.csv](CombatUpgradeBiblePerkManifest.csv), [PlayerMessageAudit.json](PlayerMessageAudit.json): data read by tools and tests.
 
-When adding a guide, add one line here and, for a rule guide, one line under Topic Guides in `AGENTS.md`.
+When adding a guide, add one line here and, for a rule guide, one line under Guides in `AGENTS.md`.

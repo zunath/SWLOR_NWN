@@ -69,7 +69,8 @@ public static class SingleWeaponEngineTests
         player.Update(record =>
         {
             record.Skills[SkillType.Armor].Rank = 40;
-            record.Skills[SkillType.Spear].Rank = 50;
+            foreach (var skill in new[] { SkillType.Spear, SkillType.Staff, SkillType.HeavyVibroblade, SkillType.TwinBlade, SkillType.Rifle })
+                record.Skills[skill].Rank = 50;
         });
         foreach (var resref in new[] { "chi_spear", "b_staff", "b_greatsword", "b_twinblade", "b_rifle" })
         {

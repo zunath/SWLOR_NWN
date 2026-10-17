@@ -13,12 +13,13 @@ Sections: How migrations run · One migration per release · One pass per data s
 
 ## One migration per release
 
-A release is a date-named GitHub release and tag (for example `2026-10-16`). Each release gets at most one server migration version and one player migration version.
+A release is a production deployment. Each release gets at most one server migration version and one player migration version.
 
-1. Find the latest release: `gh release list --limit 1`.
-2. Find the newest migration of the kind you need and the commit that added it, then check `git merge-base --is-ancestor <commit> <release tag>`.
-3. If that migration is not in the release, add your change to it (same version, same pass) instead of adding a version. If it is, add the next version; later changes before the next release go into that one.
-4. An unreleased migration may already have run on the test server. If the test server needs your change, ask before relying on a rerun.
+1. Find the newest server or player migration of the kind you need.
+2. Ask the user whether it has shipped to production, unless they already said so in this task. Nothing in the repository proves deployment: GitHub release tags do not (the `2026-10-16` release contains server migration 27 and player migration 22, which were still unreleased afterwards).
+3. If it has not shipped, add your change to it (same version, same pass) instead of adding a version. If it has, add the next version; later changes before the next release go into that one.
+4. Folding into a migration that already shipped means production never runs the change, so never guess.
+5. An unreleased migration may already have run on the test server. If the test server needs your change, ask before relying on a rerun.
 
 ## One pass per data set
 

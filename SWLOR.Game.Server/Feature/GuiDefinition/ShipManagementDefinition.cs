@@ -73,6 +73,17 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                             .BindOnClicked(model => model.OnClickUnregisterShip())
                             .SetHeight(35f);
                     });
+
+                    col.AddRow(row =>
+                    {
+                        row.AddButton()
+                            .SetText("Remove My Access")
+                            .SetTooltip("Remove your permissions from the selected ship so it no longer appears in this list.")
+                            .BindIsVisible(model => model.IsOtherShipsToggled)
+                            .BindIsEnabled(model => model.IsRemoveAccessEnabled)
+                            .BindOnClicked(model => model.OnClickRemoveAccess())
+                            .SetHeight(35f);
+                    });
                 })
 
                 .AddColumn(col =>

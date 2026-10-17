@@ -276,6 +276,61 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             });
         }
 
+        [EngineTest("Players can remove their own access to a shared ship", Category = "ShipManagement", TimeoutSeconds = 60f)]
+        public static Task PlayerCanRemoveOwnShipAccess(EngineTestContext ctx)
+        {
+            return WithShipManagementAsync(ctx, async (actor, model, created, _, _) =>
+            {
+                var owned = AddDockedShip(created, actor.Id, "Owned");
+                var ownedGrant = Grant(created, actor.Id, owned.PropertyId, isOwner: true);
+
+                var leaving = AddSharedShip(created, actor.Id, "Leaving", PropertyPermissionType.EnterProperty);
+                var duplicateGrant = Grant(created, actor.Id, leaving.Ship.PropertyId, PropertyPermissionType.RefitShip);
+                var otherPlayerGrant = Grant(created, NewId(), leaving.Ship.PropertyId, PropertyPermissionType.EnterProperty);
+                var category = AddCategory(created, leaving.Ship.PropertyId);
+                var categoryGrant = Grant(created, actor.Id, category.Id, isOwner: true);
+                var ownerCategoryGrant = Grant(created, leaving.Ship.OwnerPlayerId, category.Id, isOwner: true);
+                var kept = AddSharedShip(created, actor.Id, "Kept", PropertyPermissionType.EnterProperty);
+
+                await OpenShipManagementAsync(ctx, actor);
+                await ctx.ExecuteInCreatureContextAsync(actor.Creature, () => SelectShip(model, owned));
+                ctx.Assert(!model.IsRemoveAccessEnabled, "My Ships offers no access removal");
+                await ctx.ExecuteInCreatureContextAsync(actor.Creature, model.OnClickRemoveAccess());
+                ctx.Assert(!(model.ModalPromptText ?? string.Empty).Contains("Remove your access"), "an owned ship never prompts for access removal");
+                ctx.Assert(DB.Exists<WorldPropertyPermission>(ownedGrant.Id), "an owner keeps their permissions");
+
+                await ctx.ExecuteInCreatureContextAsync(actor.Creature, model.OnClickOtherShips());
+                AssertListed(ctx, model, new List<PlayerShip> { leaving.Ship, kept.Ship }, "Other Ships before removal");
+
+                await ctx.ExecuteInCreatureContextAsync(actor.Creature, () => SelectShip(model, kept.Ship));
+                ctx.Assert(model.IsRemoveAccessEnabled, "a shared ship offers access removal");
+                await ctx.ExecuteInCreatureContextAsync(actor.Creature, model.OnClickRemoveAccess());
+                await ctx.ExecuteInCreatureContextAsync(actor.Creature, model.OnModalCancelClick());
+                ctx.Assert(DB.Exists<WorldPropertyPermission>(kept.Grant.Id), "cancelling keeps the player's access");
+
+                await ctx.ExecuteInCreatureContextAsync(actor.Creature, () => SelectShip(model, leaving.Ship));
+                await ctx.ExecuteInCreatureContextAsync(actor.Creature, model.OnClickRemoveAccess());
+                ctx.Assert(model.ModalPromptText.Contains("Leaving"), "the prompt names the ship");
+                await ctx.ExecuteInCreatureContextAsync(actor.Creature, model.OnModalConfirmClick());
+
+                ctx.Assert(!DB.Exists<WorldPropertyPermission>(leaving.Grant.Id), "the player's permission record is removed");
+                ctx.Assert(!DB.Exists<WorldPropertyPermission>(duplicateGrant.Id), "a duplicate permission record is removed");
+                ctx.Assert(!DB.Exists<WorldPropertyPermission>(categoryGrant.Id), "the player's storage category permission is removed");
+                ctx.Assert(DB.Exists<WorldPropertyPermission>(leaving.OwnerGrant.Id), "the owner's ship permissions are kept");
+                ctx.Assert(DB.Exists<WorldPropertyPermission>(ownerCategoryGrant.Id), "the owner's category permissions are kept");
+                ctx.Assert(DB.Exists<WorldPropertyPermission>(otherPlayerGrant.Id), "other players' permissions are kept");
+                ctx.Assert(DB.Exists<WorldPropertyPermission>(kept.Grant.Id), "access to other ships is kept");
+                ctx.Assert(DB.Exists<PlayerShip>(leaving.Ship.Id) && DB.Exists<WorldProperty>(leaving.Ship.PropertyId), "the ship itself is untouched");
+
+                AssertListed(ctx, model, new List<PlayerShip> { kept.Ship }, "Other Ships after removal");
+                ctx.Assert(!model.IsRemoveAccessEnabled, "no ship is selected after removal");
+                ctx.Assert(Gui.IsWindowOpen(actor.Creature, GuiWindowType.ShipManagement), "ship management stays open");
+                await ctx.ExecuteInCreatureContextAsync(actor.Creature, model.OnClickOtherShips());
+                AssertListed(ctx, model, new List<PlayerShip> { kept.Ship }, "Other Ships reopened");
+                AssertSameShips(ctx, new[] { kept.Ship }, PlayerShipAccess.GetSharedShips(actor.Id), "shared ships after removal");
+            });
+        }
+
         /// <summary>
         /// Registers ship management for a headless player, docks test ships in the arena, and lets a test make
         /// ships enterable with the arena as their interior. Every change is undone afterward.
@@ -419,13 +474,21 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
         /// <summary>
         /// A docked ship owned by someone else that shares only the given permissions with the player.
         /// </summary>
-        private static (PlayerShip Ship, WorldPropertyPermission Grant) AddSharedShip(List<EntityBase> created, string playerId, string name,
-            params PropertyPermissionType[] granted)
+        private static (PlayerShip Ship, WorldPropertyPermission Grant, WorldPropertyPermission OwnerGrant) AddSharedShip(
+            List<EntityBase> created, string playerId, string name, params PropertyPermissionType[] granted)
         {
             var ownerId = NewId();
             var ship = AddDockedShip(created, ownerId, name);
-            Grant(created, ownerId, ship.PropertyId, isOwner: true);
-            return (ship, Grant(created, playerId, ship.PropertyId, granted));
+            var ownerGrant = Grant(created, ownerId, ship.PropertyId, isOwner: true);
+            return (ship, Grant(created, playerId, ship.PropertyId, granted), ownerGrant);
+        }
+
+        private static WorldPropertyCategory AddCategory(List<EntityBase> created, string propertyId)
+        {
+            var category = new WorldPropertyCategory { ParentPropertyId = propertyId, Name = "Cargo" };
+            DB.Set(category);
+            created.Add(category);
+            return category;
         }
 
         /// <summary>
@@ -546,17 +609,21 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
 
         private static void DeleteAll(List<EntityBase> created)
         {
+            // Records the code under test already deleted are skipped.
             foreach (var entity in created)
             {
                 switch (entity)
                 {
-                    case PlayerShip:
+                    case PlayerShip when DB.Exists<PlayerShip>(entity.Id):
                         DB.Delete<PlayerShip>(entity.Id);
                         break;
-                    case WorldPropertyPermission:
+                    case WorldPropertyPermission when DB.Exists<WorldPropertyPermission>(entity.Id):
                         DB.Delete<WorldPropertyPermission>(entity.Id);
                         break;
-                    case WorldProperty:
+                    case WorldPropertyCategory when DB.Exists<WorldPropertyCategory>(entity.Id):
+                        DB.Delete<WorldPropertyCategory>(entity.Id);
+                        break;
+                    case WorldProperty when DB.Exists<WorldProperty>(entity.Id):
                         DB.Delete<WorldProperty>(entity.Id);
                         break;
                 }

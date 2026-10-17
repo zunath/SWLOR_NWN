@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Service.DBService;
+using SWLOR.Game.Server.Service.LogService;
 
 namespace SWLOR.Game.Server.Service.SpaceService
 {
@@ -48,6 +49,40 @@ namespace SWLOR.Game.Server.Service.SpaceService
             return SearchAll(shipQuery)
                 .Where(ship => ship.OwnerPlayerId != playerId)
                 .ToList();
+        }
+
+        /// <summary>
+        /// Deletes a player's permission records on a ship someone else owns, including the ship's storage
+        /// categories, so the ship leaves their shared list. Owners keep their permissions.
+        /// </summary>
+        /// <param name="playerId">The player's Id.</param>
+        /// <param name="ship">The ship to leave.</param>
+        /// <returns>The number of permission records deleted.</returns>
+        public static int RemoveSharedAccess(string playerId, PlayerShip ship)
+        {
+            if (ship == null || ship.OwnerPlayerId == playerId)
+                return 0;
+
+            var categoryQuery = new DBQuery<WorldPropertyCategory>()
+                .AddFieldSearch(nameof(WorldPropertyCategory.ParentPropertyId), ship.PropertyId, false);
+            var propertyIds = SearchAll(categoryQuery)
+                .Select(category => category.Id)
+                .ToHashSet();
+            propertyIds.Add(ship.PropertyId);
+
+            var permissionQuery = new DBQuery<WorldPropertyPermission>()
+                .AddFieldSearch(nameof(WorldPropertyPermission.PlayerId), playerId, false);
+            var permissions = SearchAll(permissionQuery)
+                .Where(permission => permission.PlayerId == playerId && propertyIds.Contains(permission.PropertyId))
+                .ToList();
+
+            foreach (var permission in permissions)
+            {
+                DB.Delete<WorldPropertyPermission>(permission.Id);
+            }
+
+            Log.Write(LogGroup.Property, $"Player '{playerId}' removed their access to starship property '{ship.PropertyId}' ({permissions.Count} permission records).");
+            return permissions.Count;
         }
 
         /// <summary>

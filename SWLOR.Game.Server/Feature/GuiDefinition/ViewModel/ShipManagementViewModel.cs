@@ -552,6 +552,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             set => Set(value);
         }
 
+        public bool IsRemoveAccessEnabled
+        {
+            get => Get<bool>();
+            set => Set(value);
+        }
+
         public string ShipLocation
         {
             get => Get<string>();
@@ -1280,10 +1286,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 var dbProperty = DB.Get<WorldProperty>(dbShip.PropertyId);
                 var shipLocation = GetShipLocation(dbProperty, out _);
                 IsUnregisterEnabled = shipLocation == GetArea(Player) && playerId == dbProperty.OwnerPlayerId;
+                IsRemoveAccessEnabled = IsOtherShipsToggled && playerId != dbShip.OwnerPlayerId;
             }
             else
             {
                 IsUnregisterEnabled = false;
+                IsRemoveAccessEnabled = false;
             }
         }
 
@@ -1863,6 +1871,30 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             });
 
             Gui.TogglePlayerWindow(Player, GuiWindowType.ShipManagement);
+        };
+
+        public Action OnClickRemoveAccess() => () =>
+        {
+            if (SelectedShipIndex <= -1)
+                return;
+
+            var playerId = GetObjectUUID(Player);
+            var shipId = _shipIds[SelectedShipIndex];
+            var dbShip = DB.Get<PlayerShip>(shipId);
+            if (dbShip == null || dbShip.OwnerPlayerId == playerId)
+                return;
+
+            var dbProperty = DB.Get<WorldProperty>(dbShip.PropertyId);
+            ShowModal($"Remove your access to {dbProperty.CustomName}? It will no longer appear under Other Ships, and you would need to be granted permissions again to use it.",
+                () =>
+                {
+                    PlayerShipAccess.RemoveSharedAccess(playerId, DB.Get<PlayerShip>(shipId));
+                    LoadShips(GetOtherShips());
+                    ToggleRegisterButtons();
+                    LoadShip();
+
+                    FloatingTextStringOnCreature("Ship access removed.", Player, false);
+                });
         };
 
         public Action OnClickPermissions() => () =>

@@ -75,7 +75,12 @@ public class AppearanceEditorItemValidityTests
                 };
                 private readonly uint _target = 2;
                 private bool IsAppearanceSelected => false;
-                private int SelectedItemTypeIndex => ItemType == BaseItem.Helmet ? 1 : 2;
+                private int SelectedItemTypeIndex => ItemType switch
+                {
+                    BaseItem.Helmet => 1,
+                    BaseItem.Lightsaber or BaseItem.Saberstaff => 3,
+                    _ => 2
+                };
                 private uint GetItem() => Item;
                 {{methods}}
                 public static bool Run(bool targetDM, bool targetPossessed, bool cursed, bool plot, BaseItem itemType)

@@ -165,6 +165,25 @@ class LiveClientHelperTests(unittest.TestCase):
             self.assertTrue(stack.release_project('swlor-live-lock', self.root))
         self.assertEqual(docker.call_args_list[1].args[0], ['docker', 'rm', '0123abcd'])
 
+    def test_release_failure_is_not_read_as_removal(self):
+        mine = subprocess.CompletedProcess([], 0, b'0123abcd ' + str(self.root).encode() + b'\n', b'')
+        denied = subprocess.CompletedProcess([], 1, b'', b'error during connect: daemon is not running')
+        with patch.object(stack, 'run', side_effect=[mine, denied]):
+            self.assertFalse(stack.release_project('swlor-live-lock', self.root))
+
+    def test_input_checks_treat_read_errors_as_changes(self):
+        def vanished():
+            raise FileNotFoundError('sw_tile.hak')
+
+        self.assertFalse(stack.unchanged(vanished, {'a.hak': [1, 2]}))
+        self.assertTrue(stack.unchanged(vanished, None))
+        self.assertTrue(stack.unchanged(lambda: {'a': [1]}, {'a': [1]}))
+
+    def test_play_rejects_non_finite_settle_before_touching_docker(self):
+        for value in (float('nan'), float('inf'), -1.0):
+            with self.assertRaisesRegex(LiveStackError, 'finite'):
+                stack.play(object(), value)
+
     def test_live_commands_need_this_runs_reservation(self):
         run_dir = self.root / 'run'
         run_dir.mkdir()

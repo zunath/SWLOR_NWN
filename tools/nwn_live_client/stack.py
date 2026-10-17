@@ -13,6 +13,7 @@ import datetime
 import hashlib
 import io
 import json
+import math
 import os
 import re
 import secrets
@@ -420,8 +421,8 @@ def create(options) -> Stack:
     max_seconds = int(options.max_minutes * 60)
     if not 300 <= max_seconds <= 12 * 3600:
         raise LiveStackError('--max-minutes must be between 5 and 720.')
-    if options.settle < 0:
-        raise LiveStackError('--settle cannot be negative.')
+    if not (math.isfinite(options.settle) and options.settle >= 0):
+        raise LiveStackError('--settle must be a finite number of seconds, 0 or more.')
     client_settings_text = client_settings(options.player_name)
     state = {
         'project': project, 'run_dir': str(run_dir), 'mode': mode, 'player_name': options.player_name,
@@ -477,6 +478,7 @@ def create(options) -> Stack:
         stack.state['inputs']['tlk_sha256'] = {
             path.name: sha256(path) for path in sorted((run_dir / 'tlk').glob('*.tlk'))}
         stack.state['inputs']['hak_manifest'] = hak_manifest(hak_dir)
+        stack.state['inputs']['client_build'] = client_build(install)
         stack.save()
         (stack.home / 'settings.tml').write_text(settings_text, 'utf-8')
         if mode == 'player':
@@ -519,11 +521,24 @@ def create(options) -> Stack:
             'SWLOR_LIVE_MAX_SECONDS': str(max_seconds),
         }), 'utf-8')
     except BaseException:
-        remove_tree(run_dir)
-        release_project(project, run_dir)
+        try:
+            remove_tree(run_dir)
+        except OSError as cleanup_error:
+            log(f'Could not remove {run_dir} after the failed preparation: {cleanup_error}')
+        finally:
+            if not release_project(project, run_dir):
+                log(f'Could not release the {reservation_name(project)} reservation; remove it with docker rm.')
         raise
     log(f'Run directory {run_dir} (project {project})')
     return stack
+
+
+def client_build(install: Path) -> dict[str, list[int]]:
+    """Size and modification time of the client binary and its build stamps, to detect an update."""
+    files = (install / 'bin' / 'linux-x86' / 'nwmain-linux', install / 'bin' / 'linux-x86' / 'build.txt',
+             install / 'databuild.txt')
+    return {path.relative_to(install).as_posix(): [path.stat().st_size, path.stat().st_mtime_ns]
+            for path in files if path.is_file()}
 
 
 def reservation_name(project: str) -> str:
@@ -580,9 +595,10 @@ def release_project(project: str, run_dir: Path) -> bool:
     container_id, holder = found
     if not same_path(holder, str(run_dir)):
         return True
-    run(['docker', 'rm', container_id], check=False, capture=True, timeout=60)
-    return run(['docker', 'container', 'inspect', container_id], check=False, capture=True,
-               timeout=60).returncode != 0
+    removal = run(['docker', 'rm', container_id], check=False, capture=True, timeout=60)
+    # Only a completed removal or Docker's own "no such container" proves it is gone; an
+    # unreachable daemon also fails, and must not be read as success.
+    return removal.returncode == 0 or b'No such container' in removal.stderr
 
 
 def build_digest(directory: Path) -> str:
@@ -696,8 +712,8 @@ def play(stack: Stack, settle: float, timeout: float = 600) -> None:
     and character select can take minutes to appear while the client loads the haks.
     Clicking Play before then does nothing, so click every 20 seconds until the entry.
     """
-    if settle < 0:
-        raise LiveStackError('--settle cannot be negative.')
+    if not (math.isfinite(settle) and settle >= 0):
+        raise LiveStackError('--settle must be a finite number of seconds, 0 or more.')
     entered = module_entries(stack)
     deadline = time.monotonic() + timeout
     next_click = 0.0
@@ -725,6 +741,10 @@ def play(stack: Stack, settle: float, timeout: float = 600) -> None:
         # An OnModuleEnter handler can boot the character right after the entry is logged.
         if stack.joined_players() <= 0:
             raise LiveStackError('The character entered but was disconnected. See the server and app logs.')
+        # A crashed server cannot log the leave, so check both containers as well.
+        for service in ('swlor-server', 'client'):
+            if not stack.running(service):
+                raise LiveStackError(f'The {service} container stopped while the area was settling.')
         if time.monotonic() - quiet_since >= settle:
             break
         if time.monotonic() >= deadline:
@@ -808,6 +828,16 @@ def return_home_ownership(stack: Stack) -> None:
          '/home-to-return'], capture=True, timeout=300)
 
 
+def unchanged(current, recorded) -> bool:
+    """Compare a recorded manifest with a fresh one; a read error mid-scan counts as a change."""
+    if recorded is None:
+        return True
+    try:
+        return current() == recorded
+    except OSError:
+        return False
+
+
 def destroy(stack: Stack) -> dict:
     """Boot the player, remove the project's Docker resources, then the key, profile and home."""
     # The reservation is released only once this run's Docker resources are gone, so a rerun
@@ -830,14 +860,18 @@ def destroy(stack: Stack) -> dict:
             if result.returncode != 0:
                 errors.append('compose down failed: ' + result.stderr.decode('utf-8', 'replace').strip())
 
-    def own_resources() -> dict[str, list[str]]:
-        return project_resources(stack.project) if owns_project else {'containers': [], 'volumes': [], 'networks': []}
-
     (stack.profile / 'cdkey.ini').unlink(missing_ok=True)
-    if own_resources()['containers']:
-        # A surviving container still uses the bind mounts; keep them, and compose.env so down can be rerun.
-        errors.append('Containers remain after compose down; the profile, home and build were kept. '
-                      'Fix the containers, then run down again.')
+    if project_resources(stack.project)['containers']:
+        # A surviving container may still use the bind mounts; keep them, and compose.env so down can be rerun.
+        if owns_project:
+            errors.append('Containers remain after compose down; the profile, home and build were kept. '
+                          'Fix the containers, then run down again.')
+        else:
+            # The reservation is gone (for example pruned with stopped containers), so ownership of
+            # these containers cannot be proven: leave them and their possible mounts alone.
+            errors.append(f'Project {stack.project} has containers but no reservation; they were not touched '
+                          'and the profile, home and build were kept. Confirm they belong to this run, remove '
+                          f'them with docker compose -p {stack.project} down, then run down again.')
     else:
         try:
             return_home_ownership(stack)
@@ -857,25 +891,34 @@ def destroy(stack: Stack) -> dict:
             except OSError as error:
                 errors.append(f'Could not remove {path}: {error}')
 
-    recorded = stack.state['inputs'].get('hak_manifest')
-    hak_dir = Path(stack.state['inputs']['hak_dir'])
-    try:
-        report['hak_folder_unchanged'] = recorded is None or hak_manifest(hak_dir) == recorded
-    except OSError:
-        # A file vanished mid-scan: a redeploy is in progress, so the folder changed.
-        report['hak_folder_unchanged'] = False
-    if not report['hak_folder_unchanged']:
+    # The shared inputs are judged once, at the first teardown; a rerun must not hold a later
+    # deployment against a run that had already ended.
+    checks = stack.state.get('end_of_run_checks')
+    if checks is None:
+        checks = {
+            'hak_folder_unchanged': unchanged(lambda: hak_manifest(Path(stack.state['inputs']['hak_dir'])),
+                                              stack.state['inputs'].get('hak_manifest')),
+            'client_build_unchanged': unchanged(
+                lambda: client_build(Path(stack.state['inputs']['client_install'])),
+                stack.state['inputs'].get('client_build')),
+        }
+        stack.state['end_of_run_checks'] = checks
+    report.update(checks)
+    if not checks['hak_folder_unchanged']:
         errors.append('The shared hak folder changed during the run; captures may mix asset versions. Recapture.')
+    if not checks['client_build_unchanged']:
+        errors.append('The client install changed during the run (for example a Steam update). Recapture.')
 
-    resources = own_resources()
-    report['reservation_removed'] = False
+    resources = project_resources(stack.project)
+    report['reservation_removed'] = not owns_project
     if not any(resources.values()):
         # Kept while any project resource remains so down can be rerun.
         for name in ('compose.env', 'server-extra.env', 'server.env'):
             (stack.run_dir / name).unlink(missing_ok=True)
-        report['reservation_removed'] = release_project(stack.project, stack.run_dir)
-        if not report['reservation_removed']:
-            errors.append(f'Could not remove the {reservation_name(stack.project)} reservation container.')
+        if owns_project:
+            report['reservation_removed'] = release_project(stack.project, stack.run_dir)
+            if not report['reservation_removed']:
+                errors.append(f'Could not remove the {reservation_name(stack.project)} reservation container.')
     leftovers = [str(path) for pattern in ('cdkey.ini', '*.bic') for path in stack.run_dir.rglob(pattern)]
     report.update({
         'remaining_containers': len(resources['containers']),

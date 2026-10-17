@@ -3,6 +3,14 @@
 This document describes the in-engine integration test system: how it works, the full
 `EngineTestContext` API, how to write a new test, and how to run the suite locally and in CI.
 
+Read only the sections the task needs:
+
+- Writing a test: "How to Write a New Engine Test" (attribute contract, `EngineTestContext` API, player fixture, timing, worked example).
+- Migration or persistence change: "Persistence and migration coverage".
+- Ability or perk coverage: "The ability behavior coverage program" and "The perk coverage program".
+- Running tests: "How to Run Locally". Concurrent runs collide on one compose project; see `AgentEnvironment.md`.
+- Changing the runner itself: "Project Layout and Isolation", "Architecture Overview", "Environment Variable Reference".
+
 ## What It Is and Why
 
 `SWLOR.Game.Server.Tests` (the NUnit suite) covers pure C# logic and data - calculations, builder

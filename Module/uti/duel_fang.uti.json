@@ -47,7 +47,7 @@
   },
   "ModelPart1": {
     "type": "byte",
-    "value": 231
+    "value": 232
   },
   "ModelPart2": {
     "type": "byte",
@@ -181,7 +181,7 @@
   },
   "xModelPart1": {
     "type": "word",
-    "value": 231
+    "value": 232
   },
   "xModelPart2": {
     "type": "word",

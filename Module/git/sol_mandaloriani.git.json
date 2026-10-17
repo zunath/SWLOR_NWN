@@ -217807,7 +217807,7 @@
               },
               "ModelPart2": {
                 "type": "byte",
-                "value": 204
+                "value": 203
               },
               "ModelPart3": {
                 "type": "byte",
@@ -218038,7 +218038,7 @@
               },
               "xModelPart2": {
                 "type": "word",
-                "value": 204
+                "value": 203
               },
               "xModelPart3": {
                 "type": "word",
@@ -218112,7 +218112,7 @@
               },
               "ModelPart2": {
                 "type": "byte",
-                "value": 204
+                "value": 203
               },
               "ModelPart3": {
                 "type": "byte",
@@ -218343,7 +218343,7 @@
               },
               "xModelPart2": {
                 "type": "word",
-                "value": 204
+                "value": 203
               },
               "xModelPart3": {
                 "type": "word",
@@ -218417,7 +218417,7 @@
               },
               "ModelPart2": {
                 "type": "byte",
-                "value": 204
+                "value": 203
               },
               "ModelPart3": {
                 "type": "byte",
@@ -218648,7 +218648,7 @@
               },
               "xModelPart2": {
                 "type": "word",
-                "value": 204
+                "value": 203
               },
               "xModelPart3": {
                 "type": "word",
@@ -272614,7 +272614,7 @@
                     },
                     "ModelPart1": {
                       "type": "byte",
-                      "value": 96
+                      "value": 268
                     },
                     "Plot": {
                       "type": "byte",
@@ -272744,7 +272744,7 @@
                     },
                     "xModelPart1": {
                       "type": "word",
-                      "value": 96
+                      "value": 268
                     },
                     "XOrientation": {
                       "type": "float",

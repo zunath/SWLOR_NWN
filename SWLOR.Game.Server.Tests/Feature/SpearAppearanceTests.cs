@@ -13,8 +13,8 @@ public class SpearAppearanceTests
     public void PlayerSpearBlueprints_HaveEveryPartInTheAppearanceEditorCatalog()
     {
         var appearance = new SpearAppearanceDefinition();
-        var parts = new[] { appearance.TopParts, appearance.MiddleParts, appearance.BottomParts };
-        var partNames = new[] { "Top", "Middle", "Bottom" };
+        var parts = new[] { appearance.BottomParts, appearance.MiddleParts, appearance.TopParts };
+        var partNames = new[] { "Bottom", "Middle", "Top" };
         var checkedBlueprints = new List<string>();
         var missingParts = new List<string>();
 

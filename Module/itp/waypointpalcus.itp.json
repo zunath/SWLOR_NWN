@@ -1627,7 +1627,7 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Veles Militia Annex - Vital Rupture Master Spawn"
+                      "value": "Veles Militia Annex - Viral Cascade Master Spawn"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -1638,7 +1638,7 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Veles Militia Annex - Vital Rupture Warden Spawn"
+                      "value": "Veles Militia Annex - Viral Cascade Warden Spawn"
                     },
                     "RESREF": {
                       "type": "resref",

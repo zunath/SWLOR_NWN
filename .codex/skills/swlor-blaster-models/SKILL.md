@@ -1,9 +1,9 @@
 ---
 name: swlor-blaster-models
-description: Import, create, replace, split, or refit SWLOR weapon models, including pistol blasters, knives, longswords, greatswords, staffs, spears, twinblades, electroblades and shuriken. Covers local authoring, native NWN parts, textures, inventory icons, appearance catalogs and HAK verification. Use for weapon appearance replacements, GR2 imports, original designs, or grip, scale, seam and muzzle alignment changes.
+description: Import, create, replace, split, or refit SWLOR weapon models, including pistol blasters, knives, longswords, greatswords, staffs, spears, twinblades, electroblades, shuriken and large shields. Covers local authoring, native NWN parts, textures, inventory icons, appearance catalogs and HAK verification. Use for weapon or shield appearance replacements, GR2 imports, original designs, or grip, scale, seam and muzzle alignment changes.
 ---
 
-# SWLOR Weapon Models
+# SWLOR Weapon and Shield Models
 
 Use the [model workflow](../../../SWLOR.Game.Server/Readmes/BlasterModelImport.md)
 for commands, a local import-manifest example, material rules and fitting details.
@@ -12,7 +12,7 @@ do not automatically reach another checkout's build inputs.
 
 ## Repository contents
 
-Commit only each weapon's finished MDL, DDS textures, MTR and DDS inventory icon.
+Commit only each weapon or shield's finished MDL, DDS textures, MTR and DDS inventory icon.
 Keep new and replacement inventory artwork DDS-only; do not add TGA companions
 or registration stubs as an automatic workaround for native lookup failures.
 Keep imported GR2/DDS inputs, manifests, Blender files, per-model authoring scripts,
@@ -54,7 +54,7 @@ appearance editor's independent part choices. Preserve the native IDs, audit
 shared slots, cap or cover cuts with common connectors, and check every new
 part combination against the same joint envelopes. Verify mixed assemblies
 in the NWN client using SWLOR assets. Native simple-model items such as shuriken
-keep their single-model format.
+and large shields keep their single-model format.
 
 Audit the full PR's changed MDLs against the selectable appearance catalogs,
 including unchanged old parts. Blueprint usage and new-only join checks do not
@@ -63,6 +63,20 @@ bottom=center grip, middle=both end bands, top=both terminal tips; stock 05x use
 a different lower/center/upper split. Match the intended legacy convention before
 cutting, and record incompatible whole-weapon, blank or shifted legacy slots.
 Axial coverage is a failure screen, not proof of three-dimensional fit.
+
+## Large shields
+
+Use base item **56**, simple family **AShLw**, model `ashlw_###.mdl` and
+matching `iashlw_###.dds` artwork. Audit the selectable model resources rather
+than relying on blueprint usage. Keep appearance IDs and persisted instances.
+Each shield exports one complete model; clipped pieces and empty shield models
+are rejected. Supply both `imp_shield_1` and `imp_shield_2` using
+`attachment_dummies` with measured root-space positions and unit XYZW
+quaternions. Preserve these impact-effect hooks separately from the grip.
+Use the exact **64-by-128** transparent icon canvas (64-by-96 logical artwork)
+and DDS-only replacement icons. Inspect the actual SWLOR left hand, rear grip,
+forearm/body clearance, attack poses, ground model and native inventory icon.
+Follow the guide's shield fit and export schema.
 
 ## Fit and review
 
@@ -74,14 +88,14 @@ Axial coverage is a failure screen, not proof of three-dimensional fit.
   right hand. Custom pistols use **bowshot**; **xbowshot** rotates the hook
   differently. Existing fit measurements are examples, not universal presets.
 - Stage exports in a fresh ignored folder. Review textured views, both hand views
-  and the transparent 64x64 icon. Check trigger contact, barrel direction, UV seams
+  and the transparent icon on its native canvas. Check hand contact, orientation, UV seams
   and material maps. Copy only reviewed game resources to `SWLOR_Haks/sw_weapon/`.
   Use unique meaningful texture resrefs within the 16-character limit.
 - Use NWN Crunch EE to compress large maps to DDS before copying, following the
   guide's channel-specific presets, handheld texture budgets and vertical flip;
   validate dimensions, mipmaps, decoded orientation and material quality. Replace
   the corresponding TGA rather than shipping duplicate formats. Use DXT5 DDS
-  (`-DXT5 -dxtQuality uber -gamma 2.2 -mipMode None`) for 64x64 inventory icons
+  (`-DXT5 -dxtQuality uber -gamma 2.2 -mipMode None`) for native inventory icons
   to preserve transparency. Do not use uncompressed `-A8R8G8B8`: the native DDS
   loader does not recognize it, even though generic DDS decoders do. Review
   the compressed icon itself. Compression tools and intermediate images stay local.
@@ -94,9 +108,9 @@ Axial coverage is a failure screen, not proof of three-dimensional fit.
   See the guide for the command and binary/material verification. For later edits,
   read the shipped binary with `MdlReader` into local authoring rather than relying
   on a legacy decompiler to preserve EE materials.
-- Check the native slot against `PistolAppearanceDefinition.MiddleParts`, the
+- Check the native slot against its appearance catalog, the
   model and inventory icon. Each appearance needs unique artwork matching its
-  finished model, including replacements of occupied slots. Run
+  finished model, including replacements of occupied slots. For pistols, run
   `python -m unittest discover -s tools/tests -p test_pistol_inventory_icons.py`
   to audit every catalog slot for missing, blank or duplicate artwork, DXT5 encoding, DDS/TGA
   shadows and end layers that obscure the middle icon. Review a contact sheet

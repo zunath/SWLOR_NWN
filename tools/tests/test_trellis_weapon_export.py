@@ -88,6 +88,8 @@ class TrellisWeaponExportTests(unittest.TestCase):
     def test_large_shield_uses_one_native_model_and_padded_inventory_canvas(self):
         asset=copy.deepcopy(self.asset)
         asset.update(base_item=56,model='ashlw_255',icon_size=[64,128]);asset.pop('parts')
+        asset['attachment_dummies']=[{'name':name,'position':[0,0,0],'quaternion':[0,0,0,1]}
+                                     for name in ('imp_shield_1','imp_shield_2')]
         checked=self.validate(asset)['assets'][0]
         self.assertEqual(checked['_item_class'],'ashlw')
         self.assertEqual(checked['_model_type'],0)
@@ -95,6 +97,46 @@ class TrellisWeaponExportTests(unittest.TestCase):
         for key,value in [('model','ashlw_m_255'),('model','wthsh_255'),('icon_size',[64,64])]:
             invalid=copy.deepcopy(asset);invalid[key]=value
             with self.subTest(key=key,value=value),self.assertRaises(ValueError):self.validate(invalid)
+
+    def test_shield_export_requires_both_impact_hooks_even_with_aliases(self):
+        for aliases in ([], ['ashlw_032']):
+            asset=copy.deepcopy(self.asset)
+            asset.update(base_item=56,model='ashlw_031',icon_size=[64,128],aliases=aliases)
+            asset.pop('parts')
+            with self.subTest(aliases=aliases),self.assertRaisesRegex(ValueError,'both native shield impact'):
+                self.validate(asset)
+        with self.assertRaisesRegex(ValueError,'both native shield impact'):
+            exporter.attachment_dummy_nodes({'_item_class':'ashlw','_model_type':0},'ashlw_031')
+
+    def test_shield_inspection_accepts_minimal_source_without_export_fields(self):
+        asset={key:self.asset[key] for key in ('asset','source','sha256')}
+        asset['base_item']=56
+        config={'schema_version':1,'assets':[asset]}
+        exporter.validate_manifest(config,self.root,self.manifest,'inspect')
+        self.assertEqual(asset['_item_class'],'ashlw')
+        self.assertNotIn('attachment_dummies',asset)
+        self.assertNotIn('icon_size',asset)
+
+    def test_shield_rejects_other_power_of_two_icon_canvases(self):
+        asset=copy.deepcopy(self.asset)
+        asset.update(base_item=56,model='ashlw_031',icon_size=[64,128]);asset.pop('parts')
+        asset['attachment_dummies']=[{'name':name,'position':[0,0,0],'quaternion':[0,0,0,1]}
+                                     for name in ('imp_shield_1','imp_shield_2')]
+        self.validate(asset)
+        for size in ([128,128], [64,256], [128,256]):
+            invalid=copy.deepcopy(asset);invalid['icon_size']=size
+            with self.subTest(size=size),self.assertRaisesRegex(ValueError,r'exactly \[64, 128\]'):
+                self.validate(invalid)
+
+    def test_weapon_exports_keep_optional_hooks_and_generic_icon_canvas_rules(self):
+        composite=copy.deepcopy(self.asset);composite['icon_size']=[128,256]
+        simple=copy.deepcopy(self.asset)
+        simple.update(base_item=59,model='wthsh_011',icon_size=[128,128]);simple.pop('parts')
+        for asset in (simple,composite):
+            with self.subTest(model=asset['model']):
+                checked=self.validate(asset)['assets'][0]
+                self.assertEqual(exporter.attachment_dummy_nodes(checked,checked['model']),'')
+                self.assertEqual(checked['icon_size'],asset['icon_size'])
 
     def test_shields_reject_every_partial_surface_selection(self):
         for selection in ({'clip_min_y':0}, {'clip_max_y':0}, {'plane_y':0},

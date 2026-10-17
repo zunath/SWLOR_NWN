@@ -10,7 +10,7 @@ requires model, texture (<=14 characters), texture_size (512/1024), scale,
 orientation (proper 3x3 rotation), source_grip, target_grip, attachment with
 review_notes and two independent source/target axis_pairs, and icon_size (the
 actual native canvas, not merely baseitems inventory slots). Simple large shields
-may preserve both native impact hooks with attachment_dummies entries containing
+must preserve both native impact hooks with attachment_dummies entries containing
 name (imp_shield_1/2), position and unit XYZW quaternion in fitted root space.
 Transforms refer
 to imported Blender WORLD coordinates, after glTF axis conversion. Composite
@@ -412,7 +412,10 @@ def validate_model_name(model,item_class,model_type):
 
 
 def attachment_dummy_nodes(config,model):
-    if 'attachment_dummies' not in config:return ''
+    if 'attachment_dummies' not in config:
+        if config['_item_class']=='ashlw':
+            raise ValueError('Expected both native shield impact attachment_dummies')
+        return ''
     dummies=config['attachment_dummies']
     if config['_item_class']!='ashlw' or config['_model_type']!=0:
         raise ValueError('attachment_dummies requires a simple large shield')
@@ -836,6 +839,8 @@ def validate_manifest(config, repo, manifest, mode):
         item['_icon_art_size']=[int(row['InvSlotWidth'])*32,int(row['InvSlotHeight'])*32]
         if mode=='inspect':continue
         icon=native_icon_size(item.get('icon_size'))
+        if item['_item_class']=='ashlw' and icon!=(64,128):
+            raise ValueError('Large shield icon_size must be exactly [64, 128]')
         if any(a>b for a,b in zip(item['_icon_art_size'],icon)):
             raise ValueError('icon_size is smaller than baseitems logical inventory area')
         if not number(item.get('scale')) or item['scale']<=0:raise ValueError('Positive uniform scale required')

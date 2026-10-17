@@ -183,7 +183,7 @@ artwork `iashlw_###.dds`, and a **64-by-128** icon canvas (64-by-96 logical
 artwork). Export one complete model per shield appearance. Measure its native
 root, front and up axes from the source shield and verify the left-hand grip;
 do not apply composite weapon cuts. Preserve the two native shield impact
-hooks with optional `attachment_dummies`, each containing `name`
+hooks with required `attachment_dummies`, each containing `name`
 (`imp_shield_1` or `imp_shield_2`), root-space `position`, and a unit XYZW
 `quaternion`. These hooks position impact effects; they are separate from the
 grip geometry. Keep the existing appearance IDs and persisted item instances.

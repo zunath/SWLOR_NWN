@@ -32,7 +32,9 @@ Mantle's invisible Cloth 2 preset 61. The shared material uses the opaque pass:
 `fs_cloaktint` discards palette alpha below 0.5 and keeps the remaining pixels
 opaque, independently of the wearer's material fade. This matches the repository's
 punch-through cutoff; fractional palette alpha does not request blended rendering.
-These cloaks must not acquire metal reflection from alpha.
+These cloaks must not acquire metal reflection from alpha. Exact RGB tints retain
+neutral-reference palette coverage for every layer on cutout cloaks; reflective
+cloaks keep nonmetal RGB opaque and use reference alpha only for metal reflection.
 The cloak shader enables `FORCE_ALLOW_DISCARD` before `inc_standard`: the opaque
 white placeholder otherwise lets NWN suppress the cutout even when palette alpha
 is zero. The GPU regression checks composited pixels around the cutoff with

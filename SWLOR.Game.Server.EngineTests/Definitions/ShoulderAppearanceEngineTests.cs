@@ -40,7 +40,7 @@ public static class ShoulderAppearanceEngineTests
             var item = NWNXLib.g_pAppManager.m_pServerExoApp.GetGameObject(armor).AsNWSItem();
             var colors = Enumerable.Range(0, 120).Select(i => GetItemAppearance(armor, ItemAppearanceType.ArmorColor, i)).ToArray();
             for (var cycle = 0; cycle < 2; cycle++)
-            foreach (var style in new[] { 13, 140, 141, 185, 256, 260 })
+            foreach (var style in new[] { 6, 13, 140, 141, 185, 256, 258, 260 })
             foreach (var robe in new[] { 200, 1, 0 })
             {
                 EquippedItemAppearance.Set(armor, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.LeftShoulder, style);

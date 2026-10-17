@@ -31,7 +31,7 @@ public class ShoulderAppearanceTests
     }
 
     [Test]
-    public void ShippedTableCoversAllSixStylesOnBothSidesForEveryMaleHumanRobe()
+    public void ShippedTableCoversAllExternalStylesOnBothSidesForEveryMaleHumanRobe()
     {
         var root = new DirectoryInfo(TestContext.CurrentContext.TestDirectory);
         while (root != null && !File.Exists(Path.Combine(root.FullName, "SWLOR.Game.Server.sln")))
@@ -48,7 +48,7 @@ public class ShoulderAppearanceTests
             .Select(fields => "pmh" + fields[2]).Distinct();
         foreach (var body in bodies)
         foreach (var side in new[] { 'l', 'r' })
-        foreach (var style in new ushort[] { 13, 140, 141, 185, 256, 260 })
+        foreach (var style in new ushort[] { 6, 13, 140, 141, 185, 256, 258, 260 })
         {
             var source = $"pmh0_sho{side}{style:D3}";
             var render = catalog.Resolve(body, source, style);

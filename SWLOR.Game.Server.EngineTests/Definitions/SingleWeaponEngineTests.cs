@@ -66,7 +66,11 @@ public static class SingleWeaponEngineTests
     public static async Task TwoHandedWeapons(EngineTestContext ctx)
     {
         using var player = await PlayerAbilityFixture.CreateAsync(ctx);
-        player.Update(record => record.Skills[SkillType.Armor].Rank = 40);
+        player.Update(record =>
+        {
+            record.Skills[SkillType.Armor].Rank = 40;
+            record.Skills[SkillType.Spear].Rank = 50;
+        });
         foreach (var resref in new[] { "chi_spear", "b_staff", "b_greatsword", "b_twinblade", "b_rifle" })
         {
             var weapon = await ctx.EquipItemAsync(player.Creature, resref, InventorySlot.RightHand);

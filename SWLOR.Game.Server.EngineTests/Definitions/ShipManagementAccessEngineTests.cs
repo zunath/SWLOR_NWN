@@ -177,30 +177,9 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
         }
 
         [EngineTest("A shared ship the 50-row list omitted can be selected and boarded", Category = "ShipManagement", TimeoutSeconds = 60f)]
-        public static async Task OmittedSharedShipCanBeBoarded(EngineTestContext ctx)
+        public static Task OmittedSharedShipCanBeBoarded(EngineTestContext ctx)
         {
-            using var actor = await PlayerAbilityFixture.CreateAsync(ctx);
-            var created = new List<EntityBase>();
-            var layout = Space.GetShipDetailByItemTag(ShipItemTag).Layout;
-            var entrances = (Dictionary<PropertyLayoutType, Vector4>)typeof(Property)
-                .GetField("_entrancesByLayout", BindingFlags.Static | BindingFlags.NonPublic)!.GetValue(null)!;
-            var instances = (Dictionary<string, PropertyInstance>)typeof(Property)
-                .GetField("_propertyInstances", BindingFlags.Static | BindingFlags.NonPublic)!.GetValue(null)!;
-            var windows = (Dictionary<string, Dictionary<GuiWindowType, GuiPlayerWindow>>)typeof(Gui)
-                .GetField("_playerWindows", BindingFlags.Static | BindingFlags.NonPublic)!.GetValue(null)!;
-            var originalEntrance = entrances[layout];
-            var originalPropertyId = Property.GetPropertyId(ctx.Arena);
-            var registeredInstances = new List<string>();
-
-            ctx.Assert(!windows.ContainsKey(actor.Id), "fixture GUI registration must be isolated");
-            var template = Gui.GetWindowTemplate(GuiWindowType.ShipManagement);
-            var playerWindow = template.CreatePlayerWindowAction();
-            playerWindow.ViewModel.Geometry = template.InitialGeometry;
-            windows.Add(actor.Id, new Dictionary<GuiWindowType, GuiPlayerWindow> { [GuiWindowType.ShipManagement] = playerWindow });
-            var model = (ShipManagementViewModel)playerWindow.ViewModel;
-            Area.GetAreas()[DockAreaResref] = ctx.Arena;
-
-            try
+            return WithShipManagementAsync(ctx, async (actor, model, created, makeEnterable, boardPosition) =>
             {
                 var owned = Enumerable.Range(0, 3).Select(index => AddDockedShip(created, actor.Id, $"Owned {index}")).ToList();
                 foreach (var ship in owned)
@@ -229,9 +208,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 var duplicated = shared.First(ship => ship.Id != target.Id && ship.Id != revoked.Id);
                 Grant(created, actor.Id, duplicated.PropertyId, isOwner: false);
 
-                await ctx.ExecuteInCreatureContextAsync(actor.Creature, () =>
-                    Gui.TogglePlayerWindow(actor.Creature, GuiWindowType.ShipManagement,
-                        new ShipManagementPayload(PlanetType.Viscara, ctx.GetArenaLocation(), ctx.GetArenaLocation())));
+                await OpenShipManagementAsync(ctx, actor);
                 ctx.Assert(Gui.IsWindowOpen(actor.Creature, GuiWindowType.ShipManagement), "ship management opens for the player");
                 AssertListed(ctx, model, owned, "My Ships");
 
@@ -239,25 +216,15 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 AssertListed(ctx, model, shared, "Other Ships");
                 ctx.Assert(!ShipIds(model).Contains(foreign.Id), "a ship shared only with another player is not listed");
 
-                var boardPosition = GetPositionFromLocation(ctx.GetArenaLocation(4f));
-                entrances[layout] = new Vector4(boardPosition.X, boardPosition.Y, boardPosition.Z, 0f);
-                foreach (var ship in new[] { target, revoked })
-                {
-                    Property.RegisterInstance(ship.PropertyId, ctx.Arena, layout);
-                    registeredInstances.Add(ship.PropertyId);
-                }
+                makeEnterable(target);
+                makeEnterable(revoked);
 
                 // Access revoked after selection blocks boarding.
                 await ctx.ExecuteInCreatureContextAsync(actor.Creature, () => SelectShip(model, revoked));
                 ctx.Assert(model.IsBoardShipEnabled, "the omitted ship is boardable while its permission record exists");
                 DB.Delete<WorldPropertyPermission>(grants[revoked.Id].Id);
                 created.Remove(grants[revoked.Id]);
-                var start = GetPosition(actor.Creature);
-                await ctx.ExecuteInCreatureContextAsync(actor.Creature, model.OnClickBoardShip());
-                await ctx.DelaySecondsAsync(0.5f);
-                ctx.Assert(!model.IsBoardShipEnabled, "boarding a revoked ship refreshes the selection without access");
-                ctx.Assert(Gui.IsWindowOpen(actor.Creature, GuiWindowType.ShipManagement), "a refused boarding keeps the window open");
-                ctx.Assert(Vector3.Distance(start, GetPosition(actor.Creature)) < 0.1f, "a refused boarding leaves the player in place");
+                await AssertBoardingRefusedAsync(ctx, actor, model, "a revoked ship");
 
                 await ctx.ExecuteInCreatureContextAsync(actor.Creature, () => SelectShip(model, duplicated));
                 ctx.AssertEqual(DB.Get<WorldProperty>(duplicated.PropertyId).CustomName, model.ShipName, "a ship with duplicate permission records loads");
@@ -266,11 +233,85 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 await ctx.ExecuteInCreatureContextAsync(actor.Creature, () => SelectShip(model, target));
                 ctx.AssertEqual(DB.Get<WorldProperty>(target.PropertyId).CustomName, model.ShipName, "the omitted ship loads");
                 ctx.Assert(model.IsBoardShipEnabled, "the omitted ship is boardable at its dock");
-                await ctx.ExecuteInCreatureContextAsync(actor.Creature, model.OnClickBoardShip());
-                await ctx.WaitUntilAsync(() => Vector3.Distance(boardPosition, GetPosition(actor.Creature)) < 1f, 5f,
-                    "the player to reach the omitted ship's entrance");
-                ctx.Assert(!Gui.IsWindowOpen(actor.Creature, GuiWindowType.ShipManagement), "boarding closes ship management");
+                await AssertBoardsAsync(ctx, actor, model, boardPosition, "the omitted ship");
                 ctx.SetResultDetail($"55 shared ships listed; unpaged list omitted {omitted.Count}; boarded '{DB.Get<WorldProperty>(target.PropertyId).CustomName}'");
+            });
+        }
+
+        [EngineTest("Boarding from ship management requires the Enter Property permission", Category = "ShipManagement", TimeoutSeconds = 60f)]
+        public static Task BoardingRequiresEnterProperty(EngineTestContext ctx)
+        {
+            return WithShipManagementAsync(ctx, async (actor, model, created, makeEnterable, boardPosition) =>
+            {
+                var owned = AddDockedShip(created, actor.Id, "Owned");
+                Grant(created, actor.Id, owned.PropertyId, isOwner: true);
+                var refitOnly = AddSharedShip(created, actor.Id, "Refit only", PropertyPermissionType.RefitShip);
+                var enterRemoved = AddSharedShip(created, actor.Id, "Enter removed", PropertyPermissionType.EnterProperty, PropertyPermissionType.RefitShip);
+                var enterGranted = AddSharedShip(created, actor.Id, "Enter granted", PropertyPermissionType.EnterProperty);
+                foreach (var ship in new[] { owned, refitOnly.Ship, enterRemoved.Ship, enterGranted.Ship })
+                    makeEnterable(ship);
+
+                await OpenShipManagementAsync(ctx, actor);
+                await ctx.ExecuteInCreatureContextAsync(actor.Creature, () => SelectShip(model, owned));
+                ctx.Assert(model.IsBoardShipEnabled, "an owner can board their own ship");
+
+                await ctx.ExecuteInCreatureContextAsync(actor.Creature, model.OnClickOtherShips());
+                AssertListed(ctx, model, new List<PlayerShip> { refitOnly.Ship, enterRemoved.Ship, enterGranted.Ship }, "Other Ships");
+
+                await ctx.ExecuteInCreatureContextAsync(actor.Creature, () => SelectShip(model, refitOnly.Ship));
+                ctx.Assert(!model.IsBoardShipEnabled, "a grant without Enter Property cannot board");
+                ctx.Assert(model.IsRefitEnabled, "a Refit grant can still refit the listed ship");
+                await AssertBoardingRefusedAsync(ctx, actor, model, "a Refit-only grant");
+
+                await ctx.ExecuteInCreatureContextAsync(actor.Creature, () => SelectShip(model, enterRemoved.Ship));
+                ctx.Assert(model.IsBoardShipEnabled, "an Enter Property grant can board");
+                enterRemoved.Grant.Permissions[PropertyPermissionType.EnterProperty] = false;
+                DB.Set(enterRemoved.Grant);
+                await AssertBoardingRefusedAsync(ctx, actor, model, "Enter Property removed after selection");
+                ctx.Assert(model.IsRefitEnabled, "removing Enter Property keeps the Refit permission");
+
+                await ctx.ExecuteInCreatureContextAsync(actor.Creature, () => SelectShip(model, enterGranted.Ship));
+                ctx.Assert(model.IsBoardShipEnabled, "an Enter Property grant can board");
+                await AssertBoardsAsync(ctx, actor, model, boardPosition, "an Enter Property grant");
+            });
+        }
+
+        /// <summary>
+        /// Registers ship management for a headless player, docks test ships in the arena, and lets a test make
+        /// ships enterable with the arena as their interior. Every change is undone afterward.
+        /// </summary>
+        private static async Task WithShipManagementAsync(EngineTestContext ctx,
+            Func<PlayerAbilityFixture, ShipManagementViewModel, List<EntityBase>, Action<PlayerShip>, Vector3, Task> test)
+        {
+            using var actor = await PlayerAbilityFixture.CreateAsync(ctx);
+            var created = new List<EntityBase>();
+            var layout = Space.GetShipDetailByItemTag(ShipItemTag).Layout;
+            var entrances = (Dictionary<PropertyLayoutType, Vector4>)typeof(Property)
+                .GetField("_entrancesByLayout", BindingFlags.Static | BindingFlags.NonPublic)!.GetValue(null)!;
+            var instances = (Dictionary<string, PropertyInstance>)typeof(Property)
+                .GetField("_propertyInstances", BindingFlags.Static | BindingFlags.NonPublic)!.GetValue(null)!;
+            var windows = (Dictionary<string, Dictionary<GuiWindowType, GuiPlayerWindow>>)typeof(Gui)
+                .GetField("_playerWindows", BindingFlags.Static | BindingFlags.NonPublic)!.GetValue(null)!;
+            var originalEntrance = entrances[layout];
+            var originalPropertyId = Property.GetPropertyId(ctx.Arena);
+            var registeredInstances = new List<string>();
+
+            ctx.Assert(!windows.ContainsKey(actor.Id), "fixture GUI registration must be isolated");
+            var template = Gui.GetWindowTemplate(GuiWindowType.ShipManagement);
+            var playerWindow = template.CreatePlayerWindowAction();
+            playerWindow.ViewModel.Geometry = template.InitialGeometry;
+            windows.Add(actor.Id, new Dictionary<GuiWindowType, GuiPlayerWindow> { [GuiWindowType.ShipManagement] = playerWindow });
+            var boardPosition = GetPositionFromLocation(ctx.GetArenaLocation(4f));
+
+            try
+            {
+                Area.GetAreas()[DockAreaResref] = ctx.Arena;
+                entrances[layout] = new Vector4(boardPosition.X, boardPosition.Y, boardPosition.Z, 0f);
+                await test(actor, (ShipManagementViewModel)playerWindow.ViewModel, created, ship =>
+                {
+                    Property.RegisterInstance(ship.PropertyId, ctx.Arena, layout);
+                    registeredInstances.Add(ship.PropertyId);
+                }, boardPosition);
             }
             finally
             {
@@ -283,6 +324,31 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 Area.GetAreas().Remove(DockAreaResref);
                 DeleteAll(created);
             }
+        }
+
+        private static Task OpenShipManagementAsync(EngineTestContext ctx, PlayerAbilityFixture actor)
+        {
+            return ctx.ExecuteInCreatureContextAsync(actor.Creature, () =>
+                Gui.TogglePlayerWindow(actor.Creature, GuiWindowType.ShipManagement,
+                    new ShipManagementPayload(PlanetType.Viscara, ctx.GetArenaLocation(), ctx.GetArenaLocation())));
+        }
+
+        private static async Task AssertBoardingRefusedAsync(EngineTestContext ctx, PlayerAbilityFixture actor, ShipManagementViewModel model, string label)
+        {
+            var start = GetPosition(actor.Creature);
+            await ctx.ExecuteInCreatureContextAsync(actor.Creature, model.OnClickBoardShip());
+            await ctx.DelaySecondsAsync(0.5f);
+            ctx.Assert(!model.IsBoardShipEnabled, $"{label}: the refused selection has Board turned off");
+            ctx.Assert(Gui.IsWindowOpen(actor.Creature, GuiWindowType.ShipManagement), $"{label}: a refused boarding keeps the window open");
+            ctx.Assert(Vector3.Distance(start, GetPosition(actor.Creature)) < 0.1f, $"{label}: a refused boarding leaves the player in place");
+        }
+
+        private static async Task AssertBoardsAsync(EngineTestContext ctx, PlayerAbilityFixture actor, ShipManagementViewModel model, Vector3 entrance, string label)
+        {
+            await ctx.ExecuteInCreatureContextAsync(actor.Creature, model.OnClickBoardShip());
+            await ctx.WaitUntilAsync(() => Vector3.Distance(entrance, GetPosition(actor.Creature)) < 1f, 5f,
+                $"{label}: the player to reach the ship's entrance");
+            ctx.Assert(!Gui.IsWindowOpen(actor.Creature, GuiWindowType.ShipManagement), $"{label}: boarding closes ship management");
         }
 
         private static string NewId() => Guid.NewGuid().ToString();
@@ -334,6 +400,32 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             DB.Set(permission);
             created.Add(permission);
             return permission;
+        }
+
+        private static WorldPropertyPermission Grant(List<EntityBase> created, string playerId, string propertyId, params PropertyPermissionType[] granted)
+        {
+            var permission = new WorldPropertyPermission { PlayerId = playerId, PropertyId = propertyId };
+            foreach (var type in Property.GetPermissionsByPropertyType(PropertyType.Starship))
+            {
+                permission.Permissions[type] = granted.Contains(type);
+                permission.GrantPermissions[type] = false;
+            }
+
+            DB.Set(permission);
+            created.Add(permission);
+            return permission;
+        }
+
+        /// <summary>
+        /// A docked ship owned by someone else that shares only the given permissions with the player.
+        /// </summary>
+        private static (PlayerShip Ship, WorldPropertyPermission Grant) AddSharedShip(List<EntityBase> created, string playerId, string name,
+            params PropertyPermissionType[] granted)
+        {
+            var ownerId = NewId();
+            var ship = AddDockedShip(created, ownerId, name);
+            Grant(created, ownerId, ship.PropertyId, isOwner: true);
+            return (ship, Grant(created, playerId, ship.PropertyId, granted));
         }
 
         /// <summary>

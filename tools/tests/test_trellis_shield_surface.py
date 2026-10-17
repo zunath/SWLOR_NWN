@@ -56,6 +56,17 @@ class ShieldSurfaceTests(unittest.TestCase):
         self.assertTrue(all(shell['signed_volume']>0 for shell in report['shells']))
         with self.assertRaisesRegex(ValueError,'no volumetric geometry'):surface.remove_collapsed_islands(*flat)
 
+    def test_flat_shell_touching_a_solid_at_one_vertex_cannot_borrow_its_volume(self):
+        vertices=np.asarray([[0,0,0],[1,0,0],[0,1,0],[0,0,1],[-1,0,0],[0,-1,0]],np.float32)
+        faces=np.asarray([[0,2,1],[0,1,3],[0,3,2],[1,2,3],[0,4,5],[5,4,0]],np.int32)
+        report=surface.audit_surface(vertices,faces,components=True)
+        self.assertEqual(report['bad_edges'],0);self.assertEqual(report['zero_area_triangles'],0)
+        self.assertEqual(len(report['shells']),2);self.assertEqual(report['zero_volume_shells'],1)
+        with self.assertRaisesRegex(ValueError,'closed nondegenerate'):surface.require_closed(report)
+        v,f,removed=surface.remove_collapsed_islands(vertices,faces)
+        self.assertEqual(removed,0)
+        with self.assertRaises(ValueError):surface.require_closed(surface.audit_surface(v,f,components=True))
+
     def test_quantization_preserves_every_byte_and_positive_grazing_normal(self):
         images=np.zeros((1,1,256,3),np.float32);images[0,0,:,0]=np.arange(256)/255
         images[...,1:]=.5

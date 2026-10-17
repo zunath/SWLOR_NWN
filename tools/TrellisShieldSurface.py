@@ -43,15 +43,18 @@ def audit_surface(vertices, faces, components=False):
     report={'vertices':len(vertices),'triangles':len(faces),'bad_edges':int(((counts!=2)|(winding!=0)).sum()),
             'zero_area_triangles':int((area2==0).sum()),'bounds_min':vertices.min(axis=0).tolist(),'bounds_max':vertices.max(axis=0).tolist()}
     if components:
-        parents=list(range(int(welded.max())+1))
+        # Shells connect through edges. A flat pair touching a solid at one
+        # vertex must not borrow that solid's positive volume.
+        parents=list(range(len(faces)))
         def find(index):
             while parents[index]!=index:parents[index]=parents[parents[index]];index=parents[index]
             return index
-        for face in welded:
-            root=find(int(face[0]))
-            for vertex in face[1:]:parents[find(int(vertex))]=root
+        order=np.argsort(edge_ids,kind='stable')
+        shared=edge_ids[order[1:]]==edge_ids[order[:-1]]
+        for first,second in zip(order[1:][shared]//3,order[:-1][shared]//3):
+            parents[find(int(second))]=find(int(first))
         groups=collections.defaultdict(list)
-        for index,face in enumerate(welded):groups[find(int(face[0]))].append(index)
+        for index in range(len(faces)):groups[find(index)].append(index)
         shells=[]
         for ids in groups.values():
             points=triangles[ids];origin=points.mean(axis=(0,1));shifted=points-origin

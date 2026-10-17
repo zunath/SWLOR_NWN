@@ -1,9 +1,9 @@
 ---
 name: swlor-blaster-models
-description: Import, create, replace, or refit SWLOR pistol blaster models through local authoring, NWN model and texture export, inventory icons, appearance catalog registration, and HAK deployment verification. Use for GR2 blaster imports, original blaster designs, or weapon grip, scale, and muzzle alignment changes.
+description: Import, create, replace, split, or refit SWLOR weapon models, including pistol blasters, knives, longswords, greatswords, staffs, spears, twinblades, electroblades and shuriken. Covers local authoring, native NWN parts, textures, inventory icons, appearance catalogs and HAK verification. Use for weapon appearance replacements, GR2 imports, original designs, or grip, scale, seam and muzzle alignment changes.
 ---
 
-# SWLOR Blaster Models
+# SWLOR Weapon Models
 
 Use the [model workflow](../../../SWLOR.Game.Server/Readmes/BlasterModelImport.md)
 for commands, a local import-manifest example, material rules and fitting details.
@@ -23,6 +23,8 @@ conversion, fitting and export helpers in the process tooling.
 
 ## Choose and author
 
+For local image-to-GLB generation, follow the guide's [TRELLIS.2 workflow](../../../SWLOR.Game.Server/Readmes/BlasterModelImport.md#generate-local-weapon-sources-with-trellis2); preflight the local runtime and keep all per-model sources in ignored staging.
+
 - Resolve the requested slot from the catalog, assets and blueprint users. A
   shared slot replacement changes persisted items too. Ask only if intent cannot
   be inferred. Choose another modern pistol for a new model unless asked to revise
@@ -41,6 +43,16 @@ conversion, fitting and export helpers in the process tooling.
   a local scene/script. Reuse `write_mdl` from the converter for static export.
   For later edits, work from the committed MDL, MTR and DDS maps; do not require
   the original import files or procedural builder.
+
+## Composite melee parts
+
+Composite melee replacements must contain usable bottom, middle and top models.
+A whole weapon in one slot with empty companion MDLs does not preserve the
+appearance editor's independent part choices. Preserve the native IDs, audit
+shared slots, cap or cover cuts with common connectors, and check every new
+part combination against the same joint envelopes. Verify mixed assemblies
+in the NWN client using SWLOR assets. Native simple-model items such as shuriken
+keep their single-model format.
 
 ## Fit and review
 

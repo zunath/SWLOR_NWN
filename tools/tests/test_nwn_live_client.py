@@ -141,6 +141,17 @@ class LiveClientHelperTests(unittest.TestCase):
             with self.assertRaisesRegex(LiveStackError, r'reserved by run C:\\runs\\first'):
                 stack.reserve_project('swlor-live-lock', self.root / 'second', 'image:tag')
 
+    def test_down_refuses_a_project_reserved_by_another_run(self):
+        run_dir = self.root / 'stale-run'
+        run_dir.mkdir()
+        (run_dir / 'state.json').write_text('{"project": "swlor-live-reused"}', 'utf-8')
+        stale = stack.Stack(run_dir)
+        with patch.object(stack, 'reservation_holder', return_value=str(self.root / 'new-run')), \
+                patch.object(stack, 'boot_players') as boot:
+            with self.assertRaisesRegex(LiveStackError, 'now reserved by run'):
+                stack.destroy(stale)
+        boot.assert_not_called()
+
     def test_build_digest_changes_with_content_and_names(self):
         build = self.root / 'build'
         build.mkdir()

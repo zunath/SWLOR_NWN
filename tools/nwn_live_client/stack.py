@@ -414,7 +414,10 @@ def create(options) -> Stack:
         'cdkey_source': str(cdkey),
         'inputs': {'hak_dir': str(hak_dir), 'tlk_dir': str(tlk_dir), 'module': str(module),
                    'dotnet': str(dotnet), 'client_install': str(install),
-                   'server_env_file': str(server_env), 'server_env_overrides': sorted(extra_env)},
+                   'server_env_file': str(server_env), 'server_env_overrides': sorted(extra_env),
+                   # Values can be secrets, so keep only a digest that tells runs apart.
+                   'server_env_overrides_sha256': hashlib.sha256(
+                       render_env_file(extra_env).encode('utf-8')).hexdigest()},
     }
     if mode == 'player':
         state['character'] = {'source': str(character), 'file': character.name.lower(), 'uuid': uuid}
@@ -514,14 +517,21 @@ def reserve_project(project: str, run_dir: Path, image: str) -> None:
                   '--label', f'swlor.live.run_dir={run_dir}', '--entrypoint', 'true', image],
                  check=False, capture=True, timeout=120)
     if result.returncode != 0:
-        owner = run(['docker', 'container', 'inspect', '-f', '{{index .Config.Labels "swlor.live.run_dir"}}',
-                     reservation_name(project)], check=False, capture=True, timeout=60)
-        holder = owner.stdout.decode('utf-8', 'replace').strip() if owner.returncode == 0 else ''
+        holder = reservation_holder(project)
         if not holder:
             raise LiveStackError(f'Could not reserve project {project}: '
                                  + result.stderr.decode('utf-8', 'replace').strip())
         raise LiveStackError(f'Project {project} is reserved by run {holder}. Choose another --name, or run '
                              f'down on that run (docker rm {reservation_name(project)} only once it is gone).')
+
+
+def reservation_holder(project: str) -> str | None:
+    """The run directory recorded on the project's reservation, or None when there is none."""
+    owner = run(['docker', 'container', 'inspect', '-f', '{{index .Config.Labels "swlor.live.run_dir"}}',
+                 reservation_name(project)], check=False, capture=True, timeout=60)
+    if owner.returncode != 0:
+        return None
+    return owner.stdout.decode('utf-8', 'replace').strip() or None
 
 
 def release_project(project: str) -> bool:
@@ -544,7 +554,8 @@ def source_commit() -> str:
     """The checkout's HEAD, marked when it has uncommitted changes."""
     try:
         head = output(['git', '-C', str(REPO_ROOT), 'rev-parse', 'HEAD'], timeout=60)
-        dirty = output(['git', '-C', str(REPO_ROOT), 'status', '--porcelain', '--untracked-files=no'], timeout=120)
+        # Untracked sources count: the SDK's default globs compile them into the build.
+        dirty = output(['git', '-C', str(REPO_ROOT), 'status', '--porcelain'], timeout=120)
     except LiveStackError:
         return 'unknown'
     return head + (' (uncommitted changes)' if dirty else '')
@@ -664,6 +675,8 @@ def play(stack: Stack, settle: float, timeout: float = 600) -> None:
     # A new character is set up and may be moved to its starting area right away.
     tips = loading_tips(stack)
     quiet_since = time.monotonic()
+    # Settling has its own window, so a late entry still gets the full quiet period.
+    deadline = quiet_since + settle + timeout
     while True:
         # An OnModuleEnter handler can boot the character right after the entry is logged.
         if stack.joined_players() <= 0:
@@ -749,6 +762,11 @@ def return_home_ownership(stack: Stack) -> None:
 
 def destroy(stack: Stack) -> dict:
     """Boot the player, remove the project's Docker resources, then the key, profile and home."""
+    holder = reservation_holder(stack.project)
+    if holder and os.path.normcase(holder) != os.path.normcase(str(stack.run_dir)):
+        # The name was released and reused: this run no longer owns anything under it.
+        raise LiveStackError(f'Project {stack.project} is now reserved by run {holder}; '
+                             f'refusing to tear it down from {stack.run_dir}.')
     report = {'project': stack.project, 'utc': utc_now()}
     errors = []
     try:
@@ -777,8 +795,11 @@ def destroy(stack: Stack) -> dict:
             errors.append(str(error))
         for source, name in ((stack.profile / 'logs', 'client-logs'), (stack.home / 'logs', 'server-logs'),
                              (stack.home / 'app_logs', 'server-app-logs')):
-            if source.is_dir() and any(source.iterdir()):
-                shutil.copytree(source, stack.evidence / name, dirs_exist_ok=True)
+            try:
+                if source.is_dir() and any(source.iterdir()):
+                    shutil.copytree(source, stack.evidence / name, dirs_exist_ok=True)
+            except (OSError, shutil.Error) as error:
+                errors.append(f'Could not keep {name} in the evidence: {error}')
         for path in (stack.profile, stack.home, stack.run_dir / 'dotnet', stack.run_dir / 'module',
                      stack.run_dir / 'tlk', stack.run_dir / 'bin'):
             try:

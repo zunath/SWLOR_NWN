@@ -2884,6 +2884,24 @@
                             "type": "resref",
                             "value": "abs_rakghoul"
                           }
+                        },                        {
+                          "__struct_id": 0,
+                          "CR": {
+                            "type": "float",
+                            "value": 23.0
+                          },
+                          "FACTION": {
+                            "type": "cexostring",
+                            "value": "Hostile"
+                          },
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Colicoid"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "abs_colicoid"
+                          }
                         },
                         {
                           "__struct_id": 0,
@@ -2902,6 +2920,24 @@
                           "RESREF": {
                             "type": "resref",
                             "value": "abs_rakalpha"
+                          }
+                        },                        {
+                          "__struct_id": 0,
+                          "CR": {
+                            "type": "float",
+                            "value": 29.0
+                          },
+                          "FACTION": {
+                            "type": "cexostring",
+                            "value": "Hostile"
+                          },
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Colicoid Alpha"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "abs_colalpha"
                           }
                         },
                         {
@@ -2922,6 +2958,24 @@
                             "type": "resref",
                             "value": "abs_rakbrute"
                           }
+                        },                        {
+                          "__struct_id": 0,
+                          "CR": {
+                            "type": "float",
+                            "value": 27.0
+                          },
+                          "FACTION": {
+                            "type": "cexostring",
+                            "value": "Hostile"
+                          },
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Colicoid Brute"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "abs_colbrute"
+                          }
                         },
                         {
                           "__struct_id": 0,
@@ -2940,6 +2994,24 @@
                           "RESREF": {
                             "type": "resref",
                             "value": "abs_rakstalk"
+                          }
+                        },                        {
+                          "__struct_id": 0,
+                          "CR": {
+                            "type": "float",
+                            "value": 25.0
+                          },
+                          "FACTION": {
+                            "type": "cexostring",
+                            "value": "Hostile"
+                          },
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Colicoid Stalker"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "abs_colstalk"
                           }
                         },
                         {
@@ -3073,6 +3145,24 @@
                           "RESREF": {
                             "type": "resref",
                             "value": "abs_subzero"
+                          }
+                        },                        {
+                          "__struct_id": 0,
+                          "CR": {
+                            "type": "float",
+                            "value": 28.0
+                          },
+                          "FACTION": {
+                            "type": "cexostring",
+                            "value": "Hostile"
+                          },
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Subject Zero"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "abs_colzero"
                           }
                         },
                         {

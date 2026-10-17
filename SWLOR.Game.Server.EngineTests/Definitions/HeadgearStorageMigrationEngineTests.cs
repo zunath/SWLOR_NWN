@@ -21,6 +21,12 @@ public static partial class MigrationEngineTests
     [EngineTest("Headgear migration repairs every persistent storage surface beyond the default search page", Category = HeadgearCategory, TimeoutSeconds = 90)]
     public static async Task StoredHeadgearSurfaces(EngineTestContext ctx)
     {
+        await VerifyStoredHeadgearSurfaces(ctx, false);
+        await VerifyStoredHeadgearSurfaces(ctx, true);
+    }
+
+    private static async Task VerifyStoredHeadgearSurfaces(EngineTestContext ctx, bool alreadyHelmet)
+    {
         var owner = ctx.SpawnCreature("civilian");
         await ctx.WaitFrameAsync();
         var item = await CreateItemAsync(ctx, owner, "ruptorvanecr", owner);
@@ -37,11 +43,25 @@ public static partial class MigrationEngineTests
             correctHelmet = ObjectPlugin.Serialize(item);
             helmetIcon = Item.GetIconResref(item);
             StampLegacyVisor(item);
-            legacyIcon = Item.GetIconResref(item);
-            ctx.Assert(legacyIcon != helmetIcon, "The fixture begins with a distinct armor icon");
+            if (alreadyHelmet)
+            {
+                ItemPlugin.SetBaseItemType(item, BaseItem.Helmet);
+                ItemPlugin.SetItemAppearance(item, SWLOR.NWN.API.NWScript.Enum.Item.ItemAppearanceType.SimpleModel, 0, 223);
+            }
+            // NUI cannot render PLTs and can return the same fallback for both
+            // helmet models. Seed stale record metadata explicitly in that case.
+            legacyIcon = alreadyHelmet ? "ihelm_223" : Item.GetIconResref(item);
+            if (alreadyHelmet)
+                ctx.AssertEqual(223, GetItemAppearance(item, ItemAppearanceType.SimpleModel, 0), "The saved helmet actually starts with the reserved model");
+            ctx.Assert(legacyIcon != helmetIcon, "The saved record starts with stale icon metadata");
             ctx.Log($"Stored headgear icon: {legacyIcon} -> {helmetIcon}");
             saved = ObjectPlugin.Serialize(item);
             StampLegacyVisor(nested);
+            if (alreadyHelmet)
+            {
+                ItemPlugin.SetBaseItemType(nested, BaseItem.Helmet);
+                ItemPlugin.SetItemAppearance(nested, SWLOR.NWN.API.NWScript.Enum.Item.ItemAppearanceType.SimpleModel, 0, 223);
+            }
             savedBag = ObjectPlugin.Serialize(bag);
             ordinaryArmor = ObjectPlugin.Serialize(GetItemInSlot(SWLOR.NWN.API.NWScript.Enum.InventorySlot.Chest, owner));
             DestroyObject(item);
@@ -81,6 +101,7 @@ public static partial class MigrationEngineTests
                         try
                         {
                             ctx.AssertEqual(BaseItem.Helmet, GetBaseItemType(restored), $"{typeof(T).Name} legacy armor becomes headgear");
+                            ctx.AssertEqual(110, GetItemAppearance(restored, ItemAppearanceType.SimpleModel, 0), "Stored visor uses the standard model after the same item visit");
                             ctx.AssertEqual("fixture-crafter", GetLocalString(restored, "CRAFTED_BY"), "Stored crafting identity survives");
                             ctx.AssertEqual(10, SumProperty(restored, ItemPropertyType.Attack, 0), "One stored item visit applies the existing loot delta and preserves crafted Attack");
                         }
@@ -124,7 +145,7 @@ public static partial class MigrationEngineTests
                 Add(new QuestContractDelivery { PlayerId = "stored-owner", Items = { new QuestContractItem { Data = saved, StackSize = 1, Name = "Custom delivery" } } }, x => x.Items.Select(y => y.Data));
                 for (var run = 0; run < 2; run++)
                 {
-                    new _27_UpdateStoredItems().Migrate();
+                    new _28_CorrectStoredEquipmentTypes().Migrate();
                     foreach (var check in checks) check();
                 }
             }

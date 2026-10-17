@@ -29,7 +29,17 @@ def convert_json(source, output, tools=None):
     checked([find_tool('nwn_gff.exe',tools),'-i',source,'-l','json','-o',output,'-k','gff'])
 
 
+def validate_tilesets(source):
+    """The native SET reader needs CRLF, as required by the HAK .gitattributes."""
+    for path in Path(source).iterdir():
+        if path.is_file() and path.suffix.lower() == '.set':
+            remaining = path.read_bytes().replace(b'\r\n', b'')
+            if b'\n' in remaining or b'\r' in remaining:
+                raise ValueError(f'{path.name} must use CRLF line endings; LF tilesets can overrun the native NWN loader buffer')
+
+
 def pack_hak(source, output, tools=None):
+    validate_tilesets(source)
     checked([find_tool('nwn_erf.exe',tools),'-c','--add-restypes','lod:2078','-e','HAK','-f',output,source],timeout=240)
 
 
@@ -50,6 +60,7 @@ def compile_script(script, profile, client, tools=None):
 
 def build_module(source, profile, client, tools=None):
     source = Path(source).resolve()
+    validate_tilesets(source)
     staging = profile / 'build'
     staging.mkdir()
     for path in sorted(source.iterdir()):

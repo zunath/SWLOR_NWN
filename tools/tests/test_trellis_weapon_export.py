@@ -49,6 +49,9 @@ class TrellisWeaponExportTests(unittest.TestCase):
                       'source_grip': [0,0,0], 'target_grip': [0,0,0], 'icon_size': [64,256],
                       'attachment': {'review_notes': 'Explicit native reference axes', 'axis_pairs': [
                           {'source': [0,1,0], 'target': [0,1,0]}, {'source': [1,0,0], 'target': [1,0,0]}]}}
+        self.asset['parts'] = [{'model':'wdbsw_b_011','clip_max_y':-.1},
+                               {'model':'wdbsw_m_011','clip_min_y':-.1,'clip_max_y':.1},
+                               {'model':'wdbsw_t_011','clip_min_y':.1}]
         self.manifest = self.root / 'manifest.json'
 
     def validate(self, asset=None, **extra):
@@ -76,17 +79,47 @@ class TrellisWeaponExportTests(unittest.TestCase):
 
     def test_simple_empty_parts_cannot_overwrite_real_geometry(self):
         asset = copy.deepcopy(self.asset)
-        asset.update(base_item=59, model='wthsh_011', icon_size=[32,32])
+        asset.update(base_item=59, model='wthsh_011', icon_size=[32,32]); asset.pop('parts')
         with self.assertRaisesRegex(ValueError,'occupied'):
             self.validate(asset, empty_parts=[{'model':'wthsh_011','base_item':59,'icon_size':[32,32]}])
 
     def test_multipart_aliases_are_validated_individually(self):
         asset = copy.deepcopy(self.asset)
         asset['parts'] = [{'model':'wdbsw_m_011','plane_y':.2,'clip_side':'above','aliases':['wdbsw_m_021']},
-                          {'model':'wdbsw_b_011','plane_y':.2,'clip_side':'below'}]
+                          {'model':'wdbsw_b_011','plane_y':.2,'clip_side':'below'},
+                          {'model':'wdbsw_t_011','clip_min_y':.4}]
         self.validate(asset)
         asset['parts'][1]['aliases'] = ['wdbsw_m_021']
+        with self.assertRaisesRegex(ValueError,'part role'): self.validate(asset)
+        asset['parts'][1].pop('aliases')
+        asset['parts'][0]['aliases'] = ['wdbsw_m_021','wdbsw_m_021']
         with self.assertRaisesRegex(ValueError,'Repeated'): self.validate(asset)
+
+    def test_composite_exports_require_a_complete_assembly(self):
+        for parts in (None, [{'model':'wdbsw_m_011'}], self.asset['parts'][:2]):
+            asset=copy.deepcopy(self.asset)
+            if parts is None:asset.pop('parts')
+            else:asset['parts']=parts
+            with self.subTest(parts=parts), self.assertRaisesRegex(ValueError,'Composite export requires real'):
+                self.validate(asset)
+
+    def test_explicit_assemblies_can_group_separate_exported_parts(self):
+        assets=[]
+        for role in ('b','m','t'):
+            asset=copy.deepcopy(self.asset);asset.update(asset='part_'+role,model='wdbsw_'+role+'_011');asset.pop('parts');assets.append(asset)
+        assembly={'base_item':12,'bottom':'wdbsw_b_011','middle':'wdbsw_m_011','top':'wdbsw_t_011'}
+        config={'schema_version':1,'assets':assets,'composite_assemblies':[assembly]}
+        exporter.validate_manifest(copy.deepcopy(config),self.root,self.manifest,'export')
+        for key,value in [('top','wdbsw_t_021'),('bottom','wdbsw_m_011')]:
+            invalid=copy.deepcopy(config);invalid['composite_assemblies'][0][key]=value
+            with self.subTest(key=key), self.assertRaisesRegex(ValueError,'requires exported'):
+                exporter.validate_manifest(invalid,self.root,self.manifest,'export')
+
+    def test_clip_bounds_reject_nonfinite_reversed_and_ambiguous_intervals(self):
+        for update in ({'clip_min_y':float('nan')},{'clip_min_y':.2,'clip_max_y':.1},
+                       {'plane_y':0.,'clip_side':'above'}):
+            asset=copy.deepcopy(self.asset);asset['parts'][1].update(update)
+            with self.subTest(update=update), self.assertRaises(ValueError):self.validate(asset)
 
     def test_rotation_rejects_mirror_scale_and_nonfinite_values(self):
         for matrix in ([[1,0,0],[0,1,0],[0,0,-1]], [[2,0,0],[0,1,0],[0,0,1]], [[float('nan'),0,0],[0,1,0],[0,0,1]]):
@@ -173,6 +206,21 @@ class TrellisWeaponExportTests(unittest.TestCase):
                 self.assertAlmostEqual(uv[1],(position[1]+1)/2)
                 self.assertAlmostEqual(exporter.Vector(normal).length,1)
         self.assertAlmostEqual(area,4)
+
+    @unittest.skipUnless(HAS_BLENDER,'Run Blender 4.0 for bounded middle clipping')
+    def test_middle_clip_bounds_preserve_uv_normals_winding_and_area(self):
+        mesh=([(-1,-1,0),(1,-1,0),(1,1,0),(-1,1,0)],[(0,0),(1,0),(1,1),(0,1)],[(0,1,2),(0,2,3)],[(0,0,1)]*4)
+        vertices,uvs,faces,normals=exporter.clip_part_mesh(mesh,{'clip_min_y':-.25,'clip_max_y':.25})
+        self.assertAlmostEqual(min(v[1] for v in vertices),-.25)
+        self.assertAlmostEqual(max(v[1] for v in vertices),.25)
+        area=0.
+        for face in faces:
+            a,b,c=[exporter.Vector(vertices[i]) for i in face];cross=(b-a).cross(c-a)
+            self.assertGreater(cross.z,0);area+=cross.length/2
+        self.assertAlmostEqual(area,1.)
+        for position,uv,normal in zip(vertices,uvs,normals):
+            self.assertAlmostEqual(uv[0],(position[0]+1)/2);self.assertAlmostEqual(uv[1],(position[1]+1)/2)
+            self.assertAlmostEqual(exporter.Vector(normal).length,1)
 
     @unittest.skipUnless(HAS_BLENDER,'Run Blender 4.0 for icon pixels')
     def test_icon_padding_keeps_top_art_pixels_and_transparent_bottom(self):

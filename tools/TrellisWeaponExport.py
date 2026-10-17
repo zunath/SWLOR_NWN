@@ -10,8 +10,10 @@ requires model, texture (<=14 characters), texture_size (512/1024), scale,
 orientation (proper 3x3 rotation), source_grip, target_grip, attachment with
 review_notes and two independent source/target axis_pairs, and icon_size (the
 actual native canvas, not merely baseitems inventory slots). Transforms refer
-to imported Blender WORLD coordinates, after glTF axis conversion. Optional
-parts[{model, plane_y, clip_side:above|below, aliases:[]}], aliases:[], and
+to imported Blender WORLD coordinates, after glTF axis conversion. Composite
+exports require bottom/middle/top coverage in parts or composite_assemblies.
+Parts support plane_y/clip_side or clip_min_y/clip_max_y interval bounds.
+Optional aliases:[] and
 empty_parts[{model,base_item,icon_size}] can clear explicitly audited simple-model
 IDs only. Composite weapons require real bottom, middle and top geometry.
 normal_basis_policy defaults to 'reproject'. Explicit 'authored_tangents' patches
@@ -511,6 +513,13 @@ def mesh_preview(mesh,name,material):
     return ob
 
 
+def clip_part_mesh(mesh, part):
+    result=clip_mesh_y(mesh,float(part['plane_y']),part['clip_side']) if 'clip_side' in part else mesh
+    if 'clip_min_y' in part:result=clip_mesh_y(result,float(part['clip_min_y']),'above')
+    if 'clip_max_y' in part:result=clip_mesh_y(result,float(part['clip_max_y']),'below')
+    return result
+
+
 def write_parts(config,resources,helpers,mesh_data,mesh_names,materials):
     default=config["model"]
     parts=config.get('parts',[{'model':default}]);objects=[];reports=[]
@@ -519,7 +528,7 @@ def write_parts(config,resources,helpers,mesh_data,mesh_names,materials):
         validate_model_name(model,config['_item_class'],config['_model_type'])
         selected=[];textures=[]
         for mesh,texture in zip(mesh_data,mesh_names):
-            result=clip_mesh_y(mesh,float(part['plane_y']),part['clip_side']) if 'clip_side' in part else mesh
+            result=clip_part_mesh(mesh,part)
             if result[2]:
                 selected.append(result);textures.append(texture)
                 ob=mesh_preview(result,model+'_'+str(len(selected)),materials[texture]);ob['weapon_part']=model;objects.append(ob)
@@ -686,7 +695,7 @@ def export_one(config,source,repo,out,mode,helpers,icon_size):
 def validate_manifest(config, repo, manifest, mode):
     if config.get('schema_version')!=1 or not isinstance(config.get('assets'),list) or not config['assets']:
         raise ValueError('Expected schema_version 1 and nonempty assets')
-    seen=set();asset_names=set()
+    seen=set();asset_names=set();composites=[];outputs={}
     for item in config['assets']:
         asset=item.get('asset','')
         if not re.fullmatch(r'[a-z][a-z0-9_]{0,47}',asset) or asset in asset_names:
@@ -718,12 +727,35 @@ def validate_manifest(config, repo, manifest, mode):
             if ('clip_side' in part)!=('plane_y' in part):raise ValueError('Split requires plane_y and clip_side')
             if 'clip_side' in part and (part['clip_side'] not in ('above','below') or not number(part['plane_y'])):
                 raise ValueError('Invalid part split')
+            bounds=[key for key in ('clip_min_y','clip_max_y') if key in part]
+            if bounds and ('clip_side' in part or any(not number(part[key]) for key in bounds)):
+                raise ValueError('Use finite clip bounds without plane_y/clip_side')
+            if len(bounds)==2 and part['clip_min_y']>=part['clip_max_y']:
+                raise ValueError('clip_min_y must be below clip_max_y')
+            if item['_model_type']==2 and any(alias.rsplit('_',2)[-2]!=part['model'].rsplit('_',2)[-2] for alias in part.get('aliases',[])):
+                raise ValueError('Part aliases must preserve the native part role')
             declared += [part['model']]+part.get('aliases',[])
         for model in declared:
             validate_model_name(model,item['_item_class'],item['_model_type'])
             if model in seen:raise ValueError('Repeated output resource '+model)
             seen.add(model)
+            outputs[model]=(item['_item_class'],item['_model_type'])
+        if item['_model_type']==2:
+            composites.append((asset,declared,{part['model'].rsplit('_',2)[-2] for part in parts}))
     if mode=='export':
+        covered={model for _,models,roles in composites if roles=={'b','m','t'} for model in models}
+        for assembly in config.get('composite_assemblies',[]):
+            row=base_item_row(repo,assembly['base_item']);family=row['ItemClass'].lower()
+            if int(row['ModelType'])!=2:raise ValueError('composite_assemblies requires a composite weapon baseitem')
+            for role,key in [('b','bottom'),('m','middle'),('t','top')]:
+                model=assembly.get(key,'')
+                validate_model_name(model,family,2)
+                if model.rsplit('_',2)[-2]!=role or outputs.get(model)!=(family,2):
+                    raise ValueError('Composite assembly requires exported '+key+' geometry: '+model)
+                covered.add(model)
+        for asset,models,_ in composites:
+            if not set(models)<=covered:
+                raise ValueError('Composite export requires real bottom, middle and top parts in the asset or composite_assemblies: '+asset)
         for part in config.get('empty_parts',[]):
             row=base_item_row(repo,part['base_item']);model=part['model']
             if int(row['ModelType'])==2:

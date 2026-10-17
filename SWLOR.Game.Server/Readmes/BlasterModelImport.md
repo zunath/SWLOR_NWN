@@ -139,6 +139,11 @@ and audited consumers. `sha256` binds the complete self-contained GLB.
     "model": "wplss_t_081", "texture": "spear_field", "texture_size": 1024,
     "scale": 1.0, "orientation": [[1,0,0],[0,1,0],[0,0,1]],
     "source_grip": [0,0,0], "target_grip": [0,0,0], "icon_size": [32,128],
+    "parts": [
+      {"model":"wplss_b_011", "clip_max_y":-0.1},
+      {"model":"wplss_m_013", "clip_min_y":-0.1, "clip_max_y":0.1},
+      {"model":"wplss_t_081", "clip_min_y":0.1}
+    ],
     "attachment": {
       "review_notes": "Replace with measured hand, blade/edge and shared-slot findings",
       "axis_pairs": [
@@ -175,7 +180,14 @@ entries require `model`, `base_item` and `icon_size` and are permitted only for
 explicitly audited simple-model IDs. Composite weapons must export real bottom,
 middle and top geometry; blank companion parts are rejected. Fit common joins,
 cap or cover the cuts, and verify independent mixed assemblies in the native
-client. The tool checks family/name collisions, not the full consumer graph.
+client. Composite exports must supply all three roles within each asset, or explicitly
+list `composite_assemblies` with `base_item`, `bottom`, `middle` and `top`; every
+referenced model must be exported in the same manifest. This supports separately
+fitted source parts without accepting absent or stale companions. Parts may use
+finite `clip_min_y` and `clip_max_y` bounds for a middle interval, or the legacy
+one-plane split. Neither clipping mode caps cuts automatically; author covered
+connectors or closed ends before native qualification. The tool checks output
+coverage and family/name collisions, not the full consumer graph.
 
 `icon_size` is the measured native power-of-two canvas, not just inventory cells.
 For example, a 2-by-5 logical area occupies 64-by-160 artwork in a 64-by-256 canvas;

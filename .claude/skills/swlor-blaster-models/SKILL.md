@@ -1,9 +1,9 @@
 ---
 name: swlor-blaster-models
-description: Import, create, replace, or refit SWLOR pistol blaster models through local authoring, NWN model and texture export, inventory icons, appearance catalog registration, and HAK deployment verification. Use for GR2 blaster imports, original blaster designs, or weapon grip, scale, and muzzle alignment changes.
+description: Import, create, replace, split, or refit SWLOR weapon models, including pistol blasters, knives, longswords, greatswords, staffs, spears, twinblades, electroblades and shuriken. Covers local authoring, native NWN parts, textures, inventory icons, appearance catalogs and HAK verification. Use for weapon appearance replacements, GR2 imports, original designs, or grip, scale, seam and muzzle alignment changes.
 ---
 
-# SWLOR Blaster Models
+# SWLOR Weapon Models
 
 Use the [model workflow](../../../SWLOR.Game.Server/Readmes/BlasterModelImport.md)
 for commands, a local import-manifest example, material rules and fitting details.

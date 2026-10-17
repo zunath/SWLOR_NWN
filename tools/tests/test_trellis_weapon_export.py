@@ -69,9 +69,16 @@ class TrellisWeaponExportTests(unittest.TestCase):
             asset = copy.deepcopy(self.asset); asset[key] = value
             with self.subTest(key=key), self.assertRaises(ValueError): self.validate(asset)
 
-    def test_empty_parts_cannot_overwrite_real_geometry(self):
+    def test_empty_parts_reject_composite_slots_even_when_unoccupied(self):
+        for role in ('b', 'm', 't'):
+            with self.subTest(role=role), self.assertRaisesRegex(ValueError, 'Composite weapons require real'):
+                self.validate(empty_parts=[{'model':f'wdbsw_{role}_021','base_item':12,'icon_size':[64,256]}])
+
+    def test_simple_empty_parts_cannot_overwrite_real_geometry(self):
+        asset = copy.deepcopy(self.asset)
+        asset.update(base_item=59, model='wthsh_011', icon_size=[32,32])
         with self.assertRaisesRegex(ValueError,'occupied'):
-            self.validate(empty_parts=[{'model':'wdbsw_m_011','base_item':12,'icon_size':[64,256]}])
+            self.validate(asset, empty_parts=[{'model':'wthsh_011','base_item':59,'icon_size':[32,32]}])
 
     def test_multipart_aliases_are_validated_individually(self):
         asset = copy.deepcopy(self.asset)

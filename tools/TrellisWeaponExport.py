@@ -12,7 +12,8 @@ review_notes and two independent source/target axis_pairs, and icon_size (the
 actual native canvas, not merely baseitems inventory slots). Transforms refer
 to imported Blender WORLD coordinates, after glTF axis conversion. Optional
 parts[{model, plane_y, clip_side:above|below, aliases:[]}], aliases:[], and
-empty_parts[{model,base_item,icon_size}] preserve explicitly audited native IDs.
+empty_parts[{model,base_item,icon_size}] can clear explicitly audited simple-model
+IDs only. Composite weapons require real bottom, middle and top geometry.
 normal_basis_policy defaults to 'reproject'. Explicit 'authored_tangents' patches
 only uniquely owned native tangent/sign streams and keeps staged map pixels;
 mixed-sign glTF triangles have undefined shading, so this selects NWN's native
@@ -725,6 +726,8 @@ def validate_manifest(config, repo, manifest, mode):
     if mode=='export':
         for part in config.get('empty_parts',[]):
             row=base_item_row(repo,part['base_item']);model=part['model']
+            if int(row['ModelType'])==2:
+                raise ValueError('Composite weapons require real bottom, middle and top parts; empty_parts is not allowed: '+model)
             validate_model_name(model,row['ItemClass'].lower(),int(row['ModelType']))
             native_icon_size(part.get('icon_size'))
             if model in seen:raise ValueError('Empty part would replace occupied resource '+model)

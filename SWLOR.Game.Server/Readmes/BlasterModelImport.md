@@ -171,8 +171,11 @@ B/M/T consumer before replacing shared resources: ModelPart1 is bottom, 2 middle
 3 top. Optional `aliases` copies a whole resource to explicitly audited model IDs;
 `parts` entries have `model`, `plane_y`, `clip_side` (`above`/`below`) and optional
 `aliases` for complementary uncapped splits. Optional top-level `empty_parts`
-entries require `model`, `base_item` and `icon_size`; only declare ends proven safe
-to empty. The tool checks family/name collisions, not the full consumer graph.
+entries require `model`, `base_item` and `icon_size` and are permitted only for
+explicitly audited simple-model IDs. Composite weapons must export real bottom,
+middle and top geometry; blank companion parts are rejected. Fit common joins,
+cap or cover the cuts, and verify independent mixed assemblies in the native
+client. The tool checks family/name collisions, not the full consumer graph.
 
 `icon_size` is the measured native power-of-two canvas, not just inventory cells.
 For example, a 2-by-5 logical area occupies 64-by-160 artwork in a 64-by-256 canvas;

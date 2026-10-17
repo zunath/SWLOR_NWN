@@ -54,6 +54,13 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.ItemAppearance
             NeckAppearance.RemoveUnavailableNeck(creature, item);
             nativeCreature.UpdateAppearanceForEquippedItems();
 
+            // A helmet that will render through the head is not resent as an attachment. Its
+            // client must see the attachment removed: discarding the cached item while it stays
+            // attached leaves every later render head invisible until relog.
+            var resendsHeadItem = GetItemInSlot(InventorySlot.Head, creature) != item ||
+                                  !HelmetModelRenderer.RendersThroughHead(
+                                      creature, TintMapModelResolver.GetCurrentSelections(creature));
+
             var message = server.GetNWSMessage();
             var players = server.GetPlayerList();
             var refreshedClient = false;
@@ -67,7 +74,7 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.ItemAppearance
                 var handItem = appearance.m_oidLeftHandItem == item || appearance.m_oidRightHandItem == item;
                 var cloakItem = appearance.m_oidCloakItem == item;
                 var changed = false;
-                if (appearance.m_oidHeadItem == item)
+                if (appearance.m_oidHeadItem == item && resendsHeadItem)
                 {
                     appearance.m_oidHeadItem = OBJECT_INVALID;
                     changed = true;

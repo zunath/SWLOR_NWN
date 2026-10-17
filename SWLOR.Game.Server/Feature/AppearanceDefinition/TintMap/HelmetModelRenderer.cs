@@ -104,6 +104,17 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
             return ModelResource.Exists(GetHeadModel(gender, race, head));
         }
 
+        /// <summary>
+        /// Whether Apply renders the worn helmet through the head rather than as the native
+        /// helmet attachment.
+        /// </summary>
+        public static bool RendersThroughHead(uint creature, IReadOnlyList<TintMapMaterialSelection> selections)
+        {
+            var helmet = selections.FirstOrDefault(selection => selection.IsWornHelmet);
+            return helmet != null && IsShownByOwner(helmet.PaletteSource) &&
+                   HasRenderHead(creature, helmet.ModelResref);
+        }
+
         public static void Apply(uint creature, IReadOnlyList<TintMapMaterialSelection> selections)
         {
             var server = NWNXLib.g_pAppManager.m_pServerExoApp;
@@ -112,8 +123,7 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
                 return;
 
             var helmet = selections.FirstOrDefault(selection => selection.IsWornHelmet);
-            var visible = helmet != null && IsShownByOwner(helmet.PaletteSource) &&
-                          HasRenderHead(creature, helmet.ModelResref);
+            var visible = RendersThroughHead(creature, selections);
             var parts = Get2DAString("appearance", "MODELTYPE", (int)GetAppearanceType(creature))
                 .StartsWith("P", StringComparison.OrdinalIgnoreCase);
             var originalHead = nativeCreature.m_pStats.m_nHeadVariation;

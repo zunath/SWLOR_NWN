@@ -135,6 +135,45 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             ctx.SetResultDetail("Two real unequip/re-equip cycles on an unpossessed NPC restored its canonical head, released the removed helmet's native hidden flag, automatically restored the equipped render head, and retained item identity and ownership.");
         }
 
+        [EngineTest("Helmet model changes move between the native helmet and render heads", Category = "NpcEquipmentAppearance", TimeoutSeconds = 60f)]
+        public static async Task HelmetModelChangesCrossNativeHelmet(EngineTestContext ctx)
+        {
+            var npc = ctx.SpawnCreature("civilian");
+            await ctx.DelaySecondsAsync(1f);
+            var helmet = await ctx.EquipItemAsync(npc, "advent_helmet", InventorySlot.Head);
+            var native = NWNXLib.g_pAppManager.m_pServerExoApp.GetCreatureByGameObjectID(npc);
+            var originalHead = native.m_pStats.m_nHeadVariation;
+
+            // Helmet 64 has no tint material, so it is the native attachment between two
+            // render heads. Repeat the cycle, as the appearance editor does while scrolling.
+            for (var pass = 0; pass < 2; pass++)
+            {
+                foreach (var model in new[] { 114, 64, 65 })
+                {
+                    await RunAssignedAsync(ctx, npc, () =>
+                    {
+                        EquippedItemAppearance.Set(helmet, ItemAppearanceType.SimpleModel, 0, model);
+                        EquippedItemAppearance.Refresh(npc, helmet);
+                    });
+                    await ctx.WaitFrameAsync();
+
+                    var projected = model != 64;
+                    ctx.AssertEqual(projected,
+                        HelmetModelRenderer.RendersThroughHead(npc, TintMapModelResolver.GetCurrentSelections(npc)),
+                        $"Pass {pass}: helm_{model:000} render path");
+                    ctx.AssertEqual(projected ? (ushort)(HelmetModelRenderer.HeadBase + model) : originalHead,
+                        native.m_cAppearance.m_nHeadVariation, $"Pass {pass}: helm_{model:000} replicated head");
+                    ctx.AssertEqual(projected ? 1 : 0, GetHiddenWhenEquipped(helmet),
+                        $"Pass {pass}: helm_{model:000} native attachment hidden flag");
+                    ctx.AssertEqual(projected ? OBJECT_INVALID : helmet, native.m_cAppearance.m_oidHeadItem,
+                        $"Pass {pass}: helm_{model:000} replicated head item");
+                    ctx.Assert(HelmetModelRenderer.IsShownByOwner(helmet), "The helmet remains visible by owner choice.");
+                    ctx.AssertEqual(originalHead, native.m_pStats.m_nHeadVariation, "The canonical head never changes.");
+                }
+            }
+            ctx.SetResultDetail("Two helmet model cycles 114 -> 64 -> 65 moved between render heads and the native helm_064 attachment, kept the native hidden flag and replicated head item consistent with each render path, and left the canonical head and owner visibility unchanged.");
+        }
+
         [EngineTest("Tint module declares the client material and mask packs", Category = "Tint")]
         public static Task ModuleDeclaresTintAssets(EngineTestContext ctx)
         {

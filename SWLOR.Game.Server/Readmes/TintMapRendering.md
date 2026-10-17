@@ -26,6 +26,10 @@ explicit authoring requires `--game-data`. The client draws every cloak mesh wit
 the `cloakmodel.TEXTURE` PLT, even where its bitmap names the model, another PLT,
 or nothing that exists (model 007's only visible mesh is the `cala_cloak` skin), so
 every mesh is bound. Authoring refuses a mesh naming a real TGA, DDS, or MTR.
+Cloak palette alpha is reflection coverage only when the native cloak has an
+environment map. Otherwise it controls opacity, including the Mantle's invisible
+Cloth 2 preset 61. `fs_cloaktint` discards fully transparent pixels and leaves
+opaque dyes visible; these cloaks must not acquire metal reflection from alpha.
 
 Authored MTRs can inherit a same-name DDS/TGA without declaring `texture0`.
 `TintMapMaterialSources.json` records that input as `implicitTexture0`.

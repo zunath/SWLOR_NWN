@@ -173,7 +173,8 @@ Transforms use Blender's imported world coordinates, after glTF axis conversion:
 `target_grip + orientation * scale * (point - source_grip)`. Use uniform scale,
 a proper rotation and two independent reviewed axis pairs. Audit every native
 B/M/T consumer before replacing shared resources: ModelPart1 is bottom, 2 middle,
-3 top. Optional `aliases` copies a whole resource to explicitly audited model IDs;
+3 top. Top-level `aliases` are only for simple models; composite variants use
+role-preserving aliases on their individual parts.
 `parts` entries have `model`, `plane_y`, `clip_side` (`above`/`below`) and optional
 `aliases` for complementary uncapped splits. Optional top-level `empty_parts`
 entries require `model`, `base_item` and `icon_size` and are permitted only for
@@ -188,7 +189,9 @@ that framing for cameras and lighting; their icon canvases, art sizes, direction
 and rolls must match, and geometry outside the frame is rejected. This supports
 separately fitted source parts without absent companions or misaligned layers. Parts may use
 finite `clip_min_y` and `clip_max_y` bounds for a middle interval, or the legacy
-one-plane split. Neither clipping mode caps cuts automatically; author covered
+one-plane split. Multiple parts cut from one source must partition its Y axis
+without gaps or overlaps; normal interpolation stays linear across all cuts and
+normalizes only at the end. Neither clipping mode caps cuts automatically; author covered
 connectors or closed ends before native qualification. The tool checks output
 coverage and family/name collisions, not the full consumer graph.
 
@@ -199,7 +202,8 @@ UV seams and authored corner normals are retained. Unsupported material features
 fail explicitly. Samplers support repeat wrapping, linear magnification and
 trilinear minification; clamp, mirror and other explicit filters are rejected.
 Normal reprojection fills all unused RGB texels from native-frame coverage before
-mip generation, preserving covered texels and alpha. This removes untouched
+mip generation, preserving covered texels and alpha. Every matched face must
+cover a texel center; subtexel/degenerate UV faces fail explicitly. This removes untouched
 source-frame padding from every mip footprint. A double-sided source is rejected unless the fit explicitly sets
 `double_sided_policy` to `closed_surface` and its shells pass the closure/winding
 and enclosed-cavity checks; inspect the resulting culling and shading too.

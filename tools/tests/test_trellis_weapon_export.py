@@ -85,7 +85,7 @@ class TrellisWeaponExportTests(unittest.TestCase):
 
     def test_multipart_aliases_are_validated_individually(self):
         asset = copy.deepcopy(self.asset)
-        asset['parts'] = [{'model':'wdbsw_m_011','plane_y':.2,'clip_side':'above','aliases':['wdbsw_m_021']},
+        asset['parts'] = [{'model':'wdbsw_m_011','clip_min_y':.2,'clip_max_y':.4,'aliases':['wdbsw_m_021']},
                           {'model':'wdbsw_b_011','plane_y':.2,'clip_side':'below'},
                           {'model':'wdbsw_t_011','clip_min_y':.4}]
         self.validate(asset)
@@ -100,7 +100,7 @@ class TrellisWeaponExportTests(unittest.TestCase):
             asset=copy.deepcopy(self.asset)
             if parts is None:asset.pop('parts')
             else:asset['parts']=parts
-            with self.subTest(parts=parts), self.assertRaisesRegex(ValueError,'Composite export requires real'):
+            with self.subTest(parts=parts), self.assertRaises(ValueError):
                 self.validate(asset)
 
     def test_explicit_assemblies_can_group_separate_exported_parts(self):
@@ -124,6 +124,22 @@ class TrellisWeaponExportTests(unittest.TestCase):
             invalid=copy.deepcopy(config);invalid['composite_assemblies'][0][key]=value
             with self.subTest(key=key), self.assertRaisesRegex(ValueError,'requires exported'):
                 exporter.validate_manifest(invalid,self.root,self.manifest,'export')
+
+    def test_multi_part_source_cannot_duplicate_a_whole_weapon_or_drop_regions(self):
+        cases=[ [{'model':'wdbsw_'+role+'_011'} for role in ('b','m','t')],
+                [{'model':'wdbsw_b_011','clip_max_y':-.2},{'model':'wdbsw_m_011','clip_min_y':-.1,'clip_max_y':.1},{'model':'wdbsw_t_011','clip_min_y':.1}],
+                [{'model':'wdbsw_b_011','clip_max_y':0.},{'model':'wdbsw_m_011','clip_min_y':-.1,'clip_max_y':.1},{'model':'wdbsw_t_011','clip_min_y':.1}]]
+        for parts in cases:
+            asset=copy.deepcopy(self.asset);asset['parts']=parts
+            with self.subTest(parts=parts), self.assertRaisesRegex(ValueError,'partition the Y axis'):
+                self.validate(asset)
+
+    def test_top_level_aliases_cannot_fake_composite_part_coverage(self):
+        asset=copy.deepcopy(self.asset);asset.pop('parts');asset['aliases']=['wdbsw_b_011','wdbsw_t_011']
+        assembly={'base_item':12,'bottom':'wdbsw_b_011','middle':'wdbsw_m_011','top':'wdbsw_t_011',
+                  'icon_bounds':{'min':[-1,-1,-1],'max':[1,1,1]}}
+        with self.assertRaisesRegex(ValueError,'top-level aliases'):
+            self.validate(asset,composite_assemblies=[assembly])
 
     def test_clip_bounds_reject_nonfinite_reversed_and_ambiguous_intervals(self):
         for update in ({'clip_min_y':float('nan')},{'clip_min_y':.2,'clip_max_y':.1},
@@ -246,6 +262,18 @@ class TrellisWeaponExportTests(unittest.TestCase):
             self.assertAlmostEqual(uv[0],(position[0]+1)/2);self.assertAlmostEqual(uv[1],(position[1]+1)/2)
             self.assertAlmostEqual(exporter.Vector(normal).length,1)
 
+    @unittest.skipUnless(HAS_BLENDER,'Run Blender 4.0 for interpolated seam normals')
+    def test_two_plane_middle_normals_match_the_independently_clipped_top(self):
+        mesh=([(-1,-1,0),(1,-1,0),(0,1,0)],[(0,0),(1,0),(.5,1)],[(0,1,2)],[(.8,0,.6),(0,.6,.8),(0,0,1)])
+        middle=exporter.clip_part_mesh(mesh,{'clip_min_y':-.5,'clip_max_y':.5})
+        top=exporter.clip_part_mesh(mesh,{'clip_min_y':.5})
+        def seam(part):
+            return {tuple(round(x,6) for x in p):(uv,n) for p,uv,n in zip(part[0],part[1],part[3]) if abs(p[1]-.5)<1e-6}
+        a,b=seam(middle),seam(top);self.assertEqual(set(a),set(b));self.assertEqual(len(a),2)
+        for key in a:
+            np.testing.assert_allclose(a[key][0],b[key][0],atol=1e-7)
+            np.testing.assert_allclose(a[key][1],b[key][1],atol=1e-7)
+
     @unittest.skipUnless(HAS_BLENDER,'Run Blender 4.0 for shared icon projection')
     def test_separate_parts_use_the_same_icon_frame_and_reject_clipped_geometry(self):
         vector=exporter.Vector;frame={'min':[-1,-2,-.5],'max':[1,2,.5]}
@@ -345,6 +373,20 @@ class NativeWeaponNormalTests(unittest.TestCase):
                 np.testing.assert_allclose(mip,np.broadcast_to(native,mip.shape))
                 if mip.shape[0]==1:break
                 mip=mip.reshape(mip.shape[0]//2,2,mip.shape[1]//2,2,3).mean(axis=(1,3))
+
+    def test_reprojection_rejects_a_subtexel_face_even_after_other_faces_have_coverage(self):
+        positions=np.array([[[0.,0.,0.],[1.,0.,0.],[0.,1.,0.]],[[3.,0.,0.],[4.,0.,0.],[3.,1.,0.]]])
+        uv=np.array([[[.1,.1],[.9,.1],[.1,.9]],[[.201,.201],[.202,.201],[.201,.202]]])
+        source={'positions':positions,'uv':uv,'normals':np.array([[[0.,0.,1.]]*3]*2),
+                'tangents':np.array([[[1.,0.,0.]]*3]*2),'signs':np.ones((2,3))}
+        target={**source,'tangents':np.array([[[1.,0.,0.]]*3,[[0.,1.,0.]]*3])}
+        with tempfile.TemporaryDirectory() as temporary:
+            path=Path(temporary)/'source.tga';out=Path(temporary)/'native.tga';header=bytearray(18)
+            header[2]=2;struct.pack_into('<HH',header,12,64,64);header[16]=24
+            pixels=np.broadcast_to(np.array([204,128,230],np.uint8),(64,64,3));path.write_bytes(header+pixels[...,::-1].tobytes())
+            with self.assertRaisesRegex(ValueError,'face 1 has no texel-center coverage'):
+                self.helper.reproject_texture(source,[target],path,out)
+            self.assertFalse(out.exists())
 
     def authored_fixture(self):
         p=np.array([[[0.,0.,0.],[1.,0.,0.],[0.,1.,0.]]]);n=np.array([[[0.,0.,1.]]*3]);t=np.array([[[1.,0.,0.]]*3])

@@ -198,11 +198,11 @@ def reproject_texture(source,meshes,input_path,output_path):
         for ti,(si,weights) in enumerate(match_faces(source,mesh)):
             matched+=1;uv=mesh['uv'][ti];xmin=max(0,int(np.floor(uv[:,0].min()*width-.5)));xmax=min(width-1,int(np.ceil(uv[:,0].max()*width-.5)));ymin=max(0,int(np.floor(uv[:,1].min()*height-.5)));ymax=min(height-1,int(np.ceil(uv[:,1].max()*height-.5)))
             if uv.min()<-1e-6 or uv.max()>1+1e-6:raise ValueError('Normal reprojection requires nonwrapped UV0 islands')
-            if xmin>xmax or ymin>ymax:continue
+            if xmin>xmax or ymin>ymax:raise ValueError(f'Native normal face {ti} falls outside the texture sample grid')
             yy,xx=np.mgrid[ymin:ymax+1,xmin:xmax+1];q=np.stack(((xx+.5)/width,(yy+.5)/height),axis=-1);a=uv[1]-uv[0];b=uv[2]-uv[0];den=a[0]*b[1]-a[1]*b[0]
-            if abs(den)<1e-15:continue
+            if abs(den)<1e-15:raise ValueError(f'Native normal face {ti} has degenerate UV coverage')
             dif=q-uv[0];bb=(dif[...,0]*b[1]-dif[...,1]*b[0])/den;cc=(a[0]*dif[...,1]-a[1]*dif[...,0])/den;aa=1-bb-cc;mask=(aa>=-1e-9)&(bb>=-1e-9)&(cc>=-1e-9);x=xx[mask];y=yy[mask]
-            if not len(x):continue
+            if not len(x):raise ValueError(f'Native normal face {ti} has no texel-center coverage; increase the texture budget or use an explicitly reviewed authored basis')
             bary=np.stack((aa[mask],bb[mask],cc[mask]),axis=-1);old=bary@weights
             mapped=reproject_normals(pixels[y,x,:3]/255.,old@source['normals'][si],old@source['tangents'][si],old@source['signs'][si],bary@mesh['normals'][ti],bary@mesh['tangents'][ti],bary@mesh['signs'][ti])
             encoded=np.clip(np.round((mapped+1)*127.5),0,255).astype(np.uint8);used=coverage[y,x]

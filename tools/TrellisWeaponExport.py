@@ -500,7 +500,17 @@ def closed_surface_report(objects):
             'authored_normals_preserved':True}
 
 
-def clip_mesh_y(mesh, plane, side):
+def normalize_clipped_normals(mesh):
+    normals=[]
+    for normal in mesh[3]:
+        value=Vector(normal)
+        if not all(math.isfinite(x) for x in value) or value.length<1e-8:
+            raise ValueError('Clipping produced an undefined corner normal')
+        normals.append(tuple(value.normalized()))
+    return mesh[0],mesh[1],mesh[2],normals
+
+
+def clip_mesh_y(mesh, plane, side, normalize_normals=True):
     if side not in ('above','below'):raise ValueError('clip_side must be above or below')
     vertices,uvs,faces,normals=mesh;outv=[];outu=[];outf=[];outn=[];lookup={}
     sign=1 if side=='above' else -1
@@ -508,7 +518,7 @@ def clip_mesh_y(mesh, plane, side):
     def crossing(a,b):
         t=(plane-a[0][1])/(b[0][1]-a[0][1])
         pos=a[0].lerp(b[0],t);pos.y=plane
-        uv=a[1].lerp(b[1],t);normal=a[2].lerp(b[2],t).normalized()
+        uv=a[1].lerp(b[1],t);normal=a[2].lerp(b[2],t)
         return pos,uv,normal
     def index(corner):
         key=tuple(tuple(value) for value in corner)
@@ -526,7 +536,8 @@ def clip_mesh_y(mesh, plane, side):
             corners=[clipped[0],clipped[i],clipped[i+1]]
             if (corners[1][0]-corners[0][0]).cross(corners[2][0]-corners[0][0]).length_squared==0:continue
             outf.append(tuple(index(corner) for corner in corners))
-    return outv,outu,outf,outn
+    result=(outv,outu,outf,outn)
+    return normalize_clipped_normals(result) if normalize_normals else result
 
 
 def mesh_preview(mesh,name,material):
@@ -540,10 +551,14 @@ def mesh_preview(mesh,name,material):
 
 
 def clip_part_mesh(mesh, part):
-    result=clip_mesh_y(mesh,float(part['plane_y']),part['clip_side']) if 'clip_side' in part else mesh
-    if 'clip_min_y' in part:result=clip_mesh_y(result,float(part['clip_min_y']),'above')
-    if 'clip_max_y' in part:result=clip_mesh_y(result,float(part['clip_max_y']),'below')
-    return result
+    planes=[]
+    if 'clip_side' in part:planes.append((float(part['plane_y']),part['clip_side']))
+    if 'clip_min_y' in part:planes.append((float(part['clip_min_y']),'above'))
+    if 'clip_max_y' in part:planes.append((float(part['clip_max_y']),'below'))
+    result=mesh
+    # Keep linear corner attributes through every plane; normalize only the final field.
+    for plane,side in planes:result=clip_mesh_y(result,plane,side,normalize_normals=False)
+    return normalize_clipped_normals(result) if planes else result
 
 
 def write_parts(config,resources,helpers,mesh_data,mesh_names,materials):
@@ -749,6 +764,8 @@ def validate_manifest(config, repo, manifest, mode):
         if not item.get('attachment',{}).get('review_notes'):raise ValueError('Attachment review notes required')
         parts=item.get('parts',[{'model':item['model']}])
         if not parts or item['model'] not in [part['model'] for part in parts]:raise ValueError('Primary model must be an exported part')
+        if item['_model_type']==2 and item.get('aliases'):
+            raise ValueError('Composite top-level aliases are not allowed; use role-preserving part aliases')
         declared=list(item.get('aliases',[]))
         for part in parts:
             if ('clip_side' in part)!=('plane_y' in part):raise ValueError('Split requires plane_y and clip_side')
@@ -762,6 +779,16 @@ def validate_manifest(config, repo, manifest, mode):
             if item['_model_type']==2 and any(alias.rsplit('_',2)[-2]!=part['model'].rsplit('_',2)[-2] for alias in part.get('aliases',[])):
                 raise ValueError('Part aliases must preserve the native part role')
             declared += [part['model']]+part.get('aliases',[])
+        if item['_model_type']==2 and len(parts)>1:
+            intervals=[]
+            for part in parts:
+                low=part.get('clip_min_y',-math.inf);high=part.get('clip_max_y',math.inf)
+                if part.get('clip_side')=='above':low=part['plane_y']
+                elif part.get('clip_side')=='below':high=part['plane_y']
+                intervals.append((low,high))
+            intervals.sort()
+            if intervals[0][0]!=-math.inf or intervals[-1][1]!=math.inf or any(a[1]!=b[0] for a,b in zip(intervals,intervals[1:])):
+                raise ValueError('Multi-part source regions must partition the Y axis without gaps or overlaps')
         for model in declared:
             validate_model_name(model,item['_item_class'],item['_model_type'])
             if model in seen:raise ValueError('Repeated output resource '+model)

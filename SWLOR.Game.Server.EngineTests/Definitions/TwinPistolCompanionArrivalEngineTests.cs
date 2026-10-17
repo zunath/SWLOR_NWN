@@ -71,12 +71,15 @@ public static class TwinPistolCompanionArrivalEngineTests
     {
         using var player = await PlayerAbilityFixture.CreateAsync(ctx, -.5f);
         var actor = player.Creature;
-        var (target, _, companion) = await Prepare(ctx, player);
+        // A real longer shot leaves room for the target's native death processing before
+        // the half-flight sample; the production flight calculation remains unchanged.
+        var (target, _, companion) = await Prepare(ctx, player, outcome == "death" ? 24f : 10f);
         var departure = outcome == "area" ? await DepartureLocation(ctx) : null;
         var health = GetCurrentHitPoints(target);
         var stamina = Stat.GetCurrentStamina(actor);
         var damage = 0;
         var launchedAt = 0L;
+        var launchCompletedAt = 0L;
         var flight = 0f;
         var sampledAt = 0L;
         var sampledStamina = -1;
@@ -100,6 +103,9 @@ public static class TwinPistolCompanionArrivalEngineTests
                 stamina = Stat.GetCurrentStamina(actor);
                 launchedAt = Environment.TickCount64;
                 flight = Launch(ctx, actor, target, companion);
+                launchCompletedAt = Environment.TickCount64;
+                ctx.Assert(outcome != "death" || flight >= .4f,
+                    "The target's actual location provides the longer death-processing flight window");
                 var shot = RangedWeaponAttackContext.GetRoll(actor, target, 0);
                 ctx.Assert(shot is { Ordinary: true, Completed: true } && shot.Damage > 0,
                     "The actual resolver captures one completed ordinary companion shot");
@@ -119,6 +125,8 @@ public static class TwinPistolCompanionArrivalEngineTests
                 DiscardTarget(ctx, actor, target, outcome, departure, launchedAt, flight);
             });
             await WaitFrames(ctx, () => sampledAt > 0, "the native half-flight reward sample");
+            ctx.Log($"Ordinary {outcome} timing: resolverMs={launchCompletedAt - launchedAt}, " +
+                    $"sampleMs={sampledAt - launchedAt}, flightMs={flight * 1000f:0.000}.");
             ctx.Assert(sampledAt < launchedAt + flight * 1000f,
                 "Rewards are sampled inside the authoritative projectile flight window");
             ctx.AssertEqual(stamina, sampledStamina, "Alternating Fire restores no stamina before arrival");
@@ -316,7 +324,8 @@ public static class TwinPistolCompanionArrivalEngineTests
             "Delayed queued damage retains its original ability attribution");
     }
 
-    private static async Task<(uint Target, uint Main, uint Companion)> Prepare(EngineTestContext ctx, PlayerAbilityFixture player)
+    private static async Task<(uint Target, uint Main, uint Companion)> Prepare(EngineTestContext ctx, PlayerAbilityFixture player,
+        float targetOffset = 10f)
     {
         var actor = player.Creature;
         player.Update(record =>
@@ -329,7 +338,7 @@ public static class TwinPistolCompanionArrivalEngineTests
         });
         var main = await ctx.EquipItemAsync(actor, "b_twinpistol", InventorySlot.RightHand);
         var companion = await TwinPistolEquipmentEngineTests.WaitForPair(ctx, actor, main);
-        var target = ctx.SpawnCreature("nw_rat001", 10f);
+        var target = ctx.SpawnCreature("nw_rat001", targetOffset);
         await ctx.DelaySecondsAsync(1f);
         await ctx.ExecuteInCreatureContextAsync(actor, () =>
         {
@@ -378,6 +387,8 @@ public static class TwinPistolCompanionArrivalEngineTests
         var distance = GetDistanceBetween(actor, target);
         ctx.Assert(distance >= 9f && distance < native.MaxAttackRange(target),
             "The actual launch distance provides a native flight window inside weapon range");
+        ctx.Log($"Companion launch: actor={GetPosition(actor)}, target={GetPosition(target)}, " +
+                $"distance={distance:0.000}m, maximumRange={native.MaxAttackRange(target):0.000}m.");
         native.m_pcCombatRound.StartCombatRound(target);
         native.m_pcCombatRound.m_nCurrentAttack = 0;
         ctx.SeedRandom(1);

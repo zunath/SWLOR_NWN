@@ -10,7 +10,9 @@ The skill name is **Twin Pistol** throughout player-facing text. Akimbo Stance b
 
 The approved design is implemented on the feature branch and has not been deployed. The cross-skill revision, handling choice and Paired Volley changes supersede the earlier balance results. The companion [Discord feedback draft](TwinPistolDiscordFeedback.md) presents the same values for discussion; the validation record below distinguishes implemented behavior from release balance.
 
-## Implementation validation
+## Historical implementation validation
+
+The execution results below predate the latest master reconciliation. Current simulator and native results, their exact source revisions, and remaining checks are recorded in [the Twin Pistol pull request](https://github.com/zunath/SWLOR_NWN/pull/2613). These earlier measurements do not establish balance against a later master revision.
 
 The single-item equipment contract supersedes the earlier independently owned companion design. The earlier validation below is historical evidence for unchanged attack/perk behavior; equipment ownership, automatic equip/cleanup and repeated save/reload require coverage of the revised pair lifecycle. Earlier screenshots showing the resource name Momentum predate its player-facing rename to Flow and do not verify the current label.
 
@@ -227,7 +229,7 @@ These are one seeded encounter per build before the October 14 tuning, not a sta
 
 Crossfire completed Slide, Rush, Grapple and both paid finishers, but its controller accumulated 47-48 blocked Slide attempts and 42-43 unavailable Rush lanes. Its measured damage includes arena geometry and controller decisions; it is not an unobstructed rotation ceiling or a measure of movement's survival benefit. Target positions were not logged, so the records do not establish same-floor geometry throughout. The NPC remained above 70% HP, making High Noon's target-health condition eligible throughout. Incoming damage, Second Wind opportunities, Cool Under Fire, allied buffs, per-hit enhancements, equal acquisition cost, PvP and multiple seeds remain outside this comparison.
 
-### Repeated native comparison of the current values
+### Historical repeated native comparison
 
 Three fixed seeds (20261013/14/15) per build ran in a verified flat open corridor at the same 69-SP investment, rank 50, attributes 26 and DMG 22 / Delay 250. Actual player attacks, native rolls/batching, finite 61 STM, production regeneration every six seconds, paid capstones and real movement/cast interruption are retained. Ordinary and activated resolved damage reconcile exactly with delivered HP after an eight-second projectile drain. The unchanged Pistol/Barrage samples and revised Crossfire samples use identical fixture conditions.
 
@@ -245,7 +247,7 @@ The first open-corridor Crossfire candidate averaged 22.23/21.84 DPS, revealing 
 
 Incoming pressure, optimized rotations, PvP, other weapon/attribute tiers, external buffs, per-hit enhancements and equal acquisition-cost builds remain outside this bounded comparison. All five native cross-skill controls pass with the final costs, including real saber/rifle ordinary damage and Haste. Reports and source/resource hashes are retained in the local engine-test artifacts.
 
-### Capstone-first opening comparison
+### Historical capstone-first opening comparison
 
 All five opening cases passed with three fixed seeds each, using the same equal-69-SP builds, gear, corridor and finite resources. The controller requests the purchased capstone at zero seconds and core feats at two, three and four seconds, subject to real cast timing, readiness and the movement lockout. Final Salvo starts at zero Flow. Every sample reconciled ordinary plus activated damage to delivered HP after the bounded drain.
 

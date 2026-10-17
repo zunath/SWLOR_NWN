@@ -60,6 +60,7 @@ public class HeadgearSlotMigrationTests
 
     [TestCase(0)]
     [TestCase(33)]
+    [TestCase(223)]
     public void ArchivedLegacyCopyKeepsEveryUnrelatedFieldAndIsByteStableOnRetry(int existingModel)
     {
         var root = Visor();
@@ -69,11 +70,67 @@ public class HeadgearSlotMigrationTests
         var before = Read(original);
         var after = Read(migrated);
         Value(after, "BaseItem").Should().Be((int)BaseItem.Helmet);
-        Value(after, "ModelPart1").Should().Be((byte)(existingModel > 0 ? existingModel : 223));
+        Value(after, "ModelPart1").Should().Be((byte)(existingModel is 0 or 223 ? 110 : existingModel));
         after.Fields.Where(x => x.Label is not "BaseItem" and not "ModelPart1")
             .Should().BeEquivalentTo(before.Fields.Where(x => x.Label is not "BaseItem" and not "ModelPart1"));
         HeadgearSlotMigration.MigrateSerializedObject(migrated, out var retry).Should().BeFalse();
         retry.Should().Be(migrated);
+    }
+
+    [TestCase("ruptorvanecr", BaseItem.Helmet, 223, 110)]
+    [TestCase("THERMLANCERCR", BaseItem.Armor, 223, 110)]
+    [TestCase("ruptorvanecr", BaseItem.Armor, 0, 110)]
+    [TestCase("charm_cowl", BaseItem.Armor, 0, 33)]
+    [TestCase("ruptorvanecr", BaseItem.Helmet, 33, 33)]
+    [TestCase("ruptorvanecr", BaseItem.Helmet, 110, 110)]
+    [TestCase("ruptorvanecr", BaseItem.Cloak, 223, 223)]
+    [TestCase("revan_mask", BaseItem.Helmet, 223, 223)]
+    [TestCase("other_helmet", BaseItem.Helmet, 223, 223)]
+    public void ModelRepairTargetsOnlyTheAffectedVisors(string resref, BaseItem type, int model, int expected)
+    {
+        HeadgearSlotMigration.GetCorrectedModel(resref, type, model).Should().Be(expected);
+    }
+
+    [TestCase(223, 223)]
+    [TestCase(110, 223)]
+    [TestCase(223, -1)]
+    public void ArchivedHelmetRepairsBothModelFieldsWithoutChangingOtherState(int legacyModel, int extendedModel)
+    {
+        var root = Node(0, Resref("thermlancercr"), Scalar(5, "BaseItem", (int)BaseItem.Helmet),
+            Scalar(0, "ModelPart1", legacyModel), Text("UUID", "saved-visor"), Scalar(2, "StackSize", 3),
+            Text("Description", "custom description"), Scalar(0, "Metal1Color", 7));
+        if (extendedModel >= 0) AddField(root, Scalar(2, "xModelPart1", extendedModel));
+        var original = Encode(root);
+        var bag = Encode(Node(0, Scalar(5, "BaseItem", (int)BaseItem.MiscSmall), List("ItemList", root)));
+        foreach (var data in new[] { original, bag })
+        {
+            HeadgearSlotMigration.MigrateSerializedObject(data, out var migrated).Should().BeTrue();
+            var after = Read(migrated);
+            if (after.Fields.Any(x => x.Label == "ItemList")) after = Children(after, "ItemList").Single();
+            Value(after, "ModelPart1").Should().Be((byte)110);
+            if (extendedModel >= 0) Value(after, "xModelPart1").Should().Be((ushort)110);
+            after.Fields.Where(x => x.Label is not "ModelPart1" and not "xModelPart1")
+                .Should().BeEquivalentTo(Read(original).Fields.Where(x => x.Label is not "ModelPart1" and not "xModelPart1"));
+            HeadgearSlotMigration.MigrateSerializedObject(migrated, out var retry).Should().BeFalse();
+            retry.Should().Be(migrated);
+        }
+    }
+
+    [Test]
+    public void SavedHelmetModelRepairDoesNotMoveDroidEquipmentOrChangeItsIdentity()
+    {
+        var visor = Encode(Node(0, Resref("ruptorvanecr"), Scalar(5, "BaseItem", (int)BaseItem.Helmet),
+            Scalar(0, "ModelPart1", 223), Scalar(2, "xModelPart1", 223), Text("UUID", "same-visor")));
+        var original = new JObject { ["Name"] = "same droid", ["EquippedItems"] = new JObject { ["Head"] = visor }, ["Inventory"] = new JObject() }.ToString();
+        var method = typeof(HeadgearSlotMigration).GetMethod("MigrateDroid", BindingFlags.NonPublic | BindingFlags.Static)!;
+        var migrated = (string)method.Invoke(null, new object[] { original, null, true })!;
+        var droid = JObject.Parse(migrated);
+        droid["Name"]!.Value<string>().Should().Be("same droid");
+        ((JObject)droid["Inventory"]!).Should().BeEmpty();
+        var saved = Read((string)droid["EquippedItems"]!["Head"]!);
+        Value(saved, "UUID").Should().Be("same-visor");
+        Value(saved, "xModelPart1").Should().Be((ushort)110);
+        method.Invoke(null, new object[] { migrated, null, true }).Should().Be(migrated);
     }
 
     [Test]
@@ -179,6 +236,51 @@ public class HeadgearSlotMigrationTests
         Value(saved, "UUID").Should().Be("visor-uuid");
         result["UnknownState"]!.Value<int>().Should().Be(42);
         method.Invoke(null, new object[] { migrated, repair, true }).Should().Be(migrated);
+    }
+
+    [TestCase("hexweave", BaseItem.Bracer, BaseItem.Cloak, InventorySlot.Arms, InventorySlot.Cloak, false, false)]
+    [TestCase("hexweave", BaseItem.Bracer, BaseItem.Cloak, InventorySlot.Arms, InventorySlot.Cloak, true, false)]
+    [TestCase("absdef_l3", BaseItem.Gloves, BaseItem.Helmet, InventorySlot.Arms, InventorySlot.Head, false, false)]
+    [TestCase("absdef_l3", BaseItem.Gloves, BaseItem.Helmet, InventorySlot.Arms, InventorySlot.Head, false, true)]
+    [TestCase("piston_gaunt", BaseItem.Armor, BaseItem.Gloves, InventorySlot.Chest, InventorySlot.Arms, false, false)]
+    [TestCase("piston_gaunt", BaseItem.Armor, BaseItem.Gloves, InventorySlot.Chest, InventorySlot.Arms, true, false)]
+    [TestCase("piston_gaunt", BaseItem.Armor, BaseItem.Gloves, InventorySlot.Chest, InventorySlot.Arms, false, true)]
+    [TestCase("brawl_wraps", BaseItem.Bracer, BaseItem.Gloves, InventorySlot.Arms, InventorySlot.Arms, false, false)]
+    public void CorrectedDroidWearablesPreserveCollidingCopiesAndRestoreTheCorrectSlot(
+        string resref, BaseItem legacyType, BaseItem correctedType, InventorySlot previousSlot, InventorySlot targetSlot, bool numeric, bool pending)
+    {
+        object Wearable(BaseItem type, string uuid) => Node(0, Resref(resref), Scalar(5, "BaseItem", (int)type),
+            Scalar(0, "ModelPart1", EquipmentTypeMigration.Corrections[resref].Model), Text("UUID", uuid), Scalar(2, "StackSize", 3),
+            List("VarTable", Node(0, Text("Name", "DROID_ITEM_ID"), Scalar(4, "Type", 3), Text("Value", "same-id"))));
+        var original = Encode(Wearable(legacyType, "equipped-uuid"));
+        var replacement = Encode(Wearable(correctedType, "equipped-uuid"));
+        var carried = Encode(Wearable(correctedType, "carried-uuid"));
+        var archive = new JObject { ["EquippedItems"] = new JObject(), ["Inventory"] = new JObject { ["same-id"] = carried } };
+        var key = pending ? "DROID_RESTORE_ITEM:" + (int)previousSlot + ":same-id" : numeric ? ((int)previousSlot).ToString() : previousSlot.ToString();
+        ((JObject)archive[pending ? "Inventory" : "EquippedItems"]!)[key] = original;
+        Func<string, string> convert = data => data == original ? replacement : data;
+        var method = typeof(HeadgearSlotMigration).GetMethod("MigrateDroid", BindingFlags.Static | BindingFlags.NonPublic)!;
+        var migrated = (string)method.Invoke(null, new object[] { archive.ToString(), convert, true })!;
+        var result = JObject.Parse(migrated);
+        ((string)result["Inventory"]!["same-id"]!).Should().Be(carried, "the colliding carried copy must never be overwritten");
+        string repaired;
+        if (previousSlot != targetSlot)
+        {
+            ((JObject)result[pending ? "Inventory" : "EquippedItems"]!).Property(key).Should().BeNull();
+            var moved = ((JObject)result["Inventory"]!).Properties().Single(x => x.Name.StartsWith("DROID_RESTORE_ITEM:" + (int)targetSlot + ":", StringComparison.Ordinal));
+            repaired = (string)moved.Value!;
+            ((JObject)result["Inventory"]!).Should().HaveCount(2);
+        }
+        else
+        {
+            repaired = (string)result["EquippedItems"]![key]!;
+            ((JObject)result["Inventory"]!).Should().HaveCount(1);
+        }
+        var item = Read(repaired);
+        Value(item, "BaseItem").Should().Be((int)correctedType);
+        Value(item, "UUID").Should().Be("equipped-uuid");
+        Value(item, "StackSize").Should().Be((ushort)3);
+        method.Invoke(null, new object[] { migrated, convert, true }).Should().Be(migrated, "a retry must be byte-stable");
     }
 
     // Build raw GFF fixtures with the established writer and inspect with the independent formats reader.

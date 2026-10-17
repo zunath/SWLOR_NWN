@@ -73,6 +73,9 @@ public class LootStatRevisionTests
                 var expected = RareLootStatRevisionCatalog.Changes.TryGetValue(resref, out var corrections)
                     ? corrections.FirstOrDefault(x => x.Type == change.Type && x.Subtype == change.Subtype, change).Current
                     : change.Current;
+                if (FoundryLootStatRevisionCatalog.Changes.TryGetValue(resref, out var foundryCorrections))
+                    expected = foundryCorrections.Where(x => x.Type == change.Type && x.Subtype == change.Subtype)
+                        .Select(x => x.Current).DefaultIfEmpty(expected).Single();
                 if (value != expected)
                     failures.Add($"{resref}: {change.Type} is {value}, catalog expects {expected}");
                 if (change.Previous == change.Current)
@@ -84,6 +87,27 @@ public class LootStatRevisionTests
         }
 
         failures.Should().BeEmpty(string.Join(Environment.NewLine, failures));
+    }
+
+    [Test]
+    public void FoundryCorrections_MatchBlueprintsAndFollowTheExistingLootRevisions()
+    {
+        var root = FindRepositoryRoot();
+        foreach (var (resref, changes) in FoundryLootStatRevisionCatalog.Changes)
+        {
+            using var blueprint = JsonDocument.Parse(File.ReadAllText(Path.Combine(root.FullName, "Module", "uti", $"{resref}.uti.json")));
+            var properties = ReadProperties(blueprint.RootElement);
+            foreach (var change in changes)
+            {
+                var preceding = LootStatRevisionCatalog.Changes[resref].Single(x => x.Type == change.Type && x.Subtype == change.Subtype);
+                if (RareLootStatRevisionCatalog.Changes.TryGetValue(resref, out var rareChanges))
+                    preceding = rareChanges.FirstOrDefault(x => x.Type == change.Type && x.Subtype == change.Subtype, preceding);
+                change.Previous.Should().Be(preceding.Current, resref);
+                properties[((int)change.Type, change.Subtype)].Should().Be(change.Current, resref);
+            }
+            ReadLocalInt(blueprint.RootElement, FoundryLootStatRevisionCatalog.RevisionVariable)
+                .Should().Be(FoundryLootStatRevisionCatalog.CurrentRevision, resref);
+        }
     }
 
     [Test]

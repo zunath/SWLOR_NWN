@@ -89,7 +89,7 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
                 .AddItem("biolab_gloves", 1)
                 .AddItem("biolab_boots", 1);
 
-            // Rakghouls, test subjects and the rancor carry whatever their victims wore.
+            // Colicoids, test subjects and the rancor carry whatever their victims wore.
             _builder.Create("STATION_GEAR")
                 .AddItem("cnt_helmet", 1)
                 .AddItem("cnt_armor", 1)

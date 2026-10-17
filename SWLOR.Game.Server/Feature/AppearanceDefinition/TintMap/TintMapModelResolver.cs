@@ -209,6 +209,8 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
                     ? GetItemAppearance(armor, ItemAppearanceType.ArmorModel, (int)armorPart)
                     : 0;
                 var partId = ResolvePartId(creaturePartId, armorPartId, usesArmorModel);
+                if (part is CreaturePart.LeftShoulder or CreaturePart.RightShoulder)
+                    partId = ShoulderModelRenderer.GetAuthoredStyle(creature, (AppearanceArmor)(int)part, partId);
                 if (partId <= 0)
                     continue;
 

@@ -116,7 +116,7 @@ public static partial class MigrationEngineTests
         await ctx.ExecuteInCreatureContextAsync(owner, () =>
         {
             ctx.AssertEqual(correction.LegacyType, GetBaseItemType(item), "The equipped fixture starts with its legacy type");
-            new _23_CorrectEquipmentTypes().Migrate(owner);
+            new _22_ReviseLootStats().Migrate(owner);
             ctx.AssertEqual(correction.Type, GetBaseItemType(item), "Login conversion corrects the type");
             ctx.AssertEqual(occupied ? existing : item, GetItemInSlot(correction.Slot, owner), "An existing destination item is never replaced");
             ctx.AssertEqual(owner, GetItemPossessor(item), "Conversion retains ownership");
@@ -138,7 +138,7 @@ public static partial class MigrationEngineTests
             await ctx.WaitUntilAsync(() => !GetIsObjectValid(item), 5f, "the deposited item to leave the inventory");
             await ctx.ExecuteInCreatureContextAsync(owner, () =>
             {
-                new _28_CorrectStoredEquipmentTypes().Migrate();
+                new _27_UpdateStoredItems().Migrate();
                 Bank.WithdrawItem(owner, stored.Id);
             });
             await ctx.WaitFrameAsync();

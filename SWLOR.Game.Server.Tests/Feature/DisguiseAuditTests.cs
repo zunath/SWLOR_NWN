@@ -47,6 +47,8 @@ public class DisguiseAuditTests
             public sealed class IndexedAttribute : Attribute { }
             public class EntityBase { public string Id { get; set; } = Guid.NewGuid().ToString(); }
             {{ReadSource("Entity/PlayerDisguise.cs").DescendantNodes().OfType<ClassDeclarationSyntax>().Single()}}
+            {{ReadSource("Service/PlayerListService/PlayerListFlagType.cs").DescendantNodes().OfType<EnumDeclarationSyntax>().Single()}}
+            {{ReadSource("Service/PlayerListService/PlayerListFlagAttribute.cs").DescendantNodes().OfType<ClassDeclarationSyntax>().Single()}}
             {{ReadSource("Service/DisguiseService/SaveDisguiseResult.cs").DescendantNodes().OfType<ClassDeclarationSyntax>().Single()}}
             {{ReadSource("Service/DisguiseService/ActivateDisguiseResult.cs").DescendantNodes().OfType<ClassDeclarationSyntax>().Single()}}
             {{ReadSource("Service/DisguiseService/DeleteRetiredDisguiseResult.cs").DescendantNodes().OfType<EnumDeclarationSyntax>().Single()}}

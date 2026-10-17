@@ -172,7 +172,10 @@ def main():
     with temporary.open('wb') as stream:np.savez(stream,vertices=vertices,faces=faces)
     temporary.replace(args.output)
     report.update(input_sha256=hashlib.sha256(args.input.read_bytes()).hexdigest(),output_sha256=hashlib.sha256(args.output.read_bytes()).hexdigest())
-    args.output.with_suffix('.json').write_text(json.dumps(report,indent=2)+'\n')
+    report_path=args.output.with_suffix('.json')
+    temporary_report=report_path.with_suffix('.json.part')
+    temporary_report.write_text(json.dumps(report,indent=2)+'\n',encoding='utf-8')
+    temporary_report.replace(report_path)
     print(json.dumps(report),flush=True)
 
 

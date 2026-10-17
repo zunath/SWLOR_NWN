@@ -6,6 +6,7 @@ import tempfile
 from types import SimpleNamespace
 from pathlib import Path
 import unittest
+from unittest.mock import patch
 import numpy as np
 
 TOOLS=Path(__file__).resolve().parents[1]
@@ -85,6 +86,63 @@ class ShieldSurfaceTests(unittest.TestCase):
             np.testing.assert_array_equal(actual[0],v);np.testing.assert_array_equal(actual[1],f)
             path.write_bytes(path.read_bytes()+b'changed')
             with self.assertRaisesRegex(ValueError,'Cached shield surface changed'):bridge.cached_arrays(path)
+
+    def test_schema_discovery_rejects_missing_blender_invalid_cache_and_wrong_build(self):
+        spec=importlib.util.spec_from_file_location('shield_preflight_bridge',TOOLS/'trellis2_shield_nodes/__init__.py')
+        bridge=importlib.util.module_from_spec(spec);spec.loader.exec_module(bridge)
+        with patch.object(bridge.shutil,'which',return_value=None):
+            with self.assertRaisesRegex(ValueError,'SWLOR_BLENDER'):bridge.SWLORClosedVoxelMesh.INPUT_TYPES()
+        with patch.object(bridge.shutil,'which',return_value='not-invoked'),patch.dict(bridge.os.environ,{'SWLOR_SHIELD_CACHE':'relative'}):
+            with self.assertRaisesRegex(ValueError,'absolute task-owned'):bridge.SWLORClosedVoxelMesh.INPUT_TYPES()
+        with tempfile.TemporaryDirectory() as temporary:
+            executable=Path(temporary)/'blender';executable.write_bytes(b'test-build')
+            cache=Path(temporary)/'not-created-by-preflight'
+            with patch.object(bridge.shutil,'which',return_value=str(executable)),patch.dict(bridge.os.environ,{'SWLOR_SHIELD_CACHE':str(cache)}):
+                with patch.object(bridge.subprocess,'run',return_value=SimpleNamespace(stdout='Blender 3.6.0')):
+                    with self.assertRaisesRegex(ValueError,'Blender 4.0'):bridge.SWLORClosedVoxelMesh.INPUT_TYPES()
+                with patch.object(bridge.subprocess,'run',return_value=SimpleNamespace(stdout='Blender 4.0.0')):
+                    self.assertIn('mesh',bridge.SWLORClosedVoxelMesh.INPUT_TYPES()['required'])
+            self.assertFalse(cache.exists())
+            with patch.object(bridge.shutil,'which',return_value=str(executable)),patch.dict(bridge.os.environ,{'SWLOR_SHIELD_CACHE':str(executable/'child')}):
+                with self.assertRaisesRegex(ValueError,'beneath a directory'):bridge.SWLORClosedVoxelMesh.INPUT_TYPES()
+
+    def test_incomplete_surface_cache_pairs_are_discarded_and_can_be_rebuilt(self):
+        spec=importlib.util.spec_from_file_location('shield_cache_bridge',TOOLS/'trellis2_shield_nodes/__init__.py')
+        bridge=importlib.util.module_from_spec(spec);spec.loader.exec_module(bridge)
+        with tempfile.TemporaryDirectory() as temporary:
+            path=Path(temporary)/'closed_high.npz';report=path.with_suffix('.json');v,f=box()
+            for failure in ('npz_only','report_only','partial_report','valid_empty_report'):
+                with self.subTest(failure=failure):
+                    if failure!='report_only':np.savez(path,vertices=v,faces=f)
+                    if failure!='npz_only':report.write_text('{' if failure=='partial_report' else '{}')
+                    path.with_suffix('.npz.part').write_bytes(b'interrupted')
+                    report.with_suffix('.json.part').write_bytes(b'interrupted')
+                    self.assertIsNone(bridge.cached_entry(path))
+                    self.assertFalse(any(Path(temporary).iterdir()))
+                    np.savez(path,vertices=v,faces=f)
+                    report.write_text(json.dumps({'output_sha256':hashlib.sha256(path.read_bytes()).hexdigest()}))
+                    actual=bridge.cached_entry(path)
+                    np.testing.assert_array_equal(actual[0],v);np.testing.assert_array_equal(actual[1],f)
+                    path.write_bytes(path.read_bytes()+b'changed')
+                    with self.assertRaisesRegex(ValueError,'Cached shield surface changed'):bridge.cached_entry(path)
+                    path.unlink();report.unlink()
+
+    def test_blender_replacement_changes_surface_and_comfy_cache_identities(self):
+        spec=importlib.util.spec_from_file_location('shield_build_bridge',TOOLS/'trellis2_shield_nodes/__init__.py')
+        bridge=importlib.util.module_from_spec(spec);spec.loader.exec_module(bridge)
+        with tempfile.TemporaryDirectory() as temporary,patch.object(bridge.subprocess,'run',return_value=SimpleNamespace(stdout='Blender 4.0.0')):
+            executable=Path(temporary)/'blender';executable.write_bytes(b'build-one')
+            first=bridge.blender_identity(executable)
+            executable.write_bytes(b'build-two');second=bridge.blender_identity(executable)
+            other=Path(temporary)/'other-blender';other.write_bytes(b'build-two');third=bridge.blender_identity(other)
+            self.assertNotEqual(first['sha256'],second['sha256']);self.assertNotEqual(second['path'],third['path'])
+            v,f=box();keys={bridge.surface_cache_key(v,f,.003,runtime) for runtime in (first,second,third)}
+            self.assertEqual(len(keys),3)
+            identifiers=[]
+            for runtime in (first,second,third):
+                with patch.object(bridge,'settings',return_value=(runtime['path'],Path(temporary),runtime)):
+                    identifiers.append(bridge.SWLORClosedVoxelMesh.IS_CHANGED(None,.003,3500))
+            self.assertEqual(len(set(identifiers)),3)
 
     def test_shield_workflow_binds_budget_and_same_post_uv_basis_to_every_bake(self):
         spec=importlib.util.spec_from_file_location('shield_generation_runner',TOOLS/'GenerateWeaponModels.py')

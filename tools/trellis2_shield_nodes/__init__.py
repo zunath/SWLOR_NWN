@@ -6,6 +6,7 @@ SWLOR_SHIELD_CACHE to an absolute task-owned staging directory. Do not modify a
 shared ComfyUI installation or enable this package in an unrelated service.
 """
 import hashlib
+from functools import lru_cache
 import importlib.util
 import json
 import os
@@ -16,14 +17,36 @@ import subprocess
 SURFACE_SCRIPT=Path(__file__).resolve().parents[1]/'TrellisShieldSurface.py'
 
 
+@lru_cache(maxsize=8)
+def blender_version(executable, executable_sha256):
+    result=subprocess.run([executable,'--version'],capture_output=True,text=True,
+                          timeout=15,check=True,creationflags=getattr(subprocess,'CREATE_NO_WINDOW',0))
+    version=result.stdout.strip()
+    if not version.splitlines() or not version.splitlines()[0].startswith('Blender 4.0.'):
+        raise ValueError('Use tested Blender 4.0; executable reports: '+version)
+    return version
+
+
+def blender_identity(executable):
+    path=Path(executable).resolve()
+    digest=hashlib.sha256()
+    with path.open('rb') as stream:
+        for block in iter(lambda:stream.read(4*1024*1024),b''):digest.update(block)
+    fingerprint=digest.hexdigest()
+    return {'path':str(path),'sha256':fingerprint,'version':blender_version(str(path),fingerprint)}
+
+
 def settings():
     executable=os.environ.get('SWLOR_BLENDER','blender')
     found=shutil.which(executable)
     if found is None:raise ValueError('Set SWLOR_BLENDER to the installed Blender4.0 executable')
     cache=Path(os.environ.get('SWLOR_SHIELD_CACHE',''))
     if not cache.is_absolute():raise ValueError('Set SWLOR_SHIELD_CACHE to an absolute task-owned staging directory')
+    ancestor=cache
+    while not ancestor.exists():ancestor=ancestor.parent
+    if not ancestor.is_dir():raise ValueError('Shield cache must resolve beneath a directory: '+str(cache))
     if not SURFACE_SCRIPT.is_file():raise ValueError('Link this package from repository tools/ so TrellisShieldSurface.py remains beside it')
-    return found,cache
+    return found,cache,blender_identity(found)
 
 
 def require_untextured(mesh):
@@ -34,14 +57,33 @@ def require_untextured(mesh):
 
 def cached_arrays(path):
     import numpy as np
-    record=json.loads(path.with_suffix('.json').read_text())
+    record=json.loads(path.with_suffix('.json').read_text(encoding='utf-8'))
     if record['output_sha256']!=hashlib.sha256(path.read_bytes()).hexdigest():raise ValueError('Cached shield surface changed: '+str(path))
     with np.load(path,allow_pickle=False) as data:return data['vertices'].copy(),data['faces'].copy()
+
+
+def cached_entry(path):
+    """Recover interrupted publication; complete entries still reject corruption."""
+    report=path.with_suffix('.json')
+    if path.is_file() and report.is_file():
+        try:return cached_arrays(path)
+        except (json.JSONDecodeError,KeyError):pass
+    for incomplete in (path,report,path.with_suffix(path.suffix+'.part'),report.with_suffix('.json.part')):
+        if incomplete.exists():incomplete.unlink()
+    return None
+
+
+def surface_cache_key(vertices,faces,voxel_size,runtime):
+    digest=hashlib.sha256()
+    for part in (vertices.tobytes(),faces.tobytes(),str(voxel_size).encode(),SURFACE_SCRIPT.read_bytes(),json.dumps(runtime,sort_keys=True).encode()):
+        digest.update(part)
+    return digest.hexdigest()
 
 
 class SWLORClosedVoxelMesh:
     @classmethod
     def INPUT_TYPES(cls):
+        settings()  # Object-info discovery must fail before expensive upstream work.
         return {'required':{'mesh':('MESH',),'voxel_size':('FLOAT',{'default':.003,'min':.0001,'max':.1,'step':.001}),
                             'target_face_count':('INT',{'default':3500,'min':100,'max':100000})}}
     RETURN_TYPES=('MESH','MESH')
@@ -51,35 +93,36 @@ class SWLORClosedVoxelMesh:
 
     @classmethod
     def IS_CHANGED(cls,mesh,voxel_size,target_face_count):
-        executable,cache=settings()
-        return hashlib.sha256(SURFACE_SCRIPT.read_bytes()+Path(__file__).read_bytes()+str((executable,cache)).encode()).hexdigest()
+        executable,cache,runtime=settings()
+        return hashlib.sha256(SURFACE_SCRIPT.read_bytes()+Path(__file__).read_bytes()+json.dumps((runtime,str(cache)),sort_keys=True).encode()).hexdigest()
 
     def execute(self,mesh,voxel_size,target_face_count):
         import numpy as np
         import torch
         from comfy_api.latest import Types
-        executable,cache=settings()
+        executable,cache,runtime=settings()
         require_untextured(mesh)
         if len(mesh.vertices)!=1 or len(mesh.faces)!=1:raise ValueError('Expected exactly one shield mesh')
         vertices=mesh.vertices[0].detach().cpu().numpy().astype(np.float32)
         faces=mesh.faces[0].detach().cpu().numpy().astype(np.int32)
-        digest=hashlib.sha256()
-        for part in (vertices.tobytes(),faces.tobytes(),str(voxel_size).encode(),SURFACE_SCRIPT.read_bytes()):digest.update(part)
-        directory=cache/digest.hexdigest();directory.mkdir(parents=True,exist_ok=True)
+        directory=cache/surface_cache_key(vertices,faces,voxel_size,runtime);directory.mkdir(parents=True,exist_ok=True)
         source=directory/'input.npz';high=directory/'closed_high.npz';low=directory/('closed_low_'+str(target_face_count)+'.npz')
         def run(mode,input_path,output_path,flags):
             command=[executable,'-b','--factory-startup','--python-exit-code','1','--python',str(SURFACE_SCRIPT),'--',mode,str(input_path),str(output_path),*flags]
             with output_path.with_suffix('.log').open('w',encoding='utf-8') as log:
                 subprocess.run(command,stdout=log,stderr=subprocess.STDOUT,timeout=600,check=True,creationflags=getattr(subprocess,'CREATE_NO_WINDOW',0))
-        if not high.is_file():
+        high_arrays=cached_entry(high)
+        if high_arrays is None:
             np.savez(source,vertices=vertices,faces=faces)
             run('voxel',source,high,['--voxel-size',str(voxel_size)])
             source.unlink()
-        high_arrays=cached_arrays(high)
-        if not low.is_file():run('decimate',high,low,['--target-faces',str(target_face_count)])
-        low_arrays=cached_arrays(low)
+            high_arrays=cached_arrays(high)
+        low_arrays=cached_entry(low)
+        if low_arrays is None:
+            run('decimate',high,low,['--target-faces',str(target_face_count)])
+            low_arrays=cached_arrays(low)
         meshes=tuple(Types.MESH(vertices=torch.from_numpy(v).unsqueeze(0),faces=torch.from_numpy(f).unsqueeze(0)) for v,f in (high_arrays,low_arrays))
-        provenance={'high_surface':str(high),'low_surface':str(low),'surface_script_sha256':hashlib.sha256(SURFACE_SCRIPT.read_bytes()).hexdigest()}
+        provenance={'high_surface':str(high),'low_surface':str(low),'surface_script_sha256':hashlib.sha256(SURFACE_SCRIPT.read_bytes()).hexdigest(),'blender':runtime}
         return {'ui':{'text':[json.dumps(provenance,sort_keys=True)]},'result':meshes}
 
 

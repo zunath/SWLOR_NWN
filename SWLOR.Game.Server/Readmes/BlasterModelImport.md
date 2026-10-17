@@ -144,8 +144,11 @@ manifest's `target_faces` budget. The workflow unwraps that low surface and
 establishes its normals before baking the original material field and high
 surface detail onto that same mesh. Positive-Z float normals are validated
 before UNORM8 rounding. The helper rejects textured inputs rather than
-discarding authored materials or UVs. Cache hashes and helper hashes are recorded
-in ComfyUI history; export still requires strict closed-surface validation.
+discarding authored materials or UVs. Preflight validates the Blender executable and cache settings before submitting
+work. Cache keys include the Blender executable hash/build and helper hash;
+ComfyUI history records those identities. Incomplete NPZ/report pairs from an
+interrupted publication are rebuilt, while changed complete entries are rejected.
+Export still requires strict closed-surface validation.
 
 The default voxel size is `.003` in source coordinates. A source that fails
 closure needs inspection; any changed voxel size requires a separate workflow,

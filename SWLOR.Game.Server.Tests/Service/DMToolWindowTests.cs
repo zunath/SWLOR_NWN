@@ -1,5 +1,6 @@
 using FluentAssertions;
 using NUnit.Framework;
+using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Feature.GuiDefinition;
 using SWLOR.Game.Server.Service.DMToolService;
 using SWLOR.Game.Server.Service.GuiService;
@@ -66,6 +67,18 @@ public class DMToolWindowTests
         DMListText.Fit("A soft-spoken Mirialan", 19).Should().Be("A soft-spoken Mi...");
         DMListText.Fit("A long-haired Wookiee", 17).Should().Be("A long-haired...");
         DMListText.Fit(null, 19).Should().BeEmpty();
+    }
+
+    [Test]
+    public void DisguiseText_NamesTheWornDisguiseAndWhenItWasPutOn()
+    {
+        DMDisguiseText.Describe(null).Should().Be("None");
+        DMDisguiseText.Describe(new PlayerDisguise
+        {
+            PrivateName = "Dock worker",
+            DateLastActivated = new DateTime(2026, 10, 15, 14, 5, 59, DateTimeKind.Utc)
+        }).Should().Be("Dock worker (since 2026-10-15 14:05 UTC)");
+        DMDisguiseText.Describe(new PlayerDisguise { PrivateName = "Dock worker" }).Should().Be("Dock worker");
     }
 
     [Test]

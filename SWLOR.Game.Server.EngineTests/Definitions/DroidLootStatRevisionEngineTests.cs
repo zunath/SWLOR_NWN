@@ -218,7 +218,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             Stat.GetNPCSkinStats(GetItemInSlot(InventorySlot.CreatureArmor, droid)).Attack;
 
         private static int RevisedPistolAttack() =>
-            LootStatRevisionCatalog.Changes[MigrationEngineTests.RevisedPistol].Single(x => x.Type == ItemPropertyType.Attack).Current;
+            RareLootStatRevisionCatalog.Changes[MigrationEngineTests.RevisedPistol].Single(x => x.Type == ItemPropertyType.Attack).Current;
 
         private static int LegacyPistolAttack() =>
             MigrationEngineTests.LegacyValue(MigrationEngineTests.RevisedPistol, ItemPropertyType.Attack, 0, NoLootEnhancements);

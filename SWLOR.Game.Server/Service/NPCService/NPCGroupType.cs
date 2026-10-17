@@ -606,6 +606,8 @@ namespace SWLOR.Game.Server.Service.NPCService
         Hutlar_FoundryDroid = 297,
         [NPCGroup("Station Horror")]
         AbandonedStation_Horror = 298,
+        [NPCGroup("Krakenborne Ship")]
+        MonCala_Krakenborne = 299,
 
     }
 

@@ -92,6 +92,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         {
             _isInitialized = false;
             _selectedPlayer = OBJECT_INVALID;
+            if (DMPresence.IsControlledByDM(Player))
+                Geometry = DMToolbarViewModel.PlaceBelowToolbar(Player, Geometry);
 
             IsGeneralRPFlagged = false;
             IsPvPFlagged = false;

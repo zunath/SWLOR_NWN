@@ -107,6 +107,20 @@ def _read_gff_string(path: Path, data: bytes, label: str) -> str | None:
     return None
 
 
+def validate_bic(path: Path) -> None:
+    """Refuse a file the game would not list as a character: wrong type or a damaged GFF."""
+    if path.read_bytes()[:4] != b'BIC ':
+        raise LiveStackError(f'{path} is not a character (.bic) file.')
+    read_gff_string(path, 'UUID')
+
+
+def write_json_atomic(path: Path, data) -> None:
+    """Write then replace, so an interrupted save never leaves a half-written file."""
+    temporary = path.with_name(path.name + '.tmp')
+    temporary.write_text(json.dumps(data, indent=2) + '\n', 'utf-8')
+    os.replace(temporary, path)
+
+
 def character_uuid(path: Path) -> str:
     uuid = read_gff_string(path, 'UUID')
     if not uuid or not re.fullmatch(r'[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}', uuid):
@@ -319,9 +333,7 @@ class Stack:
 
     def save(self) -> None:
         # Write then replace, so an interrupted save never leaves a half-written recovery record.
-        temporary = self.state_path.with_name('state.json.tmp')
-        temporary.write_text(json.dumps(self.state, indent=2) + '\n', 'utf-8')
-        os.replace(temporary, self.state_path)
+        write_json_atomic(self.state_path, self.state)
 
     def compose_command(self, *arguments: str) -> str:
         """The full Compose command line for this run, for recovery instructions."""
@@ -436,6 +448,8 @@ def create(options) -> Stack:
     if not re.search(r'\[masterserver\.key-authentication\]\s*mode\s*=\s*"if-reachable"', settings_text):
         raise LiveStackError('SWLOR.Game.Server/Docker/settings.tml no longer sets '
                              'masterserver.key-authentication mode = "if-reachable".')
+    # Every vault input must be a readable character file, whether or not its UUID is used.
+    validate_bic(character if mode == 'player' else dm_avatar)
     uuid = character_uuid(character) if mode == 'player' and not options.no_seed else None
 
     project = project_name(options.name)
@@ -498,7 +512,8 @@ def create(options) -> Stack:
             # another UID and a strict umask. The 0700 run directory still keeps other users out.
             for sub in ('home', 'home/logs', 'home/app_logs'):
                 os.chmod(run_dir / sub, 0o755)
-        (run_dir / 'state.json').write_text(json.dumps(state, indent=2) + '\n', 'utf-8')
+        # The recovery record down depends on: never leave it half-written next to a reservation.
+        write_json_atomic(run_dir / 'state.json', state)
         stack = Stack(run_dir)
         for script in SCRIPTS:
             text = (PACKAGE_DIR / script).read_text('utf-8').replace('\r\n', '\n')

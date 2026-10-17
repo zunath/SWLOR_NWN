@@ -69,6 +69,14 @@ class LiveClientHelperTests(unittest.TestCase):
         with self.assertRaisesRegex(LiveStackError, 'damaged'):
             stack.read_gff_string(self.write('cut.bic', whole[:70]), 'UUID')
 
+    def test_validate_bic_needs_a_character_gff(self):
+        good = gff([('Tag', ''), ('UUID', 'a27c0f71-93de-4dcb-aa02-0047c02e6b2d')])
+        stack.validate_bic(self.write('good.bic', good))
+        with self.assertRaisesRegex(LiveStackError, 'not a character'):
+            stack.validate_bic(self.write('item.bic', b'UTI ' + good[4:]))
+        with self.assertRaisesRegex(LiveStackError, 'damaged'):
+            stack.validate_bic(self.write('cut.bic', good[:70]))
+
     def test_rejects_non_gff(self):
         with self.assertRaises(LiveStackError):
             stack.read_gff_string(self.write('bad.bic', b'not a gff' * 10), 'UUID')

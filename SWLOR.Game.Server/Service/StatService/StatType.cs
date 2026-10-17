@@ -6198,6 +6198,10 @@ namespace SWLOR.Game.Server.Service.StatService
         [StatType(StatTypeCategory.NonBeneficial)]
         HealingReceivedStaminaRestoreCooldownSeconds = 1099,
 
+        /// <summary>Percent bonus to equipped Mimicry trait stats and resistances.</summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        MimicryTraitPotencyPercent = 1100,
+
         /// <summary>Exclusive ordinary damage bonus; the strongest paired-ranged handling contribution applies.</summary>
         [StatType(StatTypeCategory.BeneficialWhenPositive, StatTypeAggregation.Maximum)]
         PairedRangedOrdinaryDamagePercentAdjustment = 1131,

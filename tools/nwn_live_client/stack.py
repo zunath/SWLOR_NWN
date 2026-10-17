@@ -40,6 +40,10 @@ WINDOW_SIZE = (1280, 720)
 STEAM_INSTALL = Path('C:/Program Files (x86)/Steam/steamapps/common/Neverwinter Nights')
 # nwserverLog connection lines; "Joined as" is written when the client connects, before character select.
 JOIN_PATTERN = re.compile(r'\) Joined as (Player|Game Master) \d+')
+# nwserverLog lines carry no year ("[Sat Oct 17 21:20:43] ..."); the session header does.
+JOIN_TIME_PATTERN = re.compile(r'^\[[A-Za-z]{3} ([A-Za-z]{3} +\d+ [\d:]{8})\] .*\) Joined as ', re.M)
+LOG_YEAR_PATTERN = re.compile(r'^Messages for: .* (\d{4})\s*$', re.M)
+ENTRY_TIME_PATTERN = re.compile(r'^(\d{4}-\d\d-\d\d \d\d:\d\d:\d\d)\S* .*: Connected to server\r?$', re.M)
 JOIN_KEY_PATTERN = re.compile(r'\(([A-Z0-9]{8})\) Joined as (?:Player|Game Master) \d+')
 LEFT_PATTERN = re.compile(r' Left as a (Player|Game Master) ')
 ENTRY_PATTERN = re.compile(r': Connected to server\r?$', re.M)
@@ -130,6 +134,25 @@ def _read_gff_string(path: Path, data: bytes, label: str) -> str | None:
             fields.append(entry)
         return fields
 
+    def check_localized_string(field_data: int, size: int) -> None:
+        # Size, string reference and count, then (id, length, text) entries that fill the size exactly.
+        broken = LiveStackError(f'{path} is damaged: a localized string is malformed.')
+        if size < 8:
+            raise broken
+        count = struct.unpack_from('<I', data, field_data_offset + field_data + 8)[0]
+        cursor, end, seen = field_data + 12, field_data + 4 + size, set()
+        for _ in range(count):
+            if cursor > end - 8:
+                raise broken
+            string_id, length = struct.unpack_from('<2I', data, field_data_offset + cursor)
+            cursor += 8
+            if length > end - cursor or string_id in seen:
+                raise broken
+            seen.add(string_id)
+            cursor += length
+        if cursor != end:
+            raise broken
+
     def child_structs(field_type: int, field_data: int) -> list[int]:
         """Check a field's payload; return the structs it refers to."""
         if field_type > 15:
@@ -144,6 +167,8 @@ def _read_gff_string(path: Path, data: bytes, label: str) -> str | None:
             size = struct.unpack_from('<I', data, field_data_offset + field_data)[0]
             if not within(field_data + 4, size, field_data_size):
                 raise damaged('a field value')
+        if field_type == 12:
+            check_localized_string(field_data, size)
         if field_type == 11:
             if not within(field_data, 1, field_data_size) or not within(
                     field_data + 1, data[field_data_offset + field_data], field_data_size):
@@ -965,6 +990,19 @@ def verify_public_cdkey(stack: Stack, timeout: float = 300) -> None:
     raise LiveStackError(f'The client did not connect to the server within {timeout:.0f}s.')
 
 
+def entered_current_connection(stack: Stack) -> bool:
+    """True when SWLOR logged a module entry at or after the latest connection (both UTC)."""
+    server_log = stack.server_log.read_text('utf-8', 'replace') if stack.server_log.is_file() else ''
+    years = LOG_YEAR_PATTERN.findall(server_log)
+    year = years[-1] if years else str(datetime.datetime.now(datetime.timezone.utc).year)
+    joins = [datetime.datetime.strptime(f"{' '.join(stamp.split())} {year}", '%b %d %H:%M:%S %Y')
+             for stamp in JOIN_TIME_PATTERN.findall(server_log)]
+    entries = [datetime.datetime.strptime(stamp, '%Y-%m-%d %H:%M:%S')
+               for path in (stack.home / 'app_logs' / 'Connection').glob('*.log')
+               for stamp in ENTRY_TIME_PATTERN.findall(path.read_text('utf-8', 'replace'))]
+    return bool(joins and entries) and max(entries) >= max(joins)
+
+
 def module_entries(stack: Stack) -> int:
     """Characters that entered the module, from SWLOR's OnModuleEnter audit line (players and DMs)."""
     return sum(count_matches(path, ENTRY_PATTERN) for path in (stack.home / 'app_logs' / 'Connection').glob('*.log'))
@@ -988,9 +1026,9 @@ def play(stack: Stack, settle: float, timeout: float = 600) -> None:
     deadline = time.monotonic() + timeout
     next_click = 0.0
     attempt = 0
-    # A rerun after an earlier play entered on this same connection must not click into the game.
-    connection = count_matches(stack.server_log, JOIN_PATTERN)
-    already_in = stack.state.get('entered_connection') == connection and stack.joined_players() > 0
+    # The character may already be in the game (an earlier play, or a manual ui click): never
+    # click the Play position into a live game.
+    already_in = stack.joined_players() > 0 and entered_current_connection(stack)
     if already_in:
         log('The character already entered on this connection; not clicking Play again.')
     while not already_in and module_entries(stack) <= entered:
@@ -1010,8 +1048,6 @@ def play(stack: Stack, settle: float, timeout: float = 600) -> None:
             stack.ui('click', str(PLAY_BUTTON[0]), str(PLAY_BUTTON[1]))
             next_click = time.monotonic() + 20
         time.sleep(1)
-    stack.state['entered_connection'] = connection
-    stack.save()
     log(f'Character entered; waiting until no area transition has started for {settle:.0f}s')
     # A new character is set up and may be moved to its starting area right away.
     tips = loading_tips(stack)
@@ -1184,40 +1220,57 @@ def destroy(stack: Stack) -> dict:
     unconfirmed_boot_message = ('The player was not confirmed booted; the CD key may stay held for up to '
                                 '5 minutes (this stack\'s net.udp.window.timeout).')
     if owns_project:
+        booted = False
         try:
-            report['player_booted'] = boot_players(stack)
+            booted = boot_players(stack)
         except LiveStackError as error:
-            report['player_booted'] = False
             errors.append(str(error))
-        if not report['player_booted']:
-            stack.state['unconfirmed_boot'] = True
-            stack.save()
         if (stack.run_dir / 'compose.env').is_file():
             # NWNX and the server print to stdout, which the containers take with them.
             # Stop first so shutdown messages are in the output, then collect it before removal.
-            for service, grace in (('client', '30'), ('swlor-server', '60')):
+            def stop(service: str, grace: str) -> None:
                 stopped = stack.compose('stop', '-t', grace, service, client=service == 'client', check=False,
                                         capture=True, timeout=180)
                 if stopped.returncode != 0 or stack.running(service):
                     lost_evidence.append(f'Could not confirm the {service} container stopped before its output '
                                          'was saved; shutdown messages may be missing.')
                     errors.append(lost_evidence[-1])
+
+            stop('client', '30')
+            # A client that stops cleanly also ends its connection, which the server still logs.
+            for _ in range(10):
+                if booted or stack.joined_players() <= 0:
+                    booted = True
+                    break
+                time.sleep(1)
+            stop('swlor-server', '60')
+            stop('redis', '30')
             for service in ('swlor-server', 'client', 'redis'):
+                existing = stack.compose('ps', '-a', '-q', service, client=service == 'client', check=False,
+                                         capture=True, timeout=60)
+                if existing.returncode == 0 and not existing.stdout.strip():
+                    continue  # Removed by an earlier down; keep whatever that run archived.
                 logs = stack.compose('logs', '--no-color', '--no-log-prefix', service, client=service == 'client',
                                      check=False, capture=True, timeout=120)
+                archive = stack.evidence / f'{service}-container.log'
                 problem = None
                 if logs.returncode != 0:
                     problem = logs.stderr.decode('utf-8', 'replace').strip() or f'exit {logs.returncode}'
-                else:
+                elif logs.stdout or not archive.exists():
                     try:
-                        (stack.evidence / f'{service}-container.log').write_bytes(logs.stdout)
+                        archive.write_bytes(logs.stdout)
                     except OSError as error:
                         problem = str(error)
                 if problem:
                     # compose down removes the only copy, so this loss is permanent.
                     lost_evidence.append(f'Could not keep the {service} container output: {problem}')
                     errors.append(lost_evidence[-1])
-            stack.save()
+        elif stack.joined_players() <= 0:
+            booted = True
+        if not booted:
+            stack.state['unconfirmed_boot'] = True
+        stack.save()
+        if (stack.run_dir / 'compose.env').is_file():
             result = stack.compose('down', '--volumes', '--remove-orphans', '--timeout', '60', client=True,
                                    check=False, capture=True, timeout=600)
             if result.returncode != 0:
@@ -1285,7 +1338,9 @@ def destroy(stack: Stack) -> dict:
         # Kept while any project resource remains so down can be rerun.
         for name in ('compose.env', 'compose.yml', 'server-extra.env', 'server.env'):
             (stack.run_dir / name).unlink(missing_ok=True)
-        if owns_project:
+        # The reservation also keeps the recorded server image in use, which a Linux retry of the
+        # home hand-back needs; release it only once the local cleanup has finished.
+        if owns_project and not stack.profile.exists() and not stack.home.exists():
             report['reservation_removed'] = release_project(stack.project, stack.run_dir)
             if not report['reservation_removed']:
                 errors.append(f'Could not remove the {reservation_name(stack.project)} reservation container.')

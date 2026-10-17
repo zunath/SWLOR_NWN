@@ -14,14 +14,18 @@ from nwn_live_client.stack import LiveStackError
 
 
 def gff(fields):
-    """Build a minimal GFF V3.2 .bic with top-level CExoString fields."""
-    labels = b''.join(label.encode('ascii').ljust(16, b'\0') for label, _ in fields)
+    """Build a minimal GFF V3.2 .bic: (label, text) CExoString fields or (label, type, raw payload)."""
+    labels = b''.join(field[0].encode('ascii').ljust(16, b'\0') for field in fields)
     field_data = b''
     entries = b''
-    for index, (_, value) in enumerate(fields):
-        entries += struct.pack('<3I', 10, index, len(field_data))
-        encoded = value.encode('utf-8')
-        field_data += struct.pack('<I', len(encoded)) + encoded
+    for index, field in enumerate(fields):
+        if len(field) == 3:
+            field_type, payload = field[1], field[2]
+        else:
+            encoded = field[1].encode('utf-8')
+            field_type, payload = 10, struct.pack('<I', len(encoded)) + encoded
+        entries += struct.pack('<3I', field_type, index, len(field_data))
+        field_data += payload
     indices = b''.join(struct.pack('<I', index) for index in range(len(fields)))
     struct_offset = 56
     field_offset = struct_offset + 12
@@ -124,6 +128,35 @@ class LiveClientHelperTests(unittest.TestCase):
                 stack.development_environment({'SWLOR_ENVIRONMENT': value}, base)
         with self.assertRaisesRegex(LiveStackError, 'cannot be production'):
             stack.development_environment({}, self.write('prod.env', b'SWLOR_ENVIRONMENT="production"\n'))
+
+    def test_localized_strings_are_parsed(self):
+        def locstring(*entries, extra=b''):
+            body = struct.pack('<2I', 0xFFFFFFFF, len(entries)) + b''.join(
+                struct.pack('<2I', string_id, len(text)) + text for string_id, text in entries) + extra
+            return struct.pack('<I', len(body)) + body
+
+        uuid = ('UUID', 'a27c0f71-93de-4dcb-aa02-0047c02e6b2d')
+        stack.validate_bic(self.write('ok.bic', gff([('FirstName', 12, locstring((0, b'Agan'))), uuid])))
+        for name, payload in (('short', struct.pack('<I', 4) + b'\0' * 4),
+                              ('repeat', locstring((0, b'A'), (0, b'B'))),
+                              ('slack', locstring((0, b'A'), extra=b'\0\0'))):
+            with self.assertRaisesRegex(LiveStackError, 'localized string'):
+                stack.validate_bic(self.write(f'{name}.bic', gff([('FirstName', 12, payload), uuid])))
+
+    def test_entry_on_the_current_connection_is_detected(self):
+        home = self.root / 'home'
+        (home / 'app_logs' / 'Connection').mkdir(parents=True)
+        (home / 'logs').mkdir()
+        server_log = home / 'logs' / 'nwserverLog1.txt'
+        audit = home / 'app_logs' / 'Connection' / 'Connection_20261017.log'
+        fake = SimpleNamespace(server_log=server_log, home=home)
+        server_log.write_text('[Sat Oct 17 21:20:43] Tester (ABCD1234) Joined as Player 1\n')
+        self.assertFalse(stack.entered_current_connection(fake))
+        audit.write_text('2026-10-17 21:21:21.090 +00:00 [INF] Tester - Tester - ABCD1234 - 1.2.3.4: '
+                         'Connected to server\n')
+        self.assertTrue(stack.entered_current_connection(fake))
+        server_log.write_text(server_log.read_text() + '[Sat Oct 17 21:30:00] Tester (ABCD1234) Joined as Player 1\n')
+        self.assertFalse(stack.entered_current_connection(fake))
 
     def test_seed_error_reply_fails_start_up(self):
         def compose(reply):

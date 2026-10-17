@@ -54,6 +54,7 @@ public static partial class MigrationEngineTests
         }
 
         var gloves = await CreateItemAsync(ctx, owner, RevisedGloves, owner);
+        var buffedGloves = await CreateItemAsync(ctx, owner, RevisedGloves, owner);
         var artwork = await CreateItemAsync(ctx, owner, "aen_hp1", owner);
         var current = await CreateItemAsync(ctx, owner, RevisedPistol, owner);
         var bag = await CreateItemAsync(ctx, owner, "bag_sm", owner);
@@ -65,6 +66,9 @@ public static partial class MigrationEngineTests
         await ctx.ExecuteInCreatureContextAsync(owner, () =>
         {
             StampLegacyLoot(gloves, GloveEnhancements);
+            // A temporary bonus of a revised stat must stay temporary and outside the revision.
+            StampLegacyLoot(buffedGloves, GloveEnhancements);
+            AddItemProperty(DurationType.Temporary, ItemPropertyCustom(ItemPropertyType.Attack, -1, 3), buffedGloves, 3600f);
             ItemPlugin.SetItemAppearance(artwork, ItemAppearanceType.SimpleModel, 0, 88);
             SetLocalInt(artwork, "CRAFTED_QUALITY", 29);
             StampLegacyLoot(nestedGloves, GloveEnhancements);
@@ -79,6 +83,9 @@ public static partial class MigrationEngineTests
                 Inventory = { ["spare-visor"] = LegacyHeadgearFixtures.Thermal, ["spare-gloves"] = legacyGloves },
             }));
             fixtures.Add(("legacy loot with crafted enhancements", legacyGloves, true));
+            var buffedData = ObjectPlugin.Serialize(buffedGloves);
+            ctx.Log("Temporary bonus fixture: " + buffedData);
+            fixtures.Add(("legacy loot with a temporary Attack bonus", buffedData, true));
             fixtures.Add(("legacy artwork", ObjectPlugin.Serialize(artwork), true));
             fixtures.Add((CurrentLootLabel, ObjectPlugin.Serialize(current), true));
             fixtures.Add(("container with legacy contents", ObjectPlugin.Serialize(bag), true));

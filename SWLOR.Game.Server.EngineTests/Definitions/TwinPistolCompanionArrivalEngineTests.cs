@@ -88,6 +88,8 @@ public static class TwinPistolCompanionArrivalEngineTests
         var sampledRare = -1;
         var sampledHaste = -1;
         var sampledConverging = true;
+        PairedRangedTraitState traitState = null;
+        HashSet<long> attemptsAfterLaunch = null;
         try
         {
             await ctx.ExecuteInCreatureContextAsync(actor, () =>
@@ -100,6 +102,8 @@ public static class TwinPistolCompanionArrivalEngineTests
                 TemporaryStatModifier.Add(actor, StatType.PairedRangedRepeatedTargetDurationSeconds, 6, 30f);
                 StatusEffect.ApplyPermanentStatusEffect<AkimboStanceStatusEffect>(actor, actor);
                 GrantOrdinaryAttempts(ctx, actor);
+                traitState = GetTraitState(ctx, actor);
+                var attemptsBeforeLaunch = AttemptReceipts(ctx, traitState);
                 stamina = Stat.GetCurrentStamina(actor);
                 launchedAt = Environment.TickCount64;
                 flight = Launch(ctx, actor, target, companion);
@@ -112,6 +116,10 @@ public static class TwinPistolCompanionArrivalEngineTests
                 damage = shot.Damage;
                 ctx.AssertEqual(5, StatusEffect.GetStatusEffect<TwinSunsStatusEffect>(actor)?.Attempts ?? 0,
                     "The attempted shot immediately consumes one Twin Suns charge");
+                attemptsAfterLaunch = AttemptReceipts(ctx, traitState);
+                ctx.Assert(attemptsBeforeLaunch.IsSubsetOf(attemptsAfterLaunch) &&
+                           attemptsAfterLaunch.Count == attemptsBeforeLaunch.Count + 1,
+                    "The companion launch records exactly one new ordinary attempt receipt");
                 AssignCommand(GetModule(), () => DelayCommand(flight / 2f, () =>
                 {
                     sampledStamina = Stat.GetCurrentStamina(actor);
@@ -148,8 +156,13 @@ public static class TwinPistolCompanionArrivalEngineTests
             ctx.AssertEqual(landed ? 1 : 0, _damageEvents, "A discarded projectile produces no native damage callback");
             if (outcome != "death")
                 ctx.AssertEqual(health - (landed ? damage : 0), GetCurrentHitPoints(target), "Only the captured arriving payload removes HP");
-            ctx.AssertEqual(5, StatusEffect.GetStatusEffect<TwinSunsStatusEffect>(actor)?.Attempts ?? 0,
-                "Arrival and discard never consume an extra attempted-shot charge");
+            // Idle combat cleanup may remove displayed Twin Suns charges while this isolated
+            // projectile settles. Its attempt receipts survive that cleanup and prove whether
+            // arrival or discard actually recorded an additional ordinary shot.
+            ctx.Assert(ReferenceEquals(traitState, GetTraitState(ctx, actor)),
+                "The attempt ledger still belongs to the actual actor state");
+            ctx.Assert(attemptsAfterLaunch.SetEquals(AttemptReceipts(ctx, traitState)),
+                "Arrival and discard never record an extra ordinary attempt");
         }
         finally { Cleanup(actor, target); }
     }
@@ -403,6 +416,25 @@ public static class TwinPistolCompanionArrivalEngineTests
         var bonus = PairedRangedTraits.BeginAbility(actor, false, false);
         PairedRangedTraits.CompleteAbility(actor, bonus, false, 0f, false, 0, 0, 6, 25, 12);
         ctx.AssertEqual(6, StatusEffect.GetStatusEffect<TwinSunsStatusEffect>(actor)?.Attempts ?? 0, "The fixture starts with six ordinary attempted-shot charges");
+    }
+
+    private static PairedRangedTraitState GetTraitState(EngineTestContext ctx, uint actor)
+    {
+        var field = typeof(PairedRangedTraits).GetField("States", BindingFlags.NonPublic | BindingFlags.Static);
+        ctx.Assert(field != null, "The production paired trait state registry is available");
+        var states = field.GetValue(null) as Dictionary<uint, PairedRangedTraitState>;
+        var state = states?.GetValueOrDefault(actor);
+        ctx.Assert(state != null, "The actor has actual paired trait state after its charge grant");
+        return state;
+    }
+
+    private static HashSet<long> AttemptReceipts(EngineTestContext ctx, PairedRangedTraitState state)
+    {
+        var field = typeof(PairedRangedTraitState).GetField("_attempts", BindingFlags.NonPublic | BindingFlags.Instance);
+        ctx.Assert(field != null, "The production ordinary-attempt ledger is available");
+        var receipts = field.GetValue(state) as HashSet<long>;
+        ctx.Assert(receipts != null, "The actor has an ordinary-attempt receipt ledger");
+        return new HashSet<long>(receipts);
     }
 
     private static int Points(uint actor, uint target, SkillType skill)

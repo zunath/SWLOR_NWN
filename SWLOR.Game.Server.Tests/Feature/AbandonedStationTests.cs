@@ -3,6 +3,7 @@ using System.Text.Json;
 using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Game.Server.Enumeration;
+using SWLOR.Game.Server.Feature.GuiDefinition.ViewModel;
 using SWLOR.Game.Server.Feature.LootTableDefinition;
 using SWLOR.Game.Server.Feature.QuestDefinition;
 using SWLOR.Game.Server.Feature.SpawnDefinition;
@@ -153,6 +154,8 @@ public class AbandonedStationTests
         Text(master, "TemplateResRef").Should().Be("spc_dockhand");
         Text(master, "ScriptDialogue").Should().Be("dialog_start");
         Local(master, "CONVERSATION")!.Value.GetString().Should().Be("StarportDialog");
+        Local(master, ShipManagementViewModel.BoardingOutOfCombatVariable)!.Value.GetInt32().Should().Be(1,
+            "the docking bay must not provide an escape while enemies are targeting the player");
         Number(master, "Plot").Should().Be(1);
 
         var landing = List(main, "WaypointList").Single(w => Text(w, "Tag") ==
@@ -177,6 +180,19 @@ public class AbandonedStationTests
                     Number(r, "FactionID2") == target), "FactionRep").Should().BeGreaterThanOrEqualTo(50,
                     "the dock master and every station enemy must be non-hostile in both directions");
         }
+    }
+
+    [Test]
+    public void DockMaster_HasALocalStandardDockhandStore()
+    {
+        var main = Load("git", Main);
+        var store = List(main, "StoreList").Single(s => Text(s, "Tag") == "dockhand_store");
+        Text(store, "ResRef").Should().Be("dockhand_store");
+        var blueprint = Load("utm", "dockhand_store");
+        JsonSerializer.Serialize(Value(store, "StoreList")).Should().Be(JsonSerializer.Serialize(Value(blueprint, "StoreList")),
+            "the station offers the standard dockhand inventory");
+        var master = List(main, "Creature List").Single(c => Text(c, "Tag") == "aban_dockmaster");
+        Distance(Position(store), Position(master)).Should().BeLessThan(2);
     }
 
     [Test]

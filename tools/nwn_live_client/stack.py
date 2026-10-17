@@ -27,6 +27,7 @@ from pathlib import Path
 PACKAGE_DIR = Path(__file__).resolve().parent
 REPO_ROOT = PACKAGE_DIR.parents[1]
 COMPOSE_FILE = PACKAGE_DIR / 'compose.yml'
+REDIS_IMAGE = 'redislabs/redismod:latest'
 SERVER_DOCKER_DIR = REPO_ROOT / 'SWLOR.Game.Server' / 'Docker'
 SCRIPTS = ('run-client.sh', 'server-entry.sh', 'ui.sh')
 
@@ -293,6 +294,11 @@ class Stack:
         self.profile = self.run_dir / 'profile'
         self.evidence = self.run_dir / 'evidence'
 
+    @property
+    def compose_file(self) -> Path:
+        # The run's own snapshot, so later commands use the definition that started it.
+        return self.run_dir / 'compose.yml'
+
     def save(self) -> None:
         # Write then replace, so an interrupted save never leaves a half-written recovery record.
         temporary = self.state_path.with_name('state.json.tmp')
@@ -301,7 +307,7 @@ class Stack:
 
     def compose_command(self, *arguments: str) -> str:
         """The full Compose command line for this run, for recovery instructions."""
-        return (f'docker compose -p {self.project} -f "{COMPOSE_FILE}" --env-file "{self.run_dir / "compose.env"}" '
+        return (f'docker compose -p {self.project} -f "{self.compose_file}" --env-file "{self.run_dir / "compose.env"}" '
                 f'--profile client ' + ' '.join(arguments))
 
     def ensure_owner(self, require_reservation: bool = True) -> bool:
@@ -322,7 +328,7 @@ class Stack:
 
     def compose(self, *arguments: str, client: bool = False, check: bool = True, capture: bool = False,
                 timeout: float = 600) -> subprocess.CompletedProcess:
-        command = ['docker', 'compose', '-p', self.project, '-f', str(COMPOSE_FILE),
+        command = ['docker', 'compose', '-p', self.project, '-f', str(self.compose_file),
                    '--env-file', str(self.run_dir / 'compose.env')]
         if client:
             command += ['--profile', 'client']
@@ -426,6 +432,9 @@ def create(options) -> Stack:
         # no pre-existing access entries.
         raise LiveStackError(f'The run directory must not exist yet: {run_dir}')
 
+    for name, value in (('--max-minutes', options.max_minutes), ('--server-timeout', options.server_timeout)):
+        if not (math.isfinite(value) and value > 0):
+            raise LiveStackError(f'{name} must be a finite number greater than 0.')
     max_seconds = int(options.max_minutes * 60)
     if not 300 <= max_seconds <= 12 * 3600:
         raise LiveStackError('--max-minutes must be between 5 and 720.')
@@ -489,6 +498,9 @@ def create(options) -> Stack:
         stack.state['inputs']['client_build'] = client_build(install)
         stack.save()
         (stack.home / 'settings.tml').write_text(settings_text, 'utf-8')
+        stack.state['inputs']['server_settings_sha256'] = sha256(stack.home / 'settings.tml')
+        shutil.copyfile(COMPOSE_FILE, stack.compose_file)
+        stack.state['inputs']['compose_sha256'] = sha256(stack.compose_file)
         if mode == 'player':
             vault = stack.home / 'servervault' / public_key
             vault.mkdir(parents=True)
@@ -648,6 +660,11 @@ def start(stack: Stack, server_timeout: float) -> None:
     stack.ensure_owner()
     log('Starting Redis and the server')
     stack.compose('up', '-d', '--no-build', timeout=900)
+    # Tags such as redismod:latest can differ between machines; keep the IDs that actually ran.
+    stack.state['image_ids'] = {
+        image: output(['docker', 'image', 'inspect', '--format', '{{.Id}}', image], timeout=60)
+        for image in (stack.state['server_image'], stack.state['client_image'], REDIS_IMAGE)}
+    stack.save()
     wait_for_server(stack, server_timeout)
     uuid = stack.state.get('character', {}).get('uuid')
     if uuid:
@@ -937,7 +954,7 @@ def destroy(stack: Stack) -> dict:
     report['reservation_removed'] = not owns_project
     if not any(resources.values()):
         # Kept while any project resource remains so down can be rerun.
-        for name in ('compose.env', 'server-extra.env', 'server.env'):
+        for name in ('compose.env', 'compose.yml', 'server-extra.env', 'server.env'):
             (stack.run_dir / name).unlink(missing_ok=True)
         if owns_project:
             report['reservation_removed'] = release_project(stack.project, stack.run_dir)

@@ -81,6 +81,8 @@ services:
             NWNX_METRICS_INFLUXDB_SKIP: "y"
             NWNX_WEBHOOK_SKIP: "y"
             SWLOR_APP_LOG_DIRECTORY: /nwn/home/app_logs/
+            # dev or test, chosen by the tool; never production on this stack.
+            SWLOR_ENVIRONMENT: ${SWLOR_LIVE_ENVIRONMENT}
             SWLOR_SUPER_ADMIN_CD_KEY: ${SWLOR_LIVE_ADMIN_CDKEY}
             SWLOR_BUG_GITHUB_REPOSITORY: ""
             SWLOR_BUG_GITHUB_TOKEN: ""

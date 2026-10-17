@@ -92,6 +92,17 @@ class LiveClientHelperTests(unittest.TestCase):
         with self.assertRaisesRegex(LiveStackError, 'list reference'):
             stack.validate_bic(self.write('badlist.bic', bytes(bad_list)))
 
+    def test_stack_environment_is_never_production(self):
+        base = self.write('swlor.env', b'NWN_MODULE="x"\nSWLOR_ENVIRONMENT=dev\n')
+        self.assertEqual(stack.development_environment({}, base), 'dev')
+        self.assertEqual(stack.development_environment({'SWLOR_ENVIRONMENT': 'test'}, base), 'test')
+        self.assertEqual(stack.development_environment({'SWLOR_ENVIRONMENT': 'typo'}, base), 'dev')
+        for value in ('production', 'PROD'):
+            with self.assertRaisesRegex(LiveStackError, 'cannot be production'):
+                stack.development_environment({'SWLOR_ENVIRONMENT': value}, base)
+        with self.assertRaisesRegex(LiveStackError, 'cannot be production'):
+            stack.development_environment({}, self.write('prod.env', b'SWLOR_ENVIRONMENT="production"\n'))
+
     def test_seed_error_reply_fails_start_up(self):
         def compose(reply):
             return lambda *args, **kwargs: subprocess.CompletedProcess([], 0, reply, b'')

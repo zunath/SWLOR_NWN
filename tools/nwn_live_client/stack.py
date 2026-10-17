@@ -96,7 +96,6 @@ def _read_gff_string(path: Path, data: bytes, label: str) -> str | None:
     (struct_offset, struct_count, field_offset, field_total, label_offset, label_count, field_data_offset,
      field_data_size, field_indices_offset, field_indices_size, list_indices_offset,
      list_indices_size) = struct.unpack_from('<12I', data, 8)
-    # Every table the top-level struct can reach must lie inside the file.
     for name, offset, length in (('the struct table', struct_offset, struct_count * 12),
                                  ('the field table', field_offset, field_total * 12),
                                  ('the label table', label_offset, label_count * 16),
@@ -108,9 +107,31 @@ def _read_gff_string(path: Path, data: bytes, label: str) -> str | None:
     if struct_count < 1:
         raise damaged('the top-level struct')
 
-    def check_field_payload(field_type: int, field_data: int) -> None:
-        # 64-bit values and doubles live in the field data; strings, resrefs, localized
-        # strings and void data carry a length prefix; structs and lists index other tables.
+    def struct_fields(index: int) -> list[tuple[int, int, int]]:
+        """(type, label index, data) of every field of a struct, with its table entries checked."""
+        _, struct_data, field_count = struct.unpack_from('<3I', data, struct_offset + index * 12)
+        if field_count == 0:
+            indices = []
+        elif field_count == 1:
+            indices = [struct_data]
+        else:
+            if not within(struct_data, field_count * 4, field_indices_size):
+                raise damaged('a field index list')
+            indices = struct.unpack_from(f'<{field_count}I', data, field_indices_offset + struct_data)
+        fields = []
+        for field in indices:
+            if field >= field_total:
+                raise damaged('a field')
+            entry = struct.unpack_from('<3I', data, field_offset + field * 12)
+            if entry[1] >= label_count:
+                raise damaged('a field label')
+            fields.append(entry)
+        return fields
+
+    def child_structs(field_type: int, field_data: int) -> list[int]:
+        """Check a field's payload; return the structs it refers to."""
+        # 64-bit values and doubles live in the field data; strings, localized strings and void
+        # data carry a 4-byte length; resrefs a 1-byte length; structs and lists index other tables.
         if field_type in (6, 7, 9) and not within(field_data, 8, field_data_size):
             raise damaged('a 64-bit field value')
         if field_type in (10, 12, 13):
@@ -123,41 +144,39 @@ def _read_gff_string(path: Path, data: bytes, label: str) -> str | None:
             if not within(field_data, 1, field_data_size) or not within(
                     field_data + 1, data[field_data_offset + field_data], field_data_size):
                 raise damaged('a resref value')
-        if field_type == 14 and field_data >= struct_count:
-            raise damaged('a struct reference')
+        if field_type == 14:
+            if field_data >= struct_count:
+                raise damaged('a struct reference')
+            return [field_data]
         if field_type == 15:
             if not within(field_data, 4, list_indices_size):
                 raise damaged('a list reference')
             count = struct.unpack_from('<I', data, list_indices_offset + field_data)[0]
             if not within(field_data + 4, count * 4, list_indices_size):
                 raise damaged('a list')
-            members = struct.unpack_from(f'<{count}I', data, list_indices_offset + field_data + 4)
+            members = list(struct.unpack_from(f'<{count}I', data, list_indices_offset + field_data + 4))
             if any(member >= struct_count for member in members):
                 raise damaged('a list member')
-    _, struct_data, field_count = struct.unpack_from('<3I', data, struct_offset)
-    if field_count == 1:
-        indices = [struct_data]
-    else:
-        if not within(struct_data, field_count * 4, field_indices_size):
-            raise damaged('a field index list')
-        indices = struct.unpack_from(f'<{field_count}I', data, field_indices_offset + struct_data)
-    for index in indices:
-        if index >= field_total:
-            raise damaged('a field')
-        field_type, label_index, field_data = struct.unpack_from('<3I', data, field_offset + index * 12)
-        if label_index >= label_count:
-            raise damaged('a field label')
-        check_field_payload(field_type, field_data)
+            return members
+        return []
+
+    # Check every struct reachable from the top level once; the visited set stops cycles.
+    visited, pending = set(), [0]
+    while pending:
+        index = pending.pop()
+        if index in visited:
+            continue
+        visited.add(index)
+        for field_type, _, field_data in struct_fields(index):
+            pending.extend(child_structs(field_type, field_data))
+
+    for field_type, label_index, field_data in struct_fields(0):
         start = label_offset + label_index * 16
         if data[start:start + 16].rstrip(b'\0').decode('ascii', 'replace') != label:
             continue
         if field_type != 10:
             raise LiveStackError(f'{path}: field {label} is not a string.')
-        if not within(field_data, 4, field_data_size):
-            raise damaged(f'the {label} value')
         length = struct.unpack_from('<I', data, field_data_offset + field_data)[0]
-        if not within(field_data + 4, length, field_data_size):
-            raise damaged(f'the {label} value')
         offset = field_data_offset + field_data + 4
         return data[offset:offset + length].decode('utf-8', 'replace')
     return None
@@ -206,6 +225,18 @@ def parse_server_env(pairs: list[str]) -> dict[str, str]:
         values[key] = value
     render_env_file(values)
     return values
+
+
+def development_environment(extra_env: dict[str, str], server_env: Path) -> str:
+    """The SWLOR_ENVIRONMENT for this stack: dev or test, as requested, and never production."""
+    requested = extra_env.get('SWLOR_ENVIRONMENT')
+    if requested is None:
+        match = re.search(r'^\s*SWLOR_ENVIRONMENT\s*=\s*(.*?)\s*$', server_env.read_text('utf-8', 'replace'), re.M)
+        requested = match.group(1) if match else ''
+    value = requested.strip().strip('"\'').lower()
+    if value in ('prod', 'production'):
+        raise LiveStackError('SWLOR_ENVIRONMENT cannot be production on this development stack; use dev or test.')
+    return value if value in ('dev', 'development', 'test', 'testing') else 'dev'
 
 
 def client_settings(player_name: str) -> str:
@@ -325,8 +356,8 @@ def repository_roots() -> set[Path]:
 
 
 def deploy_home() -> Path | None:
-    """The first debugserver/ (this checkout, then the main checkout) holding haks, TLK and module."""
-    for candidate in (REPO_ROOT / 'debugserver', main_checkout() / 'debugserver'):
+    """The first debugserver/ (the main checkout, then this one) holding haks, TLK and module."""
+    for candidate in (main_checkout() / 'debugserver', REPO_ROOT / 'debugserver'):
         if (any((candidate / 'hak').glob('*.hak')) and any((candidate / 'tlk').glob('*.tlk'))
                 and (candidate / 'modules' / DEFAULT_MODULE).is_file()):
             return candidate
@@ -506,6 +537,7 @@ def create(options) -> Stack:
         raise LiveStackError('Missing or invalid: ' + '; '.join(missing))
     public_key = validate_public_cdkey(options.public_cdkey or os.environ.get('SWLOR_LIVE_PUBLIC_CDKEY', ''))
     extra_env = parse_server_env(options.server_env or [])
+    swlor_environment = development_environment(extra_env, server_env)
     settings_text = (SERVER_DOCKER_DIR / 'settings.tml').read_text('utf-8')
     # The software-rendered client can stall for over a minute loading haks on a busy machine;
     # let this private server wait 5 minutes before dropping it. Teardown kicks the player, so
@@ -550,6 +582,7 @@ def create(options) -> Stack:
         'inputs': {'hak_dir': str(hak_dir), 'tlk_dir': str(tlk_dir), 'module': str(module),
                    'dotnet': str(dotnet), 'client_install': str(install),
                    'server_env_file': str(server_env), 'server_env_overrides': sorted(extra_env),
+                   'swlor_environment': swlor_environment,
                    # Values can be secrets, so keep only a digest that tells runs apart.
                    'server_env_overrides_sha256': hashlib.sha256(
                        render_env_file(extra_env).encode('utf-8')).hexdigest()},
@@ -658,6 +691,7 @@ def create(options) -> Stack:
             'SWLOR_LIVE_CLIENT_INSTALL': install.resolve().as_posix(),
             'SWLOR_LIVE_SERVER_PORT': str(SERVER_PORT),
             'SWLOR_LIVE_CLIENT_MODE': mode,
+            'SWLOR_LIVE_ENVIRONMENT': swlor_environment,
             'SWLOR_LIVE_CLIENT_USER': host_user(),
             # A throwaway password for this unpublished server; it leaves with compose.env.
             'SWLOR_LIVE_DM_PASSWORD': secrets.token_hex(12) if mode == 'dm' else '',
@@ -1120,8 +1154,13 @@ def destroy(stack: Stack) -> dict:
         if (stack.run_dir / 'compose.env').is_file():
             # NWNX and the server print to stdout, which the containers take with them.
             # Stop first so shutdown messages are in the output, then collect it before removal.
-            stack.compose('stop', '-t', '30', 'client', client=True, check=False, capture=True, timeout=120)
-            stack.compose('stop', '-t', '60', 'swlor-server', check=False, capture=True, timeout=180)
+            for service, grace in (('client', '30'), ('swlor-server', '60')):
+                stopped = stack.compose('stop', '-t', grace, service, client=service == 'client', check=False,
+                                        capture=True, timeout=180)
+                if stopped.returncode != 0 or stack.running(service):
+                    lost_evidence.append(f'Could not confirm the {service} container stopped before its output '
+                                         'was saved; shutdown messages may be missing.')
+                    errors.append(lost_evidence[-1])
             for service in ('swlor-server', 'client'):
                 logs = stack.compose('logs', '--no-color', '--no-log-prefix', service, client=service == 'client',
                                      check=False, capture=True, timeout=120)

@@ -396,7 +396,7 @@ public class PlayerNameRecognitionTests
         source.Should().Contain("private static string BuildDisplayNameWithDescriptor(string primaryName, string descriptor)");
         source.Should().Contain("private static string BuildColoredDisplayNameWithDescriptor(string primaryName, string descriptor)");
         source.Should().Contain("private static string ResolveChatDisplayName(uint observer, uint target, out bool isUnknown)");
-        source.Should().Contain("private static bool ShouldShowDescriptorForNamedPlayers(uint observer)");
+        source.Should().Contain("public static bool ShouldShowDescriptorForNamedPlayers(uint observer)");
         source.Should().Contain("ShowDescriptorsForNamedPlayersByObserverId");
         source.Should().NotContain("SendWithChatNameOverride");
         source.Should().NotContain("SetCreatureNameOverride");
@@ -594,7 +594,7 @@ public class PlayerNameRecognitionTests
 
         playerNameSource.Should().Contain("public static void RefreshNameOverridesForObserver(uint observer)");
         playerNameSource.Should().Contain("ShowDescriptorsForNamedPlayersByObserverId.Remove(observerId);");
-        playerNameSource.Should().Contain("private static bool ShouldShowOwnDescriptor(uint player)");
+        playerNameSource.Should().Contain("public static bool ShouldShowOwnDescriptor(uint player)");
         playerNameSource.Should().Contain("Disguise.ShouldScrambleAccountName(player)");
         playerNameSource.Should().Contain("GetIsDM(observer) ||");
         playerNameSource.Should().Contain("GetIsDMPossessed(observer)");

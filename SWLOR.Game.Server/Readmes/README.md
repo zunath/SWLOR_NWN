@@ -18,6 +18,7 @@ One line per guide. Rule guides are required reading before working in their are
 - [Conversations.md](Conversations.md): authored dialogue graphs in `ConversationData/`.
 - [PlayerIdentity.md](PlayerIdentity.md): showing player names through the `PlayerName` service.
 - [PlayerFeedback.md](PlayerFeedback.md): which player messages stay enabled in Production.
+- [ItemAppearanceRules.md](ItemAppearanceRules.md): choosing item models; reserved helmet model 223.
 - [EconomyRestrictedItems.md](EconomyRestrictedItems.md): keeping NPC-only and unobtainable items out of player economy surfaces.
 - [NpcHitPoints.md](NpcHitPoints.md): creature HP, stat skins, and the 16-bit HP limit.
 - [NuiLayoutRules.md](NuiLayoutRules.md) and [GuiWindowAuthoring.md](GuiWindowAuthoring.md): NUI layout rules and building a window end to end.

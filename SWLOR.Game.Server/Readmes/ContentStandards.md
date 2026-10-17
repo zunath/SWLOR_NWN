@@ -19,7 +19,7 @@ Balance follows the existing standards. A new tier, a new direction, or any valu
 - Base types the editor does not cover (gloves, boots, belts, rings, amulets, bracers) reuse appearances already on existing player items of the same base type.
 - In a batch, give every item its own appearance. If the catalog cannot supply enough distinct options, stop and ask.
 - The base item type must match what the item is. Name, description, Design Bible slot (`Equipment - Weapons` column D, `Equipment - Armor` column C), and `BaseItem` must agree: a cloak is never a glove. Run the `EquipmentTypeTests` filter after adding or changing wearables; it matches item names to base types and checks the workbook.
-- Item blueprints also follow `EconomyRestrictedItems.md` (economy flags and obtainability) and `IconStandards.md`.
+- Item models also follow `ItemAppearanceRules.md` (reserved helmet model 223, `ModelPart1`/`xModelPart1` consistency, embedded item copies). Item blueprints follow `EconomyRestrictedItems.md` (economy flags and obtainability) and `IconStandards.md`.
 
 ## Loot
 

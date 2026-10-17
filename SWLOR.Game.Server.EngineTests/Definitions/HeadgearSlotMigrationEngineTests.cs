@@ -50,7 +50,7 @@ public static partial class MigrationEngineTests
                 ctx.AssertEqual(OBJECT_INVALID, GetItemInSlot(InventorySlot.Chest, owner), "The old chest slot is clear");
                 ctx.AssertEqual(uuid, GetObjectUUID(visor), "Native fixture identity survives in place");
                 ctx.AssertEqual(properties, DescribeProperties(visor), "Slot compatibility alone preserves every historical property");
-                ctx.AssertEqual(223, GetItemAppearance(visor, ItemAppearanceType.SimpleModel, 0), "Missing historical helmet model uses the corrected blueprint model");
+                ctx.AssertEqual(110, GetItemAppearance(visor, ItemAppearanceType.SimpleModel, 0), "Missing historical helmet model uses the corrected blueprint model");
                 ctx.AssertEqual(attack, Stat.GetNPCSkinStats(GetItemInSlot(InventorySlot.CreatureArmor, owner)).Attack, "Moving slots neither doubles nor drops the equipment contribution");
                 ctx.Assert(!HeadgearSlotMigration.MigrateObject(visor), "Historical native fixture conversion is idempotent");
             });
@@ -189,7 +189,7 @@ public static partial class MigrationEngineTests
         AddItemProperty(DurationType.Permanent, ItemPropertyCustom(ItemPropertyType.Stamina, -1, 11), visor);
     }
 
-    internal static void AssertVisorCustomization(EngineTestContext ctx, uint visor, string uuid)
+    internal static void AssertVisorCustomization(EngineTestContext ctx, uint visor, string uuid, int expectedModel = 110)
     {
         ctx.AssertEqual(BaseItem.Helmet, GetBaseItemType(visor), "The copy is headgear");
         ctx.AssertEqual(uuid, GetObjectUUID(visor), "The item's UUID is preserved");
@@ -200,7 +200,7 @@ public static partial class MigrationEngineTests
         ctx.AssertEqual(42, GetLocalInt(visor, "CUSTOM_INT"), "Integer local survives");
         ctx.AssertEqual(1.25f, GetLocalFloat(visor, "CUSTOM_FLOAT"), "Float local survives");
         ctx.AssertEqual(7, GetItemAppearance(visor, ItemAppearanceType.ArmorColor, 0), "Custom color survives");
-        ctx.Assert(GetItemAppearance(visor, ItemAppearanceType.SimpleModel, 0) > 0, "Converted headgear has a model");
+        ctx.AssertEqual(expectedModel, GetItemAppearance(visor, ItemAppearanceType.SimpleModel, 0), "Converted headgear retains its expected model");
         ctx.AssertEqual(9, SumProperty(visor, ItemPropertyType.FP, 0), "Custom FP property survives");
         ctx.AssertEqual(11, SumProperty(visor, ItemPropertyType.Stamina, 0), "Custom stamina property survives");
     }
@@ -298,7 +298,7 @@ public static partial class MigrationEngineTests
                 ctx.AssertEqual(1, Item.GetInventoryItemCount(bag), "Each container retains exactly its original visor");
                 var item = GetFirstItemInInventory(bag);
                 ctx.AssertEqual(resref, GetResRef(item), "The exact nested resref survives");
-                AssertVisorCustomization(ctx, item, items[resref]);
+                AssertVisorCustomization(ctx, item, items[resref], HeadgearSlotMigration.LegacyHeadgear[resref]);
                 AssertRevisedLoot(ctx, item, VisorEnhancements);
                 ctx.AssertEqual(HeadgearSlotMigration.LegacyHeadgear[resref], GetItemAppearance(item, ItemAppearanceType.SimpleModel, 0), "Each missing legacy helmet model uses its own corrected blueprint");
                 ctx.AssertEqual(bag, GetItemPossessor(item, true), "Nested container ownership survives");
@@ -341,7 +341,7 @@ public static partial class MigrationEngineTests
             ctx.Assert(ItemPlugin.MoveTo(item, fixture.Creature), "Transfer a real legacy instance to the player"));
         await ctx.WaitUntilAsync(() => GetBaseItemType(item) == BaseItem.Helmet &&
             GetLocalInt(item, LootStatRevisionMigration.RevisionVariable) == LootStatRevisionMigration.CurrentRevision, 5f, "acquisition compatibility handlers");
-        AssertVisorCustomization(ctx, item, uuid);
+        AssertVisorCustomization(ctx, item, uuid, 33);
         ctx.AssertEqual(33, GetItemAppearance(item, ItemAppearanceType.SimpleModel, 0), "A valid customized helmet model is preserved");
         AssertRevisedLoot(ctx, item, VisorEnhancements);
         ctx.AssertEqual(fixture.Creature, GetItemPossessor(item), "Acquisition preserves ownership");

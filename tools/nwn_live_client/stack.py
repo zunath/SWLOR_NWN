@@ -1,0 +1,650 @@
+"""Private SWLOR server plus a Linux NWN:EE client for live-server client evidence.
+
+The stack runs entirely in Docker under a unique Compose project: a tmpfs Redis, a
+private server built from this checkout, and the Linux client on an Xvfb display
+inside its own container. Input and captures stay inside that display, so the host
+desktop, focus, audio and Windows client are never touched. The procedure is in
+SWLOR.Game.Server/Readmes/InEngineVisualVerification.md ("Server behavior").
+"""
+from __future__ import annotations
+
+import datetime
+import hashlib
+import json
+import os
+import re
+import secrets
+import shutil
+import struct
+import subprocess
+import tempfile
+import time
+from pathlib import Path
+
+PACKAGE_DIR = Path(__file__).resolve().parent
+REPO_ROOT = PACKAGE_DIR.parents[1]
+COMPOSE_FILE = PACKAGE_DIR / 'compose.yml'
+SERVER_DOCKER_DIR = REPO_ROOT / 'SWLOR.Game.Server' / 'Docker'
+SCRIPTS = ('run-client.sh', 'server-entry.sh', 'ui.sh')
+
+PROJECT_PREFIX = 'swlor-live-'
+SERVER_PORT = 5121
+# Character select "Play" button at the profile's 1280x720 window and UI scale 1.0.
+PLAY_BUTTON = (742, 591)
+# First row of the character list; a DM's Play stays disabled until its avatar row is selected.
+FIRST_CHARACTER_ROW = (436, 135)
+WINDOW_SIZE = (1280, 720)
+STEAM_INSTALL = Path('C:/Program Files (x86)/Steam/steamapps/common/Neverwinter Nights')
+# nwserverLog connection lines; "Joined as" is written when the client connects, before character select.
+JOIN_PATTERN = re.compile(r'\) Joined as (Player|Game Master) \d+')
+LEFT_PATTERN = re.compile(r' Left as a (Player|Game Master) ')
+ENTRY_PATTERN = re.compile(r': Connected to server\r?$', re.M)
+LOADING_TIP_PATTERN = re.compile(r'^\[CHAT WINDOW TEXT\] \[[^]]+\] Loading Screen: ', re.M)
+
+
+class LiveStackError(RuntimeError):
+    """A prerequisite, start-up or teardown step failed."""
+
+
+def log(message: str) -> None:
+    print(f'[nwn-live] {message}', flush=True)
+
+
+# ---------------------------------------------------------------- pure helpers
+
+def project_name(label: str | None) -> str:
+    """Return the Compose project name, always prefixed so ownership is unambiguous."""
+    suffix = label.lower() if label else secrets.token_hex(3)
+    if suffix.startswith(PROJECT_PREFIX):
+        suffix = suffix[len(PROJECT_PREFIX):]
+    name = PROJECT_PREFIX + suffix
+    if not re.fullmatch(r'[a-z0-9][a-z0-9_-]{0,62}', name):
+        raise LiveStackError(f'Invalid project name {name!r}: use lowercase letters, digits, "-" and "_".')
+    return name
+
+
+def validate_public_cdkey(key: str) -> str:
+    key = key.strip().upper()
+    if not re.fullmatch(r'[A-Z0-9]{8}', key):
+        raise LiveStackError('The public CD key must be the 8-character key from a server log '
+                             '"Joined as Player" line, never the private key in cdkey.ini.')
+    return key
+
+
+def read_gff_string(path: Path, label: str) -> str | None:
+    """Read a top-level CExoString field from a GFF V3.2 file such as a .bic."""
+    data = path.read_bytes()
+    if len(data) < 56 or data[4:8] != b'V3.2':
+        raise LiveStackError(f'{path} is not a GFF V3.2 file.')
+    (struct_offset, _, field_offset, _, label_offset, _, field_data_offset, _,
+     field_indices_offset, _, _, _) = struct.unpack_from('<12I', data, 8)
+    _, struct_data, field_count = struct.unpack_from('<3I', data, struct_offset)
+    if field_count == 1:
+        indices = [struct_data]
+    else:
+        indices = struct.unpack_from(f'<{field_count}I', data, field_indices_offset + struct_data)
+    for index in indices:
+        field_type, label_index, field_data = struct.unpack_from('<3I', data, field_offset + index * 12)
+        start = label_offset + label_index * 16
+        if data[start:start + 16].rstrip(b'\0').decode('ascii', 'replace') != label:
+            continue
+        if field_type != 10:
+            raise LiveStackError(f'{path}: field {label} is not a string.')
+        length = struct.unpack_from('<I', data, field_data_offset + field_data)[0]
+        offset = field_data_offset + field_data + 4
+        return data[offset:offset + length].decode('utf-8', 'replace')
+    return None
+
+
+def character_uuid(path: Path) -> str:
+    uuid = read_gff_string(path, 'UUID')
+    if not uuid or not re.fullmatch(r'[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}', uuid):
+        raise LiveStackError(f'{path} has no object UUID. Log the character into any NWN:EE game once '
+                             'so the engine assigns one, or pass --no-seed and seed the Player record yourself.')
+    return uuid
+
+
+def render_env_file(values: dict[str, str]) -> str:
+    """Render a Compose env file with literal single-quoted values."""
+    lines = []
+    for key, value in values.items():
+        if not re.fullmatch(r'[A-Z_][A-Z0-9_]*', key):
+            raise LiveStackError(f'Invalid environment variable name {key!r}.')
+        if any(character in value for character in "'\r\n"):
+            raise LiveStackError(f'Value for {key} cannot contain quotes or line breaks.')
+        lines.append(f"{key}='{value}'")
+    return '\n'.join(lines) + '\n'
+
+
+def parse_server_env(pairs: list[str]) -> dict[str, str]:
+    values = {}
+    for pair in pairs:
+        key, separator, value = pair.partition('=')
+        if not separator:
+            raise LiveStackError(f'--server-env expects KEY=VALUE, got {pair!r}.')
+        values[key] = value
+    render_env_file(values)
+    return values
+
+
+def client_settings(player_name: str) -> str:
+    """Client settings.tml: silent, no movies, windowed 1280x720 at UI scale 1.0."""
+    if not re.fullmatch(r'[A-Za-z0-9]{3,24}', player_name):
+        raise LiveStackError('The player name must be 3-24 letters or digits.')
+    return f'''[client.identity]
+name = "{player_name}"
+[sound.effects]
+volume = 0.0
+[sound.music]
+volume = 0.0
+[sound.streams]
+volume = 0.0
+[sound.voices]
+volume = 0.0
+[graphics.intro.splash]
+enabled = false
+[graphics.movies]
+enabled = false
+[graphics.movies.intro]
+enabled = false
+[graphics.window]
+mode = "windowed"
+[graphics.window.windowed]
+width = {WINDOW_SIZE[0]}
+height = {WINDOW_SIZE[1]}
+[graphics.video.vsync]
+mode = "off"
+[game.auto-pause.on-focus-loss]
+enabled = false
+[ui]
+scale = 1.0
+'''
+
+
+CLIENT_ALIASES = '''[Alias]
+HD0=/profile/
+CACHE=/profile/cache
+CRASHREPORT=/profile/crashreport
+CURRENTGAME=/profile/currentgame
+DATABASE=/profile/database
+DEVELOPMENT=/profile/development
+DMVAULT=/profile/dmvault
+LOCALVAULT=/profile/localvault
+LOGS=/profile/logs
+MODELCOMPILER=/profile/modelcompiler
+MODULES=/profile/modules
+NWSYNC=/profile/nwsync
+OVERRIDE=/profile/override
+PORTRAITS=/profile/portraits
+SAVES=/profile/saves
+SCREENSHOTS=/profile/screenshots
+SERVERVAULT=/profile/servervault
+TEMP=/profile/temp
+TEMPCLIENT=/profile/tempclient
+HAK=/hak
+TLK=/tlk
+'''
+
+# Puts the whole chat window, including combat and feedback lines, in logs/nwclientLog1.txt.
+CLIENT_PLAYER_INI = '[Game Options]\nClientEntireChatWindowLogging=1\n'
+
+
+def is_within(path: Path, root: Path) -> bool:
+    try:
+        path.resolve().relative_to(root.resolve())
+        return True
+    except ValueError:
+        return False
+
+
+def count_matches(path: Path, pattern: re.Pattern[str]) -> int:
+    if not path.is_file():
+        return 0
+    return len(pattern.findall(path.read_text('utf-8', 'replace')))
+
+
+def sha256(path: Path) -> str:
+    return hashlib.sha256(path.read_bytes()).hexdigest()
+
+
+def utc_now() -> str:
+    return datetime.datetime.now(datetime.timezone.utc).isoformat(timespec='seconds')
+
+
+# ---------------------------------------------------------------- discovery
+
+def main_checkout() -> Path:
+    """The primary checkout, which holds debugserver/ when this is a git worktree."""
+    try:
+        common = subprocess.run(['git', '-C', str(REPO_ROOT), 'rev-parse', '--path-format=absolute',
+                                 '--git-common-dir'], capture_output=True, text=True, check=True).stdout.strip()
+        return Path(common).parent
+    except (OSError, subprocess.CalledProcessError):
+        return REPO_ROOT
+
+
+def deploy_home() -> Path | None:
+    for candidate in (REPO_ROOT / 'debugserver', main_checkout() / 'debugserver'):
+        if any((candidate / 'hak').glob('*.hak')):
+            return candidate
+    return None
+
+
+def server_image() -> str:
+    """The NWNX image the repository's engine-test stack runs."""
+    text = (SERVER_DOCKER_DIR / 'docker-compose.enginetests.yml').read_text('utf-8')
+    match = re.search(r'image:\s*(zunath/nwn-dotnet:\S+)', text)
+    if not match:
+        raise LiveStackError('Cannot find the server image in docker-compose.enginetests.yml.')
+    return match.group(1)
+
+
+def client_image_tag() -> str:
+    dockerfile = (PACKAGE_DIR / 'Dockerfile.client').read_bytes().replace(b'\r\n', b'\n')
+    return 'swlor-nwn-live-client:' + hashlib.sha256(dockerfile).hexdigest()[:12]
+
+
+# ---------------------------------------------------------------- docker
+
+def run(command: list[str], *, check: bool = True, capture: bool = False, timeout: float = 600,
+        stdin: bytes | None = None) -> subprocess.CompletedProcess:
+    try:
+        result = subprocess.run(command, input=stdin, capture_output=capture, timeout=timeout)
+    except subprocess.TimeoutExpired as error:
+        raise LiveStackError(f'Timed out after {timeout:.0f}s: {" ".join(command[:6])}') from error
+    if check and result.returncode != 0:
+        detail = result.stderr.decode('utf-8', 'replace').strip() if capture and result.stderr else ''
+        raise LiveStackError(f'Command failed ({result.returncode}): {" ".join(command[:8])}\n{detail}')
+    return result
+
+
+def output(command: list[str], timeout: float = 120) -> str:
+    return run(command, capture=True, timeout=timeout).stdout.decode('utf-8', 'replace').strip()
+
+
+def project_resources(project: str) -> dict[str, list[str]]:
+    label = f'label=com.docker.compose.project={project}'
+    return {
+        'containers': output(['docker', 'ps', '-aq', '--filter', label]).split(),
+        'volumes': output(['docker', 'volume', 'ls', '-q', '--filter', label]).split(),
+        'networks': output(['docker', 'network', 'ls', '-q', '--filter', label]).split(),
+    }
+
+
+class Stack:
+    """One run directory and its Compose project."""
+
+    def __init__(self, run_dir: Path):
+        self.run_dir = run_dir.resolve()
+        self.state_path = self.run_dir / 'state.json'
+        if not self.state_path.is_file():
+            raise LiveStackError(f'{self.run_dir} has no state.json; it was not created by this tool.')
+        self.state = json.loads(self.state_path.read_text('utf-8'))
+        self.project = self.state['project']
+        self.home = self.run_dir / 'home'
+        self.profile = self.run_dir / 'profile'
+        self.evidence = self.run_dir / 'evidence'
+
+    def save(self) -> None:
+        self.state_path.write_text(json.dumps(self.state, indent=2) + '\n', 'utf-8')
+
+    def compose(self, *arguments: str, client: bool = False, check: bool = True, capture: bool = False,
+                timeout: float = 600) -> subprocess.CompletedProcess:
+        command = ['docker', 'compose', '-p', self.project, '-f', str(COMPOSE_FILE),
+                   '--env-file', str(self.run_dir / 'compose.env')]
+        if client:
+            command += ['--profile', 'client']
+        return run(command + list(arguments), check=check, capture=capture, timeout=timeout)
+
+    def running(self, service: str) -> bool:
+        result = self.compose('ps', '--status', 'running', '-q', service, client=service == 'client',
+                              check=False, capture=True, timeout=60)
+        return result.returncode == 0 and bool(result.stdout.strip())
+
+    @property
+    def server_log(self) -> Path:
+        return self.home / 'logs' / 'nwserverLog1.txt'
+
+    def joined_players(self) -> int:
+        return count_matches(self.server_log, JOIN_PATTERN) - count_matches(self.server_log, LEFT_PATTERN)
+
+    def ui(self, *arguments: str, timeout: float = 180) -> str:
+        if not self.running('client'):
+            raise LiveStackError('The client container is not running.')
+        result = self.compose('exec', '-T', 'client', '/bin/bash', '/tool/ui.sh', *arguments, client=True,
+                              check=False, capture=True, timeout=timeout)
+        text = (result.stdout + result.stderr).decode('utf-8', 'replace').strip()
+        if result.returncode != 0:
+            raise LiveStackError(f'ui.sh {" ".join(arguments)} failed: {text}')
+        return text
+
+    def console(self, command: str) -> None:
+        """Append one line to the nwserver console (for example "status" or "kick <name>")."""
+        if '\n' in command or '\r' in command:
+            raise LiveStackError('Console commands are single lines.')
+        if not self.running('swlor-server'):
+            raise LiveStackError('The server container is not running.')
+        self.compose('exec', '-T', 'swlor-server', '/bin/sh', '-c', 'printf "%s\\n" "$1" >> /nwn/run/console.in',
+                     'console', command, capture=True, timeout=60)
+
+
+# ---------------------------------------------------------------- commands
+
+def create(options) -> Stack:
+    """Validate the inputs and prepare a run directory; no containers start here."""
+    if shutil.which('docker') is None:
+        raise LiveStackError('docker is not on PATH.')
+    output(['docker', 'info', '--format', '{{.ServerVersion}}'], timeout=60)
+
+    deployed = deploy_home()
+    hak_dir = Path(options.hak_dir) if options.hak_dir else (deployed / 'hak' if deployed else None)
+    tlk_dir = Path(options.tlk_dir) if options.tlk_dir else (deployed / 'tlk' if deployed else None)
+    module = Path(options.module) if options.module else (
+        deployed / 'modules' / 'Star Wars LOR v2.mod' if deployed else None)
+    dotnet = Path(options.dotnet) if options.dotnet else (
+        REPO_ROOT / 'SWLOR.Game.Server' / 'bin' / options.configuration / 'net10.0')
+    install = Path(options.client_install or os.environ.get('NWN_LINUX_CLIENT_INSTALL') or STEAM_INSTALL)
+    cdkey = Path(options.cdkey) if options.cdkey else Path.home() / 'Documents' / 'Neverwinter Nights' / 'cdkey.ini'
+    server_env = Path(options.server_env_file) if options.server_env_file else SERVER_DOCKER_DIR / 'swlor.env'
+    character = Path(options.character) if options.character else None
+    dm_avatar = Path(options.dm_avatar) if options.dm_avatar else None
+    mode = 'dm' if dm_avatar else 'player'
+
+    checks = {
+        'haks (--hak-dir)': hak_dir is not None and any(hak_dir.glob('*.hak')),
+        'TLK (--tlk-dir)': tlk_dir is not None and any(tlk_dir.glob('*.tlk')),
+        'module (--module)': module is not None and module.is_file() and module.suffix == '.mod',
+        'server build (--dotnet; build with -c Release -p:RunPostBuildEvent=Never)':
+            (dotnet / 'SWLOR.Game.Server.dll').is_file()
+            and (dotnet / 'SWLOR.Game.Server.runtimeconfig.json').is_file(),
+        'Linux client (--client-install)': (install / 'bin' / 'linux-x86' / 'nwmain-linux').is_file(),
+        'cdkey.ini (--cdkey)': cdkey.is_file(),
+        'server env file (--server-env-file)': server_env.is_file(),
+    }
+    if mode == 'player':
+        checks['character .bic (--character)'] = character is not None and character.is_file()
+    else:
+        checks['DM avatar .bic (--dm-avatar)'] = dm_avatar.is_file()
+        if character:
+            raise LiveStackError('Use --character for a player run or --dm-avatar for a DM run, not both.')
+    missing = [name for name, ok in checks.items() if not ok]
+    if missing:
+        raise LiveStackError('Missing or invalid: ' + '; '.join(missing))
+    public_key = validate_public_cdkey(options.public_cdkey or os.environ.get('SWLOR_LIVE_PUBLIC_CDKEY', ''))
+    extra_env = parse_server_env(options.server_env or [])
+    settings_text = (SERVER_DOCKER_DIR / 'settings.tml').read_text('utf-8')
+    if not re.search(r'\[masterserver\.key-authentication\]\s*mode\s*=\s*"if-reachable"', settings_text):
+        raise LiveStackError('SWLOR.Game.Server/Docker/settings.tml no longer sets '
+                             'masterserver.key-authentication mode = "if-reachable".')
+    uuid = character_uuid(character) if mode == 'player' and not options.no_seed else None
+
+    project = project_name(options.name)
+    if any(project_resources(project).values()):
+        raise LiveStackError(f'Compose project {project} already has Docker resources.')
+    run_dir = Path(options.run_dir) if options.run_dir else Path(tempfile.gettempdir()) / 'swlor-live' / project
+    run_dir = run_dir.resolve()
+    for root in {REPO_ROOT, main_checkout()}:
+        if is_within(run_dir, root):
+            raise LiveStackError(f'The run directory must be outside the repository: {run_dir}')
+    if run_dir.exists() and any(run_dir.iterdir()):
+        raise LiveStackError(f'The run directory must be new or empty: {run_dir}')
+
+    max_seconds = int(options.max_minutes * 60)
+    if not 300 <= max_seconds <= 12 * 3600:
+        raise LiveStackError('--max-minutes must be between 5 and 720.')
+    client_settings_text = client_settings(options.player_name)
+    state = {
+        'project': project, 'run_dir': str(run_dir), 'mode': mode, 'player_name': options.player_name,
+        'public_cdkey': public_key, 'created_utc': utc_now(), 'repo': str(REPO_ROOT),
+        'server_image': server_image(), 'client_image': client_image_tag(), 'max_seconds': max_seconds,
+        'cdkey_source': str(cdkey),
+        'inputs': {'hak_dir': str(hak_dir), 'tlk_dir': str(tlk_dir), 'module': str(module),
+                   'module_sha256': sha256(module), 'dotnet': str(dotnet), 'client_install': str(install),
+                   'server_env_file': str(server_env), 'server_env_overrides': sorted(extra_env)},
+    }
+    if mode == 'player':
+        state['character'] = {'source': str(character), 'file': character.name.lower(), 'uuid': uuid}
+    else:
+        state['dm_avatar'] = {'source': str(dm_avatar), 'file': dm_avatar.name.lower()}
+
+    created_dir = not run_dir.exists()
+    try:
+        for sub in ('home/logs', 'home/app_logs', 'profile/logs', 'profile/dmvault', 'evidence', 'bin'):
+            (run_dir / sub).mkdir(parents=True, exist_ok=True)
+        (run_dir / 'state.json').write_text(json.dumps(state, indent=2) + '\n', 'utf-8')
+        stack = Stack(run_dir)
+        for script in SCRIPTS:
+            text = (PACKAGE_DIR / script).read_text('utf-8').replace('\r\n', '\n')
+            (run_dir / 'bin' / script).write_bytes(text.encode('utf-8'))
+        shutil.copytree(dotnet, run_dir / 'dotnet')
+        (stack.home / 'settings.tml').write_text(settings_text, 'utf-8')
+        if mode == 'player':
+            vault = stack.home / 'servervault' / public_key
+            vault.mkdir(parents=True)
+            shutil.copy2(character, vault / character.name.lower())
+        else:
+            shutil.copy2(dm_avatar, stack.profile / 'dmvault' / dm_avatar.name.lower())
+        (stack.profile / 'nwn.ini').write_text(CLIENT_ALIASES, 'utf-8')
+        (stack.profile / 'nwnplayer.ini').write_text(CLIENT_PLAYER_INI, 'utf-8')
+        (stack.profile / 'settings.tml').write_text(client_settings_text, 'utf-8')
+        (run_dir / 'server-extra.env').write_text(render_env_file(extra_env), 'utf-8')
+        (run_dir / 'compose.env').write_text(render_env_file({
+            'SWLOR_LIVE_RUN_DIR': run_dir.as_posix(),
+            'SWLOR_LIVE_SERVER_IMAGE': state['server_image'],
+            'SWLOR_LIVE_CLIENT_IMAGE': state['client_image'],
+            'SWLOR_LIVE_PREPARE_HOME': (SERVER_DOCKER_DIR / 'prepare-server-home.sh').as_posix(),
+            'SWLOR_LIVE_SERVER_ENV_FILE': server_env.resolve().as_posix(),
+            'SWLOR_LIVE_SERVER_NAME': f'SWLOR live check {project}',
+            'SWLOR_LIVE_MODULE_DIR': module.resolve().parent.as_posix(),
+            'SWLOR_LIVE_MODULE_NAME': module.stem,
+            'SWLOR_LIVE_HAK_DIR': hak_dir.resolve().as_posix(),
+            'SWLOR_LIVE_TLK_DIR': tlk_dir.resolve().as_posix(),
+            'SWLOR_LIVE_CLIENT_INSTALL': install.resolve().as_posix(),
+            'SWLOR_LIVE_SERVER_PORT': str(SERVER_PORT),
+            'SWLOR_LIVE_CLIENT_MODE': mode,
+            # A throwaway password for this unpublished server; it leaves with compose.env.
+            'SWLOR_LIVE_DM_PASSWORD': secrets.token_hex(12) if mode == 'dm' else '',
+            'SWLOR_LIVE_ADMIN_CDKEY': public_key if mode == 'dm' else '',
+            'SWLOR_LIVE_MAX_SECONDS': str(max_seconds),
+        }), 'utf-8')
+    except BaseException:
+        if created_dir:
+            remove_tree(run_dir)
+        raise
+    log(f'Run directory {run_dir} (project {project})')
+    return stack
+
+
+def start(stack: Stack, server_timeout: float) -> None:
+    """Start Redis and the server, seed the Player record, then start the client."""
+    ensure_client_image(stack.state['client_image'])
+    log('Starting Redis and the server')
+    stack.compose('up', '-d', '--no-build', timeout=900)
+    wait_for_server(stack, server_timeout)
+    uuid = stack.state.get('character', {}).get('uuid')
+    if uuid:
+        seed_player(stack, uuid)
+    start_client(stack, Path(stack.state['cdkey_source']))
+
+
+def ensure_client_image(tag: str) -> None:
+    if run(['docker', 'image', 'inspect', tag], check=False, capture=True, timeout=60).returncode == 0:
+        return
+    log(f'Building {tag}')
+    # The Dockerfile needs no build context, so nothing from the checkout is uploaded.
+    run(['docker', 'build', '-t', tag, '-'], stdin=(PACKAGE_DIR / 'Dockerfile.client').read_bytes(),
+        timeout=1800)
+
+
+def wait_for_server(stack: Stack, timeout: float) -> None:
+    """Wait for SWLOR's OnModuleLoad "Server is starting up." line."""
+    log('Waiting for the module to load')
+    deadline = time.monotonic() + timeout
+    server_logs = stack.home / 'app_logs' / 'Server'
+    while time.monotonic() < deadline:
+        for path in server_logs.glob('Server_*.log'):
+            if 'Server is starting up.' in path.read_text('utf-8', 'replace'):
+                log('Server module loaded')
+                return
+        if not stack.running('swlor-server'):
+            raise LiveStackError('The server container stopped during start-up. '
+                                 f'See {stack.home / "logs"} and {stack.home / "app_logs" / "Error"}.')
+        time.sleep(5)
+    raise LiveStackError(f'The server did not finish loading within {timeout:.0f}s.')
+
+
+def seed_player(stack: Stack, uuid: str) -> None:
+    """Create the Player record a fresh database needs before a saved character may enter.
+
+    PlayerInitialization boots a character with neither an initialized record nor the
+    creation intent that PlayerCreation records, so seed that intent: the server then
+    runs normal first-login setup on this run's copy of the character.
+    """
+    record = json.dumps({'Id': uuid, 'EntityType': 'Player', 'DateCreated': utc_now(),
+                         'CharacterInitializationPending': True}, separators=(',', ':'))
+    result = stack.compose('exec', '-T', 'redis', 'redis-cli', 'JSON.SET', f'Player:{uuid}', '.', record, 'NX',
+                           capture=True, timeout=60)
+    created = result.stdout.decode('utf-8', 'replace').strip() == 'OK'
+    log(f'Player record {uuid} ' + ('seeded' if created else 'already existed'))
+
+
+def start_client(stack: Stack, cdkey: Path) -> None:
+    target = stack.profile / 'cdkey.ini'
+    shutil.copyfile(cdkey, target)
+    log('Starting the client')
+    stack.compose('up', '-d', '--no-deps', '--no-build', 'client', client=True, timeout=300)
+    stack.state['client_started_utc'] = utc_now()
+    stack.save()
+    stack.ui('wait-window', '180', timeout=240)
+    log('Client window is up')
+
+
+def module_entries(stack: Stack) -> int:
+    """Characters that entered the module, from SWLOR's OnModuleEnter audit line (players and DMs)."""
+    return sum(count_matches(path, ENTRY_PATTERN) for path in (stack.home / 'app_logs' / 'Connection').glob('*.log'))
+
+
+def loading_tips(stack: Stack) -> int:
+    """SWLOR's loading-screen tip, written to the chat log when an area transition starts."""
+    return count_matches(stack.profile / 'logs' / 'nwclientLog1.txt', LOADING_TIP_PATTERN)
+
+
+def play(stack: Stack, settle: float, timeout: float = 600) -> None:
+    """Click Play until the character enters, then wait for area transitions to settle.
+
+    The server's "Joined as" line is written at connection, before character select,
+    and character select can take minutes to appear while the client loads the haks.
+    Clicking Play before then does nothing, so click every 20 seconds until the entry.
+    """
+    entered = module_entries(stack)
+    deadline = time.monotonic() + timeout
+    next_click = 0.0
+    attempt = 0
+    while module_entries(stack) <= entered:
+        now = time.monotonic()
+        if now >= deadline:
+            raise LiveStackError(f'The character did not enter within {timeout:.0f}s. '
+                                 'Capture the screen to see where the client is.')
+        if now >= next_click:
+            attempt += 1
+            log(f'Clicking Play (attempt {attempt})')
+            if stack.state['mode'] == 'dm':
+                stack.ui('click', str(FIRST_CHARACTER_ROW[0]), str(FIRST_CHARACTER_ROW[1]))
+            stack.ui('click', str(PLAY_BUTTON[0]), str(PLAY_BUTTON[1]))
+            next_click = time.monotonic() + 20
+        time.sleep(1)
+    log(f'Character entered; waiting until no area transition has started for {settle:.0f}s')
+    # A new character is set up and may be moved to its starting area right away.
+    tips = loading_tips(stack)
+    quiet_since = time.monotonic()
+    while time.monotonic() - quiet_since < settle:
+        if time.monotonic() >= deadline:
+            raise LiveStackError('Area transitions did not settle.')
+        current = loading_tips(stack)
+        if current != tips:
+            tips, quiet_since = current, time.monotonic()
+        time.sleep(1)
+    log('Settled. Inspect each capture: a slow first render can still show the loading screen.')
+
+
+def capture(stack: Stack, label: str) -> Path:
+    stack.ui('capture', label)
+    path = stack.evidence / f'{label}.png'
+    if not path.is_file():
+        raise LiveStackError(f'The capture {path} was not written.')
+    log(f'{path} sha256={sha256(path)}')
+    return path
+
+
+def boot_players(stack: Stack, timeout: float = 30) -> bool:
+    """Kick the player through the server console so the CD key is released cleanly."""
+    if stack.joined_players() <= 0 or not stack.running('swlor-server'):
+        return True
+    stack.console(f'kick {stack.state["player_name"]}')
+    deadline = time.monotonic() + timeout
+    while time.monotonic() < deadline:
+        if stack.joined_players() <= 0:
+            log('Player booted')
+            return True
+        time.sleep(1)
+    log('The server did not log the player leaving after the kick.')
+    return False
+
+
+def remove_tree(path: Path) -> None:
+    if not path.exists():
+        return
+
+    def retry(function, target, _):
+        os.chmod(target, 0o700)
+        function(target)
+
+    shutil.rmtree(path, onexc=retry)
+
+
+def destroy(stack: Stack) -> dict:
+    """Boot the player, remove the project's Docker resources, then the key, profile and home."""
+    report = {'project': stack.project, 'utc': utc_now()}
+    errors = []
+    try:
+        report['player_booted'] = boot_players(stack)
+    except LiveStackError as error:
+        report['player_booted'] = False
+        errors.append(str(error))
+    if (stack.run_dir / 'compose.env').is_file():
+        stack.compose('stop', '-t', '30', 'client', client=True, check=False, capture=True, timeout=120)
+        result = stack.compose('down', '--volumes', '--remove-orphans', '--timeout', '60', client=True,
+                               check=False, capture=True, timeout=600)
+        if result.returncode != 0:
+            errors.append('compose down failed: ' + result.stderr.decode('utf-8', 'replace').strip())
+
+    (stack.profile / 'cdkey.ini').unlink(missing_ok=True)
+    for source, name in ((stack.profile / 'logs', 'client-logs'), (stack.home / 'logs', 'server-logs'),
+                         (stack.home / 'app_logs', 'server-app-logs')):
+        if source.is_dir() and any(source.iterdir()):
+            shutil.copytree(source, stack.evidence / name, dirs_exist_ok=True)
+    for path in (stack.profile, stack.home, stack.run_dir / 'dotnet', stack.run_dir / 'bin'):
+        try:
+            remove_tree(path)
+        except OSError as error:
+            errors.append(f'Could not remove {path}: {error}')
+    for name in ('compose.env', 'server-extra.env'):
+        (stack.run_dir / name).unlink(missing_ok=True)
+
+    resources = project_resources(stack.project)
+    leftovers = [str(path) for pattern in ('cdkey.ini', '*.bic') for path in stack.run_dir.rglob(pattern)]
+    report.update({
+        'remaining_containers': len(resources['containers']),
+        'remaining_volumes': len(resources['volumes']),
+        'remaining_networks': len(resources['networks']),
+        'profile_removed': not stack.profile.exists(),
+        'home_removed': not stack.home.exists(),
+        'key_and_character_copies_remaining': leftovers,
+        'errors': errors,
+    })
+    report['clean'] = (not errors and not any(resources.values()) and not leftovers
+                       and report['profile_removed'] and report['home_removed'])
+    (stack.evidence / 'cleanup.json').write_text(json.dumps(report, indent=2) + '\n', 'utf-8')
+    stack.state['destroyed_utc'] = report['utc']
+    stack.save()
+    return report

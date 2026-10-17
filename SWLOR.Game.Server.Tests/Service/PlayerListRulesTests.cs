@@ -1,0 +1,226 @@
+using FluentAssertions;
+using NUnit.Framework;
+using SWLOR.Game.Server.Extension;
+using SWLOR.Game.Server.Service.PlayerListService;
+
+namespace SWLOR.Game.Server.Tests.Service;
+
+public class PlayerListRulesTests
+{
+    [Test]
+    public void Search_EmptyMatchesEveryone()
+    {
+        PlayerListRules.MatchesSearch(null, "Kira Venn", "A friendly Twi'lek").Should().BeTrue();
+        PlayerListRules.MatchesSearch("   ", string.Empty, "A hooded figure").Should().BeTrue();
+    }
+
+    [Test]
+    public void Search_MatchesTheStartOfWordsInAnyField()
+    {
+        PlayerListRules.MatchesSearch("ki", "Kira Venn", "A friendly Twi'lek").Should().BeTrue();
+        PlayerListRules.MatchesSearch("FRIEND", "Kira Venn", "A friendly Twi'lek").Should().BeTrue();
+        PlayerListRules.MatchesSearch("ira", "Kira Venn", "A friendly Twi'lek").Should().BeFalse();
+    }
+
+    [Test]
+    public void Search_RequiresEveryWordAcrossTheFields()
+    {
+        PlayerListRules.MatchesSearch("venn twi", "Kira Venn", "A friendly Twi'lek").Should().BeTrue();
+        PlayerListRules.MatchesSearch("venn rodian", "Kira Venn", "A friendly Twi'lek").Should().BeFalse();
+    }
+
+    [Test]
+    public void Search_KeepsApostrophesAndHyphensInsideWords()
+    {
+        PlayerListRules.MatchesSearch("twi'l", string.Empty, "A friendly Twi'lek").Should().BeTrue();
+        PlayerListRules.MatchesSearch("kal-r", "Kal-Ria Halkov", string.Empty).Should().BeTrue();
+        PlayerListRules.MatchesSearch("lek", string.Empty, "A friendly Twi'lek").Should().BeFalse();
+    }
+
+    [Test]
+    public void Search_IgnoresMissingFields()
+    {
+        PlayerListRules.MatchesSearch("rodian", null, "A small Rodian").Should().BeTrue();
+        PlayerListRules.MatchesSearch("rodian", null, null).Should().BeFalse();
+    }
+
+    [Test]
+    public void DMs_AreVisibleOnlyToOtherDMs()
+    {
+        PlayerListRules.IsVisibleTo(viewerIsDM: false, subjectIsDM: true).Should().BeFalse();
+        PlayerListRules.IsVisibleTo(viewerIsDM: true, subjectIsDM: true).Should().BeTrue();
+        PlayerListRules.IsVisibleTo(viewerIsDM: false, subjectIsDM: false).Should().BeTrue();
+        PlayerListRules.IsVisibleTo(viewerIsDM: true, subjectIsDM: false).Should().BeTrue();
+    }
+
+    [Test]
+    public void NoSelection_DisablesTargetedActionsButKeepsLeaveParty()
+    {
+        var actions = PlayerListRules.Evaluate(new PlayerListRelation { ViewerIsInParty = true });
+
+        foreach (var state in new[] { actions.SendTell, actions.ToggleHostile, actions.Invite, actions.Remove, actions.MakeLeader })
+        {
+            state.IsEnabled.Should().BeFalse();
+            state.DisabledReason.Should().Be(PlayerListRules.SelectPlayerFirst);
+        }
+
+        actions.LeaveParty.IsEnabled.Should().BeTrue();
+        PlayerListRules.Evaluate(new PlayerListRelation()).LeaveParty.DisabledReason.Should().Be("You are not in a party.");
+    }
+
+    [Test]
+    public void SelfSelected_OnlyAllowsLeavingTheParty()
+    {
+        var actions = PlayerListRules.Evaluate(new PlayerListRelation
+        {
+            HasTarget = true,
+            TargetIsSelf = true,
+            ViewerIsInParty = true,
+            ViewerIsPartyLeader = true,
+        });
+
+        actions.SendTell.DisabledReason.Should().Be("You cannot send a tell to yourself.");
+        actions.ToggleHostile.IsEnabled.Should().BeFalse();
+        actions.Invite.IsEnabled.Should().BeFalse();
+        actions.Remove.DisabledReason.Should().Be("Use Leave Party to leave your party.");
+        actions.MakeLeader.DisabledReason.Should().Be("You already lead your party.");
+        actions.LeaveParty.IsEnabled.Should().BeTrue();
+    }
+
+    [Test]
+    public void LeaderSelectingMember_CanRemoveAndPassLeadership()
+    {
+        var actions = PlayerListRules.Evaluate(new PlayerListRelation
+        {
+            HasTarget = true,
+            ViewerIsInParty = true,
+            ViewerIsPartyLeader = true,
+            TargetIsInViewerParty = true,
+        });
+
+        actions.SendTell.IsEnabled.Should().BeTrue();
+        actions.Remove.IsEnabled.Should().BeTrue();
+        actions.MakeLeader.IsEnabled.Should().BeTrue();
+        actions.Invite.DisabledReason.Should().Be("Already in your party.");
+        actions.ToggleHostile.DisabledReason.Should().Be("You cannot mark members of your party hostile.");
+    }
+
+    [Test]
+    public void MemberWhoIsNotLeader_CannotManageTheParty()
+    {
+        var member = PlayerListRules.Evaluate(new PlayerListRelation
+        {
+            HasTarget = true,
+            ViewerIsInParty = true,
+            TargetIsInViewerParty = true,
+        });
+        member.Remove.DisabledReason.Should().Be("Only your party leader can remove members.");
+        member.MakeLeader.DisabledReason.Should().Be("Only your party leader can choose a new leader.");
+
+        var outsider = PlayerListRules.Evaluate(new PlayerListRelation
+        {
+            HasTarget = true,
+            ViewerIsInParty = true,
+        });
+        outsider.Invite.DisabledReason.Should().Be("Only your party leader can invite players.");
+    }
+
+    [Test]
+    public void SoloPlayers_CanInviteAndMarkHostile()
+    {
+        var actions = PlayerListRules.Evaluate(new PlayerListRelation { HasTarget = true });
+
+        actions.Invite.IsEnabled.Should().BeTrue();
+        actions.ToggleHostile.IsEnabled.Should().BeTrue();
+        actions.ToggleHostileText.Should().Be("Mark Hostile");
+        actions.Remove.DisabledReason.Should().Be("Not in your party.");
+        actions.LeaveParty.IsEnabled.Should().BeFalse();
+
+        PlayerListRules.Evaluate(new PlayerListRelation { HasTarget = true, ViewerDislikesTarget = true })
+            .ToggleHostileText.Should().Be("Clear Hostile");
+    }
+
+    [Test]
+    public void TargetInAnotherParty_CannotBeInvited()
+    {
+        PlayerListRules.Evaluate(new PlayerListRelation { HasTarget = true, TargetIsInOtherParty = true })
+            .Invite.DisabledReason.Should().Be("Already in another party.");
+    }
+
+    [Test]
+    public void DMViewer_CanSendTellsButNotUsePartyOrHostility()
+    {
+        var actions = PlayerListRules.Evaluate(new PlayerListRelation { HasTarget = true, ViewerIsDM = true });
+
+        actions.SendTell.IsEnabled.Should().BeTrue();
+        actions.ToggleHostile.IsEnabled.Should().BeFalse();
+        actions.Invite.DisabledReason.Should().Be(PlayerListRules.DMsCannotUsePartyControls);
+        actions.Remove.DisabledReason.Should().Be(PlayerListRules.DMsCannotUsePartyControls);
+        actions.MakeLeader.DisabledReason.Should().Be(PlayerListRules.DMsCannotUsePartyControls);
+        actions.LeaveParty.DisabledReason.Should().Be(PlayerListRules.DMsCannotUsePartyControls);
+    }
+
+    [Test]
+    public void Status_MarksPartyHostilityAndDMs()
+    {
+        PlayerListRules.GetStatus(new PlayerListRelation { TargetIsSelf = true })
+            .Should().Be(PlayerListStatus.None);
+        PlayerListRules.GetStatus(new PlayerListRelation { TargetIsSelf = true, ViewerIsInParty = true, ViewerIsPartyLeader = true })
+            .Should().Be(PlayerListStatus.Leader);
+        PlayerListRules.GetStatus(new PlayerListRelation { TargetIsSelf = true, ViewerIsInParty = true })
+            .Should().Be(PlayerListStatus.Party);
+        PlayerListRules.GetStatus(new PlayerListRelation { TargetIsInViewerParty = true, TargetIsPartyLeader = true })
+            .Should().Be(PlayerListStatus.Leader);
+        PlayerListRules.GetStatus(new PlayerListRelation { TargetIsInViewerParty = true })
+            .Should().Be(PlayerListStatus.Party);
+        PlayerListRules.GetStatus(new PlayerListRelation { TargetIsInOtherParty = true })
+            .Should().Be(PlayerListStatus.Grouped);
+        PlayerListRules.GetStatus(new PlayerListRelation { TargetIsInOtherParty = true, ViewerDislikesTarget = true })
+            .Should().Be(PlayerListStatus.Hostile);
+        PlayerListRules.GetStatus(new PlayerListRelation { TargetIsDM = true })
+            .Should().Be(PlayerListStatus.DM);
+    }
+
+    [Test]
+    public void Flags_KeepTheirPersistedValuesAndDescribeThemselves()
+    {
+        ((int)PlayerListFlagType.GeneralRP).Should().Be(1);
+        ((int)PlayerListFlagType.PvP).Should().Be(2);
+        ((int)PlayerListFlagType.DM).Should().Be(3);
+        ((int)PlayerListFlagType.Crafting).Should().Be(4);
+
+        foreach (var flag in Enum.GetValues<PlayerListFlagType>())
+        {
+            var definition = flag.GetAttribute<PlayerListFlagType, PlayerListFlagAttribute>();
+            definition.Name.Should().NotBeNullOrWhiteSpace();
+            definition.Description.Should().StartWith(definition.Name + ":");
+            definition.IconResref.Should().MatchRegex("^[a-z0-9_]{1,16}$");
+        }
+    }
+
+    [Test]
+    public void Flags_ShipTheirIconsInTheUIHak()
+    {
+        var ui = Path.Combine(FindRepositoryRoot(), "SWLOR_Haks", "sw_ui");
+
+        foreach (var flag in Enum.GetValues<PlayerListFlagType>())
+        {
+            var path = Path.Combine(ui, flag.GetAttribute<PlayerListFlagType, PlayerListFlagAttribute>().IconResref + ".tga");
+            File.Exists(path).Should().BeTrue(path);
+
+            // NWN ignores the TGA origin bit and reads rows bottom-up.
+            var header = File.ReadAllBytes(path).Take(18).ToArray();
+            (header[12] | header[13] << 8).Should().Be(32, path);
+            (header[14] | header[15] << 8).Should().Be(32, path);
+            (header[17] & 0x20).Should().Be(0, $"{path} must store rows bottom-up");
+        }
+    }
+
+    private static string FindRepositoryRoot()
+    {
+        var directory = new DirectoryInfo(TestContext.CurrentContext.TestDirectory);
+        while (directory != null && !Directory.Exists(Path.Combine(directory.FullName, "Module")))
+            directory = directory.Parent;
+        return directory?.FullName ?? throw new DirectoryNotFoundException("Could not locate repository root.");
+    }
+}

@@ -2,6 +2,12 @@
 
 These rules apply when editing any Design Bible workbook.
 
+## Keeping It In Sync
+
+- Agents keep the repository copy, `design/bible/SWLOR Design Bible.xlsx`, in sync. When a change alters anything the Bible records (stats, balance values, descriptions, recipes, enemy rows), update the matching workbook rows on the same branch.
+- The owner uploads Bible changes to the Google copy. Agents never edit, upload to, or drive the Google copy, and never hand that upload back as a to-do.
+- Run `tools/UpdateCombatUpgradeAudit.ps1` with `-RefreshLocalBible`, never `-RefreshBible`: the latter pulls from the Google copy, which lacks local changes until the owner uploads them.
+
 ## Editing The File
 
 - Never edit a workbook with `openpyxl` or any library that rewrites the whole file. It drops cached formula results and silently breaks formula-backed tabs and tests such as `NPCEnemyBalanceAuditTests`.

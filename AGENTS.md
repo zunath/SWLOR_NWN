@@ -11,7 +11,7 @@ SWLOR is a live Neverwinter Nights: Enhanced Edition persistent world. Server lo
 
 ## How to Work
 
-- **Do what was asked, all of it, and nothing else.** Work every item until it is fixed and verified; if one is blocked, say why and finish the rest. Follow-up chores (deploy steps, Bible and Sheet syncs, cleanup) are part of the job. Ask before changing shared code, unrelated systems, or behavior the user did not mention; report unrequested defects instead of fixing them.
+- **Do what was asked, all of it, and nothing else.** Work every item until it is fixed and verified; if one is blocked, say why and finish the rest. Follow-up chores (deploy steps, keeping the repo's Design Bible in sync, cleanup) are part of the job; the owner uploads Bible changes to Google, never agents. Ask before changing shared code, unrelated systems, or behavior the user did not mention; report unrequested defects instead of fixing them.
 - **Check instead of assuming.** Look up paths, values, helpers, and how similar features work before using them. Balance numbers come from the Design Bible or code, never extrapolation. For a bug report, find the exact reported object first (search for the label in the screenshot).
 - **Follow existing standards; ask before departing from them.** A new tier, a new direction, or a value outside the established standards (enemy stats, item stats, crafting requirements, and similar) needs the user's approval first.
 - Ask only for real decisions, once, with a recommendation. If an approach fails twice, change approach or report the blocker with evidence.

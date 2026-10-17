@@ -30,8 +30,14 @@ public class AbilityImpactVisualEffectTests
         foreach (var entry in manifest.RootElement.EnumerateArray())
         {
             var id = entry.GetProperty("Id").GetString()!;
-            var enumName = id == "ShieldBash" ? "Vfx_Imp_Shield_Bash" : "Vfx_Ability_" + id;
+            var enumName = id switch
+            {
+                "ShieldBash" => "Vfx_Imp_Shield_Bash",
+                "MercilessAngleTechnique" => "Vfx_Imp_Merciless_Angle",
+                _ => "Vfx_Ability_" + id
+            };
             Enum.TryParse<VisualEffect>(enumName, out var expected).Should().BeTrue($"{id} must have a stable effect reference");
+            ((int)expected).Should().NotBe(999, $"{id} must not use NWN's hardcoded Cows from Hell effect");
             usedEffects.Add(expected).Should().BeTrue($"{id} should have its own effect, shared only across ranks");
             var definitions = entry.GetProperty("DefinitionFiles").EnumerateArray()
                 .Select(file => Path.ChangeExtension(file.GetString()!, null).Replace('/', '.').Replace('\\', '.')).ToArray();

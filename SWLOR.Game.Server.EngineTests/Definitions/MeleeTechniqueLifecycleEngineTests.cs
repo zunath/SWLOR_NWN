@@ -23,7 +23,10 @@ public static class MeleeTechniqueLifecycleEngineTests
         using var victim = await PlayerAbilityFixture.CreateAsync(context, 1f);
         var counterOwner = context.SpawnCreature("nw_bandit001", -1f, 1f);
         await context.DelaySecondsAsync(1f);
-        context.MakeHostile(victim.Creature);
+        // NPC factions and player PvP attitudes use different native hostility paths.
+        context.MakeHostile(counterOwner);
+        SetPCDislike(killer.Creature, victim.Creature);
+        SetPCDislike(victim.Creature, killer.Creature);
         SetPlotFlag(victim.Creature, false);
         SetImmortal(victim.Creature, false);
         SetEventScript(victim.Creature, EventScript.Creature_OnDeath, ScriptName.OnPlayerDeath);
@@ -82,19 +85,21 @@ public static class MeleeTechniqueLifecycleEngineTests
 
             // The source is a real player with subdual enabled; only the native death event invokes cleanup.
             await context.ExecuteInCreatureContextAsync(killer.Creature, () =>
-                ApplyEffectToObject(DurationType.Instant, EffectDeath(), victim.Creature));
-            await context.WaitUntilAsync(() => StatusEffect.HasStatusEffect<SubdualPenaltyStatusEffect>(victim.Creature),
-                3f, "the actual module player death route to resurrect and subdue the victim");
-            context.Assert(!GetIsDead(victim.Creature), "Subdual revives the player immediately in the same area.");
-            context.AssertEqual(context.Arena, GetArea(victim.Creature), "The victim did not leave the area to clear references.");
-            // Read the markers first: a technique getter could otherwise hide a missing event cleanup by refreshing lazily.
-            context.Assert(!StatusEffect.HasStatusEffect<SlipAwayStatusEffect>(killer.Creature), "Player death clears another fighter's earned Flow window.");
-            context.Assert(!StatusEffect.HasStatusEffect<OpeningStatusEffect>(counterOwner), "Player death clears another fighter's unspent setup.");
-            context.Assert(!StatusEffect.HasStatusEffect<RetaliationStatusEffect>(counterOwner), "Player death clears another fighter's counter marker.");
-            context.Assert(StatusEffect.HasStatusEffect<FlowStanceStatusEffect>(killer.Creature), "The living fighter keeps its stance.");
-            context.Assert(StatusEffect.HasStatusEffect<BruiserStanceStatusEffect>(counterOwner), "The living counter owner keeps its stance.");
-            context.AssertEqual(MeleeTechniqueStage.None, MeleeTechnique.GetSetupStage(counterOwner, victim.Creature), "Setup cannot survive immediate subdual revival.");
-            context.AssertEqual(0, MeleeTechnique.GetPendingRetaliationPower(counterOwner, victim.Creature), "The old counter cannot be spent on the revived player.");
+            {
+                ApplyEffectToObject(DurationType.Instant, EffectDeath(), victim.Creature);
+                context.Assert(StatusEffect.HasStatusEffect<SubdualPenaltyStatusEffect>(victim.Creature),
+                    "The native module death handler completes subdual synchronously before the killing action returns.");
+                context.Assert(!GetIsDead(victim.Creature), "Subdual revives the player immediately in the same area.");
+                context.AssertEqual(context.Arena, GetArea(victim.Creature), "The victim did not leave the area to clear references.");
+                // No yield or technique getter may let heartbeat or lazy refresh hide a missing death handler.
+                context.Assert(!StatusEffect.HasStatusEffect<SlipAwayStatusEffect>(killer.Creature), "Player death clears another fighter's earned Flow window.");
+                context.Assert(!StatusEffect.HasStatusEffect<OpeningStatusEffect>(counterOwner), "Player death clears another fighter's unspent setup.");
+                context.Assert(!StatusEffect.HasStatusEffect<RetaliationStatusEffect>(counterOwner), "Player death clears another fighter's counter marker.");
+                context.Assert(StatusEffect.HasStatusEffect<FlowStanceStatusEffect>(killer.Creature), "The living fighter keeps its stance.");
+                context.Assert(StatusEffect.HasStatusEffect<BruiserStanceStatusEffect>(counterOwner), "The living counter owner keeps its stance.");
+                context.AssertEqual(MeleeTechniqueStage.None, MeleeTechnique.GetSetupStage(counterOwner, victim.Creature), "Setup cannot survive immediate subdual revival.");
+                context.AssertEqual(0, MeleeTechnique.GetPendingRetaliationPower(counterOwner, victim.Creature), "The old counter cannot be spent on the revived player.");
+            });
         }
         finally
         {
@@ -110,8 +115,14 @@ public static class MeleeTechniqueLifecycleEngineTests
         var ability = Ability.GetAbilityDetail(feat);
         Ability.ClearLastCompletedAbilityImpactSummary(caster);
         await context.ExecuteInCreatureContextAsync(caster, () =>
+        {
+            context.Assert(GetIsReactionTypeHostile(target, caster),
+                $"{ability.Name}: the native target is hostile to the caster immediately before activation.");
+            context.Assert(GetIsReactionTypeHostile(caster, target),
+                $"{ability.Name}: the native caster is hostile to the target immediately before activation.");
             context.Assert(UsePerkFeat.TryUseAbility(caster, target, feat, GetLocation(target)),
-                $"{ability.Name} starts: {Ability.GetLastActivationDenialReason()}"));
+                $"{ability.Name} starts: {Ability.GetLastActivationDenialReason()}");
+        });
         await context.WaitUntilAsync(() => Ability.GetLastCompletedAbilityImpactSummary(caster)?.Ability == ability,
             6f, $"{ability.Name} to complete its actual activation");
         AssignCommand(caster, () => ClearAllActions());

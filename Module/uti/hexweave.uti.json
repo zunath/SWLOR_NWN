@@ -6,7 +6,7 @@
   },
   "BaseItem": {
     "type": "int",
-    "value": 78
+    "value": 80
   },
   "Charges": {
     "type": "byte",
@@ -48,11 +48,11 @@
   },
   "ModelPart1": {
     "type": "byte",
-    "value": 176
+    "value": 117
   },
   "PaletteID": {
     "type": "byte",
-    "value": 17
+    "value": 18
   },
   "Plot": {
     "type": "byte",
@@ -73,7 +73,7 @@
         },
         "CostValue": {
           "type": "word",
-          "value": 11
+          "value": 8
         },
         "Param1": {
           "type": "byte",
@@ -297,11 +297,26 @@
           "type": "int",
           "value": 1
         }
+      },
+      {
+        "__struct_id": 0,
+        "Name": {
+          "type": "cexostring",
+          "value": "EQUIPMENT_TYPE_STATS_REVISION"
+        },
+        "Type": {
+          "type": "dword",
+          "value": 1
+        },
+        "Value": {
+          "type": "int",
+          "value": 1
+        }
       }
     ]
   },
   "xModelPart1": {
     "type": "word",
-    "value": 176
+    "value": 117
   }
 }

@@ -181,6 +181,51 @@ public class HeadgearSlotMigrationTests
         method.Invoke(null, new object[] { migrated, repair, true }).Should().Be(migrated);
     }
 
+    [TestCase("hexweave", BaseItem.Bracer, BaseItem.Cloak, InventorySlot.Arms, InventorySlot.Cloak, false, false)]
+    [TestCase("hexweave", BaseItem.Bracer, BaseItem.Cloak, InventorySlot.Arms, InventorySlot.Cloak, true, false)]
+    [TestCase("absdef_l3", BaseItem.Gloves, BaseItem.Helmet, InventorySlot.Arms, InventorySlot.Head, false, false)]
+    [TestCase("absdef_l3", BaseItem.Gloves, BaseItem.Helmet, InventorySlot.Arms, InventorySlot.Head, false, true)]
+    [TestCase("piston_gaunt", BaseItem.Armor, BaseItem.Gloves, InventorySlot.Chest, InventorySlot.Arms, false, false)]
+    [TestCase("piston_gaunt", BaseItem.Armor, BaseItem.Gloves, InventorySlot.Chest, InventorySlot.Arms, true, false)]
+    [TestCase("piston_gaunt", BaseItem.Armor, BaseItem.Gloves, InventorySlot.Chest, InventorySlot.Arms, false, true)]
+    [TestCase("brawl_wraps", BaseItem.Bracer, BaseItem.Gloves, InventorySlot.Arms, InventorySlot.Arms, false, false)]
+    public void CorrectedDroidWearablesPreserveCollidingCopiesAndRestoreTheCorrectSlot(
+        string resref, BaseItem legacyType, BaseItem correctedType, InventorySlot previousSlot, InventorySlot targetSlot, bool numeric, bool pending)
+    {
+        object Wearable(BaseItem type, string uuid) => Node(0, Resref(resref), Scalar(5, "BaseItem", (int)type),
+            Scalar(0, "ModelPart1", EquipmentTypeMigration.Corrections[resref].Model), Text("UUID", uuid), Scalar(2, "StackSize", 3),
+            List("VarTable", Node(0, Text("Name", "DROID_ITEM_ID"), Scalar(4, "Type", 3), Text("Value", "same-id"))));
+        var original = Encode(Wearable(legacyType, "equipped-uuid"));
+        var replacement = Encode(Wearable(correctedType, "equipped-uuid"));
+        var carried = Encode(Wearable(correctedType, "carried-uuid"));
+        var archive = new JObject { ["EquippedItems"] = new JObject(), ["Inventory"] = new JObject { ["same-id"] = carried } };
+        var key = pending ? "DROID_RESTORE_ITEM:" + (int)previousSlot + ":same-id" : numeric ? ((int)previousSlot).ToString() : previousSlot.ToString();
+        ((JObject)archive[pending ? "Inventory" : "EquippedItems"]!)[key] = original;
+        Func<string, string> convert = data => data == original ? replacement : data;
+        var method = typeof(HeadgearSlotMigration).GetMethod("MigrateDroid", BindingFlags.Static | BindingFlags.NonPublic)!;
+        var migrated = (string)method.Invoke(null, new object[] { archive.ToString(), convert, true })!;
+        var result = JObject.Parse(migrated);
+        ((string)result["Inventory"]!["same-id"]!).Should().Be(carried, "the colliding carried copy must never be overwritten");
+        string repaired;
+        if (previousSlot != targetSlot)
+        {
+            ((JObject)result[pending ? "Inventory" : "EquippedItems"]!).Property(key).Should().BeNull();
+            var moved = ((JObject)result["Inventory"]!).Properties().Single(x => x.Name.StartsWith("DROID_RESTORE_ITEM:" + (int)targetSlot + ":", StringComparison.Ordinal));
+            repaired = (string)moved.Value!;
+            ((JObject)result["Inventory"]!).Should().HaveCount(2);
+        }
+        else
+        {
+            repaired = (string)result["EquippedItems"]![key]!;
+            ((JObject)result["Inventory"]!).Should().HaveCount(1);
+        }
+        var item = Read(repaired);
+        Value(item, "BaseItem").Should().Be((int)correctedType);
+        Value(item, "UUID").Should().Be("equipped-uuid");
+        Value(item, "StackSize").Should().Be((ushort)3);
+        method.Invoke(null, new object[] { migrated, convert, true }).Should().Be(migrated, "a retry must be byte-stable");
+    }
+
     // Build raw GFF fixtures with the established writer and inspect with the independent formats reader.
     private static readonly Type Document = typeof(HeadgearSlotMigration).Assembly.GetType("SWLOR.Game.Server.Feature.MigrationDefinition.StoredObjectData")!;
     private static readonly Type NodeType = Document.GetNestedType("Node", BindingFlags.NonPublic)!;

@@ -53,6 +53,8 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.ItemAppearance
             RobeAppearance.RemoveUnavailableRobe(creature, item);
             NeckAppearance.RemoveUnavailableNeck(creature, item);
             nativeCreature.UpdateAppearanceForEquippedItems();
+            if (GetItemInSlot(InventorySlot.Head, creature) == item)
+                HelmetModelRenderer.Apply(creature, TintMapModelResolver.GetCurrentSelections(creature));
 
             var message = server.GetNWSMessage();
             var players = server.GetPlayerList();
@@ -67,7 +69,10 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.ItemAppearance
                 var handItem = appearance.m_oidLeftHandItem == item || appearance.m_oidRightHandItem == item;
                 var cloakItem = appearance.m_oidCloakItem == item;
                 var changed = false;
-                if (appearance.m_oidHeadItem == item)
+                // Keep a removed native attachment in the observer cache until the
+                // normal creature update sends its detach. Clearing it here would
+                // suppress that delta when a tintable helmet renders as a head.
+                if (appearance.m_oidHeadItem == item && nativeCreature.m_cAppearance.m_oidHeadItem == item)
                 {
                     appearance.m_oidHeadItem = OBJECT_INVALID;
                     changed = true;

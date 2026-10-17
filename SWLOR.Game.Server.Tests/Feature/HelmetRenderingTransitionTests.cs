@@ -6,6 +6,111 @@ namespace SWLOR.Game.Server.Tests.Feature;
 
 public class HelmetRenderingTransitionTests
 {
+    [TestCase(true, false)]
+    [TestCase(true, true)]
+    [TestCase(false, false)]
+    public void RefreshDeliversNativeHelmetAttachmentChanges(bool projected, bool projectionAlreadyApplied)
+    {
+        var harness = DMPossessionHarness.Compile($$"""
+            using static Engine;
+            public static class EquippedItemAppearance
+            {
+                private const float QuickbarRefreshDelaySeconds = .2f;
+                {{DMPossessionHarness.Method("Feature/AppearanceDefinition/ItemAppearance/EquippedItemAppearance.cs", "Refresh")}}
+                private static void RefreshInventorySlot(Player player, object gui, uint creature, uint item, bool clearIcon) { }
+                private static void RestoreQuickbarReferences(uint creature, uint item) { }
+                private static void RefreshHandAppearance(uint creature, uint item) { }
+            }
+            public enum InventorySlot { Head, Chest, LeftHand, RightHand }
+            public static class NWNXLib { public static Manager g_pAppManager = new(); }
+            public class Manager { public Server m_pServerExoApp = new(); }
+            public class Server
+            {
+                public GameObject GetGameObject(uint id) => new();
+                public Message GetNWSMessage() => Transport;
+                public Player[] GetPlayerList() => [Observer];
+                public void SetForceUpdate() { }
+            }
+            public class GameObject
+            {
+                public Creature AsNWSCreature() => Wearer;
+                public Item AsNWSItem() => new();
+            }
+            public class Item { public uint m_oidPossessor = 1; }
+            public class Inventory { public int GetItemInInventory(Item item) => 1; }
+            public class Appearance
+            {
+                public uint m_oidHeadItem = 2;
+                public uint m_oidChestItem, m_oidCloakItem, m_oidLeftHandItem, m_oidRightHandItem;
+            }
+            public class Creature
+            {
+                public Inventory m_pInventory = new();
+                public Appearance m_cAppearance = new();
+                public void UpdateAppearanceForEquippedItems() =>
+                    m_cAppearance.m_oidHeadItem = Hidden ? OBJECT_INVALID : 2;
+            }
+            public class Player
+            {
+                public Appearance m_cAppearance = new();
+                public object m_pInventoryGUI, m_pOtherInventoryGUI;
+                public Player GetLastUpdateObject(uint creature) => this;
+            }
+            public class Message
+            {
+                public int Destroyed;
+                public void SendServerPlayerItemUpdate_DestroyItem(Player player, uint item) => Destroyed++;
+            }
+            public static class RobeAppearance { public static void RemoveUnavailableRobe(uint creature, uint item) { } }
+            public static class NeckAppearance { public static void RemoveUnavailableNeck(uint creature, uint item) { } }
+            public static class Droid { public static void UpdateEquippedItemSnapshot(uint creature, uint item) { } }
+            public static class TintMapModelResolver { public static object GetCurrentSelections(uint creature) => null; }
+            public static class HelmetModelRenderer
+            {
+                public static void Apply(uint creature, object selections)
+                {
+                    Hidden = Projected;
+                    Wearer.m_cAppearance.m_oidHeadItem = Projected ? OBJECT_INVALID : 2;
+                }
+            }
+            public static class TintMapService
+            {
+                public static void ApplyCurrentColors(uint creature, bool resetShaderOverrides) => HelmetModelRenderer.Apply(creature, null);
+            }
+            public static class Engine
+            {
+                public static Creature Wearer = new();
+                public static Player Observer = new();
+                public static Message Transport = new();
+                public static bool Hidden, Projected;
+                public static uint GetItemInSlot(InventorySlot slot, uint creature) => slot == InventorySlot.Head ? 2u : OBJECT_INVALID;
+                public static void DelayCommand(float seconds, Action action) { }
+            }
+            public static class Regression
+            {
+                public static void Run(bool projected, bool projectionAlreadyApplied)
+                {
+                    Projected = projected;
+                    if (projectionAlreadyApplied) HelmetModelRenderer.Apply(1, null);
+                    EquippedItemAppearance.Refresh(1, 2);
+
+                    // The client still has the native attachment from model64. The
+                    // normal creature delta can remove it only if its old cache survives.
+                    uint clientAttachment = 2;
+                    if (Observer.m_cAppearance.m_oidHeadItem != Wearer.m_cAppearance.m_oidHeadItem)
+                        clientAttachment = Wearer.m_cAppearance.m_oidHeadItem;
+                    if (clientAttachment != (projected ? OBJECT_INVALID : 2))
+                        throw new Exception("The client never received the native helmet detach.");
+                    if (Transport.Destroyed != (projected ? 0 : 1))
+                        throw new Exception("Only an attachment that remains equipped needs an item replacement.");
+                }
+            }
+            """);
+
+        var run = () => harness.Invoke("Regression", "Run", projected, projectionAlreadyApplied);
+        run.Should().NotThrow();
+    }
+
     [TestCase(false)]
     [TestCase(true)]
     public void NativeHelmetRebuildsItsAttachmentAfterAProjectedHelmet(bool canonicalHeadAlreadyRestored)

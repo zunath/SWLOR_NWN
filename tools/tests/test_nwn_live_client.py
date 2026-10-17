@@ -150,7 +150,9 @@ class LiveClientHelperTests(unittest.TestCase):
         server_log = home / 'logs' / 'nwserverLog1.txt'
         audit = home / 'app_logs' / 'Connection' / 'Connection_20261017.log'
         fake = SimpleNamespace(server_log=server_log, home=home)
-        server_log.write_text('[Sat Oct 17 21:20:43] Tester (ABCD1234) Joined as Player 1\n')
+        # The year comes from the log header, so the test does not depend on today's date.
+        server_log.write_text('Messages for: Sat Oct 17 21:20:40 2026\n'
+                              '[Sat Oct 17 21:20:43] Tester (ABCD1234) Joined as Player 1\n')
         self.assertFalse(stack.entered_current_connection(fake))
         audit.write_text('2026-10-17 21:21:21.090 +00:00 [INF] Tester - Tester - ABCD1234 - 1.2.3.4: '
                          'Connected to server\n')

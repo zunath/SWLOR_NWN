@@ -702,13 +702,20 @@ def create(options) -> Stack:
         if mode == 'player':
             vault = stack.home / 'servervault' / public_key
             vault.mkdir(parents=True)
-            shutil.copyfile(character, vault / character.name.lower())
-            make_private(vault / character.name.lower(), 0o600)
-            stack.state['character']['sha256'] = sha256(vault / character.name.lower())
+            snapshot = vault / character.name.lower()
+            shutil.copyfile(character, snapshot)
+            make_private(snapshot, 0o600)
+            # The source may be saved again meanwhile: validate, identify and hash the copy that runs.
+            validate_bic(snapshot)
+            if stack.state['character']['uuid']:
+                stack.state['character']['uuid'] = character_uuid(snapshot)
+            stack.state['character']['sha256'] = sha256(snapshot)
         else:
-            shutil.copyfile(dm_avatar, stack.profile / 'dmvault' / dm_avatar.name.lower())
-            make_private(stack.profile / 'dmvault' / dm_avatar.name.lower(), 0o600)
-            stack.state['dm_avatar']['sha256'] = sha256(stack.profile / 'dmvault' / dm_avatar.name.lower())
+            snapshot = stack.profile / 'dmvault' / dm_avatar.name.lower()
+            shutil.copyfile(dm_avatar, snapshot)
+            make_private(snapshot, 0o600)
+            validate_bic(snapshot)
+            stack.state['dm_avatar']['sha256'] = sha256(snapshot)
         # The base env file may hold secrets: run from a private copy, keep only its digest.
         shutil.copyfile(server_env, run_dir / 'server.env')
         make_private(run_dir / 'server.env', 0o600)
@@ -1103,6 +1110,8 @@ def require_running(stack: Stack, when: str) -> None:
 
 
 def capture(stack: Stack, label: str) -> Path:
+    # A screenshot is live-server evidence only while the whole stack is up.
+    require_running(stack, 'before the capture')
     stack.ui('capture', label)
     path = stack.evidence / f'{label}.png'
     if not path.is_file():
@@ -1252,15 +1261,18 @@ def destroy(stack: Stack) -> dict:
                     continue  # Removed by an earlier down; keep whatever that run archived.
                 logs = stack.compose('logs', '--no-color', '--no-log-prefix', service, client=service == 'client',
                                      check=False, capture=True, timeout=120)
-                archive = stack.evidence / f'{service}-container.log'
                 problem = None
                 if logs.returncode != 0:
                     problem = logs.stderr.decode('utf-8', 'replace').strip() or f'exit {logs.returncode}'
-                elif logs.stdout or not archive.exists():
-                    try:
-                        archive.write_bytes(logs.stdout)
-                    except OSError as error:
-                        problem = str(error)
+                else:
+                    # docker compose logs prints the container's stderr on its own stderr.
+                    for stream, archive in ((logs.stdout, stack.evidence / f'{service}-container.log'),
+                                            (logs.stderr, stack.evidence / f'{service}-container-stderr.log')):
+                        if stream or not archive.exists():
+                            try:
+                                archive.write_bytes(stream)
+                            except OSError as error:
+                                problem = str(error)
                 if problem:
                     # compose down removes the only copy, so this loss is permanent.
                     lost_evidence.append(f'Could not keep the {service} container output: {problem}')

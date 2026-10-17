@@ -43,12 +43,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                         row.AddSpacer();
                     });
 
-                    col.AddPagination(
-                        model => model.PageNumbers,
-                        model => model.SelectedPageIndex,
-                        model => model.OnPreviousPage(),
-                        model => model.OnNextPage());
-
                     col.AddRow(row =>
                     {
                         row.AddList(template =>
@@ -64,6 +58,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                         })
                             .BindRowCount(model => model.ShipNames);
                     });
+
+                    col.AddPagination(
+                        model => model.PageNumbers,
+                        model => model.SelectedPageIndex,
+                        model => model.OnPreviousPage(),
+                        model => model.OnNextPage());
 
                     col.AddRow(row =>
                     {

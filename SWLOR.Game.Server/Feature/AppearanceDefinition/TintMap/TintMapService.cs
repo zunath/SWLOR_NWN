@@ -159,6 +159,7 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
             var rendersRobeRgb = RobeModelRenderer.Apply(creature, selections);
             HelmetModelRenderer.Apply(creature, selections);
             NeckModelRenderer.Apply(creature);
+            ShoulderModelRenderer.Apply(creature);
             ProjectNativeRobeColors(creature, selections, rendersRobeRgb);
             ApplyEquippedHelmetColors(creature, selections, resetShaderOverrides);
             if (resetShaderOverrides)

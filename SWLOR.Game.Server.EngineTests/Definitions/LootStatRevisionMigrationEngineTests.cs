@@ -360,6 +360,7 @@ public static partial class MigrationEngineTests
         }
         DeleteLocalInt(item, LootStatRevisionMigration.RevisionVariable);
         DeleteLocalInt(item, RareLootStatRevisionCatalog.RevisionVariable);
+        DeleteLocalInt(item, FoundryLootStatRevisionCatalog.RevisionVariable);
     }
 
     internal static void AssertRevisedLoot(EngineTestContext ctx, uint item, Dictionary<(ItemPropertyType, int), int> enhancements)
@@ -372,6 +373,13 @@ public static partial class MigrationEngineTests
                 final[(change.Type, change.Subtype)] = change;
             ctx.AssertEqual(RareLootStatRevisionCatalog.CurrentRevision,
                 GetLocalInt(item, RareLootStatRevisionCatalog.RevisionVariable), $"{resref} is marked as corrected");
+        }
+        if (FoundryLootStatRevisionCatalog.Changes.TryGetValue(resref, out var foundryCorrections))
+        {
+            foreach (var change in foundryCorrections)
+                final[(change.Type, change.Subtype)] = change;
+            ctx.AssertEqual(FoundryLootStatRevisionCatalog.CurrentRevision,
+                GetLocalInt(item, FoundryLootStatRevisionCatalog.RevisionVariable), $"{resref} is marked as Foundry-corrected");
         }
         foreach (var change in final.Values)
         {

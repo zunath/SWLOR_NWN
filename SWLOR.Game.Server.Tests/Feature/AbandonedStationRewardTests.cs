@@ -23,7 +23,7 @@ public class AbandonedStationRewardTests
     {
         ("ABANDONED_STATION_MAIN", "abs_zchief", "CHIEF", new[] { "riotvisor_helm", "lockdown_bracer" },
             "bp_breachbelt", RecipeType.SalvagedBreachSealBelt, "breachseal_belt", "override_spike"),
-        ("ABANDONED_STATION_RESTRICTED", "abs_subzero", "SUBZERO", new[] { "quarantine_mask", "isolation_shroud" },
+        ("ABANDONED_STATION_RESTRICTED", "abs_colzero", "SUBZERO", new[] { "quarantine_mask", "isolation_shroud" },
             "bp_serumneck", RecipeType.SalvagedSerumCellNecklace, "serumcell_neck", "plague_culture"),
     };
 
@@ -164,7 +164,7 @@ public class AbandonedStationRewardTests
         loot["STATION_RESEARCH_GEAR"].Select(i => i.Resref).Should().BeEquivalentTo(BiolabArmor);
         loot["STATION_GEAR"].Select(i => i.Resref).Should().BeEquivalentTo(
             loot["STATION_SECURITY_GEAR"].Concat(loot["STATION_CREW_GEAR"]).Concat(loot["STATION_RESEARCH_GEAR"]).Select(i => i.Resref),
-            "rakghouls, test subjects and the rancor carry whatever their victims wore");
+            "colicoids, test subjects and the rancor carry whatever their victims wore");
         foreach (var table in new[] { "STATION_SECURITY_GEAR", "STATION_CREW_GEAR", "STATION_RESEARCH_GEAR", "STATION_GEAR" })
             loot[table].Should().OnlyContain(i => i.Weight == 1 && i.MaxQuantity == 1, table);
 
@@ -375,12 +375,12 @@ public class AbandonedStationRewardTests
         ("abs_ztech", "STATION_CREW_GEAR", 5),
         ("abs_zresearch", "STATION_RESEARCH_GEAR", 5),
         ("abs_zguard", "STATION_SECURITY_GEAR", 10),
-        ("abs_rakghoul", "STATION_GEAR", 5),
+        ("abs_colicoid", "STATION_GEAR", 5),
         ("abs_zgenetic", "STATION_RESEARCH_GEAR", 10),
         ("abs_zsubject", "STATION_GEAR", 10),
-        ("abs_rakstalk", "STATION_GEAR", 10),
-        ("abs_rakbrute", "STATION_GEAR", 20),
-        ("abs_rakalpha", "STATION_GEAR", 50),
+        ("abs_colstalk", "STATION_GEAR", 10),
+        ("abs_colbrute", "STATION_GEAR", 20),
+        ("abs_colalpha", "STATION_GEAR", 50),
         ("abs_zdirector", "STATION_RESEARCH_GEAR", 100),
         ("abs_zrancor", "STATION_GEAR", 100),
     };

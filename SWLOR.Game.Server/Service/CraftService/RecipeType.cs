@@ -3470,5 +3470,8 @@ namespace SWLOR.Game.Server.Service.CraftService
         SongDiscStormtroopers = 6275,
         SongDiscThemeLando = 6276,
         SongDiscLandoCalrissian = 6277,
+        ArkanianDragonHelm = 6278,
+        ArkanianDragonWardRing = 6279,
+        ArkanianDragonForceRing = 6280,
     }
 }

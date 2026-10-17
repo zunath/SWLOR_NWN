@@ -12,7 +12,7 @@ using SWLOR.NWN.API.NWScript.Enum.Item;
 
 namespace SWLOR.Game.Server.Feature.MigrationDefinition;
 
-/// <summary>Repairs the chest-slot headgear shipped before the blueprint correction, without replacing items or revising their stats.</summary>
+/// <summary>Repairs legacy headgear slots and reserved visor models without replacing items or revising their stats.</summary>
 public static class HeadgearSlotMigration
 {
     // 8382511cf changed these exact crafted resrefs from Armor to Helmet. The
@@ -20,15 +20,21 @@ public static class HeadgearSlotMigration
     public static IReadOnlyDictionary<string, int> LegacyHeadgear { get; } =
         new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase)
         {
-            ["beaconmarkscr"] = 223, ["charm_cowl"] = 33, ["chemslingercr"] = 223,
-            ["dunedeadeyecr"] = 223, ["enclavesentlcr"] = 223, ["flameweavercr"] = 223,
-            ["markahungercr"] = 223, ["precision_optic"] = 223, ["quillstalkercr"] = 223,
-            ["rite_crown"] = 11, ["ruptorvanecr"] = 223, ["siege_optics"] = 223,
-            ["thermlancercr"] = 223,
+            ["beaconmarkscr"] = 110, ["charm_cowl"] = 33, ["chemslingercr"] = 110,
+            ["dunedeadeyecr"] = 110, ["enclavesentlcr"] = 110, ["flameweavercr"] = 110,
+            ["markahungercr"] = 110, ["precision_optic"] = 110, ["quillstalkercr"] = 110,
+            ["rite_crown"] = 11, ["ruptorvanecr"] = 110, ["siege_optics"] = 110,
+            ["thermlancercr"] = 110,
         };
 
     public static bool IsLegacyHeadgear(string resref, BaseItem baseItem) =>
         baseItem == BaseItem.Armor && resref != null && LegacyHeadgear.ContainsKey(resref);
+
+    public static int GetCorrectedModel(string resref, BaseItem baseItem, int model) =>
+        resref != null && LegacyHeadgear.TryGetValue(resref, out var fallback) &&
+        (baseItem == BaseItem.Armor || baseItem == BaseItem.Helmet) &&
+        (baseItem == BaseItem.Armor && model <= 0 || model == 223 && fallback == 110)
+            ? fallback : model;
 
     /// <summary>Traverses equipped, carried and nested items, plus controller-backed and summoned droid inventories.</summary>
     public static bool MigrateObject(uint obj) => LootStatRevisionMigration.MigrateHeadgear(obj);
@@ -37,7 +43,17 @@ public static class HeadgearSlotMigration
 
     internal static bool ConvertItem(uint item)
     {
-        if (!IsLegacyHeadgear(GetResRef(item), GetBaseItemType(item))) return false;
+        var resref = GetResRef(item);
+        var baseItem = GetBaseItemType(item);
+        if (baseItem == BaseItem.Helmet)
+        {
+            var model = GetItemAppearance(item, ItemAppearanceType.SimpleModel, 0);
+            var corrected = GetCorrectedModel(resref, baseItem, model);
+            if (corrected == model) return false;
+            ItemPlugin.SetItemAppearance(item, ItemAppearanceType.SimpleModel, 0, corrected, updateCreatureAppearance: true);
+            return true;
+        }
+        if (!IsLegacyHeadgear(resref, baseItem)) return false;
         var owner = GetItemPossessor(item);
         var equipped = GetObjectType(owner) == ObjectType.Creature && GetItemInSlot(InventorySlot.Chest, owner) == item;
         var record = IsPlayer(owner) ? DB.Get<Player>(GetObjectUUID(owner)) : null;
@@ -51,8 +67,10 @@ public static class HeadgearSlotMigration
             if (equipped && !PlayerEquipmentStorage.TryUnequip(owner, item, InventorySlot.Chest))
                 throw new PlayerMigrationDeferredException("Free inventory space, then reconnect to complete your equipment update.");
             ItemPlugin.SetBaseItemType(item, BaseItem.Helmet);
-            if (GetItemAppearance(item, ItemAppearanceType.SimpleModel, 0) <= 0)
-                ItemPlugin.SetItemAppearance(item, ItemAppearanceType.SimpleModel, 0, LegacyHeadgear[GetResRef(item)]);
+            var model = GetItemAppearance(item, ItemAppearanceType.SimpleModel, 0);
+            var corrected = GetCorrectedModel(resref, baseItem, model);
+            if (corrected != model)
+                ItemPlugin.SetItemAppearance(item, ItemAppearanceType.SimpleModel, 0, corrected);
 
             // Never swap out the player's existing helmet. A failed validation
             // leaves this same object in its reserved owned inventory location.
@@ -123,15 +141,18 @@ public static class HeadgearSlotMigration
                 // Capture the legacy root before conversion; nested gear must
                 // not move its containing bag out of an equipment slot.
                 var originalItem = (string)entry.Value;
-                var moveChest = repairHeadgear &&
-                    (field == "EquippedItems" && (entry.Name == "Chest" || entry.Name == ((int)InventorySlot.Chest).ToString()) ||
-                     field == "Inventory" && entry.Name.StartsWith(Droid.GetPendingItemRestoreKey(InventorySlot.Chest, ""), StringComparison.Ordinal)) &&
-                    StoredObjectData.IsLegacyHeadgearRoot(originalItem);
+                var chestHeadgear = repairHeadgear && StoredObjectData.IsLegacyHeadgearRoot(originalItem);
+                var correction = repairHeadgear ? StoredObjectData.GetEquipmentSlotCorrection(originalItem) : null;
+                var previousSlot = chestHeadgear ? InventorySlot.Chest : correction?.Previous ?? InventorySlot.Arms;
+                var targetSlot = chestHeadgear ? InventorySlot.Head : correction?.Target ?? previousSlot;
+                var moveSlot = targetSlot != previousSlot &&
+                    (field == "EquippedItems" && (entry.Name == previousSlot.ToString() || entry.Name == ((int)previousSlot).ToString()) ||
+                     field == "Inventory" && entry.Name.StartsWith(Droid.GetPendingItemRestoreKey(previousSlot, ""), StringComparison.Ordinal));
                 var migrated = migrateItem(originalItem);
                 if (originalItem == migrated) continue;
-                if (moveChest)
+                if (moveSlot)
                 {
-                    // The existing pending-restore path tries Head on summon;
+                    // The pending-restore path tries the corrected slot on summon;
                     // occupied slots or validation failure leave it carried.
                     if (droid["Inventory"] is not JObject inventory)
                     {
@@ -140,12 +161,12 @@ public static class HeadgearSlotMigration
                     }
                     var id = StoredObjectData.ReadRootString(migrated, "DROID_ITEM_ID");
                     if (string.IsNullOrWhiteSpace(id) || inventory.Property(id) != null ||
-                        inventory.Property(Droid.GetPendingItemRestoreKey(InventorySlot.Head, id)) != null)
+                        inventory.Property(Droid.GetPendingItemRestoreKey(targetSlot, id)) != null)
                     {
                         id = Guid.NewGuid().ToString();
                         migrated = StoredObjectData.SetRootString(migrated, "DROID_ITEM_ID", id);
                     }
-                    var restoreKey = Droid.GetPendingItemRestoreKey(InventorySlot.Head, id);
+                    var restoreKey = Droid.GetPendingItemRestoreKey(targetSlot, id);
                     inventory[restoreKey] = migrated;
                     movedInventoryIds.Add(restoreKey);
                     entry.Remove();

@@ -14,6 +14,7 @@ using SWLOR.Game.Server.Service.GuiService.Component;
 using SWLOR.Game.Server.Service.KeyItemService;
 using SWLOR.Game.Server.Service.NPCService;
 using SWLOR.Game.Server.Service.PerkService;
+using SWLOR.Game.Server.Service.PlayerListService;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.Game.Server.Service.TaxiService;
 using SWLOR.NWN.API.NWScript.Enum;
@@ -108,6 +109,7 @@ namespace SWLOR.Game.Server.Entity
             UndisguisedSoundSetId = -1;
             UndisguisedDescription = string.Empty;
             HasUndisguisedDescriptionSnapshot = false;
+            PlayerListFlags = new List<PlayerListFlagType>();
         }
 
 
@@ -193,6 +195,8 @@ namespace SWLOR.Game.Server.Entity
         public int UndisguisedSoundSetId { get; set; }
         public string UndisguisedDescription { get; set; }
         public bool HasUndisguisedDescriptionSnapshot { get; set; }
+        // Player list flags for the undisguised identity; each disguise keeps its own.
+        public List<PlayerListFlagType> PlayerListFlags { get; set; }
 
         public PlayerSettings Settings { get; set; }
         public Dictionary<SkillType, int> Control { get; set; }

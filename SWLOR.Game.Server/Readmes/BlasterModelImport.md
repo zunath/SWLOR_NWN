@@ -177,6 +177,16 @@ a proper rotation and two independent reviewed axis pairs. Audit every native
 B/M/T consumer before replacing shared resources: ModelPart1 is bottom, 2 middle,
 3 top. Top-level `aliases` are only for simple models; composite variants use
 role-preserving aliases on their individual parts.
+
+Large shields use base item **56**, simple model family `ashlw_###`, inventory
+artwork `iashlw_###.dds`, and a **64-by-128** icon canvas (64-by-96 logical
+artwork). Export one complete model per shield appearance. Measure its native
+root, front and up axes from the source shield and verify the left-hand grip;
+do not apply composite weapon cuts. Preserve the two native shield impact
+hooks with optional `attachment_dummies`, each containing `name`
+(`imp_shield_1` or `imp_shield_2`), root-space `position`, and a unit XYZW
+`quaternion`. These hooks position impact effects; they are separate from the
+grip geometry. Keep the existing appearance IDs and persisted item instances.
 `parts` entries have `model`, `plane_y`, `clip_side` (`above`/`below`) and optional
 `aliases` for complementary uncapped splits. Optional top-level `empty_parts`
 entries require `model`, `base_item` and `icon_size` and are permitted only for

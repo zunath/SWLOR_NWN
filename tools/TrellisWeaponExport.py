@@ -9,7 +9,10 @@ Schema 1 assets: asset, source (relative GLB), sha256, base_item. Export also
 requires model, texture (<=14 characters), texture_size (512/1024), scale,
 orientation (proper 3x3 rotation), source_grip, target_grip, attachment with
 review_notes and two independent source/target axis_pairs, and icon_size (the
-actual native canvas, not merely baseitems inventory slots). Transforms refer
+actual native canvas, not merely baseitems inventory slots). Simple large shields
+may preserve both native impact hooks with attachment_dummies entries containing
+name (imp_shield_1/2), position and unit XYZW quaternion in fitted root space.
+Transforms refer
 to imported Blender WORLD coordinates, after glTF axis conversion. Composite
 exports require bottom/middle/top coverage in parts or composite_assemblies.
 Parts support plane_y/clip_side or clip_min_y/clip_max_y interval bounds.
@@ -395,14 +398,45 @@ def base_item_row(repo,base_item):
     if len(rows)!=1 or len(rows[0])!=len(headers)+1:
         raise ValueError('Missing/ambiguous/incomplete baseitem row '+str(base_item))
     values=dict(zip(headers,rows[0][1:]))
-    if int(values['ModelType']) not in (0,2) or not re.fullmatch(r'w[a-z0-9_]{2,9}',values['ItemClass'].lower()):
-        raise ValueError('Expected simple/composite weapon baseitem')
+    family=values['ItemClass'].lower();model_type=int(values['ModelType'])
+    weapon=model_type in (0,2) and re.fullmatch(r'w[a-z0-9_]{2,9}',family)
+    shield=model_type==0 and family=='ashlw'
+    if not (weapon or shield):
+        raise ValueError('Expected simple/composite weapon or simple large shield baseitem')
     return values
 
 
 def validate_model_name(model,item_class,model_type):
     pattern=re.escape(item_class)+(r'_[bmt]_\d{3}' if model_type==2 else r'_\d{3}')
     if not isinstance(model,str) or len(model)>15 or not re.fullmatch(pattern,model):raise ValueError('Model resource does not match baseitem family: '+model)
+
+
+def attachment_dummy_nodes(config,model):
+    if 'attachment_dummies' not in config:return ''
+    dummies=config['attachment_dummies']
+    if config['_item_class']!='ashlw' or config['_model_type']!=0:
+        raise ValueError('attachment_dummies requires a simple large shield')
+    if not isinstance(dummies,list) or len(dummies)!=2 or any(not isinstance(d,dict) for d in dummies):
+        raise ValueError('Expected both native shield impact attachment_dummies')
+    if {d.get('name') for d in dummies}!={'imp_shield_1','imp_shield_2'}:
+        raise ValueError('Expected unique imp_shield_1 and imp_shield_2 attachment_dummies')
+    lines=[]
+    for dummy in dummies:
+        position=vector3(dummy.get('position'),'attachment dummy position')
+        q=dummy.get('quaternion')
+        if not isinstance(q,list) or len(q)!=4 or not all(number(v) for v in q):
+            raise ValueError('attachment dummy quaternion must be finite XYZW')
+        length=math.sqrt(sum(v*v for v in q))
+        if abs(length-1)>1e-4:raise ValueError('attachment dummy quaternion must be unit length')
+        q=[v/length for v in q]
+        if q[3]<0:q=[-v for v in q]
+        sine=math.sqrt(sum(v*v for v in q[:3]))
+        axis=[v/sine for v in q[:3]] if sine>1e-12 else [0.,0.,1.]
+        angle=2*math.atan2(sine,q[3]) if sine>1e-12 else 0.
+        lines += [f"node dummy {dummy['name']}",f'  parent {model}',
+                  '  position '+' '.join(f'{v:.9g}' for v in position),
+                  '  orientation '+' '.join(f'{v:.9g}' for v in [*axis,angle]),'endnode']
+    return '\n'.join(lines)+'\n'
 
 
 def compact_subset(exported,triangles,material_index):
@@ -623,6 +657,7 @@ def write_parts(config,resources,helpers,mesh_data,mesh_names,materials):
             return match.group(0).replace('material_pending',textures[i]).replace('blaster'+str(i),'weapon'+str(i),1)
         text=re.sub(r'node trimesh.*?endnode',material_block,text,flags=re.S)
         if counter[0]!=len(textures) or 'material_pending' in text:raise ValueError('Exporter material binding mismatch')
+        text=text.replace(f'endmodelgeom {model}',attachment_dummy_nodes(config,model)+f'endmodelgeom {model}')
         mdl.write_text(text,encoding='ascii')
         points=[Vector(v) for mesh in selected for v in mesh[0]]
         reports.append({'model':model,'clip':part,'triangles':sum(len(m[2]) for m in selected),'bounds_min':[min(v[i] for v in points) for i in range(3)],'bounds_max':[max(v[i] for v in points) for i in range(3)]})
@@ -815,6 +850,8 @@ def validate_manifest(config, repo, manifest, mode):
             raise ValueError('Composite top-level aliases are not allowed; use role-preserving part aliases')
         declared=list(item.get('aliases',[]))
         for part in parts:
+            if item['_item_class']=='ashlw' and any(key in part for key in ('clip_min_y','clip_max_y','plane_y','clip_side')):
+                raise ValueError('Shields require the complete surface; clipping is not allowed')
             if ('clip_side' in part)!=('plane_y' in part):raise ValueError('Split requires plane_y and clip_side')
             if 'clip_side' in part and (part['clip_side'] not in ('above','below') or not number(part['plane_y'])):
                 raise ValueError('Invalid part split')
@@ -851,6 +888,7 @@ def validate_manifest(config, repo, manifest, mode):
                 elif source_part.get('clip_side')=='below':high=source_part['plane_y']
                 selection={'sha256':item['sha256'],'matrix':matrix,'translation':translation,'clip':[None if low is None else clean(low),None if high is None else clean(high)]}
                 output_selections[model]=json.dumps(selection,sort_keys=True)
+        attachment_dummy_nodes(item,item['model'])
         if item['_model_type']==2:
             composites.append((asset,declared,[part['model'].rsplit('_',2)[-2] for part in parts]))
     if mode=='export':
@@ -895,6 +933,8 @@ def validate_manifest(config, repo, manifest, mode):
                 raise ValueError('Composite export requires real bottom, middle and top parts in the asset or composite_assemblies: '+asset)
         for part in config.get('empty_parts',[]):
             row=base_item_row(repo,part['base_item']);model=part['model']
+            if row['ItemClass'].lower()=='ashlw':
+                raise ValueError('Shields require real geometry; empty_parts is not allowed: '+model)
             if int(row['ModelType'])==2:
                 raise ValueError('Composite weapons require real bottom, middle and top parts; empty_parts is not allowed: '+model)
             validate_model_name(model,row['ItemClass'].lower(),int(row['ModelType']))
@@ -934,17 +974,49 @@ def validate_native(path, source, runtime):
     def name(offset,size):
         require(offset>=12 and offset+size<=raw,'Native name out of bounds')
         return data[offset:offset+size].split(b'\0',1)[0].decode('ascii')
-    nodes={};pointers=set();pending=[struct.unpack_from('<I',data,84)[0]]
+    nodes={};parents={};pointers=set();pending=[(struct.unpack_from('<I',data,84)[0], 'NULL')]
     while pending:
-        pointer=pending.pop();node=12+pointer
+        pointer,parent=pending.pop();node=12+pointer
         require(pointer not in pointers and len(pointers)<10000,'Cyclic/oversized native node graph')
         pointers.add(pointer)
-        label=name(node+32,32);require(label not in nodes,'Duplicate native node name');nodes[label]=node
+        label=name(node+32,32);require(label not in nodes,'Duplicate native node name');nodes[label]=node;parents[label]=parent
         offset,count,_=unpack('<III',node+72,raw)
         require(count<=10000,'Oversized native child table')
-        pending.extend(unpack('<I',12+offset+4*i,raw)[0] for i in range(count))
-    blocks=re.findall(r'node trimesh (\S+)(.*?)endnode',source.read_text(),re.S)
-    require(set(nodes)=={path.stem}|{n for n,_ in blocks},'Native node set changed')
+        pending.extend((unpack('<I',12+offset+4*i,raw)[0], label) for i in range(count))
+    source_nodes=re.findall(r'node (dummy|trimesh) (\S+)(.*?)endnode',source.read_text(),re.S)
+    require(len({label for _,label,_ in source_nodes})==len(source_nodes),'Duplicate ASCII node name')
+    require(set(nodes)=={label for _,label,_ in source_nodes},'Native node set changed')
+    blocks=[(label,block) for kind,label,block in source_nodes if kind=='trimesh']
+    dummies=[]
+    for kind,label,block in source_nodes:
+        parent=re.search(r'^\s*parent\s+(\S+)',block,re.M)
+        require(parent is not None and parents[label]==parent[1],'Native node parent changed: '+label)
+        if kind!='dummy':continue
+        node=nodes[label]
+        require(unpack('<I',node+108,raw)[0]==1,'Native dummy acquired geometry: '+label)
+        key_offset,key_count,_=unpack('<III',node+84,raw)
+        data_offset,data_count,_=unpack('<III',node+96,raw)
+        require(key_count<=1000 and data_count<=10000,'Oversized native controllers')
+        actual={8:np.zeros(3),20:np.asarray([0.,0.,0.,1.]),36:np.ones(1)}
+        seen=set()
+        for index in range(key_count):
+            controller,rows,_,start,columns=unpack('<IHHHBx',12+key_offset+index*12,raw)
+            require(controller in actual and controller not in seen and rows==1 and columns==len(actual[controller]),'Unexpected native dummy controller: '+label)
+            require(start+columns<=data_count,'Native controller data out of bounds')
+            actual[controller]=np.asarray(unpack('<'+'f'*columns,12+data_offset+start*4,raw));seen.add(controller)
+        def source_values(key,default):
+            match=re.search(r'^\s*'+key+r'\s+([^\n]+)',block,re.M)
+            return np.asarray(list(map(float,match[1].split()))) if match else np.asarray(default)
+        position=source_values('position',[0,0,0]);orientation=source_values('orientation',[0,0,1,0]);scale=source_values('scale',[1])
+        require(len(position)==3 and len(orientation)==4 and len(scale)==1,'Invalid ASCII dummy transform')
+        axis=orientation[:3];angle=orientation[3];length=np.linalg.norm(axis)
+        require(length>0 or abs(angle)<1e-12,'Invalid ASCII dummy rotation')
+        quaternion=np.r_[axis/max(length,1e-30)*math.sin(angle/2),math.cos(angle/2)]
+        require(all(np.isfinite(value).all() for value in (*actual.values(),position,quaternion,scale)),'Nonfinite dummy transform')
+        position_error=float(np.max(abs(actual[8]-position)))
+        rotation_error=float(min(np.max(abs(actual[20]-quaternion)),np.max(abs(actual[20]+quaternion))))
+        require(position_error<1e-6 and rotation_error<1e-6 and np.max(abs(actual[36]-scale))<1e-6,'Native dummy transform changed: '+label)
+        dummies.append({'node':label,'parent':parents[label],'max_position_error':position_error,'max_quaternion_error':rotation_error})
     meshes=[]
     for label,block in blocks:
         mesh=nodes[label]+112
@@ -986,7 +1058,7 @@ def validate_native(path, source, runtime):
             require(found,'Native position/UV/normal/winding changed: '+path.name+'/'+label)
         meshes.append({'node':label,'triangles':fc,'max_position_uv_normal_error':errors.tolist()})
     if not blocks:require(len(nodes)==1 and raw==len(data),'Dummy acquired geometry')
-    return {'model':path.stem,'meshes':meshes,'sha256':hashlib.sha256(data).hexdigest()}
+    return {'model':path.stem,'meshes':meshes,'dummies':dummies,'sha256':hashlib.sha256(data).hexdigest()}
 
 
 def dds_header(data, size, mips, fourcc):

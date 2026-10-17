@@ -3,6 +3,7 @@ import copy
 import hashlib
 import importlib.util
 import json
+import os
 import re
 from pathlib import Path
 import struct
@@ -38,7 +39,7 @@ class TrellisWeaponExportTests(unittest.TestCase):
         self.addCleanup(self.temporary.cleanup)
         self.root = Path(self.temporary.name)
         table = self.root / 'SWLOR_Haks/sw_2da'; table.mkdir(parents=True)
-        (table / 'baseitems.2da').write_text('2DA V2.0\n\nItemClass ModelType InvSlotWidth InvSlotHeight\n12 wdbsw 2 2 5\n59 wthsh 0 1 1\n')
+        (table / 'baseitems.2da').write_text('2DA V2.0\n\nItemClass ModelType InvSlotWidth InvSlotHeight\n12 wdbsw 2 2 5\n56 AShLw 0 2 3\n59 wthsh 0 1 1\n')
         self.source = self.root / 'input.glb'
         self.document = {'asset': {'version': '2.0'}, 'buffers': [{'byteLength': 4}],
                          'materials': [{'pbrMetallicRoughness': {}}], 'meshes': [{'primitives': [
@@ -83,6 +84,128 @@ class TrellisWeaponExportTests(unittest.TestCase):
         asset.update(base_item=59, model='wthsh_011', icon_size=[32,32]); asset.pop('parts')
         with self.assertRaisesRegex(ValueError,'occupied'):
             self.validate(asset, empty_parts=[{'model':'wthsh_011','base_item':59,'icon_size':[32,32]}])
+
+    def test_large_shield_uses_one_native_model_and_padded_inventory_canvas(self):
+        asset=copy.deepcopy(self.asset)
+        asset.update(base_item=56,model='ashlw_255',icon_size=[64,128]);asset.pop('parts')
+        checked=self.validate(asset)['assets'][0]
+        self.assertEqual(checked['_item_class'],'ashlw')
+        self.assertEqual(checked['_model_type'],0)
+        self.assertEqual(checked['_icon_art_size'],[64,96])
+        for key,value in [('model','ashlw_m_255'),('model','wthsh_255'),('icon_size',[64,64])]:
+            invalid=copy.deepcopy(asset);invalid[key]=value
+            with self.subTest(key=key,value=value),self.assertRaises(ValueError):self.validate(invalid)
+
+    def test_shields_reject_every_partial_surface_selection(self):
+        for selection in ({'clip_min_y':0}, {'clip_max_y':0}, {'plane_y':0},
+                          {'clip_side':'below'}, {'plane_y':0,'clip_side':'below'}):
+            asset=copy.deepcopy(self.asset)
+            asset.update(base_item=56,model='ashlw_031',icon_size=[64,128])
+            asset['parts']=[{'model':'ashlw_031',**selection}]
+            with self.subTest(selection=selection),self.assertRaisesRegex(ValueError,'complete surface'):
+                self.validate(asset)
+
+    def test_shields_reject_empty_resources_even_when_slot_is_unoccupied(self):
+        with self.assertRaisesRegex(ValueError,'Shields require real geometry'):
+            self.validate(empty_parts=[{'model':'ashlw_032','base_item':56,'icon_size':[64,128]}])
+
+    def test_shield_support_does_not_admit_other_armor_or_composite_shields(self):
+        table=self.root/'SWLOR_Haks/sw_2da/baseitems.2da'
+        table.write_text(table.read_text()+'60 AShLw 2 2 3\n61 AHe 0 2 2\n62 AShLw 1 2 3\n')
+        for base_item in (60,61,62):
+            with self.subTest(base_item=base_item),self.assertRaisesRegex(ValueError,'baseitem'):
+                exporter.base_item_row(self.root,base_item)
+
+    def test_shield_impact_hooks_validate_family_identity_and_transform(self):
+        asset=copy.deepcopy(self.asset)
+        asset.update(base_item=56,model='ashlw_031',icon_size=[64,128]);asset.pop('parts')
+        hooks=[{'name':name,'position':[0,0,0],'quaternion':[0,0,0,1]} for name in ('imp_shield_1','imp_shield_2')]
+        asset['attachment_dummies']=hooks;self.validate(asset)
+        invalid=copy.deepcopy(self.asset);invalid['attachment_dummies']=hooks
+        with self.assertRaisesRegex(ValueError,'simple large shield'):self.validate(invalid)
+        for key,value in [('name','unknown'),('name','imp_shield_2'),('position',[0,float('nan'),0]),
+                          ('quaternion',[0,0,0,0]),('quaternion',[0,0,0,2]),('quaternion',[0,False,0,1])]:
+            invalid=copy.deepcopy(asset);invalid['attachment_dummies'][0][key]=value
+            with self.subTest(key=key,value=value),self.assertRaises(ValueError):self.validate(invalid)
+        for value in (None,[],hooks[:1]):
+            invalid=copy.deepcopy(asset);invalid['attachment_dummies']=value
+            with self.subTest(hooks=value),self.assertRaises(ValueError):self.validate(invalid)
+
+    @unittest.skipUnless(HAS_BLENDER,'Run Blender 4.0 for shield dummy export')
+    def test_shield_export_preserves_native_impact_hooks_and_alias_parents(self):
+        exporter.bpy.ops.wm.read_factory_settings(use_empty=True)
+        asset=copy.deepcopy(self.asset)
+        asset.update(base_item=56,model='ashlw_031',icon_size=[64,128]);asset.pop('parts')
+        asset['attachment_dummies']=[
+            {'name':'imp_shield_1','position':[-.0883441,-.1016,.0776264],'quaternion':[0,.043619405,0,.99904823]},
+            {'name':'imp_shield_2','position':[-.0698349,.0248255,-.052034],'quaternion':[0,-.130526,0,.9914449]}]
+        config=self.validate(asset)['assets'][0]
+        helper=exporter.load_module('shield_test_writer',ROOT/'tools/ImportBlasterModel.py')
+        mesh=([(0,0,0),(0,1,0),(0,0,1)],[(0,0),(1,0),(0,1)],[(0,1,2)],[(1,0,0)]*3)
+        material=exporter.bpy.data.materials.new('shield_mat')
+        exporter.write_parts(config,self.root,helper,[mesh],['shield_mat'],{'shield_mat':material})
+        text=(self.root/'ashlw_031.mdl').read_text()
+        alias=exporter.alias_model_identifiers(text,'ashlw_031','ashlw_032')
+        for native in asset['attachment_dummies']:
+            block=re.search(r'node dummy '+native['name']+r'\n(.*?)endnode',text,re.S).group(1)
+            self.assertIn('parent ashlw_031',block)
+            position=[float(v) for v in re.search(r'position ([^\n]+)',block).group(1).split()]
+            self.assertEqual(position,native['position'])
+            orientation=[float(v) for v in re.search(r'orientation ([^\n]+)',block).group(1).split()]
+            actual=exporter.Quaternion(exporter.Vector(orientation[:3]),orientation[3])
+            q=native['quaternion'];expected=exporter.Quaternion([q[3],*q[:3]]).normalized()
+            self.assertAlmostEqual(abs(actual.dot(expected)),1.,places=6)
+            alias_block=re.search(r'node dummy '+native['name']+r'\n(.*?)endnode',alias,re.S).group(1)
+            self.assertIn('parent ashlw_032',alias_block)
+            self.assertEqual(block.replace('ashlw_031','ashlw_032'),alias_block)
+        self.assertIn('bitmap shield_mat',text)
+
+    @unittest.skipUnless(HAS_BLENDER and os.environ.get('NWN_NATIVE_COMPILER'),'Set NWN_NATIVE_COMPILER under Blender for native package validation')
+    def test_native_shield_hooks_and_aliases_survive_compilation_and_detect_corruption(self):
+        exporter.bpy.ops.wm.read_factory_settings(use_empty=True)
+        asset=copy.deepcopy(self.asset)
+        asset.update(base_item=56,model='ashlw_031',icon_size=[64,128]);asset.pop('parts')
+        asset['attachment_dummies']=[
+            {'name':'imp_shield_1','position':[-.0883441,-.1016,.0776264],'quaternion':[0,.043619405,0,.99904823]},
+            {'name':'imp_shield_2','position':[-.0698349,.0248255,-.052034],'quaternion':[0,-.130526,0,.9914449]}]
+        config=self.validate(asset)['assets'][0]
+        resources=self.root/'resources';resources.mkdir()
+        helper=exporter.load_module('native_shield_writer',ROOT/'tools/ImportBlasterModel.py')
+        mesh=([(0,0,0),(0,1,0),(0,0,1)],[(0,0),(1,0),(0,1)],[(0,1,2)],[(1,0,0)]*3)
+        material=exporter.bpy.data.materials.new('shield_mat')
+        exporter.write_parts(config,resources,helper,[mesh],['shield_mat'],{'shield_mat':material})
+        source=resources/'ashlw_031.mdl'
+        (resources/'ashlw_032.mdl').write_text(exporter.alias_model_identifiers(source.read_text(),'ashlw_031','ashlw_032'))
+        (resources/'shield_mat.mtr').write_text('renderhint NormalAndSpecMapped\ntexture0 shield_mat\ntexture1 shield_mat_n\n')
+        compiler=exporter.load_module('native_shield_compiler',ROOT/'tools/CompileBlasterModels.py')
+        compiled=self.root/'compiled'
+        compiler.compile_models(os.environ['NWN_NATIVE_COMPILER'],resources,compiled,[])
+        for model in ('ashlw_031','ashlw_032'):
+            report=exporter.validate_native(compiled/(model+'.mdl'),resources/(model+'.mdl'),resources)
+            self.assertEqual({dummy['node'] for dummy in report['dummies']},{model,'imp_shield_1','imp_shield_2'})
+            self.assertTrue(all(dummy['parent']==model for dummy in report['dummies'] if dummy['node']!=model))
+        target=compiled/'ashlw_031.mdl';original=target.read_bytes()
+        hook=original.index(b'imp_shield_1')-32
+        key_offset,key_count,_=struct.unpack_from('<III',original,hook+84)
+        data_offset=struct.unpack_from('<I',original,hook+96)[0]
+        for controller in (8,20):
+            for index in range(key_count):
+                kind,_,_,start,columns=struct.unpack_from('<IHHHBx',original,12+key_offset+index*12)
+                if kind!=controller:continue
+                changed=bytearray(original);address=12+data_offset+start*4
+                value=struct.unpack_from('<f',changed,address)[0];struct.pack_into('<f',changed,address,value+.01)
+                target.write_bytes(changed)
+                with self.subTest(controller=controller),self.assertRaisesRegex(ValueError,'dummy transform changed'):
+                    exporter.validate_native(target,source,resources)
+                break
+            else:self.fail('Compiled shield hook has no transform controller '+str(controller))
+        target.write_bytes(original)
+        expected=source.read_text()
+        # Test the declared hierarchy independently of transform values.
+        source.write_text(re.sub(r'(node dummy imp_shield_1\n\s*parent )ashlw_031',r'\1imp_shield_2',expected))
+        with self.assertRaisesRegex(ValueError,'parent changed'):exporter.validate_native(target,source,resources)
+        source.write_text(expected.replace('node dummy imp_shield_1','node dummy missing_hook'))
+        with self.assertRaisesRegex(ValueError,'node set changed'):exporter.validate_native(target,source,resources)
 
     def test_multipart_aliases_are_validated_individually(self):
         asset = copy.deepcopy(self.asset)

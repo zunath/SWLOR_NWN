@@ -103,5 +103,5 @@ Before writing code in an unfamiliar area, find two or three existing examples o
 
 ## Agent Skills and Read-Only Areas
 
-- Skills live in `.codex/skills/` and are mirrored to `.claude/skills/`. Edit only `.codex/skills/`, then run `powershell -ExecutionPolicy Bypass -File tools/SyncAgentSkills.ps1` (`-CheckOnly` to verify). `agents/openai.yaml` files are Codex-only and not mirrored. Keep skill text agent-neutral.
+- Shared skills live only in `skills/`. After cloning or moving a checkout, run `powershell -NoProfile -ExecutionPolicy Bypass -File tools/SyncAgentSkills.ps1` to link `.agents/skills` (Codex) and `.claude/skills` (Claude) to it; use `-CheckOnly` to verify. On Windows without symbolic-link privileges, the script uses directory junctions without elevation. Links are local and ignored by Git. Edit only `skills/`; keep skill text agent-neutral. `agents/openai.yaml` is optional Codex metadata.
 - The Unified solution (`C:\Projects\unified`) is read-only reference material. Never change it.

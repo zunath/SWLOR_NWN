@@ -5,7 +5,7 @@ description: Import, create, replace, or refit SWLOR pistol blaster models throu
 
 # SWLOR Blaster Models
 
-Use the [model workflow](../../../SWLOR.Game.Server/Readmes/BlasterModelImport.md)
+Use the model workflow at `SWLOR.Game.Server/Readmes/BlasterModelImport.md` (from the repository root)
 for commands, a local import-manifest example, material rules and fitting details.
 Inspect the parent checkout and HAK submodule used for testing; worktree changes
 do not automatically reach another checkout's build inputs.

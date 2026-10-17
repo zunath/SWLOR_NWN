@@ -1,82 +1,107 @@
-# Mirrors canonical agent skills from .codex/skills into .claude/skills so both
-# Codex and Claude Code discover the same skills. Codex-only files under each
-# skill's agents/ directory (openai.yaml) are excluded from the mirror.
-#
-# Usage:
-#   powershell -ExecutionPolicy Bypass -File tools/SyncAgentSkills.ps1             # sync mirror
-#   powershell -ExecutionPolicy Bypass -File tools/SyncAgentSkills.ps1 -CheckOnly  # report drift, exit 1 if out of sync
+# Creates agent discovery links to the one canonical skills/ directory.
+# Run after cloning or moving a checkout. No files are copied.
+# Windows uses junctions if symbolic-link creation needs unavailable privileges.
+# Usage: powershell -NoProfile -ExecutionPolicy Bypass -File tools/SyncAgentSkills.ps1 [-CheckOnly]
 [CmdletBinding()]
-param(
-    [switch]$CheckOnly
-)
+param([switch]$CheckOnly)
 
+Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
 
-$repoRoot = Split-Path -Parent $PSScriptRoot
-$source = Join-Path $repoRoot '.codex\skills'
-$mirror = Join-Path $repoRoot '.claude\skills'
+$repoRoot = [IO.Path]::GetFullPath((Split-Path -Parent $PSScriptRoot))
+$sharedRoot = Join-Path $repoRoot 'skills'
+$isWindowsHost = [Environment]::OSVersion.Platform -eq [PlatformID]::Win32NT
+$pathComparison = [StringComparison]::Ordinal
+if ($isWindowsHost) { $pathComparison = [StringComparison]::OrdinalIgnoreCase }
 
-if (-not (Test-Path $source)) {
-    throw "Canonical skills directory not found: $source"
+function Normalize-Path([string]$path) {
+    [IO.Path]::GetFullPath($path).TrimEnd([IO.Path]::DirectorySeparatorChar, [IO.Path]::AltDirectorySeparatorChar)
 }
 
-function Get-SkillFiles([string]$root) {
-    if (-not (Test-Path $root)) { return @() }
-    Get-ChildItem $root -Recurse -File |
-        ForEach-Object { $_.FullName.Substring($root.Length + 1) } |
-        Where-Object { $_ -notmatch '^[^\\]+\\agents\\' }
+function Get-Entry([string]$path) {
+    Get-Item -LiteralPath $path -Force -ErrorAction SilentlyContinue
 }
 
-$sourceFiles = @(Get-SkillFiles $source)
-$mirrorFiles = @(Get-SkillFiles $mirror)
+function Test-DirectoryLink($entry) {
+    $entry -and ($entry.Attributes -band [IO.FileAttributes]::ReparsePoint) -and
+        $entry.LinkType -in @('SymbolicLink', 'Junction') -and $entry.PSIsContainer
+}
 
-$missing = @()
-$differs = @()
-foreach ($rel in $sourceFiles) {
-    $dst = Join-Path $mirror $rel
-    if (-not (Test-Path $dst)) {
-        $missing += $rel
+function Test-LinkTarget($entry) {
+    if (-not (Test-DirectoryLink $entry)) { return $false }
+    $targets = @($entry.Target)
+    if ($targets.Count -ne 1 -or [string]::IsNullOrWhiteSpace($targets[0])) { return $false }
+    $target = [string]$targets[0]
+    if (-not [IO.Path]::IsPathRooted($target)) {
+        $target = Join-Path (Split-Path -Parent $entry.FullName) $target
     }
-    elseif ((Get-FileHash (Join-Path $source $rel)).Hash -ne (Get-FileHash $dst).Hash) {
-        $differs += $rel
+    [string]::Equals((Normalize-Path $target), (Normalize-Path $sharedRoot), $pathComparison)
+}
+
+$sharedEntry = Get-Entry $sharedRoot
+if (-not $sharedEntry -or -not $sharedEntry.PSIsContainer -or
+    ($sharedEntry.Attributes -band [IO.FileAttributes]::ReparsePoint)) {
+    throw "Expected a real canonical skills directory at $sharedRoot."
+}
+$skillFolders = @(Get-ChildItem -LiteralPath $sharedRoot -Directory)
+if ($skillFolders.Count -eq 0) { throw "No skills found in $sharedRoot." }
+foreach ($folder in $skillFolders) {
+    if (-not (Test-Path -LiteralPath (Join-Path $folder.FullName 'SKILL.md') -PathType Leaf)) {
+        throw "Missing SKILL.md in $($folder.FullName)."
     }
 }
-$orphaned = @($mirrorFiles | Where-Object { $sourceFiles -notcontains $_ })
+
+$agentFolders = @('.agents', '.claude')
+$issues = @()
+# Preflight every path before making changes. Never replace a real directory or file.
+foreach ($agent in $agentFolders) {
+    $parent = Join-Path $repoRoot $agent
+    $parentEntry = Get-Entry $parent
+    if ($parentEntry -and (-not $parentEntry.PSIsContainer -or
+        ($parentEntry.Attributes -band [IO.FileAttributes]::ReparsePoint))) {
+        throw "Refusing to write through an unexpected agent directory: $parent"
+    }
+    $path = Join-Path $parent 'skills'
+    $entry = Get-Entry $path
+    if ($entry -and -not (Test-DirectoryLink $entry)) {
+        throw "Refusing to replace existing data at $path. Move that directory or file aside, then rerun."
+    }
+    if (-not (Test-LinkTarget $entry)) { $issues += $path }
+}
 
 if ($CheckOnly) {
-    $missing | ForEach-Object { Write-Host "missing from mirror: .claude\skills\$_" }
-    $differs | ForEach-Object { Write-Host "differs from canonical: .claude\skills\$_" }
-    $orphaned | ForEach-Object { Write-Host "orphaned in mirror: .claude\skills\$_" }
-    if ($missing.Count + $differs.Count + $orphaned.Count -gt 0) {
-        Write-Host 'Skill mirror is out of sync. Run tools/SyncAgentSkills.ps1 to fix.'
+    if ($issues.Count -gt 0) {
+        $issues | ForEach-Object { Write-Host "Missing or incorrect agent skill link: $_" }
+        Write-Host 'Run tools/SyncAgentSkills.ps1 to create or repair the local links.'
         exit 1
     }
-    Write-Host 'Skill mirror is in sync with .codex/skills.'
+    Write-Host "Both agent skill links resolve to skills/ ($($skillFolders.Count) skills)."
     exit 0
 }
 
-foreach ($rel in $missing + $differs) {
-    $dst = Join-Path $mirror $rel
-    $dstDir = Split-Path -Parent $dst
-    if (-not (Test-Path $dstDir)) { New-Item -ItemType Directory -Force $dstDir | Out-Null }
-    Copy-Item (Join-Path $source $rel) $dst -Force
-    Write-Host "synced: .claude\skills\$rel"
+foreach ($path in $issues) {
+    $entry = Get-Entry $path
+    if ($entry) {
+        # Non-recursive deletion of the verified link itself; its target is untouched.
+        [IO.Directory]::Delete($path)
+    }
+    $parent = Split-Path -Parent $path
+    if (-not (Test-Path -LiteralPath $parent)) {
+        New-Item -ItemType Directory -Path $parent | Out-Null
+    }
+    $target = '../skills'
+    # Windows PowerShell 5.1 requires an absolute target for directory symlinks.
+    if ($isWindowsHost) { $target = $sharedRoot }
+    try {
+        New-Item -ItemType SymbolicLink -Path $path -Target $target -ErrorAction Stop | Out-Null
+    }
+    catch {
+        if (-not $isWindowsHost -or (Get-Entry $path)) { throw }
+        New-Item -ItemType Junction -Path $path -Target $sharedRoot -ErrorAction Stop | Out-Null
+        Write-Host "Symbolic-link privileges unavailable; created Windows junction: $path"
+    }
+    if (-not (Test-LinkTarget (Get-Entry $path))) {
+        throw "Agent skill link did not resolve to the shared directory: $path"
+    }
 }
-foreach ($rel in $orphaned) {
-    Remove-Item (Join-Path $mirror $rel) -Force -Confirm:$false
-    Write-Host "removed orphan: .claude\skills\$rel"
-}
-
-# Drop skill directories that no longer exist in the canonical source, and any
-# directories emptied by orphan removal.
-if (Test-Path $mirror) {
-    Get-ChildItem $mirror -Recurse -Directory |
-        Sort-Object { $_.FullName.Length } -Descending |
-        Where-Object { -not (Get-ChildItem $_.FullName -Recurse -File) } |
-        ForEach-Object {
-            Remove-Item $_.FullName -Recurse -Force -Confirm:$false
-            Write-Host "removed empty directory: $($_.FullName.Substring($repoRoot.Length + 1))"
-        }
-}
-
-Write-Host "Skill mirror refreshed ($($sourceFiles.Count) files)."
+Write-Host "Both agents use the shared skills/ directory ($($skillFolders.Count) skills)."

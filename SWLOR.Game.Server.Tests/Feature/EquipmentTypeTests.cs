@@ -94,8 +94,8 @@ public class EquipmentTypeTests
         }
         EquipmentTypeMigration.IsLegacyEquipment("ordinary_bracer", BaseItem.Bracer).Should().BeFalse();
         EquipmentTypeMigration.IsLegacyEquipment(null!, BaseItem.Bracer).Should().BeFalse();
-        typeof(_22_ReviseLootStats).Assembly.GetType("SWLOR.Game.Server.Feature.MigrationDefinition.PlayerMigration._23_CorrectEquipmentTypes").Should().BeNull();
-        typeof(_27_UpdateStoredItems).Assembly.GetType("SWLOR.Game.Server.Feature.MigrationDefinition.ServerMigration._28_CorrectStoredEquipmentTypes").Should().BeNull();
+        new _23_CorrectEquipmentTypes().Version.Should().BeGreaterThan(new _22_ReviseLootStats().Version);
+        new _28_CorrectStoredEquipmentTypes().Version.Should().BeGreaterThan(new _27_UpdateStoredItems().Version);
     }
 
     [Test]

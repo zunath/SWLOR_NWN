@@ -481,10 +481,10 @@ def create(options) -> Stack:
         run_dir.parent.mkdir(parents=True, exist_ok=True)
         run_dir.mkdir()
     except FileExistsError:
-        release_project(project, run_dir)
+        release_after_failure(project, run_dir)
         raise LiveStackError(f'The run directory was created by another run: {run_dir}') from None
     except BaseException:
-        release_project(project, run_dir)
+        release_after_failure(project, run_dir)
         raise
     try:
         # The run holds a CD key and a character: keep it private to the caller.
@@ -501,7 +501,11 @@ def create(options) -> Stack:
         for script in SCRIPTS:
             text = (PACKAGE_DIR / script).read_text('utf-8').replace('\r\n', '\n')
             (run_dir / 'bin' / script).write_bytes(text.encode('utf-8'))
-        stack.state['inputs']['scripts_sha256'] = {script: sha256(run_dir / 'bin' / script) for script in SCRIPTS}
+        # The shared home-preparation script runs as root in this stack; run a private copy of it too.
+        text = (SERVER_DOCKER_DIR / 'prepare-server-home.sh').read_text('utf-8').replace('\r\n', '\n')
+        (run_dir / 'bin' / 'prepare-server-home.sh').write_bytes(text.encode('utf-8'))
+        stack.state['inputs']['scripts_sha256'] = {
+            path.name: sha256(path) for path in sorted((run_dir / 'bin').iterdir())}
         shutil.copytree(dotnet, run_dir / 'dotnet')
         # The copy is deleted at teardown, so record what identifies the server code that ran.
         stack.state['inputs']['dotnet_sha256'] = build_digest(run_dir / 'dotnet')
@@ -547,7 +551,7 @@ def create(options) -> Stack:
             'SWLOR_LIVE_RUN_DIR': run_dir.as_posix(),
             'SWLOR_LIVE_SERVER_IMAGE': state['server_image'],
             'SWLOR_LIVE_CLIENT_IMAGE': state['client_image'],
-            'SWLOR_LIVE_PREPARE_HOME': (SERVER_DOCKER_DIR / 'prepare-server-home.sh').as_posix(),
+            'SWLOR_LIVE_PREPARE_HOME': (run_dir / 'bin' / 'prepare-server-home.sh').as_posix(),
             'SWLOR_LIVE_SERVER_ENV_FILE': (run_dir / 'server.env').as_posix(),
             'SWLOR_LIVE_SERVER_NAME': f'SWLOR live check {project}',
             'SWLOR_LIVE_MODULE_DIR': (run_dir / 'module').as_posix(),
@@ -569,13 +573,7 @@ def create(options) -> Stack:
         except OSError as cleanup_error:
             log(f'Could not remove {run_dir} after the failed preparation: {cleanup_error}')
         finally:
-            try:
-                released = release_project(project, run_dir)
-            except LiveStackError as release_error:
-                log(str(release_error))
-                released = False
-            if not released:
-                log(f'Could not release the {reservation_name(project)} reservation; remove it with docker rm.')
+            release_after_failure(project, run_dir)
         raise
     log(f'Run directory {run_dir} (project {project})')
     return stack
@@ -587,6 +585,17 @@ def client_build(install: Path) -> dict[str, list[int]]:
              install / 'databuild.txt')
     return {path.relative_to(install).as_posix(): [path.stat().st_size, path.stat().st_mtime_ns]
             for path in files if path.is_file()}
+
+
+def release_after_failure(project: str, run_dir: Path) -> None:
+    """Release the reservation during a rollback without replacing the error being raised."""
+    try:
+        released = release_project(project, run_dir)
+    except LiveStackError as release_error:
+        log(str(release_error))
+        released = False
+    if not released:
+        log(f'Could not release the {reservation_name(project)} reservation; remove it with docker rm.')
 
 
 def reservation_name(project: str) -> str:

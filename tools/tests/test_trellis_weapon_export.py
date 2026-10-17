@@ -133,6 +133,17 @@ class TrellisWeaponExportTests(unittest.TestCase):
             with self.subTest(key=key), self.assertRaisesRegex(ValueError,'requires exported'):
                 exporter.validate_manifest(invalid,self.root,self.manifest,'export')
 
+    def test_four_partitioned_regions_cannot_implicitly_supply_two_primary_middles(self):
+        asset=copy.deepcopy(self.asset);asset['parts']=[{'model':'wdbsw_b_011','clip_max_y':-.2},
+            {'model':'wdbsw_m_011','clip_min_y':-.2,'clip_max_y':0},
+            {'model':'wdbsw_m_021','clip_min_y':0,'clip_max_y':.2},
+            {'model':'wdbsw_t_011','clip_min_y':.2}]
+        with self.assertRaisesRegex(ValueError,'Composite export requires real'):self.validate(asset)
+        assemblies=[{'base_item':12,'bottom':'wdbsw_b_011','middle':model,'top':'wdbsw_t_011',
+                     'icon_bounds':{'min':[-1,-1,-1],'max':[1,1,1]}} for model in ['wdbsw_m_011','wdbsw_m_021']]
+        with self.assertRaisesRegex(ValueError,'must cover that source'):
+            self.validate(asset,composite_assemblies=assemblies)
+
     def test_multi_part_source_cannot_duplicate_a_whole_weapon_or_drop_regions(self):
         cases=[ [{'model':'wdbsw_'+role+'_011'} for role in ('b','m','t')],
                 [{'model':'wdbsw_b_011','clip_max_y':-.2},{'model':'wdbsw_m_011','clip_min_y':-.1,'clip_max_y':.1},{'model':'wdbsw_t_011','clip_min_y':.1}],
@@ -218,6 +229,18 @@ class TrellisWeaponExportTests(unittest.TestCase):
         with self.assertRaises(ValueError): exporter.normalize_normal(np.zeros((1,1,3)))
         with self.assertRaisesRegex(ValueError,'negative tangent-space Z'):
             exporter.normalize_normal(np.array([[[0.,0.,-1.]]]))
+
+    @unittest.skipIf(np is None,'numpy required')
+    def test_normal_source_texels_are_validated_before_downsampling_or_scale(self):
+        for invalid in ([.5,.5,0.],[.5,.5,.5]):
+            pixels=np.broadcast_to(np.array([.5,.5,1.]),(2,2,3)).copy();pixels[0,0]=invalid
+            with self.subTest(invalid=invalid), self.assertRaises(ValueError):
+                exporter.prepare_normal_map(pixels,1,1)
+        pixels=np.broadcast_to(np.array([.5,.5,1.]),(2,2,3)).copy();pixels[0,0]=[1.,.5,.5]
+        with self.assertRaises(ValueError):exporter.prepare_normal_map(pixels,0,1)
+        valid=np.broadcast_to(np.array([.6,.8,1.]),(2,2,3)).copy();actual=exporter.prepare_normal_map(valid,2,1)
+        expected=np.array([.4,1.2,1.]);expected/=np.linalg.norm(expected)
+        np.testing.assert_allclose(actual[0,0],expected)
 
     @unittest.skipUnless(HAS_BLENDER,'Run Blender 4.0 for source surface proof')
     def test_closed_surface_policy_allows_enclosed_cavity_but_not_exposed_inversion(self):

@@ -148,6 +148,14 @@ def normalize_normal(normal):
     return normalized
 
 
+def prepare_normal_map(pixels, scale, limit):
+    normal=pixels[...,:3]*2-1
+    normalize_normal(normal)  # Validate every source texel before filtering can hide it.
+    normal[...,:2]*=scale
+    normalize_normal(normal)  # Scaling must not create undefined directions either.
+    return normalize_normal(resize(normal,limit))
+
+
 def validate_texture_samplers(doc):
     for texture in doc.get('textures',[]):
         if 'sampler' not in texture:continue
@@ -279,10 +287,7 @@ def material_maps(doc,binary,index,source,cache,resources,name,limit):
     # Inverse of NWN inc_material metallicness=clamp(3*spec-.6,0,1).
     spec=metallic_to_specularity(np.clip(metal,0,1))
     if 'normalTexture' in mat:
-        nt=mat['normalTexture']; normal=read_image(doc,binary,nt,source,cache)[...,:3]*2-1
-        normal[...,:2]*=nt.get('scale',1)
-        normal=resize(normal,limit)
-        normal=normalize_normal(normal)
+        nt=mat['normalTexture'];normal=prepare_normal_map(read_image(doc,binary,nt,source,cache),nt.get('scale',1),limit)
         normal=normal*.5+.5
     else: normal=np.broadcast_to(np.array([.5,.5,1],np.float32),(4,4,3))
     maps={name:base,name+'_n':normal,name+'_s':spec,name+'_r':rough}
@@ -805,9 +810,9 @@ def validate_manifest(config, repo, manifest, mode):
                 selection={'sha256':item['sha256'],'matrix':matrix,'translation':translation,'clip':[None if low is None else clean(low),None if high is None else clean(high)]}
                 output_selections[model]=json.dumps(selection,sort_keys=True)
         if item['_model_type']==2:
-            composites.append((asset,declared,{part['model'].rsplit('_',2)[-2] for part in parts}))
+            composites.append((asset,declared,[part['model'].rsplit('_',2)[-2] for part in parts]))
     if mode=='export':
-        covered={model for _,models,roles in composites if roles=={'b','m','t'} for model in models}
+        covered={model for _,models,roles in composites if sorted(roles)==['b','m','t'] for model in models}
         for assembly in config.get('composite_assemblies',[]):
             row=base_item_row(repo,assembly['base_item']);family=row['ItemClass'].lower()
             if int(row['ModelType'])!=2:raise ValueError('composite_assemblies requires a composite weapon baseitem')
@@ -815,7 +820,7 @@ def validate_manifest(config, repo, manifest, mode):
             if not isinstance(frame,dict):raise ValueError('Grouped parts require shared icon_bounds')
             low=vector3(frame.get('min'),'icon_bounds min');high=vector3(frame.get('max'),'icon_bounds max')
             if any(b<=a for a,b in zip(low,high)):raise ValueError('icon_bounds must have positive dimensions')
-            settings=None;selections=set()
+            settings=None;selections=set();geometry_sources=[]
             for role,key in [('b','bottom'),('m','middle'),('t','top')]:
                 model=assembly.get(key,'')
                 validate_model_name(model,family,2)
@@ -824,6 +829,7 @@ def validate_manifest(config, repo, manifest, mode):
                 selection=output_selections[model]
                 if selection in selections:raise ValueError('Grouped roles must not reuse the same source geometry selection')
                 selections.add(selection)
+                geometry_sources.append(json.loads(selection))
                 owner=output_assets[model]
                 current=[owner['icon_size'],owner['_icon_art_size'],owner.get('icon_direction',[1,-.1,.12]),owner.get('icon_roll_degrees',0)]
                 if settings is not None and current!=settings:raise ValueError('Grouped icon canvas and camera settings must match')
@@ -832,6 +838,11 @@ def validate_manifest(config, repo, manifest, mode):
                     raise ValueError('Shared part has conflicting icon_bounds')
                 owner['_shared_icon_bounds']=frame
                 covered.add(model)
+            identities=[{k:v for k,v in selected.items() if k!='clip'} for selected in geometry_sources]
+            if all(identity==identities[0] for identity in identities):
+                intervals=sorted((-math.inf if selected['clip'][0] is None else selected['clip'][0],math.inf if selected['clip'][1] is None else selected['clip'][1]) for selected in geometry_sources)
+                if intervals[0][0]!=-math.inf or intervals[-1][1]!=math.inf or any(a[1]!=b[0] for a,b in zip(intervals,intervals[1:])):
+                    raise ValueError('Grouped parts from one fitted source must cover that source without gaps or overlaps')
         for asset,models,_ in composites:
             if not set(models)<=covered:
                 raise ValueError('Composite export requires real bottom, middle and top parts in the asset or composite_assemblies: '+asset)

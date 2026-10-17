@@ -13,6 +13,7 @@ using SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap;
 using SWLOR.Game.Server.Feature.GuiDefinition.Payload;
 using SWLOR.Game.Server.Feature.GuiDefinition.ViewModel;
 using SWLOR.Game.Server.Service.GuiService;
+using SWLOR.Game.Server.Service.GuiService.Component;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Creature;
 using SWLOR.NWN.API.NWScript.Enum.Item;
@@ -60,6 +61,14 @@ public static class ConnectedHelmetEngineTests
                     await Setup((AppearanceType)(int)action["race"], (Gender)(int)action["gender"]);
                 if (operation == "camera")
                     AssignCommand(_player, () => SetCameraFacing(90f, (float)action["distance"], (float)action["pitch"]));
+                if (operation == "editor")
+                {
+                    var editor = (AppearanceEditorViewModel)Gui.GetPlayerWindow(_player, GuiWindowType.AppearanceEditor).ViewModel;
+                    editor.Geometry = new GuiRectangle(0, 0, 600, 680);
+                    editor.OnSelectEquipment()();
+                    editor.SelectedItemTypeIndex = 1;
+                    await ctx.DelaySecondsAsync(1f);
+                }
                 Snapshot("request:" + (string)action["id"]);
                 File.WriteAllText(Path.Combine(ProbeDirectory, "response.json"), action.ToString(Formatting.None));
             }
@@ -84,7 +93,7 @@ public static class ConnectedHelmetEngineTests
                 RacialAppearanceRegistry.TryGet(race, out var definition);
                 SetCreatureBodyPart(CreaturePart.Head,
                     (gender == Gender.Female ? definition.FemaleHeads : definition.MaleHeads).First(), _player);
-                EquippedItemAppearance.Set(helmet, ItemAppearanceType.SimpleModel, -1, 63);
+                EquippedItemAppearance.Set(helmet, ItemAppearanceType.SimpleModel, -1, race == AppearanceType.Droid ? 0 : 63);
                 ArmorDisplay.Apply(_player, true, true);
                 SetFacing(270f);
                 AssignCommand(_player, () => SetCameraFacing(90f, 4f, 65f));
@@ -104,6 +113,7 @@ public static class ConnectedHelmetEngineTests
         if (!GetIsObjectValid(_player)) return;
         var native = NWNXLib.g_pAppManager.m_pServerExoApp.GetCreatureByGameObjectID(_player);
         var helmet = GetItemInSlot(InventorySlot.Head, _player);
+        var editor = (AppearanceEditorViewModel)Gui.GetPlayerWindow(_player, GuiWindowType.AppearanceEditor).ViewModel;
         var state = new
         {
             reason, time = DateTime.UtcNow, player = _player, helmet,
@@ -112,6 +122,8 @@ public static class ConnectedHelmetEngineTests
             head = native.m_cAppearance.m_nHeadVariation, canonicalHead = native.m_pStats.m_nHeadVariation,
             headItem = native.m_cAppearance.m_oidHeadItem, hidden = GetHiddenWhenEquipped(helmet),
             marker = GetLocalInt(helmet, "HELMET_RENDER_HEAD_HIDDEN"), shown = HelmetModelRenderer.IsShownByOwner(helmet),
+            owner = GetItemPossessor(helmet), equipmentPage = editor.IsEquipmentSelected,
+            itemType = editor.SelectedItemTypeIndex, editor.Geometry,
             observers = NWNXLib.g_pAppManager.m_pServerExoApp.GetPlayerList().Select(player => new
             {
                 id = player.m_nPlayerID,

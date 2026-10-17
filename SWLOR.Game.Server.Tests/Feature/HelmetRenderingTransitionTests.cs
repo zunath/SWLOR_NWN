@@ -6,10 +6,11 @@ namespace SWLOR.Game.Server.Tests.Feature;
 
 public class HelmetRenderingTransitionTests
 {
-    [TestCase(true, false)]
-    [TestCase(true, true)]
-    [TestCase(false, false)]
-    public void RefreshDeliversNativeHelmetAttachmentChanges(bool projected, bool projectionAlreadyApplied)
+    [TestCase(true, false, false)]
+    [TestCase(true, true, false)]
+    [TestCase(true, true, true)]
+    [TestCase(false, false, false)]
+    public void RefreshDeliversNativeHelmetAttachmentChanges(bool projected, bool projectionAlreadyApplied, bool observerAlreadyProjected)
     {
         var harness = DMPossessionHarness.Compile($$"""
             using static Engine;
@@ -17,7 +18,10 @@ public class HelmetRenderingTransitionTests
             {
                 private const float QuickbarRefreshDelaySeconds = .2f;
                 {{DMPossessionHarness.Method("Feature/AppearanceDefinition/ItemAppearance/EquippedItemAppearance.cs", "Refresh")}}
-                private static void RefreshInventorySlot(Player player, object gui, uint creature, uint item, bool clearIcon) { }
+                private static void RefreshInventorySlot(Player player, object gui, uint creature, uint item, bool clearIcon)
+                {
+                    if (clearIcon) Transport.InventoryRefreshes++;
+                }
                 private static void RestoreQuickbarReferences(uint creature, uint item) { }
                 private static void RefreshHandAppearance(uint creature, uint item) { }
             }
@@ -59,6 +63,7 @@ public class HelmetRenderingTransitionTests
             public class Message
             {
                 public int Destroyed;
+                public int InventoryRefreshes;
                 public void SendServerPlayerItemUpdate_DestroyItem(Player player, uint item) => Destroyed++;
             }
             public static class RobeAppearance { public static void RemoveUnavailableRobe(uint creature, uint item) { } }
@@ -88,26 +93,27 @@ public class HelmetRenderingTransitionTests
             }
             public static class Regression
             {
-                public static void Run(bool projected, bool projectionAlreadyApplied)
+                public static void Run(bool projected, bool projectionAlreadyApplied, bool observerAlreadyProjected)
                 {
                     Projected = projected;
                     if (projectionAlreadyApplied) HelmetModelRenderer.Apply(1, null);
+                    if (observerAlreadyProjected) Observer.m_cAppearance.m_oidHeadItem = OBJECT_INVALID;
                     EquippedItemAppearance.Refresh(1, 2);
 
                     // The client still has the native attachment from model64. The
                     // normal creature delta can remove it only if its old cache survives.
-                    uint clientAttachment = 2;
+                    uint clientAttachment = observerAlreadyProjected ? OBJECT_INVALID : 2;
                     if (Observer.m_cAppearance.m_oidHeadItem != Wearer.m_cAppearance.m_oidHeadItem)
                         clientAttachment = Wearer.m_cAppearance.m_oidHeadItem;
                     if (clientAttachment != (projected ? OBJECT_INVALID : 2))
                         throw new Exception("The client never received the native helmet detach.");
-                    if (Transport.Destroyed != (projected ? 0 : 1))
-                        throw new Exception("Only an attachment that remains equipped needs an item replacement.");
+                    if (Transport.Destroyed != 1 || Transport.InventoryRefreshes != 2)
+                        throw new Exception("The helmet item and both inventory views must still refresh.");
                 }
             }
             """);
 
-        var run = () => harness.Invoke("Regression", "Run", projected, projectionAlreadyApplied);
+        var run = () => harness.Invoke("Regression", "Run", projected, projectionAlreadyApplied, observerAlreadyProjected);
         run.Should().NotThrow();
     }
 

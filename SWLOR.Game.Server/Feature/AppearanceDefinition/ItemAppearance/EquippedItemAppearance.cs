@@ -53,7 +53,8 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.ItemAppearance
             RobeAppearance.RemoveUnavailableRobe(creature, item);
             NeckAppearance.RemoveUnavailableNeck(creature, item);
             nativeCreature.UpdateAppearanceForEquippedItems();
-            if (GetItemInSlot(InventorySlot.Head, creature) == item)
+            var headItem = GetItemInSlot(InventorySlot.Head, creature) == item;
+            if (headItem)
                 HelmetModelRenderer.Apply(creature, TintMapModelResolver.GetCurrentSelections(creature));
 
             var message = server.GetNWSMessage();
@@ -68,7 +69,7 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.ItemAppearance
                 var appearance = lastUpdate.m_cAppearance;
                 var handItem = appearance.m_oidLeftHandItem == item || appearance.m_oidRightHandItem == item;
                 var cloakItem = appearance.m_oidCloakItem == item;
-                var changed = false;
+                var changed = headItem;
                 // Keep a removed native attachment in the observer cache until the
                 // normal creature update sends its detach. Clearing it here would
                 // suppress that delta when a tintable helmet renders as a head.
@@ -102,10 +103,10 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.ItemAppearance
 
                 // Match NWNX_Item_SetItemAppearance's observer refresh, including hands.
                 // Only the client's cached item is discarded; ownership and equipment stay put.
-                if (handItem || cloakItem)
+                if (handItem || cloakItem || headItem)
                 {
-                    RefreshInventorySlot(player, player.m_pInventoryGUI, creature, item, cloakItem);
-                    RefreshInventorySlot(player, player.m_pOtherInventoryGUI, creature, item, cloakItem);
+                    RefreshInventorySlot(player, player.m_pInventoryGUI, creature, item, cloakItem || headItem);
+                    RefreshInventorySlot(player, player.m_pOtherInventoryGUI, creature, item, cloakItem || headItem);
                 }
                 message.SendServerPlayerItemUpdate_DestroyItem(player, item);
                 refreshedClient = true;

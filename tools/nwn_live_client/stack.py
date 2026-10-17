@@ -421,6 +421,15 @@ def server_image() -> str:
     return match.group(1)
 
 
+def resolve_image_id(tag: str) -> str:
+    """The immutable ID of a local image, pulling the tag first when it is missing."""
+    inspect = ['docker', 'image', 'inspect', '--format', '{{.Id}}', tag]
+    if run(inspect, check=False, capture=True, timeout=60).returncode != 0:
+        log(f'Pulling {tag}')
+        run(['docker', 'pull', tag], capture=True, timeout=1800)
+    return output(inspect, timeout=60)
+
+
 def client_image_tag() -> str:
     dockerfile = (PACKAGE_DIR / 'Dockerfile.client').read_bytes().replace(b'\r\n', b'\n')
     return 'swlor-nwn-live-client:' + hashlib.sha256(dockerfile).hexdigest()[:12]
@@ -625,7 +634,8 @@ def create(options) -> Stack:
     state = {
         'project': project, 'run_dir': str(run_dir), 'mode': mode, 'player_name': options.player_name,
         'public_cdkey': public_key, 'created_utc': utc_now(), 'repo': str(REPO_ROOT),
-        'server_image': server_image(), 'client_image': client_image_tag(), 'max_seconds': max_seconds,
+        'server_image': server_image(), 'server_image_id': resolve_image_id(server_image()),
+        'client_image': client_image_tag(), 'max_seconds': max_seconds,
         'cdkey_source': str(cdkey),
         'inputs': {'hak_dir': str(hak_dir), 'tlk_dir': str(tlk_dir), 'module': str(module),
                    'dotnet': str(dotnet), 'client_install': str(install),
@@ -640,7 +650,7 @@ def create(options) -> Stack:
     else:
         state['dm_avatar'] = {'source': str(dm_avatar), 'file': dm_avatar.name.lower()}
 
-    reserve_project(project, run_dir, state['server_image'])
+    reserve_project(project, run_dir, state['server_image_id'])
     try:
         # Exclusive creation claims the directory: a concurrent run choosing it fails here.
         run_dir.parent.mkdir(parents=True, exist_ok=True)
@@ -675,7 +685,8 @@ def create(options) -> Stack:
         shutil.copytree(dotnet, run_dir / 'dotnet')
         # The copy is deleted at teardown, so record what identifies the server code that ran.
         stack.state['inputs']['dotnet_sha256'] = build_digest(run_dir / 'dotnet')
-        stack.state['inputs']['source_commit'] = source_commit()
+        stack.state['inputs']['build_source_revision'] = build_source_revision(run_dir / 'dotnet')
+        stack.state['inputs']['tool_checkout_commit'] = source_commit()
         # The deploy home is shared; serve and hash a private copy so a repack cannot swap it.
         shared_before = shared_deploy_manifest(module, tlk_dir, hak_dir)
         (run_dir / 'module').mkdir()
@@ -734,7 +745,8 @@ def create(options) -> Stack:
         (run_dir / 'server-extra.env').write_text(render_env_file(extra_env), 'utf-8')
         (run_dir / 'compose.env').write_text(render_env_file({
             'SWLOR_LIVE_RUN_DIR': run_dir.as_posix(),
-            'SWLOR_LIVE_SERVER_IMAGE': state['server_image'],
+            # The ID resolved once at preparation, so a retag by another session cannot change it.
+            'SWLOR_LIVE_SERVER_IMAGE': state['server_image_id'],
             'SWLOR_LIVE_CLIENT_IMAGE': state['client_image'],
             'SWLOR_LIVE_PREPARE_HOME': (run_dir / 'bin' / 'prepare-server-home.sh').as_posix(),
             'SWLOR_LIVE_SERVER_ENV_FILE': (run_dir / 'server.env').as_posix(),
@@ -860,8 +872,15 @@ def build_digest(directory: Path) -> str:
     return digest.hexdigest()
 
 
+def build_source_revision(dotnet: Path) -> str:
+    """The commit the SDK stamped into the server assembly's informational version (1.0.0+<sha>)."""
+    assembly = dotnet / 'SWLOR.Game.Server.dll'
+    match = re.search(rb'\d+\.\d+\.\d+\+([0-9a-f]{40})', assembly.read_bytes()) if assembly.is_file() else None
+    return match.group(1).decode('ascii') if match else 'unknown'
+
+
 def source_commit() -> str:
-    """The checkout's HEAD, marked when it has uncommitted changes."""
+    """The tool checkout's HEAD, marked when it has uncommitted changes. Not the build's revision."""
     try:
         head = output(['git', '-C', str(REPO_ROOT), 'rev-parse', 'HEAD'], timeout=60)
         # Untracked sources count: the SDK's default globs compile them into the build.
@@ -1196,7 +1215,7 @@ def return_home_ownership(stack: Stack) -> None:
     run(['docker', 'run', '--rm', '--network', 'none', '--user', '0:0', '--entrypoint', 'chown',
          '-v', f'{stack.home}:/home-to-return',
          # The image ID recorded at start-up, not the tag another session may have moved.
-         stack.state.get('image_ids', {}).get('swlor-server', stack.state['server_image']), '-R', host_user(),
+         stack.state.get('image_ids', {}).get('swlor-server', stack.state['server_image_id']), '-R', host_user(),
          '/home-to-return'], capture=True, timeout=300)
 
 
@@ -1266,7 +1285,7 @@ def destroy(stack: Stack) -> dict:
             stop('swlor-server', '60')
             booted = booted or stack.joined_players() <= 0
             stop('redis', '30')
-            for service in ('swlor-server', 'client', 'redis'):
+            for service in ('server-home-init', 'swlor-server', 'client', 'redis'):
                 existing = stack.compose('ps', '-a', '-q', service, client=service == 'client', check=False,
                                          capture=True, timeout=60)
                 if existing.returncode == 0 and not existing.stdout.strip():

@@ -117,6 +117,8 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         public static List<PlayerListEntry> BuildEntries(uint viewer, IReadOnlyList<PlayerListSubject> subjects)
         {
+            // A possessing DM's window belongs to the creature, but the roster lists their avatar.
+            viewer = DMPresence.GetDM(viewer);
             var viewerIsDM = DMPresence.IsControlledByDM(viewer);
             var viewerSubject = subjects.FirstOrDefault(subject => subject.Player == viewer);
             var entries = new List<PlayerListEntry>();
@@ -151,6 +153,8 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         public static PlayerListRelation GetRelation(uint viewer, uint target)
         {
+            viewer = DMPresence.GetDM(viewer);
+            target = DMPresence.GetDM(target);
             var viewerIsDM = DMPresence.IsControlledByDM(viewer);
             var online = GetOnlinePlayers();
             if (!online.Contains(target) || !PlayerListRules.IsVisibleTo(viewerIsDM, DMPresence.IsControlledByDM(target)))

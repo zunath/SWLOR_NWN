@@ -245,6 +245,55 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
         }
 
         /// <summary>
+        /// A possessing DM's window is bound to the possessed creature while the roster lists their avatar.
+        /// The avatar row must still be their own: marked as self, with no tell or jump to themselves.
+        /// </summary>
+        [EngineTest("Player list treats a possessing DM's avatar as their own row", Category = "PlayerList", TimeoutSeconds = 45f)]
+        public static async Task PossessingDMSeesTheirOwnRow(EngineTestContext ctx)
+        {
+            using var player = await PlayerAbilityFixture.CreateAsync(ctx);
+            using var dm = await PlayerAbilityFixture.CreateAsync(ctx, 2f);
+            var npc = ctx.SpawnCreature("civilian", 4f);
+            await ctx.WaitFrameAsync();
+
+            var server = NWNXLib.g_pAppManager.m_pServerExoApp;
+            var client = server.GetClientObjectByObjectId(dm.Creature);
+            var nativeDM = server.GetCreatureByGameObjectID(dm.Creature);
+            var nativeNpc = server.GetCreatureByGameObjectID(npc);
+            var originalAssociate = nativeNpc.m_nAssociateType;
+            var originalMaster = nativeNpc.m_oidMaster;
+            var restoreDM = InstallNativeDM(ctx, dm.Creature);
+            try
+            {
+                // NWNX AssociateType::DMPossess, installed without moving a synthetic client between areas.
+                nativeNpc.m_nAssociateType = 7;
+                nativeNpc.m_oidMaster = dm.Creature;
+                client.SetGameObject(nativeNpc);
+                ctx.Assert(GetIsDMPossessed(npc), "native GetIsDMPossessed recognizes the possessed creature");
+
+                var ownRow = PlayerList.BuildEntries(npc, PlayerList.BuildSubjects()).SingleOrDefault(row => row.Player == dm.Creature);
+                ctx.Assert(ownRow != null, "the possessing DM sees their avatar row");
+                ctx.Assert(ownRow.Relation.TargetIsSelf, "the avatar row is the possessing DM's own row");
+                ctx.AssertEqual(PlayerListStatus.DM, ownRow.Status, "the avatar row is marked DM");
+
+                var ownActions = PlayerListRules.Evaluate(PlayerList.GetRelation(npc, dm.Creature));
+                ctx.Assert(!ownActions.SendTell.IsEnabled, "the possessing DM cannot send a tell to themselves");
+                ctx.Assert(!ownActions.JumpTo.IsEnabled, "the possessing DM cannot jump to themselves");
+                ctx.Assert(PlayerListRules.Evaluate(PlayerList.GetRelation(npc, player.Creature)).JumpTo.IsEnabled,
+                    "the possessing DM can still jump to a player");
+                ctx.Assert(PlayerList.BuildEntries(player.Creature, PlayerList.BuildSubjects()).All(row => row.Player != dm.Creature),
+                    "players still do not see the possessing DM");
+            }
+            finally
+            {
+                client.SetGameObject(nativeDM);
+                nativeNpc.m_nAssociateType = originalAssociate;
+                nativeNpc.m_oidMaster = originalMaster;
+                restoreDM();
+            }
+        }
+
+        /// <summary>
         /// Invite sends the native party invitation from the viewer to the selected player, which the
         /// invited client answers through the engine's own accept and decline popup.
         /// </summary>

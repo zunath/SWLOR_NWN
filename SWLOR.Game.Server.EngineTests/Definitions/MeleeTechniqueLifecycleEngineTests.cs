@@ -116,10 +116,9 @@ public static class MeleeTechniqueLifecycleEngineTests
         Ability.ClearLastCompletedAbilityImpactSummary(caster);
         await context.ExecuteInCreatureContextAsync(caster, () =>
         {
+            // Match the directional hostility check used by ability activation and target-bound technique state.
             context.Assert(GetIsReactionTypeHostile(target, caster),
-                $"{ability.Name}: the native target is hostile to the caster immediately before activation.");
-            context.Assert(GetIsReactionTypeHostile(caster, target),
-                $"{ability.Name}: the native caster is hostile to the target immediately before activation.");
+                $"{ability.Name}: native target {target} (PC={GetIsPC(target)}) is hostile to caster {caster} (PC={GetIsPC(caster)}).");
             context.Assert(UsePerkFeat.TryUseAbility(caster, target, feat, GetLocation(target)),
                 $"{ability.Name} starts: {Ability.GetLastActivationDenialReason()}");
         });

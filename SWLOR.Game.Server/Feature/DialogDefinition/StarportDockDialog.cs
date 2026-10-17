@@ -192,7 +192,8 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
                     // Docking at an NPC starport will update the safety location to that dock.
                     // In the event that the ship is docked at a player starport and it gets destroyed or
                     // otherwise goes away, the player's ship will return back to the last NPC dock it visited.
-                    if (dockPoint.IsNPC)
+                    // Ship-only locations never become the safety location, so ships left there return on restart.
+                    if (dockPoint.IsNPC && !StarshipDockReturn.IsShipOnlyArea(landingArea))
                     {
                         dbProperty.Positions[PropertyLocationType.LastNPCDockPosition] = new PropertyLocation
                         {
@@ -201,6 +202,15 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
                             Y = landingPosition.Y,
                             Z = landingPosition.Z,
                             Orientation = landingOrientation
+                        };
+
+                        dbProperty.Positions[PropertyLocationType.LastNPCSpacePosition] = new PropertyLocation
+                        {
+                            AreaResref = spaceAreaResref,
+                            X = spacePosition.X,
+                            Y = spacePosition.Y,
+                            Z = spacePosition.Z,
+                            Orientation = spaceOrientation
                         };
                     }
 

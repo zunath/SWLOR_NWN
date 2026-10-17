@@ -40,6 +40,7 @@ WINDOW_SIZE = (1280, 720)
 STEAM_INSTALL = Path('C:/Program Files (x86)/Steam/steamapps/common/Neverwinter Nights')
 # nwserverLog connection lines; "Joined as" is written when the client connects, before character select.
 JOIN_PATTERN = re.compile(r'\) Joined as (Player|Game Master) \d+')
+JOIN_KEY_PATTERN = re.compile(r'\(([A-Z0-9]{8})\) Joined as (?:Player|Game Master) \d+')
 LEFT_PATTERN = re.compile(r' Left as a (Player|Game Master) ')
 ENTRY_PATTERN = re.compile(r': Connected to server\r?$', re.M)
 LOADING_TIP_PATTERN = re.compile(r'^\[CHAT WINDOW TEXT\] \[[^]]+\] Loading Screen: ', re.M)
@@ -420,9 +421,10 @@ def create(options) -> Stack:
         'server env file (--server-env-file)': server_env.is_file(),
     }
     if mode == 'player':
-        checks['character .bic (--character)'] = character is not None and character.is_file()
+        checks['character .bic (--character)'] = (character is not None and character.is_file()
+                                                  and character.suffix.lower() == '.bic')
     else:
-        checks['DM avatar .bic (--dm-avatar)'] = dm_avatar.is_file()
+        checks['DM avatar .bic (--dm-avatar)'] = dm_avatar.is_file() and dm_avatar.suffix.lower() == '.bic'
         if character:
             raise LiveStackError('Use --character for a player run or --dm-avatar for a DM run, not both.')
     missing = [name for name, ok in checks.items() if not ok]
@@ -521,6 +523,11 @@ def create(options) -> Stack:
             shutil.copyfile(tlk, run_dir / 'tlk' / tlk.name)
         stack.state['inputs']['tlk_sha256'] = {
             path.name: sha256(path) for path in sorted((run_dir / 'tlk').glob('*.tlk'))}
+        if os.name == 'posix':
+            # Readable for the container users; the 0700 run directory keeps other people out.
+            for tree in ('bin', 'module', 'tlk', 'dotnet'):
+                for path in [run_dir / tree, *(run_dir / tree).rglob('*')]:
+                    os.chmod(path, 0o755 if path.is_dir() else 0o644)
         stack.state['inputs']['hak_manifest'] = hak_manifest(hak_dir)
         stack.state['inputs']['client_build'] = client_build(install)
         stack.save()
@@ -780,6 +787,28 @@ def start_client(stack: Stack, cdkey: Path) -> None:
     stack.save()
     stack.ui('wait-window', '180', timeout=240)
     log('Client window is up')
+    verify_public_cdkey(stack)
+
+
+def verify_public_cdkey(stack: Stack, timeout: float = 300) -> None:
+    """Fail when the connecting client's public CD key differs from --public-cdkey.
+
+    The vault folder (player runs) and SWLOR_SUPER_ADMIN_CD_KEY (DM runs) are named after
+    that key, so a wrong value would quietly run under the wrong vault or authorization.
+    """
+    deadline = time.monotonic() + timeout
+    while time.monotonic() < deadline:
+        text = stack.server_log.read_text('utf-8', 'replace') if stack.server_log.is_file() else ''
+        keys = JOIN_KEY_PATTERN.findall(text)
+        if keys:
+            if keys[-1] != stack.state['public_cdkey']:
+                raise LiveStackError(f'The client connected with public CD key {keys[-1]}, not the '
+                                     f'--public-cdkey given ({stack.state["public_cdkey"]}).')
+            return
+        if not stack.running('client'):
+            raise LiveStackError('The client stopped before it connected to the server.')
+        time.sleep(2)
+    raise LiveStackError(f'The client did not connect to the server within {timeout:.0f}s.')
 
 
 def module_entries(stack: Stack) -> int:
@@ -805,7 +834,12 @@ def play(stack: Stack, settle: float, timeout: float = 600) -> None:
     deadline = time.monotonic() + timeout
     next_click = 0.0
     attempt = 0
-    while module_entries(stack) <= entered:
+    # A rerun after an earlier play entered on this same connection must not click into the game.
+    connection = count_matches(stack.server_log, JOIN_PATTERN)
+    already_in = stack.state.get('entered_connection') == connection and stack.joined_players() > 0
+    if already_in:
+        log('The character already entered on this connection; not clicking Play again.')
+    while not already_in and module_entries(stack) <= entered:
         now = time.monotonic()
         if now >= deadline:
             raise LiveStackError(f'The character did not enter within {timeout:.0f}s. '
@@ -818,6 +852,8 @@ def play(stack: Stack, settle: float, timeout: float = 600) -> None:
             stack.ui('click', str(PLAY_BUTTON[0]), str(PLAY_BUTTON[1]))
             next_click = time.monotonic() + 20
         time.sleep(1)
+    stack.state['entered_connection'] = connection
+    stack.save()
     log(f'Character entered; waiting until no area transition has started for {settle:.0f}s')
     # A new character is set up and may be moved to its starting area right away.
     tips = loading_tips(stack)
@@ -938,6 +974,7 @@ def destroy(stack: Stack) -> dict:
     # Evidence lost by an earlier teardown cannot be recovered; keep reporting it.
     lost_evidence = stack.state.setdefault('lost_evidence', [])
     errors = list(lost_evidence)
+    unconfirmed_boot_message = 'The player was not confirmed booted; the CD key may stay held for 60 seconds.'
     if owns_project:
         try:
             report['player_booted'] = boot_players(stack)
@@ -945,13 +982,18 @@ def destroy(stack: Stack) -> dict:
             report['player_booted'] = False
             errors.append(str(error))
         if not report['player_booted']:
-            errors.append('The player was not confirmed booted; the CD key may stay held for 60 seconds.')
+            stack.state['unconfirmed_boot'] = True
+            stack.save()
         if (stack.run_dir / 'compose.env').is_file():
             stack.compose('stop', '-t', '30', 'client', client=True, check=False, capture=True, timeout=120)
             result = stack.compose('down', '--volumes', '--remove-orphans', '--timeout', '60', client=True,
                                    check=False, capture=True, timeout=600)
             if result.returncode != 0:
                 errors.append('compose down failed: ' + result.stderr.decode('utf-8', 'replace').strip())
+    if stack.state.get('unconfirmed_boot'):
+        # Kept across reruns: a later down cannot undo a boot that was never confirmed.
+        report['player_booted'] = False
+        errors.append(unconfirmed_boot_message)
 
     (stack.profile / 'cdkey.ini').unlink(missing_ok=True)
     if project_resources(stack.project)['containers']:
@@ -979,6 +1021,8 @@ def destroy(stack: Stack) -> dict:
             except (OSError, shutil.Error) as error:
                 lost_evidence.append(f'Could not keep {name} in the evidence: {error}')
                 errors.append(lost_evidence[-1])
+        # Record lost evidence before deleting the only source of it.
+        stack.save()
         for path in (stack.profile, stack.home, stack.run_dir / 'dotnet', stack.run_dir / 'module',
                      stack.run_dir / 'tlk', stack.run_dir / 'bin'):
             try:

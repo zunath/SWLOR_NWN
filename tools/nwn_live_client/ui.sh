@@ -8,13 +8,14 @@ die() { echo "$*" >&2; exit 1; }
 
 client_window() {
     local pid
-    pid=$(cat /tmp/client.pid 2>/dev/null) || die "The client is not running"
+    # Not fatal here: wait-window polls while run-client.sh is still starting the client.
+    pid=$(cat /tmp/client.pid 2>/dev/null) || return 1
     mapfile -t windows < <(xdotool search --onlyvisible --pid "$pid" 2>/dev/null || true)
     [ "${#windows[@]}" -eq 1 ] || return 1
     echo "${windows[0]}"
 }
 
-window() { client_window || die "Expected one visible client window"; }
+window() { client_window || die "Expected one visible client window; is the client running?"; }
 
 coordinate() {
     [[ "$1" =~ ^[0-9]+$ ]] && [ "$1" -lt "$2" ] || die "Coordinate $1 is outside 0..$(($2 - 1))"

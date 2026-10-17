@@ -122,6 +122,7 @@ class LiveClientHelperTests(unittest.TestCase):
             'Tester (ABCD1234) Joined as Player 1\n').encode())
         self.assertEqual(stack.count_matches(log, stack.JOIN_PATTERN), 3)
         self.assertEqual(stack.count_matches(log, stack.LEFT_PATTERN), 2)
+        self.assertEqual(stack.JOIN_KEY_PATTERN.findall(log.read_text()), ['ABCD1234'] * 3)
 
     def test_entry_and_loading_tip_patterns_match_swlor_logs(self):
         audit = self.write('Connection_20261017.log', (

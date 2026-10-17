@@ -2,7 +2,7 @@
 
 Read before writing or changing code, generators, or hak data.
 
-Sections: Code · Module JSON · Stat-driven gameplay · Haks, TLK, and 2DA
+Sections: Code · Renames · Module JSON · Stat-driven gameplay · Haks, TLK, and 2DA
 
 ## Code
 
@@ -15,6 +15,12 @@ Sections: Code · Module JSON · Stat-driven gameplay · Haks, TLK, and 2DA
 - No internal initiative, milestone, or phase labels (such as `CombatUpgrade`) in new identifiers, filenames, namespaces, or comments. Use gameplay terms.
 - When an ability applies `EffectDamage` with `ApplyEffectToObject`, wrap it in `AssignCommand(source, () => ApplyEffectToObject(...))` so the damage appears in the player's combat log.
 - Player chat commands use `.Permissions(AuthorizationLevel.All)`. `AuthorizationLevel.Player` alone silently rejects DM and admin accounts with "Invalid chat command".
+
+## Renames
+
+- When a rename affects something identified by an enum member (perk, skill, ability, item, key item, recipe, quest, NPC group, status effect, and similar), rename the enum member too, keeping its numeric value.
+- Every enum rename needs migration code that moves old data to the new name. Persisted data stores enum names, not just numbers: Newtonsoft writes enum dictionary keys by name (for example `Player.Perks`, key items, and quest kill progress), so an unmigrated rename silently drops those entries on load. See `Migrations.md`, "Enum renames".
+- A rename keeps the thing's identity. Replacing it with something different is a new definition instead (see "Haks, TLK, and 2DA").
 
 ## Module JSON
 

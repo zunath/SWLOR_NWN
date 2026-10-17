@@ -89,7 +89,7 @@ namespace SWLOR.Toolset.Editors.Placeables
                 ["VELESSEWERS"] = "Veles Sewers",
                 ["VISC"] = "Viscara",
                 ["VISBUNKER"] = "Viscara Bunker",
-                ["VITRUPT"] = "Vital Rupture",
+                ["VITRUPT"] = "Viral Cascade",
                 ["WORLDBRK"] = "Worldbreaker"
             };
 

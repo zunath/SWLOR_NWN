@@ -15,7 +15,7 @@ Build quests in the real SWLOR artifacts, not in a side memo. Use the current re
 - NPC templates and placement: `Module/utc/*.utc.json`, `Module/git/<area>.git.json`
 - Enemy groups and spawn tables: `NPCGroupType.cs`, `Feature/SpawnDefinition/*SpawnDefinition.cs`, enemy `Module/utc/*.utc.json`
 
-Before inventing a pattern, inspect nearby quests for the same planet, hub, guild, reward tier, and objective style.
+Before inventing a pattern, inspect nearby quests for the same planet, hub, guild, reward tier, and objective style. New reward items, enemies, and ship-only destinations follow `SWLOR.Game.Server/Readmes/ContentStandards.md`.
 
 When the concept is underspecified, grill the request one dependency at a time. Ask one question, include a recommended answer, and answer it yourself by searching the repo when the repository can provide the answer.
 

@@ -1,7 +1,9 @@
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using SWLOR.Game.Server.EngineTests.Framework;
 using SWLOR.Game.Server.Entity;
+using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Service.PropertyService;
 
 namespace SWLOR.Game.Server.EngineTests.Definitions;
@@ -39,9 +41,13 @@ public static class PropertyDeletionEngineTests
     [EngineTest("Retrieving a player starport returns docked ships to their safe dock and orbit and skips deleted ones", Category = "PropertyDeletion")]
     public static async Task StarportRetrievalSkipsDeletedShips(EngineTestContext ctx)
     {
-        var city = CreateCity();
+        // A real Viscara area, so a ship with no safe dock can fall back to the planet's starport.
+        var city = CreateCity("velesinterior");
         var (building, interior) = CreateStarport(city, listInCity: true);
+        var (otherBuilding, otherInterior) = CreateStarport(city, listInCity: true);
         var ship = CreateDockedShip(interior);
+        // A stale entry: the ship has since docked and registered at another starport.
+        var dockedElsewhere = CreateDockedShip(otherInterior);
         // Registered before safe orbits were recorded.
         var withoutSafeOrbit = CreateDockedShip(interior);
         withoutSafeOrbit.Positions.Remove(PropertyLocationType.LastNPCSpacePosition);
@@ -52,10 +58,13 @@ public static class PropertyDeletionEngineTests
         DB.Set(withoutSafeDock);
         interior.ChildPropertyIds[PropertyChildType.Starship] = new List<string>
         {
-            Guid.NewGuid().ToString(), withoutSafeDock.Id, withoutSafeOrbit.Id, ship.Id
+            Guid.NewGuid().ToString(), withoutSafeDock.Id, dockedElsewhere.Id, withoutSafeOrbit.Id, ship.Id
         };
         DB.Set(interior);
-        var created = new List<WorldProperty> { city, building, interior, ship, withoutSafeOrbit, withoutSafeDock };
+        var created = new List<WorldProperty>
+        {
+            city, building, interior, otherBuilding, otherInterior, ship, dockedElsewhere, withoutSafeOrbit, withoutSafeDock
+        };
 
         try
         {
@@ -78,11 +87,24 @@ public static class PropertyDeletionEngineTests
             ctx.AssertEqual("starport_orbit", dbWithoutSafeOrbit.Positions[PropertyLocationType.SpacePosition].AreaResref,
                 "a ship without a recorded safe orbit keeps its orbit");
 
+            var viscara = Planet.GetPlanetByType(PlanetType.Viscara);
+            var velesLanding = GetResRef(GetArea(GetWaypointByTag(viscara.LandingWaypointTag)));
+            var viscaraOrbit = GetResRef(GetArea(GetWaypointByTag(viscara.SpaceOrbitWaypointTag)));
             var dbWithoutSafeDock = DB.Get<WorldProperty>(withoutSafeDock.Id);
-            ctx.AssertEqual(interior.Id, dbWithoutSafeDock.Positions[PropertyLocationType.DockPosition].InstancePropertyId,
-                "a ship with no safe dock is left in place, and the ships after it are still relocated");
+            ctx.AssertEqual(velesLanding, dbWithoutSafeDock.Positions[PropertyLocationType.DockPosition].AreaResref,
+                "a ship with no safe dock goes to the starport of the city's planet");
+            ctx.AssertEqual(viscaraOrbit, dbWithoutSafeDock.Positions[PropertyLocationType.SpacePosition].AreaResref,
+                "a ship with no safe dock launches from that planet's orbit");
+            ctx.AssertEqual(velesLanding, dbWithoutSafeDock.Positions[PropertyLocationType.LastNPCDockPosition].AreaResref,
+                "the planet's starport becomes the safe dock");
             ctx.AssertEqual(0, dbWithoutSafeDock.ChildPropertyIds[PropertyChildType.RegisteredStarport].Count,
-                "a ship with no safe dock still loses its starport registration");
+                "a ship with no safe dock loses its registration at the retrieved starport");
+
+            var dbDockedElsewhere = DB.Get<WorldProperty>(dockedElsewhere.Id);
+            ctx.AssertEqual(otherInterior.Id, dbDockedElsewhere.Positions[PropertyLocationType.DockPosition].InstancePropertyId,
+                "a ship docked at another starport stays there");
+            ctx.Assert(dbDockedElsewhere.ChildPropertyIds[PropertyChildType.RegisteredStarport].SequenceEqual(new[] { otherInterior.Id }),
+                "a ship docked at another starport keeps that starport's registration");
         }
         finally
         {
@@ -124,9 +146,9 @@ public static class PropertyDeletionEngineTests
         await ctx.ExecuteInCreatureContextAsync(creature, action);
     }
 
-    private static WorldProperty CreateCity()
+    private static WorldProperty CreateCity(string areaResref = CityAreaResref)
     {
-        return CreateProperty(PropertyType.City, CityAreaResref);
+        return CreateProperty(PropertyType.City, areaResref);
     }
 
     private static (WorldProperty Building, WorldProperty Interior) CreateStarport(WorldProperty city, bool listInCity)

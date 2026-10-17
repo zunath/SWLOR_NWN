@@ -1406,8 +1406,9 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         /// <param name="property">The starship property to update.</param>
         /// <param name="retrievedStarportId">A player starport interior being retrieved. Ships docked there return even though it still exists.</param>
+        /// <param name="fallbackAreaResref">An area whose planet's starport receives the ship if it has no usable safe dock, such as the retrieved starport's city.</param>
         /// <returns>What happened to the starship's dock.</returns>
-        public static StarshipDockReturnResult ReturnStarshipToSafeDock(WorldProperty property, string retrievedStarportId = "")
+        public static StarshipDockReturnResult ReturnStarshipToSafeDock(WorldProperty property, string retrievedStarportId = "", string fallbackAreaResref = "")
         {
             static bool IsShipOnlyArea(string areaResref) =>
                 StarshipDockReturn.IsShipOnlyArea(Area.GetAreaByResref(areaResref));
@@ -1422,7 +1423,8 @@ namespace SWLOR.Game.Server.Service
                 property.Positions,
                 IsShipOnlyArea,
                 starportId => starportId != retrievedStarportId && DB.Exists<WorldProperty>(starportId),
-                GetPlanetStarport);
+                GetPlanetStarport,
+                fallbackAreaResref);
 
             var destination = property.Positions.TryGetValue(PropertyLocationType.DockPosition, out var dock)
                 ? dock.AreaResref
@@ -1441,7 +1443,7 @@ namespace SWLOR.Game.Server.Service
                     Log.Write(LogGroup.Property, $"Starship '{property.CustomName}' ({property.Id}) had no dock position. It has been placed at the last NPC dock position at '{destination}'.");
                     break;
                 case StarshipDockReturnResult.ReturnedToPlanetStarport:
-                    Log.Write(LogGroup.Property, $"Starship '{property.CustomName}' ({property.Id}) was docked at the ship-only location '{previousDock?.AreaResref}' without a last NPC dock position. It has been returned to the planet's starport at '{destination}'.");
+                    Log.Write(LogGroup.Property, $"Starship '{property.CustomName}' ({property.Id}) had to leave '{previousDock?.AreaResref}{previousDock?.InstancePropertyId}' without a last NPC dock position. It has been returned to the planet's starport at '{destination}'.");
                     break;
                 case StarshipDockReturnResult.NoSafeDock:
                     Log.Write(LogGroup.Error, $"Starship '{property.CustomName}' ({property.Id}) needs to return to its last NPC dock position but none could be found. Dock position: '{previousDock?.AreaResref}{previousDock?.InstancePropertyId}'.");

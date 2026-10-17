@@ -166,6 +166,28 @@ public class StarshipDockReturnTests
     }
 
     [Test]
+    public void ShipAtRetrievedStarportWithoutSafeDock_ReturnsToTheCityPlanetStarport()
+    {
+        const string cityArea = "veles_city";
+        (PropertyLocation Landing, PropertyLocation Orbit)? CityPlanetStarport(string areaResref) =>
+            areaResref == cityArea ? (At(Veles, 1f), At(StationOrbit, 2f)) : null;
+        var positions = new Dictionary<PropertyLocationType, PropertyLocation>
+        {
+            [PropertyLocationType.DockPosition] = AtStarport(PlayerStarportId),
+            [PropertyLocationType.SpacePosition] = At("city_orbit", 6f),
+        };
+
+        StarshipDockReturn.ReturnToSafeDock(positions, IsShipOnly, _ => false, CityPlanetStarport, cityArea)
+            .Should().Be(StarshipDockReturnResult.ReturnedToPlanetStarport);
+
+        var (landing, orbit) = CityPlanetStarport(cityArea)!.Value;
+        positions[PropertyLocationType.DockPosition].Should().BeEquivalentTo(landing);
+        positions[PropertyLocationType.SpacePosition].Should().BeEquivalentTo(orbit);
+        positions[PropertyLocationType.LastNPCDockPosition].Should().BeEquivalentTo(landing);
+        positions[PropertyLocationType.LastNPCSpacePosition].Should().BeEquivalentTo(orbit);
+    }
+
+    [Test]
     public void ShipWithoutSafeOrbit_ReturnsToSafeDockAndKeepsItsOrbit()
     {
         // Ships that have not docked at a regular starport since safe orbits were recorded.

@@ -177,6 +177,8 @@ namespace SWLOR.Game.Server.Service.PropertyService
                 if (dbInterior == null)
                     return;
 
+                var dbCity = DB.Get<WorldProperty>(property.ParentPropertyId);
+
                 if (dbInterior.ChildPropertyIds.ContainsKey(PropertyChildType.Starship))
                 {
                     foreach (var starshipId in dbInterior.ChildPropertyIds[PropertyChildType.Starship])
@@ -185,18 +187,19 @@ namespace SWLOR.Game.Server.Service.PropertyService
                         if (dbStarship == null)
                             continue;
 
-                        if (dbStarship.ChildPropertyIds.ContainsKey(PropertyChildType.RegisteredStarport))
-                            dbStarship.ChildPropertyIds[PropertyChildType.RegisteredStarport].Clear();
+                        // A stale entry may belong to a ship now registered at another starport. Keep that registration.
+                        if (dbStarship.ChildPropertyIds.TryGetValue(PropertyChildType.RegisteredStarport, out var registeredStarports))
+                            registeredStarports.Remove(dbInterior.Id);
 
                         // Returns the ship to its last NPC dock and that dock's orbit, so it launches from the
                         // starport it is docked at rather than from the retrieved starport's orbit.
-                        Property.ReturnStarshipToSafeDock(dbStarship, dbInterior.Id);
+                        // A ship with no safe dock goes to the starport of the planet the city is on.
+                        Property.ReturnStarshipToSafeDock(dbStarship, dbInterior.Id, dbCity?.ParentPropertyId ?? string.Empty);
 
                         DB.Set(dbStarship);
                     }
                 }
 
-                var dbCity = DB.Get<WorldProperty>(property.ParentPropertyId);
                 if (dbCity == null)
                     return;
 

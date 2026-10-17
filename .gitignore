@@ -292,7 +292,3 @@ Module/ncs/.script-staleness-cache.json
 # Packed modules are generated from Module source files; keep them out of Git and LFS.
 *.[mM][oO][dD]
 *.[bB][aA][cC][kK][uU][pP][mM][oO][dD]
-
-# Local agent discovery links, created by tools/SyncAgentSkills.ps1.
-/.agents/skills
-/.claude/skills

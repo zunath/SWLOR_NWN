@@ -103,5 +103,13 @@ Before writing code in an unfamiliar area, find two or three existing examples o
 
 ## Agent Skills and Read-Only Areas
 
-- Shared skills live only in `skills/`. After cloning or moving a checkout, run `powershell -NoProfile -ExecutionPolicy Bypass -File tools/SyncAgentSkills.ps1` to link `.agents/skills` (Codex) and `.claude/skills` (Claude) to it; use `-CheckOnly` to verify. On Windows without symbolic-link privileges, the script uses directory junctions without elevation. Links are local and ignored by Git. Edit only `skills/`; keep skill text agent-neutral. `agents/openai.yaml` is optional Codex metadata.
+Skills live only in `skills/`. Both Codex and Claude must read the matching `SKILL.md` below before starting work in its scope, including when the user names the skill. Paths are relative to the repository root. Load only relevant skills and follow their referenced files as needed. Edit the shared files directly; no copies, links, or setup commands are required. Keep instructions agent-neutral.
+
+- Beast definitions, taming/incubation beasts, mutation paths, DNA/TLK assets, or beast generators: read `skills/swlor-beast-generation/SKILL.md`.
+- Blaster model imports, original designs, grips, scale, muzzle alignment, textures, or inventory artwork: read `skills/swlor-blaster-models/SKILL.md`.
+- NUI windows, tabs, tables, modals, or bindings: read `skills/swlor-gui-window-generation/SKILL.md`.
+- NPC quests, dialogue, journals, objectives, rewards, prerequisites, or quest placement: read `skills/swlor-quest-generation/SKILL.md`.
+- Weighted rare spawns, named elites, NPC stats, unique rare loot, or spawn assets: read `skills/swlor-rare-spawn-generation/SKILL.md`.
+- SWLOR Wiki release-note creation, updates, or finalization: read `skills/swlor-release-notes/SKILL.md`.
+
 - The Unified solution (`C:\Projects\unified`) is read-only reference material. Never change it.

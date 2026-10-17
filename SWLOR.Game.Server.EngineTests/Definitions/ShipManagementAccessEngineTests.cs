@@ -25,13 +25,15 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
         private const string ShipItemTag = "ShipDeedLightFreighter";
         private const string DockAreaResref = "engine_shipaccess";
         private const int UnpagedSearchLimit = 50;
-        private static readonly int[] BoundaryCounts = { 0, 49, 50, 51, 120 };
+        private const int PageSize = 25;
+        private static readonly int[] OwnedCounts = { 0, 49, 50, 51, 120 };
+        private static readonly int[] SharedCounts = { 0, 24, 25, 26, 49, 50, 51, 120 };
 
         [EngineTest("Owned ship list loads every ship at and past the 50-row search limit", Category = "ShipManagement", TimeoutSeconds = 120f)]
         public static async Task OwnedShipListIsComplete(EngineTestContext ctx)
         {
             var details = new List<string>();
-            foreach (var count in BoundaryCounts)
+            foreach (var count in OwnedCounts)
             {
                 var created = new List<EntityBase>();
                 try
@@ -64,39 +66,36 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             ctx.SetResultDetail(string.Join("; ", details));
         }
 
-        [EngineTest("Shared ship list loads every permitted ship at and past the 50-row search limit", Category = "ShipManagement", TimeoutSeconds = 120f)]
-        public static async Task SharedShipListIsComplete(EngineTestContext ctx)
+        [EngineTest("Shared ship pages cover every permitted ship at and past the 50-row search limit", Category = "ShipManagement", TimeoutSeconds = 180f)]
+        public static async Task SharedShipPagesAreComplete(EngineTestContext ctx)
         {
             var details = new List<string>();
-            foreach (var count in BoundaryCounts)
+            foreach (var count in SharedCounts)
             {
                 var created = new List<EntityBase>();
                 try
                 {
                     var playerId = NewId();
-                    var shared = new List<PlayerShip>();
-                    for (var index = 0; index < count; index++)
-                    {
-                        var ownerId = NewId();
-                        var ship = AddShip(created, ownerId);
-                        Grant(created, ownerId, ship.PropertyId, isOwner: true);
-                        Grant(created, playerId, ship.PropertyId, isOwner: false);
-                        shared.Add(ship);
-                    }
-
+                    var shared = Enumerable.Range(0, count)
+                        .Select(index => AddSharedShip(created, playerId, $"Shared {index:000}", PropertyPermissionType.EnterProperty).Ship)
+                        .ToList();
                     var withoutAccess = AddShipsWithoutAccess(created, playerId);
-                    var permissionRows = count + withoutAccess.NonShipGrants;
 
-                    List<PlayerShip> listed = null;
-                    var queries = CountQueries(() => listed = PlayerShipAccess.GetSharedShips(playerId));
-                    AssertSameShips(ctx, shared, listed, $"{count} shared");
-                    ctx.Assert(listed.All(ship => !withoutAccess.ShipIds.Contains(ship.Id)), $"{count} shared: ships without a permission record stay excluded");
-                    ctx.AssertEqual(count > 0 ? 4L : 3L, queries.Searches, $"{count} shared: searches (permissions count and page, ships count and page)");
-                    ctx.AssertEqual((long)(permissionRows + count), queries.Rows, $"{count} shared: rows read");
+                    List<string> propertyIds = null;
+                    var idQueries = CountQueries(() => propertyIds = PlayerShipAccess.GetSharedPropertyIds(playerId));
+                    ctx.AssertEqual(3L, idQueries.Searches, $"{count} shared: Id searches (permission count and page, owned count)");
+                    ctx.AssertEqual((long)(count + withoutAccess.PermissionRows), idQueries.Rows, $"{count} shared: permission rows read once");
 
+                    var pages = ReadSharedPages(propertyIds, out var totalCount, out var pageQueries);
+                    AssertSharedPages(ctx, shared, pages, totalCount, $"{count} shared");
+                    ctx.Assert(pages.SelectMany(page => page).All(entry => !withoutAccess.ShipIds.Contains(entry.Ship.Id)),
+                        $"{count} shared: ships without access, queued for deletion or of another property type stay excluded");
+                    AssertPageCosts(ctx, pages, pageQueries, $"{count} shared");
+
+                    // The old query also matched the queued-for-deletion ship, which keeps its ship record in this fixture.
                     var legacy = LegacySharedPage(playerId).Count;
-                    ctx.AssertEqual(Math.Min(count, UnpagedSearchLimit), legacy, $"{count} shared: the unpaged ship search this replaces");
-                    details.Add($"{count} shared: listed {listed.Count}, unpaged {legacy}");
+                    ctx.AssertEqual(Math.Min(count + 1, UnpagedSearchLimit), legacy, $"{count} shared: the unpaged ship search this replaces");
+                    details.Add($"{count} shared: {pages.Count} pages ({string.Join("/", pages.Select(page => page.Count))}), unpaged {legacy}");
                 }
                 finally
                 {
@@ -106,14 +105,16 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 await ctx.WaitFrameAsync();
             }
 
-            var noRecords = new List<PlayerShip>();
-            var none = CountQueries(() => noRecords = PlayerShipAccess.GetSharedShips(NewId()));
-            ctx.AssertEqual(0, noRecords.Count, "a player without permission records sees no shared ships");
+            List<string> noRecords = null;
+            var none = CountQueries(() => noRecords = PlayerShipAccess.GetSharedPropertyIds(NewId()));
+            ctx.AssertEqual(0, noRecords.Count, "a player without permission records has no shared ships");
             ctx.AssertEqual(1L, none.Searches, "a player without permission records needs only the permission count");
+            var emptyPage = CountQueries(() => PlayerShipAccess.GetSharedShipsPage(noRecords, 0, PageSize, out _));
+            ctx.AssertEqual(0L, emptyPage.Searches, "an empty Id list pages without a search");
             ctx.SetResultDetail(string.Join("; ", details));
         }
 
-        [EngineTest("Owned ships no longer use up the shared ship list's rows", Category = "ShipManagement", TimeoutSeconds = 120f)]
+        [EngineTest("Owned ships no longer use up the shared ship list's rows", Category = "ShipManagement", TimeoutSeconds = 180f)]
         public static async Task OwnedShipsDoNotCrowdOutSharedShips(EngineTestContext ctx)
         {
             const int ownedCount = 10;
@@ -124,7 +125,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 try
                 {
                     var playerId = NewId();
-                    var owned = Enumerable.Range(0, ownedCount).Select(_ => AddShip(created, playerId)).ToList();
+                    var owned = Enumerable.Range(0, ownedCount).Select(index => AddDockedShip(created, playerId, $"Owned {index:00}")).ToList();
                     foreach (var ship in owned)
                         Grant(created, playerId, ship.PropertyId, isOwner: true);
 
@@ -132,10 +133,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                     var duplicateGrants = 0;
                     for (var index = 0; index < sharedCount; index++)
                     {
-                        var ownerId = NewId();
-                        var ship = AddShip(created, ownerId);
-                        Grant(created, ownerId, ship.PropertyId, isOwner: true);
-                        Grant(created, playerId, ship.PropertyId, isOwner: false);
+                        var ship = AddSharedShip(created, playerId, $"Shared {index:000}", PropertyPermissionType.EnterProperty).Ship;
                         // Duplicate records for one ship must not list it twice.
                         if (index % 5 == 0)
                         {
@@ -145,12 +143,15 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                         shared.Add(ship);
                     }
 
-                    List<PlayerShip> listed = null;
-                    var queries = CountQueries(() => listed = PlayerShipAccess.GetSharedShips(playerId));
-                    AssertSameShips(ctx, shared, listed, $"{ownedCount} owned + {sharedCount} shared");
-                    ctx.AssertEqual(4L, queries.Searches, $"{sharedCount} shared: searches");
-                    ctx.AssertEqual((long)(ownedCount + sharedCount + duplicateGrants + ownedCount + sharedCount), queries.Rows,
-                        $"{sharedCount} shared: rows read (every permission record, then every matching ship once)");
+                    List<string> propertyIds = null;
+                    var idQueries = CountQueries(() => propertyIds = PlayerShipAccess.GetSharedPropertyIds(playerId));
+                    ctx.AssertEqual(4L, idQueries.Searches, $"{sharedCount} shared: Id searches (permissions and owned ships, count and page each)");
+                    ctx.AssertEqual((long)(ownedCount + sharedCount + duplicateGrants + ownedCount), idQueries.Rows,
+                        $"{sharedCount} shared: rows read (every permission record, then each owned ship)");
+                    ctx.AssertEqual(sharedCount, propertyIds.Count, $"{sharedCount} shared: owned ships and duplicate records leave the Id list");
+
+                    var pages = ReadSharedPages(propertyIds, out var totalCount, out _);
+                    AssertSharedPages(ctx, shared, pages, totalCount, $"{ownedCount} owned + {sharedCount} shared");
                     AssertSameShips(ctx, owned, PlayerShipAccess.GetOwnedShips(playerId), $"{ownedCount} owned beside {sharedCount} shared");
 
                     // The pre-fix list read one unpaged page and only then dropped owned ships.
@@ -163,7 +164,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                         ctx.Assert(ownedInPage > 0, $"{sharedCount} shared: owned ships take rows of the unpaged page");
                     if (sharedCount > UnpagedSearchLimit)
                         ctx.Assert(legacyShared < sharedCount, $"{sharedCount} shared: the unpaged page loses shared ships");
-                    details.Add($"{ownedCount}+{sharedCount}: listed {listed.Count}, unpaged page {legacyPage.Count} with {ownedInPage} owned");
+                    details.Add($"{ownedCount}+{sharedCount}: {totalCount} shared in {pages.Count} pages, unpaged page {legacyPage.Count} with {ownedInPage} owned");
                 }
                 finally
                 {
@@ -174,6 +175,100 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             }
 
             ctx.SetResultDetail(string.Join("; ", details));
+        }
+
+        [EngineTest("Shared ships with identical names page without repeats or gaps", Category = "ShipManagement", TimeoutSeconds = 120f)]
+        public static async Task IdenticalShipNamesPageCleanly(EngineTestContext ctx)
+        {
+            var created = new List<EntityBase>();
+            try
+            {
+                // New ships are all named "Starship" until renamed, so name ties are the common case.
+                var playerId = NewId();
+                var shared = Enumerable.Range(0, 60)
+                    .Select(_ => AddSharedShip(created, playerId, "Starship", PropertyPermissionType.EnterProperty).Ship)
+                    .ToList();
+
+                var propertyIds = PlayerShipAccess.GetSharedPropertyIds(playerId);
+                var pages = ReadSharedPages(propertyIds, out var totalCount, out _);
+                AssertSharedPages(ctx, shared, pages, totalCount, "60 ships named Starship");
+
+                // Repeated reads of the same page return the same ships in the same order.
+                for (var pageIndex = 0; pageIndex < pages.Count; pageIndex++)
+                {
+                    var again = PlayerShipAccess.GetSharedShipsPage(propertyIds, pageIndex, PageSize, out _);
+                    ctx.Assert(again.Select(entry => entry.Ship.Id).SequenceEqual(pages[pageIndex].Select(entry => entry.Ship.Id)),
+                        $"page {pageIndex + 1} reads back in the same order");
+                }
+
+                var pastEnd = PlayerShipAccess.GetSharedShipsPage(propertyIds, 99, PageSize, out _);
+                ctx.Assert(pastEnd.Select(entry => entry.Ship.Id).SequenceEqual(pages[^1].Select(entry => entry.Ship.Id)),
+                    "a page past the end returns the last page");
+                ctx.SetResultDetail($"60 identical names: {string.Join("/", pages.Select(page => page.Count))}");
+            }
+            finally
+            {
+                DeleteAll(created);
+            }
+
+            await ctx.WaitFrameAsync();
+        }
+
+        [EngineTest("Other Ships pages 25 ships at a time and a page flip reads only that page", Category = "ShipManagement", TimeoutSeconds = 60f)]
+        public static Task OtherShipsPagesTwentyFiveAtATime(EngineTestContext ctx)
+        {
+            return WithShipManagementAsync(ctx, async (actor, model, created, _, _) =>
+            {
+                var owned = Enumerable.Range(0, 3).Select(index => AddDockedShip(created, actor.Id, $"Owned {index}")).ToList();
+                foreach (var ship in owned)
+                    Grant(created, actor.Id, ship.PropertyId, isOwner: true);
+                var shared = Enumerable.Range(0, 26)
+                    .Select(index => AddSharedShip(created, actor.Id, $"Shared {index:00}", PropertyPermissionType.EnterProperty))
+                    .ToList();
+                // Extra permission records the page flips must not read again.
+                for (var index = 0; index < 40; index++)
+                    Grant(created, actor.Id, NewId(), isOwner: true);
+
+                await OpenShipManagementAsync(ctx, actor);
+                AssertListed(ctx, model, owned, "My Ships");
+                ctx.AssertEqual(1, model.PageNumbers.Count, "My Ships: one page");
+
+                await ctx.ExecuteInCreatureContextAsync(actor.Creature, model.OnClickOtherShips());
+                ctx.AssertEqual(2, model.PageNumbers.Count, "Other Ships: 26 ships make two pages");
+                ctx.AssertEqual(0, model.SelectedPageIndex, "Other Ships opens on the first page");
+                AssertListed(ctx, model, shared.Take(PageSize).Select(entry => entry.Ship).ToList(), "Other Ships page 1");
+                ctx.Assert(model.ShipNames.SequenceEqual(Enumerable.Range(0, PageSize).Select(index => $"Shared {index:00}")),
+                    "page 1 lists the first 25 ships by name");
+
+                (long Searches, long Rows) flip = default;
+                await ctx.ExecuteInCreatureContextAsync(actor.Creature, () => flip = CountQueries(model.OnNextPage()));
+                AssertListed(ctx, model, new List<PlayerShip> { shared[25].Ship }, "Other Ships page 2");
+                ctx.AssertEqual(1, model.SelectedPageIndex, "Next moves to page 2");
+                ctx.AssertEqual(4L, flip.Searches, "a page flip runs the page's property and ship queries only");
+                ctx.AssertEqual(2L, flip.Rows, "a page flip reads one property and one ship per listed row");
+
+                await ctx.ExecuteInCreatureContextAsync(actor.Creature, () => flip = CountQueries(model.OnNextPage()));
+                ctx.AssertEqual(0L, flip.Searches, "Next on the last page does nothing");
+
+                await ctx.ExecuteInCreatureContextAsync(actor.Creature, () => flip = CountQueries(model.OnPreviousPage()));
+                ctx.AssertEqual(0, model.SelectedPageIndex, "Previous returns to page 1");
+                ctx.AssertEqual((long)(2 * PageSize), flip.Rows, "page 1 reads its 25 properties and ships");
+
+                // The page selector is a watched combo: the client's change runs the property setter.
+                await ctx.ExecuteInCreatureContextAsync(actor.Creature, () => model.SelectedPageIndex = 1);
+                AssertListed(ctx, model, new List<PlayerShip> { shared[25].Ship }, "Other Ships page 2 from the page selector");
+
+                await ctx.ExecuteInCreatureContextAsync(actor.Creature, () => SelectShip(model, shared[25].Ship));
+                await ctx.ExecuteInCreatureContextAsync(actor.Creature, model.OnClickRemoveAccess());
+                await ctx.ExecuteInCreatureContextAsync(actor.Creature, model.OnModalConfirmClick());
+                ctx.AssertEqual(1, model.PageNumbers.Count, "removing the only ship on the last page leaves one page");
+                ctx.AssertEqual(0, model.SelectedPageIndex, "the emptied last page falls back to page 1");
+                AssertListed(ctx, model, shared.Take(PageSize).Select(entry => entry.Ship).ToList(), "Other Ships after removal");
+
+                await ctx.ExecuteInCreatureContextAsync(actor.Creature, model.OnClickMyShips());
+                AssertListed(ctx, model, owned, "My Ships again");
+                ctx.AssertEqual(1, model.PageNumbers.Count, "My Ships again: one page");
+            });
         }
 
         [EngineTest("A shared ship the 50-row list omitted can be selected and boarded", Category = "ShipManagement", TimeoutSeconds = 60f)]
@@ -189,11 +284,9 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 var grants = new Dictionary<string, WorldPropertyPermission>();
                 for (var index = 0; index < 55; index++)
                 {
-                    var ownerId = NewId();
-                    var ship = AddDockedShip(created, ownerId, $"Shared {index:00}");
-                    Grant(created, ownerId, ship.PropertyId, isOwner: true);
-                    grants[ship.Id] = Grant(created, actor.Id, ship.PropertyId, isOwner: false);
-                    shared.Add(ship);
+                    var entry = AddSharedShip(created, actor.Id, $"Shared {index:00}", PropertyPermissionType.EnterProperty);
+                    grants[entry.Ship.Id] = entry.Grant;
+                    shared.Add(entry.Ship);
                 }
 
                 var outsiderId = NewId();
@@ -213,28 +306,33 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 AssertListed(ctx, model, owned, "My Ships");
 
                 await ctx.ExecuteInCreatureContextAsync(actor.Creature, model.OnClickOtherShips());
-                AssertListed(ctx, model, shared, "Other Ships");
-                ctx.Assert(!ShipIds(model).Contains(foreign.Id), "a ship shared only with another player is not listed");
+                var listed = await ReadAllListedPagesAsync(ctx, actor, model);
+                ctx.AssertEqual(3, model.PageNumbers.Count, "55 shared ships make three pages");
+                ctx.Assert(listed.Select(page => page.Count).SequenceEqual(new[] { 25, 25, 5 }), "pages hold 25, 25 and 5 ships");
+                var listedIds = listed.SelectMany(page => page).ToList();
+                ctx.AssertEqual(listedIds.Count, listedIds.Distinct().Count(), "no ship is listed on two pages");
+                ctx.Assert(shared.All(ship => listedIds.Contains(ship.Id)), "every shared ship is on a page");
+                ctx.Assert(!listedIds.Contains(foreign.Id), "a ship shared only with another player is not listed");
 
                 makeEnterable(target);
                 makeEnterable(revoked);
 
                 // Access revoked after selection blocks boarding.
-                await ctx.ExecuteInCreatureContextAsync(actor.Creature, () => SelectShip(model, revoked));
+                await ShowAndSelectAsync(ctx, actor, model, revoked);
                 ctx.Assert(model.IsBoardShipEnabled, "the omitted ship is boardable while its permission record exists");
                 DB.Delete<WorldPropertyPermission>(grants[revoked.Id].Id);
                 created.Remove(grants[revoked.Id]);
                 await AssertBoardingRefusedAsync(ctx, actor, model, "a revoked ship");
 
-                await ctx.ExecuteInCreatureContextAsync(actor.Creature, () => SelectShip(model, duplicated));
+                await ShowAndSelectAsync(ctx, actor, model, duplicated);
                 ctx.AssertEqual(DB.Get<WorldProperty>(duplicated.PropertyId).CustomName, model.ShipName, "a ship with duplicate permission records loads");
                 ctx.Assert(model.IsBoardShipEnabled, "a ship with duplicate permission records is boardable");
 
-                await ctx.ExecuteInCreatureContextAsync(actor.Creature, () => SelectShip(model, target));
+                await ShowAndSelectAsync(ctx, actor, model, target);
                 ctx.AssertEqual(DB.Get<WorldProperty>(target.PropertyId).CustomName, model.ShipName, "the omitted ship loads");
                 ctx.Assert(model.IsBoardShipEnabled, "the omitted ship is boardable at its dock");
                 await AssertBoardsAsync(ctx, actor, model, boardPosition, "the omitted ship");
-                ctx.SetResultDetail($"55 shared ships listed; unpaged list omitted {omitted.Count}; boarded '{DB.Get<WorldProperty>(target.PropertyId).CustomName}'");
+                ctx.SetResultDetail($"55 shared ships on 3 pages; unpaged list omitted {omitted.Count}; boarded '{DB.Get<WorldProperty>(target.PropertyId).CustomName}' from page {model.SelectedPageIndex + 1}");
             });
         }
 
@@ -327,7 +425,8 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 ctx.Assert(Gui.IsWindowOpen(actor.Creature, GuiWindowType.ShipManagement), "ship management stays open");
                 await ctx.ExecuteInCreatureContextAsync(actor.Creature, model.OnClickOtherShips());
                 AssertListed(ctx, model, new List<PlayerShip> { kept.Ship }, "Other Ships reopened");
-                AssertSameShips(ctx, new[] { kept.Ship }, PlayerShipAccess.GetSharedShips(actor.Id), "shared ships after removal");
+                var pages = ReadSharedPages(PlayerShipAccess.GetSharedPropertyIds(actor.Id), out var totalCount, out _);
+                AssertSharedPages(ctx, new[] { kept.Ship }, pages, totalCount, "shared ships after removal");
             });
         }
 
@@ -404,6 +503,40 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             await ctx.WaitUntilAsync(() => Vector3.Distance(entrance, GetPosition(actor.Creature)) < 1f, 5f,
                 $"{label}: the player to reach the ship's entrance");
             ctx.Assert(!Gui.IsWindowOpen(actor.Creature, GuiWindowType.ShipManagement), $"{label}: boarding closes ship management");
+        }
+
+        /// <summary>
+        /// Shows every page through the page selector and returns each page's listed ship Ids, ending on page 1.
+        /// </summary>
+        private static async Task<List<List<string>>> ReadAllListedPagesAsync(EngineTestContext ctx, PlayerAbilityFixture actor, ShipManagementViewModel model)
+        {
+            var pages = new List<List<string>>();
+            var pageCount = model.PageNumbers.Count;
+            for (var pageIndex = 0; pageIndex < pageCount; pageIndex++)
+            {
+                var index = pageIndex;
+                await ctx.ExecuteInCreatureContextAsync(actor.Creature, () => model.SelectedPageIndex = index);
+                ctx.AssertEqual(index, model.SelectedPageIndex, $"page {index + 1} is shown");
+                ctx.AssertEqual(ShipIds(model).Count, model.ShipNames.Count, $"page {index + 1}: ship names");
+                pages.Add(ShipIds(model).ToList());
+            }
+
+            await ctx.ExecuteInCreatureContextAsync(actor.Creature, () => model.SelectedPageIndex = 0);
+            return pages;
+        }
+
+        /// <summary>
+        /// Moves to the page listing the ship, then selects it.
+        /// </summary>
+        private static async Task ShowAndSelectAsync(EngineTestContext ctx, PlayerAbilityFixture actor, ShipManagementViewModel model, PlayerShip ship)
+        {
+            for (var pageIndex = 0; pageIndex < model.PageNumbers.Count && !ShipIds(model).Contains(ship.Id); pageIndex++)
+            {
+                var index = pageIndex;
+                await ctx.ExecuteInCreatureContextAsync(actor.Creature, () => model.SelectedPageIndex = index);
+            }
+
+            await ctx.ExecuteInCreatureContextAsync(actor.Creature, () => SelectShip(model, ship));
         }
 
         private static string NewId() => Guid.NewGuid().ToString();
@@ -492,32 +625,102 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
         }
 
         /// <summary>
-        /// Ships the player cannot access, alongside permission records that match no ship.
+        /// Ships the shared list must not show, plus the player's permission records that match no listable starship.
         /// </summary>
-        private static (HashSet<string> ShipIds, int NonShipGrants) AddShipsWithoutAccess(List<EntityBase> created, string playerId)
+        private static (HashSet<string> ShipIds, int PermissionRows) AddShipsWithoutAccess(List<EntityBase> created, string playerId)
         {
             var shipIds = new HashSet<string>();
             var outsiderId = NewId();
             for (var index = 0; index < 60; index++)
-            {
-                var ownerId = NewId();
-                var ship = AddShip(created, ownerId);
-                Grant(created, ownerId, ship.PropertyId, isOwner: true);
-                Grant(created, outsiderId, ship.PropertyId, isOwner: false);
-                shipIds.Add(ship.Id);
-            }
+                shipIds.Add(AddSharedShip(created, outsiderId, $"Outsider {index:00}", PropertyPermissionType.EnterProperty).Ship.Id);
 
-            var revokedShip = AddShip(created, NewId());
-            var revoked = Grant(created, playerId, revokedShip.PropertyId, isOwner: false);
-            DB.Delete<WorldPropertyPermission>(revoked.Id);
-            created.Remove(revoked);
-            shipIds.Add(revokedShip.Id);
+            var revoked = AddSharedShip(created, playerId, "Revoked", PropertyPermissionType.EnterProperty);
+            DB.Delete<WorldPropertyPermission>(revoked.Grant.Id);
+            created.Remove(revoked.Grant);
+            shipIds.Add(revoked.Ship.Id);
 
-            const int nonShipGrants = 5;
-            for (var index = 0; index < nonShipGrants; index++)
+            // An unregistered ship's property stays, queued for deletion, until the next boot.
+            var queued = AddSharedShip(created, playerId, "Queued", PropertyPermissionType.EnterProperty);
+            var queuedProperty = DB.Get<WorldProperty>(queued.Ship.PropertyId);
+            queuedProperty.IsQueuedForDeletion = true;
+            DB.Set(queuedProperty);
+            shipIds.Add(queued.Ship.Id);
+
+            var apartment = new WorldProperty { CustomName = "Apartment", PropertyType = PropertyType.Apartment, OwnerPlayerId = NewId() };
+            DB.Set(apartment);
+            created.Add(apartment);
+            Grant(created, playerId, apartment.Id, isOwner: false);
+
+            const int unmatchedGrants = 5;
+            for (var index = 0; index < unmatchedGrants; index++)
                 Grant(created, playerId, NewId(), isOwner: true);
 
-            return (shipIds, nonShipGrants);
+            return (shipIds, unmatchedGrants + 2);
+        }
+
+        /// <summary>
+        /// Reads every page the way the window does: one call per page against a property Id list loaded once.
+        /// </summary>
+        private static List<List<(PlayerShip Ship, WorldProperty Property)>> ReadSharedPages(
+            List<string> propertyIds, out int totalCount, out List<(long Searches, long Rows)> pageQueries)
+        {
+            var pages = new List<List<(PlayerShip Ship, WorldProperty Property)>>();
+            pageQueries = new List<(long Searches, long Rows)>();
+            totalCount = 0;
+            for (var pageIndex = 0; ; pageIndex++)
+            {
+                List<(PlayerShip Ship, WorldProperty Property)> page = null;
+                var total = 0;
+                var index = pageIndex;
+                pageQueries.Add(CountQueries(() => page = PlayerShipAccess.GetSharedShipsPage(propertyIds, index, PageSize, out total)));
+                totalCount = total;
+                if (page.Count > 0)
+                    pages.Add(page);
+                if ((pageIndex + 1) * PageSize >= totalCount)
+                    return pages;
+            }
+        }
+
+        private static void AssertSharedPages(EngineTestContext ctx, IEnumerable<PlayerShip> expected,
+            List<List<(PlayerShip Ship, WorldProperty Property)>> pages, int totalCount, string label)
+        {
+            var expectedIds = expected.Select(ship => ship.Id).ToHashSet();
+            ctx.AssertEqual(expectedIds.Count, totalCount, $"{label}: total shared ships");
+            ctx.AssertEqual((totalCount + PageSize - 1) / PageSize, pages.Count, $"{label}: pages");
+            for (var pageIndex = 0; pageIndex < pages.Count; pageIndex++)
+            {
+                var size = pageIndex < pages.Count - 1 ? PageSize : totalCount - PageSize * (pages.Count - 1);
+                ctx.AssertEqual(size, pages[pageIndex].Count, $"{label}: page {pageIndex + 1} size");
+            }
+
+            var entries = pages.SelectMany(page => page).ToList();
+            var ids = entries.Select(entry => entry.Ship.Id).ToList();
+            ctx.AssertEqual(ids.Count, ids.Distinct().Count(), $"{label}: no ship on two pages");
+            ctx.AssertEqual(0, expectedIds.Except(ids).Count(), $"{label}: missing ships");
+            ctx.AssertEqual(0, ids.Except(expectedIds).Count(), $"{label}: unexpected ships");
+            ctx.Assert(entries.All(entry => entry.Ship.PropertyId == entry.Property.Id), $"{label}: each ship carries its own property");
+            ctx.Assert(entries.Zip(entries.Skip(1)).All(pair =>
+                    string.Compare(pair.First.Property.CustomName, pair.Second.Property.CustomName, StringComparison.OrdinalIgnoreCase) <= 0),
+                $"{label}: pages are sorted by ship name");
+        }
+
+        private static void AssertPageCosts(EngineTestContext ctx, List<List<(PlayerShip Ship, WorldProperty Property)>> pages,
+            List<(long Searches, long Rows)> pageQueries, string label)
+        {
+            if (pages.Count == 0)
+            {
+                ctx.AssertEqual(1, pageQueries.Count, $"{label}: one empty page read");
+                ctx.AssertEqual(1L, pageQueries[0].Searches, $"{label}: an empty list needs only the count");
+                ctx.AssertEqual(0L, pageQueries[0].Rows, $"{label}: an empty list reads no rows");
+                return;
+            }
+
+            ctx.AssertEqual(pages.Count, pageQueries.Count, $"{label}: one read per page");
+            for (var pageIndex = 0; pageIndex < pages.Count; pageIndex++)
+            {
+                ctx.AssertEqual(4L, pageQueries[pageIndex].Searches, $"{label}: page {pageIndex + 1} searches (properties and ships, count and page each)");
+                ctx.AssertEqual(2L * pages[pageIndex].Count, pageQueries[pageIndex].Rows, $"{label}: page {pageIndex + 1} reads one property and one ship per row");
+            }
         }
 
         // The queries ship management ran before this fix.

@@ -3,11 +3,12 @@ using System.Linq;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Service.DBService;
 using SWLOR.Game.Server.Service.LogService;
+using SWLOR.Game.Server.Service.PropertyService;
 
 namespace SWLOR.Game.Server.Service.SpaceService
 {
     /// <summary>
-    /// Loads the complete ship lists shown in ship management.
+    /// Loads the ship lists shown in ship management.
     /// </summary>
     public static class PlayerShipAccess
     {
@@ -25,30 +26,82 @@ namespace SWLOR.Game.Server.Service.SpaceService
         }
 
         /// <summary>
-        /// Retrieves every ship owned by someone else on which a player holds a permission record.
+        /// Retrieves the property Ids a player holds permission records on, minus the properties of ships they own.
+        /// Load this once and page through it with <see cref="GetSharedShipsPage"/>.
         /// </summary>
         /// <param name="playerId">The player's Id.</param>
-        /// <returns>All ships shared with the player.</returns>
-        public static List<PlayerShip> GetSharedShips(string playerId)
+        /// <returns>The candidate property Ids of ships shared with the player.</returns>
+        public static List<string> GetSharedPropertyIds(string playerId)
         {
             var permissionQuery = new DBQuery<WorldPropertyPermission>()
                 .AddFieldSearch(nameof(WorldPropertyPermission.PlayerId), playerId, false);
             var propertyIds = SearchAll(permissionQuery)
                 .Select(permission => permission.PropertyId)
                 .Where(propertyId => !string.IsNullOrWhiteSpace(propertyId))
-                .Distinct()
-                .ToList();
+                .ToHashSet();
 
             if (propertyIds.Count <= 0)
-                return new List<PlayerShip>();
+                return new List<string>();
+
+            // Owners hold a permission record on their own ships; those belong to My Ships.
+            foreach (var ship in GetOwnedShips(playerId))
+                propertyIds.Remove(ship.PropertyId);
+
+            return propertyIds.ToList();
+        }
+
+        /// <summary>
+        /// Retrieves one page of the shared ships behind <paramref name="sharedPropertyIds"/>, sorted by name.
+        /// Only starships that exist and are not queued for deletion are counted.
+        /// </summary>
+        /// <param name="sharedPropertyIds">The Ids from <see cref="GetSharedPropertyIds"/>.</param>
+        /// <param name="pageIndex">The zero-based page. A page past the end returns the last page.</param>
+        /// <param name="pageSize">The number of ships per page.</param>
+        /// <param name="totalCount">The number of shared ships across all pages.</param>
+        /// <returns>The page's ships with their properties.</returns>
+        public static List<(PlayerShip Ship, WorldProperty Property)> GetSharedShipsPage(
+            IReadOnlyCollection<string> sharedPropertyIds,
+            int pageIndex,
+            int pageSize,
+            out int totalCount)
+        {
+            totalCount = 0;
+            var page = new List<(PlayerShip Ship, WorldProperty Property)>();
+            if (sharedPropertyIds.Count <= 0)
+                return page;
+
+            var propertyQuery = new DBQuery<WorldProperty>()
+                .AddFieldSearch(nameof(WorldProperty.Id), sharedPropertyIds)
+                .AddFieldSearch(nameof(WorldProperty.PropertyType), (int)PropertyType.Starship)
+                .AddFieldSearch(nameof(WorldProperty.IsQueuedForDeletion), false)
+                .OrderBy(nameof(WorldProperty.CustomName));
+            totalCount = (int)DB.SearchCount(propertyQuery);
+            if (totalCount <= 0)
+                return page;
+
+            var lastPage = (totalCount - 1) / pageSize;
+            pageIndex = Math.Clamp(pageIndex, 0, lastPage);
+            var properties = DB.Search(propertyQuery.AddPaging(pageSize, pageIndex * pageSize))
+                .Where(property => property != null &&
+                                   property.PropertyType == PropertyType.Starship &&
+                                   sharedPropertyIds.Contains(property.Id))
+                .ToList();
+            if (properties.Count <= 0)
+                return page;
 
             var shipQuery = new DBQuery<PlayerShip>()
-                .AddFieldSearch(nameof(PlayerShip.PropertyId), propertyIds);
+                .AddFieldSearch(nameof(PlayerShip.PropertyId), properties.Select(property => property.Id));
+            var shipsByPropertyId = SearchAll(shipQuery)
+                .GroupBy(ship => ship.PropertyId)
+                .ToDictionary(group => group.Key, group => group.First());
 
-            // Owned ships are removed after the full set loads so they cannot use up the shared ships' rows.
-            return SearchAll(shipQuery)
-                .Where(ship => ship.OwnerPlayerId != playerId)
-                .ToList();
+            foreach (var property in properties)
+            {
+                if (shipsByPropertyId.TryGetValue(property.Id, out var ship))
+                    page.Add((ship, property));
+            }
+
+            return page;
         }
 
         /// <summary>

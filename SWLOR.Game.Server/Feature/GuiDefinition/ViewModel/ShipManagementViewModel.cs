@@ -6,6 +6,7 @@ using SWLOR.Game.Server.Feature.GuiDefinition.Payload;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.DBService;
 using SWLOR.Game.Server.Service.GuiService;
+using SWLOR.Game.Server.Service.GuiService.Component;
 using SWLOR.Game.Server.Service.PropertyService;
 using SWLOR.Game.Server.Service.SpaceService;
 using SWLOR.NWN.API.Engine;
@@ -18,12 +19,34 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
     public class ShipManagementViewModel : GuiViewModelBase<ShipManagementViewModel, ShipManagementPayload>
     {
         private const string _blank = "Blank";
+        private const int ShipsPerPage = 25;
 
         private int SelectedShipIndex { get; set; }
         private List<string> _shipIds { get; set; } = new List<string>();
         private Location _spaceLocation;
         private Location _landingLocation;
         private PlanetType _planetType;
+        private bool _skipPageLoad;
+        private List<PlayerShip> _myShips = new();
+        private List<string> _sharedPropertyIds = new();
+
+        public GuiBindingList<GuiComboEntry> PageNumbers
+        {
+            get => Get<GuiBindingList<GuiComboEntry>>();
+            set => Set(value);
+        }
+
+        public int SelectedPageIndex
+        {
+            get => Get<int>();
+            set
+            {
+                Set(value);
+
+                if (!_skipPageLoad)
+                    LoadPage();
+            }
+        }
 
         public string ShipCountRegistered
         {
@@ -605,9 +628,44 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             return PlayerShipAccess.GetOwnedShips(GetObjectUUID(Player));
         }
 
-        private List<PlayerShip> GetOtherShips()
+        private void SetPageIndexWithoutLoad(int pageIndex)
         {
-            return PlayerShipAccess.GetSharedShips(GetObjectUUID(Player));
+            var wasSkipping = _skipPageLoad;
+            _skipPageLoad = true;
+            SelectedPageIndex = pageIndex;
+            _skipPageLoad = wasSkipping;
+        }
+
+        private void UpdatePagination(int totalCount)
+        {
+            var pagination = GuiPaginationState.Create(totalCount, ShipsPerPage, SelectedPageIndex);
+            PageNumbers = pagination.PageNumbers;
+            SetPageIndexWithoutLoad(pagination.SelectedPageIndex);
+        }
+
+        /// <summary>
+        /// Shows the selected page of the active tab. Other Ships reads only that page's ships; the
+        /// candidate property Ids are loaded once when the tab opens.
+        /// </summary>
+        private void LoadPage()
+        {
+            if (IsOtherShipsToggled)
+            {
+                var page = PlayerShipAccess.GetSharedShipsPage(_sharedPropertyIds, SelectedPageIndex, ShipsPerPage, out var totalCount);
+                UpdatePagination(totalCount);
+                LoadShips(page.Select(entry => (entry.Ship.Id, entry.Property.CustomName)));
+            }
+            else
+            {
+                UpdatePagination(_myShips.Count);
+                LoadShips(_myShips
+                    .Skip(SelectedPageIndex * ShipsPerPage)
+                    .Take(ShipsPerPage)
+                    .Select(ship => (ship.Id, DB.Get<WorldProperty>(ship.PropertyId).CustomName)));
+            }
+
+            ToggleRegisterButtons();
+            LoadShip();
         }
 
         /// <summary>
@@ -698,16 +756,18 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 IsOtherShipsEnabled = true;
             }
 
-            LoadShips(dbPlayerShips);
-
+            _skipPageLoad = true;
+            _myShips = dbPlayerShips;
+            _sharedPropertyIds = new List<string>();
             ShipCountRegistered = $"Ships: {dbPlayerShips.Count} / {Space.MaxRegisteredShips}";
-            LoadShip();
-
             IsMyShipsToggled = true;
             IsOtherShipsToggled = false;
-            ToggleRegisterButtons();
+            SelectedPageIndex = 0;
+            LoadPage();
 
             WatchOnClient(model => model.ShipName);
+            WatchOnClient(model => model.SelectedPageIndex);
+            _skipPageLoad = false;
         }
 
         private void LoadShip()
@@ -1384,6 +1444,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
                 // Update the UI with the new ship details.
                 ShipCountRegistered = $"Ships: {registeredShipCount + 1} / {Space.MaxRegisteredShips}";
+                _myShips.Add(ship);
                 _shipIds.Add(ship.Id);
                 ShipNames.Add(property.CustomName);
                 ShipToggles.Add(false);
@@ -1432,6 +1493,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     var item = ObjectPlugin.Deserialize(dbShip.SerializedItem);
                     ObjectPlugin.AcquireItem(Player, item);
 
+                    _myShips.RemoveAll(ship => ship.Id == shipId);
                     _shipIds.RemoveAt(SelectedShipIndex);
                     ShipNames.RemoveAt(SelectedShipIndex);
                     ShipToggles.RemoveAt(SelectedShipIndex);
@@ -1889,9 +1951,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 () =>
                 {
                     PlayerShipAccess.RemoveSharedAccess(playerId, DB.Get<PlayerShip>(shipId));
-                    LoadShips(GetOtherShips());
-                    ToggleRegisterButtons();
-                    LoadShip();
+                    _sharedPropertyIds.Remove(dbShip.PropertyId);
+                    LoadPage();
 
                     FloatingTextStringOnCreature("Ship access removed.", Player, false);
                 });
@@ -1906,20 +1967,17 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             Gui.TogglePlayerWindow(Player, GuiWindowType.PermissionManagement, payload, TetherObject);
         };
 
-        private void LoadShips(List<PlayerShip> ships)
+        private void LoadShips(IEnumerable<(string ShipId, string Name)> ships)
         {
             _shipIds.Clear();
             var shipNames = new GuiBindingList<string>();
             var shipToggles = new GuiBindingList<bool>();
 
-            foreach (var ship in ships)
+            foreach (var (shipId, name) in ships)
             {
-                var property = DB.Get<WorldProperty>(ship.PropertyId);
-
-                _shipIds.Add(ship.Id);
+                _shipIds.Add(shipId);
                 shipToggles.Add(false);
-
-                shipNames.Add(property.CustomName);
+                shipNames.Add(name);
             }
 
             SelectedShipIndex = -1;
@@ -1931,21 +1989,39 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         {
             IsMyShipsToggled = true;
             IsOtherShipsToggled = false;
-            var ships = GetMyShips();
-            LoadShips(ships);
-            ToggleRegisterButtons();
-            LoadShip();
+            _myShips = GetMyShips();
+            SetPageIndexWithoutLoad(0);
+            LoadPage();
         };
 
         public Action OnClickOtherShips() => () =>
         {
             IsMyShipsToggled = false;
             IsOtherShipsToggled = true;
-            var ships = GetOtherShips();
-            LoadShips(ships);
-            ToggleRegisterButtons();
-            LoadShip();
+            _sharedPropertyIds = PlayerShipAccess.GetSharedPropertyIds(GetObjectUUID(Player));
+            SetPageIndexWithoutLoad(0);
+            LoadPage();
         };
+
+        public Action OnPreviousPage() => () =>
+        {
+            ChangePage(SelectedPageIndex - 1);
+        };
+
+        public Action OnNextPage() => () =>
+        {
+            ChangePage(SelectedPageIndex + 1);
+        };
+
+        private void ChangePage(int pageIndex)
+        {
+            pageIndex = Math.Clamp(pageIndex, 0, Math.Max(0, PageNumbers.Count - 1));
+            if (pageIndex == SelectedPageIndex)
+                return;
+
+            SetPageIndexWithoutLoad(pageIndex);
+            LoadPage();
+        }
 
         public Action OnClickRepair() => () =>
         {

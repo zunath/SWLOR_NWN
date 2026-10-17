@@ -106,7 +106,8 @@ class TrellisWeaponExportTests(unittest.TestCase):
     def test_explicit_assemblies_can_group_separate_exported_parts(self):
         assets=[]
         for role in ('b','m','t'):
-            asset=copy.deepcopy(self.asset);asset.update(asset='part_'+role,model='wdbsw_'+role+'_011');asset.pop('parts');assets.append(asset)
+            asset=copy.deepcopy(self.asset);asset.update(asset='part_'+role,model='wdbsw_'+role+'_011',texture='part_'+role)
+            asset['parts']=[copy.deepcopy(next(p for p in self.asset['parts'] if p['model']==asset['model']))];assets.append(asset)
         assembly={'base_item':12,'bottom':'wdbsw_b_011','middle':'wdbsw_m_011','top':'wdbsw_t_011',
                   'icon_bounds':{'min':[-1,-1,-1],'max':[1,1,1]}}
         config={'schema_version':1,'assets':assets,'composite_assemblies':[assembly]}
@@ -120,6 +121,13 @@ class TrellisWeaponExportTests(unittest.TestCase):
             else:invalid['assets'][1]['icon_direction']=[1,0,0]
             with self.subTest(change=change), self.assertRaisesRegex(ValueError,'icon_bounds|settings must match'):
                 exporter.validate_manifest(invalid,self.root,self.manifest,'export')
+        duplicated=copy.deepcopy(config)
+        for asset in duplicated['assets']:asset['parts']=[{'model':asset['model']}]
+        with self.assertRaisesRegex(ValueError,'same source geometry selection'):
+            exporter.validate_manifest(duplicated,self.root,self.manifest,'export')
+        duplicated['assets'][1].update(source_grip=[0,1,0],target_grip=[0,.5,0])
+        with self.assertRaisesRegex(ValueError,'same source geometry selection'):
+            exporter.validate_manifest(duplicated,self.root,self.manifest,'export')
         for key,value in [('top','wdbsw_t_021'),('bottom','wdbsw_m_011')]:
             invalid=copy.deepcopy(config);invalid['composite_assemblies'][0][key]=value
             with self.subTest(key=key), self.assertRaisesRegex(ValueError,'requires exported'):

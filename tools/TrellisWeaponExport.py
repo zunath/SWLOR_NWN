@@ -736,7 +736,7 @@ def export_one(config,source,repo,out,mode,helpers,icon_size):
 def validate_manifest(config, repo, manifest, mode):
     if config.get('schema_version')!=1 or not isinstance(config.get('assets'),list) or not config['assets']:
         raise ValueError('Expected schema_version 1 and nonempty assets')
-    seen=set();asset_names=set();composites=[];outputs={};output_assets={}
+    seen=set();asset_names=set();composites=[];outputs={};output_assets={};output_selections={}
     for item in config['assets']:
         item.pop('_shared_icon_bounds',None)
         asset=item.get('asset','')
@@ -794,6 +794,16 @@ def validate_manifest(config, repo, manifest, mode):
             if model in seen:raise ValueError('Repeated output resource '+model)
             seen.add(model)
             outputs[model]=(item['_item_class'],item['_model_type']);output_assets[model]=item
+            if item['_model_type']==2:
+                source_part=next(p for p in parts if model==p['model'] or model in p.get('aliases',[]))
+                clean=lambda value:0. if abs(value)<1e-12 else round(float(value),12)
+                matrix=[[clean(item['scale']*v) for v in row] for row in item['orientation']]
+                translation=[clean(item['target_grip'][i]-sum(matrix[i][j]*item['source_grip'][j] for j in range(3))) for i in range(3)]
+                low=source_part.get('clip_min_y');high=source_part.get('clip_max_y')
+                if source_part.get('clip_side')=='above':low=source_part['plane_y']
+                elif source_part.get('clip_side')=='below':high=source_part['plane_y']
+                selection={'sha256':item['sha256'],'matrix':matrix,'translation':translation,'clip':[None if low is None else clean(low),None if high is None else clean(high)]}
+                output_selections[model]=json.dumps(selection,sort_keys=True)
         if item['_model_type']==2:
             composites.append((asset,declared,{part['model'].rsplit('_',2)[-2] for part in parts}))
     if mode=='export':
@@ -805,12 +815,15 @@ def validate_manifest(config, repo, manifest, mode):
             if not isinstance(frame,dict):raise ValueError('Grouped parts require shared icon_bounds')
             low=vector3(frame.get('min'),'icon_bounds min');high=vector3(frame.get('max'),'icon_bounds max')
             if any(b<=a for a,b in zip(low,high)):raise ValueError('icon_bounds must have positive dimensions')
-            settings=None
+            settings=None;selections=set()
             for role,key in [('b','bottom'),('m','middle'),('t','top')]:
                 model=assembly.get(key,'')
                 validate_model_name(model,family,2)
                 if model.rsplit('_',2)[-2]!=role or outputs.get(model)!=(family,2):
                     raise ValueError('Composite assembly requires exported '+key+' geometry: '+model)
+                selection=output_selections[model]
+                if selection in selections:raise ValueError('Grouped roles must not reuse the same source geometry selection')
+                selections.add(selection)
                 owner=output_assets[model]
                 current=[owner['icon_size'],owner['_icon_art_size'],owner.get('icon_direction',[1,-.1,.12]),owner.get('icon_roll_degrees',0)]
                 if settings is not None and current!=settings:raise ValueError('Grouped icon canvas and camera settings must match')

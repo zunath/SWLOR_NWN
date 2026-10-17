@@ -129,6 +129,18 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             }
 
             ctx.AssertEqual(string.Empty, FindEntry(ctx, viewer.Creature, other.Creature).Name, "forgetting the name returns the player to Unassigned");
+
+            await ctx.ExecuteInCreatureContextAsync(other.Creature, () => PlayerName.ToggleAfk(other.Creature));
+            try
+            {
+                ctx.Assert(FindEntry(ctx, viewer.Creature, other.Creature).IsAfk, "a player who goes AFK is marked AFK in the list");
+            }
+            finally
+            {
+                if (PlayerName.IsAfk(other.Creature))
+                    await ctx.ExecuteInCreatureContextAsync(other.Creature, () => PlayerName.ToggleAfk(other.Creature));
+            }
+            ctx.Assert(!FindEntry(ctx, viewer.Creature, other.Creature).IsAfk, "returning from AFK clears the marker");
         }
 
         /// <summary>

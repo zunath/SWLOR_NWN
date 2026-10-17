@@ -67,6 +67,25 @@ public class PlayerListRulesTests
     }
 
     [Test]
+    public void RowNames_MarkSelfUnassignedAndAfk()
+    {
+        PlayerListRules.GetRowName("Taren Vos", isSelf: true, isAfk: false).Should().Be("Taren Vos (You)");
+        PlayerListRules.GetRowName(string.Empty, isSelf: false, isAfk: false).Should().Be("Unassigned");
+        PlayerListRules.GetRowName("Kira Venn", isSelf: false, isAfk: true).Should().Be("Kira Venn [AFK]");
+        PlayerListRules.GetRowName("Kira Venn", false, false, maxLength: 17).Should().Be("Kira Venn");
+    }
+
+    [Test]
+    public void RowNames_KeepTheAfkMarkerWhenShortened()
+    {
+        var shortened = PlayerListRules.GetRowName("Bartholomew Quintessence", isSelf: false, isAfk: true, maxLength: 17);
+
+        shortened.Should().EndWith(" [AFK]");
+        shortened.Length.Should().BeLessThanOrEqualTo(17);
+        PlayerListRules.GetRowName("Bartholomew Quintessence", false, false, 17).Should().HaveLength(17).And.EndWith("...");
+    }
+
+    [Test]
     public void NoSelection_DisablesTargetedActionsButKeepsLeaveParty()
     {
         var actions = PlayerListRules.Evaluate(new PlayerListRelation { ViewerIsInParty = true });

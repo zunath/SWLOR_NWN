@@ -13,6 +13,7 @@ namespace SWLOR.Game.Server.Service.PlayerListService
         public string CanonicalName { get; set; }
         public string Descriptor { get; set; }
         public bool IsDisguised { get; set; }
+        public bool IsAfk { get; set; }
         public IReadOnlyCollection<PlayerListFlagType> Flags { get; set; }
         public uint PartyLeader { get; set; }
         public int PartyPlayerCount { get; set; }

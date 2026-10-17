@@ -84,6 +84,7 @@ namespace SWLOR.Game.Server.Service
                 {
                     Player = player,
                     CanonicalName = GetName(player),
+                    IsAfk = PlayerName.IsAfk(player),
                 };
 
                 if (DMPresence.IsControlledByDM(player))
@@ -140,6 +141,7 @@ namespace SWLOR.Game.Server.Service
                     Name = name,
                     Descriptor = showsDescriptor ? subject.Descriptor : string.Empty,
                     IsDisguised = viewerIsDM && subject.IsDisguised,
+                    IsAfk = subject.IsAfk,
                     Flags = subject.Flags,
                     Relation = relation,
                     Status = PlayerListRules.GetStatus(relation),

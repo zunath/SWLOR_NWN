@@ -16,7 +16,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         public const string MainContentElement = "playerlist_content";
         public const string MainContentPartial = "PLAYERLIST_MAIN";
 
-        private const string UnassignedName = "Unassigned";
         // Characters that fit the 140 px name column and the descriptor column; tooltips show full values.
         private const int NameColumnLength = 17;
         private const int DescriptorColumnLength = 24;
@@ -191,7 +190,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
                 statuses.Add(status.Text);
                 statusColors.Add(status.Color);
-                names.Add(DMListText.Fit(name, NameColumnLength));
+                names.Add(PlayerListRules.GetRowName(entry.Name, entry.Relation.TargetIsSelf, entry.IsAfk, NameColumnLength));
                 nameTooltips.Add(string.IsNullOrEmpty(entry.Name)
                     ? "You have not given this player a name. Use /name to give them one."
                     : name);
@@ -272,10 +271,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         private static string GetDisplayName(PlayerListEntry entry)
         {
-            if (entry.Relation.TargetIsSelf)
-                return $"{entry.Name} (You)";
-
-            return string.IsNullOrEmpty(entry.Name) ? UnassignedName : entry.Name;
+            return PlayerListRules.GetRowName(entry.Name, entry.Relation.TargetIsSelf, entry.IsAfk);
         }
 
         // How the selected player is referred to in prompts and feedback: their name, or their descriptor.

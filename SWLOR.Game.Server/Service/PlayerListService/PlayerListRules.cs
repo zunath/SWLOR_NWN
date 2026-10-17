@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using SWLOR.Game.Server.Service.DMToolService;
 
 namespace SWLOR.Game.Server.Service.PlayerListService
 {
@@ -9,6 +10,9 @@ namespace SWLOR.Game.Server.Service.PlayerListService
     public static class PlayerListRules
     {
         public const string SelectPlayerFirst = "Select a player first.";
+        public const string UnassignedName = "Unassigned";
+        // The marker the native player list showed through the name override.
+        public const string AfkMarker = " [AFK]";
         public const string DMsCannotUsePartyControls = "DMs cannot use party controls.";
 
         /// <summary>
@@ -70,6 +74,18 @@ namespace SWLOR.Game.Server.Service.PlayerListService
                 return PlayerListStatus.Hostile;
 
             return relation.TargetIsInOtherParty ? PlayerListStatus.Grouped : PlayerListStatus.None;
+        }
+
+        /// <summary>
+        /// The name a row shows: the viewer's own name marked "(You)", an assigned name, or Unassigned, with the AFK
+        /// marker while the player is away. Long names are shortened before the marker so it always shows.
+        /// </summary>
+        public static string GetRowName(string name, bool isSelf, bool isAfk, int maxLength = int.MaxValue)
+        {
+            var rowName = isSelf ? $"{name} (You)" : string.IsNullOrEmpty(name) ? UnassignedName : name;
+            return isAfk
+                ? DMListText.Fit(rowName, Math.Max(0, maxLength - AfkMarker.Length)) + AfkMarker
+                : DMListText.Fit(rowName, maxLength);
         }
 
         /// <summary>

@@ -1,0 +1,287 @@
+#nullable enable
+using System.Reflection;
+using System.Text;
+using FluentAssertions;
+using Newtonsoft.Json;
+using NUnit.Framework;
+using SWLOR.Game.Server.Feature.MigrationDefinition;
+using SWLOR.Game.Server.Feature.MigrationDefinition.ServerMigration;
+using SWLOR.Game.Server.Service.DroidService;
+using SWLOR.Game.Server.Service.MigrationService;
+using SWLOR.Game.Server.Service.PlayerMarketService;
+using SWLOR.NWN.API.NWScript.Enum.Item;
+using SWLOR.NWN.Formats.Gff;
+using SWLOR.NWN.Formats.TwoDA;
+
+namespace SWLOR.Game.Server.Tests.Feature;
+
+/// <summary>
+/// The offline stored-item sweep edits saved GFF the way the engine pass edits live items. Parity with
+/// the engine on real data is checked on a production copy; these cases pin each rule and its saved form.
+/// </summary>
+public class OfflineStoredItemMigrationTests
+{
+    private static readonly Assembly ServerAssembly = typeof(HeadgearSlotMigration).Assembly;
+    private static readonly Type Document = ServerAssembly.GetType("SWLOR.Game.Server.Feature.MigrationDefinition.StoredObjectData")!;
+    private static readonly Type NodeType = Document.GetNestedType("Node", BindingFlags.NonPublic)!;
+    private static readonly Type ConvertedType = ServerAssembly.GetType("SWLOR.Game.Server.Feature.MigrationDefinition.ConvertedEquipment")!;
+
+    [Test]
+    public void LootRevision_ShiftsEachCatalogStatAndSavesPropertiesTheWayTheEngineDoes()
+    {
+        // absdef_l1: loot DMG 23 -> 42 and Attack 12 -> 3, then rare Attack 3 -> 12.
+        var original = Encode(Item("absdef_l1", BaseItem.Gloves, 59,
+            Property(ItemPropertyType.DMG, 0, 34, 23, param1Value: 0),
+            Property((ItemPropertyType)82, 125, 26, 39),
+            Property(ItemPropertyType.Attack, 0, 45, 12, param1Value: 0)));
+
+        Migrate(original, out var migrated, true, out var converted).Should().BeTrue();
+
+        converted.Should().BeEmpty("absdef_l1 keeps its equipment type");
+        var properties = Children(Read(migrated), "PropertiesList").ToList();
+        properties.Select(p => (Int(p, "PropertyName"), Int(p, "CostValue")))
+            .Should().Equal((82, 39), ((int)ItemPropertyType.DMG, 42), ((int)ItemPropertyType.Attack, 12));
+        properties.Select(p => p.Type).Should().Equal(0u, 1u, 2u);
+        var added = properties[2];
+        added.Fields.Select(f => f.Label).Should().Equal("PropertyName", "Subtype", "CostTable", "CostValue",
+            "Param1", "Param1Value", "ChanceAppear", "UsesPerDay", "Useable", "CustomTag");
+        (Int(added, "Subtype"), Int(added, "CostTable"), Int(added, "Param1"), Int(added, "Param1Value"),
+            Int(added, "ChanceAppear"), Int(added, "UsesPerDay"), Int(added, "Useable"))
+            .Should().Be((ushort.MaxValue, 45, 255, 255, 100, 255, 1));
+        Locals(Read(migrated)).Should().Equal(
+            (LootStatRevisionMigration.RevisionVariable, LootStatRevisionMigration.CurrentRevision),
+            (RareLootStatRevisionCatalog.RevisionVariable, RareLootStatRevisionCatalog.CurrentRevision));
+
+        Migrate(migrated, out var rerun, true, out _).Should().BeFalse("revision locals make the sweep idempotent");
+        rerun.Should().BeSameAs(migrated);
+    }
+
+    [Test]
+    public void LegacyHeadgear_BecomesAHelmetWithItsFallbackModelAndListingMetadata()
+    {
+        var original = Encode(Item("precision_optic", BaseItem.Armor, null,
+            Scalar(0, "ArmorPart_Torso", 186), Text("UUID", "optic-uuid")));
+
+        Migrate(original, out var migrated, true, out var converted).Should().BeTrue();
+
+        var root = Read(migrated);
+        (Int(root, "BaseItem"), Int(root, "ModelPart1"), Int(root, "xModelPart1")).Should().Be(((int)BaseItem.Helmet, 110, 110));
+        Value(root, "UUID").Should().Be("optic-uuid");
+        Children(root, "PropertiesList").Should().Contain(p => Int(p, "PropertyName") == (int)ItemPropertyType.HPBonus && Int(p, "CostValue") == 50,
+            "the loot revision adds stats the blueprint gained");
+        converted.Should().ContainSingle().Which.Should().Be(("ihelm", MarketCategoryType.Helmet));
+    }
+
+    [Test]
+    public void EquipmentTypeCorrection_SetsTheCorrectedTypeAndModel()
+    {
+        var original = Encode(Item("fang_gaunt", BaseItem.Bracer, 7));
+
+        Migrate(original, out var migrated, true, out var converted).Should().BeTrue();
+
+        var root = Read(migrated);
+        (Int(root, "BaseItem"), Int(root, "ModelPart1"), Int(root, "xModelPart1")).Should().Be(((int)BaseItem.Gloves, 176, 176));
+        converted.Should().ContainSingle().Which.Should().Be(("iit_glove_176", MarketCategoryType.Glove));
+    }
+
+    [Test]
+    public void OutfitTemplates_KeepTheirEquipmentType()
+    {
+        var original = Encode(Item("precision_optic", BaseItem.Armor, null));
+
+        Migrate(original, out var migrated, false, out var converted).Should().BeTrue("the stat revision still applies");
+
+        Int(Read(migrated), "BaseItem").Should().Be((int)BaseItem.Armor);
+        converted.Should().BeEmpty();
+    }
+
+    [Test]
+    public void Artwork_UpdatesRecognizedModels()
+    {
+        Migrate(Encode(Item("abdamaryllia", (BaseItem)516, 5)), out var migrated, true, out _).Should().BeTrue();
+        (Int(Read(migrated), "ModelPart1"), Int(Read(migrated), "xModelPart1")).Should().Be((19, 19));
+    }
+
+    [Test]
+    public void UnrecognizedItems_AreLeftUntouched()
+    {
+        var original = Encode(Item("distilled_water", (BaseItem)24, 3, Property((ItemPropertyType)82, 125, 26, 39)));
+        Migrate(original, out var migrated, true, out _).Should().BeFalse();
+        migrated.Should().BeSameAs(original);
+    }
+
+    [Test]
+    public void ContainerContents_AreMigratedInPlace()
+    {
+        var original = Encode(Item("bag", (BaseItem)66, 1,
+            List("ItemList", Item("absdef_l1", BaseItem.Gloves, 59, Property(ItemPropertyType.DMG, 0, 34, 23)))));
+
+        Migrate(original, out var migrated, true, out _).Should().BeTrue();
+
+        var nested = Children(Read(migrated), "ItemList").Single();
+        Children(nested, "PropertiesList").Should().Contain(p => Int(p, "PropertyName") == (int)ItemPropertyType.DMG && Int(p, "CostValue") == 42);
+    }
+
+    [Test]
+    public void DroidControllers_MigrateTheirSavedParts()
+    {
+        var part = Encode(Item("absdef_l1", BaseItem.Gloves, 59, Property(ItemPropertyType.DMG, 0, 34, 23)));
+        var droid = JsonConvert.SerializeObject(new ConstructedDroid { SerializedHead = part });
+        var original = Encode(Item("droid_ctrl", (BaseItem)24, 1,
+            List("VarTable", Node(0, Text("Name", "CONSTRUCTED_DROID"), Scalar(4, "Type", 3), Text("Value", droid)))));
+
+        Migrate(original, out var migrated, true, out _).Should().BeTrue();
+
+        var saved = (string)Value(Children(Read(migrated), "VarTable").Single(), "Value");
+        var head = JsonConvert.DeserializeObject<ConstructedDroid>(saved)!.SerializedHead;
+        Children(Read(head), "PropertiesList").Should().Contain(p => Int(p, "PropertyName") == (int)ItemPropertyType.DMG && Int(p, "CostValue") == 42);
+    }
+
+    [Test]
+    public void SavedCreatures_OnlyChangeTheirItemsArtwork()
+    {
+        var original = Encode(Node(0,
+            Text("Tag", "dm_creature"),
+            List("Equip_ItemList",
+                Item("absdef_l1", BaseItem.Gloves, 59, Property(ItemPropertyType.DMG, 0, 34, 23)),
+                Item("abdamaryllia", (BaseItem)516, 5))), "UTC ");
+
+        Migrate(original, out var migrated, true, out _).Should().BeTrue();
+
+        var equipped = Children(Read(migrated), "Equip_ItemList").ToList();
+        Int(Children(equipped[0], "PropertiesList").Single(), "CostValue").Should().Be(23, "saved creatures keep authored stats");
+        Int(equipped[1], "xModelPart1").Should().Be(19);
+    }
+
+    [Test]
+    public void RevisedPropertyCostTables_MatchItemPropDefAndCoverEveryCatalog()
+    {
+        var table = TwoDAReader.Read(Path.Combine(FindRepositoryRoot(), "SWLOR_Haks", "sw_2da", "itempropdef.2da"));
+        var costTables = (IReadOnlyDictionary<ItemPropertyType, byte>)Document
+            .GetProperty("RevisedPropertyCostTables", BindingFlags.NonPublic | BindingFlags.Static)!.GetValue(null)!;
+        foreach (var (type, costTable) in costTables)
+            table.GetValue((int)type, "CostTableResRef").Should().Be(costTable.ToString(), $"{type} saves its itempropdef.2da cost table");
+
+        var catalogTypes = new[] { LootStatRevisionCatalog.Changes, RareLootStatRevisionCatalog.Changes,
+                EquipmentTypeStatRevisionCatalog.Changes, FoundryLootStatRevisionCatalog.Changes }
+            .SelectMany(catalog => catalog.Values).SelectMany(changes => changes).Select(change => change.Type).Distinct();
+        costTables.Keys.Should().Contain(catalogTypes);
+    }
+
+    [Test]
+    public void ConvertedEquipmentIcons_FollowBaseItemIconRules()
+    {
+        var table = TwoDAReader.Read(Path.Combine(FindRepositoryRoot(), "SWLOR_Haks", "sw_2da", "baseitems.2da"));
+        // Item.GetIconResref: helmets are not simple models and use DefaultIcon; gloves are simple models named by ItemClass.
+        table.GetValue((int)BaseItem.Helmet, "ModelType").Should().NotBe("0");
+        table.GetValue((int)BaseItem.Helmet, "DefaultIcon").Should().Be("ihelm");
+        table.GetValue((int)BaseItem.Gloves, "ModelType").Should().Be("0");
+        table.GetValue((int)BaseItem.Gloves, "ItemClass").Should().Be("it_glove");
+        EquipmentTypeMigration.Corrections.Values.Where(c => c.Type == BaseItem.Gloves).Select(c => c.Model).Distinct()
+            .Should().BeSubsetOf(new[] { 126, 176 }, "the offline icon table covers every glove model a correction produces");
+        EquipmentTypeMigration.Corrections.Values.Select(c => c.Type).Distinct()
+            .Should().BeSubsetOf(new[] { BaseItem.Helmet, BaseItem.Gloves, BaseItem.Cloak });
+    }
+
+    [Test]
+    public void OfflineRunner_RunsOnlyWhenEveryPendingMigrationIsOfflineCapable()
+    {
+        var migrations = ServerAssembly.GetTypes()
+            .Where(type => !type.IsAbstract && !type.IsInterface && typeof(IServerMigration).IsAssignableFrom(type))
+            .Select(type => (IServerMigration)Activator.CreateInstance(type)!).ToList();
+
+        var (pending, blockers) = OfflineServerMigrations.Plan(migrations, 27);
+        pending.Select(m => m.GetType()).Should().Equal(typeof(_28_CorrectStoredEquipmentTypes));
+        blockers.Should().BeEmpty();
+
+        (pending, blockers) = OfflineServerMigrations.Plan(migrations, 26);
+        pending.Select(m => m.GetType()).Should().Equal(
+            typeof(_27_UpdatePlayerRecords), typeof(_27_UpdateStoredItems), typeof(_28_CorrectStoredEquipmentTypes));
+        blockers.Should().HaveCount(2, "migration 27 still runs in the server");
+    }
+
+    private static bool Migrate(string original, out string migrated, bool repairHeadgear, out List<(string Icon, MarketCategoryType Category)> converted)
+    {
+        var sink = new List<object>();
+        var capture = typeof(OfflineStoredItemMigrationTests).GetMethod(nameof(Capture), BindingFlags.NonPublic | BindingFlags.Static)!
+            .MakeGenericMethod(ConvertedType).Invoke(null, new object[] { sink });
+        var arguments = new[] { original, null, repairHeadgear, capture };
+        var changed = (bool)Document.GetMethod("MigrateStoredItemOffline", BindingFlags.NonPublic | BindingFlags.Static)!.Invoke(null, arguments)!;
+        migrated = (string)arguments[1]!;
+        converted = sink.Select(value => ((string)ConvertedType.GetProperty("IconResref")!.GetValue(value)!,
+            (MarketCategoryType)ConvertedType.GetProperty("Category")!.GetValue(value)!)).ToList();
+        return changed;
+    }
+
+    private static Action<T> Capture<T>(List<object> sink) => value => sink.Add(value!);
+
+    private static object Item(string resref, BaseItem baseItem, int? model, params object[] fields)
+    {
+        var all = new List<object> { Resref(resref), Scalar(5, "BaseItem", (int)baseItem) };
+        if (model != null)
+        {
+            all.Add(Scalar(0, "ModelPart1", model.Value));
+            all.Add(Scalar(2, "xModelPart1", model.Value));
+        }
+        var properties = fields.OfType<PropertyFixture>().Select((property, index) => Node((uint)index, property.Fields)).ToArray();
+        all.AddRange(fields.Where(field => field is not PropertyFixture));
+        if (properties.Length > 0) all.Add(List("PropertiesList", properties));
+        return Node(0, all.ToArray());
+    }
+
+    private sealed record PropertyFixture(object[] Fields);
+
+    private static PropertyFixture Property(ItemPropertyType type, int subtype, int costTable, int value, int param1Value = 255) =>
+        new(new[] { Scalar(2, "PropertyName", (int)type), Scalar(2, "Subtype", subtype), Scalar(0, "CostTable", costTable),
+            Scalar(2, "CostValue", value), Scalar(0, "Param1", 255), Scalar(0, "Param1Value", param1Value),
+            Scalar(0, "ChanceAppear", 100), Scalar(0, "UsesPerDay", 255), Scalar(0, "Useable", 1), Text("CustomTag", "") });
+
+    private static object Node(uint type, params object[] fields)
+    {
+        var node = Activator.CreateInstance(NodeType, true)!;
+        NodeType.GetField("Type")!.SetValue(node, type);
+        var list = (System.Collections.IList)NodeType.GetField("Fields")!.GetValue(node)!;
+        foreach (var field in fields) list.Add(field);
+        return node;
+    }
+
+    private static object Field(uint type, string name, byte[]? data = null, params object[] children)
+    {
+        object? list = null;
+        if (type == 15)
+        {
+            list = Activator.CreateInstance(typeof(List<>).MakeGenericType(NodeType))!;
+            foreach (var child in children) ((System.Collections.IList)list).Add(child);
+        }
+        return Document.GetMethod("MakeField", BindingFlags.NonPublic | BindingFlags.Static)!.Invoke(null, new[] { (object)type, name, data, list })!;
+    }
+
+    private static object Scalar(uint type, string name, int value) => Field(type, name, BitConverter.GetBytes(value));
+    private static object Text(string name, string text) { var bytes = Encoding.UTF8.GetBytes(text); return Field(10, name, BitConverter.GetBytes(bytes.Length).Concat(bytes).ToArray()); }
+    private static object Resref(string resref) { var bytes = Encoding.ASCII.GetBytes(resref); return Field(11, "TemplateResRef", new[] { (byte)bytes.Length }.Concat(bytes).ToArray()); }
+    private static object List(string name, params object[] children) => Field(15, name, null, children);
+
+    private static string Encode(object root, string fileType = "UTI ")
+    {
+        NodeType.GetField("Type")!.SetValue(root, uint.MaxValue);
+        var document = System.Runtime.CompilerServices.RuntimeHelpers.GetUninitializedObject(Document);
+        Document.GetField("_header", BindingFlags.NonPublic | BindingFlags.Instance)!.SetValue(document, Encoding.ASCII.GetBytes(fileType + "V3.2"));
+        Document.GetField("_root", BindingFlags.NonPublic | BindingFlags.Instance)!.SetValue(document, root);
+        return (string)Document.GetMethod("Serialize", BindingFlags.NonPublic | BindingFlags.Instance)!.Invoke(document, null)!;
+    }
+
+    private static GffStruct Read(string data) => GffReader.Read(Convert.FromBase64String(data)).RootStruct;
+    private static object Value(GffStruct node, string name) => node.Fields.Single(x => x.Label == name).Value!;
+    private static int Int(GffStruct node, string name) => Convert.ToInt32(Value(node, name));
+    private static IEnumerable<GffStruct> Children(GffStruct node, string name) => ((GffList)Value(node, name)).Elements;
+    private static IEnumerable<(string, int)> Locals(GffStruct node) =>
+        Children(node, "VarTable").Select(variable => ((string)Value(variable, "Name"), Int(variable, "Value")));
+
+    private static string FindRepositoryRoot()
+    {
+        for (var directory = new DirectoryInfo(TestContext.CurrentContext.TestDirectory); directory != null; directory = directory.Parent)
+            if (File.Exists(Path.Combine(directory.FullName, "SWLOR_Haks", "sw_2da", "itempropdef.2da")))
+                return directory.FullName;
+        throw new DirectoryNotFoundException("Could not locate SWLOR_Haks/sw_2da.");
+    }
+}

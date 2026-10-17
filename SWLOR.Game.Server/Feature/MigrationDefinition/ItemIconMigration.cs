@@ -1457,15 +1457,25 @@ public static class ItemIconMigration
     private static bool MigrateDroidInventory(uint item)
     {
         const string variable = "CONSTRUCTED_DROID";
-        var serialized = GetLocalString(item, variable);
+        if (!MigrateDroidArtwork(GetLocalString(item, variable), MigrateSerializedObject, out var updated)) return false;
+        SetLocalString(item, variable, updated);
+        return true;
+    }
+
+    internal delegate bool SerializedMigration(string serialized, out string updated);
+
+    /// <summary>Updates artwork in a saved droid's parts and items; <paramref name="migrate"/> converts one saved object.</summary>
+    internal static bool MigrateDroidArtwork(string serialized, SerializedMigration migrate, out string updated)
+    {
+        updated = serialized;
         if (string.IsNullOrWhiteSpace(serialized)) return false;
         var droid = JsonConvert.DeserializeObject<ConstructedDroid>(serialized);
         if (droid == null) return false;
         var changed = false;
         bool Field(string value, Action<string> setter)
         {
-            if (!MigrateSerializedObject(value, out var updated)) return false;
-            setter(updated);
+            if (!migrate(value, out var migrated)) return false;
+            setter(migrated);
             return true;
         }
         changed |= Field(droid.SerializedCPU, value => droid.SerializedCPU = value);
@@ -1483,7 +1493,7 @@ public static class ItemIconMigration
         }
         changed |= Inventory(droid.Inventory);
         changed |= Inventory(droid.EquippedItems);
-        if (changed) SetLocalString(item, variable, JsonConvert.SerializeObject(droid));
+        if (changed) updated = JsonConvert.SerializeObject(droid);
         return changed;
     }
 }

@@ -26,7 +26,10 @@ public static partial class DroidInventoryEngineTests
     [EngineTest("Migration retargets pending droid chest visor restores to the head slot across two resummons", Category = "DroidInventory", TimeoutSeconds = 90)]
     public static Task HeadgearSavedPendingChest(EngineTestContext ctx) => VerifySavedHeadgear(ctx, true, false, false, true);
 
-    private static async Task VerifySavedHeadgear(EngineTestContext ctx, bool statsFirst, bool occupied = true, bool denyEquip = false, bool pendingChest = false)
+    [EngineTest("Migration repairs reserved models on saved droid helmets without moving head slots across two resummons", Category = "DroidInventory", TimeoutSeconds = 90)]
+    public static Task ReservedSavedHelmetModels(EngineTestContext ctx) => VerifySavedHeadgear(ctx, true, false, alreadyHelmet: true);
+
+    private static async Task VerifySavedHeadgear(EngineTestContext ctx, bool statsFirst, bool occupied = true, bool denyEquip = false, bool pendingChest = false, bool alreadyHelmet = false)
     {
         var owner = ctx.SpawnCreature("civilian");
         await ctx.WaitFrameAsync();
@@ -48,12 +51,21 @@ public static partial class DroidInventoryEngineTests
                 AddItemProperty(DurationType.Permanent, ItemPropertyLimitUseByRace(RacialType.Droid), item);
             SetLocalString(head, "DROID_ITEM_ID", "collision");
             SetLocalString(visor, "DROID_ITEM_ID", "collision");
+            if (alreadyHelmet)
+            {
+                foreach (var item in new[] { visor, carried })
+                {
+                    ItemPlugin.SetBaseItemType(item, BaseItem.Helmet);
+                    ItemPlugin.SetItemAppearance(item, ItemAppearanceType.SimpleModel, 0, 223);
+                }
+                SetLocalString(visor, "DROID_ITEM_ID", "equipped-visor");
+            }
             if (denyEquip) AddItemProperty(DurationType.Permanent,
                 ItemPropertyCustom(ItemPropertyType.RequiresSkill, (int)SWLOR.Game.Server.Service.SkillService.SkillType.Rifle, 50), visor);
             var archive = new ConstructedDroid
             {
                 Name = "Headgear fixture",
-                EquippedItems = { [InventorySlot.Chest] = ObjectPlugin.Serialize(visor) },
+                EquippedItems = { [alreadyHelmet ? InventorySlot.Head : InventorySlot.Chest] = ObjectPlugin.Serialize(visor) },
                 Inventory = { ["collision"] = ObjectPlugin.Serialize(carried) },
             };
             if (occupied) archive.EquippedItems[InventorySlot.Head] = ObjectPlugin.Serialize(head);
@@ -72,8 +84,8 @@ public static partial class DroidInventoryEngineTests
             ctx.Assert(!HeadgearSlotMigration.MigrateObject(controller), "Controller retry is stable");
             var saved = Droid.LoadConstructedDroid(controller);
             ctx.Assert(!saved.EquippedItems.ContainsKey(InventorySlot.Chest), "No saved chest visor remains");
-            ctx.AssertEqual(occupied, saved.EquippedItems.ContainsKey(InventorySlot.Head), "Existing saved helmet is preserved");
-            ctx.AssertEqual(2, saved.Inventory.Count, "Both carried and stowed copies are retained despite colliding historical IDs");
+            ctx.AssertEqual(occupied || alreadyHelmet, saved.EquippedItems.ContainsKey(InventorySlot.Head), "Existing saved helmet is preserved");
+            ctx.AssertEqual(alreadyHelmet ? 1 : 2, saved.Inventory.Count, "Carried and equipped copies are retained without moving existing head-slot gear");
         });
         await ctx.DelaySecondsAsync(0.3f);
         var droid = await Spawn(ctx, owner, controller);

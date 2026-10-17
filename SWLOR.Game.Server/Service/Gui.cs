@@ -534,7 +534,7 @@ namespace SWLOR.Game.Server.Service
 
         /// <summary>
         /// Skips the default NWN window open events and shows the SWLOR windows instead.
-        /// Applies to the Journal, Character Sheet, Player Guide, and Item Examine panels.
+        /// Applies to the Journal, Character Sheet, Player Guide, Item Examine, and Player List panels.
         /// </summary>
         [NWNEventHandler(ScriptName.OnModuleGuiEvent)]
         public static void ReplaceNWNGuis()
@@ -571,6 +571,13 @@ namespace SWLOR.Game.Server.Service
             else if (panelType == GuiPanel.ExamineItem)
             {
                 ExamineItemViewModel.ShowExamineWindow(player, target);
+            }
+            else if (panelType == GuiPanel.PlayerList)
+            {
+                if (DMPresence.IsControlledByDM(player))
+                    DMPresence.ToggleWindow(player, GuiWindowType.PlayerList);
+                else
+                    TogglePlayerWindow(player, GuiWindowType.PlayerList);
             }
         }
 

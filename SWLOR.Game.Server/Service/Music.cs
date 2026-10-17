@@ -5,6 +5,7 @@ using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Extension;
 using SWLOR.Game.Server.Service.KeyItemService;
 using SWLOR.Game.Server.Service.MusicService;
+using SWLOR.Game.Server.Service.PropertyService;
 using SWLOR.NWN.API.NWNX;
 
 namespace SWLOR.Game.Server.Service
@@ -215,33 +216,45 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>
-        /// Retrieves the player ID of the owner of a jukebox structure: the owner of the top-level
-        /// property it sits in, such as the city, apartment or ship. Structures keep the owner they
-        /// were placed under, so a city's current mayor is only recorded on the city itself.
-        /// Jukeboxes placed in the world rather than in a property have no owner.
+        /// Retrieves the collection owner for a jukebox. Apartments and ships use their current owner,
+        /// and jukeboxes placed directly in a city use its current mayor. City building interiors inherit
+        /// mayor ownership when created, so they and unowned world jukeboxes use the selecting player's
+        /// collection by returning an empty owner ID.
         /// </summary>
         /// <param name="jukebox">The jukebox placeable</param>
-        /// <returns>The owner's player ID, or an empty string if the jukebox has no owner.</returns>
+        /// <returns>The collection owner's player ID, or an empty string to use the selecting player's collection.</returns>
         public static string GetJukeboxOwnerId(uint jukebox)
         {
-            var propertyId = Property.GetPropertyId(jukebox);
+            return ResolveJukeboxOwnerId(Property.GetPropertyId(jukebox), DB.Get<WorldProperty>);
+        }
+
+        private static string ResolveJukeboxOwnerId(string propertyId, Func<string, WorldProperty> getProperty)
+        {
             if (string.IsNullOrWhiteSpace(propertyId))
                 return string.Empty;
 
-            var property = DB.Get<WorldProperty>(propertyId);
+            var property = getProperty(propertyId);
+            WorldProperty containingProperty = null;
             var visited = new HashSet<string>();
-            while (property != null &&
-                   visited.Add(property.Id) &&
-                   !string.IsNullOrWhiteSpace(property.ParentPropertyId))
+            while (property != null && visited.Add(property.Id))
             {
-                var parent = DB.Get<WorldProperty>(property.ParentPropertyId);
+                if (containingProperty == null && property.PropertyType != PropertyType.Structure)
+                    containingProperty = property;
+
+                if (property.PropertyType == PropertyType.City)
+                    return containingProperty == property ? property.OwnerPlayerId ?? string.Empty : string.Empty;
+
+                if (string.IsNullOrWhiteSpace(property.ParentPropertyId))
+                    break;
+
+                var parent = getProperty(property.ParentPropertyId);
                 if (parent == null)
                     break;
 
                 property = parent;
             }
 
-            return property?.OwnerPlayerId ?? string.Empty;
+            return (containingProperty ?? property)?.OwnerPlayerId ?? string.Empty;
         }
 
         /// <summary>

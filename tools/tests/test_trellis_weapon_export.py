@@ -133,6 +133,27 @@ class TrellisWeaponExportTests(unittest.TestCase):
             with self.subTest(key=key), self.assertRaisesRegex(ValueError,'requires exported'):
                 exporter.validate_manifest(invalid,self.root,self.manifest,'export')
 
+    def test_mixed_source_assemblies_reject_overlap_within_each_shared_source(self):
+        other=self.root/'other.glb';other.write_bytes(make_glb({**self.document,'extras':{'source':'other'}}))
+        for roles in [('b','m'),('b','t'),('m','t')]:
+            assets=[]
+            for role in ('b','m','t'):
+                asset=copy.deepcopy(self.asset);asset.update(asset='part_'+role,model='wdbsw_'+role+'_011',texture='part_'+role)
+                part={'model':asset['model']}
+                if role==roles[0]:part['clip_max_y']=.2
+                elif role==roles[1]:part.update(clip_min_y=.1,clip_max_y=.3)
+                else:asset.update(source='other.glb',sha256=hashlib.sha256(other.read_bytes()).hexdigest())
+                asset['parts']=[part];assets.append(asset)
+            assembly={'base_item':12,'bottom':'wdbsw_b_011','middle':'wdbsw_m_011','top':'wdbsw_t_011',
+                      'icon_bounds':{'min':[-1,-1,-1],'max':[1,1,1]}}
+            config={'schema_version':1,'assets':assets,'composite_assemblies':[assembly]}
+            with self.subTest(roles=roles),self.assertRaisesRegex(ValueError,'must not overlap'):
+                exporter.validate_manifest(copy.deepcopy(config),self.root,self.manifest,'export')
+            for boundary in (.2,.25):
+                valid=copy.deepcopy(config)
+                next(a for a in valid['assets'] if a['asset']=='part_'+roles[1])['parts'][0]['clip_min_y']=boundary
+                exporter.validate_manifest(valid,self.root,self.manifest,'export')
+
     def test_four_partitioned_regions_cannot_implicitly_supply_two_primary_middles(self):
         asset=copy.deepcopy(self.asset);asset['parts']=[{'model':'wdbsw_b_011','clip_max_y':-.2},
             {'model':'wdbsw_m_011','clip_min_y':-.2,'clip_max_y':0},

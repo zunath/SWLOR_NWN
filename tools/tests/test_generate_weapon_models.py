@@ -87,6 +87,59 @@ class WeaponGenerationTests(unittest.TestCase):
         self.assertEqual((self.output / 'image_0.png').read_bytes(), b'test')
         self.assertIn('linear G roughness', first['pbr']['channels']['metallicRoughnessTexture'])
 
+    def test_journal_replacement_flushes_before_the_submission_post(self):
+        publish=generator.durable_replace;barriers=[]
+        def durable(source,target):
+            publish(source,target)
+            if target.name=='submission.json':barriers.append(generator.read_json(target)['status'])
+        api=FakeAPI(self.output);post=api.post
+        def submit(route,value):
+            self.assertEqual(barriers,['prepared','submission-started'])
+            return post(route,value)
+        api.post=submit
+        with patch.object(generator,'durable_replace',side_effect=durable):self.run_asset(api)
+        self.assertEqual(api.posts,1)
+
+    def test_journal_sync_failure_prevents_submission(self):
+        publish=generator.durable_replace
+        def fail_before_post(source,target):
+            if target.name=='submission.json' and generator.read_json(source)['status']=='submission-started':
+                raise OSError('journal metadata sync failed')
+            publish(source,target)
+        api=FakeAPI(self.output)
+        with patch.object(generator,'durable_replace',side_effect=fail_before_post):
+            with self.assertRaisesRegex(OSError,'metadata sync'):self.run_asset(api)
+        self.assertEqual(api.posts,0)
+
+    def test_posix_replacement_syncs_directory_after_rename_and_closes_on_failure(self):
+        target=self.folder/'journal.json';source=self.folder/'journal.json.tmp'
+        events=[]
+        def renamed(*args):events.append('rename')
+        def opened(path,flags):
+            self.assertEqual(path,target.parent);events.append('open');return 37
+        def synced(fd):self.assertEqual(fd,37);events.append('sync')
+        def closed(fd):self.assertEqual(fd,37);events.append('close')
+        with patch.object(generator.os,'name','posix'),patch.object(generator.os,'replace',side_effect=renamed),patch.object(generator.os,'open',side_effect=opened),patch.object(generator.os,'fsync',side_effect=synced),patch.object(generator.os,'close',side_effect=closed):
+            generator.durable_replace(source,target)
+        self.assertEqual(events,['rename','open','sync','close'])
+        with patch.object(generator.os,'name','posix'),patch.object(generator.os,'replace'),patch.object(generator.os,'open',return_value=37),patch.object(generator.os,'fsync',side_effect=OSError('sync failed')),patch.object(generator.os,'close') as close:
+            with self.assertRaises(OSError):generator.durable_replace(source,target)
+            close.assert_called_once_with(37)
+
+    def test_windows_replacement_requests_write_through_and_propagates_failure(self):
+        if generator.os.name!='nt':self.skipTest('Windows native replacement')
+        import ctypes
+        from unittest.mock import Mock
+        move=Mock(return_value=1);kernel=Mock(MoveFileExW=move)
+        source=self.folder/'journal.tmp';target=self.folder/'journal.json'
+        with patch.object(ctypes,'WinDLL',return_value=kernel) as load:
+            generator.replace_windows(source,target)
+            load.assert_called_once_with('kernel32',use_last_error=True)
+            move.assert_called_once_with(str(source.absolute()),str(target.absolute()),9)
+            move.return_value=0
+            with patch.object(ctypes,'get_last_error',return_value=5),self.assertRaises(OSError):
+                generator.replace_windows(source,target)
+
     def test_lost_response_recovers_owned_history_without_post(self):
         api = FakeAPI(self.output, lost=True)
         with self.assertRaises(TimeoutError): self.run_asset(api)

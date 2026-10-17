@@ -838,10 +838,15 @@ def validate_manifest(config, repo, manifest, mode):
                     raise ValueError('Shared part has conflicting icon_bounds')
                 owner['_shared_icon_bounds']=frame
                 covered.add(model)
-            identities=[{k:v for k,v in selected.items() if k!='clip'} for selected in geometry_sources]
-            if all(identity==identities[0] for identity in identities):
-                intervals=sorted((-math.inf if selected['clip'][0] is None else selected['clip'][0],math.inf if selected['clip'][1] is None else selected['clip'][1]) for selected in geometry_sources)
-                if intervals[0][0]!=-math.inf or intervals[-1][1]!=math.inf or any(a[1]!=b[0] for a,b in zip(intervals,intervals[1:])):
+            source_groups={}
+            for selected in geometry_sources:
+                identity=json.dumps({k:v for k,v in selected.items() if k!='clip'},sort_keys=True)
+                source_groups.setdefault(identity,[]).append(selected)
+            for group in source_groups.values():
+                intervals=sorted((-math.inf if selected['clip'][0] is None else selected['clip'][0],math.inf if selected['clip'][1] is None else selected['clip'][1]) for selected in group)
+                if any(a[1]>b[0] for a,b in zip(intervals,intervals[1:])):
+                    raise ValueError('Grouped parts from one fitted source must not overlap')
+                if len(group)==3 and (intervals[0][0]!=-math.inf or intervals[-1][1]!=math.inf or any(a[1]!=b[0] for a,b in zip(intervals,intervals[1:]))):
                     raise ValueError('Grouped parts from one fitted source must cover that source without gaps or overlaps')
         for asset,models,_ in composites:
             if not set(models)<=covered:

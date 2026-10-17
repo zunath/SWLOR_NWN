@@ -45,7 +45,30 @@ def write_json(path, value):
         stream.write('\n')
         stream.flush()
         os.fsync(stream.fileno())
-    os.replace(temporary, path)
+    durable_replace(temporary, path)
+
+
+def replace_windows(source, target):
+    import ctypes
+    from ctypes import wintypes
+    move = ctypes.WinDLL('kernel32', use_last_error=True).MoveFileExW
+    move.argtypes = [wintypes.LPCWSTR, wintypes.LPCWSTR, wintypes.DWORD]
+    move.restype = wintypes.BOOL
+    # MOVEFILE_REPLACE_EXISTING | MOVEFILE_WRITE_THROUGH; never defer or copy.
+    if not move(str(source.absolute()), str(target.absolute()), 0x1 | 0x8):
+        raise ctypes.WinError(ctypes.get_last_error())
+
+
+def durable_replace(source, target):
+    if os.name == 'nt':
+        replace_windows(source, target)
+    else:
+        os.replace(source, target)
+        descriptor = os.open(target.parent, os.O_RDONLY | getattr(os, 'O_DIRECTORY', 0))
+        try:
+            os.fsync(descriptor)
+        finally:
+            os.close(descriptor)
 
 
 def read_json(path):

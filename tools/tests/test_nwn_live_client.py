@@ -41,7 +41,43 @@ def gff(fields):
     return header + top + entries + labels + field_data + indices
 
 
+def gff_structs(structs):
+    """Build a .bic whose structs hold only struct-reference fields: structs[i] lists target indices."""
+    entries, indices, struct_table = b'', b'', b''
+    for number, targets in enumerate(structs):
+        first = len(entries) // 12
+        for target in targets:
+            entries += struct.pack('<3I', 14, 0, target)
+        if len(targets) == 1:
+            data = first
+        else:
+            data = len(indices)
+            indices += b''.join(struct.pack('<I', first + offset) for offset in range(len(targets)))
+        struct_table += struct.pack('<3I', 0xFFFFFFFF if number == 0 else 0, data, len(targets))
+    labels = b'Next'.ljust(16, b'\0')
+    struct_offset = 56
+    field_offset = struct_offset + len(struct_table)
+    label_offset = field_offset + len(entries)
+    indices_offset = label_offset + len(labels)
+    header = b'BIC V3.2' + struct.pack(
+        '<12I', struct_offset, len(structs), field_offset, len(entries) // 12, label_offset, 1,
+        indices_offset, 0, indices_offset, len(indices), indices_offset + len(indices), 0)
+    return header + struct_table + entries + labels + indices
+
+
 class LiveClientHelperTests(unittest.TestCase):
+    def test_struct_nesting_follows_the_gff_reader_limit(self):
+        def chain(levels):
+            return [[number + 1] for number in range(levels)] + [[]]
+
+        stack.validate_bic(self.write('deep128.bic', gff_structs(chain(128))))
+        with self.assertRaisesRegex(LiveStackError, '128 levels'):
+            stack.validate_bic(self.write('deep129.bic', gff_structs(chain(129))))
+        # Struct 1 is checked shallowly first, then referenced again at depth 129.
+        shared = [[1, 2], []] + [[number + 3] for number in range(127)] + [[1]]
+        with self.assertRaisesRegex(LiveStackError, '128 levels'):
+            stack.validate_bic(self.write('shared.bic', gff_structs(shared)))
+
     def setUp(self):
         self.directory = tempfile.TemporaryDirectory()
         self.root = Path(self.directory.name)

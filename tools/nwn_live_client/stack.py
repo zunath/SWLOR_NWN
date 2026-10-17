@@ -202,8 +202,6 @@ def _read_gff_string(path: Path, data: bytes, label: str) -> str | None:
     while path_stack:
         index, children = path_stack[-1]
         if children is None:
-            if len(path_stack) - 1 > 128:
-                raise LiveStackError(f'{path} is damaged: its structs nest more than 128 levels deep.')
             active.add(index)
             children = iter([child for field_type, _, field_data in struct_fields(index)
                              for child in child_structs(field_type, field_data)])
@@ -213,6 +211,9 @@ def _read_gff_string(path: Path, data: bytes, label: str) -> str | None:
             path_stack.pop()
             active.discard(index)
             finished.add(index)
+        elif len(path_stack) > 128:
+            # The child would sit at depth len(path_stack); GffReader checks this before its cache.
+            raise LiveStackError(f'{path} is damaged: its structs nest more than 128 levels deep.')
         elif child in active:
             raise LiveStackError(f'{path} is damaged: struct {child} refers back to itself.')
         elif child not in finished:
@@ -1215,7 +1216,8 @@ def return_home_ownership(stack: Stack) -> None:
     run(['docker', 'run', '--rm', '--network', 'none', '--user', '0:0', '--entrypoint', 'chown',
          '-v', f'{stack.home}:/home-to-return',
          # The image ID recorded at start-up, not the tag another session may have moved.
-         stack.state.get('image_ids', {}).get('swlor-server', stack.state['server_image_id']), '-R', host_user(),
+         (stack.state.get('image_ids', {}).get('swlor-server') or stack.state.get('server_image_id')
+          or stack.state['server_image']), '-R', host_user(),
          '/home-to-return'], capture=True, timeout=300)
 
 
@@ -1253,9 +1255,18 @@ def destroy(stack: Stack) -> dict:
     # that finds none must leave Docker alone: anything under the name now belongs to another run.
     owns_project = stack.ensure_owner(require_reservation=False)
     report = {'project': stack.project, 'utc': utc_now(), 'player_booted': True}
-    # Evidence lost by an earlier teardown cannot be recovered; keep reporting it.
+    # Evidence lost by an earlier teardown is reported on every later down, unless a retry
+    # recovers it (the source was still there); errors holds only this run's other problems.
     lost_evidence = stack.state.setdefault('lost_evidence', [])
-    errors = list(lost_evidence)
+    errors = []
+
+    def lose(message: str) -> None:
+        if message not in lost_evidence:
+            lost_evidence.append(message)
+        stack.save()
+
+    def recovered(prefix: str) -> None:
+        lost_evidence[:] = [message for message in lost_evidence if not message.startswith(prefix)]
     unconfirmed_boot_message = ('The player was not confirmed booted; the CD key may stay held for up to '
                                 '5 minutes (this stack\'s net.udp.window.timeout).')
     if owns_project:
@@ -1270,10 +1281,11 @@ def destroy(stack: Stack) -> dict:
             def stop(service: str, grace: str) -> None:
                 stopped = stack.compose('stop', '-t', grace, service, client=service == 'client', check=False,
                                         capture=True, timeout=180)
+                prefix = f'Could not confirm the {service} container stopped'
                 if stopped.returncode != 0 or stack.running(service):
-                    lost_evidence.append(f'Could not confirm the {service} container stopped before its output '
-                                         'was saved; shutdown messages may be missing.')
-                    errors.append(lost_evidence[-1])
+                    lose(f'{prefix} before its output was saved; shutdown messages may be missing.')
+                else:
+                    recovered(prefix)
 
             stop('client', '30')
             # A client that stops cleanly also ends its connection, which the server still logs.
@@ -1304,10 +1316,12 @@ def destroy(stack: Stack) -> dict:
                                 archive.write_bytes(stream)
                             except OSError as error:
                                 problem = str(error)
+                prefix = f'Could not keep the {service} container output'
                 if problem:
-                    # compose down removes the only copy, so this loss is permanent.
-                    lost_evidence.append(f'Could not keep the {service} container output: {problem}')
-                    errors.append(lost_evidence[-1])
+                    # compose down removes the only copy, so record the loss before it.
+                    lose(f'{prefix}: {problem}')
+                else:
+                    recovered(prefix)
         elif stack.joined_players() <= 0:
             booted = True
         if not booted:
@@ -1360,12 +1374,13 @@ def destroy(stack: Stack) -> dict:
             errors.append(str(error))
         for source, name in ((stack.profile / 'logs', 'client-logs'), (stack.home / 'logs', 'server-logs'),
                              (stack.home / 'app_logs', 'server-app-logs')):
+            prefix = f'Could not keep {name} in the evidence'
             try:
                 if source.is_dir() and any(source.iterdir()):
                     shutil.copytree(source, stack.evidence / name, dirs_exist_ok=True)
+                recovered(prefix)
             except (OSError, shutil.Error) as error:
-                lost_evidence.append(f'Could not keep {name} in the evidence: {error}')
-                errors.append(lost_evidence[-1])
+                lose(f'{prefix}: {error}')
         # Record lost evidence before deleting the only source of it.
         stack.save()
         for path in (stack.profile, stack.home, stack.run_dir / 'dotnet', stack.run_dir / 'module',
@@ -1388,6 +1403,7 @@ def destroy(stack: Stack) -> dict:
             if not report['reservation_removed']:
                 errors.append(f'Could not remove the {reservation_name(stack.project)} reservation container.')
     leftovers = [str(path) for pattern in ('cdkey.ini', '*.bic') for path in stack.run_dir.rglob(pattern)]
+    errors = lost_evidence + errors
     report.update({
         'remaining_containers': len(resources['containers']),
         'remaining_volumes': len(resources['volumes']),

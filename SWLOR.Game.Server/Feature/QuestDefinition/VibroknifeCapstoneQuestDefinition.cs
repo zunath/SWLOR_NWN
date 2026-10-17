@@ -62,13 +62,13 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "Mikka Varn gave you the Veles Militia Annex Key. Enter the Veles Militia Annex on Viscara through the sealed door inside the Sheriff's Office on the west side of Veles. Defeat six Vital Rupture adepts and secure the Vital Rupture Veles Drill Ledger.")
+                    "Begin Mikka Varn's trials to unlock Viral Cascade. Mikka Varn gave you the Veles Militia Annex Key. Enter the Veles Militia Annex on Viscara through the sealed door inside the Sheriff's Office on the west side of Veles. Defeat six Viral Cascade adepts and secure the Viral Cascade Veles Drill Ledger.")
                 .AddKillObjective(NPCGroupType.Viscara_VitalRupture_Adept, 6)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneVitalRuptureVelesDrillLedger)
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Vital Rupture Veles Drill Ledger is in hand. Return to Mikka Varn in Racin' Jims in Veles on Viscara.")
+                    "The Viral Cascade Veles Drill Ledger is in hand. Return to Mikka Varn in Racin' Jims in Veles on Viscara.")
                 .AddXPReward(15000)
                 .AddGoldReward(7500);
         }
@@ -83,13 +83,13 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "Defeat five Vital Rupture specialists in the Veles Militia Annex on Viscara and secure the Vital Rupture Militia Range Relay.")
+                    "Defeat five Viral Cascade specialists in the Veles Militia Annex on Viscara and secure the Viral Cascade Militia Range Relay.")
                 .AddKillObjective(NPCGroupType.Viscara_VitalRupture_Specialist, 5)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneVitalRuptureMilitiaRangeRelay)
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Vital Rupture Militia Range Relay is in hand. Return to Mikka Varn in Racin' Jims in Veles on Viscara.")
+                    "The Viral Cascade Militia Range Relay is in hand. Return to Mikka Varn in Racin' Jims in Veles on Viscara.")
                 .AddXPReward(17500)
                 .AddGoldReward(9000);
         }
@@ -104,13 +104,13 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "Defeat the Vital Rupture warden in the Veles Militia Annex on Viscara and secure the Vital Rupture Scored Challenge Badge.")
+                    "Defeat the Viral Cascade warden in the Veles Militia Annex on Viscara and secure the Viral Cascade Scored Challenge Badge.")
                 .AddKillObjective(NPCGroupType.Viscara_VitalRupture_Warden, 1)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneVitalRuptureScoredChallengeBadge)
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Vital Rupture warden is defeated and the Vital Rupture Scored Challenge Badge is in hand. Return to Mikka Varn in Racin' Jims in Veles on Viscara.")
+                    "The Viral Cascade warden is defeated and the Viral Cascade Scored Challenge Badge is in hand. Return to Mikka Varn in Racin' Jims in Veles on Viscara.")
                 .AddXPReward(20000)
                 .AddGoldReward(10500);
         }
@@ -125,13 +125,13 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "Defeat the four members of the Vital Rupture inner circle in the Veles Militia Annex on Viscara and secure the Vital Rupture Captain's Challenge Chit.")
+                    "Defeat the four members of the Viral Cascade inner circle in the Veles Militia Annex on Viscara and secure the Viral Cascade Captain's Challenge Chit.")
                 .AddKillObjective(NPCGroupType.Viscara_VitalRupture_InnerCircle, 4)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneVitalRuptureCaptainsChallengeChit)
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Vital Rupture Captain's Challenge Chit is in hand. Return to Mikka Varn in Racin' Jims in Veles on Viscara.")
+                    "The Viral Cascade Captain's Challenge Chit is in hand. Return to Mikka Varn in Racin' Jims in Veles on Viscara.")
                 .AddXPReward(22500)
                 .AddGoldReward(12000);
         }
@@ -144,12 +144,12 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "Defeat the Vital Rupture master in the Veles Militia Annex on Viscara.")
+                    "Defeat the Viral Cascade master in the Veles Militia Annex on Viscara.")
                 .AddKillObjective(NPCGroupType.Viscara_VitalRupture_Master, 1)
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Vital Rupture master is defeated. Return to Mikka Varn in Racin' Jims in Veles on Viscara.")
+                    "The Viral Cascade master is defeated. Return to Mikka Varn in Racin' Jims in Veles on Viscara.")
                 .AddXPReward(30000)
                 .AddGoldReward(18000)
                 .OnCompleteAction((player, sourceObject) =>

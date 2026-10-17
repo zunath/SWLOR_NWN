@@ -126,7 +126,7 @@
   },
   "Comment": {
     "type": "cexostring",
-    "value": "Vital Rupture specialist in Viscara - Veles Militia Annex."
+    "value": "Viral Cascade specialist in Viscara - Veles Militia Annex."
   },
   "Con": {
     "type": "byte",
@@ -302,7 +302,7 @@
   "FirstName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Vital Rupture Specialist"
+      "0": "Viral Cascade Specialist"
     }
   },
   "fortbonus": {

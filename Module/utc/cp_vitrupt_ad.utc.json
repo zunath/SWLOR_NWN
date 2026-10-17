@@ -126,7 +126,7 @@
   },
   "Comment": {
     "type": "cexostring",
-    "value": "Vital Rupture adept in Viscara - Veles Militia Annex."
+    "value": "Viral Cascade adept in Viscara - Veles Militia Annex."
   },
   "Con": {
     "type": "byte",
@@ -358,7 +358,7 @@
   "FirstName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Vital Rupture Adept"
+      "0": "Viral Cascade Adept"
     }
   },
   "fortbonus": {

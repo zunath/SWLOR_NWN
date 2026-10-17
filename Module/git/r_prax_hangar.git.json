@@ -1958,7 +1958,7 @@
               },
               "ArmorPart_Torso": {
                 "type": "byte",
-                "value": 170
+                "value": 172
               },
               "BaseItem": {
                 "type": "int",
@@ -2120,7 +2120,7 @@
               },
               "xArmorPart_Torso": {
                 "type": "word",
-                "value": 170
+                "value": 172
               },
               "XOrientation": {
                 "type": "float",

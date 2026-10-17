@@ -123,15 +123,18 @@ public static class HeadgearSlotMigration
                 // Capture the legacy root before conversion; nested gear must
                 // not move its containing bag out of an equipment slot.
                 var originalItem = (string)entry.Value;
-                var moveChest = repairHeadgear &&
-                    (field == "EquippedItems" && (entry.Name == "Chest" || entry.Name == ((int)InventorySlot.Chest).ToString()) ||
-                     field == "Inventory" && entry.Name.StartsWith(Droid.GetPendingItemRestoreKey(InventorySlot.Chest, ""), StringComparison.Ordinal)) &&
-                    StoredObjectData.IsLegacyHeadgearRoot(originalItem);
+                var chestHeadgear = repairHeadgear && StoredObjectData.IsLegacyHeadgearRoot(originalItem);
+                var correction = repairHeadgear ? StoredObjectData.GetEquipmentSlotCorrection(originalItem) : null;
+                var previousSlot = chestHeadgear ? InventorySlot.Chest : correction?.Previous ?? InventorySlot.Arms;
+                var targetSlot = chestHeadgear ? InventorySlot.Head : correction?.Target ?? previousSlot;
+                var moveSlot = targetSlot != previousSlot &&
+                    (field == "EquippedItems" && (entry.Name == previousSlot.ToString() || entry.Name == ((int)previousSlot).ToString()) ||
+                     field == "Inventory" && entry.Name.StartsWith(Droid.GetPendingItemRestoreKey(previousSlot, ""), StringComparison.Ordinal));
                 var migrated = migrateItem(originalItem);
                 if (originalItem == migrated) continue;
-                if (moveChest)
+                if (moveSlot)
                 {
-                    // The existing pending-restore path tries Head on summon;
+                    // The pending-restore path tries the corrected slot on summon;
                     // occupied slots or validation failure leave it carried.
                     if (droid["Inventory"] is not JObject inventory)
                     {
@@ -140,12 +143,12 @@ public static class HeadgearSlotMigration
                     }
                     var id = StoredObjectData.ReadRootString(migrated, "DROID_ITEM_ID");
                     if (string.IsNullOrWhiteSpace(id) || inventory.Property(id) != null ||
-                        inventory.Property(Droid.GetPendingItemRestoreKey(InventorySlot.Head, id)) != null)
+                        inventory.Property(Droid.GetPendingItemRestoreKey(targetSlot, id)) != null)
                     {
                         id = Guid.NewGuid().ToString();
                         migrated = StoredObjectData.SetRootString(migrated, "DROID_ITEM_ID", id);
                     }
-                    var restoreKey = Droid.GetPendingItemRestoreKey(InventorySlot.Head, id);
+                    var restoreKey = Droid.GetPendingItemRestoreKey(targetSlot, id);
                     inventory[restoreKey] = migrated;
                     movedInventoryIds.Add(restoreKey);
                     entry.Remove();

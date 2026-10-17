@@ -177,7 +177,12 @@ def durable_replace(source,target):
         finally:os.close(descriptor)
 
 
+def require_npz_output(output):
+    if output.suffix.lower()!='.npz':raise ValueError('Shield surface output must use the .npz suffix')
+
+
 def publish_surface(output,vertices,faces,report):
+    require_npz_output(output)
     output.parent.mkdir(parents=True,exist_ok=True)
     temporary=output.with_suffix(output.suffix+'.part')
     with temporary.open('wb') as stream:
@@ -200,6 +205,7 @@ def main():
     parser.add_argument('--voxel-size',type=float,default=.003)
     parser.add_argument('--target-faces',type=int,default=3500)
     args=parser.parse_args(sys.argv[sys.argv.index('--')+1:])
+    require_npz_output(args.output)
     if args.output.exists():raise FileExistsError('Use a fresh output: '+str(args.output))
     with np.load(args.input,allow_pickle=False) as source:
         if set(source.files)!={'vertices','faces'}:raise ValueError('Expected geometry-only NPZ; do not discard authored attributes')

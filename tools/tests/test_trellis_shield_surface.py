@@ -138,6 +138,55 @@ class ShieldSurfaceTests(unittest.TestCase):
                     with self.assertRaisesRegex(ValueError,'Cached shield surface changed'):bridge.cached_entry(path)
                     path.unlink();report.unlink()
 
+    def test_schema_discovery_probes_cache_permissions_and_removes_new_directories(self):
+        spec=importlib.util.spec_from_file_location('shield_cache_permissions',TOOLS/'trellis2_shield_nodes/__init__.py')
+        bridge=importlib.util.module_from_spec(spec);spec.loader.exec_module(bridge)
+        with tempfile.TemporaryDirectory() as temporary:
+            parent=Path(temporary)/'new-parent';cache=parent/'cache'
+            real_mkdir=Path.mkdir
+            def denied(directory,*args,**kwargs):
+                if directory==cache:raise PermissionError('deterministic denied cache ACL')
+                return real_mkdir(directory,*args,**kwargs)
+            with patch.object(bridge.shutil,'which',return_value='not-invoked'),patch.dict(bridge.os.environ,{'SWLOR_SHIELD_CACHE':str(cache)}),patch.object(bridge,'blender_identity',return_value={}) as identity:
+                with patch.object(Path,'mkdir',new=denied):
+                    with self.assertRaisesRegex(ValueError,'creation and removal'):bridge.SWLORClosedVoxelMesh.INPUT_TYPES()
+                identity.assert_not_called();self.assertFalse(parent.exists())
+                self.assertIn('mesh',bridge.SWLORClosedVoxelMesh.INPUT_TYPES()['required'])
+                self.assertFalse(parent.exists())
+
+    def test_existing_cache_file_permission_denial_leaves_no_probe_artifacts(self):
+        spec=importlib.util.spec_from_file_location('shield_cache_file_permissions',TOOLS/'trellis2_shield_nodes/__init__.py')
+        bridge=importlib.util.module_from_spec(spec);spec.loader.exec_module(bridge)
+        with tempfile.TemporaryDirectory() as temporary:
+            cache=Path(temporary);sentinel=cache/'existing-cache-entry';sentinel.write_bytes(b'preserved')
+            real_open=Path.open
+            def denied(path,*args,**kwargs):
+                if path.name=='write-test':raise PermissionError('deterministic denied file ACL')
+                return real_open(path,*args,**kwargs)
+            with patch.object(bridge.shutil,'which',return_value='not-invoked'),patch.dict(bridge.os.environ,{'SWLOR_SHIELD_CACHE':str(cache)}),patch.object(bridge,'blender_identity',return_value={}):
+                with patch.object(Path,'open',new=denied):
+                    with self.assertRaisesRegex(ValueError,'creation and removal'):bridge.SWLORClosedVoxelMesh.INPUT_TYPES()
+                self.assertEqual(list(cache.iterdir()),[sentinel])
+                self.assertIn('mesh',bridge.SWLORClosedVoxelMesh.INPUT_TYPES()['required'])
+                self.assertEqual(list(cache.iterdir()),[sentinel]);self.assertEqual(sentinel.read_bytes(),b'preserved')
+
+    def test_json_output_is_rejected_before_geometry_or_file_changes(self):
+        vertices,faces=box()
+        with tempfile.TemporaryDirectory() as temporary:
+            source=Path(temporary)/'source.npz';np.savez(source,vertices=vertices,faces=faces)
+            original=source.read_bytes();existing=Path(temporary)/'existing.json';existing.write_bytes(b'preserved report')
+            for output in (Path(temporary)/'fresh.json',existing):
+                with self.subTest(output=output.name):
+                    before={p.name:p.read_bytes() for p in Path(temporary).iterdir()}
+                    with self.assertRaisesRegex(ValueError,r'\.npz suffix'):surface.publish_surface(output,vertices,faces,{})
+                    argv=['blender','--','voxel',str(source),str(output)]
+                    with patch.object(surface.sys,'argv',argv),patch.object(surface,'voxel_surface') as voxel:
+                        with self.assertRaisesRegex(ValueError,r'\.npz suffix'):surface.main()
+                        voxel.assert_not_called()
+                    self.assertEqual({p.name:p.read_bytes() for p in Path(temporary).iterdir()},before)
+            self.assertEqual(source.read_bytes(),original)
+            with np.load(source,allow_pickle=False) as data:np.testing.assert_array_equal(data['vertices'],vertices)
+
     def test_blender_replacement_changes_surface_and_comfy_cache_identities(self):
         spec=importlib.util.spec_from_file_location('shield_build_bridge',TOOLS/'trellis2_shield_nodes/__init__.py')
         bridge=importlib.util.module_from_spec(spec);spec.loader.exec_module(bridge)

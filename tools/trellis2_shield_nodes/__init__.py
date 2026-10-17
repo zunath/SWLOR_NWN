@@ -13,6 +13,7 @@ import os
 from pathlib import Path
 import shutil
 import subprocess
+import uuid
 
 SURFACE_SCRIPT=Path(__file__).resolve().parents[1]/'TrellisShieldSurface.py'
 
@@ -36,19 +37,41 @@ def blender_identity(executable):
     return {'path':str(path),'sha256':fingerprint,'version':blender_version(str(path),fingerprint)}
 
 
+def probe_cache_access(cache,missing):
+    """Exercise directory/file creation and removal, retaining no probe paths."""
+    created=[];probe_file=None
+    try:
+        for directory in reversed(missing):
+            try:directory.mkdir()
+            except FileExistsError:
+                if not directory.is_dir():raise
+            else:created.append(directory)
+        probe=cache/('.swlor-preflight-'+uuid.uuid4().hex)
+        probe.mkdir();created.append(probe)
+        candidate=probe/'write-test'
+        with candidate.open('xb') as stream:
+            probe_file=candidate;stream.write(b'SWLOR shield cache preflight\n')
+    finally:
+        if probe_file is not None:probe_file.unlink()
+        for directory in reversed(created):directory.rmdir()
+
+
 def settings():
     executable=os.environ.get('SWLOR_BLENDER','blender')
     found=shutil.which(executable)
     if found is None:raise ValueError('Set SWLOR_BLENDER to the installed Blender4.0 executable')
     cache=Path(os.environ.get('SWLOR_SHIELD_CACHE',''))
     if not cache.is_absolute():raise ValueError('Set SWLOR_SHIELD_CACHE to an absolute task-owned staging directory')
-    ancestor=cache
+    ancestor=cache;missing=[]
     while not ancestor.exists():
+        missing.append(ancestor)
         parent=ancestor.parent
         if parent==ancestor:raise ValueError('Shield cache has no existing ancestor: '+str(cache))
         ancestor=parent
     if not ancestor.is_dir():raise ValueError('Shield cache must resolve beneath a directory: '+str(cache))
     if not SURFACE_SCRIPT.is_file():raise ValueError('Link this package from repository tools/ so TrellisShieldSurface.py remains beside it')
+    try:probe_cache_access(cache,missing)
+    except OSError as error:raise ValueError('Shield cache must allow directory/file creation and removal: '+str(cache)) from error
     return found,cache,blender_identity(found)
 
 

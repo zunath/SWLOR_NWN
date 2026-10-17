@@ -139,6 +139,8 @@ class LiveClientHelperTests(unittest.TestCase):
         self.assertIn('NWN_PUBLICSERVER: "0"', compose)
         self.assertIn('NWN_NWSYNCURL: ""', compose)
         self.assertNotIn('ports:', compose)
+        self.assertIn('user: ${SWLOR_LIVE_CLIENT_USER}', compose)
+        self.assertRegex(stack.host_user(), r'^\d+:\d+$')
         self.assertRegex(stack.server_image(), r'^zunath/nwn-dotnet:')
 
 

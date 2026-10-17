@@ -442,14 +442,22 @@ def create(options) -> Stack:
             'SWLOR_LIVE_CLIENT_INSTALL': install.resolve().as_posix(),
             'SWLOR_LIVE_SERVER_PORT': str(SERVER_PORT),
             'SWLOR_LIVE_CLIENT_MODE': mode,
+            'SWLOR_LIVE_CLIENT_USER': host_user(),
             # A throwaway password for this unpublished server; it leaves with compose.env.
             'SWLOR_LIVE_DM_PASSWORD': secrets.token_hex(12) if mode == 'dm' else '',
             'SWLOR_LIVE_ADMIN_CDKEY': public_key if mode == 'dm' else '',
             'SWLOR_LIVE_MAX_SECONDS': str(max_seconds),
         }), 'utf-8')
     except BaseException:
+        # Remove everything this call wrote; keep a directory the caller created empty.
         if created_dir:
             remove_tree(run_dir)
+        elif run_dir.is_dir():
+            for child in run_dir.iterdir():
+                if child.is_dir() and not child.is_symlink():
+                    remove_tree(child)
+                else:
+                    child.unlink()
         raise
     log(f'Run directory {run_dir} (project {project})')
     return stack
@@ -557,7 +565,12 @@ def play(stack: Stack, settle: float, timeout: float = 600) -> None:
     # A new character is set up and may be moved to its starting area right away.
     tips = loading_tips(stack)
     quiet_since = time.monotonic()
-    while time.monotonic() - quiet_since < settle:
+    while True:
+        # An OnModuleEnter handler can boot the character right after the entry is logged.
+        if stack.joined_players() <= 0:
+            raise LiveStackError('The character entered but was disconnected. See the server and app logs.')
+        if time.monotonic() - quiet_since >= settle:
+            break
         if time.monotonic() >= deadline:
             raise LiveStackError('Area transitions did not settle.')
         current = loading_tips(stack)
@@ -602,6 +615,24 @@ def remove_tree(path: Path) -> None:
     shutil.rmtree(path, onexc=retry)
 
 
+def host_user() -> str:
+    """The caller's UID:GID on Linux and macOS hosts; Docker Desktop on Windows maps any UID."""
+    return f'{os.getuid()}:{os.getgid()}' if hasattr(os, 'getuid') else '1000:1000'
+
+
+def return_home_ownership(stack: Stack) -> None:
+    """Give the server home back to the caller before removal.
+
+    prepare-server-home.sh hands the home to the server's UID 1000. A Linux caller with
+    another UID could not delete what the server wrote there. Windows needs no change.
+    """
+    if not hasattr(os, 'getuid') or not stack.home.is_dir():
+        return
+    run(['docker', 'run', '--rm', '--network', 'none', '--user', '0:0', '--entrypoint', 'chown',
+         '-v', f'{stack.home}:/home-to-return', stack.state['server_image'], '-R', host_user(),
+         '/home-to-return'], capture=True, timeout=300)
+
+
 def destroy(stack: Stack) -> dict:
     """Boot the player, remove the project's Docker resources, then the key, profile and home."""
     report = {'project': stack.project, 'utc': utc_now()}
@@ -611,6 +642,8 @@ def destroy(stack: Stack) -> dict:
     except LiveStackError as error:
         report['player_booted'] = False
         errors.append(str(error))
+    if not report['player_booted']:
+        errors.append('The player was not confirmed booted; the CD key may stay held for 60 seconds.')
     if (stack.run_dir / 'compose.env').is_file():
         stack.compose('stop', '-t', '30', 'client', client=True, check=False, capture=True, timeout=120)
         result = stack.compose('down', '--volumes', '--remove-orphans', '--timeout', '60', client=True,
@@ -619,6 +652,10 @@ def destroy(stack: Stack) -> dict:
             errors.append('compose down failed: ' + result.stderr.decode('utf-8', 'replace').strip())
 
     (stack.profile / 'cdkey.ini').unlink(missing_ok=True)
+    try:
+        return_home_ownership(stack)
+    except LiveStackError as error:
+        errors.append(str(error))
     for source, name in ((stack.profile / 'logs', 'client-logs'), (stack.home / 'logs', 'server-logs'),
                          (stack.home / 'app_logs', 'server-app-logs')):
         if source.is_dir() and any(source.iterdir()):

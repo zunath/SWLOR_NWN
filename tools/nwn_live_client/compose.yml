@@ -127,6 +127,8 @@ services:
         image: ${SWLOR_LIVE_CLIENT_IMAGE}
         profiles: ["client"]
         restart: "no"
+        # The caller's UID:GID, so everything the client writes to the profile stays removable.
+        user: ${SWLOR_LIVE_CLIENT_USER}
         entrypoint: ["/bin/bash", "/tool/run-client.sh"]
         environment:
             SWLOR_LIVE_SERVER_HOST: swlor-server

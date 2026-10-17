@@ -3,6 +3,10 @@
 FROM zunath/nwn-dotnet:8193.37.17-2
 USER root
 RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends xvfb xdotool x11-apps imagemagick libgl1 libgl1-mesa-dri libopenal1 && rm -rf /var/lib/apt/lists/*
+# Lets a non-root Xvfb create its display socket.
+RUN mkdir -p /tmp/.X11-unix && chmod 1777 /tmp/.X11-unix
 # Software GL, and null audio drivers so the client can never produce sound.
-ENV DISPLAY=:99 LIBGL_ALWAYS_SOFTWARE=1 ALSOFT_DRIVERS=null SDL_AUDIODRIVER=dummy
+ENV DISPLAY=:99 LIBGL_ALWAYS_SOFTWARE=1 ALSOFT_DRIVERS=null SDL_AUDIODRIVER=dummy HOME=/tmp
 WORKDIR /install/bin/linux-x86
+# Compose runs the client as the caller's UID:GID so profile files stay removable.
+USER 1000:1000

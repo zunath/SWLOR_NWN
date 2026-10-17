@@ -624,5 +624,17 @@ namespace SWLOR.NWN.API.NWNX
         {
             return global::NWN.Core.NWNX.PlayerPlugin.GetOpenStore(player);
         }
+
+        /// <summary>
+        /// Sends a party invitation from one creature to a player, as the native party controls do.
+        /// </summary>
+        /// <param name="player">The player being invited.</param>
+        /// <param name="inviter">The creature sending the invitation.</param>
+        /// <param name="forceInvite">If true, the invitation is sent even when the player is ignoring the inviter's invitations.</param>
+        /// <param name="hideDialog">If true, the invited player's client does not show the invitation popup.</param>
+        public static void SendPartyInvite(uint player, uint inviter, bool forceInvite = false, bool hideDialog = false)
+        {
+            global::NWN.Core.NWNX.PlayerPlugin.SendPartyInvite(player, inviter, forceInvite ? 1 : 0, hideDialog ? 1 : 0);
+        }
     }
 }

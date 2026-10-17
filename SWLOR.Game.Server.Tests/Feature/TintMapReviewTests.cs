@@ -1975,6 +1975,42 @@ public class TintMapReviewTests
     }
 
     [Test]
+    public void FemaleThighSixteenVariantsExposeTheirOwnMetalAndLeatherChannels()
+    {
+        var rows = ReadSource("SWLOR_Haks", "sw_2da", "tintmap.2da")
+            .Split('\n', StringSplitOptions.RemoveEmptyEntries)
+            .Select(line => line.Split((char[])null!, StringSplitOptions.RemoveEmptyEntries))
+            .Where(columns => columns.Length == 4)
+            .ToArray();
+        var entries = JArray.Parse(ReadSource("SWLOR_Haks", "tools", "TintMapSources.json"));
+
+        foreach (var side in new[] { 'l', 'r' })
+        {
+            var material = $"pfh0_leg{side}016";
+            var entry = entries.Single(value => (string)value["model"]! == material);
+            ((int)entry["width"]!).Should().Be(128);
+            ((int)entry["height"]!).Should().Be(128);
+            entry["layers"]!.Values<int>().Should().Equal(2, 3, 6, 7);
+
+            foreach (var race in new[] { 'a', 'd', 'e', 'g', 'h', 'o' })
+            foreach (var phenotype in new[] { 0, 2 })
+            {
+                var model = $"pf{race}{phenotype}_leg{side}016";
+                var row = rows.Single(columns => columns[1] == model);
+                row[2].Should().Be(material, "thigh 15 uses a different palette and must not supply this part");
+                row[3].Should().Be("2,3,6,7");
+                var modelPath = Path.Combine(FindRepositoryRoot().FullName, "SWLOR_Haks",
+                    side == 'l' ? "sw_pt_lthigh" : "sw_pt_rthigh", model + ".mdl");
+                var modelBytes = File.ReadAllBytes(modelPath);
+                // These retained stock single-mesh models store the 64-byte material name
+                // at byte 784, separately from their model name and legacy thigh-15 bitmap.
+                System.Text.Encoding.ASCII.GetString(modelBytes, 784, 64).TrimEnd('\0')
+                    .Should().Be(material, $"{model} must render through its own converted palette");
+            }
+        }
+    }
+
+    [Test]
     public void RodianMusicianPartsBindTheConvertedHumanFallbackMaterials()
     {
         var repositoryRoot = FindRepositoryRoot();

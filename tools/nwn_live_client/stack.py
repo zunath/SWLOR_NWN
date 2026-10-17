@@ -87,21 +87,47 @@ def read_gff_string(path: Path, label: str) -> str | None:
 
 
 def _read_gff_string(path: Path, data: bytes, label: str) -> str | None:
-    (struct_offset, _, field_offset, _, label_offset, _, field_data_offset, _,
-     field_indices_offset, _, _, _) = struct.unpack_from('<12I', data, 8)
+    def damaged(what: str) -> LiveStackError:
+        return LiveStackError(f'{path} is damaged: {what} lies outside the file.')
+
+    def within(offset: int, length: int, limit: int) -> bool:
+        return 0 <= offset and 0 <= length and offset + length <= limit
+
+    (struct_offset, struct_count, field_offset, field_total, label_offset, label_count, field_data_offset,
+     field_data_size, field_indices_offset, field_indices_size, _, _) = struct.unpack_from('<12I', data, 8)
+    # Every table the top-level struct can reach must lie inside the file.
+    for name, offset, length in (('the struct table', struct_offset, struct_count * 12),
+                                 ('the field table', field_offset, field_total * 12),
+                                 ('the label table', label_offset, label_count * 16),
+                                 ('the field data', field_data_offset, field_data_size),
+                                 ('the field indices', field_indices_offset, field_indices_size)):
+        if not within(offset, length, len(data)):
+            raise damaged(name)
+    if struct_count < 1:
+        raise damaged('the top-level struct')
     _, struct_data, field_count = struct.unpack_from('<3I', data, struct_offset)
     if field_count == 1:
         indices = [struct_data]
     else:
+        if not within(struct_data, field_count * 4, field_indices_size):
+            raise damaged('a field index list')
         indices = struct.unpack_from(f'<{field_count}I', data, field_indices_offset + struct_data)
     for index in indices:
+        if index >= field_total:
+            raise damaged('a field')
         field_type, label_index, field_data = struct.unpack_from('<3I', data, field_offset + index * 12)
+        if label_index >= label_count:
+            raise damaged('a field label')
         start = label_offset + label_index * 16
         if data[start:start + 16].rstrip(b'\0').decode('ascii', 'replace') != label:
             continue
         if field_type != 10:
             raise LiveStackError(f'{path}: field {label} is not a string.')
+        if not within(field_data, 4, field_data_size):
+            raise damaged(f'the {label} value')
         length = struct.unpack_from('<I', data, field_data_offset + field_data)[0]
+        if not within(field_data + 4, length, field_data_size):
+            raise damaged(f'the {label} value')
         offset = field_data_offset + field_data + 4
         return data[offset:offset + length].decode('utf-8', 'replace')
     return None
@@ -153,7 +179,11 @@ def parse_server_env(pairs: list[str]) -> dict[str, str]:
 
 
 def client_settings(player_name: str) -> str:
-    """Client settings.tml: silent, no movies, windowed 1280x720 at UI scale 1.0."""
+    """Client settings.tml: silent, no movies, windowed 1280x720 at UI scale 1.0.
+
+    The UDP window matches the server's 5 minutes: on a busy machine the software-rendered
+    client can stall for minutes loading haks, and would otherwise drop its own connection.
+    """
     if not re.fullmatch(r'[A-Za-z0-9]{3,24}', player_name):
         raise LiveStackError('The player name must be 3-24 letters or digits.')
     return f'''[client.identity]
@@ -183,6 +213,8 @@ mode = "off"
 enabled = false
 [ui]
 scale = 1.0
+[net.udp.window]
+timeout = 300000
 '''
 
 
@@ -445,6 +477,12 @@ def create(options) -> Stack:
     public_key = validate_public_cdkey(options.public_cdkey or os.environ.get('SWLOR_LIVE_PUBLIC_CDKEY', ''))
     extra_env = parse_server_env(options.server_env or [])
     settings_text = (SERVER_DOCKER_DIR / 'settings.tml').read_text('utf-8')
+    # The software-rendered client can stall for over a minute loading haks on a busy machine;
+    # let this private server wait 5 minutes before dropping it. Teardown kicks the player, so
+    # the longer hold on a dead client's CD key never outlives the stack.
+    settings_text, replaced = re.subn(r'(\[net\.udp\.window\]\s*timeout\s*=\s*)\d+', r'\g<1>300000', settings_text)
+    if replaced != 1:
+        raise LiveStackError('SWLOR.Game.Server/Docker/settings.tml no longer sets [net.udp.window] timeout.')
     if not re.search(r'\[masterserver\.key-authentication\]\s*mode\s*=\s*"if-reachable"', settings_text):
         raise LiveStackError('SWLOR.Game.Server/Docker/settings.tml no longer sets '
                              'masterserver.key-authentication mode = "if-reachable".')
@@ -976,7 +1014,9 @@ def return_home_ownership(stack: Stack) -> None:
     if not hasattr(os, 'getuid') or not stack.home.is_dir():
         return
     run(['docker', 'run', '--rm', '--network', 'none', '--user', '0:0', '--entrypoint', 'chown',
-         '-v', f'{stack.home}:/home-to-return', stack.state['server_image'], '-R', host_user(),
+         '-v', f'{stack.home}:/home-to-return',
+         # The image ID recorded at start-up, not the tag another session may have moved.
+         stack.state.get('image_ids', {}).get('swlor-server', stack.state['server_image']), '-R', host_user(),
          '/home-to-return'], capture=True, timeout=300)
 
 
@@ -1010,6 +1050,14 @@ def destroy(stack: Stack) -> dict:
             stack.state['unconfirmed_boot'] = True
             stack.save()
         if (stack.run_dir / 'compose.env').is_file():
+            # NWNX and the server print to stdout, which the containers take with them.
+            for service in ('swlor-server', 'client'):
+                logs = stack.compose('logs', '--no-color', '--no-log-prefix', service, client=service == 'client',
+                                     check=False, capture=True, timeout=120)
+                try:
+                    (stack.evidence / f'{service}-container.log').write_bytes(logs.stdout + logs.stderr)
+                except OSError as error:
+                    errors.append(f'Could not keep the {service} output in the evidence: {error}')
             stack.compose('stop', '-t', '30', 'client', client=True, check=False, capture=True, timeout=120)
             result = stack.compose('down', '--volumes', '--remove-orphans', '--timeout', '60', client=True,
                                    check=False, capture=True, timeout=600)

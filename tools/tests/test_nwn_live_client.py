@@ -76,6 +76,11 @@ class LiveClientHelperTests(unittest.TestCase):
             stack.validate_bic(self.write('item.bic', b'UTI ' + good[4:]))
         with self.assertRaisesRegex(LiveStackError, 'damaged'):
             stack.validate_bic(self.write('cut.bic', good[:70]))
+        # Label table offset (header field 5) pointing past the end of the file.
+        stray = bytearray(good)
+        struct.pack_into('<I', stray, 8 + 4 * 4, len(good) + 100)
+        with self.assertRaisesRegex(LiveStackError, 'label table'):
+            stack.validate_bic(self.write('stray.bic', bytes(stray)))
 
     def test_rejects_non_gff(self):
         with self.assertRaises(LiveStackError):
@@ -114,6 +119,7 @@ class LiveClientHelperTests(unittest.TestCase):
             self.assertIn(f'[{section}]\nenabled = false', text)
         self.assertIn('width = 1280\nheight = 720', text)
         self.assertIn('[ui]\nscale = 1.0', text)
+        self.assertIn('[net.udp.window]\ntimeout = 300000', text)
         with self.assertRaises(LiveStackError):
             stack.client_settings('bad"name')
 

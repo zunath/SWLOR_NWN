@@ -163,4 +163,67 @@ public class WeaponControlTests
             source.Weapon.Diagnostics.GetValueOrDefault(resistance==0 ? "DazesApplied" : "DazesResisted").Should().Be(1);
         }
     }
+
+    [TestCase("None", true)]
+    [TestCase("MindResistance", false)]
+    [TestCase("AlreadyDazed", false)]
+    [TestCase("SharedImmunity", false)]
+    public void JointLock_GrantsGuardDefenseOnlyWhenDazedApplies(string rejection, bool grantsDefense)
+    {
+        var attacker = Fighter("Attacker");
+        attacker.Perks.AddRange(new[] { "GuardTraining", "ScrapperControl:3" });
+        attacker.Abilities.Add(new() { Feat = "JointLock3" });
+        var victim = Fighter("Victim");
+        if (rejection == "MindResistance") victim.WeaponCombat.MindResistance = 100;
+        var sim = TestScenarios.Spawn(TestScenarios.TwoTeams(true, new[] { attacker }, new[] { victim }), RuleSets.Current(), _catalog);
+        var source = sim.Get("Attacker");
+        var target = sim.Get("Victim");
+        source.NextActionAt = 0.1;
+        if (rejection == "AlreadyDazed") target.Weapon.Control.TryDaze(0, 8).Should().BeTrue();
+        if (rejection == "SharedImmunity") target.Weapon.Control.TryDaze(0, 0.01).Should().BeTrue();
+
+        SimulationClock.RunUntil(sim, 1);
+
+        target.Hp.Should().BeLessThan(victim.MaxHp);
+        source.Stats.AbilitiesUsed.Should().Be(1);
+        source.Weapon.DefensePercent(sim.Now).Should().Be(grantsDefense ? 10 : 0);
+        attacker.Abilities[0].IsControl.Should().BeTrue();
+    }
+
+    [TestCase(0, true)]
+    [TestCase(50, true)]
+    [TestCase(100, false)]
+    public void HookingStrike_GrantsGuardDefenseUnlessMobilityResistancePreventsHamstring(int resistance, bool grantsDefense)
+    {
+        var attacker = Fighter("Attacker");
+        attacker.Perks.Add("GuardTraining");
+        attacker.Abilities.Add(new() { Feat = "HookingStrike4" });
+        var victim = Fighter("Victim");
+        victim.WeaponCombat.MobilityResistance = resistance;
+        var sim = TestScenarios.Spawn(TestScenarios.TwoTeams(true, new[] { attacker }, new[] { victim }), RuleSets.Current(), _catalog);
+
+        SimulationClock.RunUntil(sim, 1);
+
+        sim.Get("Victim").Hp.Should().BeLessThan(victim.MaxHp);
+        sim.Get("Attacker").Weapon.DefensePercent(sim.Now).Should().Be(grantsDefense ? 10 : 0);
+    }
+
+    [TestCase(0, 10)]
+    [TestCase(100, 0)]
+    public void ScrapheapLockdown_RejectedDazeStillGrantsGuardDefenseIfHamstringApplies(int mobility, int defense)
+    {
+        var attacker = Fighter("Attacker");
+        attacker.Perks.Add("GuardTraining");
+        attacker.Abilities.Add(new() { Feat = "ScrapheapLockdown1", Target = AbilityTarget.Self });
+        var victim = Fighter("Victim");
+        victim.WeaponCombat.MindResistance = 100;
+        victim.WeaponCombat.MobilityResistance = mobility;
+        var sim = TestScenarios.Spawn(TestScenarios.TwoTeams(true, new[] { attacker }, new[] { victim }), RuleSets.Current(), _catalog);
+
+        SimulationClock.RunUntil(sim, 3);
+
+        sim.Get("Victim").Hp.Should().BeLessThan(victim.MaxHp);
+        sim.Get("Victim").Weapon.Control.IsDazed(sim.Now).Should().BeFalse();
+        sim.Get("Attacker").Weapon.DefensePercent(sim.Now).Should().Be(defense);
+    }
 }

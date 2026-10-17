@@ -23,9 +23,9 @@ public sealed partial class Simulation
         var accuracy = caster.Weapon.SetupAccuracy(target, _now);
         return (Combat.CalculateHitRate(a.Accuracy + accuracy, WeaponCombatState.Adjust(d.Evasion, target.Weapon.EvasionPercent(_now)), 0) - Combat.CalculateHitRate(a.Accuracy, d.Evasion, 0)) / 100f;
     }
-    private bool ApplyWeaponAbility(Combatant caster, Combatant target, PendingCast cast)
+    private (bool Landed, StatusEffectCategory AppliedCategories) ApplyWeaponAbility(Combatant caster, Combatant target, PendingCast cast)
     {
-        if (target.IsDead) return false;
+        if (target.IsDead) return (false, StatusEffectCategory.None);
         var technique = cast.Ability.Technique;
         var count = technique?.ImpactCount ?? cast.Use.WeaponHits;
         var weaponPercent = technique?.WeaponDamagePercent ?? cast.Use.WeaponDamagePercent;
@@ -40,24 +40,33 @@ public sealed partial class Simulation
             if (hit && cast.Technique.PaidStamina >= caster.Weapon.Stat(StatType.CostlyAbilityDamageMinimumStaminaCost) && caster.Weapon.Stat(StatType.CostlyAbilityDamageBonus) > 0)
                 caster.Weapon.Count("HighGuardImpacts");
         }
-        if (landed && !target.IsDead) ApplyWeaponStatuses(caster, target, cast.Ability);
-        return landed;
+        var categories = landed && !target.IsDead ? ApplyWeaponStatuses(caster, target, cast.Ability) : StatusEffectCategory.None;
+        return (landed, categories);
     }
 
-    private void ApplyWeaponStatuses(Combatant caster, Combatant target, AbilityInfo ability)
+    private StatusEffectCategory ApplyWeaponStatuses(Combatant caster, Combatant target, AbilityInfo ability)
     {
+        var appliedCategories = StatusEffectCategory.None;
         foreach (var type in ability.ImpactStatusTypes)
         {
             var status = (IStatusEffect)Activator.CreateInstance(type);
-            if (status is HamstringStatusEffect) continue; // Stationary fights have no movement to slow.
+            var outgoing = StatusEffect.GetOutgoingDurationPercentAdjustment(status.Categories, caster.Weapon.Stat);
+            if (status is HamstringStatusEffect)
+            {
+                // Its successful application can grant riders even though movement is not simulated.
+                var mobility = target.Spec.WeaponCombat.MobilityResistance + target.Weapon.Stat(StatType.MobilityResistance);
+                if (WeaponControlState.Duration(status, ability.ImpactStatusDuration, outgoing, mobility, IsPlayerVersusPlayer(caster, target)) > 0)
+                    appliedCategories |= status.Categories;
+                continue;
+            }
             if (status is not DazedStatusEffect)
                 throw new InvalidDataException($"Weapon simulation does not implement {type.Name}.");
-            var outgoing = StatusEffect.GetOutgoingDurationPercentAdjustment(status.Categories, caster.Weapon.Stat);
             var resistance = target.Spec.WeaponCombat.MindResistance + target.Weapon.Stat(StatType.MindResistance);
             var duration = target.Weapon.Stat(StatType.DazeImmunity) > 0 ? 0 :
                 WeaponControlState.Duration(status, ability.ImpactStatusDuration, outgoing, resistance, IsPlayerVersusPlayer(caster, target));
             if (target.Weapon.Control.TryDaze(_now, duration))
             {
+                appliedCategories |= status.Categories;
                 caster.Weapon.Count("DazesApplied");
                 target.NextAttackAt = Math.Max(target.NextAttackAt, target.Weapon.Control.DazedUntil);
             }
@@ -71,6 +80,7 @@ public sealed partial class Simulation
             target.NextAttackAt = Math.Min(target.NextAttackAt, _now);
             caster.Weapon.Count("CastsInterrupted");
         }
+        return appliedCategories;
     }
 
     private void ApplyWeaponOrdinary(Combatant attacker, Combatant target)

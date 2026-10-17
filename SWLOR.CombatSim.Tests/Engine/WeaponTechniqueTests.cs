@@ -8,6 +8,7 @@ using SWLOR.CombatSim.Tests.Support;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.StatService;
+using SWLOR.Game.Server.Service.StatusEffectService;
 using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.CombatSim.Tests.Engine;
@@ -28,7 +29,7 @@ public class WeaponTechniqueTests
         var info = _catalog.Get(feat);
         var use = new AbilityUseSpec { Feat = feat.ToString(), IsControl = control };
         var activation = c.Weapon.Begin(info, use, enemy, paid ?? info.STM, at);
-        c.Weapon.Complete(info, use, activation, enemy, landed, at);
+        c.Weapon.Complete(info, use, activation, enemy, landed, at, control && landed ? StatusEffectCategory.Control : StatusEffectCategory.None);
         return activation;
     }
     [Test] public void Catalog_ReadsActualTechniquePowerAndSharedRecasts()
@@ -212,6 +213,22 @@ public class WeaponTechniqueTests
         activation.HitPercent.Should().Be(7);
         c.Weapon.ControlDefenseUntil.Should().Be(30);
         c.Weapon.DefensePercent(29).Should().Be(10);
+        c.Weapon.DefensePercent(30).Should().Be(0);
+    }
+    [Test] public void RejectedControl_DoesNotRefreshDefenseButRetainsAuthoredDamageAndAccuracyBonuses()
+    {
+        var c = Fighter("c", 1, "None", "GuardTraining", "RedirectingGuard", "ScrapperControl:3");
+        var enemy = Fighter("e", 2);
+        Use(c, enemy, FeatType.HookingStrike4, 0, control: true);
+        var info = _catalog.Get(FeatType.JointLock3);
+        var use = new AbilityUseSpec { Feat = "JointLock3", IsControl = true };
+
+        var activation = c.Weapon.Begin(info, use, enemy, info.STM, 20);
+        c.Weapon.Complete(info, use, activation, enemy, true, 20, StatusEffectCategory.None);
+
+        activation.FlatPower.Should().Be(12);
+        activation.HitPercent.Should().Be(7);
+        c.Weapon.ControlDefenseUntil.Should().Be(30);
         c.Weapon.DefensePercent(30).Should().Be(0);
     }
     [Test] public void IndependentBrawler_RequiresNoBraceWaitOrDirtyJab()

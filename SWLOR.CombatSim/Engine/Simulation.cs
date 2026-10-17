@@ -831,8 +831,8 @@ namespace SWLOR.CombatSim.Engine
                 var victim = target.TeamIndex != caster.TeamIndex ? target : EnsureAttackTarget(caster);
                 if (victim != null)
                 {
-                    var landed = ApplyWeaponAbility(caster, victim, cast);
-                    caster.Weapon.Complete(cast.Ability, cast.Use, cast.Technique, victim, landed, _now);
+                    var (landed, appliedCategories) = ApplyWeaponAbility(caster, victim, cast);
+                    caster.Weapon.Complete(cast.Ability, cast.Use, cast.Technique, victim, landed, _now, appliedCategories);
                 }
             }
             if (cast.Use.Damage != null)

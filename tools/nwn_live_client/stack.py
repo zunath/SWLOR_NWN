@@ -27,7 +27,6 @@ from pathlib import Path
 PACKAGE_DIR = Path(__file__).resolve().parent
 REPO_ROOT = PACKAGE_DIR.parents[1]
 COMPOSE_FILE = PACKAGE_DIR / 'compose.yml'
-REDIS_IMAGE = 'redislabs/redismod:latest'
 SERVER_DOCKER_DIR = REPO_ROOT / 'SWLOR.Game.Server' / 'Docker'
 SCRIPTS = ('run-client.sh', 'server-entry.sh', 'ui.sh')
 
@@ -474,11 +473,17 @@ def create(options) -> Stack:
         make_private(run_dir, 0o700)
         for sub in ('home/logs', 'home/app_logs', 'profile/logs', 'profile/dmvault', 'evidence', 'bin'):
             (run_dir / sub).mkdir(parents=True, exist_ok=True)
+        if os.name == 'posix':
+            # prepare-server-home.sh hands these to UID 1000; keep them readable for a caller with
+            # another UID and a strict umask. The 0700 run directory still keeps other users out.
+            for sub in ('home', 'home/logs', 'home/app_logs'):
+                os.chmod(run_dir / sub, 0o755)
         (run_dir / 'state.json').write_text(json.dumps(state, indent=2) + '\n', 'utf-8')
         stack = Stack(run_dir)
         for script in SCRIPTS:
             text = (PACKAGE_DIR / script).read_text('utf-8').replace('\r\n', '\n')
             (run_dir / 'bin' / script).write_bytes(text.encode('utf-8'))
+        stack.state['inputs']['scripts_sha256'] = {script: sha256(run_dir / 'bin' / script) for script in SCRIPTS}
         shutil.copytree(dotnet, run_dir / 'dotnet')
         # The copy is deleted at teardown, so record what identifies the server code that ran.
         stack.state['inputs']['dotnet_sha256'] = build_digest(run_dir / 'dotnet')
@@ -660,17 +665,30 @@ def start(stack: Stack, server_timeout: float) -> None:
     stack.ensure_owner()
     log('Starting Redis and the server')
     stack.compose('up', '-d', '--no-build', timeout=900)
-    # Tags such as redismod:latest can differ between machines; keep the IDs that actually ran.
-    stack.state['image_ids'] = {
-        image: output(['docker', 'image', 'inspect', '--format', '{{.Id}}', image], timeout=60)
-        for image in (stack.state['server_image'], stack.state['client_image'], REDIS_IMAGE)}
-    stack.save()
+    record_image_ids(stack, ('redis', 'swlor-server'))
     wait_for_server(stack, server_timeout)
     uuid = stack.state.get('character', {}).get('uuid')
     if uuid:
         seed_player(stack, uuid)
     stack.ensure_owner()
     start_client(stack, Path(stack.state['cdkey_source']))
+    record_image_ids(stack, ('client',))
+
+
+def record_image_ids(stack: Stack, services: tuple[str, ...]) -> None:
+    """Keep the image ID each service container was created from.
+
+    A tag such as redismod:latest can be retagged or pulled by another session at any time,
+    so read the immutable image of the container itself rather than the current tag.
+    """
+    ids = stack.state.setdefault('image_ids', {})
+    for service in services:
+        container = stack.compose('ps', '-a', '-q', service, client=service == 'client', capture=True,
+                                  timeout=60).stdout.decode('utf-8', 'replace').split()
+        if container:
+            ids[service] = output(['docker', 'container', 'inspect', '--format', '{{.Image}}', container[0]],
+                                  timeout=60)
+    stack.save()
 
 
 def ensure_client_image(tag: str) -> None:

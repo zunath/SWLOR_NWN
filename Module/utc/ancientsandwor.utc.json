@@ -643,21 +643,6 @@
         "__struct_id": 0,
         "Name": {
           "type": "cexostring",
-          "value": "LOOT_TABLE_7"
-        },
-        "Type": {
-          "type": "dword",
-          "value": 3
-        },
-        "Value": {
-          "type": "cexostring",
-          "value": "TATOOINE_ANCIENT_WORM_STOLEN_GOODS,100,5"
-        }
-      },
-      {
-        "__struct_id": 0,
-        "Name": {
-          "type": "cexostring",
           "value": "QUEST_NPC_GROUP_ID"
         },
         "Type": {
@@ -673,7 +658,7 @@
         "__struct_id": 0,
         "Name": {
           "type": "cexostring",
-          "value": "LOOT_TABLE_8"
+          "value": "LOOT_TABLE_7"
         },
         "Type": {
           "type": "dword",

@@ -2731,7 +2731,7 @@ def is_aimed_area(row):
     "in a line" / "in a cone" areas let the player choose a direction, so they present a
     targeting cursor (feat.2da TARGETSELF blank, HostileFeat=1) exactly like Earthshatter.
     Radius areas ("within Nm", "nearby enemies") always originate on the caster and must not
-    prompt. See the Ability Definitions section of AGENTS.md.
+    prompt. See SWLOR.Game.Server/Readmes/AbilityTargeting.md.
     """
     # A sphere can also be aimed when it is placed at a selected point. Keep this explicit so
     # radius-only wording such as "enemies within 5m of you" remains self-centered. Check this
@@ -2902,7 +2902,7 @@ def targeting_arguments_for_row(row, feat, spell_targeting):
             raise SystemExit(
                 f"{feat}: description implies {inferred[0]} but there is no spells.2da row for it. "
                 f"Add a '{feat}' row to SWLOR_Haks/sw_2da/spells.2da and a matching Spell enum "
-                f"value before regenerating. See AGENTS.md > Ability Definitions.")
+                f"value before regenerating. See SWLOR.Game.Server/Readmes/AbilityTargeting.md.")
         return (
             "Spell.Invalid",
             "AbilityTargetingShapeType.None",

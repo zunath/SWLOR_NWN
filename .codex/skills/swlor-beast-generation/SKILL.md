@@ -1,6 +1,6 @@
 ---
 name: swlor-beast-generation
-description: Add or modify SWLOR beast data from design Bible/source TSV through generated C# definitions, BeastType enum, DNA subtype/TLK assets, haks submodule files, and validation. Use when adding a new tamable or incubation beast, adding a beast mutation path, choosing model/portrait/sound IDs, updating Beast Levels/Bible docs, updating DNA subtype labels, regenerating beast definitions, or repairing SWLOR beast generator output in C:\Projects\SWLOR_NWN.
+description: Add or modify SWLOR beast data from design Bible/source TSV through generated C# definitions, BeastType enum, DNA subtype/TLK assets, haks submodule files, and validation. Use when adding a new tamable or incubation beast, adding a beast mutation path, choosing model/portrait/sound IDs, updating Beast Levels/Bible docs, updating DNA subtype labels, regenerating beast definitions, or repairing SWLOR beast generator output.
 ---
 
 # SWLOR Beast Generation
@@ -9,7 +9,7 @@ description: Add or modify SWLOR beast data from design Bible/source TSV through
 
 Treat beast data as a source-of-truth chain, not as isolated C# edits. Keep the Bible workbook, TSV export, generator, generated server definitions, enum IDs, DNA 2DA, TLK label, and validation in sync.
 
-When the request is underspecified, resolve one blocker at a time. Ask only questions the repo cannot answer, recommend an answer, and inspect existing beasts before asking. Do not replace existing mutation outcomes unless the user explicitly says to replace one. DNA subtype player-facing labels are mandatory; never leave a beast with missing or bad player-visible data.
+When the request is underspecified, resolve one blocker at a time. Ask only questions the repo cannot answer, recommend an answer, and inspect existing beasts before asking. Do not replace existing mutation outcomes unless the user explicitly says to replace one. DNA subtype player-facing labels are mandatory; never leave a beast with missing or bad player-visible data. Beast stats follow the existing Beast Levels standards; ask before adding a new tier or direction (`SWLOR.Game.Server/Readmes/ContentStandards.md`).
 
 ## Important Files
 

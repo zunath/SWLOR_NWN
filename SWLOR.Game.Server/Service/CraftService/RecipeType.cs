@@ -3492,5 +3492,8 @@ namespace SWLOR.Game.Server.Service.CraftService
         AscendantTwinPistol = 6297,
         OphidianTwinPistol = 6298,
         ChiroTwinPistol = 6299,
+        ArkanianDragonHelm = 6278,
+        ArkanianDragonWardRing = 6279,
+        ArkanianDragonForceRing = 6280,
     }
 }

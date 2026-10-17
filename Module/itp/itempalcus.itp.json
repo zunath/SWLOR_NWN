@@ -4332,6 +4332,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Arkanian Dragon Helm"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "ark_helm"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Checkpoint Enforcer Mask"
                     },
                     "RESREF": {
@@ -9112,6 +9123,16 @@
                       "type": "resref",
                       "value": "abs_rakalpha_wp"
                     }
+                  },                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Colicoid Alpha Attack"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "abs_colalpha_wp"
+                    }
                   },
                   {
                     "__struct_id": 0,
@@ -9122,6 +9143,16 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "abs_rakghoul_wp"
+                    }
+                  },                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Colicoid Attack"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "abs_colicoid_wp"
                     }
                   },
                   {
@@ -9134,6 +9165,16 @@
                       "type": "resref",
                       "value": "abs_rakbrute_wp"
                     }
+                  },                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Colicoid Brute Attack"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "abs_colbrute_wp"
+                    }
                   },
                   {
                     "__struct_id": 0,
@@ -9144,6 +9185,16 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "abs_rakstalk_wp"
+                    }
+                  },                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Colicoid Stalker Attack"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "abs_colstalk_wp"
                     }
                   },
                   {
@@ -9419,6 +9470,16 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "abs_subzero_wp"
+                    }
+                  },                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Subject Zero Attack"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "abs_colzero_wp"
                     }
                   },
                   {
@@ -17833,6 +17894,16 @@
                       "type": "resref",
                       "value": "abs_rakalpha_sk"
                     }
+                  },                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Colicoid Alpha Stat Skin"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "abs_colalpha_sk"
+                    }
                   },
                   {
                     "__struct_id": 0,
@@ -17843,6 +17914,16 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "abs_rakbrute_sk"
+                    }
+                  },                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Colicoid Brute Stat Skin"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "abs_colbrute_sk"
                     }
                   },
                   {
@@ -17855,6 +17936,16 @@
                       "type": "resref",
                       "value": "abs_rakstalk_sk"
                     }
+                  },                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Colicoid Stalker Stat Skin"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "abs_colstalk_sk"
+                    }
                   },
                   {
                     "__struct_id": 0,
@@ -17865,6 +17956,16 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "abs_rakghoul_sk"
+                    }
+                  },                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Colicoid Stat Skin"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "abs_colicoid_sk"
                     }
                   },
                   {
@@ -18987,6 +19088,16 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "abs_subzero_sk"
+                    }
+                  },                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Subject Zero Stat Skin"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "abs_colzero_sk"
                     }
                   },
                   {
@@ -58012,6 +58123,17 @@
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
+                            "value": "Arkanian Dragon Ward Ring"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "ark_ward_ring"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
                             "value": "Cold Trigger Band"
                           },
                           "RESREF": {
@@ -58897,6 +59019,17 @@
                           "RESREF": {
                             "type": "resref",
                             "value": "mag_ring"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Arkanian Dragon Force Ring"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "ark_force_ring"
                           }
                         },
                         {
@@ -63110,6 +63243,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Blueprint: Arkanian Dragon Helm"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "bp_arkhelm"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Blueprint: Chaos Leggings"
                     },
                     "RESREF": {
@@ -63137,6 +63281,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "recipe_chring"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Blueprint: Arkanian Dragon Ward Ring"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "bp_arkward"
                     }
                   },
                   {
@@ -64710,6 +64865,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "recipe_mgring"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Blueprint: Arkanian Dragon Force Ring"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "bp_arkforce"
                     }
                   },
                   {

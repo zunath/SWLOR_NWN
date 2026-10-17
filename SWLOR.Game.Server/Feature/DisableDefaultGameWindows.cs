@@ -13,7 +13,13 @@ namespace SWLOR.Game.Server.Feature
         public static void DisableWindows()
         {
             var player = GetEnteringObject();
-            if (!GetIsPC(player) || GetIsDM(player))
+            if (!GetIsPC(player))
+                return;
+
+            // Player List - A NUI replacement is used by players and DMs.
+            SetGuiPanelDisabled(player, GuiPanel.PlayerList, true);
+
+            if (GetIsDM(player))
                 return;
 
             // Spell Book - A NUI replacement is used for the Player Guide.

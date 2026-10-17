@@ -6199,7 +6199,7 @@ namespace SWLOR.Game.Server.Service.StatService
         HealingReceivedStaminaRestoreCooldownSeconds = 1099,
 
         [StatType(StatTypeCategory.BeneficialWhenPositive)]
-        TechniqueWindowExtensionSeconds = 1100,
+        TechniqueWindowExtensionSeconds = 1161,
 
         [StatType(StatTypeCategory.BeneficialWhenPositive)]
         TechniqueWeavePower = 1101,
@@ -6291,6 +6291,9 @@ namespace SWLOR.Game.Server.Service.StatService
         [StatType(StatTypeCategory.NonBeneficial, StatTypeAggregation.Maximum)]
         TechniqueLine = 1160,
 
+        /// <summary>Percent bonus to equipped Mimicry trait stats and resistances.</summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        MimicryTraitPotencyPercent = 1100,
 
     }
 

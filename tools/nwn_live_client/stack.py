@@ -8,8 +8,10 @@ SWLOR.Game.Server/Readmes/InEngineVisualVerification.md ("Server behavior").
 """
 from __future__ import annotations
 
+import csv
 import datetime
 import hashlib
+import io
 import json
 import os
 import re
@@ -410,8 +412,9 @@ def create(options) -> Stack:
         state['dm_avatar'] = {'source': str(dm_avatar), 'file': dm_avatar.name.lower()}
 
     created_dir = not run_dir.exists()
+    reserve_project(project, run_dir)
     try:
-        # The run holds a CD key and a character: keep it private to the caller on POSIX hosts.
+        # The run holds a CD key and a character: keep it private to the caller.
         run_dir.mkdir(parents=True, exist_ok=True)
         make_private(run_dir, 0o700)
         for sub in ('home/logs', 'home/app_logs', 'profile/logs', 'profile/dmvault', 'evidence', 'bin'):
@@ -426,6 +429,14 @@ def create(options) -> Stack:
         (run_dir / 'module').mkdir()
         shutil.copyfile(module, run_dir / 'module' / module.name)
         stack.state['inputs']['module_sha256'] = sha256(run_dir / 'module' / module.name)
+        # The TLK is small enough to snapshot too. The haks (about 13 GB) stay shared and
+        # read-only; down compares this manifest to detect a redeploy during the run.
+        (run_dir / 'tlk').mkdir()
+        for tlk in sorted(tlk_dir.glob('*.tlk')):
+            shutil.copyfile(tlk, run_dir / 'tlk' / tlk.name)
+        stack.state['inputs']['tlk_sha256'] = {
+            path.name: sha256(path) for path in sorted((run_dir / 'tlk').glob('*.tlk'))}
+        stack.state['inputs']['hak_manifest'] = hak_manifest(hak_dir)
         stack.save()
         (stack.home / 'settings.tml').write_text(settings_text, 'utf-8')
         if mode == 'player':
@@ -450,7 +461,7 @@ def create(options) -> Stack:
             'SWLOR_LIVE_MODULE_DIR': (run_dir / 'module').as_posix(),
             'SWLOR_LIVE_MODULE_NAME': module.stem,
             'SWLOR_LIVE_HAK_DIR': hak_dir.resolve().as_posix(),
-            'SWLOR_LIVE_TLK_DIR': tlk_dir.resolve().as_posix(),
+            'SWLOR_LIVE_TLK_DIR': (run_dir / 'tlk').as_posix(),
             'SWLOR_LIVE_CLIENT_INSTALL': install.resolve().as_posix(),
             'SWLOR_LIVE_SERVER_PORT': str(SERVER_PORT),
             'SWLOR_LIVE_CLIENT_MODE': mode,
@@ -470,9 +481,40 @@ def create(options) -> Stack:
                     remove_tree(child)
                 else:
                     child.unlink()
+        release_project(project)
         raise
     log(f'Run directory {run_dir} (project {project})')
     return stack
+
+
+def reservation_name(project: str) -> str:
+    return project + '-reservation'
+
+
+def reserve_project(project: str, run_dir: Path) -> None:
+    """Claim the project name machine-wide: Docker refuses a second network with the same name."""
+    result = run(['docker', 'network', 'create', '--internal', '--label', f'swlor.live.run_dir={run_dir}',
+                  reservation_name(project)], check=False, capture=True, timeout=60)
+    if result.returncode != 0:
+        owner = run(['docker', 'network', 'inspect', '-f', '{{index .Labels "swlor.live.run_dir"}}',
+                     reservation_name(project)], check=False, capture=True, timeout=60)
+        raise LiveStackError(
+            f'Project {project} is reserved by run {owner.stdout.decode("utf-8", "replace").strip() or "?"}. '
+            f'Choose another --name, or run down on that run directory (docker network rm '
+            f'{reservation_name(project)} only once you know that run is gone).')
+
+
+def release_project(project: str) -> bool:
+    """Remove the reservation network; True when it no longer exists."""
+    run(['docker', 'network', 'rm', reservation_name(project)], check=False, capture=True, timeout=60)
+    return run(['docker', 'network', 'inspect', reservation_name(project)], check=False, capture=True,
+               timeout=60).returncode != 0
+
+
+def hak_manifest(hak_dir: Path) -> dict[str, list[int]]:
+    """Size and modification time of every file in the shared hak folder (including .md5 sidecars)."""
+    return {path.name: [path.stat().st_size, path.stat().st_mtime_ns]
+            for path in sorted(hak_dir.iterdir()) if path.is_file()}
 
 
 def start(stack: Stack, server_timeout: float) -> None:
@@ -634,9 +676,18 @@ def remove_tree(path: Path) -> None:
 
 
 def make_private(path: Path, mode: int) -> None:
-    """Owner-only permissions on POSIX hosts; Windows ACLs already limit the user's temp folder."""
+    """Owner-only access: POSIX mode bits, or a non-inherited Windows ACL on a directory.
+
+    The Windows ACL grants only the caller, SYSTEM and Administrators (the same principals
+    as a user profile), so a --run-dir under a shared folder such as C:\\Temp is private too.
+    Files created inside inherit it, and Docker Desktop bind mounts still work.
+    """
     if os.name == 'posix':
         os.chmod(path, mode)
+    elif path.is_dir():
+        user_sid = next(csv.reader(io.StringIO(output(['whoami', '/user', '/fo', 'csv', '/nh']))))[1]
+        run(['icacls', str(path), '/inheritance:r', '/grant:r', f'*{user_sid}:(OI)(CI)F',
+             '*S-1-5-18:(OI)(CI)F', '*S-1-5-32-544:(OI)(CI)F'], capture=True, timeout=60)
 
 
 def host_user() -> str:
@@ -690,17 +741,27 @@ def destroy(stack: Stack) -> dict:
             if source.is_dir() and any(source.iterdir()):
                 shutil.copytree(source, stack.evidence / name, dirs_exist_ok=True)
         for path in (stack.profile, stack.home, stack.run_dir / 'dotnet', stack.run_dir / 'module',
-                     stack.run_dir / 'bin'):
+                     stack.run_dir / 'tlk', stack.run_dir / 'bin'):
             try:
                 remove_tree(path)
             except OSError as error:
                 errors.append(f'Could not remove {path}: {error}')
 
+    recorded = stack.state['inputs'].get('hak_manifest')
+    hak_dir = Path(stack.state['inputs']['hak_dir'])
+    report['hak_folder_unchanged'] = recorded is None or (hak_dir.is_dir() and hak_manifest(hak_dir) == recorded)
+    if not report['hak_folder_unchanged']:
+        errors.append('The shared hak folder changed during the run; captures may mix asset versions. Recapture.')
+
     resources = project_resources(stack.project)
+    report['reservation_removed'] = False
     if not any(resources.values()):
         # Kept while any project resource remains so down can be rerun.
         for name in ('compose.env', 'server-extra.env'):
             (stack.run_dir / name).unlink(missing_ok=True)
+        report['reservation_removed'] = release_project(stack.project)
+        if not report['reservation_removed']:
+            errors.append(f'Could not remove the {reservation_name(stack.project)} reservation network.')
     leftovers = [str(path) for pattern in ('cdkey.ini', '*.bic') for path in stack.run_dir.rglob(pattern)]
     report.update({
         'remaining_containers': len(resources['containers']),
@@ -712,7 +773,7 @@ def destroy(stack: Stack) -> dict:
         'errors': errors,
     })
     report['clean'] = (not errors and not any(resources.values()) and not leftovers
-                       and report['profile_removed'] and report['home_removed'])
+                       and report['profile_removed'] and report['home_removed'] and report['reservation_removed'])
     (stack.evidence / 'cleanup.json').write_text(json.dumps(report, indent=2) + '\n', 'utf-8')
     stack.state['destroyed_utc'] = report['utc']
     stack.save()

@@ -4,6 +4,7 @@ import struct
 import sys
 import tempfile
 import unittest
+from unittest.mock import patch
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from nwn_live_client import stack
@@ -127,6 +128,23 @@ class LiveClientHelperTests(unittest.TestCase):
             '[CHAT WINDOW TEXT] [Sat Oct 17 12:56:52] Loading Screen: Each fishing location differs.\n'
             '[CHAT WINDOW TEXT] [Sat Oct 17 12:57:04] Tester: Loading Screen: typed by a player\n').encode())
         self.assertEqual(stack.count_matches(chat, stack.LOADING_TIP_PATTERN), 1)
+
+    def test_project_reservation_is_exclusive_until_released(self):
+        with patch.object(stack.tempfile, 'gettempdir', return_value=str(self.root)):
+            stack.reserve_project('swlor-live-lock', self.root / 'first')
+            with self.assertRaisesRegex(LiveStackError, 'reserved by run .*first'):
+                stack.reserve_project('swlor-live-lock', self.root / 'second')
+            self.assertTrue(stack.release_project('swlor-live-lock'))
+            stack.reserve_project('swlor-live-lock', self.root / 'second')
+            self.assertTrue(stack.release_project('swlor-live-lock'))
+
+    def test_hak_manifest_detects_a_replaced_archive(self):
+        haks = self.root / 'hak'
+        haks.mkdir()
+        (haks / 'a.hak').write_bytes(b'one')
+        before = stack.hak_manifest(haks)
+        (haks / 'a.hak').write_bytes(b'longer')
+        self.assertNotEqual(before, stack.hak_manifest(haks))
 
     def test_run_directory_must_be_outside_repository(self):
         self.assertTrue(stack.is_within(stack.REPO_ROOT / 'tools' / 'x', stack.REPO_ROOT))

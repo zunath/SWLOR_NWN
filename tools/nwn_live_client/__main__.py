@@ -24,7 +24,7 @@ def parser() -> argparse.ArgumentParser:
     up.add_argument('--cdkey', help='cdkey.ini to copy into the run profile (default: Documents\\Neverwinter '
                                     'Nights\\cdkey.ini). The copy is deleted at teardown.')
     up.add_argument('--name', help='Project label; the project is always "swlor-live-<label>".')
-    up.add_argument('--run-dir', help='New or empty directory outside the repository '
+    up.add_argument('--run-dir', help='Directory to create outside the repository; it must not exist yet '
                                       '(default: %%TEMP%%\\swlor-live\\<project>).')
     up.add_argument('--dotnet', help='Server build output (default: SWLOR.Game.Server/bin/<configuration>/net10.0).')
     up.add_argument('--configuration', default='Release', help='Build configuration for the default --dotnet.')

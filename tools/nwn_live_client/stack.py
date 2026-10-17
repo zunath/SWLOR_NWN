@@ -225,9 +225,14 @@ def main_checkout() -> Path:
         return REPO_ROOT
 
 
+DEFAULT_MODULE = 'Star Wars LOR v2.mod'
+
+
 def deploy_home() -> Path | None:
+    """The first debugserver/ (this checkout, then the main checkout) holding haks, TLK and module."""
     for candidate in (REPO_ROOT / 'debugserver', main_checkout() / 'debugserver'):
-        if any((candidate / 'hak').glob('*.hak')):
+        if (any((candidate / 'hak').glob('*.hak')) and any((candidate / 'tlk').glob('*.tlk'))
+                and (candidate / 'modules' / DEFAULT_MODULE).is_file()):
             return candidate
     return None
 
@@ -339,17 +344,20 @@ def create(options) -> Stack:
     output(['docker', 'info', '--format', '{{.ServerVersion}}'], timeout=60)
 
     deployed = deploy_home()
-    hak_dir = Path(options.hak_dir) if options.hak_dir else (deployed / 'hak' if deployed else None)
-    tlk_dir = Path(options.tlk_dir) if options.tlk_dir else (deployed / 'tlk' if deployed else None)
-    module = Path(options.module) if options.module else (
-        deployed / 'modules' / 'Star Wars LOR v2.mod' if deployed else None)
-    dotnet = Path(options.dotnet) if options.dotnet else (
-        REPO_ROOT / 'SWLOR.Game.Server' / 'bin' / options.configuration / 'net10.0')
-    install = Path(options.client_install or os.environ.get('NWN_LINUX_CLIENT_INSTALL') or STEAM_INSTALL)
-    cdkey = Path(options.cdkey) if options.cdkey else Path.home() / 'Documents' / 'Neverwinter Nights' / 'cdkey.ini'
-    server_env = Path(options.server_env_file) if options.server_env_file else SERVER_DOCKER_DIR / 'swlor.env'
-    character = Path(options.character) if options.character else None
-    dm_avatar = Path(options.dm_avatar) if options.dm_avatar else None
+    def resolved(value: str | None, default: Path | None) -> Path | None:
+        # Absolute paths in state.json, so later commands work from any working directory.
+        path = Path(value) if value else default
+        return path.resolve() if path else None
+
+    hak_dir = resolved(options.hak_dir, deployed / 'hak' if deployed else None)
+    tlk_dir = resolved(options.tlk_dir, deployed / 'tlk' if deployed else None)
+    module = resolved(options.module, deployed / 'modules' / DEFAULT_MODULE if deployed else None)
+    dotnet = resolved(options.dotnet, REPO_ROOT / 'SWLOR.Game.Server' / 'bin' / options.configuration / 'net10.0')
+    install = resolved(options.client_install or os.environ.get('NWN_LINUX_CLIENT_INSTALL'), STEAM_INSTALL)
+    cdkey = resolved(options.cdkey, Path.home() / 'Documents' / 'Neverwinter Nights' / 'cdkey.ini')
+    server_env = resolved(options.server_env_file, SERVER_DOCKER_DIR / 'swlor.env')
+    character = resolved(options.character, None)
+    dm_avatar = resolved(options.dm_avatar, None)
     mode = 'dm' if dm_avatar else 'player'
 
     checks = {
@@ -388,8 +396,10 @@ def create(options) -> Stack:
     for root in {REPO_ROOT, main_checkout()}:
         if is_within(run_dir, root):
             raise LiveStackError(f'The run directory must be outside the repository: {run_dir}')
-    if run_dir.exists() and any(run_dir.iterdir()):
-        raise LiveStackError(f'The run directory must be new or empty: {run_dir}')
+    if run_dir.exists():
+        # Only a directory this run creates exclusively is known to be unshared and to carry
+        # no pre-existing access entries.
+        raise LiveStackError(f'The run directory must not exist yet: {run_dir}')
 
     max_seconds = int(options.max_minutes * 60)
     if not 300 <= max_seconds <= 12 * 3600:
@@ -411,11 +421,19 @@ def create(options) -> Stack:
     else:
         state['dm_avatar'] = {'source': str(dm_avatar), 'file': dm_avatar.name.lower()}
 
-    created_dir = not run_dir.exists()
     reserve_project(project, run_dir)
     try:
+        # Exclusive creation claims the directory: a concurrent run choosing it fails here.
+        run_dir.parent.mkdir(parents=True, exist_ok=True)
+        run_dir.mkdir()
+    except FileExistsError:
+        release_project(project)
+        raise LiveStackError(f'The run directory was created by another run: {run_dir}') from None
+    except BaseException:
+        release_project(project)
+        raise
+    try:
         # The run holds a CD key and a character: keep it private to the caller.
-        run_dir.mkdir(parents=True, exist_ok=True)
         make_private(run_dir, 0o700)
         for sub in ('home/logs', 'home/app_logs', 'profile/logs', 'profile/dmvault', 'evidence', 'bin'):
             (run_dir / sub).mkdir(parents=True, exist_ok=True)
@@ -472,43 +490,35 @@ def create(options) -> Stack:
             'SWLOR_LIVE_MAX_SECONDS': str(max_seconds),
         }), 'utf-8')
     except BaseException:
-        # Remove everything this call wrote; keep a directory the caller created empty.
-        if created_dir:
-            remove_tree(run_dir)
-        elif run_dir.is_dir():
-            for child in run_dir.iterdir():
-                if child.is_dir() and not child.is_symlink():
-                    remove_tree(child)
-                else:
-                    child.unlink()
+        remove_tree(run_dir)
         release_project(project)
         raise
     log(f'Run directory {run_dir} (project {project})')
     return stack
 
 
-def reservation_name(project: str) -> str:
-    return project + '-reservation'
+def reservation_path(project: str) -> Path:
+    return Path(tempfile.gettempdir()) / 'swlor-live' / 'projects' / project
 
 
 def reserve_project(project: str, run_dir: Path) -> None:
-    """Claim the project name machine-wide: Docker refuses a second network with the same name."""
-    result = run(['docker', 'network', 'create', '--internal', '--label', f'swlor.live.run_dir={run_dir}',
-                  reservation_name(project)], check=False, capture=True, timeout=60)
-    if result.returncode != 0:
-        owner = run(['docker', 'network', 'inspect', '-f', '{{index .Labels "swlor.live.run_dir"}}',
-                     reservation_name(project)], check=False, capture=True, timeout=60)
-        raise LiveStackError(
-            f'Project {project} is reserved by run {owner.stdout.decode("utf-8", "replace").strip() or "?"}. '
-            f'Choose another --name, or run down on that run directory (docker network rm '
-            f'{reservation_name(project)} only once you know that run is gone).')
+    """Claim the project name: creating a directory is atomic, so only one run can hold it."""
+    lock = reservation_path(project)
+    lock.parent.mkdir(parents=True, exist_ok=True)
+    try:
+        lock.mkdir()
+    except FileExistsError:
+        owner = lock / 'run_dir.txt'
+        holder = owner.read_text('utf-8').strip() if owner.is_file() else 'unknown'
+        raise LiveStackError(f'Project {project} is reserved by run {holder}. Choose another --name, or run '
+                             f'down on that run (delete {lock} only once you know it is gone).') from None
+    (lock / 'run_dir.txt').write_text(str(run_dir) + '\n', 'utf-8')
 
 
 def release_project(project: str) -> bool:
-    """Remove the reservation network; True when it no longer exists."""
-    run(['docker', 'network', 'rm', reservation_name(project)], check=False, capture=True, timeout=60)
-    return run(['docker', 'network', 'inspect', reservation_name(project)], check=False, capture=True,
-               timeout=60).returncode != 0
+    """Remove the project reservation; True when it no longer exists."""
+    remove_tree(reservation_path(project))
+    return not reservation_path(project).exists()
 
 
 def hak_manifest(hak_dir: Path) -> dict[str, list[int]]:
@@ -761,7 +771,7 @@ def destroy(stack: Stack) -> dict:
             (stack.run_dir / name).unlink(missing_ok=True)
         report['reservation_removed'] = release_project(stack.project)
         if not report['reservation_removed']:
-            errors.append(f'Could not remove the {reservation_name(stack.project)} reservation network.')
+            errors.append(f'Could not remove the project reservation {reservation_path(stack.project)}.')
     leftovers = [str(path) for pattern in ('cdkey.ini', '*.bic') for path in stack.run_dir.rglob(pattern)]
     report.update({
         'remaining_containers': len(resources['containers']),

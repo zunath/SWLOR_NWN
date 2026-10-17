@@ -86,6 +86,20 @@ class LiveClientHelperTests(unittest.TestCase):
         struct.pack_into('<I', bad_tag, 68 + 8, 100000)
         with self.assertRaisesRegex(LiveStackError, 'field value'):
             stack.validate_bic(self.write('badtag.bic', bytes(bad_tag)))
+        # The same field retyped as a list, with an empty list-indices table to point into.
+        bad_list = bytearray(good)
+        struct.pack_into('<3I', bad_list, 68, 15, 0, 0)
+        with self.assertRaisesRegex(LiveStackError, 'list reference'):
+            stack.validate_bic(self.write('badlist.bic', bytes(bad_list)))
+
+    def test_seed_error_reply_fails_start_up(self):
+        def compose(reply):
+            return lambda *args, **kwargs: subprocess.CompletedProcess([], 0, reply, b'')
+
+        for reply in (b'OK\n', b'\n'):
+            stack.seed_player(SimpleNamespace(compose=compose(reply)), 'a27c0f71-93de-4dcb-aa02-0047c02e6b2d')
+        with self.assertRaisesRegex(LiveStackError, 'Could not seed'):
+            stack.seed_player(SimpleNamespace(compose=compose(b'(error) ERR unknown command\n')), 'x')
 
     def test_rejects_non_gff(self):
         with self.assertRaises(LiveStackError):

@@ -125,8 +125,15 @@ def _read_gff_string(path: Path, data: bytes, label: str) -> str | None:
                 raise damaged('a resref value')
         if field_type == 14 and field_data >= struct_count:
             raise damaged('a struct reference')
-        if field_type == 15 and not within(field_data, 4, list_indices_size):
-            raise damaged('a list reference')
+        if field_type == 15:
+            if not within(field_data, 4, list_indices_size):
+                raise damaged('a list reference')
+            count = struct.unpack_from('<I', data, list_indices_offset + field_data)[0]
+            if not within(field_data + 4, count * 4, list_indices_size):
+                raise damaged('a list')
+            members = struct.unpack_from(f'<{count}I', data, list_indices_offset + field_data + 4)
+            if any(member >= struct_count for member in members):
+                raise damaged('a list member')
     _, struct_data, field_count = struct.unpack_from('<3I', data, struct_offset)
     if field_count == 1:
         indices = [struct_data]
@@ -589,6 +596,7 @@ def create(options) -> Stack:
         stack.state['inputs']['dotnet_sha256'] = build_digest(run_dir / 'dotnet')
         stack.state['inputs']['source_commit'] = source_commit()
         # The deploy home is shared; serve and hash a private copy so a repack cannot swap it.
+        shared_before = shared_deploy_manifest(module, tlk_dir, hak_dir)
         (run_dir / 'module').mkdir()
         shutil.copyfile(module, run_dir / 'module' / module.name)
         stack.state['inputs']['module_sha256'] = sha256(run_dir / 'module' / module.name)
@@ -604,6 +612,10 @@ def create(options) -> Stack:
             for tree in ('bin', 'module', 'tlk', 'dotnet'):
                 for path in [run_dir / tree, *(run_dir / tree).rglob('*')]:
                     os.chmod(path, 0o755 if path.is_dir() else 0o644)
+        # A deployment while copying would pair an old module or TLK with new haks.
+        if shared_deploy_manifest(module, tlk_dir, hak_dir) != shared_before:
+            raise LiveStackError('The deployed module, TLK or haks changed while the run was being prepared. '
+                                 'Wait for the deployment to finish, then run up again.')
         stack.state['inputs']['hak_manifest'] = hak_manifest(hak_dir)
         stack.state['inputs']['client_build'] = client_build(install)
         stack.save()
@@ -769,6 +781,13 @@ def source_commit() -> str:
     return head + (' (uncommitted changes)' if dirty else '')
 
 
+def shared_deploy_manifest(module: Path, tlk_dir: Path, hak_dir: Path) -> dict:
+    """Size and modification time of the shared module, TLK files and haks."""
+    return {'module': [module.stat().st_size, module.stat().st_mtime_ns],
+            'tlk': {path.name: [path.stat().st_size, path.stat().st_mtime_ns] for path in sorted(tlk_dir.glob('*.tlk'))},
+            'hak': hak_manifest(hak_dir)}
+
+
 def hak_manifest(hak_dir: Path) -> dict[str, list[int]]:
     """Size and modification time of every file in the shared hak folder (including .md5 sidecars)."""
     return {path.name: [path.stat().st_size, path.stat().st_mtime_ns]
@@ -847,10 +866,13 @@ def seed_player(stack: Stack, uuid: str) -> None:
     """
     record = json.dumps({'Id': uuid, 'EntityType': 'Player', 'DateCreated': utc_now(),
                          'CharacterInitializationPending': True}, separators=(',', ':'))
-    result = stack.compose('exec', '-T', 'redis', 'redis-cli', 'JSON.SET', f'Player:{uuid}', '.', record, 'NX',
-                           capture=True, timeout=60)
-    created = result.stdout.decode('utf-8', 'replace').strip() == 'OK'
-    log(f'Player record {uuid} ' + ('seeded' if created else 'already existed'))
+    # -e makes redis-cli exit non-zero on an error reply, so compose() raises for it.
+    result = stack.compose('exec', '-T', 'redis', 'redis-cli', '-e', 'JSON.SET', f'Player:{uuid}', '.', record,
+                           'NX', capture=True, timeout=60)
+    reply = result.stdout.decode('utf-8', 'replace').strip()
+    if reply not in ('OK', '', '(nil)'):
+        raise LiveStackError(f'Could not seed the Player record {uuid}: {reply}')
+    log(f'Player record {uuid} ' + ('seeded' if reply == 'OK' else 'already existed'))
 
 
 def start_client(stack: Stack, cdkey: Path) -> None:
@@ -1097,6 +1119,9 @@ def destroy(stack: Stack) -> dict:
             stack.save()
         if (stack.run_dir / 'compose.env').is_file():
             # NWNX and the server print to stdout, which the containers take with them.
+            # Stop first so shutdown messages are in the output, then collect it before removal.
+            stack.compose('stop', '-t', '30', 'client', client=True, check=False, capture=True, timeout=120)
+            stack.compose('stop', '-t', '60', 'swlor-server', check=False, capture=True, timeout=180)
             for service in ('swlor-server', 'client'):
                 logs = stack.compose('logs', '--no-color', '--no-log-prefix', service, client=service == 'client',
                                      check=False, capture=True, timeout=120)
@@ -1113,7 +1138,6 @@ def destroy(stack: Stack) -> dict:
                     lost_evidence.append(f'Could not keep the {service} container output: {problem}')
                     errors.append(lost_evidence[-1])
             stack.save()
-            stack.compose('stop', '-t', '30', 'client', client=True, check=False, capture=True, timeout=120)
             result = stack.compose('down', '--volumes', '--remove-orphans', '--timeout', '60', client=True,
                                    check=False, capture=True, timeout=600)
             if result.returncode != 0:

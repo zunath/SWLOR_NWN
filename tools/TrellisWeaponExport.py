@@ -309,12 +309,22 @@ def bounds(objects):
     return points,lo,hi
 
 
-def render_setup(objects):
+def shared_icon_frame(points, frame):
+    low=Vector(vector3(frame['min'],'icon_bounds min'));high=Vector(vector3(frame['max'],'icon_bounds max'))
+    if any(high[i]<=low[i] for i in range(3)):raise ValueError('icon_bounds must have positive dimensions')
+    if any(p[i]<low[i]-1e-6 or p[i]>high[i]+1e-6 for p in points for i in range(3)):
+        raise ValueError('Exported geometry falls outside shared icon_bounds')
+    corners=[Vector((x,y,z)) for x in (low.x,high.x) for y in (low.y,high.y) for z in (low.z,high.z)]
+    return corners,(low+high)/2,max(high-low)
+
+
+def render_setup(objects, icon_bounds=None):
     scene=bpy.context.scene;scene.render.engine='BLENDER_EEVEE';scene.eevee.taa_render_samples=96
     scene.world.color=(.12,.12,.12);scene.view_settings.view_transform='Standard'
     scene.render.film_transparent=True;scene.render.resolution_percentage=100
     scene.render.image_settings.color_mode='RGBA'
     points,lo,hi=bounds(objects);center=(lo+hi)/2;span=max(hi-lo)
+    if icon_bounds is not None:points,center,span=shared_icon_frame(points,icon_bounds)
     for direction,energy in [((2,-2,3),350),((-2,0,1),220),((1,3,-1),280)]:
         bpy.ops.object.light_add(type='AREA',location=center+Vector(direction)*span)
         light=bpy.context.object;light.data.energy=energy*span*span;light.data.size=span*2
@@ -655,7 +665,7 @@ def export_one(config,source,repo,out,mode,helpers,icon_size):
         shader=neutral.node_tree.nodes.get('Principled BSDF');shader.inputs['Base Color'].default_value=(.18,.22,.26,1);shader.inputs['Roughness'].default_value=.65
         for ob in objects:ob.data.materials.clear();ob.data.materials.append(neutral)
         report['inspection_material_override']='Neutral clay, untextured source has no materials'
-    scene,camera,points,center,span=render_setup(objects)
+    scene,camera,points,center,span=render_setup(objects,config.get('_shared_icon_bounds') if mode=='export' else None)
     if mode=='inspect':views=[('view_x',(1,0,0),(0,0,1)),('view_y',(0,-1,0),(0,0,1)),('view_z',(0,0,1),(0,1,0))]
     else:views=[('view_front',(1,-.15,.08),(0,1,0)),('view_reverse',(-1,-.15,-.08),(0,1,0)),('view_edge',(0,0,1),(0,1,0))]
     paths=[]
@@ -695,8 +705,9 @@ def export_one(config,source,repo,out,mode,helpers,icon_size):
 def validate_manifest(config, repo, manifest, mode):
     if config.get('schema_version')!=1 or not isinstance(config.get('assets'),list) or not config['assets']:
         raise ValueError('Expected schema_version 1 and nonempty assets')
-    seen=set();asset_names=set();composites=[];outputs={}
+    seen=set();asset_names=set();composites=[];outputs={};output_assets={}
     for item in config['assets']:
+        item.pop('_shared_icon_bounds',None)
         asset=item.get('asset','')
         if not re.fullmatch(r'[a-z][a-z0-9_]{0,47}',asset) or asset in asset_names:
             raise ValueError('Asset identifiers must be unique lowercase names')
@@ -739,7 +750,7 @@ def validate_manifest(config, repo, manifest, mode):
             validate_model_name(model,item['_item_class'],item['_model_type'])
             if model in seen:raise ValueError('Repeated output resource '+model)
             seen.add(model)
-            outputs[model]=(item['_item_class'],item['_model_type'])
+            outputs[model]=(item['_item_class'],item['_model_type']);output_assets[model]=item
         if item['_model_type']==2:
             composites.append((asset,declared,{part['model'].rsplit('_',2)[-2] for part in parts}))
     if mode=='export':
@@ -747,11 +758,23 @@ def validate_manifest(config, repo, manifest, mode):
         for assembly in config.get('composite_assemblies',[]):
             row=base_item_row(repo,assembly['base_item']);family=row['ItemClass'].lower()
             if int(row['ModelType'])!=2:raise ValueError('composite_assemblies requires a composite weapon baseitem')
+            frame=assembly.get('icon_bounds')
+            if not isinstance(frame,dict):raise ValueError('Grouped parts require shared icon_bounds')
+            low=vector3(frame.get('min'),'icon_bounds min');high=vector3(frame.get('max'),'icon_bounds max')
+            if any(b<=a for a,b in zip(low,high)):raise ValueError('icon_bounds must have positive dimensions')
+            settings=None
             for role,key in [('b','bottom'),('m','middle'),('t','top')]:
                 model=assembly.get(key,'')
                 validate_model_name(model,family,2)
                 if model.rsplit('_',2)[-2]!=role or outputs.get(model)!=(family,2):
                     raise ValueError('Composite assembly requires exported '+key+' geometry: '+model)
+                owner=output_assets[model]
+                current=[owner['icon_size'],owner['_icon_art_size'],owner.get('icon_direction',[1,-.1,.12]),owner.get('icon_roll_degrees',0)]
+                if settings is not None and current!=settings:raise ValueError('Grouped icon canvas and camera settings must match')
+                settings=current
+                if '_shared_icon_bounds' in owner and owner['_shared_icon_bounds']!=frame:
+                    raise ValueError('Shared part has conflicting icon_bounds')
+                owner['_shared_icon_bounds']=frame
                 covered.add(model)
         for asset,models,_ in composites:
             if not set(models)<=covered:

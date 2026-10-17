@@ -107,9 +107,19 @@ class TrellisWeaponExportTests(unittest.TestCase):
         assets=[]
         for role in ('b','m','t'):
             asset=copy.deepcopy(self.asset);asset.update(asset='part_'+role,model='wdbsw_'+role+'_011');asset.pop('parts');assets.append(asset)
-        assembly={'base_item':12,'bottom':'wdbsw_b_011','middle':'wdbsw_m_011','top':'wdbsw_t_011'}
+        assembly={'base_item':12,'bottom':'wdbsw_b_011','middle':'wdbsw_m_011','top':'wdbsw_t_011',
+                  'icon_bounds':{'min':[-1,-1,-1],'max':[1,1,1]}}
         config={'schema_version':1,'assets':assets,'composite_assemblies':[assembly]}
         exporter.validate_manifest(copy.deepcopy(config),self.root,self.manifest,'export')
+        checked=copy.deepcopy(config);exporter.validate_manifest(checked,self.root,self.manifest,'export')
+        self.assertTrue(all(a['_shared_icon_bounds']==assembly['icon_bounds'] for a in checked['assets']))
+        for change in ('missing_bounds','different_canvas','different_camera'):
+            invalid=copy.deepcopy(config)
+            if change=='missing_bounds':invalid['composite_assemblies'][0].pop('icon_bounds')
+            elif change=='different_canvas':invalid['assets'][1]['icon_size']=[128,256]
+            else:invalid['assets'][1]['icon_direction']=[1,0,0]
+            with self.subTest(change=change), self.assertRaisesRegex(ValueError,'icon_bounds|settings must match'):
+                exporter.validate_manifest(invalid,self.root,self.manifest,'export')
         for key,value in [('top','wdbsw_t_021'),('bottom','wdbsw_m_011')]:
             invalid=copy.deepcopy(config);invalid['composite_assemblies'][0][key]=value
             with self.subTest(key=key), self.assertRaisesRegex(ValueError,'requires exported'):
@@ -221,6 +231,17 @@ class TrellisWeaponExportTests(unittest.TestCase):
         for position,uv,normal in zip(vertices,uvs,normals):
             self.assertAlmostEqual(uv[0],(position[0]+1)/2);self.assertAlmostEqual(uv[1],(position[1]+1)/2)
             self.assertAlmostEqual(exporter.Vector(normal).length,1)
+
+    @unittest.skipUnless(HAS_BLENDER,'Run Blender 4.0 for shared icon projection')
+    def test_separate_parts_use_the_same_icon_frame_and_reject_clipped_geometry(self):
+        vector=exporter.Vector;frame={'min':[-1,-2,-.5],'max':[1,2,.5]}
+        bottom=exporter.shared_icon_frame([vector((0,-1,0)),vector((.1,-.5,.1))],frame)
+        top=exporter.shared_icon_frame([vector((0,1,0)),vector((-.1,.5,-.1))],frame)
+        self.assertEqual(bottom,top)
+        self.assertEqual(tuple(bottom[1]),(0,0,0));self.assertEqual(bottom[2],4)
+        self.assertEqual(len(bottom[0]),8)
+        with self.assertRaisesRegex(ValueError,'outside shared'):
+            exporter.shared_icon_frame([vector((0,3,0))],frame)
 
     @unittest.skipUnless(HAS_BLENDER,'Run Blender 4.0 for icon pixels')
     def test_icon_padding_keeps_top_art_pixels_and_transparent_bottom(self):

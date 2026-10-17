@@ -181,9 +181,12 @@ explicitly audited simple-model IDs. Composite weapons must export real bottom,
 middle and top geometry; blank companion parts are rejected. Fit common joins,
 cap or cover the cuts, and verify independent mixed assemblies in the native
 client. Composite exports must supply all three roles within each asset, or explicitly
-list `composite_assemblies` with `base_item`, `bottom`, `middle` and `top`; every
-referenced model must be exported in the same manifest. This supports separately
-fitted source parts without accepting absent or stale companions. Parts may use
+list `composite_assemblies` with `base_item`, `bottom`, `middle`, `top` and
+`icon_bounds: {"min":[x,y,z],"max":[x,y,z]}` in fitted world coordinates. Every
+referenced model must be exported in the same manifest. Grouped sources share
+that framing for cameras and lighting; their icon canvases, art sizes, directions
+and rolls must match, and geometry outside the frame is rejected. This supports
+separately fitted source parts without absent companions or misaligned layers. Parts may use
 finite `clip_min_y` and `clip_max_y` bounds for a middle interval, or the legacy
 one-plane split. Neither clipping mode caps cuts automatically; author covered
 connectors or closed ends before native qualification. The tool checks output

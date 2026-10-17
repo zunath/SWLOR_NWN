@@ -26,6 +26,19 @@ explicit authoring requires `--game-data`. The client draws every cloak mesh wit
 the `cloakmodel.TEXTURE` PLT, even where its bitmap names the model, another PLT,
 or nothing that exists (model 007's only visible mesh is the `cala_cloak` skin), so
 every mesh is bound. Authoring refuses a mesh naming a real TGA, DDS, or MTR.
+Cloak palette alpha is reflection coverage only when the native cloak has an
+environment map. Otherwise it controls binary cutout coverage, including the
+Mantle's invisible Cloth 2 preset 61. The shared material uses the opaque pass:
+`fs_cloaktint` discards palette alpha below 0.5 and keeps the remaining pixels
+opaque, independently of the wearer's material fade. This matches the repository's
+punch-through cutoff; fractional palette alpha does not request blended rendering.
+These cloaks must not acquire metal reflection from alpha. Exact RGB tints retain
+neutral-reference palette coverage for every layer on cutout cloaks; reflective
+cloaks keep nonmetal RGB opaque and use reference alpha only for metal reflection.
+The cloak shader enables `FORCE_ALLOW_DISCARD` before `inc_standard`: the opaque
+white placeholder otherwise lets NWN suppress the cutout even when palette alpha
+is zero. The GPU regression checks composited pixels around the cutoff with
+blending enabled and disabled, in both native `NO_DISCARD` modes.
 
 Authored MTRs can inherit a same-name DDS/TGA without declaring `texture0`.
 `TintMapMaterialSources.json` records that input as `implicitTexture0`.

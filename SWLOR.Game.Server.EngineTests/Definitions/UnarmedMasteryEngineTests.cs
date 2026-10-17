@@ -75,12 +75,18 @@ public static class UnarmedMasteryEngineTests
 
             await Cast(context, owner.Creature, target, FeatType.LowKick1);
             context.AssertEqual(MeleeTechniqueStage.None, MeleeTechnique.GetSetupStage(owner.Creature, target), "The independent heavy trial begins without Rattled.");
+            // The civilian-derived player fixture is plot-protected until a damage-taking test opts in.
+            SetPlotFlag(owner.Creature, false);
+            var counterHitPoints = GetCurrentHitPoints(owner.Creature);
+            context.Assert(counterHitPoints > 5, "The player has enough real HP to survive the counter setup hit.");
             StatusEffect.ApplyStatusEffect(owner.Creature, owner.Creature, new BruiserStanceStatusEffect(), -1);
             await context.ExecuteInCreatureContextAsync(target, () =>
             {
                 StatusEffect.NotifyPreDamageStatusEffects(target, owner.Creature, 5, CombatDamageType.Physical);
                 ApplyEffectToObject(DurationType.Instant, EffectDamage(5), owner.Creature);
             });
+            context.Assert(GetCurrentHitPoints(owner.Creature) < counterHitPoints && !GetIsDead(owner.Creature),
+                "The counter setup hit removes real player HP without killing the fixture.");
             await context.WaitUntilAsync(() => MeleeTechnique.GetPendingRetaliationPower(owner.Creature, target) == 24,
                 2f, "direct hostile HP loss arms the optional counter before a free heavy strike");
             // Exercise the native avoided-attack callback with the owned perk's real stat source.

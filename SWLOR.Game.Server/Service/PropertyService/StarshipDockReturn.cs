@@ -58,7 +58,8 @@ namespace SWLOR.Game.Server.Service.PropertyService
         /// <param name="starportExists">Whether the player starport with the given property Id still exists.</param>
         /// <param name="getPlanetStarport">
         /// The landing and orbit of the starport serving the planet an area belongs to, or null if there is none.
-        /// Only used when a ship in a ship-only location has no usable safe dock.
+        /// Used when a ship in a ship-only location has no usable safe dock, and to find the orbit of a safe dock
+        /// recorded before safe orbits were.
         /// </param>
         /// <returns>What happened to the ship's dock.</returns>
         public static StarshipDockReturnResult ReturnToSafeDock(
@@ -97,12 +98,22 @@ namespace SWLOR.Game.Server.Service.PropertyService
             {
                 positions[PropertyLocationType.DockPosition] = Copy(safeDock);
 
-                // Ships that have not docked at a regular starport since safe orbits were recorded keep their current orbit.
-                if (positions.TryGetValue(PropertyLocationType.LastNPCSpacePosition, out var safeOrbit) &&
-                    IsAreaLocation(safeOrbit))
+                // Ships that have not docked at a regular starport since safe orbits were recorded get the orbit of
+                // their safe dock's planet, which is saved as the safe orbit. They keep their current orbit only if
+                // that planet cannot be resolved.
+                if (!positions.TryGetValue(PropertyLocationType.LastNPCSpacePosition, out var safeOrbit) ||
+                    !IsAreaLocation(safeOrbit))
                 {
-                    positions[PropertyLocationType.SpacePosition] = Copy(safeOrbit);
+                    safeOrbit = getPlanetStarport(safeDock.AreaResref) is { } safePlanet && IsAreaLocation(safePlanet.Orbit)
+                        ? Copy(safePlanet.Orbit)
+                        : null;
+
+                    if (safeOrbit != null)
+                        positions[PropertyLocationType.LastNPCSpacePosition] = safeOrbit;
                 }
+
+                if (safeOrbit != null)
+                    positions[PropertyLocationType.SpacePosition] = Copy(safeOrbit);
 
                 return result;
             }

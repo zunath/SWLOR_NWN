@@ -248,12 +248,13 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 ctx.Assert(ribBreakerDamage > 0 && slamDamage > 0,
                     $"Both abilities' own damage hit the target: Rib Breaker {ribBreakerDamage}, Slam {slamDamage}");
 
-                var gap = Math.Abs((slamAt.Value - ribBreakerAt.Value).TotalSeconds);
+                // Rib Breaker is pressed first, so Slam is the one held: the gaps are signed.
+                var gap = (slamAt.Value - ribBreakerAt.Value).TotalSeconds;
                 ctx.Assert(gap >= HostileAbilityDelay.Seconds - FrameTolerance,
                     $"Slam went off {gap:0.000}s after Rib Breaker, inside the {HostileAbilityDelay.Seconds}s delay");
-                var impactGap = Math.Abs((slamImpactAt.Value - ribBreakerImpactAt.Value).TotalSeconds);
+                var impactGap = (slamImpactAt.Value - ribBreakerImpactAt.Value).TotalSeconds;
                 ctx.Assert(impactGap >= HostileAbilityDelay.Seconds - FrameTolerance,
-                    $"The two impacts landed {impactGap:0.000}s apart, inside the {HostileAbilityDelay.Seconds}s delay");
+                    $"Slam hit {impactGap:0.000}s after Rib Breaker, inside the {HostileAbilityDelay.Seconds}s delay");
             }
             finally
             {

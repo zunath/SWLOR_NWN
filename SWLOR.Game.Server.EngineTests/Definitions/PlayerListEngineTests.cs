@@ -228,6 +228,14 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 ctx.AssertEqual(GetName(dm.Creature), dmRow.Name, "other DMs see the DM's real name");
                 ctx.Assert(PlayerList.BuildEntries(otherDM.Creature, subjects).Any(row => row.Player == player.Creature),
                     "DMs still see players");
+
+                ctx.Assert(!PlayerListRules.Evaluate(PlayerList.GetRelation(player.Creature, otherDM.Creature)).JumpTo.IsEnabled,
+                    "a player cannot jump");
+                var dmToPlayer = PlayerList.GetRelation(otherDM.Creature, player.Creature);
+                ctx.Assert(PlayerListRules.Evaluate(dmToPlayer).JumpTo.IsEnabled, "a DM can jump to a selected player");
+                await ctx.ExecuteInCreatureContextAsync(otherDM.Creature, () => PlayerList.JumpTo(otherDM.Creature, player.Creature));
+                await ctx.WaitUntilAsync(() => GetDistanceBetween(otherDM.Creature, player.Creature) < 2f, 5f,
+                    "the DM to arrive at the selected player");
             }
             finally
             {

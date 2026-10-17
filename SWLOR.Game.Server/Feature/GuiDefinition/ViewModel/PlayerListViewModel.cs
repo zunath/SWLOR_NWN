@@ -84,6 +84,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         public string MakeLeaderReason { get => Get<string>(); set => Set(value); }
         public bool CanLeaveParty { get => Get<bool>(); set => Set(value); }
         public string LeavePartyReason { get => Get<string>(); set => Set(value); }
+        public bool IsDMViewer { get => Get<bool>(); set => Set(value); }
+        public bool CanJumpTo { get => Get<bool>(); set => Set(value); }
+        public string JumpToReason { get => Get<string>(); set => Set(value); }
 
         protected override void Initialize(GuiPayloadBase initialPayload)
         {
@@ -123,6 +126,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             MakeLeaderReason = string.Empty;
             CanLeaveParty = false;
             LeavePartyReason = string.Empty;
+            IsDMViewer = DMPresence.IsControlledByDM(Player);
+            CanJumpTo = false;
+            JumpToReason = string.Empty;
 
             WatchOnClient(model => model.SearchText);
 
@@ -241,6 +247,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             MakeLeaderReason = actions.MakeLeader.DisabledReason;
             CanLeaveParty = actions.LeaveParty.IsEnabled;
             LeavePartyReason = actions.LeaveParty.DisabledReason;
+            CanJumpTo = actions.JumpTo.IsEnabled;
+            JumpToReason = actions.JumpTo.DisabledReason;
         }
 
         // With nothing selected, only the viewer's own party state matters (for Leave Party).
@@ -332,6 +340,15 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             DMPresence.SendMessage(Player, isHostile
                 ? $"You marked {GetReference(selected)} as hostile."
                 : $"You no longer mark {GetReference(selected)} as hostile.");
+        };
+
+        public Action OnClickJumpTo() => () =>
+        {
+            var selected = GetSelectedEntry();
+            if (selected == null || !CheckAction(actions => actions.JumpTo))
+                return;
+
+            PlayerList.JumpTo(Player, selected.Player);
         };
 
         public Action OnClickInvite() => () =>

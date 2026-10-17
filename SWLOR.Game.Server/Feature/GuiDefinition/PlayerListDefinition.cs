@@ -278,6 +278,16 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                     .SetWidth(120f)
                     .SetHeight(ButtonHeight);
 
+                row.AddButton()
+                    .SetText("Jump To")
+                    .SetTooltip("Teleport to the selected player")
+                    .BindDisabledTooltip(model => model.JumpToReason)
+                    .BindIsEnabled(model => model.CanJumpTo)
+                    .BindIsVisible(model => model.IsDMViewer)
+                    .BindOnClicked(model => model.OnClickJumpTo())
+                    .SetWidth(100f)
+                    .SetHeight(ButtonHeight);
+
                 row.AddSpacer();
             });
 

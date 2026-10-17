@@ -217,6 +217,15 @@ namespace SWLOR.Game.Server.Service
             return string.Empty;
         }
 
+        /// <summary>
+        /// Moves a DM, or the creature they possess, to the selected player. Written to the DM log.
+        /// </summary>
+        public static void JumpTo(uint dm, uint target)
+        {
+            DMPresence.JumpTo(dm, GetLocation(DMPresence.GetControlledCreature(target)),
+                $"{GetName(target)} ({GetObjectUUID(target)})");
+        }
+
         public static void Invite(uint inviter, uint target)
         {
             PlayerPlugin.SendPartyInvite(target, inviter);

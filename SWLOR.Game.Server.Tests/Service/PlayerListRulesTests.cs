@@ -161,6 +161,21 @@ public class PlayerListRulesTests
     }
 
     [Test]
+    public void JumpTo_IsOnlyForDMsWithAnotherPlayerSelected()
+    {
+        PlayerListRules.Evaluate(new PlayerListRelation { HasTarget = true }).JumpTo.DisabledReason
+            .Should().Be("Only DMs can jump to players.");
+        PlayerListRules.Evaluate(new PlayerListRelation { ViewerIsDM = true }).JumpTo.DisabledReason
+            .Should().Be(PlayerListRules.SelectPlayerFirst);
+        PlayerListRules.Evaluate(new PlayerListRelation { ViewerIsDM = true, HasTarget = true, TargetIsSelf = true }).JumpTo.DisabledReason
+            .Should().Be("You cannot jump to yourself.");
+        PlayerListRules.Evaluate(new PlayerListRelation { ViewerIsDM = true, HasTarget = true }).JumpTo.IsEnabled
+            .Should().BeTrue();
+        PlayerListRules.Evaluate(new PlayerListRelation { ViewerIsDM = true, HasTarget = true, TargetIsDM = true }).JumpTo.IsEnabled
+            .Should().BeTrue();
+    }
+
+    [Test]
     public void Status_MarksPartyHostilityAndDMs()
     {
         PlayerListRules.GetStatus(new PlayerListRelation { TargetIsSelf = true })

@@ -30,6 +30,7 @@ namespace SWLOR.Game.Server.Service.PlayerListService
                 Remove = EvaluateRemove(relation),
                 MakeLeader = EvaluateMakeLeader(relation),
                 LeaveParty = EvaluateLeaveParty(relation),
+                JumpTo = EvaluateJumpTo(relation),
             };
         }
 
@@ -184,6 +185,20 @@ namespace SWLOR.Game.Server.Service.PlayerListService
 
             if (!relation.ViewerIsPartyLeader)
                 return PlayerListActionState.Disabled("Only your party leader can choose a new leader.");
+
+            return PlayerListActionState.Enabled();
+        }
+
+        private static PlayerListActionState EvaluateJumpTo(PlayerListRelation relation)
+        {
+            if (!relation.ViewerIsDM)
+                return PlayerListActionState.Disabled("Only DMs can jump to players.");
+
+            if (!relation.HasTarget)
+                return PlayerListActionState.Disabled(SelectPlayerFirst);
+
+            if (relation.TargetIsSelf)
+                return PlayerListActionState.Disabled("You cannot jump to yourself.");
 
             return PlayerListActionState.Enabled();
         }

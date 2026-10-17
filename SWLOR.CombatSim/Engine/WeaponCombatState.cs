@@ -189,14 +189,16 @@ public sealed class WeaponCombatState
         Casts[use.Feat] = Casts.GetValueOrDefault(use.Feat) + 1;
         return new TechniqueActivation { Stage = stage, ConditionalPower = conditional, Accuracy = accuracy, FlatPower = flat, HitPercent = hit, PaidStamina = paid };
     }
-    public void Complete(AbilityInfo info, AbilityUseSpec use, TechniqueActivation activation, Combatant target, bool landed, double now,
-        StatusEffectCategory appliedCategories = StatusEffectCategory.None)
+    public void ApplyStatusRiders(StatusEffectCategory appliedCategories, double now)
+    {
+        if ((appliedCategories & (StatusEffectCategory)Stat(StatType.StatusAppliedRequiredCategory)) != StatusEffectCategory.None &&
+            Stat(StatType.StatusAppliedSelfDefensePercentAdjustment) > 0 && Stat(StatType.StatusAppliedSelfDurationSeconds) > 0)
+            ControlDefenseUntil = now + Stat(StatType.StatusAppliedSelfDurationSeconds);
+    }
+    public void Complete(AbilityInfo info, AbilityUseSpec use, TechniqueActivation activation, Combatant target, bool landed, double now)
     {
         if (info.IsHostile && Stat(StatType.CostlyAbilityUsedEvasionMinimumStaminaCost) > 0 && activation.PaidStamina >= Stat(StatType.CostlyAbilityUsedEvasionMinimumStaminaCost))
             HighGuardUntil = now + Stat(StatType.CostlyAbilityUsedEvasionDurationSeconds);
-        if (landed && (appliedCategories & (StatusEffectCategory)Stat(StatType.StatusAppliedRequiredCategory)) != StatusEffectCategory.None &&
-            Stat(StatType.StatusAppliedSelfDefensePercentAdjustment) > 0 && Stat(StatType.StatusAppliedSelfDurationSeconds) > 0)
-            ControlDefenseUntil = now + Stat(StatType.StatusAppliedSelfDurationSeconds);
         if (landed && info.ImpactStatusFactory?.Invoke() is { } impactStatus)
         {
             var penalty = impactStatus.StatGroup.Stats.GetValueOrDefault(StatType.OrdinaryPhysicalDamagePenaltyPercent);

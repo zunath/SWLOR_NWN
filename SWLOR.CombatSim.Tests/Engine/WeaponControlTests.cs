@@ -226,4 +226,94 @@ public class WeaponControlTests
         sim.Get("Victim").Weapon.Control.IsDazed(sim.Now).Should().BeFalse();
         sim.Get("Attacker").Weapon.DefensePercent(sim.Now).Should().Be(defense);
     }
+
+    [TestCase("HookingStrike4", 0, 10)]
+    [TestCase("HookingStrike4", 100, 0)]
+    [TestCase("JointLock3", 0, 10)]
+    [TestCase("JointLock3", 100, 0)]
+    public void LethalWeaponControl_ResolvesStatusRidersBeforeDeathWhileAnotherEnemyRemains(string feat, int resistance, int defense)
+    {
+        var attacker = Fighter("Attacker");
+        attacker.Perks.Add("GuardTraining");
+        attacker.Abilities.Add(new() { Feat = feat });
+        var victim = Fighter("Victim");
+        victim.MaxHp = 1;
+        victim.WeaponCombat.MindResistance = resistance;
+        victim.WeaponCombat.MobilityResistance = resistance;
+        var scenario = TestScenarios.TwoTeams(true, new[] { attacker }, new[] { victim, Fighter("Survivor") });
+        scenario.Teams[0].TargetPolicy = TargetPolicy.Focus;
+        scenario.Teams[0].FocusTarget = "Victim";
+        var sim = TestScenarios.Spawn(scenario, RuleSets.Current(), _catalog);
+
+        SimulationClock.RunUntil(sim, () => sim.Get("Victim").IsDead, 60, "the lethal control hit");
+
+        sim.Get("Survivor").IsDead.Should().BeFalse();
+        sim.Get("Attacker").Weapon.DefensePercent(sim.Now).Should().Be(defense);
+        sim.Get("Victim").Weapon.Control.IsDazed(sim.Now).Should().BeFalse("death clears the status after its self rider resolves");
+    }
+
+    [TestCase("None", 10)]
+    [TestCase("MindResistance", 0)]
+    [TestCase("AlreadyDazed", 0)]
+    [TestCase("SharedImmunity", 0)]
+    [TestCase("Miss", 0)]
+    public void ProfileJointLock_UsesActualStatusApplicationForGuardDefense(string rejection, int defense)
+    {
+        var attacker = Fighter("Attacker");
+        attacker.Perks.Add("GuardTraining");
+        attacker.Abilities.Add(new()
+        {
+            Feat = "JointLock3",
+            Damage = new() { Min = 5, Max = 5, Hits = 2, HitChance = rejection == "Miss" ? 0 : 1 }
+        });
+        var victim = Fighter("Victim");
+        if (rejection == "MindResistance") victim.WeaponCombat.MindResistance = 100;
+        var sim = TestScenarios.Spawn(TestScenarios.TwoTeams(true, new[] { attacker }, new[] { victim }), RuleSets.Current(), _catalog);
+        var source = sim.Get("Attacker");
+        var target = sim.Get("Victim");
+        source.NextActionAt = 0.1;
+        if (rejection == "AlreadyDazed") target.Weapon.Control.TryDaze(0, 8).Should().BeTrue();
+        if (rejection == "SharedImmunity") target.Weapon.Control.TryDaze(0, 0.01).Should().BeTrue();
+
+        SimulationClock.RunUntil(sim, 1);
+
+        attacker.Abilities[0].WeaponPower.Should().BeNull("the calibrated profile remains the damage source");
+        target.Hp.Should().Be(victim.MaxHp - (rejection == "Miss" ? 0 : 10));
+        source.Weapon.DefensePercent(sim.Now).Should().Be(defense);
+        source.Weapon.Diagnostics.GetValueOrDefault("DazesApplied").Should().Be(rejection == "None" ? 1 : 0);
+        source.Weapon.Diagnostics.GetValueOrDefault("DazesResisted").Should().Be(rejection is "None" or "Miss" ? 0 : 1);
+    }
+
+    [Test]
+    public void ProfileAreaControl_LethalSuccessGrantsDefenseWhenOtherVictimsAreImmuneOrMissed()
+    {
+        var attacker = Fighter("Attacker");
+        attacker.Perks.Add("GuardTraining");
+        attacker.Abilities.Add(new()
+        {
+            Feat = "ScrapheapLockdown1", Target = AbilityTarget.Self,
+            Damage = new() { Min = 5, Max = 5, Hits = 2, Area = true, HitChanceVs = new() { ["Missed"] = 0 } }
+        });
+        var lethal = Fighter("Lethal");
+        lethal.MaxHp = 1;
+        lethal.WeaponCombat.MobilityResistance = 100;
+        var immune = Fighter("Immune");
+        immune.WeaponCombat.MindResistance = 100;
+        immune.WeaponCombat.MobilityResistance = 100;
+        var missed = Fighter("Missed");
+        var sim = TestScenarios.Spawn(TestScenarios.TwoTeams(true, new[] { attacker }, new[] { lethal, immune, missed }), RuleSets.Current(), _catalog);
+
+        SimulationClock.RunUntil(sim, 3);
+
+        var source = sim.Get("Attacker");
+        sim.Get("Lethal").IsDead.Should().BeTrue();
+        sim.Get("Lethal").Weapon.Control.IsDazed(sim.Now).Should().BeFalse();
+        sim.Get("Immune").Hp.Should().Be(immune.MaxHp - 10);
+        sim.Get("Immune").Weapon.Control.IsDazed(sim.Now).Should().BeFalse();
+        sim.Get("Missed").Hp.Should().Be(missed.MaxHp);
+        sim.Get("Missed").Weapon.Control.IsDazed(sim.Now).Should().BeFalse();
+        source.Weapon.DefensePercent(sim.Now).Should().Be(10);
+        source.Weapon.Diagnostics.GetValueOrDefault("DazesApplied").Should().Be(1);
+        source.Weapon.Diagnostics.GetValueOrDefault("DazesResisted").Should().Be(1);
+    }
 }

@@ -831,8 +831,8 @@ namespace SWLOR.CombatSim.Engine
                 var victim = target.TeamIndex != caster.TeamIndex ? target : EnsureAttackTarget(caster);
                 if (victim != null)
                 {
-                    var (landed, appliedCategories) = ApplyWeaponAbility(caster, victim, cast);
-                    caster.Weapon.Complete(cast.Ability, cast.Use, cast.Technique, victim, landed, _now, appliedCategories);
+                    var landed = ApplyWeaponAbility(caster, victim, cast);
+                    caster.Weapon.Complete(cast.Ability, cast.Use, cast.Technique, victim, landed, _now);
                 }
             }
             if (cast.Use.Damage != null)
@@ -842,8 +842,11 @@ namespace SWLOR.CombatSim.Engine
                 DamageHealingCatalog.TryGet(cast.Ability.Feat, out var damageHealing);
                 if (victim != null || cast.Use.Damage.Area)
                 {
-                    var landed = ApplyDamageProfile(caster, victim, cast.Use.Damage, hitBonus, damageHealing);
-                    if (caster.Weapon != null) caster.Weapon.Complete(cast.Ability, cast.Use, cast.Technique, target, landed, _now);
+                    Action<Combatant> beforeDamage = caster.Weapon != null && cast.Ability.SourceWeaponPower.HasValue
+                        ? hitTarget => ApplyWeaponStatusRiders(caster, hitTarget, cast.Ability)
+                        : null;
+                    var landed = ApplyDamageProfile(caster, victim, cast.Use.Damage, hitBonus, damageHealing, beforeDamage: beforeDamage);
+                    if (caster.Weapon != null) caster.Weapon.Complete(cast.Ability, cast.Use, cast.Technique, victim ?? target, landed, _now);
                 }
             }
 
@@ -1194,7 +1197,7 @@ namespace SWLOR.CombatSim.Engine
         /// <returns>Whether a hit landed on the chosen target, or on anyone for an area.</returns>
         private bool ApplyDamageProfile(
             Combatant attacker, Combatant target, DamageSpec damage, float hitBonus, DamageHealing damageHealing = null,
-            bool alwaysHits = false, double? at = null)
+            bool alwaysHits = false, double? at = null, Action<Combatant> beforeDamage = null)
         {
             var reachable = EnemiesAt(attacker, at ?? _now).ToList();
             var targets = damage.Area ? reachable : new List<Combatant> { target };
@@ -1217,9 +1220,15 @@ namespace SWLOR.CombatSim.Engine
                     continue;
                 // In the Targets form the first victim is the chosen one; the rest take the extra-target share.
                 var multiplier = !damage.Area && index > 0 ? damage.ExtraTargetDamagePercent / 100.0 : 1.0;
+                var statusesResolved = false;
                 for (var hit = 0; hit < damage.Hits; hit++)
                 {
-                    var (hitLanded, dealt) = RollAndApply(attacker, victim, damage, hitBonus, multiplier, alwaysHits);
+                    var (hitLanded, dealt) = RollAndApply(attacker, victim, damage, hitBonus, multiplier, alwaysHits, beforeDamage == null ? null : () =>
+                    {
+                        if (statusesResolved) return;
+                        beforeDamage(victim);
+                        statusesResolved = true;
+                    });
                     if (hitLanded && (damage.Area || index == 0))
                         landed = true;
                     // The game picks the low-HP rate after the hit, from the victim's HP it left.
@@ -1308,7 +1317,8 @@ namespace SWLOR.CombatSim.Engine
 
         /// <returns>Whether the roll hit, and the damage that landed on temporary HP or HP.</returns>
         private (bool Hit, double Dealt) RollAndApply(
-            Combatant attacker, Combatant target, DamageSpec damage, float hitBonus = 0f, double multiplier = 1.0, bool alwaysHits = false)
+            Combatant attacker, Combatant target, DamageSpec damage, float hitBonus = 0f, double multiplier = 1.0, bool alwaysHits = false,
+            Action beforeDamage = null)
         {
             if (target.IsDead || (!alwaysHits && _random.NextDouble() >= Math.Min(1f, damage.GetHitChance(target.Name) + hitBonus)))
                 return (false, 0);
@@ -1317,6 +1327,7 @@ namespace SWLOR.CombatSim.Engine
             if (damage.CritChance > 0 && _random.NextDouble() < damage.CritChance)
                 amount *= damage.CritMultiplier;
 
+            beforeDamage?.Invoke();
             return (true, ApplyDamage(attacker, target, amount * multiplier, damage.Type, directHostile: true));
         }
 

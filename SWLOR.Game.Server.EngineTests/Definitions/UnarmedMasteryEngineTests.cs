@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using SWLOR.Game.Server.EngineTests.Framework;
@@ -12,6 +13,7 @@ using SWLOR.Game.Server.Service.ConversationService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.Game.Server.Service.StatService;
+using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Item;
 
@@ -77,6 +79,14 @@ public static class UnarmedMasteryEngineTests
             context.AssertEqual(MeleeTechniqueStage.None, MeleeTechnique.GetSetupStage(owner.Creature, target), "The independent heavy trial begins without Rattled.");
             // The civilian-derived player fixture is plot-protected until a damage-taking test opts in.
             SetPlotFlag(owner.Creature, false);
+            // Match the normal native player levels used by damage-taking PvP fixtures.
+            CreaturePlugin.SetClassByPosition(owner.Creature, 0, ClassType.Standard);
+            await context.ExecuteInCreatureContextAsync(owner.Creature, () =>
+                typeof(PlayerInitialization).GetMethod("EnsureNativeLevels", BindingFlags.Static | BindingFlags.NonPublic)
+                    .Invoke(null, new object[] { owner.Creature }));
+            CreaturePlugin.SetRawAbilityScore(owner.Creature, AbilityType.Vitality, 10);
+            await context.WaitFrameAsync();
+            ObjectPlugin.SetCurrentHitPoints(owner.Creature, GetMaxHitPoints(owner.Creature));
             var counterHitPoints = GetCurrentHitPoints(owner.Creature);
             context.Assert(counterHitPoints > 5, "The player has enough real HP to survive the counter setup hit.");
             StatusEffect.ApplyStatusEffect(owner.Creature, owner.Creature, new BruiserStanceStatusEffect(), -1);

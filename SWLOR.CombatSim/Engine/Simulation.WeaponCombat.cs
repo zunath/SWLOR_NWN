@@ -23,9 +23,9 @@ public sealed partial class Simulation
         var accuracy = caster.Weapon.SetupAccuracy(target, _now);
         return (Combat.CalculateHitRate(a.Accuracy + accuracy, WeaponCombatState.Adjust(d.Evasion, target.Weapon.EvasionPercent(_now)), 0) - Combat.CalculateHitRate(a.Accuracy, d.Evasion, 0)) / 100f;
     }
-    private (bool Landed, StatusEffectCategory AppliedCategories) ApplyWeaponAbility(Combatant caster, Combatant target, PendingCast cast)
+    private bool ApplyWeaponAbility(Combatant caster, Combatant target, PendingCast cast)
     {
-        if (target.IsDead) return (false, StatusEffectCategory.None);
+        if (target.IsDead) return false;
         var technique = cast.Ability.Technique;
         var count = technique?.ImpactCount ?? cast.Use.WeaponHits;
         var weaponPercent = technique?.WeaponDamagePercent ?? cast.Use.WeaponDamagePercent;
@@ -35,13 +35,19 @@ public sealed partial class Simulation
             if (target.IsDead) break;
             var power = cast.Use.WeaponPower.Value + (int)(0.15f * caster.Spec.WeaponCombat.WeaponSkillRank) + TechniqueSequence.ScaleWeaponDamage(caster.Spec.WeaponCombat.WeaponDamage, weaponPercent) +
                 TechniqueSequence.SplitPower(cast.Technique.ConditionalPower, count, index) + cast.Technique.FlatPower;
-            var hit = RollWeapon(caster, target, power, cast.Technique.Accuracy, cast.Technique.HitPercent, false);
+            var hit = RollWeapon(caster, target, power, cast.Technique.Accuracy, cast.Technique.HitPercent, false,
+                () => { if (!landed) ApplyWeaponStatusRiders(caster, target, cast.Ability); });
             landed |= hit;
             if (hit && cast.Technique.PaidStamina >= caster.Weapon.Stat(StatType.CostlyAbilityDamageMinimumStaminaCost) && caster.Weapon.Stat(StatType.CostlyAbilityDamageBonus) > 0)
                 caster.Weapon.Count("HighGuardImpacts");
         }
-        var categories = landed && !target.IsDead ? ApplyWeaponStatuses(caster, target, cast.Ability) : StatusEffectCategory.None;
-        return (landed, categories);
+        return landed;
+    }
+
+    private void ApplyWeaponStatusRiders(Combatant caster, Combatant target, AbilityInfo ability)
+    {
+        // Tracked native impacts resolve statuses and their self riders before flushing lethal damage.
+        caster.Weapon.ApplyStatusRiders(ApplyWeaponStatuses(caster, target, ability), _now);
     }
 
     private StatusEffectCategory ApplyWeaponStatuses(Combatant caster, Combatant target, AbilityInfo ability)
@@ -94,7 +100,8 @@ public sealed partial class Simulation
         var hit = RollWeapon(attacker, target, attacker.Spec.WeaponCombat.WeaponDamage + weave, accuracy, 0, true);
         if (weave > 0 && hit) state.Count("WeavesLanded");
     }
-    private bool RollWeapon(Combatant attacker, Combatant target, int power, int accuracyBonus, int hitPercent, bool ordinary)
+    private bool RollWeapon(Combatant attacker, Combatant target, int power, int accuracyBonus, int hitPercent, bool ordinary,
+        Action beforeDamage = null)
     {
         var a = attacker.Spec.WeaponCombat; var d = target.Spec.WeaponCombat;
         attacker.Weapon.Refresh(_now); target.Weapon.Refresh(_now);
@@ -112,6 +119,7 @@ public sealed partial class Simulation
         if (ordinary) amount = Combat.ApplyPercentDamageAdjustment(amount, -attacker.Weapon.LowKick.Values.Select(x => x.Penalty).DefaultIfEmpty().Max());
         if (!ordinary && attacker.Spec.CombatReadinessPercent > 0)
             amount += (int)Math.Ceiling(amount * (attacker.Spec.CombatReadinessPercent / 100f));
+        beforeDamage?.Invoke();
         ApplyDamage(attacker, target, amount, directHostile: true);
         attacker.Weapon.Count(ordinary ? "OrdinaryLanded" : "AbilityImpactsLanded");
         return true;

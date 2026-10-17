@@ -29,7 +29,8 @@ public class WeaponTechniqueTests
         var info = _catalog.Get(feat);
         var use = new AbilityUseSpec { Feat = feat.ToString(), IsControl = control };
         var activation = c.Weapon.Begin(info, use, enemy, paid ?? info.STM, at);
-        c.Weapon.Complete(info, use, activation, enemy, landed, at, control && landed ? StatusEffectCategory.Control : StatusEffectCategory.None);
+        c.Weapon.ApplyStatusRiders(control && landed ? StatusEffectCategory.Control : StatusEffectCategory.None, at);
+        c.Weapon.Complete(info, use, activation, enemy, landed, at);
         return activation;
     }
     [Test] public void Catalog_ReadsActualTechniquePowerAndSharedRecasts()
@@ -224,7 +225,8 @@ public class WeaponTechniqueTests
         var use = new AbilityUseSpec { Feat = "JointLock3", IsControl = true };
 
         var activation = c.Weapon.Begin(info, use, enemy, info.STM, 20);
-        c.Weapon.Complete(info, use, activation, enemy, true, 20, StatusEffectCategory.None);
+        c.Weapon.ApplyStatusRiders(StatusEffectCategory.None, 20);
+        c.Weapon.Complete(info, use, activation, enemy, true, 20);
 
         activation.FlatPower.Should().Be(12);
         activation.HitPercent.Should().Be(7);

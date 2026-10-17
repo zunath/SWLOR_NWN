@@ -401,7 +401,7 @@ def create(options) -> Stack:
         'server_image': server_image(), 'client_image': client_image_tag(), 'max_seconds': max_seconds,
         'cdkey_source': str(cdkey),
         'inputs': {'hak_dir': str(hak_dir), 'tlk_dir': str(tlk_dir), 'module': str(module),
-                   'module_sha256': sha256(module), 'dotnet': str(dotnet), 'client_install': str(install),
+                   'dotnet': str(dotnet), 'client_install': str(install),
                    'server_env_file': str(server_env), 'server_env_overrides': sorted(extra_env)},
     }
     if mode == 'player':
@@ -422,6 +422,11 @@ def create(options) -> Stack:
             text = (PACKAGE_DIR / script).read_text('utf-8').replace('\r\n', '\n')
             (run_dir / 'bin' / script).write_bytes(text.encode('utf-8'))
         shutil.copytree(dotnet, run_dir / 'dotnet')
+        # The deploy home is shared; serve and hash a private copy so a repack cannot swap it.
+        (run_dir / 'module').mkdir()
+        shutil.copyfile(module, run_dir / 'module' / module.name)
+        stack.state['inputs']['module_sha256'] = sha256(run_dir / 'module' / module.name)
+        stack.save()
         (stack.home / 'settings.tml').write_text(settings_text, 'utf-8')
         if mode == 'player':
             vault = stack.home / 'servervault' / public_key
@@ -442,7 +447,7 @@ def create(options) -> Stack:
             'SWLOR_LIVE_PREPARE_HOME': (SERVER_DOCKER_DIR / 'prepare-server-home.sh').as_posix(),
             'SWLOR_LIVE_SERVER_ENV_FILE': server_env.resolve().as_posix(),
             'SWLOR_LIVE_SERVER_NAME': f'SWLOR live check {project}',
-            'SWLOR_LIVE_MODULE_DIR': module.resolve().parent.as_posix(),
+            'SWLOR_LIVE_MODULE_DIR': (run_dir / 'module').as_posix(),
             'SWLOR_LIVE_MODULE_NAME': module.stem,
             'SWLOR_LIVE_HAK_DIR': hak_dir.resolve().as_posix(),
             'SWLOR_LIVE_TLK_DIR': tlk_dir.resolve().as_posix(),
@@ -684,15 +689,18 @@ def destroy(stack: Stack) -> dict:
                              (stack.home / 'app_logs', 'server-app-logs')):
             if source.is_dir() and any(source.iterdir()):
                 shutil.copytree(source, stack.evidence / name, dirs_exist_ok=True)
-        for path in (stack.profile, stack.home, stack.run_dir / 'dotnet', stack.run_dir / 'bin'):
+        for path in (stack.profile, stack.home, stack.run_dir / 'dotnet', stack.run_dir / 'module',
+                     stack.run_dir / 'bin'):
             try:
                 remove_tree(path)
             except OSError as error:
                 errors.append(f'Could not remove {path}: {error}')
-        for name in ('compose.env', 'server-extra.env'):
-            (stack.run_dir / name).unlink(missing_ok=True)
 
     resources = project_resources(stack.project)
+    if not any(resources.values()):
+        # Kept while any project resource remains so down can be rerun.
+        for name in ('compose.env', 'server-extra.env'):
+            (stack.run_dir / name).unlink(missing_ok=True)
     leftovers = [str(path) for pattern in ('cdkey.ini', '*.bic') for path in stack.run_dir.rglob(pattern)]
     report.update({
         'remaining_containers': len(resources['containers']),

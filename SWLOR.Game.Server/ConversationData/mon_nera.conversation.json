@@ -1,0 +1,375 @@
+{
+  "Id": "mon_nera",
+  "Title": "Nera Venn - Clear the Smuggler's Lane",
+  "EntryPoints": [
+    {
+      "TargetNodeId": "completed",
+      "Conditions": [
+        {
+          "Key": "condition-completed-quest",
+          "Arguments": [
+            "mon_starlane"
+          ],
+          "IsNegated": false
+        }
+      ]
+    },
+    {
+      "TargetNodeId": "turnin",
+      "Conditions": [
+        {
+          "Key": "condition-on-quest-state",
+          "Arguments": [
+            "mon_starlane",
+            "2"
+          ],
+          "IsNegated": false
+        }
+      ]
+    },
+    {
+      "TargetNodeId": "active",
+      "Conditions": [
+        {
+          "Key": "condition-has-quest",
+          "Arguments": [
+            "mon_starlane"
+          ],
+          "IsNegated": false
+        }
+      ]
+    },
+    {
+      "TargetNodeId": "offer",
+      "Conditions": []
+    }
+  ],
+  "Nodes": {
+    "offer": {
+      "Id": "offer",
+      "SpeakerName": "",
+      "SpeakerTag": "",
+      "PortraitResref": "",
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Text": [
+        {
+          "Text": "I've got freighters waiting to run to Smuggler's Moon, and Krakenborne ships picking them off above Mon Cala. Break ten of their ships in this orbit and bring me the flight record. I'll clear you for our direct starlane, permanently.",
+          "Style": 0,
+          "Color": null
+        }
+      ],
+      "OnEnterActions": [],
+      "Choices": [
+        {
+          "ChoiceId": "details",
+          "Conditions": []
+        },
+        {
+          "ChoiceId": "accept",
+          "Conditions": [
+            {
+              "Key": "condition-can-accept-quest",
+              "Arguments": [
+                "mon_starlane"
+              ],
+              "IsNegated": false
+            }
+          ]
+        },
+        {
+          "ChoiceId": "leave",
+          "Conditions": []
+        }
+      ]
+    },
+    "details": {
+      "Id": "details",
+      "SpeakerName": "",
+      "SpeakerTag": "",
+      "PortraitResref": "",
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Text": [
+        {
+          "Text": "Any ten Krakenborne ships in Mon Cala orbit will do. Their fighters, interceptors, bombers, gunships, trovehaulers, privateers and defense platforms all serve the same raiders. Sith and Mandalorian ships aren't part of this job. Take the contract before you launch, then report back to me here by the dockhand.",
+          "Style": 0,
+          "Color": null
+        }
+      ],
+      "OnEnterActions": [],
+      "Choices": [
+        {
+          "ChoiceId": "accept",
+          "Conditions": [
+            {
+              "Key": "condition-can-accept-quest",
+              "Arguments": [
+                "mon_starlane"
+              ],
+              "IsNegated": false
+            }
+          ]
+        },
+        {
+          "ChoiceId": "leave",
+          "Conditions": []
+        }
+      ]
+    },
+    "accepted": {
+      "Id": "accepted",
+      "SpeakerName": "",
+      "SpeakerTag": "",
+      "PortraitResref": "",
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Text": [
+        {
+          "Text": "I'll log you for the run. Ten Krakenborne ships in Mon Cala orbit, then come back to me in the Elite Hotel. Keep your ship in one piece.",
+          "Style": 0,
+          "Color": null
+        }
+      ],
+      "OnEnterActions": [],
+      "Choices": [
+        {
+          "ChoiceId": "leave",
+          "Conditions": []
+        }
+      ]
+    },
+    "active": {
+      "Id": "active",
+      "SpeakerName": "",
+      "SpeakerTag": "",
+      "PortraitResref": "",
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Text": [
+        {
+          "Text": "The Krakenborne are still hitting my freight. Finish the ten ships in Mon Cala orbit, then bring the record back here. Your journal has the tally.",
+          "Style": 0,
+          "Color": null
+        }
+      ],
+      "OnEnterActions": [],
+      "Choices": [
+        {
+          "ChoiceId": "leave",
+          "Conditions": []
+        }
+      ]
+    },
+    "turnin": {
+      "Id": "turnin",
+      "SpeakerName": "",
+      "SpeakerTag": "",
+      "PortraitResref": "",
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Text": [
+        {
+          "Text": "Ten confirmed Krakenborne losses. My captains can make their run now. Ready for your clearance?",
+          "Style": 0,
+          "Color": null
+        }
+      ],
+      "OnEnterActions": [],
+      "Choices": [
+        {
+          "ChoiceId": "claim",
+          "Conditions": [
+            {
+              "Key": "condition-on-quest-state",
+              "Arguments": [
+                "mon_starlane",
+                "2"
+              ],
+              "IsNegated": false
+            }
+          ]
+        },
+        {
+          "ChoiceId": "leave",
+          "Conditions": []
+        }
+      ]
+    },
+    "complete": {
+      "Id": "complete",
+      "SpeakerName": "",
+      "SpeakerTag": "",
+      "PortraitResref": "",
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Text": [
+        {
+          "Text": "Here's your Starlane Pass. The beacon at the south edge of Mon Cala orbit will take you to Smuggler's Moon. The return beacon is on the east edge of its orbit. Both recognize your clearance, and it doesn't expire. Each pilot needs their own pass.",
+          "Style": 0,
+          "Color": null
+        }
+      ],
+      "OnEnterActions": [],
+      "Choices": [
+        {
+          "ChoiceId": "leave",
+          "Conditions": []
+        }
+      ]
+    },
+    "completed": {
+      "Id": "completed",
+      "SpeakerName": "",
+      "SpeakerTag": "",
+      "PortraitResref": "",
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Text": [
+        {
+          "Text": "Your clearance is still good. Use the starlane at the south edge of Mon Cala orbit, or the return beacon at the east edge of Smuggler's Moon orbit. Safe flying.",
+          "Style": 0,
+          "Color": null
+        }
+      ],
+      "OnEnterActions": [],
+      "Choices": [
+        {
+          "ChoiceId": "leave",
+          "Conditions": []
+        }
+      ]
+    }
+  },
+  "Choices": {
+    "details": {
+      "Id": "details",
+      "Text": {
+        "Text": "Which ships are you after?",
+        "Style": 4,
+        "Color": null
+      },
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Actions": [],
+      "Next": [
+        {
+          "TargetNodeId": "details",
+          "Conditions": []
+        }
+      ],
+      "EndsConversation": false,
+      "IsAutomatic": false
+    },
+    "accept": {
+      "Id": "accept",
+      "Text": {
+        "Text": "I'll clear the route.",
+        "Style": 4,
+        "Color": null
+      },
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Actions": [
+        {
+          "Key": "action-accept-quest",
+          "Arguments": [
+            "mon_starlane"
+          ]
+        }
+      ],
+      "Next": [
+        {
+          "TargetNodeId": "accepted",
+          "Conditions": []
+        }
+      ],
+      "EndsConversation": false,
+      "IsAutomatic": false
+    },
+    "claim": {
+      "Id": "claim",
+      "Text": {
+        "Text": "Here is the flight record. I'll take the pass.",
+        "Style": 4,
+        "Color": null
+      },
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Actions": [
+        {
+          "Key": "action-advance-quest",
+          "Arguments": [
+            "mon_starlane"
+          ]
+        }
+      ],
+      "Next": [
+        {
+          "TargetNodeId": "complete",
+          "Conditions": []
+        }
+      ],
+      "EndsConversation": false,
+      "IsAutomatic": false
+    },
+    "leave": {
+      "Id": "leave",
+      "Text": {
+        "Text": "Safe travels.",
+        "Style": 4,
+        "Color": null
+      },
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Actions": [],
+      "Next": [],
+      "EndsConversation": true,
+      "IsAutomatic": false
+    }
+  }
+}

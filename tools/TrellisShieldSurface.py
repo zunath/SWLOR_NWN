@@ -12,6 +12,7 @@ import argparse
 import collections
 import hashlib
 import json
+import os
 from pathlib import Path
 import sys
 import numpy as np
@@ -134,15 +135,16 @@ def voxel_surface(vertices, faces, voxel_size=.003):
     bmesh.ops.remove_doubles(bm,verts=list(bm.verts),dist=min(1e-7,voxel_size*1e-4))
     bmesh.ops.dissolve_degenerate(bm,edges=list(bm.edges),dist=1e-10)
     bm.to_mesh(obj.data);bm.free()
-    result=mesh_arrays(obj.data);report=audit_surface(*result)
-    report.update(source_vertices=len(vertices),source_triangles=len(faces),voxel_size=voxel_size)
+    output_vertices,output_faces,removed=remove_collapsed_islands(*mesh_arrays(obj.data))
+    result=(output_vertices,output_faces);report=audit_surface(*result,components=True)
+    report.update(source_vertices=len(vertices),source_triangles=len(faces),voxel_size=voxel_size,collapsed_zero_volume_faces_removed=removed)
     require_closed(report)
     return *result,report
 
 
 def decimate_surface(vertices, faces, target_faces=3500):
     if type(target_faces) is not int or not 100<=target_faces<=100000:raise ValueError('Expected100..100000 target faces')
-    require_closed(audit_surface(vertices,faces))
+    require_closed(audit_surface(vertices,faces,components=True))
     bpy=blender();obj=mesh_object(vertices,faces)
     modifier=obj.modifiers.new('ClosedCollapse','DECIMATE');modifier.decimate_type='COLLAPSE'
     modifier.ratio=min(1.,target_faces/len(faces));modifier.use_collapse_triangulate=True
@@ -151,7 +153,41 @@ def decimate_surface(vertices, faces, target_faces=3500):
     report=audit_surface(output_vertices,output_faces,components=True)
     report.update(source_triangles=len(faces),target_faces=target_faces,collapsed_zero_volume_faces_removed=removed)
     require_closed(report)
+    if len(output_faces)>target_faces:raise ValueError(f'Closed shield surface exceeds face budget: {len(output_faces)} > {target_faces}')
     return output_vertices,output_faces,report
+
+
+def durable_replace(source,target):
+    """Use the generation runner's established durable publication algorithm."""
+    if os.name=='nt':
+        import ctypes
+        from ctypes import wintypes
+        move=ctypes.WinDLL('kernel32',use_last_error=True).MoveFileExW
+        move.argtypes=[wintypes.LPCWSTR,wintypes.LPCWSTR,wintypes.DWORD]
+        move.restype=wintypes.BOOL
+        if not move(str(source.absolute()),str(target.absolute()),0x1|0x8):
+            raise ctypes.WinError(ctypes.get_last_error())
+    else:
+        os.replace(source,target)
+        descriptor=os.open(target.parent,os.O_RDONLY|getattr(os,'O_DIRECTORY',0))
+        try:os.fsync(descriptor)
+        finally:os.close(descriptor)
+
+
+def publish_surface(output,vertices,faces,report):
+    output.parent.mkdir(parents=True,exist_ok=True)
+    temporary=output.with_suffix(output.suffix+'.part')
+    with temporary.open('wb') as stream:
+        np.savez(stream,vertices=vertices,faces=faces)
+        stream.flush();os.fsync(stream.fileno())
+    durable_replace(temporary,output)
+    report=dict(report,output_sha256=hashlib.sha256(output.read_bytes()).hexdigest())
+    report_path=output.with_suffix('.json');temporary_report=report_path.with_suffix('.json.part')
+    with temporary_report.open('w',encoding='utf-8') as stream:
+        json.dump(report,stream,indent=2);stream.write('\n')
+        stream.flush();os.fsync(stream.fileno())
+    durable_replace(temporary_report,report_path)
+    return report
 
 
 def main():
@@ -167,15 +203,8 @@ def main():
         vertices,faces=arrays(source['vertices'],source['faces'])
     if args.mode=='voxel':vertices,faces,report=voxel_surface(vertices,faces,args.voxel_size)
     else:vertices,faces,report=decimate_surface(vertices,faces,args.target_faces)
-    args.output.parent.mkdir(parents=True,exist_ok=True)
-    temporary=args.output.with_suffix(args.output.suffix+'.part')
-    with temporary.open('wb') as stream:np.savez(stream,vertices=vertices,faces=faces)
-    temporary.replace(args.output)
-    report.update(input_sha256=hashlib.sha256(args.input.read_bytes()).hexdigest(),output_sha256=hashlib.sha256(args.output.read_bytes()).hexdigest())
-    report_path=args.output.with_suffix('.json')
-    temporary_report=report_path.with_suffix('.json.part')
-    temporary_report.write_text(json.dumps(report,indent=2)+'\n',encoding='utf-8')
-    temporary_report.replace(report_path)
+    report['input_sha256']=hashlib.sha256(args.input.read_bytes()).hexdigest()
+    report=publish_surface(args.output,vertices,faces,report)
     print(json.dumps(report),flush=True)
 
 

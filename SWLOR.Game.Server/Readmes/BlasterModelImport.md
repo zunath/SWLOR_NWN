@@ -140,7 +140,9 @@ python -B tools/GenerateWeaponModels.py "$env:TEMP/shield-sources/manifest.json"
 
 After preflight succeeds, repeat with `--timeout 1800` instead of `--preflight`.
 The continuous UDF high surface is voxel reconstructed, then collapsed to the
-manifest's `target_faces` budget. The workflow unwraps that low surface and
+manifest's `target_faces` budget. This shield stage rejects an oversized result
+when collapse returns more triangles than that limit. The
+workflow unwraps that low surface and
 establishes its normals before baking the original material field and high
 surface detail onto that same mesh. Positive-Z float normals are validated
 before UNORM8 rounding. The helper rejects textured inputs rather than
@@ -148,7 +150,9 @@ discarding authored materials or UVs. Preflight validates the Blender executable
 work. Cache keys include the Blender executable hash/build and helper hash;
 ComfyUI history records those identities. Incomplete NPZ/report pairs from an
 interrupted publication are rebuilt, while changed complete entries are rejected.
-Export still requires strict closed-surface validation.
+Payloads are flushed and their renames persisted before completion; both high
+and low surfaces receive component-aware zero-volume checks. Export still
+requires strict closed-surface validation.
 
 The default voxel size is `.003` in source coordinates. A source that fails
 closure needs inspection; any changed voxel size requires a separate workflow,
@@ -229,8 +233,9 @@ role-preserving aliases on their individual parts.
 Large shields use base item **56**, simple model family `ashlw_###`, inventory
 artwork `iashlw_###.dds`, and a **64-by-128** icon canvas (64-by-96 logical
 artwork). Export one complete model per shield appearance. Measure its native
-root, front and up axes from the source shield and verify the left-hand grip;
-do not apply composite weapon cuts. Preserve the two native shield impact
+root, front and up axes from the source shield and verify the left-hand grip.
+Measure rear hardware in the actual native shield attachment frame; do not reuse
+a handheld weapon's `lhand_g` transform. Do not apply composite weapon cuts. Preserve the two native shield impact
 hooks with required `attachment_dummies`, each containing `name`
 (`imp_shield_1` or `imp_shield_2`), root-space `position`, and a unit XYZW
 `quaternion`. These hooks position impact effects; they are separate from the

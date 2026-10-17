@@ -43,7 +43,10 @@ def settings():
     cache=Path(os.environ.get('SWLOR_SHIELD_CACHE',''))
     if not cache.is_absolute():raise ValueError('Set SWLOR_SHIELD_CACHE to an absolute task-owned staging directory')
     ancestor=cache
-    while not ancestor.exists():ancestor=ancestor.parent
+    while not ancestor.exists():
+        parent=ancestor.parent
+        if parent==ancestor:raise ValueError('Shield cache has no existing ancestor: '+str(cache))
+        ancestor=parent
     if not ancestor.is_dir():raise ValueError('Shield cache must resolve beneath a directory: '+str(cache))
     if not SURFACE_SCRIPT.is_file():raise ValueError('Link this package from repository tools/ so TrellisShieldSurface.py remains beside it')
     return found,cache,blender_identity(found)

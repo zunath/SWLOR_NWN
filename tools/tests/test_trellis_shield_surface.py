@@ -144,6 +144,58 @@ class ShieldSurfaceTests(unittest.TestCase):
                     identifiers.append(bridge.SWLORClosedVoxelMesh.IS_CHANGED(None,.003,3500))
             self.assertEqual(len(set(identifiers)),3)
 
+    def test_cache_validation_terminates_when_no_filesystem_ancestor_exists(self):
+        spec=importlib.util.spec_from_file_location('shield_unavailable_cache_bridge',TOOLS/'trellis2_shield_nodes/__init__.py')
+        bridge=importlib.util.module_from_spec(spec);spec.loader.exec_module(bridge)
+        cache=str(Path(tempfile.gettempdir())/'unavailable'/'cache')
+        with patch.object(bridge.shutil,'which',return_value='not-invoked'),patch.dict(bridge.os.environ,{'SWLOR_SHIELD_CACHE':cache}),patch.object(bridge.Path,'exists',return_value=False):
+            with self.assertRaisesRegex(ValueError,'no existing ancestor'):bridge.SWLORClosedVoxelMesh.INPUT_TYPES()
+
+    def test_surface_publication_flushes_payloads_before_durable_renames(self):
+        vertices,faces=box();events=[]
+        real_fsync=surface.os.fsync;real_replace=surface.durable_replace
+        def sync(descriptor):
+            events.append('fsync');return real_fsync(descriptor)
+        def replace(source,target):
+            self.assertEqual(events[-1],'fsync')
+            events.append(target.suffix)
+            if target.suffix=='.npz':
+                with np.load(source,allow_pickle=False) as data:np.testing.assert_array_equal(data['vertices'],vertices)
+                self.assertFalse(target.with_suffix('.json').exists())
+            else:
+                report=json.loads(source.read_text())
+                self.assertEqual(report['output_sha256'],hashlib.sha256(target.with_suffix('.npz').read_bytes()).hexdigest())
+            return real_replace(source,target)
+        with tempfile.TemporaryDirectory() as temporary,patch.object(surface.os,'fsync',side_effect=sync),patch.object(surface,'durable_replace',side_effect=replace):
+            output=Path(temporary)/'published.npz'
+            report=surface.publish_surface(output,vertices,faces,{'input_sha256':'source'})
+            self.assertEqual([event for event in events if event!='fsync'],['.npz','.json'])
+            self.assertEqual(json.loads(output.with_suffix('.json').read_text()),report)
+            self.assertFalse(list(Path(temporary).glob('*.part')))
+
+    @unittest.skipUnless(HAS_BLENDER,'Run Blender4.0 for high-surface artifact cleanup')
+    def test_voxel_high_surface_removes_entire_zero_volume_opposite_face_island(self):
+        body=box()
+        flat=(np.asarray([[0,0,2],[.1,0,2],[0,.1,2]],np.float32),np.asarray([[0,1,2],[2,1,0]],np.int32))
+        artifact=combine(body,flat)
+        with patch.object(surface,'mesh_arrays',return_value=artifact):
+            vertices,faces,report=surface.voxel_surface(*body,voxel_size=.01)
+        self.assertEqual(report['collapsed_zero_volume_faces_removed'],2)
+        self.assertEqual(report['zero_volume_shells'],0);self.assertEqual(len(report['shells']),1)
+        self.assertEqual(len(faces),12);surface.require_closed(report)
+        # A larger coplanar closed shell must fail, rather than pass a non-component audit.
+        plate_v=np.asarray([[0,0,2],[1,0,2],[1,1,2],[0,1,2]],np.float32)
+        plate_f=np.asarray([[0,2,1],[0,1,3],[0,3,2],[1,2,3]],np.int32)
+        with patch.object(surface,'mesh_arrays',return_value=combine(body,(plate_v,plate_f))):
+            with self.assertRaisesRegex(ValueError,'closed nondegenerate'):surface.voxel_surface(*body,voxel_size=.01)
+
+    @unittest.skipUnless(HAS_BLENDER,'Run Blender4.0 for unreachable collapse budget')
+    def test_external_decimator_overshoot_does_not_publish_oversized_low_surface(self):
+        source=combine(*(box((index*.1,0,0),(.02,.02,.02)) for index in range(10)))
+        # Inject the backend condition under review: a closed result above its target.
+        with patch.object(surface,'mesh_arrays',return_value=source):
+            with self.assertRaisesRegex(ValueError,'face budget'):surface.decimate_surface(*source,target_faces=100)
+
     def test_shield_workflow_binds_budget_and_same_post_uv_basis_to_every_bake(self):
         spec=importlib.util.spec_from_file_location('shield_generation_runner',TOOLS/'GenerateWeaponModels.py')
         runner=importlib.util.module_from_spec(spec);spec.loader.exec_module(runner)

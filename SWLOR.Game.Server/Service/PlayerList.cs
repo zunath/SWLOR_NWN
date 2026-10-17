@@ -279,6 +279,31 @@ namespace SWLOR.Game.Server.Service
             QueueRefresh();
         }
 
+        /// <summary>
+        /// Reopens an open player list on whatever a DM controls next. The client keeps the window open across
+        /// possession, but its view model stays bound to the object it opened on.
+        /// </summary>
+        [NWNEventHandler(ScriptName.OnDMPossessBefore)]
+        [NWNEventHandler(ScriptName.OnDMPossessFullPowerBefore)]
+        public static void MoveWindowOnPossession()
+        {
+            // Possessing starts on the avatar; returning to it starts on the possessed creature.
+            var current = OBJECT_SELF;
+            if (!GetIsDM(current) && !GetIsDMPossessed(current))
+                return;
+
+            if (!Gui.IsWindowOpen(current, GuiWindowType.PlayerList))
+                return;
+
+            var dm = DMPresence.GetDM(current);
+            // Possession has not settled while the event runs, so follow it on the next tick.
+            DelayCommand(0.1f, () =>
+            {
+                DMPresence.CloseWindow(dm, GuiWindowType.PlayerList);
+                DMPresence.ShowWindow(dm, GuiWindowType.PlayerList);
+            });
+        }
+
         [NWNEventHandler(ScriptName.OnPartyAcceptInvitationAfter)]
         [NWNEventHandler(ScriptName.OnPartyLeaveAfter)]
         [NWNEventHandler(ScriptName.OnPartyKickAfter)]

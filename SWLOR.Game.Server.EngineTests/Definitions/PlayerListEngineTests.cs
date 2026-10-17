@@ -5,7 +5,10 @@ using System.Threading.Tasks;
 using NWN.Native.API;
 using SWLOR.Game.Server.EngineTests.Framework;
 using SWLOR.Game.Server.Entity;
+using SWLOR.Game.Server.Feature.GuiDefinition.ViewModel;
 using SWLOR.Game.Server.Service.DBService;
+using SWLOR.Game.Server.Service.GuiService;
+using SWLOR.Game.Server.Service.GuiService.Component;
 using SWLOR.Game.Server.Service.PlayerListService;
 
 namespace SWLOR.Game.Server.EngineTests.Definitions
@@ -314,6 +317,88 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 nativeNpc.m_oidMaster = originalMaster;
                 restoreDM();
             }
+        }
+
+        /// <summary>
+        /// The client keeps a NUI window open across possession, so an open player list must be reopened on
+        /// whatever the DM controls next or it keeps acting for the object it opened on.
+        /// </summary>
+        [EngineTest("Player list follows a DM into and out of possession", Category = "PlayerList", TimeoutSeconds = 60f)]
+        public static async Task WindowFollowsDMPossession(EngineTestContext ctx)
+        {
+            using var player = await PlayerAbilityFixture.CreateAsync(ctx);
+            using var dm = await PlayerAbilityFixture.CreateAsync(ctx, 2f);
+            var npc = ctx.SpawnCreature("civilian", 4f);
+            await ctx.WaitFrameAsync();
+
+            var server = NWNXLib.g_pAppManager.m_pServerExoApp;
+            var client = server.GetClientObjectByObjectId(dm.Creature);
+            var nativeDM = server.GetCreatureByGameObjectID(dm.Creature);
+            var nativeNpc = server.GetCreatureByGameObjectID(npc);
+            var originalAssociate = nativeNpc.m_nAssociateType;
+            var originalMaster = nativeNpc.m_oidMaster;
+            var originalPlayerFlag = nativeDM.m_bPlayerCharacter;
+            var windows = (Dictionary<string, Dictionary<GuiWindowType, GuiPlayerWindow>>)typeof(Gui)
+                .GetField("_playerWindows", BindingFlags.Static | BindingFlags.NonPublic).GetValue(null);
+            ctx.Assert(!windows.ContainsKey(dm.Id), "the DM fixture has no existing GUI registration");
+            var window = Gui.GetWindowTemplate(GuiWindowType.PlayerList).CreatePlayerWindowAction();
+            windows.Add(dm.Id, new Dictionary<GuiWindowType, GuiPlayerWindow> { [GuiWindowType.PlayerList] = window });
+            var model = (PlayerListViewModel)window.ViewModel;
+            // Login normally seeds the saved geometry; Bind reads it before applying the default.
+            model.Geometry = new GuiRectangle(0f, 0f, 610f, 620f);
+            var restoreDM = InstallNativeDM(ctx, dm.Creature);
+            try
+            {
+                await ctx.ExecuteInCreatureContextAsync(dm.Creature, () => DMPresence.ToggleWindow(dm.Creature, GuiWindowType.PlayerList));
+                await ctx.WaitFrameAsync();
+                ctx.Assert(window.WindowToken > 0, "the DM opens a real player list window");
+                ctx.AssertEqual(dm.Creature, GetWindowOwner(model), "the window opens on the avatar");
+
+                // Possessing starts on the avatar, and the engine settles it within the same tick. A possessing
+                // DM's avatar stops reporting GetIsPC, which is how DMPresence finds the creature.
+                await ctx.ExecuteInCreatureContextAsync(dm.Creature, () =>
+                {
+                    PlayerList.MoveWindowOnPossession();
+                    nativeNpc.m_nAssociateType = 7; // NWNX AssociateType::DMPossess.
+                    nativeNpc.m_oidMaster = dm.Creature;
+                    nativeDM.m_bPlayerCharacter = 0;
+                    client.SetGameObject(nativeNpc);
+                });
+                ctx.Assert(DMPresence.GetControlledCreature(dm.Creature) == npc, "DMPresence sees the DM controlling the creature");
+                await ctx.WaitUntilAsync(() => GetWindowOwner(model) == npc, 5f, "the window to follow the DM into the creature");
+                ctx.Assert(model.IsDMViewer, "the possessing DM still sees the staff view");
+                ctx.Assert(model.RowNames.Any(name => name.EndsWith("(You)")), "the possessing DM still has their own row");
+
+                // Returning to the avatar starts on the possessed creature.
+                await ctx.ExecuteInCreatureContextAsync(npc, () =>
+                {
+                    PlayerList.MoveWindowOnPossession();
+                    client.SetGameObject(nativeDM);
+                    nativeDM.m_bPlayerCharacter = originalPlayerFlag;
+                    nativeNpc.m_nAssociateType = originalAssociate;
+                    nativeNpc.m_oidMaster = originalMaster;
+                });
+                await ctx.WaitUntilAsync(() => GetWindowOwner(model) == dm.Creature, 5f, "the window to return to the avatar");
+                ctx.Assert(model.IsDMViewer, "the DM sees the staff view on the avatar again");
+            }
+            finally
+            {
+                if (window.WindowToken > 0)
+                    NuiDestroy(GetWindowOwner(model), window.WindowToken);
+                client.SetGameObject(nativeDM);
+                nativeDM.m_bPlayerCharacter = originalPlayerFlag;
+                nativeNpc.m_nAssociateType = originalAssociate;
+                nativeNpc.m_oidMaster = originalMaster;
+                restoreDM();
+                windows.Remove(dm.Id);
+            }
+        }
+
+        private static uint GetWindowOwner(PlayerListViewModel model)
+        {
+            return (uint)model.GetType()
+                .GetProperty("Player", BindingFlags.Instance | BindingFlags.NonPublic)
+                .GetValue(model);
         }
 
         /// <summary>

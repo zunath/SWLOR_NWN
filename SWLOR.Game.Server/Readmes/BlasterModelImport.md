@@ -117,6 +117,51 @@ adapter below, then complete native verification. Focused runner tests use no GP
 python -B -m unittest discover -s tools/tests -p test_generate_weapon_models.py
 ```
 
+### Generate closed shield surfaces
+
+Use `tools/workflows/trellis2_shield.json` for thin shield sources. It adds a
+Blender 4.0 surface reconstruction stage before UVs and material baking; the
+default weapon workflow remains available for other weapon families.
+
+Snapshot `tools/TrellisShieldSurface.py` and `tools/trellis2_shield_nodes/` into
+task-owned staging with the same relative layout. Link that snapshot's node
+package into the task-owned ComfyUI `custom_nodes` directory, then start that
+service with `SWLOR_BLENDER` set to the installed Blender 4.0 executable and
+`SWLOR_SHIELD_CACHE` set to an absolute task-owned cache directory. Do not alter
+or restart a shared service. Keep the helper snapshot unchanged while jobs run.
+The ordinary generation runner, manifests, ownership lock and recovery journals
+also apply to this workflow:
+
+```powershell
+python -B tools/GenerateWeaponModels.py "$env:TEMP/shield-sources/manifest.json" `
+  --workflow tools/workflows/trellis2_shield.json `
+  --output "$env:TEMP/shield-sources/generated" --preflight
+```
+
+After preflight succeeds, repeat with `--timeout 1800` instead of `--preflight`.
+The continuous UDF high surface is voxel reconstructed, then collapsed to the
+manifest's `target_faces` budget. The workflow unwraps that low surface and
+establishes its normals before baking the original material field and high
+surface detail onto that same mesh. Positive-Z float normals are validated
+before UNORM8 rounding. The helper rejects textured inputs rather than
+discarding authored materials or UVs. Cache hashes and helper hashes are recorded
+in ComfyUI history; export still requires strict closed-surface validation.
+
+The default voxel size is `.003` in source coordinates. A source that fails
+closure needs inspection; any changed voxel size requires a separate workflow,
+fresh output and new journals. Preserve the failed history. Direct raw decode
+can retain perforated sheets even after closure, so inspect the front, rim,
+back and rear grip before accepting any reconstructed source. Topology tests do
+not establish visual quality or native hand fit.
+
+Run the focused repair checks inside Blender 4.0:
+
+```powershell
+& 'C:/Program Files/Blender Foundation/Blender 4.0/blender.exe' `
+  -b --factory-startup --python-exit-code 1 `
+  --python tools/tests/test_trellis_shield_surface.py
+```
+
 ### Inspect, fit and package a generated GLB
 
 `tools/TrellisWeaponExport.py` runs `inspect` and `export` inside Blender 4.0;

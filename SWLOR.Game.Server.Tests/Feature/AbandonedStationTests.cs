@@ -146,6 +146,40 @@ public class AbandonedStationTests
     }
 
     [Test]
+    public void DockMaster_ProvidesShipAccessAndIsNeutralToStationEnemies()
+    {
+        var main = Load("git", Main);
+        var master = List(main, "Creature List").Single(c => Text(c, "Tag") == "aban_dockmaster");
+        Text(master, "TemplateResRef").Should().Be("spc_dockhand");
+        Text(master, "ScriptDialogue").Should().Be("dialog_start");
+        Local(master, "CONVERSATION")!.Value.GetString().Should().Be("StarportDialog");
+        Number(master, "Plot").Should().Be(1);
+
+        var landing = List(main, "WaypointList").Single(w => Text(w, "Tag") ==
+            Local(master, "STARPORT_LANDING_WAYPOINT")!.Value.GetString());
+        Text(landing, "Tag").Should().Be("ABANDONED_STATION_DOCK_LANDING");
+        Distance(Position(master), Position(landing)).Should().BeLessThan(5, "the dock master serves the station's docking bay");
+        var departureTag = Local(master, "STARPORT_TELEPORT_WAYPOINT")!.Value.GetString();
+        var orbit = Load("git", "viscaraorbit");
+        List(orbit, "WaypointList").Should().ContainSingle(w => Text(w, "Tag") == departureTag);
+        var spaceDock = List(orbit, "Placeable List").Single(p => Text(p, "Tag") == "ABANDONED_STATION_DOCK");
+        Local(spaceDock, "STARPORT_TELEPORT_WAYPOINT")!.Value.GetString().Should().Be(departureTag);
+
+        var factions = Load("fac", "repute");
+        var masterFaction = (int)Number(master, "FactionID");
+        Text(List(factions, "FactionList")[masterFaction], "FactionName").Should().Be("Neutral");
+        var enemyFactions = new AbandonedStationSpawnDefinition().BuildSpawnTables().Values
+            .SelectMany(t => t.Spawns).Select(s => (int)Number(Load("utc", s.Resref), "FactionID")).Distinct();
+        foreach (var enemyFaction in enemyFactions)
+        {
+            foreach (var (source, target) in new[] { (masterFaction, enemyFaction), (enemyFaction, masterFaction) })
+                Number(List(factions, "RepList").Single(r => Number(r, "FactionID1") == source &&
+                    Number(r, "FactionID2") == target), "FactionRep").Should().BeGreaterThanOrEqualTo(50,
+                    "the dock master and every station enemy must be non-hostile in both directions");
+        }
+    }
+
+    [Test]
     public void EscapePod_RequiresConfirmationBeforeReturningPlayersToVeles()
     {
         var pod = List(Load("git", Main), "Placeable List").Single(p => Text(p, "Tag") == "aban_shuttle_exit");

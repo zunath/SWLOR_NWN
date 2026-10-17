@@ -58,15 +58,20 @@ namespace SWLOR.Game.Server.Service.PropertyService
         /// <param name="starportExists">Whether the player starport with the given property Id still exists.</param>
         /// <param name="getPlanetStarport">
         /// The landing and orbit of the starport serving the planet an area belongs to, or null if there is none.
-        /// Used when a ship in a ship-only location has no usable safe dock, and to find the orbit of a safe dock
+        /// Used when a ship that must return has no usable safe dock, and to find the orbit of a safe dock
         /// recorded before safe orbits were.
+        /// </param>
+        /// <param name="fallbackAreaResref">
+        /// An area whose planet's starport receives a ship that must return, has no usable safe dock and is not in a
+        /// ship-only location, such as the city area of a player starport being retrieved.
         /// </param>
         /// <returns>What happened to the ship's dock.</returns>
         public static StarshipDockReturnResult ReturnToSafeDock(
             Dictionary<PropertyLocationType, PropertyLocation> positions,
             Func<string, bool> isShipOnlyArea,
             Func<string, bool> starportExists,
-            Func<string, (PropertyLocation Landing, PropertyLocation Orbit)?> getPlanetStarport)
+            Func<string, (PropertyLocation Landing, PropertyLocation Orbit)?> getPlanetStarport,
+            string fallbackAreaResref = "")
         {
             StarshipDockReturnResult result;
             var shipOnlyAreaResref = string.Empty;
@@ -118,10 +123,11 @@ namespace SWLOR.Game.Server.Service.PropertyService
                 return result;
             }
 
-            // A ship stranded in a ship-only location without a usable safe dock goes to the starport of
-            // the planet that location belongs to, which becomes its safe dock from now on.
-            if (!string.IsNullOrWhiteSpace(shipOnlyAreaResref) &&
-                TrySetPlanetSafeDock(positions, shipOnlyAreaResref, getPlanetStarport))
+            // A ship without a usable safe dock goes to the starport of the planet its ship-only location
+            // (or the given fallback area) belongs to, which becomes its safe dock from now on.
+            var planetAreaResref = string.IsNullOrWhiteSpace(shipOnlyAreaResref) ? fallbackAreaResref : shipOnlyAreaResref;
+            if (!string.IsNullOrWhiteSpace(planetAreaResref) &&
+                TrySetPlanetSafeDock(positions, planetAreaResref, getPlanetStarport))
             {
                 positions[PropertyLocationType.DockPosition] = Copy(positions[PropertyLocationType.LastNPCDockPosition]);
                 positions[PropertyLocationType.SpacePosition] = Copy(positions[PropertyLocationType.LastNPCSpacePosition]);

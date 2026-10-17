@@ -64,11 +64,23 @@ def durable_replace(source, target):
         replace_windows(source, target)
     else:
         os.replace(source, target)
-        descriptor = os.open(target.parent, os.O_RDONLY | getattr(os, 'O_DIRECTORY', 0))
-        try:
-            os.fsync(descriptor)
-        finally:
-            os.close(descriptor)
+        sync_directory(target.parent)
+
+
+def sync_directory(folder):
+    descriptor = os.open(folder, os.O_RDONLY | getattr(os, 'O_DIRECTORY', 0))
+    try:
+        os.fsync(descriptor)
+    finally:
+        os.close(descriptor)
+
+
+def create_output_folder(folder):
+    folder.mkdir(parents=True, exist_ok=True)
+    if os.name != 'nt':
+        # Include existing ancestors: a prior failed sync may have left new entries.
+        for parent in folder.parents:
+            sync_directory(parent)
 
 
 def read_json(path):
@@ -298,7 +310,7 @@ def extract_glb(data, folder):
 
 
 def run_asset(api, template, asset, image, folder, timeout, identity):
-    folder.mkdir(parents=True, exist_ok=True)
+    create_output_folder(folder)
     path = folder / 'submission.json'
     fingerprint = digest(json.dumps({'asset': asset, 'image_sha256': digest(image.read_bytes()),
                                      'workflow': template, 'url': api.url}, sort_keys=True).encode())

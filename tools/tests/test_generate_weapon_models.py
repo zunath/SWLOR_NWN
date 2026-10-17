@@ -126,6 +126,20 @@ class WeaponGenerationTests(unittest.TestCase):
             with self.assertRaises(OSError):generator.durable_replace(source,target)
             close.assert_called_once_with(37)
 
+    def test_new_output_directories_publish_parent_entries_before_submission(self):
+        folder=self.folder/'nested'/'new_asset';synced=[]
+        with patch.object(generator.os,'name','posix'),patch.object(generator,'sync_directory',side_effect=synced.append):
+            generator.create_output_folder(folder)
+        self.assertTrue(folder.is_dir())
+        self.assertEqual(synced,list(folder.parents))
+        with patch.object(generator.os,'name','posix'),patch.object(generator,'sync_directory') as sync:
+            generator.create_output_folder(folder)
+            self.assertEqual([call.args[0] for call in sync.call_args_list],list(folder.parents))
+        api=FakeAPI(self.output)
+        with patch.object(generator.os,'name','posix'),patch.object(generator,'sync_directory',side_effect=OSError('directory sync failed')):
+            with self.assertRaisesRegex(OSError,'directory sync'):self.run_asset(api)
+        self.assertEqual(api.posts,0)
+
     def test_windows_replacement_requests_write_through_and_propagates_failure(self):
         if generator.os.name!='nt':self.skipTest('Windows native replacement')
         import ctypes

@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using NWN.Native.API;
 using SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap;
 using SWLOR.Game.Server.Service;
@@ -12,6 +13,7 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.ItemAppearance
     public static class EquippedItemAppearance
     {
         private const float QuickbarRefreshDelaySeconds = 0.2f;
+        private const int DetachedHeadItemAttempts = 10;
 
         public static void Set(uint item, ItemAppearanceType type, int index, int value)
         {
@@ -64,6 +66,7 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.ItemAppearance
             var message = server.GetNWSMessage();
             var players = server.GetPlayerList();
             var refreshedClient = false;
+            var detachingPlayers = new List<uint>();
             foreach (var player in players)
             {
                 var lastUpdate = player.GetLastUpdateObject(creature);
@@ -71,6 +74,8 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.ItemAppearance
                     continue;
 
                 var appearance = lastUpdate.m_cAppearance;
+                if (appearance.m_oidHeadItem == item && !resendsHeadItem)
+                    detachingPlayers.Add(player.m_nPlayerID);
                 var handItem = appearance.m_oidLeftHandItem == item || appearance.m_oidRightHandItem == item;
                 var cloakItem = appearance.m_oidCloakItem == item;
                 var changed = false;
@@ -117,12 +122,70 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.ItemAppearance
             TintMapService.ApplyCurrentColors(creature, resetShaderOverrides);
             Droid.UpdateEquippedItemSnapshot(creature, item);
 
+            if (detachingPlayers.Count > 0)
+                DelayCommand(QuickbarRefreshDelaySeconds, () =>
+                    RefreshDetachedHeadItem(creature, item, detachingPlayers, resetShaderOverrides, DetachedHeadItemAttempts));
+
             if (refreshedClient && GetIsPC(creature))
                 DelayCommand(QuickbarRefreshDelaySeconds, () => RestoreQuickbarReferences(creature, item));
 
             if (refreshedClient && (GetItemInSlot(InventorySlot.RightHand, creature) == item ||
                                     GetItemInSlot(InventorySlot.LeftHand, creature) == item))
                 DelayCommand(QuickbarRefreshDelaySeconds, () => RefreshHandAppearance(creature, item));
+        }
+
+        /// <summary>
+        /// Replaces the client's cached helmet once its native attachment has been detached.
+        /// Deleting it while still attached masks the head, so this waits for each player's
+        /// creature update to drop the head item first.
+        /// </summary>
+        private static void RefreshDetachedHeadItem(uint creature, uint item, List<uint> playerIds,
+            bool resetShaderOverrides, int attemptsLeft)
+        {
+            if (!GetIsObjectValid(creature) || !GetIsObjectValid(item) ||
+                GetItemInSlot(InventorySlot.Head, creature) != item)
+                return;
+
+            var server = NWNXLib.g_pAppManager.m_pServerExoApp;
+            var nativeCreature = server.GetGameObject(creature)?.AsNWSCreature();
+            // A later click that selected the native helmet again runs its own refresh.
+            if (nativeCreature == null || nativeCreature.m_cAppearance.m_oidHeadItem == item)
+                return;
+
+            var message = server.GetNWSMessage();
+            var pending = new List<uint>();
+            var refreshedClient = false;
+            foreach (var player in server.GetPlayerList())
+            {
+                if (!playerIds.Contains(player.m_nPlayerID))
+                    continue;
+
+                var lastUpdate = player.GetLastUpdateObject(creature);
+                if (lastUpdate == null)
+                    continue;
+                if (lastUpdate.m_cAppearance.m_oidHeadItem == item)
+                {
+                    pending.Add(player.m_nPlayerID);
+                    continue;
+                }
+
+                RefreshInventorySlot(player, player.m_pInventoryGUI, creature, item, true);
+                RefreshInventorySlot(player, player.m_pOtherInventoryGUI, creature, item, true);
+                message.SendServerPlayerItemUpdate_DestroyItem(player, item);
+                refreshedClient = true;
+            }
+
+            if (pending.Count > 0 && attemptsLeft > 1)
+                DelayCommand(QuickbarRefreshDelaySeconds, () =>
+                    RefreshDetachedHeadItem(creature, item, pending, resetShaderOverrides, attemptsLeft - 1));
+
+            if (!refreshedClient)
+                return;
+
+            server.SetForceUpdate();
+            TintMapService.ApplyCurrentColors(creature, resetShaderOverrides);
+            if (GetIsPC(creature))
+                DelayCommand(QuickbarRefreshDelaySeconds, () => RestoreQuickbarReferences(creature, item));
         }
 
         private static unsafe void RefreshInventorySlot(CNWSPlayer player, CNWSPlayerInventoryGUI gui, uint creature, uint item, bool clearIcon)

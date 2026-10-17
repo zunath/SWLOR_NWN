@@ -66,6 +66,7 @@ public static class SingleWeaponEngineTests
     public static async Task TwoHandedWeapons(EngineTestContext ctx)
     {
         using var player = await PlayerAbilityFixture.CreateAsync(ctx);
+        CreaturePlugin.AddFeat(player.Creature, FeatType.WeaponProficiencyExotic);
         player.Update(record =>
         {
             record.Skills[SkillType.Armor].Rank = 40;

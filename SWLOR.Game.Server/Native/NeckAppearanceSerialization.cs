@@ -30,10 +30,18 @@ namespace SWLOR.Game.Server.Native
             var original = (delegate* unmanaged<void*, void*, void*, void>)_hook->m_trampoline;
             var item = CNWSItem.FromPointer(itemPointer);
             var source = item.m_nArmorModelPart[(int)AppearanceArmor.Neck];
+            var leftShoulder = item.m_nArmorModelPart[(int)AppearanceArmor.LeftShoulder];
+            var rightShoulder = item.m_nArmorModelPart[(int)AppearanceArmor.RightShoulder];
             try
             {
                 try { item.m_nArmorModelPart[(int)AppearanceArmor.Neck] = NeckModelRenderer.GetItemProjection(item); }
                 catch (Exception ex) { Log.WriteError(ex, "Could not project the equipped neck model"); }
+                try
+                {
+                    item.m_nArmorModelPart[(int)AppearanceArmor.LeftShoulder] = ShoulderModelRenderer.GetItemProjection(item, AppearanceArmor.LeftShoulder);
+                    item.m_nArmorModelPart[(int)AppearanceArmor.RightShoulder] = ShoulderModelRenderer.GetItemProjection(item, AppearanceArmor.RightShoulder);
+                }
+                catch (Exception ex) { Log.WriteError(ex, "Could not project the equipped shoulder models"); }
                 original(message, player, itemPointer);
             }
             finally
@@ -41,6 +49,8 @@ namespace SWLOR.Game.Server.Native
                 // The synchronous native writer only serializes appearance. Inventory,
                 // saves, outfit copies, stats, and subsequent scripts see the authored ID.
                 item.m_nArmorModelPart[(int)AppearanceArmor.Neck] = source;
+                item.m_nArmorModelPart[(int)AppearanceArmor.LeftShoulder] = leftShoulder;
+                item.m_nArmorModelPart[(int)AppearanceArmor.RightShoulder] = rightShoulder;
             }
         }
     }

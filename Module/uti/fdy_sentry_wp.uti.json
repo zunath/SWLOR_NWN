@@ -6,7 +6,7 @@
   },
   "BaseItem": {
     "type": "int",
-    "value": 61
+    "value": 7
   },
   "Charges": {
     "type": "byte",
@@ -110,7 +110,7 @@
         },
         "CostValue": {
           "type": "word",
-          "value": 34
+          "value": 37
         },
         "Param1": {
           "type": "byte",

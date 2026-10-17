@@ -474,7 +474,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Component("lth_high", 20)
                 .Component("ark_drg_scales", 20)
                 .Component("chiro_shard", 2)
-                .Component("ark_dragon_troph", 5)
+                .Component("ark_dragon_troph", 3)
                 .Component("ref_scordspar", 5)
                 .Component("ref_plagionite", 5)
                 .Component("ref_keromber", 5);

@@ -41,6 +41,8 @@ public static class LootStatRevisionMigration
     /// </summary>
     public static bool MigrateObject(uint obj) => MigrateObject(obj, new HashSet<uint>(), true, true);
 
+    public static bool MigratePlayerItems(uint player) => MigrateObject(player, new HashSet<uint>(), true, true, true);
+
     internal static bool MigrateHeadgear(uint obj) => MigrateObject(obj, new HashSet<uint>(), false, true);
 
     private static bool MigrateObject(uint obj, HashSet<uint> visited, bool reviseStats, bool repairHeadgear, bool updateArtwork = false)
@@ -70,8 +72,12 @@ public static class LootStatRevisionMigration
         {
             // Direct acquisition follows the same ordering: storage failure must
             // precede any property revision or persisted wearer-stat difference.
+            if (repairHeadgear)
+            {
+                changed |= HeadgearSlotMigration.ConvertItem(obj);
+                changed |= EquipmentTypeMigration.ConvertItem(obj);
+            }
             if (updateArtwork) changed |= ItemIconMigration.MigrateItem(obj);
-            if (repairHeadgear) changed |= HeadgearSlotMigration.ConvertItem(obj);
             if (reviseStats) changed |= MigrateItem(obj);
             changed |= MigrateObject(GetSummonedDroid(obj), visited, reviseStats, repairHeadgear, updateArtwork);
             var original = GetLocalString(obj, ConstructedDroidVariable);
@@ -148,11 +154,14 @@ public static class LootStatRevisionMigration
         var obj = MigrationObject.Deserialize(inventory?.PrepareForNativeLoad(null) ?? original);
         try
         {
-            var legacyRoot = repairHeadgear && GetObjectType(obj) == ObjectType.Item &&
-                HeadgearSlotMigration.IsLegacyHeadgear(GetResRef(obj), GetBaseItemType(obj));
+            var refreshRootMetadata = repairHeadgear && GetObjectType(obj) == ObjectType.Item &&
+                (HeadgearSlotMigration.IsLegacyHeadgear(GetResRef(obj), GetBaseItemType(obj)) ||
+                 HeadgearSlotMigration.GetCorrectedModel(GetResRef(obj), GetBaseItemType(obj),
+                     GetItemAppearance(obj, ItemAppearanceType.SimpleModel, 0)) != GetItemAppearance(obj, ItemAppearanceType.SimpleModel, 0) ||
+                 EquipmentTypeMigration.IsLegacyEquipment(GetResRef(obj), GetBaseItemType(obj)));
             if (!MigrateObject(obj, new HashSet<uint>(), reviseStats, repairHeadgear, updateArtwork))
                 return false;
-            if (legacyRoot) convertedHeadgear?.Invoke(obj);
+            if (refreshRootMetadata) convertedHeadgear?.Invoke(obj);
             migrated = MigrationObject.Serialize(obj, original);
             if (inventory != null)
                 migrated = inventory.CopyMigratedInventory(migrated);
@@ -166,9 +175,22 @@ public static class LootStatRevisionMigration
 
     private static bool MigrateItem(uint item)
     {
+        var alreadyRevisedRare = GetLocalInt(item, RareLootStatRevisionCatalog.RevisionVariable) >= RareLootStatRevisionCatalog.CurrentRevision;
         var changed = ApplyRevision(item, LootStatRevisionCatalog.Changes, RevisionVariable, CurrentRevision);
         changed |= ApplyRevision(item, RareLootStatRevisionCatalog.Changes,
             RareLootStatRevisionCatalog.RevisionVariable, RareLootStatRevisionCatalog.CurrentRevision);
+        if (alreadyRevisedRare)
+            changed |= ApplyRevision(item, EquipmentTypeStatRevisionCatalog.Changes,
+                EquipmentTypeStatRevisionCatalog.RevisionVariable, EquipmentTypeStatRevisionCatalog.CurrentRevision);
+        else if (EquipmentTypeStatRevisionCatalog.Changes.ContainsKey(GetResRef(item)) &&
+                 GetLocalInt(item, EquipmentTypeStatRevisionCatalog.RevisionVariable) < EquipmentTypeStatRevisionCatalog.CurrentRevision)
+        {
+            // The revised rare catalog already applied the final cloak value.
+            SetLocalInt(item, EquipmentTypeStatRevisionCatalog.RevisionVariable, EquipmentTypeStatRevisionCatalog.CurrentRevision);
+            changed = true;
+        }
+        changed |= ApplyRevision(item, FoundryLootStatRevisionCatalog.Changes,
+            FoundryLootStatRevisionCatalog.RevisionVariable, FoundryLootStatRevisionCatalog.CurrentRevision);
         return changed;
     }
 

@@ -1,0 +1,161 @@
+# Private SWLOR server plus a Linux NWN:EE client on a virtual display, used for
+# live-server client evidence. Start it only through tools/NwnLiveClient.py: it writes
+# the --env-file that fills every ${SWLOR_LIVE_*} value and always passes a unique
+# -p project name. See SWLOR.Game.Server/Readmes/InEngineVisualVerification.md.
+#
+# - No host ports are published. The client reaches the server over this project's
+#   own network, so concurrent stacks cannot collide on ports.
+# - Redis is tmpfs, so every stack starts with an empty database.
+# - The server alone has the Beamdog master server blocked (extra_hosts) and NWSync
+#   blanked. These are development-stack settings; never copy them to production.
+
+services:
+    redis:
+        image: redislabs/redismod:latest
+        tmpfs:
+            - /data
+        # Same module list and RediSearch GC threshold as docker-compose.enginetests.yml.
+        command:
+            - --loadmodule
+            - /usr/lib/redis/modules/redisai.so
+            - --loadmodule
+            - /usr/lib/redis/modules/redisearch.so
+            - FORK_GC_CLEAN_THRESHOLD
+            - "100000000"
+            - --loadmodule
+            - /usr/lib/redis/modules/redisgraph.so
+            - --loadmodule
+            - /usr/lib/redis/modules/redistimeseries.so
+            - --loadmodule
+            - /usr/lib/redis/modules/rejson.so
+            - --loadmodule
+            - /usr/lib/redis/modules/redisbloom.so
+            - --loadmodule
+            - /usr/lib/redis/modules/redisgears.so
+            - Plugin
+            - /var/opt/redislabs/modules/rg/plugin/gears_python.so
+
+    server-home-init:
+        image: ${SWLOR_LIVE_SERVER_IMAGE}
+        user: "0:0"
+        network_mode: none
+        restart: "no"
+        entrypoint: ["/bin/bash", "/prepare-server-home.sh"]
+        volumes:
+            - type: bind
+              source: ${SWLOR_LIVE_RUN_DIR}/home
+              target: /nwn/home
+            - type: bind
+              source: ${SWLOR_LIVE_PREPARE_HOME}
+              target: /prepare-server-home.sh
+              read_only: true
+
+    swlor-server:
+        hostname: swlor-server
+        image: ${SWLOR_LIVE_SERVER_IMAGE}
+        stop_signal: SIGINT
+        restart: "no"
+        depends_on:
+            server-home-init:
+                condition: service_completed_successfully
+            redis:
+                condition: service_started
+        entrypoint: ["/bin/bash", "/tool/server-entry.sh"]
+        env_file:
+            - ${SWLOR_LIVE_SERVER_ENV_FILE}
+            - ${SWLOR_LIVE_RUN_DIR}/server-extra.env
+        # Takes precedence over both env files, so --server-env cannot re-enable any of these.
+        environment:
+            NWN_PUBLICSERVER: "0"
+            NWN_SERVERVAULT: "1"
+            NWN_SERVERNAME: ${SWLOR_LIVE_SERVER_NAME}
+            NWN_MODULE: ${SWLOR_LIVE_MODULE_NAME}
+            NWN_PORT: ${SWLOR_LIVE_SERVER_PORT}
+            NWN_PLAYERPASSWORD: ""
+            NWN_ADMINPASSWORD: ""
+            NWN_DMPASSWORD: ${SWLOR_LIVE_DM_PASSWORD}
+            NWN_NWSYNCURL: ""
+            NWN_NWSYNCHASH: ""
+            NWN_RELOADWHENEMPTY: "0"
+            NWNX_REDIS_HOST: redis
+            NWNX_METRICS_INFLUXDB_SKIP: "y"
+            NWNX_WEBHOOK_SKIP: "y"
+            SWLOR_APP_LOG_DIRECTORY: /nwn/home/app_logs/
+            SWLOR_SUPER_ADMIN_CD_KEY: ${SWLOR_LIVE_ADMIN_CDKEY}
+            SWLOR_BUG_GITHUB_REPOSITORY: ""
+            SWLOR_BUG_GITHUB_TOKEN: ""
+            SWLOR_BUG_CODEX_REVIEW_ENABLED: "false"
+            SWLOR_BUG_DISCORD_WEBHOOK_URL: ""
+            SWLOR_HOLONET_WEBHOOK_URL: ""
+            SWLOR_DM_SHOUT_WEBHOOK_URL: ""
+            SWLOR_PROPERTY_BROADCAST_WEBHOOK_URL: ""
+            SWLOR_SERVER_NOTIFICATION_WEBHOOK_URL: ""
+            SWLOR_LIVE_MAX_SECONDS: ${SWLOR_LIVE_MAX_SECONDS}
+        extra_hosts:
+            - "nwmaster2.beamdog.net:127.0.0.1"
+            - "nwn.beamdog.net:127.0.0.1"
+            - "api.nwn.beamdog.net:127.0.0.1"
+        volumes:
+            - type: bind
+              source: ${SWLOR_LIVE_RUN_DIR}/home
+              target: /nwn/home
+            - type: bind
+              source: ${SWLOR_LIVE_RUN_DIR}/home/logs
+              target: /nwn/run/logs.0
+            - type: bind
+              source: ${SWLOR_LIVE_HAK_DIR}
+              target: /nwn/home/hak
+              read_only: true
+            - type: bind
+              source: ${SWLOR_LIVE_TLK_DIR}
+              target: /nwn/home/tlk
+              read_only: true
+            - type: bind
+              source: ${SWLOR_LIVE_MODULE_DIR}
+              target: /nwn/home/modules
+              read_only: true
+            - type: bind
+              source: ${SWLOR_LIVE_RUN_DIR}/dotnet
+              target: /nwn/home/dotnet
+              read_only: true
+            - type: bind
+              source: ${SWLOR_LIVE_RUN_DIR}/bin
+              target: /tool
+              read_only: true
+
+    client:
+        image: ${SWLOR_LIVE_CLIENT_IMAGE}
+        profiles: ["client"]
+        restart: "no"
+        # The caller's UID:GID, so everything the client writes to the profile stays removable.
+        user: ${SWLOR_LIVE_CLIENT_USER}
+        entrypoint: ["/bin/bash", "/tool/run-client.sh"]
+        environment:
+            SWLOR_LIVE_SERVER_HOST: swlor-server
+            SWLOR_LIVE_SERVER_PORT: ${SWLOR_LIVE_SERVER_PORT}
+            SWLOR_LIVE_CLIENT_MODE: ${SWLOR_LIVE_CLIENT_MODE}
+            SWLOR_LIVE_DM_PASSWORD: ${SWLOR_LIVE_DM_PASSWORD}
+            SWLOR_LIVE_MAX_SECONDS: ${SWLOR_LIVE_MAX_SECONDS}
+        volumes:
+            - type: bind
+              source: ${SWLOR_LIVE_CLIENT_INSTALL}
+              target: /install
+              read_only: true
+            - type: bind
+              source: ${SWLOR_LIVE_HAK_DIR}
+              target: /hak
+              read_only: true
+            - type: bind
+              source: ${SWLOR_LIVE_TLK_DIR}
+              target: /tlk
+              read_only: true
+            - type: bind
+              source: ${SWLOR_LIVE_RUN_DIR}/profile
+              target: /profile
+            - type: bind
+              source: ${SWLOR_LIVE_RUN_DIR}/evidence
+              target: /verify
+            - type: bind
+              source: ${SWLOR_LIVE_RUN_DIR}/bin
+              target: /tool
+              read_only: true

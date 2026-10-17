@@ -25,12 +25,13 @@ or migration that assigns item models.
   screenshots. Migration behavior also requires the engine coverage in `EngineTesting.md`.
 
 Blueprint corrections require a module repack and deployment. Migration changes also require
-a C# server deployment. Player migrations through 23 have released and must retain their
-entry points and checkpoint numbers. Player migration 24 and unreleased stored-item migration 28
-repair model 223 on the affected visors during their existing combined item visit, including
+a C# server deployment. Release `2026-10-16` (`b1406fec3`) shipped player migrations through 22
+and server migrations through 27; retain those entry points and checkpoint numbers. The pending
+player migration 23 and stored-item migration 28 repair model 223 on the affected visors during
+their combined artwork, type and loot-stat visit, including the Foundry correction and
 saved root icons. Saved DM creatures receive the model correction within their existing
 artwork visit, retaining authored stats and equipment slots. Valid custom models and the
-reserved NPC prop remain untouched. Characters already at player version 23 receive one
-pending item traversal in migration 24; stored items already at server version 27 receive
+reserved NPC prop remain untouched. Characters already at player version 22 receive one
+pending item traversal in migration 23; stored items already at server version 27 receive
 one pending item traversal in migration 28. Keep the appearance, type and stat corrections
 in that combined visit rather than adding another pass to either pending migration.

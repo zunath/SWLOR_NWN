@@ -17,6 +17,9 @@ namespace SWLOR.Game.Server.Tests.Feature;
 
 public class MigrationDataTests
 {
+    // Release 2026-10-16 (b1406fec3) shipped player 22 and server 27.
+    private const int ReleasedPlayerVersion = 22;
+    private const int ReleasedServerVersion = 27;
     private static readonly Assembly ServerAssembly = typeof(_22_CombatSystemReplacement).Assembly;
 
     [Test]
@@ -33,14 +36,13 @@ public class MigrationDataTests
         new _24_RemoveWeaponStatOverrides().Version.Should().BeGreaterThan(new _23_RetireForceWeaponEnhancements().Version);
         new _24_RemoveWeaponStatOverrides().ExecutionType.Should().Be(MigrationExecutionType.PostCacheLoad);
         migrations.Where(migration => migration.Version >= 27).Select(migration => migration.GetType())
-            .Should().BeEquivalentTo(new[] { typeof(_27_UpdatePlayerRecords), typeof(_27_UpdateStoredItems), typeof(_28_CorrectStoredEquipmentTypes), typeof(_29_CorrectStoredFoundryLoot) });
+            .Should().BeEquivalentTo(new[] { typeof(_27_UpdatePlayerRecords), typeof(_27_UpdateStoredItems), typeof(_28_CorrectStoredEquipmentTypes) });
         new _27_UpdatePlayerRecords().ExecutionType.Should().Be(MigrationExecutionType.PostDatabaseLoad);
         new _27_UpdateStoredItems().ExecutionType.Should().Be(MigrationExecutionType.PostCacheLoad);
-        migrations.Where(migration => migration.Version > 27).Select(migration => migration.GetType())
-            .Should().BeEquivalentTo(new[] { typeof(_28_CorrectStoredEquipmentTypes), typeof(_29_CorrectStoredFoundryLoot) });
+        migrations.Where(migration => migration.Version > ReleasedServerVersion).Select(migration => migration.GetType())
+            .Should().BeEquivalentTo(new[] { typeof(_28_CorrectStoredEquipmentTypes) }, "the last release must receive one combined stored-item pass");
         new _28_CorrectStoredEquipmentTypes().ExecutionType.Should().Be(MigrationExecutionType.PostCacheLoad);
-        new _29_CorrectStoredFoundryLoot().ExecutionType.Should().Be(MigrationExecutionType.PostCacheLoad);
-        new _29_CorrectStoredFoundryLoot().Version.Should().BeGreaterThan(new _28_CorrectStoredEquipmentTypes().Version);
+        new _28_CorrectStoredEquipmentTypes().Version.Should().Be(ReleasedServerVersion + 1);
     }
 
     [Test]
@@ -52,9 +54,10 @@ public class MigrationDataTests
         migrations.Select(migration => migration.Version).Should().OnlyHaveUniqueItems();
         new _17_RemoveWeaponStatOverrides().Version.Should().BeGreaterThan(new _16_RetireForceWeaponEnhancements().Version);
         migrations.Where(migration => migration.Version >= 22).Select(migration => migration.GetType())
-            .Should().BeEquivalentTo(new[] { typeof(_22_ReviseLootStats), typeof(_23_CorrectEquipmentTypes), typeof(_24_UpdateItemAppearances), typeof(_25_CorrectFoundryLoot) });
-        migrations.Where(migration => migration.Version > 24).Select(migration => migration.GetType())
-            .Should().BeEquivalentTo(new[] { typeof(_25_CorrectFoundryLoot) }, "already-checkpointed characters still need the Foundry correction");
+            .Should().BeEquivalentTo(new[] { typeof(_22_ReviseLootStats), typeof(_23_CorrectEquipmentTypes) });
+        migrations.Where(migration => migration.Version > ReleasedPlayerVersion).Select(migration => migration.GetType())
+            .Should().BeEquivalentTo(new[] { typeof(_23_CorrectEquipmentTypes) }, "the last release must receive one combined player-item pass");
+        new _23_CorrectEquipmentTypes().Version.Should().Be(ReleasedPlayerVersion + 1);
     }
 
     [Test]

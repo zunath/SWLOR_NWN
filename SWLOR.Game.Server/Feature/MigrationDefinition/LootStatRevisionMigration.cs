@@ -39,23 +39,9 @@ public static class LootStatRevisionMigration
     /// Revises a player's equipped and carried items and their summoned droid, a summoned droid,
     /// an item, or a container and its contents.
     /// </summary>
-    public static bool MigrateObject(uint obj) => MigrateRoot(obj, false);
+    public static bool MigrateObject(uint obj) => MigrateObject(obj, new HashSet<uint>(), true, true);
 
-    public static bool MigratePlayerItems(uint player) => MigrateRoot(player, true);
-
-    private static bool MigrateRoot(uint obj, bool updateArtwork)
-    {
-        var changed = MigrateObject(obj, new HashSet<uint>(), true, true, updateArtwork);
-        // A pending older migration already applies the Foundry correction. Record
-        // its completed player traversal so the new checkpoint need not repeat it.
-        if (GetIsPC(obj) && !GetIsDM(obj) && !GetIsDMPossessed(obj) &&
-            GetLocalInt(obj, FoundryLootStatRevisionCatalog.RevisionVariable) < FoundryLootStatRevisionCatalog.CurrentRevision)
-        {
-            SetLocalInt(obj, FoundryLootStatRevisionCatalog.RevisionVariable, FoundryLootStatRevisionCatalog.CurrentRevision);
-            changed = true;
-        }
-        return changed;
-    }
+    public static bool MigratePlayerItems(uint player) => MigrateObject(player, new HashSet<uint>(), true, true, true);
 
     internal static bool MigrateHeadgear(uint obj) => MigrateObject(obj, new HashSet<uint>(), false, true);
 

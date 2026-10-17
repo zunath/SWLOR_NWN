@@ -128,8 +128,6 @@ public class ItemIconTests
         File.ReadAllText(Path.Combine(migrations, "PlayerMigration", "_22_ReviseLootStats.cs"))
             .Should().Contain("LootStatRevisionMigration.MigrateObject(player)");
         File.ReadAllText(Path.Combine(migrations, "PlayerMigration", "_23_CorrectEquipmentTypes.cs"))
-            .Should().Contain("LootStatRevisionMigration.MigrateObject(player)");
-        File.ReadAllText(Path.Combine(migrations, "PlayerMigration", "_24_UpdateItemAppearances.cs"))
             .Should().Contain("LootStatRevisionMigration.MigratePlayerItems(player)");
         File.ReadAllText(Path.Combine(migrations, "ServerMigration", "_27_UpdateStoredItems.cs"))
             .Should().Contain("LootStatRevisionMigration.MigrateStoredObjectData").And.NotContain("StoredItemDataMigration.Migrate()");

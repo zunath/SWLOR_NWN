@@ -421,7 +421,7 @@ def create(options) -> Stack:
     else:
         state['dm_avatar'] = {'source': str(dm_avatar), 'file': dm_avatar.name.lower()}
 
-    reserve_project(project, run_dir)
+    reserve_project(project, run_dir, state['server_image'])
     try:
         # Exclusive creation claims the directory: a concurrent run choosing it fails here.
         run_dir.parent.mkdir(parents=True, exist_ok=True)
@@ -443,6 +443,9 @@ def create(options) -> Stack:
             text = (PACKAGE_DIR / script).read_text('utf-8').replace('\r\n', '\n')
             (run_dir / 'bin' / script).write_bytes(text.encode('utf-8'))
         shutil.copytree(dotnet, run_dir / 'dotnet')
+        # The copy is deleted at teardown, so record what identifies the server code that ran.
+        stack.state['inputs']['dotnet_sha256'] = build_digest(run_dir / 'dotnet')
+        stack.state['inputs']['source_commit'] = source_commit()
         # The deploy home is shared; serve and hash a private copy so a repack cannot swap it.
         (run_dir / 'module').mkdir()
         shutil.copyfile(module, run_dir / 'module' / module.name)
@@ -497,28 +500,54 @@ def create(options) -> Stack:
     return stack
 
 
-def reservation_path(project: str) -> Path:
-    return Path(tempfile.gettempdir()) / 'swlor-live' / 'projects' / project
+def reservation_name(project: str) -> str:
+    return project + '-reservation'
 
 
-def reserve_project(project: str, run_dir: Path) -> None:
-    """Claim the project name: creating a directory is atomic, so only one run can hold it."""
-    lock = reservation_path(project)
-    lock.parent.mkdir(parents=True, exist_ok=True)
-    try:
-        lock.mkdir()
-    except FileExistsError:
-        owner = lock / 'run_dir.txt'
-        holder = owner.read_text('utf-8').strip() if owner.is_file() else 'unknown'
+def reserve_project(project: str, run_dir: Path, image: str) -> None:
+    """Claim the project name daemon-wide, for every user and temp folder sharing this Docker.
+
+    The claim is a created, never-started container: the daemon reserves container names
+    atomically, so a second run asking for the same name is refused. It uses no CPU or memory.
+    """
+    result = run(['docker', 'create', '--name', reservation_name(project), '--network', 'none',
+                  '--label', f'swlor.live.run_dir={run_dir}', '--entrypoint', 'true', image],
+                 check=False, capture=True, timeout=120)
+    if result.returncode != 0:
+        owner = run(['docker', 'container', 'inspect', '-f', '{{index .Config.Labels "swlor.live.run_dir"}}',
+                     reservation_name(project)], check=False, capture=True, timeout=60)
+        holder = owner.stdout.decode('utf-8', 'replace').strip() if owner.returncode == 0 else ''
+        if not holder:
+            raise LiveStackError(f'Could not reserve project {project}: '
+                                 + result.stderr.decode('utf-8', 'replace').strip())
         raise LiveStackError(f'Project {project} is reserved by run {holder}. Choose another --name, or run '
-                             f'down on that run (delete {lock} only once you know it is gone).') from None
-    (lock / 'run_dir.txt').write_text(str(run_dir) + '\n', 'utf-8')
+                             f'down on that run (docker rm {reservation_name(project)} only once it is gone).')
 
 
 def release_project(project: str) -> bool:
     """Remove the project reservation; True when it no longer exists."""
-    remove_tree(reservation_path(project))
-    return not reservation_path(project).exists()
+    run(['docker', 'rm', reservation_name(project)], check=False, capture=True, timeout=60)
+    return run(['docker', 'container', 'inspect', reservation_name(project)], check=False, capture=True,
+               timeout=60).returncode != 0
+
+
+def build_digest(directory: Path) -> str:
+    """One SHA-256 over every file's relative path and content, identifying the server build that ran."""
+    digest = hashlib.sha256()
+    for path in sorted(p for p in directory.rglob('*') if p.is_file()):
+        digest.update(path.relative_to(directory).as_posix().encode('utf-8') + b'\0')
+        digest.update(sha256(path).encode('ascii') + b'\n')
+    return digest.hexdigest()
+
+
+def source_commit() -> str:
+    """The checkout's HEAD, marked when it has uncommitted changes."""
+    try:
+        head = output(['git', '-C', str(REPO_ROOT), 'rev-parse', 'HEAD'], timeout=60)
+        dirty = output(['git', '-C', str(REPO_ROOT), 'status', '--porcelain', '--untracked-files=no'], timeout=120)
+    except LiveStackError:
+        return 'unknown'
+    return head + (' (uncommitted changes)' if dirty else '')
 
 
 def hak_manifest(hak_dir: Path) -> dict[str, list[int]]:
@@ -759,7 +788,11 @@ def destroy(stack: Stack) -> dict:
 
     recorded = stack.state['inputs'].get('hak_manifest')
     hak_dir = Path(stack.state['inputs']['hak_dir'])
-    report['hak_folder_unchanged'] = recorded is None or (hak_dir.is_dir() and hak_manifest(hak_dir) == recorded)
+    try:
+        report['hak_folder_unchanged'] = recorded is None or hak_manifest(hak_dir) == recorded
+    except OSError:
+        # A file vanished mid-scan: a redeploy is in progress, so the folder changed.
+        report['hak_folder_unchanged'] = False
     if not report['hak_folder_unchanged']:
         errors.append('The shared hak folder changed during the run; captures may mix asset versions. Recapture.')
 
@@ -771,7 +804,7 @@ def destroy(stack: Stack) -> dict:
             (stack.run_dir / name).unlink(missing_ok=True)
         report['reservation_removed'] = release_project(stack.project)
         if not report['reservation_removed']:
-            errors.append(f'Could not remove the project reservation {reservation_path(stack.project)}.')
+            errors.append(f'Could not remove the {reservation_name(stack.project)} reservation container.')
     leftovers = [str(path) for pattern in ('cdkey.ini', '*.bic') for path in stack.run_dir.rglob(pattern)]
     report.update({
         'remaining_containers': len(resources['containers']),

@@ -1,6 +1,7 @@
 """Pure helpers of the live-server client stack; the Docker run itself is verified in-engine."""
 from pathlib import Path
 import struct
+import subprocess
 import sys
 import tempfile
 import unittest
@@ -129,14 +130,26 @@ class LiveClientHelperTests(unittest.TestCase):
             '[CHAT WINDOW TEXT] [Sat Oct 17 12:57:04] Tester: Loading Screen: typed by a player\n').encode())
         self.assertEqual(stack.count_matches(chat, stack.LOADING_TIP_PATTERN), 1)
 
-    def test_project_reservation_is_exclusive_until_released(self):
-        with patch.object(stack.tempfile, 'gettempdir', return_value=str(self.root)):
-            stack.reserve_project('swlor-live-lock', self.root / 'first')
-            with self.assertRaisesRegex(LiveStackError, 'reserved by run .*first'):
-                stack.reserve_project('swlor-live-lock', self.root / 'second')
-            self.assertTrue(stack.release_project('swlor-live-lock'))
-            stack.reserve_project('swlor-live-lock', self.root / 'second')
-            self.assertTrue(stack.release_project('swlor-live-lock'))
+    def test_project_reservation_reports_the_holding_run(self):
+        def completed(code, out=b''):
+            return subprocess.CompletedProcess([], code, out, b'Conflict. The container name is already in use')
+
+        with patch.object(stack, 'run', side_effect=[completed(0)]) as docker:
+            stack.reserve_project('swlor-live-lock', self.root / 'first', 'image:tag')
+        self.assertEqual(docker.call_args.args[0][:4], ['docker', 'create', '--name', 'swlor-live-lock-reservation'])
+        with patch.object(stack, 'run', side_effect=[completed(1), completed(0, b'C:\\runs\\first\n')]):
+            with self.assertRaisesRegex(LiveStackError, r'reserved by run C:\\runs\\first'):
+                stack.reserve_project('swlor-live-lock', self.root / 'second', 'image:tag')
+
+    def test_build_digest_changes_with_content_and_names(self):
+        build = self.root / 'build'
+        build.mkdir()
+        (build / 'a.dll').write_bytes(b'one')
+        first = stack.build_digest(build)
+        (build / 'a.dll').write_bytes(b'two')
+        self.assertNotEqual(first, stack.build_digest(build))
+        (build / 'a.dll').rename(build / 'b.dll')
+        self.assertNotEqual(first, stack.build_digest(build))
 
     def test_hak_manifest_detects_a_replaced_archive(self):
         haks = self.root / 'hak'

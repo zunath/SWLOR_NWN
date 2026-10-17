@@ -164,6 +164,36 @@ public class HutlarDroidFoundryRewardTests
     }
 
     [Test]
+    public void FoundryLoot_DoesNotDropChiroShards()
+    {
+        var loot = new HutlarLootTableDefinition().BuildLootTables();
+        foreach (var (key, table) in loot.Where(pair => pair.Key.StartsWith("HUTLAR_FOUNDRY_")))
+            table.Should().NotContain(item => item.Resref == "chiro_shard", key);
+
+        var creatures = new HutlarSpawnDefinition().BuildSpawnTables()
+            .Where(pair => pair.Key.StartsWith("HUTLAR_FOUNDRY_"))
+            .SelectMany(pair => pair.Value.Spawns)
+            .Select(spawn => spawn.Resref)
+            .Distinct();
+        foreach (var creature in creatures)
+        {
+            var blueprint = Load("utc", creature);
+            var lootVariables = Value(blueprint, "VarTable").EnumerateArray()
+                .Where(variable => Text(variable, "Name").StartsWith("LOOT_TABLE_"))
+                .Select(variable => Text(variable, "Name"))
+                .ToArray();
+            lootVariables.Should().BeEquivalentTo(Enumerable.Range(1, lootVariables.Length).Select(index => $"LOOT_TABLE_{index}"),
+                $"{creature} loot rolls must remain contiguous because the runtime stops at the first missing local");
+
+            var tables = LootLocals(blueprint)
+                .Select(local => local.Split(',')[0])
+                .Where(key => key.StartsWith("HUTLAR_FOUNDRY_"));
+            foreach (var key in tables)
+                loot.Should().ContainKey(key, $"{creature} must not reference a retired loot table");
+        }
+    }
+
+    [Test]
     public void FloorAndOverseerLoot_AreTierFiveSalvageAndDroidEngineeringGems()
     {
         var loot = new HutlarLootTableDefinition().BuildLootTables();
@@ -176,14 +206,11 @@ public class HutlarDroidFoundryRewardTests
         rares.Should().OnlyContain(i => i.IsRare);
         rares.Select(i => i.Resref).Should().Contain(new[] { "emerald", "diamond", "zinsiam", "lockbox_t5", "map_276" });
 
-        // A Loot Boss carries premium gem and resource tables, including what its premium recipes consume.
-        loot["HUTLAR_FOUNDRY_OVERSEER_SHARD"].Select(i => i.Resref).Should().Equal("chiro_shard");
         loot["HUTLAR_FOUNDRY_OVERSEER_SALVAGE"].Should().Contain(i => i.Resref == "ref_arkoxit" && i.IsRare);
         loot["HUTLAR_FOUNDRY_OVERSEER_GEMS"].Select(i => i.Resref).Should().BeEquivalentTo(new[] { "diamond", "zinsiam", "emerald" });
         LootLocals(Load("utc", "fdy_overseer")).Should().Contain(new[]
         {
             "HUTLAR_FOUNDRY_OVERSEER_GEMS,100,1",
-            "HUTLAR_FOUNDRY_OVERSEER_SHARD,100,1",
             "HUTLAR_FOUNDRY_OVERSEER_SALVAGE,100,6",
             "HUTLAR_FOUNDRY_OVERSEER_CREDITS,100,1",
         });

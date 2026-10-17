@@ -6199,7 +6199,7 @@ namespace SWLOR.Game.Server.Service.StatService
         HealingReceivedStaminaRestoreCooldownSeconds = 1099,
 
         [StatType(StatTypeCategory.BeneficialWhenPositive)]
-        TechniqueWindowExtensionSeconds = 1100,
+        TechniqueWindowExtensionSeconds = 1165,
 
         [StatType(StatTypeCategory.BeneficialWhenPositive)]
         TechniqueWeavePower = 1101,
@@ -6290,6 +6290,19 @@ namespace SWLOR.Game.Server.Service.StatService
         /// <summary>Sequence line selector belonging to the same source as its technique payload.</summary>
         [StatType(StatTypeCategory.NonBeneficial, StatTypeAggregation.Maximum)]
         TechniqueLine = 1160,
+
+        /// <summary>Source-scoped power for abilities which opt into an independent technique bonus.</summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        TechniqueAbilityPower = 1161,
+
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        TechniqueRetaliationPower = 1162,
+
+        [StatType(StatTypeCategory.NonBeneficial, StatTypeAggregation.Maximum)]
+        TechniqueRetaliationDurationSeconds = 1163,
+
+        [StatType(StatTypeCategory.NonBeneficial, StatTypeAggregation.Maximum)]
+        TechniqueRetaliationCooldownSeconds = 1164,
 
 
     }

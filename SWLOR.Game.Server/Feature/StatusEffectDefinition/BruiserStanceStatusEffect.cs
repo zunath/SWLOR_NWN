@@ -1,4 +1,5 @@
 using SWLOR.Game.Server.Service.StatService;
+using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.Game.Server.Service.StatusEffectService;
 using SWLOR.NWN.API.NWScript.Enum;
 
@@ -15,9 +16,10 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
         {
             StatGroup.Stats[StatType.PhysicalDefensePercentAdjustment] = 10;
             StatGroup.Stats[StatType.TechniqueLine] = 2;
-            StatGroup.Stats[StatType.TechniqueSetupBraceWindowSeconds] = 4;
-            StatGroup.Stats[StatType.TechniqueSetupRetaliationPower] = 8;
-            StatGroup.Stats[StatType.TechniqueSetupRetaliationCooldownSeconds] = 18;
+            StatGroup.Stats[StatType.TechniquePresentationSkillType] = (int)SkillType.Unarmed;
+            StatGroup.Stats[StatType.TechniqueRetaliationPower] = 24;
+            StatGroup.Stats[StatType.TechniqueRetaliationDurationSeconds] = 8;
+            StatGroup.Stats[StatType.TechniqueRetaliationCooldownSeconds] = 18;
         }
     }
 }

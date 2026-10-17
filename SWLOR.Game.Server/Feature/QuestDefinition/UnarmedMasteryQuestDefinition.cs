@@ -40,8 +40,8 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
             _builder.Create(HaymakerMasteryQuestId, "Make the Opening Count")
                 .PrerequisiteSkill(SkillType.Unarmed, 50)
                 .AddState()
-                .SetStateJournalText("Land 40 Uppercuts that spend your own Rattled against hostile, unsummoned NPC opponents of combat level 45 or higher. Use equipped Power Gloves. Only your own paid attacks after accepting this trial count; misses, free casts and another fighter's Rattled do not. Return to Borrik Sen in the Hangar on CZ-220 when the requirement is complete.")
-                .AddCombatObjective(DistractionSpentObjective, "Rattled-spending Uppercuts", 40)
+                .SetStateJournalText("Land 40 Uppercuts against hostile, unsummoned NPC opponents of combat level 45 or higher. Use equipped Power Gloves. Only your own paid attacks after accepting this trial count; misses and free casts do not. Rattled and Retaliation are optional. Return to Borrik Sen in the Hangar on CZ-220 when the requirement is complete.")
+                .AddCombatObjective(DistractionSpentObjective, "Landed Uppercuts", 40)
                 .AddState()
                 .SetStateJournalText("You completed the heavy-strike requirement. Return to Borrik Sen in the Hangar on CZ-220 to complete your Haymaker training.")
                 .OnCompleteAction((player, source) => Achievement.GiveAchievement(player, AchievementType.Haymaker));

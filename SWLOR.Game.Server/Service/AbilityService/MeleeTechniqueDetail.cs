@@ -18,6 +18,9 @@ namespace SWLOR.Game.Server.Service.AbilityService
         public int ImpactCount { get; init; } = 1;
         public int WeaponDamagePercent { get; init; } = 100;
         public bool RefundEligible { get; init; }
+        public bool RefundRequiresSetup { get; init; } = true;
+        public bool UsesAbilityPower { get; init; }
+        public bool ConsumesRetaliation { get; init; }
         public bool PreservesMatchingSetup { get; init; }
         public bool ClearSetup { get; init; }
         public Func<IStatusEffect> SourceOwnedSetupStatusEffectFactory { get; init; }

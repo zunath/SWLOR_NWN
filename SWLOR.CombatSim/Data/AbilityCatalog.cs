@@ -1,4 +1,5 @@
 using SWLOR.Game.Server.Service.AbilityService;
+using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.CombatSim.Data
@@ -76,9 +77,24 @@ namespace SWLOR.CombatSim.Data
             if (unreadable.Length > 0)
                 _loadErrors.Add($"{feat}: {unreadable} needs the game engine");
 
+            var katarWeapon = detail.SkillType == SkillType.Katar && detail.IsHostileAbility &&
+                HasImpactCapture(detail, "baseDamage");
+            var statuses = new List<Type>();
+            if (katarWeapon)
+            {
+                var status = ReadImpactCapture<Type>(detail, "statusEffect");
+                if (status != null) statuses.Add(status);
+                statuses.AddRange(ReadImpactCapture<IEnumerable<Type>>(detail, "additionalStatusEffects") ?? Array.Empty<Type>());
+            }
             return new AbilityInfo
             {
                 Feat = feat,
+                Technique = detail.MeleeTechnique,
+                SourceWeaponPower = detail.MeleeTechnique != null ? ReadTechniquePower(detail) : katarWeapon ? ReadImpactCapture<int>(detail, "baseDamage") : null,
+                ImpactStatusDuration = detail.MeleeTechnique != null ? ReadImpactCapture<int>(detail, "statusDuration") : katarWeapon ? ReadImpactCapture<int>(detail, "duration") : 0,
+                ImpactStatusTypes = statuses,
+                InterruptsTarget = katarWeapon && ReadImpactCapture<object>(detail, "profile").GetType().GetProperty("ClearTargetActionsOnHit")?.GetValue(ReadImpactCapture<object>(detail, "profile")) is true,
+                ImpactStatusFactory = detail.MeleeTechnique == null ? null : ReadImpactCapture<Func<SWLOR.Game.Server.Service.StatusEffectService.IStatusEffect>>(detail, "statusFactory"),
                 Name = detail.Name,
                 PerkName = perk?.Name ?? detail.Name,
                 RecastGroup = detail.RecastGroup.ToString(),
@@ -106,6 +122,26 @@ namespace SWLOR.CombatSim.Data
             var fp = requirements.FindIndex(r => r is AbilityRequirementFP);
             var stamina = requirements.FindIndex(r => r is AbilityRequirementStamina);
             return fp >= 0 && (stamina < 0 || fp < stamina);
+        }
+
+        private static bool HasImpactCapture(AbilityDetail detail, string name) => detail.ImpactAction?.Target?.GetType().GetField(name,
+            System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.NonPublic) != null;
+
+        private static T ReadImpactCapture<T>(AbilityDetail detail, string name)
+        {
+            var closure = detail.ImpactAction?.Target;
+            var field = closure?.GetType().GetField(name, System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.NonPublic);
+            if (field == null) throw new InvalidDataException($"Cannot read impact metadata {name} for {detail.Name}.");
+            return (T)field.GetValue(closure);
+        }
+
+        private static int ReadTechniquePower(AbilityDetail detail)
+        {
+            // ConfigureStrike captures its declared constant power in the impact closure. Fail closed on compiler/layout changes.
+            var closure = detail.ImpactAction?.Target;
+            var field = closure?.GetType().GetField("power", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.NonPublic);
+            if (field?.GetValue(closure) is int power) return power;
+            throw new InvalidDataException($"Cannot read source power for {detail.Name}; do not substitute scenario damage.");
         }
 
         private static float? TryEvaluate(Func<float> evaluate)

@@ -16,6 +16,7 @@ namespace SWLOR.Game.Server.Service.CombatService
         public DateTime WindowExpires { get; private set; }
         public uint BraceTarget { get; private set; }
         public uint RetaliationTarget { get; private set; }
+        public bool RetaliationRequiresSetup { get; private set; }
 
         public bool TryOpenWindow(uint target, MeleeTechniqueStage stage, int duration, int cooldown, DateTime now)
         {
@@ -50,8 +51,21 @@ namespace SWLOR.Game.Server.Service.CombatService
             if (power <= 0 || now < _retaliationAvailable)
                 return false;
             RetaliationTarget = attacker;
+            RetaliationRequiresSetup = true;
             _retaliationPower = power;
             _retaliationExpires = setupExpires;
+            _retaliationAvailable = now.AddSeconds(Math.Max(0, cooldown));
+            return true;
+        }
+
+        public bool TryGrantIndependentRetaliation(uint attacker, int power, int duration, int cooldown, DateTime now)
+        {
+            if (attacker == 0 || power <= 0 || duration <= 0 || now < _retaliationAvailable)
+                return false;
+            RetaliationTarget = attacker;
+            RetaliationRequiresSetup = false;
+            _retaliationPower = power;
+            _retaliationExpires = now.AddSeconds(duration);
             _retaliationAvailable = now.AddSeconds(Math.Max(0, cooldown));
             return true;
         }
@@ -62,7 +76,8 @@ namespace SWLOR.Game.Server.Service.CombatService
         public int TakeRetaliation(uint target, DateTime now)
         {
             var power = GetRetaliation(target, now);
-            ClearSetupBenefits();
+            if (power > 0)
+                ClearRetaliation();
             return power;
         }
 
@@ -70,7 +85,14 @@ namespace SWLOR.Game.Server.Service.CombatService
         {
             BraceTarget = 0;
             _braceExpires = DateTime.MinValue;
+            if (RetaliationRequiresSetup)
+                ClearRetaliation();
+        }
+
+        public void ClearRetaliation()
+        {
             RetaliationTarget = 0;
+            RetaliationRequiresSetup = false;
             _retaliationPower = 0;
             _retaliationExpires = DateTime.MinValue;
         }
@@ -85,6 +107,7 @@ namespace SWLOR.Game.Server.Service.CombatService
         public void ClearBenefits()
         {
             ClearSetupBenefits();
+            ClearRetaliation();
             ClearWindow();
         }
     }

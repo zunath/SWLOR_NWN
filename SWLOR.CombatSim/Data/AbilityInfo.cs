@@ -9,6 +9,12 @@ namespace SWLOR.CombatSim.Data
     public sealed class AbilityInfo
     {
         public FeatType Feat { get; init; }
+        public SWLOR.Game.Server.Service.AbilityService.MeleeTechniqueDetail Technique { get; init; }
+        public int? SourceWeaponPower { get; init; }
+        public int ImpactStatusDuration { get; init; }
+        public Func<SWLOR.Game.Server.Service.StatusEffectService.IStatusEffect> ImpactStatusFactory { get; init; }
+        public IReadOnlyList<Type> ImpactStatusTypes { get; init; } = Array.Empty<Type>();
+        public bool InterruptsTarget { get; init; }
         public string Name { get; init; }
         public string PerkName { get; init; }
         public string RecastGroup { get; init; }

@@ -21,11 +21,13 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Unarmed
                 new MeleeTechniqueDetail
                 {
                     Line = MeleeTechniqueLine.Brawler,
-                    ConsumedStages = MeleeTechniqueStage.Distraction,
-                    DistractionPower = 80,
+                    PreservesMatchingSetup = true,
+                    UsesAbilityPower = true,
+                    ConsumesRetaliation = true,
                     RefundEligible = true,
+                    RefundRequiresSetup = false,
                 },
-                40,
+                90,
                 12,
                 activationDelay: 2f);
 

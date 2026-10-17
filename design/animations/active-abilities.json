@@ -5988,7 +5988,7 @@
     "InternalName": "sw_flowst",
     "Category": "Unarmed",
     "Type": "Stance",
-    "Description": "While active, a landed Finishing Combination spending Opening grants Slip Away: +20% Evasion and +15% movement speed for 6 seconds. A landed Finishing Combination or Perfect Form spending Finish instead grants Press Forward: +15% Haste for 6 seconds. These windows are mutually exclusive and share a 12-second trigger cooldown. Weapon swaps and unrelated hostile skills against the same enemy preserve the window. Stance, combat or enemy changes clear it. No ordinary damage penalty.",
+    "Description": "While active, a landed Finishing Combination spending Opening grants Slip Away: +35% Evasion and +15% movement speed for 8 seconds. A landed Finishing Combination or Perfect Form spending Finish instead grants Press Forward: +30% Haste for 8 seconds. These windows are mutually exclusive and share a 12-second trigger cooldown. Weapon swaps and unrelated hostile skills against the same enemy preserve the window. Stance, combat or enemy changes clear it. No ordinary damage penalty.",
     "Reference": "",
     "PerkId": "FlowStance",
     "Feats": [
@@ -6057,7 +6057,7 @@
     "InternalName": "sw_uppercut",
     "Category": "Unarmed",
     "Type": "Combat",
-    "Description": "One committed strike, weapon DMG + 36. Spending your Rattled against its enemy adds +16 power.",
+    "Description": "One committed strike, weapon DMG + 52. No Rattled requirement. Can spend optional Retaliation against its enemy.",
     "Reference": "",
     "PerkId": "Uppercut",
     "Feats": [
@@ -6104,7 +6104,7 @@
     "InternalName": "sw_bruisst",
     "Category": "Unarmed",
     "Type": "Stance",
-    "Description": "Increases Physical Defense by 10%, with any equipment. A landed Dirty Jab braces you against its enemy for 4 seconds. The first direct hostile hit from that enemy that damages real HP arms Retaliation: +8 total power on the next Uppercut or Haymaker spending your own Rattled before it expires. One grant per opener, with an 18-second grant cooldown. The bonus is spent on paid activation, including a miss. Weapon swaps and unrelated hostile skills against the same enemy preserve it. Stance, combat or enemy changes clear it. No ordinary damage penalty.",
+    "Description": "Increases Physical Defense by 10%, with any equipment. Direct hostile damage to real HP arms Retaliation against the attacker: +24 total power on your next Uppercut or Haymaker against that enemy within 8 seconds. One charge, with an 18-second grant cooldown. No Dirty Jab or Rattled requirement. The bonus is spent on activation, including a miss. Weapon swaps and unrelated hostile skills against the same enemy preserve it. Stance, combat or enemy changes clear it. No ordinary damage penalty.",
     "Reference": "",
     "PerkId": "BruiserStance",
     "Feats": [
@@ -6126,7 +6126,7 @@
     "InternalName": "sw_haymaker",
     "Category": "Unarmed",
     "Type": "Combat",
-    "Description": "Deals weapon DMG + 40 to one enemy. Spending your Rattled against its enemy adds +80 power; Heavy Blows also applies.",
+    "Description": "Deals weapon DMG + 90 to one enemy. No Rattled requirement. Heavy Blows applies, and the strike can spend optional Retaliation against its enemy.",
     "Reference": "",
     "PerkId": "Haymaker",
     "Feats": [

@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Newtonsoft.Json;
 using SWLOR.Game.Server.EngineTests.Framework;
 using SWLOR.Game.Server.Entity;
+using SWLOR.Game.Server.Feature.StatusEffectDefinition;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.AchievementService;
 using SWLOR.Game.Server.Service.CombatService;
@@ -49,6 +50,8 @@ public static class UnarmedMasteryEngineTests
             record.Skills[SkillType.Spear].Rank = 35;
             record.Perks[PerkType.DirtyJab] = 1;
             record.Perks[PerkType.Uppercut] = 1;
+            record.Perks[PerkType.LowKick] = 1;
+            record.Perks[PerkType.CatchYourBreath] = 1;
             record.Perks[PerkType.OpportunistsFlow] = 1;
         });
         other.Update(record => record.Skills[SkillType.Unarmed].Rank = 50);
@@ -56,12 +59,12 @@ public static class UnarmedMasteryEngineTests
         context.AssertEqual(1, Perk.GetPerkLevel(owner.Creature, PerkType.OpportunistsFlow), "The player owns the real global four-stamina discount perk.");
         var uppercut = Ability.GetAbilityDetail(FeatType.Uppercut1);
         var notifiedPayments = new List<int>();
-        void TrackPayment(uint player, uint enemy, MeleeTechniqueDetail detail, MeleeTechniqueStage stage)
+        void TrackPayment(uint player, uint enemy, AbilityDetail ability, MeleeTechniqueStage stage)
         {
-            if (player == owner.Creature && enemy == target && detail.Line == MeleeTechniqueLine.Brawler && stage == MeleeTechniqueStage.Distraction)
+            if (player == owner.Creature && enemy == target && ability.EffectiveLevelPerkType == PerkType.Uppercut)
                 notifiedPayments.Add(Combat.GetPaidAbilityStaminaCost(player, uppercut));
         }
-        MeleeTechnique.TechniqueSpent += TrackPayment;
+        MeleeTechnique.TechniqueLanded += TrackPayment;
         Combat.SetAbilityHitResolutionOverride(true);
         Combat.SetAutoAttackHitResolutionOverride(false);
         try
@@ -70,19 +73,28 @@ public static class UnarmedMasteryEngineTests
                 await context.ExecuteInCreatureContextAsync(player.Creature,
                     () => context.Assert(Quest.AcceptQuest(player.Creature, trainer, questId), "Each real player independently accepts the trial."));
 
-            await Cast(context, owner.Creature, target, FeatType.DirtyJab1);
-            context.AssertEqual(MeleeTechniqueStage.Distraction, MeleeTechnique.GetSetupStage(owner.Creature, target), "The paid opener creates the player's own Rattled.");
+            await Cast(context, owner.Creature, target, FeatType.LowKick1);
+            context.AssertEqual(MeleeTechniqueStage.None, MeleeTechnique.GetSetupStage(owner.Creature, target), "The independent heavy trial begins without Rattled.");
+            StatusEffect.ApplyStatusEffect(owner.Creature, owner.Creature, new BruiserStanceStatusEffect(), -1);
+            await context.ExecuteInCreatureContextAsync(target, () =>
+            {
+                StatusEffect.NotifyPreDamageStatusEffects(target, owner.Creature, 5, CombatDamageType.Physical);
+                ApplyEffectToObject(DurationType.Instant, EffectDamage(5), owner.Creature);
+            });
+            await context.WaitUntilAsync(() => MeleeTechnique.GetPendingRetaliationPower(owner.Creature, target) == 24,
+                2f, "direct hostile HP loss arms the optional counter before a free heavy strike");
             // Exercise the native avoided-attack callback with the owned perk's real stat source.
             await context.ExecuteInCreatureContextAsync(owner.Creature, () => Combat.TrackAvoidedAttack(owner.Creature, target));
             context.AssertEqual(-4, Combat.GetNextSkillAbilityStaminaCostAdjustment(owner.Creature, SkillType.Unarmed, true), "Opportunist's Flow applies its global discount while Power Gloves are equipped.");
             await context.DelaySecondsAsync(1.05f);
             var freeStamina = Stat.GetCurrentStamina(owner.Creature);
             var freeImpact = await Cast(context, owner.Creature, target, FeatType.Uppercut1);
-            context.AssertEqual(freeStamina, Stat.GetCurrentStamina(owner.Creature), "The real four-stamina Uppercut is reduced to zero payment.");
+            context.AssertEqual(freeStamina, Stat.GetCurrentStamina(owner.Creature), "The free Uppercut pays zero and receives no Catch Your Breath refund despite missing stamina.");
+            context.AssertEqual(0, MeleeTechnique.GetPendingRetaliationPower(owner.Creature, target), "A valid free heavy strike still spends its optional counter.");
             context.Assert(freeImpact.ImpactedTargetCount > 0 && freeImpact.AttributedDamage > 0, "The free cast still lands and deals its normal combat damage.");
-            context.AssertEqual(MeleeTechniqueStage.None, MeleeTechnique.GetSetupStage(owner.Creature, target), "The free cast still consumes its matching setup.");
+            context.AssertEqual(MeleeTechniqueStage.None, MeleeTechnique.GetSetupStage(owner.Creature, target), "The free heavy strike needs no setup.");
             context.AssertEqual(0, Combat.GetNextSkillAbilityStaminaCostAdjustment(owner.Creature, SkillType.Unarmed, true), "The real discount is consumed once.");
-            context.AssertEqual(0, notifiedPayments.Count, "A free landed setup spender does not emit a paid mastery notification.");
+            context.AssertEqual(0, notifiedPayments.Count, "A free landed heavy strike does not emit a paid mastery notification.");
             var unchanged = JsonConvert.DeserializeObject<Player>(DB.GetRawJson<Player>(owner.Id));
             context.AssertEqual(40, unchanged.Quests[questId].CombatProgresses[objective], "The accepted trial persists no credit for the free cast.");
             context.AssertEqual(1, unchanged.Quests[questId].CurrentState, "The free cast cannot advance the accepted trial.");
@@ -93,11 +105,10 @@ public static class UnarmedMasteryEngineTests
                 foreach (var group in new[] { RecastGroup.UnarmedOpener, RecastGroup.UnarmedResponse })
                     Recast.ReduceRecastDelay(owner.Creature, group, 100f);
                 await context.DelaySecondsAsync(1.05f);
-                await Cast(context, owner.Creature, target, FeatType.DirtyJab1);
-                await context.DelaySecondsAsync(1.05f);
+                context.AssertEqual(MeleeTechniqueStage.None, MeleeTechnique.GetSetupStage(owner.Creature, target), "Paid trial credit needs no Rattled or counter charge.");
                 var paidStamina = Stat.GetCurrentStamina(owner.Creature);
                 await Cast(context, owner.Creature, target, FeatType.Uppercut1);
-                context.AssertEqual(paidStamina - 4, Stat.GetCurrentStamina(owner.Creature), "Without another avoided attack the next Uppercut pays its normal cost.");
+                context.AssertEqual(paidStamina - 4 + (cycle == 0 ? 2 : 0), Stat.GetCurrentStamina(owner.Creature), "Paid Uppercuts refund once under the shared gate; the free cast did not start that gate.");
                 context.AssertEqual(cycle + 1, notifiedPayments.Count, "Each landed paid Uppercut emits exactly one mastery notification.");
                 context.AssertEqual(4, notifiedPayments[cycle], "The real paid-cost context remains available during the mastery notification.");
                 var saved = JsonConvert.DeserializeObject<Player>(DB.GetRawJson<Player>(owner.Id));
@@ -108,7 +119,7 @@ public static class UnarmedMasteryEngineTests
         }
         finally
         {
-            MeleeTechnique.TechniqueSpent -= TrackPayment;
+            MeleeTechnique.TechniqueLanded -= TrackPayment;
             Combat.SetAbilityHitResolutionOverride(null);
             Combat.SetAutoAttackHitResolutionOverride(null);
             AssignCommand(owner.Creature, () => ClearAllActions());

@@ -14,11 +14,11 @@ namespace SWLOR.Game.Server.Feature
         [NWNEventHandler(ScriptName.OnModuleCacheBefore)]
         public static void Register()
         {
-            MeleeTechnique.TechniqueSpent -= OnTechniqueSpent;
-            MeleeTechnique.TechniqueSpent += OnTechniqueSpent;
+            MeleeTechnique.TechniqueLanded -= OnTechniqueLanded;
+            MeleeTechnique.TechniqueLanded += OnTechniqueLanded;
         }
 
-        private static void OnTechniqueSpent(uint player, uint target, MeleeTechniqueDetail detail, MeleeTechniqueStage stage)
+        private static void OnTechniqueLanded(uint player, uint target, AbilityDetail ability, MeleeTechniqueStage stage)
         {
             if (!GetIsPC(player) || GetIsDM(player) || !EquipmentPredicates.HasUnarmedGrip(player) ||
                 !GetIsObjectValid(target) || GetIsPC(target) || GetIsDM(target) || GetIsDMPossessed(target) || GetImmortal(target) ||
@@ -26,16 +26,16 @@ namespace SWLOR.Game.Server.Feature
                 Stat.GetNPCStats(target).Level < MinimumOpponentLevel)
                 return;
 
-            var objective = GetObjectiveKey(detail, stage);
+            var objective = GetObjectiveKey(ability.MeleeTechnique, stage, ability.EffectiveLevelPerkType);
             if (objective != null)
                 Quest.RecordCombatObjective(player, objective, target);
         }
 
-        public static string GetObjectiveKey(MeleeTechniqueDetail detail, MeleeTechniqueStage stage) => (detail.Line, stage) switch
+        public static string GetObjectiveKey(MeleeTechniqueDetail detail, MeleeTechniqueStage stage, PerkType abilityPerk = PerkType.Invalid) => (detail.Line, stage) switch
         {
             (MeleeTechniqueLine.MartialArtist, MeleeTechniqueStage.Opening) when detail.CreatedStage == MeleeTechniqueStage.Finish => UnarmedMasteryQuestDefinition.OpeningSpentObjective,
             (MeleeTechniqueLine.MartialArtist, MeleeTechniqueStage.Finish) => UnarmedMasteryQuestDefinition.FinishSpentObjective,
-            (MeleeTechniqueLine.Brawler, MeleeTechniqueStage.Distraction) => UnarmedMasteryQuestDefinition.DistractionSpentObjective,
+            (MeleeTechniqueLine.Brawler, _) when abilityPerk == PerkType.Uppercut => UnarmedMasteryQuestDefinition.DistractionSpentObjective,
             _ => null
         };
     }

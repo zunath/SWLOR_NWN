@@ -77,6 +77,10 @@ namespace SWLOR.CombatSim.Effects
             [FeatType.Resuscitation1] = new AbilityEffect { Kind = EffectKind.Revive, Percent = 0, Scaling = ScalingStat.None },
             [FeatType.Resuscitation2] = new AbilityEffect { Kind = EffectKind.Revive, Percent = 20 },
 
+            [FeatType.FlowStance1] = SelfStatus(typeof(FlowStanceStatusEffect), 0f),
+            [FeatType.BruiserStance1] = SelfStatus(typeof(BruiserStanceStatusEffect), 0f),
+            [FeatType.ScrapperStance1] = SelfStatus(typeof(ScrapperStanceStatusEffect), 0f),
+
             // Conduit: the stance is held until toggled off (no duration in the game); the capstone lasts 45 seconds.
             [FeatType.ConduitStance1] = SelfStatus(typeof(ConduitStanceStatusEffect), 0f),
             [FeatType.InfiniteConduit1] = SelfStatus(typeof(InfiniteConduitStatusEffect), 45f)

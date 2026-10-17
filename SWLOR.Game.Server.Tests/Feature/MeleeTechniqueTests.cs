@@ -186,15 +186,17 @@ public class MeleeTechniqueTests
     public void FinisherWindowsShareTheirGateAndCannotBeBankedByToggling()
     {
         var state = new TechniqueReactiveState();
-        state.TryOpenWindow(11, MeleeTechniqueStage.Opening, 6, 12, Start).Should().BeTrue();
-        state.GetWindowStage(Start.AddSeconds(5)).Should().Be(MeleeTechniqueStage.Opening);
-        state.TryOpenWindow(11, MeleeTechniqueStage.Finish, 6, 12, Start.AddSeconds(1)).Should().BeFalse();
+        state.TryOpenWindow(11, MeleeTechniqueStage.Opening, 8, 12, Start).Should().BeTrue();
+        state.GetWindowStage(Start.AddSeconds(7)).Should().Be(MeleeTechniqueStage.Opening);
+        state.GetWindowStage(Start.AddSeconds(8)).Should().Be(MeleeTechniqueStage.None);
+        state.TryOpenWindow(11, MeleeTechniqueStage.Finish, 8, 12, Start.AddSeconds(1)).Should().BeFalse();
         state.ClearBenefits();
         state.GetWindowStage(Start.AddSeconds(1)).Should().Be(MeleeTechniqueStage.None);
-        state.TryOpenWindow(12, MeleeTechniqueStage.Finish, 6, 12, Start.AddSeconds(11)).Should().BeFalse();
-        state.TryOpenWindow(12, MeleeTechniqueStage.Finish, 6, 12, Start.AddSeconds(12)).Should().BeTrue();
+        state.TryOpenWindow(12, MeleeTechniqueStage.Finish, 8, 12, Start.AddSeconds(11)).Should().BeFalse();
+        state.TryOpenWindow(12, MeleeTechniqueStage.Finish, 8, 12, Start.AddSeconds(12)).Should().BeTrue();
         state.WindowTarget.Should().Be(12);
-        state.GetWindowStage(Start.AddSeconds(18)).Should().Be(MeleeTechniqueStage.None);
+        state.GetWindowStage(Start.AddSeconds(19)).Should().Be(MeleeTechniqueStage.Finish);
+        state.GetWindowStage(Start.AddSeconds(20)).Should().Be(MeleeTechniqueStage.None);
     }
 
     [Test]
@@ -231,13 +233,49 @@ public class MeleeTechniqueTests
     }
 
     [Test]
+    public void IndependentRetaliationNeedsNoOpenerAndSurvivesSetupChanges()
+    {
+        var state = new TechniqueReactiveState();
+        state.TryGrantIndependentRetaliation(11, 24, 8, 18, Start).Should().BeTrue();
+        state.RetaliationRequiresSetup.Should().BeFalse();
+        state.ClearSetupBenefits();
+        state.BeginBrace(11, Start.AddSeconds(6), 4, Start.AddSeconds(1));
+        state.GetRetaliation(11, Start.AddSeconds(2)).Should().Be(24);
+        state.TakeRetaliation(12, Start.AddSeconds(2)).Should().Be(0);
+        state.GetRetaliation(11, Start.AddSeconds(2)).Should().Be(24, "another target cannot consume the charge");
+        state.TryGrantIndependentRetaliation(12, 24, 8, 18, Start.AddSeconds(3)).Should().BeFalse();
+        state.TakeRetaliation(11, Start.AddSeconds(3)).Should().Be(24);
+        state.TakeRetaliation(11, Start.AddSeconds(3)).Should().Be(0);
+        state.ClearBenefits();
+        state.TryGrantIndependentRetaliation(12, 24, 8, 18, Start.AddSeconds(17)).Should().BeFalse();
+        state.TryGrantIndependentRetaliation(12, 24, 8, 18, Start.AddSeconds(18)).Should().BeTrue();
+    }
+
+    [Test]
+    public void IndependentRetaliationHasItsOwnExpiryAndRetainsItsGateWhenCleared()
+    {
+        var state = new TechniqueReactiveState();
+        state.TryGrantIndependentRetaliation(0, 24, 8, 18, Start).Should().BeFalse();
+        state.TryGrantIndependentRetaliation(11, 0, 8, 18, Start).Should().BeFalse();
+        state.TryGrantIndependentRetaliation(11, 24, 0, 18, Start).Should().BeFalse();
+        state.TryGrantIndependentRetaliation(11, 24, 8, 18, Start).Should().BeTrue();
+        state.GetRetaliation(11, Start.AddSeconds(7)).Should().Be(24);
+        state.GetRetaliation(11, Start.AddSeconds(8)).Should().Be(0);
+        state.ClearRetaliation();
+        state.TryGrantIndependentRetaliation(11, 24, 8, 18, Start.AddSeconds(17)).Should().BeFalse();
+        state.TryGrantIndependentRetaliation(11, 24, 8, 18, Start.AddSeconds(18)).Should().BeTrue();
+        state.ClearBenefits();
+        state.GetRetaliation(11, Start.AddSeconds(19)).Should().Be(0);
+    }
+
+    [Test]
     public void ReactiveStatusClonesPreserveTheirPayloadAndExactExpiration()
     {
-        var evasion = (SlipAwayStatusEffect)new SlipAwayStatusEffect(20, 15).Clone();
-        var haste = (PressForwardStatusEffect)new PressForwardStatusEffect(15).Clone();
-        evasion.StatGroup.Stats[StatType.EvasionPercentAdjustment].Should().Be(20);
+        var evasion = (SlipAwayStatusEffect)new SlipAwayStatusEffect(35, 15).Clone();
+        var haste = (PressForwardStatusEffect)new PressForwardStatusEffect(30).Clone();
+        evasion.StatGroup.Stats[StatType.EvasionPercentAdjustment].Should().Be(35);
         evasion.StatGroup.Stats[StatType.MovementSpeedPercentAdjustment].Should().Be(15);
-        haste.StatGroup.Stats[StatType.AttackDelayReductionPercent].Should().Be(15);
+        haste.StatGroup.Stats[StatType.AttackDelayReductionPercent].Should().Be(30);
         evasion.ActivationType.Should().Be(StatusEffectActivationType.Passive);
         haste.ActivationType.Should().Be(StatusEffectActivationType.Passive);
         new RetaliationStatusEffect().ActivationType.Should().Be(StatusEffectActivationType.Passive);

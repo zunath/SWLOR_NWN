@@ -164,9 +164,9 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.MeasuredTechniqueTrait)
-                .Description("While your Opening or Finish is active, gain +5 ability ACC against its enemy with any skill. This also applies to the ability that spends the setup.")
+                .Description("While your Opening or Finish is active, gain +10 ability ACC against its enemy with any skill. This also applies to the ability that spends the setup.")
                 .IncreasesStat(StatType.TechniqueLine, 1)
-                .IncreasesStat(StatType.TechniqueSetupAbilityAccuracy, 5)
+                .IncreasesStat(StatType.TechniqueSetupAbilityAccuracy, 10)
                 .Price(4)
                 .RequirementSkill(SkillType.Unarmed, 15)
                 .RequirementMustHavePerk(PerkType.PalmStrike);
@@ -201,7 +201,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.FlowStance1)
-                .Description("While active, a landed Finishing Combination spending Opening grants Slip Away: +20% Evasion and +15% movement speed for 6 seconds. A landed Finishing Combination or Perfect Form spending Finish instead grants Press Forward: +15% Haste for 6 seconds. These windows are mutually exclusive and share a 12-second trigger cooldown. Weapon swaps and unrelated hostile skills against the same enemy preserve the window. Stance, combat or enemy changes clear it. No ordinary damage penalty.")
+                .Description("While active, a landed Finishing Combination spending Opening grants Slip Away: +35% Evasion and +15% movement speed for 8 seconds. A landed Finishing Combination or Perfect Form spending Finish instead grants Press Forward: +30% Haste for 8 seconds. These windows are mutually exclusive and share a 12-second trigger cooldown. Weapon swaps and unrelated hostile skills against the same enemy preserve the window. Stance, combat or enemy changes clear it. No ordinary damage penalty.")
                 .Price(4)
                 .RequirementSkill(SkillType.Unarmed, 20);
         }
@@ -291,7 +291,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.DirtyFightingTrait)
-                .Description("Extends your Rattled from 6 to 8 seconds. Gain +3 ordinary weapon ACC against the enemy affected by your Rattled, with any weapon.")
+                .Description("Extends your Rattled from 6 to 8 seconds. Gain +3 ordinary weapon ACC against the enemy affected by your Rattled, with any weapon. Uppercut and Haymaker do not consume Rattled.")
                 .IncreasesStat(StatType.TechniqueLine, 2)
                 .IncreasesStat(StatType.TechniqueWindowExtensionSeconds, 2)
                 .IncreasesStat(StatType.TechniqueDebuffTargetOrdinaryAccuracy, 3)
@@ -308,21 +308,21 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.Uppercut1)
-                .Description("One committed strike, weapon DMG + 12. Spending your Rattled against its enemy adds +8 power.")
+                .Description("One committed strike, weapon DMG + 20. No Rattled requirement. Can spend optional Retaliation against its enemy.")
                 .Price(2)
                 .RequirementSkill(SkillType.Unarmed, 8)
                 .RequirementMustHavePerk(PerkType.DirtyJab)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.Uppercut2)
-                .Description("One committed strike, weapon DMG + 24. Spending your Rattled against its enemy adds +12 power.")
+                .Description("One committed strike, weapon DMG + 36. No Rattled requirement. Can spend optional Retaliation against its enemy.")
                 .Price(4)
                 .RequirementSkill(SkillType.Unarmed, 22)
                 .RequirementMustHavePerk(PerkType.DirtyJab)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.Uppercut3)
-                .Description("One committed strike, weapon DMG + 36. Spending your Rattled against its enemy adds +16 power.")
+                .Description("One committed strike, weapon DMG + 52. No Rattled requirement. Can spend optional Retaliation against its enemy.")
                 .Price(4)
                 .RequirementSkill(SkillType.Unarmed, 45)
                 .RequirementMustHavePerk(PerkType.DirtyJab);
@@ -336,27 +336,27 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.HeavyBlowsTrait)
-                .Description("Uppercut or Haymaker spending your Rattled gains +4 total power for that activation.")
+                .Description("Uppercut and Haymaker gain +4 total power per activation, without requiring or consuming Rattled.")
                 .IncreasesStat(StatType.TechniqueLine, 2)
-                .IncreasesStat(StatType.TechniqueConditionalPower, 4)
+                .IncreasesStat(StatType.TechniqueAbilityPower, 4)
                 .Price(2)
                 .RequirementSkill(SkillType.Unarmed, 10)
                 .RequirementMustHavePerk(PerkType.Uppercut)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.HeavyBlows2Trait)
-                .Description("Uppercut or Haymaker spending your Rattled gains +8 total power for that activation.")
+                .Description("Uppercut and Haymaker gain +8 total power per activation, without requiring or consuming Rattled.")
                 .IncreasesStat(StatType.TechniqueLine, 2)
-                .IncreasesStat(StatType.TechniqueConditionalPower, 8)
+                .IncreasesStat(StatType.TechniqueAbilityPower, 8)
                 .Price(4)
                 .RequirementSkill(SkillType.Unarmed, 30)
                 .RequirementMustHavePerk(PerkType.Uppercut)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.HeavyBlows3Trait)
-                .Description("Uppercut or Haymaker spending your Rattled gains +12 total power for that activation.")
+                .Description("Uppercut and Haymaker gain +12 total power per activation, without requiring or consuming Rattled.")
                 .IncreasesStat(StatType.TechniqueLine, 2)
-                .IncreasesStat(StatType.TechniqueConditionalPower, 12)
+                .IncreasesStat(StatType.TechniqueAbilityPower, 12)
                 .Price(4)
                 .RequirementSkill(SkillType.Unarmed, 38)
                 .RequirementMustHavePerk(PerkType.Uppercut);
@@ -403,7 +403,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.BruiserStance1)
-                .Description("Increases Physical Defense by 10%, with any equipment. A landed Dirty Jab braces you against its enemy for 4 seconds. The first direct hostile hit from that enemy that damages real HP arms Retaliation: +8 total power on the next Uppercut or Haymaker spending your own Rattled before it expires. One grant per opener, with an 18-second grant cooldown. The bonus is spent on paid activation, including a miss. Weapon swaps and unrelated hostile skills against the same enemy preserve it. Stance, combat or enemy changes clear it. No ordinary damage penalty.")
+                .Description("Increases Physical Defense by 10%, with any equipment. Direct hostile damage to real HP arms Retaliation against the attacker: +24 total power on your next Uppercut or Haymaker against that enemy within 8 seconds. One charge, with an 18-second grant cooldown. No Dirty Jab or Rattled requirement. The bonus is spent on activation, including a miss. Weapon swaps and unrelated hostile skills against the same enemy preserve it. Stance, combat or enemy changes clear it. No ordinary damage penalty.")
                 .Price(4)
                 .RequirementSkill(SkillType.Unarmed, 20);
         }
@@ -416,7 +416,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.CatchYourBreathTrait)
-                .Description("A Rattled spender landing its hit restores 2 STM once per cast, no more than STM paid. Shares a 12-second refund cooldown with Controlled Breathing.")
+                .Description("A landed Uppercut or Haymaker restores 2 STM once per paid cast, no more than STM paid. No Rattled requirement. Shares a 12-second refund cooldown with Controlled Breathing.")
                 .IncreasesStat(StatType.TechniqueLine, 2)
                 .IncreasesStat(StatType.TechniqueRefundStamina, 2)
                 .IncreasesStat(StatType.TechniqueRefundCooldownSeconds, 12)
@@ -450,7 +450,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.Haymaker1)
-                .Description("Deals weapon DMG + 40 to one enemy. Spending your Rattled against its enemy adds +80 power; Heavy Blows also applies.")
+                .Description("Deals weapon DMG + 90 to one enemy. No Rattled requirement. Heavy Blows applies, and the strike can spend optional Retaliation against its enemy.")
                 .Price(6)
                 .RequirementSkill(SkillType.Unarmed, 50)
                 .RequirementQuest(UnarmedMasteryQuestDefinition.HaymakerMasteryQuestId)

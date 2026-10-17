@@ -3,6 +3,7 @@ namespace SWLOR.CombatSim.Scenario
     public sealed class CombatantSpec
     {
         public string Name { get; set; }
+        public WeaponCombatSpec WeaponCombat { get; set; }
 
         /// <summary>Spawns this many copies, numbered after the name.</summary>
         public int Count { get; set; } = 1;
@@ -19,7 +20,7 @@ namespace SWLOR.CombatSim.Scenario
         public int Might { get; set; } = 10;
         public int Social { get; set; } = 10;
 
-        /// <summary>-10 (Dark) to +10 (Light).</summary>
+        /// <summary>Final affinity including all owned perks, from -10 (Dark) to +10 (Light); perk affinity is not added again.</summary>
         public int ForceAffinity { get; set; }
 
         public float CombatReadinessPercent { get; set; }

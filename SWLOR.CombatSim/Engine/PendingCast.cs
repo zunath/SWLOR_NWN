@@ -16,6 +16,7 @@ namespace SWLOR.CombatSim.Engine
         public bool Activated { get; set; }
         public bool InterruptedByDamage { get; init; }
         public int FpCost { get; init; }
-        public int StmCost { get; init; }
+        public int StmCost { get; set; }
+        public TechniqueActivation Technique { get; set; }
     }
 }

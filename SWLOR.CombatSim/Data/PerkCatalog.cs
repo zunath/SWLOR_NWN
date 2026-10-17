@@ -70,6 +70,25 @@ namespace SWLOR.CombatSim.Data
             return totals;
         }
 
+        public List<Dictionary<StatType, int>> GetSources(IEnumerable<string> entries)
+        {
+            var result = new List<Dictionary<StatType,int>>();
+            var owned = new HashSet<PerkType>();
+            foreach (var entry in entries ?? Enumerable.Empty<string>())
+            {
+                var (perk, level) = Parse(entry);
+                if (!owned.Add(perk.Type)) throw new InvalidDataException($"Duplicate perk {entry}.");
+                var source = new Dictionary<StatType,int>();
+                foreach (var bonus in perk.StatBonuses.Concat(level.StatBonuses))
+                {
+                    try { source[bonus.Stat] = Stat.AggregateStatAdjustment(bonus.Stat, source.GetValueOrDefault(bonus.Stat), bonus.Calculate(PlaceholderObject)); }
+                    catch (Exception ex) { throw new InvalidDataException($"Cannot evaluate source stat {entry}/{bonus.Stat} outside the engine.", ex); }
+                }
+                if (source.Count > 0) result.Add(source);
+            }
+            return result;
+        }
+
         private (PerkDetail Perk, PerkLevel Level) Parse(string entry)
         {
             var parts = (entry ?? string.Empty).Split(':');

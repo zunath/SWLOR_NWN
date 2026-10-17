@@ -14,10 +14,10 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
         public FlowStanceStatusEffect()
         {
             StatGroup.Stats[StatType.TechniqueLine] = 1;
-            StatGroup.Stats[StatType.TechniqueOpeningFinisherEvasionPercent] = 20;
+            StatGroup.Stats[StatType.TechniqueOpeningFinisherEvasionPercent] = 35;
             StatGroup.Stats[StatType.TechniqueOpeningFinisherMovementSpeedPercent] = 15;
-            StatGroup.Stats[StatType.TechniqueFinishFinisherHastePercent] = 15;
-            StatGroup.Stats[StatType.TechniqueFinisherWindowDurationSeconds] = 6;
+            StatGroup.Stats[StatType.TechniqueFinishFinisherHastePercent] = 30;
+            StatGroup.Stats[StatType.TechniqueFinisherWindowDurationSeconds] = 8;
             StatGroup.Stats[StatType.TechniqueFinisherWindowCooldownSeconds] = 12;
         }
     }

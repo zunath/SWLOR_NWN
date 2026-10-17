@@ -205,16 +205,18 @@ public class UnarmedProgressionTests
             Assert.That(flow.StatGroup.Stats[StatType.AttackDelayReductionPercent], Is.Zero);
             Assert.That(flow.StatGroup.Stats[StatType.EvasionPercentAdjustment], Is.Zero);
             Assert.That(flow.StatGroup.Stats[StatType.TechniqueLine], Is.EqualTo(1));
-            Assert.That(flow.StatGroup.Stats[StatType.TechniqueOpeningFinisherEvasionPercent], Is.EqualTo(20));
+            Assert.That(flow.StatGroup.Stats[StatType.TechniqueOpeningFinisherEvasionPercent], Is.EqualTo(35));
             Assert.That(flow.StatGroup.Stats[StatType.TechniqueOpeningFinisherMovementSpeedPercent], Is.EqualTo(15));
-            Assert.That(flow.StatGroup.Stats[StatType.TechniqueFinishFinisherHastePercent], Is.EqualTo(15));
-            Assert.That(flow.StatGroup.Stats[StatType.TechniqueFinisherWindowDurationSeconds], Is.EqualTo(6));
+            Assert.That(flow.StatGroup.Stats[StatType.TechniqueFinishFinisherHastePercent], Is.EqualTo(30));
+            Assert.That(flow.StatGroup.Stats[StatType.TechniqueFinisherWindowDurationSeconds], Is.EqualTo(8));
             Assert.That(flow.StatGroup.Stats[StatType.TechniqueFinisherWindowCooldownSeconds], Is.EqualTo(12));
             Assert.That(bruiser.StatGroup.Stats[StatType.PhysicalDefensePercentAdjustment], Is.EqualTo(10));
             Assert.That(bruiser.StatGroup.Stats[StatType.TechniqueLine], Is.EqualTo(2));
-            Assert.That(bruiser.StatGroup.Stats[StatType.TechniqueSetupBraceWindowSeconds], Is.EqualTo(4));
-            Assert.That(bruiser.StatGroup.Stats[StatType.TechniqueSetupRetaliationPower], Is.EqualTo(8));
-            Assert.That(bruiser.StatGroup.Stats[StatType.TechniqueSetupRetaliationCooldownSeconds], Is.EqualTo(18));
+            Assert.That(bruiser.StatGroup.Stats[StatType.TechniqueSetupBraceWindowSeconds], Is.Zero);
+            Assert.That(bruiser.StatGroup.Stats[StatType.TechniqueSetupRetaliationPower], Is.Zero);
+            Assert.That(bruiser.StatGroup.Stats[StatType.TechniqueRetaliationPower], Is.EqualTo(24));
+            Assert.That(bruiser.StatGroup.Stats[StatType.TechniqueRetaliationDurationSeconds], Is.EqualTo(8));
+            Assert.That(bruiser.StatGroup.Stats[StatType.TechniqueRetaliationCooldownSeconds], Is.EqualTo(18));
             Assert.That(bruiser.StatGroup.Stats[StatType.Guard], Is.Zero);
             Assert.That(bruiser.StatGroup.Stats[StatType.ForceDefensePercentAdjustment], Is.Zero);
         });
@@ -241,7 +243,7 @@ public class UnarmedProgressionTests
         {
             Assert.That(Stats(PerkType.RootedTechnique)[StatType.MobilityResistance], Is.EqualTo(15));
             Assert.That(Stats(PerkType.HardKnocks)[StatType.TraumaResistance], Is.EqualTo(15));
-            Assert.That(measured[StatType.TechniqueSetupAbilityAccuracy], Is.EqualTo(5));
+            Assert.That(measured[StatType.TechniqueSetupAbilityAccuracy], Is.EqualTo(10));
             Assert.That(measured.ContainsKey(StatType.TechniqueConditionalAccuracy), Is.False);
             Assert.That(payback[StatType.DirectHostileDamageNextAbilityStaminaDiscount], Is.EqualTo(2));
             Assert.That(payback[StatType.DirectHostileDamageNextAbilityDiscountDurationSeconds], Is.EqualTo(8));
@@ -250,6 +252,32 @@ public class UnarmedProgressionTests
             Assert.That(payback.ContainsKey(StatType.DirectHostileDamageNextTechniqueStaminaDiscount), Is.False);
             Assert.That(payback.ContainsKey(StatType.TechniqueLine), Is.False);
         });
+    }
+
+    [Test]
+    public void HeavyStrikesUseIndependentPowerRefundsAndPreservePressure()
+    {
+        var definitions = new[] { new UppercutAbilityDefinition().BuildAbilities(), new HaymakerAbilityDefinition().BuildAbilities() };
+        foreach (var ability in definitions.SelectMany(definition => definition.Values))
+        {
+            var technique = ability.MeleeTechnique;
+            Assert.Multiple(() =>
+            {
+                Assert.That(technique.ConsumedStages, Is.EqualTo(MeleeTechniqueStage.None));
+                Assert.That(technique.PreservesMatchingSetup, Is.True);
+                Assert.That(technique.UsesAbilityPower && technique.ConsumesRetaliation, Is.True);
+                Assert.That(technique.RefundEligible, Is.True);
+                Assert.That(technique.RefundRequiresSetup, Is.False);
+            });
+        }
+        var perks = new UnarmedPerkDefinition().BuildPerks();
+        foreach (var rank in new[] { 1, 2, 3 })
+        {
+            var bonuses = perks[PerkType.HeavyBlows].PerkLevels[rank].StatBonuses;
+            Assert.That(bonuses.Single(bonus => bonus.Stat == StatType.TechniqueAbilityPower).Calculate(uint.MaxValue), Is.EqualTo(rank * 4));
+            Assert.That(bonuses.Any(bonus => bonus.Stat == StatType.TechniqueConditionalPower), Is.False);
+        }
+        Assert.That(new FinishingCombinationAbilityDefinition().BuildAbilities().Values.All(ability => ability.MeleeTechnique.RefundRequiresSetup), Is.True);
     }
 
     [Test]
@@ -263,7 +291,8 @@ public class UnarmedProgressionTests
             Assert.That(UnarmedMastery.GetObjectiveKey(palm, MeleeTechniqueStage.Opening), Is.EqualTo("unarmed_opening_spent"));
             Assert.That(UnarmedMastery.GetObjectiveKey(finisher, MeleeTechniqueStage.Opening), Is.Null);
             Assert.That(UnarmedMastery.GetObjectiveKey(finisher, MeleeTechniqueStage.Finish), Is.EqualTo("unarmed_finish_spent"));
-            Assert.That(UnarmedMastery.GetObjectiveKey(uppercut, MeleeTechniqueStage.Distraction), Is.EqualTo("unarmed_distraction_spent"));
+            Assert.That(UnarmedMastery.GetObjectiveKey(uppercut, MeleeTechniqueStage.None, PerkType.Uppercut), Is.EqualTo("unarmed_distraction_spent"));
+            Assert.That(UnarmedMastery.GetObjectiveKey(uppercut, MeleeTechniqueStage.None, PerkType.Haymaker), Is.Null);
             Assert.That(UnarmedMastery.GetObjectiveKey(uppercut, MeleeTechniqueStage.None), Is.Null);
         });
         var quests = new UnarmedMasteryQuestDefinition().BuildQuests();

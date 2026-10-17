@@ -21,11 +21,13 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Unarmed
                 new MeleeTechniqueDetail
                 {
                     Line = MeleeTechniqueLine.Brawler,
-                    ConsumedStages = MeleeTechniqueStage.Distraction,
-                    DistractionPower = 8,
+                    PreservesMatchingSetup = true,
+                    UsesAbilityPower = true,
+                    ConsumesRetaliation = true,
                     RefundEligible = true,
+                    RefundRequiresSetup = false,
                 },
-                12,
+                20,
                 4,
                 activationDelay: 1f);
 
@@ -38,11 +40,13 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Unarmed
                 new MeleeTechniqueDetail
                 {
                     Line = MeleeTechniqueLine.Brawler,
-                    ConsumedStages = MeleeTechniqueStage.Distraction,
-                    DistractionPower = 12,
+                    PreservesMatchingSetup = true,
+                    UsesAbilityPower = true,
+                    ConsumesRetaliation = true,
                     RefundEligible = true,
+                    RefundRequiresSetup = false,
                 },
-                24,
+                36,
                 8,
                 activationDelay: 1f);
 
@@ -55,11 +59,13 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Unarmed
                 new MeleeTechniqueDetail
                 {
                     Line = MeleeTechniqueLine.Brawler,
-                    ConsumedStages = MeleeTechniqueStage.Distraction,
-                    DistractionPower = 16,
+                    PreservesMatchingSetup = true,
+                    UsesAbilityPower = true,
+                    ConsumesRetaliation = true,
                     RefundEligible = true,
+                    RefundRequiresSetup = false,
                 },
-                36,
+                52,
                 10,
                 activationDelay: 1f);
 

@@ -282,6 +282,89 @@ class TrellisWeaponExportTests(unittest.TestCase):
         finally:
             for ob in objects:bpy.data.objects.remove(ob,do_unlink=True)
 
+    def make_mixed_surface_glb(self,missing_face=False):
+        bpy=exporter.bpy
+        bpy.ops.mesh.primitive_cube_add(size=2)
+        cube=bpy.context.object;cube.data.calc_loop_triangles()
+        triangles=np.array([[cube.data.vertices[i].co[:] for i in t.vertices] for t in cube.data.loop_triangles],np.float32)
+        bpy.data.objects.remove(cube,do_unlink=True)
+        # The unrelated open sheet shares a point, but no edge, with the cube.
+        sheet=np.array([[triangles[0,0],[-4,-3,-2],[-4,-2,-3]]],np.float32)
+        document={'asset':{'version':'2.0'},'buffers':[{}],'bufferViews':[],'accessors':[],
+                  'materials':[{'name':'duplicate','doubleSided':True},{'name':'duplicate'}],
+                  'meshes':[{'primitives':[]}],'nodes':[{'mesh':0}],'scenes':[{'nodes':[0]}],'scene':0}
+        binary=bytearray()
+        def add(values,kind):
+            values=np.asarray(values,dtype='<f4');offset=len(binary);binary.extend(values.tobytes())
+            view=len(document['bufferViews']);document['bufferViews'].append({'buffer':0,'byteOffset':offset,'byteLength':values.nbytes})
+            accessor={'bufferView':view,'componentType':5126,'count':len(values),'type':kind}
+            if kind=='VEC3':accessor.update(min=values.min(axis=0).tolist(),max=values.max(axis=0).tolist())
+            index=len(document['accessors']);document['accessors'].append(accessor);return index
+        for faces,material,color in [(triangles[:2],0,False),(triangles[2:-1] if missing_face else triangles[2:],1,True),(sheet,1,False)]:
+            positions=faces.reshape(-1,3);normal=np.cross(faces[:,1]-faces[:,0],faces[:,2]-faces[:,0]);normal/=np.linalg.norm(normal,axis=1)[:,None]
+            attributes={'POSITION':add(positions,'VEC3'),'NORMAL':add(np.repeat(normal,3,axis=0),'VEC3'),
+                        'TEXCOORD_0':add(np.tile([[0,0],[1,0],[0,1]],(len(faces),1)),'VEC2')}
+            if color:attributes['COLOR_0']=add(np.ones((len(positions),4)),'VEC4')
+            document['meshes'][0]['primitives'].append({'attributes':attributes,'material':material})
+        document['buffers'][0]['byteLength']=len(binary)
+        return document,bytes(binary)
+
+    @unittest.skipUnless(HAS_BLENDER,'Run Blender 4.0 for material-scoped closure proof')
+    def test_closed_surface_policy_uses_identity_and_complete_affected_components(self):
+        bpy=exporter.bpy;document,binary=self.make_mixed_surface_glb()
+        exporter.tag_import_materials(document);path=self.root/'mixed.glb';exporter.write_glb(path,document,binary)
+        before=set(bpy.data.objects);bpy.ops.import_scene.gltf(filepath=str(path));objects=[ob for ob in bpy.data.objects if ob not in before and ob.type=='MESH']
+        try:
+            materials={material for ob in objects for material in ob.data.materials}
+            # Vertex-color and non-vertex-color variants retain the same source ID.
+            self.assertEqual(sorted(exporter.imported_material_index(mat,2) for mat in materials),[0,1,1])
+            for mat in materials:mat.name='renamed_by_blender'
+            report=exporter.closed_surface_report(objects,{0},2)
+            self.assertEqual(report['triangles'],12);self.assertEqual(report['shells'],1);self.assertEqual(report['unaffected_triangles'],1)
+            with self.assertRaisesRegex(ValueError,'exactly closed'):exporter.closed_surface_report(objects,{1},2)
+            # A neighboring single-sided face still participates in winding proof.
+            for ob in objects:
+                polygon=next(p for p in ob.data.polygons if exporter.imported_material_index(ob.data.materials[p.material_index],2)==1)
+                polygon.flip();ob.data.update();break
+            with self.assertRaisesRegex(ValueError,'consistently wound'):exporter.closed_surface_report(objects,{0},2)
+            mat=next(iter(materials));del mat[exporter.SOURCE_MATERIAL_INDEX]
+            with self.assertRaisesRegex(ValueError,'material identity'):exporter.imported_material_index(mat,2)
+        finally:
+            for ob in objects:bpy.data.objects.remove(ob,do_unlink=True)
+
+    @unittest.skipUnless(HAS_BLENDER,'Run Blender 4.0 for export closure integration')
+    def test_export_scopes_closure_to_double_sided_materials_and_rejects_affected_holes(self):
+        for missing_face in (False,True):
+            with self.subTest(missing_face=missing_face):
+                document,binary=self.make_mixed_surface_glb(missing_face);path=self.root/f'source-{missing_face}.glb'
+                for primitive in document['meshes'][0]['primitives']:primitive['attributes'].pop('COLOR_0',None)
+                exporter.write_glb(path,document,binary);out=self.root/f'export-{missing_face}'
+                # Stop immediately after the closure report: no rendering or runtime assets.
+                expected='exactly closed' if missing_face else 'Explicit positive uniform scale'
+                with self.assertRaisesRegex(ValueError,expected):
+                    exporter.export_one({'double_sided_policy':'closed_surface','scale':0},path,self.root,out,'export',None,None)
+                if not missing_face:
+                    report=json.loads((out/'report.json').read_text())['surface_conversion']
+                    self.assertEqual(report['triangles'],12);self.assertEqual(report['unaffected_triangles'],1)
+
+    @unittest.skipUnless(HAS_BLENDER,'Run Blender 4.0 for unaffected cavity enclosure')
+    def test_affected_inward_shell_accepts_valid_single_sided_outer_shell(self):
+        bpy=exporter.bpy;objects=[];materials=[]
+        for size,reverse,index in [(2,False,0),(.5,True,1)]:
+            bpy.ops.mesh.primitive_cube_add(size=size);ob=bpy.context.object;objects.append(ob)
+            mat=bpy.data.materials.new('shell');mat[exporter.SOURCE_MATERIAL_INDEX]=index;materials.append(mat);ob.data.materials.append(mat)
+            if reverse:
+                for polygon in ob.data.polygons:polygon.flip()
+            ob.data.update()
+        try:
+            report=exporter.closed_surface_report(objects,{1},2)
+            self.assertEqual(report['triangles'],12);self.assertEqual(report['inward_shells_validated_as_internal'],1)
+            objects[1].location.x=4;bpy.context.view_layer.update()
+            with self.assertRaisesRegex(ValueError,'not proven enclosed'):exporter.closed_surface_report(objects,{1},2)
+        finally:
+            for ob in objects:bpy.data.objects.remove(ob,do_unlink=True)
+            for mat in materials:bpy.data.materials.remove(mat)
+
     @unittest.skipUnless(HAS_BLENDER,'Run Blender 4.0 for split geometry')
     def test_split_keeps_shared_seam_uv_normals_winding_and_area(self):
         mesh=([(-1,-1,0),(1,-1,0),(1,1,0),(-1,1,0)],[(0,0),(1,0),(1,1),(0,1)],[(0,1,2),(0,2,3)],[(0,0,1)]*4)
@@ -407,6 +490,34 @@ class NativeWeaponNormalTests(unittest.TestCase):
         self.assertTrue(np.all(np.any(result[...,:3]!=0,axis=-1)))
         with self.assertRaisesRegex(ValueError,'covered texels'):
             self.helper.pad_native_normals(pixels,np.zeros_like(coverage))
+
+    def test_normal_padding_wraps_edges_and_corners_to_the_correct_native_island(self):
+        for covered,target in [((3,0),(3,8)),((0,3),(8,3)),((0,0),(8,8))]:
+            with self.subTest(covered=covered,target=target):
+                pixels=np.zeros((9,9,4),np.uint8);pixels[...,3]=np.arange(81).reshape(9,9)
+                coverage=np.zeros((9,9),bool);coverage[covered]=coverage[4,4]=True
+                pixels[covered][:3]=[255,128,128];pixels[4,4,:3]=[128,255,128]
+                result=self.helper.pad_native_normals(pixels,coverage)
+                np.testing.assert_array_equal(result[target][:3],pixels[covered][:3])
+                np.testing.assert_array_equal(result[coverage],pixels[coverage]);np.testing.assert_array_equal(result[...,3],pixels[...,3])
+                self.assertTrue(np.all(np.any(result[...,:3]!=0,axis=-1)))
+
+    def test_normal_padding_matches_brute_force_toroidal_distance(self):
+        rng=np.random.default_rng(7281)
+        for height,width in [(1,9),(9,1),(3,8),(8,3),(9,11)]:
+            for _ in range(12):
+                coverage=rng.random((height,width))<.15;coverage[rng.integers(height),rng.integers(width)]=True
+                pixels=np.zeros((height,width,4),np.uint8);pixels[...,3]=rng.integers(0,256,(height,width),dtype=np.uint8)
+                owners=np.argwhere(coverage)
+                for index,(y,x) in enumerate(owners):pixels[y,x,:3]=[index+1,128,255]
+                result=self.helper.pad_native_normals(pixels,coverage)
+                for y in range(height):
+                    for x in range(width):
+                        dy=np.abs(owners[:,0]-y);dx=np.abs(owners[:,1]-x)
+                        distance=np.minimum(dy,height-dy)+np.minimum(dx,width-dx)
+                        owner=int(result[y,x,0])-1
+                        self.assertGreaterEqual(owner,0);self.assertEqual(distance[owner],distance.min())
+                np.testing.assert_array_equal(result[coverage],pixels[coverage]);np.testing.assert_array_equal(result[...,3],pixels[...,3])
 
     def test_reprojection_replaces_source_basis_padding_through_the_last_mip(self):
         positions=np.array([[[0.,0.,0.],[1.,0.,0.],[0.,1.,0.]]]);uv=np.array([[[.4,.4],[.6,.4],[.4,.6]]])

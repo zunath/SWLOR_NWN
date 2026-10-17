@@ -17,6 +17,7 @@ import copy
 import hashlib
 import ipaddress
 import json
+import math
 import os
 from pathlib import Path
 import re
@@ -43,6 +44,16 @@ def write_json(path, value):
     with temporary.open('w', encoding='utf-8') as stream:
         json.dump(value, stream, indent=2)
         stream.write('\n')
+        stream.flush()
+        os.fsync(stream.fileno())
+    durable_replace(temporary, path)
+
+
+def write_bytes(path, payload):
+    """Flush artifact contents and publish their directory entry before completion."""
+    temporary = path.with_suffix(path.suffix + '.tmp')
+    with temporary.open('wb') as stream:
+        stream.write(payload)
         stream.flush()
         os.fsync(stream.fileno())
     durable_replace(temporary, path)
@@ -126,12 +137,12 @@ class LocalAPI:
     def post(self, route, value):
         return self.request(route, json.dumps(value).encode())
 
-    def upload(self, image):
+    def upload(self, data, suffix):
         boundary = 'swlor-' + uuid.uuid4().hex
-        name = 'swlor-' + digest(image.read_bytes()) + image.suffix.lower()
+        name = 'swlor-' + digest(data) + suffix.lower()
         payload = (f'--{boundary}\r\nContent-Disposition: form-data; name="image"; filename="{name}"\r\n'
                    'Content-Type: application/octet-stream\r\n\r\n').encode()
-        payload += image.read_bytes() + f'\r\n--{boundary}--\r\n'.encode()
+        payload += data + f'\r\n--{boundary}--\r\n'.encode()
         return self.request('/upload/image', payload, 'multipart/form-data; boundary=' + boundary)
 
 
@@ -167,7 +178,12 @@ def staging_path(path):
     repository = next((parent for parent in (path, *path.parents) if (parent / '.git').exists()), None)
     if repository is not None:
         relative = path.relative_to(repository).as_posix()
-        result = subprocess.run(['git', '-C', str(repository), 'check-ignore', '--no-index', '--quiet', relative], check=False)
+        tracked = subprocess.run(['git', '-C', str(repository), '--literal-pathspecs',
+                                  'ls-files', '-z', '--', relative],
+                                 check=True, capture_output=True)
+        if tracked.stdout:
+            raise ValueError(f'Authoring files must not be tracked or contain tracked files: {path}')
+        result = subprocess.run(['git', '-C', str(repository), 'check-ignore', '--no-index', '--quiet', '--', relative], check=False)
         if result.returncode != 0:
             raise ValueError(f'Authoring files must be outside Git or explicitly ignored: {path}')
     return path
@@ -246,16 +262,36 @@ def preflight(graph, info):
             raise ValueError(f'Node {key} {node["class_type"]}: missing {missing}, unknown {unknown}')
         for name, value in actual.items():
             if isinstance(value, list):
+                if len(value) != 2:
+                    raise ValueError(f'Invalid link {key}.{name}')
                 upstream, slot = str(value[0]), value[1]
                 if upstream not in graph or type(slot) is not int or slot < 0 or slot >= len(info[graph[upstream]['class_type']]['output']):
                     raise ValueError(f'Invalid link {key}.{name}')
-            elif name in allowed and name != 'image':
+            elif name in allowed:
                 definition = allowed[name]
                 choices = definition[0] if isinstance(definition[0], list) else None
                 if definition[0] == 'COMBO' and len(definition) > 1:
                     choices = definition[1].get('options')
-                if choices is not None and value not in choices:
+                if choices is not None and name != 'image' and value not in choices:
                     raise ValueError(f'Unavailable option/model for {key}.{name}: {value}')
+                kind = definition[0]
+                scalar_types = {'INT': (int,), 'FLOAT': (int, float),
+                                'BOOLEAN': (bool,), 'STRING': (str,)}
+                if isinstance(kind, str) and kind in scalar_types:
+                    # Reject implicit coercions that silently change authored values.
+                    if type(value) not in scalar_types[kind]:
+                        raise ValueError(f'Invalid {kind} value for {key}.{name}: {value!r}')
+                    if kind in ('INT', 'FLOAT'):
+                        if type(value) is float and not math.isfinite(value):
+                            raise ValueError(f'Non-finite value for {key}.{name}')
+                        options = definition[1] if len(definition) > 1 else {}
+                        if 'min' in options and value < options['min']:
+                            raise ValueError(f'Value below minimum for {key}.{name}: {value}')
+                        if 'max' in options and value > options['max']:
+                            raise ValueError(f'Value above maximum for {key}.{name}: {value}')
+                        # ComfyUI step is a widget increment, not a server value constraint:
+                        # https://docs.comfy.org/custom-nodes/backend/datatypes#additional-parameters
+
 
 
 def recover_prompt(api, token):
@@ -297,7 +333,7 @@ def extract_glb(data, folder):
         if not suffix:
             raise ValueError('Unsupported embedded image type')
         name = f'image_{index}{suffix}'; payload = blob[start:end]
-        (folder / name).write_bytes(payload)
+        write_bytes(folder / name, payload)
         images.append({'file': name, 'sha256': digest(payload)})
     materials = doc.get('materials', [])
     if not materials or not images:
@@ -310,9 +346,12 @@ def extract_glb(data, folder):
 
 
 def run_asset(api, template, asset, image, folder, timeout, identity):
+    # One immutable snapshot owns the fingerprint, uploaded bytes and result hash.
+    image_data = image.read_bytes()
+    image_hash = digest(image_data)
     create_output_folder(folder)
     path = folder / 'submission.json'
-    fingerprint = digest(json.dumps({'asset': asset, 'image_sha256': digest(image.read_bytes()),
+    fingerprint = digest(json.dumps({'asset': asset, 'image_sha256': image_hash,
                                      'workflow': template, 'url': api.url}, sort_keys=True).encode())
     if path.exists():
         state = read_json(path)
@@ -337,12 +376,19 @@ def run_asset(api, template, asset, image, folder, timeout, identity):
         write_json(path, state)
     if 'prompt_id' not in state:
         api.deadline = state['deadline_unix']
+        graph = build_graph(template, asset)
+        info = node_schemas(api, [graph])
+        preflight(graph, info)
+        write_json(folder / 'preflight.json', {'workflow_version': VERSION,
+                   'workflow_sha256': digest(json.dumps(template, sort_keys=True).encode()),
+                   'object_info_sha256': digest(json.dumps(info, sort_keys=True).encode()),
+                   'checked_unix': time.time(), 'url': api.url})
         while True:
             queue = api.get('/queue')
             if not queue.get('queue_running') and not queue.get('queue_pending'):
                 break
             time.sleep(min(2, max(0, api.deadline - time.time())))
-        uploaded = api.upload(image)
+        uploaded = api.upload(image_data, image.suffix)
         image_name = '/'.join(x for x in (uploaded.get('subfolder'), uploaded['name']) if x)
         graph = build_graph(template, asset, image_name, '3d/SWLOR/weapons/' + state['token'])
         write_json(folder / 'prompt.json', graph)
@@ -376,9 +422,9 @@ def run_asset(api, template, asset, image, folder, timeout, identity):
         raise ValueError('Unexpected GLB output location')
     data = api.request('/view?' + urllib.parse.urlencode({**descriptor, 'type': 'output'}), binary=True)
     metadata = extract_glb(data, folder)
-    (folder / 'source.glb').write_bytes(data)
+    write_bytes(folder / 'source.glb', data)
     result = {'workflow_version': VERSION, 'asset': asset, 'prompt_id': state['prompt_id'],
-              'input_sha256': digest(image.read_bytes()), 'sha256': digest(data), 'bytes': len(data),
+              'input_sha256': image_hash, 'sha256': digest(data), 'bytes': len(data),
               'pbr': metadata, 'status': 'generated', 'native_verified': False}
     write_json(complete, result)
     return result
@@ -403,23 +449,20 @@ def main():
     if len(set(ids)) != len(ids) or any(not re.fullmatch('[a-z][a-z0-9_-]{0,63}', key) for key in ids):
         raise ValueError('Asset IDs must be unique safe lowercase directory names')
     output = staging_path(args.output); api = LocalAPI(args.url)
-    graphs = [build_graph(template, asset) for asset in manifest['assets']]
-    info = node_schemas(api, graphs)
     images = []
     for asset in manifest['assets']:
         image = staging_path(manifest_path.parent / asset['image'])
         if not image.is_file() or image.suffix.lower() not in ('.png', '.jpg', '.jpeg', '.webp'):
             raise ValueError(f'Missing/unsupported concept image: {image}')
         images.append(image)
-        preflight(build_graph(template, asset), info)
     if args.preflight:
+        graphs = [build_graph(template, asset) for asset in manifest['assets']]
+        info = node_schemas(api, graphs)
+        for graph in graphs:
+            preflight(graph, info)
         print(f'Preflight passed: {len(ids)} assets, workflow {VERSION}; no jobs submitted')
         return
     with endpoint_lock(api.url):
-        output.mkdir(parents=True, exist_ok=True)
-        write_json(output / 'preflight.json', {'workflow_version': VERSION,
-                   'workflow_sha256': digest(args.workflow.read_bytes()), 'object_info_sha256': digest(json.dumps(info, sort_keys=True).encode()),
-                   'checked_unix': time.time(), 'url': api.url})
         for asset, image in zip(manifest['assets'], images):
             print('TRACKING', asset['id'], flush=True)
             run_asset(api, template, asset, image, output / asset['id'], args.timeout, 'swlor-trellis')

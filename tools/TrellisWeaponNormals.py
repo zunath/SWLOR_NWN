@@ -170,23 +170,31 @@ def match_faces(source,target):
 
 
 def pad_native_normals(pixels, coverage):
-    """Fill every unused texel from the nearest native-frame texel in Manhattan distance.
+    """Fill unused texels from an exact nearest covered texel on the repeat torus.
 
-    Full coverage prevents any mip footprint from mixing in untouched source-frame RGB.
-    Covered texels and alpha are immutable; no wrapped neighbors or extra dependencies.
+    Distance is wrapped Manhattan distance, matching the supported repeat sampler.
+    Full coverage excludes source-frame RGB from every mip; covered RGB and all
+    alpha stay immutable. Lower mips can still blend different native islands.
+    The separable distance transform uses linear storage.
     """
     height,width=coverage.shape
     if pixels.shape[:2]!=(height,width) or not coverage.any():raise ValueError('Native normal padding needs covered texels')
     xs=np.broadcast_to(np.arange(width),(height,width));ys=np.broadcast_to(np.arange(height)[:,None],(height,width))
-    left=np.maximum.accumulate(np.where(coverage,xs,-width),axis=1)
-    right=np.minimum.accumulate(np.where(coverage,xs,2*width)[:,::-1],axis=1)[:,::-1]
-    owner_x=np.where(xs-left<=right-xs,left,right).clip(0,width-1);owner_y=ys.copy()
-    distance=np.abs(xs-owner_x);distance[~coverage.any(axis=1)]=height+width+1
-    for rows,previous in [(range(1,height),-1),(range(height-2,-1,-1),1)]:
-        for y in rows:
-            closer=distance[y+previous]+1<distance[y]
-            distance[y,closer]=distance[y+previous,closer]+1
-            owner_x[y,closer]=owner_x[y+previous,closer];owner_y[y,closer]=owner_y[y+previous,closer]
+    first=np.argmax(coverage,axis=1);last=width-1-np.argmax(coverage[:,::-1],axis=1)
+    left=np.maximum.accumulate(np.where(coverage,xs,(last-width)[:,None]),axis=1)
+    right=np.minimum.accumulate(np.where(coverage,xs,(first+width)[:,None])[:,::-1],axis=1)[:,::-1]
+    distance=np.minimum(xs-left,right-xs)
+    owner_x=np.where(xs-left<=right-xs,left,right)%width;owner_y=ys.copy()
+    distance[~coverage.any(axis=1)]=height+width+1
+    # Two laps in each direction propagate paths across the vertical seam as
+    # well as paths starting after the sweep origin. Strict improvement keeps
+    # ties deterministic; every shortest toroidal path needs at most one wrap.
+    for rows,previous in [(range(2*height),-1),(range(2*height-1,-1,-1),1)]:
+        for row in rows:
+            y=row%height;neighbor=(y+previous)%height
+            closer=distance[neighbor]+1<distance[y]
+            distance[y,closer]=distance[neighbor,closer]+1
+            owner_x[y,closer]=owner_x[neighbor,closer];owner_y[y,closer]=owner_y[neighbor,closer]
     if not coverage[owner_y,owner_x].all():raise ValueError('Incomplete native normal padding')
     result=pixels.copy();empty=~coverage;result[empty,:3]=pixels[owner_y[empty],owner_x[empty],:3]
     return result
@@ -213,7 +221,7 @@ def reproject_texture(source,meshes,input_path,output_path):
     # No untouched source-frame texels may contribute to any generated mip level.
     result=pad_native_normals(result,coverage);filled=np.ones_like(coverage)
     write_tga(output_path,original,result)
-    return {'source_tga_sha256':hashlib.sha256(original).hexdigest(),'reprojected_tga_sha256':hashlib.sha256(output_path.read_bytes()).hexdigest(),'native_triangles_matched':matched,'covered_texels':int(coverage.sum()),'dilated_texels':int((filled&~coverage).sum()),'padding':'full_texture_nearest_manhattan','conflicting_uv_texels':overlap,'max_quantization_error_degrees':max_error,'negative_z_clamped':False}
+    return {'source_tga_sha256':hashlib.sha256(original).hexdigest(),'reprojected_tga_sha256':hashlib.sha256(output_path.read_bytes()).hexdigest(),'native_triangles_matched':matched,'covered_texels':int(coverage.sum()),'dilated_texels':int((filled&~coverage).sum()),'padding':'full_texture_nearest_toroidal_manhattan','conflicting_uv_texels':overlap,'max_quantization_error_degrees':max_error,'negative_z_clamped':False}
 
 
 def preserve_authored_tangents(path,sources):

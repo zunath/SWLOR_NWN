@@ -447,23 +447,44 @@ def component_reports(objects):
     return reports
 
 
-def closed_surface_report(objects):
-    """Prove culling is safe on complete shells; never create backfaces or repair normals."""
-    vertices=[];faces=[];lookup={};opposed_area=0.;area=0.;opposed=0
+SOURCE_MATERIAL_INDEX = '_trellis_source_material_index'
+
+
+def tag_import_materials(document):
+    """Carry GLB material identity through importer variants and Blender renames."""
+    for index,material in enumerate(document.get('materials',[])):
+        material['name']=f'trellis_material_{index}'
+        extras=material.get('extras')
+        material['extras']={**(extras if isinstance(extras,dict) else {}),SOURCE_MATERIAL_INDEX:index}
+
+
+def imported_material_index(material,material_count):
+    index=material.get(SOURCE_MATERIAL_INDEX) if material is not None else None
+    if type(index) is not int or not 0<=index<material_count:
+        raise ValueError('Imported material has no valid GLB material identity')
+    return index
+
+
+def closed_surface_report(objects,double_sided_materials=None,material_count=None):
+    """Prove culling safe on complete components containing affected source faces."""
+    vertices=[];faces=[];lookup={};affected=[];face_areas=[];opposed_faces=[];degenerate=[]
     for ob in objects:
         ob.data.calc_loop_triangles();ob.data.calc_normals_split()
         normal_transform=ob.matrix_world.to_3x3().inverted().transposed()
         for triangle in ob.data.loop_triangles:
+            if double_sided_materials is None:affected.append(True)
+            else:
+                material=ob.data.materials[triangle.material_index] if triangle.material_index<len(ob.data.materials) else None
+                affected.append(imported_material_index(material,material_count) in double_sided_materials)
             ids=[]
             for index in triangle.vertices:
                 point=tuple(ob.matrix_world@ob.data.vertices[index].co)
                 if point not in lookup:lookup[point]=len(vertices);vertices.append(Vector(point))
                 ids.append(lookup[point])
             a,b,c=(vertices[i] for i in ids);cross=(b-a).cross(c-a)
-            if cross.length_squared==0:raise ValueError('Closed-surface conversion rejects degenerate faces')
+            degenerate.append(cross.length_squared==0)
             mean=sum((normal_transform@ob.data.corner_normals[i].vector for i in triangle.loops),Vector((0,0,0)))
-            triangle_area=cross.length/2;area+=triangle_area
-            if cross.dot(mean)<=0:opposed+=1;opposed_area+=triangle_area
+            face_areas.append(cross.length/2);opposed_faces.append(cross.dot(mean)<=0)
             faces.append(ids)
     edges={};parents=list(range(len(faces)))
     def find(index):
@@ -471,23 +492,33 @@ def closed_surface_report(objects):
         return index
     for index,face in enumerate(faces):
         for a,b in zip(face,face[1:]+face[:1]):edges.setdefault(tuple(sorted((a,b))),[]).append((index,1 if a<b else -1))
-    if not faces or any(len(values)!=2 or sum(sign for _,sign in values)!=0 for values in edges.values()):
+    for values in edges.values():
+        for index,_ in values[1:]:parents[find(index)]=find(values[0][0])
+    selected={find(i) for i,changed in enumerate(affected) if changed}
+    invalid={find(values[0][0]) for values in edges.values() if len(values)!=2 or sum(sign for _,sign in values)!=0}
+    degenerate_roots={find(i) for i,bad in enumerate(degenerate) if bad}
+    if selected & degenerate_roots:raise ValueError('Closed-surface conversion rejects degenerate faces')
+    if (not faces and double_sided_materials is None) or selected & invalid:
         raise ValueError('Double-sided source is not an exactly closed, consistently wound surface')
-    for values in edges.values():parents[find(values[0][0])]=find(values[1][0])
-    volumes={}
+    all_volumes={};all_groups={}
     for index,face in enumerate(faces):
         a,b,c=(vertices[i] for i in face);root=find(index)
-        volumes[root]=volumes.get(root,0)+a.dot(b.cross(c))/6
+        all_volumes[root]=all_volumes.get(root,0)+a.dot(b.cross(c))/6
+        all_groups.setdefault(root,[]).append(face)
+    volumes={root:all_volumes[root] for root in selected}
     if any(v==0 for v in volumes.values()):raise ValueError('Double-sided source contains a zero-volume shell')
     # TRELLIS can retain closed inward cavity shells. They are safe to cull only
     # when fully enclosed by a nonintersecting outward shell, never exposed sheets.
     from mathutils.bvhtree import BVHTree
-    groups={root:[face for i,face in enumerate(faces) if find(i)==root] for root in volumes}
+    # Unchanged outward shells may enclose an affected cavity, but unrelated open
+    # components neither provide enclosure evidence nor block the conversion.
+    enclosing={root:volume for root,volume in all_volumes.items() if volume>0 and root not in invalid|degenerate_roots}
+    groups={root:all_groups[root] for root in selected|set(enclosing)}
     trees={root:BVHTree.FromPolygons(vertices,group,all_triangles=True) for root,group in groups.items()}
     inward=[root for root,volume in volumes.items() if volume<0]
     for root in inward:
         point=np.asarray(vertices[groups[root][0][0]],dtype=np.float64);contained=False
-        for outer,volume in volumes.items():
+        for outer,volume in enclosing.items():
             if volume<=0 or trees[root].overlap(trees[outer]):continue
             triangles=np.asarray([[vertices[i] for i in face] for face in groups[outer]],dtype=np.float64)-point
             a,b,c=triangles[:,0],triangles[:,1],triangles[:,2]
@@ -497,11 +528,14 @@ def closed_surface_report(objects):
             winding=float(np.sum(2*np.arctan2(numerator,denominator))/(4*math.pi))
             if abs(abs(winding)-1)<1e-5:contained=True;break
         if not contained:raise ValueError('Inward shell is not proven enclosed by a nonintersecting outward shell')
+    selected_faces=[i for i in range(len(faces)) if find(i) in selected]
+    area=sum(face_areas[i] for i in selected_faces);opposed=sum(opposed_faces[i] for i in selected_faces)
+    opposed_area=sum(face_areas[i] for i in selected_faces if opposed_faces[i])
     return {'conversion':'doubleSided=true to native single-sided; closed coherent outer shells and enclosed cavities',
             'inward_shells_validated_as_internal':len(inward),
-            'triangles':len(faces),'shells':len(volumes),'signed_shell_volumes':list(volumes.values()),
+            'triangles':len(selected_faces),'unaffected_triangles':len(faces)-len(selected_faces),'shells':len(volumes),'signed_shell_volumes':list(volumes.values()),
             'boundary_edges':0,'nonmanifold_edges':0,'inconsistent_winding_edges':0,
-            'opposed_mean_corner_normal_faces':opposed,'opposed_mean_corner_normal_area_fraction':opposed_area/area,
+            'opposed_mean_corner_normal_faces':opposed,'opposed_mean_corner_normal_area_fraction':opposed_area/area if area else 0.,
             'authored_normals_preserved':True}
 
 
@@ -629,13 +663,13 @@ def export_one(config,source,repo,out,mode,helpers,icon_size):
     bpy.ops.wm.read_factory_settings(use_empty=True)
     bpy.context.scene.world=bpy.data.worlds.new('Studio')
     doc,binary=glb_document(source);out.mkdir();cache=out/'source_images';cache.mkdir()
-    # Rename only local material labels to avoid Blender name collisions; source bytes stay untouched.
+    # Label and tag materials only in the import copy; source bytes stay untouched.
     source_materials=json.loads(json.dumps(doc.get('materials',[])))
     policy=config.get('double_sided_policy','reject')
     if policy not in ('reject','closed_surface'):raise ValueError('Unknown double_sided_policy')
     if mode=='export':validate_glb_geometry(doc,policy=='closed_surface')
     imported=json.loads(json.dumps(doc))
-    for i,mat in enumerate(imported.get('materials',[])):mat['name']=f'trellis_material_{i}'
+    tag_import_materials(imported)
     import_path=cache/'import.glb';write_glb(import_path,imported,binary)
     bpy.ops.import_scene.gltf(filepath=str(import_path))
     objects=[ob for ob in bpy.context.scene.objects if ob.type=='MESH']
@@ -646,7 +680,8 @@ def export_one(config,source,repo,out,mode,helpers,icon_size):
         ob.data.calc_loop_triangles()
     surface_conversion=None
     if mode=='export' and any(mat.get('doubleSided',False) for mat in doc['materials']):
-        surface_conversion=closed_surface_report(objects)
+        double_sided={i for i,mat in enumerate(doc['materials']) if mat.get('doubleSided',False)}
+        surface_conversion=closed_surface_report(objects,double_sided,len(doc['materials']))
         for mat in doc['materials']:mat['doubleSided']=False
     points,lo,hi=bounds(objects)
     report={'name':config.get('name',source.stem),'source':str(source),'sha256':hashlib.sha256(source.read_bytes()).hexdigest(),'mode':mode,'coordinate_system':'Blender imported world XYZ; glTF importer axis conversion already included','source_bounds_min':list(lo),'source_bounds_max':list(hi),'dimensions':list(hi-lo),'materials':source_materials,'surface_conversion':surface_conversion,'components':component_reports(objects),'objects':[{'name':ob.name,'vertices':len(ob.data.vertices),'triangles':len(ob.data.loop_triangles),'materials':[m.name if m else None for m in ob.data.materials],'world_matrix':[list(row) for row in ob.matrix_world]} for ob in objects]}
@@ -665,18 +700,15 @@ def export_one(config,source,repo,out,mode,helpers,icon_size):
         if not re.fullmatch('[a-z][a-z0-9_]{0,13}',texture):raise ValueError('Texture base must be lowercase and at most14 characters (map suffix space)' )
         if limit not in (512,1024):raise ValueError('texture_size must be512 or1024')
         resources=out/'resources';resources.mkdir();names={};previews={};mapdims={}
-        source_names=[m['name'] for m in imported.get('materials',[])]
+        material_count=len(doc['materials'])
         mesh_data=[];mesh_names=[];removed=0
         for ob in objects:
             exported=helpers.export_mesh(ob.data,ob.matrix_world)
             for mat_slot in sorted({t.material_index for t in ob.data.loop_triangles}):
                 mat=ob.data.materials[mat_slot]
-                candidates=[i for i,n in enumerate(source_names) if n==mat.name]
-                if len(source_names)==1:candidates=[0]
-                if len(candidates)!=1:raise ValueError('Cannot uniquely map imported material '+mat.name+' to GLB material')
-                index=candidates[0]
+                index=imported_material_index(mat,material_count)
                 if index not in names:
-                    name=texture if len(source_names)==1 else texture+f'_{index}'
+                    name=texture if material_count==1 else texture+f'_{index}'
                     if len(name)>14:raise ValueError('Material texture name exceeds14 characters')
                     dims,maps=material_maps(doc,binary,index,source,cache,resources,name,limit)
                     names[index]=name;mapdims.update(dims);previews[index]=preview_material(resources,name,maps)

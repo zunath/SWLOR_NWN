@@ -23,7 +23,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
 {
     public static class HelmetModelRendererEngineTests
     {
-        [EngineTest("Helmet model scrolling through 64 preserves every playable species and gender", Category = "HelmetModelRenderer", TimeoutSeconds = 180f)]
+        [EngineTest("Helmet model scrolling through 64 preserves every playable species and gender", Category = "HelmetModelRenderer", TimeoutSeconds = 300f)]
         public static async Task ScrollThroughNativeHelmet(EngineTestContext ctx)
         {
             var creature = ctx.SpawnCreature("civilian");

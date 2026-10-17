@@ -180,11 +180,28 @@ public static partial class MigrationEngineTests
         var nested = await CreateItemAsync(ctx, player, "dancer_f_2", bag);
         await ctx.ExecuteInCreatureContextAsync(player, () =>
         {
-            // A copy that no longer has the retired Ice Defense keeps only its enhancement's Ice Resistance.
-            StampLegacyArkanianArmor(armor, enhancements, 0, 5);
+            StampLegacyArkanianArmor(armor, enhancements, 30, 5);
             foreach (var item in new[] { weapon, stars, nested })
                 StampLegacyAppearance(ctx, item);
             RemoveRequirement(weapon);
+            // Reload the breastplate as a character file would, so its retired Ice Defense is a saved
+            // permanent property. The marker keeps the acquire hook from revising it on the way in.
+            var saved = ObjectPlugin.Serialize(armor);
+            DestroyObject(armor);
+            armor = Deserialize(ctx, saved);
+            SetLocalInt(armor, ArkanianArmorStatRevisionCatalog.RevisionVariable, ArkanianArmorStatRevisionCatalog.CurrentRevision);
+            ctx.Assert(ObjectPlugin.AcquireItem(player, armor), "The player holds the reloaded breastplate");
+        });
+        await ctx.WaitFrameAsync();
+        await ctx.ExecuteInCreatureContextAsync(player, () =>
+        {
+            DeleteLocalInt(armor, ArkanianArmorStatRevisionCatalog.RevisionVariable);
+            var retired = 0;
+            for (var ip = GetFirstItemProperty(armor); GetIsItemPropertyValid(ip); ip = GetNextItemProperty(armor))
+                if (GetItemPropertyType(ip) == ItemPropertyType.Defense && GetItemPropertySubType(ip) == (int)CombatDamageType.Ice &&
+                    GetItemPropertyDurationType(ip) == DurationType.Permanent)
+                    retired += GetItemPropertyCostTableValue(ip);
+            ctx.AssertEqual(30, retired, "The reloaded breastplate carries the retired Ice Defense as a permanent property");
         });
         var baseline = ReadArmorTotals(player);
         var baselineHp = GetMaxHitPoints(player);

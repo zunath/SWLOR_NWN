@@ -219,7 +219,7 @@ public static class LootStatRevisionMigration
         foreach (var change in changes)
         {
             var difference = ApplyChange(item, change);
-            if (difference != 0 && GetIsObjectValid(wearer))
+            if (difference != 0 && GetIsObjectValid(wearer) && CountsOnWearer(change))
                 EquipmentStats.ApplyStatAmount(wearer, item, change.Type, PropertySubtype(change),
                     Math.Abs(difference), difference > 0);
         }
@@ -281,6 +281,10 @@ public static class LootStatRevisionMigration
         }
         return (total, matches);
     }
+
+    // Retired elemental Defense never counted on the wearer, and its property cannot be rebuilt.
+    private static bool CountsOnWearer(LootStatChange change) =>
+        change.Type != ItemPropertyType.Defense || ((CombatDamageType)change.Subtype).IsDefenseDamageType();
 
     private static bool HasSubtype(ItemPropertyType type) =>
         type is ItemPropertyType.Defense or ItemPropertyType.Resistance or ItemPropertyType.RequiresSkill;

@@ -5,7 +5,7 @@ description: Import, create, replace, split, or refit SWLOR weapon models, inclu
 
 # SWLOR Weapon and Shield Models
 
-Use the [model workflow](../../../SWLOR.Game.Server/Readmes/BlasterModelImport.md)
+Use the model workflow at `SWLOR.Game.Server/Readmes/BlasterModelImport.md` (from the repository root)
 for commands, a local import-manifest example, material rules and fitting details.
 Inspect the parent checkout and HAK submodule used for testing; worktree changes
 do not automatically reach another checkout's build inputs.
@@ -25,7 +25,7 @@ conversion, fitting and export helpers in the process tooling.
 
 ## Choose and author
 
-For local image-to-GLB generation, follow the guide's [TRELLIS.2 workflow](../../../SWLOR.Game.Server/Readmes/BlasterModelImport.md#generate-local-weapon-sources-with-trellis2); preflight the local runtime and keep all per-model sources in ignored staging.
+For local image-to-GLB generation, follow the guide's [TRELLIS.2 workflow](../../SWLOR.Game.Server/Readmes/BlasterModelImport.md#generate-local-weapon-sources-with-trellis2); preflight the local runtime and keep all per-model sources in ignored staging.
 
 - Resolve the requested slot from the catalog, assets and blueprint users. A
   shared slot replacement changes persisted items too. Ask only if intent cannot

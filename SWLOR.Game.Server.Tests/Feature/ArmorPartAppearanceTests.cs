@@ -56,4 +56,17 @@ public class ArmorPartAppearanceTests
 
         Assert.That(female.Select(option => option.Value), Is.EqualTo(new[] { 0, 24, 30, 50 }));
     }
+
+    [Test]
+    public void LeavingAPreservedUnrenderablePartRemovesItFromTheList()
+    {
+        var options = new[] { 0, 24, 30, 50 }.Select(value => new GuiComboEntry(value.ToString(), value)).ToList();
+
+        ArmorPartAppearance.ForgetLeftStyle(options, 30, 30, false);
+        Assert.That(options.Select(option => option.Value), Is.EqualTo(new[] { 0, 24, 30, 50 }));
+        ArmorPartAppearance.ForgetLeftStyle(options, 24, 50, true);
+        Assert.That(options.Select(option => option.Value), Is.EqualTo(new[] { 0, 24, 30, 50 }));
+        ArmorPartAppearance.ForgetLeftStyle(options, 30, 24, false);
+        Assert.That(options.Select(option => option.Value), Is.EqualTo(new[] { 0, 24, 50 }));
+    }
 }

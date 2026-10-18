@@ -3266,8 +3266,11 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 if (!selected.HasValue)
                     return;
 
+                var left = GetItemAppearance(GetItem(), ItemAppearanceType.ArmorModel, (int)partType);
                 setSelection(selected.Value);
                 ModifyItemPart((int)partType, selected.Value);
+                ArmorPartAppearance.ForgetLeftStyle(options, left, selected.Value,
+                    ArmorPartAppearance.IsAvailable(_target, partType, left));
             }
 
             var wasSkippingAdjustment = _skipAdjustArmorPart;

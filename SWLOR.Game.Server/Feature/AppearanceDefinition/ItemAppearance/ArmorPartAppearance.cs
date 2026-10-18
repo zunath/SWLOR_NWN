@@ -66,12 +66,33 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.ItemAppearance
                 // Creatures without modular bodies keep the full list; zero is always "none".
                 // The equipped style stays in place, so the arrows can step from an unrenderable
                 // saved part to its available neighbors without rewriting the item on open.
-                if (string.IsNullOrEmpty(body) || option.Value <= 0 || option.Value == equipped ||
-                    !string.IsNullOrEmpty(ResolveModel(body, part, option.Value, fallback, exists)))
+                if (option.Value == equipped || IsRenderable(body, part, option.Value, fallback, exists))
                     available.Add(option);
             }
             return available;
         }
+
+        public static bool IsRenderable(string body, AppearanceArmor part, int style,
+            Func<int, int> fallback, Func<string, bool> exists) =>
+            string.IsNullOrEmpty(body) || style <= 0 ||
+            !string.IsNullOrEmpty(ResolveModel(body, part, style, fallback, exists));
+
+        /// <summary>
+        /// Drops a preserved unrenderable style once the item has left it, so it cannot be picked again.
+        /// </summary>
+        public static void ForgetLeftStyle(IList<GuiComboEntry> options, int left, int selected, bool leftRenderable)
+        {
+            if (left == selected || leftRenderable)
+                return;
+            for (var index = options.Count - 1; index >= 0; index--)
+            {
+                if (options[index].Value == left)
+                    options.RemoveAt(index);
+            }
+        }
+
+        public static bool IsAvailable(uint creature, AppearanceArmor part, int style) =>
+            IsRenderable(NeckAppearance.GetBodyModel(creature, true), part, style, DefaultPhenotype, ModelResource.Exists);
 
         public static GuiBindingList<GuiComboEntry> GetAvailableOptions(uint creature, AppearanceArmor part,
             IEnumerable<GuiComboEntry> options, int equipped) =>

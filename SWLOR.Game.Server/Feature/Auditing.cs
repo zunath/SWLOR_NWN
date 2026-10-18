@@ -18,7 +18,7 @@ namespace SWLOR.Game.Server.Feature
             var ipAddress = GetPCIPAddress(player);
             var cdKey = GetPCPublicCDKey(player);
             var account = GetPCPlayerName(player);
-            var pcName = PlayerName.GetAuditName(player);
+            var pcName = PlayerName.GetAuditIdentity(player);
 
             var log = $"{pcName} - {account} - {cdKey} - {ipAddress}: Connected to server";
             Log.Write(LogGroup.Connection, log, true);
@@ -34,7 +34,7 @@ namespace SWLOR.Game.Server.Feature
             var ipAddress = GetPCIPAddress(player);
             var cdKey = GetPCPublicCDKey(player);
             var account = GetPCPlayerName(player);
-            var pcName = PlayerName.GetAuditName(player);
+            var pcName = PlayerName.GetAuditIdentity(player);
 
             var log = $"{pcName} - {account} - {cdKey} - {ipAddress}: Disconnected from server";
             Log.Write(LogGroup.Connection, log, true);
@@ -54,7 +54,7 @@ namespace SWLOR.Game.Server.Feature
                 var ipAddress = GetPCIPAddress(sender);
                 var cdKey = GetPCPublicCDKey(sender);
                 var account = GetPCPlayerName(sender);
-                var pcName = PlayerName.GetAuditName(sender);
+                var pcName = PlayerName.GetAuditIdentity(sender);
 
                 var logMessage = $"{pcName} - {account} - {cdKey} - {ipAddress} - {chatChannel}: {message}";
 
@@ -67,14 +67,18 @@ namespace SWLOR.Game.Server.Feature
                 var receiver = ChatPlugin.GetTarget();
                 var chatChannel = ChatPlugin.GetChannel();
                 var message = ChatPlugin.GetMessage();
-                var senderIPAddress = GetPCIPAddress(sender);
-                var senderCDKey = GetPCPublicCDKey(sender);
-                var senderAccount = GetPCPlayerName(sender);
-                var senderPCName = PlayerName.GetAuditName(sender);
-                var receiverIPAddress = GetPCIPAddress(receiver);
-                var receiverCDKey = GetPCPublicCDKey(receiver);
-                var receiverAccount = GetPCPlayerName(receiver);
-                var receiverPCName = PlayerName.GetAuditName(receiver);
+                // A possessing DM's tells involve either the creature or the detached avatar. Record the DM
+                // behind them, and read connection details from the object their client controls.
+                var senderConnection = DMPresence.GetControlledCreature(sender);
+                var senderIPAddress = GetPCIPAddress(senderConnection);
+                var senderCDKey = GetPCPublicCDKey(senderConnection);
+                var senderAccount = GetPCPlayerName(senderConnection);
+                var senderPCName = PlayerName.GetAuditIdentity(DMPresence.GetDM(sender));
+                var receiverConnection = DMPresence.GetControlledCreature(receiver);
+                var receiverIPAddress = GetPCIPAddress(receiverConnection);
+                var receiverCDKey = GetPCPublicCDKey(receiverConnection);
+                var receiverAccount = GetPCPlayerName(receiverConnection);
+                var receiverPCName = PlayerName.GetAuditIdentity(DMPresence.GetDM(receiver));
 
                 var logMessage = $"{senderPCName} - {senderAccount} - {senderCDKey} - {senderIPAddress} - {chatChannel} (SENT TO {receiverPCName} - {receiverAccount} - {receiverCDKey} - {receiverIPAddress}): {message}";
                 return logMessage;

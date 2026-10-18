@@ -27,13 +27,13 @@
   "DescIdentified": {
     "type": "cexolocstring",
     "value": {
-      "0": "A sealed vial of cultured rakghoul plague used in antiviral research. Smiths use it to charge serum-cell jewelry."
+      "0": "A sealed vial of cultured pathogens from the station's Colicoid experiments, used in antiviral research. Smiths use it to charge serum-cell jewelry."
     }
   },
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "A sealed vial of cultured rakghoul plague used in antiviral research. Smiths use it to charge serum-cell jewelry."
+      "0": "A sealed vial of cultured pathogens from the station's Colicoid experiments, used in antiviral research. Smiths use it to charge serum-cell jewelry."
     }
   },
   "Identified": {

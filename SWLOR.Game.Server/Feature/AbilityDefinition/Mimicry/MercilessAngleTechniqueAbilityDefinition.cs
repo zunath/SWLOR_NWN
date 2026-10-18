@@ -37,7 +37,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 VisualEffect.Vfx_Fnf_Screen_Bump,
                 damagePercentAdjustment: InnateAbility.ComboBonus(50, typeof(BleedStatusEffect), typeof(HemorrhageStatusEffect)),
                 afterSuccessfulHit: ResolveHemorrhage)
-                .DisplaysVisualEffectOnSuccessfulImpact(VisualEffect.Vfx_Ability_MercilessAngleTechnique)
+                .DisplaysVisualEffectOnSuccessfulImpact(VisualEffect.Vfx_Imp_Merciless_Angle)
                 .SkillType(SkillType.Mimicry)
                 .Level(1)
                 .CombatImpactDamageAbility(AbilityType.Social)

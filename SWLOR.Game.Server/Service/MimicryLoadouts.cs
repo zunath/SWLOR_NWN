@@ -98,7 +98,7 @@ public static class MimicryLoadouts
         var candidate = trimmed;
         error = string.Empty;
         if (trimmed.Length == 0 || trimmed.Length > MaxNameLength || trimmed.Any(char.IsControl))
-            error = $"Use a name of 1–{MaxNameLength} characters without line breaks.";
+            error = $"Use 1-{MaxNameLength} characters, no line breaks.";
         else if (player.MimicryLoadouts.Any(x => x.Id != id && string.Equals(x.Name, candidate, StringComparison.OrdinalIgnoreCase)))
             error = "Another build already uses that name.";
         return error.Length == 0;

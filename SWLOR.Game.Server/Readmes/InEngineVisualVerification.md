@@ -1,70 +1,26 @@
 # In-engine visual verification
 
-This is the single shared procedure for every AI agent, including Codex/GPT and
-Claude. Read it before any NWN client visual verification. The root `AGENTS.md`
-requires this workflow; Codex reads that file directly and `CLAUDE.md` imports it.
-Keep the procedure here rather than maintaining agent-specific copies.
+The shared procedure for NWN client evidence. Read it before verifying any change.
 
-Visual changes require inspection in the actual Neverwinter Nights: Enhanced
-Edition client **running in the background through the isolated private-desktop
-workflow** before handoff. Never bring the client to the foreground, take user
-focus, or switch the user's desktop during this process. This applies to NPC
-and object placements,
-models, textures, equipment, VFX, and in-game UI. Inspect every changed placement
-and the relevant appearances or states of other visual changes. Include the
-screenshots in the user report and describe the validation in the pull request.
-Static previews, coordinate audits, builds, and automated tests supplement this
-evidence; they do not prove the final in-game appearance.
+**Every change with an in-game effect needs evidence from the actual NWN:EE client before handoff, unless the user explicitly says otherwise.** A change with no in-game surface is the only exception (see the last route below). Show the screenshots to the user and describe the validation in the pull request. Static previews, coordinate audits, builds, and tests supplement this evidence; they never replace it. Pick the route by what produces the change:
 
-## Hard rules for every agent
+- **Offline launcher** (most of this guide): anything the module and haks render without the C# server, such as placements, models, textures, equipment, VFX, and areas. Inspect every changed placement and the relevant appearances or states.
+- **Live server** ("Server behavior" below): anything the C# server produces, such as combat, abilities, NUI windows, conversations, chat commands, migrations, and economy behavior.
+- A change with no in-game surface (toolset app, CLI, docs, agent rules) has nothing to capture; say so in the handoff.
 
-1. **Use only the repository launcher:** `python tools/VerifyNwnVisuals.py`, backed
-   by `tools/nwn_visual_check/`. Do not launch `nwmain.exe` directly, write your
-   own launcher or AppContainer/desktop implementation, or copy helpers from
-   another repository. If the launcher fails, report the concrete error and
-   affected items as unverified. There is no visible fallback.
-2. **No focus or real input.** Never call `SetForegroundWindow`, `SetCursorPos`,
-   or send real mouse/keyboard events. Never switch desktops or show the client
-   window. The launcher owns an undisplayed private desktop. Its capture helper
-   posts messages only to the owned HWND; these do not enter the user's input
-   queue. Script camera and movement checks in the fixture's NWScript probe.
-3. **Silence belongs to the isolated profile.** The launcher zeroes all four
-   volume channels and disables splash/intro movies, which can play audio even
-   at zero volume. Never change the user's normal `settings.tml`, Windows mixer,
-   or audio devices. If sound is heard, stop the owned run and fix its profile.
-4. **Own only your process.** Record the launcher's client PID and confirm it
-   exits on success or failure. Never terminate `nwmain.exe` by name; another
-   agent or the user may have a separate client running.
-5. **Keep generated files outside the repository.** Put fixture sources, HAK
-   copies, evidence, and reports in a task-owned temporary directory such as
-   `C:\Temp\review\`. Keep evidence after cleanup and leave `git status` clean.
+Sections: Hard rules · Run the launcher · Build a faithful fixture · Capture · Server behavior · Client traps · Public access · Evidence and cleanup
 
-## Standard background client workflow
+## Hard rules
 
-Background client execution is mandatory. The required runtime is shipped in
-`tools/nwn_visual_check/`, with the command `tools/VerifyNwnVisuals.py`. It includes
-the private desktop, zero-capability AppContainer, owned profile, module conversion
-and native screenshot helpers previously borrowed from Xenomech. No other checkout,
-agent session, account or machine-specific helper path is required. Source commit
-and helper hashes are recorded in `tools/nwn_visual_check/provenance.json`.
+1. **Use only the established procedures**: the repository launcher, `python tools/VerifyNwnVisuals.py` (backed by `tools/nwn_visual_check/`), for offline captures, and the containerized client in "Server behavior" for live checks. Never launch the Windows `nwmain.exe` directly, write your own launcher or AppContainer/desktop code, or copy helpers from another repository. If a procedure fails, report the error and mark the affected items unverified. There is no visible fallback.
+2. **No focus or real input.** Never call `SetForegroundWindow` or `SetCursorPos`, send real mouse or keyboard events, switch desktops, or show the client window. Script camera and movement in the fixture's NWScript probe.
+3. **Silence belongs to the isolated profile.** The launcher zeroes all four volume channels and disables splash and intro movies, which play audio even at zero volume. Never change the user's `settings.tml`, Windows mixer, or audio devices. If sound is heard, stop the owned run and fix its profile.
+4. **Own only your process.** Record the launcher's client PID and confirm it exits on success or failure. Never terminate `nwmain.exe` by name; another agent or the user may be running a client.
+5. **Keep generated files outside the repository.** Fixture sources, HAK copies, evidence, and reports go in a task-owned temp directory such as `C:\Temp\review\`. Keep the evidence after cleanup and leave `git status` clean.
 
-Prerequisites: Windows 10 or newer, Python 3.12 or newer, an installed NWN:EE client,
-and Pillow:
+## Run the launcher
 
-```powershell
-python -m pip install -r tools/nwn_visual_check/requirements.txt
-python -B tools/VerifyNwnVisuals.py --help
-```
-
-The client is discovered in the usual Steam/GOG locations. Set `NWN_CLIENT` or pass
-`--client C:\path\to\bin\win32\nwmain.exe` for another installation. For module
-building, GFF/ERF/script tools are discovered in `tools/SWLOR.CLI`, `SWLOR_Haks`,
-then PATH; `--tools` accepts an explicit tool directory. Missing prerequisites
-fail with a named error. Every Windows firewall profile must be enabled; the
-launcher checks this without changing firewall settings.
-
-Author a task-owned review module with named log markers at each settled camera
-view, then run from any copy of this repository:
+Prerequisites: Windows 10+, Python 3.12+, an installed NWN:EE client, and Pillow (`python -m pip install -r tools/nwn_visual_check/requirements.txt`). The client is found in the usual Steam/GOG locations; otherwise set `NWN_CLIENT` or pass `--client <path>\bin\win32\nwmain.exe`. GFF/ERF/script tools are found in `tools/SWLOR.CLI`, `SWLOR_Haks`, then PATH, or passed with `--tools`. Every Windows firewall profile must be enabled; the launcher checks this without changing it. `python -B tools/VerifyNwnVisuals.py --help` lists the options.
 
 ```powershell
 python tools/VerifyNwnVisuals.py `
@@ -75,238 +31,72 @@ python tools/VerifyNwnVisuals.py `
   --complete-marker VISUAL_REVIEW_COMPLETE --timeout 120
 ```
 
-`--output` must be a new directory for each run, including recaptures. The client
-timeout must be greater than zero and at most 600 seconds.
+- `--output` must be a new directory for every run, including recaptures. `--timeout` is 1 to 600 seconds.
+- `--sources <dir>` replaces `--module` and builds a flat fixture directory (`module.ifo.json`, ARE/GIT/GFF JSON, NSS, binary resources): JSON through `nwn_gff`, NSS compiled against the client with `--no-ovr`, packed with `nwn_erf`. Point it only at fixture resources, never the production module. `nwn_visual_check.module.pack_hak(source, output, tools)` packs current source HAK folders.
+- Keep tileset `.set` files CRLF (the HAK repository's `*.set text eol=crlf` rule), including files read straight from Git objects. LF-only SET files overrun the native loader's stack buffer (`0xc0000409`) before the module starts; the module and HAK builders reject them before packing.
+- Each `--capture` marker must match a complete `WriteTimestampedLogEntry` payload and triggers a fresh 1280x720 native screenshot. Markers and labels must be unique. Two pending uncaptured markers, a blank frame, an early exit, a missing marker, or a timeout fails the run.
+- The output directory receives native PNGs, `client.log`, `isolation.json`, and `manifest.json` (input and capture hashes, PID, completion and cleanup status). The manifest proves capture and isolation, not visual correctness.
+- The launcher copies inputs into a fresh key-free profile on an unused port, stops the owned process, and removes the profile when the run ends. If cleanup fails, it records the leftovers under `%LOCALAPPDATA%/SWLOR/NwnVisualChecks/cleanup` and recovers them on the next run (or via `offline_client.retry_retained_processes()`). Never delete AppContainer profiles or ACLs by hand; report unresolved cleanup errors.
+- The CLI has no profile overrides, Player-DM login, or arbitrary window messages. Report DM-only UI and keyholing customization as unverified instead of editing the managed profile or building another launcher.
+- Launcher self-tests: set `SWLOR_NATIVE_ISOLATION_TESTS=1`, run `python -B -m unittest discover -s tools/tests -p test_nwn_visual_check.py -v`, then clear the variable.
 
-Use `--sources C:\Temp\review\module-src` instead of `--module` to build a flat
-directory containing `module.ifo.json`, ARE/GIT/GFF JSON, NSS and binary resources.
-JSON resources are converted through `nwn_gff`; NSS is compiled against the installed
-client with `--no-ovr`; resources are packed with `nwn_erf`. The Python API also
-exposes `nwn_visual_check.module.pack_hak(source, output, tools)` for current source
-HAK folders. Do not point `--sources` at the entire production module or an arbitrary
-directory: it must contain only the fixture resources intended for that review.
+## Build a faithful fixture
 
-The command copies module/HAK/TLK inputs into a fresh, key-free temporary profile,
-sets every sound channel to zero, disables splash/movies and background pausing,
-selects an unused non-default port, then launches the client with a bounded lifetime
-on an undisplayed desktop. Shared-file hardlinks and reparse points are refused:
-granting the AppContainer ACL to a hardlink would also affect the source file.
-The child is assigned at creation to a non-inherited kill-on-close Windows job, and
-only its standard-I/O handles are inherited. Job termination/closure backs up direct
-process termination. It never changes the installed client or the user's normal
-profile. Native capture requests address only the task-owned HWND. There is no
-visible launch fallback.
+1. Record the source commit, changed subjects, area resrefs, tags, authored XYZ and facing, and SHA-256 hashes of the inspected source files.
+2. Make a flat fixture folder with `module.ifo.json`, the affected area's real `Module/are` and `Module/git` resources (plus GIC when needed), required blueprints, and the probe `.nss`. Keep the area geometry and all placed objects, and the subject's authored position, facing, appearance, and equipment. An empty test room cannot validate world placement.
+3. Build or copy the HAKs named by `Module/ifo/module.ifo.json`, with the matching custom TLK, from current assets. An installed HAK may predate the change.
+4. Without NWNX, an offline fixture may disable server event scripts and conversation dispatch in the temporary copies; document it. Never alter collision or move scenery to make a placement look valid. Behavior that needs the server needs a server check as well.
+5. Hook the temporary module's OnClientEnter (or equivalent) to the probe; C# does not run offline, so an unhooked probe emits no markers. Keep instrumentation out of production content.
 
-Each marker matches a complete log payload (the text passed to
-WriteTimestampedLogEntry) and requests a fresh 1280x720 native screenshot. Earlier
-messages containing that text as a substring do not trigger capture or completion.
-Markers and output labels
-must be unique, and views must be held long enough to capture them; multiple pending
-uncaptured markers are rejected instead of photographing the latest view under old
-labels. A blank frame, early exit, missing marker or timeout fails the run.
+Read source JSON in its actual encoding (the module IFO uses a legacy encoding), and never rewrite production JSON through a serializer to build a fixture.
 
-The new output directory receives native PNGs, `client.log`, `isolation.json`, and
-`manifest.json` with input/capture hashes, PID, completion/failure and profile-cleanup
-status. Primary run errors and any evidence/cleanup errors are reported together.
-On success or failure, the owned process is stopped and the temporary profile
-and copied archives are removed once process exit is confirmed. If Windows refuses
-all shutdown methods, the launcher retains retryable control handles and the profile;
-`offline_client.retry_retained_processes()` retries those owned handles and removes
-the retained profile once exit is confirmed. The CLI makes a final retry during
-teardown. Failed AppContainer deletions receive three bounded retry attempts and
-are saved under `%LOCALAPPDATA%/SWLOR/NwnVisualChecks/cleanup` for recovery on the
-next invocation, including from another repo copy. Only matching tool-owned
-container names are recovered. Failed temporary-profile removals also retain the
-original ownership token and path there. Recovery requires the same ownership marker
-and refuses deletion while a recorded PID remains active. Ownership markers survive
-partial removal, and isolation evidence is refreshed after a shutdown retry.
-The failure is recorded, and cleanup
-never discards control of a live client. Evidence stays outside the repository for inspection.
-The manifest proves capture and isolation, not visual correctness: inspect every image,
-record observed transforms/approach results, and deliver the labelled report below.
+## Capture
 
-Focused checks, including real Windows network denial, timeout and callback cleanup:
+- Set each camera after the area load settles and wait for a fresh render before emitting its marker. Timings such as camera at 4 s, marker at 7 s, overview at 10 s, marker at 13 s are examples, not proof: inspect images for loading screens, stale frames, wrong angles, and occlusion, and recapture failures.
+- Emit each marker as the entire payload (`WriteTimestampedLogEntry("VISUAL_CLOSE_READY")`), hold the view a few seconds, and never emit two markers back-to-back. End with `VISUAL_REVIEW_COMPLETE` after the final view is held. Use the same strings in the launcher arguments.
+- Log the subject's `GetPosition` and `GetFacing` at capture and compare them with the authored data. The engine moves creatures off blocked coordinates; an adjusted spawn does not verify the requested one. Correct the source and recapture.
+- Capture at least a clear close view and a contextual overview for each moved NPC or object. Keep the native PNGs; contact sheets may resize copies but must link the originals. Do not edit away clipping or obstacles.
+
+## Server behavior
+
+The offline launcher cannot run C#, so server behavior needs a private server with a client connected to it. `python tools/NwnLiveClient.py` (backed by `tools/nwn_live_client/`) runs both in Docker; use only this tool for live checks. Engine tests (`EngineTesting.md`) supplement this; they are not client evidence.
+
+Prerequisites: Docker Desktop, Python 3.12+, a Release build from your worktree (`dotnet build SWLOR.Game.Server\SWLOR.Game.Server.csproj -c Release -p:RunPostBuildEvent=Never`, or `--dotnet <dir>`), the Steam NWN:EE install (it ships `bin/linux-x86/nwmain-linux`; otherwise `--client-install`), the repacked module and deployed haks and TLK (default: the main checkout's `debugserver/`, or `--module`, `--hak-dir`, `--tlk-dir`), your `cdkey.ini`, and your 8-character public CD key from a server log "Joined as Player" line (`--public-cdkey` or `SWLOR_LIVE_PUBLIC_CDKEY`; keep it out of commits and pull requests). `--help` on each command lists the options.
 
 ```powershell
-$env:SWLOR_NATIVE_ISOLATION_TESTS = '1'
-python -B -m unittest discover -s tools/tests -p test_nwn_visual_check.py -v
-Remove-Item Env:SWLOR_NATIVE_ISOLATION_TESTS
+python tools/NwnLiveClient.py up --name my-check --character <test character>.bic --play
+python tools/NwnLiveClient.py capture <run dir> in-area
+python tools/NwnLiveClient.py ui <run dir> click 742 591   # also rightclick, doubleclick, drag, move, key, type
+python tools/NwnLiveClient.py console <run dir> status      # one nwserver console line
+python tools/NwnLiveClient.py down <run dir>
 ```
 
-## Build a faithful review fixture
+- **Server:** its own Compose project, `swlor-live-<label>`, with no published host ports (the client reaches the server on the project's network, so stacks never collide), a tmpfs Redis, `NWN_PUBLICSERVER=0`, blank passwords, webhooks and tokens, the repository `swlor.env` as the base, your build, the module, and the TLK copied into the run directory (`state.json` records their hashes and the commit stamped into the server build), and read-only module, hak, and TLK mounts. The haks stay shared; `down` fails if the hak folder changed during the run. A sleeping container named `<project>-reservation` (running, so `docker container prune` leaves it alone) claims the project name on the Docker daemon until `down`, and the run directory must not exist yet; the tool creates it owner-only. Pass environment-gated test-driver switches with `--server-env KEY=VALUE`; driver code stays uncommitted.
+- **Development stack only, never production:** the master server is blocked so other sessions' CD-key use cannot lock you out (`[masterserver.key-authentication] mode = "if-reachable"` from `SWLOR.Game.Server/Docker/settings.tml`, plus `extra_hosts` mapping `nwmaster2.beamdog.net`, `nwn.beamdog.net`, and `api.nwn.beamdog.net` to `127.0.0.1`), and NWSync is blank.
+- **Character:** `--character` copies the `.bic` into `servervault/<public key>/` (`NWN_SERVERVAULT=1`) and seeds its Player record with pending initialization, so the server runs normal first-login setup on that copy. The `.bic` needs an object UUID; `--no-seed` skips the seed.
+- **Client:** the Linux client in its own container on a private Xvfb display, with all volumes at zero, movies off, a 1280x720 window at UI scale 1.0, HAK and TLK aliases pointing at the mounted haks, chat-window logging, and a copied `cdkey.ini`. `ui` input (xdotool) never reaches the user's desktop. Character select can take several minutes to appear while the client loads the haks; `--play`, or `play <run dir>`, clicks Play at (742,591) every 20 seconds until SWLOR's Connection log shows the character entering (the server log's "Joined as" line is written at connection, before character select), then waits until no area transition has started for `--settle` seconds (default 45) and SWLOR's loading-screen frame is gone from the client screen. Still inspect every capture.
+- **DM checks:** `--dm-avatar <dmvault .bic>` instead of `--character` launches `-dmc +connect <server> +password <per-run password>`, with `NWN_DMPASSWORD` set and `SWLOR_SUPER_ADMIN_CD_KEY` set to your public key so DM authorization accepts you. Play stays disabled until an avatar is selected, so `play` clicks the first list row before each Play click.
+- **Test conditions:** live areas spawn hostiles. Clear creatures from the test areas and wait until the character is out of combat before acting; log combat state with each step. The server's automated restart at 10:00 UTC boots everyone; do not span it.
+- **Lifetime and teardown:** the server and client stop themselves after `--max-minutes` (default 120), and a failed `up` tears itself down unless `--keep-on-failure`. `down` boots the character through the server console first (a killed client holds its CD key until the server's `net.udp.window.timeout`, which this stack raises from 60 seconds to 5 minutes on both server and client so a client stalled loading haks on a busy machine is not dropped), stops the client, runs `docker compose -p <project> down --volumes --remove-orphans` on its own project only, deletes the copied key, profile, and server home, and writes `evidence/cleanup.json`. It exits non-zero if any container, volume, network, key, or character copy remains.
+- **Evidence:** `<run dir>/evidence` (default run directory `%TEMP%\swlor-live\<project>`) keeps the captures, `captures.jsonl`, `ui-actions.log`, client and server logs, the containers' stdout (NWNX logs there), and `cleanup.json`. If the stack cannot start or a capture is incomplete, report the affected items as unverified with the error.
 
-1. Record the source commit, changed subjects, area resrefs, tags, authored XYZ
-   and facing, and SHA-256 hashes of the source files being inspected.
-2. Make a flat fixture source folder containing `module.ifo.json`, the affected
-   area's actual `Module/are` and `Module/git` resources (plus GIC when needed),
-   required blueprints, and the probe `.nss` script. Retain area geometry and all
-   placed objects. Preserve the subject's authored position, facing, appearance,
-   and equipment. An empty test room cannot validate world placement.
-3. Build or copy the HAKs named by `Module/ifo/module.ifo.json` into the isolated
-   profile, with the matching custom TLK. Use current assets, not an unrelated
-   installed HAK that may predate the change. Keep large generated archives
-   outside the repository.
-4. An offline fixture may disable server event scripts and conversation
-   dispatch when NWNX is unavailable. Make those changes only to the temporary
-   copies and document them. Never alter collision or move scenery to make a
-   placement appear valid. A feature needing server behavior requires a
-   suitable server check as well; an offline fixture cannot prove that behavior.
-5. Set the temporary module's OnClientEnter (or an equivalent hook) to the probe
-   script. Without NWNX, C# server logic does not run; an unhooked probe will not
-   produce capture markers. Compile the probe and pack a temporary module, or
-   let `--sources` do that. Script camera positions and named log markers so each
-   captured frame maps to a specific subject. Keep this instrumentation outside
-   production content.
+## Client traps
 
-Read source JSON using its actual encoding. Most module JSON is UTF-8; the
-module IFO used in this check required its legacy encoding. Do not silently
-rewrite production JSON through a serializer merely to build a fixture.
+- Offline `+TestNewModule` runs need no CD key. Never copy the user's credentials into an offline profile.
+- `-dmc` ignores `+TestNewModule` and plays the intro movies; do not add it to offline runs.
+- Do not resize the client window; a DPI-unaware resize at 150% scaling produced black captures.
+- Do not capture during area loads or transitions or in a tight loop; both have frozen the client.
+- Offline captures do not establish server or NUI behavior.
 
-## Launch and capture
+## Public access
 
-Use a task-owned, key-free `-userdirectory` profile and an unused embedded
-server port. Do not reuse the user's normal profile, credentials, or running
-client. The `VerifyNwnVisuals.py` launcher handles this through the repository's
-`nwn_visual_check.offline_client.run` helper, with an explicit timeout, `on_start`
-to record the PID, and `until` to detect completion. These are runtime internals,
-not instructions to write a separate launcher. Keep the existing private-desktop
-and zero-capability isolation.
-Track only the process created by this task; never terminate clients by name.
+A good-looking placement can still be unreachable. For each moved NPC, start on a known public route outside the surrounding enclosure and walk normally to interaction distance (about 1.5 m), adding approaches when walls, doors, or scenery make access ambiguous. Record the start coordinates and final `GetDistanceBetween`. Never teleport beside the NPC or through walls for the tested approach; any collision bypass used to place the camera must end before walking. State separately whether doors, faction travel, and live conversation dispatch were tested. (This caught an NPC reachable only from inside an enclosed strip.)
 
-Sound must be disabled for the background client instance. The user is
-working on the same machine, and a hidden client must never play music,
-ambient audio, voices, or effects. NWN:EE has no master sound switch, so set
-all four volume channels to zero in the isolated `settings.tml` before launch.
-Also disable the intro, splash, and movie playback: those movies play audio
-outside the four volume channels, so a client that reaches them is audible even
-at zero volume. Mute only the task-owned profile; never change the user's normal
-`settings.tml`, Windows volume mixer, or audio devices. If the client is heard
-during a run, stop it and fix the profile before relaunching.
+## Evidence and cleanup
 
-The launcher creates the isolated `settings.tml` with the following sound,
-movie, window, and focus settings. These are reference values, not a step to edit
-its internally managed profile. Do not edit the user's profile:
-
-```toml
-[sound.effects]
-volume=0.0
-[sound.music]
-volume=0.0
-[sound.streams]
-volume=0.0
-[sound.voices]
-volume=0.0
-[graphics.intro.splash]
-enabled=false
-[graphics.movies]
-enabled=false
-[graphics.movies.intro]
-enabled=false
-[graphics.window]
-mode="windowed"
-[graphics.window.windowed]
-width=1280
-height=720
-[game.auto-pause.on-focus-loss]
-enabled=false
-[graphics.video.vsync]
-mode="off"
-```
-
-The CLI does not expose profile overrides, Player-DM login, or arbitrary window
-messages. DM-only UI and explicit keyholing customization are not supported by
-this command. Report those checks as unverified when required; do not edit the
-managed profile or build an alternative launcher to work around that limit.
-
-For each subject, set the camera after area loading settles, then wait for a
-fresh render before capturing. The capstone script set a close camera at four
-seconds, emitted its screenshot marker at seven seconds, then set an overview
-at ten seconds and emitted that marker at thirteen seconds. These delays are
-examples, not proof of readiness: inspect the images for loading screens,
-stale frames, wrong camera angles, and occlusion. Adjust and recapture failures.
-
-Emit each unique marker as the entire `WriteTimestampedLogEntry` payload, for
-example `WriteTimestampedLogEntry("VISUAL_CLOSE_READY")`. Hold the settled view
-for a few seconds after its marker before setting the next camera. Never emit
-two capture markers back-to-back. End the probe with
-`WriteTimestampedLogEntry("VISUAL_REVIEW_COMPLETE")` after the final view has been
-held. Use the same marker strings in the launcher arguments.
-
-Log the subject's actual `GetPosition` and `GetFacing` at capture time. Compare
-them with the authored data: the engine can move a creature away from blocked
-coordinates. An engine-adjusted spawn is not verification of the requested
-coordinate; correct the source and capture again.
-
-Capture at least a clear close view and a contextual overview for each moved
-NPC or object. Preserve original native PNGs at their capture resolution.
-Contact sheets may resize copies, but must link to the originals. Inspect any
-camera cutaway of foreground scenery and use an overview that makes the
-surrounding layout clear. Do not edit away clipping or obstacles.
-
-## Known client traps and live-server limits
-
-- Offline `+TestNewModule` runs need no CD key. Use the launcher's key-free
-  profile and never copy the user's credentials.
-- `-dmc` ignores `+TestNewModule` and reaches the main menu through intro movies.
-  Do not add it to the launcher command; it cannot provide offline DM-UI captures.
-- Do not resize the client window. A DPI-unaware resize at 150% scaling caused
-  black captures. Keep the launcher's native 1280x720 capture size.
-- Do not capture during area loads or transitions or in a tight loop; both have
-  frozen the client. Capture only at settled probe markers.
-- Do not manually delete AppContainer profiles or ACLs to fix cleanup. Use the
-  runtime's ownership-checked recovery described above and report unresolved
-  cleanup errors.
-- A logged-in client with C# running on a live NWNX server is a separate workflow.
-  Do not attempt that client workflow unless asked. It needs the user to click
-  Play at character selection; do not inject real input or change desktop/focus
-  rules to bypass that step. Server-side integration tests are documented in
-  [EngineTesting.md](EngineTesting.md). Offline captures do not establish live
-  server or NUI behavior.
-
-## Verify public access separately
-
-A good-looking placement can still be inaccessible. For each moved NPC, start
-on a known public route outside the surrounding enclosure and walk normally to
-interaction distance. Choose additional public approaches when walls, doors,
-or scenery make access ambiguous. Record start coordinates and the final
-`GetDistanceBetween` result; the capstone check targeted 1.5 m.
-
-Do not infer public access by teleporting beside the NPC and walking the last
-three metres. Do not cross walls by teleport during the tested approach. Any
-cutscene ghost or collision bypass used to position the camera must expire or
-be removed before walking. Inspect the chosen start and route as well as the
-final distance. State separately whether doors, faction travel, and live
-conversation dispatch were tested.
-
-This distinction caught a real capstone error: Talan Rees was reachable from
-within an enclosed strip but inaccessible from the public spaceport path.
-His corrected public-side position was verified from (89,70) and (94,77),
-reaching approximately 1.500 m and 1.496 m with normal collision enabled.
-
-## Evidence, delivery, and cleanup
-
-- Save a manifest mapping each subject to its source hashes, authored and
-  observed transforms, screenshot filenames and SHA-256 hashes, camera settings,
-  approach starts/results, client PID, isolation metadata, and completion status.
-  Preserve logs and earlier captures separately when a correction is recaptured.
-- Inspect every final image yourself. Confirm identity, orientation, ground
-  contact, clearance from furniture/walls, and the surrounding route. Recapture
-  after any subsequent visual change; earlier evidence is valid only for
-  unchanged source and assets.
-- Provide a report with a labelled image for every changed placement, links to
-  original captures, and explicit limitations. Show the images or open the
-  report for the user; do not merely say screenshots were taken. Keep generated
-  reports and captures in the task's artifact directory outside the repository.
-- Include the method, coverage, approach results, limitations, and artifact
-  location in the PR description. Local artifact paths are not accessible to
-  remote reviewers; identify them as local and do not imply they are uploaded.
-- Repack the production module after final source corrections. Extract its
-  binary GIT resources and verify final placements against the inspected plan.
-  Report packing and live deployment separately.
-- Stop the owned client even on failure. Confirm its PID has exited, then remove
-  only the verified task-owned temporary profile and generated HAKs. Keep the
-  evidence and report. Leave the repository clean at handoff.
-
-If the client cannot run or a capture is incomplete, report the affected items
-as unverified and give the concrete blocker. Do not substitute an illustration,
-toolset view, or another subject's screenshot for engine evidence.
+- Save a manifest mapping each subject to source hashes, authored and observed transforms, screenshot filenames and hashes, camera settings, approach results, client PID, isolation metadata, and completion status. Keep earlier captures and logs when recapturing.
+- Inspect every final image: identity, orientation, ground contact, clearance from furniture and walls, and the surrounding route. Evidence is valid only for unchanged source and assets; recapture after any later visual change.
+- Give the user a labelled image for every changed placement, links to the original captures, and explicit limitations. Show the images or open the report; do not merely say screenshots were taken.
+- In the pull request, describe method, coverage, approach results, limitations, and artifact location, marked as local (reviewers cannot open local paths).
+- Repack the production module after final corrections, extract its GIT resources, and verify final placements against the inspected plan. Report packing and live deployment separately.
+- If the client cannot run or a capture is incomplete, report the affected items as unverified with the concrete blocker. Never substitute an illustration, toolset view, or another subject's screenshot.

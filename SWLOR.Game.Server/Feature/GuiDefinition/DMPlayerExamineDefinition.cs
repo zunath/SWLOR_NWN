@@ -17,7 +17,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
             var window = _builder.CreateWindow(GuiWindowType.DMPlayerExamine)
                 .SetIsResizable(true)
                 .SetIsCollapsible(true)
-                .SetInitialGeometry(0, 0, 640f, 660f)
+                .SetInitialGeometry(0, 0, 640f, 710f)
                 .BindTitle(model => model.Name)
                 .DefinePartialView(DMPlayerExamineViewModel.DetailView, AddDetails)
                 .DefinePartialView(DMPlayerExamineViewModel.SkillsView, AddSkills)
@@ -56,12 +56,13 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
         }
 
         private static void AddPanel(GuiGroup<DMPlayerExamineViewModel> host,
-            Action<GuiColumn<DMPlayerExamineViewModel>> content)
+            Action<GuiColumn<DMPlayerExamineViewModel>> content,
+            NuiScrollbars scrollbars = NuiScrollbars.None)
         {
             host.AddColumn(col => col.AddRow(row => row.AddGroup(panel =>
             {
                 panel.SetShowBorder(false);
-                panel.SetScrollbars(NuiScrollbars.None);
+                panel.SetScrollbars(scrollbars);
                 panel.AddColumn(content);
             }).SetWidth(560f)));
         }
@@ -118,6 +119,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
             });
         }
 
+        // Scrolls because DMs keep the window size they last used, which can be shorter than these details.
         private static void AddDetails(GuiGroup<DMPlayerExamineViewModel> host) => AddPanel(host, col =>
         {
             col.AddRow(row =>
@@ -137,13 +139,15 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                 });
             });
             AddDetailRow(col, "Descriptor", model => model.Descriptor);
+            AddDetailRow(col, "Disguise", model => model.WornDisguise);
+            AddDetailRow(col, "Real descriptor", model => model.UndisguisedDescriptor);
             AddDetailRow(col, "True name", model => model.TrueName);
             AddDetailRow(col, "Account", model => model.AccountName);
             AddDetailRow(col, "Public CD key", model => model.PublicCDKey);
             col.AddRow(r => r.AddLabel().SetText("Description").SetHeight(20f)
                 .SetHorizontalAlign(NuiHorizontalAlign.Left));
             col.AddRow(r => r.AddPartialView(DMPlayerExamineViewModel.DescriptionElement).SetHeight(96f));
-        });
+        }, NuiScrollbars.Auto);
 
         private static void AddDetailRow(GuiColumn<DMPlayerExamineViewModel> col, string label,
             Expression<Func<DMPlayerExamineViewModel, string>> value)

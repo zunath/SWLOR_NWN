@@ -6,6 +6,8 @@ normal-map decoding and material export with the [blaster converter](BlasterMode
 but uses rifle attachment coordinates, material validation and inventory dimensions.
 Keep original archives, extracted files, manifests, scenes and review images in
 ignored `.tmp/rifle/` staging. Only finished MDL, MTR and DDS resources belong in HAKs.
+Delete each intermediate once used and empty the staging folder after the finished
+resources are committed (see [AgentEnvironment.md](AgentEnvironment.md), "Disk hygiene").
 
 Rifles are base item **7**, item class **WBwXl**. The appearance editor ID is
 `color * 100 + model`; the native middle part is `model * 10 + color`.
@@ -56,7 +58,7 @@ The normal blue channel is not part of the decoded normal vector.
 Compress maps with the documented NWN Crunch channel presets; icons use DXT5
 DDS with alpha and no mipmaps (`-fileformat dds -unflip -yflip -DXT5 -dxtQuality uber -gamma 2.2 -mipMode None`). Native CResDDS cannot decode uncompressed RGBA DDS. Replace the matching old icon TGA so it cannot override
 the DDS. Compile staged ASCII models with `tools/CompileBlasterModels.py` and the
-installed NWN:EE executable. It accepts `wbwxl` resrefs as well as pistol resrefs.
+CleanModels CLI installed as described in the blaster guide. It accepts `wbwxl` resrefs as well as pistol resrefs.
 Keep `CompileModels: false` when packing HAKs. Validate native-reader geometry,
 normals, material bindings, texture dependencies and compiled triangle corners.
 Do not make validation depend on local source manifests.

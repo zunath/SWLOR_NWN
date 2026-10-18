@@ -9,9 +9,9 @@ using SWLOR.CombatSim.Scenario;
 const string Usage = """
 SWLOR combat simulator
 
-  run <scenario.json> [--rules pre-tuning,current,tuned-pvp] [--rules-file custom.json]... [--runs 200] [--seed 1] [--out report.md] [--json results.json] [--detail]
+  run <scenario.json> [--rules pre-tuning,current] [--rules-file custom.json]... [--runs 200] [--seed 1] [--out report.md] [--json results.json] [--detail]
       Runs the scenario under each rule set and prints a comparison; --json also writes the raw per-rule-set results.
-  rules [--name tuned-pvp]
+  rules [--name current]
       Prints a rule preset as JSON, to copy into a --rules-file and edit.
   abilities [--out abilities.csv]
       Writes the ability cost and timing data the simulator reads from the game server.
@@ -87,7 +87,7 @@ static int Run(string[] args)
 static int PrintRules(string[] args)
 {
     var options = CommandLineOptions.Parse(args, new[] { "--name" });
-    var name = options.GetValueOrDefault("--name", new List<string> { RuleSets.TunedPvpName })[0];
+    var name = options.GetValueOrDefault("--name", new List<string> { RuleSets.CurrentName })[0];
     Console.WriteLine(JsonConvert.SerializeObject(RuleSets.Get(name), Formatting.Indented));
     return 0;
 }

@@ -104,14 +104,6 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>
-        /// Retrieves the creature a DM is currently possessing, or OBJECT_INVALID if there is none.
-        /// </summary>
-        public static uint GetDMPossessedCreature(uint dm)
-        {
-            return GetLocalObject(dm, DMPossessedCreature);
-        }
-
-        /// <summary>
         /// When a player focuses the chatbar, set a typing indicator on the player; when
         /// unfocused, remove the indicator.
         /// </summary>
@@ -151,10 +143,12 @@ namespace SWLOR.Game.Server.Service
             //   sender's current location scope: planet, space area, event area, instance fallback, or starship.
             // - PlayerShout is disabled for players. DMs use the native channel behaviour.
             // - PlayerDM echoes back the message received to the sender.
+            // - DMTalk and DMWhisper are a DM avatar's Talk and Whisper. The engine only uses the DM channels while
+            //   the DM is not possessing a creature, so they get the same emote handling as possessed creatures.
 
             var handledChat =
-                channel == ChatChannel.PlayerTalk ||
-                channel == ChatChannel.PlayerWhisper ||
+                IsTalkChannel(channel) ||
+                IsWhisperChannel(channel) ||
                 channel == ChatChannel.PlayerParty ||
                 channel == ChatChannel.PlayerShout;
 
@@ -252,16 +246,12 @@ namespace SWLOR.Game.Server.Service
             // The sender always wants to see their own message.
             var recipients = new List<uint> { sender };
             var allPlayersAndDMs = new List<uint>();
-            var allDMs = new List<uint>();
+            // DMs whose Comms filter hides this message, by the creature they control.
+            var mutedDMs = new HashSet<uint>();
 
             for (var player = GetFirstPC(); GetIsObjectValid(player); player = GetNextPC())
             {
                 allPlayersAndDMs.Add(player);
-
-                if (GetIsDM(player) || GetIsDMPossessed(player))
-                {
-                    allDMs.Add(player);
-                }
             }
 
             // This is the Comms channel. Party members matching the sender's current
@@ -269,6 +259,9 @@ namespace SWLOR.Game.Server.Service
             // Party members outside that range trigger a warning.
             if (channel == ChatChannel.PlayerParty)
             {
+                var (dmReaders, dmsFilteringOut) = GetDMCommsAudience(sender, allPlayersAndDMs);
+                mutedDMs = dmsFilteringOut;
+
                 for (var member = GetFirstFactionMember(sender); GetIsObjectValid(member); member = GetNextFactionMember(sender))
                 {
                     if (sender == member) continue;
@@ -285,19 +278,19 @@ namespace SWLOR.Game.Server.Service
                     }
                 }
 
-                recipients.AddRange(allDMs);
+                recipients.AddRange(dmReaders);
 
                 needsAreaCheck = true;
                 distanceCheck = 20.0f;
             }
             // Normal talk - 20 units.
-            else if (channel == ChatChannel.PlayerTalk)
+            else if (IsTalkChannel(channel))
             {
                 needsAreaCheck = true;
                 distanceCheck = 20.0f;
             }
             // Whisper - 4 units.
-            else if (channel == ChatChannel.PlayerWhisper)
+            else if (IsWhisperChannel(channel))
             {
                 needsAreaCheck = true;
                 distanceCheck = 4.0f;
@@ -322,6 +315,7 @@ namespace SWLOR.Game.Server.Service
                     // member delivery pass above.
                     if (GetArea(target) == GetArea(sender) &&
                         distance <= distanceCheck &&
+                        !mutedDMs.Contains(target) &&
                         !recipients.Contains(target))
                     {
                         recipients.Add(target);
@@ -365,7 +359,7 @@ namespace SWLOR.Game.Server.Service
 
                 if (channel == ChatChannel.PlayerParty)
                 {
-                    if (GetIsDM(receiver))
+                    if (GetIsDM(receiver) || GetIsDMPossessed(receiver))
                     {
                         // Convenience for DMs - append the party members.
                         finalMessage.Append("{ ");
@@ -517,6 +511,45 @@ namespace SWLOR.Game.Server.Service
                 receiver,
                 identitySpeaker,
                 () => ChatPlugin.SendMessage(channel, message, identitySpeaker, receiver));
+        }
+
+        private static bool IsTalkChannel(ChatChannel channel) =>
+            channel == ChatChannel.PlayerTalk || channel == ChatChannel.DMTalk;
+
+        private static bool IsWhisperChannel(ChatChannel channel) =>
+            channel == ChatChannel.PlayerWhisper || channel == ChatChannel.DMWhisper;
+
+        /// <summary>
+        /// Splits the online DMs into those who read a Comms message and those whose Comms filter hides it.
+        /// Each DM is identified by the creature they control, since chat sent to a possessing DM's avatar is dropped.
+        /// </summary>
+        /// <param name="sender">The creature that sent the Comms message.</param>
+        /// <param name="onlinePlayers">Every object returned by GetFirstPC/GetNextPC.</param>
+        private static (List<uint> Readers, HashSet<uint> Muted) GetDMCommsAudience(uint sender, List<uint> onlinePlayers)
+        {
+            var readers = new List<uint>();
+            var muted = new HashSet<uint>();
+            // Party membership belongs to each player's own character, which is the avatar for a possessing DM.
+            var senderCharacter = DMPresence.GetDM(sender);
+
+            foreach (var player in onlinePlayers)
+            {
+                if (!DMPresence.IsControlledByDM(player))
+                    continue;
+
+                var controlled = DMPresence.GetControlledCreature(player);
+                if (DMPreference.Get(controlled).CommsFilter == DMCommsFilter.AllParties ||
+                    Party.IsInParty(senderCharacter, player))
+                {
+                    readers.Add(controlled);
+                }
+                else
+                {
+                    muted.Add(controlled);
+                }
+            }
+
+            return (readers, muted);
         }
 
         private static bool IsChatCommandMessage(string message)
@@ -937,7 +970,11 @@ namespace SWLOR.Game.Server.Service
 
         public static EmoteStyle GetEmoteStyle(uint player)
         {
-            if (GetIsPC(player) && !GetIsDM(player) && !GetIsDMPossessed(player))
+            // DMs keep one emote style for their avatar and every creature they possess.
+            if (GetIsDM(player) || GetIsDMPossessed(player))
+                return DMPreference.Get(player).EmoteStyle;
+
+            if (GetIsPC(player))
             {
                 var playerId = GetObjectUUID(player);
                 var dbPlayer = DB.Get<Player>(playerId);
@@ -948,18 +985,28 @@ namespace SWLOR.Game.Server.Service
             return EmoteStyle.Regular;
         }
 
-        public static void SetEmoteStyle(uint player, EmoteStyle style)
+        /// <summary>
+        /// Saves a player's or DM's emote style.
+        /// </summary>
+        /// <param name="player">A player, a DM avatar, or the creature a DM possesses.</param>
+        /// <param name="style">The new style.</param>
+        /// <returns>false when there was nowhere to save it.</returns>
+        public static bool SetEmoteStyle(uint player, EmoteStyle style)
         {
-            if (GetIsPC(player) && !GetIsDM(player))
-            {
-                var playerId = GetObjectUUID(player);
-                var dbPlayer = DB.Get<Player>(playerId);
-                if (dbPlayer == null)
-                    return;
+            if (GetIsDM(player) || GetIsDMPossessed(player))
+                return DMPreference.Update(player, preferences => preferences.EmoteStyle = style);
 
-                dbPlayer.EmoteStyle = style;
-                DB.Set(dbPlayer);
-            }
+            if (!GetIsPC(player))
+                return false;
+
+            var playerId = GetObjectUUID(player);
+            var dbPlayer = DB.Get<Player>(playerId);
+            if (dbPlayer == null)
+                return false;
+
+            dbPlayer.EmoteStyle = style;
+            DB.Set(dbPlayer);
+            return true;
         }
     }
 }

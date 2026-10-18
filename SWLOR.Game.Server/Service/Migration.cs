@@ -165,7 +165,7 @@ namespace SWLOR.Game.Server.Service
                 try
                 {
                     sw.Start();
-                    ApplyPlayerMigration(migration, player,
+                    var completed = ApplyPlayerMigration(migration, player,
                         () => DB.Get<Player>(playerId) ?? throw new InvalidOperationException("The player record was lost during migration."),
                         updatedPlayer => DB.Set(updatedPlayer),
                         () => fileVersion,
@@ -175,6 +175,12 @@ namespace SWLOR.Game.Server.Service
                             fileVersion = version;
                         });
                     sw.Stop();
+                    if (!completed)
+                    {
+                        Log.Write(LogGroup.Migration, $"Player migration #{migration.Version} deferred for player [{playerId}] until inventory space is available.");
+                        SendMessageToPC(player, "Free inventory space, then reconnect to complete your equipment update.");
+                        break;
+                    }
                     Log.Write(LogGroup.Migration, $"Player migration #{migration.Version} applied to player {GetName(player)} [{playerId}] successfully. (Took {sw.ElapsedMilliseconds}ms)");
                 }
                 catch (Exception ex)
@@ -200,7 +206,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// Advances character-file and database checkpoints independently so retrying an older file never repeats record rewards.
         /// </summary>
-        internal static void ApplyPlayerMigration(
+        internal static bool ApplyPlayerMigration(
             IPlayerMigration migration,
             uint player,
             Func<Player> loadPlayer,
@@ -211,12 +217,13 @@ namespace SWLOR.Game.Server.Service
             var migratePlayerData = loadPlayer().Version < migration.Version;
             if (loadCharacterVersion() < migration.Version)
             {
-                migration.Migrate(player);
+                try { migration.Migrate(player); }
+                catch (PlayerMigrationDeferredException) { return false; }
                 saveCharacterVersion(migration.Version);
             }
 
             if (!migratePlayerData)
-                return;
+                return true;
 
             // Live-object migrations may save player data. Refresh it, then copy
             // the cached record so failed hooks or saves cannot publish an unsaved
@@ -225,6 +232,7 @@ namespace SWLOR.Game.Server.Service
             migration.MigratePlayerData(dbPlayer);
             dbPlayer.Version = migration.Version;
             savePlayer(dbPlayer);
+            return true;
         }
 
         /// <summary>

@@ -15,15 +15,16 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         public const float ToolbarX = 1f;
         public const float ToolbarY = 1f;
         // The client keeps at least 720 UI pixels of height, so a 1280x1024 screen at its highest UI scale is
-        // about 914 wide. The admin toolbar must fit there without covering the portrait.
-        public const float ButtonWidth = 84f;
+        // about 914 wide. The admin toolbar must fit there without covering the portrait, which starts about 80
+        // pixels from the right edge, so ten buttons leave room for labels only as wide as "Placeables".
+        public const float ButtonWidth = 76f;
         // Measured in the client: each button takes 4 pixels of margin and the window about 14 of padding per side.
         public const float ButtonSlotWidth = ButtonWidth + 4f;
         // Every DM sees these buttons; admins also get the Admin button at the end.
-        public const int PublicButtonCount = 8;
+        public const int PublicButtonCount = 9;
         public const float ToolbarWidth = PublicButtonCount * ButtonSlotWidth + 28f;
         public const float AdminToolbarWidth = ToolbarWidth + ButtonSlotWidth;
-        public const float ToolbarHeight = 52f;
+        public const float ToolbarHeight = 32f;
 
         public bool IsAdmin
         {
@@ -123,6 +124,11 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         public Action OnClickMusic() => () =>
         {
             DMPresence.ToggleWindow(Player, GuiWindowType.MusicPicker, new MusicPickerPayload(MusicPickerMode.DungeonMaster));
+        };
+
+        public Action OnClickSettings() => () =>
+        {
+            DMPresence.ToggleWindow(Player, GuiWindowType.DMSettings);
         };
 
         public Action OnClickAdmin() => () =>

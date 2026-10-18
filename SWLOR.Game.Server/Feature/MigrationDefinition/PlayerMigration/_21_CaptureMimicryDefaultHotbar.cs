@@ -5,7 +5,7 @@ using SWLOR.Game.Server.Service;
 namespace SWLOR.Game.Server.Feature.MigrationDefinition.PlayerMigration;
 
 /// <summary>
-/// Records the quickbar positions of the build created by server migration 29. The quickbar lives in
+/// Records the quickbar positions of the build created by server migration 27. The quickbar lives in
 /// the character file, so this runs on the character's first login after that migration.
 /// </summary>
 public sealed class _21_CaptureMimicryDefaultHotbar : PlayerMigrationBase

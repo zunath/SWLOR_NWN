@@ -1,11 +1,18 @@
 using SWLOR.Game.Server.Core.Beamdog;
 using SWLOR.Game.Server.Feature.GuiDefinition.ViewModel;
+using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.GuiService;
+using SWLOR.Game.Server.Service.GuiService.Component;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition
 {
     internal class TechniquesDefinition: IGuiWindowDefinition
     {
+        private const float BuildBarHeight = 52f;
+        private const float BuildControlHeight = 32f;
+        private const float BuildFieldWidth = 260f;
+        private const float BuildButtonWidth = 90f;
+
         private readonly GuiWindowBuilder<TechniquesViewModel> _builder = new();
 
         public GuiConstructedWindow BuildWindow()
@@ -15,41 +22,17 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                 .SetIsCollapsible(true)
                 .SetInitialGeometry(0, 0, 940f, 700f)
                 .SetTitle("Techniques")
+                .DefinePartialView(TechniquesViewModel.BuildBarPartial, AddBuildBar)
+                .DefinePartialView(TechniquesViewModel.ManageBarPartial, AddManageBar)
+                .DefinePartialView(TechniquesViewModel.DeleteBarPartial, AddDeleteBar)
 
                 .AddColumn(col =>
                 {
-                    // Saved-build controls, with the equipped build summarized on the right.
+                    // Saved-build controls. Manage swaps this bar in place so the lists stay visible.
                     col.AddRow(row =>
                     {
-                        row.AddComboBox()
-                            .BindOptions(model => model.LoadoutOptions)
-                            .BindSelectedIndex(model => model.SelectedLoadoutIndex)
-                            .SetWidth(260f)
-                            .SetHeight(32f);
-                        row.AddButton()
-                            .SetText("Save")
-                            .SetWidth(80f)
-                            .SetHeight(32f)
-                            .SetTooltip("Store the preview in the selected build.")
-                            .BindOnClicked(model => model.OnClickSave());
-                        row.AddButton()
-                            .SetText("Save As")
-                            .SetWidth(90f)
-                            .SetHeight(32f)
-                            .BindTooltip(model => model.BuildsText)
-                            .BindDisabledTooltip(model => model.BuildsText)
-                            .BindIsEnabled(model => model.CanSaveAs)
-                            .BindOnClicked(model => model.OnClickSaveAs());
-                        row.AddButton()
-                            .SetText("Manage")
-                            .SetWidth(90f)
-                            .SetHeight(32f)
-                            .SetTooltip("Rename or delete the selected build.")
-                            .BindOnClicked(model => model.OnClickManage());
-                        row.AddLabel()
-                            .BindText(model => model.ActiveLoadoutText)
-                            .SetHorizontalAlign(NuiHorizontalAlign.Right)
-                            .SetHeight(32f);
+                        row.AddPartialView(TechniquesViewModel.BuildBarElement)
+                            .SetHeight(BuildBarHeight);
                     });
 
                     col.AddRow(row =>
@@ -227,6 +210,111 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                 });
 
             return _builder.Build();
+        }
+
+        // The selected build, its save actions, and the equipped build summarized on the right.
+        private static void AddBuildBar(GuiGroup<TechniquesViewModel> group)
+        {
+            group.AddColumn(col =>
+            {
+                col.AddRow(row =>
+                {
+                    row.AddComboBox()
+                        .BindOptions(model => model.LoadoutOptions)
+                        .BindSelectedIndex(model => model.SelectedLoadoutIndex)
+                        .SetWidth(BuildFieldWidth)
+                        .SetHeight(BuildControlHeight);
+                    row.AddButton()
+                        .SetText("Save")
+                        .SetWidth(80f)
+                        .SetHeight(BuildControlHeight)
+                        .SetTooltip("Store the preview in the selected build.")
+                        .BindOnClicked(model => model.OnClickSave());
+                    row.AddButton()
+                        .SetText("Save As")
+                        .SetWidth(BuildButtonWidth)
+                        .SetHeight(BuildControlHeight)
+                        .BindTooltip(model => model.BuildsText)
+                        .BindDisabledTooltip(model => model.BuildsText)
+                        .BindIsEnabled(model => model.CanSaveAs)
+                        .BindOnClicked(model => model.OnClickSaveAs());
+                    row.AddButton()
+                        .SetText("Manage")
+                        .SetWidth(BuildButtonWidth)
+                        .SetHeight(BuildControlHeight)
+                        .SetTooltip("Rename or delete the selected build.")
+                        .BindOnClicked(model => model.OnClickManage());
+                    row.AddLabel()
+                        .BindText(model => model.ActiveLoadoutText)
+                        .SetHorizontalAlign(NuiHorizontalAlign.Right)
+                        .SetHeight(BuildControlHeight);
+                });
+            });
+        }
+
+        // The name field takes the dropdown's place, so the build being managed stays in view.
+        private static void AddManageBar(GuiGroup<TechniquesViewModel> group)
+        {
+            group.AddColumn(col =>
+            {
+                col.AddRow(row =>
+                {
+                    row.AddTextEdit()
+                        .SetPlaceholder("Build name")
+                        .SetMaxLength(MimicryLoadouts.MaxNameLength)
+                        .BindValue(model => model.BuildNameText)
+                        .SetWidth(BuildFieldWidth)
+                        .SetHeight(BuildControlHeight);
+                    row.AddButton()
+                        .SetText("Rename")
+                        .SetWidth(BuildButtonWidth)
+                        .SetHeight(BuildControlHeight)
+                        .SetTooltip("Give the selected build this name.")
+                        .BindOnClicked(model => model.OnClickRenameBuild());
+                    row.AddButton()
+                        .SetText("Delete")
+                        .SetWidth(BuildButtonWidth)
+                        .SetHeight(BuildControlHeight)
+                        .SetTooltip("Delete the selected build.")
+                        .SetDisabledTooltip("Keep at least one saved build.")
+                        .BindIsEnabled(model => model.CanDeleteBuild)
+                        .BindOnClicked(model => model.OnClickDeleteBuild());
+                    row.AddButton()
+                        .SetText("Cancel")
+                        .SetWidth(BuildButtonWidth)
+                        .SetHeight(BuildControlHeight)
+                        .BindOnClicked(model => model.OnClickCancelManage());
+                    row.AddLabel()
+                        .BindText(model => model.ManageText)
+                        .BindColor(model => model.ManageColor)
+                        .SetHorizontalAlign(NuiHorizontalAlign.Right)
+                        .SetHeight(BuildControlHeight);
+                });
+            });
+        }
+
+        private static void AddDeleteBar(GuiGroup<TechniquesViewModel> group)
+        {
+            group.AddColumn(col =>
+            {
+                col.AddRow(row =>
+                {
+                    row.AddLabel()
+                        .BindText(model => model.DeleteBuildText)
+                        .SetHorizontalAlign(NuiHorizontalAlign.Left)
+                        .SetHeight(BuildControlHeight);
+                    row.AddButton()
+                        .SetText("Delete")
+                        .SetWidth(BuildButtonWidth)
+                        .SetHeight(BuildControlHeight)
+                        .BindOnClicked(model => model.OnClickConfirmDeleteBuild());
+                    row.AddButton()
+                        .SetText("Cancel")
+                        .SetWidth(BuildButtonWidth)
+                        .SetHeight(BuildControlHeight)
+                        .BindOnClicked(model => model.OnClickCancelManage());
+                });
+            });
         }
     }
 }

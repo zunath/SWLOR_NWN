@@ -1248,9 +1248,9 @@ public class CombatDamageTests
         var payloadSource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Feature", "GuiDefinition", "Payload", "ExamineItemPayload.cs"));
         var previewSource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Feature", "GuiDefinition", "ViewModel", "ExamineItemViewModel.cs"));
         payloadSource.Should().Contain("HasItemDMG = GetItemHasItemProperty(item, ItemPropertyType.DMG)");
-        previewSource.Should().Contain("var hasItemDMG = _payload.HasItemDMG;");
-        previewSource.Should().Contain("hasItemDMG = GetItemHasItemProperty(_payload.ItemObject, ItemPropertyType.DMG)");
-        previewSource.Should().Contain("StatType.SingleWeaponDamagePercentAdjustment), hasItemDMG)");
+        // Capture re-reads HasItemDMG from the live item before the preview is built.
+        previewSource.Should().Contain("_payload.Capture(_payload.ItemObject);");
+        previewSource.Should().Contain("StatType.SingleWeaponDamagePercentAdjustment), _payload.HasItemDMG)");
     }
 
     [Test]

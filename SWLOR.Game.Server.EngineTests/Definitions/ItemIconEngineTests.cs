@@ -19,8 +19,8 @@ public static partial class MigrationEngineTests
     [EngineTest("Non-ship artwork refresh preserves crafted enhancement state", Category = "ItemIcons")]
     public static async Task EnhancementArtworkPreservesCraftedState(EngineTestContext ctx)
     {
-        var owner = ctx.SpawnCreature("civilian");
-        await ctx.WaitFrameAsync();
+        using var fixture = await PlayerAbilityFixture.CreateAsync(ctx);
+        var owner = fixture.Creature;
         var item = await CreateItemAsync(ctx, owner, "aen_hp1", owner);
         await ctx.ExecuteInCreatureContextAsync(owner, () =>
         {
@@ -113,7 +113,7 @@ public static partial class MigrationEngineTests
                 DB.Set(inventory); DB.Set(market); DB.Set(category); DB.Set(property);
                 DB.Set(research); DB.Set(outfit); DB.Set(creature); DB.Set(ship);
                 DB.Set(contract); DB.Set(delivery);
-                new _27_UpdateItemIcons().Migrate();
+                new _27_UpdateStoredItems().Migrate();
                 var migratedInventory = DB.Get<InventoryItem>(inventory.Id);
                 AssertPayload(migratedInventory.Data);
                 ctx.AssertEqual("iit_ess2_019", migratedInventory.IconResref, "Stored UI metadata follows the new artwork");
@@ -151,7 +151,7 @@ public static partial class MigrationEngineTests
                 AssertPayload(delivered.Data);
                 ctx.AssertEqual("iit_ess2_019", delivered.IconResref, "Pending delivery artwork is updated");
                 ctx.AssertEqual("Retained delivery", delivered.Name, "Pending delivery name is preserved");
-                new _27_UpdateItemIcons().Migrate();
+                new _27_UpdateStoredItems().Migrate();
                 ctx.AssertEqual(migratedInventory.Data, DB.Get<InventoryItem>(inventory.Id).Data, "A repeat server migration leaves exact payloads intact");
             }
             finally

@@ -8,6 +8,7 @@ using SWLOR.Game.Server.Native;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.FrameProfilerService;
+using SWLOR.Game.Server.Service.PvpCombatService;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.Game.Server.Service.StatService;
 using SWLOR.Game.Server.Service.StatusEffectService;
@@ -578,11 +579,12 @@ namespace SWLOR.Game.Server.Service
 
             if (!isPermanent)
             {
+                var isPlayerAgainstPlayer = PvpCombat.IsPlayerAgainstPlayer(source, creature);
                 durationTicks = ClampHardCrowdControlDurationTicks(statusEffect.Categories, durationTicks, statusEffect.Frequency,
-                    isSelfApplied: source == creature);
+                    isSelfApplied: source == creature, isPlayerAgainstPlayer: isPlayerAgainstPlayer);
                 durationTicksWithoutResistance = ClampHardCrowdControlDurationTicks(
                     statusEffect.Categories, durationTicksWithoutResistance, statusEffect.Frequency,
-                    isSelfApplied: source == creature);
+                    isSelfApplied: source == creature, isPlayerAgainstPlayer: isPlayerAgainstPlayer);
             }
 
             if (!isPermanent && durationTicks <= 0)
@@ -976,13 +978,15 @@ namespace SWLOR.Game.Server.Service
         /// Apply the final control budget after outgoing duration bonuses and resistance.
         /// Self-applied system penalties, soft debuffs and permanent effects are unaffected.
         /// </summary>
+        /// <param name="isPlayerAgainstPlayer">A player or a player's pet applied it to another player, so it lasts half as long.</param>
         public static int ClampHardCrowdControlDurationTicks(
-            StatusEffectCategory categories, int ticks, float frequency, bool isSelfApplied = false)
+            StatusEffectCategory categories, int ticks, float frequency, bool isSelfApplied = false, bool isPlayerAgainstPlayer = false)
         {
             if (isSelfApplied || ticks <= 0 || (categories & StatusEffectCategory.HardCrowdControl) == 0)
                 return ticks;
 
-            return Math.Min(ticks, (int)Math.Floor(MaximumHardCrowdControlDurationSeconds / Math.Max(1f, frequency)));
+            ticks = Math.Min(ticks, (int)Math.Floor(MaximumHardCrowdControlDurationSeconds / Math.Max(1f, frequency)));
+            return isPlayerAgainstPlayer ? PvpCombatRules.ShortenHardCrowdControlTicks(ticks) : ticks;
         }
 
         private static float ApplyOutgoingStatusDurationAdjustments(

@@ -17,6 +17,7 @@ from nwn_visual_check import offline_client, private_desktop, profile, module, f
 from nwn_visual_check.__main__ import parse_captures, log_records, main
 from nwn_visual_check.result import ClientRun
 from nwn_visual_check.process_job import ProcessJob
+from nwn_visual_check.native_frames import NativeFrames
 
 
 def setUpModule():
@@ -144,6 +145,31 @@ class ProfileBoundaryTests(unittest.TestCase):
 
     def test_generated_profile_is_silent_private_and_background_ready(self):
         self.validate()
+
+    def test_fresh_profile_accepts_its_first_native_screenshot(self):
+        from PIL import Image
+
+        frames = NativeFrames.__new__(NativeFrames)
+        frames.directory = self.owned/'screenshots'
+        frames.window = 1
+        frames.frame = None
+        frames.user = Mock()
+        native = frames.directory/'NWN0000.tga'
+
+        def screenshot(_, message, *_args):
+            if message == 0x101:
+                image = Image.new('RGB', (1280, 720), 'black')
+                image.paste('white', (640, 0, 1280, 720))
+                image.save(native)
+            return True
+
+        frames.user.PostMessageW.side_effect = screenshot
+        output = self.owned/'first.png'
+        frames.save(output)
+        with Image.open(output) as captured:
+            self.assertEqual(captured.size, (1280, 720))
+            self.assertEqual(captured.getpixel((1000, 360)), (255, 255, 255))
+        self.assertFalse(native.exists())
 
     def test_native_refusal_happens_before_process_creation(self):
         self.settings('volume=0.0','volume=0.5')
@@ -376,8 +402,41 @@ class FixtureCompilerTests(unittest.TestCase):
                     with self.assertRaises(RuntimeError):module.compile_script(*args)
 
 
+class TilesetPackingTests(unittest.TestCase):
+    def test_invalid_line_endings_fail_before_conversion_or_packing_without_changing_source(self):
+        for payload in (b'[GENERAL]\nName=ZSF01\n', b'[GENERAL]\rName=ZSF01\r', b'[GENERAL]\r\nName=ZSF01\n'):
+            for build in ('hak', 'module'):
+                with self.subTest(payload=payload, build=build), tempfile.TemporaryDirectory() as temporary:
+                    source=Path(temporary)/'source';source.mkdir()
+                    tileset=source/'zsf01.SET';tileset.write_bytes(payload)
+                    with patch.object(module,'find_tool') as find_tool, patch.object(module,'checked') as checked:
+                        with self.assertRaisesRegex(ValueError,'zsf01.SET must use CRLF'):
+                            if build=='hak': module.pack_hak(source,Path(temporary)/'review.hak')
+                            else: module.build_module(source,Path(temporary)/'profile',Path('client/bin/win32/nwmain.exe'))
+                        find_tool.assert_not_called()
+                        checked.assert_not_called()
+                    self.assertEqual(tileset.read_bytes(),payload)
+
+
 @unittest.skipUnless(sys.platform=='win32' and os.environ.get('SWLOR_NATIVE_ISOLATION_TESTS')=='1','Set SWLOR_NATIVE_ISOLATION_TESTS=1 for actual fixture tools')
 class NativeFixtureTests(unittest.TestCase):
+    def test_crlf_tileset_survives_hak_and_module_packing(self):
+        owned=profile.create_profile()
+        with tempfile.TemporaryDirectory() as temporary:
+            source=Path(temporary)/'source';source.mkdir()
+            payload=b'[GENERAL]\r\nName=ZSF01\r\nType=SET\r\n'
+            (source/'zsf01.set').write_bytes(payload)
+            (source/'module.ifo').write_bytes(b'fixture resource')
+            try:
+                hak=Path(temporary)/'review.hak'
+                module.pack_hak(source,hak,os.environ.get('SWLOR_NWN_TOOLS'))
+                packed=module.build_module(source,owned,module.discover_client(),os.environ.get('SWLOR_NWN_TOOLS'))
+                for archive in (hak,packed):
+                    self.assertEqual(archive_resources(archive)[(b'zsf01',2013)],payload)
+                self.assertEqual((source/'zsf01.set').read_bytes(),payload)
+            finally:
+                profile.cleanup(owned)
+
     def test_local_include_is_staged_before_alphabetically_earlier_entry_point(self):
         owned=profile.create_profile()
         with tempfile.TemporaryDirectory() as temporary:

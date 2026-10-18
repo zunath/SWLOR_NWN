@@ -6,6 +6,7 @@ using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.ConversationService;
 using SWLOR.Game.Server.Service.LogService;
 using SWLOR.Game.Server.Service.PropertyService;
+using SWLOR.Game.Server.Service.SpaceService;
 using SWLOR.NWN.API.Engine;
 
 namespace SWLOR.Game.Server.Feature.DialogDefinition
@@ -16,6 +17,7 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
         {
             public PlanetType Planet { get; set; }
             public Location SpaceLocation { get; set; }
+            public ShipDockPoint LandingPoint { get; set; }
         }
 
         private const string MainPageId = "MAIN_PAGE";
@@ -67,6 +69,27 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
             var model = Data<Model>();
             model.SpaceLocation = GetLocation(spaceWaypoint);
             model.Planet = planetType;
+
+            var landingWaypointTag = GetLocalString(self, "STARPORT_LANDING_WAYPOINT_TAG");
+            if (!string.IsNullOrWhiteSpace(landingWaypointTag))
+            {
+                var landingWaypoint = GetWaypointByTag(landingWaypointTag);
+                if (!GetIsObjectValid(landingWaypoint))
+                {
+                    Log.Write(LogGroup.Error, $"{GetName(self)} has an invalid STARPORT_LANDING_WAYPOINT_TAG: {landingWaypointTag}.");
+                    SendMessageToPC(player, "This docking point is misconfigured. Notify an admin.");
+                    Close();
+                    return;
+                }
+
+                model.LandingPoint = new ShipDockPoint
+                {
+                    Name = GetName(landingWaypoint),
+                    Location = GetLocation(landingWaypoint),
+                    PropertyId = string.Empty,
+                    IsNPC = true
+                };
+            }
         }
 
         private void MainPageInit(ConversationMenuPage page)
@@ -74,7 +97,9 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
             var player = Player;
             var playerId = GetObjectUUID(player);
             var model = Data<Model>();
-            var dockPoints = Space.GetDockPointsByPlanet(model.Planet);
+            var dockPoints = model.LandingPoint == null
+                ? Space.GetDockPointsByPlanet(model.Planet)
+                : new Dictionary<string, ShipDockPoint> { ["station"] = model.LandingPoint };
 
             page.Header = "Please select a location.";
 
@@ -167,7 +192,8 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
                     // Docking at an NPC starport will update the safety location to that dock.
                     // In the event that the ship is docked at a player starport and it gets destroyed or
                     // otherwise goes away, the player's ship will return back to the last NPC dock it visited.
-                    if (dockPoint.IsNPC)
+                    // Ship-only locations never become the safety location, so ships left there return on restart.
+                    if (dockPoint.IsNPC && !StarshipDockReturn.IsShipOnlyArea(landingArea))
                     {
                         dbProperty.Positions[PropertyLocationType.LastNPCDockPosition] = new PropertyLocation
                         {
@@ -176,6 +202,15 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
                             Y = landingPosition.Y,
                             Z = landingPosition.Z,
                             Orientation = landingOrientation
+                        };
+
+                        dbProperty.Positions[PropertyLocationType.LastNPCSpacePosition] = new PropertyLocation
+                        {
+                            AreaResref = spaceAreaResref,
+                            X = spacePosition.X,
+                            Y = spacePosition.Y,
+                            Z = spacePosition.Z,
+                            Orientation = spaceOrientation
                         };
                     }
 

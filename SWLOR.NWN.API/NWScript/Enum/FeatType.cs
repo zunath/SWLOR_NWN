@@ -2688,6 +2688,7 @@ namespace SWLOR.NWN.API.NWScript.Enum
         AutoCastShadowStep2 = 3157,
         AutoCastChainLightning = 3158,
         AutoCastBloodSiphon = 3159,
+        AutoCastPowerCell3 = 3160,
 
         PairedVolley1 = 3216,
         PairedVolley2 = 3217,

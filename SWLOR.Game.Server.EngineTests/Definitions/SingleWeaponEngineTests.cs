@@ -62,6 +62,36 @@ public static class SingleWeaponEngineTests
         ctx.AssertEqual(0, Combat.GetCombatImpactWeaponDamage(player.Creature, SkillType.Devices), "Devices damage has no weapon component");
     }
 
+    [EngineTest("Two-handed weapons never receive Single Weapon or Doublehand", Category = "SingleWeapon", TimeoutSeconds = 60f)]
+    public static async Task TwoHandedWeapons(EngineTestContext ctx)
+    {
+        using var player = await PlayerAbilityFixture.CreateAsync(ctx);
+        CreaturePlugin.AddFeat(player.Creature, FeatType.WeaponProficiencyExotic);
+        player.Update(record =>
+        {
+            record.Skills[SkillType.Armor].Rank = 40;
+            foreach (var skill in new[] { SkillType.Spear, SkillType.Staff, SkillType.HeavyVibroblade, SkillType.TwinBlade, SkillType.Rifle })
+                record.Skills[skill].Rank = 50;
+        });
+        foreach (var resref in new[] { "chi_spear", "b_staff", "b_greatsword", "b_twinblade", "b_rifle" })
+        {
+            var weapon = await ctx.EquipItemAsync(player.Creature, resref, InventorySlot.RightHand);
+            await SetDamage(ctx, player.Creature, weapon, 46);
+            foreach (var rank in new[] { 0, 1, 2, 3 })
+            {
+                player.Update(record => record.Perks[PerkType.Doublehand] = rank);
+                ctx.Assert(!EquipmentPredicates.HasSingleWeapon(player.Creature), $"{resref} does not qualify at Doublehand rank {rank}");
+                ctx.AssertEqual(46, WeaponDamage.GetEffectiveDMG(player.Creature, weapon), $"{resref} retains its base DMG at Doublehand rank {rank}");
+                ctx.AssertEqual(46, Combat.GetCombatImpactWeaponDamage(player.Creature, Skill.GetSkillTypeByBaseItem(GetBaseItemType(weapon))),
+                    $"{resref} ability damage retains its base weapon rating at Doublehand rank {rank}");
+            }
+            var preview = new ExamineItemPayload(weapon);
+            ctx.Assert(!WeaponDamage.IsSingleWeaponType(preview.ItemType), $"{resref} does not display a Single Weapon examine bonus");
+            DestroyObject(weapon);
+            await ctx.WaitFrameAsync();
+        }
+    }
+
     [EngineTest("Pistols receive Single Weapon and Doublehand only without a shield", Category = "SingleWeapon", TimeoutSeconds = 60f)]
     public static async Task PistolShield(EngineTestContext ctx)
     {

@@ -33,10 +33,17 @@ public class AbilityImpactVisualEffectTests
             var id = entry.GetProperty("Id").GetString()!;
             var declaresNativeEffect = entry.TryGetProperty("NativeImpactVisualEffect", out var nativeEffect);
             var enumName = declaresNativeEffect ? nativeEffect.GetString()! :
-                id == "ShieldBash" ? "Vfx_Imp_Shield_Bash" : "Vfx_Ability_" + id;
+                id switch
+                {
+                    "ShieldBash" => "Vfx_Imp_Shield_Bash",
+                    "MercilessAngleTechnique" => "Vfx_Imp_Merciless_Angle",
+                    _ => "Vfx_Ability_" + id
+                };
             Enum.TryParse<VisualEffect>(enumName, out var expected).Should().BeTrue($"{id} must have a stable effect reference");
             Enum.IsDefined(expected).Should().BeTrue($"{id} must reference a declared effect enum");
             expected.Should().NotBe(VisualEffect.None);
+            ((int)expected).Should().NotBe(999,
+                $"{id} must avoid NWN's hardcoded Cows from Hell effect, which overrides visualeffects.2da");
             if (declaresNativeEffect)
             {
                 enumName.Should().NotStartWith("Vfx_Ability_", "authored effects retain their unique resource contract");
@@ -96,6 +103,12 @@ public class AbilityImpactVisualEffectTests
                 .Where(column => column.name.StartsWith("Imp_") && column.name.EndsWith("_Node"))
                 .Select(column => row[column.index]).Where(value => value != "****").ToArray();
             models.Should().NotBeEmpty($"{id} needs a model attachment");
+            if (id == "MercilessAngleTechnique")
+            {
+                ((int)expected).Should().Be(1127);
+                models.Should().Equal(new[] { "vx_merc_angl" },
+                    "Merciless Angle must retain its authored crimson slash model");
+            }
             foreach (var model in models)
             {
                 model.Length.Should().BeLessThanOrEqualTo(16);

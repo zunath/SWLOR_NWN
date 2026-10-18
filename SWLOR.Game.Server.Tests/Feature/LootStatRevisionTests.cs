@@ -3,6 +3,7 @@ using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Game.Server.Feature.MigrationDefinition;
 using SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition;
+using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.LootService;
 using SWLOR.Game.Server.Service.SlicingService;
 using SWLOR.NWN.API.NWScript.Enum.Item;
@@ -108,6 +109,42 @@ public class LootStatRevisionTests
             ReadLocalInt(blueprint.RootElement, FoundryLootStatRevisionCatalog.RevisionVariable)
                 .Should().Be(FoundryLootStatRevisionCatalog.CurrentRevision, resref);
         }
+    }
+
+    [Test]
+    public void ArkanianArmorRevision_EndsOnTheBlueprintAndMarksOnlyIt()
+    {
+        var root = FindRepositoryRoot();
+        foreach (var (resref, changes) in ArkanianArmorStatRevisionCatalog.Changes)
+        {
+            using var blueprint = JsonDocument.Parse(File.ReadAllText(Path.Combine(root.FullName, "Module", "uti", $"{resref}.uti.json")));
+            var properties = new Dictionary<(int Type, int Subtype), int>();
+            foreach (var property in blueprint.RootElement.GetProperty("PropertiesList").GetProperty("value").EnumerateArray())
+            {
+                var key = (property.GetProperty("PropertyName").GetProperty("value").GetInt32(),
+                    property.GetProperty("Subtype").GetProperty("value").GetInt32());
+                properties[key] = properties.GetValueOrDefault(key) + property.GetProperty("CostValue").GetProperty("value").GetInt32();
+            }
+
+            // Ice Resistance replaces the shipped blueprint's retired Ice Defense and is revised from each copy's own Ice values.
+            var iceResistance = ((int)ItemPropertyType.Resistance, (int)ResistanceType.Ice);
+            properties.GetValueOrDefault(iceResistance).Should().Be(ArkanianArmorStatRevisionCatalog.IceResistance, resref);
+            properties.Keys.Should().BeSubsetOf(changes.Select(change => ((int)change.Type, change.Subtype)).Append(iceResistance),
+                $"every {resref} property moves with the revision");
+            foreach (var change in changes)
+            {
+                change.Previous.Should().NotBe(change.Current, $"{resref} {change.Type} changes");
+                properties.GetValueOrDefault(((int)change.Type, change.Subtype)).Should().Be(change.Current, $"{resref} {change.Type} {change.Subtype}");
+            }
+            ReadLocalInt(blueprint.RootElement, ArkanianArmorStatRevisionCatalog.RevisionVariable)
+                .Should().Be(ArkanianArmorStatRevisionCatalog.CurrentRevision, resref);
+        }
+
+        Directory.EnumerateFiles(Path.Combine(root.FullName, "Module", "uti"), "*.uti.json")
+            .Where(path => File.ReadAllText(path).Contains(ArkanianArmorStatRevisionCatalog.RevisionVariable))
+            .Select(path => Path.GetFileName(path)[..^".uti.json".Length])
+            .Should().BeEquivalentTo(ArkanianArmorStatRevisionCatalog.Changes.Keys,
+                "an item built from a stamped blueprint is never revised, so only cataloged blueprints carry the marker");
     }
 
     [Test]

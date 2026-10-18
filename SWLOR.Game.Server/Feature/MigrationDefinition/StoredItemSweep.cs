@@ -7,22 +7,17 @@ using SWLOR.Game.Server.Service.MigrationService;
 using SWLOR.Game.Server.Service.QuestContractService;
 using SWLOR.Game.Server.Service.SpaceService;
 
-namespace SWLOR.Game.Server.Feature.MigrationDefinition.ServerMigration;
+namespace SWLOR.Game.Server.Feature.MigrationDefinition;
 
 /// <summary>
 /// Updates item artwork, loot stats and legacy headgear slots across every stored item (banks, market,
 /// property storage, research, outfits, saved creatures, ships, contracts) in one pass. Each stored object
-/// is loaded and saved once, with one item traversal. Player records are updated by <see cref="_27_UpdatePlayerRecords"/>.
+/// is loaded and saved once, with one item traversal. Server migrations that change stored items run it.
 /// The pass edits saved data directly instead of loading each item into the engine, and converts records on
 /// worker threads, so a production sweep takes about a minute at boot (<see cref="StoredObjectData"/>'s item sweep).
 /// </summary>
-public sealed class _27_UpdateStoredItems : IServerMigration
+internal static class StoredItemSweep
 {
-    public int Version => 27;
-    public MigrationExecutionType ExecutionType => MigrationExecutionType.PostCacheLoad;
-
-    public void Migrate() => Migrate(Version);
-
     internal static void Migrate(int version)
     {
         var progress = new ServerMigrationProgress(version, CountSections());

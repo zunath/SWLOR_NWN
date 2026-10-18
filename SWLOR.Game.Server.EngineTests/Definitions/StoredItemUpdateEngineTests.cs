@@ -47,7 +47,7 @@ public static partial class MigrationEngineTests
                 {
                     if (run == 1)
                         DB.Set(record);
-                    new _27_UpdateStoredItems().Migrate();
+                    new _28_CorrectStoredEquipmentTypes().Migrate();
                     var stored = ReadPersisted<InventoryItem>(record.Id);
                     if (run == 1)
                     {

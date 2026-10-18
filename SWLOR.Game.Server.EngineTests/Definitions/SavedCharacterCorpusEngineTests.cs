@@ -22,7 +22,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             if (string.IsNullOrWhiteSpace(input))
                 ctx.Skip("Supply a private saved-character JSONL corpus in an isolated engine-test home.");
 
-            var migrationType = typeof(_22_CombatSystemReplacement).Assembly.GetType(
+            var migrationType = typeof(_28_CorrectStoredEquipmentTypes).Assembly.GetType(
                 "SWLOR.Game.Server.Feature.MigrationDefinition.ServerMigration.StoredItemDataMigration");
             var method = migrationType.GetMethod("MigrateStoredObject", BindingFlags.NonPublic | BindingFlags.Static);
             var resultType = migrationType.GetNestedType("SerializedObjectMigrationResult", BindingFlags.NonPublic);

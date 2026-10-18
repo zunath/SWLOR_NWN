@@ -19,7 +19,7 @@ public class WeaponDamageMigrationTests
     [TestCase(ushort.MaxValue)]
     public void CanonicalUntypedDamageDoesNotNeedAnotherConversion(int subtype)
     {
-        var method = typeof(_22_CombatSystemReplacement).Assembly
+        var method = typeof(_28_CorrectStoredEquipmentTypes).Assembly
             .GetType("SWLOR.Game.Server.Feature.MigrationDefinition.SerializedItemWeaponDamageTypeMigration")!
             .GetMethod("ShouldMigrate", BindingFlags.NonPublic | BindingFlags.Static)!;
         var damage = new List<(ItemProperty Property, int SubType, int Value)> { (null!, subtype, 5) };
@@ -36,7 +36,7 @@ public class WeaponDamageMigrationTests
     [Test]
     public void LegacyForceDamageResolvesToPhysical()
     {
-        var migration = typeof(_22_CombatSystemReplacement).Assembly
+        var migration = typeof(_28_CorrectStoredEquipmentTypes).Assembly
             .GetType("SWLOR.Game.Server.Feature.MigrationDefinition.SerializedItemWeaponDamageTypeMigration")!;
         var resolve = migration.GetMethod("ResolveDamageType", BindingFlags.NonPublic | BindingFlags.Static)!;
         var shouldMigrate = migration.GetMethod("ShouldMigrate", BindingFlags.NonPublic | BindingFlags.Static)!;

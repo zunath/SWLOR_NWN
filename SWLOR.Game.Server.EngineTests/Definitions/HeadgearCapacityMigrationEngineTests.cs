@@ -90,7 +90,7 @@ public static partial class MigrationEngineTests
             InventoryItem saved = null;
             await ctx.ExecuteInCreatureContextAsync(player, () => saved = Bank.DepositItem(player, visor));
             await ctx.WaitUntilAsync(() => !GetIsObjectValid(visor), 5f, "the visor to finish bank deposit");
-            await ctx.ExecuteInCreatureContextAsync(player, () => { new _27_UpdateStoredItems().Migrate(); Bank.WithdrawItem(player, saved.Id); });
+            await ctx.ExecuteInCreatureContextAsync(player, () => { new _28_CorrectStoredEquipmentTypes().Migrate(); Bank.WithdrawItem(player, saved.Id); });
             await ctx.WaitFrameAsync();
             visor = FindHeadgear(player, "ruptorvanecr");
             ctx.AssertEqual(uuid, GetObjectUUID(visor), "Failed-login recovery retains identity through normal bank reload");

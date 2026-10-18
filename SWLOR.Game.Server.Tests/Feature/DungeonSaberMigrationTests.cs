@@ -52,14 +52,6 @@ public class DungeonSaberMigrationTests
         replacement.Should().Be("sabstorm_l3");
     }
 
-    [Test]
-    public void ReleasedServersAndPlayersReceiveNewRepairVersions()
-    {
-        new _25_ReplaceDungeonSabers().Version.Should().Be(25);
-        new _25_ReplaceDungeonSabers().ExecutionType.Should().Be(MigrationExecutionType.PostCacheLoad);
-        new _18_ReplaceDungeonSabers().Version.Should().Be(18);
-    }
-
     private static JsonDocument ReadItem(string resref) => JsonDocument.Parse(File.ReadAllText(
         Path.Combine(Root(), "Module", "uti", resref + ".uti.json")));
 

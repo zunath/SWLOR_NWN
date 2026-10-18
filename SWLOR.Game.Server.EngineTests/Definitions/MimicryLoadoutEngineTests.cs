@@ -30,65 +30,6 @@ public static class MimicryLoadoutEngineTests
     private const FeatType Wave = FeatType.DreadWaveTechnique;
     private const FeatType Trait = FeatType.IronCarapaceTechnique;
 
-    [EngineTest("Legacy equipped techniques migrate to Default and survive Redis reload", Category = "MimicryLoadouts", TimeoutSeconds = 30f)]
-    public static async Task DefaultMigration(EngineTestContext ctx)
-    {
-        using var fixture = await PlayerAbilityFixture.CreateAsync(ctx);
-        var player = fixture.Creature;
-        Prepare(fixture);
-        // Records saved before saved builds existed deserialize without either field.
-        var legacy = ReadPersisted(fixture.Id);
-        legacy.MimicryLoadouts = null;
-        legacy.ActiveMimicryLoadoutId = null;
-        legacy.EquippedTechniques = new List<FeatType> { Rush, Trait };
-        DB.Set(legacy);
-        CreaturePlugin.AddFeat(player, Rush);
-        PlayerPlugin.SetQuickBarSlot(player, 17, PlayerQuickBarSlot.UseFeat(Rush));
-
-        var migration = new _27_UpdatePlayerRecords();
-        migration.Migrate();
-        var record = ReadPersisted(fixture.Id);
-        var migrated = record.MimicryLoadouts.Single();
-        ctx.AssertEqual("Default", migrated.Name, "the legacy build receives the standard name");
-        ctx.AssertEqual(migrated.Id, record.ActiveMimicryLoadoutId, "the migrated build is active");
-        AssertSet(ctx, new[] { Rush, Trait }, migrated.Techniques, "migration preserves equipped techniques");
-        migration.Migrate();
-        record = ReadPersisted(fixture.Id);
-        ctx.AssertEqual(1, record.MimicryLoadouts.Count, "migration retry does not duplicate Default");
-        ctx.AssertEqual(migrated.Id, record.MimicryLoadouts[0].Id, "migration retry keeps the original Default");
-
-        new _21_CaptureMimicryDefaultHotbar().Migrate(player);
-        ctx.Assert(ReadPersisted(fixture.Id).MimicryLoadouts[0].HotbarSlots.TryGetValue(17, out var captured) && captured == Rush,
-            "first login records the migrated build's quickbar positions");
-
-        // A Combat Analyzer refund clears technique shortcuts before any build switch.
-        Mimicry.UnequipAllTechniques(player);
-        ctx.Assert(!IsFeat(player, 17, Rush), "refund removes the technique shortcut");
-        record = ReadPersisted(fixture.Id);
-        ctx.AssertEqual(0, record.EquippedTechniques.Count, "refund unequips every technique");
-        AssertSet(ctx, new[] { Rush, Trait }, record.MimicryLoadouts[0].Techniques, "refund does not rewrite the saved Default");
-        MimicryLoadouts.Save(record, null, "Other", new[] { Wave, Trait }, out var other, out _);
-        DB.Set(record);
-
-        for (var cycle = 1; cycle <= 2; cycle++)
-        {
-            Apply(ctx, player, other.Id, Wave, Trait);
-            record = ReadPersisted(fixture.Id);
-            AssertSet(ctx, new[] { Wave, Trait }, record.EquippedTechniques, $"cycle {cycle}: Other is persisted as equipped");
-            ctx.AssertEqual(other.Id, record.ActiveMimicryLoadoutId, $"cycle {cycle}: Other is persisted as active");
-            ctx.Assert(GetHasFeat(Wave, player) && !GetHasFeat(Rush, player), $"cycle {cycle}: native feats follow Other");
-
-            Apply(ctx, player, migrated.Id, Rush, Trait);
-            record = ReadPersisted(fixture.Id);
-            AssertSet(ctx, new[] { Rush, Trait }, record.EquippedTechniques, $"cycle {cycle}: Default is persisted as equipped");
-            ctx.AssertEqual(migrated.Id, record.ActiveMimicryLoadoutId, $"cycle {cycle}: Default is persisted as active");
-            ctx.AssertEqual(2, record.MimicryLoadouts.Count, $"cycle {cycle}: no builds are added or lost");
-            ctx.Assert(GetHasFeat(Rush, player) && !GetHasFeat(Wave, player), $"cycle {cycle}: native feats follow Default");
-            AssertSlot(ctx, player, 17, Rush);
-        }
-        ctx.SetResultDetail("Legacy record with no saved builds; Default name, active ID, retry, first-login quickbar capture, refund before switching, and two apply/save/Redis-reload cycles verified.");
-    }
-
     [EngineTest("Save, apply, unsaved apply and reopened technique window preserve their separate state", Category = "MimicryLoadouts", TimeoutSeconds = 30f)]
     public static async Task SaveApplyReopen(EngineTestContext ctx)
     {

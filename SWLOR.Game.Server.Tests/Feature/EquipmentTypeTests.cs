@@ -95,7 +95,6 @@ public class EquipmentTypeTests
         EquipmentTypeMigration.IsLegacyEquipment("ordinary_bracer", BaseItem.Bracer).Should().BeFalse();
         EquipmentTypeMigration.IsLegacyEquipment(null!, BaseItem.Bracer).Should().BeFalse();
         new _23_CorrectEquipmentTypes().Version.Should().BeGreaterThan(new _22_ReviseLootStats().Version);
-        new _28_CorrectStoredEquipmentTypes().Version.Should().BeGreaterThan(new _27_UpdateStoredItems().Version);
     }
 
     [Test]

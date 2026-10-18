@@ -53,9 +53,8 @@ public class HeadgearSlotMigrationTests
         HeadgearSlotMigration.IsLegacyHeadgear("piston_gaunt", BaseItem.Armor).Should().BeFalse();
         HeadgearSlotMigration.IsLegacyHeadgear("ordinary_armor", BaseItem.Armor).Should().BeFalse();
         new _22_ReviseLootStats().Version.Should().Be(22);
-        new _27_UpdateStoredItems().Version.Should().Be(27);
         typeof(_22_ReviseLootStats).Assembly.GetType("SWLOR.Game.Server.Feature.MigrationDefinition.PlayerMigration._23_RepairHeadgearSlots").Should().BeNull();
-        typeof(_27_UpdateStoredItems).Assembly.GetType("SWLOR.Game.Server.Feature.MigrationDefinition.ServerMigration._31_RepairHeadgearSlots").Should().BeNull();
+        typeof(_22_ReviseLootStats).Assembly.GetType("SWLOR.Game.Server.Feature.MigrationDefinition.ServerMigration._31_RepairHeadgearSlots").Should().BeNull();
     }
 
     [TestCase(0)]

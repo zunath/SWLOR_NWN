@@ -7,5 +7,5 @@ public sealed class _28_CorrectStoredEquipmentTypes : IServerMigration
 {
     public int Version => 28;
     public MigrationExecutionType ExecutionType => MigrationExecutionType.PostCacheLoad;
-    public void Migrate() => _27_UpdateStoredItems.Migrate(Version);
+    public void Migrate() => StoredItemSweep.Migrate(Version);
 }

@@ -113,7 +113,7 @@ public static partial class MigrationEngineTests
                 DB.Set(inventory); DB.Set(market); DB.Set(category); DB.Set(property);
                 DB.Set(research); DB.Set(outfit); DB.Set(creature); DB.Set(ship);
                 DB.Set(contract); DB.Set(delivery);
-                new _27_UpdateStoredItems().Migrate();
+                new _28_CorrectStoredEquipmentTypes().Migrate();
                 var migratedInventory = DB.Get<InventoryItem>(inventory.Id);
                 AssertPayload(migratedInventory.Data);
                 ctx.AssertEqual("iit_ess2_019", migratedInventory.IconResref, "Stored UI metadata follows the new artwork");
@@ -151,7 +151,7 @@ public static partial class MigrationEngineTests
                 AssertPayload(delivered.Data);
                 ctx.AssertEqual("iit_ess2_019", delivered.IconResref, "Pending delivery artwork is updated");
                 ctx.AssertEqual("Retained delivery", delivered.Name, "Pending delivery name is preserved");
-                new _27_UpdateStoredItems().Migrate();
+                new _28_CorrectStoredEquipmentTypes().Migrate();
                 ctx.AssertEqual(migratedInventory.Data, DB.Get<InventoryItem>(inventory.Id).Data, "A repeat server migration leaves exact payloads intact");
             }
             finally

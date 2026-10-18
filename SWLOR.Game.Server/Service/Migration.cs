@@ -16,6 +16,12 @@ namespace SWLOR.Game.Server.Service
     public static class Migration
     {
         private const int ConsoleProgressMigrationVersion = 22;
+
+        /// <summary>
+        /// Server migrations up to this version ran on production and were removed. A new database starts
+        /// here; a database below it predates this build and cannot be upgraded by it.
+        /// </summary>
+        internal const int RetiredServerMigrationVersion = 27;
         internal const string PlayerFileVersionVariable = "PLAYER_MIGRATION_VERSION";
         private const int LastPlayerVersionWithoutFileCheckpoint = 12;
         private static int _currentMigrationVersion;
@@ -27,7 +33,20 @@ namespace SWLOR.Game.Server.Service
         [NWNEventHandler(ScriptName.OnDatabaseLoaded)]
         public static void AfterDatabaseLoaded()
         {
-            var config = GetServerConfiguration();
+            var stored = DB.Get<ServerConfiguration>("SWLOR_CONFIG");
+            var config = ResolveConfiguration(stored);
+            if (config == null)
+            {
+                _serverMigrationState = new ServerMigrationState(stored.MigrationVersion);
+                _serverMigrationState.MarkFailed();
+                Log.Write(LogGroup.Error, $"The database is at server migration {stored.MigrationVersion}, but this build only upgrades " +
+                    $"databases at {RetiredServerMigrationVersion} or later. Upgrade it with an older build first. Shutting down server.", true);
+                AdministrationPlugin.ShutdownServer();
+                return;
+            }
+            if (stored == null)
+                DB.Set(config);
+
             _currentMigrationVersion = config.MigrationVersion;
             _serverMigrationState = new ServerMigrationState(_currentMigrationVersion);
 
@@ -52,6 +71,17 @@ namespace SWLOR.Game.Server.Service
                 config.MigrationVersion = _serverMigrationState.CompletedVersion;
                 DB.Set(config);
             }
+        }
+
+        /// <summary>
+        /// A new database starts at the retired version, so removed migrations never run; a database below it
+        /// returns null because this build no longer has the migrations it needs.
+        /// </summary>
+        internal static ServerConfiguration ResolveConfiguration(ServerConfiguration stored)
+        {
+            if (stored == null)
+                return new ServerConfiguration { MigrationVersion = RetiredServerMigrationVersion };
+            return stored.MigrationVersion < RetiredServerMigrationVersion ? null : stored;
         }
 
         private static ServerConfiguration GetServerConfiguration()

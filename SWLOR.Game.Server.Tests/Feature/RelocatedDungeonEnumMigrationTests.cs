@@ -142,31 +142,4 @@ public class RelocatedDungeonEnumMigrationTests
         migrated.Quests["saber_storm_foundation"].KillProgresses[NPCGroupType.Viscara_KillzoneBeacon_Adept].Should().Be(1);
     }
 
-    [Test]
-    public void Migration_RunsOnRawJsonBeforeTypedMigrations()
-    {
-        var migration = new _27_UpdatePlayerRecords();
-        migration.ExecutionType.Should().Be(MigrationExecutionType.PostDatabaseLoad);
-        migration.Version.Should().Be(27);
-    }
-
-    [Test]
-    public void PlayerRecordPass_RenamesEnumsAndCreatesDefaultBuildInOneSave()
-    {
-        var json = "{\"Id\":\"relocated-player\",\"EquippedTechniques\":[2797,2799]," +
-                   "\"KeyItems\":{\"CapstoneKorribanForgeCavernsKey\":\"2026-10-01T00:00:00Z\"}," +
-                   "\"Quests\":{\"absolute_defense_foundation\":{\"CurrentState\":1,\"KillProgresses\":{\"Korriban_AbsoluteDefense_Adept\":4},\"ItemProgresses\":{}}}}";
-
-        _27_UpdatePlayerRecords.MigratePlayer(JObject.Parse(json), out var player).Should().BeTrue();
-        player.KeyItems.Should().ContainKey(KeyItemType.CapstoneTatooineForgeCavernsKey);
-        player.Quests["absolute_defense_foundation"].KillProgresses[NPCGroupType.Tatooine_AbsoluteDefense_Adept].Should().Be(4);
-        var saved = player.MimicryLoadouts.Should().ContainSingle().Subject;
-        saved.Techniques.Should().Equal(player.EquippedTechniques);
-        player.ActiveMimicryLoadoutId.Should().Be(saved.Id);
-
-        var stored = JsonConvert.SerializeObject(player);
-        JObject.Parse(stored)[nameof(Player.KeyItems)]!["CapstoneKorribanForgeCavernsKey"].Should().BeNull();
-        _27_UpdatePlayerRecords.MigratePlayer(JObject.Parse(stored), out var retried).Should().BeFalse();
-        retried.MimicryLoadouts.Should().ContainSingle().Which.Id.Should().Be(saved.Id);
-    }
 }

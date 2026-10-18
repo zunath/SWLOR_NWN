@@ -19,66 +19,6 @@ public class CombatUpgradeMigrationCoverageTests
     private const string PerkTypeEnumMemberPattern = @"^\s*([A-Za-z_]\w*)\s*(?:=\s*-?\d+)?\s*,?\s*(?://.*)?$";
 
     [Test]
-    public void CombatUpgradeServerMigration_ForcesFullRebuildAndRepairsStoredData()
-    {
-        var root = FindRepositoryRoot();
-        var serverMigrations = Path.Combine(
-            root.FullName,
-            "SWLOR.Game.Server",
-            "Feature",
-            "MigrationDefinition",
-            "ServerMigration");
-        var previousMigration = File.ReadAllText(Path.Combine(serverMigrations, "_21_SetDefaultOutfitAndMarketLimits.cs"));
-        var combatMigration = File.ReadAllText(Path.Combine(serverMigrations, "_22_CombatSystemReplacement.cs"));
-
-        previousMigration.Should().Contain("public int Version => 21;");
-        previousMigration.Should().Contain("MigrationExecutionType.PostCacheLoad");
-        combatMigration.Should().Contain("public int Version => 22;");
-        combatMigration.Should().Contain("MigrationExecutionType.PostDatabaseLoad");
-        combatMigration.Should().Contain("dbPlayer.RebuildComplete = false;");
-        combatMigration.Should().NotContain("ClearLoggedOutPlayerEffects");
-        combatMigration.Should().Contain("WeaponBlueprintPerkMigration.CollapsePlayerPerks");
-        combatMigration.Should().Contain("DroidBoostRecipeMigration.ExpandPlayerRecipeDictionaries");
-        combatMigration.Should().Contain("CombatReadinessMigration.ResetCombatReadiness");
-        combatMigration.Should().Contain("StoredItemDataMigration.Migrate();");
-        combatMigration.Should().Contain("RefundBeastPerks(beast, out var perkChanged)");
-        combatMigration.Should().NotContain("beast.UnallocatedSP += refund;");
-        combatMigration.Should().Contain("Starting consolidated server migration.");
-        combatMigration.Should().Contain("Current migration progress:");
-        combatMigration.Should().Contain("new MigrationProgress(\"players\", playerCount)");
-        combatMigration.Should().Contain("new MigrationProgress(\"beasts\", count)");
-        combatMigration.Should().Contain("new MigrationProgress(\"incubation jobs\", count)");
-        combatMigration.Should().Contain("SplitDefensesAndResistances(jObject);");
-        combatMigration.Should().Contain("NormalizeResistanceDictionary(jObject, nameof(Player.Resistances));");
-        combatMigration.Should().Contain("PlayerRemovedPerks");
-        combatMigration.Should().Contain("BeastRemovedPerks");
-        combatMigration.Should().NotContain("CurrencyType.RebuildToken");
-    }
-
-    [Test]
-    public void CombatUpgradeServerMigration_ClearsRecastTimesBeforePlayerDeserialization()
-    {
-        var clearRecastTimes = typeof(_22_CombatSystemReplacement)
-            .GetMethod("ClearRecastTimes", BindingFlags.NonPublic | BindingFlags.Static)!;
-        var playerJson = JObject.Parse("""
-            {
-              "RecastTimes": {
-                "SnarlGrowl": "2026-06-30T00:00:00Z",
-                "ShieldWall": "2026-06-30T00:01:00Z"
-              }
-            }
-            """);
-
-        ((bool)clearRecastTimes.Invoke(null, new object[] { playerJson })!)
-            .Should()
-            .BeTrue();
-        var recastTimes = (JObject)playerJson[nameof(Player.RecastTimes)]!;
-
-        recastTimes.Properties().Should().BeEmpty();
-        playerJson.ToObject<Player>()!.RecastTimes.Should().BeEmpty();
-    }
-
-    [Test]
     public void LoggedOutStatusEffects_RemainProcessLocalRuntimeState()
     {
         var root = FindRepositoryRoot();
@@ -117,43 +57,6 @@ public class CombatUpgradeMigrationCoverageTests
         obsoleteItemMigration.Should().Contain("public override int Version => 15;");
         obsoleteItemMigration.Should().Contain("ObsoleteItemMigration.RemoveObsoleteItemsFromObject(player);");
         obsoleteItemMigration.Should().Contain("PlayerInitialization.ResetFeatsToBaseline(player);");
-    }
-
-    [Test]
-    public void EquipmentRequirementMigration_CoversStoredItemSurfaces()
-    {
-        var root = FindRepositoryRoot();
-        var migration = File.ReadAllText(Path.Combine(
-            root.FullName,
-            "SWLOR.Game.Server",
-            "Feature",
-            "MigrationDefinition",
-            "ServerMigration",
-            "StoredItemDataMigration.cs"));
-        var serverMigration = File.ReadAllText(Path.Combine(
-            root.FullName,
-            "SWLOR.Game.Server",
-            "Feature",
-            "MigrationDefinition",
-            "ServerMigration",
-            "_22_CombatSystemReplacement.cs"));
-
-        serverMigration.Should().Contain("StoredItemDataMigration.Migrate();");
-        migration.Should().Contain("EquipmentRequirementMigration.MigrateObject(obj)");
-        var droidBoostMigration = migration[
-            migration.IndexOf("private static class DroidBoostStoredItemMigration", StringComparison.Ordinal)..];
-        droidBoostMigration.Should().Contain("wasMigrated = EquipmentRequirementMigration.MigrateObject(obj)");
-        AssertMigrationCalls(migration,
-            "MigrateInventoryItems(progress, disposal);",
-            "MigrateMarketItems(progress, disposal);",
-            "MigrateWorldPropertyCategories(categories, progress, disposal);",
-            "MigrateEntityItems(SearchAll<WorldProperty>()",
-            "MigrateEntityItems(researchJobs",
-            "MigrateEntityItems(SearchAll<PlayerOutfit>()",
-            "MigrateEntityItems(SearchAll<DMCreature>()",
-            "MigratePlayerShips(ships, progress, disposal);");
-        AssertStoredEntitySurfaces(migration);
-        AssertShipSurfaces(migration);
     }
 
     /// <summary>
@@ -336,30 +239,6 @@ public class CombatUpgradeMigrationCoverageTests
     }
 
     [Test]
-    public void DamageResistanceAndDelayMigrations_CoverStoredItemSurfacesIncludingShips()
-    {
-        var root = FindRepositoryRoot();
-        var migrationRoot = Path.Combine(
-            root.FullName,
-            "SWLOR.Game.Server",
-            "Feature",
-            "MigrationDefinition",
-            "ServerMigration");
-        var serverMigration = File.ReadAllText(Path.Combine(migrationRoot, "_22_CombatSystemReplacement.cs"));
-        var storedItemMigration = File.ReadAllText(Path.Combine(migrationRoot, "StoredItemDataMigration.cs"));
-
-        storedItemMigration.Should().Contain("SerializedItemResistanceMigration.MigrateObject(obj)");
-        storedItemMigration.Should().Contain("SerializedItemWeaponDamageTypeMigration.MigrateObject(obj)");
-        storedItemMigration.Should().Contain("CombatReadinessMigration.MigrateObject(obj)");
-        AssertStoredEntitySurfaces(storedItemMigration);
-        AssertShipSurfaces(storedItemMigration);
-
-        serverMigration.Should().Contain("NormalizeResistanceDictionary(jObject, nameof(Player.Resistances));");
-        serverMigration.Should().Contain("NormalizeResistanceDictionary(jObject, nameof(Beast.ResistancePurities));");
-        serverMigration.Should().Contain("NormalizeResistanceDictionary(jObject, nameof(IncubationJob.ResistancePurities));");
-    }
-
-    [Test]
     public void WeaponDamageMigration_CollapsesConflictingBlueprintElementalDamageBonuses()
     {
         var root = FindRepositoryRoot();
@@ -376,84 +255,6 @@ public class CombatUpgradeMigrationCoverageTests
         migrationSource.Should().Contain("DamageType.IsElementalDamageType()");
         migrationSource.Should().Contain("SWLOR.Game.Server.Service.Random.Next(elementalDamageTypes.Count)");
         migrationSource.Should().Contain("damageEnhancement.DamageType == selectedElementalDamageType");
-    }
-
-    [Test]
-    public void ResistanceMigration_MergesLegacyElementalValuesIntoDefaultTargets()
-    {
-        var moveLegacyElementalDefense = typeof(_22_CombatSystemReplacement)
-            .GetMethod("MoveLegacyElementalDefense", BindingFlags.NonPublic | BindingFlags.Static)!;
-        var normalizeLegacyElementalResistance = typeof(_22_CombatSystemReplacement)
-            .GetMethod("NormalizeLegacyElementalResistance", BindingFlags.NonPublic | BindingFlags.Static)!;
-
-        var defenses = JObject.Parse("""{ "Fire": 14 }""");
-        var resistances = JObject.Parse("""{ "Fire": 0 }""");
-
-        ((bool)moveLegacyElementalDefense.Invoke(
-            null,
-            new object[] { defenses, resistances, CombatDamageType.Fire, ResistanceType.Fire })!)
-            .Should()
-            .BeTrue();
-        resistances["Fire"]!.Value<int>().Should().Be(14);
-        defenses.ContainsKey("Fire").Should().BeFalse();
-
-        resistances = JObject.Parse("""{ "Fire": 0, "3": -12 }""");
-
-        ((bool)normalizeLegacyElementalResistance.Invoke(
-            null,
-            new object[] { resistances, CombatDamageType.Fire, ResistanceType.Fire })!)
-            .Should()
-            .BeTrue();
-        resistances["Fire"]!.Value<int>().Should().Be(-12);
-        resistances.ContainsKey("3").Should().BeFalse();
-    }
-
-    [Test]
-    public void BeastMigration_RefundsAllBeastPerksAndNormalizesSkillPoints()
-    {
-        var refundBeastPerks = typeof(_22_CombatSystemReplacement)
-            .GetMethod("RefundBeastPerks", BindingFlags.NonPublic | BindingFlags.Static)!;
-        var beast = new Beast
-        {
-            Level = 50,
-            UnallocatedSP = 35,
-            Perks =
-            {
-                [PerkType.EnduranceLink] = 3,
-                [PerkType.PoisonBreath] = 5
-            }
-        };
-
-        object[] args = { beast, false };
-
-        ((int)refundBeastPerks.Invoke(null, args)!)
-            .Should()
-            .Be(15);
-        ((bool)args[1]).Should().BeTrue();
-        beast.Perks.Should().BeEmpty();
-        beast.UnallocatedSP.Should().Be(50);
-    }
-
-    [Test]
-    public void StoredItemMigration_MapsLegacyNumericWeaponCategories()
-    {
-        var migrationType = typeof(_22_CombatSystemReplacement)
-            .Assembly
-            .GetType("SWLOR.Game.Server.Feature.MigrationDefinition.ServerMigration.StoredItemDataMigration")!;
-        var tryMapWeaponCategory = migrationType.GetMethod(
-            "TryMapWeaponCategory",
-            BindingFlags.NonPublic | BindingFlags.Static,
-            null,
-            new[] { typeof(JToken), typeof(MarketCategoryType).MakeByRefType() },
-            null)!;
-
-        object[] vibroknifeArgs = { new JValue(2), MarketCategoryType.Invalid };
-        ((bool)tryMapWeaponCategory.Invoke(null, vibroknifeArgs)!).Should().BeTrue();
-        vibroknifeArgs[1].Should().Be(MarketCategoryType.Vibroknife);
-
-        object[] spearArgs = { new JValue(4), MarketCategoryType.Invalid };
-        ((bool)tryMapWeaponCategory.Invoke(null, spearArgs)!).Should().BeTrue();
-        spearArgs[1].Should().Be(MarketCategoryType.Spear);
     }
 
     [Test]
@@ -553,108 +354,6 @@ public class CombatUpgradeMigrationCoverageTests
         migration.Should().Contain("DroidPartItemPropertySubType.CPU");
         migration.Should().Contain("Droid.DroidControlItemResref");
         migration.Should().Contain("GetTierArmorSkillRank");
-    }
-
-    [Test]
-    public void ObsoleteBiblePerkMigration_CoversPlayersBeastsStoredItemsDroidsAndShips()
-    {
-        var root = FindRepositoryRoot();
-        var serverMigration = File.ReadAllText(Path.Combine(
-            root.FullName,
-            "SWLOR.Game.Server",
-            "Feature",
-            "MigrationDefinition",
-            "ServerMigration",
-            "_22_CombatSystemReplacement.cs"));
-        var storedItemMigration = File.ReadAllText(Path.Combine(
-            root.FullName,
-            "SWLOR.Game.Server",
-            "Feature",
-            "MigrationDefinition",
-            "ServerMigration",
-            "StoredItemDataMigration.cs"));
-        var obsoleteItemMigration = File.ReadAllText(Path.Combine(
-            root.FullName,
-            "SWLOR.Game.Server",
-            "Feature",
-            "MigrationDefinition",
-            "ObsoleteItemMigration.cs"));
-
-        serverMigration.Should().Contain("MigratePlayers();");
-        serverMigration.Should().Contain("MigrateBeasts();");
-        serverMigration.Should().Contain("StoredItemDataMigration.Migrate();");
-        serverMigration.Should().Contain("PlayerRemovedPerks");
-        serverMigration.Should().Contain("PlayerTrimmedPerks");
-        foreach (var removedLeadershipPerk in new[]
-                 {
-                     "PerkType.Dedication",
-                     "PerkType.SoldiersSpeed",
-                     "PerkType.SoldiersStrike",
-                     "PerkType.Charge",
-                     "PerkType.SoldiersPrecision",
-                     "PerkType.ShockingShout",
-                     "PerkType.Rejuvenation",
-                     "PerkType.FrenziedShout",
-                     "PerkType.ShoutRange",
-                 })
-        {
-            serverMigration.Should().Contain(removedLeadershipPerk);
-        }
-
-        foreach (var removedBlueprintPerk in new[]
-                 {
-                     "PerkType.WeaponBlueprints",
-                     "PerkType.ArmorBlueprints",
-                     "PerkType.AccessoryBlueprints",
-                     "PerkType.FurnitureBlueprints",
-                     "PerkType.StructureBlueprints",
-                     "PerkType.StarshipBlueprints",
-                     "PerkType.EnhancementBlueprints",
-                     "PerkType.DroidEquipmentBlueprints",
-                 })
-        {
-            serverMigration.Should().Contain(removedBlueprintPerk);
-        }
-
-        serverMigration.Should().Contain("BeastRemovedPerks");
-        serverMigration.Should().Contain("BeastTrimmedPerks");
-        serverMigration.Should().Contain("ClearRecastTimes(jObject)");
-        serverMigration.Should().Contain("RemoveUnlockedPerks(dbPlayer)");
-        AssertMigrationCalls(storedItemMigration,
-            "MigrateInventoryItems(progress, disposal);",
-            "MigrateMarketItems(progress, disposal);",
-            "MigrateWorldPropertyCategories(categories, progress, disposal);",
-            "MigrateEntityItems(SearchAll<WorldProperty>()",
-            "MigrateEntityItems(researchJobs",
-            "MigrateEntityItems(SearchAll<PlayerOutfit>()",
-            "MigrateEntityItems(SearchAll<DMCreature>()",
-            "MigratePlayerShips(ships, progress, disposal);");
-        storedItemMigration.Should().Contain("ObsoleteItemMigration.RemoveObsoleteItemsInPass");
-        AssertShipSurfaces(storedItemMigration);
-
-        obsoleteItemMigration.Should().Contain("DroidInstructions.Normalize");
-        obsoleteItemMigration.Should().Contain("RemoveObsoleteItemsFromConstructedDroid");
-        obsoleteItemMigration.Should().Contain("SyncDroidInstructionProperties");
-        obsoleteItemMigration.Should().Contain("id_concgren3");
-        obsoleteItemMigration.Should().Contain("id_tranqshot3");
-    }
-
-    [Test]
-    public void RemovedPerkMigration_CoversEveryPerkWithoutCurrentDefinition()
-    {
-        var root = FindRepositoryRoot();
-        var currentPerks = GetCurrentPerkDefinitions(root);
-        var cleanupPerks = GetMigrationCleanupPerks(root);
-        var enumPerks = GetPerkTypeEnumNames(root);
-
-        var missingCleanup = enumPerks
-            .Except(currentPerks)
-            .Except(cleanupPerks)
-            .OrderBy(perk => perk)
-            .ToList();
-
-        missingCleanup.Should().BeEmpty(
-            "persisted perk keys without current definitions must be removed or trimmed by the consolidated migration");
     }
 
     [Test]
@@ -784,80 +483,6 @@ public class CombatUpgradeMigrationCoverageTests
         return ranks.Length == 0
             ? 0
             : ranks[0];
-    }
-
-    private static HashSet<string> GetPerkTypeEnumNames(DirectoryInfo root)
-    {
-        var source = File.ReadAllText(Path.Combine(
-            root.FullName,
-            "SWLOR.Game.Server",
-            "Service",
-            "PerkService",
-            "PerkType.cs"));
-
-        return Regex.Matches(source, PerkTypeEnumMemberPattern, RegexOptions.Multiline)
-            .Select(match => match.Groups[1].Value)
-            .Where(perk => perk != "Invalid")
-            .ToHashSet();
-    }
-
-    private static HashSet<string> GetCurrentPerkDefinitions(DirectoryInfo root)
-    {
-        var perkDefinitionRoot = Path.Combine(root.FullName, "SWLOR.Game.Server", "Feature", "PerkDefinition");
-        var currentPerks = new HashSet<string>();
-        foreach (var path in Directory.EnumerateFiles(perkDefinitionRoot, "*.cs", SearchOption.AllDirectories))
-        {
-            var source = File.ReadAllText(path);
-            foreach (Match match in Regex.Matches(
-                         source,
-                         @"\.Create\(\s*PerkCategoryType\.\w+\s*,\s*PerkType\.(\w+)"))
-            {
-                currentPerks.Add(match.Groups[1].Value);
-            }
-
-            foreach (Match match in Regex.Matches(
-                         source,
-                         @"Create\w*Perk\(\s*PerkType\.(\w+)"))
-            {
-                currentPerks.Add(match.Groups[1].Value);
-            }
-        }
-
-        return currentPerks;
-    }
-
-    private static HashSet<string> GetMigrationCleanupPerks(DirectoryInfo root)
-    {
-        var source = File.ReadAllText(Path.Combine(
-            root.FullName,
-            "SWLOR.Game.Server",
-            "Feature",
-            "MigrationDefinition",
-            "ServerMigration",
-            "_22_CombatSystemReplacement.cs"));
-
-        var cleanupPerks = new HashSet<string>();
-        foreach (var dictionaryName in new[]
-                 {
-                     "PlayerRemovedPerks",
-                     "PlayerTrimmedPerks",
-                     "BeastRemovedPerks",
-                     "BeastTrimmedPerks",
-                 })
-        {
-            var dictionary = Regex.Match(
-                source,
-                $@"{dictionaryName}\s*=\s*new\(\)\s*{{(?<body>.*?)^\s*}};",
-                RegexOptions.Singleline | RegexOptions.Multiline);
-            dictionary.Success.Should().BeTrue($"{dictionaryName} must remain discoverable by migration coverage tests");
-
-            foreach (Match match in Regex.Matches(dictionary.Groups["body"].Value, @"PerkType\.(\w+)"))
-            {
-                cleanupPerks.Add(match.Groups[1].Value);
-            }
-        }
-
-        return cleanupPerks;
     }
 
     private static DirectoryInfo FindRepositoryRoot()

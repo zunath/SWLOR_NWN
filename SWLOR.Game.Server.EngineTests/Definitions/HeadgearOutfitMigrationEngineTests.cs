@@ -36,7 +36,7 @@ public static partial class MigrationEngineTests
             {
                 DB.Set(outfit);
                 DB.Set(bank);
-                new _27_UpdateStoredItems().Migrate();
+                new _28_CorrectStoredEquipmentTypes().Migrate();
                 var template = Deserialize(ctx, DB.Get<PlayerOutfit>(outfit.Id).Data);
                 ctx.AssertEqual(BaseItem.Armor, GetBaseItemType(template), "Cosmetic legacy template retains its armor type through the merged migration");
                 ctx.AssertEqual(156, GetItemAppearance(template, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.Torso), "Cosmetic legacy template retains its historical torso");
@@ -60,7 +60,7 @@ public static partial class MigrationEngineTests
                     var view = BindOutfit();
                     view.OnClickStoreOutfit()();
                     view.OnModalConfirmClick()();
-                    new _27_UpdateStoredItems().Migrate();
+                    new _28_CorrectStoredEquipmentTypes().Migrate();
                     EquippedItemAppearance.Set(chest, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.Torso, model + 2);
                     EquippedItemAppearance.Set(chest, ItemAppearanceType.ArmorColor, 0, color + 2);
                     LoadOutfit(BindOutfit());

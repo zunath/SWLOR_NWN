@@ -316,7 +316,7 @@ public static partial class MigrationEngineTests
                 DB.Set(contract);
                 for (var run = 1; run <= 2; run++)
                 {
-                    new _27_UpdateStoredItems().Migrate();
+                    new _28_CorrectStoredEquipmentTypes().Migrate();
                     foreach (var record in records)
                     {
                         var stored = DB.Get<InventoryItem>(record.Id);

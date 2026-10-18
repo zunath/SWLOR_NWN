@@ -171,6 +171,11 @@ namespace SWLOR.Game.Server.Service
         {
             DeleteLocalBool(player, BattleThemePlayingVariable);
             PlayerPlugin.MusicBattleToggle(player, false);
+
+            // The client resumes background music when battle music stops. Keep stopped area music
+            // off unless the player has their own track playing.
+            if (IsAreaMusicStopped(GetArea(player)) && GetPersonalTrackId(player) == null)
+                PlayerPlugin.MusicBackgroundToggle(player, false);
         }
 
         /// <summary>

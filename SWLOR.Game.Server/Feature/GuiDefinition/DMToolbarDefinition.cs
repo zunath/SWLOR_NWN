@@ -13,7 +13,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
         private readonly GuiWindowBuilder<DMToolbarViewModel> _builder = new();
 
         private const float ButtonWidth = DMToolbarViewModel.ButtonWidth;
-        private const float ButtonHeight = 32f;
+        private const float ButtonHeight = 24f;
 
         public GuiConstructedWindow BuildWindow()
         {

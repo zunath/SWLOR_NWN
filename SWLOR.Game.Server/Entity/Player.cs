@@ -115,6 +115,11 @@ namespace SWLOR.Game.Server.Entity
 
         [Indexed]
         public int Version { get; set; }
+        /// <summary>
+        /// The newest character-file migration whose changes to this record are saved. A character file still
+        /// behind it is upgraded again without changing the record a second time.
+        /// </summary>
+        public int CharacterFileVersion { get; set; }
         public bool CharacterInitializationPending { get; set; }
         [Indexed]
         public string Name { get; set; }

@@ -12,6 +12,7 @@ using SWLOR.Game.Server.Service.DroidService;
 using SWLOR.Game.Server.Service.QuestContractService;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.NWN.API.NWScript.Enum.Item;
 
 namespace SWLOR.Game.Server.EngineTests.Definitions;
 
@@ -68,4 +69,22 @@ public static partial class MigrationEngineTests
         });
     }
 
+
+    [EngineTest("Replacing a worn dungeon saber takes its stats off the record", Category = "DungeonSaberMigration")]
+    public static async Task DungeonSaberWornStatsLeaveRecord(EngineTestContext ctx)
+    {
+        // Players cannot acquire a retired dungeon saber (the acquire rule exchanges it), so a creature wears it, as an
+        // old character file still can.
+        var owner = ctx.SpawnCreature("civilian");
+        await ctx.WaitFrameAsync();
+        var saber = await ctx.EquipItemAsync(owner, "sabstorm_l1", InventorySlot.RightHand);
+        await ctx.ExecuteInCreatureContextAsync(owner, () =>
+        {
+            var attack = SumProperty(saber, ItemPropertyType.Attack, 0);
+            var record = new Player(Guid.NewGuid().ToString()) { Version = 17, Attack = 100 + attack };
+            ctx.Assert(attack > 0, "The fixture saber grants Attack");
+            var upgraded = SavedCharacterMigration.Run(owner, record, "_18_ReplaceDungeonSabers");
+            ctx.AssertEqual(record.Attack - attack, upgraded.Record.Attack, "The replaced saber's Attack leaves the record");
+        });
+    }
 }

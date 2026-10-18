@@ -458,7 +458,13 @@ internal sealed class SavedCharacter
         if (item.Node.Fields.Any(field => field.Name == "Pickpocketable"))
             SavedGff.WriteScalar(replacement, "Pickpocketable", 0, StoredObjectData.ReadInteger(item.Node, "Pickpocketable"));
         var kept = item.Container == null ? AddToInventory(replacement) : AddToContainer(item.Container, replacement);
+        // Removing a worn item takes its stats off the record, as unequipping it does.
+        var worn = item.IsEquipped;
+        if (worn)
+            ApplyItemStats(item, false);
         Destroy(item);
+        if (worn)
+            RefreshCombatReadinessEquipment();
         if (item.Container != null)
             StoredObjectData.NumberListElements(item.List);
         return kept;

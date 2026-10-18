@@ -53,10 +53,14 @@ internal static class CharacterFileUpgrade
     /// checkpoints, as at login: a migration changes the file when the file is behind it and the record when
     /// the record is. Returns null when the character is current.
     /// </summary>
-    internal static CharacterUpgradeResult Upgrade(byte[] file, Player record, Beast activeBeast = null)
+    /// <param name="recordVersionBeforeUpgrade">
+    /// The record's version before this boot upgraded another file that shares it; a file without a checkpoint is
+    /// judged by it rather than by the record the other file already advanced.
+    /// </param>
+    internal static CharacterUpgradeResult Upgrade(byte[] file, Player record, Beast activeBeast = null, int? recordVersionBeforeUpgrade = null)
     {
         var character = new SavedCharacter(file, record) { ActiveBeast = activeBeast };
-        var fileVersion = ResolveFileVersion(ReadFileVersion(character), record.Version);
+        var fileVersion = ResolveFileVersion(ReadFileVersion(character), recordVersionBeforeUpgrade ?? record.Version);
         var start = Math.Min(record.Version, fileVersion);
         if (start >= LatestVersion)
             return null;
@@ -129,6 +133,7 @@ internal static class CharacterFileUpgrade
         var backupDirectory = Path.Combine(Path.GetDirectoryName(realVault) ?? realVault,
             "servervault_backups", $"character-upgrade-{LatestVersion}-{DateTime.UtcNow:yyyyMMddHHmmss}");
         var counts = new UpgradeCounts();
+        var recordVersions = new Dictionary<string, int>();
         // Files that share a record wait for a later round, so each converts from the record the previous one saved.
         var queue = files;
         while (queue.Length > 0)
@@ -137,7 +142,7 @@ internal static class CharacterFileUpgrade
             var deferred = new List<string>();
             foreach (var batch in queue.Chunk(BatchSize))
             {
-                UpgradeBatch(batch, vault, backupDirectory, seen, deferred, counts);
+                UpgradeBatch(batch, vault, backupDirectory, seen, deferred, counts, recordVersions);
                 Log.Write(LogGroup.Migration, $"Character upgrade: {counts.Done}/{files.Length} files ({counts.Upgraded} upgraded, " +
                     $"{counts.Current} current, {counts.Skipped} without an initialized record, {counts.Failed} failed) in {stopwatch.Elapsed:hh\\:mm\\:ss}.", true);
             }
@@ -159,7 +164,7 @@ internal static class CharacterFileUpgrade
     private const int BatchSize = 500;
 
     private static void UpgradeBatch(string[] batch, string vault, string backupDirectory, HashSet<string> seen,
-        List<string> deferred, UpgradeCounts counts)
+        List<string> deferred, UpgradeCounts counts, Dictionary<string, int> recordVersions)
     {
         var pending = new CharacterFile[batch.Length];
         Parallel.For(0, batch.Length, index => pending[index] = CharacterFile.Read(batch[index]));
@@ -183,6 +188,10 @@ internal static class CharacterFileUpgrade
             if (record == null || record.IsDeleted || record.Version == 0 || record.CharacterInitializationPending)
                 continue;
             character.Record = JsonConvert.DeserializeObject<Player>(JsonConvert.SerializeObject(record));
+            // Files that share a record are judged by its version before the first of them advanced it.
+            if (!recordVersions.TryGetValue(character.Id, out var versionBeforeUpgrade))
+                recordVersions[character.Id] = versionBeforeUpgrade = record.Version;
+            character.RecordVersionBeforeUpgrade = versionBeforeUpgrade;
             if (!string.IsNullOrWhiteSpace(record.ActiveBeastId))
                 character.ActiveBeast = DB.Get<Beast>(record.ActiveBeastId);
         }
@@ -302,6 +311,7 @@ internal static class CharacterFileUpgrade
         public bool IsDM { get; private init; }
         public Player Record { get; set; }
         public Beast ActiveBeast { get; set; }
+        public int RecordVersionBeforeUpgrade { get; set; }
         public bool Deferred { get; set; }
         public CharacterUpgradeResult Result { get; private set; }
         public string Error { get; private set; }
@@ -368,7 +378,7 @@ internal static class CharacterFileUpgrade
                 return;
             try
             {
-                Result = Upgrade(Data, Record, ActiveBeast);
+                Result = Upgrade(Data, Record, ActiveBeast, RecordVersionBeforeUpgrade);
             }
             catch (Exception ex)
             {

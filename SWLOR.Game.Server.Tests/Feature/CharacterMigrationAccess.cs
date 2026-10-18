@@ -50,7 +50,7 @@ internal static class CharacterMigrations
     public static Upgraded? Upgrade(byte[] file, Player record)
     {
         var result = GameType(ServiceNamespace + "CharacterFileUpgrade").GetMethod("Upgrade", Members)!
-            .Invoke(null, new object?[] { file, record, null });
+            .Invoke(null, new object?[] { file, record, null, null });
         return result == null
             ? null
             : new Upgraded((byte[])result.GetType().GetProperty("File")!.GetValue(result)!, (Player)result.GetType().GetProperty("Record")!.GetValue(result)!);

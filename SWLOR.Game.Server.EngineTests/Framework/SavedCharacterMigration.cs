@@ -182,7 +182,7 @@ namespace SWLOR.Game.Server.EngineTests.Framework
             EnsureDataLoaded();
             var copy = CopyRecord(record);
             var result = GameType(ServiceNamespace + "CharacterFileUpgrade").GetMethod("Upgrade", Members)
-                .Invoke(null, new object[] { file, copy, null });
+                .Invoke(null, new object[] { file, copy, null, null });
             if (result == null)
                 return null;
             var type = result.GetType();

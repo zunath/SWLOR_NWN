@@ -127,14 +127,14 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                     ctx.Assert(File.ReadAllBytes(path).SequenceEqual(original), "A character still being created keeps its file");
                     ctx.AssertEqual(5, DB.Get<Player>(fixture.Id).Version, "A character still being created keeps its record");
 
-                    // Two files that share a record and start from the same checkpoint keep separate overflow items.
+                    // Two files without a checkpoint that share a record are both judged by the record's version before
+                    // this boot advanced it, so each runs every migration and keeps its own overflow items.
                     foreach (var item in OverflowRecords(fixture.Id))
                         DB.Delete<OverflowItem>(item.Id);
                     var second = Path.Combine(vault, "TESTKEY2", "fixture.bic");
                     Directory.CreateDirectory(Path.GetDirectoryName(second)!);
-                    var checkpointed = SavedCharacterMigration.WithFileVersion(original, 5);
-                    File.WriteAllBytes(path, checkpointed);
-                    File.WriteAllBytes(second, checkpointed);
+                    File.WriteAllBytes(path, original);
+                    File.WriteAllBytes(second, original);
                     StartUpgrade(fixture.Id, previousRecord);
                     ctx.Assert(SavedCharacterMigration.UpgradeServerVault(), "Both files that share a record are upgraded");
                     ctx.AssertEqual(latest, SavedCharacterMigration.ReadFileVersion(File.ReadAllBytes(second)), "The second file is current");

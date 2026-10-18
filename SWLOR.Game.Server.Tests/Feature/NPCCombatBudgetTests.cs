@@ -261,6 +261,29 @@ public class NPCCombatBudgetTests
     }
 
     [Test]
+    public void BossRatedEnemies_CarryTheBossMarkerForTheirMinimumHitChance()
+    {
+        var root = FindRoot();
+        var rows = ReadRows(root, "World NPCs")
+            .Where(r => r.TryGetValue("C", out var resref) && !string.IsNullOrWhiteSpace(resref))
+            .ToList();
+        var bosses = rows.Where(r => r.GetValueOrDefault("E") == "Boss").Select(r => r["C"]).ToHashSet();
+        bosses.Count.Should().BeGreaterThan(100);
+
+        foreach (var resref in rows.Select(r => r["C"]).Distinct())
+        {
+            if (!File.Exists(Path.Combine(root, "Module", "utc", $"{resref}.utc.json")))
+                continue;
+
+            using var utc = ReadAsset(root, "utc", resref);
+            var marked = Variables(utc.RootElement).Any(v =>
+                v.GetProperty("Name").GetProperty("value").GetString() == BossCreature.Variable && Int(v, "Value") == 1);
+            marked.Should().Be(bosses.Contains(resref),
+                $"{resref} is rated {(bosses.Contains(resref) ? "Boss" : "below Boss")} on World NPCs, which decides its minimum hit chance");
+        }
+    }
+
+    [Test]
     public void OrdinaryEnemiesAndPresets_MaintainAtLeast75PercentUnbuffedReferenceHitRate()
     {
         var root = FindRoot();

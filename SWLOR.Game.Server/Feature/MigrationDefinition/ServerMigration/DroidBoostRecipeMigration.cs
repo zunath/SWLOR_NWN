@@ -40,7 +40,7 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition.ServerMigration
             { 3495, "RangedBoost2" },
         };
 
-        private static readonly Dictionary<string, int> NewRecipeIdsByName = new()
+        internal static readonly Dictionary<string, int> NewRecipeIdsByName = new()
         {
             { "DroidVibrobladeBoost1", 4799 },
             { "DroidVibroknifeBoost1", 4800 },

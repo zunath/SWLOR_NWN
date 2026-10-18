@@ -1013,7 +1013,7 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition.ServerMigration
                 : $"Blueprint: {Cache.GetItemNameByResref(recipe.Resref)}";
         }
 
-        private static string GetVariantId(string sourceId, int recipeId)
+        internal static string GetVariantId(string sourceId, int recipeId)
         {
             // Entity and droid item IDs are opaque strings. Deriving the ID directly
             // avoids loading a native cryptography provider inside the NWN host.
@@ -1145,7 +1145,7 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition.ServerMigration
             }
         }
 
-        private static string ExpandTrainingRecipeBook(string resref, string recipeList)
+        internal static string ExpandTrainingRecipeBook(string resref, string recipeList)
         {
             var recipes = resref switch
             {
@@ -1182,11 +1182,11 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition.ServerMigration
             return changed ? string.Join(",", entries) : recipeList;
         }
 
-        private static class DroidBoostStoredItemMigration
+        internal static class DroidBoostStoredItemMigration
         {
             public const string BlueprintRecipeIdVariable = "BLUEPRINT_RECIPE_ID";
 
-            private static readonly Dictionary<int, int[]> LegacyDroidStatMap = new()
+            internal static readonly Dictionary<int, int[]> LegacyDroidStatMap = new()
             {
                 { 12, new[] { 115, 116, 117 } },
                 { 13, new[] { 118, 119, 120, 121 } },
@@ -1194,7 +1194,7 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition.ServerMigration
                 { 15, new[] { 124, 125, 126 } },
             };
 
-            private static readonly Dictionary<int, int[]> LegacyDroidEnhancementMap = new()
+            internal static readonly Dictionary<int, int[]> LegacyDroidEnhancementMap = new()
             {
                 { 111, new[] { 115, 116, 117 } },
                 { 112, new[] { 118, 119, 120, 121 } },
@@ -1348,7 +1348,7 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition.ServerMigration
                 return true;
             }
 
-            private static int GetTierArmorSkillRank(int tier)
+            internal static int GetTierArmorSkillRank(int tier)
             {
                 return tier switch
                 {

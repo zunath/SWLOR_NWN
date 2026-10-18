@@ -311,7 +311,7 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition
             return true;
         }
 
-        private static bool TryRemapLegacyWeaponSkill(
+        internal static bool TryRemapLegacyWeaponSkill(
             BaseItem baseItem,
             ref int skillId,
             ref int requiredRank)
@@ -335,7 +335,7 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition
                 or LegacyWeaponSkillId4;
         }
 
-        private static bool TryGetSkillRequirement(
+        internal static bool TryGetSkillRequirement(
             int legacyRequirement,
             int requiredLevel,
             BaseItem baseItem,

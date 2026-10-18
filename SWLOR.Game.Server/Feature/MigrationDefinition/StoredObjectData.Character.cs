@@ -33,6 +33,48 @@ internal sealed partial class StoredObjectData
     /// <summary>The root structure of a saved item (UTI, base64), to insert into an inventory.</summary>
     internal static Node ParseItem(string data) => new StoredObjectData(Convert.FromBase64String(data))._root;
 
+    /// <summary>
+    /// Replaces the text of every saved string in an item's localized name, keeping its string reference and
+    /// language IDs; a name without saved strings gains one for language 0.
+    /// </summary>
+    internal static void WriteLocalizedName(Node item, string name)
+    {
+        var field = item.Fields.SingleOrDefault(x => x.Name == "LocalizedName" && x.Type == 12);
+        var reference = field == null || field.Data.Length < 8 ? uint.MaxValue : BinaryPrimitives.ReadUInt32LittleEndian(field.Data.AsSpan(4));
+        var languages = new System.Collections.Generic.List<uint>();
+        if (field != null && field.Data.Length >= 12)
+        {
+            var count = BinaryPrimitives.ReadUInt32LittleEndian(field.Data.AsSpan(8));
+            var offset = 12;
+            for (var index = 0u; index < count && offset + 8 <= field.Data.Length; index++)
+            {
+                languages.Add(BinaryPrimitives.ReadUInt32LittleEndian(field.Data.AsSpan(offset)));
+                offset += 8 + BinaryPrimitives.ReadInt32LittleEndian(field.Data.AsSpan(offset + 4));
+            }
+        }
+        if (languages.Count == 0)
+            languages.Add(0);
+        var text = Encoding.UTF8.GetBytes(name);
+        using var output = new System.IO.MemoryStream();
+        using var writer = new System.IO.BinaryWriter(output);
+        writer.Write(0u);
+        writer.Write(reference);
+        writer.Write((uint)languages.Count);
+        foreach (var language in languages)
+        {
+            writer.Write(language);
+            writer.Write(text.Length);
+            writer.Write(text);
+        }
+        writer.Flush();
+        var data = output.ToArray();
+        BinaryPrimitives.WriteInt32LittleEndian(data, data.Length - 4);
+        if (field == null)
+            item.Fields.Add(MakeField(12, "LocalizedName", data));
+        else
+            field.Data = data;
+    }
+
     /// <summary>The string reference of an item's localized name; 0xFFFFFFFF when it has none.</summary>
     internal static uint ReadLocalizedNameReference(Node item)
     {

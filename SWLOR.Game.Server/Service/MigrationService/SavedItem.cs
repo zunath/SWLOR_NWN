@@ -194,6 +194,15 @@ internal sealed class SavedItem
         return locals;
     }
 
+    /// <summary>The item's saved name text; empty when the name is only a talk table reference.</summary>
+    public string Name => StoredObjectData.ReadLocalizedName(Node);
+
+    /// <summary>
+    /// Saved-data SetName with a non-empty name: every saved string of the localized name takes the new text,
+    /// and a name that was only a talk table reference gains a string for language 0.
+    /// </summary>
+    public void SetName(string name) => StoredObjectData.WriteLocalizedName(Node, name);
+
     public string ReadString(string name)
     {
         var field = Node.Fields.SingleOrDefault(x => x.Name == name && x.Type == 10);

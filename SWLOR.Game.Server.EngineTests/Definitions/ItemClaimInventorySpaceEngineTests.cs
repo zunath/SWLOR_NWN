@@ -17,9 +17,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
     /// </summary>
     public static class ItemClaimInventorySpaceEngineTests
     {
-        // A 2x5 Twin Electroblade. On 2026-10-18 acquiring one into a nearly full inventory removed a carried
-        // 2x1 item and a carried stack.
-        private const string LargeItemResref = "twin_elec_1";
+        private const string LargeItemResref = "twin_elec_1"; // 2x5 Twin Electroblade
         private const string StackResref = "herb_m";
         private const string FillerResref = "nw_maletatcivout";
         private const string SmallFillerResref = "survival_knife";
@@ -38,8 +36,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                     var fillers = FillInventory(ctx, player);
                     var carried = Snapshot(player);
                     large = Bank.DepositItem(player, CreateStorageItem(ctx, LargeItemResref));
-                    // With no free cell the engine does not merge a stack into the matching carried stack. It can remove
-                    // the carried stack instead, so a matching stack does not make room.
+                    // A matching carried stack is not room: with no free cell the engine removes it instead of merging.
                     stack = Bank.DepositItem(player, CreateStorageItem(ctx, StackResref, 5));
 
                     foreach (var record in new[] { large, stack })
@@ -88,7 +85,9 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             {
                 await ctx.ExecuteInCreatureContextAsync(player, () =>
                 {
-                    var data = ObjectPlugin.Serialize(CreateStorageItem(ctx, LargeItemResref));
+                    var source = CreateStorageItem(ctx, LargeItemResref);
+                    var data = ObjectPlugin.Serialize(source);
+                    DestroyObject(source);
                     draft.RewardItems.Add(new QuestContractItem { Data = data, Name = "Twin Electroblade" });
                     delivery.Items.Add(new QuestContractItem { Data = data, Name = "Twin Electroblade" });
                     DB.Set(draft);

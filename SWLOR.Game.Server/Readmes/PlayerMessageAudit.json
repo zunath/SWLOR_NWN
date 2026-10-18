@@ -1268,7 +1268,14 @@
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/BankViewModel.cs",
-    "Line": 152,
+    "Line": 139,
+    "Member": "OnClickWithdraw",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(Player, ColorToken.Red(failure))"
+  },
+  {
+    "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/BankViewModel.cs",
+    "Line": 158,
     "Member": "OnClickDeposit",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(Player, ColorToken.Red(failure))"
@@ -4873,42 +4880,49 @@
   },
   {
     "File": "SWLOR.Game.Server/Service/QuestContractBoard.cs",
-    "Line": 504,
+    "Line": 505,
     "Member": "VoidActiveContractQuests",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red($\"The contract '{contract.Title}' has been {reason}. It has been removed from your journal.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/QuestContractBoard.cs",
-    "Line": 537,
+    "Line": 538,
     "Member": "ClaimDeliveries",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, \"You have no pending contract deliveries.\")"
   },
   {
     "File": "SWLOR.Game.Server/Service/QuestContractBoard.cs",
-    "Line": 573,
+    "Line": 578,
     "Member": "ClaimDeliveries",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, \"Your contract claim could not be saved. Its recovery checkpoint has been retained; please try again later.\")"
   },
   {
     "File": "SWLOR.Game.Server/Service/QuestContractBoard.cs",
-    "Line": 579,
+    "Line": 584,
     "Member": "ClaimDeliveries",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, $\"You claimed {totalCredits} credits and {totalItems} item(s) from your quest contract deliveries.\")"
   },
   {
     "File": "SWLOR.Game.Server/Service/QuestContractBoard.cs",
-    "Line": 581,
+    "Line": 586,
+    "Member": "ClaimDeliveries",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(player, \"Your inventory is full. Make room, then claim your remaining deliveries.\")"
+  },
+  {
+    "File": "SWLOR.Game.Server/Service/QuestContractBoard.cs",
+    "Line": 588,
     "Member": "ClaimDeliveries",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, \"Some of your deliveries could not be claimed. Please try again.\")"
   },
   {
     "File": "SWLOR.Game.Server/Service/QuestContractBoard.cs",
-    "Line": 769,
+    "Line": 776,
     "Member": "NotifyDeliveryRecipientIfOnline",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Green(DeliveriesWaitingMessage))"

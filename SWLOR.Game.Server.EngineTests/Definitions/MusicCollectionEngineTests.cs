@@ -1,6 +1,7 @@
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
+using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.EngineTests.Framework;
 using SWLOR.Game.Server.Feature.GuiDefinition.RefreshEvent;
@@ -182,6 +183,51 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             dbPlayer = DB.Get<Player>(player.Id);
             ctx.AssertEqual(collected.TrackId, dbPlayer.Settings.PersonalMusicTrackId, "collected personal track is kept");
             ctx.Assert(dbPlayer.Settings.BattleThemeId == null, "uncollected battle theme is cleared");
+        }
+
+        [EngineTest("A battle theme plays while the player fights and stops after combat", Category = "MusicCollection", TimeoutSeconds = 90f)]
+        public static async Task BattleThemePlaysDuringCombat(EngineTestContext ctx)
+        {
+            using var player = await PlayerAbilityFixture.CreateAsync(ctx, 0f);
+            SetPlotFlag(player.Creature, true);
+            // Real players get these scripts on module entry, which the fixture skips.
+            SetEventScript(player.Creature, EventScript.Creature_OnMeleeAttacked, ScriptName.OnPlayerAttacked);
+            SetEventScript(player.Creature, EventScript.Creature_OnDamaged, ScriptName.OnPlayerDamaged);
+            await ctx.ExecuteInCreatureContextAsync(player.Creature, () => Music.GrantStarterSongs(player.Creature));
+            var theme = MusicSongCatalog.Songs.First(song => song.Acquisition == MusicAcquisitionType.Starter);
+
+            var enemy = ctx.SpawnCreature("nw_bandit001", 2f);
+            ctx.MakeHostile(enemy);
+            SetPlotFlag(enemy, true);
+            try
+            {
+                // Headless player fixtures never swing, so the enemy attacks the player.
+                await ctx.ExecuteInCreatureContextAsync(enemy, () => ActionAttack(player.Creature));
+                await ctx.WaitUntilAsync(() => Combat.HasRecentAttackActivity(enemy, 1f), 15f, "the enemy to attack the player");
+                ctx.Assert(!Music.IsBattleThemePlaying(player.Creature), "no battle theme plays without one selected");
+
+                await ctx.ExecuteInCreatureContextAsync(player.Creature, () => Music.SetBattleTheme(player.Creature, theme.TrackId));
+                await ctx.ExecuteInCreatureContextAsync(enemy, () =>
+                {
+                    ClearAllActions();
+                    ActionAttack(player.Creature);
+                });
+                await ctx.WaitUntilAsync(() => Music.IsBattleThemePlaying(player.Creature), 15f, "the battle theme to start in combat");
+
+                await ctx.WaitUntilAsync(() => GetIsInCombat(player.Creature), 15f, "the player to be in combat");
+                await ctx.ExecuteInCreatureContextAsync(player.Creature, Music.StopBattleThemeAfterCombat);
+                ctx.Assert(Music.IsBattleThemePlaying(player.Creature), "the battle theme keeps playing while in combat");
+
+                DestroyObject(enemy);
+                await ctx.WaitUntilAsync(() => !GetIsInCombat(player.Creature), 45f, "the player to leave combat");
+                await ctx.ExecuteInCreatureContextAsync(player.Creature, Music.StopBattleThemeAfterCombat);
+                ctx.Assert(!Music.IsBattleThemePlaying(player.Creature), "the battle theme stops after combat");
+            }
+            finally
+            {
+                if (GetIsObjectValid(enemy))
+                    DestroyObject(enemy);
+            }
         }
     }
 }

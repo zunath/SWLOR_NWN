@@ -15,14 +15,26 @@ public static class QuickCastPolicy
     {
         if (ability == null ||
             ability.ActivationType != AbilityActivationType.Casted ||
-            !ability.IsSingleTargetAbility ||
-            ability.IsAreaAbility ||
             !ability.RequiresTarget ||
-            ability.UsesActiveAttackTarget ||
-            ability.Targeting is { Shape: not AbilityTargetingShapeType.None })
+            ability.UsesActiveAttackTarget)
         {
             return false;
         }
+
+        if (ability.IsAreaAbility)
+        {
+            return targetType == QuickCastTargetType.Self &&
+                   !ability.IsHostileAbility && ability.AllowsSelfQuickCast &&
+                   ability.Targeting is
+                   {
+                       Shape: AbilityTargetingShapeType.Sphere,
+                       Flags: AbilityTargetingFlags.HelpsAllies
+                   };
+        }
+
+        if (!ability.IsSingleTargetAbility ||
+            ability.Targeting is { Shape: not AbilityTargetingShapeType.None })
+            return false;
 
         return targetType switch
         {

@@ -93,9 +93,9 @@ namespace SWLOR.CombatSim.Tests.Engine
         }
 
         [Test]
-        public void TunedPvp_RevivesAreAlsoBlockedInPvpWhileAnEnemyIsAlive()
+        public void Current_RevivesAreAlsoBlockedInPvpWhileAnEnemyIsAlive()
         {
-            var (simulation, _, ally, _) = SpawnAndKillAlly(RuleSets.TunedPvp(), isPvp: true);
+            var (simulation, _, ally, _) = SpawnAndKillAlly(RuleSets.Current(), isPvp: true);
 
             SimulationClock.RunUntil(simulation, 60);
 
@@ -310,7 +310,7 @@ namespace SWLOR.CombatSim.Tests.Engine
         }
 
         [Test]
-        public void TunedPvp_AReviveFailsWhenItLands_IfAnEnemyJoinedDuringTheCast()
+        public void Current_AReviveFailsWhenItLands_IfAnEnemyJoinedDuringTheCast()
         {
             var medic = TestCombatants.Medic("Medic", TestCombatants.Use("Resuscitation2", AbilityTarget.DeadAlly));
             var ally = new CombatantSpec { Name = "Ally", MaxHp = 1000 };
@@ -374,7 +374,7 @@ namespace SWLOR.CombatSim.Tests.Engine
         }
 
         [Test]
-        public void TunedPvp_AnNpcEnemyDoesNotBlockRevives_AndAnNpcKillHasNoDamageWindow()
+        public void Current_AnNpcEnemyDoesNotBlockRevives_AndAnNpcKillHasNoDamageWindow()
         {
             var medic = TestCombatants.Medic("Medic", TestCombatants.Use("Resuscitation2", AbilityTarget.DeadAlly));
             var ally = new CombatantSpec { Name = "Ally", MaxHp = 1000 };

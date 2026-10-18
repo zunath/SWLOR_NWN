@@ -1,6 +1,6 @@
 namespace SWLOR.Game.Server.Feature.MigrationDefinition.PlayerMigration;
 
-/// <summary>Moves a character's equipped and carried loot onto the revised loot stats.</summary>
+/// <summary>Revises loot stats, including rare-item corrections, and repairs headgear in one inventory traversal.</summary>
 public sealed class _22_ReviseLootStats : PlayerMigrationBase
 {
     public override int Version => 22;

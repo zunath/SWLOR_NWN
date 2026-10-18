@@ -6198,6 +6198,10 @@ namespace SWLOR.Game.Server.Service.StatService
         [StatType(StatTypeCategory.NonBeneficial)]
         HealingReceivedStaminaRestoreCooldownSeconds = 1099,
 
+        /// <summary>Percent bonus to equipped Mimicry trait stats and resistances.</summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        MimicryTraitPotencyPercent = 1100,
+
     }
 
     public class StatTypeAttribute : Attribute

@@ -426,6 +426,24 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Component("ref_plagionite", 5)
                 .Component("ref_keromber", 5);
 
+            // Arkanian Dragon Helm
+            _builder.Create(RecipeType.ArkanianDragonHelm, SkillType.Smithery)
+                .Category(RecipeCategoryType.Helmet)
+                .Resref("ark_helm")
+                .Level(52)
+                .Quantity(1)
+                .RequirementUnlocked()
+                .EnhancementSlots(RecipeEnhancementType.Armor, 2)
+                .ResearchCostModifier(0.2f)
+                .Component("ref_arkoxit", 2)
+                .Component("ref_jasioclase", 10)
+                .Component("ark_drg_scales", 10)
+                .Component("chiro_shard", 2)
+                .Component("ark_dragon_troph", 1)
+                .Component("ref_scordspar", 5)
+                .Component("ref_plagionite", 5)
+                .Component("ref_keromber", 5);
+
             // Magus Cap
             _builder.Create(RecipeType.MagusCap, SkillType.Smithery)
                 .Category(RecipeCategoryType.Cap)

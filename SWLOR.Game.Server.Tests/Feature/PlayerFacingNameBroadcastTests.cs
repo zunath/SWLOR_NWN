@@ -38,7 +38,9 @@ public class PlayerFacingNameBroadcastTests
 
         source.Should().NotContain("finalMessage.Append(\"[Comms] \");");
         source.Should().Contain("ChatPlugin.SendMessage(channel, message, identitySpeaker, receiver)");
-        source.Should().NotContain("ChatChannel.DMTalk");
+        // NWNX_Rename does not patch DM Talk, so Comms must never be re-sent on it. Incoming DM Talk is a DM
+        // avatar's own speech, which is never renamed.
+        source.Should().NotMatchRegex(@"(?<![=!<>])=\s*ChatChannel\.DMTalk|SendMessage\(\s*ChatChannel\.DMTalk");
     }
 
     [Test]
@@ -97,7 +99,7 @@ public class PlayerFacingNameBroadcastTests
             "GuiDefinition",
             "ViewModel",
             "HoloNetViewModel.cs"));
-        holoNetSource.Should().Contain("PlayerName.GetChatDisplayName(onlinePlayer, player)");
+        holoNetSource.Should().Contain("PlayerName.GetChatDisplayName(receiver, player)");
         holoNetSource.Should().Contain("\"HoloNet Broadcast\"");
         holoNetSource.Should().NotContain("authorName + \" broadcasts a new HoloNet message");
 
@@ -127,7 +129,7 @@ public class PlayerFacingNameBroadcastTests
         communicationSource.Should().NotContain("recipients.AddRange(allPlayers.Where(player => GetLocalBool(player, \"DISPLAY_HOLONET\")))");
         communicationSource.Should().NotContain("LoadHolonetSetting");
         communicationSource.Should().NotContain("\"DISPLAY_HOLONET\"");
-        communicationSource.Should().Contain("recipients.AddRange(allDMs);");
+        communicationSource.Should().Contain("recipients.AddRange(dmReaders);");
         communicationSource.Should().NotContain("var allPlayers = new List<uint>();");
         communicationSource.Should().NotContain("foreach (var player in allPlayers)");
         communicationSource.Should().NotContain("if (sender != player && IsCommsReceiverInRange(sender, player))");
@@ -138,7 +140,7 @@ public class PlayerFacingNameBroadcastTests
         communicationSource.Should().Contain("else if (GetIsPC(member) &&");
         communicationSource.Should().Contain("outOfRangeCommsPartyMembers++;");
         communicationSource.Should().Contain("Nearby non-party listeners can still overhear it.");
-        normalizedCommunicationSource.Should().Contain("recipients.AddRange(allDMs);\n\n                needsAreaCheck = true;\n                distanceCheck = 20.0f;");
+        normalizedCommunicationSource.Should().Contain("recipients.AddRange(dmReaders);\n\n                needsAreaCheck = true;\n                distanceCheck = 20.0f;");
         communicationSource.Should().NotContain("AddSameStarshipCommsRecipients");
         communicationSource.Should().Contain("if (dbSender?.Settings?.DisplayCommsOutOfRangeWarnings ?? true)");
         communicationSource.Should().Contain("SendMessageToPC(sender, ColorToken.Red(CommsOutOfRangeMessage));");
@@ -160,10 +162,11 @@ public class PlayerFacingNameBroadcastTests
         normalizedCommunicationSource.Should().Contain(
             "if (GetArea(target) == GetArea(sender) &&\n" +
             "                        distance <= distanceCheck &&\n" +
+            "                        !mutedDMs.Contains(target) &&\n" +
             "                        !recipients.Contains(target))");
         communicationSource.Should().NotContain("channel != ChatChannel.PlayerParty || IsCommsReceiverInRange(sender, target)");
         communicationSource.Should().Contain("Comms scope applies only to the party");
-        communicationSource.Should().Contain("else if (channel == ChatChannel.PlayerWhisper)");
+        communicationSource.Should().Contain("else if (IsWhisperChannel(channel))");
         communicationSource.Should().NotContain("finalMessage.Append(\"[Whisper] \");");
         communicationSource.Should().NotContain("finalMessage.Append(\"[Holonet] \");");
         communicationSource.Should().Contain("SendProcessedChatMessage(channel, receiver, sender, speaker, finalMessageColored);");
@@ -174,7 +177,7 @@ public class PlayerFacingNameBroadcastTests
         // the speaker's object update already being visible/patched to a nearby observer) and not any
         // DM_* channel. Comms must dispatch on the native PlayerParty channel, not DMTalk, or the
         // override never applies and the speaker's true name leaks once they leave the receiver's area.
-        communicationSource.Should().NotContain("ChatChannel.DMTalk");
+        communicationSource.Should().NotMatchRegex(@"(?<![=!<>])=\s*ChatChannel\.DMTalk|SendMessage\(\s*ChatChannel\.DMTalk");
         communicationSource.Should().Contain("ChatPlugin.SendMessage(channel, message, identitySpeaker, receiver)");
         communicationSource.Should().NotContain("PlayerName.SendWithChatNameOverride");
         communicationSource.Should().NotContain("ChatPlugin.SendMessage(ChatChannel.PlayerDM");

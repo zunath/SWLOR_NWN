@@ -3170,6 +3170,18 @@ namespace SWLOR.Game.Server.Service.CraftService
         SalvagedNullFieldCollar = 5056,
         SalvagedBreachSealBelt = 5057,
         SalvagedSerumCellNecklace = 5058,
+        ContainmentCloak = 5059,
+        ContainmentBelt = 5060,
+        ContainmentRing = 5061,
+        ContainmentNecklace = 5062,
+        GantryCloak = 5063,
+        GantryBelt = 5064,
+        GantryRing = 5065,
+        GantryNecklace = 5066,
+        BiolabCloak = 5067,
+        BiolabBelt = 5068,
+        BiolabRing = 5069,
+        BiolabNecklace = 5070,
 
         #endregion
 
@@ -3458,5 +3470,8 @@ namespace SWLOR.Game.Server.Service.CraftService
         SongDiscStormtroopers = 6275,
         SongDiscThemeLando = 6276,
         SongDiscLandoCalrissian = 6277,
+        ArkanianDragonHelm = 6278,
+        ArkanianDragonWardRing = 6279,
+        ArkanianDragonForceRing = 6280,
     }
 }

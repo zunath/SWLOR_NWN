@@ -4,6 +4,7 @@ using NWN.Native.API;
 using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.LogService;
 using SWLOR.NWN.API.Engine;
+using SWLOR.NWN.API.NWNX;
 
 namespace SWLOR.Game.Server.Service
 {
@@ -33,15 +34,39 @@ namespace SWLOR.Game.Server.Service
         public static void SetIsManifested(uint dm, bool isManifested)
         {
             dm = GetDM(dm);
-            if (!GetIsDM(dm))
+            // A possessing DM's avatar no longer passes GetIsDM.
+            if (!IsControlledByDM(dm))
                 return;
 
-            var creature = NWNXLib.g_pAppManager.m_pServerExoApp.GetCreatureByGameObjectID(dm);
+            var server = NWNXLib.g_pAppManager.m_pServerExoApp;
+            var creature = server.GetCreatureByGameObjectID(dm);
             if (creature?.m_pStats == null)
                 return;
 
             creature.m_pStats.m_bDMManifested = isManifested ? 1 : 0;
+            if (!isManifested)
+                creature.PacifyCreature();
+
+            RefreshAvatarFade(dm);
+
             Log.Write(LogGroup.DM, $"{DescribeDM(dm)} {(isManifested ? "appeared" : "disappeared")} in {GetResRef(GetArea(dm))}.");
+        }
+
+        /// <summary>
+        /// Fades the DM's avatar on their own screen, or shows it, to match whether players can see it. Nothing is
+        /// sent while the DM possesses a creature, so call this again once they return to their avatar.
+        /// </summary>
+        /// <param name="dm">The DM avatar or the creature they possess.</param>
+        public static void RefreshAvatarFade(uint dm)
+        {
+            dm = GetDM(dm);
+            var server = NWNXLib.g_pAppManager.m_pServerExoApp;
+            // The server never tells the DM's client about the change itself. The login state message runs the
+            // client's own Appear/Disappear handler, which fades the avatar on the DM's screen like the native button.
+            // The client applies it to whatever the DM controls, and this lookup finds no client while they possess one.
+            var player = server.GetClientObjectByObjectId(dm);
+            if (player != null)
+                server.GetNWSMessage().SendServerToPlayerDungeonMasterLoginState(player, 1, GetIsManifested(dm) ? 1 : 0);
         }
 
         /// <summary>
@@ -99,7 +124,9 @@ namespace SWLOR.Game.Server.Service
         public static string DescribeDM(uint dm)
         {
             dm = GetDM(dm);
-            return $"{GetName(dm)} ({GetPCPlayerName(dm)}) [{GetPCPublicCDKey(dm)}]";
+            // The account and CD key resolve from what the DM controls, which is the possessed creature while possessing.
+            var controlled = GetControlledCreature(dm);
+            return $"{GetName(dm)} ({GetPCPlayerName(controlled)}) [{GetPCPublicCDKey(controlled)}]";
         }
 
         /// <summary>
@@ -113,22 +140,51 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>
-        /// Returns the creature a DM is acting through: the creature they possess, or their avatar.
+        /// Returns the creature a DM is acting through: the creature they possess, or their avatar. Anything else,
+        /// including any player from GetFirstPC/GetNextPC, is returned unchanged, so messages, chat, and shader
+        /// updates sent to the result reach a possessing DM.
         /// </summary>
-        /// <param name="actor">A DM avatar or the creature they possess.</param>
+        /// <param name="actor">A DM avatar, the creature they possess, or a player.</param>
         public static uint GetControlledCreature(uint actor)
         {
-            if (GetIsDMPossessed(actor))
+            // GetIsPC is true for whatever a player controls, and false for a possessing DM's avatar.
+            if (GetIsPC(actor))
                 return actor;
 
-            // A possessed creature is listed among the PCs, with the DM avatar as its master.
+            // Possession only changes the object a player controls; GetFirstPC keeps returning the avatar.
+            var controlled = PlayerPlugin.GetGameObject(actor);
+            return GetIsDMPossessed(controlled) ? controlled : actor;
+        }
+
+        /// <summary>
+        /// Returns true when an object from GetFirstPC/GetNextPC belongs to a DM. GetFirstPC keeps returning a DM's
+        /// avatar while they possess a creature, and GetIsDM, GetIsDMPossessed, and GetIsPC are all false for the
+        /// avatar then, so the creature the player controls is checked too.
+        /// </summary>
+        /// <param name="player">An object returned by GetFirstPC or GetNextPC.</param>
+        public static bool IsControlledByDM(uint player)
+        {
+            if (GetIsDM(player) || GetIsDMPossessed(player))
+                return true;
+
+            var controlled = PlayerPlugin.GetGameObject(player);
+            return GetIsDM(controlled) || GetIsDMPossessed(controlled);
+        }
+
+        /// <summary>
+        /// Returns true when a DM's avatar, or a creature a DM possesses, is in the area.
+        /// </summary>
+        /// <param name="area">The area to check.</param>
+        public static bool IsDMPresentInArea(uint area)
+        {
             for (var pc = GetFirstPC(); GetIsObjectValid(pc); pc = GetNextPC())
             {
-                if (GetIsDMPossessed(pc) && GetMaster(pc) == actor)
-                    return pc;
+                if (IsControlledByDM(pc) &&
+                    (GetArea(pc) == area || GetArea(GetControlledCreature(pc)) == area))
+                    return true;
             }
 
-            return actor;
+            return false;
         }
 
         /// <summary>

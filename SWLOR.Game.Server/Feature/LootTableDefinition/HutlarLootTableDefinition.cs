@@ -22,29 +22,33 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
 
         private void DroidFoundry()
         {
+            // Floor salvage: tier 5 electronics and refined metal, with more gostian and electronics deeper in.
             _builder.Create("HUTLAR_FOUNDRY_INTAKE")
-                .AddItem("elec_imperfect", 10)
-                .AddItem("elec_high", 10)
-                .AddItem("scrap_metal", 25)
+                .AddItem("elec_high", 25)
+                .AddItem("ref_jasioclase", 15)
+                .AddItem("ref_gostian", 10)
                 .AddGold(70, 20);
 
             _builder.Create("HUTLAR_FOUNDRY_ASSEMBLY")
-                .AddItem("elec_imperfect", 10)
-                .AddItem("elec_high", 10)
-                .AddItem("scrap_metal", 20)
+                .AddItem("elec_high", 25)
+                .AddItem("ref_jasioclase", 15)
+                .AddItem("ref_gostian", 15)
                 .AddGold(85, 25);
 
             _builder.Create("HUTLAR_FOUNDRY_CORE")
-                .AddItem("elec_high", 20)
-                .AddItem("scrap_metal", 15)
+                .AddItem("elec_high", 25, 2)
+                .AddItem("ref_jasioclase", 10)
+                .AddItem("ref_gostian", 15)
                 .AddGold(100, 30);
 
+            // Droid-engineering gems and sealed caches pulled from the line's machinery.
             _builder.Create("HUTLAR_FOUNDRY_RARES")
                 .IsRare()
-                .AddItem("ruby", 90, 1, true)
-                .AddItem("emerald", 5, 1, true)
-                .AddItem("lockbox_t5", 3, 1, true)
-                .AddItem("map_276", 2, 1, true);
+                .AddItem("emerald", 40, 1, true)
+                .AddItem("lockbox_t5", 25, 1, true)
+                .AddItem("diamond", 10, 1, true)
+                .AddItem("zinsiam", 10, 1, true)
+                .AddItem("map_276", 10, 1, true);
 
             // Tier 5 droid plating and Carapace armor salvaged from the Assembly Line and Core.
             _builder.Create("HUTLAR_FOUNDRY_GEAR")
@@ -124,10 +128,21 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
             _builder.Create("HUTLAR_FOUNDRY_OVERSEER_LOCKBOX")
                 .AddItem("lockbox_t5", 1);
 
-            _builder.Create("HUTLAR_FOUNDRY_OVERSEER_RARES")
+            _builder.Create("HUTLAR_FOUNDRY_OVERSEER_GEMS")
                 .IsRare()
-                .AddItem("emerald", 60, 1, true)
-                .AddItem("map_276", 40, 1, true);
+                .AddItem("diamond", 40, 1, true)
+                .AddItem("zinsiam", 40, 1, true)
+                .AddItem("emerald", 20, 1, true);
+
+            _builder.Create("HUTLAR_FOUNDRY_OVERSEER_SALVAGE")
+                .AddItem("ref_arkoxit", 1, 1, true)
+                .AddItem("ref_jasioclase", 20, 2)
+                .AddItem("ref_gostian", 20, 2)
+                .AddItem("elec_high", 20, 2)
+                .AddItem("emerald", 10);
+
+            _builder.Create("HUTLAR_FOUNDRY_OVERSEER_CREDITS")
+                .AddGold(500, 1);
 
             // Named rare elites: unique gear plus a blueprint, and a guaranteed salvage component
             // that the blueprint's recipe requires.

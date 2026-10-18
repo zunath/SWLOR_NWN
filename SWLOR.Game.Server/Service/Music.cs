@@ -5,7 +5,9 @@ using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Extension;
 using SWLOR.Game.Server.Service.KeyItemService;
 using SWLOR.Game.Server.Service.MusicService;
+using SWLOR.Game.Server.Service.PropertyService;
 using SWLOR.NWN.API.NWNX;
+using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.Game.Server.Service
 {
@@ -13,6 +15,12 @@ namespace SWLOR.Game.Server.Service
     {
         public const string MusicPlayerTag = "MUSIC_PLAYER";
         private const string AreaMusicStoppedVariable = "MUSIC_BACKGROUND_STOPPED";
+        private const string BattleThemeSetVariable = "MUSIC_BATTLE_THEME_SET";
+        private const string BattleThemePlayingVariable = "MUSIC_BATTLE_THEME_PLAYING";
+        // Ability-only fights can leave the engine's combat state off, so combat also lasts this long
+        // after the player's last attack, damage, or hostile ability.
+        private const float BattleThemeCombatGraceSeconds = 12f;
+        private static readonly Dictionary<uint, DateTime> _lastBattleThemeCombat = new();
 
         private static readonly Dictionary<int, Song> _songs = new Dictionary<int,Song>();
         private static readonly Dictionary<KeyItemType, MusicSong> _collectibleSongsByKeyItem = MusicSongCatalog.Songs
@@ -85,6 +93,9 @@ namespace SWLOR.Game.Server.Service
                 ApplyBackgroundTrackToPlayer(player, personalTrackId.Value, personalTrackId.Value);
             }
 
+            if (GetLocalBool(player, BattleThemePlayingVariable))
+                StopBattleTheme(player);
+            SetLocalBool(player, BattleThemeSetVariable, dbPlayer.Settings.BattleThemeId != null);
             if (dbPlayer.Settings.BattleThemeId != null)
             {
                 PlayerPlugin.MusicBattleChange(player, dbPlayer.Settings.BattleThemeId.Value);
@@ -93,6 +104,99 @@ namespace SWLOR.Game.Server.Service
             {
                 PlayerPlugin.MusicBattleChange(player, MusicBackgroundGetBattleTrack(area));
             }
+        }
+
+        /// <summary>
+        /// Starts a player's battle theme when they attack or are attacked. The engine starts battle
+        /// music only when an enemy is within the ruleset's REST_ENEMY_CHECK_DISTANCE, which SWLOR
+        /// sets to 0, so it never starts on its own.
+        /// </summary>
+        [NWNEventHandler(ScriptName.OnCreatureAttackBefore)]
+        [NWNEventHandler(ScriptName.OnPlayerAttacked)]
+        public static void StartBattleThemeOnAttack()
+        {
+            var defender = OBJECT_SELF;
+            StartBattleTheme(defender, GetLastAttacker(defender));
+        }
+
+        /// <summary>
+        /// Starts a player's battle theme when they damage or are damaged by another creature.
+        /// </summary>
+        [NWNEventHandler(ScriptName.OnCreatureDamagedBefore)]
+        [NWNEventHandler(ScriptName.OnPlayerDamaged)]
+        public static void StartBattleThemeOnDamage()
+        {
+            var defender = OBJECT_SELF;
+            StartBattleTheme(defender, GetLastDamager(defender));
+        }
+
+        /// <summary>
+        /// Starts the battle theme of either combatant who is a player with one selected.
+        /// </summary>
+        public static void StartBattleTheme(uint defender, uint attacker)
+        {
+            if (defender == attacker ||
+                GetObjectType(defender) != ObjectType.Creature ||
+                GetObjectType(attacker) != ObjectType.Creature ||
+                GetArea(defender) != GetArea(attacker))
+                return;
+
+            StartBattleTheme(defender);
+            StartBattleTheme(attacker);
+        }
+
+        private static void StartBattleTheme(uint player)
+        {
+            if (!GetLocalBool(player, BattleThemeSetVariable) ||
+                !GetIsPC(player) || GetIsDM(player) || GetIsDMPossessed(player))
+                return;
+
+            _lastBattleThemeCombat[player] = DateTime.UtcNow;
+            if (GetLocalBool(player, BattleThemePlayingVariable))
+                return;
+
+            SetLocalBool(player, BattleThemePlayingVariable, true);
+            PlayerPlugin.MusicBattleToggle(player, true);
+        }
+
+        /// <summary>
+        /// Stops a player's battle theme once they are no longer in combat.
+        /// </summary>
+        [NWNEventHandler(ScriptName.OnIntervalPC6Seconds)]
+        public static void StopBattleThemeAfterCombat()
+        {
+            var player = OBJECT_SELF;
+            if (GetLocalBool(player, BattleThemePlayingVariable) &&
+                !GetIsInCombat(player) &&
+                (!_lastBattleThemeCombat.TryGetValue(player, out var lastCombat) ||
+                 (DateTime.UtcNow - lastCombat).TotalSeconds > BattleThemeCombatGraceSeconds))
+                StopBattleTheme(player);
+        }
+
+        [NWNEventHandler(ScriptName.OnModuleExit)]
+        public static void ForgetBattleThemeCombat()
+        {
+            _lastBattleThemeCombat.Remove(GetExitingObject());
+        }
+
+        /// <summary>
+        /// Whether a player's battle theme is playing because they are in combat.
+        /// </summary>
+        public static bool IsBattleThemePlaying(uint player)
+        {
+            return GetLocalBool(player, BattleThemePlayingVariable);
+        }
+
+        private static void StopBattleTheme(uint player)
+        {
+            DeleteLocalBool(player, BattleThemePlayingVariable);
+            _lastBattleThemeCombat.Remove(player);
+            PlayerPlugin.MusicBattleToggle(player, false);
+
+            // The client resumes background music when battle music stops. Keep stopped area music
+            // off unless the player has their own track playing.
+            if (IsAreaMusicStopped(GetArea(player)) && GetPersonalTrackId(player) == null)
+                PlayerPlugin.MusicBackgroundToggle(player, false);
         }
 
         /// <summary>
@@ -215,33 +319,45 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>
-        /// Retrieves the player ID of the owner of a jukebox structure: the owner of the top-level
-        /// property it sits in, such as the city, apartment or ship. Structures keep the owner they
-        /// were placed under, so a city's current mayor is only recorded on the city itself.
-        /// Jukeboxes placed in the world rather than in a property have no owner.
+        /// Retrieves the collection owner for a jukebox. Apartments and ships use their current owner,
+        /// and jukeboxes placed directly in a city use its current mayor. City building interiors inherit
+        /// mayor ownership when created, so they and unowned world jukeboxes use the selecting player's
+        /// collection by returning an empty owner ID.
         /// </summary>
         /// <param name="jukebox">The jukebox placeable</param>
-        /// <returns>The owner's player ID, or an empty string if the jukebox has no owner.</returns>
+        /// <returns>The collection owner's player ID, or an empty string to use the selecting player's collection.</returns>
         public static string GetJukeboxOwnerId(uint jukebox)
         {
-            var propertyId = Property.GetPropertyId(jukebox);
+            return ResolveJukeboxOwnerId(Property.GetPropertyId(jukebox), DB.Get<WorldProperty>);
+        }
+
+        private static string ResolveJukeboxOwnerId(string propertyId, Func<string, WorldProperty> getProperty)
+        {
             if (string.IsNullOrWhiteSpace(propertyId))
                 return string.Empty;
 
-            var property = DB.Get<WorldProperty>(propertyId);
+            var property = getProperty(propertyId);
+            WorldProperty containingProperty = null;
             var visited = new HashSet<string>();
-            while (property != null &&
-                   visited.Add(property.Id) &&
-                   !string.IsNullOrWhiteSpace(property.ParentPropertyId))
+            while (property != null && visited.Add(property.Id))
             {
-                var parent = DB.Get<WorldProperty>(property.ParentPropertyId);
+                if (containingProperty == null && property.PropertyType != PropertyType.Structure)
+                    containingProperty = property;
+
+                if (property.PropertyType == PropertyType.City)
+                    return containingProperty == property ? property.OwnerPlayerId ?? string.Empty : string.Empty;
+
+                if (string.IsNullOrWhiteSpace(property.ParentPropertyId))
+                    break;
+
+                var parent = getProperty(property.ParentPropertyId);
                 if (parent == null)
                     break;
 
                 property = parent;
             }
 
-            return property?.OwnerPlayerId ?? string.Empty;
+            return (containingProperty ?? property)?.OwnerPlayerId ?? string.Empty;
         }
 
         /// <summary>
@@ -292,6 +408,9 @@ namespace SWLOR.Game.Server.Service
             dbPlayer.Settings.BattleThemeId = trackId;
             DB.Set(dbPlayer);
 
+            SetLocalBool(player, BattleThemeSetVariable, trackId != null);
+            if (trackId == null && GetLocalBool(player, BattleThemePlayingVariable))
+                StopBattleTheme(player);
             PlayerPlugin.MusicBattleChange(player, trackId ?? MusicBackgroundGetBattleTrack(GetArea(player)));
         }
 

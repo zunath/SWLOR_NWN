@@ -68,7 +68,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                                     .AddOption("Stores", (int)DMObjectCategory.Stores)
                                     .AddOption("Encounters", (int)DMObjectCategory.Encounters)
                                     .BindSelectedIndex(model => model.SelectedCategory)
-                                    .SetTooltip("What to list")
                                     .SetWidth(200f)
                                     .SetHeight(ButtonHeight);
 

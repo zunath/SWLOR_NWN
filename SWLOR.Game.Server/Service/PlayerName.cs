@@ -15,6 +15,8 @@ namespace SWLOR.Game.Server.Service
     {
         public const int MaxKnownNameLength = 64;
         public const string UnknownName = PlayerDescriptor.DefaultUnknownDisplayName;
+        // Set on the sender while a tell addressed to a specific character, not a typed name, is sent.
+        public const string DirectTellVariable = "PLAYER_NAME_DIRECT_TELL";
         // Known names change only through DB writes, so entries last until a PlayerKnownName write or logout.
         private static readonly Dictionary<string, PlayerKnownName> KnownNamesByObserverId = new();
         private static long _knownNamesWriteVersion;
@@ -23,6 +25,7 @@ namespace SWLOR.Game.Server.Service
         private static IDisposable _afkMovementCheck;
         private static readonly string UnknownNamePrefix = ColorToken.TokenStart(127, 127, 127);
         private static readonly string UnknownNameSuffix = ColorToken.TokenEnd();
+        private static readonly string StaffDisguiseMarker = " " + ColorToken.Orange("[Disguised]");
 
         static PlayerName()
         {
@@ -122,6 +125,13 @@ namespace SWLOR.Game.Server.Service
                    (IsAfk(player) ? " " + ColorToken.Purple("[AFK]") : string.Empty);
         }
 
+        // Only DM observers receive this suffix, so neither the disguised player nor other players see the marker.
+        private static string GetStaffNameOverrideSuffix(uint player)
+        {
+            return GetNameOverrideSuffix(player) +
+                   (Disguise.GetActiveDisguise(player) != null ? StaffDisguiseMarker : string.Empty);
+        }
+
         [NWNEventHandler(ScriptName.OnNWNXChat)]
         public static void PreventAmbiguousTellTargets()
         {
@@ -144,7 +154,8 @@ namespace SWLOR.Game.Server.Service
             }
 
             var displayName = GetDisplayName(sender, target);
-            if (string.IsNullOrWhiteSpace(displayName) ||
+            if (GetLocalBool(sender, DirectTellVariable) ||
+                string.IsNullOrWhiteSpace(displayName) ||
                 CountDisplayNameMatches(sender, displayName) <= 1)
             {
                 ApplyChatNameOverride(target, sender);
@@ -176,6 +187,19 @@ namespace SWLOR.Game.Server.Service
                 return canonicalName;
 
             return $"{canonicalName} [{Disguise.GetDisplayDescriptor(target)}]";
+        }
+
+        /// <summary>Server-only identity snapshot for correlating messages with disguise history.</summary>
+        public static string GetAuditIdentity(uint target)
+        {
+            var name = GetAuditName(target);
+            if (!GetIsObjectValid(target) || !GetIsPC(target) || GetIsDM(target) || GetIsDMPossessed(target))
+                return name;
+
+            var playerId = GetObjectUUID(target);
+            var disguise = Disguise.GetActiveDisguise(target);
+            var identityKey = disguise == null ? playerId : Disguise.BuildIdentityKey(disguise.Id);
+            return $"{name} [PlayerId={playerId} IdentityKey={identityKey} Disguised={disguise != null} DisguiseId={disguise?.Id ?? "none"} DisguiseName={disguise?.PrivateName ?? "none"}]";
         }
 
         public static void SendChatMessageWithChatNameOverride(uint observer, uint target, Action sendMessage)
@@ -423,6 +447,7 @@ namespace SWLOR.Game.Server.Service
             DB.Set(dbKnownNames);
 
             ApplyNameOverride(observer, target);
+            PlayerList.QueueRefresh();
         }
 
         private static string ValidateKnownNameTarget(uint observer, uint target)
@@ -483,6 +508,7 @@ namespace SWLOR.Game.Server.Service
             DB.Set(dbKnownNames);
 
             ApplyNameOverride(observer, target);
+            PlayerList.QueueRefresh();
         }
 
         public static int DeleteKnownNameReferences(string targetIdentityKey)
@@ -546,11 +572,14 @@ namespace SWLOR.Game.Server.Service
 
                 ApplyNameOverride(observer, player);
             }
+
+            PlayerList.QueueRefresh();
         }
 
         public static void RefreshNameOverridesForPlayer(uint player)
         {
             ApplyNameOverridesForPlayer(player);
+            PlayerList.QueueRefresh();
         }
 
         private static PlayerKnownName GetKnownNames(uint observer, bool createIfMissing)
@@ -658,7 +687,7 @@ namespace SWLOR.Game.Server.Service
                 return;
             }
 
-            RenamePlugin.SetPCNameOverride(target, BuildStaffDisplayName(target), string.Empty, GetNameOverrideSuffix(target), PlayerNameOverrideType.Default, observer);
+            RenamePlugin.SetPCNameOverride(target, BuildStaffDisplayName(target), string.Empty, GetStaffNameOverrideSuffix(target), PlayerNameOverrideType.Default, observer);
         }
 
         private static void ApplyNameOverride(uint observer, uint target)
@@ -708,7 +737,9 @@ namespace SWLOR.Game.Server.Service
 
             var displayName = ResolveChatDisplayName(observer, target, out var isUnknown);
             var prefix = isUnknown ? UnknownNamePrefix : string.Empty;
-            var suffix = GetNameOverrideSuffix(target, isUnknown);
+            var suffix = GetIsDM(observer) || GetIsDMPossessed(observer)
+                ? GetStaffNameOverrideSuffix(target)
+                : GetNameOverrideSuffix(target, isUnknown);
 
             RenamePlugin.SetPCNameOverride(target, displayName, prefix, suffix, PlayerNameOverrideType.Default, observer);
         }
@@ -811,7 +842,7 @@ namespace SWLOR.Game.Server.Service
                    !GetIsDMPossessed(observer);
         }
 
-        private static bool ShouldShowDescriptorForNamedPlayers(uint observer)
+        public static bool ShouldShowDescriptorForNamedPlayers(uint observer)
         {
             if (!GetIsObjectValid(observer) ||
                 !GetIsPC(observer) ||
@@ -834,7 +865,7 @@ namespace SWLOR.Game.Server.Service
             return setting;
         }
 
-        private static bool ShouldShowOwnDescriptor(uint player)
+        public static bool ShouldShowOwnDescriptor(uint player)
         {
             if (!GetIsObjectValid(player) ||
                 !GetIsPC(player) ||

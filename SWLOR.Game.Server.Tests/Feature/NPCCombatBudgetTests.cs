@@ -281,6 +281,23 @@ public class NPCCombatBudgetTests
             marked.Should().Be(bosses.Contains(resref),
                 $"{resref} is rated {(bosses.Contains(resref) ? "Boss" : "below Boss")} on World NPCs, which decides its minimum hit chance");
         }
+
+        // A creature placed in an area keeps its own copy of the template's variables.
+        foreach (var area in Directory.GetFiles(Path.Combine(root, "Module", "git"), "*.git.json"))
+        {
+            using var git = JsonDocument.Parse(File.ReadAllText(area));
+            if (!git.RootElement.TryGetProperty("Creature List", out var creatures))
+                continue;
+
+            foreach (var creature in creatures.GetProperty("value").EnumerateArray())
+            {
+                var resref = creature.GetProperty("TemplateResRef").GetProperty("value").GetString()!;
+                var marked = Variables(creature).Any(v =>
+                    v.GetProperty("Name").GetProperty("value").GetString() == BossCreature.Variable && Int(v, "Value") == 1);
+                marked.Should().Be(bosses.Contains(resref),
+                    $"{resref} placed in {Path.GetFileName(area)} must match its World NPCs Boss rating");
+            }
+        }
     }
 
     [Test]

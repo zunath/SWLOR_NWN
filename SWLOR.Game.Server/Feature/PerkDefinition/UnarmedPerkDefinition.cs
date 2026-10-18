@@ -85,7 +85,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.FlowingFormTrait)
-                .Description("Extends Opening and Finish from 4 to 6 seconds. During Opening, your next ordinary weapon attempt against that enemy gains +4/8/12/16 power by Jab rank, with any weapon. One bonus per opener, consumed even on a miss.")
+                .Description("Extends Opening and Finish from 4 to 6 seconds. During Opening, your next ordinary weapon attempt against that enemy gains +4/8/12/16 DMG by Jab rank, with any weapon. One bonus per opener, consumed even on a miss.")
                 .IncreasesStat(StatType.TechniqueLine, 1)
                 .IncreasesStat(StatType.TechniqueWindowExtensionSeconds, 2)
                 .IncreasesStat(StatType.TechniqueWeaveEnabled, 1)
@@ -130,7 +130,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.PracticedFormTrait)
-                .Description("Adds +4 total power to Palm Strike spending Opening, or a finisher spending Opening/Finish. Applied once per cast; split evenly between Finishing Combination's two impacts.")
+                .Description("Adds +4 total DMG to Palm Strike spending Opening, or a finisher spending Opening/Finish. Applied once per cast; split evenly between Finishing Combination's two impacts.")
                 .IncreasesStat(StatType.TechniqueLine, 1)
                 .IncreasesStat(StatType.TechniqueConditionalPower, 4)
                 .Price(2)
@@ -139,7 +139,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.PracticedForm2Trait)
-                .Description("Adds +8 total power to Palm Strike spending Opening, or a finisher spending Opening/Finish. Applied once per cast; split evenly between Finishing Combination's two impacts.")
+                .Description("Adds +8 total DMG to Palm Strike spending Opening, or a finisher spending Opening/Finish. Applied once per cast; split evenly between Finishing Combination's two impacts.")
                 .IncreasesStat(StatType.TechniqueLine, 1)
                 .IncreasesStat(StatType.TechniqueConditionalPower, 8)
                 .Price(4)
@@ -148,7 +148,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.PracticedForm3Trait)
-                .Description("Adds +12 total power to Palm Strike spending Opening, or a finisher spending Opening/Finish. Applied once per cast; split evenly between Finishing Combination's two impacts.")
+                .Description("Adds +12 total DMG to Palm Strike spending Opening, or a finisher spending Opening/Finish. Applied once per cast; split evenly between Finishing Combination's two impacts.")
                 .IncreasesStat(StatType.TechniqueLine, 1)
                 .IncreasesStat(StatType.TechniqueConditionalPower, 12)
                 .Price(4)
@@ -180,14 +180,14 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.FinishingCombination1)
-                .Description("Two strikes at one enemy, each floor(0.50 x weapon DMG) + 8. Spend Opening for +3 power per strike and redirect the second strike to the nearest other enemy within 5m of you, if available. Spend Finish for +6 per strike, both against the selected enemy.")
+                .Description("Two strikes at one enemy, each floor(0.50 x weapon DMG) + 8. Spend Opening for +3 DMG per strike and redirect the second strike to the nearest other enemy within 5m of you, if available. Spend Finish for +6 DMG per strike, both against the selected enemy.")
                 .Price(3)
                 .RequirementSkill(SkillType.Unarmed, 18)
                 .RequirementMustHavePerk(PerkType.Jab)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.FinishingCombination2)
-                .Description("Two strikes at one enemy, each floor(0.50 x weapon DMG) + 14. Spend Opening for +4 power per strike and redirect the second strike to the nearest other enemy within 5m of you, if available. Spend Finish for +8 per strike, both against the selected enemy.")
+                .Description("Two strikes at one enemy, each floor(0.50 x weapon DMG) + 14. Spend Opening for +4 DMG per strike and redirect the second strike to the nearest other enemy within 5m of you, if available. Spend Finish for +8 DMG per strike, both against the selected enemy.")
                 .Price(3)
                 .RequirementSkill(SkillType.Unarmed, 32)
                 .RequirementMustHavePerk(PerkType.Jab);
@@ -245,7 +245,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.PerfectForm1)
-                .Description("Deals weapon DMG + 45 to one enemy. Spending Finish adds +70 power. Practiced Form applies only with Finish.")
+                .Description("Deals weapon DMG + 45 to one enemy. Spending Finish adds +70 DMG. Practiced Form applies only with Finish.")
                 .Price(6)
                 .RequirementSkill(SkillType.Unarmed, 50)
                 .RequirementQuest(UnarmedMasteryQuestDefinition.PerfectFormMasteryQuestId)
@@ -336,7 +336,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.HeavyBlowsTrait)
-                .Description("Uppercut and Haymaker gain +4 total power per activation, without requiring or consuming Rattled.")
+                .Description("Uppercut and Haymaker gain +4 total DMG per activation, without requiring or consuming Rattled.")
                 .IncreasesStat(StatType.TechniqueLine, 2)
                 .IncreasesStat(StatType.TechniqueAbilityPower, 4)
                 .Price(2)
@@ -345,7 +345,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.HeavyBlows2Trait)
-                .Description("Uppercut and Haymaker gain +8 total power per activation, without requiring or consuming Rattled.")
+                .Description("Uppercut and Haymaker gain +8 total DMG per activation, without requiring or consuming Rattled.")
                 .IncreasesStat(StatType.TechniqueLine, 2)
                 .IncreasesStat(StatType.TechniqueAbilityPower, 8)
                 .Price(4)
@@ -354,7 +354,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.HeavyBlows3Trait)
-                .Description("Uppercut and Haymaker gain +12 total power per activation, without requiring or consuming Rattled.")
+                .Description("Uppercut and Haymaker gain +12 total DMG per activation, without requiring or consuming Rattled.")
                 .IncreasesStat(StatType.TechniqueLine, 2)
                 .IncreasesStat(StatType.TechniqueAbilityPower, 12)
                 .Price(4)
@@ -403,7 +403,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.BruiserStance1)
-                .Description("Increases Physical Defense by 10%, with any equipment. Direct hostile damage to real HP arms Retaliation against the attacker: +24 total power on your next Uppercut or Haymaker against that enemy within 8 seconds. One charge, with an 18-second grant cooldown. No Dirty Jab or Rattled requirement. The bonus is spent on activation, including a miss. Weapon swaps and unrelated hostile skills against the same enemy preserve it. Stance, combat or enemy changes clear it. No ordinary damage penalty.")
+                .Description("Increases Physical Defense by 10%, with any equipment. Direct hostile damage to real HP arms Retaliation against the attacker: +24 total DMG on your next Uppercut or Haymaker against that enemy within 8 seconds. One charge, with an 18-second grant cooldown. No Dirty Jab or Rattled requirement. The bonus is spent on activation, including a miss. Weapon swaps and unrelated hostile skills against the same enemy preserve it. Stance, combat or enemy changes clear it. No ordinary damage penalty.")
                 .Price(4)
                 .RequirementSkill(SkillType.Unarmed, 20);
         }

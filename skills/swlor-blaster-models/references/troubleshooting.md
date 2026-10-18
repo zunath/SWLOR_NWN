@@ -11,9 +11,9 @@ Paths below are relative to the parent repository root.
    The post-build hook passes the initiating output through `--server-output`;
    standalone CLI `-o` uses the Release output produced by `RunCLI.cmd`.
 2. Check source assets and `Build/hakbuilder.json`. `sw_weapon` uses
-   `CompileModels: false` because the legacy MDL compiler can discard NWN:EE
-   material fields. Ship precompiled MDLs produced by the installed NWN:EE
-   `compilemodel` command; the helper and verification steps are in the guide.
+   `CompileModels: false`; that unused setting does not compile models. Ship
+   precompiled MDLs produced by CleanModels v4.4.2 from cleanmodels-qt v1.1.7,
+   using `tools/CompileBlasterModels.py`; installation and checks are in the guide.
    An ASCII header in a shipped replacement means the client must compile it
    on first appearance, which can cause a hitch.
 3. Verify `debugserver/hak/sw_weapon.hak` from the testing checkout, then the HAK
@@ -39,10 +39,10 @@ Distinguish a cold first appearance from continued slow rendering. Restart the
 client for the cold check, then show the same weapon again in the same scene.
 Record the model, lighting/body setup and before/after frame times if measuring.
 
-- A cold hitch with shipped ASCII models calls for native NWN:EE precompilation.
+- A cold hitch with shipped ASCII models calls for CleanModels precompilation.
   Inspect the MDL extracted from the actual loaded HAK, not only a staging copy.
   Binary MDLs start with four zero bytes; check EE material names and referenced
-  vertex tangent frames as well as the header. Leave the legacy build compiler off.
+  vertex tangent frames as well as the header. Package the validated binary bytes.
 - Large maps and missing mipmaps increase texture load/memory cost. Use the guide's
   DDS presets and per-map sizes; preserve smaller sources and use tiny maps for
   constant material values. Remove superseded maps and competing TGA resources.

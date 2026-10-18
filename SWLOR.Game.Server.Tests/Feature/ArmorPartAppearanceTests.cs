@@ -31,8 +31,8 @@ public class ArmorPartAppearanceTests
         var models = new HashSet<string> { "pfh0_legl023", "pfh0_legl024", "pmh0_legl023", "pmh0_legl024", "pmh0_legl030" };
         var options = new[] { 0, 23, 24, 30 }.Select(value => new GuiComboEntry(value.ToString(), value)).ToArray();
 
-        var female = ArmorPartAppearance.FilterOptions("pfh0", AppearanceArmor.LeftThigh, options, _ => 0, models.Contains);
-        var male = ArmorPartAppearance.FilterOptions("pmh0", AppearanceArmor.LeftThigh, options, _ => 0, models.Contains);
+        var female = ArmorPartAppearance.FilterOptions("pfh0", AppearanceArmor.LeftThigh, options, 24, _ => 0, models.Contains);
+        var male = ArmorPartAppearance.FilterOptions("pmh0", AppearanceArmor.LeftThigh, options, 24, _ => 0, models.Contains);
 
         Assert.That(female.Select(option => option.Value), Is.EqualTo(new[] { 0, 23, 24 }));
         Assert.That(male.Select(option => option.Value), Is.EqualTo(new[] { 0, 23, 24, 30 }));
@@ -42,7 +42,18 @@ public class ArmorPartAppearanceTests
     public void CreaturesWithoutModularBodiesKeepEveryOption()
     {
         var options = new[] { 0, 30 }.Select(value => new GuiComboEntry(value.ToString(), value)).ToArray();
-        var kept = ArmorPartAppearance.FilterOptions(string.Empty, AppearanceArmor.LeftThigh, options, _ => 0, _ => false);
+        var kept = ArmorPartAppearance.FilterOptions(string.Empty, AppearanceArmor.LeftThigh, options, 0, _ => 0, _ => false);
         Assert.That(kept.Select(option => option.Value), Is.EqualTo(new[] { 0, 30 }));
+    }
+
+    [Test]
+    public void AnEquippedUnrenderablePartStaysInPlaceSoTheArrowsCanLeaveIt()
+    {
+        var models = new HashSet<string> { "pfh0_legl024", "pfh0_legl050" };
+        var options = new[] { 0, 24, 30, 31, 50 }.Select(value => new GuiComboEntry(value.ToString(), value)).ToArray();
+
+        var female = ArmorPartAppearance.FilterOptions("pfh0", AppearanceArmor.LeftThigh, options, 30, _ => 0, models.Contains);
+
+        Assert.That(female.Select(option => option.Value), Is.EqualTo(new[] { 0, 24, 30, 50 }));
     }
 }

@@ -1980,7 +1980,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             if (SelectedItemTypeIndex == 0) // 0 = Armor
             {
                 GuiBindingList<GuiComboEntry> Available(AppearanceArmor part, IEnumerable<GuiComboEntry> options) =>
-                    ArmorPartAppearance.GetAvailableOptions(_target, part, options);
+                    ArmorPartAppearance.GetAvailableOptions(_target, part, options,
+                        GetItemAppearance(item, ItemAppearanceType.ArmorModel, (int)part));
                 var neckOptions = new GuiBindingList<GuiComboEntry>();
                 foreach (var style in NeckAppearance.GetAvailableStyles(_target, _armorAppearances[appearanceType].Neck.Prepend(0)))
                     neckOptions.Add(new GuiComboEntry(style.ToString(), style));

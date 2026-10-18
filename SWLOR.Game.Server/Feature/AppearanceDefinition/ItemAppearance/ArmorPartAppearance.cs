@@ -58,13 +58,15 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.ItemAppearance
         }
 
         public static GuiBindingList<GuiComboEntry> FilterOptions(string body, AppearanceArmor part,
-            IEnumerable<GuiComboEntry> options, Func<int, int> fallback, Func<string, bool> exists)
+            IEnumerable<GuiComboEntry> options, int equipped, Func<int, int> fallback, Func<string, bool> exists)
         {
             var available = new GuiBindingList<GuiComboEntry>();
             foreach (var option in options)
             {
                 // Creatures without modular bodies keep the full list; zero is always "none".
-                if (string.IsNullOrEmpty(body) || option.Value <= 0 ||
+                // The equipped style stays in place, so the arrows can step from an unrenderable
+                // saved part to its available neighbors without rewriting the item on open.
+                if (string.IsNullOrEmpty(body) || option.Value <= 0 || option.Value == equipped ||
                     !string.IsNullOrEmpty(ResolveModel(body, part, option.Value, fallback, exists)))
                     available.Add(option);
             }
@@ -72,8 +74,8 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.ItemAppearance
         }
 
         public static GuiBindingList<GuiComboEntry> GetAvailableOptions(uint creature, AppearanceArmor part,
-            IEnumerable<GuiComboEntry> options) =>
-            FilterOptions(NeckAppearance.GetBodyModel(creature, true), part, options, DefaultPhenotype,
+            IEnumerable<GuiComboEntry> options, int equipped) =>
+            FilterOptions(NeckAppearance.GetBodyModel(creature, true), part, options, equipped, DefaultPhenotype,
                 ModelResource.Exists);
 
         private static int DefaultPhenotype(int phenotype) =>

@@ -26,6 +26,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         public const float AdminToolbarWidth = ToolbarWidth + ButtonSlotWidth;
         public const float ToolbarHeight = 44f;
 
+        private float _guiScale;
+
         public bool IsAdmin
         {
             get => Get<bool>();
@@ -60,7 +62,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             IsAdmin = isAdmin;
             // The toolbar replaces the native DM taskbar, so it always sits in the top-left corner.
             // A hidden button still takes up its space, so the toolbar is cut short before it.
-            Geometry = new GuiRectangle(ToolbarX, ToolbarY * GetGuiScale(Player), isAdmin ? AdminToolbarWidth : ToolbarWidth, ToolbarHeight);
+            _guiScale = GetGuiScale(Player);
+            Geometry = new GuiRectangle(ToolbarX, ToolbarY * _guiScale, isAdmin ? AdminToolbarWidth : ToolbarWidth, ToolbarHeight);
         }
 
         /// <summary>
@@ -147,6 +150,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         public void Refresh(DMPresenceRefreshEvent payload)
         {
+            if (GetGuiScale(Player) != _guiScale)
+                ShowAdminButton(IsAdmin);
+
             RefreshAppearText();
         }
     }

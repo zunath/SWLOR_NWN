@@ -109,8 +109,9 @@ namespace SWLOR.Game.Server.Feature
         }
 
         /// <summary>
-        /// Keeps the toolbar's Appear button in step when the DM uses the native radial menu instead.
+        /// Keeps the toolbar position current as UI scale changes and tracks the native Appear action.
         /// </summary>
+        [NWNEventHandler(ScriptName.OnIntervalPC6Seconds)]
         [NWNEventHandler(ScriptName.OnDMAppearAfter)]
         [NWNEventHandler(ScriptName.OnDMDisappearAfter)]
         public static void RefreshAppearButton()

@@ -2539,6 +2539,8 @@ namespace SWLOR.Game.Server.Service
         {
             using var damageDerivedHealing = Combat.BeginDamageDerivedHealing(activator, target);
             var trackedImpact = GetTrackedAbilityImpact(activator);
+            // Abilities that only apply status effects raise no attack or damage events.
+            Music.StartBattleTheme(target, activator);
 
             // Register the combat point before applying damage. A lethal hit resolves the target's
             // death (and its skill XP distribution) synchronously during EffectDamage below, so

@@ -89,8 +89,8 @@ namespace SWLOR.Game.Server.Service
                 ApplyBackgroundTrackToPlayer(player, personalTrackId.Value, personalTrackId.Value);
             }
 
-            // The client starts each area with the battle music stopped.
-            DeleteLocalBool(player, BattleThemePlayingVariable);
+            if (GetLocalBool(player, BattleThemePlayingVariable))
+                StopBattleTheme(player);
             SetLocalBool(player, BattleThemeSetVariable, dbPlayer.Settings.BattleThemeId != null);
             if (dbPlayer.Settings.BattleThemeId != null)
             {
@@ -126,7 +126,10 @@ namespace SWLOR.Game.Server.Service
             StartBattleTheme(defender, GetLastDamager(defender));
         }
 
-        private static void StartBattleTheme(uint defender, uint attacker)
+        /// <summary>
+        /// Starts the battle theme of either combatant who is a player with one selected.
+        /// </summary>
+        public static void StartBattleTheme(uint defender, uint attacker)
         {
             if (defender == attacker ||
                 GetObjectType(defender) != ObjectType.Creature ||

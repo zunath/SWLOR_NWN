@@ -6,11 +6,13 @@ using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.EngineTests.Framework;
 using SWLOR.Game.Server.Feature.GuiDefinition.RefreshEvent;
 using SWLOR.Game.Server.Feature.GuiDefinition.ViewModel;
+using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.KeyItemService;
 using SWLOR.Game.Server.Service.MusicService;
 using SWLOR.Game.Server.Service.PlayerMarketService;
 using SWLOR.Game.Server.Service.PropertyService;
+using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.Game.Server.EngineTests.Definitions
@@ -227,6 +229,29 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             {
                 if (GetIsObjectValid(enemy))
                     DestroyObject(enemy);
+            }
+        }
+
+        [EngineTest("A hostile ability without damage starts the battle theme", Category = "MusicCollection", TimeoutSeconds = 45f)]
+        public static async Task HostileAbilityStartsBattleTheme(EngineTestContext ctx)
+        {
+            using var player = await PlayerAbilityFixture.CreateAsync(ctx, 0f);
+            await ctx.ExecuteInCreatureContextAsync(player.Creature, () => Music.GrantStarterSongs(player.Creature));
+            var theme = MusicSongCatalog.Songs.First(song => song.Acquisition == MusicAcquisitionType.Starter);
+            await ctx.ExecuteInCreatureContextAsync(player.Creature, () => Music.SetBattleTheme(player.Creature, theme.TrackId));
+
+            var enemy = ctx.SpawnCreature("nw_bandit001", 2f);
+            ctx.MakeHostile(enemy);
+            try
+            {
+                await ctx.ExecuteInCreatureContextAsync(enemy, () =>
+                    Ability.ApplyHostileCombatImpact(enemy, player.Creature, SkillType.Force, 0, CombatDamageType.Force));
+                ctx.Assert(Music.IsBattleThemePlaying(player.Creature), "a control-only hostile ability starts the battle theme");
+            }
+            finally
+            {
+                DestroyObject(enemy);
+                await ctx.ExecuteInCreatureContextAsync(player.Creature, () => Music.SetBattleTheme(player.Creature, null));
             }
         }
     }

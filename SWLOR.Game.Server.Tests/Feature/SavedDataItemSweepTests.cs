@@ -237,6 +237,10 @@ public class SavedDataItemSweepTests
         Int(tunic, "xArmorPart_Torso").Should().Be(171);
         armorListing.Should().ContainSingle().Which.Should().Be(("iit_chest", MarketCategoryType.Armor));
 
+        Migrate(Encode(Item("frontier_helmet", BaseItem.Helmet, 96)), out var helmet, true, out _).Should().BeTrue();
+        (Int(Read(helmet), "ModelPart1"), Int(Read(helmet), "xModelPart1")).Should().Be((0, 268),
+            "the engine saves a part above 255 only in the extended field");
+
         Migrate(Encode(Item("redcircle_star", BaseItem.Shuriken, 62)), out var star, true, out var starListing).Should().BeTrue();
         (Int(Read(star), "ModelPart1"), Int(Read(star), "xModelPart1")).Should().Be((42, 42));
         starListing.Should().ContainSingle().Which.Should().Be(("iwthsh_042", MarketCategoryType.Throwing));

@@ -234,7 +234,10 @@ internal sealed partial class StoredObjectData
         return part == null ? 0 : ReadScalar(part);
     }
 
-    /// <summary>Saves both the byte-sized and the extended part fields, as the engine does.</summary>
+    /// <summary>
+    /// Saves both the byte-sized and the extended part fields, as the engine does: a part above 255 leaves
+    /// the byte-sized field at 0 and lives only in the extended one.
+    /// </summary>
     private static void WritePart(Node item, string label, int value)
     {
         void Set(uint type, string name, int data)
@@ -244,7 +247,7 @@ internal sealed partial class StoredObjectData
             if (index >= 0) item.Fields[index] = field;
             else item.Fields.Add(field);
         }
-        Set(0, label, value & byte.MaxValue);
+        Set(0, label, value <= byte.MaxValue ? value : 0);
         Set(2, ExtendedLabel(label), value);
     }
 

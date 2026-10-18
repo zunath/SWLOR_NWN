@@ -69,6 +69,21 @@ public static partial class MigrationEngineTests
             });
         }
 
+        // A catalog pistol saved with arrow ammunition from its legacy bow base item: the engine re-saves it
+        // with the ammunition type it derives from the base item, the saved-data sweep keeps the saved value.
+        var arrowPistol = await CreateItemAsync(ctx, owner, "raider_pistol", owner);
+        await ctx.ExecuteInCreatureContextAsync(owner, () =>
+        {
+            StampLegacyAppearance(ctx, arrowPistol);
+            ItemPlugin.SetBaseItemType(arrowPistol, BaseItem.Pistol);
+            RemoveMatching(arrowPistol, ItemPropertyType.UnlimitedAmmunition, 0);
+            AddItemProperty(DurationType.Permanent, ItemPropertyCustom(ItemPropertyType.UnlimitedAmmunition, 0, 1), arrowPistol);
+            ItemPlugin.SetBaseItemType(arrowPistol, BaseItem.Sling);
+            fixtures.Add(("legacy appearance pistol with arrow ammunition", ObjectPlugin.Serialize(arrowPistol), true));
+            rootConversions.Add("legacy appearance pistol with arrow ammunition");
+            DestroyObject(arrowPistol);
+        });
+
         // Shipped breastplates: retired Ice Defense beside an Ice Resistance enhancement, the same copy after
         // losing the retired property, Ice Defense the combat replacement already converted, and no Ice at all.
         var arkanianEnhancements = new Dictionary<(ItemPropertyType, int), int>

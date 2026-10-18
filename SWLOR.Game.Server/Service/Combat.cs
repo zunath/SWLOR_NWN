@@ -1083,8 +1083,8 @@ namespace SWLOR.Game.Server.Service
                 damage = ApplyBackAttackDamageModifier(attacker, defender, skillType, damage);
             if (isAbilityDamage)
             {
-                var isArea = ability?.IsAreaAbility == true;
-                var isSingleTarget = ability?.IsSingleTargetAbility == true;
+                var isArea = Ability.IsAreaImpact(attacker, ability);
+                var isSingleTarget = Ability.IsSingleTargetImpact(attacker, ability);
                 damage = ApplyTwinBladeAbilityShapeDamageModifier(attacker, skillType, damage, isSingleTarget, isArea);
                 damage = ApplyThrowingAbilityShapeDamageModifier(attacker, skillType, damage, isArea);
                 damage = ApplySkillAreaAbilityDamageModifier(attacker, skillType, damage, isArea);
@@ -1158,9 +1158,9 @@ namespace SWLOR.Game.Server.Service
 
         public static int ApplyAbilityShapeDamageModifier(uint attacker, int damage, bool isAbilityDamage, AbilityDetail ability)
         {
-            var adjustment = !isAbilityDamage || ability is { IsHostileAbility: true, IsSingleTargetAbility: true }
+            var adjustment = !isAbilityDamage || ability?.IsHostileAbility == true && Ability.IsSingleTargetImpact(attacker, ability)
                 ? Stat.GetStatAdjustment(attacker, StatType.SingleTargetDamagePercentAdjustment)
-                : ability is { IsHostileAbility: true, IsAreaAbility: true }
+                : ability?.IsHostileAbility == true && Ability.IsAreaImpact(attacker, ability)
                     ? Stat.GetStatAdjustment(attacker, StatType.AreaAbilityDamagePercentAdjustment)
                     : 0;
             return ApplyPercentDamageAdjustment(damage, adjustment);
@@ -5448,8 +5448,8 @@ namespace SWLOR.Game.Server.Service
             ApplyAbilityUsedSkillAttackDeflection(activator, ability);
             ApplyAbilityUsedPerkCategoryAttackDeflection(activator, ability);
             ApplySingleTargetAbilityUsedAttackDeflection(activator, ability, isSingleTargetAbility);
-            ApplyAreaAbilityUsedEvasion(activator, ability, skillType);
-            ApplyAreaAbilityUsedRewards(activator, ability);
+            ApplyAreaAbilityUsedEvasion(activator, ability, skillType, summary.IsAreaAbility);
+            ApplyAreaAbilityUsedRewards(activator, ability, summary.IsAreaAbility);
             ApplyHostileAbilityForceAttack(activator, ability);
             ApplyHostileAbilityFPSpendForceAttack(activator, ability);
             ApplyAbilityUsedNearbyAllyDefense(activator);
@@ -5479,9 +5479,9 @@ namespace SWLOR.Game.Server.Service
                 : GetAbilitySkillType(activator, ability);
         }
 
-        private static void ApplyAreaAbilityUsedRewards(uint activator, AbilityDetail ability)
+        private static void ApplyAreaAbilityUsedRewards(uint activator, AbilityDetail ability, bool isAreaAbility)
         {
-            if (ability is not { IsHostileAbility: true, IsAreaAbility: true })
+            if (ability?.IsHostileAbility != true || !isAreaAbility)
                 return;
 
             var grantedDeflection = false;
@@ -5509,9 +5509,10 @@ namespace SWLOR.Game.Server.Service
         private static void ApplyAreaAbilityUsedEvasion(
             uint activator,
             AbilityDetail ability,
-            SkillType skillType)
+            SkillType skillType,
+            bool isAreaAbility)
         {
-            if (ability == null || !ability.IsHostileAbility || !ability.IsAreaAbility)
+            if (ability?.IsHostileAbility != true || !isAreaAbility)
                 return;
 
             var requiredSkillType = GetSkillTypeFromStat(Stat.GetStatAdjustment(
@@ -6231,7 +6232,7 @@ namespace SWLOR.Game.Server.Service
             AbilityDetail ability,
             bool isFirstSuccessfulTarget)
         {
-            if (ability?.IsHostileAbility != true || !ability.IsAreaAbility || !isFirstSuccessfulTarget)
+            if (ability?.IsHostileAbility != true || !Ability.IsAreaImpact(activator, ability) || !isFirstSuccessfulTarget)
                 return Array.Empty<StatAdjustmentSource>();
 
             return Stat.GetStatSources(activator, StatType.AreaAbilityPulseDamage);
@@ -6272,7 +6273,7 @@ namespace SWLOR.Game.Server.Service
             SkillType skillType,
             CombatDamageType damageType)
         {
-            if (ability == null || !ability.IsAreaAbility || !GetIsObjectValid(target))
+            if (ability == null || !Ability.IsAreaImpact(activator, ability) || !GetIsObjectValid(target))
                 return;
 
             var damage = GetAreaAbilityFragmentationStatAdjustment(activator, skillType, StatType.AreaAbilityFragmentationDamage);
@@ -6848,7 +6849,7 @@ namespace SWLOR.Game.Server.Service
             var state = EnsureFirstHostileAbilityHitState(attacker, maximumCount, damageBonus, out _);
 
             var now = DateTime.UtcNow;
-            if (ability.IsAreaAbility &&
+            if (Ability.IsAreaImpact(attacker, ability) &&
                 (now - state.LastHit).TotalSeconds <= 1)
             {
                 return;
@@ -7738,7 +7739,7 @@ namespace SWLOR.Game.Server.Service
             AbilityDetail ability,
             SkillType skillType)
         {
-            if (ability == null || !ability.IsAreaAbility || !GetIsObjectValid(target))
+            if (ability == null || !Ability.IsAreaImpact(activator, ability) || !GetIsObjectValid(target))
                 return;
 
             var requiredSkillType = GetSkillTypeFromStat(Stat.GetStatAdjustment(

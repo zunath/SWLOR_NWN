@@ -140,6 +140,10 @@ namespace SWLOR.Game.Server.Service
                 Profile = owner.Profile,
                 Skill = owner.ProfileSkill,
                 Target = target,
+                SecondaryTarget = stage == MeleeTechniqueStage.Opening && detail.ImpactCount == 2 && detail.OpeningSweepRadiusMeters > 0f
+                    ? Ability.GetHostileTargetsInSphere(creature, GetLocation(creature), detail.OpeningSweepRadiusMeters)
+                        .FirstOrDefault(enemy => enemy != target && enemy != creature, OBJECT_INVALID)
+                    : OBJECT_INVALID,
                 Stage = stage,
                 ConditionalPower = conditionalPower,
                 ConditionalAccuracy = setupAccuracy + (stage == MeleeTechniqueStage.None ? 0 :
@@ -154,11 +158,20 @@ namespace SWLOR.Game.Server.Service
 
         public static int GetConditionalPower(uint creature, uint target, int impactIndex = 0)
         {
-            if (!TryGetActivation(creature, target, out var activation))
+            if (!TryGetImpactActivation(creature, target, out var activation))
                 return 0;
             return TechniqueSequence.SplitPower(activation.ConditionalPower,
                 activation.Ability.MeleeTechnique.ImpactCount, impactIndex);
         }
+
+        public static uint GetImpactTarget(uint creature, uint primaryTarget, int impactIndex) =>
+            Activations.TryGetValue(creature, out var activation) && activation.Target == primaryTarget &&
+            impactIndex == 1 && activation.SecondaryTarget != OBJECT_INVALID
+                ? activation.SecondaryTarget : primaryTarget;
+
+        public static bool IsSweepActivation(uint creature, AbilityDetail ability) =>
+            Activations.TryGetValue(creature, out var activation) && activation.Ability == ability &&
+            activation.SecondaryTarget != OBJECT_INVALID;
 
         public static int GetConditionalAccuracy(uint creature, uint target) =>
             TryGetActivation(creature, target, out var activation) ? activation.ConditionalAccuracy : 0;
@@ -204,7 +217,7 @@ namespace SWLOR.Game.Server.Service
 
         public static bool IsImpactValid(uint creature, uint target, AbilityDetail ability) =>
             ability?.MeleeTechnique == null ||
-            TryGetActivation(creature, target, out var activation) && activation.Ability == ability;
+            TryGetImpactActivation(creature, target, out var activation) && activation.Ability == ability;
 
         public static void CompleteActivation(uint creature, AbilityImpactSummary summary)
         {
@@ -626,6 +639,14 @@ namespace SWLOR.Game.Server.Service
                    IsValidEnemy(creature, target);
         }
 
+        private static bool TryGetImpactActivation(uint creature, uint target, out Activation activation)
+        {
+            return Activations.TryGetValue(creature, out activation) &&
+                   (activation.Target == target || activation.SecondaryTarget == target) &&
+                   IsGripSnapshotValid(creature, activation.Profile, activation.Skill, activation.Weapon, activation.OffHand, activation.Area) &&
+                   IsValidEnemy(creature, target);
+        }
+
         private static bool IsGripSnapshotValid(uint creature, MeleeTechniqueProfile profile, SkillType skill,
             uint main, uint off, uint area) =>
             GetIsObjectValid(creature) && !GetIsDead(creature) &&
@@ -695,6 +716,7 @@ namespace SWLOR.Game.Server.Service
             public MeleeTechniqueProfile Profile { get; init; }
             public SkillType Skill { get; init; }
             public uint Target { get; init; }
+            public uint SecondaryTarget { get; init; } = OBJECT_INVALID;
             public MeleeTechniqueStage Stage { get; init; }
             public int ConditionalPower { get; init; }
             public int ConditionalAccuracy { get; init; }

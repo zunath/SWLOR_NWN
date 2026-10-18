@@ -9,9 +9,10 @@ using SWLOR.Game.Server.Feature.StatusEffectDefinition;
 namespace SWLOR.CombatSim.Engine;
 public sealed partial class Simulation
 {
-    private int DiscountedStamina(Combatant caster, int cost, bool consume)
+    private int DiscountedStamina(Combatant caster, int cost, bool consume, AbilityInfo ability)
     {
         if (caster.Weapon == null || cost <= 0) return cost;
+        if (ability.IsHostile) cost -= caster.Weapon.AvoidedAttackDiscount(cost, consume, _now);
         var discount = consume ? caster.Weapon.Resources.TakeDiscount(cost, WeaponCombatState.At(_now)) : Math.Min(cost, caster.Weapon.Resources.GetDiscount(WeaponCombatState.At(_now)));
         if (consume && discount > 0) caster.Weapon.Count("PaybackStaminaSaved", discount);
         return cost - discount;
@@ -25,24 +26,61 @@ public sealed partial class Simulation
     }
     private bool ApplyWeaponAbility(Combatant caster, Combatant target, PendingCast cast)
     {
-        if (target.IsDead) return false;
+        if (target.IsDead && !cast.Ability.IsAreaAbility) return false;
         var technique = cast.Ability.Technique;
         var count = technique?.ImpactCount ?? cast.Use.WeaponHits;
         var weaponPercent = technique?.WeaponDamagePercent ?? cast.Use.WeaponDamagePercent;
         var landed = false;
-        for (var index = 0; index < count; index++)
+        var secondary = cast.Technique.SweepSecondary;
+        cast.Technique.IsArea = cast.Technique.IsSweep || cast.Ability.IsAreaAbility;
+        if (cast.Technique.IsArea) caster.Weapon.AreaUsed(_now, cast.Technique.IsSweep);
+        List<Combatant> areaTargets = null;
+        if (cast.Ability.IsAreaAbility)
         {
-            if (target.IsDead) break;
+            if (cast.Ability.WeaponAreaRadius <= 0)
+                throw new InvalidDataException($"Weapon area simulation requires a source-defined self-centered sphere: {cast.Ability.Name}.");
+            areaTargets = EnemiesAt(caster, _now).Where(enemy => WeaponDistanceSquared(caster, enemy) <= Math.Pow(cast.Ability.WeaponAreaRadius, 2))
+                .OrderBy(enemy => WeaponDistanceSquared(caster, enemy)).ThenBy(enemy => enemy.SimId)
+                .Take(cast.Ability.MaximumAreaTargets > 0 ? cast.Ability.MaximumAreaTargets : int.MaxValue).ToList();
+        }
+        var impacts = areaTargets == null
+            ? Enumerable.Range(0, count).Select(index => (Victim: index == 1 && secondary != null ? secondary : target, Index: index))
+            : areaTargets.SelectMany(victim => Enumerable.Range(0, count).Select(index => (Victim: victim, Index: index)));
+        var hitTargets = new HashSet<uint>();
+        foreach (var (victim, index) in impacts)
+        {
+            if (victim.IsDead) continue;
             var power = cast.Use.WeaponPower.Value + (int)(0.15f * caster.Spec.WeaponCombat.WeaponSkillRank) + TechniqueSequence.ScaleWeaponDamage(caster.Spec.WeaponCombat.WeaponDamage, weaponPercent) +
                 TechniqueSequence.SplitPower(cast.Technique.ConditionalPower, count, index) + cast.Technique.FlatPower;
-            var hit = RollWeapon(caster, target, power, cast.Technique.Accuracy, cast.Technique.HitPercent, false,
-                () => { if (!landed) ApplyWeaponStatusRiders(caster, target, cast.Ability); });
+            var accuracy = technique == null ? caster.Weapon.SetupAccuracy(victim, _now) : victim == target ? cast.Technique.Accuracy : 0;
+            var hit = RollWeapon(caster, victim, power, accuracy, cast.Technique.HitPercent, false,
+                () =>
+                {
+                    if (!hitTargets.Contains(victim.SimId)) ApplyWeaponStatusRiders(caster, victim, cast.Ability);
+                    caster.Weapon.CostlyAbilityHit(cast.Technique);
+                });
             landed |= hit;
+            if (hit) hitTargets.Add(victim.SimId);
             if (hit && cast.Technique.PaidStamina >= caster.Weapon.Stat(StatType.CostlyAbilityDamageMinimumStaminaCost) && caster.Weapon.Stat(StatType.CostlyAbilityDamageBonus) > 0)
                 caster.Weapon.Count("HighGuardImpacts");
         }
+        cast.Technique.ImpactedTargets = hitTargets.Count;
         return landed;
     }
+
+    private void CaptureTechniqueSweep(Combatant caster, Combatant target, PendingCast cast)
+    {
+        var technique = cast.Ability.Technique;
+        if (!_rules.EnableTechniqueSweeps || cast.Technique.Stage != MeleeTechniqueStage.Opening || technique?.OpeningSweepRadiusMeters is not > 0) return;
+        cast.Technique.SweepSecondary = EnemiesAt(caster, _now)
+            .Where(enemy => enemy != target && WeaponDistanceSquared(caster, enemy) <= Math.Pow(technique.OpeningSweepRadiusMeters, 2))
+            .OrderBy(enemy => WeaponDistanceSquared(caster, enemy)).ThenBy(enemy => enemy.SimId).FirstOrDefault();
+        cast.Technique.IsSweep = cast.Technique.SweepSecondary != null;
+    }
+
+    private static double WeaponDistanceSquared(Combatant caster, Combatant target) =>
+        Math.Pow(target.Spec.WeaponCombat.PositionX - caster.Spec.WeaponCombat.PositionX, 2) +
+        Math.Pow(target.Spec.WeaponCombat.PositionY - caster.Spec.WeaponCombat.PositionY, 2);
 
     private void ApplyWeaponStatusRiders(Combatant caster, Combatant target, AbilityInfo ability)
     {
@@ -107,9 +145,10 @@ public sealed partial class Simulation
         attacker.Weapon.Refresh(_now); target.Weapon.Refresh(_now);
         var penalty = ordinary ? attacker.Weapon.Rattled.Values.Select(x => x.Penalty).DefaultIfEmpty().Max() : 0;
         var evasion = WeaponCombatState.Adjust(d.Evasion, target.Weapon.EvasionPercent(_now));
-        var chance = Combat.CalculateHitRate(a.Accuracy + accuracyBonus - penalty, evasion, hitPercent);
+        var accuracy = a.Accuracy + (int)Math.Ceiling(a.Accuracy * attacker.Weapon.AccuracyPercent(_now) / 100f);
+        var chance = Combat.CalculateHitRate(accuracy + accuracyBonus - penalty, evasion, hitPercent);
         attacker.Weapon.Count(ordinary ? "OrdinaryAttempts" : "AbilityImpactsAttempted");
-        if (_random.Next(1, 101) > chance) return false;
+        if (_random.Next(1, 101) > chance) { target.Weapon.AvoidedAttack(_now); return false; }
         var criticalChance = ordinary ? Combat.CalculateCriticalRate(a.Perception, d.Vitality, a.WeaponSkillRank, 0) : Combat.CalculateAbilityCriticalChance(0);
         var critical = a.EnableCriticals && _random.Next(1, 101) <= criticalChance ? Combat.StandardCriticalRating : 0;
         var attack = WeaponCombatState.Adjust(a.Attack, attacker.Weapon.Stat(StatType.AttackPercentAdjustment));

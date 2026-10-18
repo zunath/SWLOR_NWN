@@ -180,14 +180,14 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.FinishingCombination1)
-                .Description("Two strikes at one enemy, each floor(0.50 x weapon DMG) + 8. Spend Opening for +3 power per strike, or Finish for +6 per strike.")
+                .Description("Two strikes at one enemy, each floor(0.50 x weapon DMG) + 8. Spend Opening for +3 power per strike and redirect the second strike to the nearest other enemy within 5m of you, if available. Spend Finish for +6 per strike, both against the selected enemy.")
                 .Price(3)
                 .RequirementSkill(SkillType.Unarmed, 18)
                 .RequirementMustHavePerk(PerkType.Jab)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.FinishingCombination2)
-                .Description("Two strikes at one enemy, each floor(0.50 x weapon DMG) + 14. Spend Opening for +4 power per strike, or Finish for +8 per strike.")
+                .Description("Two strikes at one enemy, each floor(0.50 x weapon DMG) + 14. Spend Opening for +4 power per strike and redirect the second strike to the nearest other enemy within 5m of you, if available. Spend Finish for +8 per strike, both against the selected enemy.")
                 .Price(3)
                 .RequirementSkill(SkillType.Unarmed, 32)
                 .RequirementMustHavePerk(PerkType.Jab);

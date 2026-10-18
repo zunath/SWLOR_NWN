@@ -119,6 +119,8 @@ namespace SWLOR.Game.Server.Service
                 countsAsAttackAttempt: countsAsAttackAttempt,
                 activationAreaTelegraphs: activationAreaTelegraphs, sequence: sequence);
             var trackedImpact = GetTrackedAbilityImpact(activator);
+            if (MeleeTechnique.IsSweepActivation(activator, ability))
+                trackedImpact.RecordShape(ability.SkillType, true);
             trackedImpact.TriggeringWeaponDamage = GetIsObjectValid(triggeringWeapon)
                 ? WeaponDamage.GetEffectiveDMG(activator, triggeringWeapon)
                 : trackedImpact.TriggeringWeaponDamage;
@@ -646,6 +648,20 @@ namespace SWLOR.Game.Server.Service
         {
             var impact = GetTrackedAbilityImpact(activator);
             return impact?.Summary.IsAreaAbility ?? false;
+        }
+
+        public static bool IsAreaImpact(uint activator, AbilityDetail ability)
+        {
+            var impact = GetTrackedAbilityImpact(activator);
+            return impact != null && impact.Ability == ability
+                ? impact.Summary.IsAreaAbility : ability?.IsAreaAbility == true;
+        }
+
+        public static bool IsSingleTargetImpact(uint activator, AbilityDetail ability)
+        {
+            var impact = GetTrackedAbilityImpact(activator);
+            return impact != null && impact.Ability == ability
+                ? impact.Summary.IsSingleTargetAbility : ability?.IsSingleTargetAbility == true;
         }
 
         private static bool IsTrackedAbilitySingleTarget(uint activator)

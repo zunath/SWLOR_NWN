@@ -43,9 +43,10 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Unarmed
                     {
                         for (var impact = 0; impact < technique.ImpactCount; impact++)
                         {
-                            var conditionalPower = MeleeTechnique.GetConditionalPower(activator, target, impact);
+                            var impactTarget = MeleeTechnique.GetImpactTarget(activator, target, impact);
+                            var conditionalPower = MeleeTechnique.GetConditionalPower(activator, impactTarget, impact);
                             Ability.ApplyCombatImpact(
-                                activator, target, location, SkillType.Unarmed,
+                                activator, impactTarget, location, SkillType.Unarmed,
                                 power + conditionalPower, statusDuration, null, false,
                                 statusEffectFactory: statusFactory,
                                 statusResistanceType: ResistanceType.Trauma,

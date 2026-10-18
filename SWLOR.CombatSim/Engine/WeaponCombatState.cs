@@ -11,7 +11,7 @@ using SWLOR.Game.Server.Service.StatusEffectService;
 namespace SWLOR.CombatSim.Engine;
 
 /// <summary>Stationary weapon experiment using production sequence/resource/reaction state and source stat groups.</summary>
-public sealed class WeaponCombatState
+public sealed partial class WeaponCombatState
 {
     public TechniqueSequence Sequence { get; } = new();
     public TechniqueResourceState Resources { get; } = new();
@@ -59,7 +59,7 @@ public sealed class WeaponCombatState
             owner.Statuses[stance.GetType().Name] = _stance;
         }
         foreach (var stat in AllSources.SelectMany(s => s.Where(x => x.Value != 0).Select(x => x.Key)).Distinct())
-            if (!SupportedStats.Contains(stat.ToString()) && !Simulation.SupportsPerkStat(stat))
+            if (!SupportedStats.Contains(stat.ToString()) && !SweepSupportedStats.Contains(stat) && !Simulation.SupportsPerkStat(stat))
                 throw new InvalidDataException($"WeaponCombat does not implement perk stat {stat}.");
     }
     // Movement and enmity have no effect in stationary fights; resistance and control durations still apply.
@@ -211,7 +211,7 @@ public sealed class WeaponCombatState
         if (d.RefundEligible && (!d.RefundRequiresSetup || activation.Stage != MeleeTechniqueStage.None) &&
             Resources.TryRefund(activation.PaidStamina, LineStat(d.Line, StatType.TechniqueRefundStamina), LineStat(d.Line, StatType.TechniqueRefundCooldownSeconds), At(now), out var refund))
         {
-            _owner.Stm = Math.Min(_owner.Spec.MaxStm, _owner.Stm + refund); _owner.Stats.StmRefunded += refund; Count("TechniqueRefundedStamina", refund);
+            RestoreHitStamina(activation, refund, "TechniqueRefundedStamina", retainMinimumCost: false);
         }
         if (activation.Stage != MeleeTechniqueStage.None)
         {
@@ -268,11 +268,11 @@ public sealed class WeaponCombatState
     {
         if (Stat(StatType.DamageTakenNextSkillAbilityDamageBonus) > 0) ReversalUntil = now + Stat(StatType.DamageTakenNextSkillAbilityWindowSeconds);
     }
-    public int EvasionPercent(double now) => Stat(StatType.EvasionPercentAdjustment) +
+    public int EvasionPercent(double now) => Stat(StatType.EvasionPercentAdjustment) + (now < AreaEvasionUntil ? Stat(StatType.AreaAbilityUsedEvasionPercentAdjustment) : 0) +
         (now < HighGuardUntil ? Stat(StatType.CostlyAbilityUsedEvasionPercentAdjustment) : 0) +
         (Reactions.GetWindowStage(At(now)) == MeleeTechniqueStage.Opening ? LineStat(WindowLine, StatType.TechniqueOpeningFinisherEvasionPercent) : 0);
     public int DefensePercent(double now) => Stat(StatType.PhysicalDefensePercentAdjustment) + (now < ControlDefenseUntil ? Stat(StatType.StatusAppliedSelfDefensePercentAdjustment) : 0);
-    public int HastePercent(double now) => Stat(StatType.AttackDelayReductionPercent) + _owner.Spec.WeaponCombat.ExternalHastePercent +
+    public int HastePercent(double now) => Stat(StatType.AttackDelayReductionPercent) + AreaHaste(now) + _owner.Spec.WeaponCombat.ExternalHastePercent +
         (Reactions.GetWindowStage(At(now)) == MeleeTechniqueStage.Finish ? LineStat(WindowLine, StatType.TechniqueFinishFinisherHastePercent) : 0);
     public double AttackSeconds(double now) => Combat.CalculateEffectiveAttackDelay(Combat.CalculateAttackDelayMilliseconds(_owner.Spec.WeaponCombat.WeaponDelayUnits, 0, HastePercent(now), 0)) / 1000d;
     public double SwingSeconds(double now) => Combat.CalculateAttackSwingDelay((int)Math.Round(AttackSeconds(now)*1000)) / 1000d;
@@ -291,7 +291,10 @@ public sealed class WeaponCombatState
         if (Reactions.GetWindowStage(At(now)) == MeleeTechniqueStage.Opening) Count("FlowEvasionSeconds", Math.Min(step, (Reactions.WindowExpires-At(now)).TotalSeconds));
         if (Reactions.GetWindowStage(At(now)) == MeleeTechniqueStage.Finish) Count("FlowHasteSeconds", Math.Min(step, (Reactions.WindowExpires-At(now)).TotalSeconds));
         if (now < HighGuardUntil) Count("HighGuardEvasionSeconds", Math.Min(step, HighGuardUntil-now));
+        if (now < AreaEvasionUntil) Count("AreaEvasionSeconds", Math.Min(step, AreaEvasionUntil-now));
+        Count("AreaHastePercentSeconds", AreaHaste(now) * step);
+        if (now < AvoidedAccuracyUntil) Count("AvoidedAccuracySeconds", Math.Min(step, AvoidedAccuracyUntil-now));
     }
-    public void Death() { Control.Clear(); _retaliationEnemy = null; _attackDebt = 0; _windowEnemy = null; _stance = null; ClearSetup(); Reactions.ClearBenefits(); Resources.ClearBenefits(); Rattled.Clear(); LowKick.Clear(); HighGuardUntil = ControlDefenseUntil = ReversalUntil = 0; }
+    public void Death() { ClearSweepBenefits(); Control.Clear(); _retaliationEnemy = null; _attackDebt = 0; _windowEnemy = null; _stance = null; ClearSetup(); Reactions.ClearBenefits(); Resources.ClearBenefits(); Rattled.Clear(); LowKick.Clear(); HighGuardUntil = ControlDefenseUntil = ReversalUntil = 0; }
     public static int Adjust(int value, int percent) => Math.Max(1, value + Math.Sign(percent) * (int)Math.Ceiling(value * Math.Abs(percent) / 100f));
 }

@@ -30,16 +30,29 @@ public class AbilityImpactVisualEffectTests
         foreach (var entry in manifest.RootElement.EnumerateArray())
         {
             var id = entry.GetProperty("Id").GetString()!;
+            // Unarmed's authored motions use stock contact feedback only on positive damage.
+            // Its stance transitions have an authored motion without a target-impact burst.
+            VisualEffect? nativeContact = id switch
+            {
+                "Jab" or "PalmStrike" or "FinishingCombination" or "DirtyJab" or "LowKick" => VisualEffect.Vfx_Com_Blood_Spark_Small,
+                "Uppercut" => VisualEffect.Vfx_Com_Blood_Spark_Medium,
+                "PerfectForm" or "Haymaker" => VisualEffect.Vfx_Com_Blood_Spark_Large,
+                "FlowStance" or "BruiserStance" => VisualEffect.None,
+                _ => null
+            };
             var enumName = id switch
             {
                 "ShieldBash" => "Vfx_Imp_Shield_Bash",
                 "MercilessAngleTechnique" => "Vfx_Imp_Merciless_Angle",
                 _ => "Vfx_Ability_" + id
             };
-            Enum.TryParse<VisualEffect>(enumName, out var expected).Should().BeTrue($"{id} must have a stable effect reference");
+            var expected = nativeContact.GetValueOrDefault();
+            if (!nativeContact.HasValue)
+                Enum.TryParse(enumName, out expected).Should().BeTrue($"{id} must have a stable effect reference");
             ((int)expected).Should().NotBe(999,
                 $"{id} must avoid NWN's hardcoded Cows from Hell effect, which overrides visualeffects.2da");
-            usedEffects.Add(expected).Should().BeTrue($"{id} should have its own effect, shared only across ranks");
+            if (!nativeContact.HasValue)
+                usedEffects.Add(expected).Should().BeTrue($"{id} should have its own effect, shared only across ranks");
             var definitions = entry.GetProperty("DefinitionFiles").EnumerateArray()
                 .Select(file => Path.ChangeExtension(file.GetString()!, null).Replace('/', '.').Replace('\\', '.')).ToArray();
             foreach (var definition in definitions)
@@ -71,18 +84,20 @@ public class AbilityImpactVisualEffectTests
                 }
                 matches.Should().ContainSingle($"{id}/{feat} should resolve to one active definition");
                 // These lines use native visuals in the impact action or positive-damage path.
-                var usesNativeImpact = animationOnlyDefinition != null ||
+                var usesNativeImpact = nativeContact.HasValue || animationOnlyDefinition != null ||
                     id is "WristRocket" or "ForceBurst" or "ForceJudgment" or "RadiantLance";
                 var ability = matches.Single().Value;
                 ability.SuccessfulImpactVisualEffect.Should().Be(usesNativeImpact ? VisualEffect.None : expected,
                     $"{id}/{feat} must use its intended impact path");
                 ability.DamageImpactVisualEffect.Should().Be(
-                    id is "ForceJudgment" or "RadiantLance" ? VisualEffect.Vfx_Imp_Sunstrike : VisualEffect.None,
+                    nativeContact ?? (id is "ForceJudgment" or "RadiantLance" ? VisualEffect.Vfx_Imp_Sunstrike : VisualEffect.None),
                     $"{id}/{feat} must bind the intended positive-damage visual");
                 if (usesNativeImpact)
                     ability.ImpactAction.Should().NotBeNull($"{id}/{feat} still needs its native impact action");
             }
 
+            if (nativeContact.HasValue)
+                continue;
             rows.Should().ContainKey((int)expected, $"{id} needs an installed visualeffects.2da row");
             var row = rows[(int)expected];
             row[Array.IndexOf(header, "Type_FD")].Should().Be("F", $"{id} is a finite impact burst");

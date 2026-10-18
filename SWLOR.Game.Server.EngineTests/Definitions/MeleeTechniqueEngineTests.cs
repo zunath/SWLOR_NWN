@@ -18,6 +18,123 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
 {
     public static class MeleeTechniqueEngineTests
     {
+        [EngineTest("Opening sweep captures one secondary without transferring setup accuracy", Category = "MeleeTechnique", TimeoutSeconds = 25f)]
+        public static async Task OpeningSweepSelection(EngineTestContext ctx)
+        {
+            var (caster, target) = await CreateFixture(ctx);
+            var secondary = CreateSweepEnemy(ctx, 1f, 1f);
+            var excluded = CreateSweepEnemy(ctx, 2f, 2f);
+            ctx.SetNPCPerkLevel(caster, PerkType.Jab, 1);
+            ctx.SetNPCPerkLevel(caster, PerkType.MeasuredTechnique, 1);
+            ctx.SetNPCPerkLevel(caster, PerkType.PracticedForm, 3);
+            Combat.SetAbilityHitResolutionOverride(true);
+            Combat.SetAutoAttackHitResolutionOverride(false);
+            try
+            {
+                await Cast(ctx, caster, target, FeatType.Jab1);
+                var ability = Ability.GetAbilityDetail(FeatType.FinishingCombination2);
+                MeleeTechnique.BeginPaidActivation(caster, target, ability);
+                ctx.AssertEqual(target, MeleeTechnique.GetImpactTarget(caster, target, 0), "first impact keeps the selected enemy");
+                ctx.AssertEqual(secondary, MeleeTechnique.GetImpactTarget(caster, target, 1), "only the nearest other enemy receives the second impact");
+                ctx.AssertEqual(10, MeleeTechnique.GetConditionalPower(caster, target, 0), "half the Opening and Practiced Form budget belongs to the primary");
+                ctx.AssertEqual(10, MeleeTechnique.GetConditionalPower(caster, secondary, 1), "the other half belongs to the secondary");
+                ctx.AssertEqual(10, MeleeTechnique.GetAbilityAccuracy(caster, target, ability), "the primary retains Measured Technique accuracy");
+                ctx.AssertEqual(0, MeleeTechnique.GetAbilityAccuracy(caster, secondary, ability), "the secondary has no earned setup accuracy");
+                ctx.Assert(!MeleeTechnique.IsImpactValid(caster, excluded, ability), "a third enemy cannot join the captured sweep");
+                Ability.BeginAbilityImpact(caster, ability);
+                ctx.Assert(Ability.IsAreaImpact(caster, ability), "classification is area before either hit resolves");
+                ctx.Assert(!Ability.IsSingleTargetImpact(caster, ability), "single-target bonuses cannot also apply");
+                ctx.Assert(!Ability.IsAreaImpact(excluded, ability), "another actor cannot inherit this cast's area classification");
+                ctx.Assert(!ability.IsAreaAbility && ability.IsSingleTargetAbility, "shared targeting metadata stays unchanged");
+                Ability.EndAbilityImpact(caster);
+            }
+            finally
+            {
+                MeleeTechnique.AbortActivation(caster);
+                ResetOverrides(caster);
+            }
+        }
+
+        [EngineTest("Opening sweep hits two enemies and grants cross-skill area rewards once", Category = "MeleeTechnique", TimeoutSeconds = 30f)]
+        public static Task OpeningSweepRewards(EngineTestContext ctx) => VerifyFinisherBranch(ctx, MeleeTechniqueStage.Opening, true);
+
+        [EngineTest("Opening finisher without a second enemy retains focused damage and no area rewards", Category = "MeleeTechnique", TimeoutSeconds = 30f)]
+        public static Task OpeningSweepFallback(EngineTestContext ctx) => VerifyFinisherBranch(ctx, MeleeTechniqueStage.Opening, false);
+
+        [EngineTest("Full combo remains focused even with a nearby second enemy", Category = "MeleeTechnique", TimeoutSeconds = 30f)]
+        public static Task FullComboDoesNotSweep(EngineTestContext ctx) => VerifyFinisherBranch(ctx, MeleeTechniqueStage.Finish, true);
+
+        [EngineTest("Unsequenced finisher remains focused and cannot trigger area rewards", Category = "MeleeTechnique", TimeoutSeconds = 30f)]
+        public static Task UnsequencedFinisherDoesNotSweep(EngineTestContext ctx) => VerifyFinisherBranch(ctx, MeleeTechniqueStage.None, true);
+
+        private static async Task VerifyFinisherBranch(EngineTestContext ctx, MeleeTechniqueStage stage, bool hasSecondary)
+        {
+            var (caster, target) = await CreateFixture(ctx);
+            var secondary = hasSecondary ? CreateSweepEnemy(ctx, 1f, 1f) : OBJECT_INVALID;
+            var excluded = CreateSweepEnemy(ctx, 12f, 0f);
+            foreach (var perk in new[] { PerkType.Jab, PerkType.PalmStrike, PerkType.FlowStance,
+                         PerkType.ControlledBreathing, PerkType.Momentum, PerkType.FlowingFootwork, PerkType.SweepingAdvance })
+                ctx.SetNPCPerkLevel(caster, perk, 1);
+            ctx.SetNPCPerkLevel(caster, PerkType.FinishingCombination, 2);
+            ctx.SetNPCPerkLevel(caster, PerkType.SpinningRhythm, 3);
+            Combat.SetAbilityHitResolutionOverride(true);
+            Combat.SetAutoAttackHitResolutionOverride(false);
+            try
+            {
+                await Cast(ctx, caster, caster, FeatType.FlowStance1);
+                var evasion = Stat.GetStatAdjustment(caster, StatType.EvasionPercentAdjustment);
+                var haste = Stat.GetStatAdjustment(caster, StatType.AttackDelayReductionPercent);
+                if (stage != MeleeTechniqueStage.None)
+                {
+                    await Cast(ctx, caster, target, FeatType.Jab1);
+                    await ctx.DelaySecondsAsync(1.05f);
+                    if (stage == MeleeTechniqueStage.Finish)
+                    {
+                        await Cast(ctx, caster, target, FeatType.PalmStrike1);
+                        await ctx.DelaySecondsAsync(1.05f);
+                    }
+                }
+                var stamina = Stat.GetCurrentStamina(caster);
+                var primaryHP = GetCurrentHitPoints(target);
+                var secondaryHP = hasSecondary ? GetCurrentHitPoints(secondary) : 0;
+                var excludedHP = GetCurrentHitPoints(excluded);
+                await Cast(ctx, caster, target, FeatType.FinishingCombination2);
+                var summary = Ability.GetLastCompletedAbilityImpactSummary(caster);
+                var sweep = stage == MeleeTechniqueStage.Opening && hasSecondary;
+                ctx.AssertEqual(sweep, summary.IsAreaAbility, "only a captured Opening sweep counts as area");
+                ctx.AssertEqual(!sweep, summary.IsSingleTargetAbility, "the focused routes keep their original classification");
+                ctx.AssertEqual(sweep ? 2 : 1, summary.ImpactedTargetCount, "two impacts never become three targets");
+                ctx.Assert(GetCurrentHitPoints(target) < primaryHP, "the selected enemy receives damage");
+                if (hasSecondary)
+                    ctx.AssertEqual(sweep, GetCurrentHitPoints(secondary) < secondaryHP, "only the sweep damages the secondary");
+                ctx.AssertEqual(excludedHP, GetCurrentHitPoints(excluded), "an enemy outside the sweep radius is untouched");
+                ctx.AssertEqual(stamina - 9 + (stage == MeleeTechniqueStage.None ? 0 : 2) + (sweep ? 4 : 0),
+                    Stat.GetCurrentStamina(caster), "Controlled Breathing refunds once and area recovery counts only the two hit targets");
+                ctx.AssertEqual(evasion + (stage == MeleeTechniqueStage.Opening ? 35 : 0) + (sweep ? 10 : 0),
+                    Stat.GetStatAdjustment(caster, StatType.EvasionPercentAdjustment), "Flowing Footwork applies only to the sweep");
+                ctx.AssertEqual(haste + (stage == MeleeTechniqueStage.Finish ? 30 : 0) + (sweep ? 9 : 0),
+                    Stat.GetStatAdjustment(caster, StatType.AttackDelayReductionPercent), "two landed targets grant one stack from each area haste source");
+                if (stage == MeleeTechniqueStage.Opening)
+                {
+                    MeleeTechnique.PrepareOrdinaryAttempt(caster, target, SkillType.Unarmed, false, 0);
+                    ctx.Assert(StatusEffect.HasStatusEffect(caster, typeof(SlipAwayStatusEffect)), "the selected primary still anchors Flow after the secondary impact");
+                }
+            }
+            finally { ResetOverrides(caster); }
+        }
+
+        private static uint CreateSweepEnemy(EngineTestContext ctx, float x, float y)
+        {
+            var target = ctx.SpawnCreature("nw_rat001", x, y);
+            ctx.SuppressNPCNaturalRegen(target);
+            Stat.SetNPCMaxHitPoints(target, 20000, true);
+            SetAILevel(target, AILevel.VeryLow);
+            ApplyEffectToObject(DurationType.Temporary, EffectCutsceneParalyze(), target, 60f);
+            TemporaryStatModifier.Add(target, StatType.MeleeDeflection, -100, 60f);
+            ctx.MakeHostile(target);
+            return target;
+        }
+
         [EngineTest("Unarmed first purchases form a paid sequence without later traits", Category = "MeleeTechnique", TimeoutSeconds = 35f)]
         public static async Task FirstPurchaseSequence(EngineTestContext ctx)
         {

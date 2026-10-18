@@ -644,7 +644,7 @@ function Get-StatusSemanticCategory([string]$className, [string]$name, [string]$
 
 function Get-AbilityRows([string]$path, [int]$startRow, [int]$endRow) {
     $rows = @()
-    $seenIcons = [System.Collections.Generic.HashSet[string]]::new([System.StringComparer]::OrdinalIgnoreCase)
+    $rowByIcon = @{}
     foreach ($line in Get-Content -Path $path) {
         if ([string]::IsNullOrWhiteSpace($line)) { continue }
         $parts = $line -split "\s+"
@@ -655,18 +655,29 @@ function Get-AbilityRows([string]$path, [int]$startRow, [int]$endRow) {
         if ($row -lt $startRow -or $row -gt $endRow -or $parts[1] -eq "****") { continue }
         if ($parts[1].EndsWith("Trait", [System.StringComparison]::Ordinal)) { continue }
         if (!$parts[4].StartsWith("ife_", [System.StringComparison]::OrdinalIgnoreCase)) { continue }
-        # Ranks of one ability share artwork. Manifest one family, while passive
-        # traits are classified separately by Get-CustomFeatSpellRows.
-        if (!$seenIcons.Add($parts[4])) { continue }
-
         $rank = Get-RankFromText $parts[1]
-        $rows += [pscustomobject]@{
+        $icon = $parts[4]
+        if ($rowByIcon.ContainsKey($icon)) {
+            $previous = $rows[$rowByIcon[$icon]]
+            # A relocated first rank still names its icon family; presentation aliases do not replace it.
+            if ($parts[1].StartsWith("AutoCast", [StringComparison]::Ordinal) -or
+                (!$previous.Key.StartsWith("AutoCast", [StringComparison]::Ordinal) -and
+                 ($null -eq $rank -or $null -eq $previous.Rank -or $rank -ge $previous.Rank))) { continue }
+        }
+        $entry = [pscustomobject]@{
             Type = "Ability"
             Key = $parts[1]
             DisplayName = $parts[1]
             Rank = $rank
             IconResRef = $parts[4]
             SourcePath = $Feat2daPath
+        }
+        if ($rowByIcon.ContainsKey($icon)) {
+            $rows[$rowByIcon[$icon]] = $entry
+        }
+        else {
+            $rowByIcon[$icon] = $rows.Count
+            $rows += $entry
         }
     }
 

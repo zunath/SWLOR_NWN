@@ -77,10 +77,10 @@ namespace SWLOR.CombatSim.Data
             if (unreadable.Length > 0)
                 _loadErrors.Add($"{feat}: {unreadable} needs the game engine");
 
-            var katarWeapon = detail.SkillType == SkillType.Katar && detail.IsHostileAbility &&
+            var modeledWeapon = (detail.SkillType == SkillType.Katar || feat is FeatType.SpinningWhirl1 or FeatType.SpinningWhirl2 or FeatType.SpinningWhirl3) && detail.IsHostileAbility &&
                 HasImpactCapture(detail, "baseDamage");
             var statuses = new List<Type>();
-            if (katarWeapon)
+            if (modeledWeapon)
             {
                 var status = ReadImpactCapture<Type>(detail, "statusEffect");
                 if (status != null) statuses.Add(status);
@@ -90,10 +90,15 @@ namespace SWLOR.CombatSim.Data
             {
                 Feat = feat,
                 Technique = detail.MeleeTechnique,
-                SourceWeaponPower = detail.MeleeTechnique != null ? ReadTechniquePower(detail) : katarWeapon ? ReadImpactCapture<int>(detail, "baseDamage") : null,
-                ImpactStatusDuration = detail.MeleeTechnique != null ? ReadImpactCapture<int>(detail, "statusDuration") : katarWeapon ? ReadImpactCapture<int>(detail, "duration") : 0,
+                SourceWeaponPower = detail.MeleeTechnique != null ? ReadTechniquePower(detail) : modeledWeapon ? ReadImpactCapture<int>(detail, "baseDamage") : null,
+                ImpactStatusDuration = detail.MeleeTechnique != null ? ReadImpactCapture<int>(detail, "statusDuration") : modeledWeapon ? ReadImpactCapture<int>(detail, "duration") : 0,
                 ImpactStatusTypes = statuses,
-                InterruptsTarget = katarWeapon && ReadImpactCapture<object>(detail, "profile").GetType().GetProperty("ClearTargetActionsOnHit")?.GetValue(ReadImpactCapture<object>(detail, "profile")) is true,
+                InterruptsTarget = modeledWeapon && ReadImpactCapture<object>(detail, "profile").GetType().GetProperty("ClearTargetActionsOnHit")?.GetValue(ReadImpactCapture<object>(detail, "profile")) is true,
+                IsAreaAbility = detail.IsAreaAbility,
+                WeaponAreaRadius = detail.Targeting is { Shape: AbilityTargetingShapeType.Sphere } targeting &&
+                    targeting.Flags.HasFlag(AbilityTargetingFlags.OriginOnSelf) ? targeting.SizeX : 0f,
+                MaximumAreaTargets = modeledWeapon ? (int)ReadImpactCapture<object>(detail, "profile").GetType()
+                    .GetProperty("MaximumAreaTargets")!.GetValue(ReadImpactCapture<object>(detail, "profile"))! : 0,
                 ImpactStatusFactory = detail.MeleeTechnique == null ? null : ReadImpactCapture<Func<SWLOR.Game.Server.Service.StatusEffectService.IStatusEffect>>(detail, "statusFactory"),
                 Name = detail.Name,
                 PerkName = perk?.Name ?? detail.Name,

@@ -16,6 +16,7 @@ namespace SWLOR.Game.Server.Service.AbilityService
         public int FinishPower { get; init; }
         public int DistractionPower { get; init; }
         public int ImpactCount { get; init; } = 1;
+        public float OpeningSweepRadiusMeters { get; init; }
         public int WeaponDamagePercent { get; init; } = 100;
         public bool RefundEligible { get; init; }
         public bool RefundRequiresSetup { get; init; } = true;

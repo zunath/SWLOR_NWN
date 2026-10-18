@@ -1,6 +1,7 @@
 using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Game.Server.Feature.StatusEffectDefinition;
+using SWLOR.Game.Server.Feature.AbilityDefinition.Unarmed;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.CombatService;
@@ -12,6 +13,26 @@ namespace SWLOR.Game.Server.Tests.Feature;
 public class MeleeTechniqueTests
 {
     private static readonly DateTime Start = new(2026, 10, 13, 12, 0, 0, DateTimeKind.Utc);
+
+    [Test]
+    public void FinisherSweepPreservesManualTargetingAndTheTwoImpactBudget()
+    {
+        var abilities = new FinishingCombinationAbilityDefinition().BuildAbilities();
+        abilities.Should().HaveCount(2);
+        foreach (var ability in abilities.Values)
+        {
+            ability.RequiresTarget.Should().BeTrue();
+            ability.IsSingleTargetAbility.Should().BeTrue();
+            ability.IsAreaAbility.Should().BeFalse("the sweep is conditional per cast, not a permanent targeting mode");
+            ability.MeleeTechnique.ImpactCount.Should().Be(2);
+            ability.MeleeTechnique.WeaponDamagePercent.Should().Be(50);
+            ability.MeleeTechnique.OpeningSweepRadiusMeters.Should().Be(5f);
+            Ability.IsAreaImpact(uint.MaxValue, ability).Should().BeFalse();
+            Ability.IsSingleTargetImpact(uint.MaxValue, ability).Should().BeTrue();
+        }
+        new MeleeTechniqueDetail().OpeningSweepRadiusMeters.Should().Be(0f,
+            "other techniques do not acquire a sweep implicitly");
+    }
 
     [Test]
     public void OpenerWorksWithoutWindowUpgradeOrOrdinaryAttack()

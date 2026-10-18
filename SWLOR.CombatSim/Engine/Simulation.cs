@@ -662,7 +662,7 @@ namespace SWLOR.CombatSim.Engine
                     continue;
 
                 var fp = _rules.GetFpCost(info);
-                var stm = DiscountedStamina(caster, _rules.GetStmCost(info), false);
+                var stm = DiscountedStamina(caster, _rules.GetStmCost(info), false, info);
                 if (caster.Fp < fp || caster.Stm < stm)
                 {
                     starved = true;
@@ -774,7 +774,7 @@ namespace SWLOR.CombatSim.Engine
                     return;
                 }
 
-                if (caster.Weapon != null) cast.StmCost = DiscountedStamina(caster, _rules.GetStmCost(cast.Ability), false);
+                if (caster.Weapon != null) cast.StmCost = DiscountedStamina(caster, _rules.GetStmCost(cast.Ability), false, cast.Ability);
                 if (caster.Fp < cast.FpCost || caster.Stm < cast.StmCost)
                 {
                     caster.IsStarved = true;
@@ -783,8 +783,9 @@ namespace SWLOR.CombatSim.Engine
 
                 if (caster.Weapon != null)
                 {
-                    DiscountedStamina(caster, _rules.GetStmCost(cast.Ability), true);
+                    DiscountedStamina(caster, _rules.GetStmCost(cast.Ability), true, cast.Ability);
                     cast.Technique = caster.Weapon.Begin(cast.Ability, cast.Use, target, cast.StmCost, _now);
+                    CaptureTechniqueSweep(caster, target, cast);
                 }
                 PayCosts(caster, cast);
                 caster.Stats.AbilitiesUsed++;
@@ -833,6 +834,7 @@ namespace SWLOR.CombatSim.Engine
                 {
                     var landed = ApplyWeaponAbility(caster, victim, cast);
                     caster.Weapon.Complete(cast.Ability, cast.Use, cast.Technique, victim, landed, _now);
+                    caster.Weapon.CompleteSweep(cast.Technique, _now);
                 }
             }
             if (cast.Use.Damage != null)

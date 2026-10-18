@@ -15,6 +15,9 @@ namespace SWLOR.CombatSim.Data
         public Func<SWLOR.Game.Server.Service.StatusEffectService.IStatusEffect> ImpactStatusFactory { get; init; }
         public IReadOnlyList<Type> ImpactStatusTypes { get; init; } = Array.Empty<Type>();
         public bool InterruptsTarget { get; init; }
+        public bool IsAreaAbility { get; init; }
+        public float WeaponAreaRadius { get; init; }
+        public int MaximumAreaTargets { get; init; }
         public string Name { get; init; }
         public string PerkName { get; init; }
         public string RecastGroup { get; init; }

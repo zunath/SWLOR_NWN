@@ -33,14 +33,15 @@ Players configure **Self-Cast Support Abilities** and **Cast on Current Enemy** 
 ### Authoring a new ability or rank
 
 1. Define the ordinary ability and canonical native feat first. For a creature-targeted cast, keep its normal manual targeting and `RequiresTarget()` requirement so the off setting preserves ally/enemy selection. Do not set `TARGETSELF=1` on the canonical targeted cast to implement an optional preference, or use `.UsesActiveAttackTarget()` as a shortcut: that changes the default behavior and excludes it from optional targeting.
-2. Check every rank against `Service/AbilityService/QuickCastPolicy.cs`. Eligibility requires `IsCastedAbility`, `IsSingleTargetAbility` and `RequiresTarget`, with no area flag, active-attack-target behavior or non-`None` targeting shape.
+2. Check every rank against `Service/AbilityService/QuickCastPolicy.cs`. Ordinary eligibility requires `IsCastedAbility`, `IsSingleTargetAbility` and `RequiresTarget`, with no area flag, active-attack-target behavior or non-`None` targeting shape. Self-casting also accepts explicitly opted-in, non-hostile creature-targeted area casts with a `Sphere` shape and exactly `HelpsAllies` flags, such as Power Cell III. These retain their ally-centered area when targeting manually and center on the caster when self-casting.
 
    | Ability kind | Definition requirement | Optional mode |
    |---|---|---|
    | Support cast that legally accepts its own caster | Non-hostile, eligible metadata, `.AllowsSelfQuickCast()` on each applicable rank | Self-cast |
+   | Ally-targeted sphere that legally accepts its own caster | Casted, `IsAreaAbility`, `RequiresTarget`, exactly `HelpsAllies` flags, `.AllowsSelfQuickCast()`, no active-attack-target behavior | Self-cast |
    | Hostile cast targeting one creature | Eligible metadata and `.IsHostileAbility()` | Current enemy; no separate opt-in flag |
    | Ally-only or revival cast | Leave `.AllowsSelfQuickCast()` unset | Normal manual targeting |
-   | Queued weapon, self-centered area, aimed area or location-targeted cast | Keep its existing targeting metadata | Existing targeting behavior |
+   | Queued weapon, self-centered area, aimed line/cone or location-targeted cast | Keep its existing targeting metadata | Existing targeting behavior |
 
    `.AllowsSelfQuickCast()` does not bypass custom validation. Use it only when casting on oneself is legal. Follow `Feature/AbilityDefinition/Leadership/RousingShoutAbilityDefinition.cs` or `FirstAid/MedKitAbilityDefinition.cs` for support casts, and `Force/ForceDrainAbilityDefinition.cs` for hostile casts. Declare eligibility on the definition; never maintain a parallel list of ability names or IDs.
 3. Generate the native presentation variants from freshly compiled definitions using the commands below. Every eligible rank needs its own `AutoCast<CanonicalFeatEnumName>` row and `FeatType` member. The shared map discovers these names automatically; no new ability-specific runtime branch is needed.

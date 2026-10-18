@@ -1,6 +1,6 @@
 # Importing and creating pistol blaster models
 
-Use the repository [blaster skill](../../.codex/skills/swlor-blaster-models/SKILL.md)
+Use the repository [blaster skill](../../skills/swlor-blaster-models/SKILL.md)
 for agent-assisted work. Commit only the finished model, compressed texture maps, material
 definition and inventory icon for each weapon. Keep GR2/DDS inputs, Blender
 scenes, per-model builders, manifests and review artifacts in ignored local
@@ -404,7 +404,7 @@ Verify inventory/ground appearance, idle/attack grip, muzzle direction and body
 sizes in the client. Imported slot 44 has user approval for its final size/fit;
 Vesper-9 has offline hand and deployed-HAK verification, with live-client review
 pending. Record checks and feedback in the PR. See the skill's
-[troubleshooting reference](../../.codex/skills/swlor-blaster-models/references/troubleshooting.md)
+[troubleshooting reference](../../skills/swlor-blaster-models/references/troubleshooting.md)
 for stale deployment or appearance-editor problems.
 
 Publish companion HAK PRs for parent submodule changes and link them both ways.

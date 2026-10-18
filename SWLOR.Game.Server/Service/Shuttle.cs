@@ -43,6 +43,7 @@ namespace SWLOR.Game.Server.Service
         private const string PilotChairTag = "pilot_chair";
         // A droid using the parts-based "(Dynamic) Droid" appearance, which supports the sit animation.
         private const string PilotDroidResref = "maledroid";
+        private const int PilotDroidSoundset = 910;
         private const float BoardingRangeMeters = 15f;
         private const int BoardingCallSeconds = 60;
 
@@ -575,6 +576,7 @@ namespace SWLOR.Game.Server.Service
                 return;
 
             SetName(droid, "Shuttle Pilot Droid");
+            SetSoundset(droid, PilotDroidSoundset);
             SetPlotFlag(droid, true);
             SetImmortal(droid, true);
 

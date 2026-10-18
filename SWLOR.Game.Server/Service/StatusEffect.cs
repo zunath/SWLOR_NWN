@@ -26,6 +26,8 @@ namespace SWLOR.Game.Server.Service
         private static readonly Dictionary<uint, CreatureStatusEffect> _creatureEffects = new();
         private static readonly Dictionary<string, LoggedOutStatusEffects> _loggedOutPlayerEffects = new();
         private static readonly Dictionary<Type, StatusEffectMetadata> _statusEffects = new();
+        // Null marks an icon shared by definitions with different names.
+        private static readonly Dictionary<EffectIconType, string> _statusEffectNamesByIcon = new();
         private static readonly HashSet<string> _suppressedStatusEffectRemovalIds = new();
         private static readonly Dictionary<uint, int> _nativeAttackSwingDepth = new();
         private static readonly Dictionary<uint, List<Action>> _deferredNativeAttackStatusEffects = new();
@@ -190,6 +192,7 @@ namespace SWLOR.Game.Server.Service
         private static void CacheStatusEffects()
         {
             _statusEffects.Clear();
+            _statusEffectNamesByIcon.Clear();
 
             var types = AppDomain.CurrentDomain.GetAssemblies()
                 .SelectMany(s => s.GetTypes())
@@ -205,9 +208,27 @@ namespace SWLOR.Game.Server.Service
                     effect.Frequency,
                     effect.SourceType,
                     effect.Categories);
+
+                if (effect.Icon != EffectIconType.Invalid)
+                {
+                    _statusEffectNamesByIcon[effect.Icon] =
+                        !_statusEffectNamesByIcon.TryGetValue(effect.Icon, out var existing) || existing == effect.Name
+                            ? effect.Name
+                            : null;
+                }
             }
 
             Console.WriteLine($"Loaded {_statusEffects.Count} status effects.");
+        }
+
+        /// <summary>
+        /// Returns the name of the status effect definition that owns an icon, so stat-configured
+        /// effects can describe themselves by the icon they were configured with.
+        /// Returns null when no definition, or more than one differently named definition, uses it.
+        /// </summary>
+        public static string GetNameForIcon(EffectIconType icon)
+        {
+            return _statusEffectNamesByIcon.TryGetValue(icon, out var name) ? name : null;
         }
 
         private static bool TryCreateStatusEffect(Type statusEffectClass, out IStatusEffect statusEffect)

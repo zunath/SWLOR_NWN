@@ -617,6 +617,15 @@ public class CombatDamageTests
     }
 
     [Test]
+    public void MeleeRepeatedTargetDamage_FeedbackNamesTheConfiguredIcon()
+    {
+        StatusEffect.CacheData();
+
+        StatusEffect.GetNameForIcon(EffectIconType.RundownStatusEffect).Should().Be("Rundown");
+        StatusEffect.GetNameForIcon(EffectIconType.Invalid).Should().BeNull();
+    }
+
+    [Test]
     public void TargetLowHPDamageAdjustment_AppliesAtTheExecutionerThreshold()
     {
         Combat.ApplyTargetHPDamageAdjustment(100, 25, 100, 25, 8).Should().Be(108);

@@ -337,6 +337,12 @@ internal static class SavedGff
             field.Data = Payload(field.Type, value);
     }
 
+    public static float ReadFloat(Node node, string name)
+    {
+        var field = node.Fields.FirstOrDefault(x => x.Name == name && x.Type == 8);
+        return field == null || field.Data.Length < 4 ? 0f : BitConverter.ToSingle(field.Data, 0);
+    }
+
     public static void WriteFloat(Node node, string name, float value)
     {
         var field = node.Fields.FirstOrDefault(x => x.Name == name && x.Type == 8);

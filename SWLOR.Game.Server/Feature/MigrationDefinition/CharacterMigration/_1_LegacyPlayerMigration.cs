@@ -136,7 +136,8 @@ internal sealed class _1_LegacyPlayerMigration : ICharacterMigration
         character.SetCreatureBodyPart("BodyPart_RHand", cathar.RightHand.First());
         character.SetCreatureBodyPart("BodyPart_RThigh", cathar.RightThigh.First());
         character.SetCreatureBodyPart("BodyPart_RShin", cathar.RightShin.First());
-        character.SetCreatureBodyPart("BodyPart_RFoot", cathar.RightFoot.First());
+        // The engine saves the right foot under this label, unlike every other body part.
+        character.SetCreatureBodyPart("ArmorPart_RFoot", cathar.RightFoot.First());
         character.SetCreatureBodyPart("BodyPart_LBicep", cathar.LeftBicep.First());
         character.SetCreatureBodyPart("BodyPart_LFArm", cathar.LeftForearm.First());
         character.SetCreatureBodyPart("BodyPart_LHand", cathar.LeftHand.First());

@@ -25,7 +25,11 @@ internal sealed class SavedCharacter
     internal const int InventoryPageHeight = 6;
 
     private readonly StoredObjectData _file;
-    private readonly List<SavedOverflowItem> _overflow = new();
+    /// <summary>
+    /// Items that had no room, held apart from the file until the upgrade ends. Later migrations still convert
+    /// them, as they converted items the login-time path stowed in a recovery bag.
+    /// </summary>
+    private readonly Field _overflowList = StoredObjectData.MakeField(15, "OverflowList", children: new List<Node>());
 
     internal SavedCharacter(byte[] data, Player record)
     {
@@ -45,8 +49,8 @@ internal sealed class SavedCharacter
     /// </summary>
     public bool AppliesRecordEffects { get; internal set; } = true;
 
-    /// <summary>Items that had no room in the character's inventory, to be kept in overflow storage.</summary>
-    public IReadOnlyList<SavedOverflowItem> Overflow => _overflow;
+    /// <summary>Items that had no room in the character's inventory, as overflow storage keeps them.</summary>
+    public IReadOnlyList<SavedOverflowItem> Overflow => _overflowList.Children.Select(SavedOverflowItem.From).ToList();
 
     /// <summary>Messages for the player about changes they should know of, delivered at their next login.</summary>
     public List<string> Notices { get; } = new();
@@ -162,6 +166,7 @@ internal sealed class SavedCharacter
             throw new InvalidDataException("The character has no class.");
         var levels = SavedGff.List(Root, "LvlStatList", true).Children;
         var @class = StoredObjectData.ReadInteger(rows[0], "Class");
+        var gained = Math.Max(0, target - NativeLevelCount);
         for (var level = NativeLevelCount + 1; level <= target; level++)
         {
             var fields = new List<Field>();
@@ -181,8 +186,8 @@ internal sealed class SavedCharacter
             WriteInteger("HitPoints", ReadInteger("HitPoints") + hitDie, 3);
             WriteInteger("CurrentHitPoints", ReadInteger("CurrentHitPoints") + hitDie, 3);
         }
-        // A player character's challenge rating is one below its level.
-        SavedGff.WriteFloat(Root, "ChallengeRating", NativeLevelCount - 1);
+        // Each level-up raises the challenge rating by one.
+        SavedGff.WriteFloat(Root, "ChallengeRating", SavedGff.ReadFloat(Root, "ChallengeRating") + gained);
     }
 
     /// <summary>Native skills in a saved skill list.</summary>
@@ -221,13 +226,19 @@ internal sealed class SavedCharacter
     // An item button names a worn item by its slot bit (QBItemInvSlot), or a carried item by its inventory cell
     // (QBItemReposX/Y), inside a container at QBContReposX/Y (255 when carried directly).
 
+    private IEnumerable<Node> ItemButtons() =>
+        SavedGff.List(Root, "QBList", false)?.Children.Where(button =>
+            StoredObjectData.ReadInteger(button, "QBObjectType") == (int)SWLOR.Game.Server.Core.NWNX.Enum.QuickBarSlotType.Item)
+        ?? Enumerable.Empty<Node>();
+
     private IEnumerable<Node> QuickBarReferences(SavedItem item)
     {
-        var buttons = SavedGff.List(Root, "QBList", false)?.Children.Where(button =>
-            StoredObjectData.ReadInteger(button, "QBObjectType") == (int)SWLOR.Game.Server.Core.NWNX.Enum.QuickBarSlotType.Item)
-            ?? Enumerable.Empty<Node>();
+        var buttons = ItemButtons();
         if (item.IsEquipped)
             return buttons.Where(button => (uint)StoredObjectData.ReadInteger(button, "QBItemInvSlot") == item.Node.Type);
+        // Items waiting for overflow storage have no inventory position; their buttons were cleared when they left.
+        if (ReferenceEquals((item.Container ?? item).List, _overflowList))
+            return Enumerable.Empty<Node>();
         var (x, y) = (StoredObjectData.ReadInteger(item.Node, "Repos_PosX"), StoredObjectData.ReadInteger(item.Node, "Repos_Posy"));
         var (containerX, containerY) = item.Container == null
             ? (byte.MaxValue, byte.MaxValue)
@@ -239,11 +250,38 @@ internal sealed class SavedCharacter
             StoredObjectData.ReadInteger(button, "QBContReposX") == containerX && StoredObjectData.ReadInteger(button, "QBContReposY") == containerY);
     }
 
+    // A weapon-set button also names a second item, worn or carried directly: QBSecItemInvSlot (its slot bit, or
+    // 0xFFFFFFFF when carried) and QBSecItemReposX/Y.
+    private IEnumerable<Node> SecondaryQuickBarReferences(SavedItem item)
+    {
+        var buttons = ItemButtons().Where(button => button.Fields.Any(field => field.Name == "QBSecItemInvSlot"));
+        if (item.IsEquipped)
+            return buttons.Where(button => (uint)StoredObjectData.ReadInteger(button, "QBSecItemInvSlot") == item.Node.Type);
+        if (item.Container != null || ReferenceEquals(item.List, _overflowList))
+            return Enumerable.Empty<Node>();
+        var (x, y) = (StoredObjectData.ReadInteger(item.Node, "Repos_PosX"), StoredObjectData.ReadInteger(item.Node, "Repos_Posy"));
+        return buttons.Where(button => (uint)StoredObjectData.ReadInteger(button, "QBSecItemInvSlot") == uint.MaxValue &&
+            StoredObjectData.ReadInteger(button, "QBSecItemReposX") == x && StoredObjectData.ReadInteger(button, "QBSecItemReposY") == y);
+    }
+
     private void ClearQuickBarReferences(SavedItem item)
     {
         foreach (var button in QuickBarReferences(item).ToList())
             ClearQuickBarButton(button);
+        foreach (var button in SecondaryQuickBarReferences(item).ToList())
+            RemoveSecondaryItem(button);
     }
+
+    private static void PointSecondaryAtInventory(Node button, int x, int y)
+    {
+        SavedGff.WriteScalar(button, "QBSecItemInvSlot", 4, -1);
+        SavedGff.WriteScalar(button, "QBSecItemReposX", 0, x);
+        SavedGff.WriteScalar(button, "QBSecItemReposY", 0, y);
+    }
+
+    /// <summary>A weapon-set button whose second item is gone keeps its first item, as the engine leaves it.</summary>
+    private static void RemoveSecondaryItem(Node button) =>
+        button.Fields.RemoveAll(field => field.Name is "QBSecItemInvSlot" or "QBSecItemReposX" or "QBSecItemReposY");
 
     private static void PointQuickBarAtInventory(Node button, int x, int y, int containerX, int containerY)
     {
@@ -278,13 +316,16 @@ internal sealed class SavedCharacter
         }
     }
 
-    /// <summary>Items in the character's own inventory, not counting container contents.</summary>
+    /// <summary>
+    /// Items in the character's own inventory and those waiting for overflow storage, not counting container contents.
+    /// </summary>
     public IEnumerable<SavedItem> Carried
     {
         get
         {
             var list = SavedGff.List(Root, "ItemList", false);
-            return list == null ? Enumerable.Empty<SavedItem>() : list.Children.ToArray().Select(node => new SavedItem(node, list, null));
+            var carried = list == null ? Enumerable.Empty<SavedItem>() : list.Children.ToArray().Select(node => new SavedItem(node, list, null));
+            return carried.Concat(_overflowList.Children.ToArray().Select(node => new SavedItem(node, _overflowList, null)));
         }
     }
 
@@ -318,15 +359,23 @@ internal sealed class SavedCharacter
         if (!item.IsEquipped)
             throw new InvalidOperationException("Only equipped items can be unequipped.");
         var references = QuickBarReferences(item).ToList();
+        var secondary = SecondaryQuickBarReferences(item).ToList();
         Detach(item);
         var kept = AddToInventory(item.Node);
+        var (x, y) = (StoredObjectData.ReadInteger(item.Node, "Repos_PosX"), StoredObjectData.ReadInteger(item.Node, "Repos_Posy"));
         foreach (var button in references)
         {
             if (kept)
-                PointQuickBarAtInventory(button, StoredObjectData.ReadInteger(item.Node, "Repos_PosX"),
-                    StoredObjectData.ReadInteger(item.Node, "Repos_Posy"), byte.MaxValue, byte.MaxValue);
+                PointQuickBarAtInventory(button, x, y, byte.MaxValue, byte.MaxValue);
             else
                 ClearQuickBarButton(button);
+        }
+        foreach (var button in secondary)
+        {
+            if (kept)
+                PointSecondaryAtInventory(button, x, y);
+            else
+                RemoveSecondaryItem(button);
         }
         return kept;
     }
@@ -340,6 +389,8 @@ internal sealed class SavedCharacter
             throw new InvalidOperationException($"Equipment slot {slot} is occupied.");
         foreach (var button in QuickBarReferences(item).ToList())
             SavedGff.WriteScalar(button, "QBItemInvSlot", 4, 1 << (int)slot);
+        foreach (var button in SecondaryQuickBarReferences(item).ToList())
+            SavedGff.WriteScalar(button, "QBSecItemInvSlot", 4, 1 << (int)slot);
         item.Node.Type = 1u << (int)slot;
         return new SavedItem(item.Node, item.List, null);
     }
@@ -355,6 +406,8 @@ internal sealed class SavedCharacter
             throw new InvalidOperationException($"Equipment slot {slot} is occupied.");
         foreach (var button in QuickBarReferences(item).ToList())
             SavedGff.WriteScalar(button, "QBItemInvSlot", 4, 1 << (int)slot);
+        foreach (var button in SecondaryQuickBarReferences(item).ToList())
+            SavedGff.WriteScalar(button, "QBSecItemInvSlot", 4, 1 << (int)slot);
         Detach(item);
         item.Node.Fields.RemoveAll(x => x.Name is "Repos_PosX" or "Repos_Posy");
         item.Node.Type = 1u << (int)slot;
@@ -372,7 +425,7 @@ internal sealed class SavedCharacter
         var list = SavedGff.List(Root, "ItemList", true);
         if (Place(list, InventoryWidth, InventoryHeight, item, InventoryPageHeight))
             return true;
-        _overflow.Add(SavedOverflowItem.From(item));
+        _overflowList.Children.Add(item);
         return false;
     }
 
@@ -587,7 +640,7 @@ internal sealed class SavedOverflowItem
         return new SavedOverflowItem
         {
             Data = StoredObjectData.ItemToUti(item),
-            Name = StoredObjectData.ReadLocalizedName(item),
+            Name = saved.Name,
             Resref = saved.ResRef,
             Tag = saved.Tag,
             Quantity = Math.Max(1, saved.StackSize),

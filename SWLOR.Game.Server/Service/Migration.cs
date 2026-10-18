@@ -229,7 +229,7 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>
-        /// Saves the completed live migration before advancing its database checkpoint.
+        /// Saves the character file at a checkpoint now, before its record is saved as complete.
         /// The ordinary export command queues a later save and cannot establish this ordering.
         /// </summary>
         internal static void SavePlayerFileCheckpoint(uint player, int version)

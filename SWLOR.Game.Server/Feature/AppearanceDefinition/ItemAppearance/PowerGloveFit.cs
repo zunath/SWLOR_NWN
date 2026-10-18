@@ -117,8 +117,20 @@ public static class PowerGloveFit
 
         var rightModel = GetHandModel(creature, CreaturePart.RightHand, "r");
         var leftModel = GetHandModel(creature, CreaturePart.LeftHand, "l");
-        Fit(right, rightModel, rightModel, leftModel);
-        Fit(left, leftModel, rightModel, leftModel);
+        var costumeModel = GetCostumeModel(creature);
+        Fit(right, rightModel, rightModel, leftModel, costumeModel, true);
+        Fit(left, leftModel, rightModel, leftModel, costumeModel, false);
+    }
+
+    private static string GetCostumeModel(uint creature)
+    {
+        if (RobeModelRenderer.GetBasePhenotype(creature) != 0)
+            return string.Empty;
+        var armor = GetItemInSlot(InventorySlot.Chest, creature);
+        if (!GetIsObjectValid(armor))
+            return string.Empty;
+        var robe = GetItemAppearance(armor, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.Robe);
+        return robe > 0 ? TintMapModelResolver.GetCurrentRobeModelResref(creature, robe) : string.Empty;
     }
 
     private static string GetHandModel(uint creature, CreaturePart part, string side)
@@ -156,15 +168,27 @@ public static class PowerGloveFit
         return modelExists(normalModel) ? normalModel : model;
     }
 
-    private static void Fit(uint item, string handModel, string rightModel, string leftModel)
+    private static void Fit(uint item, string handModel, string rightModel, string leftModel,
+        string costumeModel, bool rightHand)
     {
         if (!IsPowerGlove(item))
             return;
         var appearance = GetItemAppearance(item, ItemAppearanceType.WeaponColor, (int)AppearanceWeapon.Middle) * 100 +
                          GetItemAppearance(item, ItemAppearanceType.WeaponModel, (int)AppearanceWeapon.Middle);
+        var fit = ResolveFit(handModel, rightModel, leftModel, costumeModel, rightHand, appearance);
+        SetScale(item, fit.Scale);
+        ApplyTranslation(item, fit.Translation);
+    }
+
+    private static (float Scale, FitVector Translation) ResolveFit(string handModel, string rightModel,
+        string leftModel, string costumeModel, bool rightHand, int appearance)
+    {
+        // Full-body costumes can supply different hands from the wearer's underlying body parts.
+        var costume = PowerGloveCostumeFit.GetFit(costumeModel, appearance);
+        if (costume.HasValue)
+            return (costume.Value.Scale, rightHand ? costume.Value.Right : costume.Value.Left);
         var scale = ResolveScale(rightModel, leftModel, appearance);
-        SetScale(item, scale);
-        ApplyTranslation(item, CanFitPair(rightModel, leftModel, appearance)
+        return (scale, CanFitPair(rightModel, leftModel, appearance)
             ? PowerGloveGripFits.GetTranslation(handModel, appearance, scale)
             : FitVector.Zero);
     }

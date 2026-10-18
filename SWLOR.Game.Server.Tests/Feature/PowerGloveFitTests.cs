@@ -10,6 +10,104 @@ namespace SWLOR.Game.Server.Tests.Feature;
 [TestFixture]
 public class PowerGloveFitTests
 {
+    [TestCase("pfd0_robe186", 1.26f, .0175f, -.0175f, 0f, -.02f, -.01f, .01f)]
+    [TestCase("pfd0_robe187", 1.26f, .0175f, -.0125f, 0f, -.015f, -.015f, .0025f)]
+    [TestCase("pfh0_robe186", 1.05f, .005f, -.0075f, 0f, -.005f, -.005f, 0f)]
+    [TestCase("pfh0_robe187", 1.05f, .005f, -.005f, .0025f, -.005f, -.0025f, 0f)]
+    [TestCase("pfo0_robe186", 1.6129032f, .0175f, -.0175f, 0f, -.0175f, -.0125f, .005f)]
+    [TestCase("pfo0_robe187", 1.6129032f, .015f, -.015f, 0f, -.0175f, -.0075f, .005f)]
+    [TestCase("pmo0_robe186", 1.6129032f, -.03f, -.0075f, .035f, .0175f, -.0025f, .0225f)]
+    [TestCase("pmo0_robe187", 1.6129032f, -.0275f, -.005f, .0375f, .0175f, -.0025f, .0175f)]
+    public void CostumeHandsUseTheirOwnCuffsInsteadOfTheUnderlyingNaturalHands(string robe, float scale,
+        float rx, float ry, float rz, float lx, float ly, float lz)
+    {
+        foreach (var key in new[] { robe, robe.ToUpperInvariant() })
+        {
+            // These underlying human hands deliberately differ from the embedded costume hands.
+            var right = ResolveFit("pmh0_handr001", "pmh0_handl001", key, true, 104);
+            var left = ResolveFit("pmh0_handr001", "pmh0_handl001", key, false, 104);
+            right.Scale.Should().BeApproximately(scale, .000001f);
+            left.Scale.Should().Be(right.Scale);
+            AssertVector(right.Translation, new(rx, ry, rz));
+            AssertVector(left.Translation, new(lx, ly, lz));
+        }
+    }
+
+    [TestCase(null, 104)]
+    [TestCase("", 104)]
+    [TestCase("pmo0_robe236", 104)]
+    [TestCase("pmo2_robe186", 104)]
+    [TestCase("pmo0_robe186", 100)]
+    [TestCase("pmo0_robe186", 106)]
+    [TestCase("pmo0_robe186", 122)]
+    public void OtherCostumesAndAppearancesKeepTheirExistingHandFit(string robe, int appearance)
+    {
+        const string right = "pmo0_handr201";
+        const string left = "pmo0_handl201";
+        var scale = Invoke<float>("ResolveScale", right, left, appearance);
+        foreach (var side in new[] { true, false })
+        {
+            var fit = ResolveFit(right, left, robe, side, appearance);
+            fit.Scale.Should().Be(scale);
+            AssertVector(fit.Translation, GripTranslation(side ? right : left, appearance, scale));
+        }
+    }
+
+    [Test]
+    public void RemovingACostumeRestoresTheNormalGripWithoutRemovingAnAuthoredOffset()
+    {
+        var authored = new FitVector(.013f, -.021f, .007f);
+        foreach (var side in new[] { true, false })
+        {
+            var costume = ResolveFit("pmo0_handr201", "pmo0_handl201", "pmo0_robe186", side, 104);
+            var normal = ResolveFit("pmo0_handr201", "pmo0_handl201", "", side, 104);
+            var result = Invoke<FitVector>("RebaseTranslation", authored + costume.Translation,
+                costume.Translation, normal.Translation);
+            AssertVector(result, authored + normal.Translation);
+        }
+    }
+
+    [Test]
+    public void EveryEmbeddedCostumeHasAllVisibleModelsAndNoInvisibleOverride()
+    {
+        var type = typeof(PowerGloveFit).Assembly.GetType(
+            "SWLOR.Game.Server.Feature.AppearanceDefinition.ItemAppearance.PowerGloveCostumeFit")!;
+        var fits = (System.Collections.IDictionary)type.GetField("Fits", BindingFlags.Static | BindingFlags.NonPublic)!
+            .GetValue(null)!;
+        fits.Count.Should().Be(23);
+        var expected = Enumerable.Range(101, 21).Where(model => model != 106).ToArray();
+        foreach (System.Collections.DictionaryEntry entry in fits)
+        {
+            var model = (string)entry.Key;
+            model[3].Should().Be('0');
+            var appearances = (System.Collections.IDictionary)entry.Value!;
+            appearances.Keys.Cast<int>().Should().BeEquivalentTo(expected);
+            foreach (var appearance in expected)
+                foreach (var side in new[] { true, false })
+                {
+                    var natural = ResolveFit("pmh0_handr001", "pmh0_handl001", model, side, appearance);
+                    var hidden = ResolveFit("unknown", "unknown", model, side, appearance);
+                    hidden.Should().Be(natural, "embedded costume hands replace hidden body and armor hands");
+                    float.IsFinite(hidden.Scale).Should().BeTrue();
+                    hidden.Scale.Should().BeGreaterThan(0f);
+                }
+        }
+    }
+
+    [TestCase("pfd0_robe186", 103, .9f, .058196932f, .007623782f, .058151010f, .009673879f, -.028852999f, .058377605f)]
+    [TestCase("pmo0_robe187", 110, .9f, -.016653266f, .000368837f, .043846827f, .023259066f, -.006423341f, .040500928f)]
+    [TestCase("pfe0_robe201", 105, 1.2f, .000881f, -.058982f, -.006366f, -.013985f, -.043497f, -.030416f)]
+    public void EmbeddedBlastClawAndClosedFistUseTheirMeasuredContact(string robe, int appearance, float scale,
+        float rx, float ry, float rz, float lx, float ly, float lz)
+    {
+        foreach (var side in new[] { true, false })
+        {
+            var fit = ResolveFit("pmh0_handr001", "pmh0_handl001", robe, side, appearance);
+            fit.Scale.Should().BeApproximately(scale, .000001f);
+            AssertVector(fit.Translation, side ? new(rx, ry, rz) : new(lx, ly, lz));
+        }
+    }
+
     [TestCase("H", Gender.Male, 0, "r", 201, 0, "pmh0_handr201")]
     [TestCase("h", Gender.Female, 0, "l", 201, 1, "pfh0_handl201")]
     [TestCase("o", Gender.Male, 0, "r", 201, 1, "pmo0_handr201")]
@@ -327,6 +425,10 @@ public class PowerGloveFitTests
                 "SWLOR.Game.Server.Feature.AppearanceDefinition.ItemAppearance.PowerGloveGripFits")!
             .GetMethod("GetTranslation", BindingFlags.Static | BindingFlags.NonPublic)!
             .Invoke(null, new object[] { hand, appearance, scale })!;
+
+    private static (float Scale, FitVector Translation) ResolveFit(string right, string left,
+        string robe, bool rightHand, int appearance) =>
+        Invoke<(float, FitVector)>("ResolveFit", rightHand ? right : left, right, left, robe, rightHand, appearance);
 
     private static void AssertVector(FitVector actual, FitVector expected)
     {

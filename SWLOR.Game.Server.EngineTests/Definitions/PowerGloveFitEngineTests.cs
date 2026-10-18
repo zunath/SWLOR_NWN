@@ -21,6 +21,96 @@ public static class PowerGloveFitEngineTests
         (ObjectVisualTransformDataScopeType)ObjectVisualTransformDataScopeItemType.ItemPart2;
     private const string RoleVariable = "POWER_GLOVE_FIT_TEST_ROLE";
 
+    [EngineTest("Power Glove costume cuffs follow the equipped robe and release their own offsets", Category = "PowerGloveFit", TimeoutSeconds = 60f)]
+    public static async Task CostumeCuffLifecycle(EngineTestContext ctx)
+    {
+        var wearer = await CreateWearer(ctx);
+        var right = await PowerGlovePairEngineTests.EquipMain(ctx, wearer);
+        var left = await PowerGlovePairEngineTests.WaitForPair(ctx, wearer, right);
+        var armor = GetItemInSlot(InventorySlot.Chest, wearer);
+        var authored = new FitVector(.013f, -.021f, .007f);
+        await ctx.ExecuteInCreatureContextAsync(wearer, () =>
+        {
+            SetPartTranslation(right, authored);
+            foreach (var body in new[]
+                     {
+                         (AppearanceType.Ewok, Gender.Female, "pfd0", 209),
+                         (AppearanceType.Trandoshan, Gender.Female, "pfh0", 201),
+                         (AppearanceType.Cathar, Gender.Female, "pfo0", 201),
+                         (AppearanceType.Cathar, Gender.Male, "pmo0", 201),
+                     })
+            {
+                SetBody(wearer, body.Item1, body.Item4, body.Item4);
+                SetGender(wearer, body.Item2);
+                foreach (var robe in new[] { 186, 187 })
+                {
+                    EquippedItemAppearance.Set(armor, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.Robe, robe);
+                    EquippedItemAppearance.Refresh(wearer, armor);
+                    ChangeGlove(wearer, right, 104);
+                    var model = $"{body.Item3}_robe{robe}";
+                    ctx.AssertEqual(model, (string)typeof(PowerGloveFit)
+                        .GetMethod("GetCostumeModel", BindingFlags.Static | BindingFlags.NonPublic)!
+                        .Invoke(null, new object[] { wearer }), "The selector follows the equipped robe resource");
+                    for (var repeat = 0; repeat < 5; repeat++)
+                        TintMapService.ApplyCurrentColors(wearer);
+                    foreach (var side in new[] { true, false })
+                    {
+                        var fit = ((float Scale, FitVector Translation))typeof(PowerGloveFit)
+                            .GetMethod("ResolveFit", BindingFlags.Static | BindingFlags.NonPublic)!
+                            .Invoke(null, new object[] { "", "", "", model, side, 104 });
+                        var item = side ? right : left;
+                        AssertFit(ctx, item, fit.Scale, model);
+                        AssertVector(ctx, ReadPartTranslation(item), authored + fit.Translation,
+                            model + (side ? " right" : " left"));
+                    }
+                    ChangeGlove(wearer, right, 106);
+                    AssertPair(ctx, right, left, 1f, "Invisible resets the costume fit");
+                    AssertVector(ctx, ReadPartTranslation(right), authored, "Invisible preserves the authored main offset");
+                    AssertVector(ctx, ReadPartTranslation(left), authored, "Invisible preserves the mirrored authored offset");
+                    AssertNoGripLocals(ctx, right, "Invisible main");
+                    AssertNoGripLocals(ctx, left, "Invisible companion");
+                    ChangeGlove(wearer, right, 104);
+                    EquippedItemAppearance.Set(armor, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.Robe, 0);
+                    EquippedItemAppearance.Refresh(wearer, armor);
+                    AssertGripPair(ctx, right, left, authored, $"{body.Item3}_handr{body.Item4:D3}",
+                        $"{body.Item3}_handl{body.Item4:D3}", 104, "Removing the costume restores the natural fit");
+                }
+            }
+            foreach (var sample in new[]
+                     {
+                         (AppearanceType.Ewok, Gender.Female, 209, 186, 103, .9f,
+                             new FitVector(.058196932f, .007623782f, .058151010f),
+                             new FitVector(.009673879f, -.028852999f, .058377605f)),
+                         (AppearanceType.Cathar, Gender.Male, 201, 187, 110, .9f,
+                             new FitVector(-.016653266f, .000368837f, .043846827f),
+                             new FitVector(.023259066f, -.006423341f, .040500928f)),
+                         (AppearanceType.Elf, Gender.Female, 208, 201, 105, 1.2f,
+                             new FitVector(.000881f, -.058982f, -.006366f),
+                             new FitVector(-.013985f, -.043497f, -.030416f)),
+                         (AppearanceType.Cathar, Gender.Female, 201, 201, 101, 1.5384616f,
+                             new FitVector(-.000000156f, -.000000842f, 0f),
+                             new FitVector(-.008821012f, .001815678f, .008960359f)),
+                     })
+            {
+                SetBody(wearer, sample.Item1, sample.Item3, sample.Item3);
+                SetGender(wearer, sample.Item2);
+                EquippedItemAppearance.Set(armor, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.Robe, sample.Item4);
+                EquippedItemAppearance.Refresh(wearer, armor);
+                ChangeGlove(wearer, right, sample.Item5);
+                AssertPair(ctx, right, left, sample.Item6, "Embedded costume shape sets the paired scale");
+                AssertVector(ctx, ReadPartTranslation(right), authored + sample.Item7, "Embedded costume right contact");
+                AssertVector(ctx, ReadPartTranslation(left), authored + sample.Item8, "Embedded costume left contact");
+                SetCreatureBodyPart(CreaturePart.RightHand, 1, wearer);
+                SetCreatureBodyPart(CreaturePart.LeftHand, 1, wearer);
+                EquippedItemAppearance.Refresh(wearer, armor);
+                AssertVector(ctx, ReadPartTranslation(right), authored + sample.Item7, "Hidden natural right hand does not move the costume fit");
+                AssertVector(ctx, ReadPartTranslation(left), authored + sample.Item8, "Hidden natural left hand does not move the costume fit");
+            }
+            PowerGlovePairEngineTests.AssertOwnedItems(ctx, wearer, right, 1);
+        });
+        ctx.SetResultDetail("Eight equipped Shock Glove costumes plus Blastknuckle, Fang Claws, Power Fist and Power Glove support corrections select their own hand offsets. Repeated appearance refresh preserves authored translations, invisible releases the fit, robe removal restores the natural fit, and hidden natural hand changes do not affect embedded costume hands. One owned glove supplies both hands.");
+    }
+
     [EngineTest("Power Glove fit follows equipment and appearance changes without leaking transforms", Category = "PowerGloveFit", TimeoutSeconds = 90f)]
     public static async Task EquipmentAndAppearanceLifecycle(EngineTestContext ctx)
     {

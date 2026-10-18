@@ -51,8 +51,18 @@ Read the guide before working in its area. `Readmes/README.md` lists every guide
 - Design Bible workbooks (never edit with `openpyxl`): `Readmes/DesignBibleWorkbookRules.md`
 - Module editor: `SWLOR.Toolset/README.md`
 
-## Skills and Read-Only Areas
+## Skills
 
-- Skills live in `.codex/skills/` and are mirrored to `.claude/skills/`. Edit only `.codex/skills/`, then run `powershell -ExecutionPolicy Bypass -File tools/SyncAgentSkills.ps1`. Keep skill text agent-neutral.
+Skills live only in `skills/`, shared by both agents; edit them in place and keep them agent-neutral. Read the matching `SKILL.md` before working in its scope or when the user names it, and follow its referenced files as needed.
+
+- Beasts (definitions, taming and incubation, mutation paths, DNA and TLK assets, generators): `skills/swlor-beast-generation/SKILL.md`
+- Blaster models (imports, original designs, grip, scale, muzzle alignment, textures, inventory art): `skills/swlor-blaster-models/SKILL.md`
+- NUI windows (tabs, tables, modals, bindings): `skills/swlor-gui-window-generation/SKILL.md`
+- Quests (NPC quests, dialogue, journals, objectives, rewards, prerequisites, placement): `skills/swlor-quest-generation/SKILL.md`
+- Rare spawns and named elites (stats, unique rare loot, spawn assets): `skills/swlor-rare-spawn-generation/SKILL.md`
+- SWLOR Wiki release notes (creating, updating, finalizing): `skills/swlor-release-notes/SKILL.md`
+
+## Rule Ownership and Read-Only Areas
+
 - Shared rules go in this file or its guides, never in `CLAUDE.md` or agent memory.
 - `C:\Projects\unified` is read-only reference material. Never change it.

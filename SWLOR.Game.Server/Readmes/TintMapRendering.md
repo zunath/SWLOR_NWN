@@ -747,6 +747,19 @@ rows. The GPU regression resolves the reported feet and shins through
 the catalog and checks their actual packed masks select Leather2 row 23 with
 zero environment-map coverage.
 
+A surviving stock PLT does not protect a stock part that stays in the KEY/BIF
+layer. Many stock parts name another part's texture as their bitmap (female
+chest 4 names `pfh0_chest001`, belt 5 names `pmh0_belt007`). Once that name is
+a generated tint MTR, its non-null `texture0` wins over the selected PLT, and the
+part draws the other part's mask on its own UVs. Every such stock armor part is
+imported into its part folder and bound to the palette its native lookup selects,
+converting that stock PLT when no tint source exists yet. Converting a stock PLT
+creates a new MTR name that other stock parts may also borrow, so repeat the
+import until `python -B SWLOR_Haks/tools/TestStockPartTintBindings.py --game-data
+"<NWN>/data"` reports no borrowed tint maps. Import the stock MDL first and
+convert its PLT with `--generate-preserving`; the remaining imports bind through
+`--refresh-model-bindings`.
+
 PLT replacement changes the underlying diffuse texture, not the existing
 SharedMaterial configuration. Preserve the original normal, specular,
 emission, transparency, and cutout settings; the fallback PLT's same-name MTR

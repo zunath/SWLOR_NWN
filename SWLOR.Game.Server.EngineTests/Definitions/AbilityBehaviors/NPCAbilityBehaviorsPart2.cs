@@ -451,6 +451,17 @@ namespace SWLOR.Game.Server.EngineTests.Definitions.AbilityBehaviors
                     ExpectsRecast = true,
                 },
 
+                // UnnervingRoarAbilityDefinition - hand-written self-centered sphere with 0 base damage
+                // and no hit roll, so Unnerved lands whatever the target's Evasion.
+                new()
+                {
+                    Feat = FeatType.UnnervingRoar,
+                    Target = AbilityTargetKind.HostileCreature,
+                    ExpectedTargetStatusEffects = new[] { typeof(UnnervedStatusEffect) },
+                    ExpectsSTMCost = true,
+                    ExpectsRecast = true,
+                },
+
                 // VenomSprayAbilityDefinition - InnateAbility.BuildArea, target-anchored cone.
                 new()
                 {

@@ -10,6 +10,7 @@ using SWLOR.Game.Server.Service.DBService;
 using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.GuiService.Component;
 using SWLOR.Game.Server.Service.PlayerListService;
+using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.Game.Server.EngineTests.Definitions
 {
@@ -229,6 +230,164 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
         }
 
         /// <summary>
+        /// GetFactionLeader is not proof of a party. The DM client's Set Faction rewrites a player's faction id
+        /// without updating any member list, and the engine then names the NPC faction's strongest creature as
+        /// leader for every player set to it. A player who accepts such a player's invitation lands in that NPC
+        /// faction too. None of them is in a party, and players with only NPC companions are solo.
+        /// </summary>
+        [EngineTest("Player list does not group players who only share an NPC faction leader", Category = "PlayerList", TimeoutSeconds = 60f)]
+        public static async Task SharedNPCFactionLeaderIsNotAParty(EngineTestContext ctx)
+        {
+            using var viewer = await PlayerAbilityFixture.CreateAsync(ctx);
+            using var first = await PlayerAbilityFixture.CreateAsync(ctx, 2f);
+            using var second = await PlayerAbilityFixture.CreateAsync(ctx, 4f);
+            var companion = ctx.SpawnCreature("civilian", 6f);
+            await ctx.WaitFrameAsync();
+
+            await ctx.ExecuteInCreatureContextAsync(first.Creature, () => AddHenchman(first.Creature, companion));
+            await ctx.WaitUntilAsync(() => GetMaster(companion) == first.Creature, 5f, "the companion to join its owner");
+            AssertSolo(ctx, viewer, first, second, "a player with an NPC companion");
+
+            var nativeFirst = NWNXLib.g_pAppManager.m_pServerExoApp.GetCreatureByGameObjectID(first.Creature);
+            var nativeSecond = NWNXLib.g_pAppManager.m_pServerExoApp.GetCreatureByGameObjectID(second.Creature);
+            var commoner = nativeFirst.GetFaction().GetFactionManager().m_pDefaultFactionCommoner.m_nFactionId;
+            try
+            {
+                // DMFI's faction commands: the engine gives each player a faction of their own instead.
+                await ctx.ExecuteInCreatureContextAsync(first.Creature, () =>
+                {
+                    ChangeToStandardFaction(first.Creature, StandardFaction.Commoner);
+                    ChangeToStandardFaction(second.Creature, StandardFaction.Commoner);
+                });
+                ctx.Log($"after ChangeToStandardFaction: GetFactionLeader is 0x{GetFactionLeader(first.Creature):x} and 0x{GetFactionLeader(second.Creature):x}");
+                AssertSolo(ctx, viewer, first, second, "players a DMFI command moved toward the Commoner faction");
+                await LeaveNPCFaction(ctx, first, second);
+
+                // The DM client's Set Faction writes the faction id without touching any member list.
+                var firstFaction = nativeFirst.m_pStats.m_nFactionId;
+                var secondFaction = nativeSecond.m_pStats.m_nFactionId;
+                nativeFirst.m_pStats.m_nFactionId = commoner;
+                nativeSecond.m_pStats.m_nFactionId = commoner;
+                try
+                {
+                    AssertSharedLeader(ctx, first, second, "after a DM Set Faction");
+                    AssertSolo(ctx, viewer, first, second, "players a DM set to the Commoner faction");
+
+                    // Joining a set player's "party" adds the joiner to the Commoner faction's member list.
+                    await ctx.ExecuteInCreatureContextAsync(viewer.Creature, () => AddToParty(viewer.Creature, first.Creature));
+                    await ctx.WaitUntilAsync(() => GetFactionLeader(viewer.Creature) == GetFactionLeader(first.Creature), 5f,
+                        "the joiner to share the NPC faction leader");
+                    AssertSolo(ctx, second, viewer, first, "a player who joined a DM-set player");
+                    await LeaveNPCFaction(ctx, viewer);
+                }
+                finally
+                {
+                    nativeFirst.m_pStats.m_nFactionId = firstFaction;
+                    nativeSecond.m_pStats.m_nFactionId = secondFaction;
+                }
+            }
+            finally
+            {
+                await LeaveNPCFaction(ctx, first, second);
+            }
+        }
+
+        /// <summary>
+        /// An open list must show party changes as they happen: joining marks the party, and removal and an
+        /// NPC faction leave everyone solo.
+        /// </summary>
+        [EngineTest("Player list keeps an open window's party status current", Category = "PlayerList", TimeoutSeconds = 60f)]
+        public static async Task OpenListFollowsPartyChanges(EngineTestContext ctx)
+        {
+            using var viewer = await PlayerAbilityFixture.CreateAsync(ctx);
+            using var other = await PlayerAbilityFixture.CreateAsync(ctx, 2f);
+            using var bystander = await PlayerAbilityFixture.CreateAsync(ctx, 4f);
+
+            var windows = (Dictionary<string, Dictionary<GuiWindowType, GuiPlayerWindow>>)typeof(Gui)
+                .GetField("_playerWindows", BindingFlags.Static | BindingFlags.NonPublic).GetValue(null);
+            ctx.Assert(!windows.ContainsKey(bystander.Id), "the bystander has no existing GUI registration");
+            var window = Gui.GetWindowTemplate(GuiWindowType.PlayerList).CreatePlayerWindowAction();
+            windows.Add(bystander.Id, new Dictionary<GuiWindowType, GuiPlayerWindow> { [GuiWindowType.PlayerList] = window });
+            var model = (PlayerListViewModel)window.ViewModel;
+            model.Geometry = new GuiRectangle(0f, 0f, 610f, 620f);
+            try
+            {
+                await ctx.ExecuteInCreatureContextAsync(bystander.Creature, () => Gui.TogglePlayerWindow(bystander.Creature, GuiWindowType.PlayerList));
+                await ctx.WaitFrameAsync();
+                ctx.Assert(window.WindowToken > 0, "the bystander opens a real player list window");
+                ctx.Assert(model.RowStatuses.All(string.IsNullOrEmpty), "solo players show no status");
+
+                await ctx.ExecuteInCreatureContextAsync(other.Creature, () => AddToParty(other.Creature, viewer.Creature));
+                await ctx.WaitUntilAsync(() => GetFactionLeader(other.Creature) == viewer.Creature, 5f, "the party to form");
+                // Accepting through the client fires the refresh; a script join does not.
+                PlayerList.QueueRefresh();
+                await ctx.WaitUntilAsync(() => model.RowStatuses.Count(status => status == "Grouped") == 2, 5f,
+                    "the open list to mark both party members Grouped");
+
+                await ctx.ExecuteInCreatureContextAsync(viewer.Creature, () => PlayerList.RemoveFromParty(other.Creature));
+                await ctx.WaitUntilAsync(() => model.RowStatuses.All(string.IsNullOrEmpty), 5f,
+                    "the open list to clear the statuses after the Remove control");
+
+                await ctx.ExecuteInCreatureContextAsync(viewer.Creature, () =>
+                {
+                    ChangeToStandardFaction(viewer.Creature, StandardFaction.Commoner);
+                    ChangeToStandardFaction(other.Creature, StandardFaction.Commoner);
+                });
+                PlayerList.QueueRefresh();
+                await ctx.WaitFrameAsync();
+                await ctx.WaitFrameAsync();
+                ctx.Assert(model.RowStatuses.All(string.IsNullOrEmpty), "players sharing an NPC faction stay unmarked in the open list");
+            }
+            finally
+            {
+                await LeaveNPCFaction(ctx, viewer, other);
+                if (window.WindowToken > 0)
+                    NuiDestroy(bystander.Creature, window.WindowToken);
+                windows.Remove(bystander.Id);
+            }
+        }
+
+        private static void AssertSharedLeader(EngineTestContext ctx, PlayerAbilityFixture first, PlayerAbilityFixture second, string label)
+        {
+            var leader = GetFactionLeader(first.Creature);
+            ctx.Log($"{label}: GetFactionLeader is 0x{leader:x} and 0x{GetFactionLeader(second.Creature):x}");
+            ctx.Assert(GetIsObjectValid(leader) && leader == GetFactionLeader(second.Creature),
+                $"{label}: the engine reports one faction leader for both players");
+        }
+
+        private static void AssertSolo(
+            EngineTestContext ctx,
+            PlayerAbilityFixture viewer,
+            PlayerAbilityFixture first,
+            PlayerAbilityFixture second,
+            string label)
+        {
+            var subjects = PlayerList.BuildSubjects();
+            foreach (var (from, to) in new[] { (viewer, first), (viewer, second), (first, second), (second, first), (first, first) })
+            {
+                var row = PlayerList.BuildEntries(from.Creature, subjects).Single(entry => entry.Player == to.Creature);
+                ctx.AssertEqual(PlayerListStatus.None, row.Status, $"{label}: a solo player has no status");
+                ctx.Assert(!row.Relation.ViewerIsInParty && !row.Relation.TargetIsInOtherParty && !row.Relation.TargetIsInViewerParty,
+                    $"{label}: the relation has no party");
+            }
+
+            ctx.AssertEqual(1, subjects.Single(subject => subject.Player == first.Creature).PartyPlayerCount,
+                $"{label}: the party count is one");
+            var relation = PlayerList.GetRelation(first.Creature, second.Creature);
+            var actions = PlayerListRules.Evaluate(relation);
+            ctx.Assert(actions.Invite.IsEnabled, $"{label}: a solo player can invite another solo player");
+            ctx.Assert(!actions.LeaveParty.IsEnabled, $"{label}: a solo player has no party to leave");
+        }
+
+        // RemoveFromParty gives a player character a faction of their own again.
+        private static async Task LeaveNPCFaction(EngineTestContext ctx, params PlayerAbilityFixture[] players)
+        {
+            foreach (var player in players)
+                await ctx.ExecuteInCreatureContextAsync(player.Creature, () => RemoveFromParty(player.Creature));
+            await ctx.WaitFrameAsync();
+        }
+
+        /// <summary>
         /// DMs are listed only to other DMs. A player's list, its count, its action checks, and tells
         /// all treat a DM as absent.
         /// </summary>
@@ -321,9 +480,21 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                     "the possessing DM can still jump to a player");
                 ctx.Assert(PlayerList.BuildEntries(player.Creature, PlayerList.BuildSubjects()).All(row => row.Player != dm.Creature),
                     "players still do not see the possessing DM");
+
+                // A possessing DM in the player's party adds no one: DMs and possessed creatures are never counted.
+                await ctx.ExecuteInCreatureContextAsync(dm.Creature, () => AddToParty(dm.Creature, player.Creature));
+                await ctx.WaitUntilAsync(() => GetFactionEqual(dm.Creature, player.Creature), 5f, "the DM to join the player's party");
+                var subjects = PlayerList.BuildSubjects();
+                ctx.Assert(subjects.All(subject => subject.Player != npc), "the possessed creature is not listed");
+                ctx.AssertEqual(1, subjects.Single(subject => subject.Player == player.Creature).PartyPlayerCount,
+                    "the possessing DM does not count toward the player's party");
+                ctx.AssertEqual(PlayerListStatus.None,
+                    PlayerList.BuildEntries(player.Creature, subjects).Single(row => row.Player == player.Creature).Status,
+                    "the player is not marked as in a party with only a DM");
             }
             finally
             {
+                await ctx.ExecuteInCreatureContextAsync(player.Creature, () => RemoveFromParty(player.Creature));
                 client.SetGameObject(nativeDM);
                 nativeNpc.m_nAssociateType = originalAssociate;
                 nativeNpc.m_oidMaster = originalMaster;

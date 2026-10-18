@@ -263,6 +263,93 @@ public class PlayerListRulesTests
         }
     }
 
+    [Test]
+    public void PartyLeaders_SoloPlayersLeadThemselves()
+    {
+        var leaders = PlayerListRules.GetPartyLeaders(new[]
+        {
+            Member(1, factionId: 10, factionLeader: 1),
+            Member(2, factionId: 11, factionLeader: 2),
+        });
+
+        leaders.Should().Equal(new Dictionary<uint, uint> { [1] = 1, [2] = 2 });
+    }
+
+    [Test]
+    public void PartyLeaders_ASharedNPCFactionLeaderIsNotAParty()
+    {
+        // DM faction tools leave both players in an NPC faction whose leader is the same creature.
+        var leaders = PlayerListRules.GetPartyLeaders(new[]
+        {
+            Member(1, factionId: null, factionLeader: 900),
+            Member(2, factionId: null, factionLeader: 900),
+        });
+
+        leaders.Should().Equal(new Dictionary<uint, uint> { [1] = 1, [2] = 2 });
+    }
+
+    [Test]
+    public void PartyLeaders_AFactionLeaderOutsideTheFactionIsNotAParty()
+    {
+        // A solo player whose GetFactionLeader names another player's character shares no party with them.
+        var leaders = PlayerListRules.GetPartyLeaders(new[]
+        {
+            Member(1, factionId: 10, factionLeader: 1),
+            Member(2, factionId: 11, factionLeader: 1),
+        });
+
+        leaders.Should().Equal(new Dictionary<uint, uint> { [1] = 1, [2] = 2 });
+    }
+
+    [Test]
+    public void PartyLeaders_APartyFollowsTheEngineLeader()
+    {
+        var leaders = PlayerListRules.GetPartyLeaders(new[]
+        {
+            Member(1, factionId: 10, factionLeader: 2),
+            Member(2, factionId: 10, factionLeader: 2),
+            Member(3, factionId: 12, factionLeader: 3),
+        });
+
+        leaders.Should().Equal(new Dictionary<uint, uint> { [1] = 2, [2] = 2, [3] = 3 });
+    }
+
+    [Test]
+    public void PartyLeaders_ADMCanLeadButIsNotListed()
+    {
+        var leaders = PlayerListRules.GetPartyLeaders(new[]
+        {
+            Member(1, factionId: 10, factionLeader: 9),
+            Member(2, factionId: 10, factionLeader: 9),
+            Member(9, factionId: 10, factionLeader: 9, isDM: true),
+        });
+
+        leaders.Should().Equal(new Dictionary<uint, uint> { [1] = 9, [2] = 9 });
+    }
+
+    [Test]
+    public void PartyLeaders_AnUnlistedEngineLeaderFallsBackToAMember()
+    {
+        var leaders = PlayerListRules.GetPartyLeaders(new[]
+        {
+            Member(1, factionId: 10, factionLeader: 7),
+            Member(2, factionId: 10, factionLeader: 7),
+        });
+
+        leaders.Should().Equal(new Dictionary<uint, uint> { [1] = 1, [2] = 1 });
+    }
+
+    private static PlayerListPartyMembership Member(uint player, int? factionId, uint factionLeader, bool isDM = false)
+    {
+        return new PlayerListPartyMembership
+        {
+            Player = player,
+            IsDM = isDM,
+            PartyFactionId = factionId,
+            FactionLeader = factionLeader,
+        };
+    }
+
     private static string FindRepositoryRoot()
     {
         var directory = new DirectoryInfo(TestContext.CurrentContext.TestDirectory);

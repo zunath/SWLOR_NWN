@@ -643,8 +643,8 @@ namespace SWLOR.Game.Server.Service
         public const string InventoryFullMessage = "Your inventory is full. Make room and try again.";
 
         /// <summary>
-        /// Moves an item that is not in the world, such as a deserialized copy, into the creature's inventory when it has
-        /// room. Otherwise destroys the item and returns false, so the caller keeps the record it came from.
+        /// Moves an item that nothing holds, such as a deserialized copy, into the creature's inventory when it has room.
+        /// Otherwise destroys the item and returns false, so the caller keeps the record it came from.
         /// </summary>
         public static bool TryAcquireItem(uint creature, uint item)
         {

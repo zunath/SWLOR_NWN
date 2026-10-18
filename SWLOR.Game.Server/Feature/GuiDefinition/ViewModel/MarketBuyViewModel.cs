@@ -276,9 +276,10 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             DestroyObject(item);
         };
 
-        public Action OnClickBuy() => () =>
+        public Action OnClickBuy() => () => Buy(NuiGetEventArrayIndex());
+
+        private void Buy(int index)
         {
-            var index = NuiGetEventArrayIndex();
             var row = _rows[index];
             var itemId = row.ItemId;
             var itemName = row.Name;
@@ -358,7 +359,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 dbSeller.MarketTill += proceeds;
                 DB.Set(dbSeller);
             });
-        };
+        }
 
         public Action OnClickClearFilters() => () =>
         {

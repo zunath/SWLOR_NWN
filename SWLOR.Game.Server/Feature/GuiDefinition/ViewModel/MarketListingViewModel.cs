@@ -239,10 +239,11 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             UpdateItemCount();
         }
 
-        public Action OnClickRemove() => () =>
+        public Action OnClickRemove() => () => RemoveListing(NuiGetEventArrayIndex());
+
+        private void RemoveListing(int index)
         {
             ClosePriceWindow();
-            var index = NuiGetEventArrayIndex();
             var itemId = _itemIds[index];
 
             ShowModal("Are you sure you want to remove this item's listing? It will return to your inventory.", () =>
@@ -278,7 +279,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 _itemCount--;
                 UpdateItemCount();
             });
-        };
+        }
 
         public Action OnClickSearch()
         {

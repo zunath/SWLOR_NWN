@@ -393,16 +393,30 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             bool isNewBlueprint;
             uint item;
-            // The blueprint is finished outside the inventory and acquired last, so a full inventory keeps the job.
             if (string.IsNullOrWhiteSpace(dbJob.SerializedItem))
             {
-                item = CreateItemOnObject("blueprint", GetObjectByTag("TEMP_ITEM_STORAGE"));
+                var probe = CreateItemOnObject("blueprint", GetObjectByTag("TEMP_ITEM_STORAGE"));
+                var fits = Item.FitsInInventory(Player, probe);
+                DestroyObject(probe);
+                if (!fits)
+                {
+                    FloatingTextStringOnCreature(Item.InventoryFullMessage, Player, false);
+                    return;
+                }
+
+                item = CreateItemOnObject("blueprint", Player);
                 SetName(item, $"Blueprint: {Cache.GetItemNameByResref(recipe.Resref)}");
                 isNewBlueprint = true;
             }
             else
             {
                 item = ObjectPlugin.Deserialize(dbJob.SerializedItem);
+                if (!Item.TryAcquireItem(Player, item))
+                {
+                    FloatingTextStringOnCreature(Item.InventoryFullMessage, Player, false);
+                    return;
+                }
+
                 isNewBlueprint = false;
             }
 
@@ -544,12 +558,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             }
 
             Craft.SetBlueprintDetails(item, blueprintDetails);
-            if (!Item.TryAcquireItem(Player, item))
-            {
-                FloatingTextStringOnCreature(Item.InventoryFullMessage, Player, false);
-                return;
-            }
-
             Gui.TogglePlayerWindow(Player, GuiWindowType.Research);
 
             DB.Delete<ResearchJob>(dbJob.Id);

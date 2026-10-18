@@ -52,8 +52,8 @@ internal static class CharacterFileUpgrade
         if (start >= LatestVersion)
             return null;
 
-        // Loading a character converts retired item property rows before login-time migrations saw them.
-        Feature.MigrationDefinition.CharacterMigration.SavedLegacyItemProperties.ConvertOnLoad(character);
+        // Loading a character changes some saved items before login-time migrations saw them.
+        Feature.MigrationDefinition.CharacterMigration.SavedCharacterLoad.Apply(character);
 
         foreach (var migration in Migrations.Where(migration => migration.Version > start))
         {
@@ -72,6 +72,10 @@ internal static class CharacterFileUpgrade
 
         character.WriteInteger(PlayerFileCheckpoint.FieldName, fileVersion);
         record.CharacterFileVersion = Math.Max(record.CharacterFileVersion, fileVersion);
+        record.UpgradeNotices ??= new List<string>();
+        // A retry after a crash repeats file migrations, and their notices with them.
+        foreach (var notice in character.Notices.Where(notice => !record.UpgradeNotices.Contains(notice)))
+            record.UpgradeNotices.Add(notice);
         return new CharacterUpgradeResult(character.Serialize(), record, character.Overflow, start);
     }
 

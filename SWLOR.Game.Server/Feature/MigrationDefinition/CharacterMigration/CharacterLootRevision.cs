@@ -127,14 +127,16 @@ internal static class CharacterLootRevision
             character.Unequip(item);
     }
 
-    /// <summary>Current HP as the engine loads it, and the record's FP and STM.</summary>
-    private static (int HP, int FP, int Stamina) CapturePools(SavedCharacter character) =>
-        (Math.Min(character.ReadInteger("CurrentHitPoints"), character.GetMaxHitPoints()), character.Record.FP, character.Record.Stamina);
+    /// <summary>
+    /// The record's FP and STM before equipped items change. HP needs no capture: login sets it from the record,
+    /// which equipment changes do not touch (<see cref="SavedCharacter.SetSavedHitPointsToMaximum"/>).
+    /// </summary>
+    private static (int FP, int Stamina) CapturePools(SavedCharacter character) =>
+        (character.Record.FP, character.Record.Stamina);
 
-    /// <summary>Gives back any HP, FP or STM lost to an intermediate cap, never above the final maximum.</summary>
-    private static void RestorePools(SavedCharacter character, (int HP, int FP, int Stamina) pools)
+    /// <summary>Gives back any FP or STM lost to an intermediate cap, never above the final maximum.</summary>
+    private static void RestorePools(SavedCharacter character, (int FP, int Stamina) pools)
     {
-        character.WriteInteger("CurrentHitPoints", Math.Min(pools.HP, character.GetMaxHitPoints()), 3);
         if (!character.AppliesRecordEffects)
             return;
         character.Record.FP = Math.Min(pools.FP, SavedEquipmentStats.GetMaxFP(character));

@@ -19,9 +19,10 @@ namespace SWLOR.Game.Server.Service.MigrationService;
 /// </summary>
 internal sealed class SavedCharacter
 {
-    /// <summary>Inventory grid of a character, in item cells.</summary>
+    /// <summary>Inventory grid of a character, in item cells: six pages of six rows, and no item spans two pages.</summary>
     internal const int InventoryWidth = 10;
     internal const int InventoryHeight = 36;
+    internal const int InventoryPageHeight = 6;
 
     private readonly StoredObjectData _file;
     private readonly List<SavedOverflowItem> _overflow = new();
@@ -116,12 +117,15 @@ internal sealed class SavedCharacter
             SavedGff.WriteScalar(skills[skill], "Rank", 0, rank);
     }
 
-    /// <summary>NWNX SetBaseSavingThrow for all three saves.</summary>
+    /// <summary>
+    /// NWNX SetBaseSavingThrow for all three saves: the saved bonus beside each class save. The engine adds it to
+    /// the class save when it loads the character.
+    /// </summary>
     public void SetBaseSavingThrows(int value)
     {
-        WriteInteger("FortSaveThrow", value, 1);
-        WriteInteger("RefSaveThrow", value, 1);
-        WriteInteger("WillSaveThrow", value, 1);
+        WriteInteger("fortbonus", value, 3);
+        WriteInteger("refbonus", value, 3);
+        WriteInteger("willbonus", value, 3);
     }
 
     /// <summary>The class in a class row (1-based position, as GetClassByPosition counts).</summary>
@@ -172,7 +176,13 @@ internal sealed class SavedCharacter
             fields.Add(StoredObjectData.MakeField(15, "FeatList", children: new List<Node>()));
             levels.Add(new Node { Fields = fields });
             SavedGff.WriteScalar(rows[0], "ClassLevel", 3, StoredObjectData.ReadInteger(rows[0], "ClassLevel") + 1);
+            // A level-up adds the class hit die to the base HP and heals it, leaving the damage taken unchanged.
+            var hitDie = SavedCharacterData.GetClassHitDie((ClassType)@class);
+            WriteInteger("HitPoints", ReadInteger("HitPoints") + hitDie, 3);
+            WriteInteger("CurrentHitPoints", ReadInteger("CurrentHitPoints") + hitDie, 3);
         }
+        // A player character's challenge rating is one below its level.
+        SavedGff.WriteFloat(Root, "ChallengeRating", NativeLevelCount - 1);
     }
 
     /// <summary>Native skills in a saved skill list.</summary>
@@ -206,6 +216,50 @@ internal sealed class SavedCharacter
 
     /// <summary>The record's active beast, loaded for perk requirements that check it.</summary>
     public Beast ActiveBeast { get; internal set; }
+
+    // ---- Quickbar item buttons -----------------------------------------------------------------------
+    // An item button names a worn item by its slot bit (QBItemInvSlot), or a carried item by its inventory cell
+    // (QBItemReposX/Y), inside a container at QBContReposX/Y (255 when carried directly).
+
+    private IEnumerable<Node> QuickBarReferences(SavedItem item)
+    {
+        var buttons = SavedGff.List(Root, "QBList", false)?.Children.Where(button =>
+            StoredObjectData.ReadInteger(button, "QBObjectType") == (int)SWLOR.Game.Server.Core.NWNX.Enum.QuickBarSlotType.Item)
+            ?? Enumerable.Empty<Node>();
+        if (item.IsEquipped)
+            return buttons.Where(button => (uint)StoredObjectData.ReadInteger(button, "QBItemInvSlot") == item.Node.Type);
+        var (x, y) = (StoredObjectData.ReadInteger(item.Node, "Repos_PosX"), StoredObjectData.ReadInteger(item.Node, "Repos_Posy"));
+        var (containerX, containerY) = item.Container == null
+            ? (byte.MaxValue, byte.MaxValue)
+            : (StoredObjectData.ReadInteger(item.Container.Node, "Repos_PosX"), StoredObjectData.ReadInteger(item.Container.Node, "Repos_Posy"));
+        if (item.Container?.Container != null)
+            return Enumerable.Empty<Node>();
+        return buttons.Where(button => (uint)StoredObjectData.ReadInteger(button, "QBItemInvSlot") == uint.MaxValue &&
+            StoredObjectData.ReadInteger(button, "QBItemReposX") == x && StoredObjectData.ReadInteger(button, "QBItemReposY") == y &&
+            StoredObjectData.ReadInteger(button, "QBContReposX") == containerX && StoredObjectData.ReadInteger(button, "QBContReposY") == containerY);
+    }
+
+    private void ClearQuickBarReferences(SavedItem item)
+    {
+        foreach (var button in QuickBarReferences(item).ToList())
+            ClearQuickBarButton(button);
+    }
+
+    private static void PointQuickBarAtInventory(Node button, int x, int y, int containerX, int containerY)
+    {
+        SavedGff.WriteScalar(button, "QBItemInvSlot", 4, -1);
+        SavedGff.WriteScalar(button, "QBItemReposX", 0, x);
+        SavedGff.WriteScalar(button, "QBItemReposY", 0, y);
+        SavedGff.WriteScalar(button, "QBContReposX", 0, containerX);
+        SavedGff.WriteScalar(button, "QBContReposY", 0, containerY);
+    }
+
+    /// <summary>An empty quickbar button, as the engine leaves one whose item is gone.</summary>
+    private static void ClearQuickBarButton(Node button)
+    {
+        button.Fields.Clear();
+        button.Fields.Add(SavedGff.Scalar(0, "QBObjectType", 0));
+    }
 
     /// <summary>The saved quickbar (QBList), one entry per slot.</summary>
     public IReadOnlyList<SavedQuickBarSlot> QuickBar =>
@@ -244,29 +298,48 @@ internal sealed class SavedCharacter
     /// <summary>Removes an item (and its contents) from the character, as destroying it does.</summary>
     public void Destroy(SavedItem item)
     {
+        ClearQuickBarReferences(item);
+        Detach(item);
+    }
+
+    private static void Detach(SavedItem item)
+    {
         if (!item.List.Children.Remove(item.Node))
             throw new InvalidOperationException("The saved item is no longer in its inventory list.");
     }
 
     /// <summary>
     /// Moves an equipped item into the character's inventory, or into overflow storage when no inventory
-    /// cell fits it. Returns false when it went to overflow storage.
+    /// cell fits it. Returns false when it went to overflow storage. Quickbar buttons for the item follow it
+    /// into the inventory, as unequipping does; a button for an item sent to overflow storage is cleared.
     /// </summary>
     public bool Unequip(SavedItem item)
     {
         if (!item.IsEquipped)
             throw new InvalidOperationException("Only equipped items can be unequipped.");
-        Destroy(item);
-        return AddToInventory(item.Node);
+        var references = QuickBarReferences(item).ToList();
+        Detach(item);
+        var kept = AddToInventory(item.Node);
+        foreach (var button in references)
+        {
+            if (kept)
+                PointQuickBarAtInventory(button, StoredObjectData.ReadInteger(item.Node, "Repos_PosX"),
+                    StoredObjectData.ReadInteger(item.Node, "Repos_Posy"), byte.MaxValue, byte.MaxValue);
+            else
+                ClearQuickBarButton(button);
+        }
+        return kept;
     }
 
-    /// <summary>Moves a worn item to another, empty equipment slot.</summary>
+    /// <summary>Moves a worn item to another, empty equipment slot, along with its quickbar buttons.</summary>
     public SavedItem MoveEquipped(SavedItem item, InventorySlot slot)
     {
         if (!item.IsEquipped)
             throw new InvalidOperationException("Only equipped items can change slots.");
         if (GetEquipped(slot) != null)
             throw new InvalidOperationException($"Equipment slot {slot} is occupied.");
+        foreach (var button in QuickBarReferences(item).ToList())
+            SavedGff.WriteScalar(button, "QBItemInvSlot", 4, 1 << (int)slot);
         item.Node.Type = 1u << (int)slot;
         return new SavedItem(item.Node, item.List, null);
     }
@@ -275,12 +348,14 @@ internal sealed class SavedCharacter
     public SavedItem Locate(Node node) =>
         Equipped.Concat(CarriedRecursive).FirstOrDefault(item => ReferenceEquals(item.Node, node));
 
-    /// <summary>Equips a carried item into an empty slot.</summary>
+    /// <summary>Equips a carried item into an empty slot, along with its quickbar buttons.</summary>
     public SavedItem Equip(SavedItem item, InventorySlot slot)
     {
         if (GetEquipped(slot) != null)
             throw new InvalidOperationException($"Equipment slot {slot} is occupied.");
-        Destroy(item);
+        foreach (var button in QuickBarReferences(item).ToList())
+            SavedGff.WriteScalar(button, "QBItemInvSlot", 4, 1 << (int)slot);
+        Detach(item);
         item.Node.Fields.RemoveAll(x => x.Name is "Repos_PosX" or "Repos_Posy");
         item.Node.Type = 1u << (int)slot;
         var list = SavedGff.List(Root, "Equip_ItemList", true);
@@ -295,7 +370,7 @@ internal sealed class SavedCharacter
     public bool AddToInventory(Node item)
     {
         var list = SavedGff.List(Root, "ItemList", true);
-        if (Place(list, InventoryWidth, InventoryHeight, item))
+        if (Place(list, InventoryWidth, InventoryHeight, item, InventoryPageHeight))
             return true;
         _overflow.Add(SavedOverflowItem.From(item));
         return false;
@@ -335,9 +410,15 @@ internal sealed class SavedCharacter
         return kept;
     }
 
-    /// <summary>Places an item node in the first free cell range of an inventory grid; false when none fits.</summary>
-    internal static bool Place(Field list, int width, int height, Node item)
+    /// <summary>
+    /// Places an item node in the first free cell range of an inventory grid, scanning rows top to bottom, where
+    /// the item stays within one page of <paramref name="pageHeight"/> rows (the whole grid by default); false
+    /// when none fits.
+    /// </summary>
+    internal static bool Place(Field list, int width, int height, Node item, int pageHeight = 0)
     {
+        if (pageHeight <= 0)
+            pageHeight = height;
         item.Fields.RemoveAll(x => x.Name is "Repos_PosX" or "Repos_Posy");
         var size = SavedCharacterData.GetInventorySize(StoredObjectData.ReadBaseItem(item));
         var occupied = new bool[width, height];
@@ -354,6 +435,8 @@ internal sealed class SavedCharacter
         for (var y = 0; y + size.Height <= height; y++)
         for (var x = 0; x + size.Width <= width; x++)
         {
+            if (y % pageHeight + size.Height > pageHeight)
+                continue;
             var fits = true;
             for (var dx = 0; dx < size.Width && fits; dx++)
             for (var dy = 0; dy < size.Height && fits; dy++)
@@ -407,18 +490,14 @@ internal sealed class SavedCharacter
     }
 
     /// <summary>
-    /// Writes the record's maximum HP into the native level hit dice, as AdjustPlayerMaxHP does. A logged-in
-    /// character keeps its current HP when its maximum rises. The engine loads a saved character's current HP as
-    /// its saved CurrentHitPoints capped at the maximum it computes, and that field can hold more than the
-    /// character has, so it is capped at the maximum from before the change.
+    /// Writes the record's maximum HP into the native level hit dice, as AdjustPlayerMaxHP does. A living character
+    /// is saved at full HP for its new maximum (<see cref="SetSavedHitPointsToMaximum"/>).
     /// </summary>
     public void ApplyMaxHitPointsToLevels()
     {
         const int MaxHPPerLevel = 254;
         var levels = SavedGff.List(Root, "LvlStatList", false)?.Children ?? new List<Node>();
         var levelCount = NativeLevelCount;
-        if (ReadInteger("CurrentHitPoints") > GetMaxHitPoints())
-            WriteInteger("CurrentHitPoints", GetMaxHitPoints(), 3);
         var hpToApply = Record.MaxHP;
         for (var level = 0; level < levelCount && level < levels.Count; level++)
         {
@@ -438,6 +517,7 @@ internal sealed class SavedCharacter
                 break;
             }
         }
+        SetSavedHitPointsToMaximum();
     }
 
     /// <summary>The character's native level total across its class rows.</summary>
@@ -459,8 +539,33 @@ internal sealed class SavedCharacter
         return dice.Sum(die => Math.Max(1, die + modifier)) + Native.VitalityHitPoints.CalculateOddScoreBonus(vitality, eligible);
     }
 
-    /// <summary>Saved-data SetCurrentHitPoints(GetMaxHitPoints()): the character loads at full HP.</summary>
-    public void RestoreFullHitPoints() => WriteInteger("CurrentHitPoints", GetMaxHitPoints(), 3);
+    /// <summary>Whether the character was saved dead: its saved current HP is 0 or less.</summary>
+    public bool IsDead => ReadInteger("PregameCurrent") <= 0;
+
+    /// <summary>
+    /// The current HP a migration reads after it set the character to full HP: the maximum, or the saved current
+    /// HP of a dead character, which SetCurrentHitPoints cannot revive.
+    /// </summary>
+    public int GetCurrentHitPoints() => IsDead ? ReadInteger("PregameCurrent") : GetMaxHitPoints();
+
+    /// <summary>
+    /// Saves a living character at full HP for its maximum: no damage taken (CurrentHitPoints equal to HitPoints),
+    /// with the saved maximum and pregame HP the engine writes beside them. Login then sets the character's HP from
+    /// its record (<see cref="Feature.PersistentHitPoints.LoadHP"/>), so the record holds the HP a migration keeps;
+    /// a character loaded at full HP is never below it. A dead character keeps its saved HP.
+    /// </summary>
+    public void SetSavedHitPointsToMaximum()
+    {
+        if (IsDead)
+            return;
+        var maximum = GetMaxHitPoints();
+        WriteInteger("CurrentHitPoints", ReadInteger("HitPoints"), 3);
+        WriteInteger("MaxHitPoints", maximum, 3);
+        WriteInteger("PregameCurrent", maximum, 3);
+    }
+
+    /// <summary>Saved-data SetCurrentHitPoints(GetMaxHitPoints()).</summary>
+    public void RestoreFullHitPoints() => SetSavedHitPointsToMaximum();
 }
 
 /// <summary>A saved quickbar slot: its object type and first integer parameter (a feat for feat slots).</summary>

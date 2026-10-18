@@ -70,7 +70,7 @@ internal sealed class _1_LegacyPlayerMigration : ICharacterMigration
         record.BAB = 1;
         record.MaxFP = Stat.BaseFP;
         record.MaxStamina = Stat.BaseSTM;
-        record.HP = Math.Min(character.ReadInteger("CurrentHitPoints"), character.GetMaxHitPoints());
+        record.HP = character.GetCurrentHitPoints();
         record.FP = SavedEquipmentStats.GetMaxFP(character);
         record.Stamina = SavedEquipmentStats.GetMaxStamina(character);
         foreach (var ability in Abilities)
@@ -78,9 +78,9 @@ internal sealed class _1_LegacyPlayerMigration : ICharacterMigration
     }
 
     /// <summary>
-    /// Removes retired items and turns the rest into legacy items: no properties, descriptions or locals. Carried
-    /// items keep their names (SetName with an empty name restores the saved one); equipped items are taken off,
-    /// into the inventory or overflow storage when it is full.
+    /// Removes retired items and turns the rest into legacy items: no properties, descriptions or locals, and
+    /// carried items lose custom names. Equipped items are taken off, into the inventory or overflow storage when
+    /// it is full.
     /// </summary>
     private static void MigrateItems(SavedCharacter character)
     {
@@ -89,6 +89,7 @@ internal sealed class _1_LegacyPlayerMigration : ICharacterMigration
             if (Remove(character, item))
                 continue;
             Wipe(item);
+            item.SetName(string.Empty);
         }
         for (var index = 0; index < NumberOfInventorySlots; index++)
         {

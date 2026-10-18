@@ -416,15 +416,15 @@ internal static class SavedWeaponDamageTypeMigration
     /// Saved-data <see cref="BasicVibrobladeCompatibility.Normalize"/>: gives the retired basic weapon templates
     /// their default name and any missing damage, delay and skill requirement.
     /// </summary>
-    private static bool NormalizeBasicWeapon(SavedItem item)
+    internal static bool NormalizeBasicWeapon(SavedItem item)
     {
         if (!BasicVibrobladeCompatibility.TryGetProfile(item.BaseItem, item.ResRef, out var profile))
             return false;
         var changed = false;
         // Only replace the default name. Preserve all deliberate player/DM custom names.
-        if (profile.DefaultName != null && StoredObjectData.ReadLocalizedName(item.Node) == profile.DefaultName)
+        if (profile.DefaultName != null && item.Name == profile.DefaultName)
         {
-            SetName(item, profile.DisplayName);
+            item.SetName(profile.DisplayName);
             changed = true;
         }
         var properties = item.Properties.Select(property => property.Type).ToHashSet();
@@ -436,30 +436,6 @@ internal static class SavedWeaponDamageTypeMigration
             changed = true;
         }
         return changed;
-    }
-
-    /// <summary>
-    /// SetName on a saved item: the localized name becomes the one string, with no string reference, in the
-    /// language and gender of the name it replaces.
-    /// </summary>
-    private static void SetName(SavedItem item, string name)
-    {
-        var field = item.Node.Fields.SingleOrDefault(x => x.Name == "LocalizedName" && x.Type == 12);
-        var language = field != null && field.Data.Length >= 20 && BinaryPrimitives.ReadUInt32LittleEndian(field.Data.AsSpan(8)) > 0
-            ? BinaryPrimitives.ReadUInt32LittleEndian(field.Data.AsSpan(12))
-            : 0u;
-        var text = Encoding.UTF8.GetBytes(name);
-        var data = new byte[20 + text.Length];
-        BinaryPrimitives.WriteUInt32LittleEndian(data, (uint)(data.Length - 4));
-        BinaryPrimitives.WriteUInt32LittleEndian(data.AsSpan(4), uint.MaxValue);
-        BinaryPrimitives.WriteUInt32LittleEndian(data.AsSpan(8), 1);
-        BinaryPrimitives.WriteUInt32LittleEndian(data.AsSpan(12), language);
-        BinaryPrimitives.WriteUInt32LittleEndian(data.AsSpan(16), (uint)text.Length);
-        text.CopyTo(data, 20);
-        if (field == null)
-            item.Node.Fields.Add(StoredObjectData.MakeField(12, "LocalizedName", data));
-        else
-            field.Data = data;
     }
 
     private static bool MigrateConstructedDroid(SavedItem item)

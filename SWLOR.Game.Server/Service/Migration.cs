@@ -28,7 +28,6 @@ namespace SWLOR.Game.Server.Service
         private static ServerMigrationState _serverMigrationState = new(0);
         private static readonly Dictionary<int, IServerMigration> _serverMigrationsPostDatabase = new();
         private static readonly Dictionary<int, IServerMigration> _serverMigrationsPostCache = new();
-        private static readonly Dictionary<int, IPlayerMigration> _playerMigrations = new();
 
         [NWNEventHandler(ScriptName.OnDatabaseLoaded)]
         public static void AfterDatabaseLoaded()
@@ -51,7 +50,6 @@ namespace SWLOR.Game.Server.Service
             _serverMigrationState = new ServerMigrationState(_currentMigrationVersion);
 
             LoadServerMigrations();
-            LoadPlayerMigrations();
 
             RunServerMigrationsPostDatabase();
         }
@@ -61,6 +59,27 @@ namespace SWLOR.Game.Server.Service
         {
             RunServerMigrationsPostCache();
             UpdateMigrationVersion();
+            UpgradeCharacters();
+        }
+
+        /// <summary>
+        /// Upgrades every saved character before players can connect, including characters whose players have
+        /// not logged in since a release. A character that fails keeps its saved state, is tried again at the
+        /// next boot, and cannot log in until then.
+        /// </summary>
+        private static void UpgradeCharacters()
+        {
+            if (_serverMigrationState.Failed)
+                return;
+
+            try
+            {
+                CharacterFileUpgrade.UpgradeServerVault();
+            }
+            catch (Exception ex)
+            {
+                Log.Write(LogGroup.Error, $"The character upgrade failed: {ex.ToMessageAndCompleteStacktrace()}. Characters it did not upgrade cannot log in.", true);
+            }
         }
 
         private static void UpdateMigrationVersion()
@@ -167,102 +186,49 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>
-        /// When a player logs into the server and after initialization has run, run the migration process on their character.
+        /// Character migrations run on saved characters at boot (<see cref="CharacterFileUpgrade"/>). A character
+        /// still behind the latest version was not upgraded, so it is refused instead of played in an outdated state.
         /// </summary>
         [NWNEventHandler(ScriptName.OnCharacterInitAfter)]
-        public static void RunPlayerMigrations()
+        public static void AfterCharacterInitialization()
         {
             var player = GetEnteringObject();
             if (!GetIsPC(player) || GetIsDM(player))
                 return;
 
-            var sw = new Stopwatch();
             var playerId = GetObjectUUID(player);
-            var dbPlayer = DB.Get<Player>(playerId) ?? new Player(playerId);
-
+            var dbPlayer = DB.Get<Player>(playerId);
+            var latestVersion = GetLatestPlayerVersion();
             var fileVersion = GetLocalInt(player, PlayerFileVersionVariable);
-            if (fileVersion == 0)
+            if (fileVersion == 0 && dbPlayer != null)
                 fileVersion = Math.Min(dbPlayer.Version, LastPlayerVersionWithoutFileCheckpoint);
-
-            var migrations = _playerMigrations
-                .Where(x => x.Key > Math.Min(dbPlayer.Version, fileVersion))
-                .OrderBy(o => o.Key)
-                .Select(s => s.Value);
-
-            foreach (var migration in migrations)
+            if (dbPlayer == null || dbPlayer.Version < latestVersion || fileVersion < latestVersion)
             {
-                sw.Reset();
-                try
-                {
-                    sw.Start();
-                    var completed = ApplyPlayerMigration(migration, player,
-                        () => DB.Get<Player>(playerId) ?? throw new InvalidOperationException("The player record was lost during migration."),
-                        updatedPlayer => DB.Set(updatedPlayer),
-                        () => fileVersion,
-                        version =>
-                        {
-                            SavePlayerFileCheckpoint(player, version);
-                            fileVersion = version;
-                        });
-                    sw.Stop();
-                    if (!completed)
-                    {
-                        Log.Write(LogGroup.Migration, $"Player migration #{migration.Version} deferred for player [{playerId}] until inventory space is available.");
-                        SendMessageToPC(player, "Free inventory space, then reconnect to complete your equipment update.");
-                        break;
-                    }
-                    Log.Write(LogGroup.Migration, $"Player migration #{migration.Version} applied to player {GetName(player)} [{playerId}] successfully. (Took {sw.ElapsedMilliseconds}ms)");
-                }
-                catch (Exception ex)
-                {
-                    Log.Write(LogGroup.Migration, $"Player migration #{migration.Version} failed to apply for player {GetName(player)} [{playerId}]. Exception: {ex.ToMessageAndCompleteStacktrace()}", true);
-                    BootPC(player, "Your character update could not be completed. Please contact a server administrator.");
-                    return;
-                }
+                Log.Write(LogGroup.Migration, $"Refusing login for {GetName(player)} [{playerId}]: the character is at version " +
+                    $"{fileVersion} and its record at {dbPlayer?.Version}, but this server requires {latestVersion}. The boot-time character upgrade did not complete for it.", true);
+                BootPC(player, "Your character could not be updated for this version of the server. Please contact a server administrator.");
+                return;
             }
 
-            // Migrations can replace base attributes. Restore from the final record,
-            // including when an older character file needs no further migrations.
-            Stat.RestorePlayerAttributes(player);
+            DeliverUpgradeNotices(player, dbPlayer);
+            OverflowStorage.NotifyOnLogin(player);
 
-            // Completed migrations may have cleared native feats while preserving perk ownership.
-            // Also repair previously saved characters even when no migration is pending.
+            // Restore the base attributes and native feats the record holds, which saved characters may lack.
+            Stat.RestorePlayerAttributes(player);
             Perk.RestorePlayerFeats(player);
-            // Saved equipment does not emit equip events on login. Reconcile after
-            // migrations and feat restoration, including when no migration is pending.
+            // Saved equipment does not emit equip events on login.
             Stat.RefreshCombatReadinessEquipment(player);
         }
 
-        /// <summary>
-        /// Advances character-file and database checkpoints independently so retrying an older file never repeats record rewards.
-        /// </summary>
-        internal static bool ApplyPlayerMigration(
-            IPlayerMigration migration,
-            uint player,
-            Func<Player> loadPlayer,
-            Action<Player> savePlayer,
-            Func<int> loadCharacterVersion,
-            Action<int> saveCharacterVersion)
+        private static void DeliverUpgradeNotices(uint player, Player dbPlayer)
         {
-            var migratePlayerData = loadPlayer().Version < migration.Version;
-            if (loadCharacterVersion() < migration.Version)
-            {
-                try { migration.Migrate(player); }
-                catch (PlayerMigrationDeferredException) { return false; }
-                saveCharacterVersion(migration.Version);
-            }
+            if (dbPlayer.UpgradeNotices == null || dbPlayer.UpgradeNotices.Count == 0)
+                return;
 
-            if (!migratePlayerData)
-                return true;
-
-            // Live-object migrations may save player data. Refresh it, then copy
-            // the cached record so failed hooks or saves cannot publish an unsaved
-            // token or checkpoint through DB.Get's shared instance.
-            var dbPlayer = JsonConvert.DeserializeObject<Player>(JsonConvert.SerializeObject(loadPlayer()));
-            migration.MigratePlayerData(dbPlayer);
-            dbPlayer.Version = migration.Version;
-            savePlayer(dbPlayer);
-            return true;
+            foreach (var notice in dbPlayer.UpgradeNotices)
+                SendMessageToPC(player, notice);
+            dbPlayer.UpgradeNotices.Clear();
+            DB.Set(dbPlayer);
         }
 
         /// <summary>
@@ -331,28 +297,13 @@ namespace SWLOR.Game.Server.Service
             }
         }
 
-        private static void LoadPlayerMigrations()
-        {
-            _playerMigrations.Clear();
-            var types = AppDomain.CurrentDomain.GetAssemblies()
-                .SelectMany(s => s.GetTypes())
-                .Where(w => typeof(IPlayerMigration).IsAssignableFrom(w) && !w.IsInterface && !w.IsAbstract);
-
-            foreach (var type in types)
-            {
-                var instance = (IPlayerMigration)Activator.CreateInstance(type);
-
-                _playerMigrations.Add(instance.Version, instance);
-            }
-        }
-
         /// <summary>
         /// Retrieves the latest migration version for players.
         /// </summary>
         /// <returns>The latest migration version for players.</returns>
         public static int GetLatestPlayerVersion()
         {
-            return _playerMigrations.Max(m => m.Key);
+            return CharacterFileUpgrade.LatestVersion;
         }
 
     }

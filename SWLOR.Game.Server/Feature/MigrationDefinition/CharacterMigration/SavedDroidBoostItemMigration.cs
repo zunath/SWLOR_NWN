@@ -95,13 +95,13 @@ internal static class SavedDroidBoostItemMigration
         {
             var copy = CopyItem(item);
             copy.SetLocalInt(BlueprintRecipeIdVariable, recipeId);
-            SetName(copy, GetBlueprintName(recipeId));
+            copy.SetName(GetBlueprintName(recipeId));
             MigrateItemTree(character, copy);
             PlaceCopy(character, item, copy.Node);
         }
 
         item.SetLocalInt(BlueprintRecipeIdVariable, recipeIds[0]);
-        SetName(item, GetBlueprintName(recipeIds[0]));
+        item.SetName(GetBlueprintName(recipeIds[0]));
         return true;
     }
 
@@ -342,7 +342,7 @@ internal static class SavedDroidBoostItemMigration
         foreach (var newRecipeId in newRecipeIds)
         {
             root.SetLocalInt(BlueprintRecipeIdVariable, newRecipeId);
-            SetName(root, GetBlueprintName(newRecipeId));
+            root.SetName(GetBlueprintName(newRecipeId));
             migratedSerializedObjects.Add(document.Serialize());
         }
 
@@ -421,46 +421,4 @@ internal static class SavedDroidBoostItemMigration
             : throw new InvalidOperationException($"No blueprint name is loaded for recipe {recipeId}.");
     }
 
-    /// <summary>
-    /// SetName on saved data: every saved string of the item's localized name becomes <paramref name="name"/>, and
-    /// a name saved only as a string reference gets a language-0 string. The string reference is kept.
-    /// </summary>
-    private static void SetName(SavedItem item, string name)
-    {
-        var field = item.Node.Fields.SingleOrDefault(x => x.Name == "LocalizedName" && x.Type == 12);
-        var languages = new List<uint>();
-        if (field != null && field.Data.Length >= 12)
-        {
-            var count = BinaryPrimitives.ReadUInt32LittleEndian(field.Data.AsSpan(8));
-            var offset = 12;
-            for (var index = 0u; index < count && offset + 8 <= field.Data.Length; index++)
-            {
-                languages.Add(BinaryPrimitives.ReadUInt32LittleEndian(field.Data.AsSpan(offset)));
-                offset += 8 + (int)BinaryPrimitives.ReadUInt32LittleEndian(field.Data.AsSpan(offset + 4));
-            }
-        }
-        if (languages.Count == 0)
-            languages.Add(0);
-
-        var text = Encoding.UTF8.GetBytes(name);
-        using var output = new MemoryStream();
-        using var writer = new BinaryWriter(output, Encoding.UTF8, true);
-        writer.Write(0u);
-        writer.Write(StoredObjectData.ReadLocalizedNameReference(item.Node));
-        writer.Write((uint)languages.Count);
-        foreach (var language in languages)
-        {
-            writer.Write(language);
-            writer.Write(text.Length);
-            writer.Write(text);
-        }
-        writer.Flush();
-
-        var data = output.ToArray();
-        BinaryPrimitives.WriteInt32LittleEndian(data, data.Length - 4);
-        if (field == null)
-            item.Node.Fields.Add(StoredObjectData.MakeField(12, "LocalizedName", data));
-        else
-            field.Data = data;
-    }
 }

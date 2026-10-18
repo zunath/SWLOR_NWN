@@ -62,7 +62,7 @@ internal static class CharacterRecalculation
         character.AdjustPlayerMaxHP(0);
         character.RestoreFullHitPoints();
         if (character.AppliesRecordEffects)
-            character.Record.HP = character.GetMaxHitPoints();
+            character.Record.HP = character.GetCurrentHitPoints();
     }
 
     /// <summary>Saved-data <c>PlayerMigrationBase.RefundPerk</c>: returns a perk's purchase price as skill points.</summary>

@@ -22,6 +22,7 @@ internal static class SavedCharacterData
     private static IReadOnlyDictionary<string, string> _blueprints;
     private static IReadOnlyDictionary<(int BaseItem, int Model), bool> _weaponIcons;
     private static IReadOnlyDictionary<int, int> _classPackages;
+    private static IReadOnlyDictionary<int, int> _classHitDice;
     private static IReadOnlyDictionary<int, (int Dice, int Die)> _damageCosts;
 
     /// <summary>Inventory grid of a container item, in item cells.</summary>
@@ -53,12 +54,16 @@ internal static class SavedCharacterData
         Perk.GetAllActiveAbilityFeats(PerkType.Invalid);
 
         var packages = new Dictionary<int, int>();
+        var hitDice = new Dictionary<int, int>();
         for (var row = 0; row < Get2DARowCount("classes"); row++)
         {
             if (int.TryParse(Get2DAString("classes", "Package", row), out var package) && package >= 0 && package < (int)Package.Invalid)
                 packages[row] = package;
+            if (int.TryParse(Get2DAString("classes", "HitDie", row), out var hitDie))
+                hitDice[row] = hitDie;
         }
         _classPackages = packages;
+        _classHitDice = hitDice;
 
         var damageCosts = new Dictionary<int, (int, int)>();
         for (var row = 0; row < Get2DARowCount("iprp_damagecost"); row++)
@@ -91,6 +96,7 @@ internal static class SavedCharacterData
         Load(sizes, definitions, blueprints);
         _weaponIcons = LoadWeaponIcons(sizes.Keys);
         Feature.MigrationDefinition.CharacterMigration.SavedItemResistanceMigration.Load();
+        Feature.MigrationDefinition.CharacterMigration.SavedDroidBoostItemMigration.Load();
     }
 
     /// <summary>
@@ -133,6 +139,16 @@ internal static class SavedCharacterData
         if (_damageCosts == null)
             throw new InvalidOperationException("Saved character data is not loaded.");
         return _damageCosts.TryGetValue(row, out cost);
+    }
+
+    /// <summary>The classes.2da hit die a native level of the class adds to the base HP.</summary>
+    public static int GetClassHitDie(ClassType @class)
+    {
+        if (_classHitDice == null)
+            throw new InvalidOperationException("Saved character data is not loaded.");
+        return _classHitDice.TryGetValue((int)@class, out var hitDie)
+            ? hitDie
+            : throw new InvalidOperationException($"No hit die is known for class {@class}.");
     }
 
     /// <summary>The classes.2da leveling package of a class, as <c>PlayerInitialization.EnsureNativeLevels</c> reads it.</summary>

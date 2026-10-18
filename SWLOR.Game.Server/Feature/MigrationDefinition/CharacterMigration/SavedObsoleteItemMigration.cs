@@ -7,6 +7,7 @@ using SWLOR.Game.Server.Service.DroidService;
 using SWLOR.Game.Server.Service.MigrationService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.NWN.API.NWScript.Enum.Item;
+using SWLOR.NWN.API.NWScript.Enum.Item.Property;
 
 namespace SWLOR.Game.Server.Feature.MigrationDefinition.CharacterMigration;
 

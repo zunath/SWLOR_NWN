@@ -194,14 +194,30 @@ internal sealed class SavedItem
         return locals;
     }
 
-    /// <summary>The item's saved name text; empty when the name is only a talk table reference.</summary>
-    public string Name => StoredObjectData.ReadLocalizedName(Node);
+    /// <summary>
+    /// Saved-data GetName: the name SetName gave the item (its DisplayName), otherwise its saved localized name;
+    /// empty when that is only a talk table reference.
+    /// </summary>
+    public string Name
+    {
+        get
+        {
+            var displayName = ReadString("DisplayName");
+            return string.IsNullOrEmpty(displayName) ? StoredObjectData.ReadLocalizedName(Node) : displayName;
+        }
+    }
 
     /// <summary>
-    /// Saved-data SetName with a non-empty name: every saved string of the localized name takes the new text,
-    /// and a name that was only a talk table reference gains a string for language 0.
+    /// Saved-data SetName: the engine saves the new name as the item's DisplayName and keeps its localized name;
+    /// an empty name removes the DisplayName, restoring the localized one.
     /// </summary>
-    public void SetName(string name) => StoredObjectData.WriteLocalizedName(Node, name);
+    public void SetName(string name)
+    {
+        if (string.IsNullOrEmpty(name))
+            Node.Fields.RemoveAll(x => x.Name == "DisplayName");
+        else
+            WriteString("DisplayName", name);
+    }
 
     public string ReadString(string name)
     {
@@ -319,6 +335,15 @@ internal static class SavedGff
             node.Fields.Add(Scalar(type, name, value));
         else
             field.Data = Payload(field.Type, value);
+    }
+
+    public static void WriteFloat(Node node, string name, float value)
+    {
+        var field = node.Fields.FirstOrDefault(x => x.Name == name && x.Type == 8);
+        if (field == null)
+            node.Fields.Add(StoredObjectData.MakeField(8, name, BitConverter.GetBytes(value)));
+        else
+            field.Data = BitConverter.GetBytes(value);
     }
 
     public static void WriteString(Node node, string name, string value)

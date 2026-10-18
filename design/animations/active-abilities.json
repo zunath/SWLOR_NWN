@@ -5965,7 +5965,7 @@
     "InternalName": "sw_fincombo",
     "Category": "Unarmed",
     "Type": "Combat",
-    "Description": "Two strikes at one enemy, each floor(0.50 x weapon DMG) + 14. Spend Opening for +4 power per strike and redirect the second strike to the nearest other enemy within 5m of you, if available. Spend Finish for +8 per strike, both against the selected enemy.",
+    "Description": "Two strikes at one enemy, each floor(0.50 x weapon DMG) + 14. Spend Opening for +4 DMG per strike and redirect the second strike to the nearest other enemy within 5m of you, if available. Spend Finish for +8 DMG per strike, both against the selected enemy.",
     "Reference": "",
     "PerkId": "FinishingCombination",
     "Feats": [
@@ -6010,7 +6010,7 @@
     "InternalName": "sw_perfform",
     "Category": "Unarmed",
     "Type": "Combat",
-    "Description": "Deals weapon DMG + 45 to one enemy. Spending Finish adds +70 power. Practiced Form applies only with Finish.",
+    "Description": "Deals weapon DMG + 45 to one enemy. Spending Finish adds +70 DMG. Practiced Form applies only with Finish.",
     "Reference": "",
     "PerkId": "PerfectForm",
     "Feats": [
@@ -6104,7 +6104,7 @@
     "InternalName": "sw_bruisst",
     "Category": "Unarmed",
     "Type": "Stance",
-    "Description": "Increases Physical Defense by 10%, with any equipment. Direct hostile damage to real HP arms Retaliation against the attacker: +24 total power on your next Uppercut or Haymaker against that enemy within 8 seconds. One charge, with an 18-second grant cooldown. No Dirty Jab or Rattled requirement. The bonus is spent on activation, including a miss. Weapon swaps and unrelated hostile skills against the same enemy preserve it. Stance, combat or enemy changes clear it. No ordinary damage penalty.",
+    "Description": "Increases Physical Defense by 10%, with any equipment. Direct hostile damage to real HP arms Retaliation against the attacker: +24 total DMG on your next Uppercut or Haymaker against that enemy within 8 seconds. One charge, with an 18-second grant cooldown. No Dirty Jab or Rattled requirement. The bonus is spent on activation, including a miss. Weapon swaps and unrelated hostile skills against the same enemy preserve it. Stance, combat or enemy changes clear it. No ordinary damage penalty.",
     "Reference": "",
     "PerkId": "BruiserStance",
     "Feats": [

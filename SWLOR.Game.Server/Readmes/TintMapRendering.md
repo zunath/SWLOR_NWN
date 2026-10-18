@@ -502,21 +502,22 @@ skills and idle. Rebuild `sw_pt_robe` and `sw_pt_root`; confirmation of the nati
 client's animation transitions remains an in-game check.
 
 Normal-body robe 236 uses the generated `p??200` roots, whether or not the
-item has custom RGB. Its lower panels originally weighted separate coat helpers.
-Authored ability clips such as Force Leap animate the body but omit those helpers,
-so the legs could spread while the skirt retained its previous pose.
-`RobeSkirtBindings.py` maps the three skirts' waist weights to `pelvis_g`, middle
-weights to the corresponding thigh, and distal weights to the shin. It preserves
-the authored skinned rest shape, including the female models' nonstandard inverse
-binds, and merges duplicate palette entries without changing total vertex weight.
-Only those skin tables change; geometry, body traversal, animation IDs, materials,
-upper panels and sleeves remain unchanged. The RGB generator applies this policy
-after its native conversion audit so regeneration retains the fix.
+item has custom RGB. Its skirts are weighted to separate coat helpers, as in the native robe.
+An earlier repair weighted them to `pelvis_g`, the thighs and the shins instead, so they
+followed the legs in authored ability clips such as Force Leap. Those clips animate the body
+but omit the coat helpers. That binding made the coat hug the hips and let long pelvis parts
+poke through the back. Once the helpers received engine part IDs (see above), it was retired.
+`RobeSkirtBindings.py` now copies the native robe's skirt palettes, bone maps, inverse binds
+and weights back onto the unchanged RGB rig. Its rest-shape error is below 1e-7 m. Geometry,
+traversal, animation IDs and every other skin stay byte-identical. The trade-off matches the
+native robes: in ability clips that omit the coat tracks, the skirt holds its previous pose
+while the legs move. The generator applies no skirt policy, so regeneration keeps the native
+weights.
 
 Run `python -B SWLOR_Haks/tools/RobeSkirtBindings.py --apply` to repair the existing
-catalog, or `--check` to verify it. `TestRobeSkirtBindings.py` reconstructs the
-legacy bindings from the original native robe and checks every variant's rest
-shape, byte preservation, idempotence and movement during body-only leg poses.
+catalog, or `--check` to verify it. `TestRobeSkirtBindings.py` checks that all eight
+variants use the native coat-helper bones, that the restoration is idempotent, and that
+every weighted helper sits below numbered joints.
 Rebuild/install `sw_pt_root.hak`; no module repack or C# deploy is required.
 
 The catalog audit extends this treatment to every visible static attachment

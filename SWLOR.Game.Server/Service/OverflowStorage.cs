@@ -33,7 +33,9 @@ namespace SWLOR.Game.Server.Service
         {
             var playerId = GetObjectUUID(player);
             DeleteClaimedRecords(player);
-            var records = DB.Search(BuildQuery(playerId)).ToList();
+            // An unpaged search returns at most 50 records; load them all so a later small item is not missed.
+            var total = (int)GetItemCount(playerId);
+            var records = total == 0 ? new List<OverflowItem>() : DB.Search(BuildQuery(playerId).AddPaging(total, 0)).ToList();
             if (records.Count == 0)
             {
                 SendMessageToPC(player, "You have no items in overflow storage.");

@@ -265,6 +265,15 @@ namespace SWLOR.Game.Server.EngineTests.Framework
             return (int)characterType.GetMethod("ReadInteger", Members).Invoke(character, new object[] { "PlayerFileVer" });
         }
 
+        /// <summary>A copy of a character file with its migration checkpoint (root <c>PlayerFileVer</c>) set.</summary>
+        public static byte[] WithFileVersion(byte[] file, int version)
+        {
+            var characterType = GameType(ServiceNamespace + "SavedCharacter");
+            var character = Activator.CreateInstance(characterType, Members, null, new object[] { file, null }, null);
+            characterType.GetMethod("WriteInteger", Members).Invoke(character, new object[] { "PlayerFileVer", version, 5u });
+            return (byte[])characterType.GetMethod("Serialize", Members).Invoke(character, null);
+        }
+
         /// <summary>
         /// The server's boot-time pass over every character file in the server vault (<c>CharacterFileUpgrade.UpgradeServerVault</c>).
         /// Returns false when any character could not be upgraded. Must run inside an engine script.

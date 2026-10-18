@@ -126,13 +126,13 @@ internal static class CharacterFileUpgrade
             {
                 UpgradeBatch(batch, vault, backupDirectory, seen, deferred, counts);
                 Log.Write(LogGroup.Migration, $"Character upgrade: {counts.Done}/{files.Length} files ({counts.Upgraded} upgraded, " +
-                    $"{counts.Current} current, {counts.Skipped} without a record, {counts.Failed} failed) in {stopwatch.Elapsed:hh\\:mm\\:ss}.", true);
+                    $"{counts.Current} current, {counts.Skipped} without an initialized record, {counts.Failed} failed) in {stopwatch.Elapsed:hh\\:mm\\:ss}.", true);
             }
             queue = deferred.ToArray();
         }
 
         Log.Write(LogGroup.Migration, $"Character upgrade to version {LatestVersion} finished in {stopwatch.ElapsedMilliseconds}ms: " +
-            $"{counts.Upgraded} upgraded, {counts.Current} current, {counts.Skipped} without a record, {counts.Failed} failed, " +
+            $"{counts.Upgraded} upgraded, {counts.Current} current, {counts.Skipped} without an initialized record, {counts.Failed} failed, " +
             $"{counts.Overflowed} items moved to overflow storage.", true);
         if (counts.Failed > 0)
             return false;
@@ -163,13 +163,11 @@ internal static class CharacterFileUpgrade
                 continue;
             }
             var record = DB.Get<Player>(character.Id);
+            // A resumed file may still be behind a newer release; it is upgraded like any other below.
             if (character.ResumeOrDiscardPendingFile(record))
-            {
-                counts.Upgraded++;
                 Log.Write(LogGroup.Migration, $"Character upgrade finished an interrupted save for '{character.Path}' [{character.Id}].", true);
-                continue;
-            }
-            if (record == null || record.IsDeleted)
+            // Characters still being created are set up at login (PlayerInitialization), not upgraded.
+            if (record == null || record.IsDeleted || record.Version == 0 || record.CharacterInitializationPending)
                 continue;
             character.Record = JsonConvert.DeserializeObject<Player>(JsonConvert.SerializeObject(record));
             if (!string.IsNullOrWhiteSpace(record.ActiveBeastId))
@@ -180,7 +178,7 @@ internal static class CharacterFileUpgrade
 
         foreach (var character in pending)
         {
-            if (character.Deferred || character.Resumed)
+            if (character.Deferred)
                 continue;
             if (character.Error != null)
             {
@@ -237,7 +235,7 @@ internal static class CharacterFileUpgrade
             var item = result.Overflow[index];
             DB.Set(new OverflowItem
             {
-                Id = $"{character.Id}-{result.FromVersion}-{index}",
+                Id = $"{character.Id}-{character.FileKey}-{result.FromVersion}-{index}",
                 PlayerId = character.Id,
                 Name = item.Name,
                 Resref = item.Resref,
@@ -268,7 +266,25 @@ internal static class CharacterFileUpgrade
     private sealed class CharacterFile
     {
         public string Path { get; private init; }
-        public byte[] Data { get; private init; }
+        public byte[] Data { get; private set; }
+
+        /// <summary>
+        /// A stable identity for this file within the vault, so files that share a record keep separate overflow items.
+        /// </summary>
+        public string FileKey
+        {
+            get
+            {
+                // FNV-1a over the vault folder and file name. A cryptographic hash would load the runtime's OpenSSL
+                // bindings into the server process.
+                var name = System.IO.Path.GetFileName(System.IO.Path.GetDirectoryName(Path)) + "/" +
+                           System.IO.Path.GetFileName(Path).ToLowerInvariant();
+                var hash = 14695981039346656037UL;
+                foreach (var b in System.Text.Encoding.UTF8.GetBytes(name))
+                    hash = (hash ^ b) * 1099511628211UL;
+                return hash.ToString("x16");
+            }
+        }
         public string Id { get; private init; }
         public bool IsDM { get; private init; }
         public Player Record { get; set; }
@@ -285,9 +301,6 @@ internal static class CharacterFileUpgrade
 
         private bool HasPendingFile { get; init; }
 
-        /// <summary>True when this boot finished an interrupted save instead of upgrading the file.</summary>
-        public bool Resumed { get; private set; }
-
         /// <summary>
         /// Main thread. An upgraded file left beside the character file is moved into place when the record already
         /// holds that upgrade, and deleted otherwise so the file is upgraded again. Returns true when it was moved.
@@ -299,7 +312,7 @@ internal static class CharacterFileUpgrade
             if (record != null && PendingVersion > 0 && record.CharacterFileVersion >= PendingVersion)
             {
                 File.Move(PendingPath(Path), Path, true);
-                Resumed = true;
+                Data = File.ReadAllBytes(Path);
                 return true;
             }
             File.Delete(PendingPath(Path));
@@ -338,7 +351,7 @@ internal static class CharacterFileUpgrade
 
         public void Convert()
         {
-            if (Error != null || Record == null || Resumed)
+            if (Error != null || Record == null)
                 return;
             try
             {

@@ -91,6 +91,45 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                     ctx.AssertEqual(latest, DB.Get<Player>(fixture.Id).Version, "The redone record is current");
                     ctx.AssertEqual(overflow.Count, OverflowRecords(fixture.Id).Count,
                         "A redone upgrade replaces its overflow items instead of adding copies");
+
+                    // An interrupted save from an older release is finished, then brought to the latest version.
+                    var older = SavedCharacterMigration.WithFileVersion(upgraded, latest - 1);
+                    File.WriteAllBytes(path, original);
+                    File.WriteAllBytes(path + ".upgrade", older);
+                    var behind = SavedCharacterMigration.CopyRecord(DB.Get<Player>(fixture.Id));
+                    behind.Version = latest - 1;
+                    behind.CharacterFileVersion = latest - 1;
+                    DB.Set(behind);
+                    ResetVaultMarker();
+                    ctx.Assert(SavedCharacterMigration.UpgradeServerVault(), "An older interrupted save is finished and upgraded");
+                    ctx.AssertEqual(latest, SavedCharacterMigration.ReadFileVersion(File.ReadAllBytes(path)),
+                        "The resumed file reaches the latest version");
+                    ctx.AssertEqual(latest, DB.Get<Player>(fixture.Id).Version, "The resumed record reaches the latest version");
+
+                    // A character still being created is left for login to set up.
+                    File.WriteAllBytes(path, original);
+                    var pending = SavedCharacterMigration.CopyRecord(previousRecord);
+                    pending.Version = 5;
+                    pending.CharacterFileVersion = 0;
+                    pending.CharacterInitializationPending = true;
+                    DB.Set(pending);
+                    ResetVaultMarker();
+                    ctx.Assert(SavedCharacterMigration.UpgradeServerVault(), "A pending character does not fail the pass");
+                    ctx.Assert(File.ReadAllBytes(path).SequenceEqual(original), "A character still being created keeps its file");
+                    ctx.AssertEqual(5, DB.Get<Player>(fixture.Id).Version, "A character still being created keeps its record");
+
+                    // Two files that share a record and start from the same checkpoint keep separate overflow items.
+                    foreach (var item in OverflowRecords(fixture.Id))
+                        DB.Delete<OverflowItem>(item.Id);
+                    var second = Path.Combine(vault, "TESTKEY2", "fixture.bic");
+                    Directory.CreateDirectory(Path.GetDirectoryName(second)!);
+                    var checkpointed = SavedCharacterMigration.WithFileVersion(original, 5);
+                    File.WriteAllBytes(path, checkpointed);
+                    File.WriteAllBytes(second, checkpointed);
+                    StartUpgrade(fixture.Id, previousRecord);
+                    ctx.Assert(SavedCharacterMigration.UpgradeServerVault(), "Both files that share a record are upgraded");
+                    ctx.AssertEqual(latest, SavedCharacterMigration.ReadFileVersion(File.ReadAllBytes(second)), "The second file is current");
+                    ctx.AssertEqual(overflow.Count * 2, OverflowRecords(fixture.Id).Count, "Each file keeps its own overflow items");
                 });
             }
             finally

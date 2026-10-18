@@ -1,0 +1,416 @@
+"""Pure helpers of the live-server client stack; the Docker run itself is verified in-engine."""
+from pathlib import Path
+import struct
+import subprocess
+import sys
+import tempfile
+import unittest
+from types import SimpleNamespace
+from unittest.mock import patch
+
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+from nwn_live_client import stack
+from nwn_live_client.stack import LiveStackError
+
+
+def gff(fields):
+    """Build a minimal GFF V3.2 .bic: (label, text) CExoString fields or (label, type, raw payload)."""
+    labels = b''.join(field[0].encode('ascii').ljust(16, b'\0') for field in fields)
+    field_data = b''
+    entries = b''
+    for index, field in enumerate(fields):
+        if len(field) == 3:
+            field_type, payload = field[1], field[2]
+        else:
+            encoded = field[1].encode('utf-8')
+            field_type, payload = 10, struct.pack('<I', len(encoded)) + encoded
+        entries += struct.pack('<3I', field_type, index, len(field_data))
+        field_data += payload
+    indices = b''.join(struct.pack('<I', index) for index in range(len(fields)))
+    struct_offset = 56
+    field_offset = struct_offset + 12
+    label_offset = field_offset + len(entries)
+    field_data_offset = label_offset + len(labels)
+    indices_offset = field_data_offset + len(field_data)
+    # One field: the struct stores its index (0). Several: a byte offset into the indices (0).
+    struct_data = 0
+    header = b'BIC V3.2' + struct.pack(
+        '<12I', struct_offset, 1, field_offset, len(fields), label_offset, len(fields),
+        field_data_offset, len(field_data), indices_offset, len(indices), indices_offset + len(indices), 0)
+    top = struct.pack('<3I', 0xFFFFFFFF, struct_data, len(fields))
+    return header + top + entries + labels + field_data + indices
+
+
+def gff_structs(structs):
+    """Build a .bic whose structs hold only struct-reference fields: structs[i] lists target indices."""
+    entries, indices, struct_table = b'', b'', b''
+    for number, targets in enumerate(structs):
+        first = len(entries) // 12
+        for target in targets:
+            entries += struct.pack('<3I', 14, 0, target)
+        if len(targets) == 1:
+            data = first
+        else:
+            data = len(indices)
+            indices += b''.join(struct.pack('<I', first + offset) for offset in range(len(targets)))
+        struct_table += struct.pack('<3I', 0xFFFFFFFF if number == 0 else 0, data, len(targets))
+    labels = b'Next'.ljust(16, b'\0')
+    struct_offset = 56
+    field_offset = struct_offset + len(struct_table)
+    label_offset = field_offset + len(entries)
+    indices_offset = label_offset + len(labels)
+    header = b'BIC V3.2' + struct.pack(
+        '<12I', struct_offset, len(structs), field_offset, len(entries) // 12, label_offset, 1,
+        indices_offset, 0, indices_offset, len(indices), indices_offset + len(indices), 0)
+    return header + struct_table + entries + labels + indices
+
+
+class LiveClientHelperTests(unittest.TestCase):
+    def test_struct_nesting_follows_the_gff_reader_limit(self):
+        def chain(levels):
+            return [[number + 1] for number in range(levels)] + [[]]
+
+        stack.validate_bic(self.write('deep128.bic', gff_structs(chain(128))))
+        with self.assertRaisesRegex(LiveStackError, '128 levels'):
+            stack.validate_bic(self.write('deep129.bic', gff_structs(chain(129))))
+        # Struct 1 is checked shallowly first, then referenced again at depth 129.
+        shared = [[1, 2], []] + [[number + 3] for number in range(127)] + [[1]]
+        with self.assertRaisesRegex(LiveStackError, '128 levels'):
+            stack.validate_bic(self.write('shared.bic', gff_structs(shared)))
+
+    def setUp(self):
+        self.directory = tempfile.TemporaryDirectory()
+        self.root = Path(self.directory.name)
+
+    def tearDown(self):
+        self.directory.cleanup()
+
+    def write(self, name, data):
+        path = self.root / name
+        path.write_bytes(data)
+        return path
+
+    def test_reads_character_uuid(self):
+        uuid = 'a27c0f71-93de-4dcb-aa02-0047c02e6b2d'
+        path = self.write('test.bic', gff([('Tag', ''), ('UUID', uuid)]))
+        self.assertEqual(stack.character_uuid(path), uuid)
+
+    def test_reads_single_field_struct(self):
+        path = self.write('one.bic', gff([('UUID', 'a27c0f71-93de-4dcb-aa02-0047c02e6b2d')]))
+        self.assertEqual(stack.read_gff_string(path, 'UUID'), 'a27c0f71-93de-4dcb-aa02-0047c02e6b2d')
+
+    def test_character_without_uuid_fails(self):
+        path = self.write('none.bic', gff([('Tag', 'x'), ('Deity', '')]))
+        with self.assertRaises(LiveStackError):
+            stack.character_uuid(path)
+
+    def test_truncated_gff_is_a_cli_error(self):
+        whole = gff([('Tag', ''), ('UUID', 'a27c0f71-93de-4dcb-aa02-0047c02e6b2d')])
+        with self.assertRaisesRegex(LiveStackError, 'damaged'):
+            stack.read_gff_string(self.write('cut.bic', whole[:70]), 'UUID')
+
+    def test_validate_bic_needs_a_character_gff(self):
+        good = gff([('Tag', ''), ('UUID', 'a27c0f71-93de-4dcb-aa02-0047c02e6b2d')])
+        stack.validate_bic(self.write('good.bic', good))
+        with self.assertRaisesRegex(LiveStackError, 'not a character'):
+            stack.validate_bic(self.write('item.bic', b'UTI ' + good[4:]))
+        with self.assertRaisesRegex(LiveStackError, 'damaged'):
+            stack.validate_bic(self.write('cut.bic', good[:70]))
+        # Label table offset (header field 5) pointing past the end of the file.
+        stray = bytearray(good)
+        struct.pack_into('<I', stray, 8 + 4 * 4, len(good) + 100)
+        with self.assertRaisesRegex(LiveStackError, 'label table'):
+            stack.validate_bic(self.write('stray.bic', bytes(stray)))
+        # The Tag field (first field entry, at offset 68) pointing outside the field data.
+        bad_tag = bytearray(good)
+        struct.pack_into('<I', bad_tag, 68 + 8, 100000)
+        with self.assertRaisesRegex(LiveStackError, 'field value'):
+            stack.validate_bic(self.write('badtag.bic', bytes(bad_tag)))
+        # The same field retyped as a list, with an empty list-indices table to point into.
+        bad_list = bytearray(good)
+        struct.pack_into('<3I', bad_list, 68, 15, 0, 0)
+        with self.assertRaisesRegex(LiveStackError, 'list reference'):
+            stack.validate_bic(self.write('badlist.bic', bytes(bad_list)))
+        # A struct field pointing back at the top-level struct, and a field of unknown type.
+        cyclic = bytearray(good)
+        struct.pack_into('<3I', cyclic, 68, 14, 0, 0)
+        with self.assertRaisesRegex(LiveStackError, 'refers back'):
+            stack.validate_bic(self.write('cyclic.bic', bytes(cyclic)))
+        unknown = bytearray(good)
+        struct.pack_into('<I', unknown, 68, 16)
+        with self.assertRaisesRegex(LiveStackError, 'unknown type'):
+            stack.validate_bic(self.write('unknown.bic', bytes(unknown)))
+        # Field-index byte count (header field 10) that is not a multiple of four.
+        misaligned = bytearray(good)
+        struct.pack_into('<I', misaligned, 8 + 9 * 4, 7)
+        with self.assertRaisesRegex(LiveStackError, '32-bit'):
+            stack.validate_bic(self.write('misaligned.bic', bytes(misaligned)))
+        # The top-level struct (at offset 56) must have type 0xFFFFFFFF.
+        root = bytearray(good)
+        struct.pack_into('<I', root, 56, 0)
+        with self.assertRaisesRegex(LiveStackError, 'wrong type'):
+            stack.validate_bic(self.write('root.bic', bytes(root)))
+
+    def test_loading_screen_frame_is_recognized(self):
+        # Pixel values sampled from real loading-screen and in-game captures.
+        loading = {'gold': (198, 125, 33), 'panel': (0, 29, 49), 'bar': (8, 44, 66)}
+        self.assertTrue(stack.is_loading_screen(loading))
+        self.assertFalse(stack.is_loading_screen({'gold': (0, 0, 0), 'panel': (0, 0, 0), 'bar': (0, 0, 0)}))
+        # A gold-coloured floor in the game view alone is not the loading screen.
+        self.assertFalse(stack.is_loading_screen({'gold': (198, 125, 33), 'panel': (0, 0, 0), 'bar': (0, 0, 0)}))
+
+    def test_stack_environment_is_never_production(self):
+        base = self.write('swlor.env', b'NWN_MODULE="x"\nSWLOR_ENVIRONMENT=dev\n')
+        self.assertEqual(stack.development_environment({}, base), 'dev')
+        self.assertEqual(stack.development_environment({'SWLOR_ENVIRONMENT': 'test'}, base), 'test')
+        self.assertEqual(stack.development_environment({'SWLOR_ENVIRONMENT': 'typo'}, base), 'dev')
+        for value in ('production', 'PROD'):
+            with self.assertRaisesRegex(LiveStackError, 'cannot be production'):
+                stack.development_environment({'SWLOR_ENVIRONMENT': value}, base)
+        with self.assertRaisesRegex(LiveStackError, 'cannot be production'):
+            stack.development_environment({}, self.write('prod.env', b'SWLOR_ENVIRONMENT="production"\n'))
+
+    def test_localized_strings_are_parsed(self):
+        def locstring(*entries, extra=b''):
+            body = struct.pack('<2I', 0xFFFFFFFF, len(entries)) + b''.join(
+                struct.pack('<2I', string_id, len(text)) + text for string_id, text in entries) + extra
+            return struct.pack('<I', len(body)) + body
+
+        uuid = ('UUID', 'a27c0f71-93de-4dcb-aa02-0047c02e6b2d')
+        stack.validate_bic(self.write('ok.bic', gff([('FirstName', 12, locstring((0, b'Agan'))), uuid])))
+        for name, payload in (('short', struct.pack('<I', 4) + b'\0' * 4),
+                              ('repeat', locstring((0, b'A'), (0, b'B'))),
+                              ('slack', locstring((0, b'A'), extra=b'\0\0'))):
+            with self.assertRaisesRegex(LiveStackError, 'localized string'):
+                stack.validate_bic(self.write(f'{name}.bic', gff([('FirstName', 12, payload), uuid])))
+
+    def test_resrefs_are_at_most_sixteen_characters(self):
+        uuid = ('UUID', 'a27c0f71-93de-4dcb-aa02-0047c02e6b2d')
+        stack.validate_bic(self.write('ok.bic', gff([('Portrait', 11, bytes([16]) + b'p' * 16), uuid])))
+        with self.assertRaisesRegex(LiveStackError, 'longer than 16'):
+            stack.validate_bic(self.write('long.bic', gff([('Portrait', 11, bytes([17]) + b'p' * 17), uuid])))
+
+    def test_entry_on_the_current_connection_is_detected(self):
+        home = self.root / 'home'
+        (home / 'app_logs' / 'Connection').mkdir(parents=True)
+        (home / 'logs').mkdir()
+        server_log = home / 'logs' / 'nwserverLog1.txt'
+        audit = home / 'app_logs' / 'Connection' / 'Connection_20261017.log'
+        fake = SimpleNamespace(server_log=server_log, home=home)
+        # The year comes from the log header, so the test does not depend on today's date.
+        server_log.write_text('Messages for: Sat Oct 17 21:20:40 2026\n'
+                              '[Sat Oct 17 21:20:43] Tester (ABCD1234) Joined as Player 1\n')
+        self.assertFalse(stack.entered_current_connection(fake))
+        audit.write_text('2026-10-17 21:21:21.090 +00:00 [INF] Tester - Tester - ABCD1234 - 1.2.3.4: '
+                         'Connected to server\n')
+        self.assertTrue(stack.entered_current_connection(fake))
+        server_log.write_text(server_log.read_text() + '[Sat Oct 17 21:30:00] Tester (ABCD1234) Joined as Player 1\n')
+        self.assertFalse(stack.entered_current_connection(fake))
+
+    def test_seed_error_reply_fails_start_up(self):
+        def compose(reply):
+            return lambda *args, **kwargs: subprocess.CompletedProcess([], 0, reply, b'')
+
+        for reply in (b'OK\n', b'\n'):
+            stack.seed_player(SimpleNamespace(compose=compose(reply)), 'a27c0f71-93de-4dcb-aa02-0047c02e6b2d')
+        with self.assertRaisesRegex(LiveStackError, 'Could not seed'):
+            stack.seed_player(SimpleNamespace(compose=compose(b'(error) ERR unknown command\n')), 'x')
+
+    def test_rejects_non_gff(self):
+        with self.assertRaises(LiveStackError):
+            stack.read_gff_string(self.write('bad.bic', b'not a gff' * 10), 'UUID')
+
+    def test_project_names_are_prefixed_and_safe(self):
+        self.assertEqual(stack.project_name('Ship-Check'), 'swlor-live-ship-check')
+        self.assertEqual(stack.project_name('swlor-live-ship'), 'swlor-live-ship')
+        self.assertRegex(stack.project_name(None), r'^swlor-live-[0-9a-f]{6}$')
+        for bad in ('../x', 'a b', 'x;y'):
+            with self.assertRaises(LiveStackError):
+                stack.project_name(bad)
+
+    def test_public_cdkey_must_be_public_form(self):
+        self.assertEqual(stack.validate_public_cdkey(' abcd1234 '), 'ABCD1234')
+        for bad in ('', 'ABCDE-FGHIJ-KLMNO', 'ABC123'):
+            with self.assertRaises(LiveStackError):
+                stack.validate_public_cdkey(bad)
+
+    def test_env_files_are_literal_and_refuse_injection(self):
+        text = stack.render_env_file({'A_PATH': 'C:/Program Files (x86)/x', 'EMPTY': ''})
+        self.assertEqual(text, "A_PATH='C:/Program Files (x86)/x'\nEMPTY=''\n")
+        for values in ({'lower': 'x'}, {'OK': "it's"}, {'OK': 'a\nB=c'}):
+            with self.assertRaises(LiveStackError):
+                stack.render_env_file(values)
+        self.assertEqual(stack.parse_server_env(['SWLOR_TEST_DRIVER=1', 'X=a=b']),
+                         {'SWLOR_TEST_DRIVER': '1', 'X': 'a=b'})
+        with self.assertRaises(LiveStackError):
+            stack.parse_server_env(['NO_VALUE'])
+
+    def test_client_settings_are_silent_and_fixed_size(self):
+        text = stack.client_settings('SwlorLive')
+        for channel in ('effects', 'music', 'streams', 'voices'):
+            self.assertIn(f'[sound.{channel}]\nvolume = 0.0', text)
+        for section in ('graphics.intro.splash', 'graphics.movies', 'graphics.movies.intro'):
+            self.assertIn(f'[{section}]\nenabled = false', text)
+        self.assertIn('width = 1280\nheight = 720', text)
+        self.assertIn('[ui]\nscale = 1.0', text)
+        self.assertIn('[net.udp.window]\ntimeout = 300000', text)
+        with self.assertRaises(LiveStackError):
+            stack.client_settings('bad"name')
+
+    def test_profile_aliases_point_at_mounted_haks(self):
+        self.assertIn('HAK=/hak\n', stack.CLIENT_ALIASES)
+        self.assertIn('TLK=/tlk\n', stack.CLIENT_ALIASES)
+
+    def test_join_and_leave_patterns_match_server_log(self):
+        log = self.write('nwserverLog1.txt', (
+            'Tester (ABCD1234) Joined as Player 1\n'
+            'Tester Left as a Player (0 players left)\n'
+            'Tester (ABCD1234) Joined as Game Master 1\n'
+            'Tester Left as a Game Master (0 players left)\n'
+            'Tester (ABCD1234) Joined as Player 1\n').encode())
+        self.assertEqual(stack.count_matches(log, stack.JOIN_PATTERN), 3)
+        self.assertEqual(stack.count_matches(log, stack.LEFT_PATTERN), 2)
+        self.assertEqual(stack.JOIN_KEY_PATTERN.findall(log.read_text()), ['ABCD1234'] * 3)
+
+    def test_entry_and_loading_tip_patterns_match_swlor_logs(self):
+        audit = self.write('Connection_20261017.log', (
+            '2026-10-17 12:56:49.989 +00:00 [INF] Tester [PlayerId=x] - Tester - ABCD1234 - 172.26.0.4: '
+            'Connected to server\n'
+            '2026-10-17 12:58:06.410 +00:00 [INF] Tester [PlayerId=x] - Tester - ABCD1234 - 172.26.0.4: '
+            'Disconnected from server\r\n').encode())
+        self.assertEqual(stack.count_matches(audit, stack.ENTRY_PATTERN), 1)
+        chat = self.write('nwclientLog1.txt', (
+            '[CHAT WINDOW TEXT] [Sat Oct 17 12:56:51] Acquired 200 credits\n'
+            '[CHAT WINDOW TEXT] [Sat Oct 17 12:56:52] Loading Screen: Each fishing location differs.\n'
+            '[CHAT WINDOW TEXT] [Sat Oct 17 12:57:04] Tester: Loading Screen: typed by a player\n').encode())
+        self.assertEqual(stack.count_matches(chat, stack.LOADING_TIP_PATTERN), 1)
+
+    def test_project_reservation_reports_the_holding_run(self):
+        def completed(code, out=b''):
+            return subprocess.CompletedProcess([], code, out, b'Conflict. The container name is already in use')
+
+        with patch.object(stack, 'run', side_effect=[completed(0)]) as docker:
+            stack.reserve_project('swlor-live-lock', self.root / 'first', 'image:tag')
+        command = docker.call_args.args[0]
+        self.assertEqual(command[:5], ['docker', 'run', '-d', '--name', 'swlor-live-lock-reservation'])
+        self.assertEqual(command[-2:], ['image:tag', 'infinity'])
+        with patch.object(stack, 'run', side_effect=[completed(1), completed(0, b'0123abcd C:\\runs\\first\n')]):
+            with self.assertRaisesRegex(LiveStackError, r'reserved by run C:\\runs\\first'):
+                stack.reserve_project('swlor-live-lock', self.root / 'second', 'image:tag')
+
+    def test_down_refuses_a_project_reserved_by_another_run(self):
+        run_dir = self.root / 'stale-run'
+        run_dir.mkdir()
+        (run_dir / 'state.json').write_text('{"project": "swlor-live-reused"}', 'utf-8')
+        stale = stack.Stack(run_dir)
+        with patch.object(stack, 'reservation_holder', return_value=str(self.root / 'new-run')), \
+                patch.object(stack, 'boot_players') as boot:
+            with self.assertRaisesRegex(LiveStackError, 'now reserved by run'):
+                stack.destroy(stale)
+        boot.assert_not_called()
+
+    def test_release_removes_only_this_runs_reservation_by_id(self):
+        def completed(code, out=b''):
+            return subprocess.CompletedProcess([], code, out, b'')
+
+        other = completed(0, b'0123abcd C:\\runs\\new-run\n')
+        with patch.object(stack, 'run', side_effect=[other]) as docker:
+            self.assertTrue(stack.release_project('swlor-live-lock', Path('C:/runs/stale-run')))
+        self.assertEqual(docker.call_count, 1)
+        mine = completed(0, b'0123abcd ' + str(self.root).encode() + b'\n')
+        with patch.object(stack, 'run', side_effect=[mine, completed(0), completed(1)]) as docker:
+            self.assertTrue(stack.release_project('swlor-live-lock', self.root))
+        self.assertEqual(docker.call_args_list[1].args[0], ['docker', 'rm', '--force', '0123abcd'])
+
+    def test_release_failure_is_not_read_as_removal(self):
+        mine = subprocess.CompletedProcess([], 0, b'0123abcd ' + str(self.root).encode() + b'\n', b'')
+        denied = subprocess.CompletedProcess([], 1, b'', b'error during connect: daemon is not running')
+        with patch.object(stack, 'run', side_effect=[mine, denied]):
+            self.assertFalse(stack.release_project('swlor-live-lock', self.root))
+
+    def test_reservation_lookup_failure_is_not_read_as_absence(self):
+        missing = subprocess.CompletedProcess([], 1, b'', b'Error: No such container: swlor-live-x-reservation')
+        with patch.object(stack, 'run', return_value=missing):
+            self.assertIsNone(stack.reservation('swlor-live-x'))
+        unreachable = subprocess.CompletedProcess([], 1, b'', b'error during connect: daemon is not running')
+        with patch.object(stack, 'run', return_value=unreachable):
+            with self.assertRaisesRegex(LiveStackError, 'Could not inspect'):
+                stack.reservation('swlor-live-x')
+
+    def test_input_checks_treat_read_errors_as_changes(self):
+        def vanished():
+            raise FileNotFoundError('sw_tile.hak')
+
+        self.assertFalse(stack.unchanged(vanished, {'a.hak': [1, 2]}))
+        self.assertTrue(stack.unchanged(vanished, None))
+        self.assertTrue(stack.unchanged(lambda: {'a': [1]}, {'a': [1]}))
+
+    def test_play_rejects_non_finite_settle_before_touching_docker(self):
+        for value in (float('nan'), float('inf'), -1.0):
+            with self.assertRaisesRegex(LiveStackError, 'finite'):
+                stack.play(object(), value)
+
+    def test_joined_player_on_a_stopped_server_counts_as_unbooted(self):
+        crashed = SimpleNamespace(joined_players=lambda: 1, running=lambda service: False)
+        self.assertFalse(stack.boot_players(crashed))
+        empty = SimpleNamespace(joined_players=lambda: 0, running=lambda service: False)
+        self.assertTrue(stack.boot_players(empty))
+
+    def test_state_is_replaced_atomically(self):
+        run_dir = self.root / 'run'
+        run_dir.mkdir()
+        (run_dir / 'state.json').write_text('{"project": "swlor-live-save"}', 'utf-8')
+        saved = stack.Stack(run_dir)
+        saved.state['marker'] = 1
+        saved.save()
+        self.assertEqual(stack.Stack(run_dir).state['marker'], 1)
+        self.assertFalse((run_dir / 'state.json.tmp').exists())
+
+    def test_live_commands_need_this_runs_reservation(self):
+        run_dir = self.root / 'run'
+        run_dir.mkdir()
+        (run_dir / 'state.json').write_text('{"project": "swlor-live-own"}', 'utf-8')
+        own = stack.Stack(run_dir)
+        with patch.object(stack, 'reservation_holder', return_value=str(run_dir)):
+            own.ensure_owner()
+        with patch.object(stack, 'reservation_holder', return_value=None):
+            own.ensure_owner(require_reservation=False)
+            with self.assertRaisesRegex(LiveStackError, 'has no reservation'):
+                own.ensure_owner()
+
+    def test_build_digest_changes_with_content_and_names(self):
+        build = self.root / 'build'
+        build.mkdir()
+        (build / 'a.dll').write_bytes(b'one')
+        first = stack.build_digest(build)
+        (build / 'a.dll').write_bytes(b'two')
+        self.assertNotEqual(first, stack.build_digest(build))
+        (build / 'a.dll').rename(build / 'b.dll')
+        self.assertNotEqual(first, stack.build_digest(build))
+
+    def test_hak_manifest_detects_a_replaced_archive(self):
+        haks = self.root / 'hak'
+        haks.mkdir()
+        (haks / 'a.hak').write_bytes(b'one')
+        before = stack.hak_manifest(haks)
+        (haks / 'a.hak').write_bytes(b'longer')
+        self.assertNotEqual(before, stack.hak_manifest(haks))
+
+    def test_run_directory_must_be_outside_repository(self):
+        self.assertTrue(stack.is_within(stack.REPO_ROOT / 'tools' / 'x', stack.REPO_ROOT))
+        self.assertFalse(stack.is_within(self.root, stack.REPO_ROOT))
+
+    def test_compose_and_settings_keep_development_only_blocks(self):
+        compose = stack.COMPOSE_FILE.read_text('utf-8')
+        for host in ('nwmaster2.beamdog.net', 'nwn.beamdog.net', 'api.nwn.beamdog.net'):
+            self.assertIn(f'"{host}:127.0.0.1"', compose)
+        self.assertIn('NWN_PUBLICSERVER: "0"', compose)
+        self.assertIn('NWN_NWSYNCURL: ""', compose)
+        self.assertNotIn('ports:', compose)
+        self.assertIn('user: ${SWLOR_LIVE_CLIENT_USER}', compose)
+        self.assertRegex(stack.host_user(), r'^\d+:\d+$')
+        self.assertRegex(stack.server_image(), r'^zunath/nwn-dotnet:')
+
+
+if __name__ == '__main__':
+    unittest.main()

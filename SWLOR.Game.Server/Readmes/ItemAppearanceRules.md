@@ -20,6 +20,10 @@ or migration that assigns item models.
 - Check embedded item instances in creature equipment, stores, containers, and area
   JSON as well as standalone `Module/uti` blueprints. Update any generator or migration
   fallback that could recreate a prohibited appearance. Preserve stats and item identity.
+- Moving a player blueprint to another appearance changes only new copies. Add the old and
+  new parts to `ItemAppearanceCatalogMigration.Revisions` so owned copies follow in the
+  release's combined item visit. A copy converts only while every part the blueprint changed
+  still holds its old value.
 - Run `HelmetAppearanceTests` and, when changing its fallback catalog,
   `HeadgearSlotMigrationTests`. Follow `InEngineVisualVerification.md` for actual client
   screenshots. Migration behavior also requires the engine coverage in `EngineTesting.md`.
@@ -29,7 +33,8 @@ a C# server deployment. Release `2026-10-16` (`b1406fec3`) shipped player migrat
 and server migrations through 27; retain those entry points and checkpoint numbers. The pending
 player migration 23 and stored-item migration 28 repair model 223 on the affected visors during
 their combined artwork, type and loot-stat visit, including the Foundry correction and
-saved root icons. Saved DM creatures receive the model correction within their existing
+saved root icons, the appearance editor catalog moves and the Arkanian Dragon Breastplate
+revision. Saved DM creatures receive the model correction within their existing
 artwork visit, retaining authored stats and equipment slots. Valid custom models and the
 reserved NPC prop remain untouched. Characters already at player version 22 receive one
 pending item traversal in migration 23; stored items already at server version 27 receive

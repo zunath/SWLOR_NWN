@@ -1,6 +1,7 @@
 using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Game.Server.Entity;
+using SWLOR.Game.Server.Feature.AbilityDefinition.Devices;
 using SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid;
 using SWLOR.Game.Server.Feature.AbilityDefinition.Force;
 using SWLOR.Game.Server.Feature.AbilityDefinition.Leadership;
@@ -111,6 +112,39 @@ public class QuickCastTests
         QuickCastPolicy.IsEligible(ability, QuickCastTargetType.CurrentEnemy).Should().BeFalse();
         ability.UsesActiveAttackTarget = false;
         ability.Targeting = new AbilityTargetingDetail(Spell.Invalid, AbilityTargetingShapeType.Cone, 5f, 2f, AbilityTargetingFlags.HarmsEnemies, null);
+        QuickCastPolicy.IsEligible(ability, QuickCastTargetType.CurrentEnemy).Should().BeFalse();
+    }
+
+    [Test]
+    public void PowerCell_AllRanksAllowSelfCasting_AndKeepManualTargetRequirements()
+    {
+        foreach (var ability in new PowerCellAbilityDefinition().BuildAbilities().Values)
+        {
+            QuickCastPolicy.IsEligible(ability, QuickCastTargetType.Self).Should().BeTrue();
+            QuickCastPolicy.IsEligible(ability, QuickCastTargetType.CurrentEnemy).Should().BeFalse();
+            ability.RequiresTarget.Should().BeTrue();
+            ability.CustomValidation.Should().NotBeNull();
+        }
+    }
+
+    [TestCase(AbilityTargetingShapeType.Sphere, AbilityTargetingFlags.HelpsAllies, true)]
+    [TestCase(AbilityTargetingShapeType.Cone, AbilityTargetingFlags.HelpsAllies, false)]
+    [TestCase(AbilityTargetingShapeType.Rect, AbilityTargetingFlags.HelpsAllies, false)]
+    [TestCase(AbilityTargetingShapeType.Sphere, AbilityTargetingFlags.HelpsAllies | AbilityTargetingFlags.IgnoresSelf, false)]
+    [TestCase(AbilityTargetingShapeType.Sphere, AbilityTargetingFlags.HelpsAllies | AbilityTargetingFlags.HarmsEnemies, false)]
+    [TestCase(AbilityTargetingShapeType.Sphere, AbilityTargetingFlags.HelpsAllies | AbilityTargetingFlags.OriginOnSelf, false)]
+    public void AreaSelfCast_RequiresOptInAndAnAllyTargetedSphere(
+        AbilityTargetingShapeType shape, AbilityTargetingFlags flags, bool eligible)
+    {
+        var ability = new PowerCellAbilityDefinition().BuildAbilities()[FeatType.PowerCell3];
+        ability.Targeting = new AbilityTargetingDetail(Spell.PowerCell3, shape, 5f, 0f, flags, null);
+        QuickCastPolicy.IsEligible(ability, QuickCastTargetType.Self).Should().Be(eligible);
+        QuickCastPolicy.IsEligible(ability, QuickCastTargetType.CurrentEnemy).Should().BeFalse();
+        ability.AllowsSelfQuickCast = false;
+        QuickCastPolicy.IsEligible(ability, QuickCastTargetType.Self).Should().BeFalse();
+        ability.AllowsSelfQuickCast = true;
+        ability.IsHostileAbility = true;
+        QuickCastPolicy.IsEligible(ability, QuickCastTargetType.Self).Should().BeFalse();
         QuickCastPolicy.IsEligible(ability, QuickCastTargetType.CurrentEnemy).Should().BeFalse();
     }
 

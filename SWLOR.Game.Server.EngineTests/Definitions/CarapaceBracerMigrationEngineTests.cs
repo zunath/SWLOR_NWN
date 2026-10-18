@@ -38,13 +38,6 @@ public static partial class MigrationEngineTests
             AddItemProperty(DurationType.Permanent, ItemPropertyCustom(ItemPropertyType.Defense, 1, 23), item);
             AddItemProperty(DurationType.Permanent, ItemPropertyCustom(ItemPropertyType.Defense, 2, 10), item);
             AddLegacyProperty(item, ItemPropertyType.Defense, 4, 35, 30);
-            if (converted)
-            {
-                ctx.Assert((bool)Invoke("SerializedItemResistanceMigration", "MigrateObject", item), "The old combat conversion runs first");
-                ctx.AssertEqual(30, PropertyValue(item, ItemPropertyType.Resistance, 2), "The old conversion retained the base protection as resistance");
-                RemoveMatching(item, ItemPropertyType.Resistance, 2);
-                AddItemProperty(DurationType.Permanent, ItemPropertyCustom(ItemPropertyType.Resistance, 2, 35), item);
-            }
             DeleteLocalInt(item, CarapaceBracerStatRevisionCatalog.RevisionVariable);
         });
         var uuid = GetObjectUUID(item);
@@ -61,6 +54,16 @@ public static partial class MigrationEngineTests
             await ctx.ExecuteInCreatureContextAsync(owner, () => Bank.WithdrawItem(owner, carried.Id));
             await ctx.WaitFrameAsync();
             item = FindHeadgear(owner, "cara_bracer");
+            if (converted)
+            {
+                await ctx.ExecuteInCreatureContextAsync(owner, () =>
+                {
+                    ctx.Assert((bool)Invoke("SerializedItemResistanceMigration", "MigrateObject", item), "The old combat conversion runs first");
+                    ctx.AssertEqual(30, PropertyValue(item, ItemPropertyType.Resistance, 2), "The old conversion retained the base protection as resistance");
+                    RemoveMatching(item, ItemPropertyType.Resistance, 2);
+                    AddItemProperty(DurationType.Permanent, ItemPropertyCustom(ItemPropertyType.Resistance, 2, 35), item);
+                });
+            }
             DeleteLocalInt(item, CarapaceBracerStatRevisionCatalog.RevisionVariable);
         }
         if (storedFirst)

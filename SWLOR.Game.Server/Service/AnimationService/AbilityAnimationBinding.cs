@@ -23,7 +23,13 @@ public static class AbilityAnimationBinding
         !equipmentCompatible && !ability.HasGeneratedAnimationBinding && ability.AuthoredAnimation != null
             ? Animation.Invalid
             : ability.HasGeneratedAnimationBinding && ActivationClip(ability, isPlayer, animationWindow, equipmentCompatible) == null
-                ? ability.NativeAnimationType : ability.AnimationType;
+                ? IncompatibleGestureFallback(ability, isPlayer, equipmentCompatible) : ability.AnimationType;
+
+    // A player's grip-gated gesture is skipped with the wrong weapon (or none) held. Without a
+    // native animation the activation would then play nothing, so it uses the common cast gesture.
+    private static Animation IncompatibleGestureFallback(AbilityDetail ability, bool isPlayer, bool equipmentCompatible) =>
+        isPlayer && !equipmentCompatible && ability.UsesImmediateAuthoredAnimation && ability.NativeAnimationType == Animation.Invalid
+            ? Animation.CastOutAnimation : ability.NativeAnimationType;
 
     // Gameplay callers resolve equipment before installing a gesture or queued swing replacement.
     public static AnimationClip ActivationClip(AbilityDetail ability, uint creature, float? animationWindow = null) =>

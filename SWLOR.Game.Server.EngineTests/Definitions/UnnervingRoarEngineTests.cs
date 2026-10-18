@@ -1,9 +1,12 @@
 using System;
+using System.Linq;
+using System.Reflection;
 using System.Threading.Tasks;
 using SWLOR.Game.Server.EngineTests.Framework;
 using SWLOR.Game.Server.Feature;
 using SWLOR.Game.Server.Feature.StatusEffectDefinition;
 using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.Service.AIService;
 using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.Game.Server.Service.StatService;
@@ -66,6 +69,41 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             var expected = (int)Math.Round(evasionBefore * 0.7, MidpointRounding.AwayFromZero);
             ctx.Assert(Math.Abs(evasionAfter - expected) <= 1,
                 $"Unnerved should cut Evasion by 30%: {evasionBefore} became {evasionAfter}, expected about {expected}");
+        }
+
+        [EngineTest("NPC AI uses Unnerving Roar against a lone enemy within 8 meters, not one beyond", Category = "UnnervingRoar", TimeoutSeconds = 30f)]
+        public static async Task UnnervingRoar_AIUsesItAgainstALoneEnemy(EngineTestContext ctx)
+        {
+            var caster = ctx.SpawnCreature("nw_rat001");
+            var target = ctx.SpawnCreature("nw_rat001", 3f);
+            var farTarget = ctx.SpawnCreature("nw_rat001", 12f);
+            SetAILevel(caster, AILevel.VeryLow);
+            SetAILevel(target, AILevel.VeryLow);
+            SetAILevel(farTarget, AILevel.VeryLow);
+            ctx.MakeHostile(target);
+            await ctx.WaitFrameAsync();
+            ctx.SetNPCResources(caster, 50, 50);
+
+            var action = NPCAI.Profiles[AIProfileType.Generic].Actions
+                .Single(candidate => candidate.Type == AIActionType.Ability && candidate.Feat == FeatType.UnnervingRoar);
+            Enmity.ModifyEnmity(target, caster, 10);
+            var context = new AIContext(caster, AITriggerType.Heartbeat, target,
+                new AIProfile { Type = AIProfileType.Generic }, new AIState(), Array.Empty<uint>());
+            // The AI's own resolution, which falls back to the default selector when the action has none.
+            var resolveTarget = typeof(NPCAI).GetMethod("ResolveTarget", BindingFlags.NonPublic | BindingFlags.Static)!;
+            uint ResolveTarget(AIContext aiContext) => (uint)resolveTarget.Invoke(null, new object[] { aiContext, action })!;
+            var selected = ResolveTarget(context);
+            ctx.AssertEqual(caster, selected, "Unnerving Roar is centered on the caster with one enemy in range");
+            context.SetEvaluatedTarget(selected);
+            ctx.Assert(action.Score(context) > 0, "Unnerving Roar scores with one enemy in range");
+
+            ChangeToStandardFaction(target, StandardFaction.Defender);
+            ctx.MakeHostile(farTarget);
+            Enmity.ClearEnmityTable(caster);
+            Enmity.ModifyEnmity(farTarget, caster, 10);
+            var farContext = new AIContext(caster, AITriggerType.Heartbeat, farTarget,
+                new AIProfile { Type = AIProfileType.Generic }, new AIState(), Array.Empty<uint>());
+            ctx.AssertEqual(OBJECT_INVALID, ResolveTarget(farContext), "Unnerving Roar waits for an enemy within 8 meters");
         }
     }
 }

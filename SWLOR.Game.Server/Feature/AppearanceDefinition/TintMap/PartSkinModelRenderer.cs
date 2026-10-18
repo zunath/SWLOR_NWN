@@ -20,7 +20,9 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
         private static PartSkinModelCatalog _catalog = new(
             Array.Empty<(string, string)>(), Array.Empty<(string, string, string)>());
         public static readonly AppearanceArmor[] Parts = PartSkinModelCatalog.PartNames.Keys.ToArray();
+        // Holds only parts that currently render through an alias.
         private static readonly Dictionary<(uint Creature, AppearanceArmor Part), (uint Item, ushort Source, ushort Render)> Projections = new();
+        private static int _pruneAt = 1024;
 
         [NWNEventHandler(ScriptName.OnModuleCacheBefore)]
         public static void Load()
@@ -51,16 +53,27 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
                 var source = checked((ushort)GetItemAppearance(armor, ItemAppearanceType.ArmorModel, (int)part));
                 var rendered = _catalog.Resolve(body, part, source);
                 var key = (creature, part);
-                Projections.TryGetValue(key, out var previous);
+                var projected = Projections.TryGetValue(key, out var previous);
+                if (rendered == source)
+                {
+                    // A dropped alias must be resent for the same armor (robe removed or part changed).
+                    if (Projections.Remove(key))
+                        refresh |= previous.Item == armor;
+                    continue;
+                }
                 var projection = (Item: armor, Source: source, Render: rendered);
-                if (previous == projection)
+                if (projected && previous == projection)
                     continue;
                 Projections[key] = projection;
-                refresh |= rendered != source || previous.Item == armor && previous.Render != previous.Source;
+                refresh = true;
             }
-            if (Projections.Count >= 4096)
+            if (Projections.Count >= _pruneAt)
+            {
                 foreach (var key in Projections.Keys.Where(key => !GetIsObjectValid(key.Creature)).ToArray())
                     Projections.Remove(key);
+                // Grow past the live population so a full cache is not rescanned on every call.
+                _pruneAt = Math.Max(1024, Projections.Count * 2);
+            }
             // Publish every projection before refreshing, so nested tint application terminates.
             if (refresh)
                 EquippedItemAppearance.Refresh(creature, armor, resetShaderOverrides: false);

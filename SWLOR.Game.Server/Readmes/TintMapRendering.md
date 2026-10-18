@@ -518,7 +518,9 @@ Run `python -B SWLOR_Haks/tools/RobeSkirtBindings.py --apply` to repair the exis
 catalog, or `--check` to verify it. `TestRobeSkirtBindings.py` checks that all eight
 variants use the native coat-helper bones, that the restoration is idempotent, and that
 every weighted helper sits below numbered joints.
-Rebuild/install `sw_pt_root.hak`; no module repack or C# deploy is required.
+Rebuild/install `sw_pt_root.hak` together with `sw_anim_m.hak` and `sw_anim_f.hak`:
+the helper part IDs live in the animation bridges too, and with older bridges the
+skirts stay static. No module repack or C# deploy is required.
 
 The catalog audit extends this treatment to every visible static attachment
 under a body bone, including nested belts, chest ornaments and leg coverings.

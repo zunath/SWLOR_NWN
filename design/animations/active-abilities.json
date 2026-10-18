@@ -5965,7 +5965,7 @@
     "InternalName": "sw_fincombo",
     "Category": "Unarmed",
     "Type": "Combat",
-    "Description": "Two strikes at one enemy, each floor(0.50 x weapon DMG) + 14. Spend Opening for +4 power per strike, or Finish for +8 per strike.",
+    "Description": "Two strikes at one enemy, each floor(0.50 x weapon DMG) + 14. Spend Opening for +4 power per strike and redirect the second strike to the nearest other enemy within 5m of you, if available. Spend Finish for +8 per strike, both against the selected enemy.",
     "Reference": "",
     "PerkId": "FinishingCombination",
     "Feats": [

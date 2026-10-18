@@ -12,7 +12,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
     {
         private readonly GuiWindowBuilder<DMToolbarViewModel> _builder = new();
 
-        private const float ButtonWidth = DMToolbarViewModel.ButtonWidth;
+        private const float ButtonWidth = DMToolbarViewModel.ButtonSlotWidth;
         private const float ButtonHeight = 24f;
 
         public GuiConstructedWindow BuildWindow()
@@ -28,8 +28,10 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                 .SetKeepsOpenOnAreaChange(true)
                 .AddColumn(col =>
                 {
+                    col.SetMargin(0f);
                     col.AddRow(row =>
                     {
+                        row.SetMargin(0f);
                         AddButton(row, "Chooser", "Search areas and objects", model => model.OnClickChooser());
                         AddButton(row, "Creator", "Search the palettes and spawn blueprints", model => model.OnClickCreator());
                         AddButton(row, "Players", "Search online and offline characters", model => model.OnClickPlayers());
@@ -43,6 +45,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                             .BindTooltip(model => model.AppearTooltip)
                             .SetWidth(ButtonWidth)
                             .SetHeight(ButtonHeight)
+                            .SetMargin(0f)
                             .BindOnClicked(model => model.OnClickToggleAppear());
 
                         AddButton(row, "Settings", "Emote style, Comms filter, helmet and cloak", model => model.OnClickSettings());
@@ -67,6 +70,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                 .SetTooltip(tooltip)
                 .SetWidth(ButtonWidth)
                 .SetHeight(ButtonHeight)
+                .SetMargin(0f)
                 .BindOnClicked(onClick);
         }
     }

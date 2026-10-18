@@ -24,7 +24,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         public const int PublicButtonCount = 9;
         public const float ToolbarWidth = PublicButtonCount * ButtonSlotWidth + 28f;
         public const float AdminToolbarWidth = ToolbarWidth + ButtonSlotWidth;
-        public const float ToolbarHeight = 52f;
+        public const float ToolbarHeight = 32f;
 
         public bool IsAdmin
         {

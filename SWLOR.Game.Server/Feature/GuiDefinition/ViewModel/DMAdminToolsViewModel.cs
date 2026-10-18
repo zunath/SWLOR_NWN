@@ -15,7 +15,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         /// <param name="player">The player to check.</param>
         public static bool CanUse(uint player)
         {
-            player = DMPresence.GetDM(player);
+            // The CD key resolves from the object the player controls, which is the possessed creature while possessing.
+            player = DMPresence.GetControlledCreature(player);
             // Staff are matched by CD key; a character without one cannot be an admin.
             return !string.IsNullOrEmpty(GetPCPublicCDKey(player)) &&
                    Authorization.GetAuthorizationLevel(player).HasFlag(AuthorizationLevel.Admin);
@@ -37,12 +38,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         {
             if (CanUse(Player))
                 DMPresence.ToggleWindow(Player, GuiWindowType.ManageBans);
-        };
-
-        public Action OnClickPropertyDiagnostics() => () =>
-        {
-            if (CanUse(Player))
-                DMPresence.ToggleWindow(Player, GuiWindowType.PropertyDiagnostics);
         };
     }
 }

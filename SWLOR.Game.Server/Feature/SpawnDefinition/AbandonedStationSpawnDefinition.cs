@@ -33,15 +33,17 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
 
                 .AddSpawn(ObjectType.Creature, "abs_zresearch")
                 .WithFrequency(20)
+                .RandomlyWalks()
                 .ReturnsHome()
 
-                .AddSpawn(ObjectType.Creature, "abs_rakghoul")
+                .AddSpawn(ObjectType.Creature, "abs_colicoid")
                 .WithFrequency(25)
                 .RandomlyWalks()
                 .ReturnsHome()
 
                 .AddSpawn(ObjectType.Creature, "abs_zguard")
                 .WithFrequency(15)
+                .RandomlyWalks()
                 .ReturnsHome()
 
                 .AddSpawn(ObjectType.Creature, "abs_zchief")
@@ -54,13 +56,14 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
         private void RestrictedLevel()
         {
             _builder.Create("ABANDONED_STATION_RESTRICTED", "Abandoned Station - Restricted Level")
-                .AddSpawn(ObjectType.Creature, "abs_rakstalk")
+                .AddSpawn(ObjectType.Creature, "abs_colstalk")
                 .WithFrequency(30)
                 .RandomlyWalks()
                 .ReturnsHome()
 
                 .AddSpawn(ObjectType.Creature, "abs_zgenetic")
                 .WithFrequency(25)
+                .RandomlyWalks()
                 .ReturnsHome()
 
                 .AddSpawn(ObjectType.Creature, "abs_zsubject")
@@ -68,11 +71,12 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
                 .RandomlyWalks()
                 .ReturnsHome()
 
-                .AddSpawn(ObjectType.Creature, "abs_rakbrute")
+                .AddSpawn(ObjectType.Creature, "abs_colbrute")
                 .WithFrequency(15)
+                .RandomlyWalks()
                 .ReturnsHome()
 
-                .AddSpawn(ObjectType.Creature, "abs_subzero")
+                .AddSpawn(ObjectType.Creature, "abs_colzero")
                 .WithFrequency(1)
                 .AsRare()
                 .RandomlyWalks()
@@ -84,6 +88,7 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
             _builder.Create("ABANDONED_STATION_RANCOR", "Abandoned Station - Rancor Containment")
                 .AddSpawn(ObjectType.Creature, "abs_zrancor")
                 .WithFrequency(1)
+                .RandomlyWalks()
                 .ReturnsHome()
                 .RespawnDelay(20, 40);
         }
@@ -91,13 +96,15 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
         private void DirectorsChambers()
         {
             _builder.Create("ABANDONED_STATION_CHAMBERS", "Abandoned Station - Director's Chambers")
-                .AddSpawn(ObjectType.Creature, "abs_rakalpha")
+                .AddSpawn(ObjectType.Creature, "abs_colalpha")
                 .WithFrequency(1)
+                .RandomlyWalks()
                 .ReturnsHome();
 
             _builder.Create("ABANDONED_STATION_DIRECTOR", "Abandoned Station - Station Director")
                 .AddSpawn(ObjectType.Creature, "abs_zdirector")
                 .WithFrequency(1)
+                .RandomlyWalks()
                 .ReturnsHome()
                 .RespawnDelay(15, 30);
         }

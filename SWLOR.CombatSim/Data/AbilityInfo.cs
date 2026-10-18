@@ -15,6 +15,9 @@ namespace SWLOR.CombatSim.Data
         public int SkillRequirement { get; init; }
         public int FP { get; init; }
         public int STM { get; init; }
+
+        /// <summary>The ability lists its FP requirement before its STM one, so the game pays (and Conduit restores) FP first.</summary>
+        public bool PaysFpFirst { get; init; }
         public float RecastSeconds { get; init; }
         public float CastSeconds { get; init; }
 

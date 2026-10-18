@@ -24,6 +24,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         private static readonly GuiColor OnlineColor = new(0, 200, 0);
         private static readonly GuiColor OfflineColor = new(150, 150, 150);
+        private static readonly GuiColor DescriptorColor = new(255, 255, 255);
+        private static readonly GuiColor DisguisedDescriptorColor = new(255, 127, 0);
 
         private List<DMPlayerSearchResult> _results = new();
         private readonly List<DMPlayerSearchResult> _pageResults = new();
@@ -57,6 +59,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         public GuiBindingList<string> ResultDescriptors
         {
             get => Get<GuiBindingList<string>>();
+            set => Set(value);
+        }
+
+        public GuiBindingList<GuiColor> ResultDescriptorColors
+        {
+            get => Get<GuiBindingList<GuiColor>>();
             set => Set(value);
         }
 
@@ -133,6 +141,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             SearchText = string.Empty;
             ResultNames = new GuiBindingList<string>();
             ResultDescriptors = new GuiBindingList<string>();
+            ResultDescriptorColors = new GuiBindingList<GuiColor>();
             ResultAccounts = new GuiBindingList<string>();
             ResultStatuses = new GuiBindingList<string>();
             ResultStatusColors = new GuiBindingList<GuiColor>();
@@ -185,6 +194,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             var names = new GuiBindingList<string>();
             var descriptors = new GuiBindingList<string>();
+            var descriptorColors = new GuiBindingList<GuiColor>();
             var accounts = new GuiBindingList<string>();
             var statuses = new GuiBindingList<string>();
             var statusColors = new GuiBindingList<GuiColor>();
@@ -193,6 +203,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             {
                 names.Add(result.Name);
                 descriptors.Add(DMListText.Fit(result.Descriptor, DescriptorColumnLength));
+                descriptorColors.Add(result.IsDisguised ? DisguisedDescriptorColor : DescriptorColor);
                 accounts.Add(string.IsNullOrWhiteSpace(result.AccountName) ? "?" : DMListText.Fit(result.AccountName, AccountColumnLength));
                 statuses.Add(result.IsOnline ? "Online" : "Offline");
                 statusColors.Add(result.IsOnline ? OnlineColor : OfflineColor);
@@ -201,6 +212,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             ResultNames = names;
             ResultDescriptors = descriptors;
+            ResultDescriptorColors = descriptorColors;
             ResultAccounts = accounts;
             ResultStatuses = statuses;
             ResultStatusColors = statusColors;
@@ -231,15 +243,25 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             }
 
             ResultSelections[_selectedIndex] = true;
-            SelectedDetails = string.Join("\n",
+            var details = new List<string>
+            {
                 $"Name: {result.Name}",
                 $"Descriptor: {result.Descriptor}",
+                $"Disguise: {result.Disguise}"
+            };
+            if (result.IsDisguised)
+                details.Add($"Real Descriptor: {result.UndisguisedDescriptor}");
+
+            details.AddRange(new[]
+            {
                 $"Account: {ValueOrNotRecorded(result.AccountName)}",
                 $"CD Key: {ValueOrNotRecorded(result.CDKey)}",
                 $"Player ID: {result.PlayerId}",
                 $"Status: {(result.IsOnline ? "Online" : "Offline")}",
                 $"{(result.IsOnline ? "Area" : "Last Area")}: {ValueOrNotRecorded(result.LocationName)}",
-                $"Last Login: {(result.LastLoginDate.HasValue ? result.LastLoginDate.Value.ToString("yyyy-MM-dd HH:mm") + " UTC" : NotRecorded)}");
+                $"Last Login: {(result.LastLoginDate.HasValue ? result.LastLoginDate.Value.ToString("yyyy-MM-dd HH:mm") + " UTC" : NotRecorded)}"
+            });
+            SelectedDetails = string.Join("\n", details);
             CanJumpTo = true;
             IsSelectedOnline = result.IsOnline;
         }

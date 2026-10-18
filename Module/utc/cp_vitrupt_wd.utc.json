@@ -126,7 +126,7 @@
   },
   "Comment": {
     "type": "cexostring",
-    "value": "Vital Rupture warden in Viscara - Veles Militia Annex."
+    "value": "Viral Cascade warden in Viscara - Veles Militia Annex."
   },
   "Con": {
     "type": "byte",
@@ -379,7 +379,7 @@
   "FirstName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Vital Rupture Warden"
+      "0": "Viral Cascade Warden"
     }
   },
   "fortbonus": {

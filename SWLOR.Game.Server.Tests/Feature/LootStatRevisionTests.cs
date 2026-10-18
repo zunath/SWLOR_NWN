@@ -3,6 +3,7 @@ using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Game.Server.Feature.MigrationDefinition;
 using SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition;
+using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.LootService;
 using SWLOR.Game.Server.Service.SlicingService;
 using SWLOR.NWN.API.NWScript.Enum.Item;
@@ -70,8 +71,14 @@ public class LootStatRevisionTests
             {
                 var subtype = change.Type == ItemPropertyType.Defense ? change.Subtype : 0;
                 properties.TryGetValue(((int)change.Type, subtype), out var value);
-                if (value != change.Current)
-                    failures.Add($"{resref}: {change.Type} is {value}, catalog expects {change.Current}");
+                var expected = RareLootStatRevisionCatalog.Changes.TryGetValue(resref, out var corrections)
+                    ? corrections.FirstOrDefault(x => x.Type == change.Type && x.Subtype == change.Subtype, change).Current
+                    : change.Current;
+                if (FoundryLootStatRevisionCatalog.Changes.TryGetValue(resref, out var foundryCorrections))
+                    expected = foundryCorrections.Where(x => x.Type == change.Type && x.Subtype == change.Subtype)
+                        .Select(x => x.Current).DefaultIfEmpty(expected).Single();
+                if (value != expected)
+                    failures.Add($"{resref}: {change.Type} is {value}, catalog expects {expected}");
                 if (change.Previous == change.Current)
                     failures.Add($"{resref}: {change.Type} has no change");
             }
@@ -81,6 +88,63 @@ public class LootStatRevisionTests
         }
 
         failures.Should().BeEmpty(string.Join(Environment.NewLine, failures));
+    }
+
+    [Test]
+    public void FoundryCorrections_MatchBlueprintsAndFollowTheExistingLootRevisions()
+    {
+        var root = FindRepositoryRoot();
+        foreach (var (resref, changes) in FoundryLootStatRevisionCatalog.Changes)
+        {
+            using var blueprint = JsonDocument.Parse(File.ReadAllText(Path.Combine(root.FullName, "Module", "uti", $"{resref}.uti.json")));
+            var properties = ReadProperties(blueprint.RootElement);
+            foreach (var change in changes)
+            {
+                var preceding = LootStatRevisionCatalog.Changes[resref].Single(x => x.Type == change.Type && x.Subtype == change.Subtype);
+                if (RareLootStatRevisionCatalog.Changes.TryGetValue(resref, out var rareChanges))
+                    preceding = rareChanges.FirstOrDefault(x => x.Type == change.Type && x.Subtype == change.Subtype, preceding);
+                change.Previous.Should().Be(preceding.Current, resref);
+                properties[((int)change.Type, change.Subtype)].Should().Be(change.Current, resref);
+            }
+            ReadLocalInt(blueprint.RootElement, FoundryLootStatRevisionCatalog.RevisionVariable)
+                .Should().Be(FoundryLootStatRevisionCatalog.CurrentRevision, resref);
+        }
+    }
+
+    [Test]
+    public void ArkanianArmorRevision_EndsOnTheBlueprintAndMarksOnlyIt()
+    {
+        var root = FindRepositoryRoot();
+        foreach (var (resref, changes) in ArkanianArmorStatRevisionCatalog.Changes)
+        {
+            using var blueprint = JsonDocument.Parse(File.ReadAllText(Path.Combine(root.FullName, "Module", "uti", $"{resref}.uti.json")));
+            var properties = new Dictionary<(int Type, int Subtype), int>();
+            foreach (var property in blueprint.RootElement.GetProperty("PropertiesList").GetProperty("value").EnumerateArray())
+            {
+                var key = (property.GetProperty("PropertyName").GetProperty("value").GetInt32(),
+                    property.GetProperty("Subtype").GetProperty("value").GetInt32());
+                properties[key] = properties.GetValueOrDefault(key) + property.GetProperty("CostValue").GetProperty("value").GetInt32();
+            }
+
+            // Ice Resistance replaces the shipped blueprint's retired Ice Defense and is revised from each copy's own Ice values.
+            var iceResistance = ((int)ItemPropertyType.Resistance, (int)ResistanceType.Ice);
+            properties.GetValueOrDefault(iceResistance).Should().Be(ArkanianArmorStatRevisionCatalog.IceResistance, resref);
+            properties.Keys.Should().BeSubsetOf(changes.Select(change => ((int)change.Type, change.Subtype)).Append(iceResistance),
+                $"every {resref} property moves with the revision");
+            foreach (var change in changes)
+            {
+                change.Previous.Should().NotBe(change.Current, $"{resref} {change.Type} changes");
+                properties.GetValueOrDefault(((int)change.Type, change.Subtype)).Should().Be(change.Current, $"{resref} {change.Type} {change.Subtype}");
+            }
+            ReadLocalInt(blueprint.RootElement, ArkanianArmorStatRevisionCatalog.RevisionVariable)
+                .Should().Be(ArkanianArmorStatRevisionCatalog.CurrentRevision, resref);
+        }
+
+        Directory.EnumerateFiles(Path.Combine(root.FullName, "Module", "uti"), "*.uti.json")
+            .Where(path => File.ReadAllText(path).Contains(ArkanianArmorStatRevisionCatalog.RevisionVariable))
+            .Select(path => Path.GetFileName(path)[..^".uti.json".Length])
+            .Should().BeEquivalentTo(ArkanianArmorStatRevisionCatalog.Changes.Keys,
+                "an item built from a stamped blueprint is never revised, so only cataloged blueprints carry the marker");
     }
 
     [Test]
@@ -123,12 +187,14 @@ public class LootStatRevisionTests
                 if (damage > curve[50])
                     failures.Add($"{resref}: DMG {damage} exceeds the level-50 reference {curve[50]}");
                 foreach (var type in new[] { ItemPropertyType.Attack, ItemPropertyType.ForceAttack })
-                    if (Value(properties, type) > 5)
-                        failures.Add($"{resref}: weapon {type} {Value(properties, type)} exceeds 5");
+                    if (Value(properties, type) > (RareLootStatRevisionCatalog.Changes.ContainsKey(resref) ? 20 : 5))
+                        failures.Add($"{resref}: weapon {type} exceeds its enhanced-crafted allowance");
                 continue;
             }
 
-            if (!SlotBudgets.TryGetValue((BaseItem)baseItem, out var budget))
+            // Corrected rare wearables are compared with actual enhanced recipes in RareLootBalanceTests.
+            if (RareLootStatRevisionCatalog.Changes.ContainsKey(resref) ||
+                !SlotBudgets.TryGetValue((BaseItem)baseItem, out var budget))
                 continue;
             foreach (var type in new[] { ItemPropertyType.Attack, ItemPropertyType.ForceAttack, ItemPropertyType.Evasion })
                 if (Value(properties, type) > 8)
@@ -163,10 +229,11 @@ public class LootStatRevisionTests
             var reference = WeaponDamageCurves[baseItem].Last(x => x.Key <= level).Value;
             if (damage > reference)
                 failures.Add($"{resref}: DMG {damage} exceeds the level-{level} reference {reference}");
-            if (Value(properties, ItemPropertyType.Attack) > 3)
-                failures.Add($"{resref}: Attack {Value(properties, ItemPropertyType.Attack)} exceeds 3");
-            if (Value(properties, ItemPropertyType.CombatReadiness) > 3)
-                failures.Add($"{resref}: Combat Readiness {Value(properties, ItemPropertyType.CombatReadiness)} exceeds 3");
+            var attackBudget = level switch { < 10 => 1, < 20 => 4, < 30 => 7, < 40 => 10, _ => 13 };
+            if (Value(properties, ItemPropertyType.Attack) > attackBudget)
+                failures.Add($"{resref}: Attack exceeds its tier's enhanced-crafted allowance {attackBudget}");
+            if (Value(properties, ItemPropertyType.CombatReadiness) > 4)
+                failures.Add($"{resref}: Combat Readiness exceeds 4");
         }
 
         failures.Should().BeEmpty(string.Join(Environment.NewLine, failures));

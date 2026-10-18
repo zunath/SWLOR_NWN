@@ -170,6 +170,7 @@ namespace SWLOR.Game.Server.Service
             if (player == null)
                 return Array.Empty<StatAdjustmentSource>();
 
+            var potency = Stat.GetStatAdjustment(creature, StatType.MimicryTraitPotencyPercent);
             List<StatAdjustmentSource> sources = null;
             foreach (var feat in player.EquippedTechniques)
             {
@@ -177,7 +178,10 @@ namespace SWLOR.Game.Server.Service
                     detail.MimicryTraitStats.TryGetValue(payloadStat, out var value) && value != 0)
                 {
                     sources ??= new List<StatAdjustmentSource>();
-                    sources.Add(new StatAdjustmentSource($"trait:{(int)feat}", detail.MimicryTraitStats));
+                    var stats = potency == 0
+                        ? detail.MimicryTraitStats
+                        : ScaleTraitStats(detail.MimicryTraitStats, potency);
+                    sources.Add(new StatAdjustmentSource($"trait:{(int)feat}", stats));
                 }
             }
             return (IReadOnlyList<StatAdjustmentSource>)sources ?? Array.Empty<StatAdjustmentSource>();
@@ -208,10 +212,13 @@ namespace SWLOR.Game.Server.Service
             if (!hasStatContributors)
                 return bonus;
 
+            var potency = stat == StatType.MimicryTraitPotencyPercent
+                ? 0
+                : Stat.GetStatAdjustment(creature, StatType.MimicryTraitPotencyPercent);
             foreach (var feat in dbPlayer.EquippedTechniques)
             {
                 if (contributors.TryGetValue(feat, out var amount))
-                    bonus += amount;
+                    bonus += ScaleTraitBonus(amount, potency);
             }
 
             return bonus;
@@ -232,14 +239,28 @@ namespace SWLOR.Game.Server.Service
             if (dbPlayer == null)
                 return 0;
 
+            var potency = Stat.GetStatAdjustment(creature, StatType.MimicryTraitPotencyPercent);
             var bonus = 0;
             foreach (var feat in dbPlayer.EquippedTechniques)
             {
                 if (contributors.TryGetValue(feat, out var amount))
-                    bonus += amount;
+                    bonus += ScaleTraitBonus(amount, potency);
             }
 
             return bonus;
+        }
+
+        private static int ScaleTraitBonus(int amount, int potency)
+        {
+            return amount + (int)Math.Ceiling(amount * (potency / 100f));
+        }
+
+        private static Dictionary<StatType, int> ScaleTraitStats(IReadOnlyDictionary<StatType, int> stats, int potency)
+        {
+            var scaled = new Dictionary<StatType, int>(stats.Count);
+            foreach (var (stat, amount) in stats)
+                scaled[stat] = ScaleTraitBonus(amount, potency);
+            return scaled;
         }
 
         /// <summary>
@@ -281,7 +302,7 @@ namespace SWLOR.Game.Server.Service
 
             foreach (var nearby in GetNearbyPlayers(activator, WitnessRadius))
             {
-                if (!GetIsDM(nearby))
+                if (!DMPresence.IsControlledByDM(nearby))
                 {
                     TryRecordWitness(activator, nearby, techniqueFeat, techniqueDetail);
                     TryRecordAnalysis(activator, nearby);

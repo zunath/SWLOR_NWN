@@ -17,6 +17,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
         public OverloadStatusEffect()
         {
             StatGroup.Stats[StatType.MimicryPotencyPercent] = 50;
+            StatGroup.Stats[StatType.MimicryTraitPotencyPercent] = 50;
             StatGroup.Stats[StatType.DamageDealtBleedChance] = 15;
             StatGroup.Stats[StatType.DamageDealtFreezingChance] = 15;
             StatGroup.Stats[StatType.DamageDealtShockChance] = 15;

@@ -36,8 +36,8 @@ public static partial class MigrationEngineTests
                 {
                     var pending = ((IEnumerable<IServerMigration>)getMigrations.Invoke(null, new object[] { phase })).ToArray();
                     var targetedRepairs = phase == MigrationExecutionType.PostDatabaseLoad
-                        ? new[] { 28, 29 }
-                        : new[] { 23, 24, 25, 26, 27, 30 };
+                        ? new[] { 27 }
+                        : new[] { 23, 24, 25, 26, 27 };
                     var expected = targetedRepairs.Where(version => version > checkpoint).ToArray();
                     ctx.Assert(pending.Select(migration => migration.Version).SequenceEqual(expected),
                         $"Checkpoint {checkpoint}, phase {phase}: only the pending targeted repairs are selected");

@@ -1,6 +1,5 @@
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.Bioware;
-using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
 
@@ -82,19 +81,6 @@ namespace SWLOR.Game.Server.Service
             });
 
             AssignCommand(receiver, () => ActionSpeakString(text, talkVolume));
-        }
-
-        /// <summary>
-        /// Returns true when an object from GetFirstPC/GetNextPC belongs to a DM. GetFirstPC keeps returning a DM's
-        /// avatar while they possess a creature, and GetIsDM is false for the avatar then, so the creature the
-        /// player controls is checked too.
-        /// </summary>
-        /// <param name="player">An object returned by GetFirstPC or GetNextPC.</param>
-        public static bool IsControlledByDM(uint player)
-        {
-            var controlled = PlayerPlugin.GetGameObject(player);
-            return GetIsDM(player) || GetIsDMPossessed(player) ||
-                   GetIsDM(controlled) || GetIsDMPossessed(controlled);
         }
 
         public static bool IsInCall(uint player)

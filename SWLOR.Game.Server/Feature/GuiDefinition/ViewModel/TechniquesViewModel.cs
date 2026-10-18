@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Feature.GuiDefinition.Payload;
 using SWLOR.Game.Server.Feature.GuiDefinition.RefreshEvent;
 using SWLOR.Game.Server.Service;
@@ -15,12 +16,18 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
     public class TechniquesViewModel : GuiViewModelBase<TechniquesViewModel, TechniquesPayload>,
         IGuiRefreshable<TechniqueChangedRefreshEvent>
     {
+        public const string BuildBarElement = "techniques_build_bar";
+        public const string BuildBarPartial = "TECHNIQUES_BUILD_BAR";
+        public const string ManageBarPartial = "TECHNIQUES_MANAGE_BAR";
+        public const string DeleteBarPartial = "TECHNIQUES_DELETE_BAR";
+
         private const string NoSelectionText = "Select a technique to view its details.";
         private List<FeatType> _draft;
         private List<FeatType> _savedSnapshot;
         private List<string> _loadoutIds = new();
         private string _selectedLoadoutId;
         private bool _settingSelection;
+        private string _buildBar = BuildBarPartial;
 
         public GuiBindingList<GuiComboEntry> LoadoutOptions { get => Get<GuiBindingList<GuiComboEntry>>(); set => Set(value); }
         public int SelectedLoadoutIndex { get => Get<int>(); set => Set(value); }
@@ -31,6 +38,11 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         public bool CanRevert { get => Get<bool>(); set => Set(value); }
         public string StatusText { get => Get<string>(); set => Set(value); }
         public GuiColor StatusColor { get => Get<GuiColor>(); set => Set(value); }
+        public string BuildNameText { get => Get<string>(); set => Set(value); }
+        public string ManageText { get => Get<string>(); set => Set(value); }
+        public GuiColor ManageColor { get => Get<GuiColor>(); set => Set(value); }
+        public bool CanDeleteBuild { get => Get<bool>(); set => Set(value); }
+        public string DeleteBuildText { get => Get<string>(); set => Set(value); }
         private bool IsDirty => !MimicryLoadouts.Matches(_draft, _savedSnapshot);
         private PlayerEntity Record => DB.Get<PlayerEntity>(GetObjectUUID(Player));
 
@@ -150,6 +162,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         protected override void Initialize(TechniquesPayload initialPayload)
         {
+            // Opening the window clears group layouts, so the build bar is assigned on every open.
+            ShowBuildBar(BuildBarPartial);
+
             SelectedDetails = NoSelectionText;
             IsEquipEnabled = false;
             IsUnequipEnabled = false;
@@ -157,6 +172,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             SearchText = string.Empty;
             SelectedCategoryId = 0;
             SelectedSortOrderId = 0;
+            BuildNameText = string.Empty;
 
             var record = Record;
             if (MimicryLoadouts.EnsureStartingBuild(record))
@@ -177,6 +193,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             WatchOnClient(model => model.SelectedCategoryId);
             WatchOnClient(model => model.SelectedSortOrderId);
             WatchOnClient(model => model.SelectedLoadoutIndex);
+            WatchOnClient(model => model.BuildNameText);
         }
 
         protected override void OnClientPropertyUpdated(string propertyName)
@@ -487,7 +504,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             ActiveLoadoutText = active == null ? "Equipped: Custom build" :
                 $"Equipped: {active.Name}" + (MimicryLoadouts.Matches(active.Techniques, record.EquippedTechniques) ? "" : " (Modified)");
             PreviewTitle = $"Preview: {selected.Name}" + (IsDirty ? " (unsaved)" : "");
-            CanRevert = IsDirty;
+            CanRevert = IsDirty || IsEquippedCopyModified(record);
+            if (_buildBar == DeleteBarPartial)
+                RefreshDeletePrompt(selected);
             if (!Mimicry.ValidateLoadout(record, _draft, out var error))
             {
                 StatusText = error;
@@ -502,6 +521,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             else
                 StatusText = IsDirty ? "Unsaved preview. Apply Build to equip it; Save to keep it." : "Apply Build to equip this preview.";
         }
+
+        // The selected build is equipped with applied changes that were never saved ("(Modified)").
+        private bool IsEquippedCopyModified(PlayerEntity record) =>
+            record.ActiveMimicryLoadoutId == _selectedLoadoutId &&
+            !MimicryLoadouts.Matches(record.MimicryLoadouts.First(x => x.Id == _selectedLoadoutId).Techniques,
+                record.EquippedTechniques);
 
         private void ShowError(string error)
         {
@@ -534,33 +559,73 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             $"Save build as (up to {MimicryLoadouts.MaxNameLength} characters):", string.Empty,
             () => SaveDraft(null, ModalInputText), confirmText: "Save");
 
-        public Action OnClickManage() => () => ShowModal("Manage the selected saved build:",
-            () => ShowInputModal("Rename build:", Record.MimicryLoadouts.First(x => x.Id == _selectedLoadoutId).Name,
-                () =>
-                {
-                    var record = Record;
-                    if (!MimicryLoadouts.Rename(record, _selectedLoadoutId, ModalInputText, out var error))
-                    {
-                        ShowError(error);
-                        return;
-                    }
-                    DB.Set(record);
-                    RefreshLoadouts();
-                    LoadLists();
-                }, confirmText: "Rename"),
-            () => ShowModal("Delete this saved build? Equipped techniques stay equipped.", () =>
+        public Action OnClickManage() => () =>
+        {
+            var record = Record;
+            CanDeleteBuild = record.MimicryLoadouts.Count > 1;
+            ManageText = "Rename or delete this build.";
+            ManageColor = GuiColor.White;
+            ShowBuildBar(ManageBarPartial);
+            // Input values sent before their control is on screen can be dropped (NuiLayoutRules R7).
+            BuildNameText = record.MimicryLoadouts.First(x => x.Id == _selectedLoadoutId).Name;
+        };
+
+        public Action OnClickRenameBuild() => () =>
+        {
+            var record = Record;
+            if (!MimicryLoadouts.Rename(record, _selectedLoadoutId, BuildNameText, out var error))
             {
-                var record = Record;
-                if (!MimicryLoadouts.Delete(record, _selectedLoadoutId, out var error))
-                {
-                    ShowError(error);
-                    return;
-                }
-                DB.Set(record);
-                LoadDraft(record.MimicryLoadouts[0].Id);
-                RefreshLoadouts();
-                LoadLists();
-            }, confirmText: "Delete", cancelText: "Cancel"), "Rename", "Delete...");
+                ManageText = error;
+                ManageColor = ErrorColor;
+                return;
+            }
+            DB.Set(record);
+            CloseManage();
+            LoadLists();
+        };
+
+        public Action OnClickDeleteBuild() => () =>
+        {
+            RefreshDeletePrompt(Record.MimicryLoadouts.First(x => x.Id == _selectedLoadoutId));
+            ShowBuildBar(DeleteBarPartial);
+        };
+
+        // The preview stays editable during the confirmation, so RefreshStatus keeps this current.
+        private void RefreshDeletePrompt(MimicryLoadout selected)
+        {
+            DeleteBuildText = $"Delete \"{selected.Name}\"? Equipped techniques stay equipped." +
+                              (IsDirty ? " Unsaved changes are lost." : "");
+        }
+
+        public Action OnClickConfirmDeleteBuild() => () =>
+        {
+            var record = Record;
+            if (!MimicryLoadouts.Delete(record, _selectedLoadoutId, out var error))
+            {
+                CloseManage();
+                ShowError(error);
+                return;
+            }
+            DB.Set(record);
+            LoadDraft(record.MimicryLoadouts[0].Id);
+            CloseManage();
+            LoadLists();
+        };
+
+        public Action OnClickCancelManage() => () => CloseManage();
+
+        private void CloseManage()
+        {
+            ShowBuildBar(BuildBarPartial);
+            // Also re-sends the dropdown selection after the swap.
+            RefreshLoadouts();
+        }
+
+        private void ShowBuildBar(string partial)
+        {
+            _buildBar = partial;
+            ChangePartialView(BuildBarElement, partial);
+        }
 
         private void ConfirmDraftChange(Action proceed)
         {
@@ -577,9 +642,18 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 confirmText: "Discard", cancelText: "Keep editing"), "Save", "More...");
         }
 
-        public Action OnClickRevert() => () => ShowModal("Revert the preview to the saved build?", () =>
+        public Action OnClickRevert() => () => ShowModal(IsEquippedCopyModified(Record)
+                ? "Revert to the saved build? This also re-equips it, replacing the changes you applied."
+                : "Revert the preview to the saved build?", () =>
         {
             LoadDraft(_selectedLoadoutId);
+            if (IsEquippedCopyModified(Record) &&
+                !Mimicry.ApplyLoadout(Player, _selectedLoadoutId, _draft, out var error))
+            {
+                LoadLists();
+                ShowError(error);
+                return;
+            }
             LoadLists();
         }, confirmText: "Revert", cancelText: "Cancel");
 
@@ -603,6 +677,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             SearchText = SearchText;
             SelectedCategoryId = SelectedCategoryId;
             SelectedSortOrderId = SelectedSortOrderId;
+            BuildNameText = BuildNameText;
             SetSelection(_loadoutIds.IndexOf(_selectedLoadoutId));
         }
     }

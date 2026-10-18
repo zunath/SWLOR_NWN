@@ -58,6 +58,21 @@ public class ItemIconTests
     }
 
     [Test]
+    public void ArchivedCreatureArtwork_RepairsReservedVisorsWithoutChangingAuthoredEquipment()
+    {
+        foreach (var visor in HeadgearSlotMigration.LegacyHeadgear.Where(item => item.Value == 110))
+        {
+            ItemIconMigration.GetUpdatedModel(visor.Key.ToUpperInvariant(), 17, 223).Should().Be(110);
+            ItemIconMigration.GetUpdatedModel(visor.Key, 17, 110).Should().Be(110);
+            ItemIconMigration.GetUpdatedModel(visor.Key, 17, 33).Should().Be(33);
+            ItemIconMigration.GetUpdatedModel(visor.Key, 16, 223).Should().Be(223);
+        }
+        ItemIconMigration.GetUpdatedModel("revan_mask", 17, 223).Should().Be(223);
+        ItemIconMigration.GetUpdatedModel("charm_cowl", 17, 223).Should().Be(223);
+        ItemIconMigration.GetUpdatedModel(null!, 17, 223).Should().Be(223);
+    }
+
+    [Test]
     public void OriginalItemArtwork_IsCompleteUniqueAndUsesGameTgaLayout()
     {
         var itemIcons = ReadCsv("ItemIconBindings.csv").Select(row => row["ActionIcon"]).ToHashSet();
@@ -106,12 +121,16 @@ public class ItemIconTests
         File.Exists(Path.Combine(server, "Service", "ItemIconAppearance.cs")).Should().BeFalse();
         File.Exists(Path.Combine(server, "Feature", "ShipItemIconCompatibility.cs")).Should().BeFalse();
         new _19_UpdateItemIcons().Version.Should().Be(19);
-        new _27_UpdateItemIcons().Version.Should().Be(27);
-        new _27_UpdateItemIcons().ExecutionType.Should().Be(MigrationExecutionType.PostCacheLoad);
+        new _27_UpdateStoredItems().Version.Should().Be(27);
+        new _27_UpdateStoredItems().ExecutionType.Should().Be(MigrationExecutionType.PostCacheLoad);
         File.ReadAllText(Path.Combine(migrations, "PlayerMigration", "_19_UpdateItemIcons.cs"))
             .Should().Contain("ItemIconMigration.MigrateObject(player)");
-        File.ReadAllText(Path.Combine(migrations, "ServerMigration", "_27_UpdateItemIcons.cs"))
-            .Should().Contain("ItemIconMigration.MigrateSerializedObject").And.NotContain("StoredItemDataMigration.Migrate()");
+        File.ReadAllText(Path.Combine(migrations, "PlayerMigration", "_22_ReviseLootStats.cs"))
+            .Should().Contain("LootStatRevisionMigration.MigrateObject(player)");
+        File.ReadAllText(Path.Combine(migrations, "PlayerMigration", "_23_CorrectEquipmentTypes.cs"))
+            .Should().Contain("LootStatRevisionMigration.MigratePlayerItems(player)");
+        File.ReadAllText(Path.Combine(migrations, "ServerMigration", "_27_UpdateStoredItems.cs"))
+            .Should().Contain("LootStatRevisionMigration.MigrateStoredObjectData").And.NotContain("StoredItemDataMigration.Migrate()");
         File.ReadAllText(Path.Combine(migrations, "PlayerMigration", "_14_MigrateResistanceItemProperties.cs"))
             .Should().NotContain("ItemIconMigration");
         File.ReadAllText(Path.Combine(migrations, "ServerMigration", "StoredItemDataMigration.cs"))

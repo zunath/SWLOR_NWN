@@ -246,7 +246,7 @@ namespace SWLOR.Game.Server.Service.CombatRecorderService
 
         public static CombatRecordEvent Healing(
             int sourceId, int targetId, CombatRecordSourceKind kind, string sourceName, int sourceCode,
-            int requested, int hitPointsBefore, int hitPointsAfter, int maxHitPoints)
+            int requested, int hitPointsBefore, int hitPointsAfter, int maxHitPoints, int pvpReduced = 0)
         {
             return new CombatRecordEvent
             {
@@ -260,7 +260,8 @@ namespace SWLOR.Game.Server.Service.CombatRecorderService
                 Value1 = Math.Max(0, hitPointsAfter - hitPointsBefore),
                 Value2 = hitPointsBefore,
                 Value3 = hitPointsAfter,
-                Value4 = maxHitPoints
+                Value4 = maxHitPoints,
+                Value5 = pvpReduced
             };
         }
 

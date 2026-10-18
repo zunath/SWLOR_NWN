@@ -36,6 +36,12 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition
 
         public static void Unequip(uint player, uint item, InventorySlot slot)
         {
+            if (!TryUnequip(player, item, slot))
+                throw new InvalidOperationException("The inventory has no safe space for recovered equipment. Free inventory space before reconnecting.");
+        }
+
+        internal static bool TryUnequip(uint player, uint item, InventorySlot slot)
+        {
             var creature = NWNXLib.g_pAppManager.m_pServerExoApp.GetGameObject(player).AsNWSCreature();
             var inventory = creature.m_pcItemRepository;
             var destination = OBJECT_INVALID;
@@ -47,7 +53,10 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition
                 destination = carried.FirstOrDefault(candidate => GetHasInventory(candidate) &&
                     Fits(NativeItem(candidate).m_pItemRepository, item), OBJECT_INVALID);
                 if (destination == OBJECT_INVALID)
+                {
                     destination = CreateRecoveryBag(player, item, inventory, carried);
+                    if (destination == OBJECT_INVALID) return false;
+                }
             }
 
             if (destination == OBJECT_INVALID)
@@ -67,6 +76,7 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition
             if (GetItemInSlot(slot, player) == item || GetItemPossessor(item) != player ||
                 inventory.GetItemInRepository(NativeItem(item), 1) == 0)
                 throw new InvalidOperationException($"Unable to preserve equipment from slot {slot} during player migration.");
+            return true;
         }
 
         private static uint CreateRecoveryBag(uint player, uint item, CItemRepository inventory, List<uint> carried)
@@ -97,7 +107,10 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition
                              (size.Height + itemSize.Height <= bagInventory.m_nHeight && Math.Max(size.Width, itemSize.Width) <= bagInventory.m_nWidth));
                     }, OBJECT_INVALID);
                     if (donor == OBJECT_INVALID)
-                        throw new InvalidOperationException("The inventory has no safe space for recovered equipment. Free inventory space before reconnecting.");
+                    {
+                        DestroyObject(bag);
+                        return OBJECT_INVALID;
+                    }
                     Move(donor, bag);
                 }
                 Move(bag, player);

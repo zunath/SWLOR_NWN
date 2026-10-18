@@ -187,7 +187,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             ctx.Assert(dbPlayer.Settings.BattleThemeId == null, "uncollected battle theme is cleared");
         }
 
-        [EngineTest("A battle theme plays while the player fights and stops after combat", Category = "MusicCollection", TimeoutSeconds = 90f)]
+        [EngineTest("A battle theme plays while the player fights and stops after combat", Category = "MusicCollection", TimeoutSeconds = 120f)]
         public static async Task BattleThemePlaysDuringCombat(EngineTestContext ctx)
         {
             using var player = await PlayerAbilityFixture.CreateAsync(ctx, 0f);
@@ -223,6 +223,14 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 DestroyObject(enemy);
                 await ctx.WaitUntilAsync(() => !GetIsInCombat(player.Creature), 45f, "the player to leave combat");
                 await ctx.ExecuteInCreatureContextAsync(player.Creature, Music.StopBattleThemeAfterCombat);
+                ctx.Assert(Music.IsBattleThemePlaying(player.Creature), "the battle theme waits briefly after the last combat action");
+
+                // Combat ends once the player has also had no combat activity for the grace period.
+                for (var attempt = 0; attempt < 30 && Music.IsBattleThemePlaying(player.Creature); attempt++)
+                {
+                    await ctx.DelaySecondsAsync(1f);
+                    await ctx.ExecuteInCreatureContextAsync(player.Creature, Music.StopBattleThemeAfterCombat);
+                }
                 ctx.Assert(!Music.IsBattleThemePlaying(player.Creature), "the battle theme stops after combat");
             }
             finally
@@ -232,7 +240,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             }
         }
 
-        [EngineTest("A hostile ability without damage starts the battle theme", Category = "MusicCollection", TimeoutSeconds = 45f)]
+        [EngineTest("A missed hostile ability without damage starts the battle theme", Category = "MusicCollection", TimeoutSeconds = 45f)]
         public static async Task HostileAbilityStartsBattleTheme(EngineTestContext ctx)
         {
             using var player = await PlayerAbilityFixture.CreateAsync(ctx, 0f);
@@ -244,12 +252,15 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             ctx.MakeHostile(enemy);
             try
             {
+                Combat.SetAbilityHitResolutionOverride(false);
                 await ctx.ExecuteInCreatureContextAsync(enemy, () =>
-                    Ability.ApplyHostileCombatImpact(enemy, player.Creature, SkillType.Force, 0, CombatDamageType.Force));
-                ctx.Assert(Music.IsBattleThemePlaying(player.Creature), "a control-only hostile ability starts the battle theme");
+                    Ability.ApplyCombatImpact(enemy, player.Creature, GetLocation(player.Creature), SkillType.Force,
+                        0, 0, null, false, damageType: CombatDamageType.Force));
+                ctx.Assert(Music.IsBattleThemePlaying(player.Creature), "a missed control-only hostile ability starts the battle theme");
             }
             finally
             {
+                Combat.SetAbilityHitResolutionOverride(null);
                 DestroyObject(enemy);
                 await ctx.ExecuteInCreatureContextAsync(player.Creature, () => Music.SetBattleTheme(player.Creature, null));
             }

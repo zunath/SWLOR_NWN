@@ -2539,7 +2539,7 @@ namespace SWLOR.Game.Server.Service
         {
             using var damageDerivedHealing = Combat.BeginDamageDerivedHealing(activator, target);
             var trackedImpact = GetTrackedAbilityImpact(activator);
-            // Abilities that only apply status effects raise no attack or damage events.
+            // Hostile abilities raise no attack or damage events when they only apply status effects.
             Music.StartBattleTheme(target, activator);
 
             // Register the combat point before applying damage. A lethal hit resolves the target's
@@ -2706,6 +2706,8 @@ namespace SWLOR.Game.Server.Service
                 damageType = ResolveWeaponAbilityDamageType(activator, skillType, damageType, trackedImpact);
             Combat.TrackHostileAbilityActivity(activator);
             Combat.TrackHostileDefensiveCombatEntryActivity(target, activator);
+            // Before the hit roll, so a missed ability still starts the battle theme.
+            Music.StartBattleTheme(target, activator);
             var perkType = trackedImpact?.Ability?.EffectiveLevelPerkType ?? PerkType.Invalid;
             var usesNPCStatScaling = ShouldUseNPCStatScaling(activator, useNPCStatScaling);
             var damageAbility = combatImpactDamageAbility != AbilityType.Invalid

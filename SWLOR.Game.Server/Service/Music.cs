@@ -17,6 +17,10 @@ namespace SWLOR.Game.Server.Service
         private const string AreaMusicStoppedVariable = "MUSIC_BACKGROUND_STOPPED";
         private const string BattleThemeSetVariable = "MUSIC_BATTLE_THEME_SET";
         private const string BattleThemePlayingVariable = "MUSIC_BATTLE_THEME_PLAYING";
+        // Ability-only fights can leave the engine's combat state off, so combat also lasts this long
+        // after the player's last attack, damage, or hostile ability.
+        private const float BattleThemeCombatGraceSeconds = 12f;
+        private static readonly Dictionary<uint, DateTime> _lastBattleThemeCombat = new();
 
         private static readonly Dictionary<int, Song> _songs = new Dictionary<int,Song>();
         private static readonly Dictionary<KeyItemType, MusicSong> _collectibleSongsByKeyItem = MusicSongCatalog.Songs
@@ -133,7 +137,8 @@ namespace SWLOR.Game.Server.Service
         {
             if (defender == attacker ||
                 GetObjectType(defender) != ObjectType.Creature ||
-                GetObjectType(attacker) != ObjectType.Creature)
+                GetObjectType(attacker) != ObjectType.Creature ||
+                GetArea(defender) != GetArea(attacker))
                 return;
 
             StartBattleTheme(defender);
@@ -143,8 +148,11 @@ namespace SWLOR.Game.Server.Service
         private static void StartBattleTheme(uint player)
         {
             if (!GetLocalBool(player, BattleThemeSetVariable) ||
-                GetLocalBool(player, BattleThemePlayingVariable) ||
                 !GetIsPC(player) || GetIsDM(player) || GetIsDMPossessed(player))
+                return;
+
+            _lastBattleThemeCombat[player] = DateTime.UtcNow;
+            if (GetLocalBool(player, BattleThemePlayingVariable))
                 return;
 
             SetLocalBool(player, BattleThemePlayingVariable, true);
@@ -158,8 +166,17 @@ namespace SWLOR.Game.Server.Service
         public static void StopBattleThemeAfterCombat()
         {
             var player = OBJECT_SELF;
-            if (GetLocalBool(player, BattleThemePlayingVariable) && !GetIsInCombat(player))
+            if (GetLocalBool(player, BattleThemePlayingVariable) &&
+                !GetIsInCombat(player) &&
+                (!_lastBattleThemeCombat.TryGetValue(player, out var lastCombat) ||
+                 (DateTime.UtcNow - lastCombat).TotalSeconds > BattleThemeCombatGraceSeconds))
                 StopBattleTheme(player);
+        }
+
+        [NWNEventHandler(ScriptName.OnModuleExit)]
+        public static void ForgetBattleThemeCombat()
+        {
+            _lastBattleThemeCombat.Remove(GetExitingObject());
         }
 
         /// <summary>
@@ -173,6 +190,7 @@ namespace SWLOR.Game.Server.Service
         private static void StopBattleTheme(uint player)
         {
             DeleteLocalBool(player, BattleThemePlayingVariable);
+            _lastBattleThemeCombat.Remove(player);
             PlayerPlugin.MusicBattleToggle(player, false);
 
             // The client resumes background music when battle music stops. Keep stopped area music

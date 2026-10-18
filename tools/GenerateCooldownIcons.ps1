@@ -7,7 +7,7 @@ param(
     # main generated block, are covered by a plain -Force run. Rows 1982-1991 have no ife_ feats, so this
     # adds only Force Link; the placeholder-icon abilities below 1992 stay excluded.
     [int]$GeneratedFeatStart = 1992,
-    [int]$GeneratedFeatEnd = 3216,
+    [int]$GeneratedFeatEnd = 3266,
     [int]$IconSize = 32,
     [string[]]$IconResRefs = @(),
     [switch]$Force

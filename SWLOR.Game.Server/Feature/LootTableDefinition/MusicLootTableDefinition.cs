@@ -11,6 +11,12 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
         public const string MusicDiscs = "MUSIC_DISCS";
         public const string BossMusicDiscs = "MUSIC_DISCS_BOSS";
 
+        // Creatures roll these tables at 1% (regular) and 5% (boss). A full rare find bonus
+        // (Treasure Hunter III) raises either to at most 20%.
+        public const int MaxDropChance = 20;
+        public const int MusicDiscChance = 1;
+        public const int BossMusicDiscChance = 5;
+
         private readonly LootTableBuilder _builder = new();
 
         public Dictionary<string, LootTable> BuildLootTables()
@@ -25,6 +31,7 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
         {
             _builder.Create(MusicDiscs)
                 .IsRare()
+                .MaxRareChanceBonus(MaxDropChance - MusicDiscChance)
                 .AddItem("song_1", 1)
                 .AddItem("song_2", 1)
                 .AddItem("song_3", 1)
@@ -322,6 +329,7 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
         {
             _builder.Create(BossMusicDiscs)
                 .IsRare()
+                .MaxRareChanceBonus(MaxDropChance - BossMusicDiscChance)
                 .AddItem("song_378", 1)
                 .AddItem("song_394", 1)
                 .AddItem("song_395", 1)

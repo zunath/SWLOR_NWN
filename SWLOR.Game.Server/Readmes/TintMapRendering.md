@@ -362,6 +362,19 @@ poses, so each joint keeps the garment's authored world bind and its native
 inverse skin binds unchanged. They carry no animation tracks of their own.
 Independent cloth helpers stay beneath them and keep their authored curves.
 
+Those static joints still need engine part IDs. The compiler numbers only nodes
+with tracks, so a track-less joint gets part -1, and the engine animates nothing
+beneath a -1 node. In 145 of 1,609 generated roots, coat tails, skirt bones and
+belt flaps sat at their bind shape. On robes 20, 21 and 236 that shape hugs the hips,
+so long pelvis parts poked through the back of the coat. The native robes swing
+those helpers through `a_fa_coat`. After compiling each animation bridge,
+`RobeAnimations.number_static_garment_ancestors` gives every such `rg_` joint an
+unused part ID in the geometry and in every clip. No controllers are added, so each
+wearer keeps its own adapter transform. Wearer roots compiled against the
+bridge inherit the IDs by name, which `validate_body_parts` confirms.
+`validate_static_garment_parts` fails a bridge that still has a tracked node beneath
+an unnumbered garment joint.
+
 Do not copy body tracks onto garment joints instead. The engine keeps channels
 that a clip omits from the previous clip: `custom1start`/`custom1lp` (Point
 and the carrier for every authored ability animation), the talk clips that

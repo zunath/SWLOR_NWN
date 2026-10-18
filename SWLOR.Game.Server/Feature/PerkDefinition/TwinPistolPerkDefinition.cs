@@ -312,20 +312,20 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.GrappleShot1)
-                .Description("Close up to 6m toward an enemy, then attack with each equipped attack weapon for weapon DMG + 6 per impact. Spend all Flow for +4 power per charge on each impact. Works with any weapon.")
+                .Description("Close up to 6m toward an enemy, then attack with each equipped attack weapon for weapon DMG + 6 per impact. Spend all Flow for +4 DMG per charge on each impact. Works with any weapon.")
                 .Price(2)
                 .RequirementSkill(SkillType.TwinPistol, 10)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.GrappleShot2)
-                .Description("Close up to 6m toward an enemy, then attack with each equipped attack weapon for weapon DMG + 10 per impact. Spend all Flow for +4 power per charge on each impact. Works with any weapon.")
+                .Description("Close up to 6m toward an enemy, then attack with each equipped attack weapon for weapon DMG + 10 per impact. Spend all Flow for +4 DMG per charge on each impact. Works with any weapon.")
                 .Price(4)
                 .RequirementSkill(SkillType.TwinPistol, 30)
                 .RequirementMustHavePerk(PerkType.GrappleShot, 1)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.GrappleShot3)
-                .Description("Close up to 6m toward an enemy, then attack with each equipped attack weapon for weapon DMG + 14 per impact. Spend all Flow for +4 power per charge on each impact. Works with any weapon.")
+                .Description("Close up to 6m toward an enemy, then attack with each equipped attack weapon for weapon DMG + 14 per impact. Spend all Flow for +4 DMG per charge on each impact. Works with any weapon.")
                 .Price(4)
                 .RequirementSkill(SkillType.TwinPistol, 38)
                 .RequirementMustHavePerk(PerkType.GrappleShot, 2);
@@ -413,7 +413,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.FinalSalvo)
-                .Description("Without moving, attack one enemy with each equipped attack weapon for weapon DMG + 20 per impact. Spend all Flow for +6 power per charge on each impact (max +18). Works with any weapon.")
+                .Description("Without moving, attack one enemy with each equipped attack weapon for weapon DMG + 20 per impact. Spend all Flow for +6 DMG per charge on each impact (max +18). Works with any weapon.")
                 .Price(6)
                 .RequirementSkill(SkillType.TwinPistol, 50)
                 .RequirementQuest(TwinPistolCapstoneQuestDefinition.FinalSalvoMasteryQuestId);

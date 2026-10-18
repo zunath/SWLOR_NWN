@@ -38,6 +38,17 @@ internal static class CharacterFileUpgrade
     internal static int ReadFileVersion(SavedCharacter character) => character.ReadInteger(PlayerFileCheckpoint.FieldName);
 
     /// <summary>
+    /// The version a character file has reached: its checkpoint, or for a file without one, its record's
+    /// version up to the last version that predates checkpoints.
+    /// </summary>
+    internal static int ResolveFileVersion(int checkpoint, int recordVersion) =>
+        checkpoint != 0 ? checkpoint : Math.Min(recordVersion, LastPlayerVersionWithoutFileCheckpoint);
+
+    /// <summary>True when a character file (by its checkpoint) and its record have both reached the latest version.</summary>
+    internal static bool IsCurrent(int checkpoint, Player record) =>
+        record.Version >= LatestVersion && ResolveFileVersion(checkpoint, record.Version) >= LatestVersion;
+
+    /// <summary>
     /// Applies every migration the file or the record is behind on. The file and the record keep their own
     /// checkpoints, as at login: a migration changes the file when the file is behind it and the record when
     /// the record is. Returns null when the character is current.
@@ -45,9 +56,7 @@ internal static class CharacterFileUpgrade
     internal static CharacterUpgradeResult Upgrade(byte[] file, Player record, Beast activeBeast = null)
     {
         var character = new SavedCharacter(file, record) { ActiveBeast = activeBeast };
-        var fileVersion = ReadFileVersion(character);
-        if (fileVersion == 0)
-            fileVersion = Math.Min(record.Version, LastPlayerVersionWithoutFileCheckpoint);
+        var fileVersion = ResolveFileVersion(ReadFileVersion(character), record.Version);
         var start = Math.Min(record.Version, fileVersion);
         if (start >= LatestVersion)
             return null;
@@ -101,77 +110,110 @@ internal static class CharacterFileUpgrade
         var files = Directory.EnumerateFiles(vault, "*.bic", SearchOption.AllDirectories).ToArray();
         Log.Write(LogGroup.Migration, $"Character upgrade to version {LatestVersion}: checking {files.Length} character files in '{vault}'.", true);
 
-        var backupDirectory = Path.Combine(Path.GetDirectoryName(Path.TrimEndingDirectorySeparator(vault)) ?? vault,
+        // The server image links its run folder's servervault to the mounted home; keep backups beside the real folder.
+        var vaultRoot = Path.TrimEndingDirectorySeparator(vault);
+        var realVault = new DirectoryInfo(vaultRoot).ResolveLinkTarget(true)?.FullName ?? vaultRoot;
+        var backupDirectory = Path.Combine(Path.GetDirectoryName(realVault) ?? realVault,
             "servervault_backups", $"character-upgrade-{LatestVersion}-{DateTime.UtcNow:yyyyMMddHHmmss}");
-        var upgraded = 0;
-        var current = 0;
-        var skipped = 0;
-        var failed = 0;
-        var overflowed = 0;
-        const int BatchSize = 500;
-        foreach (var batch in files.Chunk(BatchSize))
+        var counts = new UpgradeCounts();
+        // Files that share a record wait for a later round, so each converts from the record the previous one saved.
+        var queue = files;
+        while (queue.Length > 0)
         {
-            var pending = new CharacterFile[batch.Length];
-            Parallel.For(0, batch.Length, index => pending[index] = CharacterFile.Read(batch[index]));
-
-            // DB is not thread-safe: load records here and give each conversion its own copy.
-            foreach (var character in pending)
+            var seen = new HashSet<string>();
+            var deferred = new List<string>();
+            foreach (var batch in queue.Chunk(BatchSize))
             {
-                if (character.Error != null || character.IsDM || string.IsNullOrEmpty(character.Id))
-                    continue;
-                var record = DB.Get<Player>(character.Id);
-                if (record == null || record.IsDeleted)
-                    continue;
-                character.Record = JsonConvert.DeserializeObject<Player>(JsonConvert.SerializeObject(record));
-                if (!string.IsNullOrWhiteSpace(record.ActiveBeastId))
-                    character.ActiveBeast = DB.Get<Beast>(record.ActiveBeastId);
+                UpgradeBatch(batch, vault, backupDirectory, seen, deferred, counts);
+                Log.Write(LogGroup.Migration, $"Character upgrade: {counts.Done}/{files.Length} files ({counts.Upgraded} upgraded, " +
+                    $"{counts.Current} current, {counts.Skipped} without a record, {counts.Failed} failed) in {stopwatch.Elapsed:hh\\:mm\\:ss}.", true);
             }
-
-            Parallel.For(0, pending.Length, index => pending[index].Convert());
-
-            foreach (var character in pending)
-            {
-                if (character.Error != null)
-                {
-                    failed++;
-                    Log.Write(LogGroup.Migration, $"Character upgrade failed for '{character.Path}' [{character.Id}]: {character.Error}", true);
-                    continue;
-                }
-                if (character.Record == null)
-                {
-                    skipped++;
-                    continue;
-                }
-                if (character.Result == null)
-                {
-                    current++;
-                    continue;
-                }
-                try
-                {
-                    Commit(character, vault, backupDirectory);
-                    upgraded++;
-                    overflowed += character.Result.Overflow.Count;
-                }
-                catch (Exception ex)
-                {
-                    failed++;
-                    Log.Write(LogGroup.Migration, $"Character upgrade could not save '{character.Path}' [{character.Id}]: {ex.ToMessageAndCompleteStacktrace()}", true);
-                }
-            }
-            Log.Write(LogGroup.Migration, $"Character upgrade: {upgraded + current + skipped + failed}/{files.Length} files " +
-                $"({upgraded} upgraded, {current} current, {skipped} without a record, {failed} failed) in {stopwatch.Elapsed:hh\\:mm\\:ss}.", true);
+            queue = deferred.ToArray();
         }
 
         Log.Write(LogGroup.Migration, $"Character upgrade to version {LatestVersion} finished in {stopwatch.ElapsedMilliseconds}ms: " +
-            $"{upgraded} upgraded, {current} current, {skipped} without a record, {failed} failed, {overflowed} items moved to overflow storage.", true);
-        if (failed > 0)
+            $"{counts.Upgraded} upgraded, {counts.Current} current, {counts.Skipped} without a record, {counts.Failed} failed, " +
+            $"{counts.Overflowed} items moved to overflow storage.", true);
+        if (counts.Failed > 0)
             return false;
 
         config ??= new ServerConfiguration();
         config.CharacterFileVersion = LatestVersion;
         DB.Set(config);
         return true;
+    }
+
+    private const int BatchSize = 500;
+
+    private static void UpgradeBatch(string[] batch, string vault, string backupDirectory, HashSet<string> seen,
+        List<string> deferred, UpgradeCounts counts)
+    {
+        var pending = new CharacterFile[batch.Length];
+        Parallel.For(0, batch.Length, index => pending[index] = CharacterFile.Read(batch[index]));
+
+        // DB is not thread-safe: load records here and give each conversion its own copy.
+        foreach (var character in pending)
+        {
+            if (character.Error != null || character.IsDM || string.IsNullOrEmpty(character.Id))
+                continue;
+            if (!seen.Add(character.Id))
+            {
+                character.Deferred = true;
+                deferred.Add(character.Path);
+                continue;
+            }
+            var record = DB.Get<Player>(character.Id);
+            if (record == null || record.IsDeleted)
+                continue;
+            character.Record = JsonConvert.DeserializeObject<Player>(JsonConvert.SerializeObject(record));
+            if (!string.IsNullOrWhiteSpace(record.ActiveBeastId))
+                character.ActiveBeast = DB.Get<Beast>(record.ActiveBeastId);
+        }
+
+        Parallel.For(0, pending.Length, index => pending[index].Convert());
+
+        foreach (var character in pending)
+        {
+            if (character.Deferred)
+                continue;
+            if (character.Error != null)
+            {
+                counts.Failed++;
+                Log.Write(LogGroup.Migration, $"Character upgrade failed for '{character.Path}' [{character.Id}]: {character.Error}", true);
+                continue;
+            }
+            if (character.Record == null)
+            {
+                counts.Skipped++;
+                continue;
+            }
+            if (character.Result == null)
+            {
+                counts.Current++;
+                continue;
+            }
+            try
+            {
+                Commit(character, vault, backupDirectory);
+                counts.Upgraded++;
+                counts.Overflowed += character.Result.Overflow.Count;
+            }
+            catch (Exception ex)
+            {
+                counts.Failed++;
+                Log.Write(LogGroup.Migration, $"Character upgrade could not save '{character.Path}' [{character.Id}]: {ex.ToMessageAndCompleteStacktrace()}", true);
+            }
+        }
+    }
+
+    private sealed class UpgradeCounts
+    {
+        public int Upgraded { get; set; }
+        public int Current { get; set; }
+        public int Skipped { get; set; }
+        public int Failed { get; set; }
+        public int Overflowed { get; set; }
+        public int Done => Upgraded + Current + Skipped + Failed;
     }
 
     /// <summary>
@@ -224,6 +266,7 @@ internal static class CharacterFileUpgrade
         public bool IsDM { get; private init; }
         public Player Record { get; set; }
         public Beast ActiveBeast { get; set; }
+        public bool Deferred { get; set; }
         public CharacterUpgradeResult Result { get; private set; }
         public string Error { get; private set; }
 

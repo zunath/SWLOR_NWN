@@ -2,14 +2,14 @@
 
 Read before adding or changing a server or player migration, or any change to persisted data.
 
-Sections: How migrations run · One migration per release · One pass per data set · Server before player · Saved-data item sweeps · Enum renames · Testing
+Sections: How migrations run · One migration per release · One pass per data set · Server before player · Saved-data item sweeps · Character upgrade · Enum renames · Testing
 
 ## How migrations run
 
 - Server migrations implement `IServerMigration` (`Feature/MigrationDefinition/ServerMigration/`). `PostDatabaseLoad` runs on database load; `PostCacheLoad` runs after the module cache loads (use it when you need item blueprints). Versions are keyed per execution type, so one version number can have one class in each phase.
 - `ServerConfiguration.MigrationVersion` advances only after both phases succeed. A failure shuts the server down, and the next boot reruns every migration above the stored version, so every migration must be idempotent.
 - Server migrations production has already run are deleted, not kept. `Migration.RetiredServerMigrationVersion` is the newest deleted version: a new database starts there, and a database below it refuses to boot (upgrade it with an older build first). When you retire more versions, raise the constant to the newest one production has run and delete their classes and tests.
-- Player migrations implement `IPlayerMigration` (`Feature/MigrationDefinition/PlayerMigration/`) and run at login. `Migrate(player)` edits the live character; `MigratePlayerData` edits the `Player` record. Throw `PlayerMigrationDeferredException` when the player must free inventory space first.
+- Player migrations implement `ICharacterMigration` (`Feature/MigrationDefinition/CharacterMigration/`) and run at boot, after the server migrations, over every character file in the server vault and its `Player` record, including characters whose players have not logged in since (see "Character upgrade"). `Migrate(SavedCharacter)` edits the saved character file; `MigratePlayerData(Player)` edits only the record. Login refuses a character the upgrade has not brought to the latest version.
 - Load complete sets with `AddPaging(count, 0)` and log progress with `ServerMigrationProgress`.
 
 ## One migration per release
@@ -32,7 +32,7 @@ Large data sets are loaded and saved once per release, with every change for tha
 
 ## Server before player
 
-Prefer server migrations: they run once at boot over every stored record, including players who are offline. Use a player migration only for data that exists only on the character file or live object (equipped and carried items, character-file locals), and keep it to that data.
+Prefer server migrations for database records. Use a player migration only for data that lives in the character file (equipped and carried items, droid contents, feats, levels, the quickbar) and the record changes that follow from it, and keep it to that data. Both run at boot over every character, online or not.
 
 ## Saved-data item sweeps
 
@@ -42,6 +42,17 @@ The stored-item sweep (`StoredItemSweep`, run by the release's server migration)
 - Each saved-data rule mirrors the engine rule for live items (`HeadgearSlotMigration`, `EquipmentTypeMigration`, `ItemIconMigration`, `ItemAppearanceCatalogMigration`, `LootStatRevisionMigration`). A change to either changes the other in the same commit and adds the legacy kind to the `SavedDataItemSweepMatchesEngine` engine test (filter `SavedDataItemSweep`), which runs both on the same saved data and compares what the engine loads.
 - Write new GFF data the way the engine saves it: a property built with `ItemPropertyCustom` and -1 arguments saves Subtype 65535 and Param1Value 255, item properties are numbered by list index, and locals use struct type 0.
 - For a new kind of rule, also check parity on a production copy: boot one copy with a local build whose `StoredItemSweep.Migrate` passes `EngineStoredItemConverter.Instance` (the engine baseline, hours on production data) and another with the normal build, then compare the decoded records. The engine also re-saves older items in the current format (new default fields, reset orientation, reversed locals, reordered creature inventories); those differences are expected.
+
+## Character upgrade
+
+`CharacterFileUpgrade.UpgradeServerVault` (called from `Migration.AfterCacheLoaded`) reads every `.bic` in the server vault, loads each record on the main thread, converts on worker threads, and saves from the main thread. Character migrations follow the saved-data rules above: no NWScript, NWNX, engine or `DB` calls inside `Migrate`; read game data from `SavedCharacterData`, which `Load()` fills on the main thread first.
+
+- Checkpoints: the file's root `PlayerFileVer` field and `Player.Version`, as before. `Player.CharacterFileVersion` records which file migrations already changed the record, so a retry after a crash between the record save and the file write changes only the file. `ServerConfiguration.CharacterFileVersion` skips the pass once every character is current; a character that fails keeps its saved state, is logged, and is tried again at the next boot.
+- Saving order: overflow items, then the record, then the file (written to `<file>.upgrade` and moved over the original). The original file is copied first to `servervault_backups/character-upgrade-<version>-<UTC time>/`, beside the real server vault folder (the server image links its run folder's `servervault` to the mounted home).
+- Before the first migration, `SavedCharacterLoad` applies the item changes that loading a character into the engine used to make (legacy property conversion, retired basic weapons, pistol base items, missing Delay on worn weapons), so migrations see what they saw at login.
+- Write character data the way the engine saves it. `SavedCharacter` keeps the inventory grid (10 x 36 in pages of 6 rows; an item never spans pages), retargets or clears quickbar item buttons when items move, and writes hit points at full: login restores current HP from the record.
+- Items that do not fit go to `OverflowItem` records with ids derived from the upgrade, so a retry replaces them. Players claim them with `/overflow`; login tells them when any wait. Messages a migration adds to `SavedCharacter.Notices` are saved on the record (`Player.UpgradeNotices`) and shown at the next login.
+- Test a character migration on saved data: run it with `CharacterFileUpgrade.Upgrade` or on a `SavedCharacter` built from a fixture, load the result in the engine, and check what the engine loads.
 
 ## Enum renames
 

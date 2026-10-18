@@ -23,7 +23,6 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         internal const int RetiredServerMigrationVersion = 27;
         internal const string PlayerFileVersionVariable = "PLAYER_MIGRATION_VERSION";
-        private const int LastPlayerVersionWithoutFileCheckpoint = 12;
         private static int _currentMigrationVersion;
         private static ServerMigrationState _serverMigrationState = new(0);
         private static readonly Dictionary<int, IServerMigration> _serverMigrationsPostDatabase = new();
@@ -198,14 +197,12 @@ namespace SWLOR.Game.Server.Service
 
             var playerId = GetObjectUUID(player);
             var dbPlayer = DB.Get<Player>(playerId);
-            var latestVersion = GetLatestPlayerVersion();
-            var fileVersion = GetLocalInt(player, PlayerFileVersionVariable);
-            if (fileVersion == 0 && dbPlayer != null)
-                fileVersion = Math.Min(dbPlayer.Version, LastPlayerVersionWithoutFileCheckpoint);
-            if (dbPlayer == null || dbPlayer.Version < latestVersion || fileVersion < latestVersion)
+            var checkpoint = GetLocalInt(player, PlayerFileVersionVariable);
+            if (dbPlayer == null || !CharacterFileUpgrade.IsCurrent(checkpoint, dbPlayer))
             {
-                Log.Write(LogGroup.Migration, $"Refusing login for {GetName(player)} [{playerId}]: the character is at version " +
-                    $"{fileVersion} and its record at {dbPlayer?.Version}, but this server requires {latestVersion}. The boot-time character upgrade did not complete for it.", true);
+                var fileVersion = dbPlayer == null ? checkpoint : CharacterFileUpgrade.ResolveFileVersion(checkpoint, dbPlayer.Version);
+                Log.Write(LogGroup.Migration, $"Refusing login for {GetName(player)} [{playerId}]: the character is at version {fileVersion} " +
+                    $"and its record at {dbPlayer?.Version}, but this server requires {GetLatestPlayerVersion()}. The boot-time character upgrade did not complete for it.", true);
                 BootPC(player, "Your character could not be updated for this version of the server. Please contact a server administrator.");
                 return;
             }

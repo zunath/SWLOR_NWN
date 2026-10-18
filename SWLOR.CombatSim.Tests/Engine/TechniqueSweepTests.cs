@@ -134,6 +134,33 @@ public class TechniqueSweepTests
         state.AccuracyPercent(30).Should().Be(0);
     }
 
+    [TestCase(false)]
+    [TestCase(true)]
+    public void OnlyOrdinaryMissesArmAvoidedAttackRewards(bool ordinary)
+    {
+        var attacker = new CombatantSpec
+        {
+            Name = "attacker", MaxHp = 100000, MaxStm = 100, ReactionSeconds = 100,
+            WeaponCombat = new() { Accuracy = 0, EnableCriticals = false },
+            AutoAttack = ordinary ? new() { AttacksPerSecond = 1, Damage = new() { Min = 1, Max = 1 } } : null,
+            Abilities = ordinary ? new() : new() { new() { Feat = "Jab4" } }
+        };
+        var defender = new CombatantSpec
+        {
+            Name = "defender", MaxHp = 100000, WeaponCombat = new() { Evasion = 10000 },
+            Perks = new() { "ImprovedAttentiveness", "OpportunistsFlow" }
+        };
+        var sim = TestScenarios.Spawn(TestScenarios.TwoTeams(false, new[] { attacker }, new[] { defender }), RuleSets.Current(), _catalog);
+        sim.Get("attacker").NextActionAt = 0;
+        sim.Get("attacker").NextAttackAt = 0;
+        SimulationClock.RunUntil(sim, 0.5);
+        var attempts = ordinary ? "OrdinaryAttempts" : "AbilityImpactsAttempted";
+        sim.Get("attacker").Weapon.Diagnostics.GetValueOrDefault(attempts).Should().Be(1);
+        sim.Get("defender").Stats.DamageTakenToHp.Should().Be(0);
+        sim.Get("defender").Weapon.AccuracyPercent(0.5).Should().Be(ordinary ? 10 : 0);
+        sim.Get("defender").Weapon.AvoidedAttackDiscount(9, false, 0.5).Should().Be(ordinary ? 4 : 0);
+    }
+
     [Test] public void CounterfactualDisablesOnlySweep()
     {
         var sim = Setup(enabled: false);

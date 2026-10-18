@@ -32,8 +32,7 @@ public sealed partial class Simulation
         var weaponPercent = technique?.WeaponDamagePercent ?? cast.Use.WeaponDamagePercent;
         var landed = false;
         var secondary = cast.Technique.SweepSecondary;
-        cast.Technique.IsArea = cast.Technique.IsSweep || cast.Ability.IsAreaAbility;
-        if (cast.Technique.IsArea) caster.Weapon.AreaUsed(_now, cast.Technique.IsSweep);
+        BeginWeaponAreaImpact(caster, cast);
         List<Combatant> areaTargets = null;
         if (cast.Ability.IsAreaAbility)
         {
@@ -76,6 +75,12 @@ public sealed partial class Simulation
             .Where(enemy => enemy != target && WeaponDistanceSquared(caster, enemy) <= Math.Pow(technique.OpeningSweepRadiusMeters, 2))
             .OrderBy(enemy => WeaponDistanceSquared(caster, enemy)).ThenBy(enemy => enemy.SimId).FirstOrDefault();
         cast.Technique.IsSweep = cast.Technique.SweepSecondary != null;
+    }
+
+    private void BeginWeaponAreaImpact(Combatant caster, PendingCast cast)
+    {
+        cast.Technique.IsArea = cast.Technique.IsSweep || cast.Ability.IsAreaAbility;
+        if (cast.Technique.IsArea) caster.Weapon.AreaUsed(_now, cast.Technique.IsSweep);
     }
 
     private static double WeaponDistanceSquared(Combatant caster, Combatant target) =>
@@ -148,7 +153,12 @@ public sealed partial class Simulation
         var accuracy = a.Accuracy + (int)Math.Ceiling(a.Accuracy * attacker.Weapon.AccuracyPercent(_now) / 100f);
         var chance = Combat.CalculateHitRate(accuracy + accuracyBonus - penalty, evasion, hitPercent);
         attacker.Weapon.Count(ordinary ? "OrdinaryAttempts" : "AbilityImpactsAttempted");
-        if (_random.Next(1, 101) > chance) { target.Weapon.AvoidedAttack(_now); return false; }
+        if (_random.Next(1, 101) > chance)
+        {
+            // Only native ordinary attack misses/deflections arm these production perks.
+            if (ordinary) target.Weapon.AvoidedAttack(_now);
+            return false;
+        }
         var criticalChance = ordinary ? Combat.CalculateCriticalRate(a.Perception, d.Vitality, a.WeaponSkillRank, 0) : Combat.CalculateAbilityCriticalChance(0);
         var critical = a.EnableCriticals && _random.Next(1, 101) <= criticalChance ? Combat.StandardCriticalRating : 0;
         var attack = WeaponCombatState.Adjust(a.Attack, attacker.Weapon.Stat(StatType.AttackPercentAdjustment));

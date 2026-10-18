@@ -844,11 +844,26 @@ namespace SWLOR.CombatSim.Engine
                 DamageHealingCatalog.TryGet(cast.Ability.Feat, out var damageHealing);
                 if (victim != null || cast.Use.Damage.Area)
                 {
-                    Action<Combatant> beforeDamage = caster.Weapon != null && cast.Ability.SourceWeaponPower.HasValue
-                        ? hitTarget => ApplyWeaponStatusRiders(caster, hitTarget, cast.Ability)
-                        : null;
+                    var hitTargets = new HashSet<uint>();
+                    Action<Combatant> beforeDamage = null;
+                    if (caster.Weapon != null)
+                    {
+                        BeginWeaponAreaImpact(caster, cast);
+                        beforeDamage = hitTarget =>
+                        {
+                            hitTargets.Add(hitTarget.SimId);
+                            if (cast.Ability.SourceWeaponPower.HasValue)
+                                ApplyWeaponStatusRiders(caster, hitTarget, cast.Ability);
+                            caster.Weapon.CostlyAbilityHit(cast.Technique);
+                        };
+                    }
                     var landed = ApplyDamageProfile(caster, victim, cast.Use.Damage, hitBonus, damageHealing, beforeDamage: beforeDamage);
-                    if (caster.Weapon != null) caster.Weapon.Complete(cast.Ability, cast.Use, cast.Technique, victim ?? target, landed, _now);
+                    if (caster.Weapon != null)
+                    {
+                        cast.Technique.ImpactedTargets = hitTargets.Count;
+                        caster.Weapon.Complete(cast.Ability, cast.Use, cast.Technique, victim ?? target, landed, _now);
+                        caster.Weapon.CompleteSweep(cast.Technique, _now);
+                    }
                 }
             }
 

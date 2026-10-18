@@ -19,6 +19,8 @@ The detailed lookup table is [VisualEffectReference.csv](VisualEffectReference.c
 4. Check `ImageUrl` or `SourcePage` when the exact look matters. Do not choose from the constant name alone if the screenshot or tags point to a different feel.
 5. Match visual intensity to gameplay weight. Small single-target effects should not use large fire-and-forget explosions or screen shakes unless the perk is meant to read as dramatic.
 
+Never assign custom effects to ID `999`: the engine reserves it for Cows from Hell and ignores the authored `visualeffects.2da` model for that ID.
+
 ## VFX Groups
 
 | Group | Use For | Typical SWLOR Usage |

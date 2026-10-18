@@ -18,7 +18,10 @@ public static partial class MigrationEngineTests
     [EngineTest("Stored legacy Carapace Bracer correction survives two bank equip cycles", Category = "CarapaceBracerMigration", TimeoutSeconds = 120)]
     public static Task StoredCarapaceBracerLifecycle(EngineTestContext ctx) => VerifyCarapaceBracerLifecycle(ctx, true);
 
-    private static async Task VerifyCarapaceBracerLifecycle(EngineTestContext ctx, bool storedFirst)
+    [EngineTest("Previously converted Carapace Bracer keeps crafted resistance through two bank equip cycles", Category = "CarapaceBracerMigration", TimeoutSeconds = 120)]
+    public static Task ConvertedCarapaceBracerLifecycle(EngineTestContext ctx) => VerifyCarapaceBracerLifecycle(ctx, false, true);
+
+    private static async Task VerifyCarapaceBracerLifecycle(EngineTestContext ctx, bool storedFirst, bool converted = false)
     {
         using var fixture = await PlayerAbilityFixture.CreateAsync(ctx);
         var owner = fixture.Creature;
@@ -35,9 +38,31 @@ public static partial class MigrationEngineTests
             AddItemProperty(DurationType.Permanent, ItemPropertyCustom(ItemPropertyType.Defense, 1, 23), item);
             AddItemProperty(DurationType.Permanent, ItemPropertyCustom(ItemPropertyType.Defense, 2, 10), item);
             AddLegacyProperty(item, ItemPropertyType.Defense, 4, 35, 30);
+            if (converted)
+            {
+                ctx.Assert((bool)Invoke("SerializedItemResistanceMigration", "MigrateObject", item), "The old combat conversion runs first");
+                ctx.AssertEqual(30, PropertyValue(item, ItemPropertyType.Resistance, 2), "The old conversion retained the base protection as resistance");
+                RemoveMatching(item, ItemPropertyType.Resistance, 2);
+                AddItemProperty(DurationType.Permanent, ItemPropertyCustom(ItemPropertyType.Resistance, 2, 35), item);
+            }
             DeleteLocalInt(item, CarapaceBracerStatRevisionCatalog.RevisionVariable);
         });
         var uuid = GetObjectUUID(item);
+        if (!storedFirst)
+        {
+            InventoryItem carried = null;
+            await ctx.ExecuteInCreatureContextAsync(owner, () =>
+            {
+                // Materialize native legacy properties through storage before testing equipped removal.
+                SetLocalInt(item, CarapaceBracerStatRevisionCatalog.RevisionVariable, CarapaceBracerStatRevisionCatalog.CurrentRevision);
+                carried = Bank.DepositItem(owner, item);
+            });
+            await ctx.WaitUntilAsync(() => !GetIsObjectValid(item), 5f, "the legacy fixture to enter storage");
+            await ctx.ExecuteInCreatureContextAsync(owner, () => Bank.WithdrawItem(owner, carried.Id));
+            await ctx.WaitFrameAsync();
+            item = FindHeadgear(owner, "cara_bracer");
+            DeleteLocalInt(item, CarapaceBracerStatRevisionCatalog.RevisionVariable);
+        }
         if (storedFirst)
         {
             InventoryItem legacy = null;
@@ -64,6 +89,7 @@ public static partial class MigrationEngineTests
             new _24_CorrectCarapaceBracers().Migrate(owner);
             ctx.AssertEqual(53, PropertyValue(item, ItemPropertyType.Defense, 1), "The five-point enhancement survives the base correction");
             ctx.AssertEqual(-1, PropertyValue(item, ItemPropertyType.Defense, 4), "Retired defense is removed");
+            ctx.AssertEqual(converted ? 5 : -1, PropertyValue(item, ItemPropertyType.Resistance, 2), "Only the converted base resistance is removed");
             ctx.AssertEqual(baseline + 53, ReadEquipmentTotals(owner).PhysicalDefense, "Equipped defense updates exactly once");
             ctx.Assert(!LootStatRevisionMigration.MigrateObject(owner), "Retry is stable");
         });
@@ -87,6 +113,7 @@ public static partial class MigrationEngineTests
             ctx.AssertEqual(1, GetItemStackSize(item), "Reload preserves quantity");
             ctx.AssertEqual(53, PropertyValue(item, ItemPropertyType.Defense, 1), "Reload preserves enhanced physical defense");
             ctx.AssertEqual(-1, PropertyValue(item, ItemPropertyType.Defense, 4), "Reload never restores retired defense");
+            ctx.AssertEqual(converted ? 5 : -1, PropertyValue(item, ItemPropertyType.Resistance, 2), "Reload preserves only crafted resistance");
             await EquipAsync(ctx, owner, item, InventorySlot.Arms);
             ctx.AssertEqual(baseline + 53, ReadEquipmentTotals(owner).PhysicalDefense, "Reloaded equipment remains usable without stat drift");
         }

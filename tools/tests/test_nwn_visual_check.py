@@ -17,6 +17,7 @@ from nwn_visual_check import offline_client, private_desktop, profile, module, f
 from nwn_visual_check.__main__ import parse_captures, log_records, main
 from nwn_visual_check.result import ClientRun
 from nwn_visual_check.process_job import ProcessJob
+from nwn_visual_check.native_frames import NativeFrames
 
 
 def setUpModule():
@@ -144,6 +145,31 @@ class ProfileBoundaryTests(unittest.TestCase):
 
     def test_generated_profile_is_silent_private_and_background_ready(self):
         self.validate()
+
+    def test_fresh_profile_accepts_its_first_native_screenshot(self):
+        from PIL import Image
+
+        frames = NativeFrames.__new__(NativeFrames)
+        frames.directory = self.owned/'screenshots'
+        frames.window = 1
+        frames.frame = None
+        frames.user = Mock()
+        native = frames.directory/'NWN0000.tga'
+
+        def screenshot(_, message, *_args):
+            if message == 0x101:
+                image = Image.new('RGB', (1280, 720), 'black')
+                image.paste('white', (640, 0, 1280, 720))
+                image.save(native)
+            return True
+
+        frames.user.PostMessageW.side_effect = screenshot
+        output = self.owned/'first.png'
+        frames.save(output)
+        with Image.open(output) as captured:
+            self.assertEqual(captured.size, (1280, 720))
+            self.assertEqual(captured.getpixel((1000, 360)), (255, 255, 255))
+        self.assertFalse(native.exists())
 
     def test_native_refusal_happens_before_process_creation(self):
         self.settings('volume=0.0','volume=0.5')

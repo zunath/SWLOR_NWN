@@ -5,7 +5,7 @@ description: Import, create, replace, or refit SWLOR pistol blaster models throu
 
 # SWLOR Blaster Models
 
-Use the [model workflow](../../../SWLOR.Game.Server/Readmes/BlasterModelImport.md)
+Use the model workflow at `SWLOR.Game.Server/Readmes/BlasterModelImport.md` (from the repository root)
 for commands, a local import-manifest example, material rules and fitting details.
 Inspect the parent checkout and HAK submodule used for testing; worktree changes
 do not automatically reach another checkout's build inputs.
@@ -68,9 +68,11 @@ conversion, fitting and export helpers in the process tooling.
 
 ## Compile and deliver
 
-- Ship compiled MDLs using `tools/CompileBlasterModels.py` and the installed NWN:EE
-  executable. Keep ASCII exports and compile logs local. The old HAK compiler can
-  discard EE fields; leave `CompileModels: false` and pack the precompiled assets.
+- Ship compiled MDLs using `tools/CompileBlasterModels.py` and CleanModels v4.4.2
+  bundled with cleanmodels-qt v1.1.7. Install it with
+  `SWLOR_Haks/tools/SetupModelCompiler.ps1`; use `CLEANMODELS` or `--compiler` for
+  a different install path. Never compile with `nwnmdlcomp.exe` or the NWN game.
+  Keep ASCII exports and compile logs local; pack the precompiled assets.
   See the guide for the command and binary/material verification. For later edits,
   read the shipped binary with `MdlReader` into local authoring rather than relying
   on a legacy decompiler to preserve EE materials.

@@ -2689,5 +2689,6 @@ namespace SWLOR.NWN.API.NWScript.Enum
         AutoCastChainLightning = 3158,
         AutoCastBloodSiphon = 3159,
         AutoCastPowerCell3 = 3160,
+        UnnervingRoar = 3161,
 }
 }

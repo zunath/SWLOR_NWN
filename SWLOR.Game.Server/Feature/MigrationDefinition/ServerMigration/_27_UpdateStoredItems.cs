@@ -96,15 +96,15 @@ public sealed class _27_UpdateStoredItems : IServerMigration
         return changed;
     }
 
-    private static bool MigrateItem(string resref, string data, Action<string> setData, string icon, Action<string> setIcon, Action<uint> convertedHeadgear = null)
+    private static bool MigrateItem(string resref, string data, Action<string> setData, string icon, Action<string> setIcon, Action<uint> rootChanged = null)
     {
-        string headgearIcon = null;
-        var changed = MigrateData(data, setData, convertedHeadgear: item =>
+        string rootIcon = null;
+        var changed = MigrateData(data, setData, rootChanged: item =>
         {
-            headgearIcon = Item.GetIconResref(item);
-            convertedHeadgear?.Invoke(item);
+            rootIcon = Item.GetIconResref(item);
+            rootChanged?.Invoke(item);
         });
-        var updatedIcon = headgearIcon ?? ItemIconMigration.GetUpdatedIcon(resref, icon);
+        var updatedIcon = rootIcon ?? ItemIconMigration.GetUpdatedIcon(resref, icon);
         if (updatedIcon == icon)
             return changed;
         setIcon(updatedIcon);
@@ -129,9 +129,9 @@ public sealed class _27_UpdateStoredItems : IServerMigration
         return changed;
     }
 
-    private static bool MigrateData(string data, Action<string> setData, bool repairHeadgear = true, Action<uint> convertedHeadgear = null)
+    private static bool MigrateData(string data, Action<string> setData, bool repairHeadgear = true, Action<uint> rootChanged = null)
     {
-        if (!LootStatRevisionMigration.MigrateStoredObjectData(data, out var migrated, repairHeadgear, convertedHeadgear))
+        if (!LootStatRevisionMigration.MigrateStoredObjectData(data, out var migrated, repairHeadgear, rootChanged))
             return false;
         setData(migrated);
         return true;

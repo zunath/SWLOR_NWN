@@ -362,6 +362,26 @@
     "type": "resref",
     "value": "ark_armor"
   },
+  "VarTable": {
+    "type": "list",
+    "value": [
+      {
+        "__struct_id": 0,
+        "Name": {
+          "type": "cexostring",
+          "value": "ARKANIAN_ARMOR_STATS_REVISION"
+        },
+        "Type": {
+          "type": "dword",
+          "value": 1
+        },
+        "Value": {
+          "type": "int",
+          "value": 1
+        }
+      }
+    ]
+  },
   "xArmorPart_Belt": {
     "type": "word",
     "value": 11

@@ -53,7 +53,7 @@ Read these before any work package. They are the shared contract.
 - Build: `dotnet build SWLOR.Game.Server.sln` (from repo root).
 - Test: `dotnet test SWLOR.Toolset.Tests --filter <FullyQualifiedName~Pattern>`.
 - Pack (only when a refreshed .mod is needed): `Module\PackModule.cmd`.
-- Never start background processes/watchers (AGENTS.md). Never edit `.claude\skills\` (mirror only).
+- Never start background processes/watchers (AGENTS.md). Shared skill instructions live in `skills\`; follow the routing in `AGENTS.md`.
 
 ### Definition of done for EVERY work package
 1. `dotnet build SWLOR.Game.Server.sln` green.
@@ -93,7 +93,7 @@ Every subagent brief must contain, verbatim or by concrete file reference (never
 1. The **Ground rules for ALL executing agents** section of this plan (copy it in).
 2. The full text of the assigned WP (goal, inputs, deliverables, acceptance).
 3. Relevant recorded decisions quoted from `WORKLOG.md`.
-4. Hard constraints: touch ONLY the files/dirs the WP names; do not modify locked decisions, other projects, `.claude\skills\`, or the round-trip harness; if any input file is missing or an instruction is ambiguous or acceptance can't be met — STOP and report the blocker instead of improvising; never weaken/skip a failing test to get green.
+4. Hard constraints: touch ONLY the files/dirs the WP names; do not modify locked decisions, other projects, or the round-trip harness; do not create agent-specific copies of shared skills; if any input file is missing or an instruction is ambiguous or acceptance can't be met — STOP and report the blocker instead of improvising; never weaken/skip a failing test to get green.
 5. Required report format: files changed (paths), tests added + full `dotnet test` result output, decisions made, deviations, open questions.
 
 ### Verifying a subagent's work — controller MUST, before marking a WP done
@@ -106,7 +106,7 @@ If verification fails: return the report + failure evidence to the same subagent
 
 ### Escalation rules
 - Any byte-fidelity failure (round-trip, float conformance, edit locality) escalates to Lead regardless of which package surfaced it.
-- Ambiguity about SWLOR conventions → resolve from `.codex\skills\` docs and `Readmes\`; if still ambiguous, ask the user rather than guessing.
+- Ambiguity about SWLOR conventions → resolve from `skills\` docs and `Readmes\`; if still ambiguous, ask the user rather than guessing.
 - Tier is a ceiling on delegation, not a floor: the controller may always execute a Low/Mid package itself.
 
 ## Work packages
@@ -142,7 +142,7 @@ Deliverables: `RoundTripCorpusTests.cs` — for every `Module\**\*.json` (16 GFF
 Acceptance: **byte-identical for all ~17,900 files**; edit-locality exact; suite ≤2 min. This suite is permanent and must stay green in every later package.
 
 **WP1.4 — Typed documents.** Tier: **Low** (pattern-stamped after the first two).
-Inputs: WP1.1 model; field references: `.codex\skills\swlor-quest-generation\SKILL.md` + `references\implementation-checklist.md` (creature instance fields: TemplateResRef, Tag, Conversation, VarTable, X/Y/ZPosition, X/YOrientation), `SWLOR.CLI\Templates\*.json` (minimal blueprint shapes), `SWLOR.CLI\StoreInstanceSync.cs`.
+Inputs: WP1.1 model; field references: `skills\swlor-quest-generation\SKILL.md` + `references\implementation-checklist.md` (creature instance fields: TemplateResRef, Tag, Conversation, VarTable, X/Y/ZPosition, X/YOrientation), `SWLOR.CLI\Templates\*.json` (minimal blueprint shapes), `SWLOR.CLI\StoreInstanceSync.cs`.
 Deliverables in `Domain\Documents\`: `AreDocument` (Tileset, Width/Height, Tile_List, lighting/fog props), `GitDocument` (typed access to "Creature List", "Placeable List", "Door List", "WaypointList", "Encounter List", "TriggerList", "SoundList", "StoreList", AreaProperties — verify exact list key spellings against corpus before coding), `GicDocument`, `UtcDocument`, `UtiDocument`, `UtpDocument`, `UtdDocument`, `UtwDocument`, `UtsDocument`, `UttDocument`, `UtmDocument`, `ItpDocument` (palette tree: MAIN list, STRREF/RESREF nodes), `IfoDocument` (Mod_Area_list), `FacDocument`; shared `VarTable.cs` (Name/Type/Value locals; semantics per Radoub `VarTableHelper`), `LocString.cs`.
 Pattern: documents are **views** over `JsonGffDocument` — getters/setters address fields by path; unknown fields untouched. Build `AreDocument` + `GitDocument` first as the reference pattern; stamp the rest.
 Acceptance: unit tests per document reading real corpus files and asserting known values; round-trip suite still green after typed writes (edit-locality style).
@@ -202,7 +202,7 @@ Deliverables: `AreaInstancesView` (per-list grids: add-from-palette via `Instanc
 Acceptance: place a creature instance from palette into a git.json entirely in-tool; diff shape matches a hand-authored placement from the skills docs; suite green.
 
 **WP3.4 — Validation rules.** Tier: **Low** (rules are enumerated; fixtures mechanical).
-Inputs: `.codex\skills\swlor-quest-generation\references\implementation-checklist.md`, `StoreInstanceSync.cs`.
+Inputs: `skills\swlor-quest-generation\references\implementation-checklist.md`, `StoreInstanceSync.cs`.
 Deliverables in `Domain\Validation\`: `IValidationRule` + `ValidationIssue`; rules: `ResRefExistsRule` (TemplateResRef → blueprint file exists), `ResRefLengthRule` (≤16, lowercase), `VarTableEnumRule` (known keys have valid IGameCodeIndex values), `QuestActivatorNotInPaletteRule` (OnUsed=quest_enc placeables are world-instance-only), `SpawnWaypointPaletteRule` (spawn waypoint blueprint Tag == spawn table ID and palette entry exists), `DanglingInstanceTemplateRule`, `PaletteOrphanRule`; `ValidationPanelViewModel` in the app.
 Acceptance: fixture tests per rule (seeded-error JSON + known-good corpus files as negative controls).
 
@@ -252,4 +252,4 @@ Read Quartermaster/Reliquary source: which Avalonia GL control, shader setup, MD
 
 ## Critical files
 
-- `SWLOR.Game.Server.sln`, `SWLOR.CLI\Program.cs`, `SWLOR.CLI\ModulePacker.cs` (ReadKey ~:111/:200; `GetModuleFolders()`), `SWLOR.CLI\StoreInstanceSync.cs`, `Build\hakbuilder.json`, `SWLOR.Game.Server.Tests\SWLOR.Game.Server.Tests.csproj`, `.codex\skills\swlor-quest-generation\` (conventions; edit skills only in `.codex\skills\` then `powershell -ExecutionPolicy Bypass -File tools/SyncAgentSkills.ps1`).
+- `SWLOR.Game.Server.sln`, `SWLOR.CLI\Program.cs`, `SWLOR.CLI\ModulePacker.cs` (ReadKey ~:111/:200; `GetModuleFolders()`), `SWLOR.CLI\StoreInstanceSync.cs`, `Build\hakbuilder.json`, `SWLOR.Game.Server.Tests\SWLOR.Game.Server.Tests.csproj`, `skills\swlor-quest-generation\` (conventions; edit shared skill files directly).

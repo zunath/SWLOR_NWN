@@ -75,7 +75,7 @@ also push on in-place mutation (`Add`/`RemoveAt`/indexer) — see §5 for the ex
 A minimal two-tab window with a side rail, using the proven components:
 `GuiStandardLayout` (rule R5), `GuiTabGroup`/`GuiToggleGroupSync` (rule R4), and
 `OnModalClosedRestore` (rule R6). The skill assets
-(`.codex/skills/swlor-gui-window-generation/assets/`) carry this same pair as
+(`skills/swlor-gui-window-generation/assets/`) carry this same pair as
 fill-in templates.
 
 **Definition:**

@@ -50,10 +50,11 @@ namespace SWLOR.Game.Server.Service
                     continue;
                 }
                 SetLocalString(item, ItemIdVariable, record.Id);
-                if (!ObjectPlugin.AcquireItem(player, item))
+                // A smaller item may still fit where this one does not.
+                if (!FitsInInventory(player, item) || !ObjectPlugin.AcquireItem(player, item))
                 {
                     DestroyObject(item);
-                    break;
+                    continue;
                 }
                 claimed.Add((record, item));
             }
@@ -118,6 +119,21 @@ namespace SWLOR.Game.Server.Service
                 return;
             DB.Delete<OverflowItem>(id);
             DeleteLocalString(item, ItemIdVariable);
+        }
+
+        /// <summary>
+        /// True when the engine finds room for the item in the character's own inventory grid. Acquiring an item that
+        /// has no room can remove items the character already carries, so a claim never tries one.
+        /// </summary>
+        private static unsafe bool FitsInInventory(uint player, uint item)
+        {
+            var server = NWNXLib.g_pAppManager.m_pServerExoApp;
+            var creature = server.GetGameObject(player)?.AsNWSCreature();
+            var native = server.GetItemByGameObjectID(item);
+            if (creature?.m_pcItemRepository == null || native == null)
+                return false;
+            byte x = 0, y = 0;
+            return creature.m_pcItemRepository.FindPosition(native, &x, &y) != 0;
         }
 
         /// <summary>Saves the character now. The ordinary export command queues a later save.</summary>

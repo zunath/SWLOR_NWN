@@ -1,6 +1,6 @@
 # Importing and creating pistol blaster models
 
-Use the repository [blaster skill](../../.codex/skills/swlor-blaster-models/SKILL.md)
+Use the repository [blaster skill](../../skills/swlor-blaster-models/SKILL.md)
 for agent-assisted work. Commit only the finished model, compressed texture maps, material
 definition and inventory icon for each weapon. Keep GR2/DDS inputs, Blender
 scenes, per-model builders, manifests and review artifacts in ignored local
@@ -309,7 +309,8 @@ rotates it differently. The human `rhand` hook sits at
 Render a local review scene already in NWN coordinates with:
 
 ```powershell
-SWLOR_Haks/nwnmdlcomp.exe -d -e SWLOR_Haks/sw_pt_rhand/pmh0_handr001.mdl .tmp/hand001.mdl
+& "$env:LOCALAPPDATA/SWLOR/tools/cleanmodels-qt/1.1.7/cleanmodels-qt/cleanmodels.exe" decompile `
+  SWLOR_Haks/sw_pt_rhand/pmh0_handr001.mdl .tmp/hand001.mdl
 & 'C:/Program Files/Blender Foundation/Blender 4.0/blender.exe' `
   -b --factory-startup --python-exit-code 1 `
   --python tools/RenderBlasterGrip.py -- `
@@ -329,7 +330,7 @@ When changing the converter, run its focused tests:
 The exporter writes transformed corner normals explicitly, including duplicated
 vertices at UV seams. Do not drop those normals and rely on smoothing group 1:
 the compiler would introduce hard lighting seams at the duplicated vertices.
-Set `NWN_EE_NWMAIN` to the installed `nwmain.exe` path to include the native
+Set `CLEANMODELS` to the pinned `cleanmodels.exe` path to include the
 compiler normal-preservation round trip in the tests below. Ordinary Python
 runs the portable tests and skips Blender-only coverage when unavailable.
 
@@ -345,28 +346,37 @@ Verify that the target native slot maps to an entry in the appearance catalog
 and has both model and inventory resources. Validation must inspect game resources
 directly; it must not depend on committed source manifests or Blender files.
 
-Ship **compiled NWN:EE MDLs**. ASCII models force the client to compile geometry on
-first load, which can cause a visible hitch. Use the installed game's native
-compiler, which retains EE material names and tangent data; the legacy 2003
-`nwnmdlcomp.exe` compiler can discard those fields. Keep `CompileModels: false`
-in `Build/hakbuilder.json` so that the legacy build step does not recompile them.
+Ship **compiled NWN:EE MDLs** using [cleanmodels-qt v1.1.7](https://github.com/plenarius/cleanmodels-qt/releases/tag/v1.1.7),
+which bundles CleanModels CLI v4.4.2. ASCII models force the client to compile
+geometry on first load, which can cause a visible hitch. Install the pinned
+Windows release once (archive and executable hashes are verified):
 
-Stage ASCII MDLs and all maps/MTRs in an ignored local resource folder, then run:
+```powershell
+powershell -ExecutionPolicy Bypass -File SWLOR_Haks/tools/SetupModelCompiler.ps1
+```
+
+The tools discover `%LOCALAPPDATA%/SWLOR/tools/cleanmodels-qt/1.1.7/cleanmodels-qt/cleanmodels.exe`.
+For a different install folder, set `CLEANMODELS` or pass `--compiler <path>`.
+Use the CLI bundled with the GUI; neither the old `nwnmdlcomp.exe` nor the game
+executable is part of the compile path. HAK packaging copies the precompiled
+bytes; leave the unused `CompileModels` configuration field false.
+
+Stage ASCII MDLs and all maps/MTRs in a local resource folder, then run:
 
 ```powershell
 python tools/CompileBlasterModels.py `
-  --nwmain 'C:/Program Files (x86)/Steam/steamapps/common/Neverwinter Nights/bin/win32/nwmain.exe' `
   --resources .tmp/blaster/review/resources --output .tmp/blaster/compiled
 ```
 
-This invokes `compilemodel <resref>` with an isolated user directory, waits for each
-process to exit, and checks the engine success log and binary header. Optional
-`--models wbwsh_m_044` limits the selection. Use a fresh output directory. Copy only
-compiled MDLs into runtime staging; logs and ASCII intermediates stay local.
+The helper compiles the selected models as one CLI batch, makes staged MTRs
+available for tangent generation, records `compile.log`, and checks every output's
+binary section sizes before publishing any MDL. Optional `--models wbwsh_m_044`
+limits the selection. Use a fresh output directory. Copy only compiled MDLs into
+runtime staging; logs and ASCII intermediates stay local.
 Check compiled geometry, UVs, normals, EE material names and texture dependencies
 with the native reader before packing. Verify tangent data when changing export or
 compiler paths, and compare visible triangle corners and UVs against the staged
-ASCII to detect compiler changes. Native compilation may split seam vertices or
+ASCII to detect compiler changes. Compilation may split seam vertices or
 remove degenerate triangles; vertex counts alone do not establish geometry loss.
 Remove exact zero-area export faces and compact unused vertices where practical.
 When comparing before/after compilation, match triangle corner positions and UVs,
@@ -374,10 +384,10 @@ not vertex indices. Any removed face must be proven zero-area; do not waive a
 mismatch for a visible face. On vertices referenced by faces, check finite unit
 normals/tangents, near-zero normal/tangent dot product and handedness of +1 or -1.
 The compiler may retain unused vertices after removing degenerate faces; their
-zero handedness is not a rendered tangent failure. The helper's header/log checks
+zero handedness is not a rendered tangent failure. The helper's header/report checks
 alone do not establish material, tangent or visual correctness.
 For later edits, read the binary with `MdlReader` and export a local editable mesh;
-do not use the legacy decompiler to round-trip EE material fields.
+use CleanModels when an ASCII decompile is needed, and verify the round trip.
 
 The normal Windows server build deploys its initiating Debug/Release/custom
 output and rebuilds changed HAKs into `debugserver/hak`. Verification builds use
@@ -394,7 +404,7 @@ Verify inventory/ground appearance, idle/attack grip, muzzle direction and body
 sizes in the client. Imported slot 44 has user approval for its final size/fit;
 Vesper-9 has offline hand and deployed-HAK verification, with live-client review
 pending. Record checks and feedback in the PR. See the skill's
-[troubleshooting reference](../../.codex/skills/swlor-blaster-models/references/troubleshooting.md)
+[troubleshooting reference](../../skills/swlor-blaster-models/references/troubleshooting.md)
 for stale deployment or appearance-editor problems.
 
 Publish companion HAK PRs for parent submodule changes and link them both ways.

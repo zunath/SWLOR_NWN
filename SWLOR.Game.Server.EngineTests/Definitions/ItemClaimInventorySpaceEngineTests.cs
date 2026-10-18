@@ -36,9 +36,10 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                     var carried = Snapshot(player);
                     record = Bank.DepositItem(player, CreateStorageItem(ctx, LargeItemResref));
 
-                    ctx.Assert(!string.IsNullOrEmpty(Bank.WithdrawItem(player, record.Id)), "A withdrawal without room fails");
-                    ctx.Assert(DB.Get<InventoryItem>(record.Id) != null, "The bank keeps the item that did not fit");
+                    var failure = Bank.WithdrawItem(player, record.Id);
                     AssertCarriedIntact(ctx, player, carried);
+                    ctx.Assert(DB.Get<InventoryItem>(record.Id) != null, "The bank keeps the item that did not fit");
+                    ctx.Assert(!string.IsNullOrEmpty(failure), "A withdrawal without room fails");
 
                     foreach (var filler in fillers)
                         DestroyObject(filler);
@@ -82,17 +83,18 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                     var carried = Snapshot(player);
                     gold = GetGold(player);
 
-                    ctx.Assert(!string.IsNullOrEmpty(QuestContractBoard.RemoveRewardItem(player, 0)), "Removing a reward without room fails");
-                    ctx.AssertEqual(1, DB.Get<QuestContract>(draft.Id).RewardItems.Count, "The draft keeps the escrowed reward");
+                    var failure = QuestContractBoard.RemoveRewardItem(player, 0);
                     AssertCarriedIntact(ctx, player, carried);
+                    ctx.AssertEqual(1, DB.Get<QuestContract>(draft.Id).RewardItems.Count, "The draft keeps the escrowed reward");
+                    ctx.Assert(!string.IsNullOrEmpty(failure), "Removing a reward without room fails");
 
                     ClaimDeliveries(player);
+                    AssertCarriedIntact(ctx, player, carried);
                     var pending = DB.Get<QuestContractDelivery>(delivery.Id);
                     ctx.Assert(pending != null, "The delivery stays pending");
                     ctx.AssertEqual(1, pending.Items.Count, "The delivery keeps the item that did not fit");
                     ctx.AssertEqual(50, pending.Credits, "The delivery keeps its credits while an item is pending");
                     ctx.AssertEqual(gold, GetGold(player), "No credits are paid while an item is pending");
-                    AssertCarriedIntact(ctx, player, carried);
 
                     foreach (var filler in fillers)
                         DestroyObject(filler);
@@ -160,13 +162,13 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
 
         private static void AssertCarriedIntact(EngineTestContext ctx, uint player, Dictionary<uint, (string Resref, int Stack)> carried)
         {
-            foreach (var (item, (resref, stack)) in carried)
-            {
-                ctx.Assert(GetIsObjectValid(item) && GetItemPossessor(item) == player, $"The carried '{resref}' stays in the inventory");
-                ctx.AssertEqual(stack, GetItemStackSize(item), $"The carried '{resref}' keeps its stack size");
-            }
             var now = Snapshot(player);
-            ctx.Assert(carried.Keys.All(now.ContainsKey), "Every carried item is still listed in the inventory");
+            var changed = carried
+                .Where(pair => !now.TryGetValue(pair.Key, out var current) || GetItemPossessor(pair.Key) != player ||
+                               current.Stack != pair.Value.Stack)
+                .Select(pair => $"{pair.Value.Resref} (stack {pair.Value.Stack})")
+                .ToList();
+            ctx.Assert(changed.Count == 0, $"Every carried item stays in the inventory with its stack size; changed: {string.Join(", ", changed)}");
         }
 
         private static int CountCarried(uint player, string resref)

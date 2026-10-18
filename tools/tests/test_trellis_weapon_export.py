@@ -202,7 +202,7 @@ class TrellisWeaponExportTests(unittest.TestCase):
             self.assertEqual(block.replace('ashlw_031','ashlw_032'),alias_block)
         self.assertIn('bitmap shield_mat',text)
 
-    @unittest.skipUnless(HAS_BLENDER and os.environ.get('NWN_NATIVE_COMPILER'),'Set NWN_NATIVE_COMPILER under Blender for native package validation')
+    @unittest.skipUnless(HAS_BLENDER and os.environ.get('CLEANMODELS'),'Set CLEANMODELS under Blender for native package validation')
     def test_native_shield_hooks_and_aliases_survive_compilation_and_detect_corruption(self):
         exporter.bpy.ops.wm.read_factory_settings(use_empty=True)
         asset=copy.deepcopy(self.asset)
@@ -221,7 +221,7 @@ class TrellisWeaponExportTests(unittest.TestCase):
         (resources/'shield_mat.mtr').write_text('renderhint NormalAndSpecMapped\ntexture0 shield_mat\ntexture1 shield_mat_n\n')
         compiler=exporter.load_module('native_shield_compiler',ROOT/'tools/CompileBlasterModels.py')
         compiled=self.root/'compiled'
-        compiler.compile_models(os.environ['NWN_NATIVE_COMPILER'],resources,compiled,[])
+        compiler.compile_models(os.environ['CLEANMODELS'],resources,compiled,[])
         for model in ('ashlw_031','ashlw_032'):
             report=exporter.validate_native(compiled/(model+'.mdl'),resources/(model+'.mdl'),resources)
             self.assertEqual({dummy['node'] for dummy in report['dummies']},{model,'imp_shield_1','imp_shield_2'})

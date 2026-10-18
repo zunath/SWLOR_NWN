@@ -3,7 +3,7 @@
 Blender 4.0: blender -b --factory-startup --python-exit-code 1 --python
  tools/TrellisWeaponExport.py -- --mode inspect|export --manifest PATH --output EMPTY.
 Python: python -B tools/TrellisWeaponExport.py --mode package --export PATH
- --crunch crunch.exe --nwmain nwmain.exe --output EMPTY.
+ --crunch crunch.exe --compiler cleanmodels.exe --output EMPTY.
 
 Schema 1 assets: asset, source (relative GLB), sha256, base_item. Export also
 requires model, texture (<=14 characters), texture_size (512/1024), scale,
@@ -1104,7 +1104,9 @@ def package(args, repo, out):
             shutil.copy2(source,ascii_dir/source.name)
             if source.suffix=='.mtr':shutil.copy2(source,runtime/source.name)
     compiler=load_module('weapon_compiler',repo/'tools/CompileBlasterModels.py')
-    compiler.compile_models(args.nwmain,ascii_dir,out/'compiled',[])
+    compiler_path=compiler.CleanModels.find_compiler(args.compiler)
+    compiler.compile_models(compiler_path,ascii_dir,out/'compiled',[])
+    compiler_identity={'name':'CleanModels','version':compiler.CleanModels.VERSION,'path':str(compiler_path),'sha256':hashlib.sha256(compiler_path.read_bytes()).hexdigest()}
     for source in (out/'compiled').glob('*.mdl'):shutil.copy2(source,runtime/source.name)
     helper=load_module('trellis_weapon_normals',Path(__file__).with_name('TrellisWeaponNormals.py'))
     import numpy as np
@@ -1165,7 +1167,7 @@ def package(args, repo, out):
     models=[validate_native(p,ascii_dir/p.name,runtime) for p in sorted(runtime.glob('*.mdl'))]
     report={'export_manifest_sha256':hashlib.sha256((export/'export_manifest.json').read_bytes()).hexdigest(),
             'resources':{p.name:hashlib.sha256(p.read_bytes()).hexdigest() for p in runtime.iterdir()},
-            'textures':textures,'models':models,'normal_basis_reprojection':normal_reports,'production_copied':False,'native_visual_review_required':True}
+            'textures':textures,'models':models,'normal_basis_reprojection':normal_reports,'compiler':compiler_identity,'production_copied':False,'native_visual_review_required':True}
     (out/'package_report.json').write_text(json.dumps(report,indent=2)+'\n')
     print('WEAPON_PACKAGE_COMPLETE '+str(runtime))
 
@@ -1176,13 +1178,14 @@ def main():
     parser.add_argument('--manifest',type=Path);parser.add_argument('--output',type=Path,required=True)
     parser.add_argument('--mode',choices=['inspect','export','package'],required=True)
     parser.add_argument('--export',type=Path,help='Recorded export directory for package mode')
-    parser.add_argument('--crunch',type=Path);parser.add_argument('--nwmain',type=Path)
+    parser.add_argument('--crunch',type=Path)
+    parser.add_argument('--compiler',type=Path,help='Pinned CleanModels executable; defaults to CLEANMODELS or the local install')
     argv=sys.argv[sys.argv.index('--')+1:] if '--' in sys.argv else sys.argv[1:]
     args=parser.parse_args(argv);repo=args.repo.resolve();out=args.output.resolve()
     if out.is_relative_to(repo):raise ValueError('Keep staging output outside the repository')
     if out.exists() and any(out.iterdir()):raise ValueError('Output directory must be empty')
     if args.mode=='package':
-        if any(getattr(args,key) is None for key in ('export','crunch','nwmain')):parser.error('package requires --export, --crunch and --nwmain')
+        if any(getattr(args,key) is None for key in ('export','crunch')):parser.error('package requires --export and --crunch')
         out.mkdir(parents=True,exist_ok=True);package(args,repo,out);return
     if args.manifest is None:parser.error('inspect/export requires --manifest')
     manifest=args.manifest.resolve();config=json.loads(manifest.read_text(encoding='utf-8-sig'))

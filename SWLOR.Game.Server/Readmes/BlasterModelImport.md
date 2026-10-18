@@ -220,7 +220,7 @@ $blender = 'C:/Program Files/Blender Foundation/Blender 4.0/blender.exe'
   --manifest "$env:TEMP/weapon-sources/fit.json" --output "$env:TEMP/weapon-sources/export"
 python -B tools/TrellisWeaponExport.py --mode package `
   --export "$env:TEMP/weapon-sources/export" --output "$env:TEMP/weapon-sources/package" `
-  --crunch '<local-nwn_crunch.exe>' --nwmain '<installed-nwmain.exe>'
+  --crunch '<local-nwn_crunch.exe>'
 ```
 
 Transforms use Blender's imported world coordinates, after glTF axis conversion:

@@ -83,17 +83,17 @@ public static partial class MigrationEngineTests
             });
             await ctx.WaitFrameAsync();
             item = FindHeadgear(owner, "cara_bracer");
-            ctx.AssertEqual(53, PropertyValue(item, ItemPropertyType.Defense, 1), "Stored legacy data receives the correction");
+            ctx.AssertEqual(23, PropertyValue(item, ItemPropertyType.Defense, 1), "Stored legacy data receives the correction");
             ctx.AssertEqual(-1, PropertyValue(item, ItemPropertyType.Defense, 4), "Stored legacy defense is removed");
         }
         await EquipAsync(ctx, owner, item, InventorySlot.Arms);
         await ctx.ExecuteInCreatureContextAsync(owner, () =>
         {
             new _24_CorrectCarapaceBracers().Migrate(owner);
-            ctx.AssertEqual(53, PropertyValue(item, ItemPropertyType.Defense, 1), "The five-point enhancement survives the base correction");
+            ctx.AssertEqual(23, PropertyValue(item, ItemPropertyType.Defense, 1), "The five-point enhancement survives the base correction");
             ctx.AssertEqual(-1, PropertyValue(item, ItemPropertyType.Defense, 4), "Retired defense is removed");
             ctx.AssertEqual(converted ? 5 : -1, PropertyValue(item, ItemPropertyType.Resistance, 2), "Only the converted base resistance is removed");
-            ctx.AssertEqual(baseline + 53, ReadEquipmentTotals(owner).PhysicalDefense, "Equipped defense updates exactly once");
+            ctx.AssertEqual(baseline + 23, ReadEquipmentTotals(owner).PhysicalDefense, "Equipped defense updates exactly once");
             ctx.Assert(!LootStatRevisionMigration.MigrateObject(owner), "Retry is stable");
         });
         for (var cycle = 0; cycle < 2; cycle++)
@@ -114,11 +114,11 @@ public static partial class MigrationEngineTests
             ctx.AssertEqual(uuid, GetObjectUUID(item), "Reload preserves identity");
             ctx.AssertEqual(owner, GetItemPossessor(item), "Reload preserves ownership");
             ctx.AssertEqual(1, GetItemStackSize(item), "Reload preserves quantity");
-            ctx.AssertEqual(53, PropertyValue(item, ItemPropertyType.Defense, 1), "Reload preserves enhanced physical defense");
+            ctx.AssertEqual(23, PropertyValue(item, ItemPropertyType.Defense, 1), "Reload preserves enhanced physical defense");
             ctx.AssertEqual(-1, PropertyValue(item, ItemPropertyType.Defense, 4), "Reload never restores retired defense");
             ctx.AssertEqual(converted ? 5 : -1, PropertyValue(item, ItemPropertyType.Resistance, 2), "Reload preserves only crafted resistance");
             await EquipAsync(ctx, owner, item, InventorySlot.Arms);
-            ctx.AssertEqual(baseline + 53, ReadEquipmentTotals(owner).PhysicalDefense, "Reloaded equipment remains usable without stat drift");
+            ctx.AssertEqual(baseline + 23, ReadEquipmentTotals(owner).PhysicalDefense, "Reloaded equipment remains usable without stat drift");
         }
     }
 }

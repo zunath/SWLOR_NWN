@@ -15,7 +15,6 @@ public static class CarapaceBracerStatRevisionCatalog
         {
             ["cara_bracer"] = new[]
             {
-                new LootStatChange(ItemPropertyType.Defense, (int)CombatDamageType.Physical, 18, 48),
                 new LootStatChange(ItemPropertyType.Defense, (int)CombatDamageType.Poison, 30, 0),
             },
         };

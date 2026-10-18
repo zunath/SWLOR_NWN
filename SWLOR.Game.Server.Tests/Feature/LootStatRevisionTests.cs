@@ -1,4 +1,6 @@
+using System.IO.Compression;
 using System.Text.Json;
+using System.Xml.Linq;
 using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Game.Server.Feature.MigrationDefinition;
@@ -20,7 +22,7 @@ public class LootStatRevisionTests
         var properties = ReadProperties(blueprint.RootElement);
         properties.Should().BeEquivalentTo(new Dictionary<(int Type, int Subtype), int>
         {
-            [((int)ItemPropertyType.Defense, 1)] = 48,
+            [((int)ItemPropertyType.Defense, 1)] = 18,
             [((int)ItemPropertyType.Defense, 2)] = 10,
             [((int)ItemPropertyType.HPBonus, 0)] = 80,
             [((int)ItemPropertyType.RequiresSkill, 0)] = 40,
@@ -30,6 +32,33 @@ public class LootStatRevisionTests
         CarapaceBracerStatRevisionCatalog.Changes.Keys.Should().BeEquivalentTo(new[] { "cara_bracer" });
         foreach (var change in CarapaceBracerStatRevisionCatalog.Changes["cara_bracer"])
             properties.GetValueOrDefault(((int)change.Type, change.Subtype)).Should().Be(change.Current);
+
+        using var archive = ZipFile.OpenRead(Path.Combine(FindRepositoryRoot().FullName, "design", "bible", "SWLOR Design Bible.xlsx"));
+        XNamespace ns = "http://schemas.openxmlformats.org/spreadsheetml/2006/main";
+        XNamespace rel = "http://schemas.openxmlformats.org/officeDocument/2006/relationships";
+        XDocument Load(string name) { using var stream = archive.GetEntry(name)!.Open(); return XDocument.Load(stream); }
+        var shared = Load("xl/sharedStrings.xml").Descendants(ns + "si")
+            .Select(x => string.Concat(x.Descendants(ns + "t").Select(t => t.Value))).ToArray();
+        var sheet = Load("xl/workbook.xml").Descendants(ns + "sheet").Single(x => (string?)x.Attribute("name") == "Equipment - Armor");
+        var id = (string)sheet.Attribute(rel + "id")!;
+        var target = (string)Load("xl/_rels/workbook.xml.rels").Root!.Elements()
+            .Single(x => (string?)x.Attribute("Id") == id).Attribute("Target")!;
+        string Text(XElement cell) => cell.Attribute("t")?.Value switch
+        {
+            "inlineStr" => string.Concat(cell.Descendants(ns + "t").Select(x => x.Value)),
+            "s" => shared[int.Parse(cell.Element(ns + "v")!.Value)],
+            _ => cell.Element(ns + "v")?.Value ?? "",
+        };
+        var row = Load(target.StartsWith('/') ? target.TrimStart('/') : "xl/" + target)
+            .Descendants(ns + "row").Single(x => x.Elements(ns + "c")
+                .Any(cell => cell.Attribute("r")!.Value.StartsWith('B') && Text(cell) == "cara_bracer"));
+        var cells = row.Elements(ns + "c").ToDictionary(cell =>
+            new string(cell.Attribute("r")!.Value.TakeWhile(char.IsLetter).ToArray()), Text);
+        cells["E"].Should().Be("40");
+        cells["F"].Should().Be("18");
+        cells["G"].Should().Be("10");
+        cells["H"].Should().Be("80");
+        cells["T"].Should().Be("-");
     }
 
     private const int RequiresSkill = (int)ItemPropertyType.RequiresSkill;

@@ -46,6 +46,7 @@ namespace SWLOR.Game.Server.Service.AbilityService
         public float NativeAnimationPreviewDuration { get; set; }
         public AnimationService.AnimationClip AuthoredImpactAnimation { get; set; }
         public bool UsesImmediateAuthoredAnimation { get; set; }
+        public bool FitsAuthoredAnimationToCastWindow { get; set; }
         public bool UsesAuthoredImpactAnimation { get; set; }
         public float ImmediateNativeImpactAnimationDuration { get; set; }
         public bool HasGeneratedAnimationBinding { get; set; }

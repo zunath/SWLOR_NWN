@@ -124,9 +124,10 @@ namespace SWLOR.Game.Server.Service.AbilityService
         }
 
         /// <summary>Plays the catalog gesture once at activation without occupying the action queue.</summary>
-        public AbilityBuilder UsesImmediateAuthoredAnimation()
+        public AbilityBuilder UsesImmediateAuthoredAnimation(bool fitToCastWindow = false)
         {
             _activeAbility.UsesImmediateAuthoredAnimation = true;
+            _activeAbility.FitsAuthoredAnimationToCastWindow = fitToCastWindow;
             return this;
         }
 

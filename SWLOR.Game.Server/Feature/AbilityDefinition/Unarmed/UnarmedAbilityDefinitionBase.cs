@@ -23,7 +23,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Unarmed
             // Heavy strikes use the existing cast window for their windup and strike.
             // Starting the long gesture at impact lets resumed autoattacks erase it.
             if (activationDelay > 0f)
-                builder.UsesImmediateAuthoredAnimation();
+                builder.UsesImmediateAuthoredAnimation(fitToCastWindow: true);
             else
                 builder.UsesAuthoredAnimationAtImpact();
 

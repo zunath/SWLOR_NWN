@@ -8,6 +8,11 @@ namespace SWLOR.Game.Server.Service.AnimationService;
 /// <summary>Connects catalog motions to exact feat ranks without changing ability mechanics.</summary>
 public static class AbilityAnimationBinding
 {
+    /// <summary>Opt-in cast gestures finish before combat resumes; an instant cast has no windup.</summary>
+    public static float? ImmediateDuration(AbilityDetail ability, float castWindow) =>
+        !ability.FitsAuthoredAnimationToCastWindow ? null :
+        !float.IsFinite(castWindow) || castWindow <= 0f ? 0f : Math.Min(ability.AuthoredAnimation.Duration, castWindow);
+
     public static AnimationClip ActivationClip(AbilityDetail ability, bool isPlayer, float? animationWindow = null, bool equipmentCompatible = true) =>
         !equipmentCompatible || ability.HasGeneratedAnimationBinding && (!isPlayer || !ability.UsesImmediateAuthoredAnimation && animationWindow.HasValue &&
             (ability.AuthoredAnimation == null || ability.AuthoredAnimation.Duration > animationWindow.Value))

@@ -624,7 +624,15 @@ namespace SWLOR.Game.Server.Feature
                     if (authoredClip != null)
                     {
                         if (ability.UsesImmediateAuthoredAnimation)
-                            NamedAnimation.Play(activator, authoredClip, equipmentRequirement: ability.AnimationEquipmentRequirement);
+                        {
+                            var duration = AbilityAnimationBinding.ImmediateDuration(ability, delay);
+                            if (duration == 0f)
+                                NamedAnimation.ReleaseForNativePlayback(activator);
+                            else
+                                NamedAnimation.Play(activator, authoredClip, duration,
+                                    equipmentRequirement: ability.AnimationEquipmentRequirement,
+                                    fitToDuration: ability.FitsAuthoredAnimationToCastWindow);
+                        }
                         else
                             NamedAnimation.Queue(activator, authoredClip, Math.Max(authoredClip.Duration, animationLength), ability.AnimationEquipmentRequirement);
                         return;

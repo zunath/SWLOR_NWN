@@ -4864,8 +4864,18 @@ namespace SWLOR.Game.Server.Service
             state.LastHit = DateTime.UtcNow;
             _meleeRepeatedTargetDamageStates[attacker] = state;
 
+            var stackBonus = Math.Min(maxBonus, state.Stacks * bonusPerHit);
             MeleeRepeatedTargetDamageStatusEffect.Refresh(attacker, state.Stacks, statusEffectIcon);
-            return damage + Math.Min(maxBonus, state.Stacks * bonusPerHit);
+            // Rundown is the only perk that grants these stats; report the capped bonus this hit receives.
+            if (GetIsPC(attacker))
+            {
+                FloatingTextStringOnCreature(
+                    ColorToken.Combat($"Rundown {state.Stacks}/{maxStacks} (+{stackBonus} DMG)"),
+                    attacker,
+                    false);
+            }
+
+            return damage + stackBonus;
         }
 
         /// <summary>

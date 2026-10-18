@@ -3753,6 +3753,13 @@
   },
   {
     "File": "SWLOR.Game.Server/Service/Combat.cs",
+    "Line": 4872,
+    "Member": "ApplyMeleeRepeatedTargetDamageModifier",
+    "Delivery": "Retained",
+    "Call": "FloatingTextStringOnCreature(\n                    ColorToken.Combat($\"Rundown {state.Stacks}/{maxStacks} (+{stackBonus} DMG)\"),\n                    attacker,\n                    false)"
+  },
+  {
+    "File": "SWLOR.Game.Server/Service/Combat.cs",
     "Line": 4912,
     "Member": "ApplyRangedRepeatedTargetDamageModifier",
     "Delivery": "Retained",

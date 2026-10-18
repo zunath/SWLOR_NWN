@@ -102,6 +102,127 @@ public class TwinPistolTests
         actor.WeaponTraits.Paired.Momentum.Should().Be(1);
     }
 
+    [TestCase(1, false)] [TestCase(2, false)] [TestCase(2, true)]
+    public void Rush_CapturesTargetsBeforeTravel_WithoutReplacingCasualtiesOrAddingLateEntrants(int casualtyIndex, bool lateEntrant)
+    {
+        var scenario = TwinPistolScenarios.Create(true, false, targets: 4);
+        scenario.Teams[0].TargetPolicy = TargetPolicy.Focus;
+        scenario.Teams[0].FocusTarget = "Target 1";
+        scenario.Teams[1].Members[3].JoinAtSeconds = lateEntrant ? .5f : 0;
+        var spec = scenario.Teams[0].Members[0];
+        spec.StmRegenPer30Seconds = 0;
+        spec.Abilities = new List<AbilityUseSpec>
+        {
+            new() { Feat = "PistolRush2", MovementMeters = 3, MovementSeconds = 1, LineTargets = 3, MinIntervalSeconds = 600 }
+        };
+        var sim = TestScenarios.Spawn(scenario, RuleSets.Current(), _catalog, 47);
+        var actor = sim.Combatants[0];
+        actor.NextActionAt = 0;
+        actor.NextAttackAt = double.PositiveInfinity;
+        sim.Step(.1);
+        actor.Casting.Should().NotBeNull();
+        actor.Casting.Activated.Should().BeTrue();
+        actor.Casting.WeaponTargets.Select(target => target.Name).Should().Equal("Target 1", "Target 2", "Target 3");
+        var paid = actor.Stats.StmSpent;
+        sim.ApplyDamage(actor, sim.Combatants[casualtyIndex], sim.Combatants[casualtyIndex].Hp);
+        actor.NextActionAt = double.PositiveInfinity;
+
+        SimulationClock.Set(sim, 1.1);
+        sim.Step(.1);
+
+        actor.Casting.Should().BeNull();
+        actor.Stats.AbilityImpacts.Should().Be(4, "only the two surviving captured targets receive paired impacts");
+        actor.Stats.AbilityUses["PistolRush2"].Should().Be(1);
+        actor.Stats.StmSpent.Should().Be(paid);
+        sim.Combatants[4].Hp.Should().Be(sim.Combatants[4].Spec.MaxHp,
+            lateEntrant ? "a late entrant was absent at activation" : "an uncaptured target cannot replace a casualty");
+    }
+
+    [TestCase("TwinSuns")] [TestCase("FinalSalvo")]
+    public void TargetDiesDuringCast_CancelsBeforeCostsFlowDiscountRecastAndActivation(string feat)
+    {
+        var scenario = TwinPistolScenarios.Create(true, false);
+        var spec = scenario.Teams[0].Members[0];
+        spec.Perks.Add("CoolUnderFire");
+        if (feat == "TwinSuns") spec.Perks.Add("TwinSuns");
+        spec.StmRegenPer30Seconds = 0;
+        spec.Abilities = new List<AbilityUseSpec> { new() { Feat = feat, MinIntervalSeconds = 600 } };
+        var sim = TestScenarios.Spawn(scenario, RuleSets.Current(), _catalog, 47);
+        var actor = sim.Combatants[0];
+        actor.NextActionAt = 0;
+        actor.NextAttackAt = double.PositiveInfinity;
+        GrantThreeFlow(actor);
+        sim.ApplyDamage(sim.Combatants[1], actor, 1);
+        var stamina = actor.Stm;
+        sim.Step(.1);
+        actor.Casting.Should().NotBeNull();
+        actor.Casting.Activated.Should().BeFalse();
+        var recast = actor.Casting.Ability.RecastGroup;
+        sim.ApplyDamage(actor, actor.Casting.Target, actor.Casting.Target.Hp);
+        actor.NextActionAt = double.PositiveInfinity;
+
+        SimulationClock.Set(sim, 2.1);
+        sim.Step(.1);
+
+        actor.Casting.Should().BeNull();
+        actor.Stm.Should().Be(stamina);
+        actor.Stats.StmSpent.Should().Be(0);
+        actor.Stats.StmRefunded.Should().Be(0);
+        actor.Stats.AbilitiesUsed.Should().Be(0);
+        actor.Stats.AbilityUses.Should().BeEmpty();
+        actor.Stats.AbilityImpacts.Should().Be(0);
+        actor.Stats.FlowSpent.Should().Be(0);
+        actor.WeaponTraits.Paired.Momentum.Should().Be(3);
+        actor.WeaponTraits.Paired.BonusAttempts.Should().Be(0);
+        actor.WeaponTraits.Paired.GetAbilityStaminaCostAdjustment(DateTime.UnixEpoch.AddSeconds(sim.Now),
+            WeaponTraitState.Configuration(actor)).Should().Be(-2);
+        actor.RecastReadyAt.Should().NotContainKey(recast);
+        actor.LastUsedAt.Should().NotContainKey(feat);
+    }
+
+    [Test]
+    public void TargetDiesDuringPaidGrappleTravel_CostsFlowDiscountAndRecastStayCommitted()
+    {
+        var scenario = TwinPistolScenarios.Create(true, false);
+        var spec = scenario.Teams[0].Members[0];
+        spec.Perks.Add("CoolUnderFire");
+        spec.StmRegenPer30Seconds = 0;
+        spec.Abilities = new List<AbilityUseSpec>
+        {
+            new() { Feat = "GrappleShot3", MovementMeters = 3, MovementSeconds = 1, MinIntervalSeconds = 600 }
+        };
+        var sim = TestScenarios.Spawn(scenario, RuleSets.Current(), _catalog, 47);
+        var actor = sim.Combatants[0];
+        actor.NextActionAt = 0;
+        actor.NextAttackAt = double.PositiveInfinity;
+        GrantThreeFlow(actor);
+        sim.ApplyDamage(sim.Combatants[1], actor, 1);
+        var stamina = actor.Stm;
+        sim.Step(.1);
+        actor.Casting.Activated.Should().BeTrue();
+        var recast = actor.Casting.Ability.RecastGroup;
+        actor.Stats.StmSpent.Should().Be(8);
+        actor.Stats.FlowSpent.Should().Be(3, "Flow is spent before travel, not at impact");
+        sim.ApplyDamage(actor, actor.Casting.Target, actor.Casting.Target.Hp);
+        actor.NextActionAt = double.PositiveInfinity;
+
+        SimulationClock.Set(sim, 1.1);
+        sim.Step(.1);
+
+        actor.Casting.Should().BeNull();
+        actor.Stm.Should().Be(stamina - 8);
+        actor.Stats.StmSpent.Should().Be(8);
+        actor.Stats.StmRefunded.Should().Be(0);
+        actor.Stats.AbilityUses["GrappleShot3"].Should().Be(1);
+        actor.Stats.AbilityImpacts.Should().Be(0);
+        actor.Stats.FlowSpent.Should().Be(3);
+        actor.WeaponTraits.Paired.Momentum.Should().Be(0);
+        actor.WeaponTraits.Paired.GetAbilityStaminaCostAdjustment(DateTime.UnixEpoch.AddSeconds(sim.Now),
+            WeaponTraitState.Configuration(actor)).Should().Be(0);
+        actor.RecastReadyAt[recast].Should().BeGreaterThan(sim.Now);
+        actor.LastUsedAt.Should().ContainKey("GrappleShot3");
+    }
+
     [Test]
     public void ControlledBurst_RefundsOnceEvenWhenBothWeaponsHit()
     {
@@ -121,6 +242,40 @@ public class TwinPistolTests
         actor.Spec.WeaponLoadout.OffhandDelay = 0;
         SimulationClock.RunUntil(sim, () => actor.Stats.AbilitiesUsed == 1, 10, "Paired Volley");
         actor.Stats.AbilityImpacts.Should().Be(1);
+    }
+
+    [TestCase(false, 2)] [TestCase(true, 1)]
+    public void ActivatedImpacts_CountDistinctItems_WhileDoubleWeaponsKeepBothOrdinaryEnds(bool sharesMainItem, int impacts)
+    {
+        var scenario = TwinPistolScenarios.Create(false, true);
+        var spec = scenario.Teams[0].Members[0];
+        spec.Perks = new List<string> { "PairedVolley:4" };
+        spec.WeaponLoadout.OffhandSharesMainItem = sharesMainItem;
+        spec.Abilities = new List<AbilityUseSpec> { new() { Feat = "PairedVolley4", MinIntervalSeconds = 600 } };
+        var sim = TestScenarios.Spawn(scenario, RuleSets.Current(), _catalog, 47);
+        var actor = sim.Combatants[0];
+        actor.NextActionAt = 0;
+        actor.NextAttackAt = double.PositiveInfinity;
+        sim.Step(.1);
+
+        actor.Stats.AbilityImpacts.Should().Be(impacts);
+        actor.Stats.AbilityUses["PairedVolley4"].Should().Be(1);
+        actor.NextActionAt = double.PositiveInfinity;
+        actor.NextAttackAt = sim.Now;
+        sim.Step(.1);
+        actor.Stats.OrdinaryAttempts.Should().Be(2, "the ordinary off-hand end does not imply a second equipped item");
+    }
+
+    [TestCase(0, 0)] [TestCase(21, 250)] [TestCase(22, 200)]
+    public void SharedItemOffhand_RejectsMissingOrConflictingItemProfiles(int damage, int delay)
+    {
+        var scenario = TwinPistolScenarios.Create(false, true);
+        var weapon = scenario.Teams[0].Members[0].WeaponLoadout;
+        weapon.OffhandSharesMainItem = true;
+        weapon.OffhandDamage = damage;
+        weapon.OffhandDelay = delay;
+        Action spawn = () => TestScenarios.Spawn(scenario, RuleSets.Current(), _catalog, 47);
+        spawn.Should().Throw<InvalidDataException>().WithMessage("*WeaponLoadout*");
     }
 
     [TestCase("AkimboStance", 30)] [TestCase("CrossfireStance", 20)]
@@ -257,6 +412,39 @@ public class TwinPistolTests
         SimulationClock.RunUntil(sim, 27);
         actor.WeaponTraits.Haste.Reconcile(DateTime.UnixEpoch.AddSeconds(sim.Now), WeaponTraitState.HasteConfiguration(actor));
         actor.WeaponTraits.Haste.Stacks.Should().Be(0);
+    }
+
+    [Test]
+    public void ActualDeath_ResetsHasteGrantCooldownAndHitHistory_UnlikeStanceClear()
+    {
+        var (sim, actor) = SpawnOne("AkimboStance", "AkimboStance");
+        SimulationClock.RunUntil(sim, () => actor.Stats.AbilitiesUsed == 1, 10, "Akimbo");
+        var config = WeaponTraitState.HasteConfiguration(actor);
+        var now = DateTime.UnixEpoch.AddSeconds(sim.Now);
+        actor.WeaponTraits.Haste.RecordHit(now, config, 2, 1).Should().BeTrue();
+        actor.WeaponTraits.Haste.Stacks.Should().Be(1);
+        actor.WeaponTraits.Haste.Clear();
+        actor.WeaponTraits.Haste.RecordHit(now.AddSeconds(.1), config, 2, 2).Should().BeTrue();
+        actor.WeaponTraits.Haste.Stacks.Should().Be(0, "an ordinary stance/equipment clear preserves the grant cooldown");
+
+        sim.ApplyDamage(sim.Combatants[1], actor, actor.Hp);
+        actor.IsDead.Should().BeTrue();
+        actor.WeaponTraits.Haste.Stacks.Should().Be(0);
+        // Isolate the actual death lifecycle from revive/stance cast times, using the real restored stance configuration.
+        actor.IsDead = false;
+        actor.Hp = 1;
+        SimulationClock.Set(sim, sim.Now + .2);
+        actor.WeaponTraits.Haste.RecordHit(now.AddSeconds(.2), config, 2, 1).Should().BeTrue();
+        actor.WeaponTraits.Haste.Stacks.Should().Be(1, "death resets both the two-second grant gate and old roll identities");
+    }
+
+    private static void GrantThreeFlow(Combatant actor)
+    {
+        var config = WeaponTraitState.Configuration(actor);
+        actor.WeaponTraits.Paired.RecordAccuracyEvasionMiss(DateTime.UnixEpoch.AddSeconds(-20), config);
+        actor.WeaponTraits.Paired.RecordAccuracyEvasionMiss(DateTime.UnixEpoch.AddSeconds(-10), config);
+        actor.WeaponTraits.Paired.RecordAccuracyEvasionMiss(DateTime.UnixEpoch, config);
+        actor.WeaponTraits.Paired.Momentum.Should().Be(3);
     }
 
     private (Simulation Sim, Combatant Actor) SpawnOne(string perk, string feat, bool pvp = false)

@@ -27,6 +27,17 @@ public sealed partial class Simulation
         return true;
     }
 
+    private Combatant[] CaptureTwinTargets(Combatant actor, AbilityUseSpec use, TwinPistolAbilitySpec spec, Combatant target) =>
+        spec.Movement == TwinPistolMovementType.FreeDestination
+            ? Enemies(actor).OrderBy(enemy => ReferenceEquals(enemy, target) ? 0 : 1)
+                .Take(Math.Min(spec.MaximumTargets, use.LineTargets)).ToArray()
+            : new[] { target };
+
+    private static int[] CaptureTwinWeaponDamage(WeaponLoadoutSpec weapon) =>
+        weapon.DistinctAttackItemCount == 2
+            ? new[] { weapon.MainDamage, weapon.OffhandDamage }
+            : new[] { weapon.MainDamage };
+
     private void ResolveTwin(Combatant actor, PendingCast cast)
     {
         var spec = cast.Ability.TwinPistol;
@@ -47,17 +58,13 @@ public sealed partial class Simulation
             }
         }
 
-        var targets = spec.MaximumTargets > 1
-            ? Enemies(actor).OrderBy(enemy => ReferenceEquals(enemy, cast.Target) ? 0 : 1)
-                .Take(Math.Min(spec.MaximumTargets, cast.Use.LineTargets)).ToList()
-            : cast.Target is { IsDead: false } ? new List<Combatant> { cast.Target } : new List<Combatant>();
         var landed = false;
-        foreach (var target in targets)
+        foreach (var target in cast.WeaponTargets.Where(target => IsEngaged(target) && target.TeamIndex != actor.TeamIndex))
         {
-            for (var hand = 0; hand < (actor.Spec.WeaponLoadout.HasOffhand ? 2 : 1); hand++)
+            for (var hand = 0; hand < cast.WeaponDamages.Count; hand++)
             {
                 if (target.IsDead) break;
-                var weaponDamage = hand == 0 ? actor.Spec.WeaponLoadout.MainDamage : actor.Spec.WeaponLoadout.OffhandDamage;
+                var weaponDamage = cast.WeaponDamages[hand];
                 var power = weaponDamage * spec.WeaponPowerPercent / 100 + spec.FlatPower + cast.WeaponTraits.MomentumSpent * spec.MomentumPowerPerCharge;
                 var accuracy = cast.WeaponTraits.AccuracyAdjustment + (hand > 0 ? config.CompanionAccuracy : 0);
                 actor.Stats.AbilityImpacts++;
@@ -67,7 +74,6 @@ public sealed partial class Simulation
                 actor.Stats.AbilityDamage += damage;
             }
         }
-        actor.Stats.FlowSpent += cast.WeaponTraits.MomentumSpent;
         RestoreStamina(actor, actor.WeaponTraits.Paired.CompleteAbility(WeaponNow, config, cast.WeaponTraits,
             landed, distance, spec.GeneratesMomentum, cast.StmCost, spec.RestoreStaminaOnHit,
             spec.OrdinaryBonusAttempts, spec.OrdinaryBonusDamagePercent, spec.OrdinaryBonusSeconds), true);

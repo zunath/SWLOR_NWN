@@ -11,6 +11,8 @@ public sealed class WeaponLoadoutSpec
     public int MainDelay { get; set; } = 250;
     public int OffhandDamage { get; set; }
     public int OffhandDelay { get; set; }
+    /// <summary>A double weapon's ordinary off-hand profile belongs to the same equipped item.</summary>
+    public bool OffhandSharesMainItem { get; set; }
     public int OffhandDelayReductionPercent { get; set; }
     public int Attack { get; set; } = 150;
     public int Accuracy { get; set; } = 150;
@@ -23,12 +25,14 @@ public sealed class WeaponLoadoutSpec
     public int AbilityCriticalRateAdjustment { get; set; }
     public int SingleWeaponDamagePercent { get; set; }
     public bool HasOffhand => OffhandDelay > 0;
+    public int DistinctAttackItemCount => HasOffhand && !OffhandSharesMainItem ? 2 : 1;
 
     public void Validate()
     {
         if (MainDamage < 1 || MainDamage > 10000 || MainDelay < 1 || MainDelay > 10000 ||
             OffhandDamage < 0 || OffhandDamage > 10000 || OffhandDelay < 0 || OffhandDelay > 10000 ||
             (OffhandDamage > 0) != HasOffhand || OffhandDelayReductionPercent is < 0 or > 50 ||
+            (OffhandSharesMainItem && (!HasOffhand || OffhandDamage != MainDamage || OffhandDelay != MainDelay)) ||
             Attack is < 1 or > 10000 || Accuracy is < 0 or > 10000 ||
             DamageAbility is < 0 or > 255 || Perception is < 0 or > 255 || SkillRank is < 0 or > 50 || WeaponRank is < 0 or > 50 ||
             HastePercent is < -50 or > 50 || SingleWeaponDamagePercent is < 0 or > 100 ||

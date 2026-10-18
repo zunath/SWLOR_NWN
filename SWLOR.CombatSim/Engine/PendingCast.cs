@@ -18,6 +18,8 @@ namespace SWLOR.CombatSim.Engine
         public int FpCost { get; init; }
         public int StmCost { get; set; }
         public SWLOR.Game.Server.Service.CombatService.PairedRangedAbilityTraitsSnapshot WeaponTraits { get; init; }
+        public IReadOnlyList<Combatant> WeaponTargets { get; init; }
+        public IReadOnlyList<int> WeaponDamages { get; init; }
         public bool MovementStarted { get; set; }
     }
 }

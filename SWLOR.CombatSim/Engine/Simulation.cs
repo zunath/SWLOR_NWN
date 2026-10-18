@@ -2,6 +2,7 @@ using SWLOR.CombatSim.Data;
 using SWLOR.CombatSim.Effects;
 using SWLOR.CombatSim.Rules;
 using SWLOR.CombatSim.Scenario;
+using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.Game.Server.Service.StatService;
 using SWLOR.NWN.API.NWScript.Enum;
@@ -711,6 +712,8 @@ namespace SWLOR.CombatSim.Engine
                                       && _rules.Revives == ReviveRule.BlockedInPvpLimitedInPve,
                 FpCost = fp,
                 StmCost = stm,
+                WeaponTargets = info.TwinPistol == null ? null : CaptureTwinTargets(caster, use, info.TwinPistol, target),
+                WeaponDamages = info.TwinPistol == null ? null : CaptureTwinWeaponDamage(caster.Spec.WeaponLoadout),
                 WeaponTraits = info.TwinPistol == null ? null : caster.WeaponTraits.Paired.CaptureAbility(
                     WeaponNow, WeaponTraitState.Configuration(caster), info.TwinPistol.IsCrossfire, info.TwinPistol.SpendsMomentum)
             };
@@ -737,7 +740,11 @@ namespace SWLOR.CombatSim.Engine
             var target = cast.Target;
             var isRevive = effect?.Kind == EffectKind.Revive;
             var targetLost = false;
-            if (isRevive ? !target.IsDead : target.IsDead)
+            var twin = cast.Ability.TwinPistol;
+            if (!cast.Activated && twin != null && twin.Movement != TwinPistolMovementType.FreeDestination && target.IsDead)
+                return;
+            // Paid Twin travel resolves its captured legal targets, even when none survive.
+            if (twin == null && (isRevive ? !target.IsDead : target.IsDead))
             {
                 // Area damage and party heals or shields centered on the caster (Purifying Wave) need no living
                 // target: they still land, and their damage goes to enemies still in the fight. A cast spread over
@@ -752,7 +759,7 @@ namespace SWLOR.CombatSim.Engine
                 {
                     // The fallen primary stays the cast's target.
                 }
-                else if (effect == null && (cast.Use.Damage != null || cast.Ability.TwinPistol != null))
+                else if (effect == null && cast.Use.Damage != null)
                     // The game completes a hostile cast at a body: it is paid for and goes on recast, but hits nothing.
                     targetLost = true;
                 else
@@ -785,6 +792,7 @@ namespace SWLOR.CombatSim.Engine
                 {
                     caster.WeaponTraits.Paired.ConsumeAbilityStaminaDiscount(WeaponNow, WeaponTraitState.Configuration(caster));
                     caster.WeaponTraits.Paired.CommitAbility(WeaponNow, WeaponTraitState.Configuration(caster), cast.WeaponTraits);
+                    caster.Stats.FlowSpent += cast.WeaponTraits.MomentumSpent;
                 }
                 caster.RecastReadyAt[cast.Ability.RecastGroup] = _now + _rules.GetRecastSeconds(cast.Ability);
                 caster.LastUsedAt[cast.Use.Feat] = _now;
@@ -1533,7 +1541,7 @@ namespace SWLOR.CombatSim.Engine
             // Statuses end at death; a revived caster takes its stance up again.
             target.Statuses.Clear();
             target.WeaponTraits.Paired.ClearTransientState();
-            target.WeaponTraits.Haste.Clear();
+            target.WeaponTraits.Haste.Reset();
             target.KilledByPlayer = killer != null && IsPlayerVersusPlayer(killer, target);
             // Death ends PvP combat, as the game's PvpCombat.EndOnDeath does, so a revive starts a new one.
             target.PvpCombatStartedAt = double.NegativeInfinity;

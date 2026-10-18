@@ -175,6 +175,8 @@ public class AbilityAnimationBindingTests
             AbilityAnimationBinding.ActivationType(abilities[feat], true, equipmentCompatible: false).Should().Be(Animation.CastOutAnimation);
             AbilityAnimationBinding.ActivationClip(abilities[feat], true).Should().BeSameAs(abilities[feat].PreviewAnimation);
         }
+        AbilityAnimationBinding.UsesGestureFallback(abilities[FeatType.ShelterCircle1]).Should().BeTrue();
+        AbilityAnimationBinding.UsesGestureFallback(abilities[FeatType.SoulDevourerStance1]).Should().BeFalse();
     }
 
     [Test]

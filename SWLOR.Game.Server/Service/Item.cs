@@ -622,6 +622,22 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>
+        /// True when the engine finds room for the item in the creature's own inventory grid. Acquiring an item that
+        /// has no room can remove items the creature already carries, so check this before ObjectPlugin.AcquireItem.
+        /// </summary>
+        public static unsafe bool FitsInInventory(uint creature, uint item)
+        {
+            var server = global::NWN.Native.API.NWNXLib.g_pAppManager.m_pServerExoApp;
+            var repository = server.GetGameObject(creature)?.AsNWSCreature()?.m_pcItemRepository;
+            var nativeItem = server.GetItemByGameObjectID(item);
+            if (repository == null || nativeItem == null)
+                return false;
+
+            byte x = 0, y = 0;
+            return repository.FindPosition(nativeItem, &x, &y) != 0;
+        }
+
+        /// <summary>
         /// Retrieves the list of weapon base item types.
         /// </summary>
         public static List<BaseItem> WeaponBaseItemTypes { get; } = new List<BaseItem>

@@ -56,7 +56,7 @@ public class LinkedBankStorageTests
         GetPublicBankMethod(nameof(Bank.WithdrawItem), typeof(uint), typeof(string))
             .ReturnType
             .Should()
-            .Be(typeof(void));
+            .Be(typeof(string));
         GetPublicBankMethod(nameof(Bank.GetCityBankAccessFailure), typeof(uint), typeof(uint))
             .ReturnType
             .Should()

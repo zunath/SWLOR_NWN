@@ -37,6 +37,7 @@ saved root icons, the appearance editor catalog moves and the Arkanian Dragon Br
 revision. Saved DM creatures receive the model correction within their existing
 artwork visit, retaining authored stats and equipment slots. Valid custom models and the
 reserved NPC prop remain untouched. Characters already at player version 22 receive one
-pending item traversal in migration 23; stored items already at server version 27 receive
-one pending item traversal in migration 28. Keep the appearance, type and stat corrections
-in that combined visit rather than adding another pass to either pending migration.
+pending item traversal in migration 23; stored items received theirs in server migration 28,
+which production has run and which is retired. Keep the appearance, type and stat corrections
+in one combined visit rather than adding another pass; a later stored-item correction goes into
+the next release's stored-item sweep (`Migrations.md`).

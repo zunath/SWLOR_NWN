@@ -25,8 +25,6 @@ public static partial class MigrationEngineTests
         var records = new List<InventoryItem>();
         var identities = new Dictionary<string, string>();
         var enhancements = new Dictionary<(ItemPropertyType, int), int> { [(ItemPropertyType.HPBonus, 0)] = 40 };
-        var config = DB.Get<ServerConfiguration>("SWLOR_CONFIG");
-        var originalVersion = config.MigrationVersion;
         try
         {
             foreach (var resref in new[] { "grapple_bracer", "conveyor_treads", "line_visor", "riveted_mantle", "quality_signet",
@@ -47,17 +45,7 @@ public static partial class MigrationEngineTests
             for (var cycle = 1; cycle <= 2; cycle++)
                 await ctx.ExecuteInCreatureContextAsync(owner, () =>
                 {
-                    config.MigrationVersion = 27;
-                    DB.Set(config);
-                    var pending = (IEnumerable<IServerMigration>)typeof(Migration)
-                        .GetMethod("GetMigrations", BindingFlags.NonPublic | BindingFlags.Static)
-                        .Invoke(null, new object[] { MigrationExecutionType.PostCacheLoad });
-                    ctx.Assert(pending.Select(migration => migration.Version)
-                        .SequenceEqual(new[] { 28 }),
-                        "The last released server checkpoint schedules exactly one combined stored-item migration");
-                    Migration.AfterCacheLoaded();
-                    ctx.AssertEqual(28, DB.Get<ServerConfiguration>("SWLOR_CONFIG").MigrationVersion,
-                        "The stored-item correction advances the server checkpoint");
+                    StoredItemSweepRunner.Run();
                     foreach (var record in records)
                     {
                         var saved = DB.Get<InventoryItem>(record.Id);
@@ -80,8 +68,6 @@ public static partial class MigrationEngineTests
         {
             foreach (var record in records)
                 DB.Delete<InventoryItem>(record.Id);
-            config.MigrationVersion = originalVersion;
-            DB.Set(config);
         }
     }
 

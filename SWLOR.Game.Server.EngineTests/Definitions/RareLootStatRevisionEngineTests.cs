@@ -113,7 +113,7 @@ public static partial class MigrationEngineTests
             for (var cycle = 1; cycle <= 2; cycle++)
                 await ctx.ExecuteInCreatureContextAsync(owner, () =>
                 {
-                    new _28_CorrectStoredEquipmentTypes().Migrate();
+                    StoredItemSweepRunner.Run();
                     var saved = DB.Get<InventoryItem>(record.Id);
                     var restored = Deserialize(ctx, saved.Data);
                     AssertRevisedLoot(ctx, restored, new() { [(ItemPropertyType.Attack, 0)] = 5 });

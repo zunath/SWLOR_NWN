@@ -38,8 +38,6 @@ public static partial class MigrationEngineTests
         var expectedIce = new Dictionary<string, int>();
         var records = new List<InventoryItem>();
         var identities = new Dictionary<string, string>();
-        var config = DB.Get<ServerConfiguration>("SWLOR_CONFIG");
-        var originalVersion = config.MigrationVersion;
         DMCreature archive = null;
         int[] customized = null;
         try
@@ -95,16 +93,7 @@ public static partial class MigrationEngineTests
             for (var cycle = 1; cycle <= 2; cycle++)
                 await ctx.ExecuteInCreatureContextAsync(owner, () =>
                 {
-                    config.MigrationVersion = 27;
-                    DB.Set(config);
-                    var pending = (IEnumerable<IServerMigration>)typeof(Migration)
-                        .GetMethod("GetMigrations", BindingFlags.NonPublic | BindingFlags.Static)
-                        .Invoke(null, new object[] { MigrationExecutionType.PostCacheLoad });
-                    ctx.Assert(pending.Select(migration => migration.Version).SequenceEqual(new[] { 28 }),
-                        "The last released server checkpoint schedules exactly one combined stored-item migration");
-                    Migration.AfterCacheLoaded();
-                    ctx.AssertEqual(28, DB.Get<ServerConfiguration>("SWLOR_CONFIG").MigrationVersion,
-                        "The stored-item pass advances the server checkpoint");
+                    StoredItemSweepRunner.Run();
 
                     foreach (var record in records)
                     {
@@ -151,8 +140,6 @@ public static partial class MigrationEngineTests
                 DB.Delete<InventoryItem>(record.Id);
             if (archive != null)
                 DB.Delete<DMCreature>(archive.Id);
-            config.MigrationVersion = originalVersion;
-            DB.Set(config);
         }
     }
 

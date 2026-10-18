@@ -150,7 +150,7 @@ public static partial class MigrationEngineTests
             await ctx.WaitUntilAsync(() => !GetIsObjectValid(visor), 5f, "deposited visor to leave the live inventory");
             await ctx.ExecuteInCreatureContextAsync(player, () =>
             {
-                new _28_CorrectStoredEquipmentTypes().Migrate();
+                StoredItemSweepRunner.Run();
                 Bank.WithdrawItem(player, stored.Id);
             });
             await ctx.WaitFrameAsync();
@@ -285,7 +285,7 @@ public static partial class MigrationEngineTests
         await ctx.WaitUntilAsync(() => bags.Values.All(bag => !GetIsObjectValid(bag)), 5f, "the legacy containers to be stored");
         await ctx.ExecuteInCreatureContextAsync(player, () =>
         {
-            new _28_CorrectStoredEquipmentTypes().Migrate();
+            StoredItemSweepRunner.Run();
             foreach (var stored in records.Values)
             {
                 var data = DB.Get<InventoryItem>(stored.Id).Data;

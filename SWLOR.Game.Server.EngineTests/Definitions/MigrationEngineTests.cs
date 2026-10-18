@@ -314,7 +314,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
         }
 
         private static object Invoke(string type, string method, params object[] args) =>
-            typeof(_28_CorrectStoredEquipmentTypes).Assembly.GetType("SWLOR.Game.Server.Feature.MigrationDefinition." + type)
+            typeof(SWLOR.Game.Server.Service.Migration).Assembly.GetType("SWLOR.Game.Server.Feature.MigrationDefinition." + type)
                 .GetMethod(method, BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static).Invoke(null, args);
 
         private static void ClearProperties(uint item)

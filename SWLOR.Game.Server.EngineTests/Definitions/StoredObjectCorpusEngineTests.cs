@@ -23,7 +23,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             if (string.IsNullOrWhiteSpace(input))
                 ctx.Skip("Supply a private serialized-object JSONL corpus in an isolated engine-test home.");
 
-            var type = typeof(_28_CorrectStoredEquipmentTypes).Assembly.GetType(
+            var type = typeof(SWLOR.Game.Server.Service.Migration).Assembly.GetType(
                 "SWLOR.Game.Server.Feature.MigrationDefinition.ServerMigration.StoredItemDataMigration");
             var migrate = type.GetMethod("MigrateSerializedObject", BindingFlags.NonPublic | BindingFlags.Static);
             var expand = type.GetMethod("TryMigrateRootBlueprintVariants", BindingFlags.NonPublic | BindingFlags.Static);

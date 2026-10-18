@@ -16,7 +16,7 @@ public class DroidInstructionMigrationTests
     [Test]
     public void HistoricalInstructionsDoNotBecomeDifferentAbilitiesWhenAnIdIsReused()
     {
-        var method = typeof(_28_CorrectStoredEquipmentTypes).Assembly
+        var method = typeof(SWLOR.Game.Server.Service.Migration).Assembly
             .GetType("SWLOR.Game.Server.Feature.MigrationDefinition.ObsoleteItemMigration")!
             .GetMethod("RemoveReassignedDroidPerks", BindingFlags.NonPublic | BindingFlags.Static)!;
         var perks = new List<DroidPerk> { new((PerkType)23, 1), new(PerkType.MedKit, 2) };
@@ -33,7 +33,7 @@ public class DroidInstructionMigrationTests
     [Test]
     public void MissingHistoricalInstructionListNeedsNoChange()
     {
-        var method = typeof(_28_CorrectStoredEquipmentTypes).Assembly
+        var method = typeof(SWLOR.Game.Server.Service.Migration).Assembly
             .GetType("SWLOR.Game.Server.Feature.MigrationDefinition.ObsoleteItemMigration")!
             .GetMethod("RemoveReassignedDroidPerks", BindingFlags.NonPublic | BindingFlags.Static)!;
         method.Invoke(null, new object?[] { null }).Should().Be(false);

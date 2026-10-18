@@ -153,7 +153,7 @@ public static partial class MigrationEngineTests
             await ctx.WaitUntilAsync(() => !GetIsObjectValid(item), 5f, "the deposited item to leave the inventory");
             await ctx.ExecuteInCreatureContextAsync(owner, () =>
             {
-                new _28_CorrectStoredEquipmentTypes().Migrate();
+                StoredItemSweepRunner.Run();
                 Bank.WithdrawItem(owner, stored.Id);
             });
             await ctx.WaitFrameAsync();

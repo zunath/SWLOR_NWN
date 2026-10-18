@@ -16,7 +16,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
         {
             var owner = ctx.SpawnCreature("civilian");
             await ctx.WaitFrameAsync();
-            var type = typeof(_28_CorrectStoredEquipmentTypes)
+            var type = typeof(SWLOR.Game.Server.Service.Migration)
                 .Assembly.GetType("SWLOR.Game.Server.Feature.MigrationDefinition.MigrationItemDisposal");
             var remove = type.GetMethod("Remove", BindingFlags.Public | BindingFlags.Instance);
             var containers = new List<uint>();

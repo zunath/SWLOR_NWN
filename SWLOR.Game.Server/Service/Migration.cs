@@ -21,7 +21,7 @@ namespace SWLOR.Game.Server.Service
         /// Server migrations up to this version ran on production and were removed. A new database starts
         /// here; a database below it predates this build and cannot be upgraded by it.
         /// </summary>
-        internal const int RetiredServerMigrationVersion = 27;
+        internal const int RetiredServerMigrationVersion = 28;
         internal const string PlayerFileVersionVariable = "PLAYER_MIGRATION_VERSION";
         private static int _currentMigrationVersion;
         private static ServerMigrationState _serverMigrationState = new(0);

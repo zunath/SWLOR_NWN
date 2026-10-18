@@ -96,7 +96,7 @@ public static partial class MigrationEngineTests
             await ctx.WaitUntilAsync(() => !GetIsObjectValid(visor), 5f, "the saved visor to leave live inventory");
             await ctx.ExecuteInCreatureContextAsync(player, () =>
             {
-                new _28_CorrectStoredEquipmentTypes().Migrate();
+                StoredItemSweepRunner.Run();
                 Bank.WithdrawItem(player, stored.Id);
             });
             await ctx.WaitFrameAsync();

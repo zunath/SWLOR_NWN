@@ -13,8 +13,8 @@ public class MigrationDataTests
 {
     // Release 2026-10-16 (b1406fec3) shipped player 22 and server 27.
     private const int ReleasedPlayerVersion = 22;
-    private const int ReleasedServerVersion = 27;
-    private static readonly Assembly ServerAssembly = typeof(_28_CorrectStoredEquipmentTypes).Assembly;
+    private const int ReleasedServerVersion = 28;
+    private static readonly Assembly ServerAssembly = typeof(SWLOR.Game.Server.Service.Migration).Assembly;
 
     [Test]
     public void CharacterMigrationsHaveUniqueVersionsAndOneCombinedItemUpdate()

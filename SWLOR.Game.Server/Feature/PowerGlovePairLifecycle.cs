@@ -115,6 +115,7 @@ public static class PowerGlovePairLifecycle
             }
             var linkedOwner = GetLocalObject(companion, PowerGloveEquipment.OwnerVariable);
             if (PowerGloveEquipment.IsEquippedCompanion(companion) ||
+                PowerGloveEquipment.TryRestoreSavedCompanion(companion) ||
                 PowerGloveEquipment.IsChanging(linkedOwner) && GetItemPossessor(companion) == linkedOwner)
                 PowerGloveEquipment.SanitizeCompanion(companion);
             else

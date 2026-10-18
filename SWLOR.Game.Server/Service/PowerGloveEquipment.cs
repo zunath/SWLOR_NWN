@@ -59,6 +59,32 @@ public static class PowerGloveEquipment
                GetItemInSlot(InventorySlot.LeftHand, owner) == companion;
     }
 
+    /// <summary>Rebinds saved item references only while a player's equipped inventory is loading.</summary>
+    public static bool TryRestoreSavedCompanion(uint companion)
+    {
+        if (!IsGeneratedCompanion(companion) || IsDestroyingCompanion(companion)) return false;
+        var owner = GetItemPossessor(companion);
+        if (!GetIsObjectValid(owner)) return false;
+        var main = GetItemInSlot(InventorySlot.RightHand, owner);
+        var cachedPairMatches = !Pairs.TryGetValue(owner, out var existing) ||
+                                existing.Main == main && existing.Companion == companion;
+        if (!CanRestoreSavedPair(GetIsPC(owner), GetIsObjectValid(GetArea(owner)),
+                IsPairItem(main) && GetItemInSlot(InventorySlot.LeftHand, owner) == companion,
+                GetItemPossessor(main) == owner && GetLocalObject(companion, OwnerVariable) == owner,
+                cachedPairMatches))
+            return false;
+
+        // BIC acquire events can precede remapping saved cross-item references to the equipped pair.
+        SetLocalObject(main, CompanionVariable, companion);
+        SetLocalObject(companion, MainWeaponVariable, main);
+        SanitizeCompanion(companion);
+        return IsEquippedCompanion(companion);
+    }
+
+    internal static bool CanRestoreSavedPair(bool isPlayer, bool hasArea, bool hasEquippedPair,
+        bool hasMatchingOwners, bool cachedPairMatches) =>
+        isPlayer && !hasArea && hasEquippedPair && hasMatchingOwners && cachedPairMatches;
+
     public static bool IsActivePair(uint creature)
     {
         if (!GetIsObjectValid(creature) || Droid.IsDroid(creature)) return false;

@@ -81,6 +81,20 @@ public class PowerGloveEquipmentTests
         EquipmentRestrictions.GetPowerGloveEquipmentError(BaseItem.PowerGlove, InventorySlot.RightHand,
             null, null, false, "Existing restriction").Should().Be("Existing restriction");
 
+    [TestCase(true, false, true, true, true, true)]
+    [TestCase(false, false, true, true, true, false)]
+    [TestCase(true, true, true, true, true, false)]
+    [TestCase(true, false, false, true, true, false)]
+    [TestCase(true, false, true, false, true, false)]
+    [TestCase(true, false, true, true, false, false)]
+    public void SavedPairRecoveryRequiresPreAreaPlayerSlotsAndUnchangedOwnership(
+        bool isPlayer, bool hasArea, bool equippedPair, bool matchingOwners, bool cachedPairMatches, bool expected)
+    {
+        var policy = typeof(PowerGloveEquipment).GetMethod("CanRestoreSavedPair", BindingFlags.Static | BindingFlags.NonPublic)!;
+        policy.Invoke(null, new object[] { isPlayer, hasArea, equippedPair, matchingOwners, cachedPairMatches })
+            .Should().Be(expected);
+    }
+
     [Test]
     public void CompanionNativeDataHasNoDamageArmorValueWeightOrProperties()
     {

@@ -5,7 +5,6 @@ using System.Xml.Linq;
 using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Game.Server.Feature.MigrationDefinition;
-using SWLOR.Game.Server.Feature.MigrationDefinition.PlayerMigration;
 using SWLOR.Game.Server.Feature.MigrationDefinition.ServerMigration;
 using SWLOR.Game.Server.Feature;
 using SWLOR.NWN.API.NWScript.Enum.Item;
@@ -94,7 +93,7 @@ public class EquipmentTypeTests
         }
         EquipmentTypeMigration.IsLegacyEquipment("ordinary_bracer", BaseItem.Bracer).Should().BeFalse();
         EquipmentTypeMigration.IsLegacyEquipment(null!, BaseItem.Bracer).Should().BeFalse();
-        new _23_CorrectEquipmentTypes().Version.Should().BeGreaterThan(new _22_ReviseLootStats().Version);
+        CharacterMigrations.VersionOf("_23_CorrectEquipmentTypes").Should().BeGreaterThan(CharacterMigrations.VersionOf("_22_ReviseLootStats"));
     }
 
     [Test]

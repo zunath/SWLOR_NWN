@@ -3,7 +3,6 @@ using System.Reflection;
 using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Game.Server.Entity;
-using SWLOR.Game.Server.Feature.MigrationDefinition.PlayerMigration;
 using SWLOR.Game.Server.Feature.MigrationDefinition.ServerMigration;
 using SWLOR.Game.Server.Service.MigrationService;
 using SWLOR.NWN.API.NWScript.Enum.Item;
@@ -18,18 +17,29 @@ public class MigrationDataTests
     private static readonly Assembly ServerAssembly = typeof(_28_CorrectStoredEquipmentTypes).Assembly;
 
     [Test]
-    public void PlayerMigrationsHaveUniqueVersionsAndOneCombinedItemUpdate()
+    public void CharacterMigrationsHaveUniqueVersionsAndOneCombinedItemUpdate()
     {
-        var migrations = ServerAssembly.GetTypes()
-            .Where(type => !type.IsAbstract && !type.IsInterface && typeof(IPlayerMigration).IsAssignableFrom(type))
-            .Select(type => (IPlayerMigration)Activator.CreateInstance(type)!).ToArray();
-        migrations.Select(migration => migration.Version).Should().OnlyHaveUniqueItems();
-        new _17_RemoveWeaponStatOverrides().Version.Should().BeGreaterThan(new _16_RetireForceWeaponEnhancements().Version);
-        migrations.Where(migration => migration.Version >= 22).Select(migration => migration.GetType())
-            .Should().BeEquivalentTo(new[] { typeof(_22_ReviseLootStats), typeof(_23_CorrectEquipmentTypes) });
-        migrations.Where(migration => migration.Version > ReleasedPlayerVersion).Select(migration => migration.GetType())
-            .Should().BeEquivalentTo(new[] { typeof(_23_CorrectEquipmentTypes) }, "the last release must receive one combined player-item pass");
-        new _23_CorrectEquipmentTypes().Version.Should().Be(ReleasedPlayerVersion + 1);
+        var migrations = CharacterMigrations.ImplementationTypes
+            .Select(type => Activator.CreateInstance(type)!).ToArray();
+        migrations.Select(CharacterMigrations.VersionOf).Should().OnlyHaveUniqueItems();
+        CharacterMigrations.VersionOf("_17_RemoveWeaponStatOverrides").Should().BeGreaterThan(CharacterMigrations.VersionOf("_16_RetireForceWeaponEnhancements"));
+        migrations.Where(migration => CharacterMigrations.VersionOf(migration) >= 22).Select(migration => migration.GetType())
+            .Should().BeEquivalentTo(new[] { CharacterMigrations.Named("_22_ReviseLootStats"), CharacterMigrations.Named("_23_CorrectEquipmentTypes") });
+        migrations.Where(migration => CharacterMigrations.VersionOf(migration) > ReleasedPlayerVersion).Select(migration => migration.GetType())
+            .Should().BeEquivalentTo(new[] { CharacterMigrations.Named("_23_CorrectEquipmentTypes") }, "the last release must receive one combined player-item pass");
+        CharacterMigrations.VersionOf("_23_CorrectEquipmentTypes").Should().Be(ReleasedPlayerVersion + 1);
+    }
+
+    [Test]
+    public void TheCharacterUpgradeRunsEveryMigrationInVersionOrder()
+    {
+        var registered = CharacterMigrations.Registered.Select(CharacterMigrations.VersionOf).ToArray();
+        registered.Should().OnlyHaveUniqueItems();
+        registered.Should().BeInAscendingOrder("the upgrade applies migrations oldest first");
+        registered.Should().BeEquivalentTo(
+            CharacterMigrations.ImplementationTypes.Select(type => CharacterMigrations.VersionOf(Activator.CreateInstance(type)!)),
+            "every migration class is registered");
+        CharacterMigrations.LatestVersion.Should().Be(registered[^1]);
     }
 
     [TestCase(112, -12)]

@@ -31,8 +31,9 @@ public static class LootStatRevisionMigration
     {
         var item = GetModuleItemAcquired();
         var owner = GetItemPossessor(item);
-        // Items loading with a character at login are left to its player migration: a revision
-        // marker set during that load does not persist, so the migration would revise them again.
+        // Items loading with a character at login are not revised here: the boot-time character upgrade
+        // already revised the saved items, and a revision marker set during that load does not persist,
+        // so revising them here would repeat at every login.
         if (!GetIsObjectValid(GetArea(owner)))
             return;
         if (GetIsPC(owner) && !GetIsDM(owner) && !GetIsDMPossessed(owner))

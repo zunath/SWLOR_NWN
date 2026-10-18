@@ -117,14 +117,7 @@ public class RelocatedDungeonEnumMigrationTests
             "\"hold_the_line_circle\":{\"CurrentState\":1,\"KillProgresses\":{\"Dantooine_HoldTheLine_InnerCircle\":3,\"MonCala_HoldTheLine_InnerCircle\":2},\"ItemProgresses\":{}}," +
             "\"saber_storm_foundation\":{\"CurrentState\":1,\"KillProgresses\":{\"Dantooine_StormDrillDroid\":5,\"" + beacon + "\":1},\"ItemProgresses\":{}}}," +
             "\"UnknownField\":{\"value\":42}}");
-        var unknown = player["UnknownField"]!.DeepClone();
         // A record that skipped server migration 27 (e.g. restored afterwards) still loads, with the former names mapped.
-        AssertMigrated(JsonConvert.DeserializeObject<Player>(player.ToString())!);
-
-        RelocatedDungeonEnumMigration.MigratePlayer(player).Should().BeTrue();
-        RelocatedDungeonEnumMigration.MigratePlayer(player).Should().BeFalse();
-        JToken.DeepEquals(player["UnknownField"], unknown).Should().BeTrue();
-
         AssertMigrated(JsonConvert.DeserializeObject<Player>(player.ToString())!);
         var reserialized = JObject.Parse(JsonConvert.SerializeObject(JsonConvert.DeserializeObject<Player>(player.ToString())));
         reserialized[nameof(Player.KeyItems)]![nameof(KeyItemType.CapstoneTatooineForgeCavernsKey)].Should().NotBeNull();

@@ -6,7 +6,6 @@ using Newtonsoft.Json;
 using SWLOR.Game.Server.EngineTests.Framework;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Feature.MigrationDefinition;
-using SWLOR.Game.Server.Feature.MigrationDefinition.PlayerMigration;
 using SWLOR.Game.Server.Feature.MigrationDefinition.ServerMigration;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.DroidService;
@@ -48,15 +47,24 @@ public static partial class MigrationEngineTests
             {
                 EquippedItems = { [InventorySlot.RightHand] = saved }
             }));
-            new _18_ReplaceDungeonSabers().Migrate(owner);
-            ctx.Assert(!GetIsObjectValid(GetItemInSlot(InventorySlot.RightHand, owner)), "Live weapon is unequipped");
-            ctx.AssertEqual("sabcycl_l4", GetResRef(GetFirstItemInInventory(bag)), "Live nested weapon is exchanged");
-            ctx.AssertEqual("b_longsword", GetResRef(normal), "Unrelated weapon remains untouched");
-            var droid = JsonConvert.DeserializeObject<ConstructedDroid>(GetLocalString(controller, "CONSTRUCTED_DROID"));
+
+            // The same exchange on the saved character file, as the boot-time upgrade runs it.
+            var upgraded = SavedCharacterMigration.Run(owner, new Player(GetObjectUUID(owner)), "_18_ReplaceDungeonSabers");
+            var character = SavedCharacterMigration.Load(ctx, upgraded);
+            ctx.Assert(!GetIsObjectValid(GetItemInSlot(InventorySlot.RightHand, character)), "The saber is unequipped");
+            var characterBag = SavedCharacterMigration.FindItem(character, "bag_sm");
+            ctx.AssertEqual("sabcycl_l4", GetResRef(GetFirstItemInInventory(characterBag)), "The nested weapon is exchanged");
+            ctx.AssertEqual("b_longsword", GetResRef(SavedCharacterMigration.FindItem(character, "b_longsword")),
+                "Unrelated weapon remains untouched");
+            var droid = JsonConvert.DeserializeObject<ConstructedDroid>(GetLocalString(
+                SavedCharacterMigration.FindItem(character, Droid.DroidControlItemResref), "CONSTRUCTED_DROID"));
             ctx.AssertEqual(0, droid.EquippedItems.Count, "Droid weapon slot is cleared");
             ctx.AssertEqual("eclipse_w3", GetResRef(Deserialize(ctx, droid.Inventory["dungeon-saber-fixture"])),
                 "Droid keeps the replacement under its original inventory ID");
-            ctx.Assert(!DungeonSaberMigration.MigrateObject(owner), "Live retry cannot grant another replacement");
+            ctx.Assert(!DungeonSaberMigration.MigrateObject(character), "The migrated character holds no saber the acquisition path would exchange");
+
+            var retried = SavedCharacterMigration.Run(upgraded.File, upgraded.Record, "_18_ReplaceDungeonSabers");
+            ctx.Assert(retried.File.SequenceEqual(upgraded.File), "A retry cannot grant another replacement");
         });
     }
 

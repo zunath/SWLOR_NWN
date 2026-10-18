@@ -6,7 +6,6 @@ using Newtonsoft.Json;
 using SWLOR.Game.Server.EngineTests.Framework;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Feature.MigrationDefinition;
-using SWLOR.Game.Server.Feature.MigrationDefinition.PlayerMigration;
 using SWLOR.Game.Server.Feature.MigrationDefinition.ServerMigration;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.CombatService;
@@ -21,7 +20,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions;
 
 public static partial class MigrationEngineTests
 {
-    [EngineTest("Player migration removes equipped, carried and nested weapon stat overrides", Category = "WeaponStatOverrides")]
+    [EngineTest("Character migration removes equipped, carried and nested weapon stat overrides from the saved character", Category = "WeaponStatOverrides")]
     public static async Task PlayerWeaponStatOverrides(EngineTestContext ctx)
     {
         using var fixture = await PlayerAbilityFixture.CreateAsync(ctx);
@@ -34,11 +33,22 @@ public static partial class MigrationEngineTests
         {
             foreach (var weapon in new[] { equipped, carried, nested })
                 StampWeaponStatOverrides(weapon);
-            new _17_RemoveWeaponStatOverrides().Migrate(player);
-            foreach (var weapon in new[] { equipped, carried, nested })
+            var upgraded = SavedCharacterMigration.Run(player, DB.Get<Player>(fixture.Id), "_17_RemoveWeaponStatOverrides");
+            var character = SavedCharacterMigration.Load(ctx, upgraded);
+            var restoredEquipped = GetItemInSlot(InventorySlot.RightHand, character);
+            var restoredBag = SavedCharacterMigration.FindItem(character, "bag_sm");
+            var carriedItems = SavedCharacterMigration.Carried(character);
+            var carriedSwords = carriedItems.Where(item => GetResRef(item) == "b_longsword").ToList();
+            ctx.AssertEqual(1, carriedSwords.Count, "The character carries one loose longsword; it carries: " + string.Join(", ", carriedItems.Select(GetResRef)));
+            var bagItems = SavedCharacterMigration.Carried(restoredBag);
+            ctx.AssertEqual(1, bagItems.Count, "The bag holds one longsword; it holds: " + string.Join(", ", bagItems.Select(GetResRef)));
+            var restoredCarried = carriedSwords[0];
+            var restoredNested = bagItems[0];
+            foreach (var weapon in new[] { restoredEquipped, restoredCarried, restoredNested })
                 AssertWeaponOverridesRemoved(ctx, weapon);
-            ctx.AssertEqual(equipped, GetItemInSlot(InventorySlot.RightHand, player), "Weapon stays equipped");
-            ctx.Assert(!WeaponStatOverrideMigration.MigrateObject(player), "Retry makes no further changes");
+            ctx.AssertEqual("b_longsword", GetResRef(restoredEquipped), "Weapon stays equipped");
+            var retried = SavedCharacterMigration.Run(upgraded.File, upgraded.Record, "_17_RemoveWeaponStatOverrides");
+            ctx.Assert(retried.File.SequenceEqual(upgraded.File), "Retry makes no further changes");
         });
     }
 

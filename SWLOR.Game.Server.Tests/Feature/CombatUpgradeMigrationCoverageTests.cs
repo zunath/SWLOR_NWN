@@ -34,29 +34,29 @@ public class CombatUpgradeMigrationCoverageTests
     }
 
     [Test]
-    public void PlayerMigrations_InvokeLiveObjectCombatUpgradeMigrations()
+    public void CharacterMigrations_RunTheSavedDataCombatUpgradeMigrations()
     {
         var root = FindRepositoryRoot();
-        var playerMigrationRoot = Path.Combine(
+        var characterMigrationRoot = Path.Combine(
             root.FullName,
             "SWLOR.Game.Server",
             "Feature",
             "MigrationDefinition",
-            "PlayerMigration");
-        var requirementMigration = File.ReadAllText(Path.Combine(playerMigrationRoot, "_13_UpdateItemRequirements.cs"));
-        var resistanceMigration = File.ReadAllText(Path.Combine(playerMigrationRoot, "_14_MigrateResistanceItemProperties.cs"));
-        var obsoleteItemMigration = File.ReadAllText(Path.Combine(playerMigrationRoot, "_15_RemoveObsoleteCombatInstructionDiscs.cs"));
+            "CharacterMigration");
+        var requirementMigration = File.ReadAllText(Path.Combine(characterMigrationRoot, "_13_UpdateItemRequirements.cs"));
+        var combatUpgradeMigrations = File.ReadAllText(Path.Combine(characterMigrationRoot, "_14_15_CombatUpgradeMigrations.cs"));
 
-        requirementMigration.Should().Contain("public override int Version => 13;");
-        requirementMigration.Should().Contain("EquipmentRequirementMigration.MigrateObject(player);");
-        resistanceMigration.Should().Contain("public override int Version => 14;");
-        resistanceMigration.Should().Contain("SerializedItemResistanceMigration.MigrateObject(player);");
-        resistanceMigration.Should().Contain("SerializedItemWeaponDamageTypeMigration.MigrateObject(player);");
-        resistanceMigration.Should().Contain("CombatReadinessMigration.MigratePlayer(player);");
-        resistanceMigration.Should().Contain("PistolBaseItemMigration.MigratePlayer(player);");
-        obsoleteItemMigration.Should().Contain("public override int Version => 15;");
-        obsoleteItemMigration.Should().Contain("ObsoleteItemMigration.RemoveObsoleteItemsFromObject(player);");
-        obsoleteItemMigration.Should().Contain("PlayerInitialization.ResetFeatsToBaseline(player);");
+        CharacterMigrations.VersionOf("_13_UpdateItemRequirements").Should().Be(13);
+        requirementMigration.Should().Contain("SavedEquipmentRequirementMigration.MigrateCharacter(character);");
+        CharacterMigrations.VersionOf("_14_MigrateResistanceItemProperties").Should().Be(14);
+        combatUpgradeMigrations.Should().Contain("SavedItemResistanceMigration.MigrateCharacter(character);");
+        combatUpgradeMigrations.Should().Contain("SavedWeaponDamageTypeMigration.MigrateCharacter(character);");
+        combatUpgradeMigrations.Should().Contain("SavedCombatUpgradeItemMigrations.MigrateCombatReadiness(character);");
+        combatUpgradeMigrations.Should().Contain("SavedCombatUpgradeItemMigrations.MigratePistols(character);");
+        combatUpgradeMigrations.Should().Contain("SavedCombatUpgradeItemMigrations.MigrateAccuracy(character);");
+        CharacterMigrations.VersionOf("_15_RemoveObsoleteCombatInstructionDiscs").Should().Be(15);
+        combatUpgradeMigrations.Should().Contain("SavedObsoleteItemMigration.MigrateCharacter(character);");
+        combatUpgradeMigrations.Should().Contain("CharacterRecalculation.ResetFeatsToBaseline(character);");
     }
 
     /// <summary>
@@ -169,73 +169,6 @@ public class CombatUpgradeMigrationCoverageTests
         {
             migration.Should().Contain(message);
         }
-    }
-
-    [Test]
-    public void EquipmentRequirementMigration_PrefiltersSerializedObjectsBeforeNwnDeserialization()
-    {
-        var root = FindRepositoryRoot();
-        var migrationSource = File.ReadAllText(Path.Combine(
-            root.FullName,
-            "SWLOR.Game.Server",
-            "Feature",
-            "MigrationDefinition",
-            "EquipmentRequirementMigration.cs"));
-
-        migrationSource.Should().Contain("CouldContainRequirementMigrationTarget(serializedObject)");
-        migrationSource.Should().Contain("MigrationObject.Deserialize(serializedObject)");
-
-        var method = Type.GetType("SWLOR.Game.Server.Feature.MigrationDefinition.EquipmentRequirementMigration, SWLOR.Game.Server")!
-            .GetMethod("CouldContainRequirementMigrationTarget", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Static)!;
-        bool CouldContainRequirementMigrationTarget(string serializedObject)
-        {
-            return (bool)method.Invoke(null, new object[] { serializedObject })!;
-        }
-
-        CouldContainRequirementMigrationTarget("""
-        {
-          "PropertiesList": {
-            "type": "list",
-            "value": [
-              {
-                "PropertyName": { "type": "word", "value": 117 },
-                "Subtype": { "type": "word", "value": 0 }
-              }
-            ]
-          }
-        }
-        """).Should().BeFalse();
-
-        CouldContainRequirementMigrationTarget("""
-        {
-          "PropertiesList": {
-            "type": "list",
-            "value": [
-              {
-                "PropertyName": { "type": "word", "value": 100 },
-                "Subtype": { "type": "word", "value": 6 }
-              }
-            ]
-          }
-        }
-        """).Should().BeTrue();
-
-        CouldContainRequirementMigrationTarget("""
-        {
-          "PropertiesList": {
-            "type": "list",
-            "value": [
-              {
-                "PropertyName": { "type": "word", "value": 131 },
-                "Subtype": { "type": "word", "value": 1 }
-              }
-            ]
-          }
-        }
-        """).Should().BeTrue();
-
-        CouldContainRequirementMigrationTarget("legacy-serialized-object")
-            .Should().BeTrue("unknown serialized formats must keep the original deserialization path");
     }
 
     [Test]

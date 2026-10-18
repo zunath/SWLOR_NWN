@@ -5,7 +5,6 @@ using FluentAssertions;
 using Newtonsoft.Json.Linq;
 using NUnit.Framework;
 using SWLOR.Game.Server.Feature.MigrationDefinition;
-using SWLOR.Game.Server.Feature.MigrationDefinition.PlayerMigration;
 using SWLOR.Game.Server.Feature.MigrationDefinition.ServerMigration;
 using SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition;
 using SWLOR.Game.Server.Service.CraftService;
@@ -52,9 +51,9 @@ public class HeadgearSlotMigrationTests
         }
         HeadgearSlotMigration.IsLegacyHeadgear("piston_gaunt", BaseItem.Armor).Should().BeFalse();
         HeadgearSlotMigration.IsLegacyHeadgear("ordinary_armor", BaseItem.Armor).Should().BeFalse();
-        new _22_ReviseLootStats().Version.Should().Be(22);
-        typeof(_22_ReviseLootStats).Assembly.GetType("SWLOR.Game.Server.Feature.MigrationDefinition.PlayerMigration._23_RepairHeadgearSlots").Should().BeNull();
-        typeof(_22_ReviseLootStats).Assembly.GetType("SWLOR.Game.Server.Feature.MigrationDefinition.ServerMigration._31_RepairHeadgearSlots").Should().BeNull();
+        CharacterMigrations.VersionOf("_22_ReviseLootStats").Should().Be(22);
+        CharacterMigrations.FindNamed("_23_RepairHeadgearSlots").Should().BeNull();
+        typeof(_28_CorrectStoredEquipmentTypes).Assembly.GetType("SWLOR.Game.Server.Feature.MigrationDefinition.ServerMigration._31_RepairHeadgearSlots").Should().BeNull();
     }
 
     [TestCase(0)]
@@ -154,11 +153,11 @@ public class HeadgearSlotMigrationTests
 
     [TestCase("BIC ")]
     [TestCase("UTC ")]
-    public void SavedCreaturesWaitForLivePlayerMigrationSoDatabaseStatsCannotBecomeStale(string fileType)
+    public void SavedCreaturesAreLeftToTheCharacterUpgradeSoDatabaseStatsCannotBecomeStale(string fileType)
     {
         var original = Encode(Node(0, List("Equip_ItemList", Visor(1u << (int)InventorySlot.Chest))), fileType);
         HeadgearSlotMigration.MigrateSerializedObject(original, out var migrated).Should().BeFalse();
-        migrated.Should().Be(original, "PC gear needs its loaded DB record and native unequip; authored NPC gear is outside player migration scope");
+        migrated.Should().Be(original, "worn PC gear changes the player record, so only the character upgrade converts it; authored NPC gear is outside that scope");
     }
 
     [TestCase("Chest", false)]

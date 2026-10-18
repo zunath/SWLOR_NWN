@@ -1,7 +1,8 @@
+using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 using SWLOR.Game.Server.EngineTests.Framework;
-using SWLOR.Game.Server.Feature.MigrationDefinition.PlayerMigration;
+using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
@@ -91,7 +92,8 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 native.m_pcItemRepository.m_bScalable = 0;
                 var carried = CreateItemOnObject(existingBag ? "bag_b" : "nw_maletatcivout", owner);
                 ctx.AssertEqual(owner, GetItemPossessor(carried), "The fixture fills its owned inventory");
-                Invoke("PlayerEquipmentStorage", "Unequip", owner, weapon, InventorySlot.RightHand);
+                ctx.Assert((bool)Invoke("PlayerEquipmentStorage", "TryUnequip", owner, weapon, InventorySlot.RightHand),
+                    "The live equipment rules can reserve space for the unequipped weapon");
                 ctx.Assert(GetItemInSlot(InventorySlot.RightHand, owner) != weapon, "The equipment slot is cleared");
                 ctx.AssertEqual(owner, GetItemPossessor(weapon), "The weapon stays owned by the character");
                 var bag = GetItemPossessor(weapon, true);
@@ -109,10 +111,53 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             ctx.AssertEqual(owner, GetItemPossessor(weapon), "A later engine update must not drop the weapon");
         }
 
+        /// <summary>
+        /// A character whose inventory has no room keeps its unequipped gear: the upgrade moves it to overflow storage
+        /// and the saved character holds exactly the items it carried before.
+        /// </summary>
+        [EngineTest("Full inventory sends unequipped gear to overflow storage", Category = "PlayerItemMigration", TimeoutSeconds = 120)]
+        public static async Task CrowdedInventoryOverflowsEquipment(EngineTestContext ctx)
+        {
+            using var fixture = await PlayerAbilityFixture.CreateAsync(ctx);
+            var owner = fixture.Creature;
+            var weapon = await ctx.EquipItemAsync(owner, "nw_wswls001", InventorySlot.RightHand);
+            var fillers = 0;
+            await ctx.ExecuteInCreatureContextAsync(owner, () =>
+            {
+                // A 2x3 outfit fills six cells; sixty of them cover the 10x36 inventory a character file holds.
+                for (; fillers < 60; fillers++)
+                {
+                    var carried = CreateItemOnObject("nw_maletatcivout", owner);
+                    if (!GetIsObjectValid(carried) || GetItemPossessor(carried) != owner)
+                        break;
+                }
+            });
+            ctx.AssertEqual(60, fillers, "The fixture fills its whole inventory");
+            await ctx.ExecuteInCreatureContextAsync(owner, () =>
+            {
+                var carriedBefore = Item.GetInventoryItemCount(owner);
+                var worn = Enumerable.Range(0, NumberOfInventorySlots)
+                    .Select(slot => (InventorySlot)slot)
+                    .Where(slot => slot != InventorySlot.CreatureArmor && slot != InventorySlot.CreatureBite &&
+                                   slot != InventorySlot.CreatureLeft && slot != InventorySlot.CreatureRight)
+                    .Count(slot => GetIsObjectValid(GetItemInSlot(slot, owner)));
+                var upgraded = SavedCharacterMigration.Run(owner, DB.Get<Player>(fixture.Id), "_6_RecalculateStats");
+                ctx.AssertEqual(worn, upgraded.Overflow.Count, "Every worn item that fits nowhere goes to overflow storage");
+                ctx.Assert(upgraded.Overflow.Any(item => item.ResRef == "nw_wswls001"), "Overflow storage keeps the unequipped weapon");
+                var character = SavedCharacterMigration.Load(ctx, upgraded);
+                ctx.Assert(!GetIsObjectValid(GetItemInSlot(InventorySlot.RightHand, character)), "The equipment slot is cleared");
+                ctx.AssertEqual(carriedBefore, Item.GetInventoryItemCount(character), "The saved character keeps every item it carried");
+                ctx.AssertEqual(0, SavedCharacterMigration.FindItems(character, "nw_wswls001").Count,
+                    "The weapon is not duplicated into the character file");
+            });
+            await ctx.WaitFrameAsync();
+            ctx.AssertEqual(owner, GetItemPossessor(weapon), "The live fixture is not changed by the saved upgrade");
+        }
+
         [EngineTest("Sequential saber property conversion survives engine updates", Category = "PlayerItemMigration")]
         public static async Task SequentialSaberPropertiesSurviveUpdates(EngineTestContext ctx)
         {
-            var owner = ctx.SpawnCreature("nw_rat001");
+            var owner = ctx.SpawnCreature("civilian");
             await ctx.WaitFrameAsync();
             // Only DM-built sabers are recalibrated; NPC-only blueprints such as valcl4 keep their authored stats.
             var item = await CreateItemAsync(ctx, owner, "b_longsword", owner);
@@ -124,32 +169,32 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 AddLegacyProperty(item, ItemPropertyType.UseLimitationPerk, 18, 33, 5);
             });
             await ctx.WaitFrameAsync();
+            uint migrated = OBJECT_INVALID;
             string expected = null;
             await ctx.ExecuteInCreatureContextAsync(owner, () =>
             {
                 ctx.Assert((bool)Invoke("LegacySaberMigration", "IsLegacySaber", item), "The fixture is a DM-built legacy saber");
-                Invoke("EquipmentRequirementMigration", "MigrateObject", owner);
-                Invoke("SerializedItemResistanceMigration", "MigrateObject", owner);
-                Invoke("SerializedItemWeaponDamageTypeMigration", "MigrateObject", owner);
-                Invoke("LegacySaberMigration", "MigratePlayer", owner);
-                ctx.AssertEqual(21, PropertyValue(item, ItemPropertyType.DMG), "Tier 5 saber damage is present");
-                ctx.AssertEqual(40, PropertyValue(item, ItemPropertyType.RequiresSkill), "Tier 5 skill requirement is present");
-                expected = DescribeProperties(item);
+                var upgraded = SavedCharacterMigration.Run(owner, new Player(GetObjectUUID(owner)),
+                    "_13_UpdateItemRequirements", "_14_MigrateResistanceItemProperties", "_15_RemoveObsoleteCombatInstructionDiscs");
+                migrated = SavedCharacterMigration.FindItem(SavedCharacterMigration.Load(ctx, upgraded), "b_longsword");
+                ctx.AssertEqual(21, PropertyValue(migrated, ItemPropertyType.DMG), "Tier 5 saber damage is present");
+                ctx.AssertEqual(40, PropertyValue(migrated, ItemPropertyType.RequiresSkill), "Tier 5 skill requirement is present");
+                expected = DescribeProperties(migrated);
                 ctx.Log("Immediate saber properties: " + expected);
             });
             await ctx.DelaySecondsAsync(0.3f);
             await ctx.ExecuteInCreatureContextAsync(owner, () =>
             {
-                ctx.Log("Settled saber properties: " + DescribeProperties(item));
-                ctx.AssertEqual(expected, DescribeProperties(item), "Later engine updates must retain every replacement property");
+                ctx.Log("Settled saber properties: " + DescribeProperties(migrated));
+                ctx.AssertEqual(expected, DescribeProperties(migrated), "Later engine updates must retain every replacement property");
             });
         }
 
-        /// <summary>Checks the same-script save cannot retain items or properties removed by the original player migration.</summary>
-        [EngineTest("Legacy player items are removed before the character checkpoint", Category = "PlayerItemMigration")]
+        /// <summary>Checks the saved character excludes the items and properties the original player migration removed.</summary>
+        [EngineTest("Legacy player items are removed from the saved character", Category = "PlayerItemMigration")]
         public static async Task LegacyPlayerItemsAreSavedImmediately(EngineTestContext ctx)
         {
-            var owner = ctx.SpawnCreature("nw_rat001");
+            var owner = ctx.SpawnCreature("civilian");
             await ctx.WaitFrameAsync();
             await CreateItemAsync(ctx, owner, "xp_tome_1", owner);
             await CreateItemAsync(ctx, owner, "refund_tome", owner);
@@ -159,17 +204,20 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             await ctx.WaitFrameAsync();
             await ctx.ExecuteInCreatureContextAsync(owner, () =>
             {
-                typeof(_1_LegacyPlayerMigration).GetMethod("MigrateItems", BindingFlags.NonPublic | BindingFlags.Instance)
-                    .Invoke(new _1_LegacyPlayerMigration(), new object[] { owner });
-                var restored = Deserialize(ctx, ObjectPlugin.Serialize(owner));
-                ctx.AssertEqual(1, Item.GetInventoryItemCount(restored), "The saved file excludes both retired items immediately");
-                var item = GetFirstItemInInventory(restored);
-                ctx.AssertEqual("b_longsword", GetResRef(item), "The retained item survives");
-                ctx.Assert(!GetIsItemPropertyValid(GetFirstItemProperty(item)), "No wiped property survives the immediate save");
+                var wornBefore = Enumerable.Range(0, NumberOfInventorySlots).Count(slot => GetIsObjectValid(GetItemInSlot((InventorySlot)slot, owner)));
+                var upgraded = SavedCharacterMigration.Run(owner, new Player(GetObjectUUID(owner)), "_1_LegacyPlayerMigration");
+                var restored = SavedCharacterMigration.Load(ctx, upgraded);
+                // The migration also takes the character's worn gear off, into the inventory.
+                var carried = SavedCharacterMigration.Carried(restored);
+                ctx.AssertEqual(1 + wornBefore, carried.Count, "The saved file excludes both retired items and carries the retained item and the unequipped gear");
+                ctx.AssertEqual(0, carried.Count(item => GetResRef(item) is "xp_tome_1" or "refund_tome"), "The retired items are gone");
+                var item = SavedCharacterMigration.FindItem(restored, "b_longsword");
+                ctx.Assert(GetIsObjectValid(item), "The retained item survives");
+                ctx.Assert(!GetIsItemPropertyValid(GetFirstItemProperty(item)), "No wiped property survives the save");
             });
         }
 
-        /// <summary>Checks interrupted historical damage conversion neither saves old properties nor increments damage twice.</summary>
+        /// <summary>Checks historical damage conversion neither keeps the old properties nor increments damage twice.</summary>
         [EngineTest("Historical weapon damage conversion survives save and retry", Category = "PlayerItemMigration")]
         public static async Task HistoricalWeaponDamageSaveAndRetry(EngineTestContext ctx)
         {
@@ -185,13 +233,14 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             await ctx.WaitFrameAsync();
             await ctx.ExecuteInCreatureContextAsync(owner, () =>
             {
-                new _8_UpgradeWeapons().Migrate(owner);
-                item = Deserialize(ctx, ObjectPlugin.Serialize(item));
-                ctx.AssertEqual(15, PropertyValue(item, ItemPropertyType.DMG), "The historical +3 adjustment reaches weapons in bags and is persisted immediately");
-                var saved = DescribeProperties(item);
-                var update = typeof(_8_UpgradeWeapons).GetMethod("Update", BindingFlags.NonPublic | BindingFlags.Instance);
-                update.Invoke(new _8_UpgradeWeapons(), new object[] { item });
-                ctx.AssertEqual(saved, DescribeProperties(item), "Retry after a later failure must not add damage again");
+                var upgraded = SavedCharacterMigration.Run(owner, new Player(GetObjectUUID(owner)), "_8_UpgradeWeapons");
+                var restoredBag = SavedCharacterMigration.FindItem(SavedCharacterMigration.Load(ctx, upgraded), "bag_sm");
+                var restored = GetFirstItemInInventory(restoredBag);
+                ctx.AssertEqual(15, PropertyValue(restored, ItemPropertyType.DMG), "The historical +3 adjustment reaches weapons in bags and is saved");
+                var saved = DescribeProperties(restored);
+                var retried = SavedCharacterMigration.Run(upgraded.File, upgraded.Record, "_8_UpgradeWeapons");
+                var retriedItem = GetFirstItemInInventory(SavedCharacterMigration.FindItem(SavedCharacterMigration.Load(ctx, retried), "bag_sm"));
+                ctx.AssertEqual(saved, DescribeProperties(retriedItem), "Retry after a later failure must not add damage again");
             });
         }
     }

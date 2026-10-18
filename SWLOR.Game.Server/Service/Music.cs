@@ -7,6 +7,7 @@ using SWLOR.Game.Server.Service.KeyItemService;
 using SWLOR.Game.Server.Service.MusicService;
 using SWLOR.Game.Server.Service.PropertyService;
 using SWLOR.NWN.API.NWNX;
+using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.Game.Server.Service
 {
@@ -14,6 +15,12 @@ namespace SWLOR.Game.Server.Service
     {
         public const string MusicPlayerTag = "MUSIC_PLAYER";
         private const string AreaMusicStoppedVariable = "MUSIC_BACKGROUND_STOPPED";
+        private const string BattleThemeSetVariable = "MUSIC_BATTLE_THEME_SET";
+        private const string BattleThemePlayingVariable = "MUSIC_BATTLE_THEME_PLAYING";
+        // Ability-only fights can leave the engine's combat state off, so combat also lasts this long
+        // after the player's last attack, damage, or hostile ability.
+        private const float BattleThemeCombatGraceSeconds = 12f;
+        private static readonly Dictionary<uint, DateTime> _lastBattleThemeCombat = new();
 
         private static readonly Dictionary<int, Song> _songs = new Dictionary<int,Song>();
         private static readonly Dictionary<KeyItemType, MusicSong> _collectibleSongsByKeyItem = MusicSongCatalog.Songs
@@ -86,6 +93,9 @@ namespace SWLOR.Game.Server.Service
                 ApplyBackgroundTrackToPlayer(player, personalTrackId.Value, personalTrackId.Value);
             }
 
+            if (GetLocalBool(player, BattleThemePlayingVariable))
+                StopBattleTheme(player);
+            SetLocalBool(player, BattleThemeSetVariable, dbPlayer.Settings.BattleThemeId != null);
             if (dbPlayer.Settings.BattleThemeId != null)
             {
                 PlayerPlugin.MusicBattleChange(player, dbPlayer.Settings.BattleThemeId.Value);
@@ -94,6 +104,99 @@ namespace SWLOR.Game.Server.Service
             {
                 PlayerPlugin.MusicBattleChange(player, MusicBackgroundGetBattleTrack(area));
             }
+        }
+
+        /// <summary>
+        /// Starts a player's battle theme when they attack or are attacked. The engine starts battle
+        /// music only when an enemy is within the ruleset's REST_ENEMY_CHECK_DISTANCE, which SWLOR
+        /// sets to 0, so it never starts on its own.
+        /// </summary>
+        [NWNEventHandler(ScriptName.OnCreatureAttackBefore)]
+        [NWNEventHandler(ScriptName.OnPlayerAttacked)]
+        public static void StartBattleThemeOnAttack()
+        {
+            var defender = OBJECT_SELF;
+            StartBattleTheme(defender, GetLastAttacker(defender));
+        }
+
+        /// <summary>
+        /// Starts a player's battle theme when they damage or are damaged by another creature.
+        /// </summary>
+        [NWNEventHandler(ScriptName.OnCreatureDamagedBefore)]
+        [NWNEventHandler(ScriptName.OnPlayerDamaged)]
+        public static void StartBattleThemeOnDamage()
+        {
+            var defender = OBJECT_SELF;
+            StartBattleTheme(defender, GetLastDamager(defender));
+        }
+
+        /// <summary>
+        /// Starts the battle theme of either combatant who is a player with one selected.
+        /// </summary>
+        public static void StartBattleTheme(uint defender, uint attacker)
+        {
+            if (defender == attacker ||
+                GetObjectType(defender) != ObjectType.Creature ||
+                GetObjectType(attacker) != ObjectType.Creature ||
+                GetArea(defender) != GetArea(attacker))
+                return;
+
+            StartBattleTheme(defender);
+            StartBattleTheme(attacker);
+        }
+
+        private static void StartBattleTheme(uint player)
+        {
+            if (!GetLocalBool(player, BattleThemeSetVariable) ||
+                !GetIsPC(player) || GetIsDM(player) || GetIsDMPossessed(player))
+                return;
+
+            _lastBattleThemeCombat[player] = DateTime.UtcNow;
+            if (GetLocalBool(player, BattleThemePlayingVariable))
+                return;
+
+            SetLocalBool(player, BattleThemePlayingVariable, true);
+            PlayerPlugin.MusicBattleToggle(player, true);
+        }
+
+        /// <summary>
+        /// Stops a player's battle theme once they are no longer in combat.
+        /// </summary>
+        [NWNEventHandler(ScriptName.OnIntervalPC6Seconds)]
+        public static void StopBattleThemeAfterCombat()
+        {
+            var player = OBJECT_SELF;
+            if (GetLocalBool(player, BattleThemePlayingVariable) &&
+                !GetIsInCombat(player) &&
+                (!_lastBattleThemeCombat.TryGetValue(player, out var lastCombat) ||
+                 (DateTime.UtcNow - lastCombat).TotalSeconds > BattleThemeCombatGraceSeconds))
+                StopBattleTheme(player);
+        }
+
+        [NWNEventHandler(ScriptName.OnModuleExit)]
+        public static void ForgetBattleThemeCombat()
+        {
+            _lastBattleThemeCombat.Remove(GetExitingObject());
+        }
+
+        /// <summary>
+        /// Whether a player's battle theme is playing because they are in combat.
+        /// </summary>
+        public static bool IsBattleThemePlaying(uint player)
+        {
+            return GetLocalBool(player, BattleThemePlayingVariable);
+        }
+
+        private static void StopBattleTheme(uint player)
+        {
+            DeleteLocalBool(player, BattleThemePlayingVariable);
+            _lastBattleThemeCombat.Remove(player);
+            PlayerPlugin.MusicBattleToggle(player, false);
+
+            // The client resumes background music when battle music stops. Keep stopped area music
+            // off unless the player has their own track playing.
+            if (IsAreaMusicStopped(GetArea(player)) && GetPersonalTrackId(player) == null)
+                PlayerPlugin.MusicBackgroundToggle(player, false);
         }
 
         /// <summary>
@@ -305,6 +408,9 @@ namespace SWLOR.Game.Server.Service
             dbPlayer.Settings.BattleThemeId = trackId;
             DB.Set(dbPlayer);
 
+            SetLocalBool(player, BattleThemeSetVariable, trackId != null);
+            if (trackId == null && GetLocalBool(player, BattleThemePlayingVariable))
+                StopBattleTheme(player);
             PlayerPlugin.MusicBattleChange(player, trackId ?? MusicBackgroundGetBattleTrack(GetArea(player)));
         }
 

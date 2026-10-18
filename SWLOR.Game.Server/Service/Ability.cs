@@ -2564,6 +2564,8 @@ namespace SWLOR.Game.Server.Service
             var trackedImpact = GetTrackedAbilityImpact(activator);
             var allowsHitProcs = trackedImpact?.Ability.MeleeTechnique == null ||
                 trackedImpact.Sequence.TryTriggerDamageRider($"TechniqueHitProcs:{target}");
+            // Hostile abilities raise no attack or damage events when they only apply status effects.
+            Music.StartBattleTheme(target, activator);
 
             // Register the combat point before applying damage. A lethal hit resolves the target's
             // death (and its skill XP distribution) synchronously during EffectDamage below, so
@@ -2754,6 +2756,8 @@ namespace SWLOR.Game.Server.Service
                 damageType = ResolveWeaponAbilityDamageType(activator, skillType, damageType, trackedImpact);
             Combat.TrackHostileAbilityActivity(activator);
             Combat.TrackHostileDefensiveCombatEntryActivity(target, activator);
+            // Before the hit roll, so a missed ability still starts the battle theme.
+            Music.StartBattleTheme(target, activator);
             var perkType = trackedImpact?.Ability?.EffectiveLevelPerkType ?? PerkType.Invalid;
             var usesNPCStatScaling = ShouldUseNPCStatScaling(activator, useNPCStatScaling);
             var damageAbility = combatImpactDamageAbility != AbilityType.Invalid

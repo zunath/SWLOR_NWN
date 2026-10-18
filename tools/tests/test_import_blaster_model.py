@@ -59,14 +59,14 @@ class BlasterImportTests(unittest.TestCase):
                 [(0, 0, 0), (1, 0, 0), (0, 1, 0)],
                 [(0, 0), (1, 0), (0, 1)], [(0, 1, 2)], [(0, .6, .8)] * 3)])
             self.assertIn('normals 3\n    0 0.6 0.8', path.read_text())
-            # Opt-in native round trip verifies the compiler honors custom normals,
+            # Opt-in CleanModels round trip verifies the compiler honors custom normals,
             # rather than silently regenerating this triangle's (0, 0, 1) normal.
-            if os.environ.get('NWN_EE_NWMAIN'):
+            if os.environ.get('CLEANMODELS'):
                 spec = importlib.util.spec_from_file_location('compiler', ROOT / 'tools/CompileBlasterModels.py')
                 compiler = importlib.util.module_from_spec(spec)
                 spec.loader.exec_module(compiler)
                 output = Path(directory) / 'compiled'
-                compiler.compile_models(os.environ['NWN_EE_NWMAIN'], directory, output, ['seamtest'])
+                compiler.compile_models(os.environ['CLEANMODELS'], directory, output, ['seamtest'])
                 data = (output / path.name).read_bytes()
                 raw = 12 + struct.unpack_from('<I', data, 4)[0]
                 # NWN binary trimesh header: normal-array offset is at byte 468.

@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.Text.Json;
 using SWLOR.Game.Server.Core.Bioware;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.SkillService;
@@ -99,101 +98,6 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition
             "mag_ring",
             "mag_tunic"
         };
-
-        /// <summary>
-        /// Migrates a saved object and releases its temporary native load on success or failure; unchanged payloads remain intact.
-        /// </summary>
-        public static bool MigrateSerializedObject(string serializedObject, out string migratedSerializedObject)
-        {
-            migratedSerializedObject = serializedObject;
-            if (string.IsNullOrWhiteSpace(serializedObject))
-                return false;
-
-            if (!CouldContainRequirementMigrationTarget(serializedObject))
-                return false;
-
-            var obj = MigrationObject.Deserialize(serializedObject);
-            if (!GetIsObjectValid(obj))
-                return false;
-
-            try
-            {
-                var wasMigrated = MigrateObject(obj);
-                if (wasMigrated)
-                    migratedSerializedObject = MigrationObject.Serialize(obj, serializedObject);
-
-                return wasMigrated;
-            }
-            finally
-            {
-                MigrationObject.DestroyTemporaryObject(obj);
-            }
-        }
-
-        private static bool CouldContainRequirementMigrationTarget(string serializedObject)
-        {
-            var trimmedObject = serializedObject.TrimStart();
-            if (!serializedObject.Contains("\"PropertyName\"", StringComparison.Ordinal))
-                return trimmedObject.StartsWith("{", StringComparison.Ordinal) ||
-                       trimmedObject.StartsWith("[", StringComparison.Ordinal)
-                    ? false
-                    : true;
-
-            if (!trimmedObject.StartsWith("{", StringComparison.Ordinal) &&
-                !trimmedObject.StartsWith("[", StringComparison.Ordinal))
-            {
-                return true;
-            }
-
-            try
-            {
-                using var document = JsonDocument.Parse(serializedObject);
-                return ContainsRequirementProperty(document.RootElement);
-            }
-            catch (JsonException)
-            {
-                return true;
-            }
-        }
-
-        private static bool ContainsRequirementProperty(JsonElement element)
-        {
-            switch (element.ValueKind)
-            {
-                case JsonValueKind.Object:
-                    if (TryGetWrappedInt(element, "PropertyName", out var propertyName) &&
-                        propertyName is (int)ItemPropertyType.UseLimitationPerk or (int)ItemPropertyType.RequiresSkill)
-                    {
-                        return true;
-                    }
-
-                    foreach (var property in element.EnumerateObject())
-                    {
-                        if (ContainsRequirementProperty(property.Value))
-                            return true;
-                    }
-
-                    return false;
-                case JsonValueKind.Array:
-                    foreach (var item in element.EnumerateArray())
-                    {
-                        if (ContainsRequirementProperty(item))
-                            return true;
-                    }
-
-                    return false;
-                default:
-                    return false;
-            }
-        }
-
-        private static bool TryGetWrappedInt(JsonElement element, string propertyName, out int value)
-        {
-            value = 0;
-            return element.TryGetProperty(propertyName, out var property) &&
-                   property.TryGetProperty("value", out var wrappedValue) &&
-                   wrappedValue.TryGetInt32(out value);
-        }
 
         public static bool MigrateObject(uint obj)
         {

@@ -8,7 +8,7 @@ using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.Game.Server.Feature.MigrationDefinition.CharacterMigration;
 
-/// <summary>Saved-data counterparts of the character-wide steps older player migrations share.</summary>
+/// <summary>The character-wide steps several character migrations share: recalculation, perk refunds, feats, skills and levels.</summary>
 internal static class CharacterRecalculation
 {
     private static readonly InventorySlot[] CreatureSlots =
@@ -17,7 +17,7 @@ internal static class CharacterRecalculation
     };
 
     /// <summary>
-    /// Saved-data <c>PlayerMigrationBase.RecalculateStats</c>: unequips everything but creature items, then
+    /// Unequips everything but creature items (into the inventory, or overflow storage when it is full), then
     /// resets the record's equipment-derived stats to their base values and restores full HP, FP and STM.
     /// </summary>
     public static void RecalculateStats(SavedCharacter character)
@@ -65,7 +65,7 @@ internal static class CharacterRecalculation
             character.Record.HP = character.GetCurrentHitPoints();
     }
 
-    /// <summary>Saved-data <c>PlayerMigrationBase.RefundPerk</c>: returns a perk's purchase price as skill points.</summary>
+    /// <summary>Returns a perk's purchase price as skill points and tells the player.</summary>
     public static void RefundPerk(SavedCharacter character, PerkType perkType)
     {
         var record = character.Record;

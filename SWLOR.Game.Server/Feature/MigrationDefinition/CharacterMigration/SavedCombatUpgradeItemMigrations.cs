@@ -23,8 +23,8 @@ internal static class SavedCombatUpgradeItemMigrations
     // ---- Combat readiness -----------------------------------------------------------------------------
 
     /// <summary>
-    /// <see cref="CombatReadinessMigration.MigratePlayer"/>: renames combat readiness enhancements everywhere on the
-    /// character, then sets the record's combat readiness to what its equipment grants.
+    /// Renames combat readiness enhancements everywhere on the character (as <see cref="CombatReadinessMigration.MigrateObject"/>
+    /// does for live items), then sets the record's combat readiness to what its equipment grants.
     /// </summary>
     public static void MigrateCombatReadiness(SavedCharacter character)
     {
@@ -51,9 +51,9 @@ internal static class SavedCombatUpgradeItemMigrations
     // ---- Accuracy -------------------------------------------------------------------------------------
 
     /// <summary>
-    /// <see cref="AccuracyItemPropertyMigration.MigratePlayer"/>: combines native Accuracy and Enhancement Bonus
-    /// properties into Accuracy everywhere on the character, then sets the record's accuracy to what its equipped
-    /// non-weapon items grant.
+    /// Combines native Accuracy and Enhancement Bonus properties into Accuracy everywhere on the character (as
+    /// <see cref="AccuracyItemPropertyMigration.MigrateObject"/> does for live items), then sets the record's accuracy
+    /// to what its equipped non-weapon items grant.
     /// </summary>
     public static void MigrateAccuracy(SavedCharacter character)
     {
@@ -95,9 +95,9 @@ internal static class SavedCombatUpgradeItemMigrations
     // ---- Pistols and ammunition -----------------------------------------------------------------------
 
     /// <summary>
-    /// <see cref="PistolBaseItemMigration.MigratePlayer"/>: gives pistols and blaster ammunition their canonical base
-    /// items and moves ammunition worn in the arrow slot to the bullet slot. When the worn weapon would make the
-    /// engine supply bullets, the moved stack stays in the inventory, as the live rule does.
+    /// Gives pistols and blaster ammunition their canonical base items (as <see cref="PistolBaseItemMigration.MigrateStoredObject"/>
+    /// does for live objects) and moves ammunition worn in the arrow slot to the bullet slot. When the worn weapon would
+    /// make the engine supply bullets, the moved stack stays in the inventory, as the live rule does.
     /// </summary>
     public static void MigratePistols(SavedCharacter character)
     {

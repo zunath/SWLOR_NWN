@@ -3,7 +3,6 @@ using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Game.Server.Feature.LootTableDefinition;
 using SWLOR.Game.Server.Feature.MigrationDefinition;
-using SWLOR.Game.Server.Feature.MigrationDefinition.PlayerMigration;
 using SWLOR.Game.Server.Feature.MigrationDefinition.ServerMigration;
 using SWLOR.Game.Server.Service.MigrationService;
 using SWLOR.NWN.API.NWScript.Enum.Item;

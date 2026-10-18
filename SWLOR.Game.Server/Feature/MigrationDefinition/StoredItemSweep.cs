@@ -118,8 +118,4 @@ internal static class StoredItemSweep
         setData(migrated);
         return true;
     }
-
-    /// <summary>Loads a stored object once and applies artwork, loot stats and headgear repair in one item traversal.</summary>
-    public static bool MigrateSerializedObject(string serialized, out string migrated)
-        => LootStatRevisionMigration.MigrateStoredObjectData(serialized, out migrated);
 }

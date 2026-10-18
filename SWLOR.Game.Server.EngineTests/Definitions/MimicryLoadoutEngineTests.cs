@@ -8,7 +8,6 @@ using SWLOR.Game.Server.EngineTests.Framework;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Feature.GuiDefinition.Payload;
 using SWLOR.Game.Server.Feature.GuiDefinition.ViewModel;
-using SWLOR.Game.Server.Feature.MigrationDefinition.PlayerMigration;
 using SWLOR.Game.Server.Feature.MigrationDefinition.ServerMigration;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.GuiService;

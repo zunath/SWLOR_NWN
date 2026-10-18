@@ -1,7 +1,7 @@
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 using SWLOR.Game.Server.Entity;
-using SWLOR.Game.Server.Feature.MigrationDefinition.PlayerMigration;
 using SWLOR.Game.Server.Feature.MigrationDefinition.ServerMigration;
 using SWLOR.Game.Server.Service.SpaceService;
 using SWLOR.Game.Server.EngineTests.Framework;
@@ -16,7 +16,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions;
 
 public static partial class MigrationEngineTests
 {
-    [EngineTest("Non-ship artwork refresh preserves crafted enhancement state", Category = "ItemIcons")]
+    [EngineTest("Non-ship artwork refresh preserves crafted enhancement state in the saved character", Category = "ItemIcons")]
     public static async Task EnhancementArtworkPreservesCraftedState(EngineTestContext ctx)
     {
         using var fixture = await PlayerAbilityFixture.CreateAsync(ctx);
@@ -30,18 +30,21 @@ public static partial class MigrationEngineTests
             SetItemCharges(item, 6);
             ItemPlugin.SetItemAppearance(item, ItemAppearanceType.SimpleModel, 0, 88);
             var properties = DescribeProperties(item);
-            var identity = GetObjectUUID(item);
-            new _19_UpdateItemIcons().Migrate(owner);
-            ctx.AssertEqual(ItemIconMigration.GetUpdatedModel("aen_hp1", (int)GetBaseItemType(item), 88), GetItemAppearance(item, ItemAppearanceType.SimpleModel, 0), "Uses its reviewed enhancement artwork");
-            ctx.AssertEqual(identity, GetObjectUUID(item), "The original native object is retained");
-            ctx.AssertEqual("Custom vitality enhancement", GetName(item), "Custom name is retained");
-            ctx.AssertEqual(29, GetLocalInt(item, "CRAFTED_QUALITY"), "Crafting metadata is retained");
-            ctx.AssertEqual(6, GetItemCharges(item), "Charges are retained");
-            ctx.AssertEqual(properties, DescribeProperties(item), "Enhancement properties are retained");
-            ctx.Assert(!ItemIconMigration.MigrateObject(owner), "Updates are idempotent");
+            var updatedModel = ItemIconMigration.GetUpdatedModel("aen_hp1", (int)GetBaseItemType(item), 88);
+            var upgraded = SavedCharacterMigration.Run(owner, DB.Get<Player>(fixture.Id), "_19_UpdateItemIcons");
+            var migrated = SavedCharacterMigration.FindItem(SavedCharacterMigration.Load(ctx, upgraded), "aen_hp1");
+            ctx.AssertEqual(updatedModel, GetItemAppearance(migrated, ItemAppearanceType.SimpleModel, 0), "Uses its reviewed enhancement artwork");
+            ctx.AssertEqual("Custom vitality enhancement", GetName(migrated), "Custom name is retained");
+            ctx.AssertEqual(29, GetLocalInt(migrated, "CRAFTED_QUALITY"), "Crafting metadata is retained");
+            ctx.AssertEqual(6, GetItemCharges(migrated), "Charges are retained");
+            ctx.AssertEqual(properties, DescribeProperties(migrated), "Enhancement properties are retained");
+            var retried = SavedCharacterMigration.Run(upgraded.File, upgraded.Record, "_19_UpdateItemIcons");
+            ctx.Assert(retried.File.SequenceEqual(upgraded.File), "Updates are idempotent");
+
             ItemPlugin.SetItemAppearance(item, ItemAppearanceType.SimpleModel, 0, 254);
-            ctx.Assert(!ItemIconMigration.MigrateObject(item), "A customized model is preserved");
-            ctx.AssertEqual(254, GetItemAppearance(item, ItemAppearanceType.SimpleModel, 0), "Customized appearance remains unchanged");
+            var customized = SavedCharacterMigration.Run(owner, DB.Get<Player>(fixture.Id), "_19_UpdateItemIcons");
+            var customizedItem = SavedCharacterMigration.FindItem(SavedCharacterMigration.Load(ctx, customized), "aen_hp1");
+            ctx.AssertEqual(254, GetItemAppearance(customizedItem, ItemAppearanceType.SimpleModel, 0), "Customized appearance remains unchanged");
         });
     }
 

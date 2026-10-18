@@ -5,9 +5,9 @@ using FluentAssertions;
 using Microsoft.VisualBasic.FileIO;
 using NUnit.Framework;
 using SWLOR.Game.Server.Feature.MigrationDefinition;
-using SWLOR.Game.Server.Feature.MigrationDefinition.PlayerMigration;
 using SWLOR.Game.Server.Feature.MigrationDefinition.ServerMigration;
 using SWLOR.Game.Server.Service.MigrationService;
+using SWLOR.Game.Server.Tests.Feature;
 
 namespace SWLOR.Game.Server.Tests.Service;
 
@@ -120,18 +120,18 @@ public class ItemIconTests
         File.Exists(Path.Combine(server, "Service", "ShipItemAppearance.cs")).Should().BeFalse();
         File.Exists(Path.Combine(server, "Service", "ItemIconAppearance.cs")).Should().BeFalse();
         File.Exists(Path.Combine(server, "Feature", "ShipItemIconCompatibility.cs")).Should().BeFalse();
-        new _19_UpdateItemIcons().Version.Should().Be(19);
-        File.ReadAllText(Path.Combine(migrations, "PlayerMigration", "_19_UpdateItemIcons.cs"))
-            .Should().Contain("ItemIconMigration.MigrateObject(player)");
-        File.ReadAllText(Path.Combine(migrations, "PlayerMigration", "_22_ReviseLootStats.cs"))
-            .Should().Contain("LootStatRevisionMigration.MigrateObject(player)");
-        File.ReadAllText(Path.Combine(migrations, "PlayerMigration", "_23_CorrectEquipmentTypes.cs"))
-            .Should().Contain("LootStatRevisionMigration.MigratePlayerItems(player)");
+        CharacterMigrations.VersionOf("_19_UpdateItemIcons").Should().Be(19);
+        File.ReadAllText(Path.Combine(migrations, "CharacterMigration", "_19_UpdateItemIcons.cs"))
+            .Should().Contain("StoredObjectData.UpdateArtwork(item.Node)");
+        File.ReadAllText(Path.Combine(migrations, "CharacterMigration", "_22_ReviseLootStats.cs"))
+            .Should().Contain("CharacterLootRevision.Migrate(character, updateArtwork: false)");
+        File.ReadAllText(Path.Combine(migrations, "CharacterMigration", "_23_CorrectEquipmentTypes.cs"))
+            .Should().Contain("CharacterLootRevision.Migrate(character, updateArtwork: true)");
         File.ReadAllText(Path.Combine(migrations, "StoredItemSweep.cs"))
             .Should().Contain("SavedDataStoredItemConverter.Instance").And.NotContain("StoredItemDataMigration.Migrate()");
         File.ReadAllText(Path.Combine(migrations, "StoredItemConverters.cs"))
             .Should().Contain("LootStatRevisionMigration.MigrateStoredObjectData");
-        File.ReadAllText(Path.Combine(migrations, "PlayerMigration", "_14_MigrateResistanceItemProperties.cs"))
+        File.ReadAllText(Path.Combine(migrations, "CharacterMigration", "_14_15_CombatUpgradeMigrations.cs"))
             .Should().NotContain("ItemIconMigration");
         File.ReadAllText(Path.Combine(migrations, "ServerMigration", "StoredItemDataMigration.cs"))
             .Should().NotContain("ItemIconMigration");

@@ -190,17 +190,6 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition
         /// <summary>
         /// Sweeps live equipment, carried inventory, and serialized droid contents for retired items and historical instructions.
         /// </summary>
-        public static int RemoveObsoleteItemsFromObject(uint obj)
-        {
-            using var disposal = new MigrationItemDisposal();
-            var result = new MigrationResult(disposal);
-            RemoveObsoleteItemsFromObject(obj, result);
-            return result.RemovedItems;
-        }
-
-        /// <summary>
-        /// Sweeps live equipment, carried inventory, and serialized droid contents for retired items and historical instructions.
-        /// </summary>
         public static bool RemoveObsoleteItemsFromObject(
             uint obj,
             out int removedCount,

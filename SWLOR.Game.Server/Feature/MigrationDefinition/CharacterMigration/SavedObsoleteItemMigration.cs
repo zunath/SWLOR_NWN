@@ -12,9 +12,9 @@ using SWLOR.NWN.API.NWScript.Enum.Item.Property;
 namespace SWLOR.Game.Server.Feature.MigrationDefinition.CharacterMigration;
 
 /// <summary>
-/// Saved-data <see cref="ObsoleteItemMigration.RemoveObsoleteItemsFromObject(uint)"/>: removes retired items (old
-/// instruction discs and recipes), converts retired upgrade kits to their replacement, and reconciles the
-/// instructions of droids saved on controller items.
+/// Removes retired items (old instruction discs and recipes) from a saved character, converts retired upgrade kits
+/// to their replacement, and reconciles the instructions of droids saved on controller items, as
+/// <see cref="ObsoleteItemMigration.RemoveObsoleteItemsInPass"/> does for live objects.
 /// </summary>
 internal static class SavedObsoleteItemMigration
 {

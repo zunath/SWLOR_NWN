@@ -6,7 +6,7 @@ param(
     [string]$SpellEnumPath = "SWLOR.NWN.API\NWScript\Enum\spell.cs",
     [string]$FeatEnumPath = "SWLOR.NWN.API\NWScript\Enum\FeatType.cs",
     [int]$GeneratedFeatStart = 2000,
-    [int]$GeneratedFeatEnd = 3195,
+    [int]$GeneratedFeatEnd = 3216,
     [int]$ManualHotbarClassFeatRowLimit = 1024
 )
 

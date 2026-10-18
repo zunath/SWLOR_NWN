@@ -11,6 +11,28 @@ public class PlayerAbilityRadialMenuTests
     private const int GeneratedFeatEnd = 2899;
 
     [Test]
+    public void UnarmedAbilities_RemainInsideAllGeneratedFeatToolBounds()
+    {
+        var root = FindRepositoryRoot();
+        var unarmedFeats = typeof(IAbilityListDefinition).Assembly.GetTypes()
+            .Where(type => type.IsClass && !type.IsAbstract &&
+                           typeof(IAbilityListDefinition).IsAssignableFrom(type) &&
+                           type.Namespace == "SWLOR.Game.Server.Feature.AbilityDefinition.Unarmed")
+            .SelectMany(type => ((IAbilityListDefinition)Activator.CreateInstance(type)!).BuildAbilities().Keys)
+            .Select(feat => (int)feat).ToArray();
+        unarmedFeats.Should().NotBeEmpty();
+
+        foreach (var script in new[] { "LinkCombatUpgradeFeatSpells.ps1", "GenerateCooldownIcons.ps1", "UpdateGameplayIconStandards.ps1" })
+        {
+            var source = File.ReadAllText((root / "tools" / script).FullName);
+            var end = System.Text.RegularExpressions.Regex.Match(source, @"\[int\]\$GeneratedFeatEnd\s*=\s*(\d+)");
+            end.Success.Should().BeTrue($"{script} must declare its generated feat bound");
+            int.Parse(end.Groups[1].Value).Should().BeGreaterThanOrEqualTo(unarmedFeats.Max(),
+                $"{script} must still include Unarmed abilities after native ID conflict resolution");
+        }
+    }
+
+    [Test]
     public void CustomPlayerAbilityFeats_AreLinkedAndAvailableOnFighterMenu()
     {
         var root = FindRepositoryRoot();

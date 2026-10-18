@@ -14,6 +14,39 @@ namespace SWLOR.Game.Server.EngineTests.Definitions;
 
 public static class QuickCastEngineTests
 {
+    [EngineTest("Power Cell III self-casts through its native alias and restores stamina", Category = "QuickCast", TimeoutSeconds = 30f)]
+    public static async Task NativePowerCellIII(EngineTestContext ctx)
+    {
+        using var fixture = await PlayerAbilityFixture.CreateAsync(ctx);
+        var player = fixture.Creature;
+        fixture.Update(record =>
+        {
+            record.Perks[PerkType.PowerCell] = 3;
+            record.Skills[SkillType.Devices].Rank = 50;
+        });
+        CreaturePlugin.AddFeat(player, FeatType.PowerCell3);
+        ctx.SetResources(player, 100, 100);
+        fixture.Update(record => record.Stamina = 50);
+        SetLocalInt(player, Stat.SuppressNaturalRegenVariable, 1);
+        var expectedStamina = 50 - 7 + GameMath.PercentOf(Stat.GetMaxStamina(player), 18);
+        await ctx.ExecuteInCreatureContextAsync(player, () =>
+            ctx.Assert(!QuickCast.TryCast(player, FeatType.AutoCastPowerCell3, out _), "default-off setting rejects alias"));
+        fixture.Update(record => record.Settings.SelfQuickCastEnabled = true);
+        QuickCast.ApplyPreferences(player);
+        ctx.Assert(CreaturePlugin.GetKnowsFeat(player, FeatType.AutoCastPowerCell3), "self setting grants native alias");
+        ctx.Assert(!CreaturePlugin.GetKnowsFeat(player, FeatType.PowerCell3), "manual presentation is replaced");
+        await ctx.ExecuteInCreatureContextAsync(player, () => UseNativeFeat(player, FeatType.AutoCastPowerCell3));
+        await ctx.WaitUntilAsync(() => StatusEffect.HasStatusEffect<Feature.StatusEffectDefinition.PowerCell3StatusEffect>(player) &&
+                                      !Activity.IsBusy(player), 8f, "self-targeted Power Cell impact");
+        ctx.AssertEqual(expectedStamina, Stat.GetCurrentStamina(player), "seven stamina cost and eighteen percent restoration");
+        await ctx.ExecuteInCreatureContextAsync(player, () =>
+            ctx.Assert(!QuickCast.TryCast(player, FeatType.AutoCastPowerCell3, out _), "normal cooldown blocks repeated cast"));
+        fixture.Update(record => record.Settings.SelfQuickCastEnabled = false);
+        QuickCast.ApplyPreferences(player);
+        ctx.Assert(CreaturePlugin.GetKnowsFeat(player, FeatType.PowerCell3), "disabling restores manual presentation");
+        ctx.Assert(!CreaturePlugin.GetKnowsFeat(player, FeatType.AutoCastPowerCell3), "disabling removes alias");
+    }
+
     private static unsafe void UseNativeFeat(uint player, FeatType feat)
     {
         // Normal client hotkeys reach CNWSCreature.UseFeat with self as the alias target.

@@ -29,8 +29,9 @@ public static partial class MigrationEngineTests
         await ctx.ExecuteInCreatureContextAsync(owner, () =>
         {
             ctx.Assert(!LootStatRevisionMigration.MigrateObject(item), "New drops already carry the correction");
-            ClearProperties(item);
-            AddItemProperty(DurationType.Permanent, ItemPropertyCustom(ItemPropertyType.HPBonus, 0, 80), item);
+            RemoveMatching(item, ItemPropertyType.Defense, 1);
+            RemoveMatching(item, ItemPropertyType.Defense, 2);
+            RemoveRequirement(item);
             AddItemProperty(DurationType.Permanent, ItemPropertyCustom(ItemPropertyType.Defense, 1, 23), item);
             AddItemProperty(DurationType.Permanent, ItemPropertyCustom(ItemPropertyType.Defense, 2, 10), item);
             AddLegacyProperty(item, ItemPropertyType.Defense, 4, 35, 30);

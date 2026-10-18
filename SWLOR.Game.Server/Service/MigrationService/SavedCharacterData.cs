@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using SWLOR.Game.Server.Feature.MigrationDefinition;
 using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.PerkService;
@@ -21,6 +22,7 @@ internal static class SavedCharacterData
     private static IReadOnlyDictionary<string, string> _blueprints;
     private static IReadOnlyDictionary<(int BaseItem, int Model), bool> _weaponIcons;
     private static IReadOnlyDictionary<int, int> _classPackages;
+    private static IReadOnlyDictionary<int, (int Dice, int Die)> _damageCosts;
 
     /// <summary>Inventory grid of a container item, in item cells.</summary>
     public static int ContainerWidth { get; private set; } = 7;
@@ -58,6 +60,15 @@ internal static class SavedCharacterData
         }
         _classPackages = packages;
 
+        var damageCosts = new Dictionary<int, (int, int)>();
+        for (var row = 0; row < Get2DARowCount("iprp_damagecost"); row++)
+        {
+            if (int.TryParse(Get2DAString("iprp_damagecost", "NumDice", row), out var dice) &&
+                int.TryParse(Get2DAString("iprp_damagecost", "Die", row), out var die))
+                damageCosts[row] = (dice, die);
+        }
+        _damageCosts = damageCosts;
+
         var blueprints = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
         var storage = GetObjectByTag("TEMP_ITEM_STORAGE");
         // Container items all share one inventory grid; measure it from a bag.
@@ -79,6 +90,7 @@ internal static class SavedCharacterData
         }
         Load(sizes, definitions, blueprints);
         _weaponIcons = LoadWeaponIcons(sizes.Keys);
+        Feature.MigrationDefinition.CharacterMigration.SavedItemResistanceMigration.Load();
     }
 
     /// <summary>
@@ -115,6 +127,14 @@ internal static class SavedCharacterData
 
     private const int MaximumSimpleModel = 1024;
 
+    /// <summary>The dice an iprp_damagecost row rolls, for rows with both columns set.</summary>
+    public static bool TryGetDamageCost(int row, out (int Dice, int Die) cost)
+    {
+        if (_damageCosts == null)
+            throw new InvalidOperationException("Saved character data is not loaded.");
+        return _damageCosts.TryGetValue(row, out cost);
+    }
+
     /// <summary>The classes.2da leveling package of a class, as <c>PlayerInitialization.EnsureNativeLevels</c> reads it.</summary>
     public static bool TryGetClassPackage(ClassType @class, out int package)
     {
@@ -136,7 +156,7 @@ internal static class SavedCharacterData
 
     /// <summary>Every blueprint a character migration creates a replacement item from.</summary>
     private static IEnumerable<string> ReplacementBlueprints() =>
-        DungeonSaberMigration.Replacements.Values;
+        DungeonSaberMigration.Replacements.Values.Concat(ObsoleteItemMigration.ConversionResRefs);
 
     /// <summary>Supplies the data directly, for tests and for callers that read it elsewhere.</summary>
     public static void Load(IReadOnlyDictionary<int, (int Width, int Height)> inventorySizes,

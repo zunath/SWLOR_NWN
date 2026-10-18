@@ -143,6 +143,9 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition
 
 
 
+        /// <summary>The replacement blueprint of every converted item.</summary>
+        internal static IEnumerable<string> ConversionResRefs => ObsoleteItemConversions.Values;
+
         public static bool IsObsoleteResRef(string resref)
         {
             return !string.IsNullOrWhiteSpace(resref) &&
@@ -476,7 +479,7 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition
         /// <summary>
         /// Removes historical instructions whose numeric IDs now identify different abilities.
         /// </summary>
-        private static bool RemoveReassignedDroidPerks(List<DroidPerk> perks)
+        internal static bool RemoveReassignedDroidPerks(List<DroidPerk> perks)
         {
             return perks?.RemoveAll(perk => perk != null &&
                 LegacyPerkRefundMigration.IsReassignedLegacyPerk(perk.Perk)) > 0;
@@ -503,7 +506,7 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition
             return result;
         }
 
-        private static bool MergeDroidPerks(List<DroidPerk> target, IEnumerable<DroidPerk> source)
+        internal static bool MergeDroidPerks(List<DroidPerk> target, IEnumerable<DroidPerk> source)
         {
             var changed = false;
             var existing = target
@@ -562,7 +565,7 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition
         /// <summary>
         /// Compares ordered instruction identities and ranks so unchanged controllers need no save.
         /// </summary>
-        private static bool AreEqualDroidPerks(IReadOnlyList<DroidPerk> left, IReadOnlyList<DroidPerk> right)
+        internal static bool AreEqualDroidPerks(IReadOnlyList<DroidPerk> left, IReadOnlyList<DroidPerk> right)
         {
             if (left.Count != right.Count)
                 return false;

@@ -42,15 +42,18 @@ internal static class CharacterFileUpgrade
     /// checkpoints, as at login: a migration changes the file when the file is behind it and the record when
     /// the record is. Returns null when the character is current.
     /// </summary>
-    internal static CharacterUpgradeResult Upgrade(byte[] file, Player record)
+    internal static CharacterUpgradeResult Upgrade(byte[] file, Player record, Beast activeBeast = null)
     {
-        var character = new SavedCharacter(file, record);
+        var character = new SavedCharacter(file, record) { ActiveBeast = activeBeast };
         var fileVersion = ReadFileVersion(character);
         if (fileVersion == 0)
             fileVersion = Math.Min(record.Version, LastPlayerVersionWithoutFileCheckpoint);
         var start = Math.Min(record.Version, fileVersion);
         if (start >= LatestVersion)
             return null;
+
+        // Loading a character converts retired item property rows before login-time migrations saw them.
+        Feature.MigrationDefinition.CharacterMigration.SavedLegacyItemProperties.ConvertOnLoad(character);
 
         foreach (var migration in Migrations.Where(migration => migration.Version > start))
         {
@@ -116,6 +119,8 @@ internal static class CharacterFileUpgrade
                 if (record == null || record.IsDeleted)
                     continue;
                 character.Record = JsonConvert.DeserializeObject<Player>(JsonConvert.SerializeObject(record));
+                if (!string.IsNullOrWhiteSpace(record.ActiveBeastId))
+                    character.ActiveBeast = DB.Get<Beast>(record.ActiveBeastId);
             }
 
             Parallel.For(0, pending.Length, index => pending[index].Convert());
@@ -214,6 +219,7 @@ internal static class CharacterFileUpgrade
         public string Id { get; private init; }
         public bool IsDM { get; private init; }
         public Player Record { get; set; }
+        public Beast ActiveBeast { get; set; }
         public CharacterUpgradeResult Result { get; private set; }
         public string Error { get; private set; }
 
@@ -243,7 +249,7 @@ internal static class CharacterFileUpgrade
                 return;
             try
             {
-                Result = Upgrade(Data, Record);
+                Result = Upgrade(Data, Record, ActiveBeast);
             }
             catch (Exception ex)
             {

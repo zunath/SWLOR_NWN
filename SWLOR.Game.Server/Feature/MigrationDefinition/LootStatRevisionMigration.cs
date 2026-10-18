@@ -201,6 +201,8 @@ public static class LootStatRevisionMigration
         changed |= ApplyRevision(item, ArkanianArmorStatRevisionCatalog.Changes,
             ArkanianArmorStatRevisionCatalog.RevisionVariable, ArkanianArmorStatRevisionCatalog.CurrentRevision,
             current => ReviseIceProtection(current, ArkanianArmorStatRevisionCatalog.IceResistance));
+        changed |= ApplyRevision(item, CarapaceBracerStatRevisionCatalog.Changes,
+            CarapaceBracerStatRevisionCatalog.RevisionVariable, CarapaceBracerStatRevisionCatalog.CurrentRevision);
         return changed;
     }
 

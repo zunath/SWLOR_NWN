@@ -12,6 +12,26 @@ namespace SWLOR.Game.Server.Tests.Feature;
 
 public class LootStatRevisionTests
 {
+    [Test]
+    public void CarapaceBracer_UsesBiblePhysicalDefenseWithoutRetiredElementalDefense()
+    {
+        using var blueprint = JsonDocument.Parse(File.ReadAllText(Path.Combine(
+            FindRepositoryRoot().FullName, "Module", "uti", "cara_bracer.uti.json")));
+        var properties = ReadProperties(blueprint.RootElement);
+        properties.Should().BeEquivalentTo(new Dictionary<(int Type, int Subtype), int>
+        {
+            [((int)ItemPropertyType.Defense, 1)] = 48,
+            [((int)ItemPropertyType.Defense, 2)] = 10,
+            [((int)ItemPropertyType.HPBonus, 0)] = 80,
+            [((int)ItemPropertyType.RequiresSkill, 0)] = 40,
+        });
+        ReadLocalInt(blueprint.RootElement, CarapaceBracerStatRevisionCatalog.RevisionVariable)
+            .Should().Be(CarapaceBracerStatRevisionCatalog.CurrentRevision);
+        CarapaceBracerStatRevisionCatalog.Changes.Keys.Should().BeEquivalentTo(new[] { "cara_bracer" });
+        foreach (var change in CarapaceBracerStatRevisionCatalog.Changes["cara_bracer"])
+            properties.GetValueOrDefault(((int)change.Type, change.Subtype)).Should().Be(change.Current);
+    }
+
     private const int RequiresSkill = (int)ItemPropertyType.RequiresSkill;
     private const int Defense = (int)ItemPropertyType.Defense;
 

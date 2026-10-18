@@ -94,6 +94,8 @@ public class PowerGloveFitTests
         }
     }
 
+    [TestCase("pfd0_robe186", 105, 1.26f, -0.00375f, -0.02625f, 0.0225f, -0.01875f, -0.00375f, 0.02625f)]
+    [TestCase("pfd0_robe187", 105, 1.26f, -0.0037498667f, -0.02625042f, 0.0225f, -0.0187501208f, -0.0037501974f, 0.02625f)]
     [TestCase("pfd0_robe186", 103, .9f, .058196932f, .007623782f, .058151010f, .009673879f, -.028852999f, .058377605f)]
     [TestCase("pmo0_robe187", 110, .9f, -.016653266f, .000368837f, .043846827f, .023259066f, -.006423341f, .040500928f)]
     [TestCase("pfe0_robe201", 105, 1.2f, .000881f, -.058982f, -.006366f, -.013985f, -.043497f, -.030416f)]
@@ -203,6 +205,10 @@ public class PowerGloveFitTests
         AssertVector(GripTranslation("pmh0_handr001", 103, 1f), FitVector.Zero);
     }
 
+    [TestCase("pmh0", 1, 105, 1f, 0f, 0.02f, 0f, 0f, 0.02f, 0f)]
+    [TestCase("pmh0", 204, 105, 1.08f, 0f, 0.02f, 0f, 0f, 0.02f, 0f)]
+    [TestCase("pmd0", 1, 105, 1.25f, 0f, 0.01f, 0f, 0f, 0.01f, 0f)]
+    [TestCase("pmd0", 209, 105, 1.26f, 0f, 0.02f, 0f, 0f, 0.02f, 0f)]
     [TestCase("pfo0", 201, 104, 1.6129032f, .015f, -.01125f, .00375f, -.015f, -.01125f, .00375f)]
     [TestCase("pfo0", 201, 105, 1.724138f, .01125f, -.0225f, .0225f, -.015f, -.0225f, .01875f)]
     [TestCase("pfh0", 201, 105, 1.05f, -.01125f, -.02625f, 0f, -.0075f, -.0225f, .015f)]

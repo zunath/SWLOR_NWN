@@ -10,6 +10,38 @@ internal static class PowerGloveHandFitOverrides
     private static readonly Dictionary<string, Dictionary<int, (float Scale, FitVector AuthoredCenter, FitVector TargetCenter)>> Fits =
         new(StringComparer.OrdinalIgnoreCase)
         {
+            ["pmh0_handl001"] = new()
+            {
+                [105] = (1f, new FitVector(0f, 0f, 0f), new FitVector(0f, 0.02f, 0f)),
+            },
+            ["pmh0_handr001"] = new()
+            {
+                [105] = (1f, new FitVector(0f, 0f, 0f), new FitVector(0f, 0.02f, 0f)),
+            },
+            ["pmh0_handl204"] = new()
+            {
+                [105] = (1.08f, new FitVector(0f, 0f, 0f), new FitVector(0f, 0.02f, 0f)),
+            },
+            ["pmh0_handr204"] = new()
+            {
+                [105] = (1.08f, new FitVector(0f, 0f, 0f), new FitVector(0f, 0.02f, 0f)),
+            },
+            ["pmd0_handl001"] = new()
+            {
+                [105] = (1.25f, new FitVector(0f, 0f, 0f), new FitVector(0f, 0.01f, 0f)),
+            },
+            ["pmd0_handr001"] = new()
+            {
+                [105] = (1.25f, new FitVector(0f, 0f, 0f), new FitVector(0f, 0.01f, 0f)),
+            },
+            ["pmd0_handl209"] = new()
+            {
+                [105] = (1.26f, new FitVector(0f, 0f, 0f), new FitVector(0f, 0.02f, 0f)),
+            },
+            ["pmd0_handr209"] = new()
+            {
+                [105] = (1.26f, new FitVector(0f, 0f, 0f), new FitVector(0f, 0.02f, 0f)),
+            },
             ["pfd0_handl001"] = new()
             {
                 [104] = (1.14f, new FitVector(0f, 0f, 0f), new FitVector(-0.015f, -0.02625f, 0.015f)),

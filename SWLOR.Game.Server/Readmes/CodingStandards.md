@@ -36,6 +36,7 @@ Sections: Code · Renames · Module JSON · Stat-driven gameplay · Haks, TLK, a
 
 ## Haks, TLK, and 2DA
 
+- Model compilation uses CleanModels v4.4.2 bundled with cleanmodels-qt v1.1.7, installed by `SWLOR_Haks/tools/SetupModelCompiler.ps1`. Use the shared compile helpers; never run `nwnmdlcomp.exe` or the NWN game to compile models.
 - Replace by adding: a replaced stat, item property, 2DA row, TLK string, or enum value gets a new definition, and the old one stays untouched (hidden from builders only if asked).
 - New custom TLK strings take the first placeholder slot in `SWLOR_Haks/sw_tlk/sw_tlk.tlk.json` before appending at the end. Never set an entry's text to empty: `nwn_tlk` drops it and every later strref shifts. Regenerate `sw_tlk.tlk` after editing the JSON and round-trip it: the entry count stays the same when you filled placeholders and grows by exactly the number of entries you appended, and every other entry's text is unchanged.
 - Never delete a 2DA row; retire it in place. Row indices are referenced by enums and other data.

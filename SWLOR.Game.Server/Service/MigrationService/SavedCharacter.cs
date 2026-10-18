@@ -454,6 +454,9 @@ internal sealed class SavedCharacter
         var droidItemId = item.GetLocalString("DROID_ITEM_ID");
         if (!string.IsNullOrWhiteSpace(droidItemId))
             saved.SetLocalString("DROID_ITEM_ID", droidItemId);
+        // The engine marks items it places in a character's inventory as pickpocketable; the blueprint does not.
+        if (item.Node.Fields.Any(field => field.Name == "Pickpocketable"))
+            SavedGff.WriteScalar(replacement, "Pickpocketable", 0, StoredObjectData.ReadInteger(item.Node, "Pickpocketable"));
         var kept = item.Container == null ? AddToInventory(replacement) : AddToContainer(item.Container, replacement);
         Destroy(item);
         if (item.Container != null)

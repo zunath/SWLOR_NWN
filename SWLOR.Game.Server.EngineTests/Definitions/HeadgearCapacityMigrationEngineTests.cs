@@ -67,10 +67,9 @@ public static partial class MigrationEngineTests
 
             var overflowVisor = Deserialize(ctx, upgraded.Overflow[0].Data);
             ctx.AssertEqual(BaseItem.Helmet, GetBaseItemType(overflowVisor), "The stored visor is converted to headgear");
-            // Overflow storage keeps the item as the headgear conversion left it; claiming it acquires the item, and the
-            // acquire rule revises its loot stats.
-            ctx.Assert(LootStatRevisionMigration.MigrateObject(overflowVisor), "Claiming the stored visor revises its loot stats");
+            // The upgrade revises items it sends to overflow storage, so claiming one leaves the acquire rule nothing to do.
             AssertRevisedLoot(ctx, overflowVisor, VisorEnhancements);
+            ctx.Assert(!LootStatRevisionMigration.MigrateObject(overflowVisor), "The claimed visor needs no further revision");
             ctx.AssertEqual("Customized salvage", GetName(overflowVisor), "Custom name survives");
             ctx.AssertEqual("fixture-crafter", GetLocalString(overflowVisor, "CRAFTED_BY"), "Crafting identity survives");
             ctx.AssertEqual(9, SumProperty(overflowVisor, ItemPropertyType.FP, 0), "Custom FP property survives");

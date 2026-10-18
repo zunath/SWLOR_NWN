@@ -49,7 +49,8 @@ internal sealed class _17_RemoveWeaponStatOverrides : ICharacterMigration
     internal static bool IsEconomyRestricted(SavedItem item)
     {
         const string TalkTableName = "talk table name";
-        var name = StoredObjectData.ReadLocalizedName(item.Node);
+        // GetName: the display name set on the item, else its localized name.
+        var name = item.Name;
         if (string.IsNullOrEmpty(name) && StoredObjectData.ReadLocalizedNameReference(item.Node) != uint.MaxValue)
             name = TalkTableName;
         return Item.IsEconomyRestricted(item.BaseItem, name, item.GetLocalInt(Item.NoEconomyVariable) == 1,

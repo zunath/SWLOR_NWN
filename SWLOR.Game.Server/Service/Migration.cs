@@ -202,8 +202,11 @@ namespace SWLOR.Game.Server.Service
             {
                 var fileVersion = dbPlayer == null ? checkpoint : CharacterFileUpgrade.ResolveFileVersion(checkpoint, dbPlayer.Version);
                 Log.Write(LogGroup.Migration, $"Refusing login for {GetName(player)} [{playerId}]: the character is at version {fileVersion} " +
-                    $"and its record at {dbPlayer?.Version}, but this server requires {GetLatestPlayerVersion()}. The boot-time character upgrade did not complete for it.", true);
-                BootPC(player, "Your character could not be updated for this version of the server. Please contact a server administrator.");
+                    $"and its record at {dbPlayer?.Version}, but this server requires {GetLatestPlayerVersion()}. It is upgraded at the next boot.", true);
+                // A file restored or imported after the vault was marked current is upgraded at the next boot.
+                if (dbPlayer != null)
+                    CharacterFileUpgrade.RequestVaultRescan();
+                BootPC(player, "Your character needs an update that runs when the server restarts. Please try again after the next restart, or contact a server administrator.");
                 return;
             }
 

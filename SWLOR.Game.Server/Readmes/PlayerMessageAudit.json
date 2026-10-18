@@ -4495,7 +4495,7 @@
   },
   {
     "File": "SWLOR.Game.Server/Service/Migration.cs",
-    "Line": 226,
+    "Line": 229,
     "Member": "DeliverUpgradeNotices",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, notice)"
@@ -4544,42 +4544,42 @@
   },
   {
     "File": "SWLOR.Game.Server/Service/OverflowStorage.cs",
-    "Line": 39,
+    "Line": 41,
     "Member": "Claim",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, \"You have no items in overflow storage.\")"
   },
   {
     "File": "SWLOR.Game.Server/Service/OverflowStorage.cs",
-    "Line": 64,
+    "Line": 66,
     "Member": "Claim",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, $\"Your inventory is full. Free inventory space, then use /overflow again to claim your {records.Count} item(s).\")"
   },
   {
     "File": "SWLOR.Game.Server/Service/OverflowStorage.cs",
-    "Line": 72,
+    "Line": 74,
     "Member": "Claim",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, \"Your character could not be saved, so your items stay in overflow storage. Please try again.\")"
   },
   {
     "File": "SWLOR.Game.Server/Service/OverflowStorage.cs",
-    "Line": 92,
+    "Line": 94,
     "Member": "Claim",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, $\"You claimed {claimed.Count} item(s) from overflow storage.\")"
   },
   {
     "File": "SWLOR.Game.Server/Service/OverflowStorage.cs",
-    "Line": 94,
+    "Line": 96,
     "Member": "Claim",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, $\"You claimed {claimed.Count} item(s) from overflow storage. {remaining} item(s) remain; free inventory space and use /overflow again.\")"
   },
   {
     "File": "SWLOR.Game.Server/Service/OverflowStorage.cs",
-    "Line": 103,
+    "Line": 105,
     "Member": "NotifyOnLogin",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Green($\"{count} item(s) from a character update did not fit in your inventory and are in overflow storage. Free inventory space and use /overflow to claim them.\"))"

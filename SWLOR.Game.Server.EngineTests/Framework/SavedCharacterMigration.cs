@@ -278,6 +278,9 @@ namespace SWLOR.Game.Server.EngineTests.Framework
         /// The server's boot-time pass over every character file in the server vault (<c>CharacterFileUpgrade.UpgradeServerVault</c>).
         /// Returns false when any character could not be upgraded. Must run inside an engine script.
         /// </summary>
+        public static void RequestVaultRescan() =>
+            GameType(ServiceNamespace + "CharacterFileUpgrade").GetMethod("RequestVaultRescan", Members).Invoke(null, null);
+
         public static bool UpgradeServerVault() =>
             (bool)GameType(ServiceNamespace + "CharacterFileUpgrade").GetMethod("UpgradeServerVault", Members).Invoke(null, null);
     }

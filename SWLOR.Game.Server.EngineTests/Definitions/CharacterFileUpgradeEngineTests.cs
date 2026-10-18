@@ -71,6 +71,15 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                     ctx.Assert(SavedCharacterMigration.UpgradeServerVault(), "A current vault succeeds");
                     ctx.Assert(File.ReadAllBytes(path).SequenceEqual(upgraded), "A current vault is not read again");
 
+                    // A file restored after the vault was marked current waits for a rescan, which login requests.
+                    File.WriteAllBytes(path, original);
+                    ctx.Assert(SavedCharacterMigration.UpgradeServerVault(), "A current vault is skipped");
+                    ctx.Assert(File.ReadAllBytes(path).SequenceEqual(original), "A restored file is not seen while the vault is marked current");
+                    SavedCharacterMigration.RequestVaultRescan();
+                    ctx.Assert(SavedCharacterMigration.UpgradeServerVault(), "A rescan upgrades the restored file");
+                    ctx.AssertEqual(latest, SavedCharacterMigration.ReadFileVersion(File.ReadAllBytes(path)), "The restored file is current again");
+                    File.WriteAllBytes(path, upgraded);
+
                     // Interrupted after the record was saved: the upgraded file beside the original is moved into place.
                     File.WriteAllBytes(path, original);
                     File.WriteAllBytes(path + ".upgrade", upgraded);

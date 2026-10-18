@@ -89,6 +89,19 @@ internal static class CharacterFileUpgrade
     }
 
     /// <summary>
+    /// Makes the next boot read the whole vault again, for a character file that was restored or imported after the
+    /// vault was last marked current.
+    /// </summary>
+    internal static void RequestVaultRescan()
+    {
+        var config = DB.Get<ServerConfiguration>("SWLOR_CONFIG");
+        if (config == null || config.CharacterFileVersion == 0)
+            return;
+        config.CharacterFileVersion = 0;
+        DB.Set(config);
+    }
+
+    /// <summary>
     /// Upgrades every character file in the server vault. Returns false when any character could not be
     /// upgraded; those keep their saved state and are tried again at the next boot.
     /// </summary>

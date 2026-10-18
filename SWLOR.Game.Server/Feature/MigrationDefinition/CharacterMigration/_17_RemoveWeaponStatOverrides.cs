@@ -46,7 +46,7 @@ internal sealed class _17_RemoveWeaponStatOverrides : ICharacterMigration
     /// reference from the talk table, whose item names are never empty or marked for NPCs; a stand-in name
     /// keeps the name rule from flagging those items.
     /// </summary>
-    private static bool IsEconomyRestricted(SavedItem item)
+    internal static bool IsEconomyRestricted(SavedItem item)
     {
         const string TalkTableName = "talk table name";
         var name = StoredObjectData.ReadLocalizedName(item.Node);

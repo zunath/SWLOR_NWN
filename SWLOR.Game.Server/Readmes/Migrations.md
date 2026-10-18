@@ -40,7 +40,7 @@ The stored-item sweep (`_27_UpdateStoredItems`) edits saved GFF directly instead
 - Conversion runs off the main thread: no NWScript, NWNX, engine or `DB` calls. The pass does the loading and saving.
 - Each saved-data rule mirrors the engine rule for live items (`HeadgearSlotMigration`, `EquipmentTypeMigration`, `ItemIconMigration`, `ItemAppearanceCatalogMigration`, `LootStatRevisionMigration`). A change to either changes the other in the same commit and adds the legacy kind to the `SavedDataItemSweepMatchesEngine` engine test (filter `SavedDataItemSweep`), which runs both on the same saved data and compares what the engine loads.
 - Write new GFF data the way the engine saves it: a property built with `ItemPropertyCustom` and -1 arguments saves Subtype 65535 and Param1Value 255, item properties are numbered by list index, and locals use struct type 0.
-- For a new kind of rule, also check parity on a production copy: run the engine converter's sweep on one copy and the saved-data sweep on another, then compare the decoded records. The engine also re-saves older items in the current format (new default fields, reset orientation, reversed locals, reordered creature inventories); those differences are expected.
+- For a new kind of rule, also check parity on a production copy: boot one copy with a local build whose `_27_UpdateStoredItems.Migrate` passes `EngineStoredItemConverter.Instance` (the engine baseline, hours on production data) and another with the normal build, then compare the decoded records. The engine also re-saves older items in the current format (new default fields, reset orientation, reversed locals, reordered creature inventories); those differences are expected.
 
 ## Enum renames
 

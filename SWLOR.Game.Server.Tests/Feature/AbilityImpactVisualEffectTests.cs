@@ -90,6 +90,12 @@ public class AbilityImpactVisualEffectTests
                 .Where(column => column.name.StartsWith("Imp_") && column.name.EndsWith("_Node"))
                 .Select(column => row[column.index]).Where(value => value != "****").ToArray();
             models.Should().NotBeEmpty($"{id} needs a model attachment");
+            if (id == "MercilessAngleTechnique")
+            {
+                ((int)expected).Should().Be(1127);
+                models.Should().Equal(new[] { "vx_merc_angl" },
+                    "Merciless Angle must retain its authored crimson slash model");
+            }
             foreach (var model in models)
             {
                 model.Length.Should().BeLessThanOrEqualTo(16);

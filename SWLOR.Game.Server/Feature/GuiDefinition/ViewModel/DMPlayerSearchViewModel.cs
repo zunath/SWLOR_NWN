@@ -32,6 +32,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         private int _selectedIndex = -1;
         private bool _isTruncated;
         private bool _suppressSearch;
+        // Checked characters by player ID, kept across searches and pages. The names are for messages.
+        private readonly Dictionary<string, string> _checkedPlayers = new();
 
         public int SelectedScope
         {
@@ -92,6 +94,36 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             set => Set(value);
         }
 
+        public GuiBindingList<bool> ResultChecks
+        {
+            get => Get<GuiBindingList<bool>>();
+            set => Set(value);
+        }
+
+        public GuiBindingList<bool> ResultCheckEnabled
+        {
+            get => Get<GuiBindingList<bool>>();
+            set => Set(value);
+        }
+
+        public string CheckedSummary
+        {
+            get => Get<string>();
+            set => Set(value);
+        }
+
+        public string BringCheckedText
+        {
+            get => Get<string>();
+            set => Set(value);
+        }
+
+        public bool HasChecked
+        {
+            get => Get<bool>();
+            set => Set(value);
+        }
+
         public GuiBindingList<GuiComboEntry> PageNumbers
         {
             get => Get<GuiBindingList<GuiComboEntry>>();
@@ -146,17 +178,21 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             ResultStatuses = new GuiBindingList<string>();
             ResultStatusColors = new GuiBindingList<GuiColor>();
             ResultSelections = new GuiBindingList<bool>();
+            ResultChecks = new GuiBindingList<bool>();
+            ResultCheckEnabled = new GuiBindingList<bool>();
             PageNumbers = new GuiBindingList<GuiComboEntry>();
             SelectedPageIndex = 0;
             ResultSummary = string.Empty;
             SelectedDetails = string.Empty;
             CanJumpTo = false;
             IsSelectedOnline = false;
+            UpdateCheckedState();
             _suppressSearch = false;
 
             WatchOnClient(model => model.SelectedScope);
             WatchOnClient(model => model.SearchText);
             WatchOnClient(model => model.SelectedPageIndex);
+            WatchOnClient(model => model.ResultChecks);
 
             ChangePartialView(MainContentElement, MainContentPartial);
             RunSearch();
@@ -199,6 +235,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var statuses = new GuiBindingList<string>();
             var statusColors = new GuiBindingList<GuiColor>();
             var selections = new GuiBindingList<bool>();
+            var checks = new GuiBindingList<bool>();
+            var checkEnabled = new GuiBindingList<bool>();
             foreach (var result in _pageResults)
             {
                 names.Add(result.Name);
@@ -208,6 +246,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 statuses.Add(result.IsOnline ? "Online" : "Offline");
                 statusColors.Add(result.IsOnline ? OnlineColor : OfflineColor);
                 selections.Add(false);
+                checks.Add(result.IsOnline && _checkedPlayers.ContainsKey(result.PlayerId));
+                checkEnabled.Add(result.IsOnline);
             }
 
             ResultNames = names;
@@ -217,6 +257,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             ResultStatuses = statuses;
             ResultStatusColors = statusColors;
             ResultSelections = selections;
+            ResultChecks = checks;
+            ResultCheckEnabled = checkEnabled;
 
             var onlineCount = _results.Count(result => result.IsOnline);
             ResultSummary = _results.Count == 0
@@ -264,6 +306,51 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             SelectedDetails = string.Join("\n", details);
             CanJumpTo = true;
             IsSelectedOnline = result.IsOnline;
+        }
+
+        private void UpdateCheckedState()
+        {
+            var count = _checkedPlayers.Count;
+            HasChecked = count > 0;
+            CheckedSummary = count == 0
+                ? "Check online characters to bring them together."
+                : $"{count} character{(count == 1 ? string.Empty : "s")} checked.";
+            BringCheckedText = count == 0 ? "Bring Checked Here" : $"Bring Checked Here ({count})";
+        }
+
+        // Reflects the page's checkboxes on the client into the checked set.
+        private void ReadPageChecks()
+        {
+            if (ResultChecks.Count != _pageResults.Count)
+                return;
+
+            for (var index = 0; index < _pageResults.Count; index++)
+            {
+                var result = _pageResults[index];
+                if (result.IsOnline && ResultChecks[index])
+                    _checkedPlayers[result.PlayerId] = result.Name;
+                else
+                    _checkedPlayers.Remove(result.PlayerId);
+            }
+
+            UpdateCheckedState();
+        }
+
+        private void ShowPageChecks()
+        {
+            for (var index = 0; index < _pageResults.Count && index < ResultChecks.Count; index++)
+            {
+                var result = _pageResults[index];
+                ResultChecks[index] = result.IsOnline && _checkedPlayers.ContainsKey(result.PlayerId);
+            }
+
+            UpdateCheckedState();
+        }
+
+        protected override void OnClientPropertyUpdated(string propertyName)
+        {
+            if (propertyName == nameof(ResultChecks))
+                ReadPageChecks();
         }
 
         private static string ValueOrNotRecorded(string value)
@@ -355,6 +442,46 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var error = DMPresence.Summon(Player, target);
             if (!string.IsNullOrEmpty(error))
                 DMPresence.SendMessage(Player, error);
+        };
+
+        public Action OnClickCheckAllOnline() => () =>
+        {
+            foreach (var result in _results.Where(result => result.IsOnline))
+            {
+                _checkedPlayers[result.PlayerId] = result.Name;
+            }
+
+            ShowPageChecks();
+        };
+
+        public Action OnClickClearChecks() => () =>
+        {
+            _checkedPlayers.Clear();
+            ShowPageChecks();
+        };
+
+        public Action OnClickBringChecked() => () =>
+        {
+            var brought = 0;
+            foreach (var (playerId, name) in _checkedPlayers.ToList())
+            {
+                var target = DMPlayerDirectory.GetOnlinePlayer(playerId);
+                if (!GetIsObjectValid(target))
+                {
+                    DMPresence.SendMessage(Player, $"{name} is no longer online.");
+                    _checkedPlayers.Remove(playerId);
+                    continue;
+                }
+
+                var error = DMPresence.Summon(Player, target);
+                if (string.IsNullOrEmpty(error))
+                    brought++;
+                else
+                    DMPresence.SendMessage(Player, error);
+            }
+
+            DMPresence.SendMessage(Player, $"Brought {brought} character{(brought == 1 ? string.Empty : "s")} to you.");
+            ShowPageChecks();
         };
 
         public Action OnClickExamine() => () =>

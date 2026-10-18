@@ -532,6 +532,9 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 record.UnknownDisplayName = "A lanky Twi'lek";
             });
             SetName(target.Creature, "Vexa Zyndari");
+            using var second = await PlayerAbilityFixture.CreateAsync(ctx, 9f);
+            second.Update(record => record.Name = "Morn Kesh");
+            SetName(second.Creature, "Morn Kesh");
 
             var offlineId = Guid.NewGuid().ToString();
             var savedAreaResref = Area.GetAreas().Keys.First();
@@ -597,6 +600,37 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 await InContext(ctx, dm.Creature, model.OnClickJumpHere());
                 await ctx.WaitUntilAsync(() => GetDistanceBetween(dm.Creature, target.Creature) < 3f, 5f, "the player to be brought to the DM");
 
+                // Checks gathered from separate searches bring the whole group at once.
+                ctx.Assert(!model.HasChecked, "nothing is checked when the window opens");
+                await CheckRow(ctx, dm.Creature, model, 0);
+                await InContext(ctx, dm.Creature, () => model.SearchText = "Morn Kesh");
+                await InContext(ctx, dm.Creature, model.OnClickSearch());
+                ctx.AssertEqual(1, model.ResultNames.Count, "second character search result count");
+                ctx.Assert(!model.ResultChecks[0] && model.ResultCheckEnabled[0], "an unchecked online character can be checked");
+                await CheckRow(ctx, dm.Creature, model, 0);
+                ctx.AssertEqual("Bring Checked Here (2)", model.BringCheckedText, "checks persist across searches");
+                Capture(dm.Creature, GuiWindowType.DMPlayerSearch, "players-checked");
+
+                AssignCommand(dm.Creature, () => JumpToLocation(ctx.GetArenaLocation(-8f, 0f)));
+                await ctx.WaitUntilAsync(() => GetDistanceBetween(dm.Creature, target.Creature) > 10f &&
+                                               GetDistanceBetween(dm.Creature, second.Creature) > 10f, 5f, "the DM to move away from both");
+                await InContext(ctx, dm.Creature, model.OnClickBringChecked());
+                await ctx.WaitUntilAsync(() => GetDistanceBetween(dm.Creature, target.Creature) < 3f &&
+                                               GetDistanceBetween(dm.Creature, second.Creature) < 3f, 5f, "both checked players to be brought to the DM");
+                ctx.Assert(model.HasChecked, "checks stay after bringing the group, so it can be moved again");
+
+                await InContext(ctx, dm.Creature, model.OnClickClearChecks());
+                ctx.Assert(!model.HasChecked && !model.ResultChecks[0], "Clear Checks unchecks everyone");
+                await InContext(ctx, dm.Creature, () => model.SearchText = string.Empty);
+                await InContext(ctx, dm.Creature, model.OnClickSearch());
+                await InContext(ctx, dm.Creature, model.OnClickCheckAllOnline());
+                ctx.Assert(model.ResultChecks.Count >= 2 && model.ResultChecks.All(isChecked => isChecked),
+                    "Check All Online checks every online result");
+                await InContext(ctx, dm.Creature, model.OnClickClearChecks());
+
+                await InContext(ctx, dm.Creature, () => model.SearchText = "lanky");
+                await InContext(ctx, dm.Creature, model.OnClickSearch());
+                await SelectRow(ctx, dm.Creature, model, 0);
                 await InContext(ctx, dm.Creature, model.OnClickExamine());
                 ctx.Assert(Gui.IsWindowOpen(dm.Creature, GuiWindowType.DMPlayerExamine), "Examine opens the DM examine window");
                 Gui.ClosePlayerWindow(dm.Creature, GuiWindowType.DMPlayerExamine);
@@ -660,6 +694,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 ctx.Assert(model.ResultNames.IndexOf("Vexa Zyndari") < offlineRow, "online characters are listed first");
                 await SelectRow(ctx, dm.Creature, model, offlineRow);
                 ctx.Assert(!model.IsSelectedOnline && model.CanJumpTo, "offline characters only allow Jump To");
+                ctx.Assert(!model.ResultCheckEnabled[offlineRow], "offline characters cannot be checked");
                 ctx.Assert(model.SelectedDetails.Contains("Account: qorinaccount") && model.SelectedDetails.Contains("CD Key: QZTEST01"),
                     "offline details show the recorded account and CD key");
                 ctx.Assert(model.SelectedDetails.Contains("Last Login: 2026-10-01 18:30 UTC"), "offline details show the last login");
@@ -688,6 +723,18 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
         {
             await ctx.ExecuteInCreatureContextAsync(creature, action);
             await ctx.WaitFrameAsync();
+        }
+
+        // A checkbox click reaches the server as a watch event on the whole list, so set the row and run the
+        // view model's watch handler.
+        private static Task CheckRow(EngineTestContext ctx, uint creature, DMPlayerSearchViewModel model, int row)
+        {
+            var method = typeof(DMPlayerSearchViewModel).GetMethod("OnClientPropertyUpdated", BindingFlags.Instance | BindingFlags.NonPublic)!;
+            return InContext(ctx, creature, () =>
+            {
+                model.ResultChecks[row] = true;
+                method.Invoke(model, new object[] { nameof(DMPlayerSearchViewModel.ResultChecks) });
+            });
         }
 
         // A list click reports its row through NuiGetEventArrayIndex, which only exists inside a

@@ -366,10 +366,11 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 {
                     var dbJob = GetJob();
 
-                    if (!string.IsNullOrWhiteSpace(dbJob.SerializedItem))
+                    if (!string.IsNullOrWhiteSpace(dbJob.SerializedItem) &&
+                        !Item.TryAcquireItem(Player, ObjectPlugin.Deserialize(dbJob.SerializedItem)))
                     {
-                        var item = ObjectPlugin.Deserialize(dbJob.SerializedItem);
-                        ObjectPlugin.AcquireItem(Player, item);
+                        FloatingTextStringOnCreature(Item.InventoryFullMessage, Player, false);
+                        return;
                     }
 
                     DB.Delete<ResearchJob>(dbJob.Id);
@@ -392,16 +393,16 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             bool isNewBlueprint;
             uint item;
+            // The blueprint is finished outside the inventory and acquired last, so a full inventory keeps the job.
             if (string.IsNullOrWhiteSpace(dbJob.SerializedItem))
             {
-                item = CreateItemOnObject("blueprint", Player);
+                item = CreateItemOnObject("blueprint", GetObjectByTag("TEMP_ITEM_STORAGE"));
                 SetName(item, $"Blueprint: {Cache.GetItemNameByResref(recipe.Resref)}");
                 isNewBlueprint = true;
             }
             else
             {
                 item = ObjectPlugin.Deserialize(dbJob.SerializedItem);
-                ObjectPlugin.AcquireItem(Player, item);
                 isNewBlueprint = false;
             }
 
@@ -543,6 +544,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             }
 
             Craft.SetBlueprintDetails(item, blueprintDetails);
+            if (!Item.TryAcquireItem(Player, item))
+            {
+                FloatingTextStringOnCreature(Item.InventoryFullMessage, Player, false);
+                return;
+            }
+
             Gui.TogglePlayerWindow(Player, GuiWindowType.Research);
 
             DB.Delete<ResearchJob>(dbJob.Id);

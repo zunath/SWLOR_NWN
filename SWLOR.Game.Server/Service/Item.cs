@@ -639,6 +639,23 @@ namespace SWLOR.Game.Server.Service
             return repository.FindPosition(nativeItem, &x, &y) != 0;
         }
 
+        /// <summary>The message shown when an item cannot be returned because the player's inventory is full.</summary>
+        public const string InventoryFullMessage = "Your inventory is full. Make room and try again.";
+
+        /// <summary>
+        /// Moves an item that is not in the world, such as a deserialized copy, into the creature's inventory when it has
+        /// room. Otherwise destroys the item and returns false, so the caller keeps the record it came from.
+        /// </summary>
+        public static bool TryAcquireItem(uint creature, uint item)
+        {
+            if (GetIsObjectValid(item) && FitsInInventory(creature, item) && ObjectPlugin.AcquireItem(creature, item))
+                return true;
+
+            if (GetIsObjectValid(item))
+                DestroyObject(item);
+            return false;
+        }
+
         /// <summary>
         /// Retrieves the list of weapon base item types.
         /// </summary>

@@ -254,7 +254,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 if (dbListing != null)
                 {
                     var deserialized = ObjectPlugin.Deserialize(dbListing.Data);
-                    ObjectPlugin.AcquireItem(Player, deserialized);
+                    if (!Item.TryAcquireItem(Player, deserialized))
+                    {
+                        FloatingTextStringOnCreature(Item.InventoryFullMessage, Player, false);
+                        return;
+                    }
+
                     DB.Delete<MarketItem>(itemId);
                 }
                 else

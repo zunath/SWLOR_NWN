@@ -322,19 +322,25 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     return;
                 }
 
-                // Take money and give the item to the buyer.
+                // Give the item to the buyer, then take their money. A full inventory leaves the listing and credits alone.
+                var item = ObjectPlugin.Deserialize(dbItem.Data);
+                var purchase = $"{GetItemStackSize(item)}x {GetName(item)}";
+                if (!Item.TryAcquireItem(Player, item))
+                {
+                    FloatingTextStringOnCreature(Item.InventoryFullMessage, Player, false);
+                    return;
+                }
+
                 AssignCommand(Player, () =>
                 {
                     TakeGoldFromCreature(price, Player, true);
                 });
-                var item = ObjectPlugin.Deserialize(dbItem.Data);
                 if (string.IsNullOrWhiteSpace(dbItem.SellerCDKey))
                 {
                     Log.Write(LogGroup.PlayerMarket, $"Listing '{dbItem.Id}' has no SellerCDKey; allowing purchase (legacy listing).");
                 }
 
-                Log.Write(LogGroup.PlayerMarket, $"{GetName(Player)} [{GetObjectUUID(Player)}] bought {GetItemStackSize(item)}x {GetName(item)} from {dbItem.SellerName} for {price} credits.");
-                ObjectPlugin.AcquireItem(Player, item);
+                Log.Write(LogGroup.PlayerMarket, $"{GetName(Player)} [{GetObjectUUID(Player)}] bought {purchase} from {dbItem.SellerName} for {price} credits.");
 
                 // Remove this item from the client's search results.
                 var currentIndex = _rows.IndexOf(row);

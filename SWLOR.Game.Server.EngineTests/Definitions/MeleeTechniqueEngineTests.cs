@@ -33,7 +33,12 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             {
                 await Cast(ctx, caster, target, FeatType.Jab1);
                 var ability = Ability.GetAbilityDetail(FeatType.FinishingCombination2);
-                MeleeTechnique.BeginPaidActivation(caster, target, ability);
+                ctx.AssertEqual(MeleeTechniqueStage.Opening, MeleeTechnique.GetSetupStage(caster, target),
+                    "the landed Jab supplies the Opening used by this selection check");
+                // Native LineOfSightVector requires a creature context in the tested area,
+                // matching the real activation path rather than the test runner's context.
+                await ctx.ExecuteInCreatureContextAsync(caster, () =>
+                    MeleeTechnique.BeginPaidActivation(caster, target, ability));
                 ctx.AssertEqual(target, MeleeTechnique.GetImpactTarget(caster, target, 0), "first impact keeps the selected enemy");
                 ctx.AssertEqual(secondary, MeleeTechnique.GetImpactTarget(caster, target, 1), "only the nearest other enemy receives the second impact");
                 ctx.AssertEqual(10, MeleeTechnique.GetConditionalPower(caster, target, 0), "half the Opening and Practiced Form budget belongs to the primary");

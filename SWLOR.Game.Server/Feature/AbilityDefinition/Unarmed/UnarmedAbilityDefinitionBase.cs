@@ -20,6 +20,13 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Unarmed
             int statusDuration = 0,
             Func<IStatusEffect> statusFactory = null)
         {
+            // Heavy strikes use the existing cast window for their windup and strike.
+            // Starting the long gesture at impact lets resumed autoattacks erase it.
+            if (activationDelay > 0f)
+                builder.UsesImmediateAuthoredAnimation();
+            else
+                builder.UsesAuthoredAnimationAtImpact();
+
             builder.MeleeTechnique(technique)
                 .SkillType(SkillType.Unarmed)
                 .HasActivationDelay(activationDelay)
@@ -29,7 +36,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Unarmed
                 .RequiresTarget()
                 .HasMaxRange(7f)
                 .BreaksStealth()
-                .UsesAuthoredAnimationAtImpact()
                 .UsesImpactAnimation(Animation.DoubleStrike)
                 .HasCustomValidation((activator, target, level, location) => ValidateGrip(activator))
                 .HasActivationAction((activator, target, level, location) =>
@@ -50,7 +56,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Unarmed
                                 power + conditionalPower, statusDuration, null, false,
                                 statusEffectFactory: statusFactory,
                                 statusResistanceType: ResistanceType.Trauma,
-                                playImpactAnimation: impact == 0);
+                                playImpactAnimation: impact == 0 && (activationDelay <= 0f || !GetIsPC(activator)));
                         }
                     }
                     finally

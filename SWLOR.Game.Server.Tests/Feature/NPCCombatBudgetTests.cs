@@ -282,9 +282,25 @@ public class NPCCombatBudgetTests
                 $"{resref} is rated {(bosses.Contains(resref) ? "Boss" : "below Boss")} on World NPCs, which decides its minimum hit chance");
         }
 
-        // A creature placed in an area keeps its own copy of the template's variables.
-        foreach (var area in Directory.GetFiles(Path.Combine(root, "Module", "git"), "*.git.json"))
+        // A creature placed in an area keeps its own copy of the template's variables. Most areas place
+        // no boss, so only files with a boss resref or the marker as a string value are parsed.
+        var bossValues = bosses.Append(BossCreature.Variable).ToHashSet();
+        bool HasBossValue(string line)
         {
+            var start = line.IndexOf(": \"", StringComparison.Ordinal);
+            if (start < 0)
+                return false;
+
+            start += 3;
+            var end = line.IndexOf('"', start);
+            return end > start && bossValues.Contains(line.Substring(start, end - start));
+        }
+
+        foreach (var area in Directory.EnumerateFiles(Path.Combine(root, "Module", "git"), "*.git.json"))
+        {
+            if (!File.ReadLines(area).Any(HasBossValue))
+                continue;
+
             using var git = JsonDocument.Parse(File.ReadAllText(area));
             if (!git.RootElement.TryGetProperty("Creature List", out var creatures))
                 continue;

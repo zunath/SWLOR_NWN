@@ -70,8 +70,6 @@ internal sealed class SavedCharacter
         return field == null ? string.Empty : Encoding.UTF8.GetString(field.Data.AsSpan(4));
     }
 
-    public bool HasField(string name) => Root.Fields.Any(x => x.Name == name);
-
     // ---- Character -----------------------------------------------------------------------------------
 
     private static readonly string[] AbilityFields = { "Str", "Dex", "Con", "Int", "Wis", "Cha" };

@@ -163,6 +163,12 @@ internal static class CharacterFileUpgrade
                 continue;
             }
             var record = DB.Get<Player>(character.Id);
+            if (character.ResumeOrDiscardPendingFile(record))
+            {
+                counts.Upgraded++;
+                Log.Write(LogGroup.Migration, $"Character upgrade finished an interrupted save for '{character.Path}' [{character.Id}].", true);
+                continue;
+            }
             if (record == null || record.IsDeleted)
                 continue;
             character.Record = JsonConvert.DeserializeObject<Player>(JsonConvert.SerializeObject(record));
@@ -174,7 +180,7 @@ internal static class CharacterFileUpgrade
 
         foreach (var character in pending)
         {
-            if (character.Deferred)
+            if (character.Deferred || character.Resumed)
                 continue;
             if (character.Error != null)
             {
@@ -217,9 +223,11 @@ internal static class CharacterFileUpgrade
     }
 
     /// <summary>
-    /// Saves the record before the file. A crash between the two leaves a record whose
-    /// <see cref="Player.CharacterFileVersion"/> is ahead of its file, so the retry changes the file only.
-    /// Overflow items use identities derived from the upgrade, so a retry replaces them instead of adding copies.
+    /// Keeps the original file as a backup and writes the upgraded file beside it before saving the record, then
+    /// moves it into place. A crash after the record is saved leaves that file behind, and the next boot finishes the
+    /// move (<see cref="CharacterFile.ResumeOrDiscardPendingFile"/>); a crash before it leaves the record unchanged and
+    /// the file is upgraded again. Overflow items use identities derived from the upgrade, so a retry replaces them
+    /// instead of adding copies.
     /// </summary>
     private static void Commit(CharacterFile character, string vault, string backupDirectory)
     {
@@ -238,15 +246,14 @@ internal static class CharacterFileUpgrade
                 Data = item.Data,
             });
         }
-        DB.Set(result.Record);
-
         var backup = Path.Combine(backupDirectory, Path.GetRelativePath(vault, character.Path));
         Directory.CreateDirectory(Path.GetDirectoryName(backup)!);
         if (!File.Exists(backup))
             File.Copy(character.Path, backup);
-        var temporary = character.Path + ".upgrade";
-        File.WriteAllBytes(temporary, result.File);
-        File.Move(temporary, character.Path, true);
+        var pending = CharacterFile.PendingPath(character.Path);
+        File.WriteAllBytes(pending, result.File);
+        DB.Set(result.Record);
+        File.Move(pending, character.Path, true);
     }
 
     private static string GetServerVaultDirectory()
@@ -270,18 +277,57 @@ internal static class CharacterFileUpgrade
         public CharacterUpgradeResult Result { get; private set; }
         public string Error { get; private set; }
 
+        /// <summary>The upgraded file written beside a character file until its record is saved.</summary>
+        public static string PendingPath(string path) => path + ".upgrade";
+
+        /// <summary>The checkpoint of an upgraded file left by an interrupted save; 0 when none or unreadable.</summary>
+        private int PendingVersion { get; init; }
+
+        private bool HasPendingFile { get; init; }
+
+        /// <summary>True when this boot finished an interrupted save instead of upgrading the file.</summary>
+        public bool Resumed { get; private set; }
+
+        /// <summary>
+        /// Main thread. An upgraded file left beside the character file is moved into place when the record already
+        /// holds that upgrade, and deleted otherwise so the file is upgraded again. Returns true when it was moved.
+        /// </summary>
+        public bool ResumeOrDiscardPendingFile(Player record)
+        {
+            if (!HasPendingFile)
+                return false;
+            if (record != null && PendingVersion > 0 && record.CharacterFileVersion >= PendingVersion)
+            {
+                File.Move(PendingPath(Path), Path, true);
+                Resumed = true;
+                return true;
+            }
+            File.Delete(PendingPath(Path));
+            return false;
+        }
+
         public static CharacterFile Read(string path)
         {
             try
             {
                 var data = File.ReadAllBytes(path);
                 var character = new SavedCharacter(data, null);
+                var pending = PendingPath(path);
+                var hasPending = File.Exists(pending);
+                var pendingVersion = 0;
+                if (hasPending)
+                {
+                    try { pendingVersion = ReadFileVersion(new SavedCharacter(File.ReadAllBytes(pending), null)); }
+                    catch (Exception) { pendingVersion = 0; }
+                }
                 return new CharacterFile
                 {
                     Path = path,
                     Data = data,
                     Id = character.Id,
                     IsDM = character.ReadInteger("IsDM") != 0,
+                    HasPendingFile = hasPending,
+                    PendingVersion = pendingVersion,
                 };
             }
             catch (Exception ex)
@@ -292,7 +338,7 @@ internal static class CharacterFileUpgrade
 
         public void Convert()
         {
-            if (Error != null || Record == null)
+            if (Error != null || Record == null || Resumed)
                 return;
             try
             {

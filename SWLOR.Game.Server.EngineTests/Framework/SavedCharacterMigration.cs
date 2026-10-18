@@ -264,5 +264,12 @@ namespace SWLOR.Game.Server.EngineTests.Framework
             var character = Activator.CreateInstance(characterType, Members, null, new object[] { file, null }, null);
             return (int)characterType.GetMethod("ReadInteger", Members).Invoke(character, new object[] { "PlayerFileVer" });
         }
+
+        /// <summary>
+        /// The server's boot-time pass over every character file in the server vault (<c>CharacterFileUpgrade.UpgradeServerVault</c>).
+        /// Returns false when any character could not be upgraded. Must run inside an engine script.
+        /// </summary>
+        public static bool UpgradeServerVault() =>
+            (bool)GameType(ServiceNamespace + "CharacterFileUpgrade").GetMethod("UpgradeServerVault", Members).Invoke(null, null);
     }
 }

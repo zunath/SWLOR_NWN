@@ -118,6 +118,12 @@ internal static class CharacterLootRevision
     /// <summary>Re-equips a worn item in its corrected slot when that slot is empty, otherwise stows it.</summary>
     private static void MoveOrStow(SavedCharacter character, SavedItem item, InventorySlot slot)
     {
+        // A correction that keeps the item's slot re-equips it there, as the live rule does after unequipping it.
+        if (item.Slot == slot)
+        {
+            character.ApplyItemStats(item, true);
+            return;
+        }
         if (character.GetEquipped(slot) == null)
         {
             var moved = character.MoveEquipped(item, slot);

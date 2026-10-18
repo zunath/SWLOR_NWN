@@ -281,7 +281,7 @@ public class SavedDataItemSweepTests
         var sink = new List<object>();
         var capture = typeof(SavedDataItemSweepTests).GetMethod(nameof(Capture), BindingFlags.NonPublic | BindingFlags.Static)!
             .MakeGenericMethod(ListingType).Invoke(null, new object[] { sink });
-        var arguments = new[] { original, null, repairHeadgear, capture };
+        var arguments = new[] { original, null, repairHeadgear, capture, true };
         var changed = (bool)Document.GetMethod("MigrateStoredItemData", BindingFlags.NonPublic | BindingFlags.Static)!.Invoke(null, arguments)!;
         migrated = (string)arguments[1]!;
         converted = sink.Select(value => ((string)ListingType.GetProperty("IconResref")!.GetValue(value)!,

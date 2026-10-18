@@ -20,26 +20,35 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
         // A 2x5 Twin Electroblade. On 2026-10-18 acquiring one into a nearly full inventory removed a carried
         // 2x1 item and a carried stack.
         private const string LargeItemResref = "twin_elec_1";
+        private const string StackResref = "herb_m";
         private const string FillerResref = "nw_maletatcivout";
+        private const string SmallFillerResref = "survival_knife";
 
         [EngineTest("A bank withdrawal without inventory room keeps the record and every carried item", Category = "ItemClaimSpace")]
         public static async Task BankWithdrawalWithoutRoom(EngineTestContext ctx)
         {
             using var fixture = await PlayerAbilityFixture.CreateAsync(ctx);
             var player = fixture.Creature;
-            InventoryItem record = null;
+            InventoryItem large = null;
+            InventoryItem stack = null;
             try
             {
                 await ctx.ExecuteInCreatureContextAsync(player, () =>
                 {
                     var fillers = FillInventory(ctx, player);
                     var carried = Snapshot(player);
-                    record = Bank.DepositItem(player, CreateStorageItem(ctx, LargeItemResref));
+                    large = Bank.DepositItem(player, CreateStorageItem(ctx, LargeItemResref));
+                    // With no free cell the engine does not merge a stack into the matching carried stack. It can remove
+                    // the carried stack instead, so a matching stack does not make room.
+                    stack = Bank.DepositItem(player, CreateStorageItem(ctx, StackResref, 5));
 
-                    var failure = Bank.WithdrawItem(player, record.Id);
-                    AssertCarriedIntact(ctx, player, carried);
-                    ctx.Assert(DB.Get<InventoryItem>(record.Id) != null, "The bank keeps the item that did not fit");
-                    ctx.Assert(!string.IsNullOrEmpty(failure), "A withdrawal without room fails");
+                    foreach (var record in new[] { large, stack })
+                    {
+                        var failure = Bank.WithdrawItem(player, record.Id);
+                        AssertCarriedIntact(ctx, player, carried);
+                        ctx.Assert(DB.Get<InventoryItem>(record.Id) != null, $"The bank keeps the '{record.Resref}' that did not fit");
+                        ctx.Assert(!string.IsNullOrEmpty(failure), $"Withdrawing the '{record.Resref}' without room fails");
+                    }
 
                     foreach (var filler in fillers)
                         DestroyObject(filler);
@@ -48,16 +57,22 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 await ctx.ExecuteInCreatureContextAsync(player, () =>
                 {
                     var carried = Snapshot(player);
-                    ctx.AssertEqual(string.Empty, Bank.WithdrawItem(player, record.Id), "A withdrawal with room succeeds");
-                    ctx.Assert(DB.Get<InventoryItem>(record.Id) == null, "The withdrawn item leaves the bank");
+                    ctx.AssertEqual(string.Empty, Bank.WithdrawItem(player, large.Id), "A withdrawal with room succeeds");
+                    ctx.Assert(DB.Get<InventoryItem>(large.Id) == null, "The withdrawn item leaves the bank");
                     ctx.AssertEqual(1, CountCarried(player, LargeItemResref), "The withdrawn item reaches the inventory");
                     AssertCarriedIntact(ctx, player, carried);
+
+                    ctx.AssertEqual(string.Empty, Bank.WithdrawItem(player, stack.Id), "A stack withdrawal with room succeeds");
+                    ctx.Assert(DB.Get<InventoryItem>(stack.Id) == null, "The withdrawn stack leaves the bank");
+                    ctx.AssertEqual(43 + stack.Quantity, CarriedStackTotal(player, StackResref), "The withdrawn stack joins the carried stack");
                 });
             }
             finally
             {
-                if (record != null)
-                    DB.Delete<InventoryItem>(record.Id);
+                if (large != null)
+                    DB.Delete<InventoryItem>(large.Id);
+                if (stack != null)
+                    DB.Delete<InventoryItem>(stack.Id);
             }
         }
 
@@ -120,34 +135,40 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
         }
 
         /// <summary>
-        /// Gives the player a 2x1 medkit stack and a 43-herb stack, then fills the rest of the inventory with 2x3 outfits
-        /// until none fits. A 2x5 item then has no room. Returns the outfits.
+        /// Gives the player a 2x1 medkit stack and a 43-herb stack, then fills every other cell with 2x3 outfits and
+        /// 1x1 knives. Neither a 2x5 item nor a 1x1 stack then has room. Returns the fillers.
         /// </summary>
         private static List<uint> FillInventory(EngineTestContext ctx, uint player)
         {
             var medkits = CreateItemOnObject("nw_it_medkit001", player, 3);
-            var herbs = CreateItemOnObject("herb_m", player, 43);
+            var herbs = CreateItemOnObject(StackResref, player, 43);
             ctx.Assert(GetIsObjectValid(medkits) && GetIsObjectValid(herbs), "The player carries a medkit stack and an herb stack");
 
-            var probe = CreateStorageItem(ctx, FillerResref);
             var fillers = new List<uint>();
-            while (Item.FitsInInventory(player, probe) && fillers.Count < 200)
+            foreach (var resref in new[] { FillerResref, SmallFillerResref })
             {
-                var filler = CreateItemOnObject(FillerResref, player);
-                ctx.Assert(GetItemPossessor(filler) == player, "An outfit that fits is placed in the inventory");
-                fillers.Add(filler);
+                var probe = CreateStorageItem(ctx, resref);
+                while (Item.FitsInInventory(player, probe) && fillers.Count < 400)
+                {
+                    var filler = CreateItemOnObject(resref, player);
+                    ctx.Assert(GetItemPossessor(filler) == player, $"A '{resref}' that fits is placed in the inventory");
+                    fillers.Add(filler);
+                }
+                DestroyObject(probe);
             }
-            DestroyObject(probe);
 
-            var large = CreateStorageItem(ctx, LargeItemResref);
-            ctx.Assert(!Item.FitsInInventory(player, large), "The filled inventory has no room for a 2x5 item");
-            DestroyObject(large);
+            foreach (var resref in new[] { LargeItemResref, StackResref })
+            {
+                var item = CreateStorageItem(ctx, resref);
+                ctx.Assert(!Item.FitsInInventory(player, item), $"The filled inventory has no room for a '{resref}'");
+                DestroyObject(item);
+            }
             return fillers;
         }
 
-        private static uint CreateStorageItem(EngineTestContext ctx, string resref)
+        private static uint CreateStorageItem(EngineTestContext ctx, string resref, int stackSize = 1)
         {
-            var item = CreateItemOnObject(resref, GetObjectByTag("TEMP_ITEM_STORAGE"));
+            var item = CreateItemOnObject(resref, GetObjectByTag("TEMP_ITEM_STORAGE"), stackSize);
             ctx.Assert(GetIsObjectValid(item), $"The '{resref}' item is created");
             return item;
         }
@@ -174,6 +195,11 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
         private static int CountCarried(uint player, string resref)
         {
             return Snapshot(player).Values.Count(item => item.Resref == resref);
+        }
+
+        private static int CarriedStackTotal(uint player, string resref)
+        {
+            return Snapshot(player).Values.Where(item => item.Resref == resref).Sum(item => item.Stack);
         }
 
         private static void ClaimDeliveries(uint player)

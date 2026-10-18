@@ -624,6 +624,8 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// True when the engine finds room for the item in the creature's own inventory grid. Acquiring an item that
         /// has no room can remove items the creature already carries, so check this before ObjectPlugin.AcquireItem.
+        /// A matching carried stack does not count as room: with no free cell the engine removes that stack instead of
+        /// merging into it.
         /// </summary>
         public static unsafe bool FitsInInventory(uint creature, uint item)
         {

@@ -6,6 +6,7 @@ using SWLOR.Game.Server.EngineTests.Framework;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.DBService;
+using SWLOR.Game.Server.Service.QuestContractService;
 using SWLOR.NWN.API.NWNX;
 
 namespace SWLOR.Game.Server.EngineTests.Definitions

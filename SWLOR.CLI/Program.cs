@@ -18,7 +18,6 @@ namespace SWLOR.CLI
         private static readonly DeployBuild _deployBuild = new();
         private static readonly BeastCodeBuilder _beastBuilder = new();
         private static readonly StoreInstanceSync _storeInstanceSync = new();
-        private static readonly OfflineMigrationRunner _offlineMigrationRunner = new();
 
         static int Main(string[] args)
         {
@@ -88,22 +87,6 @@ namespace SWLOR.CLI
             {
                 Description = "Skips the 'Press any key to end' prompt after packing or unpacking a module."
             };
-            var migrateOfflineOption = new Option<bool>("--migrateOffline")
-            {
-                Description = "Applies pending server migrations to a stopped server's database. Reports changes only unless --write is set."
-            };
-            var redisOption = new Option<string>("--redis")
-            {
-                Description = "Redis host:port for --migrateOffline. Defaults to NWNX_REDIS_HOST."
-            };
-            var writeOption = new Option<bool>("--write")
-            {
-                Description = "Saves the records --migrateOffline changes and advances the migration version."
-            };
-            var parallelismOption = new Option<int>("--parallelism")
-            {
-                Description = "Worker threads for --migrateOffline. Defaults to the processor count."
-            };
 
             var rootCommand = new RootCommand("SWLOR build and content tools.");
             rootCommand.Options.Add(adHocToolOption);
@@ -124,10 +107,6 @@ namespace SWLOR.CLI
             rootCommand.Options.Add(createMissingStoreBlueprintsOption);
             rootCommand.Options.Add(storeModuleRootOption);
             rootCommand.Options.Add(noPromptOption);
-            rootCommand.Options.Add(migrateOfflineOption);
-            rootCommand.Options.Add(redisOption);
-            rootCommand.Options.Add(writeOption);
-            rootCommand.Options.Add(parallelismOption);
 
             rootCommand.SetAction(parseResult =>
             {
@@ -191,14 +170,6 @@ namespace SWLOR.CLI
                 if (parseResult.GetValue(beastBuilderOption))
                 {
                     _beastBuilder.Process();
-                }
-
-                if (parseResult.GetValue(migrateOfflineOption))
-                {
-                    return _offlineMigrationRunner.Process(
-                        parseResult.GetValue(redisOption),
-                        parseResult.GetValue(writeOption),
-                        parseResult.GetValue(parallelismOption));
                 }
 
                 var storeModeCount = new[]

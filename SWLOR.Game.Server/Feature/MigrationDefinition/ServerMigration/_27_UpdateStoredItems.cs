@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.LogService;
@@ -14,8 +13,8 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition.ServerMigration;
 /// Updates item artwork, loot stats and legacy headgear slots across every stored item (banks, market,
 /// property storage, research, outfits, saved creatures, ships, contracts) in one pass. Each stored object
 /// is loaded and saved once, with one item traversal. Player records are updated by <see cref="_27_UpdatePlayerRecords"/>.
-/// The server runs the pass through the game engine; <see cref="MigrateOffline"/> runs the same pass on saved
-/// data alone, so SWLOR.CLI can apply it in parallel to a stopped server's database.
+/// The pass edits saved data directly instead of loading each item into the engine, and converts records on
+/// worker threads, so a production sweep takes about a minute at boot (<see cref="StoredObjectData"/>'s item sweep).
 /// </summary>
 public sealed class _27_UpdateStoredItems : IServerMigration
 {
@@ -27,17 +26,8 @@ public sealed class _27_UpdateStoredItems : IServerMigration
     internal static void Migrate(int version)
     {
         var progress = new ServerMigrationProgress(version, CountSections());
-        var changed = Sweep(new ServerStoredItemPass(progress), EngineStoredItemConverter.Instance);
+        var changed = Sweep(new ParallelStoredItemPass(progress), SavedDataStoredItemConverter.Instance);
         Log.Write(LogGroup.Migration, $"Migration #{version}: Updated item artwork, loot stats and equipment slots in {changed} stored records.", true);
-    }
-
-    internal static void MigrateOffline(int version, OfflineMigrationOptions options)
-    {
-        var stopwatch = Stopwatch.StartNew();
-        var progress = new ServerMigrationProgress(version, CountSections(), options.Write, () => stopwatch.Elapsed);
-        var changed = Sweep(new OfflineStoredItemPass(progress, options), OfflineStoredItemConverter.Instance);
-        options.Write($"Migration #{version}: Updated item artwork, loot stats and equipment slots in {changed} stored records" +
-            (options.DryRun ? " (dry run: nothing saved)." : "."));
     }
 
     private static (string Name, int Count)[] CountSections() => new[]
@@ -54,8 +44,8 @@ public sealed class _27_UpdateStoredItems : IServerMigration
         ServerMigrationProgress.CountRecords<QuestContractDelivery>(),
     };
 
-    /// <summary>Every stored item record and the fields holding its items, shared by the server and offline passes.</summary>
-    private static int Sweep(IStoredItemPass pass, IStoredItemConverter converter)
+    /// <summary>Every stored item record and the fields holding its items.</summary>
+    private static int Sweep(ParallelStoredItemPass pass, IStoredItemConverter converter)
     {
         var changed = 0;
         changed += pass.Process<InventoryItem>(item =>

@@ -9,7 +9,6 @@ using SWLOR.Game.Server.Feature.MigrationDefinition.ServerMigration;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.DroidService;
-using SWLOR.Game.Server.Service.MigrationService;
 using SWLOR.Game.Server.Service.PlayerMarketService;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.NWN.API.NWScript.Enum.Item;
@@ -19,10 +18,10 @@ using SWLOR.NWN.Formats.TwoDA;
 namespace SWLOR.Game.Server.Tests.Feature;
 
 /// <summary>
-/// The offline stored-item sweep edits saved GFF the way the engine pass edits live items. Parity with
+/// The saved-data stored-item sweep edits saved GFF the way the engine pass edits live items. Parity with
 /// the engine on real data is checked on a production copy; these cases pin each rule and its saved form.
 /// </summary>
-public class OfflineStoredItemMigrationTests
+public class SavedDataItemSweepTests
 {
     private static readonly Assembly ServerAssembly = typeof(HeadgearSlotMigration).Assembly;
     private static readonly Type Document = ServerAssembly.GetType("SWLOR.Game.Server.Feature.MigrationDefinition.StoredObjectData")!;
@@ -198,9 +197,9 @@ public class OfflineStoredItemMigrationTests
 
         bool Covered(BaseItem baseItem, int model) => rootIcons.ContainsKey(baseItem) || simpleIcons.ContainsKey((baseItem, model));
         foreach (var correction in EquipmentTypeMigration.Corrections.Values)
-            Covered(correction.Type, correction.Model).Should().BeTrue($"{correction.Type} {correction.Model} has an offline icon");
+            Covered(correction.Type, correction.Model).Should().BeTrue($"{correction.Type} {correction.Model} has a saved-data icon");
         foreach (var (resref, revision) in ItemAppearanceCatalogMigration.Revisions)
-            Covered(revision.BaseItem, revision.Current[0]).Should().BeTrue($"{resref} has an offline icon");
+            Covered(revision.BaseItem, revision.Current[0]).Should().BeTrue($"{resref} has a saved-data icon");
         foreach (var baseItem in rootIcons.Keys.Concat(simpleIcons.Keys.Select(key => key.BaseItem)))
             PlayerMarket.GetBaseItemMarketCategory(baseItem).Should().NotBeNull($"{baseItem} has a base-item market category");
     }
@@ -273,30 +272,13 @@ public class OfflineStoredItemMigrationTests
         Migrate(migrated, out _, true, out _).Should().BeFalse();
     }
 
-    [Test]
-    public void OfflineRunner_RunsOnlyWhenEveryPendingMigrationIsOfflineCapable()
-    {
-        var migrations = ServerAssembly.GetTypes()
-            .Where(type => !type.IsAbstract && !type.IsInterface && typeof(IServerMigration).IsAssignableFrom(type))
-            .Select(type => (IServerMigration)Activator.CreateInstance(type)!).ToList();
-
-        var (pending, blockers) = OfflineServerMigrations.Plan(migrations, 27);
-        pending.Select(m => m.GetType()).Should().Equal(typeof(_28_CorrectStoredEquipmentTypes));
-        blockers.Should().BeEmpty();
-
-        (pending, blockers) = OfflineServerMigrations.Plan(migrations, 26);
-        pending.Select(m => m.GetType()).Should().Equal(
-            typeof(_27_UpdatePlayerRecords), typeof(_27_UpdateStoredItems), typeof(_28_CorrectStoredEquipmentTypes));
-        blockers.Should().HaveCount(2, "migration 27 still runs in the server");
-    }
-
     private static bool Migrate(string original, out string migrated, bool repairHeadgear, out List<(string Icon, MarketCategoryType Category)> converted)
     {
         var sink = new List<object>();
-        var capture = typeof(OfflineStoredItemMigrationTests).GetMethod(nameof(Capture), BindingFlags.NonPublic | BindingFlags.Static)!
+        var capture = typeof(SavedDataItemSweepTests).GetMethod(nameof(Capture), BindingFlags.NonPublic | BindingFlags.Static)!
             .MakeGenericMethod(ListingType).Invoke(null, new object[] { sink });
         var arguments = new[] { original, null, repairHeadgear, capture };
-        var changed = (bool)Document.GetMethod("MigrateStoredItemOffline", BindingFlags.NonPublic | BindingFlags.Static)!.Invoke(null, arguments)!;
+        var changed = (bool)Document.GetMethod("MigrateStoredItemData", BindingFlags.NonPublic | BindingFlags.Static)!.Invoke(null, arguments)!;
         migrated = (string)arguments[1]!;
         converted = sink.Select(value => ((string)ListingType.GetProperty("IconResref")!.GetValue(value)!,
             (MarketCategoryType)ListingType.GetProperty("Category")!.GetValue(value)!)).ToList();

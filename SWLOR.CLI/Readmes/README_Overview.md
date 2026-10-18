@@ -34,12 +34,6 @@ Use `tools/SWLOR.CLI/RunCLI.cmd` from the repository (or `RunCLI.cmd` while in t
 | **ModulePacker** | `-p` or `--pack` | Packs JSON files into NWN module format |
 | **ModulePacker** | `-u` or `--unpack` | Unpacks NWN module to JSON format |
 
-### Database Commands
-
-| Command | Flag | Description |
-|---------|------|-------------|
-| **OfflineMigrationRunner** | `--migrateOffline` | Applies pending server migrations to a stopped server's database ([README_OfflineMigrations.md](README_OfflineMigrations.md)) |
-
 ## Quick Reference
 
 ### Content Generation

@@ -11,8 +11,8 @@ using SWLOR.NWN.API.NWScript.Enum.Item;
 namespace SWLOR.Game.Server.Feature.MigrationDefinition;
 
 /// <summary>
-/// The stored-item sweep applied to saved GFF with no game engine, for offline runs. Each rule
-/// mirrors its native counterpart on an unequipped item: <see cref="HeadgearSlotMigration.ConvertItem"/>,
+/// The stored-item sweep applied to saved GFF with no game engine, so the server can convert stored records
+/// on worker threads at boot. Each rule mirrors its native counterpart on an unequipped item: <see cref="HeadgearSlotMigration.ConvertItem"/>,
 /// <see cref="EquipmentTypeMigration.ConvertItem"/>, <see cref="ItemIconMigration.MigrateItem"/> (with
 /// <see cref="ItemAppearanceCatalogMigration.ConvertItem"/>) and <see cref="LootStatRevisionMigration"/>'s stat
 /// revision, in the same order. Fields the sweep does not
@@ -38,15 +38,15 @@ internal sealed partial class StoredObjectData
         [ItemPropertyType.Resistance] = 54,
     };
 
-    /// <summary>Offline counterpart of <see cref="LootStatRevisionMigration.MigrateStoredObjectData"/>.</summary>
-    internal static bool MigrateStoredItemOffline(string original, out string migrated, bool repairHeadgear, Action<RootListing> rootChanged)
+    /// <summary>Saved-data counterpart of <see cref="LootStatRevisionMigration.MigrateStoredObjectData"/>.</summary>
+    internal static bool MigrateStoredItemData(string original, out string migrated, bool repairHeadgear, Action<RootListing> rootChanged)
     {
         migrated = original;
         if (string.IsNullOrWhiteSpace(original))
             return false;
         // Saved creatures keep authored stats and slots; only their items' artwork changes.
         if (IsCreatureData(original))
-            return MigrateArtworkOffline(original, out migrated);
+            return MigrateSavedArtwork(original, out migrated);
 
         var document = new StoredObjectData(Convert.FromBase64String(original));
         if (Encoding.ASCII.GetString(document._header, 0, 4) != "UTI ")
@@ -60,7 +60,7 @@ internal sealed partial class StoredObjectData
              HeadgearSlotMigration.GetCorrectedModel(resref, baseItem, model) != model ||
              EquipmentTypeMigration.IsLegacyEquipment(resref, baseItem)) ||
             IsLegacyAppearance(root);
-        if (!MigrateItemOffline(root, repairHeadgear, new HashSet<Node>()))
+        if (!MigrateSavedItem(root, repairHeadgear, new HashSet<Node>()))
             return false;
         if (refreshRootMetadata)
             rootChanged?.Invoke(GetRootListing(root));
@@ -68,8 +68,8 @@ internal sealed partial class StoredObjectData
         return true;
     }
 
-    /// <summary>Offline counterpart of <see cref="ItemIconMigration.MigrateSerializedObject"/>: artwork only.</summary>
-    internal static bool MigrateArtworkOffline(string original, out string migrated)
+    /// <summary>Saved-data counterpart of <see cref="ItemIconMigration.MigrateSerializedObject"/>: artwork only.</summary>
+    internal static bool MigrateSavedArtwork(string original, out string migrated)
     {
         migrated = original;
         if (string.IsNullOrWhiteSpace(original))
@@ -85,7 +85,7 @@ internal sealed partial class StoredObjectData
                 changed |= UpdateArtwork(node);
                 var droid = FindLocal(node, ConstructedDroidVariable, 3);
                 var saved = droid == null ? null : ReadText(droid);
-                if (ItemIconMigration.MigrateDroidArtwork(saved, MigrateArtworkOffline, out var updated))
+                if (ItemIconMigration.MigrateDroidArtwork(saved, MigrateSavedArtwork, out var updated))
                 {
                     WriteText(droid, updated);
                     changed = true;
@@ -102,7 +102,7 @@ internal sealed partial class StoredObjectData
         return true;
     }
 
-    private static bool MigrateItemOffline(Node item, bool repairHeadgear, HashSet<Node> visited)
+    private static bool MigrateSavedItem(Node item, bool repairHeadgear, HashSet<Node> visited)
     {
         if (!visited.Add(item)) return false;
         var changed = false;
@@ -119,7 +119,7 @@ internal sealed partial class StoredObjectData
         {
             var original = ReadText(droid);
             var migrated = HeadgearSlotMigration.MigrateDroid(original, data =>
-                MigrateStoredItemOffline(data, out var result, repairHeadgear, null) ? result : data, repairHeadgear);
+                MigrateStoredItemData(data, out var result, repairHeadgear, null) ? result : data, repairHeadgear);
             if (original != migrated)
             {
                 WriteText(droid, migrated);
@@ -129,7 +129,7 @@ internal sealed partial class StoredObjectData
 
         foreach (var list in item.Fields.Where(IsInventoryList))
         foreach (var child in list.Children)
-            changed |= MigrateItemOffline(child, repairHeadgear, visited);
+            changed |= MigrateSavedItem(child, repairHeadgear, visited);
         return changed;
     }
 
@@ -362,7 +362,7 @@ internal sealed partial class StoredObjectData
     /// <see cref="Item.GetIconResref"/> for every root type a conversion produces. Helmets, cloaks, armor and
     /// composite weapons are not simple models, so their icon depends only on the base item; gloves and
     /// shuriken are simple models whose icon is named by model. Checked against the engine by
-    /// <c>OfflineStoredItemSweepMatchesEngine</c>.
+    /// <c>SavedDataItemSweepMatchesEngine</c>.
     /// </summary>
     internal static IReadOnlyDictionary<BaseItem, string> RootIcons { get; } = new Dictionary<BaseItem, string>
     {
@@ -391,7 +391,7 @@ internal sealed partial class StoredObjectData
         var baseItem = ReadBaseItem(root);
         var model = ReadSimpleModel(root);
         if (!RootIcons.TryGetValue(baseItem, out var icon) && !SimpleModelRootIcons.TryGetValue((baseItem, model), out icon))
-            throw new InvalidOperationException($"No offline icon is known for converted base item {baseItem} with model {model}.");
+            throw new InvalidOperationException($"No saved-data icon is known for converted base item {baseItem} with model {model}.");
         var category = PlayerMarket.GetBaseItemMarketCategory(baseItem)
             ?? throw new InvalidOperationException($"Converted base item {baseItem} has no base-item market category.");
         return new RootListing(icon, category);

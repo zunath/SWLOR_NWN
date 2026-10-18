@@ -14,7 +14,10 @@ internal interface IStoredItemConverter
     bool MigrateStoredObjectData(string original, out string migrated, bool repairHeadgear, Action<RootListing> rootChanged);
 }
 
-/// <summary>Loads each saved object into the game engine and migrates the live object.</summary>
+/// <summary>
+/// Loads each saved object into the game engine and migrates the live object. The sweep uses
+/// <see cref="SavedDataStoredItemConverter"/>; this is the reference its engine test compares against.
+/// </summary>
 internal sealed class EngineStoredItemConverter : IStoredItemConverter
 {
     public static readonly EngineStoredItemConverter Instance = new();
@@ -25,10 +28,10 @@ internal sealed class EngineStoredItemConverter : IStoredItemConverter
 }
 
 /// <summary>Edits the saved GFF directly, with no game engine; safe to call from several threads.</summary>
-internal sealed class OfflineStoredItemConverter : IStoredItemConverter
+internal sealed class SavedDataStoredItemConverter : IStoredItemConverter
 {
-    public static readonly OfflineStoredItemConverter Instance = new();
+    public static readonly SavedDataStoredItemConverter Instance = new();
 
     public bool MigrateStoredObjectData(string original, out string migrated, bool repairHeadgear, Action<RootListing> rootChanged)
-        => StoredObjectData.MigrateStoredItemOffline(original, out migrated, repairHeadgear, rootChanged);
+        => StoredObjectData.MigrateStoredItemData(original, out migrated, repairHeadgear, rootChanged);
 }

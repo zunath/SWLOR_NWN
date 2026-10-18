@@ -18,17 +18,17 @@ namespace SWLOR.Game.Server.EngineTests.Definitions;
 
 public static partial class MigrationEngineTests
 {
-    private const string OfflineMigrationCategory = "OfflineMigration";
+    private const string SavedDataSweepCategory = "SavedDataItemSweep";
     private const string CurrentLootLabel = "already migrated loot";
-    private static readonly Assembly OfflineMigrationAssembly = typeof(EquipmentTypeMigration).Assembly;
+    private static readonly Assembly SavedDataSweepAssembly = typeof(EquipmentTypeMigration).Assembly;
 
     /// <summary>
-    /// The offline sweep must save what the engine sweep saves. Both converters run on the same legacy payloads,
+    /// The saved-data sweep must save what the engine sweep saves. Both converters run on the same legacy payloads,
     /// both results load into the engine, and everything the engine reads back is compared. The production-copy
-    /// parity check holds few of these legacy kinds, so this covers each rule the offline sweep mirrors.
+    /// parity check holds few of these legacy kinds, so this covers each rule the saved-data sweep mirrors.
     /// </summary>
-    [EngineTest("Offline stored-item sweep saves what the engine sweep saves for every legacy item kind", Category = OfflineMigrationCategory, TimeoutSeconds = 400f)]
-    public static async Task OfflineStoredItemSweepMatchesEngine(EngineTestContext ctx)
+    [EngineTest("Saved-data stored-item sweep saves what the engine sweep saves for every legacy item kind", Category = SavedDataSweepCategory, TimeoutSeconds = 400f)]
+    public static async Task SavedDataItemSweepMatchesEngine(EngineTestContext ctx)
     {
         var owner = ctx.SpawnCreature("civilian");
         var savedCreature = ctx.SpawnCreature("civilian", 2f);
@@ -112,7 +112,7 @@ public static partial class MigrationEngineTests
             StampLegacyLoot(creatureGloves, GloveEnhancements);
             ItemPlugin.SetItemAppearance(creatureArtwork, ItemAppearanceType.SimpleModel, 0, 88);
             // A pistol saved with arrow ammunition from its legacy bow base item. The engine path re-saves
-            // creature items after loading them, so loading the offline result must yield the same pistol.
+            // creature items after loading them, so loading the saved-data result must yield the same pistol.
             ItemPlugin.SetBaseItemType(creaturePistol, BaseItem.Pistol);
             RemoveMatching(creaturePistol, ItemPropertyType.UnlimitedAmmunition, 0);
             AddItemProperty(DurationType.Permanent, ItemPropertyCustom(ItemPropertyType.UnlimitedAmmunition, 0, 1), creaturePistol);
@@ -146,18 +146,18 @@ public static partial class MigrationEngineTests
                 try
                 {
                     var engine = ConvertStoredItem("EngineStoredItemConverter", data, repairHeadgear);
-                    var offline = ConvertStoredItem("OfflineStoredItemConverter", data, repairHeadgear);
+                    var savedData = ConvertStoredItem("SavedDataStoredItemConverter", data, repairHeadgear);
                     Check(engine.Changed == (label != CurrentLootLabel), $"the engine sweep changed it: {engine.Changed}");
-                    Check(engine.Changed == offline.Changed, $"engine changed {engine.Changed}, offline changed {offline.Changed}");
-                    Check(engine.Listing == offline.Listing, $"engine listing '{engine.Listing}', offline listing '{offline.Listing}'");
+                    Check(engine.Changed == savedData.Changed, $"engine changed {engine.Changed}, saved-data changed {savedData.Changed}");
+                    Check(engine.Listing == savedData.Listing, $"engine listing '{engine.Listing}', saved-data listing '{savedData.Listing}'");
                     Check(rootConversions.Contains(label) == (engine.Listing.Length > 0), $"reported listing '{engine.Listing}'");
                     var engineObject = DescribeStoredObject(ctx, engine.Migrated);
-                    var offlineObject = DescribeStoredObject(ctx, offline.Migrated);
-                    Check(engineObject == offlineObject, $"the engine reads different objects:\n  engine:  {engineObject}\n  offline: {offlineObject}");
-                    Check(!ConvertStoredItem("EngineStoredItemConverter", offline.Migrated, repairHeadgear).Changed,
-                        "the engine sweep finds more to change in the offline result");
-                    Check(!ConvertStoredItem("OfflineStoredItemConverter", offline.Migrated, repairHeadgear).Changed,
-                        "the offline sweep is not idempotent");
+                    var savedObject = DescribeStoredObject(ctx, savedData.Migrated);
+                    Check(engineObject == savedObject, $"the engine reads different objects:\n  engine:  {engineObject}\n  saved:   {savedObject}");
+                    Check(!ConvertStoredItem("EngineStoredItemConverter", savedData.Migrated, repairHeadgear).Changed,
+                        "the engine sweep finds more to change in the saved-data result");
+                    Check(!ConvertStoredItem("SavedDataStoredItemConverter", savedData.Migrated, repairHeadgear).Changed,
+                        "the saved-data sweep is not idempotent");
                 }
                 catch (Exception ex)
                 {
@@ -171,8 +171,8 @@ public static partial class MigrationEngineTests
 
     private static (bool Changed, string Migrated, string Listing) ConvertStoredItem(string converterName, string data, bool repairHeadgear)
     {
-        var converter = OfflineMigrationAssembly.GetType("SWLOR.Game.Server.Feature.MigrationDefinition." + converterName);
-        var listingType = OfflineMigrationAssembly.GetType("SWLOR.Game.Server.Feature.MigrationDefinition.RootListing");
+        var converter = SavedDataSweepAssembly.GetType("SWLOR.Game.Server.Feature.MigrationDefinition." + converterName);
+        var listingType = SavedDataSweepAssembly.GetType("SWLOR.Game.Server.Feature.MigrationDefinition.RootListing");
         var listings = new List<object>();
         var capture = typeof(MigrationEngineTests).GetMethod(nameof(CaptureRootListing), BindingFlags.NonPublic | BindingFlags.Static)
             .MakeGenericMethod(listingType).Invoke(null, new object[] { listings });

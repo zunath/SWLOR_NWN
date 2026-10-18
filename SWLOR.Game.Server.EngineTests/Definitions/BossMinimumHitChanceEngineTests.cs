@@ -74,34 +74,41 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
 
             await ctx.WaitUntilAsync(() => writer.Completion.IsCompleted, 10f, "the recording writer to finish its files");
             ctx.Assert(writer.Error == null, $"the recording writer failed: {writer.Error}");
-            var events = File.ReadAllLines(writer.EventsPath).Select(line => JsonDocument.Parse(line).RootElement).ToList();
-            File.Delete(writer.EventsPath);
-
-            int ParticipantId(string name) => events.Single(e =>
-                e.GetProperty("type").GetString() == "participant" && e.GetProperty("name").GetString() == name)
-                .GetProperty("id").GetInt32();
-
-            var targetId = ParticipantId("Evasive Target");
-            int[] SwingHitChances(string attackerName)
+            try
             {
-                var attackerId = ParticipantId(attackerName);
-                return events
-                    .Where(e => e.GetProperty("type").GetString() == "attack" &&
-                                e.GetProperty("mode").GetString() == "autoattack" &&
-                                e.GetProperty("attacker").GetInt32() == attackerId &&
-                                e.GetProperty("defender").GetInt32() == targetId)
-                    .Select(e => e.GetProperty("hit_chance").GetInt32())
-                    .ToArray();
-            }
+                var events = File.ReadAllLines(writer.EventsPath).Select(line => JsonDocument.Parse(line).RootElement).ToList();
 
-            var bossSwings = SwingHitChances("Test Boss");
-            var regularSwings = SwingHitChances("Test Regular");
-            ctx.Log($"Boss swing hit chances: {string.Join(", ", bossSwings)}; other creature: {string.Join(", ", regularSwings)}");
-            ctx.Assert(bossSwings.Length > 0 && regularSwings.Length > 0, "both attackers swung at the target");
-            ctx.Assert(bossSwings.All(chance => chance == Combat.BossMinimumHitRate),
-                $"every boss swing rolls at {Combat.BossMinimumHitRate}%: {string.Join(", ", bossSwings)}");
-            ctx.Assert(regularSwings.All(chance => chance == Combat.MinimumHitRate),
-                $"every other swing rolls at {Combat.MinimumHitRate}%: {string.Join(", ", regularSwings)}");
+                int ParticipantId(string name) => events.Single(e =>
+                    e.GetProperty("type").GetString() == "participant" && e.GetProperty("name").GetString() == name)
+                    .GetProperty("id").GetInt32();
+
+                var targetId = ParticipantId("Evasive Target");
+                int[] SwingHitChances(string attackerName)
+                {
+                    var attackerId = ParticipantId(attackerName);
+                    return events
+                        .Where(e => e.GetProperty("type").GetString() == "attack" &&
+                                    e.GetProperty("mode").GetString() == "autoattack" &&
+                                    e.GetProperty("attacker").GetInt32() == attackerId &&
+                                    e.GetProperty("defender").GetInt32() == targetId)
+                        .Select(e => e.GetProperty("hit_chance").GetInt32())
+                        .ToArray();
+                }
+
+                var bossSwings = SwingHitChances("Test Boss");
+                var regularSwings = SwingHitChances("Test Regular");
+                ctx.Log($"Boss swing hit chances: {string.Join(", ", bossSwings)}; other creature: {string.Join(", ", regularSwings)}");
+                ctx.Assert(bossSwings.Length > 0 && regularSwings.Length > 0, "both attackers swung at the target");
+                ctx.Assert(bossSwings.All(chance => chance == Combat.BossMinimumHitRate),
+                    $"every boss swing rolls at {Combat.BossMinimumHitRate}%: {string.Join(", ", bossSwings)}");
+                ctx.Assert(regularSwings.All(chance => chance == Combat.MinimumHitRate),
+                    $"every other swing rolls at {Combat.MinimumHitRate}%: {string.Join(", ", regularSwings)}");
+            }
+            finally
+            {
+                File.Delete(writer.EventsPath);
+                File.Delete(writer.SummaryPath);
+            }
         }
 
         private static void Prepare(EngineTestContext ctx, uint creature, string name)

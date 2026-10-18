@@ -30,8 +30,15 @@ public class AbilityImpactVisualEffectTests
         foreach (var entry in manifest.RootElement.EnumerateArray())
         {
             var id = entry.GetProperty("Id").GetString()!;
-            var enumName = id == "ShieldBash" ? "Vfx_Imp_Shield_Bash" : "Vfx_Ability_" + id;
+            var enumName = id switch
+            {
+                "ShieldBash" => "Vfx_Imp_Shield_Bash",
+                "MercilessAngleTechnique" => "Vfx_Imp_Merciless_Angle",
+                _ => "Vfx_Ability_" + id
+            };
             Enum.TryParse<VisualEffect>(enumName, out var expected).Should().BeTrue($"{id} must have a stable effect reference");
+            ((int)expected).Should().NotBe(999,
+                $"{id} must avoid NWN's hardcoded Cows from Hell effect, which overrides visualeffects.2da");
             usedEffects.Add(expected).Should().BeTrue($"{id} should have its own effect, shared only across ranks");
             var definitions = entry.GetProperty("DefinitionFiles").EnumerateArray()
                 .Select(file => Path.ChangeExtension(file.GetString()!, null).Replace('/', '.').Replace('\\', '.')).ToArray();
@@ -83,6 +90,12 @@ public class AbilityImpactVisualEffectTests
                 .Where(column => column.name.StartsWith("Imp_") && column.name.EndsWith("_Node"))
                 .Select(column => row[column.index]).Where(value => value != "****").ToArray();
             models.Should().NotBeEmpty($"{id} needs a model attachment");
+            if (id == "MercilessAngleTechnique")
+            {
+                ((int)expected).Should().Be(1127);
+                models.Should().Equal(new[] { "vx_merc_angl" },
+                    "Merciless Angle must retain its authored crimson slash model");
+            }
             foreach (var model in models)
             {
                 model.Length.Should().BeLessThanOrEqualTo(16);

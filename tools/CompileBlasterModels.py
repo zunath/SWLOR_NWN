@@ -1,17 +1,23 @@
-"""Compile staged rigid blasters with NWN:EE; keep material maps beside input MDLs."""
+"""Compile staged rigid weapons with CleanModels; keep maps/MTRs beside MDLs."""
 import argparse
 from pathlib import Path
 import re
 import shutil
-import struct
-import subprocess
+import sys
 import tempfile
 
+sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "SWLOR_Haks/tools"))
+import CleanModels
 
-def compile_models(nwmain, resources, output, names):
-    nwmain, resources, output = (Path(p).resolve() for p in (nwmain, resources, output))
-    if not nwmain.is_file() or not resources.is_dir():
-        raise ValueError("An installed NWN:EE executable and resource directory are required")
+
+def compile_models(compiler, resources, output, names):
+    compiler = CleanModels.find_compiler(compiler)
+    resources, output = (Path(p).resolve() for p in (resources, output))
+    if not resources.is_dir():
+        raise ValueError("A staged resource directory is required")
+    for name in names:
+        if not re.fullmatch(r"[a-zA-Z0-9_]{1,16}", name):
+            raise ValueError(f"Invalid model resource: {name}")
     models = [resources / (name + ".mdl") for name in names] if names else sorted(resources.glob("*.mdl"))
     if not models:
         raise ValueError("No input models")
@@ -23,46 +29,30 @@ def compile_models(nwmain, resources, output, names):
         if (output / model.name).exists():
             raise FileExistsError(f"Use a fresh output directory: {output / model.name}")
     output.mkdir(parents=True, exist_ok=True)
-    startup = None
-    if hasattr(subprocess, "STARTUPINFO"):
-        startup = subprocess.STARTUPINFO()
-        startup.dwFlags |= subprocess.STARTF_USESHOWWINDOW
-        startup.wShowWindow = 0
-    # Each command compiles one model and exits; no client/server stays running.
-    with tempfile.TemporaryDirectory(prefix="nwn-compile-", dir=output.parent) as temporary:
-        user = Path(temporary)
-        development = user / "development"
-        development.mkdir()
-        for resource in resources.iterdir():
-            if resource.is_file() and resource.suffix.lower() in {".mdl", ".mtr", ".dds", ".tga", ".txi"}:
-                shutil.copyfile(resource, development / resource.name)
+    with tempfile.TemporaryDirectory(prefix="cleanmodels-") as temporary:
+        staging = Path(temporary)
+        binary = staging / "binary"
+        binary.mkdir()
+        try:
+            CleanModels.run(compiler, staging, "compile", models, binary, "compile.log", [resources])
+        except RuntimeError as error:
+            raise RuntimeError(f"Compilation failed; see {output / 'compile.log'}") from error
+        finally:
+            if (staging / "compile.log").exists():
+                shutil.copyfile(staging / "compile.log", output / "compile.log")
         for model in models:
-            result = subprocess.run(
-                [str(nwmain), "-userdirectory", str(user), "compilemodel", model.stem],
-                cwd=nwmain.parent, capture_output=True, timeout=60, startupinfo=startup)
-            log = user / "logs/nwengineLog.txt"
-            log_text = log.read_text(errors="replace") if log.exists() else ""
-            (output / (model.stem + ".compile.log")).write_text(log_text)
-            compiled = user / "modelcompiler" / model.name
-            if result.returncode != 0 or f"Successfully compiled model {model.stem}" not in log_text or not compiled.is_file():
-                raise RuntimeError(f"Compilation failed: {model.name}; see output log")
-            data = compiled.read_bytes()
-            if len(data) < 12:
-                raise ValueError(f"Truncated compiled MDL: {model.name}")
-            magic, model_size, raw_size = struct.unpack_from("<III", data)
-            if magic != 0 or 12 + model_size + raw_size != len(data):
-                raise ValueError(f"Invalid compiled MDL header: {model.name}")
+            CleanModels.validate_binary(binary / model.name)
         # Publish only after every compile succeeds. Logs remain local diagnostics.
         for model in models:
-            shutil.copyfile(user / "modelcompiler" / model.name, output / model.name)
+            shutil.copyfile(binary / model.name, output / model.name)
             print(f"Compiled {model.name}: {model.stat().st_size:,} -> {(output / model.name).stat().st_size:,} bytes")
 
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--nwmain", required=True, help="Installed NWN:EE nwmain.exe")
+    parser.add_argument("--compiler", help="Pinned cleanmodels.exe (default: CLEANMODELS, local install, or PATH)")
     parser.add_argument("--resources", required=True, help="Staged ASCII MDLs and material/texture dependencies")
     parser.add_argument("--output", required=True, help="Fresh local output directory")
     parser.add_argument("--models", nargs="*", default=[], help="Optional extensionless model resrefs")
     args = parser.parse_args()
-    compile_models(args.nwmain, args.resources, args.output, args.models)
+    compile_models(args.compiler, args.resources, args.output, args.models)

@@ -11,9 +11,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
     public class DMToolbarViewModel : GuiViewModelBase<DMToolbarViewModel, GuiPayloadBase>,
         IGuiRefreshable<DMPresenceRefreshEvent>
     {
-        // The client sometimes re-centers a window placed at exactly (0, 0), so the toolbar sits one pixel in.
+        // Keep X nonzero to avoid client re-centering; move the top padding off-screen to clear native window controls.
         public const float ToolbarX = 1f;
-        public const float ToolbarY = 1f;
+        public const float ToolbarY = -11f;
         // The client keeps at least 720 UI pixels of height, so a 1280x1024 screen at its highest UI scale is
         // about 914 wide. The admin toolbar must fit there without covering the portrait, which starts about 80
         // pixels from the right edge, so ten buttons leave room for labels only as wide as "Placeables".
@@ -60,7 +60,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             IsAdmin = isAdmin;
             // The toolbar replaces the native DM taskbar, so it always sits in the top-left corner.
             // A hidden button still takes up its space, so the toolbar is cut short before it.
-            Geometry = new GuiRectangle(ToolbarX, ToolbarY, isAdmin ? AdminToolbarWidth : ToolbarWidth, ToolbarHeight);
+            Geometry = new GuiRectangle(ToolbarX, ToolbarY * GetGuiScale(Player), isAdmin ? AdminToolbarWidth : ToolbarWidth, ToolbarHeight);
         }
 
         /// <summary>
@@ -72,14 +72,16 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         public static GuiRectangle PlaceBelowToolbar(uint player, GuiRectangle geometry)
         {
             // Window positions are physical pixels while sizes scale with the UI scale.
-            var scale = GetPlayerDeviceProperty(player, PlayerDevicePropertyType.GuiScale) / 100f;
-            if (scale <= 0f)
-                scale = 1f;
-
-            var toolbarBottom = ToolbarY + ToolbarHeight * scale + 4f;
+            var toolbarBottom = (ToolbarY + ToolbarHeight) * GetGuiScale(player) + 4f;
             return geometry.Y >= toolbarBottom
                 ? geometry
                 : new GuiRectangle(geometry.X, toolbarBottom, geometry.Width, geometry.Height);
+        }
+
+        private static float GetGuiScale(uint player)
+        {
+            var scale = GetPlayerDeviceProperty(player, PlayerDevicePropertyType.GuiScale) / 100f;
+            return scale > 0f ? scale : 1f;
         }
 
         private void RefreshAppearText()

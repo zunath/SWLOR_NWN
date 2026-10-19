@@ -5144,7 +5144,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Stuck — playerap_l_unf"
+            "0": "Stuck - playerap_l_unf"
           }
         },
         "MapNote": {

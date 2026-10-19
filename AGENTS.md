@@ -25,7 +25,7 @@ SWLOR is a live Neverwinter Nights: Enhanced Edition persistent world. Server lo
 
 ## Every Task
 
-- **Supported bodies only:** players are the playable species (`RacialAppearanceRegistry`) on the normal phenotype. Skip base NWN race appearances, gnome and halfling models, and the large phenotype (`Readmes/ContentStandards.md` Characters).
+- Only playable species on the normal phenotype matter (`Readmes/ContentStandards.md` Characters).
 - **Client evidence:** every change with an in-game effect needs NWN client evidence through the established procedure unless the user explicitly waives it; a change with no in-game surface (toolset app, CLI, docs, agent rules) says so in the handoff instead (`Readmes/InEngineVisualVerification.md`).
 - **Tests:** build once with `-p:RunPostBuildEvent=Never -v q -clp:ErrorsOnly`, then `dotnet test <project> --no-build --filter "FullyQualifiedName~<Class>"` for the tests that guard the change. Run the full suite only when asked or the change is broad. Report the filters you ran.
 - **Shared machine:** several Claude and Codex sessions run at once. Work in your own worktree and branch, never stash, reset, or run repo-wide generators in a shared checkout, and stop only processes you started (`Readmes/AgentEnvironment.md`).

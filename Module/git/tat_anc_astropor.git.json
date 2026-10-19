@@ -58918,7 +58918,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Dro�d - Divers dialogues"
+            "2": "Droid - Divers dialogues"
           }
         },
         "Looping": {
@@ -69475,7 +69475,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Stuck — tat_anc_astropor"
+            "0": "Stuck - tat_anc_astropor"
           }
         },
         "MapNote": {

@@ -35230,7 +35230,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Stuck — no_access"
+            "0": "Stuck - no_access"
           }
         },
         "MapNote": {

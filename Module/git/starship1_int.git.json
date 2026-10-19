@@ -11242,7 +11242,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Stuck — starship1_int"
+            "0": "Stuck - starship1_int"
           }
         },
         "MapNote": {

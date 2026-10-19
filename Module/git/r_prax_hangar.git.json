@@ -65067,7 +65067,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Stuck — r_prax_hangar"
+            "0": "Stuck - r_prax_hangar"
           }
         },
         "MapNote": {

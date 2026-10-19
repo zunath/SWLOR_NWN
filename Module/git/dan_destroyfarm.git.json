@@ -7287,7 +7287,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Stuck — dan_destroyfarm"
+            "0": "Stuck - dan_destroyfarm"
           }
         },
         "MapNote": {

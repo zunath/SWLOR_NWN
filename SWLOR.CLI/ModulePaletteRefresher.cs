@@ -72,7 +72,9 @@ namespace SWLOR.CLI
                     fullOutputDirectory,
                     definition.PaletteName + ".itp.json");
 
-                File.WriteAllText(outputPath, palette.ToString(Formatting.Indented));
+                // nwn_gff copies JSON string bytes into the GFF verbatim and the game reads them as
+                // Windows-1252, so the refreshed palette must be written in that encoding too.
+                File.WriteAllText(outputPath, palette.ToString(Formatting.Indented), NwnText);
                 replacements[Path.GetFullPath(palettePath)] = outputPath;
                 results.Add(result);
             }

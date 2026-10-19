@@ -1027,7 +1027,7 @@
               "LocalizedName": {
                 "type": "cexolocstring",
                 "value": {
-                  "0": "Pièces détachées de droïd"
+                  "0": "Pieces detachees de droid"
                 }
               },
               "ModelPart1": {
@@ -27558,7 +27558,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Stuck — tat_anc_gocorpst"
+            "0": "Stuck - tat_anc_gocorpst"
           }
         },
         "MapNote": {

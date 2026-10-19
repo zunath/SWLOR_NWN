@@ -27,13 +27,13 @@
   "DescIdentified": {
     "type": "cexolocstring",
     "value": {
-      "0": "Ash nazg durbatulûk\nash nazg gimbatul\nash nazg thrakatulûk \nagh burzum-ishi krimpatul."
+      "0": "Ash nazg durbatuluk\nash nazg gimbatul\nash nazg thrakatuluk \nagh burzum-ishi krimpatul."
     }
   },
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "Ash nazg durbatulûk\nash nazg gimbatul\nash nazg thrakatulûk \nagh burzum-ishi krimpatul. \n\n"
+      "0": "Ash nazg durbatuluk\nash nazg gimbatul\nash nazg thrakatuluk \nagh burzum-ishi krimpatul. \n\n"
     }
   },
   "Identified": {

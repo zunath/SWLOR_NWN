@@ -170,7 +170,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Détritus"
+            "0": "Detritus"
           }
         },
         "OnClick": {
@@ -398,7 +398,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Détritus"
+            "0": "Detritus"
           }
         },
         "OnClick": {
@@ -626,7 +626,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Détritus"
+            "0": "Detritus"
           }
         },
         "OnClick": {
@@ -2805,7 +2805,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Stuck — tat_anc_northhil"
+            "0": "Stuck - tat_anc_northhil"
           }
         },
         "MapNote": {

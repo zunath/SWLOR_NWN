@@ -766,7 +766,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             }
             else if (IsSelectedDisguiseActive())
             {
-                StatusText = "● Active";
+                StatusText = "Active";
                 StatusColor = _statusActiveColor;
             }
             else

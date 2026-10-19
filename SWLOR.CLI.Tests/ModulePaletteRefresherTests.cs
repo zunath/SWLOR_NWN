@@ -161,6 +161,9 @@ public sealed class ModulePaletteRefresherTests
         var descriptor = Descriptors(TerminalCategories(LoadOutput("placeablepalcus"))[7])
             .Should().ContainSingle().Subject;
         descriptor["NAME"]!["value"]!.Value<string>().Should().Be("Café’s Crate");
+        File.ReadAllBytes(Path.Combine(_outputRoot, "placeablepalcus.itp.json"))
+            .AsSpan().IndexOf(new byte[] { (byte)'C', (byte)'a', (byte)'f', 0xE9, 0x92, (byte)'s' }).Should().BePositive(
+                "nwn_gff copies palette bytes verbatim, so the name must stay Windows-1252");
     }
 
     [TestCase("doorpalcus", "utd", "PaletteID", "LocName")]
@@ -567,7 +570,8 @@ public sealed class ModulePaletteRefresherTests
     private JObject LoadOutput(string paletteName)
     {
         return JObject.Parse(File.ReadAllText(
-            Path.Combine(_outputRoot, paletteName + ".itp.json")));
+            Path.Combine(_outputRoot, paletteName + ".itp.json"),
+            Encoding.GetEncoding(1252)));
     }
 
     private static Dictionary<int, JObject> TerminalCategories(JObject palette)

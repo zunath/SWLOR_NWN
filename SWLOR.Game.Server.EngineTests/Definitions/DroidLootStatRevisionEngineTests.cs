@@ -2,8 +2,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using SWLOR.Game.Server.EngineTests.Framework;
+using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Feature.MigrationDefinition;
-using SWLOR.Game.Server.Feature.MigrationDefinition.PlayerMigration;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.DroidService;
 using SWLOR.NWN.API.NWNX;
@@ -137,16 +137,17 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             }
         }
 
-        [EngineTest("Migration revises a player's summoned droid loot during the character migration", Category = "DroidInventory", TimeoutSeconds = 60f)]
+        [EngineTest("Migration revises a player's droid loot saved on the controller and the summoned droid counts it", Category = "DroidInventory", TimeoutSeconds = 120f)]
         public static async Task LootRevisionPlayerDroid(EngineTestContext ctx)
         {
             using var player = await PlayerAbilityFixture.CreateAsync(ctx, 4f);
             var owner = player.Creature;
             var controller = await CreateController(ctx, owner);
             var droid = await Spawn(ctx, owner, controller);
+            var baseline = 0;
             try
             {
-                var baseline = SkinAttack(droid);
+                baseline = SkinAttack(droid);
                 var pistol = await CreateLoot(ctx, owner, MigrationEngineTests.RevisedPistol);
                 var gloves = await CreateLoot(ctx, owner, MigrationEngineTests.RevisedGloves);
                 await ctx.ExecuteInCreatureContextAsync(owner, () => MigrationEngineTests.RemoveRequirement(pistol));
@@ -156,31 +157,43 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 await StampEquippedLegacyPistol(ctx, droid, pistol);
                 await ctx.ExecuteInCreatureContextAsync(droid, () => MigrationEngineTests.StampLegacyLoot(gloves, GloveLootEnhancements));
                 ctx.AssertEqual(baseline + LegacyPistolAttack(), SkinAttack(droid), "The legacy fixture adds its shipped Attack");
+            }
+            finally
+            {
+                // Dismissing the droid saves its legacy gear on the controller, which the character file carries.
+                if (GetIsObjectValid(droid))
+                    await Dismiss(ctx, owner, droid);
+            }
 
-                await ctx.ExecuteInCreatureContextAsync(owner, () =>
-                {
-                    new _22_ReviseLootStats().Migrate(owner);
-                    MigrationEngineTests.AssertRevisedLoot(ctx, pistol, NoLootEnhancements);
-                    MigrationEngineTests.AssertRevisedLoot(ctx, gloves, GloveLootEnhancements);
-                    ctx.AssertEqual(baseline + RevisedPistolAttack(), SkinAttack(droid), "The droid's skin counts the revised Attack");
-                    ctx.AssertEqual(pistol, GetItemInSlot(InventorySlot.RightHand, droid), "The droid keeps its pistol equipped");
-                    var saved = Droid.LoadConstructedDroid(controller);
-                    AssertSavedLoot(ctx, saved.EquippedItems[InventorySlot.RightHand], NoLootEnhancements);
-                    AssertSavedLoot(ctx, saved.Inventory.Values.Single(), GloveLootEnhancements);
-                    ctx.Assert(!LootStatRevisionMigration.MigrateObject(owner), "A retry makes no further change");
-                });
+            SavedCharacterMigration.Upgraded upgraded = null;
+            await ctx.ExecuteInCreatureContextAsync(owner, () =>
+            {
+                upgraded = SavedCharacterMigration.Run(owner, DB.Get<Player>(player.Id), "_22_ReviseLootStats");
+                var character = SavedCharacterMigration.Load(ctx, upgraded);
+                var saved = Droid.LoadConstructedDroid(SavedCharacterMigration.FindItem(character, Droid.DroidControlItemResref));
+                AssertSavedLoot(ctx, saved.EquippedItems[InventorySlot.RightHand], NoLootEnhancements);
+                AssertSavedLoot(ctx, saved.Inventory.Values.Single(), GloveLootEnhancements);
+                var retried = SavedCharacterMigration.Run(upgraded.File, upgraded.Record, "_22_ReviseLootStats");
+                ctx.Assert(retried.File.SequenceEqual(upgraded.File), "A retry makes no further change");
+            });
 
-                await Dismiss(ctx, owner, droid);
-                droid = await Spawn(ctx, owner, controller);
+            // The upgraded player summons the droid from the revised controller.
+            using var login = await PlayerAbilityFixture.CreateFromCharacterAsync(ctx, upgraded.File, upgraded.Record, 8f);
+            var newOwner = login.Creature;
+            var newController = SavedCharacterMigration.FindItem(newOwner, Droid.DroidControlItemResref);
+            droid = await Spawn(ctx, newOwner, newController);
+            try
+            {
                 MigrationEngineTests.AssertRevisedLoot(ctx, GetItemInSlot(InventorySlot.RightHand, droid), NoLootEnhancements);
+                ctx.AssertEqual(baseline + RevisedPistolAttack(), SkinAttack(droid), "The droid's skin counts the revised Attack");
                 var carried = Items(droid).Where(item => GetResRef(item) == MigrationEngineTests.RevisedGloves).ToList();
-                ctx.AssertEqual(1, carried.Count, "Exactly one pair of gloves returns on resummon");
+                ctx.AssertEqual(1, carried.Count, "Exactly one pair of gloves returns on summon");
                 MigrationEngineTests.AssertRevisedLoot(ctx, carried[0], GloveLootEnhancements);
             }
             finally
             {
                 if (GetIsObjectValid(droid))
-                    await Dismiss(ctx, owner, droid);
+                    await Dismiss(ctx, newOwner, droid);
             }
         }
 

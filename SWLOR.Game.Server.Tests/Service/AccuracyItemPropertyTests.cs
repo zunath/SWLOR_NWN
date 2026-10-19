@@ -110,14 +110,14 @@ public class AccuracyItemPropertyTests
     {
         var root = FindRepositoryRoot();
         var migrationRoot = Path.Combine(root.FullName, "SWLOR.Game.Server", "Feature", "MigrationDefinition");
-        var playerMigration = File.ReadAllText(Path.Combine(migrationRoot, "PlayerMigration", "_14_MigrateResistanceItemProperties.cs"));
+        var characterMigration = File.ReadAllText(Path.Combine(migrationRoot, "CharacterMigration", "_14_15_CombatUpgradeMigrations.cs"));
         var storedMigration = File.ReadAllText(Path.Combine(migrationRoot, "ServerMigration", "StoredItemDataMigration.cs"));
         var accuracyMigration = File.ReadAllText(Path.Combine(migrationRoot, "AccuracyItemPropertyMigration.cs"));
-        var playerMigrationBase = File.ReadAllText(Path.Combine(migrationRoot, "PlayerMigrationBase.cs"));
+        var recalculation = File.ReadAllText(Path.Combine(migrationRoot, "CharacterMigration", "CharacterRecalculation.cs"));
 
-        playerMigration.Should().Contain("AccuracyItemPropertyMigration.MigratePlayer(player);");
+        characterMigration.Should().Contain("SavedCombatUpgradeItemMigrations.MigrateAccuracy(character);");
         storedMigration.Should().Contain("migrated |= AccuracyItemPropertyMigration.MigrateObject(obj);");
-        playerMigrationBase.Should().Contain("dbPlayer.Accuracy = 0;");
+        recalculation.Should().Contain("record.Accuracy = 0;");
 
         // Droid controllers serialize their parts and gear separately from the controller item.
         foreach (var field in new[]

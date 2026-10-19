@@ -1,263 +1,46 @@
 #nullable enable
 using System.Reflection;
 using FluentAssertions;
-using Newtonsoft.Json.Linq;
 using NUnit.Framework;
 using SWLOR.Game.Server.Entity;
-using SWLOR.Game.Server.Feature.MigrationDefinition.PlayerMigration;
 using SWLOR.Game.Server.Feature.MigrationDefinition.ServerMigration;
-using SWLOR.Game.Server.Service.CombatService;
-using SWLOR.Game.Server.Service.CraftService;
-using SWLOR.Game.Server.Service.CurrencyService;
 using SWLOR.Game.Server.Service.MigrationService;
-using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.NWN.API.NWScript.Enum.Item;
 
 namespace SWLOR.Game.Server.Tests.Feature;
 
 public class MigrationDataTests
 {
+    // Production has run player migration 23 and server migration 28.
     private const int ReleasedPlayerVersion = 23;
     private const int ReleasedServerVersion = 28;
-    private static readonly Assembly ServerAssembly = typeof(_22_CombatSystemReplacement).Assembly;
+    private static readonly Assembly ServerAssembly = typeof(SWLOR.Game.Server.Service.Migration).Assembly;
 
     [Test]
-    public void ItemMigrationRunsAfterCachesWhileRawPlayerRepairsRunBeforeCaches()
+    public void CharacterMigrationsHaveUniqueVersionsAndOneCombinedItemUpdate()
     {
-        var migrations = ServerAssembly.GetTypes()
-            .Where(type => !type.IsAbstract && !type.IsInterface && typeof(IServerMigration).IsAssignableFrom(type))
-            .Select(type => (IServerMigration)Activator.CreateInstance(type)!).ToArray();
-        migrations.GroupBy(migration => (migration.Version, migration.ExecutionType))
-            .Should().OnlyContain(group => group.Count() == 1);
-        migrations.Where(migration => migration.Version == 22).Should().HaveCount(2);
-        new _22_CombatSystemReplacement().ExecutionType.Should().Be(MigrationExecutionType.PostDatabaseLoad);
-        new StoredItemSchemaMigration().ExecutionType.Should().Be(MigrationExecutionType.PostCacheLoad);
-        new _24_RemoveWeaponStatOverrides().Version.Should().BeGreaterThan(new _23_RetireForceWeaponEnhancements().Version);
-        new _24_RemoveWeaponStatOverrides().ExecutionType.Should().Be(MigrationExecutionType.PostCacheLoad);
-        migrations.Where(migration => migration.Version >= 27).Select(migration => migration.GetType())
-            .Should().BeEquivalentTo(new[] { typeof(_27_UpdatePlayerRecords), typeof(_27_UpdateStoredItems), typeof(_28_CorrectStoredEquipmentTypes), typeof(_29_CorrectStoredCarapaceBracers) });
-        new _27_UpdatePlayerRecords().ExecutionType.Should().Be(MigrationExecutionType.PostDatabaseLoad);
-        new _27_UpdateStoredItems().ExecutionType.Should().Be(MigrationExecutionType.PostCacheLoad);
-        migrations.Where(migration => migration.Version > ReleasedServerVersion).Select(migration => migration.GetType())
-            .Should().BeEquivalentTo(new[] { typeof(_29_CorrectStoredCarapaceBracers) }, "the last release must receive one combined stored-item pass");
-        new _29_CorrectStoredCarapaceBracers().ExecutionType.Should().Be(MigrationExecutionType.PostCacheLoad);
-        new _29_CorrectStoredCarapaceBracers().Version.Should().Be(ReleasedServerVersion + 1);
+        var migrations = CharacterMigrations.ImplementationTypes
+            .Select(type => Activator.CreateInstance(type)!).ToArray();
+        migrations.Select(CharacterMigrations.VersionOf).Should().OnlyHaveUniqueItems();
+        CharacterMigrations.VersionOf("_17_RemoveWeaponStatOverrides").Should().BeGreaterThan(CharacterMigrations.VersionOf("_16_RetireForceWeaponEnhancements"));
+        migrations.Where(migration => CharacterMigrations.VersionOf(migration) >= 22).Select(migration => migration.GetType())
+            .Should().BeEquivalentTo(new[] { CharacterMigrations.Named("_22_ReviseLootStats"), CharacterMigrations.Named("_23_CorrectEquipmentTypes"),
+                CharacterMigrations.Named("_24_CorrectCarapaceBracers") });
+        migrations.Where(migration => CharacterMigrations.VersionOf(migration) > ReleasedPlayerVersion).Select(migration => migration.GetType())
+            .Should().BeEquivalentTo(new[] { CharacterMigrations.Named("_24_CorrectCarapaceBracers") }, "the next release must receive one combined player-item pass");
+        CharacterMigrations.VersionOf("_24_CorrectCarapaceBracers").Should().Be(ReleasedPlayerVersion + 1);
     }
 
     [Test]
-    public void PlayerMigrationsHaveUniqueVersionsAndOneCombinedItemUpdate()
+    public void TheCharacterUpgradeRunsEveryMigrationInVersionOrder()
     {
-        var migrations = ServerAssembly.GetTypes()
-            .Where(type => !type.IsAbstract && !type.IsInterface && typeof(IPlayerMigration).IsAssignableFrom(type))
-            .Select(type => (IPlayerMigration)Activator.CreateInstance(type)!).ToArray();
-        migrations.Select(migration => migration.Version).Should().OnlyHaveUniqueItems();
-        new _17_RemoveWeaponStatOverrides().Version.Should().BeGreaterThan(new _16_RetireForceWeaponEnhancements().Version);
-        migrations.Where(migration => migration.Version >= 22).Select(migration => migration.GetType())
-            .Should().BeEquivalentTo(new[] { typeof(_22_ReviseLootStats), typeof(_23_CorrectEquipmentTypes), typeof(_24_CorrectCarapaceBracers) });
-        migrations.Where(migration => migration.Version > ReleasedPlayerVersion).Select(migration => migration.GetType())
-            .Should().BeEquivalentTo(new[] { typeof(_24_CorrectCarapaceBracers) }, "the last release must receive one combined player-item pass");
-        new _24_CorrectCarapaceBracers().Version.Should().Be(ReleasedPlayerVersion + 1);
-    }
-
-    [Test]
-    public void ItemIconMigration_CheckpointsAfterAlreadyCompletedSchemaMigration()
-    {
-        var type = ServerAssembly.GetType("SWLOR.Game.Server.Service.MigrationService.ServerMigrationState")!;
-        var state = Activator.CreateInstance(type, 26)!;
-        var executed = false;
-        type.GetMethod("Run")!.Invoke(state, new object[]
-        {
-            new _27_UpdateStoredItems(), (Action<IServerMigration>)(_ => executed = true)
-        });
-        executed.Should().BeTrue();
-        type.GetProperty("CompletedVersion")!.GetValue(state).Should().Be(27);
-    }
-
-    [Test]
-    public void AFailedLaterPhaseCannotCheckpointAnEarlierHigherVersion()
-    {
-        var type = ServerAssembly.GetType("SWLOR.Game.Server.Service.MigrationService.ServerMigrationState")!;
-        var state = Activator.CreateInstance(type, 20)!;
-        var run = type.GetMethod("Run")!;
-        run.Invoke(state, new object[] { new _22_CombatSystemReplacement(), (Action<IServerMigration>)(_ => { }) });
-        Action fail = () => run.Invoke(state, new object[]
-        {
-            new StoredItemSchemaMigration(), (Action<IServerMigration>)(_ => throw new InvalidOperationException("failed item"))
-        });
-        fail.Should().Throw<TargetInvocationException>();
-        type.GetProperty("Failed")!.GetValue(state).Should().Be(true);
-        type.GetProperty("CompletedVersion")!.GetValue(state).Should().Be(20);
-
-        var executed = false;
-        Action retry = () => run.Invoke(state, new object[]
-        {
-            new StoredItemSchemaMigration(), (Action<IServerMigration>)(_ => executed = true)
-        });
-        retry.Should().Throw<TargetInvocationException>();
-        executed.Should().BeFalse();
-    }
-
-    [Test]
-    public void SuccessfulPhasesKeepTheHighestCompletedVersion()
-    {
-        var type = ServerAssembly.GetType("SWLOR.Game.Server.Service.MigrationService.ServerMigrationState")!;
-        var state = Activator.CreateInstance(type, 20)!;
-        foreach (var migration in new IServerMigration[] { new _22_CombatSystemReplacement(), new _21_SetDefaultOutfitAndMarketLimits(), new StoredItemSchemaMigration() })
-            type.GetMethod("Run")!.Invoke(state, new object[] { migration, (Action<IServerMigration>)(_ => { }) });
-        type.GetProperty("CompletedVersion")!.GetValue(state).Should().Be(22);
-    }
-
-    [Test]
-    public void RetryingServerPlayerConversionPreservesCurrenciesAndDoesNotRefundTwice()
-    {
-        var raw = PlayerJson();
-        raw["Version"] = 12;
-        raw["UnallocatedSP"] = 5;
-        raw["Currencies"] = JObject.Parse("""{"RebuildToken":3}""");
-        raw["Perks"] = JObject.Parse("""{"HackingBlade":3,"8":2}""");
-        var player = MigratePlayer(raw, out var refund)!;
-        refund.Should().Be(9, "numeric and named aliases represent the same purchased ranks");
-        player.UnallocatedSP.Should().Be(14);
-        player.Currencies[CurrencyType.RebuildToken].Should().Be(3, "the bonus token belongs to the player migration");
-        player.Version.Should().Be(12, "server conversion must not advance player migrations");
-        player.RebuildComplete.Should().BeFalse();
-
-        var saved = JObject.FromObject(player);
-        var before = saved.DeepClone();
-        var retried = MigratePlayer(saved, out refund)!;
-        refund.Should().Be(0);
-        JToken.DeepEquals(JObject.FromObject(retried), before).Should().BeTrue();
-    }
-
-    [TestCase(1, 1)]
-    [TestCase(2, 2)]
-    [TestCase(3, 4)]
-    [TestCase(4, 7)]
-    [TestCase(5, 10)]
-    public void LegacyBlueprintRefundMatchesThePurchasedPrice(int rank, int expected)
-    {
-        var raw = PlayerJson();
-        raw["Perks"] = new JObject { ["BladeBlueprints"] = rank };
-        var player = MigratePlayer(raw, out var refund)!;
-        refund.Should().Be(expected);
-        player.UnallocatedSP.Should().Be(expected);
-        player.Perks.Should().BeEmpty();
-    }
-
-    [Test]
-    public void MultipleBlueprintFamiliesRefundEachInvestmentOnce()
-    {
-        var raw = PlayerJson();
-        raw["Perks"] = JObject.Parse("""{"BladeBlueprints":5,"127":5,"TwoHandedBlueprints":5,"WeaponBlueprints":2}""");
-        MigratePlayer(raw, out var refund);
-        refund.Should().Be(25);
-    }
-
-    [TestCase("VibrobladeProficiency", 5, 10)]
-    [TestCase("6", 5, 10)]
-    [TestCase("Doublehand", 5, 6)]
-    [TestCase("1", 5, 6)]
-    [TestCase("WeaponFocusVibroblades", 2, 7)]
-    [TestCase("SmokeBomb", 3, 8)]
-    [TestCase("210", 3, 8)]
-    [TestCase("FlurryStyle", 2, 5)]
-    [TestCase("236", 2, 5)]
-    [TestCase("388", 1, 3)]
-    public void RetiredPerksRefundHistoricalPricesBeforeTheirNamesOrIdsAreDiscarded(string key, int rank, int expected)
-    {
-        var raw = PlayerJson();
-        raw["Perks"] = new JObject { [key] = rank };
-        var player = MigratePlayer(raw, out var refund)!;
-        refund.Should().Be(expected);
-        player.UnallocatedSP.Should().Be(expected);
-        player.Perks.Should().BeEmpty();
-    }
-
-    [Test]
-    public void ANewPerkNameDoesNotInheritTheRefundOfItsReusedLegacyId()
-    {
-        var raw = PlayerJson();
-        raw["Perks"] = JObject.Parse("""{"BlastRadius":3}""");
-        var player = MigratePlayer(raw, out var refund)!;
-        refund.Should().Be(0, "BlastRadius reuses HackingBlade's ID but is a different perk");
-        player.Perks[SWLOR.Game.Server.Service.PerkService.PerkType.BlastRadius].Should().Be(3);
-    }
-
-    [TestCase("DualWield", 2, 1, 4)]
-    [TestCase("RiotBlade", 9, 3, 8)]
-    [TestCase("LegSweep", 42, 3, 9)]
-    [TestCase("CrossCut", 43, 3, 8)]
-    [TestCase("CircleSlash", 48, 3, 9)]
-    [TestCase("DoubleStrike", 49, 3, 8)]
-    [TestCase("Slam", 64, 3, 8)]
-    [TestCase("SpinningWhirl", 65, 3, 9)]
-    [TestCase("RapidShot", 66, 2, 8)]
-    [TestCase("QuickDraw", 75, 3, 9)]
-    [TestCase("DoubleShot", 76, 3, 8)]
-    [TestCase("ExplosiveToss", 81, 3, 9)]
-    [TestCase("PiercingToss", 82, 3, 8)]
-    [TestCase("CripplingShot", 94, 3, 8)]
-    [TestCase("ShieldBash", 242, 3, 8)]
-    [TestCase("Bulwark", 244, 1, 3)]
-    public void PerkNamesReusedAtNewIdsRefundTheHistoricalInvestmentOnce(string name, int legacyId, int rank, int expected)
-    {
-        var raw = PlayerJson();
-        raw["Perks"] = new JObject { [name] = rank, [legacyId.ToString()] = rank };
-        raw["UnlockedPerks"] = new JObject { [name] = DateTime.UtcNow, [legacyId.ToString()] = DateTime.UtcNow };
-        var player = MigratePlayer(raw, out var refund)!;
-        refund.Should().Be(expected);
-        player.UnallocatedSP.Should().Be(expected);
-        player.Perks.Should().BeEmpty();
-        player.UnlockedPerks.Should().BeEmpty();
-
-        var retried = MigratePlayer(JObject.FromObject(player), out refund)!;
-        refund.Should().Be(0);
-        retried.UnallocatedSP.Should().Be(expected);
-    }
-
-    [Test]
-    public void NumericResistanceKeysKeepTheirResistanceMeaning()
-    {
-        var raw = PlayerJson();
-        raw["Resistances"] = JObject.Parse("""{"1":-12,"2":15,"3":8,"4":9,"5":10,"6":11,"7":12,"8":13}""");
-        raw["Defenses"] = JObject.Parse("""{"1":20,"2":30}""");
-        var player = MigratePlayer(raw, out _)!;
-        player.Defenses[CombatDamageType.Physical].Should().Be(20);
-        player.Defenses[CombatDamageType.Force].Should().Be(30);
-        player.Resistances.Should().BeEquivalentTo(new Dictionary<ResistanceType, int>
-        {
-            [ResistanceType.Fire] = -12, [ResistanceType.Poison] = 15,
-            [ResistanceType.Electrical] = 8, [ResistanceType.Ice] = 9,
-            [ResistanceType.Mind] = 10, [ResistanceType.Mobility] = 11,
-            [ResistanceType.Trauma] = 12, [ResistanceType.Disruption] = 13
-        });
-    }
-
-    [TestCase("LightsaberUpgradeKit1", RecipeType.ChiroLightsaberUpgradeKit)]
-    [TestCase("367", RecipeType.ChiroLightsaberUpgradeKit)]
-    [TestCase("SaberstaffUpgradeKit1", RecipeType.ChiroSaberstaffUpgradeKit)]
-    [TestCase("368", RecipeType.ChiroSaberstaffUpgradeKit)]
-    public void RetiredSaberRecipeUnlocksSurviveWithNameOrNumericKeys(string key, RecipeType replacement)
-    {
-        var raw = PlayerJson();
-        var date = new DateTime(2025, 1, 1, 0, 0, 0, DateTimeKind.Utc);
-        raw["UnlockedRecipes"] = new JObject { [key] = date };
-        raw["CraftedRecipes"] = new JObject { [key] = date };
-        var player = MigratePlayer(raw, out _)!;
-        player.UnlockedRecipes[replacement].Should().Be(date);
-        player.CraftedRecipes[replacement].Should().Be(date);
-    }
-
-    [Test]
-    public void RetiredBeastEnumNamesAreClearedBeforeDeserialization()
-    {
-        var raw = JObject.Parse("""{"Level":20,"Perks":{"RetiredUnknownBeastPerk":3}}""");
-        Invoke("ServerMigration._22_CombatSystemReplacement", "ClearBeastPerks", raw).Should().Be(true);
-        var beast = raw.ToObject<Beast>()!;
-        var args = new object[] { beast, false };
-        Invoke("ServerMigration._22_CombatSystemReplacement", "RefundBeastPerks", args);
-        beast.Perks.Should().BeEmpty();
-        beast.UnallocatedSP.Should().Be(20);
+        var registered = CharacterMigrations.Registered.Select(CharacterMigrations.VersionOf).ToArray();
+        registered.Should().OnlyHaveUniqueItems();
+        registered.Should().BeInAscendingOrder("the upgrade applies migrations oldest first");
+        registered.Should().BeEquivalentTo(
+            CharacterMigrations.ImplementationTypes.Select(type => CharacterMigrations.VersionOf(Activator.CreateInstance(type)!)),
+            "every migration class is registered");
+        CharacterMigrations.LatestVersion.Should().Be(registered[^1]);
     }
 
     [TestCase(112, -12)]
@@ -279,260 +62,83 @@ public class MigrationDataTests
         first.Should().Be("source-recipe-4800");
     }
 
-    [TestCase(PerkType.IonGrenade, 3, 2, 3)]
-    [TestCase(PerkType.AdhesiveGrenade, 3, 2, 3)]
-    [TestCase(PerkType.MedKit, 5, 4, 4)]
-    [TestCase(PerkType.Resuscitation, 3, 2, 4)]
-    [TestCase(PerkType.Shielding, 4, 3, 4)]
-    public void TrimmedPerksRefundOnlyRemovedRanksAndRemainStableOnRetry(PerkType perk, int oldRank, int newRank, int expectedRefund)
+    [Test]
+    public void AFailedLaterPhaseCannotCheckpointAnEarlierHigherVersion()
     {
-        var raw = PlayerJson();
-        raw["Perks"] = new JObject { [perk.ToString()] = oldRank, [perk.ToString("D")] = oldRank - 1 };
-        var player = MigratePlayer(raw, out var refund)!;
-        refund.Should().Be(expectedRefund);
-        player.Perks.Should().ContainSingle().Which.Should().Be(new KeyValuePair<PerkType, int>(perk, newRank));
+        var type = ServerAssembly.GetType("SWLOR.Game.Server.Service.MigrationService.ServerMigrationState")!;
+        var state = Activator.CreateInstance(type, 20)!;
+        var run = type.GetMethod("Run")!;
+        run.Invoke(state, new object[] { new StandInMigration(22, MigrationExecutionType.PostDatabaseLoad), (Action<IServerMigration>)(_ => { }) });
+        var later = new StandInMigration(21, MigrationExecutionType.PostCacheLoad);
+        Action fail = () => run.Invoke(state, new object[]
+        {
+            later, (Action<IServerMigration>)(_ => throw new InvalidOperationException("failed item"))
+        });
+        fail.Should().Throw<TargetInvocationException>();
+        type.GetProperty("Failed")!.GetValue(state).Should().Be(true);
+        type.GetProperty("CompletedVersion")!.GetValue(state).Should().Be(20);
 
-        var retried = MigratePlayer(JObject.FromObject(player), out refund)!;
-        refund.Should().Be(0);
-        retried.UnallocatedSP.Should().Be(expectedRefund);
-        retried.Perks.Should().BeEquivalentTo(player.Perks);
-    }
-
-    [TestCase(-3, 0)]
-    [TestCase(0, 0)]
-    [TestCase(99, 9)]
-    public void HistoricalRefundsAreBoundedByActualPurchasableRanks(int rank, int expected)
-    {
-        var raw = PlayerJson();
-        raw["Perks"] = new JObject { ["HackingBlade"] = rank };
-        var player = MigratePlayer(raw, out var refund)!;
-        refund.Should().Be(expected);
-        player.UnallocatedSP.Should().Be(expected);
-        player.Perks.Should().BeEmpty();
-    }
-
-    [TestCase(1, 3)]
-    [TestCase(3, 1)]
-    public void HistoricalAliasesUseTheHighestRankRegardlessOfWhichKeyHasIt(int namedRank, int numericRank)
-    {
-        var raw = PlayerJson();
-        raw["Perks"] = new JObject { ["HackingBlade"] = namedRank, ["8"] = numericRank };
-        MigratePlayer(raw, out var refund);
-        refund.Should().Be(9);
+        var executed = false;
+        Action retry = () => run.Invoke(state, new object[]
+        {
+            later, (Action<IServerMigration>)(_ => executed = true)
+        });
+        retry.Should().Throw<TargetInvocationException>();
+        executed.Should().BeFalse();
     }
 
     [Test]
-    public void UnlockingAnUnpurchasedRetiredPerkDoesNotAwardSkillPoints()
+    public void SuccessfulPhasesKeepTheHighestCompletedVersion()
     {
-        var raw = PlayerJson();
-        raw["UnallocatedSP"] = 17;
-        raw["UnlockedPerks"] = new JObject { ["HackingBlade"] = new DateTime(2025, 1, 1) };
-        var player = MigratePlayer(raw, out var refund)!;
-        refund.Should().Be(0);
-        player.UnallocatedSP.Should().Be(17);
-        player.UnlockedPerks.Should().BeEmpty();
-    }
-
-    [TestCase(0, -12, -12)]
-    [TestCase(-12, 0, -12)]
-    [TestCase(-12, -5, -5)]
-    [TestCase(-12, 8, 8)]
-    [TestCase(18, 8, 18)]
-    public void MixedResistanceAliasesPreserveVulnerabilitiesAndTheStrongerNonzeroValue(int named, int numeric, int expected)
-    {
-        var raw = PlayerJson();
-        raw["Resistances"] = new JObject { ["Fire"] = named, ["1"] = numeric };
-        var player = MigratePlayer(raw, out _)!;
-        player.Resistances[ResistanceType.Fire].Should().Be(expected);
-        var retried = MigratePlayer(JObject.FromObject(player), out _)!;
-        retried.Resistances.Should().BeEquivalentTo(player.Resistances);
-    }
-
-    [TestCase(0, -4, 0, 4)]
-    [TestCase(-10, 5, 0, 0)]
-    [TestCase(99, 60, 50, 0)]
-    [TestCase(20, 3, 20, 17)]
-    public void BeastRebuildClampsThePointBudgetAndDoesNotRegrantOnRetry(int level, int unallocated, int expectedPoints, int expectedRefund)
-    {
-        var beast = new Beast { Level = level, UnallocatedSP = unallocated, Perks = null! };
-        var args = new object[] { beast, false };
-        Invoke("ServerMigration._22_CombatSystemReplacement", "RefundBeastPerks", args).Should().Be(expectedRefund);
-        beast.UnallocatedSP.Should().Be(expectedPoints);
-        beast.Perks.Should().BeEmpty();
-        Invoke("ServerMigration._22_CombatSystemReplacement", "RefundBeastPerks", args).Should().Be(0);
-        args[1].Should().Be(false);
+        var type = ServerAssembly.GetType("SWLOR.Game.Server.Service.MigrationService.ServerMigrationState")!;
+        var state = Activator.CreateInstance(type, 20)!;
+        foreach (var migration in new IServerMigration[]
+                 {
+                     new StandInMigration(22, MigrationExecutionType.PostDatabaseLoad), new StandInMigration(21, MigrationExecutionType.PostCacheLoad),
+                     new StandInMigration(22, MigrationExecutionType.PostCacheLoad),
+                 })
+            type.GetMethod("Run")!.Invoke(state, new object[] { migration, (Action<IServerMigration>)(_ => { }) });
+        type.GetProperty("CompletedVersion")!.GetValue(state).Should().Be(22);
     }
 
     [Test]
-    public void RecipeRenameKeepsExistingReplacementDatesAndUnrelatedRecipes()
+    public void RetiredServerMigrations_StartNewDatabasesAtTheBaselineAndRejectOlderOnes()
     {
-        var raw = PlayerJson();
-        var oldDate = new DateTime(2024, 1, 1, 0, 0, 0, DateTimeKind.Utc);
-        var replacementDate = oldDate.AddDays(7);
-        foreach (var dictionary in new[] { "UnlockedRecipes", "CraftedRecipes" })
-            raw[dictionary] = new JObject
-            {
-                ["LightsaberUpgradeKit1"] = oldDate,
-                ["367"] = oldDate,
-                [nameof(RecipeType.ChiroLightsaberUpgradeKit)] = replacementDate,
-                [nameof(RecipeType.CookedSardine)] = oldDate
-            };
-        var player = MigratePlayer(raw, out _)!;
-        foreach (var recipes in new[] { player.UnlockedRecipes, player.CraftedRecipes })
-        {
-            recipes.Should().HaveCount(2);
-            recipes[RecipeType.ChiroLightsaberUpgradeKit].Should().Be(replacementDate);
-            recipes[RecipeType.CookedSardine].Should().Be(oldDate);
-        }
-        var retried = MigratePlayer(JObject.FromObject(player), out _)!;
-        retried.UnlockedRecipes.Should().BeEquivalentTo(player.UnlockedRecipes);
-        retried.CraftedRecipes.Should().BeEquivalentTo(player.CraftedRecipes);
-    }
+        var migration = ServerAssembly.GetType("SWLOR.Game.Server.Service.Migration")!;
+        var baseline = (int)migration.GetField("RetiredServerMigrationVersion", BindingFlags.NonPublic | BindingFlags.Static)!.GetValue(null)!;
+        var resolve = migration.GetMethod("ResolveConfiguration", BindingFlags.NonPublic | BindingFlags.Static)!;
+        ServerConfiguration Resolve(ServerConfiguration stored) => (ServerConfiguration)resolve.Invoke(null, new object[] { stored! })!;
 
-    [TestCase("OneHandedBoost1", "LightWeaponBoost1", "3488", new[] { 4799, 4800, 4801 })]
-    [TestCase("TwoHandedBoost1", "HeavyWeaponBoost1", "3489", new[] { 4802, 4803, 4804, 4805 })]
-    [TestCase("MartialArtsBoost1", "KatarStaffBoost1", "3490", new[] { 4806, 4807 })]
-    [TestCase("RangedBoost1", "ProjectileBoost1", "3491", new[] { 4808, 4809, 4810 })]
-    [TestCase("OneHandedBoost2", "LightWeaponBoost2", "3492", new[] { 4811, 4812, 4813 })]
-    [TestCase("TwoHandedBoost2", "HeavyWeaponBoost2", "3493", new[] { 4814, 4815, 4816, 4817 })]
-    [TestCase("MartialArtsBoost2", "KatarStaffBoost2", "3494", new[] { 4818, 4819 })]
-    [TestCase("RangedBoost2", "ProjectileBoost2", "3495", new[] { 4820, 4821, 4822 })]
-    public void EachDroidRecipeAliasExpandsBothDictionariesAndSurvivesRetry(string name, string alias, string numeric, int[] replacements)
-    {
-        var date = new DateTime(2025, 1, 1, 0, 0, 0, DateTimeKind.Utc);
-        foreach (var key in new[] { name, alias, numeric })
-        {
-            var raw = PlayerJson();
-            raw["UnlockedRecipes"] = new JObject { [key] = date };
-            raw["CraftedRecipes"] = new JObject { [key] = date };
-            var player = MigratePlayer(raw, out _)!;
-            var expected = replacements.ToDictionary(id => (RecipeType)id, _ => date);
-            player.UnlockedRecipes.Should().BeEquivalentTo(expected, $"unlock alias {key}");
-            player.CraftedRecipes.Should().BeEquivalentTo(expected, $"crafted alias {key}");
-            var retried = MigratePlayer(JObject.FromObject(player), out _)!;
-            retried.UnlockedRecipes.Should().BeEquivalentTo(expected);
-            retried.CraftedRecipes.Should().BeEquivalentTo(expected);
-        }
-    }
+        baseline.Should().Be(ReleasedServerVersion, "every server migration production has run is retired");
+        Resolve(null!).MigrationVersion.Should().Be(baseline, "a new database has nothing for the retired migrations to change");
+        Resolve(new ServerConfiguration { MigrationVersion = baseline - 1 }).Should().BeNull("this build no longer has the migrations an older database needs");
+        var current = new ServerConfiguration { MigrationVersion = baseline };
+        Resolve(current).Should().BeSameAs(current);
 
-    private static JObject PlayerJson() => JObject.Parse("""{"UnknownDisplayName":"A quiet traveler","RebuildComplete":true}""");
-
-    [Test]
-    public void LegacyFrogQuest_MovesToRewardTurnInWithoutRewardsAndSurvivesRetry()
-    {
-        var raw = PlayerJson();
-        raw["Quests"] = JObject.Parse("""
-            {"alchemized_frog":{"CurrentState":2,"TimesCompleted":0,"DateLastCompleted":null,
-              "ItemProgresses":{},"KillProgresses":{"Korriban_AlchemizedFrog":0}},
-             "other_quest":{"CurrentState":2,"ItemProgresses":{"other_proof":2}}}
-            """);
-        var otherQuest = raw["Quests"]!["other_quest"]!.ToObject<PlayerQuest>()!;
-
-        var player = MigratePlayer(raw, out _)!;
-
-        var frog = player.Quests["alchemized_frog"];
-        frog.CurrentState.Should().Be(3);
-        frog.ItemProgresses.Should().BeEmpty();
-        frog.KillProgresses.Should().BeEmpty();
-        frog.TimesCompleted.Should().Be(0, "the player must still claim the reward from Camila");
-        frog.DateLastCompleted.Should().BeNull();
-        player.Quests["other_quest"].Should().BeEquivalentTo(otherQuest);
-        var retried = MigratePlayer(JObject.FromObject(player), out _)!;
-        retried.Quests.Should().BeEquivalentTo(player.Quests);
-    }
-
-    [TestCase(1, 0, false, null)]
-    [TestCase(2, 0, false, 1)]
-    [TestCase(2, 0, false, 0)]
-    [TestCase(2, 1, false, null)]
-    [TestCase(2, 0, true, null)]
-    [TestCase(3, 0, false, null)]
-    [TestCase(3, 1, true, null)]
-    public void FrogQuestRepair_PreservesOtherStagesCompletedQuestsAndInitializedProof(
-        int state, int completions, bool completedDate, int? remainingProof)
-    {
-        var quest = new PlayerQuest
-        {
-            CurrentState = state,
-            TimesCompleted = completions,
-            DateLastCompleted = completedDate ? new DateTime(2026, 1, 1) : null
-        };
-        if (remainingProof.HasValue) quest.ItemProgresses["frogguts"] = remainingProof.Value;
-        var raw = PlayerJson();
-        raw["Quests"] = new JObject { ["alchemized_frog"] = JObject.FromObject(quest) };
-
-        var player = MigratePlayer(raw, out _)!;
-
-        player.Quests["alchemized_frog"].Should().BeEquivalentTo(quest);
-    }
-
-    [TestCase("nar_great_arkanian_dragon", "ark_dragon_troph", 1)]
-    [TestCase("nar_great_arkanian_dragon", "ark_dragon_troph", 0)]
-    [TestCase("nar_great_arkanian_dragon", "ark_dragon_troph", null)]
-    [TestCase("smuggler_favor", "stolen_goods", 5)]
-    [TestCase("smuggler_favor", "stolen_goods", 2)]
-    [TestCase("smuggler_favor", "stolen_goods", 0)]
-    [TestCase("smuggler_favor", "stolen_goods", null)]
-    public void SharedBossProofQuest_MovesExistingCollectionProgressToTurnInAndSurvivesRetry(
-        string questId, string proof, int? remaining)
-    {
-        var quest = new PlayerQuest { CurrentState = 2 };
-        if (remaining.HasValue) quest.ItemProgresses[proof] = remaining.Value;
-        var raw = PlayerJson();
-        raw["Quests"] = new JObject
-        {
-            [questId] = JObject.FromObject(quest),
-            ["unrelated_quest"] = JObject.FromObject(quest)
-        };
-        var player = MigratePlayer(raw, out _)!;
-
-        var migrated = player.Quests[questId];
-        migrated.CurrentState.Should().Be(3);
-        migrated.ItemProgresses.Should().BeEmpty();
-        migrated.KillProgresses.Should().BeEmpty();
-        migrated.TimesCompleted.Should().Be(0, "the player must still claim the reward from the giver");
-        migrated.DateLastCompleted.Should().BeNull();
-        player.Quests["unrelated_quest"].Should().BeEquivalentTo(quest);
-
-        var retried = MigratePlayer(JObject.FromObject(player), out _)!;
-        retried.Quests.Should().BeEquivalentTo(player.Quests);
-    }
-
-    [TestCase("nar_great_arkanian_dragon", "ark_dragon_troph")]
-    [TestCase("smuggler_favor", "stolen_goods")]
-    public void SharedBossProofQuestRepair_PreservesEarlierLaterAndCompletedRecords(string questId, string proof)
-    {
-        var completedOn = new DateTime(2026, 1, 1);
-        foreach (var quest in new[]
-        {
-            new PlayerQuest { CurrentState = 1 },
-            new PlayerQuest { CurrentState = 3 },
-            new PlayerQuest { CurrentState = 2, TimesCompleted = 1 },
-            new PlayerQuest { CurrentState = 2, DateLastCompleted = completedOn },
-            new PlayerQuest { CurrentState = 3, TimesCompleted = 1, DateLastCompleted = completedOn }
-        })
-        {
-            quest.ItemProgresses[proof] = 1;
-            var raw = PlayerJson();
-            raw["Quests"] = new JObject { [questId] = JObject.FromObject(quest) };
-
-            var player = MigratePlayer(raw, out _)!;
-
-            player.Quests[questId].Should().BeEquivalentTo(quest);
-        }
-    }
-
-    private static Player? MigratePlayer(JObject raw, out int refund)
-    {
-        var args = new object[] { raw, 0 };
-        var player = (Player?)typeof(_22_CombatSystemReplacement)
-            .GetMethod("MigratePlayerData", BindingFlags.NonPublic | BindingFlags.Instance)!
-            .Invoke(new _22_CombatSystemReplacement(), args);
-        refund = (int)args[1];
-        return player;
+        var remaining = ServerAssembly.GetTypes()
+            .Where(type => !type.IsAbstract && !type.IsInterface && typeof(IServerMigration).IsAssignableFrom(type))
+            .Select(type => (IServerMigration)Activator.CreateInstance(type)!).ToArray();
+        remaining.Should().OnlyContain(server => server.Version > baseline, "retired migrations are removed, not kept beside the baseline");
+        remaining.Select(server => server.GetType()).Should().BeEquivalentTo(new[] { typeof(_29_CorrectStoredCarapaceBracers) },
+            "the next release must receive one combined stored-item pass");
+        new _29_CorrectStoredCarapaceBracers().ExecutionType.Should().Be(MigrationExecutionType.PostCacheLoad);
+        new _29_CorrectStoredCarapaceBracers().Version.Should().Be(ReleasedServerVersion + 1);
     }
 
     private static object? Invoke(string type, string method, params object[] args) =>
         ServerAssembly.GetType("SWLOR.Game.Server.Feature.MigrationDefinition." + type)!
             .GetMethod(method, BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static)!.Invoke(null, args);
+
+    private sealed class StandInMigration : IServerMigration
+    {
+        public StandInMigration(int version, MigrationExecutionType executionType)
+        {
+            Version = version;
+            ExecutionType = executionType;
+        }
+
+        public int Version { get; }
+        public MigrationExecutionType ExecutionType { get; }
+        public void Migrate() { }
+    }
 }

@@ -408,7 +408,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 }
 
                 var item = ObjectPlugin.Deserialize(structure.SerializedItem);
-                ObjectPlugin.AcquireItem(Player, item);
+                if (!Item.TryAcquireItem(Player, item))
+                {
+                    Instructions = Item.InventoryFullShortMessage;
+                    InstructionColor = GuiColor.Red;
+                    return;
+                }
 
                 // Remove the structure from the parent's child list.
                 parentProperty.ChildPropertyIds[PropertyChildType.Structure].Remove(structure.Id);

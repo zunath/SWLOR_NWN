@@ -20,10 +20,10 @@ namespace SWLOR.CLI
     /// </remarks>
     public static class ModulePaletteRefresher
     {
-        private static readonly Encoding StrictUtf8 = new UTF8Encoding(
-            encoderShouldEmitUTF8Identifier: false,
-            throwOnInvalidBytes: true);
-        private static readonly Encoding NwnText = CreateNwnTextEncoding();
+        // nwn_gff copies JSON string bytes into the GFF verbatim and the game reads them as
+        // Windows-1252. Latin-1 maps every byte to one char and back, so names and raw color-token
+        // channel bytes reach the refreshed palette exactly as the source resources store them.
+        private static readonly Encoding NwnBytes = Encoding.Latin1;
 
         private static readonly PaletteDefinition[] Definitions =
         {
@@ -72,7 +72,7 @@ namespace SWLOR.CLI
                     fullOutputDirectory,
                     definition.PaletteName + ".itp.json");
 
-                File.WriteAllText(outputPath, palette.ToString(Formatting.Indented));
+                File.WriteAllText(outputPath, palette.ToString(Formatting.Indented), NwnBytes);
                 replacements[Path.GetFullPath(palettePath)] = outputPath;
                 results.Add(result);
             }
@@ -349,31 +349,12 @@ namespace SWLOR.CLI
                 if (content.StartsWith(Encoding.UTF8.Preamble))
                     content = content[Encoding.UTF8.Preamble.Length..];
 
-                string json;
-                try
-                {
-                    json = StrictUtf8.GetString(content);
-                }
-                catch (DecoderFallbackException)
-                {
-                    // nwn_gff writes text fields as raw Windows-1252, while hand-edited resources
-                    // may be real UTF-8. Match the formats library's strict-UTF-8-first convention
-                    // so valid UTF-8 is preserved and legacy NWN bytes are decoded without damage.
-                    json = NwnText.GetString(content);
-                }
-
-                return JObject.Parse(json);
+                return JObject.Parse(NwnBytes.GetString(content));
             }
             catch (Exception ex) when (ex is JsonException or IOException or UnauthorizedAccessException)
             {
                 throw new InvalidDataException($"Could not read NWN JSON resource '{path}'.", ex);
             }
-        }
-
-        private static Encoding CreateNwnTextEncoding()
-        {
-            Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
-            return Encoding.GetEncoding(1252);
         }
 
         private static JArray RequireListValue(JObject owner, string fieldName, string context)

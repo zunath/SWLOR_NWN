@@ -433,7 +433,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Stuck — medical_center"
+            "0": "Stuck - medical_center"
           }
         },
         "MapNote": {

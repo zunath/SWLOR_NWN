@@ -17,7 +17,7 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition
 {
     internal static class SerializedItemResistanceMigration
     {
-        private const string ConstructedDroidVariable = "CONSTRUCTED_DROID";
+        internal const string ConstructedDroidVariable = "CONSTRUCTED_DROID";
         private const int LegacyFortitudePurity = 12;
         private const int LegacyReflexPurity = 13;
         private const int LegacyWillPurity = 14;
@@ -85,7 +85,7 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition
             [2] = 15,
         };
 
-        private static readonly Dictionary<string, (ItemPropertyType Type, int SubType, IReadOnlyDictionary<int, int> Amounts)>
+        internal static readonly Dictionary<string, (ItemPropertyType Type, int SubType, IReadOnlyDictionary<int, int> Amounts)>
             ResistanceEnhancementByResrefPrefix = new()
             {
                 ["aen_def_fir"] = (ItemPropertyType.ArmorEnhancement, (int)EnhancementSubType.ResistanceFire, ArmorAndFoodResistanceAmountByRank),
@@ -116,7 +116,7 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition
                 ["de_res_dis"] = (ItemPropertyType.DroidEnhancement, (int)EnhancementSubType.DroidResistanceDisruption, DroidResistanceAmountByRank),
             };
 
-        private static readonly DroidStatSubType[] DroidResistanceSubTypes =
+        internal static readonly DroidStatSubType[] DroidResistanceSubTypes =
         {
             DroidStatSubType.ResistanceFire,
             DroidStatSubType.ResistancePoison,
@@ -241,7 +241,7 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition
             return true;
         }
 
-        private static bool TryGetResistanceEnhancementBalance(
+        internal static bool TryGetResistanceEnhancementBalance(
             string resref,
             out ItemPropertyType propertyType,
             out int subType,
@@ -335,7 +335,7 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition
             return true;
         }
 
-        private static bool TryGetReplacement(
+        internal static bool TryGetReplacement(
             ItemPropertyType propertyType,
             int subType,
             out ItemPropertyType replacementType,
@@ -385,14 +385,14 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition
             return false;
         }
 
-        private static int GetMigrationPropertyValue(ItemPropertyType type, int costTableValue)
+        internal static int GetMigrationPropertyValue(ItemPropertyType type, int costTableValue)
         {
             return type == ItemPropertyType.Resistance
                 ? Resistance.DecodeItemPropertyCostTableValue(costTableValue)
                 : costTableValue;
         }
 
-        private static bool ShouldRemoveLegacySavingThrowProperty(ItemPropertyType propertyType)
+        internal static bool ShouldRemoveLegacySavingThrowProperty(ItemPropertyType propertyType)
         {
             return propertyType == ItemPropertyType.SavingThrowBonus ||
                    propertyType == ItemPropertyType.SavingThrowBonusSpecific ||

@@ -69,51 +69,6 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition
             }
         }
 
-        /// <summary>
-        /// Converts a player's items, then rebuilds the accuracy their equipped non-weapon items grant.
-        /// </summary>
-        public static void MigratePlayer(uint player)
-        {
-            MigrateObject(player);
-
-            var playerId = GetObjectUUID(player);
-            var dbPlayer = DB.Get<Player>(playerId);
-
-            dbPlayer.Accuracy = CalculateEquippedAccuracy(player);
-
-            DB.Set(dbPlayer);
-        }
-
-        /// <summary>
-        /// Sums Accuracy on equipped non-weapon items. Weapon Accuracy only applies to that
-        /// weapon's attacks and is read from the weapon when attacking.
-        /// </summary>
-        private static int CalculateEquippedAccuracy(uint creature)
-        {
-            var amount = 0;
-
-            for (var index = 0; index < NumberOfInventorySlots; index++)
-            {
-                var item = GetItemInSlot((InventorySlot)index, creature);
-                if (!GetIsObjectValid(item))
-                    continue;
-
-                var baseItemType = GetBaseItemType(item);
-                if (Item.IsAttackWeaponType(baseItemType) || baseItemType == BaseItem.CreatureItem)
-                    continue;
-
-                for (var ip = GetFirstItemProperty(item); GetIsItemPropertyValid(ip); ip = GetNextItemProperty(item))
-                {
-                    if (GetItemPropertyType(ip) != ItemPropertyType.Accuracy)
-                        continue;
-
-                    amount += GetItemPropertyCostTableValue(ip);
-                }
-            }
-
-            return amount;
-        }
-
         public static bool MigrateObject(uint obj)
         {
             if (!GetIsObjectValid(obj))

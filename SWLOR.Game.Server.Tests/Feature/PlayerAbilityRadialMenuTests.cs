@@ -32,20 +32,23 @@ public class PlayerAbilityRadialMenuTests
         }
     }
 
-    [Test]
-    public void UnarmedJab_UsesCoordinatedNativeAllocationAndKeepsItsAutomaticAlias()
+    // Jab I and II moved outside Twin Pistols' feats and master's Unnerving Roar (3161).
+    [TestCase(FeatType.Jab1, FeatType.AutoCastJab1)]
+    [TestCase(FeatType.Jab2, FeatType.AutoCastJab2)]
+    public void UnarmedJab_UsesCoordinatedNativeAllocationAndKeepsItsAutomaticAlias(FeatType canonical, FeatType automatic)
     {
         var root = FindRepositoryRoot();
         var featRows = Read2da(root / "SWLOR_Haks" / "sw_2da" / "feat.2da");
         var spellRows = Read2da(root / "SWLOR_Haks" / "sw_2da" / "spells.2da");
         var classRows = Read2da(root / "SWLOR_Haks" / "sw_2da" / "CLS_FEAT_FIGHT.2da");
-        var canonicalId = (int)FeatType.Jab1;
-        var automaticId = (int)FeatType.AutoCastJab1;
+        var canonicalId = (int)canonical;
+        var automaticId = (int)automatic;
 
         canonicalId.Should().NotBeInRange(3216, 3265, "Twin Pistols owns this feat allocation");
         automaticId.Should().NotBeInRange(3216, 3265, "Twin Pistols owns this feat allocation");
-        featRows[canonicalId]["LABEL"].Should().Be(nameof(FeatType.Jab1));
-        featRows[automaticId]["LABEL"].Should().Be(nameof(FeatType.AutoCastJab1));
+        canonicalId.Should().NotBe(3161, "master owns this feat for Unnerving Roar");
+        featRows[canonicalId]["LABEL"].Should().Be(canonical.ToString());
+        featRows[automaticId]["LABEL"].Should().Be(automatic.ToString());
         featRows[automaticId]["SPELLID"].Should().Be(featRows[canonicalId]["SPELLID"]);
         featRows[automaticId]["ICON"].Should().Be(featRows[canonicalId]["ICON"]);
         spellRows[int.Parse(featRows[canonicalId]["SPELLID"])]["FeatID"].Should().Be(canonicalId.ToString());

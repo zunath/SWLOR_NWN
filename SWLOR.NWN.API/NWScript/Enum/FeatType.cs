@@ -2690,7 +2690,7 @@ namespace SWLOR.NWN.API.NWScript.Enum
         AutoCastBloodSiphon = 3159,
         AutoCastPowerCell3 = 3160,
         Jab1 = 3266,
-        Jab2 = 3161,
+        Jab2 = 3267,
         Jab3 = 3162,
         Jab4 = 3163,
         FlowingFormTrait = 3164,

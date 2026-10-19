@@ -485,7 +485,7 @@ namespace SWLOR.NWN.API.NWScript.Enum
         BruiserStanceStatusEffect = 507,
         OpeningStatusEffect = 508,
         FinishStatusEffect = 509,
-        PaybackStatusEffect = 485,
+        PaybackStatusEffect = 510,
         SlipAwayStatusEffect = 486,
         PressForwardStatusEffect = 487,
         RetaliationStatusEffect = 488,

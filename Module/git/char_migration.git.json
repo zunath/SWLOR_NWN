@@ -1582,7 +1582,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Stuck — char_migration"
+            "0": "Stuck - char_migration"
           }
         },
         "MapNote": {

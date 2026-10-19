@@ -5415,7 +5415,7 @@
         "Description": {
           "type": "cexolocstring",
           "value": {
-            "0": "Czerka Corporation is a massive, galaxy spanning corporate entity which engages in all manner of business, especially anything to do with war. They are highly controversial, especially as many of their major holdings are in space now controlled by the Sith Empire. While this has received some attention by the Republic Senate, Czerka has not received sanctions for continued business there, assuring the galaxy they are careful to comply with all sanctions on Darth Malaks empire and do not supply enemy forces."
+            "0": "Czerka Corporation is a massive, galaxy spanning corporate entity which engages in all manner of business, especially anything to do with war. They are highly controversial, especially as many of their major holdings are in space now controlled by the Sith Empire. While this has received some attention by the Republic Senate, Czerka has not received sanctions for continued business there, assuring the galaxy they are careful to comply with all sanctions on Darth Malak's empire and do not supply enemy forces."
           }
         },
         "Dex": {
@@ -259718,7 +259718,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Stuck — veles_shops"
+            "0": "Stuck - veles_shops"
           }
         },
         "MapNote": {

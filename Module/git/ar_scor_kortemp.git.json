@@ -19477,7 +19477,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Stuck — ar_scor_kortemp"
+            "0": "Stuck - ar_scor_kortemp"
           }
         },
         "MapNote": {

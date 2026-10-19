@@ -65,29 +65,6 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition
             }
         }
 
-        public static void ResetCombatReadiness(Player dbPlayer)
-        {
-            dbPlayer.CombatReadiness = 0;
-        }
-
-        public static void MigratePlayer(uint player)
-        {
-            MigrateObject(player);
-
-            var playerId = GetObjectUUID(player);
-            var dbPlayer = DB.Get<Player>(playerId);
-
-            ResetCombatReadiness(dbPlayer);
-            dbPlayer.CombatReadiness = CalculateEquippedCombatReadiness(player);
-
-            DB.Set(dbPlayer);
-        }
-
-        private static int CalculateEquippedCombatReadiness(uint creature)
-        {
-            return Stat.GetEquippedCombatReadiness(creature);
-        }
-
         public static bool MigrateObject(uint obj)
         {
             if (!GetIsObjectValid(obj))

@@ -3,6 +3,8 @@ using System.Text;
 using System.Threading.Tasks;
 using NWNXLib = NWN.Native.API.NWNXLib;
 using SWLOR.Game.Server.EngineTests.Framework;
+using SWLOR.Game.Server.Entity;
+using SWLOR.Game.Server.Service;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Item;
@@ -65,6 +67,39 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                     "Saved ammunition moves to inventory while the weapon supplies equipped ammunition");
                 var restored = Deserialize(ctx, ObjectPlugin.Serialize(creature));
                 ctx.AssertEqual(false, (bool)Invoke("PistolBaseItemMigration", "MigrateStoredObject", restored), "Retry preserves the stowed stack");
+            });
+        }
+
+        /// <summary>
+        /// Character migration 14 stows legacy ammunition the worn weapon would replace with engine bullets; like the
+        /// live rule's unequip, that takes the ammunition's stats off the record.
+        /// </summary>
+        [EngineTest("Character migration 14 takes stowed ammunition's stats off the record", Category = "MigrationAmmoSlot", TimeoutSeconds = 120)]
+        public static async Task StowedCharacterAmmunitionLeavesTheRecord(EngineTestContext ctx)
+        {
+            using var fixture = await PlayerAbilityFixture.CreateAsync(ctx);
+            var owner = fixture.Creature;
+            var held = GetItemInSlot(InventorySlot.RightHand, owner);
+            if (GetIsObjectValid(held)) await UnequipAsync(ctx, owner, held);
+            var ammo = await ctx.EquipItemAsync(owner, "blaster_bullets", InventorySlot.Bullets);
+            var weapon = await ctx.EquipItemAsync(owner, "nw_wswls001", InventorySlot.RightHand);
+            await ctx.ExecuteInCreatureContextAsync(owner, () =>
+            {
+                AddItemProperty(DurationType.Permanent, ItemPropertyUnlimitedAmmo(), weapon);
+                AddItemProperty(DurationType.Permanent, ItemPropertyCustom(ItemPropertyType.Attack, -1, 4), ammo);
+                // The record counted the ammunition's Attack while it was worn.
+                var record = SavedCharacterMigration.CopyRecord(DB.Get<Player>(fixture.Id));
+                var counted = record.Attack + 4;
+                record.Attack = counted;
+                var file = Convert.FromBase64String(WithLegacyAmmoSlot(Convert.ToBase64String(SavedCharacterMigration.SaveFile(owner)), true));
+
+                var upgraded = SavedCharacterMigration.Run(file, record, "_14_MigrateResistanceItemProperties");
+                var character = SavedCharacterMigration.Load(ctx, upgraded);
+                var stowed = SavedCharacterMigration.FindItem(character, "blaster_bullets");
+                ctx.AssertEqual(character, GetItemPossessor(stowed), "The legacy ammunition is kept");
+                ctx.Assert(GetItemInSlot(InventorySlot.Arrows, character) != stowed && GetItemInSlot(InventorySlot.Bullets, character) != stowed,
+                    "The weapon supplies bullets, so the legacy stack is carried");
+                ctx.AssertEqual(counted - 4, upgraded.Record.Attack, "Stowing the ammunition takes its Attack off the record");
             });
         }
 

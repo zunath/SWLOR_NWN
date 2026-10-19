@@ -13,11 +13,11 @@ namespace SWLOR.Game.Server.Service.PerkService
 
         public PerkRequirementCategory Category => PerkRequirementCategory.Quest;
 
-        public string CheckRequirements(uint player)
+        public string CheckRequirements(uint player) => CheckRequirements(DB.Get<Player>(GetObjectUUID(player)), null);
+
+        public string CheckRequirements(Player dbPlayer, Beast activeBeast)
         {
             var quest = Quest.GetQuestById(QuestId);
-            var playerId = GetObjectUUID(player);
-            var dbPlayer = DB.Get<Player>(playerId);
             var error = $"You have not completed the quest '{quest.Name}'.";
 
             if (!dbPlayer.Quests.ContainsKey(QuestId)) return error;

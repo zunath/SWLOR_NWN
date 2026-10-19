@@ -22,6 +22,17 @@ public class GameTextEncodingTests
 
     private static readonly Encoding Windows1252 = CreateWindows1252();
 
+    // Typographic punctuation pasted from documents and AI chats. The game can display these, but
+    // game text uses the ASCII forms (', ", -, ...) so every source follows one rule.
+    private const string TypographicPunctuation = "‘’“”–—…";
+
+    // Byte-mapping tables that list every Windows-1252 character on purpose.
+    private static readonly HashSet<string> CharacterTableFiles = new(StringComparer.Ordinal)
+    {
+        Path.Combine("Feature", "GuiDefinition", "ExamineItemText.cs"),
+        Path.Combine("Service", "ColorToken.cs")
+    };
+
     // Left as authored at the owner's request.
     private static readonly HashSet<string> AllowedCodeLines = new(StringComparer.Ordinal)
     {
@@ -68,7 +79,7 @@ public class GameTextEncodingTests
     }
 
     [Test]
-    public void GameServerCode_HasNoCharactersOutsideWindows1252()
+    public void GameServerCode_UsesWindows1252AndAsciiPunctuation()
     {
         var sourceRoot = Path.Combine(FindRepositoryRoot().FullName, "SWLOR.Game.Server");
         var violations = new List<string>();
@@ -87,18 +98,22 @@ public class GameTextEncodingTests
                 if (AllowedCodeLines.Contains(code.Trim()))
                     continue;
 
-                var bad = code.FirstOrDefault(character => character >= 0x80 && !IsWindows1252(character));
+                var isTable = CharacterTableFiles.Contains(relativePath);
+                var bad = code.FirstOrDefault(character => isTable
+                    ? character >= 0x80 && !IsWindows1252(character)
+                    : !IsGameTextCharacter(character));
                 if (bad != default)
                     violations.Add($"{relativePath}:{lineIndex + 1}: U+{(int)bad:X4} in {code.Trim()}");
             }
         }
 
         violations.Should().BeEmpty(
-            "strings reach the game as Windows-1252, so other characters display as '?'");
+            "strings reach the game as Windows-1252, so other characters display as '?', and game text " +
+            "uses ASCII quotes, dashes, and '...'");
     }
 
     [Test]
-    public void ConversationData_HasNoCharactersOutsideWindows1252()
+    public void ConversationData_UsesWindows1252AndAsciiPunctuation()
     {
         var dataRoot = Path.Combine(FindRepositoryRoot().FullName, "SWLOR.Game.Server", "ConversationData");
         var violations = new List<string>();
@@ -108,29 +123,31 @@ public class GameTextEncodingTests
             var lines = File.ReadAllLines(path);
             for (var lineIndex = 0; lineIndex < lines.Length; lineIndex++)
             {
-                var bad = lines[lineIndex].FirstOrDefault(character => character >= 0x80 && !IsWindows1252(character));
+                var bad = lines[lineIndex].FirstOrDefault(character => !IsGameTextCharacter(character));
                 if (bad != default)
                     violations.Add($"{Path.GetFileName(path)}:{lineIndex + 1}: U+{(int)bad:X4} in {lines[lineIndex].Trim()}");
             }
         }
 
         violations.Should().BeEmpty(
-            "conversation text reaches the game as Windows-1252, so other characters display as '?'");
+            "conversation text reaches the game as Windows-1252, so other characters display as '?', and " +
+            "game text uses ASCII quotes, dashes, and '...'");
     }
 
     [Test]
-    public void CustomTlkText_HasNoCharactersOutsideWindows1252()
+    public void CustomTlkText_UsesWindows1252AndAsciiPunctuation()
     {
         var path = Path.Combine(FindRepositoryRoot().FullName, "SWLOR_Haks", "sw_tlk", "sw_tlk.tlk.json");
         using var document = System.Text.Json.JsonDocument.Parse(File.ReadAllText(path));
 
         var violations = document.RootElement.GetProperty("entries").EnumerateArray()
             .Select(entry => (Id: entry.GetProperty("id").GetInt32(), Text: entry.GetProperty("text").GetString() ?? string.Empty))
-            .Where(entry => entry.Text.Any(character => character >= 0x80 && !IsWindows1252(character)))
+            .Where(entry => !entry.Text.All(IsGameTextCharacter))
             .Select(entry => $"{entry.Id}: {entry.Text}")
             .ToList();
 
-        violations.Should().BeEmpty("nwn_tlk converts TLK text to Windows-1252");
+        violations.Should().BeEmpty(
+            "nwn_tlk converts TLK text to Windows-1252, and game text uses ASCII quotes, dashes, and '...'");
     }
 
     private static bool IsVoidField(JValue value) =>
@@ -140,6 +157,9 @@ public class GameTextEncodingTests
     /// <summary>True when a Latin-1-decoded byte is a letter in Windows-1252, such as 0xE9 (é).</summary>
     private static bool IsWindows1252Letter(char character) =>
         character <= 0xFF && char.IsLetter(Windows1252.GetString(new[] { (byte)character })[0]);
+
+    private static bool IsGameTextCharacter(char character) =>
+        character < 0x80 || (IsWindows1252(character) && !TypographicPunctuation.Contains(character));
 
     private static bool IsWindows1252(char character)
     {

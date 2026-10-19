@@ -149,12 +149,12 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             ctx.SetNPCPerkLevel(caster, PerkType.FinishingCombination, 1);
             ctx.SetNPCPerkLevel(caster, PerkType.ControlledBreathing, 1);
             var spent = 0;
-            void OnSpent(uint source, uint enemy, MeleeTechniqueDetail detail, MeleeTechniqueStage stage)
+            void OnSpent(uint source, uint enemy, AbilityDetail ability, MeleeTechniqueStage stage)
             {
-                if (source == caster && enemy == target)
+                if (source == caster && enemy == target && stage != MeleeTechniqueStage.None)
                     spent++;
             }
-            MeleeTechnique.TechniqueSpent += OnSpent;
+            MeleeTechnique.TechniqueLanded += OnSpent;
             Combat.SetAbilityHitResolutionOverride(true);
             Combat.SetAutoAttackHitResolutionOverride(false);
             try
@@ -176,7 +176,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             }
             finally
             {
-                MeleeTechnique.TechniqueSpent -= OnSpent;
+                MeleeTechnique.TechniqueLanded -= OnSpent;
                 ResetOverrides(caster);
             }
         }

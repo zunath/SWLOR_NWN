@@ -1846,15 +1846,6 @@ namespace SWLOR.Game.Server.Service
                 removeNativeEffect);
         }
 
-        public static void RemoveInvalidEquipmentEffects(uint creature)
-        {
-            foreach (var effect in GetCreatureStatusEffects(creature).GetAllEffects().ToArray())
-            {
-                if (effect is IEquipmentBoundStatusEffect equipmentBound && !equipmentBound.HasValidEquipment(creature))
-                    RemoveStatusEffect(creature, effect.GetType(), effect.Source, false);
-            }
-        }
-
         /// <summary>
         /// Enforces command exclusivity for Leadership-style party-buff commands (Press the
         /// Attack, Cleanse Order, Decisive Command): applying one removes any other

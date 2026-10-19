@@ -12,7 +12,6 @@ using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.QuestService;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.Game.Server.Service.StatService;
-using SWLOR.Game.Server.Service.StatusEffectService;
 using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.Game.Server.Tests.Perks;
@@ -201,8 +200,6 @@ public class UnarmedProgressionTests
         var bruiser = new BruiserStanceStatusEffect();
         Assert.Multiple(() =>
         {
-            Assert.That(flow.StatGroup.Stats[StatType.OrdinarySkillDamagePercentAdjustment], Is.Zero);
-            Assert.That(bruiser.StatGroup.Stats[StatType.OrdinarySkillDamagePercentAdjustment], Is.Zero);
             Assert.That(flow.StatGroup.Stats[StatType.AttackDelayReductionPercent], Is.Zero);
             Assert.That(flow.StatGroup.Stats[StatType.EvasionPercentAdjustment], Is.Zero);
             Assert.That(flow.StatGroup.Stats[StatType.TechniqueLine], Is.EqualTo(1));
@@ -214,8 +211,6 @@ public class UnarmedProgressionTests
             Assert.That(flow.StatGroup.Stats[StatType.TechniqueFinisherWindowCooldownSeconds], Is.EqualTo(12));
             Assert.That(bruiser.StatGroup.Stats[StatType.PhysicalDefensePercentAdjustment], Is.EqualTo(10));
             Assert.That(bruiser.StatGroup.Stats[StatType.TechniqueLine], Is.EqualTo(2));
-            Assert.That(bruiser.StatGroup.Stats[StatType.TechniqueSetupBraceWindowSeconds], Is.Zero);
-            Assert.That(bruiser.StatGroup.Stats[StatType.TechniqueSetupRetaliationPower], Is.Zero);
             Assert.That(bruiser.StatGroup.Stats[StatType.TechniqueRetaliationPower], Is.EqualTo(12));
             Assert.That(bruiser.StatGroup.Stats[StatType.AttackPercentAdjustment], Is.EqualTo(-10));
             Assert.That(bruiser.StatGroup.Stats[StatType.TechniqueRetaliationDurationSeconds], Is.EqualTo(8));
@@ -230,8 +225,6 @@ public class UnarmedProgressionTests
             Assert.That(stance.MeleeTechnique, Is.Null, "Stances must not enter the weapon-profile validation path.");
             Assert.That(stance.CustomValidation, Is.Null, "Stances do not require Power Gloves.");
         }
-        Assert.That(flow, Is.Not.InstanceOf<IEquipmentBoundStatusEffect>());
-        Assert.That(bruiser, Is.Not.InstanceOf<IEquipmentBoundStatusEffect>());
     }
 
     [Test]
@@ -247,12 +240,10 @@ public class UnarmedProgressionTests
             Assert.That(Stats(PerkType.RootedTechnique)[StatType.MobilityResistance], Is.EqualTo(15));
             Assert.That(Stats(PerkType.HardKnocks)[StatType.TraumaResistance], Is.EqualTo(15));
             Assert.That(measured[StatType.TechniqueSetupAbilityAccuracy], Is.EqualTo(10));
-            Assert.That(measured.ContainsKey(StatType.TechniqueConditionalAccuracy), Is.False);
             Assert.That(payback[StatType.DirectHostileDamageNextAbilityStaminaDiscount], Is.EqualTo(2));
             Assert.That(payback[StatType.DirectHostileDamageNextAbilityDiscountDurationSeconds], Is.EqualTo(8));
             Assert.That(payback[StatType.DirectHostileDamageNextAbilityDiscountCooldownSeconds], Is.EqualTo(18));
             Assert.That(payback[StatType.TechniquePresentationSkillType], Is.EqualTo((int)SkillType.Unarmed));
-            Assert.That(payback.ContainsKey(StatType.DirectHostileDamageNextTechniqueStaminaDiscount), Is.False);
             Assert.That(payback.ContainsKey(StatType.TechniqueLine), Is.False);
         });
     }

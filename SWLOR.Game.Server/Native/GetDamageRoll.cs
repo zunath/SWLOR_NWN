@@ -584,7 +584,7 @@ namespace SWLOR.Game.Server.Native
                 null,
                 out var targetStatusDamageAdjustment);
 
-            damage = MeleeTechnique.ApplyOrdinaryDamageModifiers(attacker.m_idSelf, damage, skillType, damageType);
+            damage = MeleeTechnique.ApplyOrdinaryDamageModifiers(attacker.m_idSelf, damage, damageType);
 
             // Saber Ward / Aegis Eternal: re-type a share of the physical hit into a real Force
             // instance (mitigated by Force resistance, shown as Force) before physical resistance.

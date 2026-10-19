@@ -25,7 +25,6 @@ public sealed partial class WeaponCombatState
     public MeleeTechniqueLine WindowLine { get; private set; }
     public Combatant SetupEnemy { get; private set; }
     public int OrdinaryAccuracy { get; private set; }
-    public double BraceUntil { get; private set; }
     public double HighGuardUntil { get; private set; }
     public double ControlDefenseUntil { get; private set; }
     public double ReversalUntil { get; private set; }
@@ -68,11 +67,10 @@ public sealed partial class WeaponCombatState
     {
         "Invalid", "ForceAffinity", "MindResistance", "DazeImmunity", "TechniqueAbilityPower", "TechniqueRetaliationPower",
         "TechniqueRetaliationDurationSeconds", "TechniqueRetaliationCooldownSeconds", "TechniqueLine", "TechniqueWeavePower", "TechniqueWeaveEnabled", "TechniqueWindowExtensionSeconds",
-        "TechniqueConditionalPower", "TechniqueConditionalAccuracy", "TechniqueSetupAbilityAccuracy",
+        "TechniqueConditionalPower", "TechniqueSetupAbilityAccuracy",
         "TechniqueRefundStamina", "TechniqueRefundCooldownSeconds", "TechniqueDebuffTargetOrdinaryAccuracy",
         "TechniquePresentationSkillType", "TechniqueOpeningFinisherEvasionPercent", "TechniqueOpeningFinisherMovementSpeedPercent",
         "TechniqueFinishFinisherHastePercent", "TechniqueFinisherWindowDurationSeconds", "TechniqueFinisherWindowCooldownSeconds",
-        "TechniqueSetupBraceWindowSeconds", "TechniqueSetupRetaliationPower", "TechniqueSetupRetaliationCooldownSeconds",
         "DirectHostileDamageNextAbilityStaminaDiscount", "DirectHostileDamageNextAbilityDiscountDurationSeconds",
         "DirectHostileDamageNextAbilityDiscountCooldownSeconds", "CostlyAbilityDamageMinimumStaminaCost", "CostlyAbilityDamageBonus",
         "CostlyAbilityUsedEvasionMinimumStaminaCost", "CostlyAbilityUsedEvasionPercentAdjustment", "CostlyAbilityUsedEvasionDurationSeconds",
@@ -94,9 +92,7 @@ public sealed partial class WeaponCombatState
         if (!spent && Sequence.Stage != MeleeTechniqueStage.None) Count("SetupWasted");
         SetupEnemy?.Weapon?.Rattled.Remove(_owner.SimId);
         SetupEnemy = null;
-        BraceUntil = 0;
         Sequence.Clear();
-        Reactions.ClearSetupBenefits();
     }
     public void Refresh(double now)
     {
@@ -107,7 +103,6 @@ public sealed partial class WeaponCombatState
             ClearSetup();
             Reactions.ClearBenefits();
             _windowEnemy = null;
-            BraceUntil = 0;
         }
         if (_retaliationEnemy?.IsDead == true) { Reactions.ClearRetaliation(); _retaliationEnemy = null; }
         if (_windowEnemy?.IsDead == true) { Reactions.ClearWindow(); _windowEnemy = null; }
@@ -167,7 +162,6 @@ public sealed partial class WeaponCombatState
             if (stage != MeleeTechniqueStage.None)
             {
                 conditional += d.GetStagePower(stage) + LineStat(d.Line, StatType.TechniqueConditionalPower);
-                accuracy += LineStat(d.Line, StatType.TechniqueConditionalAccuracy);
                 Count("SetupSpent");
             }
         }
@@ -227,12 +221,7 @@ public sealed partial class WeaponCombatState
         OrdinaryAccuracy = d.OrdinaryAccuracyBonus + (status != null ? LineStat(d.Line, StatType.TechniqueDebuffTargetOrdinaryAccuracy) : 0);
         Sequence.Begin(target.SimId, d.CreatedStage, At(now + durationSeconds), LineStat(d.Line, StatType.TechniqueWeaveEnabled) > 0 ? LineStat(d.Line, StatType.TechniqueWeavePower) : 0);
         if (status != null)
-        {
             target.Weapon.Rattled[_owner.SimId] = (now + statusDuration, status.StatGroup.Stats.GetValueOrDefault(StatType.OrdinaryWeaponAccuracyPenalty));
-            var braceSeconds = LineStat(d.Line, StatType.TechniqueSetupBraceWindowSeconds);
-            BraceUntil = now + Math.Min(durationSeconds, braceSeconds);
-            Reactions.BeginBrace(target.SimId, Sequence.ExpiresAt, braceSeconds, At(now));
-        }
         Count("SetupCreated");
     }
     private double StatusDuration(IStatusEffect status, int seconds, Combatant target)
@@ -249,8 +238,6 @@ public sealed partial class WeaponCombatState
     public void DirectHpDamage(Combatant attacker, double now)
     {
         Refresh(now);
-        if (Sequence.Stage == MeleeTechniqueStage.Distraction && Sequence.Matches(attacker.SimId, At(now)) && Reactions.TryGrantRetaliation(attacker.SimId,
-            LineStat(Line, StatType.TechniqueSetupRetaliationPower), Sequence.ExpiresAt, LineStat(Line, StatType.TechniqueSetupRetaliationCooldownSeconds), At(now))) Count("RetaliationsArmed");
         foreach (var source in AllSources.Where(s => s.GetValueOrDefault(StatType.TechniqueLine) != 0))
             if (Reactions.TryGrantIndependentRetaliation(attacker.SimId, source.GetValueOrDefault(StatType.TechniqueRetaliationPower),
                 source.GetValueOrDefault(StatType.TechniqueRetaliationDurationSeconds), source.GetValueOrDefault(StatType.TechniqueRetaliationCooldownSeconds), At(now)))

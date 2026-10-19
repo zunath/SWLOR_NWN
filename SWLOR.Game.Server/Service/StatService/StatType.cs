@@ -6214,9 +6214,6 @@ namespace SWLOR.Game.Server.Service.StatService
         TechniqueConditionalPower = 1103,
 
         [StatType(StatTypeCategory.BeneficialWhenPositive)]
-        TechniqueConditionalAccuracy = 1104,
-
-        [StatType(StatTypeCategory.BeneficialWhenPositive)]
         TechniqueRefundStamina = 1105,
 
         [StatType(StatTypeCategory.NonBeneficial, StatTypeAggregation.Maximum)]
@@ -6234,21 +6231,6 @@ namespace SWLOR.Game.Server.Service.StatService
         OrdinaryPhysicalDamagePenaltyPercent = 1109,
 
         [StatType(StatTypeCategory.BeneficialWhenPositive)]
-        OrdinarySkillDamagePercentAdjustment = 1110,
-
-        [StatType(StatTypeCategory.NonBeneficial, StatTypeAggregation.Maximum)]
-        OrdinarySkillDamagePercentAdjustmentSkillType = 1111,
-
-        [StatType(StatTypeCategory.BeneficialWhenPositive)]
-        DirectHostileDamageNextTechniqueStaminaDiscount = 1112,
-
-        [StatType(StatTypeCategory.NonBeneficial, StatTypeAggregation.Maximum)]
-        DirectHostileDamageNextTechniqueDiscountDurationSeconds = 1113,
-
-        [StatType(StatTypeCategory.NonBeneficial, StatTypeAggregation.Maximum)]
-        DirectHostileDamageNextTechniqueDiscountCooldownSeconds = 1114,
-
-        [StatType(StatTypeCategory.BeneficialWhenPositive)]
         TechniqueOpeningFinisherEvasionPercent = 1115,
 
         [StatType(StatTypeCategory.BeneficialWhenPositive)]
@@ -6262,15 +6244,6 @@ namespace SWLOR.Game.Server.Service.StatService
 
         [StatType(StatTypeCategory.NonBeneficial, StatTypeAggregation.Maximum)]
         TechniqueFinisherWindowCooldownSeconds = 1119,
-
-        [StatType(StatTypeCategory.BeneficialWhenPositive, StatTypeAggregation.Maximum)]
-        TechniqueSetupBraceWindowSeconds = 1120,
-
-        [StatType(StatTypeCategory.BeneficialWhenPositive)]
-        TechniqueSetupRetaliationPower = 1121,
-
-        [StatType(StatTypeCategory.NonBeneficial, StatTypeAggregation.Maximum)]
-        TechniqueSetupRetaliationCooldownSeconds = 1122,
 
         /// <summary>Ability ACC against the owner's current Opening or Finish target, with any skill.</summary>
         [StatType(StatTypeCategory.BeneficialWhenPositive)]

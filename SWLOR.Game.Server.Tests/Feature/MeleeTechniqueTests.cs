@@ -233,46 +233,10 @@ public class MeleeTechniqueTests
     }
 
     [Test]
-    public void RetaliationUsesOnlyItsBracedEnemyAndOneEightPowerBudget()
-    {
-        var state = new TechniqueReactiveState();
-        state.BeginBrace(11, Start.AddSeconds(8), 4, Start);
-        state.TryGrantRetaliation(12, 8, Start.AddSeconds(8), 18, Start.AddSeconds(1)).Should().BeFalse();
-        state.TryGrantRetaliation(11, 8, Start.AddSeconds(8), 18, Start.AddSeconds(2)).Should().BeTrue();
-        state.TryGrantRetaliation(11, 8, Start.AddSeconds(8), 18, Start.AddSeconds(3)).Should().BeFalse();
-        state.GetRetaliation(12, Start.AddSeconds(3)).Should().Be(0);
-        state.TakeRetaliation(11, Start.AddSeconds(3)).Should().Be(8);
-        state.TakeRetaliation(11, Start.AddSeconds(3)).Should().Be(0, "a miss or interrupted paid cast has already spent the charge");
-        state.ClearBenefits();
-        state.BeginBrace(11, Start.AddSeconds(22), 4, Start.AddSeconds(17));
-        state.TryGrantRetaliation(11, 8, Start.AddSeconds(22), 18, Start.AddSeconds(18)).Should().BeFalse();
-        state.BeginBrace(11, Start.AddSeconds(28), 4, Start.AddSeconds(20));
-        state.TryGrantRetaliation(11, 8, Start.AddSeconds(28), 18, Start.AddSeconds(20)).Should().BeTrue();
-    }
-
-    [Test]
-    public void BraceAndRetaliationCannotOutliveTheirSetup()
-    {
-        var state = new TechniqueReactiveState();
-        state.BeginBrace(11, Start.AddSeconds(8), 4, Start);
-        state.TryGrantRetaliation(11, 8, Start.AddSeconds(8), 18, Start.AddSeconds(4)).Should().BeFalse();
-        state.BeginBrace(11, Start.AddSeconds(2), 4, Start);
-        state.TryGrantRetaliation(11, 8, Start.AddSeconds(2), 18, Start.AddSeconds(2)).Should().BeFalse();
-        state.BeginBrace(11, Start.AddSeconds(8), 4, Start);
-        state.TryGrantRetaliation(11, 8, Start.AddSeconds(8), 18, Start.AddSeconds(1)).Should().BeTrue();
-        state.GetRetaliation(11, Start.AddSeconds(8)).Should().Be(0);
-        state.ClearSetupBenefits();
-        state.GetRetaliation(11, Start.AddSeconds(2)).Should().Be(0);
-    }
-
-    [Test]
-    public void IndependentRetaliationNeedsNoOpenerAndSurvivesSetupChanges()
+    public void IndependentRetaliationNeedsNoOpenerAndStaysWithItsAttacker()
     {
         var state = new TechniqueReactiveState();
         state.TryGrantIndependentRetaliation(11, 24, 8, 18, Start).Should().BeTrue();
-        state.RetaliationRequiresSetup.Should().BeFalse();
-        state.ClearSetupBenefits();
-        state.BeginBrace(11, Start.AddSeconds(6), 4, Start.AddSeconds(1));
         state.GetRetaliation(11, Start.AddSeconds(2)).Should().Be(24);
         state.TakeRetaliation(12, Start.AddSeconds(2)).Should().Be(0);
         state.GetRetaliation(11, Start.AddSeconds(2)).Should().Be(24, "another target cannot consume the charge");

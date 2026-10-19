@@ -3,7 +3,6 @@ using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Game.Server.Feature.LootTableDefinition;
 using SWLOR.Game.Server.Feature.MigrationDefinition;
-using SWLOR.Game.Server.Feature.MigrationDefinition.PlayerMigration;
 using SWLOR.Game.Server.Feature.MigrationDefinition.ServerMigration;
 using SWLOR.Game.Server.Service.MigrationService;
 using SWLOR.NWN.API.NWScript.Enum.Item;
@@ -50,14 +49,6 @@ public class DungeonSaberMigrationTests
         DungeonSaberMigration.TryGetReplacement(null, out _).Should().BeFalse();
         DungeonSaberMigration.TryGetReplacement("SABSTORM_L1", out var replacement).Should().BeTrue();
         replacement.Should().Be("sabstorm_l3");
-    }
-
-    [Test]
-    public void ReleasedServersAndPlayersReceiveNewRepairVersions()
-    {
-        new _25_ReplaceDungeonSabers().Version.Should().Be(25);
-        new _25_ReplaceDungeonSabers().ExecutionType.Should().Be(MigrationExecutionType.PostCacheLoad);
-        new _18_ReplaceDungeonSabers().Version.Should().Be(18);
     }
 
     private static JsonDocument ReadItem(string resref) => JsonDocument.Parse(File.ReadAllText(

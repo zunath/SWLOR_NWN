@@ -14,7 +14,7 @@ public static class BasicVibrobladeCompatibility
 {
     public const string DisplayName = "Basic Vibroblade LS";
 
-    private sealed record BasicWeaponProfile(
+    internal sealed record BasicWeaponProfile(
         BaseItem BaseItem,
         string ResRef,
         SkillType Skill,
@@ -112,7 +112,7 @@ public static class BasicVibrobladeCompatibility
         return changed;
     }
 
-    private static bool TryGetProfile(BaseItem baseItem, string resref, out BasicWeaponProfile profile)
+    internal static bool TryGetProfile(BaseItem baseItem, string resref, out BasicWeaponProfile profile)
     {
         profile = Profiles.FirstOrDefault(candidate =>
             candidate.BaseItem == baseItem && string.Equals(candidate.ResRef, resref, StringComparison.OrdinalIgnoreCase));

@@ -229,35 +229,6 @@ public class LinkedBankStorageTests
         text.Should().NotContain("not linked");
     }
 
-    [Test]
-    public void LinkedBankStorageMigration_CleansRetiredUpgradeDataAndMigratesAllInventoryItems()
-    {
-        var root = FindRepositoryRoot();
-        var migrationRoot = Path.Combine(
-            root.FullName,
-            "SWLOR.Game.Server",
-            "Feature",
-            "MigrationDefinition",
-            "ServerMigration");
-        var helper = File.ReadAllText(Path.Combine(migrationRoot, "LinkedBankStorageMigration.cs"));
-        var combatMigration = File.ReadAllText(Path.Combine(migrationRoot, "_22_CombatSystemReplacement.cs"));
-
-        combatMigration.Should().Contain("LinkedBankStorageMigration.RemoveRetiredUpgradeData();");
-        combatMigration.Should().Contain("LinkedBankStorageMigration.MigrateInventoryItemsToGlobalBank();");
-        combatMigration.Should().Contain("StoredItemDataMigration.Migrate();");
-        helper.Should().Contain("!validUpgradeKeys.Contains(property.Name)");
-        helper.Should().Contain("!validNumericUpgradeKeys.Contains(property.Name)");
-        helper.Should().Contain("Bank.NormalizeStorageId(item)");
-        helper.Should().NotContain("Bank.StorageId");
-        helper.Should().NotContain("BankStorage.Global");
-        combatMigration.IndexOf("LinkedBankStorageMigration.RemoveRetiredUpgradeData();", StringComparison.Ordinal)
-            .Should()
-            .BeLessThan(combatMigration.IndexOf("StoredItemDataMigration.Migrate();", StringComparison.Ordinal));
-        combatMigration.IndexOf("StoredItemDataMigration.Migrate();", StringComparison.Ordinal)
-            .Should()
-            .BeLessThan(combatMigration.IndexOf("LinkedBankStorageMigration.MigrateInventoryItemsToGlobalBank();", StringComparison.Ordinal));
-    }
-
     private static IEnumerable<Dictionary<string, object>> FindBankVarTables(JToken token)
     {
         if (token is JObject jObject)

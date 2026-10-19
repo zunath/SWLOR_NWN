@@ -1081,6 +1081,7 @@ namespace SWLOR.Game.Server.Service
                 }
 
                 aura.Auras.RemoveAt(0);
+                AuraAnnouncementLimiter.ClearAura(activator, removeType);
             }
 
             aura.Auras.Add(new PlayerAuraDetail(type, targetsSelf, targetsParty, targetsEnemies, successfulImpactVisualEffect));
@@ -1160,7 +1161,7 @@ namespace SWLOR.Game.Server.Service
             }
 
             aura.Auras.Remove(existing);
-            AuraAnnouncementLimiter.ClearSource(activator);
+            AuraAnnouncementLimiter.ClearAura(activator, type);
             return true;
         }
 

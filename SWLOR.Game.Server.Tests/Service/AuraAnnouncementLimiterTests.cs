@@ -62,6 +62,20 @@ public class AuraAnnouncementLimiterTests
     }
 
     [Test]
+    public void SwitchingOneAuraOff_LeavesTheLeadersOtherAurasLimited()
+    {
+        var rallying = typeof(RallyingStandard1StatusEffect);
+        var watchful = typeof(WatchfulPresence1StatusEffect);
+        AuraAnnouncementLimiter.TryAnnounce(Leader, Ally, rallying, Start).Should().BeTrue();
+        AuraAnnouncementLimiter.TryAnnounce(Leader, Ally, watchful, Start).Should().BeTrue();
+
+        AuraAnnouncementLimiter.ClearAura(Leader, rallying);
+
+        AuraAnnouncementLimiter.TryAnnounce(Leader, Ally, rallying, Start + Second).Should().BeTrue();
+        AuraAnnouncementLimiter.TryAnnounce(Leader, Ally, watchful, Start + Second).Should().BeFalse();
+    }
+
+    [Test]
     public void ARecipientWhoLeavesTheArea_IsAnnouncedAgainOnReturn()
     {
         var type = typeof(RallyingStandard1StatusEffect);
@@ -119,6 +133,8 @@ public class AuraAnnouncementLimiterTests
 
         var source = File.ReadAllText(Path.Combine(directory!.FullName, "SWLOR.Game.Server", "Service", "Ability.cs"));
         source.Should().Contain("aura.AnnouncesApplication = AuraAnnouncementLimiter.TryAnnounce(source, recipient, type);");
+        source.Should().Contain("AuraAnnouncementLimiter.ClearAura(activator, type);");
+        source.Should().Contain("AuraAnnouncementLimiter.ClearAura(activator, removeType);");
         source.Should().Contain("AuraAnnouncementLimiter.ClearSource(activator);");
         source.Should().Contain("AuraAnnouncementLimiter.ClearRecipient(target);");
     }

@@ -37,7 +37,16 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>
-        /// Forgets what a source has announced so switching its auras off and on again announces them afresh.
+        /// Forgets what a source has announced for one aura so switching or replacing that aura announces it afresh,
+        /// leaving the source's other auras limited.
+        /// </summary>
+        public static void ClearAura(uint source, Type statusEffect)
+        {
+            RemoveWhere(key => key.Source == source && key.StatusEffect == statusEffect);
+        }
+
+        /// <summary>
+        /// Forgets everything a source has announced when all of its auras end.
         /// </summary>
         public static void ClearSource(uint source)
         {

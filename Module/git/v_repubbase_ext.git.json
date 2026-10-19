@@ -3649,7 +3649,7 @@
         "Description": {
           "type": "cexolocstring",
           "value": {
-            "0": "The grease-stained technicians work diligently on the Walker’s legs. Both of them, however, secretly wonder how they’re going to fix the upper part of it with no ladder. However, this one is getting paid hourly and seems quite happy about this dilemma."
+            "0": "The grease-stained technicians work diligently on the Walker's legs. Both of them, however, secretly wonder how they're going to fix the upper part of it with no ladder. However, this one is getting paid hourly and seems quite happy about this dilemma."
           }
         },
         "Dex": {
@@ -4994,7 +4994,7 @@
         "Description": {
           "type": "cexolocstring",
           "value": {
-            "0": "The grease-stained technicians work diligently on the Walker’s legs. Both of them, however, secretly wonder how they’re going to fix the upper part of it with no ladder."
+            "0": "The grease-stained technicians work diligently on the Walker's legs. Both of them, however, secretly wonder how they're going to fix the upper part of it with no ladder."
           }
         },
         "Dex": {
@@ -9247,7 +9247,7 @@
         "Description": {
           "type": "cexolocstring",
           "value": {
-            "0": "A loud and brash drill-sergeant barking orders to his troopers. It sounds like they’re in for some sugar cookies in the near future."
+            "0": "A loud and brash drill-sergeant barking orders to his troopers. It sounds like they're in for some sugar cookies in the near future."
           }
         },
         "Dex": {
@@ -31576,7 +31576,7 @@
         "Description": {
           "type": "cexolocstring",
           "value": {
-            "0": "The Crewman is wolfing down their food like they’re about to be late for something, but they seem too awkward to disengage from the conversation at hand."
+            "0": "The Crewman is wolfing down their food like they're about to be late for something, but they seem too awkward to disengage from the conversation at hand."
           }
         },
         "Dex": {
@@ -34397,7 +34397,7 @@
         "Description": {
           "type": "cexolocstring",
           "value": {
-            "0": "<cÛ µ>Challenge Rating: Impossible</c>\nThis Crewman stands above all others. The Republic’s finest. As long as you ignore the legions of higher ranking, more veteran Republic soldiers. Still, probably the best Crewman you’ll find within a five meter radius."
+            "0": "<c� �>Challenge Rating: Impossible</c>\nThis Crewman stands above all others. The Republic's finest. As long as you ignore the legions of higher ranking, more veteran Republic soldiers. Still, probably the best Crewman you'll find within a five meter radius."
           }
         },
         "Dex": {
@@ -172773,7 +172773,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Stuck — v_repubbase_ext"
+            "0": "Stuck - v_repubbase_ext"
           }
         },
         "MapNote": {

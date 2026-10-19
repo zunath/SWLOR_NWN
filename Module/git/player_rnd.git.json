@@ -433,7 +433,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Stuck — player_rnd"
+            "0": "Stuck - player_rnd"
           }
         },
         "MapNote": {

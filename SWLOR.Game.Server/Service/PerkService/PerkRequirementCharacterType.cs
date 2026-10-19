@@ -14,11 +14,10 @@ namespace SWLOR.Game.Server.Service.PerkService
 
         public PerkRequirementCategory Category => PerkRequirementCategory.CharacterType;
 
-        public string CheckRequirements(uint player)
-        {
-            var playerId = GetObjectUUID(player);
-            var dbPlayer = DB.Get<Player>(playerId);
+        public string CheckRequirements(uint player) => CheckRequirements(DB.Get<Player>(GetObjectUUID(player)), null);
 
+        public string CheckRequirements(Player dbPlayer, Beast activeBeast)
+        {
             if (dbPlayer.CharacterType != _requiredCharacterType)
             {
                 return $"Only {_requiredCharacterType} character types may access this perk.";

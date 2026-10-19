@@ -4648,7 +4648,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Stuck — ossus_landstart"
+            "0": "Stuck - ossus_landstart"
           }
         },
         "MapNote": {

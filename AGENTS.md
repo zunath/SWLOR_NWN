@@ -25,12 +25,14 @@ SWLOR is a live Neverwinter Nights: Enhanced Edition persistent world. Server lo
 
 ## Every Task
 
+- Only playable species on the normal phenotype matter (`Readmes/ContentStandards.md` Characters).
 - **Client evidence:** every change with an in-game effect needs NWN client evidence through the established procedure unless the user explicitly waives it; a change with no in-game surface (toolset app, CLI, docs, agent rules) says so in the handoff instead (`Readmes/InEngineVisualVerification.md`).
 - **Tests:** build once with `-p:RunPostBuildEvent=Never -v q -clp:ErrorsOnly`, then `dotnet test <project> --no-build --filter "FullyQualifiedName~<Class>"` for the tests that guard the change. Run the full suite only when asked or the change is broad. Report the filters you ran.
 - **Shared machine:** several Claude and Codex sessions run at once. Work in your own worktree and branch, never stash, reset, or run repo-wide generators in a shared checkout, and stop only processes you started (`Readmes/AgentEnvironment.md`).
 - **Clean up as you go:** delete generated files (renders, models, textures, HAK and module copies, client profiles, containers) once nothing needs them, without being asked. Keep only the evidence the user needs.
 - **Token economy:** never read a whole `Module/` JSON file (some reach 25 MB); search instead. Read only the guide sections you need, and keep command output small.
 - **Pull requests:** one branch and pull request per request, from up-to-date `origin/master`. Request each Codex review with `tools/RequestCodexReview.ps1`, which waits for the answer, and keep fixing in the same turn until a review of the current head finds nothing; never wait on a rate-limited CodeRabbit; resolve every thread (`Readmes/PullRequests.md`).
+- **Game text encoding:** punctuation is ASCII (straight quotes, `-`, `...`), never curly quotes or dashes pasted from documents or AI chats. Keep accented letters, but in Module JSON store them as single Windows-1252 bytes, never UTF-8, or the game shows `Ã©` and `â€™` (`Readmes/CodingStandards.md`).
 - **Public repository:** keep secrets and anti-abuse specifics out of commits, pull requests, and player-facing text.
 
 ## Guides

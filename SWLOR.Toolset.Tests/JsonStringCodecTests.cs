@@ -133,9 +133,15 @@ namespace SWLOR.Toolset.Tests
         [Test]
         public void RealCreatureDescription_WithWindows1252Apostrophe_SurvivesAnEditCycle()
         {
+            // Module text is ASCII, so put a native 0x92 apostrophe back into a real description.
             var path = Path.Combine(
                 CorpusLocator.ModuleDirectory, "utc", "nar_slavercaptn.utc.json");
-            var original = File.ReadAllBytes(path);
+            var ascii = File.ReadAllBytes(path);
+            var marker = Encoding.ASCII.GetBytes("Shaddaa's");
+            var index = ascii.AsSpan().IndexOf(marker);
+            index.Should().BeGreaterThanOrEqualTo(0);
+            var original = ascii.ToArray();
+            original[index + marker.Length - 2] = 0x92;
             var document = JsonGffDocument.Parse(original);
             var entry = document.Root.Get("Description").LocStringEntries!.Single();
 

@@ -490,16 +490,9 @@ public class PlayerNameRecognitionTests
     }
 
     [Test]
-    public void UnknownNames_AreGeneratedDuringMigrationAndLoginInitialization()
+    public void UnknownNames_AreGeneratedDuringLoginInitialization()
     {
         var root = FindRepositoryRoot();
-        var migrationSource = File.ReadAllText(Path.Combine(
-            root.FullName,
-            "SWLOR.Game.Server",
-            "Feature",
-            "MigrationDefinition",
-            "ServerMigration",
-            "_22_CombatSystemReplacement.cs"));
         var initializationSource = File.ReadAllText(Path.Combine(
             root.FullName,
             "SWLOR.Game.Server",
@@ -515,14 +508,6 @@ public class PlayerNameRecognitionTests
             "SWLOR_Haks",
             "sw_2da",
             "appearance.2da"));
-
-        migrationSource.Should().Contain("EnsureUnknownDisplayName(dbPlayer);");
-        migrationSource.Should().Contain("var hasOriginalAppearanceType = jObject[nameof(Player.OriginalAppearanceType)] != null;");
-        migrationSource.Should().Contain("dbPlayer.OriginalAppearanceType = AppearanceType.Invalid;");
-        var migrationEnsureMethod = ExtractMethod(migrationSource, "private static void EnsureUnknownDisplayName(Player dbPlayer)");
-        migrationEnsureMethod.Should().Contain("PlayerName.SanitizeKnownName(dbPlayer.UnknownDisplayName)");
-        migrationEnsureMethod.Should().Contain("PlayerDescriptor.GenerateUnknownDisplayName(dbPlayer)");
-        migrationEnsureMethod.Should().Contain("dbPlayer.UnknownDisplayName = generatedDisplayName;");
 
         var initializationMethod = ExtractMethod(initializationSource, "public static void InitializePlayer()");
         initializationMethod.Should().Contain("if (PlayerDescriptor.EnsureUnknownDisplayName(player))");

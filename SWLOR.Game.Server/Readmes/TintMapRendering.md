@@ -767,7 +767,8 @@ A surviving stock PLT does not protect a stock part that stays in the KEY/BIF
 layer. Many stock parts name another part's texture as their bitmap (female
 chest 4 names `pfh0_chest001`, belt 5 names `pmh0_belt007`). Once that name is
 a generated tint MTR, its non-null `texture0` wins over the selected PLT, and the
-part draws the other part's mask on its own UVs. Every such stock armor part is
+part draws the other part's mask on its own UVs. Every such stock armor part of a
+playable model family on the normal phenotype (`ContentStandards.md` Characters) is
 imported into its part folder and bound to the palette its native lookup selects,
 converting that stock PLT when no tint source exists yet. Converting a stock PLT
 creates a new MTR name that other stock parts may also borrow, so repeat the

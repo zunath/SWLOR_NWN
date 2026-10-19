@@ -1979,13 +1979,16 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             if (SelectedItemTypeIndex == 0) // 0 = Armor
             {
+                GuiBindingList<GuiComboEntry> Available(AppearanceArmor part, IEnumerable<GuiComboEntry> options) =>
+                    ArmorPartAppearance.GetAvailableOptions(_target, part, options,
+                        GetItemAppearance(item, ItemAppearanceType.ArmorModel, (int)part));
                 var neckOptions = new GuiBindingList<GuiComboEntry>();
                 foreach (var style in NeckAppearance.GetAvailableStyles(_target, _armorAppearances[appearanceType].Neck.Prepend(0)))
                     neckOptions.Add(new GuiComboEntry(style.ToString(), style));
                 NeckOptions = neckOptions;
-                ChestOptions = _armorAppearances[appearanceType].TorsoOptions;
-                BeltOptions = _armorAppearances[appearanceType].BeltOptions;
-                PelvisOptions = _armorAppearances[appearanceType].PelvisOptions;
+                ChestOptions = Available(AppearanceArmor.Torso, _armorAppearances[appearanceType].TorsoOptions);
+                BeltOptions = Available(AppearanceArmor.Belt, _armorAppearances[appearanceType].BeltOptions);
+                PelvisOptions = Available(AppearanceArmor.Pelvis, _armorAppearances[appearanceType].PelvisOptions);
                 var robeOptions = new GuiBindingList<GuiComboEntry>();
                 foreach (var style in RobeAppearance.GetAvailableStyles(_target, _armorAppearances[appearanceType].Robe))
                     robeOptions.Add(new GuiComboEntry(style.ToString(), style));
@@ -1994,21 +1997,21 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 if (RobeAppearance.RemoveUnavailableRobe(_target, item) || repairedNeck)
                     EquippedItemAppearance.Refresh(_target, item);
 
-                LeftShoulderOptions = _armorAppearances[appearanceType].ShoulderOptions;
-                LeftBicepOptions = _armorAppearances[appearanceType].BicepOptions;
-                LeftForearmOptions = _armorAppearances[appearanceType].ForearmOptions;
-                LeftHandOptions = _armorAppearances[appearanceType].HandOptions;
-                LeftThighOptions = _armorAppearances[appearanceType].ThighOptions;
-                LeftShinOptions = _armorAppearances[appearanceType].ShinOptions;
-                LeftFootOptions = _armorAppearances[appearanceType].FootOptions;
+                LeftShoulderOptions = Available(AppearanceArmor.LeftShoulder, _armorAppearances[appearanceType].ShoulderOptions);
+                LeftBicepOptions = Available(AppearanceArmor.LeftBicep, _armorAppearances[appearanceType].BicepOptions);
+                LeftForearmOptions = Available(AppearanceArmor.LeftForearm, _armorAppearances[appearanceType].ForearmOptions);
+                LeftHandOptions = Available(AppearanceArmor.LeftHand, _armorAppearances[appearanceType].HandOptions);
+                LeftThighOptions = Available(AppearanceArmor.LeftThigh, _armorAppearances[appearanceType].ThighOptions);
+                LeftShinOptions = Available(AppearanceArmor.LeftShin, _armorAppearances[appearanceType].ShinOptions);
+                LeftFootOptions = Available(AppearanceArmor.LeftFoot, _armorAppearances[appearanceType].FootOptions);
 
-                RightShoulderOptions = _armorAppearances[appearanceType].ShoulderOptions;
-                RightBicepOptions = _armorAppearances[appearanceType].BicepOptions;
-                RightForearmOptions = _armorAppearances[appearanceType].ForearmOptions;
-                RightHandOptions = _armorAppearances[appearanceType].HandOptions;
-                RightThighOptions = _armorAppearances[appearanceType].ThighOptions;
-                RightShinOptions = _armorAppearances[appearanceType].ShinOptions;
-                RightFootOptions = _armorAppearances[appearanceType].FootOptions;
+                RightShoulderOptions = Available(AppearanceArmor.RightShoulder, _armorAppearances[appearanceType].ShoulderOptions);
+                RightBicepOptions = Available(AppearanceArmor.RightBicep, _armorAppearances[appearanceType].BicepOptions);
+                RightForearmOptions = Available(AppearanceArmor.RightForearm, _armorAppearances[appearanceType].ForearmOptions);
+                RightHandOptions = Available(AppearanceArmor.RightHand, _armorAppearances[appearanceType].HandOptions);
+                RightThighOptions = Available(AppearanceArmor.RightThigh, _armorAppearances[appearanceType].ThighOptions);
+                RightShinOptions = Available(AppearanceArmor.RightShin, _armorAppearances[appearanceType].ShinOptions);
+                RightFootOptions = Available(AppearanceArmor.RightFoot, _armorAppearances[appearanceType].FootOptions);
 
                 NeckSelection = GetItemAppearance(item, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.Neck);
                 ChestSelection = GetItemAppearance(item, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.Torso);
@@ -3263,8 +3266,11 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 if (!selected.HasValue)
                     return;
 
+                var left = GetItemAppearance(GetItem(), ItemAppearanceType.ArmorModel, (int)partType);
                 setSelection(selected.Value);
                 ModifyItemPart((int)partType, selected.Value);
+                ArmorPartAppearance.ForgetLeftStyle(options, left, selected.Value,
+                    ArmorPartAppearance.IsAvailable(_target, partType, left));
             }
 
             var wasSkippingAdjustment = _skipAdjustArmorPart;

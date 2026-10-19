@@ -366,10 +366,11 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 {
                     var dbJob = GetJob();
 
-                    if (!string.IsNullOrWhiteSpace(dbJob.SerializedItem))
+                    if (!string.IsNullOrWhiteSpace(dbJob.SerializedItem) &&
+                        !Item.TryAcquireItem(Player, ObjectPlugin.Deserialize(dbJob.SerializedItem)))
                     {
-                        var item = ObjectPlugin.Deserialize(dbJob.SerializedItem);
-                        ObjectPlugin.AcquireItem(Player, item);
+                        FloatingTextStringOnCreature(Item.InventoryFullMessage, Player, false);
+                        return;
                     }
 
                     DB.Delete<ResearchJob>(dbJob.Id);
@@ -394,6 +395,15 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             uint item;
             if (string.IsNullOrWhiteSpace(dbJob.SerializedItem))
             {
+                var probe = CreateItemOnObject("blueprint", GetObjectByTag("TEMP_ITEM_STORAGE"));
+                var fits = Item.FitsInInventory(Player, probe);
+                DestroyObject(probe);
+                if (!fits)
+                {
+                    FloatingTextStringOnCreature(Item.InventoryFullMessage, Player, false);
+                    return;
+                }
+
                 item = CreateItemOnObject("blueprint", Player);
                 SetName(item, $"Blueprint: {Cache.GetItemNameByResref(recipe.Resref)}");
                 isNewBlueprint = true;
@@ -401,7 +411,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             else
             {
                 item = ObjectPlugin.Deserialize(dbJob.SerializedItem);
-                ObjectPlugin.AcquireItem(Player, item);
+                if (!Item.TryAcquireItem(Player, item))
+                {
+                    FloatingTextStringOnCreature(Item.InventoryFullMessage, Player, false);
+                    return;
+                }
+
                 isNewBlueprint = false;
             }
 

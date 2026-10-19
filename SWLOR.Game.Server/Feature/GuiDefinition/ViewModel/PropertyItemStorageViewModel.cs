@@ -535,7 +535,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             var dbItem = category.Items[itemId];
             var item = ObjectPlugin.Deserialize(dbItem.Data);
-            ObjectPlugin.AcquireItem(Player, item);
+            if (!Item.TryAcquireItem(Player, item))
+            {
+                Instructions = Item.InventoryFullMessage;
+                InstructionsColor = GuiColor.Red;
+                return;
+            }
 
             category.Items.Remove(itemId);
             DB.Set(category);

@@ -234,6 +234,48 @@
           "type": "cexostring",
           "value": ""
         }
+      },
+      {
+        "__struct_id": 1,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Prevents random spawns on unreachable mountain tops and ledges."
+        }
+      },
+      {
+        "__struct_id": 1,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Prevents random spawns on unreachable mountain tops and ledges."
+        }
+      },
+      {
+        "__struct_id": 1,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Prevents random spawns on unreachable mountain tops and ledges."
+        }
+      },
+      {
+        "__struct_id": 1,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Prevents random spawns on unreachable mountain tops and ledges."
+        }
+      },
+      {
+        "__struct_id": 1,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Prevents random spawns on unreachable mountain tops and ledges."
+        }
+      },
+      {
+        "__struct_id": 1,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Prevents random spawns on unreachable mountain tops and ledges."
+        }
       }
     ]
   },

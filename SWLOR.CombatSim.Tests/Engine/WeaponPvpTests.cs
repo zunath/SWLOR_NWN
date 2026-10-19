@@ -142,7 +142,7 @@ public class WeaponPvpTests
         var owner=simulation.Get("Owner"); var target=simulation.Get("Target");
         Strike(owner,target,FeatType.Jab4,0);
         Strike(owner,target,FeatType.FinishingCombination2,1);
-        owner.Weapon.EvasionPercent(1).Should().Be(35);
+        owner.Weapon.EvasionPercent(1).Should().Be(20);
         simulation.ApplyDamage(owner,target,10000,directHostile:true);
         owner.Weapon.Refresh(1);
         owner.Weapon.EvasionPercent(1).Should().Be(0);
@@ -179,7 +179,7 @@ public class WeaponPvpTests
         var owner=simulation.Get("Owner"); var target=simulation.Get("Target");
         Strike(owner,target,FeatType.Jab4,0);
         Strike(owner,target,FeatType.FinishingCombination2,1);
-        owner.Weapon.EvasionPercent(1).Should().Be(35);
+        owner.Weapon.EvasionPercent(1).Should().Be(20);
         owner.Stm=20;
         SimulationClock.Set(simulation,1);
         SimulationClock.RunUntil(simulation,()=>owner.Stats.AbilitiesUsed >= 2,20,"stance then Force cast");

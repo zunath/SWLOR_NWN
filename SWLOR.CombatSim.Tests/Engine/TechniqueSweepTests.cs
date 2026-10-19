@@ -86,7 +86,7 @@ public class TechniqueSweepTests
         var owner = sim.Get("owner"); var state = owner.Weapon;
         state.Diagnostics["SweepTargetsHit"].Should().Be(2);
         state.AreaHaste(1).Should().Be(9);
-        state.EvasionPercent(1).Should().Be(45);
+        state.EvasionPercent(1).Should().Be(30);
         state.Reactions.WindowTarget.Should().Be(sim.Get("primary").SimId);
         state.Diagnostics["FlowWindows"].Should().Be(1);
         state.Diagnostics["TechniqueRefundedStamina"].Should().Be(2);
@@ -167,7 +167,7 @@ public class TechniqueSweepTests
         SimulationClock.RunUntil(sim, 1);
         sim.Get("secondary").Stats.DamageTakenToHp.Should().Be(0);
         sim.Get("owner").Weapon.Diagnostics["AbilityImpactsAttempted"].Should().Be(2);
-        sim.Get("owner").Weapon.EvasionPercent(1).Should().Be(35);
+        sim.Get("owner").Weapon.EvasionPercent(1).Should().Be(20);
     }
 
     [Test] public void RedirectingSecondImpactConservesBareDamageAndCost()

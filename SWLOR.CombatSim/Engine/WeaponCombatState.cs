@@ -79,7 +79,7 @@ public sealed partial class WeaponCombatState
         "DamageTakenNextSkillAbilityWindowSeconds", "StatusAppliedRequiredCategory", "StatusAppliedSelfDefensePercentAdjustment",
         "StatusAppliedSelfDurationSeconds", "StatusAppliedSelfEnmityPercentAdjustment", "OutgoingDebuffDurationPercentAdjustment",
         "OutgoingControlDurationPercentAdjustment", "HostileAbilityRecastDelayPercentAdjustment", "PhysicalDefensePercentAdjustment",
-        "ForceDefensePercentAdjustment", "ForceAttackPercentAdjustment", "AttackPercentAdjustment", "EvasionPercentAdjustment", "AttackDelayReductionPercent",
+        "DefensePercentAdjustment", "ForceDefensePercentAdjustment", "ForceAttackPercentAdjustment", "AttackPercentAdjustment", "EvasionPercentAdjustment", "AttackDelayReductionPercent",
         "MobilityResistance", "TraumaResistance", "SingleWeaponDamagePercentAdjustment"
     };
     private IEnumerable<IReadOnlyDictionary<StatType, int>> AllSources =>
@@ -256,7 +256,7 @@ public sealed partial class WeaponCombatState
     public int EvasionPercent(double now) => Stat(StatType.EvasionPercentAdjustment) + (now < AreaEvasionUntil ? Stat(StatType.AreaAbilityUsedEvasionPercentAdjustment) : 0) +
         (now < HighGuardUntil ? Stat(StatType.CostlyAbilityUsedEvasionPercentAdjustment) : 0) +
         (Reactions.GetWindowStage(At(now)) == MeleeTechniqueStage.Opening ? LineStat(WindowLine, StatType.TechniqueOpeningFinisherEvasionPercent) : 0);
-    public int DefensePercent(double now) => Stat(StatType.PhysicalDefensePercentAdjustment) + (now < ControlDefenseUntil ? Stat(StatType.StatusAppliedSelfDefensePercentAdjustment) : 0);
+    public int DefensePercent(double now) => Stat(StatType.DefensePercentAdjustment) + Stat(StatType.PhysicalDefensePercentAdjustment) + (now < ControlDefenseUntil ? Stat(StatType.StatusAppliedSelfDefensePercentAdjustment) : 0);
     public int HastePercent(double now) => Stat(StatType.AttackDelayReductionPercent) + AreaHaste(now) + _owner.Spec.WeaponCombat.ExternalHastePercent +
         (Reactions.GetWindowStage(At(now)) == MeleeTechniqueStage.Finish ? LineStat(WindowLine, StatType.TechniqueFinishFinisherHastePercent) : 0);
     public double AttackSeconds(double now) => Combat.CalculateEffectiveAttackDelay(Combat.CalculateAttackDelayMilliseconds(_owner.Spec.WeaponCombat.WeaponDelayUnits, 0, HastePercent(now), 0)) / 1000d;

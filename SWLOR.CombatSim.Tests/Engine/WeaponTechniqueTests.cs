@@ -79,17 +79,17 @@ public class WeaponTechniqueTests
     {
         var c = Fighter("c",1,"Flow"); var enemy = Fighter("e",2);
         Use(c,enemy,FeatType.Jab4,0); Use(c,enemy,FeatType.FinishingCombination2,1);
-        c.Weapon.EvasionPercent(2).Should().Be(35);
+        c.Weapon.EvasionPercent(2).Should().Be(20);
         c.Weapon.HastePercent(2).Should().Be(0);
         Use(c,enemy,FeatType.Jab4,2); Use(c,enemy,FeatType.PalmStrike3,3); Use(c,enemy,FeatType.FinishingCombination2,4);
         c.Weapon.HastePercent(4).Should().Be(0);
-        c.Weapon.EvasionPercent(8.9).Should().Be(35);
+        c.Weapon.EvasionPercent(8.9).Should().Be(20);
         c.Weapon.EvasionPercent(9).Should().Be(0);
         Use(c,enemy,FeatType.Jab4,13); Use(c,enemy,FeatType.PalmStrike3,14); Use(c,enemy,FeatType.FinishingCombination2,15);
         c.Weapon.EvasionPercent(15).Should().Be(0);
-        c.Weapon.HastePercent(15).Should().Be(30);
-        c.Weapon.AttackSeconds(15).Should().Be(0.817);
-        c.Weapon.HastePercent(22.9).Should().Be(30);
+        c.Weapon.HastePercent(15).Should().Be(15);
+        c.Weapon.AttackSeconds(15).Should().Be(1.367);
+        c.Weapon.HastePercent(22.9).Should().Be(15);
         c.Weapon.HastePercent(23).Should().Be(0);
     }
     [Test] public void PaybackPaidCost_DisablesHighGuardAtSevenButNotEight()
@@ -121,10 +121,10 @@ public class WeaponTechniqueTests
         var c = Fighter("c",1,"Bruiser","HeavyBlows:3","CatchYourBreath"); var enemy = Fighter("e",2);
         c.Stm = 50;
         c.Weapon.DirectHpDamage(enemy,0);
-        c.Weapon.Reactions.GetRetaliation(enemy.SimId,WeaponCombatState.At(0)).Should().Be(24);
+        c.Weapon.Reactions.GetRetaliation(enemy.SimId,WeaponCombatState.At(0)).Should().Be(12);
         var standalone = Use(c,enemy,FeatType.Uppercut3,1);
         standalone.Stage.Should().Be(MeleeTechniqueStage.None);
-        standalone.ConditionalPower.Should().Be(36);
+        standalone.ConditionalPower.Should().Be(24);
         c.Stm.Should().Be(52);
         c.Weapon.Reactions.GetRetaliation(enemy.SimId,WeaponCombatState.At(1)).Should().Be(0);
         Use(c,enemy,FeatType.DirtyJab4,2);
@@ -144,7 +144,7 @@ public class WeaponTechniqueTests
         c.Weapon.Target(other,19);
         c.Weapon.Reactions.GetRetaliation(enemy.SimId,WeaponCombatState.At(19)).Should().Be(0);
         c.Weapon.DirectHpDamage(enemy,36);
-        Use(c,enemy,FeatType.Uppercut3,37,false).ConditionalPower.Should().Be(24);
+        Use(c,enemy,FeatType.Uppercut3,37,false).ConditionalPower.Should().Be(12);
         c.Stats.StmRefunded.Should().Be(0);
         c.Weapon.Reactions.GetRetaliation(enemy.SimId,WeaponCombatState.At(37)).Should().Be(0);
     }
@@ -152,7 +152,7 @@ public class WeaponTechniqueTests
     {
         var c=Fighter("c",1,"Bruiser","CatchYourBreath"); var enemy=Fighter("e",2);
         c.Weapon.DirectHpDamage(enemy,0);
-        Use(c,enemy,FeatType.Uppercut3,1,paid:0).ConditionalPower.Should().Be(24);
+        Use(c,enemy,FeatType.Uppercut3,1,paid:0).ConditionalPower.Should().Be(12);
         c.Weapon.Reactions.GetRetaliation(enemy.SimId,WeaponCombatState.At(1)).Should().Be(0);
         c.Stats.StmRefunded.Should().Be(0);
     }

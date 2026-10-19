@@ -90,6 +90,9 @@ namespace SWLOR.Game.Server.Service
                 ClearSetup(creature);
             if (!ability.IsHostileAbility)
                 return;
+            // Only technique casts create state; other abilities only update an existing owner's benefits.
+            if (detail == null && !Owners.ContainsKey(creature))
+                return;
 
             var owner = GetOwner(creature);
             Refresh(creature, owner);

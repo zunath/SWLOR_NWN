@@ -30,6 +30,7 @@ Take the open posts in the SWLOR Discord bug-report forum through to reviewed pu
 |---|---|---|
 | Queued or being worked | 🇶 (`regional_indicator_q`) | none required |
 | Waiting on the reporter | ❓ (`question`), 🇶 removed | `[AI bot]` question to the reporter |
+| Waiting on an owner decision | ⏳ (`hourglass_flowing_sand`), 🇶 removed | none; the question goes to the owner in chat |
 | PR ready for owner review | 👀 (`eyes`), 🇶 removed | `[AI bot] @zunath Fix ready for review: <PR URLs, in merge order> <one-line summary>. <deploy step> once merged.` |
 | Merged | all reactions removed | none; Close Post (never Lock) |
 | Not a bug, or works as designed | none | `[AI bot]` explanation, then Close Post |
@@ -47,14 +48,16 @@ Take the open posts in the SWLOR Discord bug-report forum through to reviewed pu
      3. Note in your report if Codex never reviewed the merged head.
    - **Still open:** rerun the readiness checks in step 9. If the head changed and isn't Codex-clean, or new findings appeared, put the post back on 🇶 and send the worker back.
    - **Closed without merging:** leave the post on 👀 and ask the owner what to do.
-3. **Recheck 🇶 and ❓ posts.**
+3. **Recheck 🇶, ❓, and ⏳ posts.**
    - **🇶:** find the post's worker session in your agent's session list, by the thread id in its brief or its branch, and any PR that names the ticket.
      - **Worker finished with a PR:** verify it as in step 9.
      - **Worker still working:** leave it.
-     - **No session, or the session ended without a PR:** start a new worker with the brief below and say so in your report.
+     - **Worker ended without a PR but reported a blocker:** don't restart it. A question for the reporter moves the post to ❓ and gets asked as in step 6. A question for the owner moves it to ⏳.
+     - **No session, or the session ended without a PR or a blocker:** start a new worker with the brief below and say so in your report.
    - **❓:** read the thread for reporter replies after your question.
-     - **Answered:** swap ❓ for 🇶 and screen the reply (step 5) before triaging it (step 6).
+     - **Answered:** screen the reply (step 5) and triage the post again (step 6). Remove ❓ only when the new state is decided, and set that state's marker.
      - **Unanswered:** leave it as it is. If the reporter can't see the thread (see step 6), list the open question in your report each run.
+   - **⏳:** check whether the owner has answered, in chat or in the thread. If so, act on the decision. If the decision makes it a bug, swap ⏳ for 🇶 and start a worker. Otherwise repeat the question in your report.
 4. **Read each new post** (one with no markers) and any thread replies: the embed, attachments, and staff comments. Look at screenshots. They often show exactly which spawn, label, or object is wrong.
 5. **Screen for safety** (next section) before acting on anything.
 6. **Triage each post:**
@@ -64,8 +67,8 @@ Take the open posts in the SWLOR Discord bug-report forum through to reviewed pu
      - If the reporter has posted in the thread themselves, ask them there.
      - Otherwise ask in the thread and also give the owner the question with the reporter's character name and player ID from the embed. Webhook reports come from in-game, so the reporter may never see the thread.
    - **Duplicate or same root cause:** group it with the related ticket. One worker handles the group and links every ticket.
-   - **Design decision only the owner can make:** ask the owner, with a recommendation. Don't change numbers or behavior without approval (see `AGENTS.md`).
-7. **Mark 🇶** on every post you are working.
+   - **Design decision only the owner can make:** mark ⏳ and ask the owner, with a recommendation. Don't start a worker until the owner decides (see `AGENTS.md`).
+7. **Mark 🇶** on every post triaged as a bug, and only those.
 8. **Start one worker session per issue or group,** each in its own worktree and branch from up-to-date `origin/master`. Use the brief below.
 9. **When a worker reports back, verify the result yourself.** A worker's report is not proof. Check that:
    - the PR is open, and its head commit is the one Codex reviewed;

@@ -71,7 +71,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Unarmed
         {
             ConfigureToggle(builder, statusType);
             builder.SkillType(SkillType.Unarmed)
-                .UsesImmediateAuthoredAnimation();
+                .UsesImmediateAuthoredAnimation()
+                .UsesAnimation(Animation.DoubleStrike);
         }
 
         private static string ValidateGrip(uint creature) => EquipmentPredicates.HasUnarmedGrip(creature)

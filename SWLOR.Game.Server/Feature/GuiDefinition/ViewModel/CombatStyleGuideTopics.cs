@@ -155,6 +155,14 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     },
                     "Perks", "Combat Basics", "Saberstaff Combat Styles", "Staff Combat Styles"),
 
+                Topic("Unarmed", "Choose Unarmed for Power Glove combinations that chain setups into finishers, or for heavy strikes and counterattacks.",
+                    new[]
+                    {
+                        Style("Unarmed - Martial Artist", "Martial Artist chains Jab into Palm Strike and finishers, with setups that also help your other weapon attacks."),
+                        Style("Unarmed - Brawler", "Brawler includes pressure attacks that weaken an enemy's attacks, heavy strikes, and counterattacks earned by taking damage.")
+                    },
+                    "Perks", "Combat Basics", "Katar Combat Styles", "Staff Combat Styles"),
+
                 Topic("Vibroblade", "Choose Vibroblade for attacks that scale with defense and draw enemy attention, or for nearby area damage.",
                     new[]
                     {

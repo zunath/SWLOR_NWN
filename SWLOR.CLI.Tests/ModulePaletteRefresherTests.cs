@@ -166,6 +166,24 @@ public sealed class ModulePaletteRefresherTests
                 "nwn_gff copies palette bytes verbatim, so the name must stay Windows-1252");
     }
 
+    [Test]
+    public void Refresh_PreservesColorTokenBytesThatLookLikeUtf8()
+    {
+        // Channel bytes C3 A9 20 also form a valid UTF-8 "é" followed by a space.
+        WritePalette("placeablepalcus", Terminal(7, "Custom"));
+        WriteNwnJson(
+            Path.Combine(_moduleRoot, "utp", "colored.utp.json"),
+            Blueprint("PaletteID", 7, "LocName", LocString("<cÃ© >Lamp</c>")));
+        var source = File.ReadAllBytes(Path.Combine(_moduleRoot, "utp", "colored.utp.json"));
+        var token = new byte[] { (byte)'<', (byte)'c', 0xC3, 0xA9, (byte)' ', (byte)'>', (byte)'L' };
+        source.AsSpan().IndexOf(token).Should().BePositive();
+
+        ModulePaletteRefresher.Refresh(_moduleRoot, _outputRoot);
+
+        File.ReadAllBytes(Path.Combine(_outputRoot, "placeablepalcus.itp.json"))
+            .AsSpan().IndexOf(token).Should().BePositive("the refreshed palette must keep all three channel bytes");
+    }
+
     [TestCase("doorpalcus", "utd", "PaletteID", "LocName")]
     [TestCase("encounterpalcus", "ute", "PaletteID", "LocalizedName")]
     [TestCase("itempalcus", "uti", "PaletteID", "LocalizedName")]
@@ -569,6 +587,7 @@ public sealed class ModulePaletteRefresherTests
 
     private JObject LoadOutput(string paletteName)
     {
+        Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
         return JObject.Parse(File.ReadAllText(
             Path.Combine(_outputRoot, paletteName + ".itp.json"),
             Encoding.GetEncoding(1252)));

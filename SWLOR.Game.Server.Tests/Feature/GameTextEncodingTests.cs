@@ -24,7 +24,13 @@ public class GameTextEncodingTests
 
     // Typographic punctuation pasted from documents and AI chats. The game can display these, but
     // game text uses the ASCII forms (', ", -, ...) so every source follows one rule.
-    private const string TypographicPunctuation = "‘’“”–—…";
+    private const string TypographicPunctuation =
+        "\u2018\u2019\u201A\u201C\u201D\u201E\u2039\u203A\u00AB\u00BB\u2013\u2014\u2026";
+
+    // A C# \u, \U, or \x escape that is not itself escaped by a preceding backslash.
+    private static readonly Regex CSharpEscape = new(
+        @"(?<!\\)((?:\\\\)*)\\(?:u([0-9A-Fa-f]{4})|U([0-9A-Fa-f]{8})|x([0-9A-Fa-f]{1,4}))",
+        RegexOptions.Compiled);
 
     // Byte-mapping tables that list every Windows-1252 character on purpose, keyed by file and the
     // start of the declaring line. Every other line in those files follows the normal rule.
@@ -95,7 +101,7 @@ public class GameTextEncodingTests
             var lines = File.ReadAllLines(path);
             for (var lineIndex = 0; lineIndex < lines.Length; lineIndex++)
             {
-                var code = StripComment(lines[lineIndex]);
+                var code = DecodeEscapes(StripComment(lines[lineIndex]));
                 if (AllowedCodeLines.Contains(code.Trim()))
                     continue;
 
@@ -153,6 +159,15 @@ public class GameTextEncodingTests
         violations.Should().BeEmpty(
             "nwn_tlk converts TLK text to Windows-1252, and game text uses ASCII quotes, dashes, and '...'");
     }
+
+    /// <summary>Replaces C# character escapes with the characters they produce at runtime.</summary>
+    private static string DecodeEscapes(string code) => CSharpEscape.Replace(code, match =>
+    {
+        var hex = match.Groups[2].Success ? match.Groups[2].Value
+            : match.Groups[3].Success ? match.Groups[3].Value
+            : match.Groups[4].Value;
+        return match.Groups[1].Value + char.ConvertFromUtf32(Convert.ToInt32(hex, 16));
+    });
 
     private static IEnumerable<(string Location, string Text)> StringValues(System.Text.Json.JsonElement element, string location)
     {

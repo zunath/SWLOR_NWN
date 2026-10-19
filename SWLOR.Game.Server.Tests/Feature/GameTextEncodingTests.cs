@@ -26,11 +26,12 @@ public class GameTextEncodingTests
     // game text uses the ASCII forms (', ", -, ...) so every source follows one rule.
     private const string TypographicPunctuation = "‘’“”–—…";
 
-    // Byte-mapping tables that list every Windows-1252 character on purpose.
-    private static readonly HashSet<string> CharacterTableFiles = new(StringComparer.Ordinal)
+    // Byte-mapping tables that list every Windows-1252 character on purpose, keyed by file and the
+    // start of the declaring line. Every other line in those files follows the normal rule.
+    private static readonly (string File, string Declaration)[] CharacterTables =
     {
-        Path.Combine("Feature", "GuiDefinition", "ExamineItemText.cs"),
-        Path.Combine("Service", "ColorToken.cs")
+        (Path.Combine("Feature", "GuiDefinition", "ExamineItemText.cs"), "const string highChannels = \""),
+        (Path.Combine("Service", "ColorToken.cs"), "private static string ColorArray => \"")
     };
 
     // Left as authored at the owner's request.
@@ -98,7 +99,9 @@ public class GameTextEncodingTests
                 if (AllowedCodeLines.Contains(code.Trim()))
                     continue;
 
-                var isTable = CharacterTableFiles.Contains(relativePath);
+                var trimmed = code.Trim();
+                var isTable = CharacterTables.Any(table =>
+                    table.File == relativePath && trimmed.StartsWith(table.Declaration, StringComparison.Ordinal));
                 var bad = code.FirstOrDefault(character => isTable
                     ? character >= 0x80 && !IsWindows1252(character)
                     : !IsGameTextCharacter(character));
@@ -120,12 +123,13 @@ public class GameTextEncodingTests
 
         foreach (var path in Directory.EnumerateFiles(dataRoot, "*.json", SearchOption.AllDirectories))
         {
-            var lines = File.ReadAllLines(path);
-            for (var lineIndex = 0; lineIndex < lines.Length; lineIndex++)
+            // Check decoded values so JSON escapes such as \u2019 are caught too.
+            using var document = System.Text.Json.JsonDocument.Parse(File.ReadAllText(path));
+            foreach (var (location, text) in StringValues(document.RootElement, "$"))
             {
-                var bad = lines[lineIndex].FirstOrDefault(character => !IsGameTextCharacter(character));
+                var bad = text.FirstOrDefault(character => !IsGameTextCharacter(character));
                 if (bad != default)
-                    violations.Add($"{Path.GetFileName(path)}:{lineIndex + 1}: U+{(int)bad:X4} in {lines[lineIndex].Trim()}");
+                    violations.Add($"{Path.GetFileName(path)} {location}: U+{(int)bad:X4} in {text}");
             }
         }
 
@@ -148,6 +152,27 @@ public class GameTextEncodingTests
 
         violations.Should().BeEmpty(
             "nwn_tlk converts TLK text to Windows-1252, and game text uses ASCII quotes, dashes, and '...'");
+    }
+
+    private static IEnumerable<(string Location, string Text)> StringValues(System.Text.Json.JsonElement element, string location)
+    {
+        switch (element.ValueKind)
+        {
+            case System.Text.Json.JsonValueKind.Object:
+                foreach (var property in element.EnumerateObject())
+                foreach (var value in StringValues(property.Value, $"{location}.{property.Name}"))
+                    yield return value;
+                break;
+            case System.Text.Json.JsonValueKind.Array:
+                var index = 0;
+                foreach (var item in element.EnumerateArray())
+                foreach (var value in StringValues(item, $"{location}[{index++}]"))
+                    yield return value;
+                break;
+            case System.Text.Json.JsonValueKind.String:
+                yield return (location, element.GetString() ?? string.Empty);
+                break;
+        }
     }
 
     private static bool IsVoidField(JValue value) =>

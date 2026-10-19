@@ -635,12 +635,6 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
 
                 await InContext(ctx, dm.Creature, model.OnClickClearChecks());
                 ctx.Assert(!model.HasChecked && !model.ResultChecks[0], "Clear Checks unchecks everyone");
-                await InContext(ctx, dm.Creature, () => model.SearchText = string.Empty);
-                await InContext(ctx, dm.Creature, model.OnClickSearch());
-                await InContext(ctx, dm.Creature, model.OnClickCheckAllOnline());
-                ctx.Assert(model.ResultChecks.Count >= 2 && model.ResultChecks.All(isChecked => isChecked),
-                    $"Check All Online checks every online result (checks {string.Join(",", model.ResultChecks)}, statuses {string.Join(",", model.ResultStatuses)}, {model.CheckedSummary})");
-                await InContext(ctx, dm.Creature, model.OnClickClearChecks());
 
                 await InContext(ctx, dm.Creature, () => model.SearchText = "lanky");
                 await InContext(ctx, dm.Creature, model.OnClickSearch());

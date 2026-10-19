@@ -195,13 +195,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                                     .SetHeight(20f);
 
                                 checks.AddButton()
-                                    .SetText("Check All Online")
-                                    .SetTooltip("Check every online character in these results")
-                                    .SetWidth(140f)
-                                    .SetHeight(ButtonHeight)
-                                    .BindOnClicked(model => model.OnClickCheckAllOnline());
-
-                                checks.AddButton()
                                     .SetText("Clear Checks")
                                     .SetWidth(120f)
                                     .SetHeight(ButtonHeight)

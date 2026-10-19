@@ -451,16 +451,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 DMPresence.SendMessage(Player, error);
         };
 
-        public Action OnClickCheckAllOnline() => () =>
-        {
-            foreach (var result in _results.Where(result => result.IsOnline))
-            {
-                _checkedPlayers[result.PlayerId] = result.Name;
-            }
-
-            ShowPageChecks();
-        };
-
         public Action OnClickClearChecks() => () =>
         {
             _checkedPlayers.Clear();

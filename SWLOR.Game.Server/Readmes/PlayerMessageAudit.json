@@ -176,210 +176,210 @@
   },
   {
     "File": "SWLOR.Game.Server/Feature/ChatCommandDefinition/CharacterChatCommand.cs",
-    "Line": 93,
+    "Line": 94,
     "Member": "Char",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(user, message)"
   },
   {
     "File": "SWLOR.Game.Server/Feature/ChatCommandDefinition/CharacterChatCommand.cs",
-    "Line": 105,
+    "Line": 106,
     "Member": "CDKey",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(user, \"Your public CD Key is: \" + cdKey)"
   },
   {
     "File": "SWLOR.Game.Server/Feature/ChatCommandDefinition/CharacterChatCommand.cs",
-    "Line": 132,
+    "Line": 133,
     "Member": "EndCall",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(user, \"You end your HoloCom call.\")"
   },
   {
     "File": "SWLOR.Game.Server/Feature/ChatCommandDefinition/CharacterChatCommand.cs",
-    "Line": 141,
+    "Line": 142,
     "Member": "EndCall",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(callReceiver, \"Your HoloCom stops buzzing.\")"
   },
   {
     "File": "SWLOR.Game.Server/Feature/ChatCommandDefinition/CharacterChatCommand.cs",
-    "Line": 146,
+    "Line": 147,
     "Member": "EndCall",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(user, \"You cancel your HoloCom call.\")"
   },
   {
     "File": "SWLOR.Game.Server/Feature/ChatCommandDefinition/CharacterChatCommand.cs",
-    "Line": 150,
+    "Line": 151,
     "Member": "EndCall",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(user, \"You don't have any active calls or outgoing call attempts to end.\")"
   },
   {
     "File": "SWLOR.Game.Server/Feature/ChatCommandDefinition/CharacterChatCommand.cs",
-    "Line": 249,
+    "Line": 250,
     "Member": "LanguageCommand",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(user, commands.Aggregate((a, b) => a + '\\n' + b))"
   },
   {
     "File": "SWLOR.Game.Server/Feature/ChatCommandDefinition/CharacterChatCommand.cs",
-    "Line": 258,
+    "Line": 259,
     "Member": "LanguageCommand",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(user, ColorToken.Red(\"Wookiees can only speak Shyriiwook.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Feature/ChatCommandDefinition/CharacterChatCommand.cs",
-    "Line": 268,
+    "Line": 269,
     "Member": "LanguageCommand",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(user, $\"Set active language to {language.ProperName}.\")"
   },
   {
     "File": "SWLOR.Game.Server/Feature/ChatCommandDefinition/CharacterChatCommand.cs",
-    "Line": 273,
+    "Line": 274,
     "Member": "LanguageCommand",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(user, ColorToken.Red($\"Unknown language {command}.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Feature/ChatCommandDefinition/CharacterChatCommand.cs",
-    "Line": 324,
+    "Line": 325,
     "Member": "DeleteCommand",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature(\"Please confirm your deletion by entering another \\\"/delete <CD Key>\\\" command within 30 seconds.\", user, false)"
   },
   {
     "File": "SWLOR.Game.Server/Feature/ChatCommandDefinition/CharacterChatCommand.cs",
-    "Line": 352,
+    "Line": 353,
     "Member": "ToggleEmoteStyle",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(user, ColorToken.Red(\"Your emote style could not be saved.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Feature/ChatCommandDefinition/CharacterChatCommand.cs",
-    "Line": 356,
+    "Line": 357,
     "Member": "ToggleEmoteStyle",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(user, $\"Toggled emote style to {newStyle}.\")"
   },
   {
     "File": "SWLOR.Game.Server/Feature/ChatCommandDefinition/CharacterChatCommand.cs",
-    "Line": 427,
+    "Line": 428,
     "Member": "HeadScale",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(user, \"Your appearance type does not support head scaling.\")"
   },
   {
     "File": "SWLOR.Game.Server/Feature/ChatCommandDefinition/CharacterChatCommand.cs",
-    "Line": 440,
+    "Line": 441,
     "Member": "HeadScale",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(user, $\"Head Size: {current:0.##} (range {minScale}-{maxScale}). Use /headscale <value>, /headscale +, or /headscale -.\")"
   },
   {
     "File": "SWLOR.Game.Server/Feature/ChatCommandDefinition/CharacterChatCommand.cs",
-    "Line": 462,
+    "Line": 463,
     "Member": "HeadScale",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(user, newScale >= maxScale\n                            ? \"You cannot increase your head size any further.\"\n                            : \"You cannot decrease your head size any further.\")"
   },
   {
     "File": "SWLOR.Game.Server/Feature/ChatCommandDefinition/CharacterChatCommand.cs",
-    "Line": 473,
+    "Line": 474,
     "Member": "HeadScale",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(user, $\"Head Size: {newScale:0.##}\")"
   },
   {
     "File": "SWLOR.Game.Server/Feature/ChatCommandDefinition/CharacterChatCommand.cs",
-    "Line": 486,
+    "Line": 487,
     "Member": "AlwaysWalk",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(user, $\"Walk mode {status}.\")"
   },
   {
     "File": "SWLOR.Game.Server/Feature/ChatCommandDefinition/CharacterChatCommand.cs",
-    "Line": 520,
+    "Line": 521,
     "Member": "AssociateCommands",
     "Delivery": "Retained",
     "Call": "SpeakString(message)"
   },
   {
     "File": "SWLOR.Game.Server/Feature/ChatCommandDefinition/CharacterChatCommand.cs",
-    "Line": 550,
+    "Line": 551,
     "Member": "Afk",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(user, isAfk\n                        ? ColorToken.Purple(\"You are now AFK. Move or use /afk again when you return.\")\n                        : \"You are no longer AFK.\")"
   },
   {
     "File": "SWLOR.Game.Server/Feature/ChatCommandDefinition/CharacterChatCommand.cs",
-    "Line": 571,
+    "Line": 572,
     "Member": "SetKnownName",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(user, ColorToken.Red(\"You may only name player characters.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Feature/ChatCommandDefinition/CharacterChatCommand.cs",
-    "Line": 579,
+    "Line": 580,
     "Member": "SetKnownName",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(user, ColorToken.Red(validationError))"
   },
   {
     "File": "SWLOR.Game.Server/Feature/ChatCommandDefinition/CharacterChatCommand.cs",
-    "Line": 587,
+    "Line": 588,
     "Member": "SetKnownName",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(user, ColorToken.Green($\"Public description set to '{name}'. Players who have not labeled your current identity will see this in gray.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Feature/ChatCommandDefinition/CharacterChatCommand.cs",
-    "Line": 594,
+    "Line": 595,
     "Member": "SetKnownName",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(user, ColorToken.Red(validationError))"
   },
   {
     "File": "SWLOR.Game.Server/Feature/ChatCommandDefinition/CharacterChatCommand.cs",
-    "Line": 615,
+    "Line": 616,
     "Member": "SetKnownName",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(user, ColorToken.Green($\"Private label saved as '{name}'. Only you can see this label.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Feature/ChatCommandDefinition/CharacterChatCommand.cs",
-    "Line": 643,
+    "Line": 644,
     "Member": "ForgetKnownName",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(user, ColorToken.Red(\"You may only forget names for player characters.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Feature/ChatCommandDefinition/CharacterChatCommand.cs",
-    "Line": 649,
+    "Line": 650,
     "Member": "ForgetKnownName",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(user, ColorToken.Red(\"You cannot forget your own name.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Feature/ChatCommandDefinition/CharacterChatCommand.cs",
-    "Line": 669,
+    "Line": 670,
     "Member": "ForgetKnownName",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(user, ColorToken.Green(\"Private label removed. This changes only what you see.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Feature/ChatCommandDefinition/CharacterChatCommand.cs",
-    "Line": 724,
+    "Line": 725,
     "Member": "ChangeDescription",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(user, \"You can only change descriptions of items in your inventory with this command.\")"
   },
   {
     "File": "SWLOR.Game.Server/Feature/ChatCommandDefinition/CharacterChatCommand.cs",
-    "Line": 791,
+    "Line": 810,
     "Member": "ResetWindows",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(user, ColorToken.Green(\"All window positions and sizes have been reset to their default values.\"))"
@@ -2926,13 +2926,6 @@
     "Call": "SendMessageToPC(player, $\"Your {saberText} been recalibrated to current crafting limits, retaining supported bonuses and previously applied Chiro upgrades.\")"
   },
   {
-    "File": "SWLOR.Game.Server/Feature/MigrationDefinition/PlayerMigrationBase.cs",
-    "Line": 115,
-    "Member": "RefundPerk",
-    "Delivery": "Retained",
-    "Call": "SendMessageToPC(player, $\"Perk '{perkDetail.Name}' was automatically refunded. You reclaimed {refundAmount} SP.\")"
-  },
-  {
     "File": "SWLOR.Game.Server/Feature/MiniMaps.cs",
     "Line": 71,
     "Member": "MiniMapGui",
@@ -4663,10 +4656,10 @@
   },
   {
     "File": "SWLOR.Game.Server/Service/Migration.cs",
-    "Line": 181,
-    "Member": "RunPlayerMigrations",
+    "Line": 229,
+    "Member": "DeliverUpgradeNotices",
     "Delivery": "Retained",
-    "Call": "SendMessageToPC(player, \"Free inventory space, then reconnect to complete your equipment update.\")"
+    "Call": "SendMessageToPC(player, notice)"
   },
   {
     "File": "SWLOR.Game.Server/Service/Mimicry.cs",
@@ -4709,6 +4702,48 @@
     "Member": "UnequipTechnique",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red(\"You cannot manage techniques while in combat.\"))"
+  },
+  {
+    "File": "SWLOR.Game.Server/Service/OverflowStorage.cs",
+    "Line": 41,
+    "Member": "Claim",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(player, \"You have no items in overflow storage.\")"
+  },
+  {
+    "File": "SWLOR.Game.Server/Service/OverflowStorage.cs",
+    "Line": 66,
+    "Member": "Claim",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(player, $\"Your inventory is full. Free inventory space, then use /overflow again to claim your {records.Count} item(s).\")"
+  },
+  {
+    "File": "SWLOR.Game.Server/Service/OverflowStorage.cs",
+    "Line": 74,
+    "Member": "Claim",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(player, \"Your character could not be saved, so your items stay in overflow storage. Please try again.\")"
+  },
+  {
+    "File": "SWLOR.Game.Server/Service/OverflowStorage.cs",
+    "Line": 94,
+    "Member": "Claim",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(player, $\"You claimed {claimed.Count} item(s) from overflow storage.\")"
+  },
+  {
+    "File": "SWLOR.Game.Server/Service/OverflowStorage.cs",
+    "Line": 96,
+    "Member": "Claim",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(player, $\"You claimed {claimed.Count} item(s) from overflow storage. {remaining} item(s) remain; free inventory space and use /overflow again.\")"
+  },
+  {
+    "File": "SWLOR.Game.Server/Service/OverflowStorage.cs",
+    "Line": 105,
+    "Member": "NotifyOnLogin",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(player, ColorToken.Green($\"{count} item(s) from a character update did not fit in your inventory and are in overflow storage. Free inventory space and use /overflow to claim them.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/Perk.cs",

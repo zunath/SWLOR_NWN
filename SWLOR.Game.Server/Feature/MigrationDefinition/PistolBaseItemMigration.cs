@@ -20,11 +20,6 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition
         private const string ConstructedDroidVariable = "CONSTRUCTED_DROID";
         private const string DroidItemIdVariable = "DROID_ITEM_ID";
 
-        public static void MigratePlayer(uint player)
-        {
-            NormalizeItemsOnObject(player);
-        }
-
         public static bool MigrateStoredObject(uint obj)
         {
             return NormalizeItemsOnObject(obj) > 0;

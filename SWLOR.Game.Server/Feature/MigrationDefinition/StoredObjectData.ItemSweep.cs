@@ -39,7 +39,8 @@ internal sealed partial class StoredObjectData
     };
 
     /// <summary>Saved-data counterpart of <see cref="LootStatRevisionMigration.MigrateStoredObjectData"/>.</summary>
-    internal static bool MigrateStoredItemData(string original, out string migrated, bool repairHeadgear, Action<RootListing> rootChanged)
+    internal static bool MigrateStoredItemData(string original, out string migrated, bool repairHeadgear, Action<RootListing> rootChanged,
+        bool updateArtwork = true)
     {
         migrated = original;
         if (string.IsNullOrWhiteSpace(original))
@@ -60,7 +61,7 @@ internal sealed partial class StoredObjectData
              HeadgearSlotMigration.GetCorrectedModel(resref, baseItem, model) != model ||
              EquipmentTypeMigration.IsLegacyEquipment(resref, baseItem)) ||
             IsLegacyAppearance(root);
-        if (!MigrateSavedItem(root, repairHeadgear, new HashSet<Node>()))
+        if (!MigrateSavedItem(root, repairHeadgear, new HashSet<Node>(), updateArtwork))
             return false;
         if (refreshRootMetadata)
             rootChanged?.Invoke(GetRootListing(root));
@@ -102,7 +103,7 @@ internal sealed partial class StoredObjectData
         return true;
     }
 
-    private static bool MigrateSavedItem(Node item, bool repairHeadgear, HashSet<Node> visited)
+    internal static bool MigrateSavedItem(Node item, bool repairHeadgear, HashSet<Node> visited, bool updateArtwork = true)
     {
         if (!visited.Add(item)) return false;
         var changed = false;
@@ -111,29 +112,32 @@ internal sealed partial class StoredObjectData
             changed |= ConvertHeadgear(item);
             changed |= ConvertEquipmentType(item);
         }
-        changed |= UpdateArtwork(item);
+        if (updateArtwork) changed |= UpdateArtwork(item);
         changed |= ReviseStats(item);
-
-        var droid = FindLocal(item, ConstructedDroidVariable, 3);
-        if (droid != null)
-        {
-            var original = ReadText(droid);
-            var migrated = HeadgearSlotMigration.MigrateDroid(original, data =>
-                MigrateStoredItemData(data, out var result, repairHeadgear, null) ? result : data, repairHeadgear);
-            if (original != migrated)
-            {
-                WriteText(droid, migrated);
-                changed = true;
-            }
-        }
+        changed |= MigrateSavedDroid(item, repairHeadgear, updateArtwork);
 
         foreach (var list in item.Fields.Where(IsInventoryList))
         foreach (var child in list.Children)
-            changed |= MigrateSavedItem(child, repairHeadgear, visited);
+            changed |= MigrateSavedItem(child, repairHeadgear, visited, updateArtwork);
         return changed;
     }
 
-    private static bool ConvertHeadgear(Node item)
+    /// <summary>The droid saved on a controller item: its parts, equipment and inventory get the same rules.</summary>
+    internal static bool MigrateSavedDroid(Node item, bool repairHeadgear, bool updateArtwork)
+    {
+        var droid = FindLocal(item, ConstructedDroidVariable, 3);
+        if (droid == null)
+            return false;
+        var original = ReadText(droid);
+        var migrated = HeadgearSlotMigration.MigrateDroid(original, data =>
+            MigrateStoredItemData(data, out var result, repairHeadgear, null, updateArtwork) ? result : data, repairHeadgear);
+        if (original == migrated)
+            return false;
+        WriteText(droid, migrated);
+        return true;
+    }
+
+    internal static bool ConvertHeadgear(Node item)
     {
         var resref = ReadResRef(item);
         var baseItem = ReadBaseItem(item);
@@ -154,7 +158,7 @@ internal sealed partial class StoredObjectData
         return true;
     }
 
-    private static bool ConvertEquipmentType(Node item)
+    internal static bool ConvertEquipmentType(Node item)
     {
         var resref = ReadResRef(item);
         if (!EquipmentTypeMigration.IsLegacyEquipment(resref, ReadBaseItem(item))) return false;
@@ -164,7 +168,7 @@ internal sealed partial class StoredObjectData
         return true;
     }
 
-    private static bool UpdateArtwork(Node item)
+    internal static bool UpdateArtwork(Node item)
     {
         var changed = ConvertAppearance(item);
         var current = ReadSimpleModel(item);
@@ -226,7 +230,7 @@ internal sealed partial class StoredObjectData
     private static string ExtendedLabel(string label) => ("x" + label).Length > 16 ? ("x" + label).Substring(0, 16) : "x" + label;
 
     /// <summary>The extended part field wins over the byte-sized one, as when the engine loads an item.</summary>
-    private static int ReadPart(Node item, string label)
+    internal static int ReadPart(Node item, string label)
     {
         var extended = item.Fields.SingleOrDefault(x => x.Name == ExtendedLabel(label));
         if (extended != null) return ReadScalar(extended);
@@ -238,7 +242,7 @@ internal sealed partial class StoredObjectData
     /// Saves both the byte-sized and the extended part fields, as the engine does: a part above 255 leaves
     /// the byte-sized field at 0 and lives only in the extended one.
     /// </summary>
-    private static void WritePart(Node item, string label, int value)
+    internal static void WritePart(Node item, string label, int value)
     {
         void Set(uint type, string name, int data)
         {
@@ -251,16 +255,20 @@ internal sealed partial class StoredObjectData
         Set(2, ExtendedLabel(label), value);
     }
 
-    /// <summary>Mirrors <c>LootStatRevisionMigration.MigrateItem</c>.</summary>
-    private static bool ReviseStats(Node item)
+    /// <summary>
+    /// Mirrors <c>LootStatRevisionMigration.MigrateItem</c>. <paramref name="difference"/> receives how much each
+    /// revised property's total changed, which an equipped item's wearer counts.
+    /// </summary>
+    internal static bool ReviseStats(Node item, Action<LootStatChange, int> difference = null)
     {
         var alreadyRevisedRare = ReadLocalInteger(item, RareLootStatRevisionCatalog.RevisionVariable) >= RareLootStatRevisionCatalog.CurrentRevision;
-        var changed = ApplyRevision(item, LootStatRevisionCatalog.Changes, LootStatRevisionMigration.RevisionVariable, LootStatRevisionMigration.CurrentRevision);
+        var changed = ApplyRevision(item, LootStatRevisionCatalog.Changes, LootStatRevisionMigration.RevisionVariable, LootStatRevisionMigration.CurrentRevision,
+            difference: difference);
         changed |= ApplyRevision(item, RareLootStatRevisionCatalog.Changes,
-            RareLootStatRevisionCatalog.RevisionVariable, RareLootStatRevisionCatalog.CurrentRevision);
+            RareLootStatRevisionCatalog.RevisionVariable, RareLootStatRevisionCatalog.CurrentRevision, difference: difference);
         if (alreadyRevisedRare)
             changed |= ApplyRevision(item, EquipmentTypeStatRevisionCatalog.Changes,
-                EquipmentTypeStatRevisionCatalog.RevisionVariable, EquipmentTypeStatRevisionCatalog.CurrentRevision);
+                EquipmentTypeStatRevisionCatalog.RevisionVariable, EquipmentTypeStatRevisionCatalog.CurrentRevision, difference: difference);
         else if (EquipmentTypeStatRevisionCatalog.Changes.ContainsKey(ReadResRef(item)) &&
                  ReadLocalInteger(item, EquipmentTypeStatRevisionCatalog.RevisionVariable) < EquipmentTypeStatRevisionCatalog.CurrentRevision)
         {
@@ -269,25 +277,29 @@ internal sealed partial class StoredObjectData
             changed = true;
         }
         changed |= ApplyRevision(item, FoundryLootStatRevisionCatalog.Changes,
-            FoundryLootStatRevisionCatalog.RevisionVariable, FoundryLootStatRevisionCatalog.CurrentRevision);
+            FoundryLootStatRevisionCatalog.RevisionVariable, FoundryLootStatRevisionCatalog.CurrentRevision, difference: difference);
         changed |= ApplyRevision(item, ArkanianArmorStatRevisionCatalog.Changes,
             ArkanianArmorStatRevisionCatalog.RevisionVariable, ArkanianArmorStatRevisionCatalog.CurrentRevision,
-            current => ReviseIceProtection(current, ArkanianArmorStatRevisionCatalog.IceResistance));
+            current => ReviseIceProtection(current, ArkanianArmorStatRevisionCatalog.IceResistance), difference);
         changed |= ApplyRevision(item, CarapaceBracerStatRevisionCatalog.Changes,
             CarapaceBracerStatRevisionCatalog.RevisionVariable, CarapaceBracerStatRevisionCatalog.CurrentRevision,
-            ReviseCarapaceProtection);
+            ReviseCarapaceProtection, difference);
         return changed;
     }
 
     private static bool ApplyRevision(Node item, IReadOnlyDictionary<string, LootStatChange[]> catalog, string revisionVariable, int revision,
-        Func<Node, IEnumerable<LootStatChange>> itemChanges = null)
+        Func<Node, IEnumerable<LootStatChange>> itemChanges = null, Action<LootStatChange, int> difference = null)
     {
         if (!catalog.TryGetValue(ReadResRef(item), out var catalogChanges) || ReadLocalInteger(item, revisionVariable) >= revision)
             return false;
         // Item-specific changes read the item before any change applies.
         var changes = itemChanges == null ? catalogChanges : catalogChanges.Concat(itemChanges(item)).ToArray();
         foreach (var change in changes)
-            ApplyChange(item, change);
+        {
+            var changedBy = ApplyChange(item, change);
+            if (changedBy != 0)
+                difference?.Invoke(change, changedBy);
+        }
         WriteLocalInteger(item, revisionVariable, revision);
         return true;
     }
@@ -312,14 +324,17 @@ internal sealed partial class StoredObjectData
             yield return new LootStatChange(ItemPropertyType.Resistance, (int)ResistanceType.Poison, 30, 0);
     }
 
-    /// <summary>Shifts one property by the blueprint difference, as <c>LootStatRevisionMigration.ApplyChange</c> does.</summary>
-    private static void ApplyChange(Node item, LootStatChange change)
+    /// <summary>
+    /// Shifts one property by the blueprint difference, as <c>LootStatRevisionMigration.ApplyChange</c> does, and
+    /// returns how much the item's total changed.
+    /// </summary>
+    private static int ApplyChange(Node item, LootStatChange change)
     {
         var (total, matches) = ReadTotal(item, change.Type, change.Subtype);
         var properties = item.Fields.SingleOrDefault(x => x.Name == "PropertiesList" && x.Type == 15);
         var revised = Math.Max(0, total - change.Previous + change.Current);
         if (revised == total && matches.Count <= 1)
-            return;
+            return 0;
 
         if (properties == null)
         {
@@ -331,6 +346,7 @@ internal sealed partial class StoredObjectData
             properties.Children.Add(NewProperty(change,
                 change.Type == ItemPropertyType.Resistance ? Resistance.EncodeItemPropertyCostTableValue(revised) : revised));
         NumberListElements(properties);
+        return revised - total;
     }
 
     /// <summary>Mirrors <c>LootStatRevisionMigration.ReadTotal</c>; saved property lists hold only permanent properties.</summary>
@@ -346,7 +362,7 @@ internal sealed partial class StoredObjectData
         return (total, matches);
     }
 
-    private static bool HasSubtype(ItemPropertyType type) =>
+    internal static bool HasSubtype(ItemPropertyType type) =>
         type is ItemPropertyType.Defense or ItemPropertyType.Resistance or ItemPropertyType.RequiresSkill;
 
     /// <summary>The property ItemPropertyCustom(type, subtype or -1, value, -1) saves as.</summary>
@@ -412,15 +428,15 @@ internal sealed partial class StoredObjectData
         return new RootListing(icon, category);
     }
 
-    private static string ReadResRef(Node item)
+    internal static string ReadResRef(Node item)
     {
         var field = item.Fields.SingleOrDefault(x => x.Name == "TemplateResRef" && x.Type == 11);
         return field == null ? null : Encoding.ASCII.GetString(field.Data, 1, field.Data[0]);
     }
 
-    private static BaseItem ReadBaseItem(Node item) => (BaseItem)ReadInteger(item, "BaseItem");
+    internal static BaseItem ReadBaseItem(Node item) => (BaseItem)ReadInteger(item, "BaseItem");
 
-    private static int ReadInteger(Node node, string name)
+    internal static int ReadInteger(Node node, string name)
     {
         var field = node.Fields.FirstOrDefault(x => x.Name == name && x.Type <= 5);
         return field == null ? 0 : field.Type switch
@@ -431,33 +447,33 @@ internal sealed partial class StoredObjectData
         };
     }
 
-    private static void WriteInteger(Node node, string name, int value)
+    internal static void WriteInteger(Node node, string name, int value)
     {
         var field = node.Fields.First(x => x.Name == name);
         field.Data = BitConverter.GetBytes(value);
     }
 
     /// <summary>GetItemAppearance(SimpleModel, 0).</summary>
-    private static int ReadSimpleModel(Node item) => ReadPart(item, "ModelPart1");
+    internal static int ReadSimpleModel(Node item) => ReadPart(item, "ModelPart1");
 
-    private static void WriteSimpleModel(Node item, int model) => WritePart(item, "ModelPart1", model);
+    internal static void WriteSimpleModel(Node item, int model) => WritePart(item, "ModelPart1", model);
 
     /// <summary>The first local with this name and NWN variable type (1 integer, 3 string), as GetLocal* reads it.</summary>
-    private static Node FindLocal(Node item, string name, int variableType)
+    internal static Node FindLocal(Node item, string name, int variableType)
     {
         var variables = item.Fields.SingleOrDefault(x => x.Name == "VarTable" && x.Type == 15);
         return variables?.Children.FirstOrDefault(variable =>
             ReadVariableName(variable) == name && ReadInteger(variable, "Type") == variableType);
     }
 
-    private static int ReadLocalInteger(Node item, string name)
+    internal static int ReadLocalInteger(Node item, string name)
     {
         var variable = FindLocal(item, name, 1);
         var value = variable?.Fields.SingleOrDefault(x => x.Name == "Value" && x.Type == 5);
         return value == null ? 0 : ReadScalar(value);
     }
 
-    private static void WriteLocalInteger(Node item, string name, int value)
+    internal static void WriteLocalInteger(Node item, string name, int value)
     {
         var variable = FindLocal(item, name, 1);
         if (variable != null)
@@ -482,17 +498,17 @@ internal sealed partial class StoredObjectData
         });
     }
 
-    private static string ReadText(Node variable)
+    internal static string ReadText(Node variable)
     {
         var value = variable.Fields.Single(x => x.Name == "Value" && x.Type == 10);
         return Encoding.UTF8.GetString(value.Data.AsSpan(4));
     }
 
-    private static void WriteText(Node variable, string text)
+    internal static void WriteText(Node variable, string text)
         => variable.Fields.Single(x => x.Name == "Value" && x.Type == 10).Data = StringData(text);
 
     /// <summary>The engine saves item properties with their index as the struct type (locals all use 0).</summary>
-    private static void NumberListElements(Field list)
+    internal static void NumberListElements(Field list)
     {
         for (var index = 0; index < list.Children.Count; index++)
             list.Children[index].Type = (uint)index;

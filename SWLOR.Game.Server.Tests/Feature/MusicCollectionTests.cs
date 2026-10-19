@@ -6,6 +6,7 @@ using SWLOR.Game.Server.Feature.LootTableDefinition;
 using SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition;
 using SWLOR.Game.Server.Service.CraftService;
 using SWLOR.Game.Server.Service.KeyItemService;
+using SWLOR.Game.Server.Service.LootService;
 using SWLOR.Game.Server.Service.MusicService;
 using SWLOR.Game.Server.Service.SkillService;
 
@@ -123,6 +124,30 @@ public class MusicCollectionTests
         boss.Select(item => item.Resref).Should().BeEquivalentTo(DiscsFor(MusicAcquisitionType.BossDrop));
     }
 
+    // Rare find bonuses: none, Treasure Hunter I-III, and the beast-only 5/10/15 bonuses.
+    [TestCase(0, 1, 5)]
+    [TestCase(10, 7, 10)]
+    [TestCase(20, 13, 15)]
+    [TestCase(30, 20, 20)]
+    [TestCase(5, 4, 7)]
+    [TestCase(15, 10, 12)]
+    public void SongDiscDropChance_TopsOutAtTwentyPercent(int rareBonus, int regularChance, int bossChance)
+    {
+        var tables = new MusicLootTableDefinition().BuildLootTables();
+
+        (MusicLootTableDefinition.MusicDiscChance + tables[MusicLootTableDefinition.MusicDiscs].GetRareChanceBonus(rareBonus))
+            .Should().Be(regularChance);
+        (MusicLootTableDefinition.BossMusicDiscChance + tables[MusicLootTableDefinition.BossMusicDiscs].GetRareChanceBonus(rareBonus))
+            .Should().Be(bossChance);
+    }
+
+    [Test]
+    public void RareTablesWithoutAScale_KeepTheFullRareBonus()
+    {
+        new LootTable { IsRare = true }.GetRareChanceBonus(LootTable.FullRareChanceBonus)
+            .Should().Be(LootTable.FullRareChanceBonus);
+    }
+
     [Test]
     public void SongDiscTables_AreAddedAlongsideExistingCreatureLoot()
     {
@@ -153,14 +178,25 @@ public class MusicCollectionTests
             if (resref.StartsWith("cp_"))
                 failures.Add($"{resref} is a capstone creature");
 
-            var expectedName = $"LOOT_TABLE_{lootTables.Count}";
-            if (musicTables[0].Name != expectedName)
-                failures.Add($"{resref} song table is {musicTables[0].Name}, expected the next free index {expectedName}");
+            // Loot stops reading at the first missing LOOT_TABLE_N, so a gap would skip the song table.
+            var expectedNames = Enumerable.Range(1, lootTables.Count).Select(index => $"LOOT_TABLE_{index}");
+            if (!lootTables.Select(var => var.Name).ToHashSet().SetEquals(expectedNames))
+                failures.Add($"{resref} loot tables are not numbered 1 to {lootTables.Count} without gaps");
+            if (lootTables.Any(var => string.IsNullOrWhiteSpace(var.Value)))
+                failures.Add($"{resref} loot tables contain blank values");
 
             if (musicTables[0].Value.StartsWith($"{MusicLootTableDefinition.BossMusicDiscs},"))
+            {
                 boss++;
+                if (musicTables[0].Value != $"{MusicLootTableDefinition.BossMusicDiscs},{MusicLootTableDefinition.BossMusicDiscChance},1")
+                    failures.Add($"{resref} boss song table is '{musicTables[0].Value}'");
+            }
             else
+            {
                 regular++;
+                if (musicTables[0].Value != $"{MusicLootTableDefinition.MusicDiscs},{MusicLootTableDefinition.MusicDiscChance},1")
+                    failures.Add($"{resref} song table is '{musicTables[0].Value}'");
+            }
         }
 
         failures.Should().BeEmpty(string.Join(Environment.NewLine, failures));

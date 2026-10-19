@@ -112,7 +112,7 @@ public class GatheringPerkRegressionTests
 
         spawnLoot.Should().Contain("var creditPercentIncrease = creditFinderLevel * 0.2f;");
         spawnLoot.Should().Contain("if (rareBonusChance > 0 && table.IsRare)");
-        spawnLoot.Should().Contain("chance += rareBonusChance;");
+        spawnLoot.Should().Contain("chance += table.GetRareChanceBonus(rareBonusChance);");
         spawnLoot.Should().Contain("table.GetRandomItem(rareBonusChance)");
         spawnLoot.Should().Contain("quantity += (int)(quantity * creditPercentIncrease);");
 

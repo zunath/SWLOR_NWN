@@ -16,6 +16,7 @@ using SWLOR.Game.Server.Service.PlayerMarketService;
 using SWLOR.Game.Server.Service.PropertyService;
 using SWLOR.Game.Server.Service.SpaceService;
 using static SWLOR.Game.Server.EngineTests.Framework.FullInventoryFixture;
+using static SWLOR.Game.Server.EngineTests.Framework.ViewModelTestHelper;
 
 namespace SWLOR.Game.Server.EngineTests.Definitions
 {
@@ -25,8 +26,6 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
     /// </summary>
     public static class ItemReturnInventorySpaceEngineTests
     {
-        private const BindingFlags Members = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic;
-
         [EngineTest("Unloading bait into a full inventory keeps the bait on the rod and every carried item", Category = "ItemClaimSpace")]
         public static async Task FishingBaitUnloadWithoutRoom(EngineTestContext ctx)
         {
@@ -430,53 +429,6 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 DB.Delete<WorldProperty>(parent.Id);
             }
         }
-
-        private static T OpenWindow<T>(PlayerAbilityFixture fixture, GuiWindowType type, GuiPayloadBase payload)
-        {
-            var windows = PlayerWindows();
-            if (!windows.TryGetValue(fixture.Id, out var byType))
-                windows[fixture.Id] = byType = new Dictionary<GuiWindowType, GuiPlayerWindow>();
-            if (!byType.ContainsKey(type))
-            {
-                var template = Gui.GetWindowTemplate(type);
-                var window = template.CreatePlayerWindowAction();
-                window.ViewModel.Geometry = template.InitialGeometry;
-                byType[type] = window;
-            }
-
-            if (!Gui.IsWindowOpen(fixture.Creature, type))
-                Gui.TogglePlayerWindow(fixture.Creature, type, payload);
-            return (T)Gui.GetPlayerWindow(fixture.Creature, type).ViewModel;
-        }
-
-        private static void CloseWindows(PlayerAbilityFixture fixture)
-        {
-            var windows = PlayerWindows();
-            if (!windows.TryGetValue(fixture.Id, out var byType))
-                return;
-            foreach (var type in byType.Keys.ToList())
-                Gui.ClosePlayerWindow(fixture.Creature, type);
-            windows.Remove(fixture.Id);
-        }
-
-        private static Dictionary<string, Dictionary<GuiWindowType, GuiPlayerWindow>> PlayerWindows() =>
-            (Dictionary<string, Dictionary<GuiWindowType, GuiPlayerWindow>>)typeof(Gui)
-                .GetField("_playerWindows", BindingFlags.Static | BindingFlags.NonPublic).GetValue(null);
-
-        private static object Get(object model, string name)
-        {
-            var type = model.GetType();
-            return type.GetField(name, Members)?.GetValue(model) ?? type.GetProperty(name, Members).GetValue(model);
-        }
-
-        private static void Set(object model, string name, object value) =>
-            model.GetType().GetProperty(name, Members).SetValue(model, value);
-
-        private static void Call(object model, string name, params object[] args) =>
-            model.GetType().GetMethod(name, Members).Invoke(model, args);
-
-        private static void Click(object model, string name) =>
-            ((Action)model.GetType().GetMethod(name, Members, Type.EmptyTypes).Invoke(model, null))();
 
         // List clicks report their row through NuiGetEventArrayIndex, which only exists inside a real NUI event, so the
         // tests call the row methods the click handlers forward to.

@@ -6246,7 +6246,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Stuck — ship_panth_z"
+            "0": "Stuck - ship_panth_z"
           }
         },
         "MapNote": {

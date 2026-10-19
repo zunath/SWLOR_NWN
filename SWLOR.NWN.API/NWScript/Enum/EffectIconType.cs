@@ -485,6 +485,7 @@ namespace SWLOR.NWN.API.NWScript.Enum
         PvpHealingReduction3StatusEffect = 482,
         PvpHealingReduction4StatusEffect = 483,
         PvpHealingReduction5StatusEffect = 484,
+        UnnervedStatusEffect = 485,
         // End custom status effect icons
 
         // Retain the legacy name for the same icon row.

@@ -160,6 +160,7 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
             HelmetModelRenderer.Apply(creature, selections);
             NeckModelRenderer.Apply(creature);
             ShoulderModelRenderer.Apply(creature);
+            PartSkinModelRenderer.Apply(creature);
             ProjectNativeRobeColors(creature, selections, rendersRobeRgb);
             ApplyEquippedHelmetColors(creature, selections, resetShaderOverrides);
             if (resetShaderOverrides)
@@ -1413,9 +1414,11 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
                     RobeAppearance.RemoveUnavailableRobe(creature, armor);
                 var recoveredNeck = GetIsObjectValid(armor) &&
                     NeckAppearance.RemoveUnavailableNeck(creature, armor);
+                var recoveredParts = GetIsObjectValid(armor) &&
+                    ArmorPartAppearance.RemoveUnavailableParts(creature, armor);
                 CarryStoredEquipmentCustomColors(creature);
                 CarryStoredCreatureCustomColors(creature);
-                if (recoveredRobe || recoveredNeck)
+                if (recoveredRobe || recoveredNeck || recoveredParts)
                     EquippedItemAppearance.Refresh(creature, armor, resetShaderOverrides);
                 else
                     ApplyCurrentColors(creature, resetShaderOverrides);

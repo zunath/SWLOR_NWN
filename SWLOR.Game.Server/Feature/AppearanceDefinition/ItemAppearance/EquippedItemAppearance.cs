@@ -54,6 +54,7 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.ItemAppearance
 
             RobeAppearance.RemoveUnavailableRobe(creature, item);
             NeckAppearance.RemoveUnavailableNeck(creature, item);
+            ArmorPartAppearance.RemoveUnavailableParts(creature, item);
             nativeCreature.UpdateAppearanceForEquippedItems();
 
             // A helmet that will render through the head is not resent as an attachment. Its

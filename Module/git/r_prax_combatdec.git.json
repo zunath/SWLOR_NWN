@@ -154799,7 +154799,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Stuck — r_prax_combatdec"
+            "0": "Stuck - r_prax_combatdec"
           }
         },
         "MapNote": {

@@ -11,7 +11,7 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition;
 /// <summary>Exchanges accidentally dropped saber templates for gear from the same loot tier.</summary>
 public static class DungeonSaberMigration
 {
-    private static readonly Dictionary<string, string> Replacements = new(StringComparer.OrdinalIgnoreCase)
+    internal static readonly Dictionary<string, string> Replacements = new(StringComparer.OrdinalIgnoreCase)
     {
         ["sabstorm_l1"] = "sabstorm_l3", ["sabstorm_l2"] = "sabstorm_l4", ["sabstorm_w1"] = "sabstorm_w3",
         ["guardmst_l1"] = "guardmst_l3", ["guardmst_l2"] = "guardmst_l4", ["guardmst_w1"] = "guardmst_w3",

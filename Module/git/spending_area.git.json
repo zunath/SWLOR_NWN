@@ -2763,7 +2763,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Stuck — spending_area"
+            "0": "Stuck - spending_area"
           }
         },
         "MapNote": {

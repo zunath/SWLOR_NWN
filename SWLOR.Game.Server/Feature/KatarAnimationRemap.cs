@@ -70,9 +70,6 @@ namespace SWLOR.Game.Server.Feature
         internal static void RestoreCurrentEquipmentAnimations(uint creature) =>
             SyncKatarRemapState(creature, forceRefresh: true);
 
-        /// <summary>Synchronizes saved animation state after synchronous equipment changes.</summary>
-        internal static void RefreshEquipmentAnimations(uint creature) => SyncKatarRemapState(creature);
-
         [NWNEventHandler(ScriptName.OnModuleEquip)]
         public static void OnEquip()
         {

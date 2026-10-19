@@ -27,7 +27,8 @@ Balance follows the existing standards. A new tier, a new direction, or any valu
 
 ## Characters
 
-- Player characters use only the normal phenotype. The large phenotype is not available to players, so do not build, fix, or verify player assets or code paths for it. Leave the existing large-body fallbacks in the tint renderers alone.
+- Player characters use only the normal phenotype. The large phenotype is not available to players, so do not build, fix, or verify player assets or code paths for it. Leave the existing large-body fallbacks in the tint renderers alone. `ruleset.2da`'s `CHARGEN_ENABLED_PHENOTYPES` still lists the large phenotype, but the native character-creation controls are moved off screen; players set up their body in game, where no phenotype choice exists. Do not change that setting.
+- Only the playable species matter: the appearances registered in `RacialAppearanceRegistry` (Human, Bothan, Chiss, Zabrak, Twi'lek, Mirialan, Echani, Kel Dor, Cyborg, Cathar, Rodian, Trandoshan, Togruta, Wookiee, Mon Calamari, Ugnaught, Droid, Nautolan, Ewok). Their bodies use the human (`p?h`), elf (`p?e`: Bothan, Rodian, Wookiee), half-orc (`p?o`: Cathar), dwarf (`p?d`: Ugnaught, Ewok) and droid (`p?z`) model families. The base NWN race appearances other than Human (elf, half-elf, half-orc, dwarf, gnome, halfling) are not playable, and no species uses the gnome (`p?g`) or halfling (`p?a`) models. Scope fixes, imports, generators, audits, guards and client evidence to playable species on the normal phenotype; do not spend work on anything else.
 
 ## Ship-access locations
 

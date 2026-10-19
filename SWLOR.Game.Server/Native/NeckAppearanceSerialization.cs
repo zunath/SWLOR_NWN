@@ -32,6 +32,10 @@ namespace SWLOR.Game.Server.Native
             var source = item.m_nArmorModelPart[(int)AppearanceArmor.Neck];
             var leftShoulder = item.m_nArmorModelPart[(int)AppearanceArmor.LeftShoulder];
             var rightShoulder = item.m_nArmorModelPart[(int)AppearanceArmor.RightShoulder];
+            var parts = PartSkinModelRenderer.Parts;
+            Span<ushort> authored = stackalloc ushort[parts.Length];
+            for (var index = 0; index < parts.Length; index++)
+                authored[index] = item.m_nArmorModelPart[(int)parts[index]];
             try
             {
                 try { item.m_nArmorModelPart[(int)AppearanceArmor.Neck] = NeckModelRenderer.GetItemProjection(item); }
@@ -42,6 +46,17 @@ namespace SWLOR.Game.Server.Native
                     item.m_nArmorModelPart[(int)AppearanceArmor.RightShoulder] = ShoulderModelRenderer.GetItemProjection(item, AppearanceArmor.RightShoulder);
                 }
                 catch (Exception ex) { Log.WriteError(ex, "Could not project the equipped shoulder models"); }
+                try
+                {
+                    // Male human shoulders keep the shoulder renderer's projection.
+                    for (var index = 0; index < parts.Length; index++)
+                    {
+                        var rendered = PartSkinModelRenderer.GetItemProjection(item, parts[index], authored[index]);
+                        if (rendered != authored[index])
+                            item.m_nArmorModelPart[(int)parts[index]] = rendered;
+                    }
+                }
+                catch (Exception ex) { Log.WriteError(ex, "Could not project the equipped part skin models"); }
                 original(message, player, itemPointer);
             }
             finally
@@ -51,6 +66,8 @@ namespace SWLOR.Game.Server.Native
                 item.m_nArmorModelPart[(int)AppearanceArmor.Neck] = source;
                 item.m_nArmorModelPart[(int)AppearanceArmor.LeftShoulder] = leftShoulder;
                 item.m_nArmorModelPart[(int)AppearanceArmor.RightShoulder] = rightShoulder;
+                for (var index = 0; index < parts.Length; index++)
+                    item.m_nArmorModelPart[(int)parts[index]] = authored[index];
             }
         }
     }

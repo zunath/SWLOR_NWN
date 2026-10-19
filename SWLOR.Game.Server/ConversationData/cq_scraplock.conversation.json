@@ -1670,7 +1670,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Forty openings used before they closed. You understand the wager now. Haymaker makes the commitment larger, so make the opening worth it.",
+          "Text": "Forty landed Uppercuts, all on the record. You know what the heavy blow costs now. Haymaker makes that commitment larger, so pick the moment before you throw it.",
           "Style": 0,
           "Color": null
         }
@@ -1700,7 +1700,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "That closes your trial. You have earned Haymaker training. Practice it until you can trust that commitment. Same rule as before: make your own opening and accept what committing to it costs.",
+          "Text": "That closes your trial. You have earned Haymaker training. Practice it until you can trust that commitment. Choose the moment, commit to the blow, and accept what it costs when it does not land.",
           "Style": 0,
           "Color": null
         }
@@ -2912,7 +2912,7 @@
     "unarmed-purpose": {
       "Id": "unarmed-purpose",
       "Text": {
-        "Text": "Why test combinations instead of raw damage?",
+        "Text": "Why count landed Uppercuts instead of raw damage?",
         "Style": 4,
         "Color": null
       },

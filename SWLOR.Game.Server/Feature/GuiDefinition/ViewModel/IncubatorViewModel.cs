@@ -316,7 +316,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             if (_incubatorPropertyId != initialPayload.PropertyId && !ReturnItemsHeldElsewhere())
             {
                 FloatingTextStringOnCreature(HeldElsewhereMessage, Player, false);
-                Gui.TogglePlayerWindow(Player, GuiWindowType.Incubator);
+                // Closed without the close handling, which would act on the other incubator's items.
+                Gui.CloseWindow(Player, GuiWindowType.Incubator, Player);
                 return;
             }
 
@@ -1216,7 +1217,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             }, SwitchViews);
         };
 
-        public Action OnCloseWindow() => () =>
+        /// <summary>Runs whenever the window closes, whether the player closes it or the server does.</summary>
+        public override Action OnWindowClosed() => () =>
         {
             if (!RemoveDNA())
                 SendMessageToPC(Player, Item.ItemsHeldMessage);

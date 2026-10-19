@@ -640,7 +640,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             RefreshStats();
         }
 
-        public Action OnCloseWindow() => () =>
+        /// <summary>Runs whenever the window closes, whether the player closes it or the server does.</summary>
+        public override Action OnWindowClosed() => () =>
         {
             if (!Reset())
                 SendMessageToPC(Player, Item.ItemsHeldMessage);

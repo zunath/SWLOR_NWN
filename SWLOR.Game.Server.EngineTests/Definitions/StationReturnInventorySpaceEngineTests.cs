@@ -108,7 +108,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                     ctx.Assert(!string.IsNullOrEmpty((string)Get(model, "_cpuItem")) && !string.IsNullOrEmpty((string)Get(model, "_headItem")),
                         "Reset keeps the parts without room installed");
 
-                    model.OnCloseWindow()();
+                    model.OnWindowClosed()();
                     model = ReopenWindow<DroidAssemblyViewModel>(fixture, GuiWindowType.DroidAssembly, null);
                     AssertCarriedIntact(ctx, player, carried);
                     ctx.Assert(!string.IsNullOrEmpty((string)Get(model, "_cpuItem")) && !string.IsNullOrEmpty((string)Get(model, "_headItem")),
@@ -121,7 +121,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 await ctx.ExecuteInCreatureContextAsync(player, () =>
                 {
                     var model = (DroidAssemblyViewModel)Gui.GetPlayerWindow(player, GuiWindowType.DroidAssembly).ViewModel;
-                    model.OnCloseWindow()();
+                    model.OnWindowClosed()();
                     ctx.Assert(string.IsNullOrEmpty((string)Get(model, "_cpuItem")) && string.IsNullOrEmpty((string)Get(model, "_headItem")),
                         "Closing with room returns every part");
                     ctx.AssertEqual(1, CountCarried(player, Cpu), "The CPU returns to the inventory");
@@ -160,7 +160,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                     model.OnModalConfirmClick()();
                     ctx.Assert(!string.IsNullOrEmpty((string)Get(model, "_dnaItem")), "The DNA stays while its enzyme does");
 
-                    model.OnCloseWindow()();
+                    model.OnWindowClosed()();
                     model = ReopenWindow<IncubatorViewModel>(fixture, GuiWindowType.Incubator, payload);
                     AssertCarriedIntact(ctx, player, carried);
                     ctx.Assert(!string.IsNullOrEmpty((string)Get(model, "_dnaItem")) && !string.IsNullOrEmpty((string)Get(model, "_hydrolaseItem")),
@@ -200,6 +200,71 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             }
         }
 
+        [EngineTest("Station windows closed by the server settle their slotted items", Category = "ItemClaimSpace")]
+        public static async Task ServerClosedStations(EngineTestContext ctx)
+        {
+            using var fixture = await PlayerAbilityFixture.CreateAsync(ctx);
+            var player = fixture.Creature;
+            fixture.Update(record => record.Perks[PerkType.DroidAssembly] = 5);
+            var craftPayload = new CraftPayload(RecipeType.TwinElectroblade1, OBJECT_INVALID);
+            var incubatorPayload = new IncubatorPayload("engine-claim-server-close/" + fixture.Id, string.Empty);
+            try
+            {
+                await ctx.ExecuteInCreatureContextAsync(player, () =>
+                {
+                    // Walking away from a station or changing areas closes its window from the server.
+                    var craft = OpenWindow<CraftViewModel>(fixture, GuiWindowType.Craft, craftPayload);
+                    Set(craft, "_enhancement1", SerializeNewItem(ctx, Enhancement));
+                    ((List<string>)Get(craft, "_components")).Add(SerializeNewItem(ctx, Component, 3));
+                    Gui.ClosePlayerWindow(player, GuiWindowType.Craft);
+                    ctx.AssertEqual(1, CountCarried(player, Enhancement), "A server close returns the slotted enhancement");
+                    ctx.AssertEqual(3, CarriedStackTotal(player, Component), "A server close returns the components");
+
+                    var droid = OpenWindow<DroidAssemblyViewModel>(fixture, GuiWindowType.DroidAssembly, null);
+                    var cpu = CreateItemOnObject(Cpu, player);
+                    Call(droid, "AddPart", Droid.LoadDroidPartItemPropertyDetails(cpu), cpu);
+
+                    var incubator = OpenWindow<IncubatorViewModel>(fixture, GuiWindowType.Incubator, incubatorPayload);
+                    Set(incubator, "_dnaItem", SerializeNewItem(ctx, Dna));
+                    Call(incubator, "RestoreHeldItems");
+                });
+                await ctx.WaitFrameAsync();
+                await ctx.ExecuteInCreatureContextAsync(player, () =>
+                {
+                    var droid = (DroidAssemblyViewModel)Gui.GetPlayerWindow(player, GuiWindowType.DroidAssembly).ViewModel;
+                    var incubator = (IncubatorViewModel)Gui.GetPlayerWindow(player, GuiWindowType.Incubator).ViewModel;
+                    Gui.ClosePlayerWindow(player, GuiWindowType.DroidAssembly);
+                    Gui.ClosePlayerWindow(player, GuiWindowType.Incubator);
+                    ctx.Assert(string.IsNullOrEmpty((string)Get(droid, "_cpuItem")), "A server close returns the droid parts");
+                    ctx.AssertEqual(1, CountCarried(player, Cpu), "The CPU reaches the inventory");
+                    ctx.Assert(string.IsNullOrEmpty((string)Get(incubator, "_dnaItem")), "A server close returns the incubator items");
+                    ctx.AssertEqual(1, CountCarried(player, Dna), "The DNA reaches the inventory");
+
+                    // A craft in progress fails on a server close, as it does when the player closes the window.
+                    var craft = OpenWindow<CraftViewModel>(fixture, GuiWindowType.Craft, craftPayload);
+                    Set(craft, "_enhancement1", SerializeNewItem(ctx, Enhancement));
+                    ((List<string>)Get(craft, "_components")).Add(SerializeNewItem(ctx, Component, 3));
+                    craft.IsInCraftMode = true;
+                    Gui.ClosePlayerWindow(player, GuiWindowType.Craft);
+                    ctx.Assert(!craft.IsInCraftMode, "A server close ends the craft");
+                    ctx.Assert(string.IsNullOrEmpty((string)Get(craft, "_enhancement1")) && ((List<string>)Get(craft, "_components")).Count == 0,
+                        "A failed craft keeps nothing in the window");
+
+                    // A window that closed without settling, such as on logout, settles when it next opens.
+                    craft = OpenWindow<CraftViewModel>(fixture, GuiWindowType.Craft, craftPayload);
+                    Set(craft, "_enhancement1", SerializeNewItem(ctx, Enhancement));
+                    Gui.CloseWindow(player, GuiWindowType.Craft, player);
+                    var enhancements = CountCarried(player, Enhancement);
+                    OpenWindow<CraftViewModel>(fixture, GuiWindowType.Craft, craftPayload);
+                    ctx.AssertEqual(enhancements + 1, CountCarried(player, Enhancement), "Reopening returns an enhancement left in the window");
+                });
+            }
+            finally
+            {
+                CloseWindows(fixture);
+            }
+        }
+
         [EngineTest("Crafting enhancements and components without inventory room stay at the station until it opens with room", Category = "ItemClaimSpace")]
         public static async Task CraftingWithoutRoom(EngineTestContext ctx)
         {
@@ -221,7 +286,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                     ctx.Assert(!string.IsNullOrEmpty((string)Get(model, "_enhancement1")), "A removed enhancement without room stays slotted");
                     ctx.AssertEqual(Item.InventoryFullMessage, model.StatusText, "The window says the inventory is full");
 
-                    model.OnCloseWindow()();
+                    model.OnWindowClosed()();
                     ctx.AssertEqual(2, ((List<string>)Get(model, "_heldItems")).Count, "Closing holds the enhancement and the components");
                     model = ReopenWindow<CraftViewModel>(fixture, GuiWindowType.Craft, payload);
                     AssertCarriedIntact(ctx, player, carried);

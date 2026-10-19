@@ -379,8 +379,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         protected override void Initialize(CraftPayload initialPayload)
         {
-            _components.Clear();
-            ReturnHeldItems();
+            // A session whose window closed without settling, such as on logout, is settled before a new one starts.
+            SettleSession();
 
             _recipe = initialPayload.Recipe;
             _blueprintItem = initialPayload.BlueprintItem;
@@ -496,7 +496,22 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             QualityText = $"Quality ({_quality}/{_maxQuality})";
         }
 
-        public Action OnCloseWindow() => () =>
+        /// <summary>
+        /// Runs whenever the window closes, whether the player closes it or the server does (walking away from the
+        /// station, changing areas).
+        /// </summary>
+        public override Action OnWindowClosed() => () =>
+        {
+            SettleSession();
+            if (_heldItems.Count > 0)
+                SendMessageToPC(Player, Item.ItemsHeldMessage);
+        };
+
+        /// <summary>
+        /// Ends the current session: a craft in progress fails, and items slotted before crafting go back to the player
+        /// or are held when they do not fit.
+        /// </summary>
+        private void SettleSession()
         {
             ReturnHeldItems();
 
@@ -570,10 +585,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 _itemPropertiesEnhancement8.Clear();
                 _components.Clear();
             }
-
-            if (_heldItems.Count > 0)
-                SendMessageToPC(Player, Item.ItemsHeldMessage);
-        };
+        }
 
         private bool IsValidEnhancement(uint item)
         {

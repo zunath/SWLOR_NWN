@@ -238,10 +238,8 @@ namespace SWLOR.Game.Server.Service
                     if (!IsCurrent(actor, activation)) return anyHit;
                     if (!GetIsObjectValid(target) || GetIsDead(target)) break;
                     var scaledWeapon = weapon with { Damage = weapon.Damage * spec.WeaponPowerPercent / 100 };
-                    var offhandAccuracy = weapon.Weapon == activation.OffHand
-                        ? Stat.GetStatAdjustment(actor, StatType.PairedRangedCompanionAccuracy) : 0;
                     using var source = new WeaponImpactProfile(actor, scaledWeapon, limits,
-                        offhandAccuracy, volleyIndex, spec.VolleyCount);
+                        volleyIndex: volleyIndex, volleyCount: spec.VolleyCount);
                     var handHit = false;
                     fired = true;
                     Ability.ApplyCombatImpact(actor, target, GetLocation(target), SkillType.TwinPistol,

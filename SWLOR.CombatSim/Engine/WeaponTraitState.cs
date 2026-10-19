@@ -17,7 +17,6 @@ public sealed class WeaponTraitState
     public static PairedRangedTraitConfiguration Configuration(Combatant actor) => new()
     {
         OrdinaryDamagePercentAdjustment = actor.GetStat(StatType.PairedRangedOrdinaryDamagePercentAdjustment),
-        CompanionAccuracy = actor.GetStat(StatType.PairedRangedCompanionAccuracy),
         OrdinaryHitRestoreCount = actor.GetStat(StatType.PairedRangedOrdinaryHitRestoreCount),
         OrdinaryHitStaminaRestore = actor.GetStat(StatType.PairedRangedOrdinaryHitStaminaRestore),
         OrdinaryHitRestoreCooldownSeconds = actor.GetStat(StatType.PairedRangedOrdinaryHitRestoreCooldownSeconds),

@@ -908,11 +908,11 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             WeaponAccuracy = Stat.GetAccuracy(_target, mainHand, accuracyStatOverride, SkillType.Invalid);
             if (GetIsObjectValid(mainHand) && Item.IsAttackWeaponType(GetBaseItemType(mainHand)))
-                WeaponAccuracy += PairedRangedTraits.GetOrdinaryAccuracy(_target, companion: false);
+                WeaponAccuracy += PairedRangedTraits.GetOrdinaryAccuracy(_target);
             var offhandAccuracy = hasOffhandAttack
                 ? Stat.GetAccuracy(_target, offhandAttackWeapon, AbilityType.Invalid, SkillType.Invalid) : 0;
             if (hasOffhandAttack)
-                offhandAccuracy += PairedRangedTraits.GetOrdinaryAccuracy(_target, companion: true);
+                offhandAccuracy += PairedRangedTraits.GetOrdinaryAccuracy(_target);
             OffHandAccuracy = hasOffhandAttack ? offhandAccuracy.ToString() : "-";
             ForceAccuracy = Stat.GetAccuracy(
                 _target,

@@ -115,8 +115,8 @@ public class CharacterSheetCombatUpgradeTests
         var source = File.ReadAllText(Path.Combine(FindRepositoryRoot().FullName, "SWLOR.Game.Server", "Feature",
             "GuiDefinition", "ViewModel", "CharacterSheetViewModel.cs"));
         var refresh = ExtractMethod(source, "private void RefreshEquipmentStats()");
-        refresh.Should().Contain("PairedRangedTraits.GetOrdinaryAccuracy(_target, companion: false)");
-        refresh.Should().Contain("PairedRangedTraits.GetOrdinaryAccuracy(_target, companion: true)");
+        refresh.Should().Contain("WeaponAccuracy += PairedRangedTraits.GetOrdinaryAccuracy(_target)");
+        refresh.Should().Contain("offhandAccuracy += PairedRangedTraits.GetOrdinaryAccuracy(_target)");
         refresh.Should().Contain("GetEquipmentDamageAbility(_target, item)");
         refresh.Should().Contain("PairedRangedTraits.GetOrdinaryDamagePercentAdjustment(_target, GetAttackTarget(_target))");
         refresh.Should().Contain("Combat.ApplyOrdinaryAttackDamageMultiplier(_target, min)");

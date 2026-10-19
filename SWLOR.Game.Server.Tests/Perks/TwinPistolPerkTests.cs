@@ -202,8 +202,6 @@ public class TwinPistolPerkTests
         akimbo.StatGroup.Stats[StatType.OrdinaryAttackHasteRampMaximumStacks].Should().Be(5);
         akimbo.StatGroup.Stats[StatType.OrdinaryAttackDamagePercentAdjustment].Should().Be(-30);
         crossfire.StatGroup.Stats[StatType.OrdinaryAttackDamagePercentAdjustment].Should().Be(-20);
-        akimbo.StatGroup.Stats[StatType.PairedRangedOrdinaryDamageMultiplierPercent].Should().Be(0);
-        crossfire.StatGroup.Stats[StatType.PairedRangedOrdinaryDamageMultiplierPercent].Should().Be(0);
         crossfire.StatGroup.Stats[StatType.PairedRangedMomentumExtendedDurationSeconds].Should().Be(18);
         akimbo.StatGroup.Stats[StatType.DamageDealtPercentAdjustment].Should().Be(0);
         crossfire.StatGroup.Stats[StatType.DamageDealtPercentAdjustment].Should().Be(0);

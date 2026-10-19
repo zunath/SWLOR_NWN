@@ -61,7 +61,7 @@ namespace SWLOR.Game.Server.Service.CombatService
         }
 
         public PairedRangedOrdinarySnapshot GetOrdinarySnapshot(
-            DateTime now, PairedRangedTraitConfiguration configuration, uint target, bool companion)
+            DateTime now, PairedRangedTraitConfiguration configuration, uint target)
         {
             Reconcile(now, configuration);
             var damageBonus = configuration.OrdinaryDamagePercentAdjustment;
@@ -73,16 +73,16 @@ namespace SWLOR.Game.Server.Service.CombatService
 
             return new PairedRangedOrdinarySnapshot(
                 damageBonus,
-                Momentum * configuration.MomentumAccuracyPerCharge + (companion ? configuration.CompanionAccuracy : 0));
+                Momentum * configuration.MomentumAccuracyPerCharge);
         }
 
         public PairedRangedOrdinarySnapshot RecordOrdinaryAttempt(
-            DateTime now, PairedRangedTraitConfiguration configuration, uint target, long rollId, bool companion)
+            DateTime now, PairedRangedTraitConfiguration configuration, uint target, long rollId)
         {
             Reconcile(now, configuration);
             RecordTargetChange(target);
 
-            var snapshot = GetOrdinarySnapshot(now, configuration, target, companion);
+            var snapshot = GetOrdinarySnapshot(now, configuration, target);
             if (Remember(_attempts, _attemptOrder, rollId) && BonusAttempts > 0)
                 BonusAttempts--;
             return snapshot;

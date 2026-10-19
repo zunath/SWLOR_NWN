@@ -93,7 +93,7 @@ namespace SWLOR.Game.Server.Service
                     Math.Min(Math.Max(0, paidStamina), restoreStamina));
         }
 
-        public static PairedRangedOrdinarySnapshot RecordOrdinaryAttempt(uint actor, uint target, long rollId, bool companion = false)
+        public static PairedRangedOrdinarySnapshot RecordOrdinaryAttempt(uint actor, uint target, long rollId)
         {
             TrackMovement(actor);
             if (!CanReceiveTraitEvents(actor))
@@ -101,9 +101,9 @@ namespace SWLOR.Game.Server.Service
             TwinPistolMastery.RecordTargetChange(actor, target);
             var configuration = GetConfiguration(actor);
             if (!States.ContainsKey(actor) && !NeedsOrdinaryState(configuration))
-                return UntrackedSnapshot(configuration, companion);
+                return UntrackedSnapshot(configuration);
             var state = GetState(actor);
-            var snapshot = state.RecordOrdinaryAttempt(DateTime.UtcNow, configuration, target, rollId, companion);
+            var snapshot = state.RecordOrdinaryAttempt(DateTime.UtcNow, configuration, target, rollId);
             Sync(actor, state);
             return snapshot;
         }
@@ -124,10 +124,10 @@ namespace SWLOR.Game.Server.Service
         }
 
         public static int GetOrdinaryDamagePercentAdjustment(uint actor, uint target) =>
-            GetSnapshot(actor, target, false).DamagePercentAdjustment;
+            GetSnapshot(actor, target).DamagePercentAdjustment;
 
-        public static int GetOrdinaryAccuracy(uint actor, bool companion) =>
-            GetSnapshot(actor, 0, companion).AccuracyAdjustment;
+        public static int GetOrdinaryAccuracy(uint actor) =>
+            GetSnapshot(actor, 0).AccuracyAdjustment;
 
         public static void RecordTargetChange(uint actor, uint target)
         {
@@ -274,22 +274,22 @@ namespace SWLOR.Game.Server.Service
             Sync(actor, state);
         }
 
-        private static PairedRangedOrdinarySnapshot GetSnapshot(uint actor, uint target, bool companion)
+        private static PairedRangedOrdinarySnapshot GetSnapshot(uint actor, uint target)
         {
             if (!CanReceiveTraitEvents(actor))
                 return new PairedRangedOrdinarySnapshot(0, 0);
             var configuration = GetConfiguration(actor);
             return States.TryGetValue(actor, out var state)
-                ? state.GetOrdinarySnapshot(DateTime.UtcNow, configuration, target, companion)
-                : UntrackedSnapshot(configuration, companion);
+                ? state.GetOrdinarySnapshot(DateTime.UtcNow, configuration, target)
+                : UntrackedSnapshot(configuration);
         }
 
         private static bool NeedsOrdinaryState(PairedRangedTraitConfiguration configuration) =>
             configuration.OrdinaryHitRestoreCount > 0 && configuration.OrdinaryHitStaminaRestore > 0 ||
             configuration.RepeatedTargetRequiredHits > 0 && configuration.RepeatedTargetDamagePercent != 0;
 
-        private static PairedRangedOrdinarySnapshot UntrackedSnapshot(PairedRangedTraitConfiguration configuration, bool offhand) =>
-            new(configuration.OrdinaryDamagePercentAdjustment, offhand ? configuration.CompanionAccuracy : 0);
+        private static PairedRangedOrdinarySnapshot UntrackedSnapshot(PairedRangedTraitConfiguration configuration) =>
+            new(configuration.OrdinaryDamagePercentAdjustment, 0);
 
         private static PairedRangedTraitState GetState(uint actor)
         {
@@ -310,7 +310,6 @@ namespace SWLOR.Game.Server.Service
             return new PairedRangedTraitConfiguration
             {
                 OrdinaryDamagePercentAdjustment = Read(actor, StatType.PairedRangedOrdinaryDamagePercentAdjustment),
-                CompanionAccuracy = Read(actor, StatType.PairedRangedCompanionAccuracy),
                 OrdinaryHitRestoreCount = Read(actor, StatType.PairedRangedOrdinaryHitRestoreCount),
                 OrdinaryHitStaminaRestore = Read(actor, StatType.PairedRangedOrdinaryHitStaminaRestore),
                 OrdinaryHitRestoreCooldownSeconds = Read(actor, StatType.PairedRangedOrdinaryHitRestoreCooldownSeconds),

@@ -11,7 +11,6 @@ public class PairedRangedTraitStateTests
     private static readonly PairedRangedTraitConfiguration Configuration = new()
     {
         OrdinaryDamagePercentAdjustment = 25,
-        CompanionAccuracy = 5,
         OrdinaryHitRestoreCount = 3,
         OrdinaryHitStaminaRestore = 1,
         OrdinaryHitRestoreCooldownSeconds = 6,
@@ -55,13 +54,13 @@ public class PairedRangedTraitStateTests
         var state = new PairedRangedTraitState();
         Hit(state, 0, 1);
         Hit(state, 1, 2);
-        var third = state.RecordOrdinaryAttempt(Start.AddSeconds(2), Configuration, 10, 3, false);
+        var third = state.RecordOrdinaryAttempt(Start.AddSeconds(2), Configuration, 10, 3);
         third.DamagePercentAdjustment.Should().Be(25);
         state.RecordOrdinaryHit(Start.AddSeconds(2), Configuration, 10, 3);
-        state.GetOrdinarySnapshot(Start.AddSeconds(3), Configuration, 10, false).DamagePercentAdjustment.Should().Be(30);
-        state.RecordOrdinaryAttempt(Start.AddSeconds(3), Configuration, 20, 4, false)
+        state.GetOrdinarySnapshot(Start.AddSeconds(3), Configuration, 10).DamagePercentAdjustment.Should().Be(30);
+        state.RecordOrdinaryAttempt(Start.AddSeconds(3), Configuration, 20, 4)
             .DamagePercentAdjustment.Should().Be(25);
-        state.GetOrdinarySnapshot(Start.AddSeconds(3), Configuration, 10, false).DamagePercentAdjustment.Should().Be(25);
+        state.GetOrdinarySnapshot(Start.AddSeconds(3), Configuration, 10).DamagePercentAdjustment.Should().Be(25);
     }
 
     [Test]
@@ -75,8 +74,7 @@ public class PairedRangedTraitStateTests
             state.CompleteAbility(Start.AddSeconds(i), Configuration, snapshot, true, 4, true, 8, 0);
         }
         state.Momentum.Should().Be(3);
-        state.GetOrdinarySnapshot(Start.AddSeconds(5), Configuration, 10, false).AccuracyAdjustment.Should().Be(6);
-        state.GetOrdinarySnapshot(Start.AddSeconds(5), Configuration, 10, true).AccuracyAdjustment.Should().Be(11);
+        state.GetOrdinarySnapshot(Start.AddSeconds(5), Configuration, 10).AccuracyAdjustment.Should().Be(6);
         var spender = state.BeginAbility(Start.AddSeconds(5), Configuration, true, true);
         spender.MomentumSpent.Should().Be(3);
         state.Momentum.Should().Be(0);
@@ -179,13 +177,13 @@ public class PairedRangedTraitStateTests
         state.CompleteAbility(Start, Configuration, cast, false, 0, false, 15, 0, 6, 25, 12);
         for (var i = 1; i <= 6; i++)
         {
-            var shot = state.RecordOrdinaryAttempt(Start.AddSeconds(i), Configuration, 10, i, false);
+            var shot = state.RecordOrdinaryAttempt(Start.AddSeconds(i), Configuration, 10, i);
             shot.DamagePercentAdjustment.Should().Be(50);
             var attempts = state.BonusAttempts;
-            state.RecordOrdinaryAttempt(Start.AddSeconds(i), Configuration, 10, i, false);
+            state.RecordOrdinaryAttempt(Start.AddSeconds(i), Configuration, 10, i);
             state.BonusAttempts.Should().Be(attempts, "duplicate observer callbacks cannot spend another charge");
         }
-        state.GetOrdinarySnapshot(Start.AddSeconds(7), Configuration, 10, false).DamagePercentAdjustment.Should().Be(25);
+        state.GetOrdinarySnapshot(Start.AddSeconds(7), Configuration, 10).DamagePercentAdjustment.Should().Be(25);
     }
 
     [Test]
@@ -257,7 +255,7 @@ public class PairedRangedTraitStateTests
     private static int Hit(PairedRangedTraitState state, double seconds, long rollId, uint target = 10)
     {
         var now = Start.AddSeconds(seconds);
-        state.RecordOrdinaryAttempt(now, Configuration, target, rollId, false);
+        state.RecordOrdinaryAttempt(now, Configuration, target, rollId);
         return state.RecordOrdinaryHit(now, Configuration, target, rollId);
     }
 

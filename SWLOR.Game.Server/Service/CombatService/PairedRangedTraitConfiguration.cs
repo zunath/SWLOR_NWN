@@ -4,7 +4,6 @@ namespace SWLOR.Game.Server.Service.CombatService
     public sealed record PairedRangedTraitConfiguration
     {
         public int OrdinaryDamagePercentAdjustment { get; init; }
-        public int CompanionAccuracy { get; init; }
         public int OrdinaryHitRestoreCount { get; init; }
         public int OrdinaryHitStaminaRestore { get; init; }
         public int OrdinaryHitRestoreCooldownSeconds { get; init; }

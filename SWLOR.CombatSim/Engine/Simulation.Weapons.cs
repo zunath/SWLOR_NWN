@@ -101,7 +101,7 @@ public sealed partial class Simulation
                 var flowBonus = cast.WeaponActivation?.TryTakeDamageBonus((uint)(hand + 1), cast.VolleyIndex, spec.VolleyCount) ?? 0;
                 actor.Stats.FlowDamagePowerApplied += WeaponImpactDamagePartition.Partition(flowBonus, cast.VolleyIndex, spec.VolleyCount);
                 var power = weaponDamage * spec.WeaponPowerPercent / 100 + spec.FlatPower + flowBonus;
-                var accuracy = cast.WeaponTraits.AccuracyAdjustment + (hand > 0 ? config.CompanionAccuracy : 0);
+                var accuracy = cast.WeaponTraits.AccuracyAdjustment;
                 actor.Stats.AbilityImpacts++;
                 var (hit, damage) = RollWeapon(actor, target, power, accuracy, ordinary: false,
                     volleyIndex: cast.VolleyIndex, volleyCount: spec.VolleyCount, recordMovement: false);
@@ -206,7 +206,7 @@ public sealed partial class Simulation
                     continue;
                 }
                 var roll = ++actor.WeaponTraits.RollId;
-                var bonuses = actor.WeaponTraits.Paired.RecordOrdinaryAttempt(WeaponNow, config, TargetId(target), roll, hand > 0);
+                var bonuses = actor.WeaponTraits.Paired.RecordOrdinaryAttempt(WeaponNow, config, TargetId(target), roll);
                 actor.Stats.OrdinaryAttempts++;
                 var (hit, damage) = RollWeapon(actor, target, hand == 0 ? EffectiveMainWeaponDamage(weapon) : weapon.OffhandDamage,
                     bonuses.AccuracyAdjustment, true, bonuses.DamagePercentAdjustment);

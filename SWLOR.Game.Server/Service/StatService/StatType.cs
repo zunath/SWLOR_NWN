@@ -6206,10 +6206,6 @@ namespace SWLOR.Game.Server.Service.StatService
         [StatType(StatTypeCategory.BeneficialWhenPositive, StatTypeAggregation.Maximum)]
         PairedRangedOrdinaryDamagePercentAdjustment = 1131,
 
-        /// <summary>Flat accuracy applied only to the captured companion profile.</summary>
-        [StatType(StatTypeCategory.BeneficialWhenPositive, StatTypeAggregation.Additive)]
-        PairedRangedCompanionAccuracy = 1132,
-
         /// <summary>Landed ordinary shots required for one resource recovery attempt.</summary>
         [StatType(StatTypeCategory.NonBeneficial, StatTypeAggregation.Maximum)]
         PairedRangedOrdinaryHitRestoreCount = 1133,
@@ -6286,29 +6282,9 @@ namespace SWLOR.Game.Server.Service.StatService
         [StatType(StatTypeCategory.NonBeneficial, StatTypeAggregation.Maximum)]
         PairedRangedMovementAccuracyCooldownSeconds = 1151,
 
-        /// <summary>Final ordinary-shot multiplier from the active paired-ranged stance.</summary>
-        [StatType(StatTypeCategory.BeneficialWhenPositive, StatTypeAggregation.Maximum)]
-        PairedRangedOrdinaryDamageMultiplierPercent = 1152,
-
         /// <summary>Stance charge duration; applied only on a new charge grant or refresh.</summary>
         [StatType(StatTypeCategory.BeneficialWhenPositive, StatTypeAggregation.Maximum)]
         PairedRangedMomentumExtendedDurationSeconds = 1153,
-
-        /// <summary>Haste added by each earned same-target ordinary-hit stack.</summary>
-        [StatType(StatTypeCategory.BeneficialWhenPositive, StatTypeAggregation.Maximum)]
-        PairedRangedHasteRampPerStack = 1154,
-
-        /// <summary>Maximum same-target ordinary-hit haste stacks.</summary>
-        [StatType(StatTypeCategory.BeneficialWhenPositive, StatTypeAggregation.Maximum)]
-        PairedRangedHasteRampMaximumStacks = 1123,
-
-        /// <summary>Minimum interval between haste-stack grants, preserved across resets.</summary>
-        [StatType(StatTypeCategory.NonBeneficial, StatTypeAggregation.Maximum)]
-        PairedRangedHasteRampGrantCooldownSeconds = 1124,
-
-        /// <summary>Haste-stack expiry, refreshed by every qualifying landed ordinary shot.</summary>
-        [StatType(StatTypeCategory.BeneficialWhenPositive, StatTypeAggregation.Maximum)]
-        PairedRangedHasteRampDurationSeconds = 1125,
 
         /// <summary>Multiplicative adjustment to ordinary weapon damage after outgoing bonuses; excludes activated abilities.</summary>
         [StatType(StatTypeCategory.BeneficialWhenPositive)]

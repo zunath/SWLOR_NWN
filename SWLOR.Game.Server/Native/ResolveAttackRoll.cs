@@ -140,9 +140,7 @@ namespace SWLOR.Game.Server.Native
                     weapon?.m_idSelf ?? OBJECT_INVALID, targetObject.m_idSelf, pCombatRound.m_nCurrentAttack);
                 shot.Ordinary = queuedAbility == null;
                 if (shot.Ordinary)
-                    shot.Bonuses = PairedRangedTraits.RecordOrdinaryAttempt(attacker.m_idSelf, targetObject.m_idSelf,
-                        shot.Id, RangedWeaponAttackContext.IsSimulated(attacker.m_idSelf) ||
-                                 pCombatRound.GetWeaponAttackType() == 2);
+                    shot.Bonuses = PairedRangedTraits.RecordOrdinaryAttempt(attacker.m_idSelf, targetObject.m_idSelf, shot.Id);
 
                 if (targetObject.m_nObjectType != (int)ObjectType.Creature)
                 {
@@ -427,9 +425,7 @@ namespace SWLOR.Game.Server.Native
                     // An avoided roll did not consume the readied ability. It still
                     // consumes an ordinary attempted-shot charge, including Twin Suns.
                     shot.Ordinary = true;
-                    shot.Bonuses = PairedRangedTraits.RecordOrdinaryAttempt(attacker.m_idSelf, targetObject.m_idSelf,
-                        shot.Id, RangedWeaponAttackContext.IsSimulated(attacker.m_idSelf) ||
-                                 pCombatRound.GetWeaponAttackType() == 2);
+                    shot.Bonuses = PairedRangedTraits.RecordOrdinaryAttempt(attacker.m_idSelf, targetObject.m_idSelf, shot.Id);
                 }
                 if (queuedWeaponAbilityWillResolve)
                 {

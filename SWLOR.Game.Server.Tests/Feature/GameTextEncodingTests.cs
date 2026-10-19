@@ -84,8 +84,10 @@ public class GameTextEncodingTests
                     continue;
 
                 var text = ColorToken.Replace((string)value.Value!, string.Empty);
-                var utf8 = Utf8Sequence.Match(text);
-                var index = utf8.Success
+                // A byte pair such as C2 9A is both "Âš" and UTF-8 for an invisible control
+                // character, so only a sequence that decodes to a visible character counts as UTF-8.
+                var utf8 = Utf8Sequence.Matches(text).FirstOrDefault(match => !char.IsControl(DecodeUtf8(match.Value), 0));
+                var index = utf8 != null
                     ? utf8.Index
                     : text.ToList().FindIndex(character => character >= 0x80 && !IsWindows1252Letter(character));
                 if (index >= 0)
@@ -215,6 +217,9 @@ public class GameTextEncodingTests
                 break;
         }
     }
+
+    private static string DecodeUtf8(string latin1Text) =>
+        Encoding.UTF8.GetString(Encoding.Latin1.GetBytes(latin1Text));
 
     private static bool IsVoidField(JValue value) =>
         value.Parent is JProperty { Name: "value", Parent: JObject field } &&

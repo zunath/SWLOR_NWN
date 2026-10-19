@@ -1,6 +1,9 @@
 using System.Text;
 using System.Text.RegularExpressions;
 using FluentAssertions;
+using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using NUnit.Framework;
@@ -17,8 +20,11 @@ public class GameTextEncodingTests
     // An NWN color token is "<c" followed by three raw channel bytes and ">".
     private static readonly Regex ColorToken = new("<c[\\s\\S]{3}>", RegexOptions.Compiled);
 
-    // UTF-8 encodes every non-ASCII character as a lead byte followed by continuation bytes.
-    private static readonly Regex Utf8Sequence = new("[\u00C2-\u00F4][\u0080-\u00BF]+", RegexOptions.Compiled);
+    // A structurally valid UTF-8 sequence: a lead byte and exactly the continuation bytes it needs.
+    private static readonly Regex Utf8Sequence = new(
+        "[\u00C2-\u00DF][\u0080-\u00BF]|[\u00E0-\u00EF][\u0080-\u00BF]{2}|" +
+        "[\u00F0-\u00F4][\u0080-\u00BF]{3}",
+        RegexOptions.Compiled);
 
     private static readonly Encoding Windows1252 = CreateWindows1252();
 
@@ -31,23 +37,17 @@ public class GameTextEncodingTests
     private static readonly Regex JsonEscape = new(
         @"(?<!\\)(?:\\\\)*\\u([0-9A-Fa-f]{4})", RegexOptions.Compiled);
 
-    // A C# \u, \U, or \x escape that is not itself escaped by a preceding backslash.
-    private static readonly Regex CSharpEscape = new(
-        @"(?<!\\)((?:\\\\)*)\\(?:u([0-9A-Fa-f]{4})|U([0-9A-Fa-f]{8})|x([0-9A-Fa-f]{1,4}))",
-        RegexOptions.Compiled);
-
-    // Byte-mapping tables that list every Windows-1252 character on purpose, keyed by file and the
-    // start of the declaring line. Every other line in those files follows the normal rule.
-    private static readonly (string File, string Declaration)[] CharacterTables =
+    // Byte-mapping tables that list every Windows-1252 character on purpose, by file and member.
+    private static readonly HashSet<(string File, string Member)> CharacterTables = new()
     {
-        (Path.Combine("Feature", "GuiDefinition", "ExamineItemText.cs"), "const string highChannels = \""),
-        (Path.Combine("Service", "ColorToken.cs"), "private static string ColorArray => \"")
+        (Path.Combine("Feature", "GuiDefinition", "ExamineItemText.cs"), "highChannels"),
+        (Path.Combine("Service", "ColorToken.cs"), "ColorArray")
     };
 
     // Left as authored at the owner's request.
-    private static readonly HashSet<string> AllowedCodeLines = new(StringComparer.Ordinal)
+    private static readonly HashSet<(string File, string Text)> AllowedLiterals = new()
     {
-        "StatusText = \"● Active\";"
+        (Path.Combine("Feature", "GuiDefinition", "ViewModel", "DisguiseViewModel.cs"), "\u25CF Active")
     };
 
     [Test]
@@ -111,21 +111,23 @@ public class GameTextEncodingTests
                 relativePath.StartsWith("obj" + Path.DirectorySeparatorChar, StringComparison.Ordinal))
                 continue;
 
-            var lines = File.ReadAllLines(path);
-            for (var lineIndex = 0; lineIndex < lines.Length; lineIndex++)
+            // Roslyn decodes escapes and verbatim and raw strings, and skips comments.
+            var root = CSharpSyntaxTree.ParseText(File.ReadAllText(path)).GetRoot();
+            foreach (var token in root.DescendantTokens().Where(IsStringContent))
             {
-                var code = DecodeEscapes(StripComment(lines[lineIndex]));
-                if (AllowedCodeLines.Contains(code.Trim()))
+                var text = token.ValueText;
+                if (AllowedLiterals.Contains((relativePath, text)))
                     continue;
 
-                var trimmed = code.Trim();
-                var isTable = CharacterTables.Any(table =>
-                    table.File == relativePath && trimmed.StartsWith(table.Declaration, StringComparison.Ordinal));
-                var bad = code.FirstOrDefault(character => isTable
+                var isTable = CharacterTables.Contains((relativePath, DeclaredName(token)));
+                var bad = text.FirstOrDefault(character => isTable
                     ? character >= 0x80 && !IsWindows1252(character)
                     : !IsGameTextCharacter(character));
                 if (bad != default)
-                    violations.Add($"{relativePath}:{lineIndex + 1}: U+{(int)bad:X4} in {code.Trim()}");
+                {
+                    var line = token.GetLocation().GetLineSpan().StartLinePosition.Line + 1;
+                    violations.Add($"{relativePath}:{line}: U+{(int)bad:X4} in {text}");
+                }
             }
         }
 
@@ -173,14 +175,25 @@ public class GameTextEncodingTests
             "nwn_tlk converts TLK text to Windows-1252, and game text uses ASCII quotes, dashes, and '...'");
     }
 
-    /// <summary>Replaces C# character escapes with the characters they produce at runtime.</summary>
-    private static string DecodeEscapes(string code) => CSharpEscape.Replace(code, match =>
+    private static bool IsStringContent(SyntaxToken token) => token.Kind() is
+        SyntaxKind.StringLiteralToken or SyntaxKind.CharacterLiteralToken or SyntaxKind.Utf8StringLiteralToken or
+        SyntaxKind.SingleLineRawStringLiteralToken or SyntaxKind.MultiLineRawStringLiteralToken or
+        SyntaxKind.Utf8SingleLineRawStringLiteralToken or SyntaxKind.Utf8MultiLineRawStringLiteralToken or
+        SyntaxKind.InterpolatedStringTextToken;
+
+    /// <summary>The field, local, or property a literal initializes, if any.</summary>
+    private static string DeclaredName(SyntaxToken token)
     {
-        var hex = match.Groups[2].Success ? match.Groups[2].Value
-            : match.Groups[3].Success ? match.Groups[3].Value
-            : match.Groups[4].Value;
-        return match.Groups[1].Value + char.ConvertFromUtf32(Convert.ToInt32(hex, 16));
-    });
+        foreach (var node in token.Parent!.AncestorsAndSelf())
+        {
+            if (node is VariableDeclaratorSyntax variable)
+                return variable.Identifier.ValueText;
+            if (node is PropertyDeclarationSyntax property)
+                return property.Identifier.ValueText;
+        }
+
+        return string.Empty;
+    }
 
     private static IEnumerable<(string Location, string Text)> StringValues(System.Text.Json.JsonElement element, string location)
     {
@@ -225,28 +238,6 @@ public class GameTextEncodingTests
         {
             return false;
         }
-    }
-
-    /// <summary>Drops a trailing // comment that is not inside a string literal.</summary>
-    private static string StripComment(string line)
-    {
-        var trimmed = line.TrimStart();
-        if (trimmed.StartsWith("//", StringComparison.Ordinal) || trimmed.StartsWith('*') ||
-            trimmed.StartsWith("/*", StringComparison.Ordinal))
-            return string.Empty;
-
-        var inString = false;
-        for (var index = 0; index < line.Length; index++)
-        {
-            if (line[index] == '\\' && inString)
-                index++;
-            else if (line[index] == '"')
-                inString = !inString;
-            else if (!inString && line[index] == '/' && index + 1 < line.Length && line[index + 1] == '/')
-                return line[..index];
-        }
-
-        return line;
     }
 
     private static string Snippet(string text, int index)

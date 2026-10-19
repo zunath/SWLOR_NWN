@@ -344,7 +344,8 @@ public sealed partial class QuestConversationTests
             turnedIn.Should().Equal(line.GetQuestIds());
             var finished = new ConversationSession(graph, new ConversationContext(1, 2), runtime);
             finished.Start().Should().BeTrue(line.Id);
-            finished.VisibleChoices.Should().BeEmpty(line.Id);
+            // The Katar trainers also host the independent Unarmed trial, which stays reachable after the line.
+            finished.VisibleChoices.Should().OnlyContain(choice => choice.Id == "unarmed-training", line.Id);
         }
     }
 

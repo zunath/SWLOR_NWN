@@ -83,7 +83,8 @@ public sealed partial class QuestConversationTests
                     .Where(action => action.Arguments.SequenceEqual(new[] { quest.QuestId }))
                     .Select(action => action.Key).ToHashSet();
                 var hasCollection = state.GetObjectives().OfType<CollectItemObjective>().Any();
-                var hasKills = state.GetObjectives().OfType<KillTargetObjective>().Any();
+                // Kill and combat objectives advance the quest themselves when their count is reached.
+                var hasKills = state.GetObjectives().Any(objective => objective is KillTargetObjective or CombatObjective);
                 if (hasCollection)
                     actions.Should().Contain("action-request-quest-items", $"{quest.QuestId} state {number} needs an item hand-in");
                 else

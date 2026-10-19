@@ -49,6 +49,19 @@ public class PairedRangedTraitStateTests
     }
 
     [Test]
+    public void OrdinaryHitRestore_CountsALandedHitOnAnEarlierTarget_WithoutExtendingItsStreak()
+    {
+        var state = new PairedRangedTraitState();
+        Hit(state, 0, 1);
+        state.RecordOrdinaryAttempt(Start.AddSeconds(1), Configuration, 10, 2);
+        state.RecordOrdinaryAttempt(Start.AddSeconds(1), Configuration, 20, 3);
+        state.RecordOrdinaryHit(Start.AddSeconds(1), Configuration, 10, 2).Should().Be(0);
+        state.RecordOrdinaryHit(Start.AddSeconds(1), Configuration, 20, 3).Should().Be(1,
+            "every landed ordinary hit counts toward the restore regardless of which enemy it struck");
+        state.HasRepeatedTargetBonus(Start.AddSeconds(1), Configuration).Should().BeFalse();
+    }
+
+    [Test]
     public void RepeatedTargetDamage_StartsAfterThreeHits_AndDoesNotFollowAnEnemySwitch()
     {
         var state = new PairedRangedTraitState();

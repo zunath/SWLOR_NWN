@@ -92,10 +92,11 @@ namespace SWLOR.Game.Server.Service.CombatService
         public int RecordOrdinaryHit(DateTime now, PairedRangedTraitConfiguration configuration, uint target, long rollId)
         {
             Reconcile(now, configuration);
-            if (!_attempts.Contains(rollId) || !Remember(_hits, _hitOrder, rollId) || target != _ordinaryTarget)
+            if (!_attempts.Contains(rollId) || !Remember(_hits, _hitOrder, rollId))
                 return 0;
 
-            if (configuration.RepeatedTargetRequiredHits > 0)
+            // Only the same-target streak depends on the current target; the restore counter counts every landed hit.
+            if (configuration.RepeatedTargetRequiredHits > 0 && target == _ordinaryTarget)
             {
                 _sameTargetHits = Math.Min(_sameTargetHits + 1, configuration.RepeatedTargetRequiredHits);
                 RepeatedTargetExpires = now.AddSeconds(configuration.RepeatedTargetDurationSeconds);

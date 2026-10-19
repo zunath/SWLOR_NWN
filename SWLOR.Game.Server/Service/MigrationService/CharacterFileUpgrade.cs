@@ -256,12 +256,13 @@ internal static class CharacterFileUpgrade
     }
 
     /// <summary>
-    /// Keeps the original file as a backup and writes the upgraded file beside it before saving the record, then
-    /// moves it into place. A crash after the record is saved leaves that file behind, and the next boot finishes the
-    /// move (<see cref="CharacterFile.ResumeOrDiscardPendingFile"/>); a crash before it leaves the record unchanged and
-    /// the file is upgraded again. Overflow items use identities derived from the file, its contents and the upgrade,
-    /// so a retry replaces them instead of adding copies, and a save that fails before the record is written removes
-    /// them again without touching items an earlier upgrade of another file at that path stored.
+    /// Writes the upgraded file beside the original and keeps the original as a backup before saving the record, then
+    /// moves the upgraded file into place. A crash after the record is saved leaves that file behind, and the next boot
+    /// finishes the move (<see cref="CharacterFile.ResumeOrDiscardPendingFile"/>); a crash before it leaves the record
+    /// unchanged and the file is upgraded again. Overflow items use identities derived from the file, its contents and
+    /// the upgrade, so a retry replaces them instead of adding copies, and a save that fails before the record is
+    /// written removes the upgraded file and its overflow items together, without touching items an earlier upgrade of
+    /// another file at that path stored.
     /// </summary>
     private static void Commit(CharacterFile character, string vault, string backupDirectory)
     {
@@ -287,21 +288,44 @@ internal static class CharacterFileUpgrade
                 });
                 stored.Add(id);
             }
+            File.WriteAllBytes(pending, result.File);
             var backup = Path.Combine(backupDirectory, Path.GetRelativePath(vault, character.Path));
             Directory.CreateDirectory(Path.GetDirectoryName(backup)!);
             if (!File.Exists(backup))
                 File.Copy(character.Path, backup);
-            File.WriteAllBytes(pending, result.File);
             DB.Set(result.Record);
         }
         catch
         {
             // Until the record holds the upgrade, the original file still has these items; a claim must not copy them.
-            foreach (var id in stored)
-                DB.Delete<OverflowItem>(id);
+            // The upgraded file goes with its overflow items: if another file sharing the record advanced it, a later
+            // boot would install a leftover upgraded file without them.
+            if (DiscardPendingFile(character, pending))
+                foreach (var id in stored)
+                    DB.Delete<OverflowItem>(id);
             throw;
         }
         File.Move(pending, character.Path, true);
+    }
+
+    /// <summary>
+    /// Deletes an upgraded file a failed save left beside the original. False when it cannot be deleted; its overflow
+    /// items then stay with it, since a later boot may still install it.
+    /// </summary>
+    private static bool DiscardPendingFile(CharacterFile character, string pending)
+    {
+        try
+        {
+            if (File.Exists(pending))
+                File.Delete(pending);
+            return true;
+        }
+        catch (Exception ex)
+        {
+            Log.Write(LogGroup.Migration, $"Character upgrade could not remove '{pending}' [{character.Id}] after a failed save; " +
+                $"its overflow items are kept with it: {ex.Message}", true);
+            return false;
+        }
     }
 
     private static string GetServerVaultDirectory()

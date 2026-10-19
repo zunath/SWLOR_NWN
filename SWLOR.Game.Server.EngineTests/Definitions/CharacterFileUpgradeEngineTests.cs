@@ -185,6 +185,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             var firstFolder = Path.Combine(vault, "TESTKEY1");
             var firstPath = Path.Combine(firstFolder, "first.bic");
             var secondPath = Path.Combine(vault, "TESTKEY2", "second.bic");
+            var backups = Path.Combine(root, "servervault_backups");
             var previousVault = Environment.GetEnvironmentVariable(VaultVariable);
             var previousFileVersion = 0;
             Player firstRecord = null;
@@ -226,6 +227,17 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                     ctx.Assert(File.ReadAllBytes(firstPath).SequenceEqual(firstFile), "The file is unchanged");
 
                     Directory.Delete(firstPath + ".upgrade");
+
+                    // The backup cannot be written after the upgraded file was: the upgraded file is removed with its
+                    // overflow items, so no later boot can install it without them.
+                    SetWritable(backups, false);
+                    ResetVaultMarker();
+                    ctx.Assert(!SavedCharacterMigration.UpgradeServerVault(), "The failed backup is reported");
+                    ctx.Assert(!File.Exists(firstPath + ".upgrade"), "The upgraded file is removed with its overflow items");
+                    ctx.AssertEqual(0, OverflowRecords(first.Id).Count, "The overflow items are removed with the upgraded file");
+                    ctx.AssertEqual(5, DB.Get<Player>(first.Id).Version, "The record is still unchanged");
+                    SetWritable(backups, true);
+
                     ResetVaultMarker();
                     ctx.Assert(SavedCharacterMigration.UpgradeServerVault(), "The next boot upgrades the character");
                     ctx.Assert(OverflowRecords(first.Id).Any(item => item.Resref == "nw_wswls001"), "Its overflow items are stored once it is saved");
@@ -263,11 +275,21 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                     foreach (var item in OverflowRecords(first.Id).Concat(OverflowRecords(second.Id)))
                         DB.Delete<OverflowItem>(item.Id);
                 });
-                if (Directory.Exists(firstFolder))
-                    File.SetUnixFileMode(firstFolder, UnixFileMode.UserRead | UnixFileMode.UserWrite | UnixFileMode.UserExecute);
+                SetWritable(firstFolder, true);
+                SetWritable(backups, true);
                 if (Directory.Exists(root))
                     Directory.Delete(root, true);
             }
+        }
+
+        /// <summary>Makes a folder and every folder inside it writable or read-only for the server.</summary>
+        private static void SetWritable(string folder, bool writable)
+        {
+            if (!Directory.Exists(folder))
+                return;
+            var mode = UnixFileMode.UserRead | UnixFileMode.UserExecute | (writable ? UnixFileMode.UserWrite : UnixFileMode.None);
+            foreach (var path in Directory.GetDirectories(folder, "*", SearchOption.AllDirectories).Prepend(folder))
+                File.SetUnixFileMode(path, mode);
         }
 
         private static void StartUpgrade(string playerId, Player original)

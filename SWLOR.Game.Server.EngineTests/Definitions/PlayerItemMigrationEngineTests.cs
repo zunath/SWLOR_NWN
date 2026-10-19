@@ -217,6 +217,39 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             });
         }
 
+        /// <summary>
+        /// The login migration wiped every item its creature inventory loop returned, and that loop also returns the items
+        /// inside carried bags. The saved-data migration does the same.
+        /// </summary>
+        [EngineTest("Legacy migration wipes items inside carried bags, which the login migration's inventory loop reached", Category = "PlayerItemMigration")]
+        public static async Task LegacyMigrationReachesBagContents(EngineTestContext ctx)
+        {
+            var owner = ctx.SpawnCreature("civilian");
+            await ctx.WaitFrameAsync();
+            var bag = await CreateItemAsync(ctx, owner, "bag_sm", owner);
+            var nested = await CreateItemAsync(ctx, owner, "b_longsword", bag);
+            await ctx.ExecuteInCreatureContextAsync(owner, () =>
+            {
+                AddItemProperty(DurationType.Permanent, ItemPropertyAbilityBonus(AbilityType.Might, 4), nested);
+                SetLocalString(nested, "LEGACY_FIXTURE", "nested");
+            });
+            await ctx.WaitFrameAsync();
+            await ctx.ExecuteInCreatureContextAsync(owner, () =>
+            {
+                var reached = false;
+                for (var item = GetFirstItemInInventory(owner); GetIsObjectValid(item); item = GetNextItemInInventory(owner))
+                    reached |= item == nested;
+                ctx.Assert(reached, "The engine's inventory loop on a creature returns the item inside its bag");
+
+                var upgraded = SavedCharacterMigration.Run(owner, new Player(GetObjectUUID(owner)), "_1_LegacyPlayerMigration");
+                var restoredBag = SavedCharacterMigration.FindItem(SavedCharacterMigration.Load(ctx, upgraded), "bag_sm");
+                var restored = GetFirstItemInInventory(restoredBag);
+                ctx.AssertEqual("b_longsword", GetResRef(restored), "The item stays in its bag");
+                ctx.Assert(!GetIsItemPropertyValid(GetFirstItemProperty(restored)), "Its properties are wiped, as the login migration did");
+                ctx.AssertEqual(string.Empty, GetLocalString(restored, "LEGACY_FIXTURE"), "Its locals are wiped, as the login migration did");
+            });
+        }
+
         /// <summary>Checks historical damage conversion neither keeps the old properties nor increments damage twice.</summary>
         [EngineTest("Historical weapon damage conversion survives save and retry", Category = "PlayerItemMigration")]
         public static async Task HistoricalWeaponDamageSaveAndRetry(EngineTestContext ctx)

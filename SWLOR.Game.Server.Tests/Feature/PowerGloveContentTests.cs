@@ -36,11 +36,14 @@ public class PowerGloveContentTests
         itemProperties.Where(property => Int(property, "PropertyName") != (int)ItemPropertyType.RequiresSkill)
             .Select(PropertyBudget).Should().BeEquivalentTo(sourceProperties
                 .Where(property => Int(property, "PropertyName") != (int)ItemPropertyType.RequiresSkill).Select(PropertyBudget));
-        var requirement = itemProperties.Single(property => Int(property, "PropertyName") == (int)ItemPropertyType.RequiresSkill);
-        Int(requirement, "Subtype").Should().Be((int)SkillType.Unarmed);
-        Int(requirement, "CostValue").Should().Be(sourceProperties
-            .Where(property => Int(property, "PropertyName") == (int)ItemPropertyType.RequiresSkill)
-            .Select(property => Int(property, "CostValue")).SingleOrDefault());
+        var requirements = itemProperties.Where(property => Int(property, "PropertyName") == (int)ItemPropertyType.RequiresSkill).ToArray();
+        var sourceRequirements = sourceProperties.Where(property => Int(property, "PropertyName") == (int)ItemPropertyType.RequiresSkill).ToArray();
+        requirements.Should().HaveSameCount(sourceRequirements, "a tier has a skill requirement only when its Katar does");
+        foreach (var (requirement, sourceRequirement) in requirements.Zip(sourceRequirements))
+        {
+            Int(requirement, "Subtype").Should().Be((int)SkillType.Unarmed);
+            Int(requirement, "CostValue").Should().Be(Int(sourceRequirement, "CostValue"));
+        }
         List(item, "VarTable").Should().NotContain(local => Text(local, "Name") == "NO_ECONOMY");
     }
 

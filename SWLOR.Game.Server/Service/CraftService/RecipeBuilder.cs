@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
-using SWLOR.NWN.API.NWScript.Enum.Item;
 
 namespace SWLOR.Game.Server.Service.CraftService
 {
@@ -85,19 +84,6 @@ namespace SWLOR.Game.Server.Service.CraftService
         public RecipeBuilder Resref(string resref)
         {
             _activeRecipe.Resref = resref;
-            return this;
-        }
-
-        /// <summary>Restricts kits and blueprint bonuses to properties supported by this output.</summary>
-        public RecipeBuilder AllowedEnhancements(params EnhancementSubType[] types)
-        {
-            _activeRecipe.AllowedEnhancements = new HashSet<EnhancementSubType>(types);
-            return this;
-        }
-
-        public RecipeBuilder AllowedOutputProperties(params ItemPropertyType[] types)
-        {
-            _activeRecipe.AllowedOutputProperties = new HashSet<ItemPropertyType>(types);
             return this;
         }
 

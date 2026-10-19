@@ -44,17 +44,14 @@ namespace SWLOR.Game.Server.Service.CraftService
             _bonusesByEnhancementType[RecipeEnhancementType.Food][true][3] = Tier3FoodBonuses();
         }
 
-        public BlueprintBonus PickBonus(RecipeEnhancementType enhancementType, int tier, bool isCraftingItem,
-            IReadOnlyCollection<EnhancementSubType> allowedEnhancements = null)
+        public BlueprintBonus PickBonus(RecipeEnhancementType enhancementType, int tier, bool isCraftingItem)
         {
             if (!_bonusesByEnhancementType.ContainsKey(enhancementType) ||
                 !_bonusesByEnhancementType[enhancementType].ContainsKey(isCraftingItem) ||
                 !_bonusesByEnhancementType[enhancementType][isCraftingItem].ContainsKey(tier))
                 return null;
 
-            var set = _bonusesByEnhancementType[enhancementType][isCraftingItem][tier]
-                .Where(bonus => allowedEnhancements == null || allowedEnhancements.Contains(bonus.Type)).ToArray();
-            if (set.Length == 0) return null;
+            var set = _bonusesByEnhancementType[enhancementType][isCraftingItem][tier];
             var weights = set.Select(x => x.Weight).ToArray();
             var index = Random.GetRandomWeightedIndex(weights);
 

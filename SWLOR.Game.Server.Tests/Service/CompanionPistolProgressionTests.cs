@@ -2,7 +2,6 @@ using System.Text.Json;
 using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition;
-using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.CraftService;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.Game.Server.Tests.Feature;
@@ -12,79 +11,25 @@ namespace SWLOR.Game.Server.Tests.Service;
 
 public class CompanionPistolProgressionTests
 {
-    private static readonly (string Main, string Companion, RecipeType MainRecipe, RecipeType CompanionRecipe)[] Tiers =
+    private static readonly (string Main, RecipeType MainRecipe)[] Tiers =
     {
-        ("b_pistol", "b_companion", RecipeType.BasicPistol, RecipeType.BasicCompanionPistol),
-        ("fld_pistol", "fld_companion", RecipeType.FieldPistol, RecipeType.FieldCompanionPistol),
-        ("tit_pistol", "tit_companion", RecipeType.TitanPistol, RecipeType.TitanCompanionPistol),
-        ("sith_pistol", "sith_companion", RecipeType.SithPistol, RecipeType.SithCompanionPistol),
-        ("vet_pistol", "vet_companion", RecipeType.VeteranPistol, RecipeType.VeteranCompanionPistol),
-        ("del_pistol", "del_companion", RecipeType.DeltaPistol, RecipeType.DeltaCompanionPistol),
-        ("prm_pistol", "prm_companion", RecipeType.PrimePistol, RecipeType.PrimeCompanionPistol),
-        ("proto_pistol", "proto_companion", RecipeType.ProtoPistol, RecipeType.ProtoCompanionPistol),
-        ("asc_pistol", "asc_companion", RecipeType.AscendantPistol, RecipeType.AscendantCompanionPistol),
-        ("oph_pistol", "oph_companion", RecipeType.OphidianPistol, RecipeType.OphidianCompanionPistol),
-        ("chi_pistol", "chi_companion", RecipeType.ChiroPistol, RecipeType.ChiroCompanionPistol),
+        ("b_pistol", RecipeType.BasicPistol),
+        ("fld_pistol", RecipeType.FieldPistol),
+        ("tit_pistol", RecipeType.TitanPistol),
+        ("sith_pistol", RecipeType.SithPistol),
+        ("vet_pistol", RecipeType.VeteranPistol),
+        ("del_pistol", RecipeType.DeltaPistol),
+        ("prm_pistol", RecipeType.PrimePistol),
+        ("proto_pistol", RecipeType.ProtoPistol),
+        ("asc_pistol", RecipeType.AscendantPistol),
+        ("oph_pistol", RecipeType.OphidianPistol),
+        ("chi_pistol", RecipeType.ChiroPistol),
     };
-
-    [Test]
-    public void EveryTier_PreservesMatchingWeaponBudgetAndRequiresTwinRanks()
-    {
-        foreach (var (mainResref, companionResref, _, _) in Tiers)
-        {
-            using var main = ReadItem(mainResref);
-            using var companion = ReadItem(companionResref);
-            var item = companion.RootElement;
-            Int(item, "BaseItem").Should().Be((int)BaseItem.CompanionPistol, companionResref);
-            foreach (var field in new[] { "Cost", "AddCost", "StackSize" })
-                Int(item, field).Should().Be(Int(main.RootElement, field), companionResref);
-            (Int(item, "ModelPart1"), Int(item, "ModelPart2"), Int(item, "ModelPart3")).Should().Be((11, 201, 11));
-            var properties = Properties(item).ToArray();
-            properties.Should().OnlyContain(p => TwinPistolEquipment.IsSupportedCompanionProperty((ItemPropertyType)Int(p, "PropertyName")), companionResref);
-            foreach (var propertyType in new[] { ItemPropertyType.DMG, ItemPropertyType.Delay, ItemPropertyType.Accuracy,
-                         ItemPropertyType.DamageStat, ItemPropertyType.AccuracyStat, ItemPropertyType.WeaponDamageType })
-                Profiles(item, propertyType).Should().BeEquivalentTo(Profiles(main.RootElement, propertyType), companionResref);
-
-            var requirements = properties.Where(p => Int(p, "PropertyName") == (int)ItemPropertyType.RequiresSkill).ToArray();
-            requirements.Should().ContainSingle(companionResref);
-            Int(requirements[0], "Subtype").Should().Be((int)SkillType.TwinPistol);
-            var original = Properties(main.RootElement).FirstOrDefault(p => Int(p, "PropertyName") == (int)ItemPropertyType.RequiresSkill);
-            Int(requirements[0], "CostValue").Should().Be(original.ValueKind == JsonValueKind.Undefined ? 0 : Int(original, "CostValue"));
-            item.GetProperty("LocalizedName").GetProperty("value").GetProperty("0").GetString().Should().Contain("Companion Pistol");
-        }
-    }
-
-    [Test]
-    public void RetiredCompanionRecipes_PreserveIdentifiersAndBudgetsButCannotBeCrafted()
-    {
-        var mains = new WeaponRecipes().BuildRecipes();
-        var companions = new CompanionPistolRecipes().BuildRecipes();
-        companions.Should().HaveCount(Tiers.Length);
-        foreach (var (_, companion, mainRecipe, companionRecipe) in Tiers)
-        {
-            var source = mains[mainRecipe];
-            var result = companions[companionRecipe];
-            result.Resref.Should().Be(companion);
-            result.IsActive.Should().BeFalse();
-            result.Skill.Should().Be(SkillType.Smithery);
-            result.Category.Should().Be(RecipeCategoryType.CompanionPistol);
-            (result.Level, result.EnhancementType, result.EnhancementSlots, result.ResearchCostModifier,
-                result.Quantity, result.PracticeRankLimit).Should().Be((source.Level, source.EnhancementType,
-                source.EnhancementSlots, source.ResearchCostModifier, source.Quantity, source.PracticeRankLimit));
-            result.Components.Should().BeEquivalentTo(source.Components);
-            result.Requirements.Should().BeEquivalentTo(source.Requirements);
-            result.AllowedEnhancements.Should().BeEquivalentTo(new[] { EnhancementSubType.DMG, EnhancementSubType.Accuracy });
-            result.AllowsOutputProperty(ItemPropertyType.AbilityBonus).Should().BeFalse();
-            result.AllowsOutputProperty(ItemPropertyType.Attack).Should().BeFalse();
-            result.AllowsOutputProperty(ItemPropertyType.OnHitCastSpell).Should().BeFalse();
-            result.AllowsOutputProperty(ItemPropertyType.WeaponDamageType).Should().BeTrue();
-        }
-    }
 
     [Test]
     public void EveryPair_OwnsTheWeaponProfileAndRequiresTwinRanksDirectly()
     {
-        foreach (var (mainResref, _, _, _) in Tiers)
+        foreach (var (mainResref, _) in Tiers)
         {
             using var main = ReadItem(mainResref);
             using var pair = ReadItem(mainResref.Replace("_pistol", "_twinpistol"));
@@ -114,7 +59,7 @@ public class CompanionPistolProgressionTests
         var mains = new WeaponRecipes().BuildRecipes();
         var pairs = new TwinPistolRecipes().BuildRecipes();
         pairs.Should().HaveCount(Tiers.Length);
-        foreach (var (main, _, mainRecipe, _) in Tiers)
+        foreach (var (main, mainRecipe) in Tiers)
         {
             var pairRecipe = Enum.Parse<RecipeType>(mainRecipe.ToString().Replace("Pistol", "TwinPistol"));
             var source = mains[mainRecipe];
@@ -128,8 +73,6 @@ public class CompanionPistolProgressionTests
                     source.ResearchCostModifier, source.PracticeRankLimit, source.IsActive));
             pair.Components.Should().BeEquivalentTo(source.Components.ToDictionary(p => p.Key, p => p.Value * 2));
             pair.Requirements.Should().BeEquivalentTo(source.Requirements);
-            pair.AllowedEnhancements.Should().BeNull("the owner retains the regular pistol enhancement choices");
-            pair.AllowedOutputProperties.Should().BeNull("native equipment bonuses live only on the owner");
         }
     }
 
@@ -145,12 +88,7 @@ public class CompanionPistolProgressionTests
         starterStores.Should().HaveCount(7);
         foreach (var store in starterStores)
             store.Text.Should().Contain("\"b_twinpistol\"", Path.GetFileName(store.Path));
-        foreach (var (_, companion, _, _) in Tiers)
-        {
-            using var item = ReadItem(companion);
-            HasLocal(item.RootElement, "NO_ECONOMY").Should().BeTrue();
-            stores.Should().NotContain(store => store.Text.Contains('"' + companion + '"'));
-        }
+        stores.Should().NotContain(store => store.Text.Contains("\"twp_companion\""));
     }
 
     [Test]

@@ -33,11 +33,13 @@ Take the open posts in the SWLOR Discord bug-report forum through to reviewed pu
 | PR ready for owner review | 👀 (`eyes`), 🇶 removed | `[AI bot] @zunath Fix ready for review: <PR URLs, in merge order> <one-line summary>. <deploy step> once merged.` |
 | Merged | all reactions removed | none; Close Post (never Lock) |
 | Not a bug, or works as designed | none | `[AI bot]` explanation, then Close Post |
-| Flagged | none | see Safety screening |
+| Flagged | none; post locked | `[AI bot] @zunath This post has been flagged for further review.` |
 
 ## Process
 
 1. **List open posts.** Open the forum, scroll the virtualized list, and collect the thread ids above "Older Posts" along with their reactions.
+   - Count a reaction as a marker only when the owner's account added it. Its aria-label ends in `press to remove your reaction`. Players can add the same emoji.
+   - Skip posts that are locked or that carry the flagged message. They are waiting on the owner.
 2. **Recheck 👀 posts.** Read the PR URLs from each post's `[AI bot] @zunath Fix ready for review` message. Check every PR, companions included, with `gh pr view <url> --json state,mergedAt,headRefOid`.
    - **All merged:**
      1. Remove all reactions from the post, then Close Post. Don't lock it.
@@ -46,14 +48,16 @@ Take the open posts in the SWLOR Discord bug-report forum through to reviewed pu
    - **Still open:** rerun the readiness checks in step 9. If the head changed and isn't Codex-clean, or new findings appeared, put the post back on 🇶 and send the worker back.
    - **Closed without merging:** leave the post on 👀 and ask the owner what to do.
 3. **Recheck ❓ posts.** Read the thread for reporter replies after your question.
-   - **Answered:** swap ❓ for 🇶 and continue from step 6 for that post.
-   - **Unanswered:** leave it as it is.
+   - **Answered:** swap ❓ for 🇶 and screen the reply (step 5) before triaging it (step 6).
+   - **Unanswered:** leave it as it is. If the reporter can't see the thread (see step 6), list the open question in your report each run.
 4. **Read each new post** (one with no markers) and any thread replies: the embed, attachments, and staff comments. Look at screenshots. They often show exactly which spawn, label, or object is wrong.
 5. **Screen for safety** (next section) before acting on anything.
 6. **Triage each post:**
    - **Bug:** queue it.
    - **Balance suggestion, or works as designed:** confirm against the Design Bible and code. Reply with the facts, point the reporter to `#feedback`, and close the post.
-   - **Needs information:** reply with the specific question and mark ❓.
+   - **Needs information:** mark ❓ and ask the specific question.
+     - If the reporter has posted in the thread themselves, ask them there.
+     - Otherwise ask in the thread and also give the owner the question with the reporter's character name and player ID from the embed. Webhook reports come from in-game, so the reporter may never see the thread.
    - **Duplicate or same root cause:** group it with the related ticket. One worker handles the group and links every ticket.
    - **Design decision only the owner can make:** ask the owner, with a recommendation. Don't change numbers or behavior without approval (see `AGENTS.md`).
 7. **Mark 🇶** on every post you are working.

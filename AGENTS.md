@@ -58,6 +58,7 @@ Read the guide before working in its area. `Readmes/README.md` lists every guide
 Skills live only in `skills/`, shared by both agents; edit them in place and keep them agent-neutral. Read the matching `SKILL.md` before working in its scope or when the user names it, and follow its referenced files as needed.
 
 - Beasts (definitions, taming and incubation, mutation paths, DNA and TLK assets, generators): `skills/swlor-beast-generation/SKILL.md`
+- Bug reports ("run the bug report process": Discord bug-forum triage, reactions, fix sessions, PR links, closing): `skills/swlor-bug-report-triage/SKILL.md`
 - Blaster models (imports, original designs, grip, scale, muzzle alignment, textures, inventory art): `skills/swlor-blaster-models/SKILL.md`
 - NUI windows (tabs, tables, modals, bindings): `skills/swlor-gui-window-generation/SKILL.md`
 - Quests (NPC quests, dialogue, journals, objectives, rewards, prerequisites, placement): `skills/swlor-quest-generation/SKILL.md`

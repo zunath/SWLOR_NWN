@@ -48,7 +48,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                     model.OnClickRemoveItems()();
                     AssertCarriedIntact(ctx, player, carried);
                     ctx.AssertEqual(1, model.InputItemNames.Count, "A removed ore without room stays listed");
-                    ctx.AssertEqual(Item.InventoryFullMessage, model.Instructions, "The refinery says the inventory is full");
+                    ctx.AssertEqual(Item.InventoryFullShortMessage, model.Instructions, "The refinery says the inventory is full");
 
                     model = ReopenWindow<RefineryViewModel>(fixture, GuiWindowType.Refinery, null);
                     AssertCarriedIntact(ctx, player, carried);
@@ -114,6 +114,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                     ctx.Assert(!string.IsNullOrEmpty((string)Get(model, "_cpuItem")) && !string.IsNullOrEmpty((string)Get(model, "_headItem")),
                         "A closed assembly keeps the parts that did not fit");
                     ctx.Assert(model.HeadResref != "Blank", "The reopened assembly shows the kept head");
+                    ctx.Assert(model.IsBuildInProgress, "The reopened assembly lets the kept parts be removed");
                     Free(fillers);
                 });
                 await ctx.WaitFrameAsync();
@@ -211,7 +212,8 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                     model = ReopenWindow<CraftViewModel>(fixture, GuiWindowType.Craft, payload);
                     AssertCarriedIntact(ctx, player, carried);
                     ctx.AssertEqual(2, ((List<string>)Get(model, "_heldItems")).Count, "Reopening without room keeps holding them");
-                    ctx.AssertEqual(Item.ItemsHeldMessage, model.StatusText, "The reopened window says items are held");
+                    ctx.AssertEqual("Items from your last session wait here until you have room.", model.StatusText,
+                        "The reopened window says items are held");
                     Free(fillers);
                 });
                 await ctx.WaitFrameAsync();

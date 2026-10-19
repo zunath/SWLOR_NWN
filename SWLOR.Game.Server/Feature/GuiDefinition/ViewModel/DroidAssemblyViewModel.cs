@@ -326,13 +326,18 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         {
             Error = string.Empty;
             Name = string.Empty;
-            ProcessNotStarted = true;
-            IsBuildInProgress = false;
             PersonalityIndex = 0;
 
             if (!ReturnParts())
+            {
+                // The build stays open so the parts that stayed can be removed once there is room.
+                ProcessNotStarted = false;
+                IsBuildInProgress = true;
                 return false;
+            }
 
+            ProcessNotStarted = true;
+            IsBuildInProgress = false;
             IsCPUSelected = false;
 
             _tier = 0;

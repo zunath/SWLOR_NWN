@@ -410,8 +410,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 var item = ObjectPlugin.Deserialize(structure.SerializedItem);
                 if (!Item.TryAcquireItem(Player, item))
                 {
-                    // The instruction label is narrow, so use the short form of the inventory-full message.
-                    Instructions = "Your inventory is full.";
+                    Instructions = Item.InventoryFullShortMessage;
                     InstructionColor = GuiColor.Red;
                     return;
                 }

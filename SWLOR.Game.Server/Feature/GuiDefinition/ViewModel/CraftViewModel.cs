@@ -346,6 +346,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         private readonly List<string> _components = new();
         // Items a closed session could not return to a full inventory. They go back when the station next opens.
         private readonly List<string> _heldItems = new();
+        private const string HeldItemsStatus = "Items from your last session wait here until you have room.";
         private readonly List<ItemProperty> _itemPropertiesEnhancement1 = new();
         private readonly List<ItemProperty> _itemPropertiesEnhancement2 = new();
         private readonly List<ItemProperty> _itemPropertiesEnhancement3 = new();
@@ -391,7 +392,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             SwitchToSetUpMode();
             StatusColor = _heldItems.Count > 0 ? GuiColor.Red : GuiColor.Green;
-            StatusText = _heldItems.Count > 0 ? Item.ItemsHeldMessage : string.Empty;
+            StatusText = _heldItems.Count > 0 ? HeldItemsStatus : string.Empty;
 
             var enhancementSlots = recipe.EnhancementSlots + blueprint.EnhancementSlots;
 

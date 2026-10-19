@@ -642,6 +642,9 @@ namespace SWLOR.Game.Server.Service
         /// <summary>The message shown when an item cannot be returned because the player's inventory is full.</summary>
         public const string InventoryFullMessage = "Your inventory is full. Make room and try again.";
 
+        /// <summary>The inventory-full message for window labels too narrow for the full one.</summary>
+        public const string InventoryFullShortMessage = "Your inventory is full.";
+
         /// <summary>The message shown when a closing window keeps the items that did not fit until it is opened again.</summary>
         public const string ItemsHeldMessage = "Your inventory is full. Items that did not fit stay at the station; open it again after making room.";
 

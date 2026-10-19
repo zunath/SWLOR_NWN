@@ -255,7 +255,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             if (ReturnInputs(true) > 0)
             {
-                Instructions = Item.InventoryFullMessage;
+                Instructions = Item.InventoryFullShortMessage;
                 InstructionsColor = GuiColor.Red;
             }
         };

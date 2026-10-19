@@ -100,9 +100,11 @@ public class ArmorPartAppearanceTests
         var models = new HashSet<string> { "pfh0_legl001", "pfh0_shinl001" };
         int Saved(AppearanceArmor part) => part == AppearanceArmor.LeftThigh ? 30 : part == AppearanceArmor.LeftShin ? 23 : 0;
 
-        var human = ArmorPartAppearance.PlanRepairs(ArmorAppearanceCatalog.Definitions[AppearanceType.Human], "pfh0",
+        var human = ArmorPartAppearance.PlanRepairs(ArmorAppearanceCatalog.Definitions[AppearanceType.Human], 0, "pfh0",
             Saved, _ => 0, models.Contains);
-        var unsupported = ArmorPartAppearance.PlanRepairs(null, "pfe0", Saved, _ => 0, _ => false);
+        var unsupported = ArmorPartAppearance.PlanRepairs(null, 0, "pfe0", Saved, _ => 0, _ => false);
+        var large = ArmorPartAppearance.PlanRepairs(ArmorAppearanceCatalog.Definitions[AppearanceType.Human], 2, "pfh2",
+            Saved, _ => 0, _ => false);
 
         Assert.That(human, Is.EquivalentTo(new Dictionary<AppearanceArmor, int>
         {
@@ -110,5 +112,6 @@ public class ArmorPartAppearanceTests
             [AppearanceArmor.LeftShin] = 1,
         }));
         Assert.That(unsupported, Is.Empty);
+        Assert.That(large, Is.Empty);
     }
 }

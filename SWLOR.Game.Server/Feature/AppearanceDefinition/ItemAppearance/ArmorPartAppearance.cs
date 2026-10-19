@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap;
 using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.GuiService.Component;
 using SWLOR.NWN.API.NWScript.Enum;
@@ -102,7 +103,8 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.ItemAppearance
                 return false;
 
             ArmorAppearanceCatalog.Definitions.TryGetValue(GetAppearanceType(creature), out var definition);
-            var repairs = PlanRepairs(definition, NeckAppearance.GetBodyModel(creature, true),
+            var repairs = PlanRepairs(definition, RobeModelRenderer.GetBasePhenotype(creature),
+                NeckAppearance.GetBodyModel(creature, true),
                 part => GetItemAppearance(item, ItemAppearanceType.ArmorModel, (int)part),
                 DefaultPhenotype, ModelResource.Exists);
             // Keep every other part and all saved dyes.
@@ -112,14 +114,16 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.ItemAppearance
         }
 
         /// <summary>
-        /// Only playable appearances have a part catalog. Other creatures (base NWN race NPCs)
-        /// keep their saved parts untouched.
+        /// Only playable appearances on the normal body have a supported part catalog. Other
+        /// creatures (base NWN race NPCs, large bodies) keep their saved parts untouched. Robe
+        /// phenotypes count as the normal body they are generated from.
         /// </summary>
         public static IReadOnlyDictionary<AppearanceArmor, int> PlanRepairs(BaseArmorAppearanceDefinition definition,
-            string body, Func<AppearanceArmor, int> style, Func<int, int> fallback, Func<string, bool> exists)
+            int basePhenotype, string body, Func<AppearanceArmor, int> style, Func<int, int> fallback,
+            Func<string, bool> exists)
         {
             var repairs = new Dictionary<AppearanceArmor, int>();
-            if (definition == null)
+            if (definition == null || basePhenotype != 0)
                 return repairs;
             foreach (var part in FindUnrenderableParts(body, style, fallback, exists))
             {

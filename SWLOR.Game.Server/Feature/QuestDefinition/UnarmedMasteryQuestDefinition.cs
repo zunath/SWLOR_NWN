@@ -32,6 +32,8 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
                 .AddCombatObjective(FinishSpentObjective, "Finish-spending finishers", 30)
                 .AddState()
                 .SetStateJournalText("You completed both combination requirements. Return to Tressa Kade in the Offices & Labs on CZ-220 to complete your Perfect Form training.")
+                .AddXPReward(30000)
+                .AddGoldReward(18000)
                 .OnCompleteAction((player, source) => Achievement.GiveAchievement(player, AchievementType.PerfectForm));
         }
 
@@ -44,6 +46,8 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
                 .AddCombatObjective(DistractionSpentObjective, "Landed Uppercuts", 40)
                 .AddState()
                 .SetStateJournalText("You completed the heavy-strike requirement. Return to Borrik Sen in the Hangar on CZ-220 to complete your Haymaker training.")
+                .AddXPReward(30000)
+                .AddGoldReward(18000)
                 .OnCompleteAction((player, source) => Achievement.GiveAchievement(player, AchievementType.Haymaker));
         }
     }

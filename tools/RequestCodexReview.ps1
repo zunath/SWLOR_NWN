@@ -103,17 +103,31 @@ function Get-CodexAnswer {
 
     if ($answers.Count -gt 0) {
         $latest = $answers | Sort-Object Time | Select-Object -Last 1
-        return @{ Kind = $latest.Kind; Item = $latest.Item }
+        return @{ Kind = $latest.Kind; Item = $latest.Item; ForHead = $true }
     }
 
     $limit = $comments | Where-Object { $_.body -match "usage limit" } | Select-Object -Last 1
     if ($limit) {
-        return @{ Kind = "limit"; Item = $limit }
+        return @{ Kind = "limit"; Item = $limit; ForHead = $false }
     }
 
     $other = $comments | Where-Object { $_.body -notmatch "codex-review-receipt" } | Select-Object -Last 1
     if ($other) {
-        return @{ Kind = "other"; Item = $other }
+        return @{ Kind = "other"; Item = $other; ForHead = $false }
+    }
+
+    return $null
+}
+
+function Get-CodexReviewStatus {
+    # The summary comment carries the state of Codex's latest review, such as "running".
+    foreach ($comment in Get-GitHubList "repos/$Repository/issues/$PullRequest/comments") {
+        if ($comment.user.login -eq $codexLogin -and $comment.body -match "codex-review-state:v1 (\{.*?\}) -->") {
+            $state = ($Matches[1] | ConvertFrom-Json).code_review
+            if ($state.commit_sha -eq $head) {
+                return $state.status
+            }
+        }
     }
 
     return $null
@@ -174,6 +188,7 @@ else {
 
 "Waiting up to $TimeoutMinutes minutes for Codex to answer for $shortHead on $target."
 $deadline = (Get-Date).AddMinutes($TimeoutMinutes)
+$replySeenAt = $null
 while ($true) {
     $answer = Get-CodexAnswer -Since $since
     # An answer for a superseded head does not review the pull request.
@@ -183,7 +198,21 @@ while ($true) {
         exit 2
     }
 
-    if ($answer -or (Get-Date) -ge $deadline) {
+    if ($answer -and $answer.ForHead) {
+        break
+    }
+
+    if ($answer) {
+        # Codex can post an error seconds before the review itself, so give the review time to land.
+        if (-not $replySeenAt) {
+            $replySeenAt = Get-Date
+        }
+        elseif ((Get-Date) -ge $replySeenAt.AddSeconds(90)) {
+            break
+        }
+    }
+
+    if ((Get-Date) -ge $deadline) {
         break
     }
 
@@ -192,6 +221,13 @@ while ($true) {
 
 if (-not $answer) {
     "Codex did not answer for $shortHead on $target within $TimeoutMinutes minutes."
+    if ((Get-CodexReviewStatus) -eq "running") {
+        "Codex is still reviewing $shortHead; rerun with -WaitOnly."
+    }
+    else {
+        "Codex shows no running review of $shortHead."
+    }
+
     exit 3
 }
 

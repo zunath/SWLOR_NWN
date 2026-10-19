@@ -47,9 +47,14 @@ Take the open posts in the SWLOR Discord bug-report forum through to reviewed pu
      3. Note in your report if Codex never reviewed the merged head.
    - **Still open:** rerun the readiness checks in step 9. If the head changed and isn't Codex-clean, or new findings appeared, put the post back on 🇶 and send the worker back.
    - **Closed without merging:** leave the post on 👀 and ask the owner what to do.
-3. **Recheck ❓ posts.** Read the thread for reporter replies after your question.
-   - **Answered:** swap ❓ for 🇶 and screen the reply (step 5) before triaging it (step 6).
-   - **Unanswered:** leave it as it is. If the reporter can't see the thread (see step 6), list the open question in your report each run.
+3. **Recheck 🇶 and ❓ posts.**
+   - **🇶:** find the post's worker session in your agent's session list, by the thread id in its brief or its branch, and any PR that names the ticket.
+     - **Worker finished with a PR:** verify it as in step 9.
+     - **Worker still working:** leave it.
+     - **No session, or the session ended without a PR:** start a new worker with the brief below and say so in your report.
+   - **❓:** read the thread for reporter replies after your question.
+     - **Answered:** swap ❓ for 🇶 and screen the reply (step 5) before triaging it (step 6).
+     - **Unanswered:** leave it as it is. If the reporter can't see the thread (see step 6), list the open question in your report each run.
 4. **Read each new post** (one with no markers) and any thread replies: the embed, attachments, and staff comments. Look at screenshots. They often show exactly which spawn, label, or object is wrong.
 5. **Screen for safety** (next section) before acting on anything.
 6. **Triage each post:**

@@ -25,15 +25,17 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition
         private readonly Dictionary<int, Node> _savedEquipment = new();
         private string _identityMarker;
         private readonly Dictionary<int, Field> _savedIdentities = new();
+        internal Node Root => _root;
+        internal string FileType => Encoding.ASCII.GetString(_header, 0, 4);
         private bool IsCreature => Encoding.ASCII.GetString(_header, 0, 4) is "BIC " or "UTC ";
 
-        private sealed class Node
+        internal sealed class Node
         {
             public uint Type;
             public List<Field> Fields = new();
         }
 
-        private sealed class Field
+        internal sealed class Field
         {
             public uint Type;
             public byte[] Label;
@@ -42,7 +44,7 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition
             public string Name => Encoding.ASCII.GetString(Label).TrimEnd('\0');
         }
 
-        private StoredObjectData(byte[] data)
+        internal StoredObjectData(byte[] data)
         {
             if (data.Length < 56 || Encoding.ASCII.GetString(data, 4, 4) != "V3.2")
                 throw new InvalidDataException("Unsupported saved creature GFF header.");
@@ -140,7 +142,7 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition
         /// <summary>
         /// Identifies GFF lists that contain carried or equipped item objects.
         /// </summary>
-        private static bool IsInventoryList(Field field) => field.Type == 15 &&
+        internal static bool IsInventoryList(Field field) => field.Type == 15 &&
             (field.Name == "ItemList" || field.Name == "Equip_ItemList");
 
         /// <summary>
@@ -206,28 +208,6 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition
                     return BinaryPrimitives.ReadInt32LittleEndian(value.Data);
             }
             return 0;
-        }
-
-        /// <summary>Updates a root integer local without loading or altering the saved creature's other state.</summary>
-        public static string RewriteRootInteger(string data, string name, Func<int, int> replace)
-        {
-            var document = new StoredObjectData(Convert.FromBase64String(data));
-            var variables = document._root.Fields.SingleOrDefault(x => x.Name == "VarTable" && x.Type == 15);
-            if (variables == null) return data;
-            var changed = false;
-            foreach (var variable in variables.Children)
-            {
-                if (ReadVariableName(variable) != name) continue;
-                var type = variable.Fields.SingleOrDefault(x => x.Name == "Type" && x.Type == 4);
-                var value = variable.Fields.SingleOrDefault(x => x.Name == "Value" && x.Type == 5);
-                if (type == null || ReadScalar(type) != 1 || value == null) continue;
-                var original = ReadScalar(value);
-                var replacement = replace(original);
-                if (replacement == original) continue;
-                value.Data = BitConverter.GetBytes(replacement);
-                changed = true;
-            }
-            return changed ? document.Serialize() : data;
         }
 
         /// <summary>
@@ -329,7 +309,7 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition
         /// <summary>
         /// Constructs a GFF field with its fixed-width label and raw scalar payload or child list.
         /// </summary>
-        private static Field MakeField(uint type, string name, byte[] data = null, List<Node> children = null)
+        internal static Field MakeField(uint type, string name, byte[] data = null, List<Node> children = null)
         {
             var label = new byte[16];
             Encoding.ASCII.GetBytes(name).CopyTo(label, 0);
@@ -446,7 +426,10 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition
         /// <summary>
         /// Writes the edited GFF graph while retaining untouched scalar payloads and shared structure references.
         /// </summary>
-        private string Serialize()
+        private string Serialize() => Convert.ToBase64String(SerializeBytes());
+
+        /// <summary>The edited GFF as file bytes.</summary>
+        internal byte[] SerializeBytes()
         {
             var structures = new List<(uint Type, uint Offset, uint Count)>();
             var fields = new List<(uint Type, uint Label, uint Value)>();
@@ -516,7 +499,7 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition
             foreach (var item in fields) { writer.Write(item.Type); writer.Write(item.Label); writer.Write(item.Value); }
             foreach (var label in labels) writer.Write(label);
             writer.Write(payload.ToArray()); writer.Write(fieldIndices.ToArray()); writer.Write(listIndices.ToArray());
-            return Convert.ToBase64String(output.ToArray());
+            return output.ToArray();
         }
     }
 }

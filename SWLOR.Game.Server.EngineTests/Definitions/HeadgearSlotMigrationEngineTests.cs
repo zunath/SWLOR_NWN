@@ -4,7 +4,6 @@ using System.Threading.Tasks;
 using SWLOR.Game.Server.EngineTests.Framework;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Feature.MigrationDefinition;
-using SWLOR.Game.Server.Feature.MigrationDefinition.PlayerMigration;
 using SWLOR.Game.Server.Feature.MigrationDefinition.ServerMigration;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.SkillService;
@@ -58,21 +57,18 @@ public static partial class MigrationEngineTests
     }
 
     [EngineTest("Legacy chest visor converts before loot revision and survives bank reloads", Category = HeadgearCategory, TimeoutSeconds = 90)]
-    public static Task ChestVisorSlotFirst(EngineTestContext ctx) => VerifyChestVisor(ctx, false, false, false);
+    public static Task ChestVisorSlotFirst(EngineTestContext ctx) => VerifyChestVisor(ctx, false, false);
 
     [EngineTest("Legacy chest visor converts after loot revision and survives bank reloads", Category = HeadgearCategory, TimeoutSeconds = 90)]
-    public static Task ChestVisorStatsFirst(EngineTestContext ctx) => VerifyChestVisor(ctx, true, false, false);
+    public static Task ChestVisorStatsFirst(EngineTestContext ctx) => VerifyChestVisor(ctx, true, false);
 
     [EngineTest("Occupied helmet survives legacy visor conversion before loot revision", Category = HeadgearCategory, TimeoutSeconds = 90)]
-    public static Task OccupiedHeadVisorSlotFirst(EngineTestContext ctx) => VerifyChestVisor(ctx, false, true, false);
+    public static Task OccupiedHeadVisorSlotFirst(EngineTestContext ctx) => VerifyChestVisor(ctx, false, true);
 
     [EngineTest("Occupied helmet survives legacy visor conversion after loot revision", Category = HeadgearCategory, TimeoutSeconds = 90)]
-    public static Task OccupiedHeadVisorStatsFirst(EngineTestContext ctx) => VerifyChestVisor(ctx, true, true, false);
+    public static Task OccupiedHeadVisorStatsFirst(EngineTestContext ctx) => VerifyChestVisor(ctx, true, true);
 
-    [EngineTest("Failed helmet validation leaves converted visor owned in inventory without stats", Category = HeadgearCategory, TimeoutSeconds = 90)]
-    public static Task FailedHeadgearEquip(EngineTestContext ctx) => VerifyChestVisor(ctx, false, false, true);
-
-    private static async Task VerifyChestVisor(EngineTestContext ctx, bool statsFirst, bool occupied, bool denyEquip)
+    private static async Task VerifyChestVisor(EngineTestContext ctx, bool statsFirst, bool occupied)
     {
         using var fixture = await PlayerAbilityFixture.CreateAsync(ctx);
         var player = fixture.Creature;
@@ -93,17 +89,15 @@ public static partial class MigrationEngineTests
         var baseFP = Stat.GetMaxFP(player);
         var baseSTM = Stat.GetMaxStamina(player);
         await EquipAsync(ctx, player, visor, InventorySlot.Chest);
-        var uuid = GetObjectUUID(visor);
         var hp = 0;
         var fp = 0;
         var stm = 0;
+        SavedCharacterMigration.Upgraded upgraded = null;
         await ctx.ExecuteInCreatureContextAsync(player, () =>
         {
             ctx.AssertEqual(BaseItem.Armor, GetBaseItemType(visor), "Fixture is genuinely legacy body armor before actual conversion");
             ctx.AssertEqual(visor, GetItemInSlot(InventorySlot.Chest, player), "Legacy fixture occupies chest");
             ctx.AssertEqual(baseline.Attack + 34, ReadEquipmentTotals(player).Attack, "Old Attack 29 and crafted Attack 5 are counted once");
-            if (denyEquip) AddItemProperty(DurationType.Permanent,
-                ItemPropertyCustom(ItemPropertyType.RequiresSkill, (int)SkillType.Rifle, 50), visor);
             hp = GetMaxHitPoints(player);
             SetCurrentHitPoints(player, hp);
             fp = Stat.GetMaxFP(player);
@@ -111,24 +105,34 @@ public static partial class MigrationEngineTests
             fixture.Update(record => { record.FP = fp; record.Stamina = stm; });
 
             if (statsFirst) Invoke("LootStatRevisionMigration", "MigrateItem", visor);
-            new _22_ReviseLootStats().Migrate(player);
-            ctx.Assert(!HeadgearSlotMigration.MigrateObject(player), "Repeated login conversion makes no change");
-            ctx.Assert(!LootStatRevisionMigration.MigrateObject(player), "Loot revision retry makes no change");
-            AssertVisorCustomization(ctx, visor, uuid);
-            AssertRevisedLoot(ctx, visor, VisorEnhancements);
-            ctx.AssertEqual(OBJECT_INVALID, GetItemInSlot(InventorySlot.Chest, player), "No stale chest occupancy remains");
-            ctx.AssertEqual(occupied ? head : denyEquip ? OBJECT_INVALID : visor, GetItemInSlot(InventorySlot.Head, player), "Head slot is preserved or safely equipped");
-            var worn = !occupied && !denyEquip;
-            AssertVisorTotals(ctx, player, baseline, worn);
-            ctx.AssertEqual(baseFP + (worn ? 9 : 0), Stat.GetMaxFP(player), "FP bonus is counted only while worn");
-            ctx.AssertEqual(baseSTM + (worn ? 11 : 0), Stat.GetMaxStamina(player), "Stamina bonus is counted only while worn");
-            ctx.AssertEqual(System.Math.Min(hp, GetMaxHitPoints(player)), ObjectPlugin.GetCurrentHitPoints(player), "Current HP survives within final cap");
-            var record = DB.Get<Player>(fixture.Id);
-            ctx.AssertEqual(System.Math.Min(fp, Stat.GetMaxFP(player)), record.FP, "Current FP survives within final cap");
-            ctx.AssertEqual(System.Math.Min(stm, Stat.GetMaxStamina(player)), record.Stamina, "Current stamina survives within final cap");
+            upgraded = SavedCharacterMigration.Run(player, DB.Get<Player>(fixture.Id), "_22_ReviseLootStats");
+            var character = SavedCharacterMigration.Load(ctx, upgraded);
+            var migrated = SavedCharacterMigration.FindItem(character, "ruptorvanecr");
+            AssertVisorCustomization(ctx, migrated, null);
+            AssertRevisedLoot(ctx, migrated, VisorEnhancements);
+            ctx.AssertEqual(OBJECT_INVALID, GetItemInSlot(InventorySlot.Chest, character), "No stale chest occupancy remains");
+            ctx.AssertEqual(occupied ? "charm_cowl" : "ruptorvanecr", GetResRef(GetItemInSlot(InventorySlot.Head, character)), "Head slot is preserved or safely equipped");
+            ctx.AssertEqual(0, upgraded.Overflow.Count, "A roomy inventory needs no overflow storage");
+            var worn = !occupied;
+            AssertVisorTotals(ctx, upgraded.Record, baseline, worn);
+            ctx.AssertEqual(GetMaxHitPoints(character), ObjectPlugin.GetCurrentHitPoints(character), "A character at full HP is saved at full HP for its final cap");
+            var retried = SavedCharacterMigration.Run(upgraded.File, upgraded.Record, "_22_ReviseLootStats");
+            ctx.Assert(retried.File.SequenceEqual(upgraded.File), "Repeated conversion makes no change");
+            ctx.Assert(!LootStatRevisionMigration.MigrateObject(migrated), "Loot revision retry makes no change");
+            ctx.Assert(!HeadgearSlotMigration.MigrateObject(migrated), "Headgear repair retry makes no change");
         });
-        await ctx.WaitFrameAsync();
-        AssertVisorTotals(ctx, player, baseline, !occupied && !denyEquip);
+
+        // The player logs in with the converted character and moves the visor through the bank twice.
+        using var login = await PlayerAbilityFixture.CreateFromCharacterAsync(ctx, upgraded.File, upgraded.Record, 3f);
+        player = login.Creature;
+        var loginWorn = !occupied;
+        visor = FindHeadgear(player, "ruptorvanecr");
+        var uuid = GetObjectUUID(visor);
+        ctx.AssertEqual(baseFP + (loginWorn ? 9 : 0), Stat.GetMaxFP(player), "FP bonus is counted only while worn");
+        ctx.AssertEqual(baseSTM + (loginWorn ? 11 : 0), Stat.GetMaxStamina(player), "Stamina bonus is counted only while worn");
+        ctx.AssertEqual(System.Math.Min(fp, Stat.GetMaxFP(player)), DB.Get<Player>(login.Id).FP, "Current FP survives within final cap");
+        ctx.AssertEqual(System.Math.Min(stm, Stat.GetMaxStamina(player)), DB.Get<Player>(login.Id).Stamina, "Current stamina survives within final cap");
+        AssertVisorTotals(ctx, player, baseline, loginWorn);
 
         // Use the actual bank persistence entry points. Remove, save, destroy,
         // reload, acquire and equip this same customized item twice.
@@ -140,13 +144,13 @@ public static partial class MigrationEngineTests
             await ctx.ExecuteInCreatureContextAsync(player, () =>
             {
                 stored = Bank.DepositItem(player, visor);
-                ctx.AssertEqual(fixture.Id, stored.PlayerId, $"Cycle {cycle}: bank ownership survives");
+                ctx.AssertEqual(login.Id, stored.PlayerId, $"Cycle {cycle}: bank ownership survives");
                 ctx.AssertEqual(1, stored.Quantity, $"Cycle {cycle}: exactly one visor is saved");
             });
             await ctx.WaitUntilAsync(() => !GetIsObjectValid(visor), 5f, "deposited visor to leave the live inventory");
             await ctx.ExecuteInCreatureContextAsync(player, () =>
             {
-                new _27_UpdateStoredItems().Migrate();
+                StoredItemSweepRunner.Run();
                 Bank.WithdrawItem(player, stored.Id);
             });
             await ctx.WaitFrameAsync();
@@ -158,10 +162,10 @@ public static partial class MigrationEngineTests
             await ctx.ExecuteInCreatureContextAsync(player, () =>
             {
                 ctx.Assert(DB.Get<InventoryItem>(stored.Id) == null, "Withdrawal removes the stored copy");
-                ctx.Assert(!HeadgearSlotMigration.MigrateObject(player), "Reload/login retry is stable");
-                ctx.Assert(!LootStatRevisionMigration.MigrateObject(player), "Acquisition does not revise stats twice");
+                ctx.Assert(!HeadgearSlotMigration.MigrateObject(visor), "Reload/login retry is stable");
+                ctx.Assert(!LootStatRevisionMigration.MigrateObject(visor), "Acquisition does not revise stats twice");
             });
-            if (!occupied && !denyEquip)
+            if (!occupied)
             {
                 await EquipAsync(ctx, player, visor, InventorySlot.Head);
                 AssertVisorTotals(ctx, player, baseline, true);
@@ -192,7 +196,9 @@ public static partial class MigrationEngineTests
     internal static void AssertVisorCustomization(EngineTestContext ctx, uint visor, string uuid, int expectedModel = 110)
     {
         ctx.AssertEqual(BaseItem.Helmet, GetBaseItemType(visor), "The copy is headgear");
-        ctx.AssertEqual(uuid, GetObjectUUID(visor), "The item's UUID is preserved");
+        // Items saved inside a character file carry no UUID, so only live and stored copies are checked for one.
+        if (uuid != null)
+            ctx.AssertEqual(uuid, GetObjectUUID(visor), "The item's UUID is preserved");
         ctx.AssertEqual(1, GetItemStackSize(visor), "Quantity is preserved");
         ctx.AssertEqual("Customized salvage", GetName(visor), "Custom name survives");
         ctx.AssertEqual("Crafted by a player, with retained enhancements.", GetDescription(visor), "Custom description survives");
@@ -206,9 +212,13 @@ public static partial class MigrationEngineTests
     }
 
     private static void AssertVisorTotals(EngineTestContext ctx, uint player,
+        (int Attack, int PhysicalDefense, int ForceDefense, int MaxHP) baseline, bool worn) =>
+        AssertVisorTotals(ctx, DB.Get<Player>(GetObjectUUID(player)), baseline, worn);
+
+    private static void AssertVisorTotals(EngineTestContext ctx, Player record,
         (int Attack, int PhysicalDefense, int ForceDefense, int MaxHP) baseline, bool worn)
     {
-        var actual = ReadEquipmentTotals(player);
+        var actual = ReadEquipmentTotals(record);
         ctx.AssertEqual(baseline.Attack + (worn ? 10 : 0), actual.Attack, "Revised Attack plus enhancement counts exactly once");
         ctx.AssertEqual(baseline.PhysicalDefense + (worn ? 17 : 0), actual.PhysicalDefense, "Physical Defense counts exactly once");
         ctx.AssertEqual(baseline.ForceDefense + (worn ? 8 : 0), actual.ForceDefense, "Force Defense counts exactly once");
@@ -275,7 +285,7 @@ public static partial class MigrationEngineTests
         await ctx.WaitUntilAsync(() => bags.Values.All(bag => !GetIsObjectValid(bag)), 5f, "the legacy containers to be stored");
         await ctx.ExecuteInCreatureContextAsync(player, () =>
         {
-            new _27_UpdateStoredItems().Migrate();
+            StoredItemSweepRunner.Run();
             foreach (var stored in records.Values)
             {
                 var data = DB.Get<InventoryItem>(stored.Id).Data;

@@ -4,7 +4,6 @@ using System.Threading.Tasks;
 using SWLOR.Game.Server.EngineTests.Framework;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Feature.MigrationDefinition;
-using SWLOR.Game.Server.Feature.MigrationDefinition.PlayerMigration;
 using SWLOR.Game.Server.Feature.MigrationDefinition.ServerMigration;
 using SWLOR.Game.Server.Service;
 using SWLOR.NWN.API.NWNX;
@@ -110,20 +109,36 @@ public static partial class MigrationEngineTests
             SetLocalString(item, "CRAFTED_BY", "equipment-type-fixture");
         });
         await EquipAsync(ctx, owner, item, previousSlot);
-        var uuid = GetObjectUUID(item);
         var properties = DescribeStoredEquipmentProperties(item);
         var wornAttack = ReadEquipmentTotals(owner).Attack;
+        SavedCharacterMigration.Upgraded upgraded = null;
         await ctx.ExecuteInCreatureContextAsync(owner, () =>
         {
             ctx.AssertEqual(correction.LegacyType, GetBaseItemType(item), "The equipped fixture starts with its legacy type");
-            new _23_CorrectEquipmentTypes().Migrate(owner);
-            ctx.AssertEqual(correction.Type, GetBaseItemType(item), "Login conversion corrects the type");
-            ctx.AssertEqual(occupied ? existing : item, GetItemInSlot(correction.Slot, owner), "An existing destination item is never replaced");
-            ctx.AssertEqual(owner, GetItemPossessor(item), "Conversion retains ownership");
-            ctx.AssertEqual(occupied ? baseline : wornAttack, ReadEquipmentTotals(owner).Attack, "Equipment stats are counted exactly once");
-            ctx.AssertEqual(properties, DescribeStoredEquipmentProperties(item), "Conversion preserves authored and crafted properties");
-            ctx.Assert(!LootStatRevisionMigration.MigrateObject(owner), "Login retry makes no further changes");
+            upgraded = SavedCharacterMigration.Run(owner, DB.Get<Player>(fixture.Id), "_23_CorrectEquipmentTypes");
+            var character = SavedCharacterMigration.Load(ctx, upgraded);
+            var migrated = SavedCharacterMigration.FindItem(character, resref);
+            ctx.AssertEqual(correction.Type, GetBaseItemType(migrated), "The upgrade corrects the type");
+            if (occupied)
+                ctx.AssertEqual(GetResRef(existing), GetResRef(GetItemInSlot(correction.Slot, character)), "An existing destination item is never replaced");
+            else
+                ctx.AssertEqual(migrated, GetItemInSlot(correction.Slot, character), "The corrected item moves to its destination slot");
+            ctx.AssertEqual(character, GetItemPossessor(migrated), "Conversion retains ownership");
+            ctx.AssertEqual(occupied ? baseline : wornAttack, upgraded.Record.Attack, "Equipment stats are counted exactly once");
+            ctx.AssertEqual(properties, DescribeStoredEquipmentProperties(migrated), "Conversion preserves authored and crafted properties");
+            var retried = SavedCharacterMigration.Run(upgraded.File, upgraded.Record, "_23_CorrectEquipmentTypes");
+            ctx.Assert(retried.File.SequenceEqual(upgraded.File), "A retry makes no further changes");
+            ctx.AssertEqual(upgraded.Record.Attack, retried.Record.Attack, "A retry counts no stat twice");
+            ctx.AssertEqual(0, retried.Overflow.Count, "A retry stores no item");
         });
+
+        // The player logs in with the corrected character and uses the item through two bank cycles.
+        using var login = await PlayerAbilityFixture.CreateFromCharacterAsync(ctx, upgraded.File, upgraded.Record, 3f);
+        owner = login.Creature;
+        item = SavedCharacterMigration.FindItem(owner, resref);
+        var uuid = GetObjectUUID(item);
+        ctx.Assert(GetIsObjectValid(item), "The upgraded character logs in with the corrected item");
+        ctx.AssertEqual(occupied ? baseline : wornAttack, ReadEquipmentTotals(owner).Attack, "Login counts the equipment contribution once");
         for (var cycle = 0; cycle < 2; cycle++)
         {
             if (GetItemInSlot(correction.Slot, owner) == item) await UnequipAsync(ctx, owner, item);
@@ -132,13 +147,13 @@ public static partial class MigrationEngineTests
             await ctx.ExecuteInCreatureContextAsync(owner, () =>
             {
                 stored = Bank.DepositItem(owner, item);
-                ctx.AssertEqual(fixture.Id, stored.PlayerId, "Bank save retains ownership");
+                ctx.AssertEqual(login.Id, stored.PlayerId, "Bank save retains ownership");
                 ctx.AssertEqual(1, stored.Quantity, "Bank save retains one item");
             });
             await ctx.WaitUntilAsync(() => !GetIsObjectValid(item), 5f, "the deposited item to leave the inventory");
             await ctx.ExecuteInCreatureContextAsync(owner, () =>
             {
-                new _28_CorrectStoredEquipmentTypes().Migrate();
+                StoredItemSweepRunner.Run();
                 Bank.WithdrawItem(owner, stored.Id);
             });
             await ctx.WaitFrameAsync();

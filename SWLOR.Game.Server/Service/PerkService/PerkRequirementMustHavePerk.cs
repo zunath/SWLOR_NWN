@@ -30,6 +30,19 @@ namespace SWLOR.Game.Server.Service.PerkService
             return string.Empty;
         }
 
+        /// <summary>A player's perk level is the level recorded for the perk.</summary>
+        public string CheckRequirements(Player dbPlayer, Beast activeBeast)
+        {
+            if (_mustHavePerkType == PerkType.Invalid)
+                return string.Empty;
+
+            var perkDetail = Perk.GetPerkDetails(_mustHavePerkType);
+            if (!dbPlayer.Perks.TryGetValue(_mustHavePerkType, out var level) || level < _mustHavePerkLevel)
+               return $"You must have perk {perkDetail.Name} at level {_mustHavePerkLevel}.";
+
+            return string.Empty;
+        }
+
         public string RequirementText
         {
             get

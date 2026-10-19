@@ -1412,15 +1412,6 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>
-        /// Marks an item as a legacy item.
-        /// </summary>
-        /// <param name="item">The item to mark as legacy.</param>
-        public static void MarkLegacyItem(uint item)
-        {
-            SetTag(item, "LEGACY_ITEM");
-        }
-
-        /// <summary>
         /// Retrieves the item slot of a specific item.
         /// If the item isn't equipped, InventorySlot.Invalid will be returned.
         /// </summary>

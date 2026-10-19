@@ -13,14 +13,15 @@ namespace SWLOR.Game.Server.Service.PerkService
 
         public PerkRequirementCategory Category => PerkRequirementCategory.CannotHavePerk;
 
-        public string CheckRequirements(uint player)
+        public string CheckRequirements(uint player) =>
+            _cannotHavePerkType == PerkType.Invalid ? string.Empty : CheckRequirements(DB.Get<Player>(GetObjectUUID(player)), null);
+
+        public string CheckRequirements(Player dbPlayer, Beast activeBeast)
         {
             if (_cannotHavePerkType == PerkType.Invalid)
                 return string.Empty;
 
             var perkDetail = Perk.GetPerkDetails(_cannotHavePerkType);
-            var playerId = GetObjectUUID(player);
-            var dbPlayer = DB.Get<Player>(playerId);
 
             if (dbPlayer.Perks.ContainsKey(_cannotHavePerkType) &&
                 dbPlayer.Perks[_cannotHavePerkType] > 0)

@@ -898,6 +898,32 @@ and edits to the generator, skin remapping, or model parser code. Generated alia
 excluded from tint source discovery: they share the source neck's materials.
 Rebuild `sw_pt_neck.hak` and `sw_2da.hak` and deploy the matching server assembly.
 
+### Other part skins on robe skeletons
+
+Chest, pelvis, belt, hand, shin and shoulder meshes can be external skins too,
+with the same traversal problem (female human pelvis 10 under robes 20, 21 and
+236 bound its thighs to `rp_` spacers; the male one bound to cloak bones).
+`SWLOR_Haks/tools/GeneratePartSkinModels.py` covers every modular armor slot
+except necks and male human shoulders, which keep their own generators. It
+resolves each robe body's part through the phenotype default chain, compares
+the source's bone table with that body, and emits one compiled alias
+(`<prefix>0_<part><id>`, IDs from 1000) per source and mapping. Robe bodies
+of one family share a layout, so `partlayout.2da` maps each robe body to a
+layout and `partrender.2da` lists that layout's aliases; the tables stay
+small and the aliases cost about 142 MB. ASCII parts are compiled by the
+engine and none are external skins.
+
+`PartSkinModelRenderer` projects only the equipped armor's parts in the item
+appearance packet; saved armor keeps authored IDs. Naked body parts are not
+projected: the appearance editor and droid records read those IDs directly.
+
+After changing robe bodies, base bodies or part meshes, run
+`python -B SWLOR_Haks/tools/GeneratePartSkinModels.py --apply`, then `--check`
+and `python -B -m unittest TestPartSkinModels` from `SWLOR_Haks/tools`. The
+HAK build runs `--check`, which re-plans from the current sources. Rebuild the
+`sw_pt_*` HAKs that gained aliases and `sw_2da.hak`, and deploy the matching
+server assembly.
+
 ### Exercise the reported NPCs
 
 The placed Bounty Hunter and Force Sensitive Civilian in `ooc_area` exercise

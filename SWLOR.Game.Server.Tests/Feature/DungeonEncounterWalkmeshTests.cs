@@ -205,7 +205,10 @@ public class DungeonEncounterWalkmeshTests
             for (var di = -radius; di <= radius && free[i, j]; di++)
             for (var dj = -radius; dj <= radius && free[i, j]; dj++)
             {
-                if (di * di + dj * dj > radius * radius) continue;
+                // Measure to the nearest edge of the neighbouring cell, not its centre.
+                var dx = MathF.Max(0, MathF.Abs(di) - .5f);
+                var dy = MathF.Max(0, MathF.Abs(dj) - .5f);
+                if (dx * dx + dy * dy > radius * radius) continue;
                 var (x, y) = (i + di, j + dj);
                 free[i, j] = x >= 0 && y >= 0 && x < size && y < size && floor[x, y] && !blocked[x, y];
             }

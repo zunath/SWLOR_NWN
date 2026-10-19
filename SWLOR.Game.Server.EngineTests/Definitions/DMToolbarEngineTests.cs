@@ -611,9 +611,23 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 ctx.AssertEqual("Bring Checked Here (2)", model.BringCheckedText, "checks persist across searches");
                 Capture(dm.Creature, GuiWindowType.DMPlayerSearch, "players-checked");
 
-                AssignCommand(dm.Creature, () => JumpToLocation(ctx.GetArenaLocation(-8f, 0f)));
+                AssignCommand(target.Creature, () =>
+                {
+                    ClearAllActions();
+                    JumpToLocation(ctx.GetArenaLocation(-8f, 0f));
+                });
+                AssignCommand(second.Creature, () =>
+                {
+                    ClearAllActions();
+                    JumpToLocation(ctx.GetArenaLocation(-6f, 0f));
+                });
+                AssignCommand(dm.Creature, () =>
+                {
+                    ClearAllActions();
+                    JumpToLocation(ctx.GetArenaLocation(6f, 0f));
+                });
                 await ctx.WaitUntilAsync(() => GetDistanceBetween(dm.Creature, target.Creature) > 10f &&
-                                               GetDistanceBetween(dm.Creature, second.Creature) > 10f, 5f, "the DM to move away from both");
+                                               GetDistanceBetween(dm.Creature, second.Creature) > 10f, 10f, "the DM to move away from both");
                 await InContext(ctx, dm.Creature, model.OnClickBringChecked());
                 await ctx.WaitUntilAsync(() => GetDistanceBetween(dm.Creature, target.Creature) < 3f &&
                                                GetDistanceBetween(dm.Creature, second.Creature) < 3f, 5f, "both checked players to be brought to the DM");
@@ -625,7 +639,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 await InContext(ctx, dm.Creature, model.OnClickSearch());
                 await InContext(ctx, dm.Creature, model.OnClickCheckAllOnline());
                 ctx.Assert(model.ResultChecks.Count >= 2 && model.ResultChecks.All(isChecked => isChecked),
-                    "Check All Online checks every online result");
+                    $"Check All Online checks every online result (checks {string.Join(",", model.ResultChecks)}, statuses {string.Join(",", model.ResultStatuses)}, {model.CheckedSummary})");
                 await InContext(ctx, dm.Creature, model.OnClickClearChecks());
 
                 await InContext(ctx, dm.Creature, () => model.SearchText = "lanky");

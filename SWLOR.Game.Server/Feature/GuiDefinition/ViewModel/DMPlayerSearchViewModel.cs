@@ -34,6 +34,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         private bool _suppressSearch;
         // Checked characters by player ID, kept across searches and pages. The names are for messages.
         private readonly Dictionary<string, string> _checkedPlayers = new();
+        // Setting the checkbox list fires its watch event at once, before the page is fully written.
+        private bool _isWritingChecks;
 
         public int SelectedScope
         {
@@ -257,7 +259,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             ResultStatuses = statuses;
             ResultStatusColors = statusColors;
             ResultSelections = selections;
+            _isWritingChecks = true;
             ResultChecks = checks;
+            _isWritingChecks = false;
             ResultCheckEnabled = checkEnabled;
 
             var onlineCount = _results.Count(result => result.IsOnline);
@@ -313,7 +317,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var count = _checkedPlayers.Count;
             HasChecked = count > 0;
             CheckedSummary = count == 0
-                ? "Check online characters to bring them together."
+                ? "No characters checked."
                 : $"{count} character{(count == 1 ? string.Empty : "s")} checked.";
             BringCheckedText = count == 0 ? "Bring Checked Here" : $"Bring Checked Here ({count})";
         }
@@ -321,7 +325,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         // Reflects the page's checkboxes on the client into the checked set.
         private void ReadPageChecks()
         {
-            if (ResultChecks.Count != _pageResults.Count)
+            if (_isWritingChecks || ResultChecks.Count != _pageResults.Count)
                 return;
 
             for (var index = 0; index < _pageResults.Count; index++)
@@ -338,12 +342,15 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         private void ShowPageChecks()
         {
-            for (var index = 0; index < _pageResults.Count && index < ResultChecks.Count; index++)
+            var checks = new GuiBindingList<bool>();
+            foreach (var result in _pageResults)
             {
-                var result = _pageResults[index];
-                ResultChecks[index] = result.IsOnline && _checkedPlayers.ContainsKey(result.PlayerId);
+                checks.Add(result.IsOnline && _checkedPlayers.ContainsKey(result.PlayerId));
             }
 
+            _isWritingChecks = true;
+            ResultChecks = checks;
+            _isWritingChecks = false;
             UpdateCheckedState();
         }
 

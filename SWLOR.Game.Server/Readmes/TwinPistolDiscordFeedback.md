@@ -129,6 +129,7 @@ Crossfire Stance   | Any weapon: +10% Haste, +10% movement,
 
 Follow Through    | Any Flow spender landing a hit restores
 25; 4 SP           | 1 STM per captured Flow spent, max 3.
+                   | Net ability cost cannot fall below 1 STM.
                    | Once per cast; 12s trigger cooldown.
 
 Second Wind       | Direct hostile accuracy-vs-evasion miss:
@@ -139,8 +140,8 @@ Final Salvo       | Stationary, one foe, each weapon D+20;
 50 + mastery; 6 SP | +6 per Flow spent, max D+38.
                    | STM/CD: 15 / 90s.
 ```
-Paid hostile weapon abilities from any skill capture and spend Flow once, even on a miss. Later-earned charges are preserved. Free abilities preserve Flow. Final Salvo uses +6 DMG per charge instead of +4. Extra targets, hits and channel waves do not multiply the bonus or refund. Swaps preserve charges/expiry; combat end clears them. Refunds cannot exceed paid STM.
+Paid hostile weapon abilities from any skill capture and spend Flow once, even on a miss. Later-earned charges are preserved. Free abilities preserve Flow. Final Salvo uses +6 DMG per charge instead of +4. Extra targets, hits and channel waves do not multiply the bonus or refund. Swaps preserve charges/expiry; combat end clears them.
 
 Shared cooldowns: Volley/Slide 18s; Focused/Grapple/Double Shot 24s; Controlled/Rush/Fan the Hammer 30s; both finishers share global Capstone 90s. Quick Draw stays independent. New multi-impact abilities cap generic weapon procs at one per target/cast and critical-trigger notifications at one per cast.
 
-**Balance:** earlier three-seed, equal-69-SP comparisons are historical and do not establish balance against the latest master. Current simulator results, scenarios and limitations are recorded in [the Twin Pistol PR](https://github.com/zunath/SWLOR_NWN/pull/2613). Saber/rifle stance costs passed native checks. PvP, external buffs and wider builds still need playtesting. Feedback wanted on the handling choice, stance costs and rotations.
+**Balance:** historical equal-SP comparisons predate these changes. Current simulator results and limitations are in [the Twin Pistol PR](https://github.com/zunath/SWLOR_NWN/pull/2613). Saber/rifle stance costs passed native checks. PvP, external buffs and wider builds still need playtesting. Feedback wanted on the handling choice, stance costs and rotations.

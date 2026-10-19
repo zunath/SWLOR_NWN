@@ -385,7 +385,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.TwinPistolFollowThroughTrait)
-                .Description("A Flow-spending ability landing any hit restores 1 STM per charge spent, up to 3 STM. At most once per activation and once every 12 seconds.")
+                .Description("A Flow-spending ability landing any hit restores 1 STM per charge spent, up to 3 STM. Cannot reduce the ability's net STM cost below 1. At most once per activation and once every 12 seconds.")
                 .IncreasesStat(StatType.PairedRangedMomentumStaminaRestorePerCharge, 1)
                 .IncreasesStat(StatType.PairedRangedMomentumStaminaRestoreMaximum, 3)
                 .IncreasesStat(StatType.PairedRangedMomentumRestoreCooldownSeconds, 12)

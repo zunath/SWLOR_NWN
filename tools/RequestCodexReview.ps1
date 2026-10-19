@@ -79,14 +79,15 @@ function ConvertTo-UtcTime {
 }
 
 function Get-CodexAnswer {
-    param([datetime]$Since)
+    # Comment ids only grow, so they order same-second replies that created_at cannot.
+    param([datetime]$Since, [long]$SinceId)
 
     $cleanVerdict = "Didn't find any major issues"
     $findingBadge = "!\[P\d Badge\]"
     $answers = @()
     $reviews = @(Get-GitHubList "repos/$Repository/pulls/$PullRequest/reviews" | Where-Object {
             $_.user.login -eq $codexLogin -and $_.commit_id -eq $head -and $_.submitted_at -and
-            (ConvertTo-UtcTime $_.submitted_at) -gt $Since
+            (ConvertTo-UtcTime $_.submitted_at) -ge $Since
         })
     foreach ($review in $reviews) {
         $kind = if ($review.body -match $cleanVerdict) { "clean" } else { "findings" }
@@ -94,7 +95,7 @@ function Get-CodexAnswer {
     }
 
     $comments = @(Get-GitHubList "repos/$Repository/issues/$PullRequest/comments" | Where-Object {
-            $_.user.login -eq $codexLogin -and (ConvertTo-UtcTime $_.created_at) -gt $Since -and
+            $_.user.login -eq $codexLogin -and $_.id -gt $SinceId -and
             $_.body -notmatch "codex-pull-request-review-summary"
         })
     foreach ($comment in $comments | Where-Object { $_.body -match "codex-review-receipt" -and $_.body -match $shortHead }) {
@@ -102,8 +103,9 @@ function Get-CodexAnswer {
         $answers += [pscustomobject]@{ Kind = $kind; Time = (ConvertTo-UtcTime $comment.created_at); Item = $comment }
     }
 
-    # A finding can also arrive as a plain comment that carries a priority badge.
-    foreach ($comment in $comments | Where-Object { $_.body -notmatch "codex-review-receipt" -and $_.body -match $findingBadge }) {
+    # A finding can also arrive as a plain comment that carries a priority badge. It counts for the
+    # head only when it names the head commit; a delayed comment from an older review does not.
+    foreach ($comment in $comments | Where-Object { $_.body -notmatch "codex-review-receipt" -and $_.body -match $findingBadge -and $_.body -match $shortHead }) {
         $answers += [pscustomobject]@{ Kind = "findings"; Time = (ConvertTo-UtcTime $comment.created_at); Item = $comment }
     }
 
@@ -192,6 +194,7 @@ if ($WaitOnly) {
     }
 
     $since = ConvertTo-UtcTime $request.created_at
+    $sinceId = [long]$request.id
 }
 else {
     $body = "@codex review (head $($head.Substring(0, 9)))"
@@ -201,6 +204,7 @@ else {
 
     $posted = Invoke-Gh @("api", "repos/$Repository/issues/$PullRequest/comments", "-f", "body=$body") | ConvertFrom-Json
     $since = ConvertTo-UtcTime $posted.created_at
+    $sinceId = [long]$posted.id
     "Requested a Codex review of $shortHead on $target."
 }
 
@@ -208,7 +212,7 @@ else {
 $deadline = (Get-Date).AddMinutes($TimeoutMinutes)
 $replySeenAt = $null
 while ($true) {
-    $answer = Get-CodexAnswer -Since $since
+    $answer = Get-CodexAnswer -Since $since -SinceId $sinceId
     # An answer for a superseded head does not review the pull request.
     $currentHead = Get-HeadSha
     if ($currentHead -ne $head) {

@@ -177,8 +177,8 @@ public static class AuthoredAnimation
     public static readonly global::SWLOR.Game.Server.Service.AnimationService.AnimationClip OverloadBarrage = new("sw_over_barr", 2.3499999f);
     public static readonly global::SWLOR.Game.Server.Service.AnimationService.AnimationClip PackHarrierTechnique = new("sw_pack_harr", 1.85000002f);
     public static readonly global::SWLOR.Game.Server.Service.AnimationService.AnimationClip PainSuppressant = new("sw_painsuppr", 2.5999999f);
-    public static readonly global::SWLOR.Game.Server.Service.AnimationService.AnimationClip PalmStrike = new("sw_palmstr", 0.850000024f);
     public static readonly global::SWLOR.Game.Server.Service.AnimationService.AnimationClip PairedVolley = new("sw_pairvol", 1.04999995f);
+    public static readonly global::SWLOR.Game.Server.Service.AnimationService.AnimationClip PalmStrike = new("sw_palmstr", 0.850000024f);
     public static readonly global::SWLOR.Game.Server.Service.AnimationService.AnimationClip PathogenStrike = new("sw_path_stri", 1.89999998f);
     public static readonly global::SWLOR.Game.Server.Service.AnimationService.AnimationClip PerceptiveStance = new("sw_perce_stn", 2.79999995f);
     public static readonly global::SWLOR.Game.Server.Service.AnimationService.AnimationClip PerfectFlurry = new("sw_perf_flry", 2.04999995f);

@@ -101,20 +101,32 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.ItemAppearance
             if (GetItemInSlot(InventorySlot.Chest, creature) != item)
                 return false;
 
-            var body = NeckAppearance.GetBodyModel(creature, true);
-            var parts = FindUnrenderableParts(body,
+            ArmorAppearanceCatalog.Definitions.TryGetValue(GetAppearanceType(creature), out var definition);
+            var repairs = PlanRepairs(definition, NeckAppearance.GetBodyModel(creature, true),
                 part => GetItemAppearance(item, ItemAppearanceType.ArmorModel, (int)part),
                 DefaultPhenotype, ModelResource.Exists);
-            ArmorAppearanceCatalog.Definitions.TryGetValue(GetAppearanceType(creature), out var definition);
             // Keep every other part and all saved dyes.
-            foreach (var part in parts)
-            {
-                var styles = definition == null ? Array.Empty<int>() : ArmorAppearanceCatalog.GetStyles(definition, part);
-                var style = GetRepairStyle(styles,
-                    candidate => IsRenderable(body, part, candidate, DefaultPhenotype, ModelResource.Exists));
+            foreach (var (part, style) in repairs)
                 EquippedItemAppearance.Set(item, ItemAppearanceType.ArmorModel, (int)part, style);
+            return repairs.Count > 0;
+        }
+
+        /// <summary>
+        /// Only playable appearances have a part catalog. Other creatures (base NWN race NPCs)
+        /// keep their saved parts untouched.
+        /// </summary>
+        public static IReadOnlyDictionary<AppearanceArmor, int> PlanRepairs(BaseArmorAppearanceDefinition definition,
+            string body, Func<AppearanceArmor, int> style, Func<int, int> fallback, Func<string, bool> exists)
+        {
+            var repairs = new Dictionary<AppearanceArmor, int>();
+            if (definition == null)
+                return repairs;
+            foreach (var part in FindUnrenderableParts(body, style, fallback, exists))
+            {
+                repairs[part] = GetRepairStyle(ArmorAppearanceCatalog.GetStyles(definition, part),
+                    candidate => IsRenderable(body, part, candidate, fallback, exists));
             }
-            return parts.Count > 0;
+            return repairs;
         }
 
         /// <summary>

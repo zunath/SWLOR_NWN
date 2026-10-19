@@ -93,4 +93,22 @@ public class ArmorPartAppearanceTests
         Assert.That(ArmorPartAppearance.GetRepairStyle(ArmorAppearanceCatalog.GetStyles(human, AppearanceArmor.LeftShin), _ => true), Is.EqualTo(1));
         Assert.That(ArmorPartAppearance.GetRepairStyle(new[] { 5, 7, 9 }, style => style == 7), Is.EqualTo(7));
     }
+
+    [Test]
+    public void OnlyPlayableAppearancesAreRepaired()
+    {
+        var models = new HashSet<string> { "pfh0_legl001", "pfh0_shinl001" };
+        int Saved(AppearanceArmor part) => part == AppearanceArmor.LeftThigh ? 30 : part == AppearanceArmor.LeftShin ? 23 : 0;
+
+        var human = ArmorPartAppearance.PlanRepairs(ArmorAppearanceCatalog.Definitions[AppearanceType.Human], "pfh0",
+            Saved, _ => 0, models.Contains);
+        var unsupported = ArmorPartAppearance.PlanRepairs(null, "pfe0", Saved, _ => 0, _ => false);
+
+        Assert.That(human, Is.EquivalentTo(new Dictionary<AppearanceArmor, int>
+        {
+            [AppearanceArmor.LeftThigh] = 0,
+            [AppearanceArmor.LeftShin] = 1,
+        }));
+        Assert.That(unsupported, Is.Empty);
+    }
 }

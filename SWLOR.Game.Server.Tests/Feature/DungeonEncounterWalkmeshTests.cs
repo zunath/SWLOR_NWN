@@ -244,6 +244,39 @@ public class DungeonEncounterWalkmeshTests
         }
     }
 
+    [Test]
+    public void SmugglersMoonStationAbandoned_EncounterSpawnsClearScenery()
+    {
+        var root = FindRoot();
+        using var git = JsonDocument.Parse(File.ReadAllText(Path.Combine(root, "Module", "git", "spacenarshaddung.git.json")));
+        var area = git.RootElement;
+        var spawns = area.GetProperty("WaypointList").GetProperty("value").EnumerateArray()
+            .Where(w => Text(w, "Tag").StartsWith("NAR_")).ToArray();
+        spawns.Should().HaveCount(26);
+        var floor = ReadWalkableFloor(root, "spacenarshaddung", "sw_t_alienruin");
+        var appearances = TwoDAReader.Read(Path.Combine(root, "SWLOR_Haks", "sw_2da", "placeables.2da"));
+        var meshes = Directory.EnumerateFiles(Path.Combine(root, "SWLOR_Haks"), "*.pwk", SearchOption.AllDirectories)
+            .ToDictionary(Path.GetFileNameWithoutExtension, StringComparer.OrdinalIgnoreCase);
+        var scenery = area.GetProperty("Placeable List").GetProperty("value").EnumerateArray()
+            .Select(p => (Model: appearances.GetValue((int)Number(p, "Appearance"), "ModelName"), Placeable: p))
+            .Where(p => meshes.ContainsKey(p.Model))
+            .SelectMany(p => ReadCollisionBounds(meshes[p.Model], Matrix4x4.CreateRotationZ(Number(p.Placeable, "Bearing"))
+                * Matrix4x4.CreateTranslation(Number(p.Placeable, "X"), Number(p.Placeable, "Y"), Number(p.Placeable, "Z"))))
+            .ToArray();
+
+        var blocked = new List<string>();
+        foreach (var spawn in spawns)
+        {
+            var position = new Vector3(Number(spawn, "XPosition"), Number(spawn, "YPosition"), Number(spawn, "ZPosition"));
+            // A pirate spawned 0.25 m from a cargo stack was pushed inside its hollow collision.
+            var body = Enumerable.Range(0, 16).Select(i => position + new Vector3(
+                .75f * MathF.Cos(i * MathF.PI / 8), .75f * MathF.Sin(i * MathF.PI / 8), 0)).Prepend(position);
+            if (body.Any(sample => !floor.Any(t => Covers(t, sample, .5f)) || scenery.Any(bounds => Inside(bounds, sample))))
+                blocked.Add($"{Text(spawn, "Tag")} at {position}");
+        }
+        blocked.Should().BeEmpty("every encounter spawn needs walkable floor clear of scenery for a creature body");
+    }
+
     // Qion Test Site, Forge Caverns and Canyon Range use base-game tiles whose walkmeshes are not in the repository.
     [TestCase("pw_sc_jedihalls", "sw_t_office")]
     [TestCase("pw_sc_cryptdeep", "sw_t_alienruin")]

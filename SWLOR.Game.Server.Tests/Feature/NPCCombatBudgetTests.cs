@@ -261,6 +261,62 @@ public class NPCCombatBudgetTests
     }
 
     [Test]
+    public void BossRatedEnemies_CarryTheBossMarkerForTheirMinimumHitChance()
+    {
+        var root = FindRoot();
+        var rows = ReadRows(root, "World NPCs")
+            .Where(r => r.TryGetValue("C", out var resref) && !string.IsNullOrWhiteSpace(resref))
+            .ToList();
+        var bosses = rows.Where(r => r.GetValueOrDefault("E") == "Boss").Select(r => r["C"]).ToHashSet();
+        bosses.Count.Should().BeGreaterThan(100);
+
+        foreach (var resref in rows.Select(r => r["C"]).Distinct())
+        {
+            if (!File.Exists(Path.Combine(root, "Module", "utc", $"{resref}.utc.json")))
+                continue;
+
+            using var utc = ReadAsset(root, "utc", resref);
+            var marked = Variables(utc.RootElement).Any(v =>
+                v.GetProperty("Name").GetProperty("value").GetString() == BossCreature.Variable && Int(v, "Value") == 1);
+            marked.Should().Be(bosses.Contains(resref),
+                $"{resref} is rated {(bosses.Contains(resref) ? "Boss" : "below Boss")} on World NPCs, which decides its minimum hit chance");
+        }
+
+        // A creature placed in an area keeps its own copy of the template's variables. Most areas place
+        // no boss, so only files with a boss resref or the marker as a string value are parsed.
+        var bossValues = bosses.Append(BossCreature.Variable).ToHashSet();
+        bool HasBossValue(string line)
+        {
+            var start = line.IndexOf(": \"", StringComparison.Ordinal);
+            if (start < 0)
+                return false;
+
+            start += 3;
+            var end = line.IndexOf('"', start);
+            return end > start && bossValues.Contains(line.Substring(start, end - start));
+        }
+
+        foreach (var area in Directory.EnumerateFiles(Path.Combine(root, "Module", "git"), "*.git.json"))
+        {
+            if (!File.ReadLines(area).Any(HasBossValue))
+                continue;
+
+            using var git = JsonDocument.Parse(File.ReadAllText(area));
+            if (!git.RootElement.TryGetProperty("Creature List", out var creatures))
+                continue;
+
+            foreach (var creature in creatures.GetProperty("value").EnumerateArray())
+            {
+                var resref = creature.GetProperty("TemplateResRef").GetProperty("value").GetString()!;
+                var marked = Variables(creature).Any(v =>
+                    v.GetProperty("Name").GetProperty("value").GetString() == BossCreature.Variable && Int(v, "Value") == 1);
+                marked.Should().Be(bosses.Contains(resref),
+                    $"{resref} placed in {Path.GetFileName(area)} must match its World NPCs Boss rating");
+            }
+        }
+    }
+
+    [Test]
     public void OrdinaryEnemiesAndPresets_MaintainAtLeast75PercentUnbuffedReferenceHitRate()
     {
         var root = FindRoot();

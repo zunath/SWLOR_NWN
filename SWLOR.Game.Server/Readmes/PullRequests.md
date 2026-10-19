@@ -38,7 +38,7 @@ Pull request work is done when the parent and every companion have zero unresolv
 
 ## Public text
 
-- The repository is public. Keep secrets and anti-abuse specifics (detection rules, allowances, limits, penalties, word lists, exploits found in logs) out of commits, pull request text, and player-facing docs. Use vague wording such as "Rework the RP XP OOC penalty" and give the specifics to the user in chat. GitHub keeps edit history, so get it right the first time.
+- The repository is public. Keep secrets, and the RP XP OOC detection specifics (detection rules, allowances, limits, penalties, word lists, findings from chat logs), out of commits, pull request text, and player-facing docs. For RP XP OOC changes, use vague wording such as "Rework the RP XP OOC penalty" and give the specifics to the user in chat. GitHub keeps edit history, so get it right the first time.
 - The description holds implementation notes and validation: test filters run, client evidence and its limitations, and artifact locations marked as local. Do not add README files for routine work.
 
 ## Handoff

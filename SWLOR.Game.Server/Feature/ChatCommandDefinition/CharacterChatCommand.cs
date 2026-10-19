@@ -50,6 +50,7 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
             ChangeDescription();
             OrderCompanion();
             ResetWindows();
+            Overflow();
 
             return _builder.Build();
         }
@@ -728,6 +729,24 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
 
                     var payload = new TargetDescriptionPayload(target);
                     Gui.TogglePlayerWindow(user, GuiWindowType.TargetDescription, payload);
+                });
+        }
+
+        private void Overflow()
+        {
+            _builder.Create("overflow")
+                .Description("Moves items that did not fit in your inventory during a character update back into your inventory.")
+                .Permissions(AuthorizationLevel.All)
+                .Validate((user, args) =>
+                {
+                    if (!GetIsPC(user) || GetIsDM(user) || GetIsDMPossessed(user))
+                        return "Only player characters can claim overflow items.";
+
+                    return string.Empty;
+                })
+                .Action((user, target, location, args) =>
+                {
+                    OverflowStorage.Claim(user);
                 });
         }
 

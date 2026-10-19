@@ -20029,7 +20029,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Caméra de surveillance"
+            "0": "Cam�ra de surveillance"
           }
         },
         "OnClick": {
@@ -43009,7 +43009,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Stuck — tat_anc_medical"
+            "0": "Stuck - tat_anc_medical"
           }
         },
         "MapNote": {

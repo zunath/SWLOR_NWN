@@ -200,7 +200,7 @@ Generated status-effect labels in `effecticons.2da` must use compact PascalCase 
 
 Item artwork uses the existing `GameplayIconManifest.csv`. Original sources and generation prompts live in `SWLOR_Haks/sw_item_source/`. Use meaningful 32x32 action resrefs and engine-required 64x64 `i<ItemClass>_<model>` inventory aliases. Inventory aliases must have transparent backgrounds and borders; only action icons use the shared semantic frame and regular green cooldown tools. Run `python tools/NormalizeInventoryIconTransparency.py --apply` after exporting framed ESS inventory aliases. Ranks of one function share artwork; different functions need distinct designs.
 
-Current appearances come from blueprints. Legacy conversion belongs only in new player migration 19 and server migration 27; historical mappings are icon test fixtures. Retain unused numeric ESS slots as original artwork aliases for saved custom appearances; `sw_item_source/general/native-library.csv` records their source mappings and hashes.
+Current appearances come from blueprints. Legacy conversion belongs only in player migration 19 (server migration 27 converted stored items in production and is retired); historical mappings are icon test fixtures. Retain unused numeric ESS slots as original artwork aliases for saved custom appearances; `sw_item_source/general/native-library.csv` records their source mappings and hashes.
 
 Icon tools and audits must fail when a gameplay icon violates these standards:
 

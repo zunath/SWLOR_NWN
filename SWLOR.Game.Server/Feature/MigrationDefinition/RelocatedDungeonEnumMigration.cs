@@ -86,17 +86,6 @@ public static class RelocatedDungeonEnumMigration
         ["CapstoneDantooineMedicalSublevelKey"] = KeyItemType.CapstoneMonCalaMedicalSublevelKey,
     };
 
-    public static bool MigratePlayer(JObject player)
-    {
-        var changed = RenameKeyItems(player[nameof(Player.KeyItems)] as JObject);
-        if (player[nameof(Player.Quests)] is JObject quests)
-        {
-            foreach (var quest in quests.Properties().Select(property => property.Value).OfType<JObject>())
-                changed |= RenameKillProgresses(quest[nameof(PlayerQuest.KillProgresses)] as JObject);
-        }
-        return changed;
-    }
-
     public static bool RenameKeyItems(JObject keyItems) =>
         RenameKeys(keyItems, KeyItemRenames, (existing, _) => existing);
 

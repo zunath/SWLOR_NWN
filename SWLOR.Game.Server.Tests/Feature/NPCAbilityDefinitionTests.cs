@@ -298,6 +298,7 @@ public class NPCAbilityDefinitionTests
             [FeatType.ConcussiveChallenge] = new("Concussive Challenge", RecastGroup.ConcussiveChallenge, 24f, 5),
             [FeatType.ChainLightning] = new("Chain Lightning", RecastGroup.ChainLightning, 22f, 6),
             [FeatType.BloodSiphon] = new("Blood Siphon", RecastGroup.BloodSiphon, 16f, 4),
+            [FeatType.UnnervingRoar] = new("Unnerving Roar", RecastGroup.UnnervingRoar, 30f, 6),
         };
     }
 

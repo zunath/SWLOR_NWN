@@ -36,7 +36,7 @@ public static class QuickCast
 
     public static bool IsEnabled(uint player, QuickCastTargetType type) => IsEnabled(GetSettings(player), type);
 
-    private static bool UsesAutomaticTarget(FeatType original, PlayerSettings settings)
+    internal static bool UsesAutomaticTarget(FeatType original, PlayerSettings settings)
     {
         if (settings == null || !Ability.IsFeatRegistered(original))
             return false;

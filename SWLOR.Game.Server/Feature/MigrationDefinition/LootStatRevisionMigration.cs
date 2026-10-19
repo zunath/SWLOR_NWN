@@ -31,8 +31,9 @@ public static class LootStatRevisionMigration
     {
         var item = GetModuleItemAcquired();
         var owner = GetItemPossessor(item);
-        // Items loading with a character at login are left to its player migration: a revision
-        // marker set during that load does not persist, so the migration would revise them again.
+        // Items loading with a character at login are not revised here: the boot-time character upgrade
+        // already revised the saved items, and a revision marker set during that load does not persist,
+        // so revising them here would repeat at every login.
         if (!GetIsObjectValid(GetArea(owner)))
             return;
         if (GetIsPC(owner) && !GetIsDM(owner) && !GetIsDMPossessed(owner))
@@ -201,7 +202,18 @@ public static class LootStatRevisionMigration
         changed |= ApplyRevision(item, ArkanianArmorStatRevisionCatalog.Changes,
             ArkanianArmorStatRevisionCatalog.RevisionVariable, ArkanianArmorStatRevisionCatalog.CurrentRevision,
             current => ReviseIceProtection(current, ArkanianArmorStatRevisionCatalog.IceResistance));
+        changed |= ApplyRevision(item, CarapaceBracerStatRevisionCatalog.Changes,
+            CarapaceBracerStatRevisionCatalog.RevisionVariable, CarapaceBracerStatRevisionCatalog.CurrentRevision,
+            ReviseCarapaceProtection);
         return changed;
+    }
+
+    private static IEnumerable<LootStatChange> ReviseCarapaceProtection(uint item)
+    {
+        // The combat migration converted older copies' base Poison Defense into Resistance.
+        if (ReadTotal(item, ItemPropertyType.Defense, (int)CombatDamageType.Poison).Total == 0 &&
+            ReadTotal(item, ItemPropertyType.Resistance, (int)ResistanceType.Poison).Total >= 30)
+            yield return new LootStatChange(ItemPropertyType.Resistance, (int)ResistanceType.Poison, 30, 0);
     }
 
     private static bool ApplyRevision(uint item, IReadOnlyDictionary<string, LootStatChange[]> catalog,

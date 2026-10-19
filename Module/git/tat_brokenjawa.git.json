@@ -1519,7 +1519,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "0": "DÃ©tritus"
+            "0": "Détritus"
           }
         },
         "OnClick": {
@@ -2196,7 +2196,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "0": "DÃ©tritus"
+            "0": "Détritus"
           }
         },
         "OnClick": {
@@ -3998,7 +3998,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "0": "DÃ©tritus"
+            "0": "Détritus"
           }
         },
         "OnClick": {
@@ -5649,7 +5649,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Stuck â€” tat_brokenjawa"
+            "0": "Stuck - tat_brokenjawa"
           }
         },
         "MapNote": {

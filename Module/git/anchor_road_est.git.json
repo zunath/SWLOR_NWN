@@ -801,7 +801,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Stuck — anchor_road_est"
+            "0": "Stuck - anchor_road_est"
           }
         },
         "MapNote": {

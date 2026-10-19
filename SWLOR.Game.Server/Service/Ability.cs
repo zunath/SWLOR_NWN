@@ -947,9 +947,13 @@ namespace SWLOR.Game.Server.Service
             RemoveWeakerDuplicateAuraEffects(source, recipient, type);
             var statusEffect = StatusEffect.CreateStatusEffect(type);
             if (statusEffect is AuraStatusEffectBase aura)
-                aura.AnnouncesApplication = AuraAnnouncementLimiter.TryAnnounce(source, recipient, type);
+                aura.AnnouncesApplication = AuraAnnouncementLimiter.IsFirstAnnouncement(source, recipient, type);
 
-            if (StatusEffect.ApplyStatusEffect(source, recipient, statusEffect, 0f) && successfulImpactVisualEffect != VisualEffect.None)
+            if (!StatusEffect.ApplyStatusEffect(source, recipient, statusEffect, 0f))
+                return;
+
+            AuraAnnouncementLimiter.RecordApplied(source, recipient, type);
+            if (successfulImpactVisualEffect != VisualEffect.None)
                 ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(successfulImpactVisualEffect), recipient);
         }
 

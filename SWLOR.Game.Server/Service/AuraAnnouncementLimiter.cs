@@ -4,41 +4,34 @@ using System.Collections.Generic;
 namespace SWLOR.Game.Server.Service
 {
     /// <summary>
-    /// Limits the "receives the effect of" notice for aura buffs. Allies drifting across the edge of an aura
-    /// during combat leave and re-enter it many times, and each re-entry would otherwise be announced again.
-    /// The buff itself is still applied every time; only the repeated chat line is withheld.
+    /// Sends the "receives the effect of" notice for an aura buff once per leader, ally and aura. Allies drifting
+    /// across the edge of an aura during combat leave and re-enter it many times, and each re-entry used to
+    /// announce the same buff again. The buff itself is still applied every time; only the repeat chat line is
+    /// withheld. The record ends with the aura (switched off, replaced, or all auras ended) or the ally leaving.
     /// </summary>
     public static class AuraAnnouncementLimiter
     {
-        public const int IntervalSeconds = 60;
-
-        private static readonly Dictionary<(uint Source, uint Recipient, Type StatusEffect), long> _lastAnnounced = new();
+        private static readonly HashSet<(uint Source, uint Recipient, Type StatusEffect)> _announced = new();
 
         /// <summary>
-        /// True when the aura buff from this source on this recipient has not been announced within the interval.
-        /// A true result records the announcement.
+        /// True when this source's aura has not yet been announced to this recipient since it was last cleared.
         /// </summary>
-        public static bool TryAnnounce(uint source, uint recipient, Type statusEffect, long nowTicks)
+        public static bool IsFirstAnnouncement(uint source, uint recipient, Type statusEffect)
         {
-            var key = (source, recipient, statusEffect);
-            if (_lastAnnounced.TryGetValue(key, out var lastSent) &&
-                !PlayerFeedback.IsWarningDue(nowTicks, lastSent, IntervalSeconds))
-            {
-                return false;
-            }
-
-            _lastAnnounced[key] = nowTicks;
-            return true;
+            return !_announced.Contains((source, recipient, statusEffect));
         }
 
-        public static bool TryAnnounce(uint source, uint recipient, Type statusEffect)
+        /// <summary>
+        /// Records that the aura was applied to the recipient, so later applications are not announced again.
+        /// </summary>
+        public static void RecordApplied(uint source, uint recipient, Type statusEffect)
         {
-            return TryAnnounce(source, recipient, statusEffect, DateTime.UtcNow.Ticks);
+            _announced.Add((source, recipient, statusEffect));
         }
 
         /// <summary>
         /// Forgets what a source has announced for one aura so switching or replacing that aura announces it afresh,
-        /// leaving the source's other auras limited.
+        /// leaving the source's other auras announced once.
         /// </summary>
         public static void ClearAura(uint source, Type statusEffect)
         {
@@ -63,20 +56,20 @@ namespace SWLOR.Game.Server.Service
 
         public static void Clear()
         {
-            _lastAnnounced.Clear();
+            _announced.Clear();
         }
 
         private static void RemoveWhere(Func<(uint Source, uint Recipient, Type StatusEffect), bool> match)
         {
             var keys = new List<(uint Source, uint Recipient, Type StatusEffect)>();
-            foreach (var key in _lastAnnounced.Keys)
+            foreach (var key in _announced)
             {
                 if (match(key))
                     keys.Add(key);
             }
 
             foreach (var key in keys)
-                _lastAnnounced.Remove(key);
+                _announced.Remove(key);
         }
     }
 }

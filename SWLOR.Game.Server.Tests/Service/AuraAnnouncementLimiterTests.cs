@@ -12,8 +12,6 @@ public class AuraAnnouncementLimiterTests
     private const uint Ally = 0x01000002;
     private const uint OtherAlly = 0x01000003;
     private const uint OtherLeader = 0x01000004;
-    private const long Second = TimeSpan.TicksPerSecond;
-    private const long Start = 1_000_000 * Second;
 
     [SetUp]
     public void SetUp() => AuraAnnouncementLimiter.Clear();
@@ -21,44 +19,55 @@ public class AuraAnnouncementLimiterTests
     [TearDown]
     public void TearDown() => AuraAnnouncementLimiter.Clear();
 
+    private static bool Apply(uint source, uint recipient, Type type)
+    {
+        var announces = AuraAnnouncementLimiter.IsFirstAnnouncement(source, recipient, type);
+        AuraAnnouncementLimiter.RecordApplied(source, recipient, type);
+        return announces;
+    }
+
     [Test]
-    public void AllyRepeatedlyCrossingTheAuraEdge_IsAnnouncedOncePerInterval()
+    public void AllyRepeatedlyCrossingTheAuraEdge_IsAnnouncedOnlyTheFirstTime()
     {
         var type = typeof(RallyingStandard1StatusEffect);
-        AuraAnnouncementLimiter.TryAnnounce(Leader, Ally, type, Start).Should().BeTrue();
+        Apply(Leader, Ally, type).Should().BeTrue();
 
-        for (var i = 1; i < AuraAnnouncementLimiter.IntervalSeconds; i++)
-        {
-            AuraAnnouncementLimiter.TryAnnounce(Leader, Ally, type, Start + i * Second)
-                .Should().BeFalse($"re-entry {i} seconds later is the same aura the ally was just told about");
-        }
+        for (var i = 0; i < 20; i++)
+            Apply(Leader, Ally, type).Should().BeFalse($"re-entry {i + 1} is the same aura the ally was already told about");
+    }
 
-        AuraAnnouncementLimiter.TryAnnounce(Leader, Ally, type, Start + AuraAnnouncementLimiter.IntervalSeconds * Second)
-            .Should().BeTrue("the aura is announced again once the interval has passed");
+    [Test]
+    public void ANoticeIsNotConsumedByAnApplicationThatFailed()
+    {
+        var type = typeof(RallyingStandard1StatusEffect);
+
+        AuraAnnouncementLimiter.IsFirstAnnouncement(Leader, Ally, type).Should().BeTrue();
+        AuraAnnouncementLimiter.IsFirstAnnouncement(Leader, Ally, type).Should().BeTrue(
+            "nothing is recorded until the aura is actually applied");
     }
 
     [Test]
     public void DifferentAlliesSourcesAndAurasAreLimitedIndependently()
     {
         var rallying = typeof(RallyingStandard1StatusEffect);
-        AuraAnnouncementLimiter.TryAnnounce(Leader, Ally, rallying, Start).Should().BeTrue();
+        Apply(Leader, Ally, rallying).Should().BeTrue();
 
-        AuraAnnouncementLimiter.TryAnnounce(Leader, OtherAlly, rallying, Start).Should().BeTrue();
-        AuraAnnouncementLimiter.TryAnnounce(OtherLeader, Ally, rallying, Start).Should().BeTrue();
-        AuraAnnouncementLimiter.TryAnnounce(Leader, Ally, typeof(WatchfulPresence1StatusEffect), Start).Should().BeTrue();
+        Apply(Leader, OtherAlly, rallying).Should().BeTrue();
+        Apply(OtherLeader, Ally, rallying).Should().BeTrue();
+        Apply(Leader, Ally, typeof(WatchfulPresence1StatusEffect)).Should().BeTrue();
     }
 
     [Test]
     public void SwitchingAnAuraOffAndOn_AnnouncesItAgain()
     {
         var type = typeof(RallyingStandard1StatusEffect);
-        AuraAnnouncementLimiter.TryAnnounce(Leader, Ally, type, Start).Should().BeTrue();
-        AuraAnnouncementLimiter.TryAnnounce(OtherLeader, Ally, type, Start).Should().BeTrue();
+        Apply(Leader, Ally, type).Should().BeTrue();
+        Apply(OtherLeader, Ally, type).Should().BeTrue();
 
         AuraAnnouncementLimiter.ClearSource(Leader);
 
-        AuraAnnouncementLimiter.TryAnnounce(Leader, Ally, type, Start + Second).Should().BeTrue();
-        AuraAnnouncementLimiter.TryAnnounce(OtherLeader, Ally, type, Start + Second).Should().BeFalse();
+        Apply(Leader, Ally, type).Should().BeTrue();
+        Apply(OtherLeader, Ally, type).Should().BeFalse();
     }
 
     [Test]
@@ -66,33 +75,24 @@ public class AuraAnnouncementLimiterTests
     {
         var rallying = typeof(RallyingStandard1StatusEffect);
         var watchful = typeof(WatchfulPresence1StatusEffect);
-        AuraAnnouncementLimiter.TryAnnounce(Leader, Ally, rallying, Start).Should().BeTrue();
-        AuraAnnouncementLimiter.TryAnnounce(Leader, Ally, watchful, Start).Should().BeTrue();
+        Apply(Leader, Ally, rallying).Should().BeTrue();
+        Apply(Leader, Ally, watchful).Should().BeTrue();
 
         AuraAnnouncementLimiter.ClearAura(Leader, rallying);
 
-        AuraAnnouncementLimiter.TryAnnounce(Leader, Ally, rallying, Start + Second).Should().BeTrue();
-        AuraAnnouncementLimiter.TryAnnounce(Leader, Ally, watchful, Start + Second).Should().BeFalse();
+        Apply(Leader, Ally, rallying).Should().BeTrue();
+        Apply(Leader, Ally, watchful).Should().BeFalse();
     }
 
     [Test]
     public void ARecipientWhoLeavesTheArea_IsAnnouncedAgainOnReturn()
     {
         var type = typeof(RallyingStandard1StatusEffect);
-        AuraAnnouncementLimiter.TryAnnounce(Leader, Ally, type, Start).Should().BeTrue();
+        Apply(Leader, Ally, type).Should().BeTrue();
 
         AuraAnnouncementLimiter.ClearRecipient(Ally);
 
-        AuraAnnouncementLimiter.TryAnnounce(Leader, Ally, type, Start + Second).Should().BeTrue();
-    }
-
-    [Test]
-    public void AClockThatMovesBackwards_DoesNotSilenceTheAura()
-    {
-        var type = typeof(RallyingStandard1StatusEffect);
-        AuraAnnouncementLimiter.TryAnnounce(Leader, Ally, type, Start).Should().BeTrue();
-
-        AuraAnnouncementLimiter.TryAnnounce(Leader, Ally, type, Start - Second).Should().BeTrue();
+        Apply(Leader, Ally, type).Should().BeTrue();
     }
 
     [Test]
@@ -132,7 +132,8 @@ public class AuraAnnouncementLimiterTests
         directory.Should().NotBeNull();
 
         var source = File.ReadAllText(Path.Combine(directory!.FullName, "SWLOR.Game.Server", "Service", "Ability.cs"));
-        source.Should().Contain("aura.AnnouncesApplication = AuraAnnouncementLimiter.TryAnnounce(source, recipient, type);");
+        source.Should().Contain("aura.AnnouncesApplication = AuraAnnouncementLimiter.IsFirstAnnouncement(source, recipient, type);");
+        source.Should().Contain("AuraAnnouncementLimiter.RecordApplied(source, recipient, type);");
         source.Should().Contain("AuraAnnouncementLimiter.ClearAura(activator, type);");
         source.Should().Contain("AuraAnnouncementLimiter.ClearAura(activator, removeType);");
         source.Should().Contain("AuraAnnouncementLimiter.ClearSource(activator);");

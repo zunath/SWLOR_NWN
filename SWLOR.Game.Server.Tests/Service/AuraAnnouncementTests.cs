@@ -1,98 +1,28 @@
 using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Game.Server.Feature.StatusEffectDefinition;
-using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.StatusEffectService;
 
 namespace SWLOR.Game.Server.Tests.Service;
 
-public class AuraAnnouncementLimiterTests
+public class AuraAnnouncementTests
 {
-    private const uint Leader = 0x01000001;
-    private const uint Ally = 0x01000002;
-    private const uint OtherAlly = 0x01000003;
-    private const uint OtherLeader = 0x01000004;
-
-    [SetUp]
-    public void SetUp() => AuraAnnouncementLimiter.Clear();
-
-    [TearDown]
-    public void TearDown() => AuraAnnouncementLimiter.Clear();
-
-    private static bool Apply(uint source, uint recipient, Type type)
+    [Test]
+    public void AuraDetail_StartsWithNobodyAnnouncedTo()
     {
-        var announces = AuraAnnouncementLimiter.IsFirstAnnouncement(source, recipient, type);
-        AuraAnnouncementLimiter.RecordApplied(source, recipient, type);
-        return announces;
+        new PlayerAuraDetail(typeof(RallyingStandard1StatusEffect), true, true, false).AnnouncedTo.Should().BeEmpty();
     }
 
     [Test]
-    public void AllyRepeatedlyCrossingTheAuraEdge_IsAnnouncedOnlyTheFirstTime()
+    public void EachAuraKeepsItsOwnAnnouncedList_SoSwitchingOneOffLeavesTheOthers()
     {
-        var type = typeof(RallyingStandard1StatusEffect);
-        Apply(Leader, Ally, type).Should().BeTrue();
+        var rallying = new PlayerAuraDetail(typeof(RallyingStandard1StatusEffect), true, true, false);
+        var watchful = new PlayerAuraDetail(typeof(WatchfulPresence1StatusEffect), true, true, false);
 
-        for (var i = 0; i < 20; i++)
-            Apply(Leader, Ally, type).Should().BeFalse($"re-entry {i + 1} is the same aura the ally was already told about");
-    }
+        rallying.AnnouncedTo.Add(0x01000002);
 
-    [Test]
-    public void ANoticeIsNotConsumedByAnApplicationThatFailed()
-    {
-        var type = typeof(RallyingStandard1StatusEffect);
-
-        AuraAnnouncementLimiter.IsFirstAnnouncement(Leader, Ally, type).Should().BeTrue();
-        AuraAnnouncementLimiter.IsFirstAnnouncement(Leader, Ally, type).Should().BeTrue(
-            "nothing is recorded until the aura is actually applied");
-    }
-
-    [Test]
-    public void DifferentAlliesSourcesAndAurasAreLimitedIndependently()
-    {
-        var rallying = typeof(RallyingStandard1StatusEffect);
-        Apply(Leader, Ally, rallying).Should().BeTrue();
-
-        Apply(Leader, OtherAlly, rallying).Should().BeTrue();
-        Apply(OtherLeader, Ally, rallying).Should().BeTrue();
-        Apply(Leader, Ally, typeof(WatchfulPresence1StatusEffect)).Should().BeTrue();
-    }
-
-    [Test]
-    public void SwitchingAnAuraOffAndOn_AnnouncesItAgain()
-    {
-        var type = typeof(RallyingStandard1StatusEffect);
-        Apply(Leader, Ally, type).Should().BeTrue();
-        Apply(OtherLeader, Ally, type).Should().BeTrue();
-
-        AuraAnnouncementLimiter.ClearSource(Leader);
-
-        Apply(Leader, Ally, type).Should().BeTrue();
-        Apply(OtherLeader, Ally, type).Should().BeFalse();
-    }
-
-    [Test]
-    public void SwitchingOneAuraOff_LeavesTheLeadersOtherAurasLimited()
-    {
-        var rallying = typeof(RallyingStandard1StatusEffect);
-        var watchful = typeof(WatchfulPresence1StatusEffect);
-        Apply(Leader, Ally, rallying).Should().BeTrue();
-        Apply(Leader, Ally, watchful).Should().BeTrue();
-
-        AuraAnnouncementLimiter.ClearAura(Leader, rallying);
-
-        Apply(Leader, Ally, rallying).Should().BeTrue();
-        Apply(Leader, Ally, watchful).Should().BeFalse();
-    }
-
-    [Test]
-    public void ARecipientWhoLeavesTheArea_IsAnnouncedAgainOnReturn()
-    {
-        var type = typeof(RallyingStandard1StatusEffect);
-        Apply(Leader, Ally, type).Should().BeTrue();
-
-        AuraAnnouncementLimiter.ClearRecipient(Ally);
-
-        Apply(Leader, Ally, type).Should().BeTrue();
+        watchful.AnnouncedTo.Should().BeEmpty();
     }
 
     [Test]
@@ -124,7 +54,7 @@ public class AuraAnnouncementLimiterTests
     }
 
     [Test]
-    public void AbilityAuraApplication_ConsultsTheLimiterBeforeEachAnnouncement()
+    public void AbilityAuraApplication_AnnouncesOnlyToAlliesNotYetToldAboutTheAura()
     {
         var directory = new DirectoryInfo(TestContext.CurrentContext.TestDirectory);
         while (directory != null && !File.Exists(Path.Combine(directory.FullName, "SWLOR.Game.Server.sln")))
@@ -132,11 +62,8 @@ public class AuraAnnouncementLimiterTests
         directory.Should().NotBeNull();
 
         var source = File.ReadAllText(Path.Combine(directory!.FullName, "SWLOR.Game.Server", "Service", "Ability.cs"));
-        source.Should().Contain("aura.AnnouncesApplication = AuraAnnouncementLimiter.IsFirstAnnouncement(source, recipient, type);");
-        source.Should().Contain("AuraAnnouncementLimiter.RecordApplied(source, recipient, type);");
-        source.Should().Contain("AuraAnnouncementLimiter.ClearAura(activator, type);");
-        source.Should().Contain("AuraAnnouncementLimiter.ClearAura(activator, removeType);");
-        source.Should().Contain("AuraAnnouncementLimiter.ClearSource(activator);");
-        source.Should().Contain("AuraAnnouncementLimiter.ClearRecipient(target);");
+        source.Should().Contain("aura.AnnouncesApplication = !detail.AnnouncedTo.Contains(recipient);");
+        source.Should().Contain("detail?.AnnouncedTo.Add(recipient);");
+        source.Should().Contain("aura.AnnouncedTo.Remove(target);");
     }
 }

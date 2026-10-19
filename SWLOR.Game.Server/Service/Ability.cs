@@ -945,14 +945,17 @@ namespace SWLOR.Game.Server.Service
             }
 
             RemoveWeakerDuplicateAuraEffects(source, recipient, type);
+            var detail = _playerAuras.TryGetValue(source, out var playerAura)
+                ? playerAura.Auras.FirstOrDefault(x => x.StatusEffect == type)
+                : null;
             var statusEffect = StatusEffect.CreateStatusEffect(type);
-            if (statusEffect is AuraStatusEffectBase aura)
-                aura.AnnouncesApplication = AuraAnnouncementLimiter.IsFirstAnnouncement(source, recipient, type);
+            if (statusEffect is AuraStatusEffectBase aura && detail != null)
+                aura.AnnouncesApplication = !detail.AnnouncedTo.Contains(recipient);
 
             if (!StatusEffect.ApplyStatusEffect(source, recipient, statusEffect, 0f))
                 return;
 
-            AuraAnnouncementLimiter.RecordApplied(source, recipient, type);
+            detail?.AnnouncedTo.Add(recipient);
             if (successfulImpactVisualEffect != VisualEffect.None)
                 ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(successfulImpactVisualEffect), recipient);
         }
@@ -1085,7 +1088,6 @@ namespace SWLOR.Game.Server.Service
                 }
 
                 aura.Auras.RemoveAt(0);
-                AuraAnnouncementLimiter.ClearAura(activator, removeType);
             }
 
             aura.Auras.Add(new PlayerAuraDetail(type, targetsSelf, targetsParty, targetsEnemies, successfulImpactVisualEffect));
@@ -1165,7 +1167,6 @@ namespace SWLOR.Game.Server.Service
             }
 
             aura.Auras.Remove(existing);
-            AuraAnnouncementLimiter.ClearAura(activator, type);
             return true;
         }
 
@@ -1222,7 +1223,6 @@ namespace SWLOR.Game.Server.Service
             }
 
             _playerAuras.Remove(activator);
-            AuraAnnouncementLimiter.ClearSource(activator);
         }
 
         /// <summary>
@@ -1272,7 +1272,11 @@ namespace SWLOR.Game.Server.Service
                 RemoveAuraEffect(leader, target, statusEffect);
             }
 
-            AuraAnnouncementLimiter.ClearRecipient(target);
+            foreach (var playerAura in _playerAuras.Values)
+            {
+                foreach (var aura in playerAura.Auras)
+                    aura.AnnouncedTo.Remove(target);
+            }
         }
 
 

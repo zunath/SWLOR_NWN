@@ -15,13 +15,15 @@ namespace SWLOR.Game.Server.Service.PerkService
 
         public string CheckRequirements(uint player)
         {
-            var playerId = GetObjectUUID(player);
-            var dbPlayer = DB.Get<Player>(playerId);
+            var dbPlayer = DB.Get<Player>(GetObjectUUID(player));
+            var dbBeast = string.IsNullOrWhiteSpace(dbPlayer?.ActiveBeastId) ? null : DB.Get<Beast>(dbPlayer.ActiveBeastId);
+            return CheckRequirements(dbPlayer, dbBeast);
+        }
 
+        public string CheckRequirements(Player dbPlayer, Beast dbBeast)
+        {
             if (dbPlayer == null || string.IsNullOrWhiteSpace(dbPlayer.ActiveBeastId))
                 return "You do not have a beast tamed.";
-
-            var dbBeast = DB.Get<Beast>(dbPlayer.ActiveBeastId);
 
             if (dbBeast == null)
                 return "You do not have a beast tamed.";

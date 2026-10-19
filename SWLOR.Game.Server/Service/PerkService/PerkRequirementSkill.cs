@@ -19,10 +19,10 @@ namespace SWLOR.Game.Server.Service.PerkService
 
         public PerkRequirementCategory Category => PerkRequirementCategory.Skill;
 
-        public string CheckRequirements(uint player)
+        public string CheckRequirements(uint player) => CheckRequirements(DB.Get<Player>(GetObjectUUID(player)), null);
+
+        public string CheckRequirements(Player dbPlayer, Beast activeBeast)
         {
-            var playerId = GetObjectUUID(player);
-            var dbPlayer = DB.Get<Player>(playerId);
             var skill = dbPlayer.Skills[Type];
             var rank = skill.Rank;
 

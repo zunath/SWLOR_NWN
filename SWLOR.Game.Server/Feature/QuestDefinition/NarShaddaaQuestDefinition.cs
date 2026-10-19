@@ -39,7 +39,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
                 .AddKillObjective(NPCGroupType.NarShaddaa_SlaverCaptain, 1)
 
                 .AddState()
-                .SetStateJournalText("Return to Nar Shaddaa’s port authority with proof of the raid.")
+                .SetStateJournalText("Return to Nar Shaddaa's port authority with proof of the raid.")
                 .AddGoldReward(12000)
                 .AddXPReward(15000)
                 .AddItemReward("recipe_nalhfizz", 1);

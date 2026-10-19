@@ -62,6 +62,20 @@ public sealed class IntroShuttleAndMedicalTerminalTests
     }
 
     [Test]
+    public void VelesClinicHasAMedicalRegistrationTerminal()
+    {
+        var root = FindRepositoryRoot().FullName;
+        var area = JObject.Parse(File.ReadAllText(Path.Combine(
+            root,
+            "Module",
+            "git",
+            "veles_sheriff.git.json")));
+
+        area["Placeable List"]?["value"]?.Children<JObject>()
+            .Should().Contain(resource => GetString(resource, "TemplateResRef") == "cloning_reg");
+    }
+
+    [Test]
     public void ShuttleStatusHeader_RendersAsOneCompactNuiTextBlock()
     {
         var method = typeof(ShuttleStatusDialog).GetMethod(

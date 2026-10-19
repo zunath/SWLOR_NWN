@@ -5,7 +5,31 @@ namespace SWLOR.Game.Server.Service.LootService
 {
     public class LootTable : List<LootTableItem>
     {
+        /// <summary>
+        /// The rare find bonus granted by Treasure Hunter III.
+        /// </summary>
+        public const int FullRareChanceBonus = 30;
+
         public bool IsRare { get; set; }
+
+        /// <summary>
+        /// Percentage points a full rare find bonus adds to this table's drop chance.
+        /// Null means the bonus is added unscaled.
+        /// </summary>
+        public int? MaxRareChanceBonus { get; set; }
+
+        /// <summary>
+        /// Converts a creature's rare find bonus into the percentage points added to this table's drop chance.
+        /// </summary>
+        /// <param name="rareBonusChance">The rare find bonus marked on the creature.</param>
+        /// <returns>The percentage points to add to the drop chance.</returns>
+        public int GetRareChanceBonus(int rareBonusChance)
+        {
+            if (MaxRareChanceBonus == null)
+                return rareBonusChance;
+
+            return rareBonusChance * MaxRareChanceBonus.Value / FullRareChanceBonus;
+        }
 
         /// <summary>
         /// Retrieves a random item from the loot table.

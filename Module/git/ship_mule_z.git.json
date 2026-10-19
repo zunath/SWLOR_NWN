@@ -12894,7 +12894,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Stuck — ship_mule_z"
+            "0": "Stuck - ship_mule_z"
           }
         },
         "MapNote": {

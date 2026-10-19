@@ -9060,7 +9060,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Stuck — ship_condor_z"
+            "0": "Stuck - ship_condor_z"
           }
         },
         "MapNote": {

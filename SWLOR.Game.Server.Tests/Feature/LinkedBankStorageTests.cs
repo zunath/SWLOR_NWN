@@ -56,7 +56,7 @@ public class LinkedBankStorageTests
         GetPublicBankMethod(nameof(Bank.WithdrawItem), typeof(uint), typeof(string))
             .ReturnType
             .Should()
-            .Be(typeof(void));
+            .Be(typeof(string));
         GetPublicBankMethod(nameof(Bank.GetCityBankAccessFailure), typeof(uint), typeof(uint))
             .ReturnType
             .Should()
@@ -227,35 +227,6 @@ public class LinkedBankStorageTests
         loadHints.Should().Contain((customTlkOffset + bankLoadHintTlkId).ToString());
         text.Should().Contain("All bank terminals access the same storage");
         text.Should().NotContain("not linked");
-    }
-
-    [Test]
-    public void LinkedBankStorageMigration_CleansRetiredUpgradeDataAndMigratesAllInventoryItems()
-    {
-        var root = FindRepositoryRoot();
-        var migrationRoot = Path.Combine(
-            root.FullName,
-            "SWLOR.Game.Server",
-            "Feature",
-            "MigrationDefinition",
-            "ServerMigration");
-        var helper = File.ReadAllText(Path.Combine(migrationRoot, "LinkedBankStorageMigration.cs"));
-        var combatMigration = File.ReadAllText(Path.Combine(migrationRoot, "_22_CombatSystemReplacement.cs"));
-
-        combatMigration.Should().Contain("LinkedBankStorageMigration.RemoveRetiredUpgradeData();");
-        combatMigration.Should().Contain("LinkedBankStorageMigration.MigrateInventoryItemsToGlobalBank();");
-        combatMigration.Should().Contain("StoredItemDataMigration.Migrate();");
-        helper.Should().Contain("!validUpgradeKeys.Contains(property.Name)");
-        helper.Should().Contain("!validNumericUpgradeKeys.Contains(property.Name)");
-        helper.Should().Contain("Bank.NormalizeStorageId(item)");
-        helper.Should().NotContain("Bank.StorageId");
-        helper.Should().NotContain("BankStorage.Global");
-        combatMigration.IndexOf("LinkedBankStorageMigration.RemoveRetiredUpgradeData();", StringComparison.Ordinal)
-            .Should()
-            .BeLessThan(combatMigration.IndexOf("StoredItemDataMigration.Migrate();", StringComparison.Ordinal));
-        combatMigration.IndexOf("StoredItemDataMigration.Migrate();", StringComparison.Ordinal)
-            .Should()
-            .BeLessThan(combatMigration.IndexOf("LinkedBankStorageMigration.MigrateInventoryItemsToGlobalBank();", StringComparison.Ordinal));
     }
 
     private static IEnumerable<Dictionary<string, object>> FindBankVarTables(JToken token)

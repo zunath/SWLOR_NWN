@@ -16749,7 +16749,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Stuck — ship_fight_v"
+            "0": "Stuck - ship_fight_v"
           }
         },
         "MapNote": {

@@ -9493,7 +9493,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Stuck — ship_falchion_z"
+            "0": "Stuck - ship_falchion_z"
           }
         },
         "MapNote": {

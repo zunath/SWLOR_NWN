@@ -39,6 +39,34 @@ namespace SWLOR.Game.Server.Service.PlayerListService
             return !isNamed || showNamedDescriptors;
         }
 
+        /// <summary>
+        /// Maps every non-DM character to the leader of their party. Characters share a party only when the
+        /// engine lists them in the same player-party faction. GetFactionLeader alone is not proof: DM faction
+        /// tools put players into NPC factions, whose leader is the same creature for everyone in them. A
+        /// character outside a party leads their own party of one.
+        /// </summary>
+        public static Dictionary<uint, uint> GetPartyLeaders(IReadOnlyList<PlayerListPartyMembership> memberships)
+        {
+            var leaders = new Dictionary<uint, uint>();
+            foreach (var membership in memberships)
+            {
+                if (membership.IsDM)
+                    continue;
+
+                leaders[membership.Player] = membership.Player;
+                if (membership.PartyFactionId is not { } factionId)
+                    continue;
+
+                // The engine's leader names the party when the faction really lists it; a DM avatar can lead.
+                var leader = memberships.FirstOrDefault(other =>
+                    other.Player == membership.FactionLeader && other.PartyFactionId == factionId);
+                leader ??= memberships.First(other => !other.IsDM && other.PartyFactionId == factionId);
+                leaders[membership.Player] = leader.Player;
+            }
+
+            return leaders;
+        }
+
         public static PlayerListActions Evaluate(PlayerListRelation relation)
         {
             return new PlayerListActions

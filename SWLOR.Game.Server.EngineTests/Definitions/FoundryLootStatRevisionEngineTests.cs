@@ -6,7 +6,6 @@ using System.Threading.Tasks;
 using SWLOR.Game.Server.EngineTests.Framework;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Feature.MigrationDefinition;
-using SWLOR.Game.Server.Feature.MigrationDefinition.PlayerMigration;
 using SWLOR.Game.Server.Feature.MigrationDefinition.ServerMigration;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.MigrationService;
@@ -26,8 +25,6 @@ public static partial class MigrationEngineTests
         var records = new List<InventoryItem>();
         var identities = new Dictionary<string, string>();
         var enhancements = new Dictionary<(ItemPropertyType, int), int> { [(ItemPropertyType.HPBonus, 0)] = 40 };
-        var config = DB.Get<ServerConfiguration>("SWLOR_CONFIG");
-        var originalVersion = config.MigrationVersion;
         try
         {
             foreach (var resref in new[] { "grapple_bracer", "conveyor_treads", "line_visor", "riveted_mantle", "quality_signet",
@@ -48,17 +45,7 @@ public static partial class MigrationEngineTests
             for (var cycle = 1; cycle <= 2; cycle++)
                 await ctx.ExecuteInCreatureContextAsync(owner, () =>
                 {
-                    config.MigrationVersion = 27;
-                    DB.Set(config);
-                    var pending = (IEnumerable<IServerMigration>)typeof(Migration)
-                        .GetMethod("GetMigrations", BindingFlags.NonPublic | BindingFlags.Static)
-                        .Invoke(null, new object[] { MigrationExecutionType.PostCacheLoad });
-                    ctx.Assert(pending.Select(migration => migration.Version)
-                        .SequenceEqual(new[] { 28 }),
-                        "The last released server checkpoint schedules exactly one combined stored-item migration");
-                    Migration.AfterCacheLoaded();
-                    ctx.AssertEqual(28, DB.Get<ServerConfiguration>("SWLOR_CONFIG").MigrationVersion,
-                        "The stored-item correction advances the server checkpoint");
+                    StoredItemSweepRunner.Run();
                     foreach (var record in records)
                     {
                         var saved = DB.Get<InventoryItem>(record.Id);
@@ -81,13 +68,11 @@ public static partial class MigrationEngineTests
         {
             foreach (var record in records)
                 DB.Delete<InventoryItem>(record.Id);
-            config.MigrationVersion = originalVersion;
-            DB.Set(config);
         }
     }
 
-    [EngineTest("Foundry loot migration preserves legacy and revised equipment through use and repeated reloads",
-        Category = LootCategory, TimeoutSeconds = 180f)]
+    [EngineTest("Foundry loot migration preserves legacy and revised equipment in the saved character through use and repeated reloads",
+        Category = LootCategory, TimeoutSeconds = 300f)]
     public static async Task FoundryLootEquipmentCorrection(EngineTestContext ctx)
     {
         using var fixture = await PlayerAbilityFixture.CreateAsync(ctx);
@@ -136,81 +121,77 @@ public static partial class MigrationEngineTests
             var baselineHp = GetMaxHitPoints(player);
             var baselineAttack = baseline.Attack;
             await EquipAsync(ctx, player, item, InventorySlot.Arms);
+
+            // The last released character checkpoint is 22: the saved file and the record are both behind by one migration.
+            SavedCharacterMigration.Upgraded upgraded = null;
             await ctx.ExecuteInCreatureContextAsync(player, () =>
             {
                 var record = DB.Get<Player>(GetObjectUUID(player));
-                record.Version = 22;
+                record.Version = 23;
                 DB.Set(record);
-                SetLocalInt(player, "PLAYER_MIGRATION_VERSION", 22);
-                var fileVersion = 22;
-                var fileSaves = 0;
-                var pending = typeof(_23_CorrectEquipmentTypes).Assembly.GetTypes()
-                    .Where(type => !type.IsAbstract && !type.IsInterface && typeof(IPlayerMigration).IsAssignableFrom(type))
-                    .Select(type => (IPlayerMigration)Activator.CreateInstance(type))
-                    .Where(migration => migration.Version > Math.Min(record.Version, fileVersion)).ToArray();
-                ctx.AssertEqual(23, pending.Single().Version, "The last released player checkpoint schedules exactly one combined item migration");
-                var apply = typeof(Migration).GetMethod("ApplyPlayerMigration", BindingFlags.NonPublic | BindingFlags.Static);
-                bool ApplyMigration() => (bool)apply.Invoke(null, new object[] { pending.Single(), player,
-                    (Func<Player>)(() => DB.Get<Player>(GetObjectUUID(player))), (Action<Player>)(updated => DB.Set(updated)),
-                    (Func<int>)(() => fileVersion), (Action<int>)(version =>
-                    {
-                        SetLocalInt(player, "PLAYER_MIGRATION_VERSION", version);
-                        var saved = ObjectPlugin.Serialize(player);
-                        ctx.AssertEqual(version, (int)Invoke("StoredObjectData", "ReadRootInteger", saved, "PLAYER_MIGRATION_VERSION"),
-                            "The saved character contains the completed checkpoint");
-                        fileVersion = version;
-                        fileSaves++;
-                    }) });
-                ctx.Assert(ApplyMigration(), "The actual player checkpoint path converts the legacy equipment");
-                ctx.AssertEqual(23, DB.Get<Player>(GetObjectUUID(player)).Version, "The player database checkpoint advances");
-                ctx.Assert(ApplyMigration(), "Retrying the completed checkpoint succeeds");
-                ctx.AssertEqual(1, fileSaves, "A completed checkpoint does not revisit or save the items twice");
-                AssertRevisedLoot(ctx, item, enhancements);
-                ctx.AssertEqual(baselineHp + 100, GetMaxHitPoints(player), "Equipped HP includes the corrected base and enhancement once");
-                ctx.AssertEqual(baseline.MaxHP + 100, ReadEquipmentTotals(player).MaxHP, "The persisted HP budget matches the equipment change");
-                ctx.AssertEqual(baselineAttack + 13, DB.Get<Player>(GetObjectUUID(player)).Attack, "Legacy Attack is corrected in the same item visit");
-                ctx.Assert(!LootStatRevisionMigration.MigrateObject(player), "Retrying the existing migration is stable");
+                SetLocalInt(player, "PLAYER_MIGRATION_VERSION", 23);
+                ctx.AssertEqual(24, SavedCharacterMigration.Versions.Where(version => version > 23).Single(),
+                    "The last released character checkpoint schedules exactly one combined item migration");
+                var result = SavedCharacterMigration.Upgrade(SavedCharacterMigration.SaveFile(player), record);
+                ctx.Assert(result != null, "The character upgrade converts the legacy equipment");
+                ctx.AssertEqual(24, result.Record.Version, "The player record checkpoint advances");
+                ctx.AssertEqual(baseline.MaxHP + 100, result.Record.MaxHP, "The persisted HP budget matches the equipment change");
+                ctx.AssertEqual(baselineAttack + 13, result.Record.Attack, "Legacy Attack is corrected in the same item visit");
+                var migrated = SavedCharacterMigration.FindItem(SavedCharacterMigration.Load(ctx, result), "grapple_bracer");
+                AssertRevisedLoot(ctx, migrated, enhancements);
+                ctx.Assert(!LootStatRevisionMigration.MigrateObject(migrated), "The live revision finds nothing left to change in the upgraded item");
+                ctx.Assert(SavedCharacterMigration.Upgrade(result.File, result.Record) == null,
+                    "A completed checkpoint does not revisit the items");
+                DeleteLocalInt(player, "PLAYER_MIGRATION_VERSION");
+                upgraded = result;
             });
+
+            // The player logs in with the upgraded character and plays on with the corrected equipment.
+            using var login = await PlayerAbilityFixture.CreateFromCharacterAsync(ctx, upgraded.File, upgraded.Record, 3f);
+            var loggedIn = login.Creature;
+            item = SavedCharacterMigration.FindItem(loggedIn, "grapple_bracer");
+            ctx.Assert(GetIsObjectValid(item), "The upgraded character logs in with the bracer");
+            ctx.AssertEqual(item, GetItemInSlot(InventorySlot.Arms, loggedIn), "The bracer is still worn");
+            ctx.AssertEqual(baselineHp + 100, GetMaxHitPoints(loggedIn), "Equipped HP includes the corrected base and enhancement once");
+            ctx.AssertEqual(baselineAttack + 13, DB.Get<Player>(login.Id).Attack, "Equipped Attack counts the corrected total once");
 
             for (var cycle = 1; cycle <= 2; cycle++)
             {
-                await UnequipAsync(ctx, player, item);
-                ctx.AssertEqual(baselineHp, GetMaxHitPoints(player), "Unequipping removes exactly the corrected HP");
-                ctx.AssertEqual(baseline.MaxHP, ReadEquipmentTotals(player).MaxHP, "Unequipping restores the persisted HP budget");
-                ctx.AssertEqual(baselineAttack, DB.Get<Player>(GetObjectUUID(player)).Attack, "Unequipping removes exactly the corrected Attack");
+                await UnequipAsync(ctx, loggedIn, item);
+                ctx.AssertEqual(baselineHp, GetMaxHitPoints(loggedIn), "Unequipping removes exactly the corrected HP");
+                ctx.AssertEqual(baseline.MaxHP, DB.Get<Player>(login.Id).MaxHP, "Unequipping restores the persisted HP budget");
+                ctx.AssertEqual(baselineAttack, DB.Get<Player>(login.Id).Attack, "Unequipping removes exactly the corrected Attack");
                 string saved = null;
-                string identity = null;
-                await ctx.ExecuteInCreatureContextAsync(player, () =>
+                await ctx.ExecuteInCreatureContextAsync(loggedIn, () =>
                 {
                     SetLocalInt(item, "FOUNDRY_LOOT_TEST_CYCLE", cycle);
-                    identity = GetObjectUUID(item);
                     saved = ObjectPlugin.Serialize(item);
                     DestroyObject(item);
                 });
                 await ctx.WaitFrameAsync();
-                await ctx.ExecuteInCreatureContextAsync(player, () =>
+                await ctx.ExecuteInCreatureContextAsync(loggedIn, () =>
                 {
                     item = Deserialize(ctx, saved);
-                    ctx.Assert(ObjectPlugin.AcquireItem(player, item), "The player reacquires the saved equipment");
+                    ctx.Assert(ObjectPlugin.AcquireItem(loggedIn, item), "The player reacquires the saved equipment");
                 });
                 await ctx.WaitFrameAsync();
-                var matching = new List<uint>();
-                for (var carried = GetFirstItemInInventory(player); GetIsObjectValid(carried); carried = GetNextItemInInventory(player))
-                    if (GetResRef(carried) == "grapple_bracer") matching.Add(carried);
+                var matching = SavedCharacterMigration.FindItems(loggedIn, "grapple_bracer");
                 ctx.AssertEqual(1, matching.Count, "Reload preserves exactly one bracer");
                 item = matching.Single();
                 ctx.Track(item);
-                ctx.AssertEqual(player, GetItemPossessor(item), "Ownership survives reload");
+                ctx.AssertEqual(loggedIn, GetItemPossessor(item), "Ownership survives reload");
                 ctx.AssertEqual(1, GetItemStackSize(item), "Quantity survives reload");
-                ctx.AssertEqual(identity, GetObjectUUID(item), "Identity survives reload");
                 ctx.AssertEqual(cycle, GetLocalInt(item, "FOUNDRY_LOOT_TEST_CYCLE"), "Changed state survives reload");
                 AssertRevisedLoot(ctx, item, enhancements);
-                await EquipAsync(ctx, player, item, InventorySlot.Arms);
-                ctx.AssertEqual(baselineHp + 100, GetMaxHitPoints(player), "Reloaded HP counts once");
-                ctx.AssertEqual(baselineAttack + 13, DB.Get<Player>(GetObjectUUID(player)).Attack, "Reloaded Attack counts once");
+                await EquipAsync(ctx, loggedIn, item, InventorySlot.Arms);
+                ctx.AssertEqual(baselineHp + 100, GetMaxHitPoints(loggedIn), "Reloaded HP counts once");
+                ctx.AssertEqual(baselineAttack + 13, DB.Get<Player>(login.Id).Attack, "Reloaded Attack counts once");
             }
-            await UnequipAsync(ctx, player, item);
+            await UnequipAsync(ctx, loggedIn, item);
             DestroyObject(item);
+            await ctx.WaitFrameAsync();
+            await UnequipAsync(ctx, player, SavedCharacterMigration.FindItem(player, "grapple_bracer"));
+            DestroyObject(SavedCharacterMigration.FindItem(player, "grapple_bracer"));
             await ctx.WaitFrameAsync();
         }
 

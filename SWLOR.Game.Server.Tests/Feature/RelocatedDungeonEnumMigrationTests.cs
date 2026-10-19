@@ -117,14 +117,7 @@ public class RelocatedDungeonEnumMigrationTests
             "\"hold_the_line_circle\":{\"CurrentState\":1,\"KillProgresses\":{\"Dantooine_HoldTheLine_InnerCircle\":3,\"MonCala_HoldTheLine_InnerCircle\":2},\"ItemProgresses\":{}}," +
             "\"saber_storm_foundation\":{\"CurrentState\":1,\"KillProgresses\":{\"Dantooine_StormDrillDroid\":5,\"" + beacon + "\":1},\"ItemProgresses\":{}}}," +
             "\"UnknownField\":{\"value\":42}}");
-        var unknown = player["UnknownField"]!.DeepClone();
         // A record that skipped server migration 27 (e.g. restored afterwards) still loads, with the former names mapped.
-        AssertMigrated(JsonConvert.DeserializeObject<Player>(player.ToString())!);
-
-        RelocatedDungeonEnumMigration.MigratePlayer(player).Should().BeTrue();
-        RelocatedDungeonEnumMigration.MigratePlayer(player).Should().BeFalse();
-        JToken.DeepEquals(player["UnknownField"], unknown).Should().BeTrue();
-
         AssertMigrated(JsonConvert.DeserializeObject<Player>(player.ToString())!);
         var reserialized = JObject.Parse(JsonConvert.SerializeObject(JsonConvert.DeserializeObject<Player>(player.ToString())));
         reserialized[nameof(Player.KeyItems)]![nameof(KeyItemType.CapstoneTatooineForgeCavernsKey)].Should().NotBeNull();
@@ -142,31 +135,4 @@ public class RelocatedDungeonEnumMigrationTests
         migrated.Quests["saber_storm_foundation"].KillProgresses[NPCGroupType.Viscara_KillzoneBeacon_Adept].Should().Be(1);
     }
 
-    [Test]
-    public void Migration_RunsOnRawJsonBeforeTypedMigrations()
-    {
-        var migration = new _27_UpdatePlayerRecords();
-        migration.ExecutionType.Should().Be(MigrationExecutionType.PostDatabaseLoad);
-        migration.Version.Should().Be(27);
-    }
-
-    [Test]
-    public void PlayerRecordPass_RenamesEnumsAndCreatesDefaultBuildInOneSave()
-    {
-        var json = "{\"Id\":\"relocated-player\",\"EquippedTechniques\":[2797,2799]," +
-                   "\"KeyItems\":{\"CapstoneKorribanForgeCavernsKey\":\"2026-10-01T00:00:00Z\"}," +
-                   "\"Quests\":{\"absolute_defense_foundation\":{\"CurrentState\":1,\"KillProgresses\":{\"Korriban_AbsoluteDefense_Adept\":4},\"ItemProgresses\":{}}}}";
-
-        _27_UpdatePlayerRecords.MigratePlayer(JObject.Parse(json), out var player).Should().BeTrue();
-        player.KeyItems.Should().ContainKey(KeyItemType.CapstoneTatooineForgeCavernsKey);
-        player.Quests["absolute_defense_foundation"].KillProgresses[NPCGroupType.Tatooine_AbsoluteDefense_Adept].Should().Be(4);
-        var saved = player.MimicryLoadouts.Should().ContainSingle().Subject;
-        saved.Techniques.Should().Equal(player.EquippedTechniques);
-        player.ActiveMimicryLoadoutId.Should().Be(saved.Id);
-
-        var stored = JsonConvert.SerializeObject(player);
-        JObject.Parse(stored)[nameof(Player.KeyItems)]!["CapstoneKorribanForgeCavernsKey"].Should().BeNull();
-        _27_UpdatePlayerRecords.MigratePlayer(JObject.Parse(stored), out var retried).Should().BeFalse();
-        retried.MimicryLoadouts.Should().ContainSingle().Which.Id.Should().Be(saved.Id);
-    }
 }

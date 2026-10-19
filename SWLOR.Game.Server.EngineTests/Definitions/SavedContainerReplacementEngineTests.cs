@@ -2,13 +2,62 @@ using System.Reflection;
 using System.Threading.Tasks;
 using SWLOR.Game.Server.EngineTests.Framework;
 using SWLOR.Game.Server.Entity;
+using SWLOR.Game.Server.Feature.MigrationDefinition;
+using SWLOR.Game.Server.Service;
 using SWLOR.NWN.API.NWNX;
+using SWLOR.NWN.API.NWScript.Enum.Item;
 using NWNXLib = NWN.Native.API.NWNXLib;
 
 namespace SWLOR.Game.Server.EngineTests.Definitions;
 
 public static partial class MigrationEngineTests
 {
+    /// <summary>
+    /// Migration 23 turns legacy gloves into 2x2 helmets in place. In a full bag the larger item overlaps others or runs
+    /// past the bag, and the engine drops an item when it loads such a bag; the upgrade moves it instead.
+    /// </summary>
+    [EngineTest("A full bag keeps every item when the upgrade makes one of them larger", Category = "SavedContainerReplacement", TimeoutSeconds = 90)]
+    public static async Task FullBagKeepsEnlargedItems(EngineTestContext ctx)
+    {
+        using var fixture = await PlayerAbilityFixture.CreateAsync(ctx);
+        var owner = fixture.Creature;
+        await ctx.ExecuteInCreatureContextAsync(owner, () =>
+        {
+            var bag = CreateItemOnObject("bag_sm", owner);
+            var legacy = CreateItemOnObject("sabstorm_l3", owner);
+            ItemPlugin.SetBaseItemType(legacy, EquipmentTypeMigration.Corrections["sabstorm_l3"].LegacyType);
+            ctx.Assert(ItemPlugin.MoveTo(legacy, bag, true), "The legacy item goes in the bag first");
+            // Rings fill every other cell of the bag.
+            var fillers = 0;
+            while (fillers < 40)
+            {
+                var ring = CreateItemOnObject("advent_ring", owner);
+                SetLocalInt(ring, "FILLER", fillers);
+                if (!ItemPlugin.MoveTo(ring, bag, true) || GetItemPossessor(ring, true) != bag)
+                {
+                    DestroyObject(ring);
+                    break;
+                }
+                fillers++;
+            }
+            ctx.Assert(fillers > 0 && fillers < 40, $"The bag fills with rings ({fillers})");
+            var ringsBefore = SavedCharacterMigration.FindItems(owner, "advent_ring").Count;
+
+            var record = SavedCharacterMigration.CopyRecord(DB.Get<Player>(fixture.Id));
+            record.Version = SavedCharacterMigration.LatestVersion - 2;
+            record.CharacterFileVersion = 0;
+            var file = SavedCharacterMigration.WithFileVersion(SavedCharacterMigration.SaveFile(owner), record.Version);
+            var upgraded = SavedCharacterMigration.Upgrade(file, record);
+            ctx.Assert(upgraded != null, "The character is upgraded");
+            var character = SavedCharacterMigration.Load(ctx, upgraded);
+            var helmet = SavedCharacterMigration.FindItem(character, "sabstorm_l3");
+            ctx.AssertEqual(BaseItem.Helmet, GetBaseItemType(helmet), "The legacy gloves become a helmet");
+            ctx.AssertEqual(character, GetItemPossessor(helmet), "The enlarged item is kept by the character");
+            ctx.AssertEqual(ringsBefore, SavedCharacterMigration.FindItems(character, "advent_ring").Count, "Every ring in the bag is kept");
+            ctx.AssertEqual(0, upgraded.Overflow.Count, "Nothing needs overflow storage while the inventory has room");
+        });
+    }
+
     [EngineTest("A full inventory converts its retired upgrade kits into the cells they free", Category = "SavedContainerReplacement", TimeoutSeconds = 90)]
     public static async Task FullInventoryConvertsRetiredKitsInPlace(EngineTestContext ctx)
     {

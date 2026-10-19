@@ -99,11 +99,15 @@ namespace SWLOR.Game.Server.Service
             if (!CanReceiveTraitEvents(actor))
                 return new PairedRangedOrdinarySnapshot(0, 0);
             TwinPistolMastery.RecordTargetChange(actor, target);
-            var configuration = GetConfiguration(actor);
-            if (!States.ContainsKey(actor) && !NeedsOrdinaryState(configuration))
-                return UntrackedSnapshot(configuration);
-            var state = GetState(actor);
-            var snapshot = state.RecordOrdinaryAttempt(DateTime.UtcNow, configuration, target, rollId);
+            if (!States.TryGetValue(actor, out var state))
+            {
+                // Untracked attackers need only the ordinary-shot inputs, which keeps every creature's roll cheap.
+                var ordinary = GetOrdinaryConfiguration(actor);
+                if (!NeedsOrdinaryState(ordinary))
+                    return UntrackedSnapshot(ordinary);
+                state = GetState(actor);
+            }
+            var snapshot = state.RecordOrdinaryAttempt(DateTime.UtcNow, GetConfiguration(actor), target, rollId);
             Sync(actor, state);
             return snapshot;
         }
@@ -138,10 +142,14 @@ namespace SWLOR.Game.Server.Service
             Sync(actor, state);
         }
 
+        /// <summary>Lets callers skip mitigation work for defenders that have no direct-damage trait.</summary>
+        public static bool HasDirectHostileDamageTrait(uint actor) =>
+            CanReceiveTraitEvents(actor) && Read(actor, StatType.PairedRangedDirectDamageNextAbilityStaminaReduction) > 0;
+
         /// <summary>Only positive direct hostile damage may call this hook.</summary>
         public static void RecordDirectHostileDamage(uint actor)
         {
-            if (!CanReceiveTraitEvents(actor))
+            if (!HasDirectHostileDamageTrait(actor))
                 return;
             var configuration = GetConfiguration(actor);
             if (configuration.DirectDamageNextAbilityStaminaReduction <= 0) return;
@@ -264,6 +272,14 @@ namespace SWLOR.Game.Server.Service
             States.Remove(actor);
         }
 
+        /// <summary>Drops tracking for a destroyed object without refreshing its status effects.</summary>
+        public static void ForgetDestroyed(uint actor)
+        {
+            if (MovementWindows.Remove(actor, out var movement)) movement.Clear();
+            States.Remove(actor);
+            TwinPistolMastery.ClearTrialState(actor);
+        }
+
         private static void ClearTransientState(uint actor, bool preserveMovement = false)
         {
             if (!preserveMovement && MovementWindows.Remove(actor, out var movement)) movement.Clear();
@@ -278,10 +294,9 @@ namespace SWLOR.Game.Server.Service
         {
             if (!CanReceiveTraitEvents(actor))
                 return new PairedRangedOrdinarySnapshot(0, 0);
-            var configuration = GetConfiguration(actor);
             return States.TryGetValue(actor, out var state)
-                ? state.GetOrdinarySnapshot(DateTime.UtcNow, configuration, target)
-                : UntrackedSnapshot(configuration);
+                ? state.GetOrdinarySnapshot(DateTime.UtcNow, GetConfiguration(actor), target)
+                : new PairedRangedOrdinarySnapshot(Read(actor, StatType.PairedRangedOrdinaryDamagePercentAdjustment), 0);
         }
 
         private static bool NeedsOrdinaryState(PairedRangedTraitConfiguration configuration) =>
@@ -290,6 +305,16 @@ namespace SWLOR.Game.Server.Service
 
         private static PairedRangedOrdinarySnapshot UntrackedSnapshot(PairedRangedTraitConfiguration configuration) =>
             new(configuration.OrdinaryDamagePercentAdjustment, 0);
+
+        /// <summary>The subset of <see cref="GetConfiguration"/> read by <see cref="NeedsOrdinaryState"/> and <see cref="UntrackedSnapshot"/>.</summary>
+        private static PairedRangedTraitConfiguration GetOrdinaryConfiguration(uint actor) => new()
+        {
+            OrdinaryDamagePercentAdjustment = Read(actor, StatType.PairedRangedOrdinaryDamagePercentAdjustment),
+            OrdinaryHitRestoreCount = Read(actor, StatType.PairedRangedOrdinaryHitRestoreCount),
+            OrdinaryHitStaminaRestore = Read(actor, StatType.PairedRangedOrdinaryHitStaminaRestore),
+            RepeatedTargetRequiredHits = Read(actor, StatType.PairedRangedRepeatedTargetRequiredHits),
+            RepeatedTargetDamagePercent = Read(actor, StatType.PairedRangedRepeatedTargetDamagePercent),
+        };
 
         private static PairedRangedTraitState GetState(uint actor)
         {

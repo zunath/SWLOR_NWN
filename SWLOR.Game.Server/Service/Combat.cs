@@ -1654,6 +1654,7 @@ namespace SWLOR.Game.Server.Service
             var appliesDirectDamageEffects = deliveryType == CombatDamageDeliveryType.Direct;
             if (appliesDirectDamageEffects && attacker != defender &&
                 GetIsObjectValid(attacker) && GetIsObjectValid(defender) && GetIsReactionTypeHostile(attacker, defender) &&
+                PairedRangedTraits.HasDirectHostileDamageTrait(defender) &&
                 HasPositiveDirectDamageAfterNativeMitigation(attacker, defender, damage, damageType, isAbilityDamage, skillType))
                 PairedRangedTraits.RecordDirectHostileDamage(defender);
 

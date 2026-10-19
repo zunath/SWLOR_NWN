@@ -57,6 +57,15 @@ namespace SWLOR.Game.Server.Feature
         [NWNEventHandler(ScriptName.OnCreatureDeathAfter)]
         public static void OnCreatureDeath() => ClearCombat(OBJECT_SELF, CombatRecordInterruptCause.Died);
 
+        // Area despawns destroy creatures without firing death or player-exit events.
+        [NWNEventHandler(ScriptName.OnObjectDestroyed)]
+        public static void OnDestroyed()
+        {
+            var actor = OBJECT_SELF;
+            RangedWeaponAttackContext.Clear(actor);
+            PairedRangedTraits.ForgetDestroyed(actor);
+        }
+
         [NWNEventHandler(ScriptName.OnModuleExit)]
         public static void OnExit()
         {

@@ -33,7 +33,7 @@ SWLOR is a live Neverwinter Nights: Enhanced Edition persistent world. Server lo
 - **Token economy:** never read a whole `Module/` JSON file (some reach 25 MB); search instead. Read only the guide sections you need, and keep command output small.
 - **Pull requests:** one branch and pull request per request, from up-to-date `origin/master`. Request a Codex review (`@codex review`) and keep fixing until it finds nothing; never wait on a rate-limited CodeRabbit; resolve every thread (`Readmes/PullRequests.md`).
 - **Game text encoding:** punctuation is ASCII (straight quotes, `-`, `...`), never curly quotes or dashes pasted from documents or AI chats. Keep accented letters, but in Module JSON store them as single Windows-1252 bytes, never UTF-8, or the game shows `Ã©` and `â€™` (`Readmes/CodingStandards.md`).
-- **Public repository:** keep secrets and anti-abuse specifics out of commits, pull requests, and player-facing text.
+- **Public repository:** keep secrets and RP XP OOC detection specifics out of commits, pull requests, and player-facing text.
 
 ## Guides
 
@@ -58,6 +58,7 @@ Read the guide before working in its area. `Readmes/README.md` lists every guide
 Skills live only in `skills/`, shared by both agents; edit them in place and keep them agent-neutral. Read the matching `SKILL.md` before working in its scope or when the user names it, and follow its referenced files as needed.
 
 - Beasts (definitions, taming and incubation, mutation paths, DNA and TLK assets, generators): `skills/swlor-beast-generation/SKILL.md`
+- Bug reports ("run the bug report process": Discord bug-forum triage, reactions, fix sessions, PR links, closing): `skills/swlor-bug-report-triage/SKILL.md`
 - Blaster models (imports, original designs, grip, scale, muzzle alignment, textures, inventory art): `skills/swlor-blaster-models/SKILL.md`
 - NUI windows (tabs, tables, modals, bindings): `skills/swlor-gui-window-generation/SKILL.md`
 - Quests (NPC quests, dialogue, journals, objectives, rewards, prerequisites, placement): `skills/swlor-quest-generation/SKILL.md`

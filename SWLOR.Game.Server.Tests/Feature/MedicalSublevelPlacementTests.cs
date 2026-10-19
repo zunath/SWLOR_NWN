@@ -66,8 +66,10 @@ public class MedicalSublevelPlacementTests
     {
         using var dungeon = LoadModuleJson("git", DungeonArea);
 
-        GetLocalString(dungeon.RootElement, "CREATURE_SPAWN_TABLE_ID")
-            .Should().Be("CAPSTONE_DANTOOINE_MEDICAL_SUBLEVEL");
+        // The table spawns from fixed waypoints tagged with its id, not the area local; see
+        // DungeonEncounterWalkmeshTests.MedicalSublevel_UsesTwentyFixedGeneralSpawnsOnReachableClearFloor.
+        EnumerateWaypointTags(dungeon.RootElement)
+            .Should().Contain("CAPSTONE_DANTOOINE_MEDICAL_SUBLEVEL");
         GetLocalInt(dungeon.RootElement, "IS_DUNGEON").Should().Be(1);
         GetLocalInt(dungeon.RootElement, "MINI_MAP_DISABLED").Should().Be(1);
         GetLocalInt(dungeon.RootElement, "MAP_KEY_ITEM_ID")

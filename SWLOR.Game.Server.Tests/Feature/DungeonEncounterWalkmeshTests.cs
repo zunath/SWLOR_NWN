@@ -159,10 +159,115 @@ public class DungeonEncounterWalkmeshTests
         placeables.Where(p => Text(p, "TemplateResRef") == "tele_obj").Select(p => Local(p, "DESTINATION"))
             .Should().Equal(new[] { "SMUG_BACK_ENT" }, "the exit is the only teleport; every room connects on foot");
 
+        var waypoints = area.GetProperty("WaypointList").GetProperty("value").EnumerateArray().ToArray();
+        var reachable = ReachableOnFoot(root, "pw_sc_emfbackr", "sw_t_office", "SMUG_BACKROOMS");
+
+        var spawns = waypoints.Where(w => Text(w, "Tag") is "CAPSTONE_SMUGGLERS_MOON_FIGHT_CLUB_BACKROOMS" or "FIGHTCLUB_BACKROOMS_RARES"
+            || Text(w, "Tag").EndsWith("_WD_SPAWN")).ToArray();
+        spawns.Should().HaveCount(24);
+        foreach (var spawn in spawns)
+        {
+            reachable(Number(spawn, "XPosition"), Number(spawn, "YPosition")).Should().BeTrue(
+                $"{Text(spawn, "Tag")} at ({Number(spawn, "XPosition")}, {Number(spawn, "YPosition")}) must be reachable on foot from the entrance");
+        }
+    }
+
+    [Test]
+    public void MedicalSublevel_UsesTwentyFixedGeneralSpawnsOnReachableClearFloor()
+    {
+        var root = FindRoot();
+        using var git = JsonDocument.Parse(File.ReadAllText(Path.Combine(root, "Module", "git", "pw_sc_dantmedsub.git.json")));
+        var area = git.RootElement;
+        area.GetProperty("VarTable").GetProperty("value").EnumerateArray()
+            .Should().NotContain(v => Text(v, "Name") == "CREATURE_SPAWN_TABLE_ID",
+                "random area positions put enemies inside and against the wall placeables");
+        var waypoints = area.GetProperty("WaypointList").GetProperty("value").EnumerateArray().ToArray();
+        var generalSpawns = waypoints.Where(w => Text(w, "Tag") == "CAPSTONE_DANTOOINE_MEDICAL_SUBLEVEL").ToArray();
+        generalSpawns.Should().HaveCount(20, "the 16 by 16 area previously received twenty random general spawns");
+        generalSpawns.Select(w => (Number(w, "XPosition"), Number(w, "YPosition"))).Should().OnlyHaveUniqueItems();
+
+        var spawnPoints = waypoints.Where(w => Text(w, "Tag") == "CAPSTONE_DANTOOINE_MEDICAL_SUBLEVEL"
+            || Text(w, "Tag") == "DANTOOINE_MEDICAL_SUBLEVEL_RARES" || Text(w, "Tag").EndsWith("_WD_SPAWN")).ToArray();
+        spawnPoints.Should().HaveCount(24);
+        var floor = ReadWalkableFloor(root, "pw_sc_dantmedsub", "sw_t_garage");
+        var appearances = TwoDAReader.Read(Path.Combine(root, "SWLOR_Haks", "sw_2da", "placeables.2da"));
+        var meshes = Directory.EnumerateFiles(Path.Combine(root, "SWLOR_Haks"), "*.pwk", SearchOption.AllDirectories)
+            .ToDictionary(Path.GetFileNameWithoutExtension, StringComparer.OrdinalIgnoreCase);
+        var scenery = area.GetProperty("Placeable List").GetProperty("value").EnumerateArray()
+            .Select(p => (Model: appearances.GetValue((int)Number(p, "Appearance"), "ModelName"), Placeable: p))
+            .Where(p => meshes.ContainsKey(p.Model))
+            .SelectMany(p => ReadCollisionBounds(meshes[p.Model], Matrix4x4.CreateRotationZ(Number(p.Placeable, "Bearing"))
+                * Matrix4x4.CreateTranslation(Number(p.Placeable, "X"), Number(p.Placeable, "Y"), Number(p.Placeable, "Z"))))
+            .ToArray();
+        var reachable = ReachableOnFoot(root, "pw_sc_dantmedsub", "sw_t_garage", "to_medsublevel");
+
+        foreach (var spawn in spawnPoints)
+        {
+            var position = new Vector3(Number(spawn, "XPosition"), Number(spawn, "YPosition"), Number(spawn, "ZPosition"));
+            var body = Enumerable.Range(0, 16).Select(i => position + new Vector3(
+                .75f * MathF.Cos(i * MathF.PI / 8), .75f * MathF.Sin(i * MathF.PI / 8), 0)).Prepend(position);
+            foreach (var sample in body)
+            {
+                floor.Any(t => Covers(t, sample)).Should().BeTrue($"{Text(spawn, "Tag")} at {position} needs walkable floor at {sample}");
+                scenery.Any(bounds => Inside(bounds, sample)).Should().BeFalse(
+                    $"{Text(spawn, "Tag")} at {position} must clear scenery at {sample}");
+            }
+            reachable(position.X, position.Y).Should().BeTrue(
+                $"{Text(spawn, "Tag")} at {position} must be reachable on foot from the entrance");
+        }
+    }
+
+    // Qion Test Site, Forge Caverns and Canyon Range use base-game tiles whose walkmeshes are not in the repository.
+    [TestCase("pw_sc_jedihalls", "sw_t_office")]
+    [TestCase("pw_sc_cryptdeep", "sw_t_alienruin")]
+    [TestCase("pw_sc_repubeng", "sw_t_facility")]
+    [TestCase("pw_sc_tarnpres", "sw_t_jungle")]
+    public void SlicingTerminals_HaveAClearApproachOnTheirUseSide(string area, string hakFolder)
+    {
+        var root = FindRoot();
+        using var git = JsonDocument.Parse(File.ReadAllText(Path.Combine(root, "Module", "git", area + ".git.json")));
+        var terminals = git.RootElement.GetProperty("WaypointList").GetProperty("value").EnumerateArray()
+            .Where(w => Text(w, "Tag") == "SLICING_TERMINAL_T5").ToArray();
+        terminals.Should().HaveCount(2);
+        var floor = ReadWalkableFloor(root, area, hakFolder);
+        var appearances = TwoDAReader.Read(Path.Combine(root, "SWLOR_Haks", "sw_2da", "placeables.2da"));
+        var meshes = Directory.EnumerateFiles(Path.Combine(root, "SWLOR_Haks"), "*.pwk", SearchOption.AllDirectories)
+            .ToDictionary(Path.GetFileNameWithoutExtension, StringComparer.OrdinalIgnoreCase);
+        var scenery = git.RootElement.GetProperty("Placeable List").GetProperty("value").EnumerateArray()
+            .Select(p => (Model: appearances.GetValue((int)Number(p, "Appearance"), "ModelName"), Placeable: p))
+            .Where(p => meshes.ContainsKey(p.Model))
+            .SelectMany(p => ReadCollisionBounds(meshes[p.Model], Matrix4x4.CreateRotationZ(Number(p.Placeable, "Bearing"))
+                * Matrix4x4.CreateTranslation(Number(p.Placeable, "X"), Number(p.Placeable, "Y"), Number(p.Placeable, "Z"))))
+            .ToArray();
+
+        foreach (var terminal in terminals)
+        {
+            var position = new Vector3(Number(terminal, "XPosition"), Number(terminal, "YPosition"), Number(terminal, "ZPosition"));
+            var facing = new Vector3(Number(terminal, "XOrientation"), Number(terminal, "YOrientation"), 0);
+            // The terminal model (shp_crate1_m) is used from the side opposite its facing; verified in the client.
+            var approach = position - facing * 1.5f;
+            var body = Enumerable.Range(0, 8).Select(i => approach + new Vector3(
+                .4f * MathF.Cos(i * MathF.PI / 4), .4f * MathF.Sin(i * MathF.PI / 4), 0)).Prepend(approach).ToArray();
+            foreach (var sample in body)
+            {
+                floor.Any(t => Covers(t, sample, .5f)).Should().BeTrue(
+                    $"{area} slicing terminal at {position} needs walkable floor on its use side at {sample}");
+                scenery.Any(bounds => Inside(bounds, sample)).Should().BeFalse(
+                    $"{area} slicing terminal at {position} needs its use side at {sample} clear of scenery");
+            }
+        }
+    }
+
+    // Flood fill on foot from an arrival waypoint over native floor minus placeable collision.
+    private static Func<float, float, bool> ReachableOnFoot(string root, string area, string hakFolder, string entranceTag)
+    {
+        using var git = JsonDocument.Parse(File.ReadAllText(Path.Combine(root, "Module", "git", area + ".git.json")));
+        var placeables = git.RootElement.GetProperty("Placeable List").GetProperty("value").EnumerateArray().ToArray();
+        var waypoints = git.RootElement.GetProperty("WaypointList").GetProperty("value").EnumerateArray().ToArray();
         const float cell = .25f;
         const int size = (int)(160 / cell);
         var floor = new bool[size, size];
-        foreach (var t in ReadWalkableFloor(root, "pw_sc_emfbackr", "sw_t_office"))
+        foreach (var t in ReadWalkableFloor(root, area, hakFolder))
             Rasterize(t, cell, size, (i, j, z) => { if (MathF.Abs(z) < .5f) floor[i, j] = true; });
 
         var blocked = new bool[size, size];
@@ -214,11 +319,10 @@ public class DungeonEncounterWalkmeshTests
             }
         }
 
-        var waypoints = area.GetProperty("WaypointList").GetProperty("value").EnumerateArray().ToArray();
         (int, int) CellOf(JsonElement w) => ((int)(Number(w, "XPosition") / cell), (int)(Number(w, "YPosition") / cell));
         var reached = new bool[size, size];
         var queue = new Queue<(int, int)>();
-        var entrance = CellOf(waypoints.Single(w => Text(w, "Tag") == "SMUG_BACKROOMS"));
+        var entrance = CellOf(waypoints.Single(w => Text(w, "Tag") == entranceTag));
         free[entrance.Item1, entrance.Item2].Should().BeTrue("the entrance arrival point needs clear floor");
         reached[entrance.Item1, entrance.Item2] = true;
         queue.Enqueue(entrance);
@@ -233,56 +337,7 @@ public class DungeonEncounterWalkmeshTests
                 }
         }
 
-        var spawns = waypoints.Where(w => Text(w, "Tag") is "CAPSTONE_SMUGGLERS_MOON_FIGHT_CLUB_BACKROOMS" or "FIGHTCLUB_BACKROOMS_RARES"
-            || Text(w, "Tag").EndsWith("_WD_SPAWN")).ToArray();
-        spawns.Should().HaveCount(24);
-        foreach (var spawn in spawns)
-        {
-            var (i, j) = CellOf(spawn);
-            reached[i, j].Should().BeTrue(
-                $"{Text(spawn, "Tag")} at ({Number(spawn, "XPosition")}, {Number(spawn, "YPosition")}) must be reachable on foot from the entrance");
-        }
-    }
-
-    // Qion Test Site, Forge Caverns and Canyon Range use base-game tiles whose walkmeshes are not in the repository.
-    [TestCase("pw_sc_jedihalls", "sw_t_office")]
-    [TestCase("pw_sc_cryptdeep", "sw_t_alienruin")]
-    [TestCase("pw_sc_repubeng", "sw_t_facility")]
-    [TestCase("pw_sc_tarnpres", "sw_t_jungle")]
-    public void SlicingTerminals_HaveAClearApproachOnTheirUseSide(string area, string hakFolder)
-    {
-        var root = FindRoot();
-        using var git = JsonDocument.Parse(File.ReadAllText(Path.Combine(root, "Module", "git", area + ".git.json")));
-        var terminals = git.RootElement.GetProperty("WaypointList").GetProperty("value").EnumerateArray()
-            .Where(w => Text(w, "Tag") == "SLICING_TERMINAL_T5").ToArray();
-        terminals.Should().HaveCount(2);
-        var floor = ReadWalkableFloor(root, area, hakFolder);
-        var appearances = TwoDAReader.Read(Path.Combine(root, "SWLOR_Haks", "sw_2da", "placeables.2da"));
-        var meshes = Directory.EnumerateFiles(Path.Combine(root, "SWLOR_Haks"), "*.pwk", SearchOption.AllDirectories)
-            .ToDictionary(Path.GetFileNameWithoutExtension, StringComparer.OrdinalIgnoreCase);
-        var scenery = git.RootElement.GetProperty("Placeable List").GetProperty("value").EnumerateArray()
-            .Select(p => (Model: appearances.GetValue((int)Number(p, "Appearance"), "ModelName"), Placeable: p))
-            .Where(p => meshes.ContainsKey(p.Model))
-            .SelectMany(p => ReadCollisionBounds(meshes[p.Model], Matrix4x4.CreateRotationZ(Number(p.Placeable, "Bearing"))
-                * Matrix4x4.CreateTranslation(Number(p.Placeable, "X"), Number(p.Placeable, "Y"), Number(p.Placeable, "Z"))))
-            .ToArray();
-
-        foreach (var terminal in terminals)
-        {
-            var position = new Vector3(Number(terminal, "XPosition"), Number(terminal, "YPosition"), Number(terminal, "ZPosition"));
-            var facing = new Vector3(Number(terminal, "XOrientation"), Number(terminal, "YOrientation"), 0);
-            // The terminal model (shp_crate1_m) is used from the side opposite its facing; verified in the client.
-            var approach = position - facing * 1.5f;
-            var body = Enumerable.Range(0, 8).Select(i => approach + new Vector3(
-                .4f * MathF.Cos(i * MathF.PI / 4), .4f * MathF.Sin(i * MathF.PI / 4), 0)).Prepend(approach).ToArray();
-            foreach (var sample in body)
-            {
-                floor.Any(t => Covers(t, sample, .5f)).Should().BeTrue(
-                    $"{area} slicing terminal at {position} needs walkable floor on its use side at {sample}");
-                scenery.Any(bounds => Inside(bounds, sample)).Should().BeFalse(
-                    $"{area} slicing terminal at {position} needs its use side at {sample} clear of scenery");
-            }
-        }
+        return (x, y) => reached[(int)(x / cell), (int)(y / cell)];
     }
 
     private static bool Inside((Vector3 Min, Vector3 Max, Matrix4x4 Inverse) bounds, Vector3 sample)

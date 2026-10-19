@@ -31,7 +31,7 @@ SWLOR is a live Neverwinter Nights: Enhanced Edition persistent world. Server lo
 - **Clean up as you go:** delete generated files (renders, models, textures, HAK and module copies, client profiles, containers) once nothing needs them, without being asked. Keep only the evidence the user needs.
 - **Token economy:** never read a whole `Module/` JSON file (some reach 25 MB); search instead. Read only the guide sections you need, and keep command output small.
 - **Pull requests:** one branch and pull request per request, from up-to-date `origin/master`. Request a Codex review (`@codex review`) and keep fixing until it finds nothing; never wait on a rate-limited CodeRabbit; resolve every thread (`Readmes/PullRequests.md`).
-- **Game text is plain ASCII:** straight quotes, `-`, and `...`; never paste curly quotes, dashes, or accented letters into Module JSON, C#, or TLK text, because the game shows them as `â€™` (`Readmes/CodingStandards.md`).
+- **Game text encoding:** punctuation is ASCII (straight quotes, `-`, `...`), never curly quotes or dashes pasted from documents or AI chats. Keep accented letters, but in Module JSON store them as single Windows-1252 bytes, never UTF-8, or the game shows `Ã©` and `â€™` (`Readmes/CodingStandards.md`).
 - **Public repository:** keep secrets and anti-abuse specifics out of commits, pull requests, and player-facing text.
 
 ## Guides

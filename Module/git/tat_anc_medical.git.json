@@ -20029,7 +20029,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Camera de surveillance"
+            "0": "Caméra de surveillance"
           }
         },
         "OnClick": {

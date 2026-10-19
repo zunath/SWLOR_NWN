@@ -170,7 +170,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Detritus"
+            "0": "Détritus"
           }
         },
         "OnClick": {
@@ -398,7 +398,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Detritus"
+            "0": "Détritus"
           }
         },
         "OnClick": {
@@ -626,7 +626,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Detritus"
+            "0": "Détritus"
           }
         },
         "OnClick": {

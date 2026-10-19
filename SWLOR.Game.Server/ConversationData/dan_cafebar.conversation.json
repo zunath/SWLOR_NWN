@@ -21,7 +21,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "\"Welcome to the Starlight Cafe, traveler! I see you've made your way to our humble establishment here on Dantooine. What can I get you today? A refreshing blue milk or perhaps a strong jawa juice?\"",
+          "Text": "\"Welcome to the Starlight Café, traveler! I see you've made your way to our humble establishment here on Dantooine. What can I get you today? A refreshing blue milk or perhaps a strong jawa juice?\"",
           "Style": 0,
           "Color": null
         }
@@ -140,7 +140,7 @@
     "reply-00001": {
       "Id": "reply-00001",
       "Text": {
-        "Text": "\"It's beautiful here. I've heard Dantooine is known for its lush landscapes. How long have you been running this cafe?\"",
+        "Text": "\"It's beautiful here. I've heard Dantooine is known for its lush landscapes. How long have you been running this café?\"",
         "Style": 4,
         "Color": null
       },
@@ -163,7 +163,7 @@
     "reply-00002": {
       "Id": "reply-00002",
       "Text": {
-        "Text": "\"Jedi, huh? Intriguing. And what's the specialty dish here? Anything unique to the Starlight Cafe?\"",
+        "Text": "\"Jedi, huh? Intriguing. And what's the specialty dish here? Anything unique to the Starlight Café?\"",
         "Style": 4,
         "Color": null
       },

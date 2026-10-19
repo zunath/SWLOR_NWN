@@ -17,10 +17,19 @@ public class GameTextEncodingTests
     // An NWN color token is "<c" followed by three raw channel bytes and ">".
     private static readonly Regex ColorToken = new("<c[\\s\\S]{3}>", RegexOptions.Compiled);
 
+    // UTF-8 encodes every non-ASCII character as a lead byte followed by continuation bytes.
+    private static readonly Regex Utf8Sequence = new("[\u00C2-\u00F4][\u0080-\u00BF]+", RegexOptions.Compiled);
+
     private static readonly Encoding Windows1252 = CreateWindows1252();
 
+    // Left as authored at the owner's request.
+    private static readonly HashSet<string> AllowedCodeLines = new(StringComparer.Ordinal)
+    {
+        "StatusText = \"● Active\";"
+    };
+
     [Test]
-    public void ModuleJsonText_IsAsciiOutsideColorTokens()
+    public void ModuleJsonText_UsesAsciiPunctuationAndWindows1252Letters()
     {
         var moduleRoot = Path.Combine(FindRepositoryRoot().FullName, "Module");
         var violations = new List<string>();
@@ -32,7 +41,7 @@ public class GameTextEncodingTests
                 continue;
 
             // Latin-1 maps each byte to one char, so raw color-token bytes stay three chars wide
-            // and a multi-byte UTF-8 sequence shows up as non-ASCII text outside any token.
+            // and a multi-byte UTF-8 sequence stays visible as its separate bytes.
             using var reader = new JsonTextReader(new StringReader(Encoding.Latin1.GetString(bytes)))
             {
                 DateParseHandling = DateParseHandling.None
@@ -44,15 +53,18 @@ public class GameTextEncodingTests
                     continue;
 
                 var text = ColorToken.Replace((string)value.Value!, string.Empty);
-                var index = text.ToList().FindIndex(character => character >= 0x80);
+                var utf8 = Utf8Sequence.Match(text);
+                var index = utf8.Success
+                    ? utf8.Index
+                    : text.ToList().FindIndex(character => character >= 0x80 && !IsWindows1252Letter(character));
                 if (index >= 0)
                     violations.Add($"{relativePath} {value.Path}: ...{Snippet(text, index)}...");
             }
         }
 
         violations.Should().BeEmpty(
-            "Module JSON text must be plain ASCII (straight quotes, '-', '...'); only color-token " +
-            "channels may hold raw Windows-1252 bytes");
+            "Module JSON punctuation must be ASCII (straight quotes, '-', '...') and accented letters " +
+            "must be single Windows-1252 bytes, never UTF-8");
     }
 
     [Test]
@@ -72,6 +84,9 @@ public class GameTextEncodingTests
             for (var lineIndex = 0; lineIndex < lines.Length; lineIndex++)
             {
                 var code = StripComment(lines[lineIndex]);
+                if (AllowedCodeLines.Contains(code.Trim()))
+                    continue;
+
                 var bad = code.FirstOrDefault(character => character >= 0x80 && !IsWindows1252(character));
                 if (bad != default)
                     violations.Add($"{relativePath}:{lineIndex + 1}: U+{(int)bad:X4} in {code.Trim()}");
@@ -121,6 +136,10 @@ public class GameTextEncodingTests
     private static bool IsVoidField(JValue value) =>
         value.Parent is JProperty { Name: "value", Parent: JObject field } &&
         (string?)field["type"] == "void";
+
+    /// <summary>True when a Latin-1-decoded byte is a letter in Windows-1252, such as 0xE9 (é).</summary>
+    private static bool IsWindows1252Letter(char character) =>
+        character <= 0xFF && char.IsLetter(Windows1252.GetString(new[] { (byte)character })[0]);
 
     private static bool IsWindows1252(char character)
     {

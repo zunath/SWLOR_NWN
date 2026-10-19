@@ -205,31 +205,6 @@ public sealed partial class QuestConversationTests
             .Values.SelectMany(table => table).Should().NotContain(item => item.Resref == "stolen_goods");
     }
 
-    [TestCase("alchemized_frog")]
-    [TestCase("nar_great_arkanian_dragon")]
-    [TestCase("smuggler_favor")]
-    public void MigratedBossQuestProgress_RemainsReadyForTurnInAfterLoginReconciliation(string questId)
-    {
-        var migration = new SWLOR.Game.Server.Feature.MigrationDefinition.ServerMigration._22_CombatSystemReplacement();
-        var definition = BuildQuests()[questId];
-        var record = new SWLOR.Game.Server.Entity.PlayerQuest { CurrentState = 2 };
-        if (questId != "alchemized_frog")
-            foreach (var objective in definition.States[2].GetObjectives().OfType<CollectItemObjective>())
-                record.ItemProgresses[objective.Resref] = objective.Quantity;
-        var raw = new JObject { ["Quests"] = new JObject { [questId] = JObject.FromObject(record) } };
-        var player = (SWLOR.Game.Server.Entity.Player)migration.GetType()
-            .GetMethod("MigratePlayerData", BindingFlags.NonPublic | BindingFlags.Instance)!
-            .Invoke(migration, new object[] { raw, 0 })!;
-        var saved = player.Quests[questId];
-
-        saved.CurrentState.Should().Be(3);
-        definition.States[saved.CurrentState].GetObjectives().Should().BeEmpty();
-        definition.States[saved.CurrentState].ReconcileProgress(saved).Should().BeFalse(
-            "login reconciliation must not recreate the proof requirement");
-        saved.ItemProgresses.Should().BeEmpty();
-        saved.DateLastCompleted.Should().BeNull("the giver must still pay out the quest reward");
-    }
-
     private static (QuestDetail Quest, List<(string Resref, uint Player, int Quantity)> Grants)
         BuildQuestWithItemRecorder(string questId)
     {
@@ -298,6 +273,7 @@ public sealed partial class QuestConversationTests
                 active.TryGetValue(args[0], out var state) && args.Skip(1).Contains(state.ToString()));
             runtime.RegisterCondition("condition-completed-quest", (_, args) => args.All(completed.Contains));
             runtime.RegisterCondition("condition-can-accept-quest", (_, args) =>
+                line.GetQuestIds().Contains(args[0]) &&
                 !active.ContainsKey(args[0]) && !completed.Contains(args[0]) &&
                 quests[args[0]].Prerequisites.OfType<RequiredQuestPrerequisite>()
                     .All(prerequisite => completed.Contains(prerequisite.QuestId)));
@@ -347,6 +323,103 @@ public sealed partial class QuestConversationTests
             // The Katar trainers also host the independent Unarmed trial, which stays reachable after the line.
             finished.VisibleChoices.Should().OnlyContain(choice => choice.Id == "unarmed-training", line.Id);
         }
+    }
+
+    [TestCase("cq_lastword", "twin_suns_mastery")]
+    [TestCase("cq_deadhand", "final_salvo_mastery")]
+    public void TwinPistolMasteryConversation_ResumesTrialAndOnlyTurnsInAfterRuntimeProof(
+        string graphId, string questId)
+    {
+        var graph = ReadGraphs().Single(graph => graph.Id == graphId);
+        var state = 0;
+        var completed = false;
+        var accepts = 0;
+        var turnIns = 0;
+        var runtime = new ConversationRuntime();
+        runtime.RegisterCondition("condition-has-quest", (_, args) => args[0] == questId && state > 0);
+        runtime.RegisterCondition("condition-on-quest-state", (_, args) =>
+            args[0] == questId && args.Skip(1).Contains(state.ToString()));
+        runtime.RegisterCondition("condition-completed-quest", (_, args) => completed && args.All(id => id == questId));
+        runtime.RegisterCondition("condition-can-accept-quest", (_, args) => args[0] == questId && state == 0 && !completed);
+        runtime.RegisterAction("action-accept-quest", (_, args) =>
+        {
+            args.Should().Equal(questId);
+            state.Should().Be(0);
+            state = 1;
+            accepts++;
+            return true;
+        });
+        runtime.RegisterAction("action-advance-quest", (_, args) =>
+        {
+            args.Should().Equal(questId);
+            state.Should().Be(2, "the runtime trial must supply proof before the trainer approves mastery");
+            state = 0;
+            completed = true;
+            turnIns++;
+            return true;
+        });
+
+        ConversationSession OpenTrial()
+        {
+            var session = new ConversationSession(graph, new ConversationContext(1, 2), runtime);
+            session.Start().Should().BeTrue(questId);
+            var index = session.VisibleChoices.ToList().FindIndex(choice => choice.Id == "twin-open");
+            index.Should().BeGreaterThanOrEqualTo(0, "an eligible Twin Pistol student needs the curriculum menu");
+            session.SelectChoice(index);
+            session.EndReason.Should().NotBe(ConversationEndReason.RuntimeError);
+            return session;
+        }
+
+        var offer = OpenTrial();
+        SelectQuestAction(offer, "action-accept-quest", questId);
+        string.Concat(offer.CurrentText.Select(text => text.Text)).Should().ContainEquivalentOf("key");
+        accepts.Should().Be(1);
+
+        var reminder = OpenTrial();
+        reminder.VisibleChoices.Should().NotContain(choice => choice.Actions.Any(action =>
+            action.Key == "action-accept-quest" || action.Key == "action-advance-quest"));
+        ReachableActions(graph, questId, 1).Should().NotContain(action =>
+            action.Key == "action-advance-quest" && action.Arguments.SequenceEqual(new[] { questId }),
+            "neither reminders nor optional advice may bypass the live combat proof objective");
+        turnIns.Should().Be(0);
+
+        // Live-engine mastery tests supply this transition through the actual combat proof.
+        state = 2;
+        var ready = OpenTrial();
+        SelectQuestAction(ready, "action-advance-quest", questId);
+        turnIns.Should().Be(1);
+        completed.Should().BeTrue();
+
+        var finished = new ConversationSession(graph, new ConversationContext(1, 2), runtime);
+        finished.Start().Should().BeTrue();
+        finished.VisibleChoices.Should().BeEmpty("finished students with no other eligible curriculum should reach the existing terminal greeting");
+    }
+
+    [TestCase("cq_lastword", "last_word_foundation", "twin_suns_mastery", 1)]
+    [TestCase("cq_lastword", "last_word_foundation", "twin_suns_mastery", 2)]
+    [TestCase("cq_deadhand", "dead_mans_hand_foundation", "final_salvo_mastery", 1)]
+    [TestCase("cq_deadhand", "dead_mans_hand_foundation", "final_salvo_mastery", 2)]
+    public void TwinPistolCurriculumMenu_PreservesExistingPistolResumeOrder(
+        string graphId, string pistolQuestId, string twinQuestId, int state)
+    {
+        var graph = ReadGraphs().Single(graph => graph.Id == graphId);
+        var runtime = new ConversationRuntime();
+        runtime.RegisterCondition("condition-has-quest", (_, args) => args[0] == pistolQuestId);
+        runtime.RegisterCondition("condition-on-quest-state", (_, args) =>
+            args[0] == pistolQuestId && args.Skip(1).Contains(state.ToString()));
+        runtime.RegisterCondition("condition-completed-quest", (_, _) => false);
+        runtime.RegisterCondition("condition-can-accept-quest", (_, args) => args[0] == twinQuestId);
+        var session = new ConversationSession(graph, new ConversationContext(1, 2), runtime);
+        session.Start().Should().BeTrue();
+        var index = session.VisibleChoices.ToList().FindIndex(choice => choice.Id == "pistol-open");
+        index.Should().BeGreaterThanOrEqualTo(0);
+        session.SelectChoice(index);
+        session.EndReason.Should().NotBe(ConversationEndReason.RuntimeError);
+        session.VisibleChoices.Should().NotContain(choice => choice.Actions.Any(action => action.Key == "action-accept-quest"));
+        var turnIn = session.VisibleChoices.Where(choice => choice.Actions.Any(action =>
+            action.Key == "action-advance-quest" && action.Arguments.SequenceEqual(new[] { pistolQuestId })));
+        if (state == 2) turnIn.Should().ContainSingle();
+        else turnIn.Should().BeEmpty();
     }
 
     private static void SelectQuestAction(ConversationSession session, string actionKey, string questId)

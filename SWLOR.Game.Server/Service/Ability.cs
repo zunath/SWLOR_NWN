@@ -110,7 +110,10 @@ namespace SWLOR.Game.Server.Service
             bool countsAsAttackAttempt = true,
             IReadOnlyList<TelegraphGeometry> activationAreaTelegraphs = null,
             AbilityImpactSequence sequence = null,
-            uint triggeringWeapon = OBJECT_INVALID)
+            uint triggeringWeapon = OBJECT_INVALID,
+            int? triggeringWeaponDamage = null,
+            CombatDamageType? triggeringWeaponDamageType = null,
+            WeaponAbilityTraitActivation weaponTraits = null)
         {
             if (!GetIsObjectValid(activator) || ability == null)
                 return;
@@ -121,11 +124,15 @@ namespace SWLOR.Game.Server.Service
             var trackedImpact = GetTrackedAbilityImpact(activator);
             if (MeleeTechnique.IsSweepActivation(activator, ability))
                 trackedImpact.RecordShape(ability.SkillType, true);
-            trackedImpact.TriggeringWeaponDamage = GetIsObjectValid(triggeringWeapon)
+            if (weaponTraits != null)
+            {
+                trackedImpact.Sequence.WeaponTraits = weaponTraits;
+            }
+            trackedImpact.TriggeringWeaponDamage = triggeringWeaponDamage ?? (GetIsObjectValid(triggeringWeapon)
                 ? WeaponDamage.GetEffectiveDMG(activator, triggeringWeapon)
-                : trackedImpact.TriggeringWeaponDamage;
-            if (GetIsObjectValid(triggeringWeapon))
-                trackedImpact.TriggeringWeaponDamageType = WeaponDamage.GetDamageType(triggeringWeapon);
+                : trackedImpact.TriggeringWeaponDamage);
+            if (triggeringWeaponDamageType.HasValue || GetIsObjectValid(triggeringWeapon))
+                trackedImpact.TriggeringWeaponDamageType = triggeringWeaponDamageType ?? WeaponDamage.GetDamageType(triggeringWeapon);
             trackedImpact.ResolveDamageBonuses = () =>
             {
                 var abilitySkillType = Combat.GetAbilitySkillType(activator, ability);
@@ -231,6 +238,31 @@ namespace SWLOR.Game.Server.Service
             return GetTrackedAbilityImpact(activator)?.Sequence;
         }
 
+        public static int GetWeaponTraitAccuracy(uint activator) =>
+            GetTrackedAbilityImpact(activator)?.Sequence.WeaponTraits is { IsCommitted: true } traits
+                ? traits.Snapshot.AccuracyAdjustment : 0;
+
+        public static void RecordSuccessfulWeaponAbilityHit(uint activator, uint target, SkillType skill)
+        {
+            if (!Combat.IsWeaponSkillType(skill)) return;
+            var traits = GetTrackedAbilityImpact(activator)?.Sequence.WeaponTraits;
+            if (traits?.IsCommitted != true) return;
+            PairedRangedTraits.CompleteWeaponAbilityHit(activator, traits);
+            // A field, channel, or multi-target action is one source activation.
+            // Later ticks cannot turn a new movement into another reward.
+            if (traits.MovementHitObserved) return;
+            traits.MovementHitObserved = true;
+            PairedRangedTraits.RecordLandedWeaponHit(activator, target);
+        }
+
+        private static int TakeWeaponTraitDamageBonus(uint activator, SkillType skill, TrackedAbilityImpact impact)
+        {
+            if (!Combat.IsWeaponSkillType(skill) || impact?.Sequence.WeaponTraits is not { IsCommitted: true } traits) return 0;
+            var profile = WeaponImpactProfile.Get(activator);
+            return traits.TryTakeDamageBonus(profile?.Weapon.Weapon ?? traits.PrimaryWeapon,
+                profile?.VolleyIndex ?? 0, profile?.VolleyCount ?? 1);
+        }
+
         /// <summary>
         /// Native current HP includes temporary HP. Subtract queued damage so another hit
         /// cannot draw healing from health already claimed by an earlier impact.
@@ -278,7 +310,8 @@ namespace SWLOR.Game.Server.Service
         /// to retain its own target or payload. Bonuses are consumed only when an impact lands.
         /// </summary>
         public static Action<T> CaptureRepeatedAbilityImpact<T>(
-            uint activator, Action<T> impactAction, int baseDamage = 0, bool requiresLivingActivator = true)
+            uint activator, Action<T> impactAction, int baseDamage = 0, bool requiresLivingActivator = true,
+            bool retainCapturedBonuses = false)
         {
             ArgumentNullException.ThrowIfNull(impactAction);
             // Scheduled damage belongs to this cast. Resolve its armed bonuses now so
@@ -290,6 +323,8 @@ namespace SWLOR.Game.Server.Service
 
             var ability = originatingImpact.Ability;
             var sequence = originatingImpact.Sequence;
+            var copyPartitionedBonuses = retainCapturedBonuses
+                ? originatingImpact.CapturePartitionedDamageBonuses() : null;
             return payload =>
             {
                 if (!GetIsObjectValid(activator) || requiresLivingActivator && GetCurrentHitPoints(activator) <= 0)
@@ -300,13 +335,17 @@ namespace SWLOR.Game.Server.Service
                 BeginAbilityImpact(activator, ability, 0, 0, countsAsAttackAttempt: false, sequence: sequence,
                     triggeringWeaponDamage: originatingImpact.TriggeringWeaponDamage,
                     triggeringWeaponDamageType: originatingImpact.TriggeringWeaponDamageType);
-                GetTrackedAbilityImpact(activator).CopyRepeatedDamageBonusesFrom(originatingImpact);
+                if (copyPartitionedBonuses != null)
+                    copyPartitionedBonuses(GetTrackedAbilityImpact(activator));
+                else
+                    GetTrackedAbilityImpact(activator).CopyRepeatedDamageBonusesFrom(originatingImpact);
                 var completed = false;
                 try
                 {
                     impactAction(payload);
                     var summary = EndAbilityImpact(activator);
-                    originatingImpact.CompleteRepeatedDamageBonusImpact(summary.ImpactedTargetCount > 0);
+                    if (!retainCapturedBonuses)
+                        originatingImpact.CompleteRepeatedDamageBonusImpact(summary.ImpactedTargetCount > 0);
                     completed = true;
                     if (CombatRecorder.IsRecording)
                         CombatRecorder.RecordRecurringAbilityImpact(activator, ability, summary);
@@ -616,9 +655,13 @@ namespace SWLOR.Game.Server.Service
         public static void ApplyHostileAbilityEnmity(uint activator, uint target, int bonus = 0)
         {
             // Damage is credited once by the actual damage event, including resistance and absorption.
-            var amount = HostileAbilityBaseEnmity + Math.Max(0, bonus);
+            var profile = WeaponImpactProfile.Get(activator);
+            var amount = CalculateHostileAbilityEnmity(bonus, profile?.VolleyIndex ?? 0, profile?.VolleyCount ?? 1);
             Enmity.ModifyEnmity(activator, target, amount);
         }
+
+        public static int CalculateHostileAbilityEnmity(int bonus, int volleyIndex = 0, int volleyCount = 1) =>
+            WeaponImpactDamagePartition.Partition(HostileAbilityBaseEnmity + Math.Max(0, bonus), volleyIndex, volleyCount);
 
         private static void ApplyMissedHostileAbilityEnmity(uint activator, uint target)
         {
@@ -776,6 +819,13 @@ namespace SWLOR.Game.Server.Service
                 return Deny("You must equip a weapon to use this ability.");
             }
 
+            if (ability.ActivationType == AbilityActivationType.Weapon ||
+                ability.IsHostileAbility && Combat.IsWeaponSkillType(ability.SkillType))
+            {
+                var equipmentError = TwinPistolEquipmentValidation.GetUnusableEquipmentError(activator);
+                if (!string.IsNullOrEmpty(equipmentError)) return Deny(equipmentError);
+            }
+
             if (Combat.GetAbilitySkillType(activator, ability) == SkillType.Force &&
                 Stat.GetStatAdjustment(activator, StatType.ForceAbilityActivationDisabled) > 0)
             {
@@ -928,8 +978,11 @@ namespace SWLOR.Game.Server.Service
         [NWNEventHandler(ScriptName.OnItemHit)]
         public static void AddLeadershipCombatPoint()
         {
-            var player = OBJECT_SELF;
-            var target = GetSpellTargetObject();
+            RecordLeadershipWeaponHit(OBJECT_SELF, GetSpellTargetObject());
+        }
+
+        public static void RecordLeadershipWeaponHit(uint player, uint target)
+        {
             if (!GetIsPC(player) || GetIsDM(player) || !GetIsObjectValid(player))
                 return;
 
@@ -2687,6 +2740,8 @@ namespace SWLOR.Game.Server.Service
             CombatDamageType damageType,
             TrackedAbilityImpact trackedImpact)
         {
+            if (WeaponImpactProfile.Get(activator) is { } explicitProfile)
+                return explicitProfile.Weapon.DamageType;
             var usesQueuedNaturalWeapon = UsesQueuedNaturalWeapon(trackedImpact, skillType);
             if (damageType != CombatDamageType.Physical ||
                 !Combat.IncludesCombatImpactWeaponDamage(skillType, usesQueuedNaturalWeapon))
@@ -3129,13 +3184,14 @@ namespace SWLOR.Game.Server.Service
             var idleBonuses = Combat.GetIdleSkillAbilityBonuses(activator, skillType);
             var damage = baseDamage +
                 ScaleImpactWeaponDamage(
+                    WeaponImpactProfile.Get(activator)?.Weapon.Damage ??
                     Combat.GetCombatImpactWeaponDamage(activator, skillType, usesQueuedNaturalWeapon, triggeringWeaponDamage: trackedImpact?.TriggeringWeaponDamage),
                     trackedImpact) +
                 Combat.GetAbilityDamageBonus(activator, skillType) +
                 Combat.GetAbilityDamageFlatAdjustment(activator, perkType, skillType) +
                 Combat.GetCostlyAbilityDamageBonus(activator, trackedImpact?.Ability, skillType) +
                 Combat.GetSameTargetPressureWeaponAbilityDamageBonus(activator, target, skillType) +
-                idleBonuses.DamageBonus;
+                idleBonuses.DamageBonus + TakeWeaponTraitDamageBonus(activator, skillType, trackedImpact);
             if (trackedImpact != null)
             {
                 damage += trackedImpact.NextAbilityDamageBonus;
@@ -3209,6 +3265,8 @@ namespace SWLOR.Game.Server.Service
                 abilityDamagePercentAdjustment,
                 lowHPAbilityDamagePercentAdjustment);
             calculatedDamage = ApplyCombatReadinessToActivatedAbilityMagnitude(activator, calculatedDamage);
+            if (WeaponImpactProfile.Get(activator) is { VolleyCount: > 1 } partition)
+                calculatedDamage = WeaponImpactDamagePartition.Partition(calculatedDamage, partition.VolleyIndex, partition.VolleyCount);
             // Saber Ward / Aegis Eternal: re-type a share of an incoming physical hit into a real Force
             // instance (mitigated by Force resistance, shown as Force) before physical resistance.
             Combat.ApplyIncomingPhysicalToForceConversion(activator, target, damageType, ref calculatedDamage, targetStatusDamageAdjustment);
@@ -3230,7 +3288,8 @@ namespace SWLOR.Game.Server.Service
                     activator,
                     target,
                     trackedImpact?.Ability?.Name);
-                ApplyTrackedCriticalHitEffects(
+                if (WeaponImpactProfile.Get(activator)?.Activation.TryCriticalNotification() != false)
+                    ApplyTrackedCriticalHitEffects(
                     activator,
                     target,
                     calculatedDamage,
@@ -3348,7 +3407,7 @@ namespace SWLOR.Game.Server.Service
                 Combat.GetAbilityDamageFlatAdjustment(activator, perkType, skillType) +
                 Combat.GetCostlyAbilityDamageBonus(activator, trackedImpact?.Ability, skillType) +
                 Combat.GetSameTargetPressureWeaponAbilityDamageBonus(activator, target, skillType) +
-                idleBonuses.DamageBonus;
+                idleBonuses.DamageBonus + TakeWeaponTraitDamageBonus(activator, skillType, trackedImpact);
             if (trackedImpact != null)
             {
                 damage += trackedImpact.NextAbilityDamageBonus;
@@ -3433,6 +3492,8 @@ namespace SWLOR.Game.Server.Service
                 abilityDamagePercentAdjustment,
                 lowHPAbilityDamagePercentAdjustment);
             calculatedDamage = ApplyCombatReadinessToActivatedAbilityMagnitude(activator, calculatedDamage);
+            if (WeaponImpactProfile.Get(activator) is { VolleyCount: > 1 } partition)
+                calculatedDamage = WeaponImpactDamagePartition.Partition(calculatedDamage, partition.VolleyIndex, partition.VolleyCount);
             // Saber Ward / Aegis Eternal: re-type a share of an incoming physical hit into a real Force
             // instance (mitigated by Force resistance, shown as Force) before physical resistance.
             Combat.ApplyIncomingPhysicalToForceConversion(activator, target, damageType, ref calculatedDamage, targetStatusDamageAdjustment);
@@ -3792,8 +3853,16 @@ namespace SWLOR.Game.Server.Service
 
             public AbilityDetail Ability { get; }
             public AbilityImpactVisualEffects VisualEffects { get; }
-            public int? TriggeringWeaponDamage { get; set; }
-            public CombatDamageType? TriggeringWeaponDamageType { get; set; }
+            public int? TriggeringWeaponDamage
+            {
+                get => Summary.TriggeringWeaponDamage;
+                set => Summary.TriggeringWeaponDamage = value;
+            }
+            public CombatDamageType? TriggeringWeaponDamageType
+            {
+                get => Summary.TriggeringWeaponDamageType;
+                set => Summary.TriggeringWeaponDamageType = value;
+            }
             // Delayed shapes share the original tracker until a rider actually needs cast state.
             public TrackedAbilityImpact SequenceOwner { get; set; }
             public AbilityImpactSequence Sequence => _sequence ??= SequenceOwner?.Sequence ?? new AbilityImpactSequence();
@@ -3828,6 +3897,16 @@ namespace SWLOR.Game.Server.Service
             public void CompleteRepeatedDamageBonusImpact(bool impactedTarget)
             {
                 _repeatedDamageBonusesConsumed |= impactedTarget;
+            }
+
+            public Action<TrackedAbilityImpact> CapturePartitionedDamageBonuses()
+            {
+                var damage = NextAbilityDamageBonus - StatusAppliedNextAttackDamageBonus;
+                var criticalRate = NextAbilityCriticalRatePercentAdjustment;
+                var defenseIgnore = NextAbilityDefenseIgnorePercentAdjustment;
+                var enmity = NextAttackEnmityBonus;
+                var criticalDamage = NextAbilityCriticalDamagePercentAdjustment;
+                return target => target.AddDamageBonuses(damage, criticalRate, defenseIgnore, enmity, 0, criticalDamage);
             }
 
             public void EnsureDamageBonuses()

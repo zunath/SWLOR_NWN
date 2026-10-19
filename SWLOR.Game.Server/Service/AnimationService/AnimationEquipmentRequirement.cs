@@ -12,7 +12,8 @@ public enum AnimationEquipmentRequirement
     Unarmed,
     Pistol,
     Rifle,
-    Throwing
+    Throwing,
+    TwinPistol
 }
 
 /// <summary>Native grip of an equipped item; Unknown deliberately cannot match an authored weapon motion.</summary>
@@ -27,5 +28,6 @@ public enum AnimationWeaponGrip
     Unarmed,
     Pistol,
     Rifle,
-    Throwing
+    Throwing,
+    CompanionPistol
 }

@@ -495,6 +495,22 @@ namespace SWLOR.NWN.API.NWScript.Enum
         PvpHealingReduction3StatusEffect = 482,
         PvpHealingReduction4StatusEffect = 483,
         PvpHealingReduction5StatusEffect = 484,
+        AkimboStanceStatusEffect = 494,
+        CrossfireStanceStatusEffect = 495,
+        MomentumStatusEffect1 = 496,
+        MomentumStatusEffect2 = 497,
+        MomentumStatusEffect3 = 498,
+        ChangingAnglesStatusEffect = 499,
+        ConvergingFireStatusEffect = 500,
+        CoolUnderFireStatusEffect = 501,
+        TwinSunsStatusEffect = 502,
+        OrdinaryAttackHasteStatusEffect1 = 503,
+        OrdinaryAttackHasteStatusEffect2 = 489,
+        OrdinaryAttackHasteStatusEffect3 = 490,
+        OrdinaryAttackHasteStatusEffect4 = 491,
+        OrdinaryAttackHasteStatusEffect5 = 492,
+        LastBastionBarrierStatusEffect = 493,
+        UnnervedStatusEffect = 485,
         // End custom status effect icons
 
         // Retain the legacy name for the same icon row.

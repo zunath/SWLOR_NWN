@@ -36,6 +36,8 @@ namespace SWLOR.Game.Server.Service.PerkService
                    HasItemInSlot(creature, InventorySlot.LeftHand, Item.PistolBaseItemTypes);
         }
 
+        public static bool HasTwinPistol(uint creature) => TwinPistolEquipment.IsActivePair(creature);
+
         public static bool HasRifle(uint creature)
         {
             return HasItemInSlot(creature, InventorySlot.RightHand, Item.RifleBaseItemTypes);
@@ -68,6 +70,7 @@ namespace SWLOR.Game.Server.Service.PerkService
 
         public static bool HasDualWield(uint creature)
         {
+            if (HasTwinPistol(creature)) return true;
             var mainHand = GetItemInSlot(InventorySlot.RightHand, creature);
             var offHand = GetOffhandAttackWeapon(creature);
             return GetIsObjectValid(mainHand) && Item.IsAttackWeaponType(GetBaseItemType(mainHand)) &&
@@ -78,9 +81,11 @@ namespace SWLOR.Game.Server.Service.PerkService
         public static uint GetOffhandAttackWeapon(uint creature)
         {
             var mainHand = GetItemInSlot(InventorySlot.RightHand, creature);
-            return GetIsObjectValid(mainHand) && Item.IsDoubleWeaponType(GetBaseItemType(mainHand))
-                ? mainHand
-                : GetItemInSlot(InventorySlot.LeftHand, creature);
+            if (GetIsObjectValid(mainHand) && Item.IsDoubleWeaponType(GetBaseItemType(mainHand))) return mainHand;
+            var offHand = GetItemInSlot(InventorySlot.LeftHand, creature);
+            // The native scheduler must never resolve the companion's inert carrier as a melee roll.
+            return GetIsObjectValid(offHand) && GetBaseItemType(offHand) == BaseItem.CompanionPistol
+                ? OBJECT_INVALID : offHand;
         }
 
         public static bool HasMainHandVibroknife(uint creature)

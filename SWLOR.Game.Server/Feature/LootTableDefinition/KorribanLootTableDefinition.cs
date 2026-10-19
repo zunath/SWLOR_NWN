@@ -228,6 +228,7 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
                 .AddItem("sith_katar", 5)
                 .AddItem("sith_staff", 5)
                 .AddItem("sith_pistol", 5)
+                .AddItem("sith_twinpistol", 5)
                 .AddItem("sith_twinblade", 5)
                 .AddItem("sith_rifle", 5)
                 .AddItem("sith_shuriken", 5)

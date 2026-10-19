@@ -81,12 +81,21 @@ namespace SWLOR.Game.Server.Service.AbilityService
         /// </summary>
         /// <param name="channelInterruptAction">Action run against the activator when the channel is interrupted.</param>
         /// <returns>An ability builder with the configured options.</returns>
-        public AbilityBuilder IsChanneledAbility(Action<uint> channelInterruptAction)
+        public AbilityBuilder IsChanneledAbility(Action<uint> channelInterruptAction, bool suppressAutoAttacks = false)
         {
             _activeAbility.IsChanneled = true;
             _activeAbility.ChannelInterruptAction = channelInterruptAction;
+            _activeAbility.SuppressesAutoAttacks = suppressAutoAttacks;
 
             return this;
+        }
+
+        public AbilityBuilder HasFixedActivationDelay(float seconds)
+        {
+            if (!float.IsFinite(seconds) || seconds <= 0f)
+                throw new ArgumentOutOfRangeException(nameof(seconds));
+            _activeAbility.HasFixedActivationDelay = true;
+            return HasActivationDelay(seconds);
         }
 
         /// <summary>
@@ -135,6 +144,13 @@ namespace SWLOR.Game.Server.Service.AbilityService
         public AbilityBuilder UsesAuthoredAnimationAtImpact()
         {
             _activeAbility.UsesAuthoredImpactAnimation = true;
+            return this;
+        }
+
+        public AbilityBuilder HasWeaponAbilityFlowDamagePerCharge(int damage)
+        {
+            if (damage < 0) throw new ArgumentOutOfRangeException(nameof(damage));
+            _activeAbility.WeaponAbilityFlowDamagePerCharge = damage;
             return this;
         }
 

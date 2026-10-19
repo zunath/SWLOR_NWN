@@ -22,6 +22,7 @@ public class RecipeCategoryBaseItemTests
         [RecipeCategoryType.Ring] = new[] { BaseItem.Ring },
         [RecipeCategoryType.Shield] = new[] { BaseItem.SmallShield, BaseItem.LargeShield, BaseItem.TowerShield },
         [RecipeCategoryType.PowerGlove] = new[] { BaseItem.PowerGlove },
+        [RecipeCategoryType.TwinPistol] = new[] { BaseItem.Sling },
     };
 
     private static readonly Dictionary<RecipeType, RecipeDetail> Recipes = typeof(IRecipeListDefinition).Assembly

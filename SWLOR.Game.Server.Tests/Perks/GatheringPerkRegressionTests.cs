@@ -92,7 +92,9 @@ public class GatheringPerkRegressionTests
     public void TreasureHunterAndCreditfinder_PreserveCreatureLootBonuses()
     {
         var loot = ReadSource("Service", "Loot.cs");
-        var markTarget = ExtractMethod(loot, "public static void MarkCreditfinderAndTreasureHunterOnTarget()");
+        var itemHit = ExtractMethod(loot, "public static void MarkCreditfinderAndTreasureHunterOnTarget()");
+        itemHit.Should().Contain("RecordWeaponHitFindBonuses(OBJECT_SELF, GetSpellTargetObject());");
+        var markTarget = ExtractMethod(loot, "public static void RecordWeaponHitFindBonuses(uint attacker, uint target)");
         var spawnLoot = ExtractMethod(
             loot,
             "private static List<uint> SpawnLoot(uint source, uint receiver, string lootTableName, int chance, int attempts)");
@@ -110,7 +112,7 @@ public class GatheringPerkRegressionTests
 
         spawnLoot.Should().Contain("var creditPercentIncrease = creditFinderLevel * 0.2f;");
         spawnLoot.Should().Contain("if (rareBonusChance > 0 && table.IsRare)");
-        spawnLoot.Should().Contain("chance += rareBonusChance;");
+        spawnLoot.Should().Contain("chance += table.GetRareChanceBonus(rareBonusChance);");
         spawnLoot.Should().Contain("table.GetRandomItem(rareBonusChance)");
         spawnLoot.Should().Contain("quantity += (int)(quantity * creditPercentIncrease);");
 

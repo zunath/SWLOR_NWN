@@ -742,7 +742,7 @@ if ($RefreshBible -and $RefreshLocalBible) {
 
 $sheetTabs = @(
     "Armor", "Vibroblade", "Vibroknife", "Lightsaber", "Heavy Vibroblade", "Spear",
-    "Twin Blade", "Saberstaff", "Katar", "Unarmed", "Staff", "Pistol", "Rifle", "Throwing",
+    "Twin Blade", "Saberstaff", "Katar", "Unarmed", "Staff", "Pistol", "Twin Pistol", "Rifle", "Throwing",
     "Force", "Devices", "Beast Mastery", "Piloting", "Leadership", "First Aid",
     "Espionage", "Smithery", "Engineering", "Fabrication", "Research", "Agriculture", "Gathering",
     "Mimicry"
@@ -941,7 +941,7 @@ foreach ($row in $manifest) {
     $cooldownSeconds = Convert-CooldownToSeconds $row.CooldownTime
     $hasDetectedRecast = $abilityFile -and (
         $abilityFile.Content -match "HasRecastDelay" -or
-        $abilityFile.Content -match "Configure(?:Hostile|SupportStatus|Cleanse|Heal|Revive)\("
+        $abilityFile.Content -match "Configure(?:Hostile|SupportStatus|Cleanse|Heal|Revive|PairAttack|PairStance)\("
     )
     if ($isActiveType -and $null -ne $cooldownSeconds -and $abilityFile -and !$hasDetectedRecast) {
         Add-AuditRow -Rows $auditRows -AuditType "MissingAbilityRecast" -BibleRow $row -File $abilityFile.File -Details "Expected cooldown: $($row.CooldownTime)"

@@ -83,7 +83,9 @@ namespace SWLOR.CombatSim.Effects
 
             // Conduit: the stance is held until toggled off (no duration in the game); the capstone lasts 45 seconds.
             [FeatType.ConduitStance1] = SelfStatus(typeof(ConduitStanceStatusEffect), 0f),
-            [FeatType.InfiniteConduit1] = SelfStatus(typeof(InfiniteConduitStatusEffect), 45f)
+            [FeatType.InfiniteConduit1] = SelfStatus(typeof(InfiniteConduitStatusEffect), 45f),
+            [FeatType.AkimboStance] = SelfStatus(typeof(AkimboStanceStatusEffect), 0f),
+            [FeatType.CrossfireStance] = SelfStatus(typeof(CrossfireStanceStatusEffect), 0f)
         };
 
         public static bool TryGet(FeatType feat, out AbilityEffect effect) => Effects.TryGetValue(feat, out effect);

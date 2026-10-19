@@ -271,7 +271,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
                 });
         }
 
-        private static void RemoveAnchorheadCanyonRangeAccessIfNoLongerNeeded(uint player)
+        internal static void RemoveAnchorheadCanyonRangeAccessIfNoLongerNeeded(uint player)
         {
             var questIds = new[]
             {
@@ -290,6 +290,8 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
                 StaffCapstoneQuestDefinition.UnmovingCenterBreachQuestId,
                 StaffCapstoneQuestDefinition.UnmovingCenterCircleQuestId,
                 StaffCapstoneQuestDefinition.UnmovingCenterMasteryQuestId,
+                TwinPistolCapstoneQuestDefinition.TwinSunsMasteryQuestId,
+                TwinPistolCapstoneQuestDefinition.FinalSalvoMasteryQuestId,
             };
 
             RemoveAreaAccessIfNoLongerNeeded(player, KeyItemType.CapstoneAnchorheadCanyonRangeKey, questIds);

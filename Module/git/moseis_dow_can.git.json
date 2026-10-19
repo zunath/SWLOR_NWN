@@ -25219,7 +25219,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Droïd - Commun"
+            "2": "Dro�d - Commun"
           }
         },
         "Looping": {
@@ -27447,7 +27447,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Stuck — moseis_dow_can"
+            "0": "Stuck - moseis_dow_can"
           }
         },
         "MapNote": {

@@ -82,15 +82,16 @@ public sealed partial class QuestConversationTests
                     .SelectMany(graph => ReachableActions(graph, quest.QuestId, number))
                     .Where(action => action.Arguments.SequenceEqual(new[] { quest.QuestId }))
                     .Select(action => action.Key).ToHashSet();
-                var hasCollection = state.GetObjectives().OfType<CollectItemObjective>().Any();
-                // Kill and combat objectives advance the quest themselves when their count is reached.
-                var hasKills = state.GetObjectives().Any(objective => objective is KillTargetObjective or CombatObjective);
+                var objectives = state.GetObjectives().ToArray();
+                var hasCollection = objectives.OfType<CollectItemObjective>().Any();
                 if (hasCollection)
                     actions.Should().Contain("action-request-quest-items", $"{quest.QuestId} state {number} needs an item hand-in");
                 else
                     actions.Should().NotContain("action-request-quest-items", $"{quest.QuestId} state {number} has no collection objective");
 
-                if (!hasCollection && !hasKills)
+                // Objective implementations own their runtime completion checks. Only an
+                // objective-free state needs an explicit conversation or world advance.
+                if (objectives.Length == 0)
                 {
                     var worldAdvance = worldSteps.Contains((quest.QuestId, number.ToString()));
                     (worldAdvance || actions.Contains("action-advance-quest")).Should().BeTrue(

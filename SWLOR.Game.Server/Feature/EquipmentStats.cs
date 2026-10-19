@@ -123,6 +123,7 @@ namespace SWLOR.Game.Server.Feature
         /// <param name="isAdding">If true, the item's stats are added, if false they're removed</param>
         public static void ApplyItemStats(uint creature, uint item, bool isAdding)
         {
+            if (GetBaseItemType(item) == BaseItem.CompanionPistol) return;
             for (var ip = GetFirstItemProperty(item); GetIsItemPropertyValid(ip); ip = GetNextItemProperty(item))
             {
                 var type = GetItemPropertyType(ip);
@@ -142,6 +143,7 @@ namespace SWLOR.Game.Server.Feature
         /// <param name="isAdding">If true, the amount is added, if false it's removed</param>
         public static void ApplyStatAmount(uint creature, uint item, ItemPropertyType type, int subtype, int amount, bool isAdding)
         {
+            if (GetBaseItemType(item) == BaseItem.CompanionPistol) return;
             if (amount <= 0 || !_statChangeActions.TryGetValue(type, out var action))
                 return;
             action(creature, item, ItemPropertyCustom(type, subtype, amount), isAdding);

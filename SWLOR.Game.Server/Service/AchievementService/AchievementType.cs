@@ -480,6 +480,11 @@ namespace SWLOR.Game.Server.Service.AchievementService
 
         [Achievement("Haymaker", "Completed the Brawler technique mastery trial.", true)]
         Haymaker = 184,
+
+        [Achievement("Twin Suns", "Completed Jek Talin's sustained Twin Pistol firing trial.", true)]
+        TwinSuns = 185,
+        [Achievement("Final Salvo", "Completed Pavo Orrel's Twin Pistol movement and Flow trial.", true)]
+        FinalSalvo = 186,
 	}
 
     public class AchievementAttribute: Attribute

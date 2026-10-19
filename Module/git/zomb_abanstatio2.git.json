@@ -26530,7 +26530,7 @@
         "Description": {
           "type": "cexolocstring",
           "value": {
-            "0": "The terminal appears to contain a database of experiment logs pertaining to this cell.\n\n----\n\n<cÃ¿Ã¿ >Effects of the Virus on Whiphid Biology:</c>\n\n<c Ã¿Ã¿>While it was rather difficult to perform a direct injection on such a creature, we did eventually manage. Within minutes, it began to show similar symptoms of insanity, consistent with every other test subjects. But the physical abnormalities separate it from the others.\n\nWhile necrosis isn't unusual in these tests, shortly after initial injection, the site began to suffer from heavy swelling and rapid necrosis. Following this, it seemed to rapidly develop sores all over its body that quickly popped open and began spewing out think discharges of blood and puss. It was also noted that the tusks on the whiphid's lower jaw quickly changed colour to that of a sickly yellow shade.\n\nEven prior to death, the insanity almost seemed to give it a boost in strength, which ultimate led to the deaths of two personnel in the containment unit. Aside from that, however, the death and reanimation seems consistent with other subjects.\n\nTests will continue. End log.</c>"
+            "0": "The terminal appears to contain a database of experiment logs pertaining to this cell.\n\n----\n\n<cÿÿ >Effects of the Virus on Whiphid Biology:</c>\n\n<c ÿÿ>While it was rather difficult to perform a direct injection on such a creature, we did eventually manage. Within minutes, it began to show similar symptoms of insanity, consistent with every other test subjects. But the physical abnormalities separate it from the others.\n\nWhile necrosis isn't unusual in these tests, shortly after initial injection, the site began to suffer from heavy swelling and rapid necrosis. Following this, it seemed to rapidly develop sores all over its body that quickly popped open and began spewing out think discharges of blood and puss. It was also noted that the tusks on the whiphid's lower jaw quickly changed colour to that of a sickly yellow shade.\n\nEven prior to death, the insanity almost seemed to give it a boost in strength, which ultimate led to the deaths of two personnel in the containment unit. Aside from that, however, the death and reanimation seems consistent with other subjects.\n\nTests will continue. End log.</c>"
           }
         },
         "DisarmDC": {
@@ -54254,7 +54254,7 @@
         "Description": {
           "type": "cexolocstring",
           "value": {
-            "0": "The screen on the observation terminal is badly damaged, flickering on and off and horribly distorted in places. One thing that can be made out from time to time, however, is:\n\n<cÃ¿  >CONTAINMENT BREACH</c>"
+            "0": "The screen on the observation terminal is badly damaged, flickering on and off and horribly distorted in places. One thing that can be made out from time to time, however, is:\n\n<cÿ  >CONTAINMENT BREACH</c>"
           }
         },
         "DisarmDC": {
@@ -139461,7 +139461,7 @@
         "Description": {
           "type": "cexolocstring",
           "value": {
-            "0": "The readout shows information regarding the lockdown.\n\n<cÃ¿  >EJECTED CELL | CONTAINMENT PROCEDURES ACTIVE | LOCKDOWN IN EFFECT</c>\n\nThe message repeats."
+            "0": "The readout shows information regarding the lockdown.\n\n<cÿ  >EJECTED CELL | CONTAINMENT PROCEDURES ACTIVE | LOCKDOWN IN EFFECT</c>\n\nThe message repeats."
           }
         },
         "DisarmDC": {
@@ -140142,7 +140142,7 @@
         "Description": {
           "type": "cexolocstring",
           "value": {
-            "0": "The readout shows information regarding the lockdown.\n\n<cÃ¿  >EXPLOSIVE DECOMPRESSION DETECTED | LOCKDOWN IN EFFECT</c>\n\nThe message repeats."
+            "0": "The readout shows information regarding the lockdown.\n\n<cÿ  >EXPLOSIVE DECOMPRESSION DETECTED | LOCKDOWN IN EFFECT</c>\n\nThe message repeats."
           }
         },
         "DisarmDC": {
@@ -140369,7 +140369,7 @@
         "Description": {
           "type": "cexolocstring",
           "value": {
-            "0": "The readout shows information regarding the lockdown.\n\n<cÃ¿  >BIOHAZARD CONTAINMENT FAILURE | LOCKDOWN IN EFFECT</c>\n\nThe message repeats."
+            "0": "The readout shows information regarding the lockdown.\n\n<cÿ  >BIOHAZARD CONTAINMENT FAILURE | LOCKDOWN IN EFFECT</c>\n\nThe message repeats."
           }
         },
         "DisarmDC": {
@@ -140596,7 +140596,7 @@
         "Description": {
           "type": "cexolocstring",
           "value": {
-            "0": "The readout shows information regarding the lockdown.\n\n<cÃ¿  >MANUAL OVERRIDE | LOCKDOWN IN EFFECT</c>\n\nThe message repeats."
+            "0": "The readout shows information regarding the lockdown.\n\n<cÿ  >MANUAL OVERRIDE | LOCKDOWN IN EFFECT</c>\n\nThe message repeats."
           }
         },
         "DisarmDC": {
@@ -140823,7 +140823,7 @@
         "Description": {
           "type": "cexolocstring",
           "value": {
-            "0": "The readout shows information regarding the lockdown.\n\n<cÃ¿  >EXPLOSIVE DECOMPRESSION DETECTED | LOCKDOWN IN EFFECT</c>\n\nThe message repeats."
+            "0": "The readout shows information regarding the lockdown.\n\n<cÿ  >EXPLOSIVE DECOMPRESSION DETECTED | LOCKDOWN IN EFFECT</c>\n\nThe message repeats."
           }
         },
         "DisarmDC": {
@@ -150964,7 +150964,7 @@
         "Description": {
           "type": "cexolocstring",
           "value": {
-            "0": "The readout shows information regarding the lockdown.\n\n<cÃ¿  >MANUAL OVERRIDE | LOCKDOWN IN EFFECT</c>\n\nThe message repeats."
+            "0": "The readout shows information regarding the lockdown.\n\n<cÿ  >MANUAL OVERRIDE | LOCKDOWN IN EFFECT</c>\n\nThe message repeats."
           }
         },
         "DisarmDC": {
@@ -153234,7 +153234,7 @@
         "Description": {
           "type": "cexolocstring",
           "value": {
-            "0": "The readout shows information regarding the lockdown.\n\n<cÃ¿  >MANUAL OVERRIDE | LOCKDOWN IN EFFECT</c>\n\nThe message repeats."
+            "0": "The readout shows information regarding the lockdown.\n\n<cÿ  >MANUAL OVERRIDE | LOCKDOWN IN EFFECT</c>\n\nThe message repeats."
           }
         },
         "DisarmDC": {
@@ -159871,7 +159871,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Stuck â€” zomb_abanstatio2"
+            "0": "Stuck - zomb_abanstatio2"
           }
         },
         "MapNote": {

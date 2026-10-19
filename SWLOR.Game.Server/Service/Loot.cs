@@ -127,7 +127,7 @@ namespace SWLOR.Game.Server.Service
             var table = GetLootTableByName(lootTableName);
             if (rareBonusChance > 0 && table.IsRare)
             {
-                chance += rareBonusChance;
+                chance += table.GetRareChanceBonus(rareBonusChance);
             }
             for (int x = 1; x <= attempts; x++)
             {
@@ -238,8 +238,11 @@ namespace SWLOR.Game.Server.Service
         [NWNEventHandler(ScriptName.OnItemHit)]
         public static void MarkCreditfinderAndTreasureHunterOnTarget()
         {
-            var attacker = OBJECT_SELF;
-            var target = GetSpellTargetObject();
+            RecordWeaponHitFindBonuses(OBJECT_SELF, GetSpellTargetObject());
+        }
+
+        public static void RecordWeaponHitFindBonuses(uint attacker, uint target)
+        {
             if (GetIsPC(target) || GetIsDM(target))
                 return;
 

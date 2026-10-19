@@ -129,16 +129,11 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>
-        /// Determines which market category an item should be placed in.
-        /// If category cannot be determined, MarketCategoryType.Miscellaneous will be returned.
+        /// Returns the market category decided by the base item alone (weapons and wearables), or null
+        /// when the item's data decides it. Needs no live item, so offline migrations can use it.
         /// </summary>
-        /// <param name="item">The item to check</param>
-        /// <returns>A market category type to place the item in.</returns>
-        public static MarketCategoryType GetItemMarketCategory(uint item)
+        public static MarketCategoryType? GetBaseItemMarketCategory(BaseItem baseItemType)
         {
-            var baseItemType = GetBaseItemType(item);
-            var tag = GetTag(item);
-
             // Weapon Classes
             if (Item.VibrobladeBaseItemTypes.Contains(baseItemType))
                 return MarketCategoryType.Vibroblade;
@@ -198,6 +193,24 @@ namespace SWLOR.Game.Server.Service
                 case BaseItem.Armor:
                     return MarketCategoryType.Armor;
             }
+
+            return null;
+        }
+
+        /// <summary>
+        /// Determines which market category an item should be placed in.
+        /// If category cannot be determined, MarketCategoryType.Miscellaneous will be returned.
+        /// </summary>
+        /// <param name="item">The item to check</param>
+        /// <returns>A market category type to place the item in.</returns>
+        public static MarketCategoryType GetItemMarketCategory(uint item)
+        {
+            var baseItemType = GetBaseItemType(item);
+            var tag = GetTag(item);
+
+            var baseItemCategory = GetBaseItemMarketCategory(baseItemType);
+            if (baseItemCategory != null)
+                return baseItemCategory.Value;
 
             // Recipes
             if (Craft.IsItemRecipe(item))

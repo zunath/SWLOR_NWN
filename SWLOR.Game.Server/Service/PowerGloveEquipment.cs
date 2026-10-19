@@ -372,6 +372,8 @@ public static class PowerGloveEquipment
 
     private static void UnequipOwnedItem(uint creature, uint item, InventorySlot slot)
     {
-        PlayerEquipmentStorage.Unequip(creature, item, slot);
+        // A recovery bag would let a full inventory duplicate the pair's storage; keep the item equipped instead.
+        if (!PlayerEquipmentStorage.TryUnequip(creature, item, slot, allowRecoveryBag: false))
+            throw new InvalidOperationException("No owned storage can hold the Power Glove.");
     }
 }

@@ -1,7 +1,7 @@
 namespace SWLOR.CombatSim.Scenario
 {
     /// <summary>
-    /// Damage a hostile ability or autoattack deals, taken from combat logs or set by hand.
+    /// Calibrated final damage, or explicitly supplied native weapon ability power.
     /// </summary>
     public sealed class DamageSpec
     {
@@ -12,6 +12,15 @@ namespace SWLOR.CombatSim.Scenario
 
         /// <summary>Chance to land, 0 to 1.</summary>
         public float HitChance { get; set; } = 1f;
+        /// <summary>Optional effective base ACC. Uses native ACC-versus-EVA hit math and perk accuracy when supplied.</summary>
+        public int? Accuracy { get; set; }
+
+        /// <summary>
+        /// Explicit authored weapon power, before rank, ATT/DEF, attribute and critical scaling.
+        /// Requires WeaponLoadout; calibrated final Min/Max cannot be combined with this model.
+        /// This does not infer an ability's payload from observed final damage.
+        /// </summary>
+        public WeaponPowerSpec WeaponPower { get; set; }
 
         /// <summary>Hit chance against specific targets by name, overriding <see cref="HitChance"/>.</summary>
         public Dictionary<string, float> HitChanceVs { get; set; } = new();
@@ -19,6 +28,8 @@ namespace SWLOR.CombatSim.Scenario
         public float CritChance { get; set; }
         public float CritMultiplier { get; set; } = 1.5f;
         public int Hits { get; set; } = 1;
+        /// <summary>Real attack items used by a weapon ability; defaults to its main weapon only.</summary>
+        public int WeaponItems { get; set; } = 1;
 
         /// <summary>Hits every living enemy instead of one target.</summary>
         public bool Area { get; set; }
@@ -55,6 +66,8 @@ namespace SWLOR.CombatSim.Scenario
                 problems.Add("Max must be a number of at least Min");
 
             Chance(nameof(HitChance), HitChance);
+            if (Accuracy is < 0 or > 10000)
+                problems.Add("Accuracy must be from 0 to 10000 when supplied");
             if (HitChanceVs != null)
                 foreach (var (target, chance) in HitChanceVs)
                     Chance($"{nameof(HitChanceVs)}[{target}]", chance);
@@ -64,14 +77,30 @@ namespace SWLOR.CombatSim.Scenario
                 problems.Add("CritMultiplier must be a number of at least 1");
             if (Hits < 1 || Hits > MaximumHits)
                 problems.Add($"Hits must be from 1 to {MaximumHits}");
+            if (WeaponItems is < 1 or > 2)
+                problems.Add("WeaponItems must be 1 or 2");
             if (Targets < 1)
                 problems.Add("Targets must be at least 1");
             if (!float.IsFinite(ExtraTargetDamagePercent) || ExtraTargetDamagePercent < 0f)
                 problems.Add("ExtraTargetDamagePercent must be a number of at least 0");
             if (!Enum.IsDefined(Type))
                 problems.Add($"Type must be one of {string.Join(", ", Enum.GetNames<DamageType>())}");
+            if (WeaponPower != null)
+            {
+                if (WeaponPower.FlatDamage is < 0 or > 10000 || WeaponPower.WeaponDamagePercent is < 0 or > 1000)
+                    problems.Add("WeaponPower needs FlatDamage from 0 to 10000 and WeaponDamagePercent from 0 to 1000");
+                if (Min != 0 || Max != 0 || HitChance != 1 || HitChanceVs?.Count > 0 || Accuracy != null ||
+                    CritChance != 0 || CritMultiplier != 1.5f || Type != DamageType.Physical)
+                    problems.Add("WeaponPower uses native weapon accuracy, critical and physical damage math; do not combine it with calibrated damage or roll overrides");
+            }
 
             return problems;
         }
+    }
+
+    public sealed class WeaponPowerSpec
+    {
+        public int FlatDamage { get; set; }
+        public int WeaponDamagePercent { get; set; } = 100;
     }
 }

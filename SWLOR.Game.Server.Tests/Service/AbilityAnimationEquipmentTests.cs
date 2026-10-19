@@ -178,7 +178,9 @@ public class AbilityAnimationEquipmentTests
                 AbilityAnimationBinding.QueuedClip(ability, true, compatible).Should().BeNull(entry.Id);
                 if (ability.AuthoredAnimation != null)
                     AbilityAnimationBinding.ActivationType(ability, true, 0, compatible).Should().Be(
-                        ability.HasGeneratedAnimationBinding ? ability.NativeAnimationType : Animation.Invalid, entry.Id);
+                        !ability.HasGeneratedAnimationBinding ? Animation.Invalid
+                        : ability.UsesImmediateAuthoredAnimation && ability.NativeAnimationType == Animation.Invalid ? Animation.CastOutAnimation
+                        : ability.NativeAnimationType, entry.Id);
                 (ability.ActivationAction, ability.ImpactAction, ability.ActivationDelay, ability.ActivationType,
                     ability.ImpactDelay, ability.IsChanneled).Should().Be(original[feat]);
                 ability.PreviewAnimation.Should().BeSameAs(entry.Clip);

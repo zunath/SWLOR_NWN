@@ -299,5 +299,15 @@ public static class ActiveAbilityAnimationCatalog
         new("LowKick", "Low Kick", "Unarmed", AuthoredAnimation.LowKick, new FeatType[] { FeatType.LowKick1, FeatType.LowKick2 }, EquipmentRequirement: AnimationEquipmentRequirement.Unarmed),
         new("BruiserStance", "Bruiser Stance", "Unarmed", AuthoredAnimation.BruiserStance, new FeatType[] { FeatType.BruiserStance1 }, EquipmentRequirement: AnimationEquipmentRequirement.Unarmed),
         new("Haymaker", "Haymaker", "Unarmed", AuthoredAnimation.Haymaker, new FeatType[] { FeatType.Haymaker1 }, EquipmentRequirement: AnimationEquipmentRequirement.Unarmed),
+        new("PairedVolley", "Paired Volley", "Twin Pistol", AuthoredAnimation.PairedVolley, new FeatType[] { FeatType.PairedVolley1, FeatType.PairedVolley2, FeatType.PairedVolley3, FeatType.PairedVolley4 }, EquipmentRequirement: AnimationEquipmentRequirement.TwinPistol),
+        new("FocusedBurst", "Focused Burst", "Twin Pistol", AuthoredAnimation.FocusedBurst, new FeatType[] { FeatType.FocusedBurst1, FeatType.FocusedBurst2, FeatType.FocusedBurst3 }, EquipmentRequirement: AnimationEquipmentRequirement.TwinPistol),
+        new("ControlledBurst", "Controlled Burst", "Twin Pistol", AuthoredAnimation.ControlledBurst, new FeatType[] { FeatType.ControlledBurst1, FeatType.ControlledBurst2 }, EquipmentRequirement: AnimationEquipmentRequirement.TwinPistol),
+        new("AkimboStance", "Akimbo Stance", "Twin Pistol", AuthoredAnimation.AkimboStance, new FeatType[] { FeatType.AkimboStance }, EquipmentRequirement: AnimationEquipmentRequirement.TwinPistol),
+        new("TwinSuns", "Twin Suns", "Twin Pistol", AuthoredAnimation.TwinSuns, new FeatType[] { FeatType.TwinSuns }, EquipmentRequirement: AnimationEquipmentRequirement.TwinPistol),
+        new("BlasterSlide", "Blaster Slide", "Twin Pistol", AuthoredAnimation.BlasterSlide, new FeatType[] { FeatType.BlasterSlide1, FeatType.BlasterSlide2, FeatType.BlasterSlide3, FeatType.BlasterSlide4 }, EquipmentRequirement: AnimationEquipmentRequirement.TwinPistol),
+        new("GrappleShot", "Grapple Shot", "Twin Pistol", AuthoredAnimation.GrappleShot, new FeatType[] { FeatType.GrappleShot1, FeatType.GrappleShot2, FeatType.GrappleShot3 }, EquipmentRequirement: AnimationEquipmentRequirement.TwinPistol),
+        new("PistolRush", "Pistol Rush", "Twin Pistol", AuthoredAnimation.PistolRush, new FeatType[] { FeatType.PistolRush1, FeatType.PistolRush2 }, EquipmentRequirement: AnimationEquipmentRequirement.TwinPistol),
+        new("CrossfireStance", "Crossfire Stance", "Twin Pistol", AuthoredAnimation.CrossfireStance, new FeatType[] { FeatType.CrossfireStance }, EquipmentRequirement: AnimationEquipmentRequirement.TwinPistol),
+        new("FinalSalvo", "Final Salvo", "Twin Pistol", AuthoredAnimation.FinalSalvo, new FeatType[] { FeatType.FinalSalvo }, EquipmentRequirement: AnimationEquipmentRequirement.TwinPistol),
     };
 }

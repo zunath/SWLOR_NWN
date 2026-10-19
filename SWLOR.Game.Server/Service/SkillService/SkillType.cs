@@ -507,6 +507,17 @@ namespace SWLOR.Game.Server.Service.SkillService
             false,
             CombatPointCategoryType.Weapon)]
         Unarmed = 51,
+
+        [Skill(SkillCategoryType.Combat,
+            "Twin Pistol",
+            50,
+            true,
+            "Ability to fight with a pistol and a companion pistol.",
+            true,
+            false,
+            false,
+            CombatPointCategoryType.Weapon)]
+        TwinPistol = 52,
     }
 
     public class SkillAttribute : Attribute

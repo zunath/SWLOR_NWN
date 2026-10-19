@@ -1712,6 +1712,44 @@
               },
               "InventoryRes": {
                 "type": "resref",
+                "value": "b_twinpistol"
+              },
+              "Repos_PosX": {
+                "type": "word",
+                "value": 0
+              },
+              "Repos_Posy": {
+                "type": "word",
+                "value": 11
+              }
+            },
+            {
+              "__struct_id": 25,
+              "Infinite": {
+                "type": "byte",
+                "value": 1
+              },
+              "InventoryRes": {
+                "type": "resref",
+                "value": "fld_twinpistol"
+              },
+              "Repos_PosX": {
+                "type": "word",
+                "value": 2
+              },
+              "Repos_Posy": {
+                "type": "word",
+                "value": 11
+              }
+            },
+            {
+              "__struct_id": 26,
+              "Infinite": {
+                "type": "byte",
+                "value": 1
+              },
+              "InventoryRes": {
+                "type": "resref",
                 "value": "b_pglove"
               },
               "Repos_PosX": {
@@ -1724,7 +1762,7 @@
               }
             },
             {
-              "__struct_id": 25,
+              "__struct_id": 27,
               "Infinite": {
                 "type": "byte",
                 "value": 1

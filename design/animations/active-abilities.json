@@ -5909,6 +5909,248 @@
     "CurrentPlayback": "DoubleStrike"
   },
   {
+    "Id": "PairedVolley",
+    "NativeImpactVisualEffect": "Vfx_Com_Blood_Spark_Small",
+    "EquipmentRequirement": "TwinPistol",
+    "Name": "Paired Volley",
+    "DisplayName": "Paired Volley",
+    "InternalName": "sw_pairvol",
+    "Category": "Twin Pistol",
+    "Type": "Combat",
+    "Description": "Raise the separately held pistols, aim forward and recover with both grips intact. Movement is performed by the ability before its shooting pose.",
+    "Reference": "",
+    "PerkId": "PairedVolley",
+    "Feats": [
+      "PairedVolley1",
+      "PairedVolley2",
+      "PairedVolley3",
+      "PairedVolley4"
+    ],
+    "DefinitionFiles": [
+      "SWLOR.Game.Server/Feature/AbilityDefinition/TwinPistol/PairedVolleyAbilityDefinition.cs"
+    ],
+    "CurrentPlayback": "Authored impact",
+    "SourceAnimation": "bowshot",
+    "Profile": "Authored paired blaster pose",
+    "Duration": 1.05
+  },
+  {
+    "Id": "FocusedBurst",
+    "NativeImpactVisualEffect": "Vfx_Com_Blood_Spark_Small",
+    "EquipmentRequirement": "TwinPistol",
+    "Name": "Focused Burst",
+    "DisplayName": "Focused Burst",
+    "InternalName": "sw_focusbrst",
+    "Category": "Twin Pistol",
+    "Type": "Combat",
+    "Description": "Raise the separately held pistols, aim forward and recover with both grips intact. Movement is performed by the ability before its shooting pose.",
+    "Reference": "",
+    "PerkId": "FocusedBurst",
+    "Feats": [
+      "FocusedBurst1",
+      "FocusedBurst2",
+      "FocusedBurst3"
+    ],
+    "DefinitionFiles": [
+      "SWLOR.Game.Server/Feature/AbilityDefinition/TwinPistol/FocusedBurstAbilityDefinition.cs"
+    ],
+    "CurrentPlayback": "Authored impact",
+    "SourceAnimation": "bowshot",
+    "Profile": "Authored paired blaster pose",
+    "Duration": 1.05
+  },
+  {
+    "Id": "ControlledBurst",
+    "NativeImpactVisualEffect": "Vfx_Com_Blood_Spark_Small",
+    "EquipmentRequirement": "TwinPistol",
+    "Name": "Controlled Burst",
+    "DisplayName": "Controlled Burst",
+    "InternalName": "sw_ctrlbrst",
+    "Category": "Twin Pistol",
+    "Type": "Combat",
+    "Description": "Raise the separately held pistols, aim forward and recover with both grips intact. Movement is performed by the ability before its shooting pose.",
+    "Reference": "",
+    "PerkId": "ControlledBurst",
+    "Feats": [
+      "ControlledBurst1",
+      "ControlledBurst2"
+    ],
+    "DefinitionFiles": [
+      "SWLOR.Game.Server/Feature/AbilityDefinition/TwinPistol/ControlledBurstAbilityDefinition.cs"
+    ],
+    "CurrentPlayback": "Authored impact",
+    "SourceAnimation": "bowshot",
+    "Profile": "Authored paired blaster pose",
+    "Duration": 1.05
+  },
+  {
+    "Id": "AkimboStance",
+    "NativeImpactVisualEffect": "Vfx_Imp_Haste",
+    "EquipmentRequirement": "TwinPistol",
+    "Name": "Akimbo Stance",
+    "DisplayName": "Akimbo Stance",
+    "InternalName": "sw_akimbo",
+    "Category": "Twin Pistol",
+    "Type": "Stance",
+    "Description": "Raise the separately held pistols, aim forward and recover with both grips intact. Movement is performed by the ability before its shooting pose.",
+    "Reference": "",
+    "PerkId": "AkimboStance",
+    "Feats": [
+      "AkimboStance"
+    ],
+    "DefinitionFiles": [
+      "SWLOR.Game.Server/Feature/AbilityDefinition/TwinPistol/AkimboStanceAbilityDefinition.cs"
+    ],
+    "CurrentPlayback": "Authored impact",
+    "SourceAnimation": "bowshot",
+    "Profile": "Authored paired blaster pose",
+    "Duration": 2
+  },
+  {
+    "Id": "TwinSuns",
+    "NativeImpactVisualEffect": "Vfx_Com_Blood_Spark_Small",
+    "EquipmentRequirement": "TwinPistol",
+    "Name": "Twin Suns",
+    "DisplayName": "Twin Suns",
+    "InternalName": "sw_twinsuns",
+    "Category": "Twin Pistol",
+    "Type": "Combat",
+    "Description": "Raise the separately held pistols, aim forward and recover with both grips intact. Movement is performed by the ability before its shooting pose.",
+    "Reference": "",
+    "PerkId": "TwinSuns",
+    "Feats": [
+      "TwinSuns"
+    ],
+    "DefinitionFiles": [
+      "SWLOR.Game.Server/Feature/AbilityDefinition/TwinPistol/TwinSunsAbilityDefinition.cs"
+    ],
+    "CurrentPlayback": "Authored impact",
+    "SourceAnimation": "bowshot",
+    "Profile": "Authored paired blaster pose",
+    "Duration": 2
+  },
+  {
+    "Id": "BlasterSlide",
+    "NativeImpactVisualEffect": "Vfx_Com_Blood_Spark_Small",
+    "EquipmentRequirement": "TwinPistol",
+    "Name": "Blaster Slide",
+    "DisplayName": "Blaster Slide",
+    "InternalName": "sw_blstslide",
+    "Category": "Twin Pistol",
+    "Type": "Combat",
+    "Description": "Raise the separately held pistols, aim forward and recover with both grips intact. Movement is performed by the ability before its shooting pose.",
+    "Reference": "",
+    "PerkId": "BlasterSlide",
+    "Feats": [
+      "BlasterSlide1",
+      "BlasterSlide2",
+      "BlasterSlide3",
+      "BlasterSlide4"
+    ],
+    "DefinitionFiles": [
+      "SWLOR.Game.Server/Feature/AbilityDefinition/TwinPistol/BlasterSlideAbilityDefinition.cs"
+    ],
+    "CurrentPlayback": "Authored impact",
+    "SourceAnimation": "bowshot",
+    "Profile": "Authored paired blaster pose",
+    "Duration": 1.05
+  },
+  {
+    "Id": "GrappleShot",
+    "NativeImpactVisualEffect": "Vfx_Com_Blood_Spark_Small",
+    "EquipmentRequirement": "TwinPistol",
+    "Name": "Grapple Shot",
+    "DisplayName": "Grapple Shot",
+    "InternalName": "sw_grapshot",
+    "Category": "Twin Pistol",
+    "Type": "Combat",
+    "Description": "Raise the separately held pistols, aim forward and recover with both grips intact. Movement is performed by the ability before its shooting pose.",
+    "Reference": "",
+    "PerkId": "GrappleShot",
+    "Feats": [
+      "GrappleShot1",
+      "GrappleShot2",
+      "GrappleShot3"
+    ],
+    "DefinitionFiles": [
+      "SWLOR.Game.Server/Feature/AbilityDefinition/TwinPistol/GrappleShotAbilityDefinition.cs"
+    ],
+    "CurrentPlayback": "Authored impact",
+    "SourceAnimation": "bowshot",
+    "Profile": "Authored paired blaster pose",
+    "Duration": 1.05
+  },
+  {
+    "Id": "PistolRush",
+    "NativeImpactVisualEffect": "Vfx_Com_Blood_Spark_Small",
+    "EquipmentRequirement": "TwinPistol",
+    "Name": "Pistol Rush",
+    "DisplayName": "Pistol Rush",
+    "InternalName": "sw_pistrush",
+    "Category": "Twin Pistol",
+    "Type": "Combat",
+    "Description": "Raise the separately held pistols, aim forward and recover with both grips intact. Movement is performed by the ability before its shooting pose.",
+    "Reference": "",
+    "PerkId": "PistolRush",
+    "Feats": [
+      "PistolRush1",
+      "PistolRush2"
+    ],
+    "DefinitionFiles": [
+      "SWLOR.Game.Server/Feature/AbilityDefinition/TwinPistol/PistolRushAbilityDefinition.cs"
+    ],
+    "CurrentPlayback": "Authored impact",
+    "SourceAnimation": "bowshot",
+    "Profile": "Authored paired blaster pose",
+    "Duration": 1.05
+  },
+  {
+    "Id": "CrossfireStance",
+    "NativeImpactVisualEffect": "Vfx_Imp_Haste",
+    "EquipmentRequirement": "TwinPistol",
+    "Name": "Crossfire Stance",
+    "DisplayName": "Crossfire Stance",
+    "InternalName": "sw_crossst",
+    "Category": "Twin Pistol",
+    "Type": "Stance",
+    "Description": "Raise the separately held pistols, aim forward and recover with both grips intact. Movement is performed by the ability before its shooting pose.",
+    "Reference": "",
+    "PerkId": "CrossfireStance",
+    "Feats": [
+      "CrossfireStance"
+    ],
+    "DefinitionFiles": [
+      "SWLOR.Game.Server/Feature/AbilityDefinition/TwinPistol/CrossfireStanceAbilityDefinition.cs"
+    ],
+    "CurrentPlayback": "Authored impact",
+    "SourceAnimation": "bowshot",
+    "Profile": "Authored paired blaster pose",
+    "Duration": 2
+  },
+  {
+    "Id": "FinalSalvo",
+    "NativeImpactVisualEffect": "Vfx_Com_Blood_Spark_Small",
+    "EquipmentRequirement": "TwinPistol",
+    "Name": "Final Salvo",
+    "DisplayName": "Final Salvo",
+    "InternalName": "sw_finsalvo",
+    "Category": "Twin Pistol",
+    "Type": "Combat",
+    "Description": "Raise the separately held pistols, aim forward and recover with both grips intact. Movement is performed by the ability before its shooting pose.",
+    "Reference": "",
+    "PerkId": "FinalSalvo",
+    "Feats": [
+      "FinalSalvo"
+    ],
+    "DefinitionFiles": [
+      "SWLOR.Game.Server/Feature/AbilityDefinition/TwinPistol/FinalSalvoAbilityDefinition.cs"
+    ],
+    "CurrentPlayback": "Authored impact",
+    "SourceAnimation": "bowshot",
+    "Profile": "Authored paired blaster pose",
+    "Duration": 2
+  },
+  {
     "Id": "Jab",
     "EquipmentRequirement": "Unarmed",
     "Name": "Jab",

@@ -11,6 +11,7 @@ using SWLOR.Game.Server.Service.ActivityService;
 using SWLOR.Game.Server.Service.AnimationService;
 using SWLOR.Game.Server.Service.CombatRecorderService;
 using SWLOR.Game.Server.Service.CompanionControlService;
+using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.LogService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
@@ -42,6 +43,7 @@ namespace SWLOR.Game.Server.Feature
             public List<string> TelegraphIds { get; init; }
             public uint ResumeAttackTarget { get; init; }
             public bool IsAwaitingImpact { get; set; }
+            public WeaponAbilityTraitActivation WeaponTraits { get; init; }
         }
 
         // Variable names for queued abilities.
@@ -52,11 +54,20 @@ namespace SWLOR.Game.Server.Feature
         private const string ActiveAbilityWeaponIneffectiveFeedbackWasHiddenName = "ACTIVE_ABILITY_WEAPON_INEFFECTIVE_FEEDBACK_WAS_HIDDEN";
         private const string HeldHostileAbilityPressName = "HELD_HOSTILE_ABILITY_PRESS";
         private static readonly Dictionary<uint, ActiveAbilityActivation> _activeAbilityActivations = new();
+        private static readonly Dictionary<uint, WeaponAbilityTraitActivation> _queuedWeaponTraits = new();
+
+        public static WeaponAbilityTraitActivation GetActiveWeaponTraits(uint actor) =>
+            _activeAbilityActivations.TryGetValue(actor, out var active) ? active.WeaponTraits : null;
+
+        public static int GetQueuedWeaponTraitAccuracy(uint actor) =>
+            _queuedWeaponTraits.TryGetValue(actor, out var traits) && traits.IsCommitted ? traits.Snapshot.AccuracyAdjustment : 0;
         private sealed class QueuedWeaponAttackReservation
         {
             public int AttackIndex { get; init; }
             public uint Weapon { get; init; }
             public uint Projectile { get; init; } = OBJECT_INVALID;
+            public int? TriggeringWeaponDamage { get; init; }
+            public CombatDamageType? TriggeringWeaponDamageType { get; init; }
             public bool IsCurrentAttack { get; set; } = true;
         }
         private static readonly Dictionary<uint, QueuedWeaponAttackReservation> _queuedWeaponAttacks = new();
@@ -108,7 +119,7 @@ namespace SWLOR.Game.Server.Feature
         private static void ResumeAttack(uint activator, uint target, bool clearActions = true)
         {
             if (!GetIsObjectValid(activator) ||
-                GetCurrentHitPoints(activator) <= 0)
+                GetCurrentHitPoints(activator) <= 0 || WeaponRepositioning.IsMoving(activator))
             {
                 return;
             }
@@ -166,6 +177,24 @@ namespace SWLOR.Game.Server.Feature
         {
             return InterruptAbilityActivation(activator, null, CombatRecordInterruptCause.Other, OBJECT_INVALID);
         }
+
+        public static string GetActiveAbilityActivationId(uint activator) =>
+            _activeAbilityActivations.TryGetValue(activator, out var activation) &&
+            GetLocalInt(activator, activation.ActivationId) == (int)ActivationStatus.Started
+                ? activation.ActivationId : string.Empty;
+
+        public static bool SuppressesAutoAttacks(uint activator) =>
+            _activeAbilityActivations.TryGetValue(activator, out var activation) &&
+            activation.Ability.SuppressesAutoAttacks &&
+            GetLocalInt(activator, activation.ActivationId) == (int)ActivationStatus.Started;
+
+        public static bool InterruptAbilityActivation(uint activator, string expectedActivationId) =>
+            InterruptAbilityActivation(activator, expectedActivationId, CombatRecordInterruptCause.Other);
+
+        /// <summary>Cancels only the captured activation, preserving its interruption cause.</summary>
+        public static bool InterruptAbilityActivation(
+            uint activator, string expectedActivationId, CombatRecordInterruptCause cause) =>
+            InterruptAbilityActivation(activator, expectedActivationId, cause, OBJECT_INVALID);
 
         private static bool InterruptAbilityActivation(
             uint activator, string expectedActivationId, CombatRecordInterruptCause cause, uint damagedBy)
@@ -291,6 +320,10 @@ namespace SWLOR.Game.Server.Feature
                 ResumeAttack(activator, target, clearActions);
             });
         }
+
+        /// <summary>A completed relocation resumes its captured attack without clearing a newer player action.</summary>
+        public static void ResumeAttackAfterReposition(uint activator, uint target) =>
+            ResumeAttackAfterDelay(activator, target, .1f, clearActions: false);
 
         /// <summary>
         /// Breaks stealth and invisibility effects if the ability is configured to do so.
@@ -499,6 +532,8 @@ namespace SWLOR.Game.Server.Feature
                 req.AfterActivationAction(activator, ability);
             }
             MeleeTechnique.BeginPaidActivation(activator, target, ability);
+            if (_activeAbilityActivations.TryGetValue(activator, out var activation) && activation.Ability == ability)
+                PairedRangedTraits.CommitWeaponAbility(activator, ability, activation.WeaponTraits);
         }
 
         private static void PlayAbilitySound(uint activator, string soundResref)
@@ -539,7 +574,8 @@ namespace SWLOR.Game.Server.Feature
             FeatType feat,
             AbilityDetail ability,
             Location targetLocation,
-            IReadOnlyList<TelegraphGeometry> activationAreaTelegraphs = null)
+            IReadOnlyList<TelegraphGeometry> activationAreaTelegraphs = null,
+            WeaponAbilityTraitActivation weaponTraits = null)
         {
             var impactEnded = false;
             using var recorderAttribution = CombatRecorder.BeginAbilityAttribution(activator, ability, feat);
@@ -549,7 +585,7 @@ namespace SWLOR.Game.Server.Feature
                 Ability.BeginAbilityImpact(
                     activator,
                     ability,
-                    activationAreaTelegraphs: activationAreaTelegraphs);
+                    activationAreaTelegraphs: activationAreaTelegraphs, weaponTraits: weaponTraits);
                 ability.ImpactAction?.Invoke(activator, target, ability.AbilityLevel, targetLocation);
                 var summary = Ability.EndAbilityImpact(activator);
                 impactEnded = true;
@@ -594,8 +630,11 @@ namespace SWLOR.Game.Server.Feature
             AbilityDetail ability,
             Location targetLocation)
         {
+            WeaponAbilityTraitActivation weaponTraits = null;
             float CalculateActivationDelay()
             {
+                if (ability.HasFixedActivationDelay)
+                    return ability.ActivationDelay(activator, target, ability.AbilityLevel);
                 var delayReductionPercent = Combat.ConsumeNextAbilityDelayReductionPercent(activator, ability);
                 if (delayReductionPercent >= 100)
                     return 0f;
@@ -642,6 +681,20 @@ namespace SWLOR.Game.Server.Feature
                     NamedAnimation.ReleaseForNativePlayback(activator);
                     if (AbilityAnimationBinding.ActivationType(ability, activator, animationLength) == Animation.Invalid)
                         return;
+
+                    // Like the skipped gesture it replaces, the fallback must not occupy the action queue.
+                    if (AbilityAnimationBinding.UsesGestureFallback(ability))
+                    {
+                        var fallbackLength = Math.Max(animationLength, ability.AuthoredAnimation?.Duration ?? 0f);
+                        AssignCommand(activator, () => PistolAnimationRemap.PlayAnimationPreservingExplicitThrow(
+                            activator,
+                            AbilityAnimationBinding.ActivationType(ability, activator, animationLength),
+                            1.0f,
+                            fallbackLength,
+                            immediate: true,
+                            releaseAuthoredPose: false));
+                        return;
+                    }
 
                     var sourceAnimationName = ability.AnimationSourceAnimationName;
                     var replacementAnimationName = ability.AnimationReplacementAnimationName;
@@ -836,7 +889,7 @@ namespace SWLOR.Game.Server.Feature
                         feat,
                         ability,
                         targetLocation,
-                        activationAreaTelegraphs);
+                        activationAreaTelegraphs, weaponTraits);
                     // NPCs must clear their combat state before reattacking. Queue that reset
                     // after the authored clip, so it cannot erase the animation at impact.
                     if (AbilityAnimationBinding.ActivationClip(ability, activator) != null && !GetIsPC(activator))
@@ -921,13 +974,15 @@ namespace SWLOR.Game.Server.Feature
             var resumeAttackTarget = GetResumeAttackTarget(activator, target, ability);
             var activationTelegraphIds = ProcessAnimationAndVisualEffects(activationDelay);
             var activationAreaTelegraphs = Telegraph.CaptureGeometry(activationTelegraphIds);
+            weaponTraits = PairedRangedTraits.CaptureWeaponAbility(activator, ability);
             SetLocalInt(activator, activationId, (int)ActivationStatus.Started);
             _activeAbilityActivations[activator] = new ActiveAbilityActivation
             {
                 ActivationId = activationId,
                 Ability = ability,
                 TelegraphIds = activationTelegraphIds,
-                ResumeAttackTarget = resumeAttackTarget
+                ResumeAttackTarget = resumeAttackTarget,
+                WeaponTraits = weaponTraits
             };
             if (activationDelay > 0f)
                 CheckForActivationInterruption(activationId, position);
@@ -973,10 +1028,17 @@ namespace SWLOR.Game.Server.Feature
                     feat,
                     ability,
                     targetLocation,
-                    activationAreaTelegraphs);
+                    activationAreaTelegraphs, weaponTraits);
                 Recast.ApplyRecastDelay(activator, ability.RecastGroup, recastDelay);
             }
 
+            // A synchronous interruption already released the activation; only its marker remains.
+            if (GetLocalInt(activator, activationId) != (int)ActivationStatus.Started)
+            {
+                ClearActiveAbilityActivation(activator, activationId);
+                DeleteLocalInt(activator, activationId);
+                return;
+            }
             Activity.SetBusy(activator, ActivityStatusType.AbilityActivation);
             DelayCommand(activationDelay, () =>
             {
@@ -1006,6 +1068,7 @@ namespace SWLOR.Game.Server.Feature
                 CombatRecorder.RecordAbilityQueued(activator, target, ability, feat);
 
             _queuedWeaponAttacks.Remove(activator);
+            _queuedWeaponTraits.Remove(activator);
             var abilityId = Guid.NewGuid().ToString();
             var resumeAttackTarget = GetResumeAttackTarget(activator, target, ability);
 
@@ -1019,7 +1082,11 @@ namespace SWLOR.Game.Server.Feature
 
             QueuedAttackAnimation.Begin(activator, AbilityAnimationBinding.QueuedClip(ability, activator));
 
+            var weaponTraits = PairedRangedTraits.CaptureWeaponAbility(activator, ability);
+            if (weaponTraits != null) _queuedWeaponTraits[activator] = weaponTraits;
+
             ApplyRequirementEffects(activator, target, ability, feat);
+            PairedRangedTraits.CommitWeaponAbility(activator, ability, weaponTraits);
 
             var abilityRecastDelay = Combat.ApplyAbilityRecastDelayModifiers(
                 activator,
@@ -1104,11 +1171,17 @@ namespace SWLOR.Game.Server.Feature
         // Only the first landed roll may replace its auto-attack with the queued ability.
         public static void ReserveQueuedWeaponAbilityAttack(uint activator, int attackIndex, uint weapon)
         {
+            // Cross-trained abilities retain the real main-hand launcher even when
+            // the companion supplies the first landed roll. Freeze it before flight.
+            var paired = TwinPistolEquipment.IsActivePair(activator);
+            var damageWeapon = paired ? GetItemInSlot(InventorySlot.RightHand, activator) : weapon;
             _queuedWeaponAttacks.TryAdd(activator, new QueuedWeaponAttackReservation
             {
                 AttackIndex = attackIndex,
                 Weapon = weapon,
-                Projectile = GetAttackProjectile(activator, weapon)
+                Projectile = GetAttackProjectile(activator, weapon),
+                TriggeringWeaponDamage = paired ? WeaponDamage.GetEffectiveDMG(activator, damageWeapon) : null,
+                TriggeringWeaponDamageType = paired ? WeaponDamage.GetDamageType(damageWeapon) : null,
             });
         }
 
@@ -1391,13 +1464,54 @@ namespace SWLOR.Game.Server.Feature
         [NWNEventHandler(ScriptName.OnItemHit)]
         public static void ProcessQueuedWeaponAbility()
         {
-            var activator = OBJECT_SELF;
+            ResolveQueuedWeaponAbilityHit(OBJECT_SELF, GetSpellTargetObject(), GetSpellCastItem());
+        }
+
+        /// <summary>Shared native/scripted weapon-hit entry point; the reserved launcher owns the ability.</summary>
+        public static void ResolveQueuedWeaponAbilityHit(uint activator, uint target, uint item)
+            => ResolveQueuedWeaponAbilityHitCore(activator, target, item, null, null, null);
+
+        /// <summary>Captures one launched replacement without allowing its arrival to consume a later queue.</summary>
+        public static Action CaptureQueuedWeaponAbilityHit(uint activator, uint target, uint item, Action beforeImpact = null)
+        {
+            if (!GetIsObjectValid(activator) ||
+                !_queuedWeaponAttacks.TryGetValue(activator, out var reservation)) return null;
+            var abilityId = GetLocalString(activator, ActiveAbilityIdName);
+            if (string.IsNullOrWhiteSpace(abilityId)) return null;
+            var launchArea = GetArea(activator);
+            return () =>
+            {
+                if (!_queuedWeaponAttacks.TryGetValue(activator, out var currentReservation) ||
+                    !ReferenceEquals(currentReservation, reservation)) return;
+                if (!GetIsObjectValid(activator))
+                {
+                    _queuedWeaponAttacks.Remove(activator);
+                    return;
+                }
+                if (GetLocalString(activator, ActiveAbilityIdName) != abilityId) return;
+                if (GetIsDead(activator) || GetCurrentHitPoints(activator) <= 0 || GetArea(activator) != launchArea ||
+                    !GetIsObjectValid(target) || GetIsDead(target) || GetArea(target) != launchArea)
+                {
+                    // The readied ability remains available after a discarded projectile,
+                    // but its old launcher must not reserve every later attack.
+                    _queuedWeaponAttacks.Remove(activator);
+                    return;
+                }
+                ResolveQueuedWeaponAbilityHitCore(activator, target, item, abilityId, reservation, beforeImpact);
+            };
+        }
+
+        private static void ResolveQueuedWeaponAbilityHitCore(uint activator, uint target, uint item,
+            string expectedAbilityId, QueuedWeaponAttackReservation expectedReservation, Action beforeImpact)
+        {
             if (!GetIsObjectValid(activator)) return;
+            if (expectedAbilityId != null && GetLocalString(activator, ActiveAbilityIdName) != expectedAbilityId) return;
 
-            var target = GetSpellTargetObject();
             var targetLocation = GetLocation(target);
-            var item = GetSpellCastItem();
 
+            if (expectedReservation != null &&
+                (!_queuedWeaponAttacks.TryGetValue(activator, out var currentReservation) ||
+                 !ReferenceEquals(currentReservation, expectedReservation))) return;
             if (_queuedWeaponAttacks.TryGetValue(activator, out var reservation))
             {
                 if (reservation.Weapon != item &&
@@ -1421,12 +1535,21 @@ namespace SWLOR.Game.Server.Feature
             if (!Combat.CanItemTriggerWeaponAbility(item, abilityDetail.SkillType))
                 return;
 
+            beforeImpact?.Invoke();
             HandleStealthBreaking(activator, abilityDetail);
             var impactEnded = false;
             using var recorderAttribution = CombatRecorder.BeginAbilityAttribution(activator, abilityDetail, activeWeaponAbility);
             try
             {
-                Ability.BeginAbilityImpact(activator, abilityDetail, triggeringWeapon: item);
+                var weaponTraits = _queuedWeaponTraits.GetValueOrDefault(activator);
+                // Ranged item_on_hit arrives through ammunition. The reserved attack
+                // weapon, rather than that projectile, owns this activation's budget.
+                if (weaponTraits != null && reservation != null)
+                    weaponTraits.PrimaryWeapon = reservation.Weapon;
+                Ability.BeginAbilityImpact(activator, abilityDetail, triggeringWeapon: item,
+                    triggeringWeaponDamage: reservation?.TriggeringWeaponDamage,
+                    triggeringWeaponDamageType: reservation?.TriggeringWeaponDamageType,
+                    weaponTraits: weaponTraits);
                 abilityDetail.ImpactAction?.Invoke(activator, target, activeAbilityEffectivePerkLevel, targetLocation);
                 var summary = Ability.EndAbilityImpact(activator);
                 impactEnded = true;
@@ -1449,6 +1572,7 @@ namespace SWLOR.Game.Server.Feature
 
                 Combat.CompleteAbilityStaminaCostContext(activator, abilityDetail);
                 _queuedWeaponAttacks.Remove(activator);
+                _queuedWeaponTraits.Remove(activator);
                 QueuedAttackAnimation.Stop(activator);
                 DeleteLocalString(activator, ActiveAbilityIdName);
                 DeleteLocalInt(activator, ActiveAbilityFeatIdName);
@@ -1495,6 +1619,7 @@ namespace SWLOR.Game.Server.Feature
         public static void ClearQueuedAbility(uint player)
         {
             _queuedWeaponAttacks.Remove(player);
+            _queuedWeaponTraits.Remove(player);
             QueuedAttackAnimation.Stop(player);
             Combat.ClearQueuedWeaponAbilityActivationBonuses(player);
             Combat.ClearQueuedWeaponAbilityAttemptBonuses(player);

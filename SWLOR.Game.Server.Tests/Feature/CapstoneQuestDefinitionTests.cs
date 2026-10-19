@@ -233,11 +233,23 @@ public class CapstoneQuestDefinitionTests
     }
 
     [Test]
-    public void BuildQuests_CreatesFiveStepChainForEachCapstoneLine()
+    public void BuildQuests_CreatesExistingFiveStepChainsAndTwoIndependentTwinPistolTrials()
     {
         var quests = BuildCapstoneQuests();
 
-        quests.Should().HaveCount(CapstoneQuestDefinitionTestData.Lines.Count * 5);
+        quests.Should().HaveCount(CapstoneQuestDefinitionTestData.Lines.Count * 5 + 2);
+
+        foreach (var questId in new[] { "twin_suns_mastery", "final_salvo_mastery" })
+        {
+            quests[questId].States.Should().HaveCount(2, "Twin Pistol mastery demonstrates its actual firing or movement mechanics before a trainer turn-in");
+            quests[questId].States[1].GetObjectives().Should().ContainSingle()
+                .Which.Should().BeOfType<TwinPistolTrialObjective>();
+            quests[questId].States[2].GetObjectives().Should().BeEmpty();
+            quests[questId].Prerequisites.OfType<RequiredQuestPrerequisite>().Should().BeEmpty("the two mastery trials unlock independently");
+            var skill = quests[questId].Prerequisites.OfType<RequiredSkillRankPrerequisite>().Should().ContainSingle().Which;
+            skill.SkillType.Should().Be(SkillType.TwinPistol);
+            skill.RequiredRank.Should().Be(50);
+        }
 
         foreach (var line in CapstoneQuestDefinitionTestData.Lines)
         {

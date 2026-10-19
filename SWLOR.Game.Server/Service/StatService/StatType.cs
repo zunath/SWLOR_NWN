@@ -6282,6 +6282,119 @@ namespace SWLOR.Game.Server.Service.StatService
 
 
 
+        /// <summary>Exclusive ordinary damage bonus; the strongest paired-ranged handling contribution applies.</summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive, StatTypeAggregation.Maximum)]
+        PairedRangedOrdinaryDamagePercentAdjustment = 1131,
+
+        /// <summary>Landed ordinary shots required for one resource recovery attempt.</summary>
+        [StatType(StatTypeCategory.NonBeneficial, StatTypeAggregation.Maximum)]
+        PairedRangedOrdinaryHitRestoreCount = 1133,
+
+        /// <summary>Stamina restored by a completed ordinary-hit sequence.</summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive, StatTypeAggregation.Maximum)]
+        PairedRangedOrdinaryHitStaminaRestore = 1134,
+
+        /// <summary>Minimum interval between ordinary-hit resource recoveries.</summary>
+        [StatType(StatTypeCategory.NonBeneficial, StatTypeAggregation.Maximum)]
+        PairedRangedOrdinaryHitRestoreCooldownSeconds = 1135,
+
+        /// <summary>Ordinary hits on one target required for its damage bonus.</summary>
+        [StatType(StatTypeCategory.NonBeneficial, StatTypeAggregation.Maximum)]
+        PairedRangedRepeatedTargetRequiredHits = 1136,
+
+        /// <summary>Ordinary damage bonus against the repeated target.</summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive, StatTypeAggregation.Maximum)]
+        PairedRangedRepeatedTargetDamagePercent = 1137,
+
+        /// <summary>Duration refreshed by landed ordinary shots at the repeated target.</summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive, StatTypeAggregation.Maximum)]
+        PairedRangedRepeatedTargetDurationSeconds = 1138,
+
+        /// <summary>Next paired-ranged ability cost reduction after direct hostile damage.</summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive, StatTypeAggregation.Maximum)]
+        PairedRangedDirectDamageNextAbilityStaminaReduction = 1139,
+
+        /// <summary>Duration of the one-charge ability cost reduction.</summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive, StatTypeAggregation.Maximum)]
+        PairedRangedDirectDamageCostWindowSeconds = 1140,
+
+        /// <summary>Minimum interval between direct-damage cost reduction grants.</summary>
+        [StatType(StatTypeCategory.NonBeneficial, StatTypeAggregation.Maximum)]
+        PairedRangedDirectDamageCostCooldownSeconds = 1141,
+
+        /// <summary>Maximum earned movement charges.</summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive, StatTypeAggregation.Maximum)]
+        PairedRangedMomentumMaximum = 1142,
+
+        /// <summary>Duration refreshed by earned movement charges.</summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive, StatTypeAggregation.Maximum)]
+        PairedRangedMomentumDurationSeconds = 1143,
+
+        /// <summary>Ordinary-shot accuracy per earned movement charge.</summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive, StatTypeAggregation.Maximum)]
+        PairedRangedMomentumAccuracyPerCharge = 1144,
+
+        /// <summary>Stamina restored per charge spent when the activation lands a hit.</summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive, StatTypeAggregation.Maximum)]
+        PairedRangedMomentumStaminaRestorePerCharge = 1145,
+
+        /// <summary>Maximum stamina restored by one charge spender.</summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive, StatTypeAggregation.Maximum)]
+        PairedRangedMomentumStaminaRestoreMaximum = 1146,
+
+        /// <summary>Minimum interval between successful charge-spender refunds.</summary>
+        [StatType(StatTypeCategory.NonBeneficial, StatTypeAggregation.Maximum)]
+        PairedRangedMomentumRestoreCooldownSeconds = 1147,
+
+        /// <summary>Minimum interval between accuracy-versus-evasion misses granting a charge.</summary>
+        [StatType(StatTypeCategory.NonBeneficial, StatTypeAggregation.Maximum)]
+        PairedRangedEvasionMomentumCooldownSeconds = 1148,
+
+        /// <summary>Flat accuracy for the next matching ability after a landed moving attack.</summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive, StatTypeAggregation.Maximum)]
+        PairedRangedMovementNextAbilityAccuracy = 1149,
+
+        /// <summary>Duration of the one-charge moving-attack accuracy bonus.</summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive, StatTypeAggregation.Maximum)]
+        PairedRangedMovementAccuracyDurationSeconds = 1150,
+
+        /// <summary>Minimum interval between moving-attack accuracy grants.</summary>
+        [StatType(StatTypeCategory.NonBeneficial, StatTypeAggregation.Maximum)]
+        PairedRangedMovementAccuracyCooldownSeconds = 1151,
+
+        /// <summary>Stance charge duration; applied only on a new charge grant or refresh.</summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive, StatTypeAggregation.Maximum)]
+        PairedRangedMomentumExtendedDurationSeconds = 1153,
+
+        /// <summary>Multiplicative adjustment to ordinary weapon damage after outgoing bonuses; excludes activated abilities.</summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        OrdinaryAttackDamagePercentAdjustment = 1126,
+
+        /// <summary>Haste granted per landed same-target ordinary weapon hit stack.</summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive, StatTypeAggregation.Maximum)]
+        OrdinaryAttackHasteRampPerStack = 1127,
+
+        /// <summary>Maximum same-target ordinary weapon hit haste stacks.</summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive, StatTypeAggregation.Maximum)]
+        OrdinaryAttackHasteRampMaximumStacks = 1128,
+
+        /// <summary>Minimum interval between ordinary weapon hit haste grants; preserved across resets.</summary>
+        [StatType(StatTypeCategory.NonBeneficial, StatTypeAggregation.Maximum)]
+        OrdinaryAttackHasteRampGrantCooldownSeconds = 1129,
+
+        /// <summary>Ordinary-hit haste duration refreshed by each landed hostile weapon hit.</summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive, StatTypeAggregation.Maximum)]
+        OrdinaryAttackHasteRampDurationSeconds = 1130,
+
+        /// <summary>Captured Flow damage budget per charge for one hostile weapon ability activation.</summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive, StatTypeAggregation.Maximum)]
+        MovementHitWeaponAbilityDamagePerCharge = 1166,
+
+        /// <summary>Haste that applies only while wielding two weapons (Twin Pistols or any dual wield).</summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        DualWieldAttackDelayReductionPercent = 1167,
+
+
     }
 
     public class StatTypeAttribute : Attribute

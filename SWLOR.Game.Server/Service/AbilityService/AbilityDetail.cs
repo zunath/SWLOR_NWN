@@ -65,6 +65,7 @@ namespace SWLOR.Game.Server.Service.AbilityService
         public bool CanBeUsedInSpace { get; set; }
         public float MaxRange { get; set; }
         public bool IsHostileAbility { get; set; }
+        public int? WeaponAbilityFlowDamagePerCharge { get; set; }
         /// <summary>
         /// The impact schedules damage through a status or callback even when its immediate
         /// base damage is zero. Hostile hit damage bonuses remain eligible on that impact.
@@ -123,6 +124,9 @@ namespace SWLOR.Game.Server.Service.AbilityService
         /// refunding the recast delay.
         /// </summary>
         public bool IsChanneled { get; set; }
+
+        public bool HasFixedActivationDelay { get; set; }
+        public bool SuppressesAutoAttacks { get; set; }
 
         /// <summary>
         /// Invoked against the activator when a channeled ability is interrupted so the effects granted

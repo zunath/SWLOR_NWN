@@ -407,7 +407,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                     ctx.Assert(DB.Get<WorldProperty>(structure.Id) != null, "The structure stays placed");
                     ctx.Assert(DB.Get<WorldProperty>(parent.Id).ChildPropertyIds[PropertyChildType.Structure].Contains(structure.Id),
                         "The property still lists the structure");
-                    ctx.AssertEqual(Item.InventoryFullMessage, model.Instructions, "The window says the inventory is full");
+                    ctx.AssertEqual("Your inventory is full.", model.Instructions, "The window says the inventory is full");
                     Free(fillers);
                 });
                 await ctx.WaitFrameAsync();

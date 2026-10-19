@@ -14,7 +14,7 @@ public static class NamedAnimation
     private static readonly NamedAnimationPlayback Playback = new(new NativeRuntime(), ReleaseIdlePose,
         creature =>
         {
-            if (GetIsObjectValid(creature) && !GetIsDead(creature))
+            if (GetIsObjectValid(creature) && !GetIsDead(creature) && !QueuedAttackAnimation.IsActive(creature))
                 KatarAnimationRemap.RestoreCurrentEquipmentAnimations(creature);
         });
 

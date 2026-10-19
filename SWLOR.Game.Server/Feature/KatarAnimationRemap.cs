@@ -133,6 +133,8 @@ namespace SWLOR.Game.Server.Feature
             {
                 RestoreKatarRemap(creature);
                 DeleteLocalBool(creature, KatarAnimationRemapActiveVariable);
+                // Restoring clears the 1h aliases Grip installed above for the new weapon; install them again.
+                Grip.Refresh(creature, forceRefresh: true);
             }
         }
 

@@ -316,9 +316,10 @@ namespace SWLOR.Game.Server.Service
             if (!Owners.TryGetValue(creature, out var owner))
                 return 0;
             Refresh(creature, owner);
-            if (owner.Reactions.WindowTarget != 0 && owner.Reactions.WindowTarget != target)
+            var targetsEnemy = IsValidEnemy(creature, target);
+            if (targetsEnemy && owner.Reactions.WindowTarget != 0 && owner.Reactions.WindowTarget != target)
                 ClearReactiveWindows(creature, owner);
-            if (IsValidEnemy(creature, target) && owner.Reactions.RetaliationTarget != 0 && owner.Reactions.RetaliationTarget != target)
+            if (targetsEnemy && owner.Reactions.RetaliationTarget != 0 && owner.Reactions.RetaliationTarget != target)
                 ClearRetaliation(creature, owner);
             if (owner.Sequence.Stage == MeleeTechniqueStage.None)
                 return 0;

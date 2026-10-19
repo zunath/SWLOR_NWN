@@ -34,12 +34,6 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition
                 throw new InvalidOperationException("An inventory transfer could not be completed.");
         }
 
-        public static void Unequip(uint player, uint item, InventorySlot slot)
-        {
-            if (!TryUnequip(player, item, slot))
-                throw new InvalidOperationException("The inventory has no safe space for recovered equipment. Free inventory space before reconnecting.");
-        }
-
         /// <summary>Gameplay callers pass <paramref name="allowRecoveryBag"/> false so unequipping never creates a new bag.</summary>
         internal static bool TryUnequip(uint player, uint item, InventorySlot slot, bool allowRecoveryBag = true)
         {
@@ -77,7 +71,7 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition
             }
             if (GetItemInSlot(slot, player) == item || GetItemPossessor(item) != player ||
                 inventory.GetItemInRepository(NativeItem(item), 1) == 0)
-                throw new InvalidOperationException($"Unable to preserve equipment from slot {slot} during player migration.");
+                throw new InvalidOperationException($"Unable to preserve equipment from slot {slot} while converting its equipment.");
             return true;
         }
 

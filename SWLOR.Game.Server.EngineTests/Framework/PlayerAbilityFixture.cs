@@ -2,6 +2,7 @@ using System;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
 using NWN.Native.API;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Service.PerkService;
@@ -53,27 +54,37 @@ namespace SWLOR.Game.Server.EngineTests.Framework
         /// Installs persistence and native identity inside CreateAsync's rollback scope.
         /// Stage callbacks let engine tests interrupt partial setup before arena entry.
         /// </summary>
-        private unsafe void InstallIdentity(Action<PlayerAbilityFixture, IdentitySetupStage> afterStage)
+        private unsafe void InstallIdentity(Action<PlayerAbilityFixture, IdentitySetupStage> afterStage, Player savedRecord = null)
         {
             var native = NWNXLib.g_pAppManager.m_pServerExoApp.GetGameObject(Creature).AsNWSCreature();
-            var record = new Player(Id)
+            Player record;
+            if (savedRecord != null)
             {
-                Name = "Engine test player", RebuildComplete = true,
-                CharacterType = Enumeration.CharacterType.ForceSensitive,
-                MaxHP = 1000, HP = 1000, MaxFP = 10000, FP = 9999,
-                MaxStamina = 10000, Stamina = 9999,
-                Attack = 150, Accuracy = 150, ForceAttack = 150, Evasion = 100,
-                TotalSPAcquired = Skill.TotalSkillPointCap - Skill.StartingSkillPoints,
-            };
-            foreach (var skill in Enum.GetValues<SkillType>())
-                record.Skills[skill] = new PlayerSkill();
-            foreach (var skill in new[] { SkillType.Mimicry, SkillType.BeastMastery, SkillType.FirstAid, SkillType.Force, SkillType.Vibroblade })
-                record.Skills[skill].Rank = 50;
-            foreach (var stat in record.BaseStats.Keys.ToArray())
-                record.BaseStats[stat] = GetAbilityScore(Creature, stat);
-            record.Perks[PerkType.CombatAnalyzer] = 1;
-            record.Perks[PerkType.AnalyzerMemory] = 1;
-            record.Perks[PerkType.Tame] = 5;
+                // A character logging in with an existing record: the record belongs to the loaded creature's identity.
+                record = JsonConvert.DeserializeObject<Player>(JsonConvert.SerializeObject(savedRecord));
+                record.Id = Id;
+            }
+            else
+            {
+                record = new Player(Id)
+                {
+                    Name = "Engine test player", RebuildComplete = true,
+                    CharacterType = Enumeration.CharacterType.ForceSensitive,
+                    MaxHP = 1000, HP = 1000, MaxFP = 10000, FP = 9999,
+                    MaxStamina = 10000, Stamina = 9999,
+                    Attack = 150, Accuracy = 150, ForceAttack = 150, Evasion = 100,
+                    TotalSPAcquired = Skill.TotalSkillPointCap - Skill.StartingSkillPoints,
+                };
+                foreach (var skill in Enum.GetValues<SkillType>())
+                    record.Skills[skill] = new PlayerSkill();
+                foreach (var skill in new[] { SkillType.Mimicry, SkillType.BeastMastery, SkillType.FirstAid, SkillType.Force, SkillType.Vibroblade })
+                    record.Skills[skill].Rank = 50;
+                foreach (var stat in record.BaseStats.Keys.ToArray())
+                    record.BaseStats[stat] = GetAbilityScore(Creature, stat);
+                record.Perks[PerkType.CombatAnalyzer] = 1;
+                record.Perks[PerkType.AnalyzerMemory] = 1;
+                record.Perks[PerkType.Tame] = 5;
+            }
             // DB.Set writes the search index before JSON, so even a failed write needs cleanup.
             _recordWriteAttempted = true;
             DB.Set(record);
@@ -104,15 +115,28 @@ namespace SWLOR.Game.Server.EngineTests.Framework
         /// <summary>
         /// Creates a fixture with interruption points for partial-setup cleanup checks.
         /// </summary>
-        internal static async Task<PlayerAbilityFixture> CreateAsync(EngineTestContext context, float xOffset,
+        internal static Task<PlayerAbilityFixture> CreateAsync(EngineTestContext context, float xOffset,
             Action<PlayerAbilityFixture, IdentitySetupStage> afterStage)
+            => CreateAsync(context, xOffset, afterStage, null, null);
+
+        /// <summary>
+        /// A player logging in with a saved character: the creature loads from a character file (BIC) with native
+        /// player inventory semantics, so worn items are restored without equip events, and the record is the one
+        /// saved beside it. Used after a saved-data upgrade to continue with the upgraded character.
+        /// </summary>
+        public static Task<PlayerAbilityFixture> CreateFromCharacterAsync(EngineTestContext context, byte[] characterFile,
+            Player record, float xOffset = 0f)
+            => CreateAsync(context, xOffset, null, characterFile, record);
+
+        private static async Task<PlayerAbilityFixture> CreateAsync(EngineTestContext context, float xOffset,
+            Action<PlayerAbilityFixture, IdentitySetupStage> afterStage, byte[] characterFile, Player savedRecord)
         {
             var template = context.SpawnCreature("civilian", xOffset);
             // OnSpawn's delayed stat initialization must finish before PC state is installed.
             await context.DelaySecondsAsync(1f);
             var creature = OBJECT_INVALID;
             await context.ExecuteInCreatureContextAsync(template, () =>
-                creature = LoadPlayerCreature(context, template));
+                creature = characterFile == null ? LoadPlayerCreature(context, template) : LoadSavedPlayerCreature(context, characterFile));
             context.Track(creature);
             context.Assert(creature < OBJECT_INVALID, "player fixture uses a live world object ID, not a saved-character object ID");
             context.SuppressNPCNaturalRegen(creature);
@@ -123,7 +147,7 @@ namespace SWLOR.Game.Server.EngineTests.Framework
                 // client reports the area loaded, which a headless client never does.
                 await context.ExecuteInCreatureContextAsync(template, () => EnterArena(context, creature, template));
                 context.Assert(IsListedInArena(context, creature), "fixture is in the arena's native object list");
-                fixture.InstallIdentity(afterStage);
+                fixture.InstallIdentity(afterStage, savedRecord);
                 context.Assert(GetIsPC(creature), "fixture follows the native player branch");
                 DestroyObject(template);
                 await context.WaitFrameAsync();
@@ -167,12 +191,35 @@ namespace SWLOR.Game.Server.EngineTests.Framework
             }
             fixed (byte* label = Encoding.ASCII.GetBytes("IsPC\0"))
                 file.WriteFieldBYTE(root, 1, label);
+            var creature = LoadPlayerCreature(context, file, root);
+            if (serverSave)
+                context.Log($"Native reload right={GetItemInSlot(InventorySlot.RightHand, creature):X} " +
+                    $"left={GetItemInSlot(InventorySlot.LeftHand, creature):X} " +
+                    $"inventory={GetFirstItemInInventory(creature):X}");
+            return creature;
+        }
+
+        /// <summary>Loads a saved character file the way a connecting player's character loads.</summary>
+        private static unsafe uint LoadSavedPlayerCreature(EngineTestContext context, byte[] characterFile)
+        {
+            // The resource reads the buffer without owning it; LoadCreature copies everything it needs.
+            var buffer = System.Runtime.InteropServices.Marshal.AllocHGlobal(characterFile.Length);
+            try
+            {
+                System.Runtime.InteropServices.Marshal.Copy(characterFile, 0, buffer, characterFile.Length);
+                using var file = new CResGFF();
+                using var root = new CResStruct();
+                context.Assert(file.GetDataFromPointer((void*)buffer, characterFile.Length, false) != 0, "read the saved character file");
+                context.Assert(file.GetTopLevelStruct(root) != 0, "find the saved character's root structure");
+                return LoadPlayerCreature(context, file, root);
+            }
+            finally { System.Runtime.InteropServices.Marshal.FreeHGlobal(buffer); }
+        }
+
+        private static unsafe uint LoadPlayerCreature(EngineTestContext context, CResGFF file, CResStruct root)
+        {
             using var player = new WorldPlayerCreature();
             context.Assert(player.LoadCreature(file, root, 0, 0, 0, 0) != 0, "load the creature with native PC inventory semantics");
-            if (serverSave)
-                context.Log($"Native reload right={GetItemInSlot(InventorySlot.RightHand, player.m_idSelf):X} " +
-                    $"left={GetItemInSlot(InventorySlot.LeftHand, player.m_idSelf):X} " +
-                    $"inventory={GetFirstItemInInventory(player.m_idSelf):X}");
             // LoadCreature restores the template's area ID, which makes AddToArea skip the area's
             // object list. The engine corrupts that list's heap block when such a creature moves.
             player.SetArea(null);

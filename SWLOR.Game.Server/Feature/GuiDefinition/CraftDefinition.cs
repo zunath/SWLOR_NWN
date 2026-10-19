@@ -16,7 +16,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                 .SetInitialGeometry(0, 0, 545f, 295.5f)
                 .SetTitle("Craft Item")
                 .BindIsClosable(model => model.IsClosable)
-                .BindOnClosed(model => model.OnCloseWindow())
+                .BindOnClosed(model => model.OnWindowClosed())
 
                 .AddColumn(col =>
                 {

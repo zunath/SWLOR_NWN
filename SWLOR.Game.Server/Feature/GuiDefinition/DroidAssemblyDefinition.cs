@@ -10,7 +10,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
         public GuiConstructedWindow BuildWindow()
         {
             _builder.CreateWindow(GuiWindowType.DroidAssembly)
-                .BindOnClosed(model => model.OnCloseWindow())
+                .BindOnClosed(model => model.OnWindowClosed())
                 .SetIsResizable(true)
                 .SetIsCollapsible(true)
                 .SetInitialGeometry(0, 0, 520f, 640f)

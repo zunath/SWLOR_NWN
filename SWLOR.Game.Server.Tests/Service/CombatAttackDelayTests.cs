@@ -1069,8 +1069,8 @@ public class CombatAttackDelayTests
             "SWLOR.Game.Server",
             "Feature",
             "MigrationDefinition",
-            "PlayerMigration",
-            "_14_MigrateResistanceItemProperties.cs"));
+            "CharacterMigration",
+            "_14_15_CombatUpgradeMigrations.cs"));
         var serverMigrationSource = File.ReadAllText(Path.Combine(
             root.FullName,
             "SWLOR.Game.Server",
@@ -1085,7 +1085,7 @@ public class CombatAttackDelayTests
             "MigrationDefinition",
             "SerializedItemWeaponDamageTypeMigration.cs"));
 
-        playerMigrationSource.Should().Contain("SerializedItemWeaponDamageTypeMigration.MigrateObject(player);");
+        playerMigrationSource.Should().Contain("SavedWeaponDamageTypeMigration.MigrateCharacter(character);");
         serverMigrationSource.Should().Contain("SerializedItemWeaponDamageTypeMigration.MigrateObject(obj)");
         weaponDelayMigrationSource.Should().Contain("ItemPropertyType.Delay");
         weaponDelayMigrationSource.Should().Contain("WeaponDelay.GetWeaponDelay(baseItem)");

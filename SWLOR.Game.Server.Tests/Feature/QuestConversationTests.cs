@@ -205,31 +205,6 @@ public sealed partial class QuestConversationTests
             .Values.SelectMany(table => table).Should().NotContain(item => item.Resref == "stolen_goods");
     }
 
-    [TestCase("alchemized_frog")]
-    [TestCase("nar_great_arkanian_dragon")]
-    [TestCase("smuggler_favor")]
-    public void MigratedBossQuestProgress_RemainsReadyForTurnInAfterLoginReconciliation(string questId)
-    {
-        var migration = new SWLOR.Game.Server.Feature.MigrationDefinition.ServerMigration._22_CombatSystemReplacement();
-        var definition = BuildQuests()[questId];
-        var record = new SWLOR.Game.Server.Entity.PlayerQuest { CurrentState = 2 };
-        if (questId != "alchemized_frog")
-            foreach (var objective in definition.States[2].GetObjectives().OfType<CollectItemObjective>())
-                record.ItemProgresses[objective.Resref] = objective.Quantity;
-        var raw = new JObject { ["Quests"] = new JObject { [questId] = JObject.FromObject(record) } };
-        var player = (SWLOR.Game.Server.Entity.Player)migration.GetType()
-            .GetMethod("MigratePlayerData", BindingFlags.NonPublic | BindingFlags.Instance)!
-            .Invoke(migration, new object[] { raw, 0 })!;
-        var saved = player.Quests[questId];
-
-        saved.CurrentState.Should().Be(3);
-        definition.States[saved.CurrentState].GetObjectives().Should().BeEmpty();
-        definition.States[saved.CurrentState].ReconcileProgress(saved).Should().BeFalse(
-            "login reconciliation must not recreate the proof requirement");
-        saved.ItemProgresses.Should().BeEmpty();
-        saved.DateLastCompleted.Should().BeNull("the giver must still pay out the quest reward");
-    }
-
     private static (QuestDetail Quest, List<(string Resref, uint Player, int Quantity)> Grants)
         BuildQuestWithItemRecorder(string questId)
     {

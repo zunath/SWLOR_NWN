@@ -133,7 +133,13 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var index = NuiGetEventArrayIndex();
             var itemId = _itemIds[index];
 
-            Bank.WithdrawItem(Player, itemId);
+            var failure = Bank.WithdrawItem(Player, itemId);
+            if (!string.IsNullOrWhiteSpace(failure))
+            {
+                SendMessageToPC(Player, ColorToken.Red(failure));
+                return;
+            }
+
             _itemIds.RemoveAt(index);
             ItemNames.RemoveAt(index);
             ItemResrefs.RemoveAt(index);

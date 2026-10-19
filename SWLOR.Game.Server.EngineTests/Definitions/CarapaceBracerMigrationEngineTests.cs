@@ -1,10 +1,12 @@
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using SWLOR.Game.Server.EngineTests.Framework;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Feature.MigrationDefinition;
-using SWLOR.Game.Server.Feature.MigrationDefinition.PlayerMigration;
 using SWLOR.Game.Server.Feature.MigrationDefinition.ServerMigration;
 using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Item;
 
@@ -20,6 +22,43 @@ public static partial class MigrationEngineTests
 
     [EngineTest("Previously converted Carapace Bracer keeps crafted resistance through two bank equip cycles", Category = "CarapaceBracerMigration", TimeoutSeconds = 120)]
     public static Task ConvertedCarapaceBracerLifecycle(EngineTestContext ctx) => VerifyCarapaceBracerLifecycle(ctx, false, true);
+
+    [EngineTest("An older file restored beside a current record corrects its worn bracer without changing the record again",
+        Category = "CarapaceBracerMigration", TimeoutSeconds = 120)]
+    public static async Task RestoredFileBesideCurrentRecord(EngineTestContext ctx)
+    {
+        using var fixture = await PlayerAbilityFixture.CreateAsync(ctx);
+        var owner = fixture.Creature;
+        var current = GetItemInSlot(InventorySlot.Arms, owner);
+        if (GetIsObjectValid(current)) await UnequipAsync(ctx, owner, current);
+        var item = await CreateItemAsync(ctx, owner, "cara_bracer", owner);
+        await ctx.ExecuteInCreatureContextAsync(owner, () =>
+        {
+            RemoveRequirement(item);
+            // A copy the combat migration converted: its 30-point base Poison Defense became Poison Resistance.
+            AddItemProperty(DurationType.Permanent, ItemPropertyCustom(ItemPropertyType.Resistance, (int)ResistanceType.Poison,
+                Resistance.EncodeItemPropertyCostTableValue(35)), item);
+        });
+        await EquipAsync(ctx, owner, item, InventorySlot.Arms);
+        await ctx.ExecuteInCreatureContextAsync(owner, () =>
+        {
+            DeleteLocalInt(item, CarapaceBracerStatRevisionCatalog.RevisionVariable);
+            // The record was upgraded with a newer file and no longer counts the base resistance; this older file still has it.
+            var record = SavedCharacterMigration.CopyRecord(DB.Get<Player>(fixture.Id));
+            var revised = record.Resistances.GetValueOrDefault(ResistanceType.Poison) - 30;
+            record.Resistances[ResistanceType.Poison] = revised;
+            record.Version = SavedCharacterMigration.LatestVersion;
+            record.CharacterFileVersion = 0;
+            var restored = SavedCharacterMigration.WithFileVersion(SavedCharacterMigration.SaveFile(owner), SavedCharacterMigration.LatestVersion - 1);
+
+            var upgraded = SavedCharacterMigration.Upgrade(restored, record);
+            ctx.Assert(upgraded != null, "The restored file is behind and is upgraded");
+            var migrated = SavedCharacterMigration.FindItem(SavedCharacterMigration.Load(ctx, upgraded), "cara_bracer");
+            ctx.AssertEqual(5, PropertyValue(migrated, ItemPropertyType.Resistance, (int)ResistanceType.Poison), "The restored file's bracer is corrected");
+            ctx.AssertEqual(revised, upgraded.Record.Resistances.GetValueOrDefault(ResistanceType.Poison),
+                "The current record already counts the correction and is not changed again");
+        });
+    }
 
     private static async Task VerifyCarapaceBracerLifecycle(EngineTestContext ctx, bool storedFirst, bool converted = false)
     {
@@ -87,15 +126,32 @@ public static partial class MigrationEngineTests
             ctx.AssertEqual(-1, PropertyValue(item, ItemPropertyType.Defense, 4), "Stored legacy defense is removed");
         }
         await EquipAsync(ctx, owner, item, InventorySlot.Arms);
+        SavedCharacterMigration.Upgraded upgraded = null;
         await ctx.ExecuteInCreatureContextAsync(owner, () =>
         {
-            new _24_CorrectCarapaceBracers().Migrate(owner);
-            ctx.AssertEqual(23, PropertyValue(item, ItemPropertyType.Defense, 1), "The five-point enhancement survives the base correction");
-            ctx.AssertEqual(-1, PropertyValue(item, ItemPropertyType.Defense, 4), "Retired defense is removed");
-            ctx.AssertEqual(converted ? 5 : -1, PropertyValue(item, ItemPropertyType.Resistance, 2), "Only the converted base resistance is removed");
-            ctx.AssertEqual(baseline + 23, ReadEquipmentTotals(owner).PhysicalDefense, "Equipped defense updates exactly once");
-            ctx.Assert(!LootStatRevisionMigration.MigrateObject(owner), "Retry is stable");
+            upgraded = SavedCharacterMigration.Run(owner, DB.Get<Player>(fixture.Id), "_24_CorrectCarapaceBracers");
+            var character = SavedCharacterMigration.Load(ctx, upgraded);
+            var migrated = SavedCharacterMigration.FindItem(character, "cara_bracer");
+            ctx.AssertEqual(migrated, GetItemInSlot(InventorySlot.Arms, character), "The corrected bracer stays equipped");
+            ctx.AssertEqual(23, PropertyValue(migrated, ItemPropertyType.Defense, 1), "The five-point enhancement survives the base correction");
+            ctx.AssertEqual(-1, PropertyValue(migrated, ItemPropertyType.Defense, 4), "Retired defense is removed");
+            ctx.AssertEqual(converted ? 5 : -1, PropertyValue(migrated, ItemPropertyType.Resistance, 2), "Only the converted base resistance is removed");
+            ctx.AssertEqual(baseline + 23, ReadEquipmentTotals(upgraded.Record).PhysicalDefense, "Equipped defense updates exactly once");
+            var retried = SavedCharacterMigration.Run(upgraded.File, upgraded.Record, "_24_CorrectCarapaceBracers");
+            ctx.Assert(retried.File.SequenceEqual(upgraded.File), "A retry makes no further changes");
+            ctx.AssertEqual(upgraded.Record.Defenses.GetValueOrDefault(CombatDamageType.Physical),
+                retried.Record.Defenses.GetValueOrDefault(CombatDamageType.Physical), "A retry counts no defense twice");
         });
+
+        // The player logs in with the corrected character and uses the bracer through two bank cycles.
+        using var login = await PlayerAbilityFixture.CreateFromCharacterAsync(ctx, upgraded.File, upgraded.Record, 3f);
+        owner = login.Creature;
+        item = FindHeadgear(owner, "cara_bracer");
+        uuid = GetObjectUUID(item);
+        ctx.AssertEqual(item, GetItemInSlot(InventorySlot.Arms, owner), "The upgraded character logs in wearing the corrected bracer");
+        ctx.AssertEqual(baseline + 23, ReadEquipmentTotals(owner).PhysicalDefense, "Login counts the corrected defense once");
+        await ctx.ExecuteInCreatureContextAsync(owner, () =>
+            ctx.Assert(!LootStatRevisionMigration.MigrateObject(owner), "The live revision finds nothing left to change"));
         for (var cycle = 0; cycle < 2; cycle++)
         {
             await UnequipAsync(ctx, owner, item);

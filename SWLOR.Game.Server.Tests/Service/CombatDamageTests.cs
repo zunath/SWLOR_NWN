@@ -1886,8 +1886,8 @@ public class CombatDamageTests
             "SWLOR.Game.Server",
             "Feature",
             "MigrationDefinition",
-            "PlayerMigration",
-            "_14_MigrateResistanceItemProperties.cs"));
+            "CharacterMigration",
+            "_14_15_CombatUpgradeMigrations.cs"));
         var serverMigrationSource = File.ReadAllText(Path.Combine(
             root.FullName,
             "SWLOR.Game.Server",
@@ -1902,7 +1902,7 @@ public class CombatDamageTests
             "MigrationDefinition",
             "SerializedItemWeaponDamageTypeMigration.cs"));
 
-        playerMigrationSource.Should().Contain("SerializedItemWeaponDamageTypeMigration.MigrateObject(player);");
+        playerMigrationSource.Should().Contain("SavedWeaponDamageTypeMigration.MigrateCharacter(character);");
         serverMigrationSource.Should().Contain("SerializedItemWeaponDamageTypeMigration.MigrateObject(obj)");
         weaponMigrationSource.Should().Contain("ItemPropertyType.DMG");
         weaponMigrationSource.Should().Contain("WeaponDamageScales");
@@ -1936,8 +1936,8 @@ public class CombatDamageTests
             "SWLOR.Game.Server",
             "Feature",
             "MigrationDefinition",
-            "PlayerMigration",
-            "_14_MigrateResistanceItemProperties.cs"));
+            "CharacterMigration",
+            "_14_15_CombatUpgradeMigrations.cs"));
         var serverMigrationSource = File.ReadAllText(Path.Combine(
             root.FullName,
             "SWLOR.Game.Server",
@@ -1952,7 +1952,7 @@ public class CombatDamageTests
             "MigrationDefinition",
             "SerializedItemResistanceMigration.cs"));
 
-        playerMigrationSource.Should().Contain("SerializedItemResistanceMigration.MigrateObject(player);");
+        playerMigrationSource.Should().Contain("SavedItemResistanceMigration.MigrateCharacter(character);");
         serverMigrationSource.Should().Contain("SerializedItemResistanceMigration.MigrateObject(obj)");
         resistanceMigrationSource.Should().Contain("RebalanceResistanceEnhancementItem");
         resistanceMigrationSource.Should().Contain("ArmorAndFoodResistanceAmountByRank");
@@ -1973,8 +1973,8 @@ public class CombatDamageTests
             "SWLOR.Game.Server",
             "Feature",
             "MigrationDefinition",
-            "PlayerMigration",
-            "_14_MigrateResistanceItemProperties.cs"));
+            "CharacterMigration",
+            "_14_15_CombatUpgradeMigrations.cs"));
         var serverMigrationSource = File.ReadAllText(Path.Combine(
             root.FullName,
             "SWLOR.Game.Server",
@@ -1989,7 +1989,7 @@ public class CombatDamageTests
             "MigrationDefinition",
             "CombatReadinessMigration.cs"));
 
-        playerMigrationSource.Should().Contain("CombatReadinessMigration.MigratePlayer(player);");
+        playerMigrationSource.Should().Contain("SavedCombatUpgradeItemMigrations.MigrateCombatReadiness(character);");
         playerMigrationSource.Should().NotContain("SerializedItemCombatReadinessMigration");
         serverMigrationSource.Should().Contain("CombatReadinessMigration.MigrateObject(obj)");
         serverMigrationSource.Should().NotContain("SerializedItemCombatReadinessMigration");
@@ -1997,8 +1997,14 @@ public class CombatDamageTests
         serverMigrationSource.Should().Contain("SearchAll<InventoryItem>()");
         serverMigrationSource.Should().Contain("SearchAll<MarketItem>()");
         serverMigrationSource.Should().Contain("TryMigrateCombatReadinessName(item.Resref, item.Name");
-        combatReadinessMigrationSource.Should().Contain("MigrateObject(player);");
-        combatReadinessMigrationSource.Should().Contain("CalculateEquippedCombatReadiness(player)");
+        File.ReadAllText(Path.Combine(
+                root.FullName,
+                "SWLOR.Game.Server",
+                "Feature",
+                "MigrationDefinition",
+                "CharacterMigration",
+                "SavedCombatUpgradeItemMigrations.cs"))
+            .Should().Contain("character.Record.CombatReadiness = character.Equipped.Sum(");
         combatReadinessMigrationSource.Should().Contain("CombatReadinessItemNamesByResref");
         combatReadinessMigrationSource.Should().Contain("aen_recast1");
         combatReadinessMigrationSource.Should().Contain("cen_recast5");

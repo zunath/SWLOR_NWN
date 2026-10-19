@@ -29,6 +29,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         private const int NumberOfStages = 3;
 
         private const string _blank = "Blank";
+        private const string HeldElsewhereMessage = "Your inventory is full. Items you left in another incubator are still there; make room first.";
 
         private string _dnaItem;
         private string _hydrolaseItem;
@@ -311,6 +312,15 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         protected override void Initialize(IncubatorPayload initialPayload)
         {
+            // Held items belong to the incubator they were placed in, so they never join another incubator's job.
+            if (_incubatorPropertyId != initialPayload.PropertyId && !ReturnItemsHeldElsewhere())
+            {
+                FloatingTextStringOnCreature(HeldElsewhereMessage, Player, false);
+                // Closed without the close handling, which would act on the other incubator's items.
+                Gui.CloseWindow(Player, GuiWindowType.Incubator, Player);
+                return;
+            }
+
             _incubatorPropertyId = initialPayload.PropertyId;
 
             ClearStats();
@@ -320,9 +330,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             HydrolaseItemResref = _blank;
             IsomeraseItemResref = _blank;
             LyaseItemResref = _blank;
+            RestoreHeldItems();
 
             LoadPlayerStats();
             RefreshAllStats();
+            ToggleStartJob();
+            ToggleContinueJob();
             IsErraticGeniusChecked = false;
             RefreshIncubationTime();
 
@@ -462,50 +475,121 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             EstimatedTimeToCompletion = $"Time Required: {Time.GetTimeShortIntervals(timespan, false)}";
         }
 
-        private void RemoveDNA()
+        /// <summary>
+        /// Returns the enzymes, then the DNA. An item without room stays in the incubator, and the DNA stays while any
+        /// enzyme does.
+        /// </summary>
+        /// <returns>False when an item stayed.</returns>
+        private bool RemoveDNA()
         {
             uint item;
-            if (!string.IsNullOrWhiteSpace(_dnaItem))
+            if (!string.IsNullOrWhiteSpace(_hydrolaseItem) &&
+                Item.TryAcquireItem(Player, item = ObjectPlugin.Deserialize(_hydrolaseItem)))
             {
-                item = ObjectPlugin.Deserialize(_dnaItem);
-                ObjectPlugin.AcquireItem(Player, item);
-                _dnaItem = string.Empty;
-                DNAItemResref = _blank;
-            }
-            if (!string.IsNullOrWhiteSpace(_hydrolaseItem))
-            {
-                item = ObjectPlugin.Deserialize(_hydrolaseItem);
-                ObjectPlugin.AcquireItem(Player, item);
+                SubtractItemStats(item);
                 _hydrolaseItem = string.Empty;
                 _hydrolaseColor = EnzymeColorType.Invalid;
                 HydrolaseItemResref = _blank;
             }
-            if (!string.IsNullOrWhiteSpace(_lyaseItem))
+            if (!string.IsNullOrWhiteSpace(_lyaseItem) &&
+                Item.TryAcquireItem(Player, item = ObjectPlugin.Deserialize(_lyaseItem)))
             {
-                item = ObjectPlugin.Deserialize(_lyaseItem);
-                ObjectPlugin.AcquireItem(Player, item);
+                SubtractItemStats(item);
                 _lyaseItem = string.Empty;
                 _lyaseColor = EnzymeColorType.Invalid;
                 LyaseItemResref = _blank;
             }
-            if (!string.IsNullOrWhiteSpace(_isomeraseItem))
+            if (!string.IsNullOrWhiteSpace(_isomeraseItem) &&
+                Item.TryAcquireItem(Player, item = ObjectPlugin.Deserialize(_isomeraseItem)))
             {
-                item = ObjectPlugin.Deserialize(_isomeraseItem);
-                ObjectPlugin.AcquireItem(Player, item);
+                SubtractItemStats(item);
                 _isomeraseItem = string.Empty;
                 _isomeraseColor = EnzymeColorType.Invalid;
                 IsomeraseItemResref = _blank;
             }
 
-            IsStartJobEnabled = false;
-            IsErraticGeniusChecked = false;
-            IsErraticGeniusEnabled = false;
+            var enzymesReturned = string.IsNullOrWhiteSpace(_hydrolaseItem) &&
+                                  string.IsNullOrWhiteSpace(_lyaseItem) &&
+                                  string.IsNullOrWhiteSpace(_isomeraseItem);
+            if (enzymesReturned && !string.IsNullOrWhiteSpace(_dnaItem) &&
+                Item.TryAcquireItem(Player, ObjectPlugin.Deserialize(_dnaItem)))
+            {
+                _dnaItem = string.Empty;
+                DNAItemResref = _blank;
+            }
 
-            ClearStats();
+            var allReturned = enzymesReturned && string.IsNullOrWhiteSpace(_dnaItem);
+            if (allReturned)
+            {
+                IsStartJobEnabled = false;
+                IsErraticGeniusChecked = false;
+                IsErraticGeniusEnabled = false;
+
+                ClearStats();
+            }
 
             RefreshAllStats();
             ToggleStartJob();
             ToggleContinueJob();
+            return allReturned;
+        }
+
+        /// <summary>Returns items another incubator kept. Returns false when some still do not fit.</summary>
+        private bool ReturnItemsHeldElsewhere()
+        {
+            if (!string.IsNullOrWhiteSpace(_hydrolaseItem) && Item.TryAcquireItem(Player, ObjectPlugin.Deserialize(_hydrolaseItem)))
+            {
+                _hydrolaseItem = string.Empty;
+                _hydrolaseColor = EnzymeColorType.Invalid;
+            }
+            if (!string.IsNullOrWhiteSpace(_lyaseItem) && Item.TryAcquireItem(Player, ObjectPlugin.Deserialize(_lyaseItem)))
+            {
+                _lyaseItem = string.Empty;
+                _lyaseColor = EnzymeColorType.Invalid;
+            }
+            if (!string.IsNullOrWhiteSpace(_isomeraseItem) && Item.TryAcquireItem(Player, ObjectPlugin.Deserialize(_isomeraseItem)))
+            {
+                _isomeraseItem = string.Empty;
+                _isomeraseColor = EnzymeColorType.Invalid;
+            }
+            if (!string.IsNullOrWhiteSpace(_dnaItem) && Item.TryAcquireItem(Player, ObjectPlugin.Deserialize(_dnaItem)))
+                _dnaItem = string.Empty;
+
+            return string.IsNullOrWhiteSpace(_dnaItem) && string.IsNullOrWhiteSpace(_hydrolaseItem) &&
+                   string.IsNullOrWhiteSpace(_lyaseItem) && string.IsNullOrWhiteSpace(_isomeraseItem);
+        }
+
+        /// <summary>Shows the items that stayed in the incubator when its window last closed.</summary>
+        private void RestoreHeldItems()
+        {
+            if (!string.IsNullOrWhiteSpace(_dnaItem))
+            {
+                var item = ObjectPlugin.Deserialize(_dnaItem);
+                LoadDNAStats(item);
+                DNAItemResref = Item.GetIconResref(item);
+                DestroyObject(item);
+            }
+            if (!string.IsNullOrWhiteSpace(_hydrolaseItem))
+            {
+                var item = ObjectPlugin.Deserialize(_hydrolaseItem);
+                _hydrolaseColor = AddItemStats(item);
+                HydrolaseItemResref = Item.GetIconResref(item);
+                DestroyObject(item);
+            }
+            if (!string.IsNullOrWhiteSpace(_lyaseItem))
+            {
+                var item = ObjectPlugin.Deserialize(_lyaseItem);
+                _lyaseColor = AddItemStats(item);
+                LyaseItemResref = Item.GetIconResref(item);
+                DestroyObject(item);
+            }
+            if (!string.IsNullOrWhiteSpace(_isomeraseItem))
+            {
+                var item = ObjectPlugin.Deserialize(_isomeraseItem);
+                _isomeraseColor = AddItemStats(item);
+                IsomeraseItemResref = Item.GetIconResref(item);
+                DestroyObject(item);
+            }
         }
 
         private void ClearStats()
@@ -553,7 +637,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             {
                 ShowModal("Will you remove the DNA from the incubator? All enzymes will also be removed.", () =>
                 {
-                    RemoveDNA();
+                    if (!RemoveDNA())
+                        FloatingTextStringOnCreature(Item.InventoryFullMessage, Player, false);
                     SwitchViews();
                 }, SwitchViews);
             }
@@ -574,73 +659,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                         return;
                     }
 
-                    for (var ip = GetFirstItemProperty(item); GetIsItemPropertyValid(ip); ip = GetNextItemProperty(item))
-                    {
-                        var type = GetItemPropertyType(ip);
-                        if (type == ItemPropertyType.DNAType)
-                        {
-                            _dnaType = (BeastType)GetItemPropertySubType(ip);
-                        }
-                        else if(type == ItemPropertyType.Incubation)
-                        {
-                            var subType = (IncubationStatType)GetItemPropertySubType(ip);
-                            var costId = GetItemPropertyCostTableValue(ip);
-
-                            switch (subType)
-                            {
-                                case IncubationStatType.MutationChance:
-                                    _mutationChance = costId;
-                                    break;
-                                case IncubationStatType.AttackPurity:
-                                    _attack = costId;
-                                    break;
-                                case IncubationStatType.AccuracyPurity:
-                                    _accuracy = costId;
-                                    break;
-                                case IncubationStatType.EvasionPurity:
-                                    _evasion = costId;
-                                    break;
-                                case IncubationStatType.LearningPurity:
-                                    _learning = costId;
-                                    break;
-                                case IncubationStatType.PhysicalDefensePurity:
-                                    _physicalDefense = costId;
-                                    break;
-                                case IncubationStatType.ForceDefensePurity:
-                                _forceDefense = costId;
-                                break;
-                            case IncubationStatType.FireResistancePurity:
-                                _fireResistance = costId;
-                                break;
-                            case IncubationStatType.PoisonResistancePurity:
-                                _poisonResistance = costId;
-                                break;
-                            case IncubationStatType.ElectricalResistancePurity:
-                                _electricalResistance = costId;
-                                break;
-                            case IncubationStatType.IceResistancePurity:
-                                _iceResistance = costId;
-                                break;
-                                case IncubationStatType.TraumaResistancePurity:
-                                    _traumaResistance = costId;
-                                    break;
-                                case IncubationStatType.MobilityResistancePurity:
-                                    _mobilityResistance = costId;
-                                    break;
-                                case IncubationStatType.MindResistancePurity:
-                                    _mindResistance = costId;
-                                    break;
-                                case IncubationStatType.DisruptionResistancePurity:
-                                    _disruptionResistance = costId;
-                                    break;
-                                case IncubationStatType.XPPenalty:
-                                    _xpPenalty = costId;
-                                    break;
-                                default:
-                                    throw new ArgumentOutOfRangeException();
-                            }
-                        }
-                    }
+                    LoadDNAStats(item);
 
                     DNAItemResref = Item.GetIconResref(item);
                     _dnaItem = ObjectPlugin.Serialize(item);
@@ -653,6 +672,77 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             }
 
         };
+
+        private void LoadDNAStats(uint item)
+        {
+            for (var ip = GetFirstItemProperty(item); GetIsItemPropertyValid(ip); ip = GetNextItemProperty(item))
+            {
+                var type = GetItemPropertyType(ip);
+                if (type == ItemPropertyType.DNAType)
+                {
+                    _dnaType = (BeastType)GetItemPropertySubType(ip);
+                }
+                else if(type == ItemPropertyType.Incubation)
+                {
+                    var subType = (IncubationStatType)GetItemPropertySubType(ip);
+                    var costId = GetItemPropertyCostTableValue(ip);
+
+                    switch (subType)
+                    {
+                        case IncubationStatType.MutationChance:
+                            _mutationChance = costId;
+                            break;
+                        case IncubationStatType.AttackPurity:
+                            _attack = costId;
+                            break;
+                        case IncubationStatType.AccuracyPurity:
+                            _accuracy = costId;
+                            break;
+                        case IncubationStatType.EvasionPurity:
+                            _evasion = costId;
+                            break;
+                        case IncubationStatType.LearningPurity:
+                            _learning = costId;
+                            break;
+                        case IncubationStatType.PhysicalDefensePurity:
+                            _physicalDefense = costId;
+                            break;
+                        case IncubationStatType.ForceDefensePurity:
+                        _forceDefense = costId;
+                        break;
+                    case IncubationStatType.FireResistancePurity:
+                        _fireResistance = costId;
+                        break;
+                    case IncubationStatType.PoisonResistancePurity:
+                        _poisonResistance = costId;
+                        break;
+                    case IncubationStatType.ElectricalResistancePurity:
+                        _electricalResistance = costId;
+                        break;
+                    case IncubationStatType.IceResistancePurity:
+                        _iceResistance = costId;
+                        break;
+                        case IncubationStatType.TraumaResistancePurity:
+                            _traumaResistance = costId;
+                            break;
+                        case IncubationStatType.MobilityResistancePurity:
+                            _mobilityResistance = costId;
+                            break;
+                        case IncubationStatType.MindResistancePurity:
+                            _mindResistance = costId;
+                            break;
+                        case IncubationStatType.DisruptionResistancePurity:
+                            _disruptionResistance = costId;
+                            break;
+                        case IncubationStatType.XPPenalty:
+                            _xpPenalty = costId;
+                            break;
+                        default:
+                            throw new ArgumentOutOfRangeException();
+                    }
+                }
+            }
+        }
 
         private EnzymeColorType AddItemStats(uint item)
         {
@@ -802,7 +892,13 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 ShowModal("Will you remove the Hydrolase enzyme?", () =>
                 {
                     var item = ObjectPlugin.Deserialize(_hydrolaseItem);
-                    ObjectPlugin.AcquireItem(Player, item);
+                    if (!Item.TryAcquireItem(Player, item))
+                    {
+                        FloatingTextStringOnCreature(Item.InventoryFullMessage, Player, false);
+                        SwitchViews();
+                        return;
+                    }
+
                     HydrolaseItemResref = _blank;
                     _hydrolaseItem = string.Empty;
                     _hydrolaseColor = EnzymeColorType.Invalid;
@@ -849,7 +945,13 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 ShowModal("Will you remove the Lyase Enzyme?", () =>
                 {
                     var item = ObjectPlugin.Deserialize(_lyaseItem);
-                    ObjectPlugin.AcquireItem(Player, item);
+                    if (!Item.TryAcquireItem(Player, item))
+                    {
+                        FloatingTextStringOnCreature(Item.InventoryFullMessage, Player, false);
+                        SwitchViews();
+                        return;
+                    }
+
                     LyaseItemResref = _blank;
                     _lyaseItem = string.Empty;
                     _lyaseColor = EnzymeColorType.Invalid;
@@ -895,7 +997,13 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 ShowModal("Will you remove the Isomerase Enzyme?", () =>
                 {
                     var item = ObjectPlugin.Deserialize(_isomeraseItem);
-                    ObjectPlugin.AcquireItem(Player, item);
+                    if (!Item.TryAcquireItem(Player, item))
+                    {
+                        FloatingTextStringOnCreature(Item.InventoryFullMessage, Player, false);
+                        SwitchViews();
+                        return;
+                    }
+
                     IsomeraseItemResref = _blank;
                     _isomeraseItem = string.Empty;
                     _isomeraseColor = EnzymeColorType.Invalid;
@@ -1109,9 +1217,11 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             }, SwitchViews);
         };
 
-        public Action OnCloseWindow() => () =>
+        /// <summary>Runs whenever the window closes, whether the player closes it or the server does.</summary>
+        public override Action OnWindowClosed() => () =>
         {
-            RemoveDNA();
+            if (!RemoveDNA())
+                SendMessageToPC(Player, Item.ItemsHeldMessage);
         };
 
         public void Refresh(PerkAcquiredRefreshEvent payload)

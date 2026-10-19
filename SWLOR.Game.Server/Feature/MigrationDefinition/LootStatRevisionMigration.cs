@@ -202,7 +202,18 @@ public static class LootStatRevisionMigration
         changed |= ApplyRevision(item, ArkanianArmorStatRevisionCatalog.Changes,
             ArkanianArmorStatRevisionCatalog.RevisionVariable, ArkanianArmorStatRevisionCatalog.CurrentRevision,
             current => ReviseIceProtection(current, ArkanianArmorStatRevisionCatalog.IceResistance));
+        changed |= ApplyRevision(item, CarapaceBracerStatRevisionCatalog.Changes,
+            CarapaceBracerStatRevisionCatalog.RevisionVariable, CarapaceBracerStatRevisionCatalog.CurrentRevision,
+            ReviseCarapaceProtection);
         return changed;
+    }
+
+    private static IEnumerable<LootStatChange> ReviseCarapaceProtection(uint item)
+    {
+        // The combat migration converted older copies' base Poison Defense into Resistance.
+        if (ReadTotal(item, ItemPropertyType.Defense, (int)CombatDamageType.Poison).Total == 0 &&
+            ReadTotal(item, ItemPropertyType.Resistance, (int)ResistanceType.Poison).Total >= 30)
+            yield return new LootStatChange(ItemPropertyType.Resistance, (int)ResistanceType.Poison, 30, 0);
     }
 
     private static bool ApplyRevision(uint item, IReadOnlyDictionary<string, LootStatChange[]> catalog,

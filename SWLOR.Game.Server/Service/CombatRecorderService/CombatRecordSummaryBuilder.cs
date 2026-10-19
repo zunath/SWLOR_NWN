@@ -143,7 +143,8 @@ namespace SWLOR.Game.Server.Service.CombatRecorderService
                 return;
             }
 
-            if (e.ActorId > 0)
+            // Damage a creature does to itself, such as a stance's HP drain, is taken but not dealt.
+            if (e.ActorId > 0 && e.ActorId != e.TargetId)
                 AddDamage(GetParticipant(e.ActorId).DamageDealt, label, e.Value0, hitPointsLost, absorbed, overkill);
             AddDamage(GetParticipant(e.TargetId).DamageTaken, label, e.Value0, hitPointsLost, absorbed, overkill);
         }

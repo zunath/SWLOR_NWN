@@ -11,8 +11,8 @@ namespace SWLOR.Game.Server.Tests.Feature;
 
 public class MigrationDataTests
 {
-    // Release 2026-10-16 (b1406fec3) shipped player 22 and server 27.
-    private const int ReleasedPlayerVersion = 22;
+    // Production has run player migration 23 and server migration 28.
+    private const int ReleasedPlayerVersion = 23;
     private const int ReleasedServerVersion = 28;
     private static readonly Assembly ServerAssembly = typeof(SWLOR.Game.Server.Service.Migration).Assembly;
 
@@ -24,10 +24,11 @@ public class MigrationDataTests
         migrations.Select(CharacterMigrations.VersionOf).Should().OnlyHaveUniqueItems();
         CharacterMigrations.VersionOf("_17_RemoveWeaponStatOverrides").Should().BeGreaterThan(CharacterMigrations.VersionOf("_16_RetireForceWeaponEnhancements"));
         migrations.Where(migration => CharacterMigrations.VersionOf(migration) >= 22).Select(migration => migration.GetType())
-            .Should().BeEquivalentTo(new[] { CharacterMigrations.Named("_22_ReviseLootStats"), CharacterMigrations.Named("_23_CorrectEquipmentTypes") });
+            .Should().BeEquivalentTo(new[] { CharacterMigrations.Named("_22_ReviseLootStats"), CharacterMigrations.Named("_23_CorrectEquipmentTypes"),
+                CharacterMigrations.Named("_24_CorrectCarapaceBracers") });
         migrations.Where(migration => CharacterMigrations.VersionOf(migration) > ReleasedPlayerVersion).Select(migration => migration.GetType())
-            .Should().BeEquivalentTo(new[] { CharacterMigrations.Named("_23_CorrectEquipmentTypes") }, "the last release must receive one combined player-item pass");
-        CharacterMigrations.VersionOf("_23_CorrectEquipmentTypes").Should().Be(ReleasedPlayerVersion + 1);
+            .Should().BeEquivalentTo(new[] { CharacterMigrations.Named("_24_CorrectCarapaceBracers") }, "the next release must receive one combined player-item pass");
+        CharacterMigrations.VersionOf("_24_CorrectCarapaceBracers").Should().Be(ReleasedPlayerVersion + 1);
     }
 
     [Test]
@@ -118,6 +119,10 @@ public class MigrationDataTests
             .Where(type => !type.IsAbstract && !type.IsInterface && typeof(IServerMigration).IsAssignableFrom(type))
             .Select(type => (IServerMigration)Activator.CreateInstance(type)!).ToArray();
         remaining.Should().OnlyContain(server => server.Version > baseline, "retired migrations are removed, not kept beside the baseline");
+        remaining.Select(server => server.GetType()).Should().BeEquivalentTo(new[] { typeof(_29_CorrectStoredCarapaceBracers) },
+            "the next release must receive one combined stored-item pass");
+        new _29_CorrectStoredCarapaceBracers().ExecutionType.Should().Be(MigrationExecutionType.PostCacheLoad);
+        new _29_CorrectStoredCarapaceBracers().Version.Should().Be(ReleasedServerVersion + 1);
     }
 
     private static object? Invoke(string type, string method, params object[] args) =>

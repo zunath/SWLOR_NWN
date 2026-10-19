@@ -127,7 +127,7 @@ namespace SWLOR.Game.Server.Service
             var table = GetLootTableByName(lootTableName);
             if (rareBonusChance > 0 && table.IsRare)
             {
-                chance += rareBonusChance;
+                chance += table.GetRareChanceBonus(rareBonusChance);
             }
             for (int x = 1; x <= attempts; x++)
             {

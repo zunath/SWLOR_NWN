@@ -15,7 +15,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions;
 
 public static partial class MigrationEngineTests
 {
-    [EngineTest("Character migration 23 repairs version 22 worn and nested visors and artwork before two bank reloads", Category = HeadgearCategory, TimeoutSeconds = 120)]
+    [EngineTest("Character migration 24 repairs version 23 worn and nested visors and artwork before two bank reloads", Category = HeadgearCategory, TimeoutSeconds = 120)]
     public static async Task ReservedVisorModelsAndArtwork(EngineTestContext ctx)
     {
         using var fixture = await PlayerAbilityFixture.CreateAsync(ctx);
@@ -45,16 +45,16 @@ public static partial class MigrationEngineTests
         {
             const string checkpointVariable = "PLAYER_MIGRATION_VERSION";
             var record = DB.Get<Player>(fixture.Id);
-            record.Version = 22;
+            record.Version = 23;
             DB.Set(record);
-            SetLocalInt(player, checkpointVariable, 22);
-            ctx.Assert(SavedCharacterMigration.Versions.Where(version => version > 22).SequenceEqual(new[] { 23 }),
-                "A released version 22 character receives exactly one combined item migration");
+            SetLocalInt(player, checkpointVariable, 23);
+            ctx.Assert(SavedCharacterMigration.Versions.Where(version => version > 23).SequenceEqual(new[] { 24 }),
+                "A released version 23 character receives exactly one combined item migration");
             ctx.AssertEqual(223, GetItemAppearance(visor, ItemAppearanceType.SimpleModel, 0), "Fixture reproduces the shipped reserved helmet model");
             upgraded = SavedCharacterMigration.Upgrade(SavedCharacterMigration.SaveFile(player), record);
-            ctx.Assert(upgraded != null, "The character upgrade repairs a version 22 character");
-            ctx.AssertEqual(23, upgraded.Record.Version, "The record checkpoint advances after repair");
-            ctx.AssertEqual(23, upgraded.FileVersion, "The saved character contains the new checkpoint");
+            ctx.Assert(upgraded != null, "The character upgrade repairs a version 23 character");
+            ctx.AssertEqual(24, upgraded.Record.Version, "The record checkpoint advances after repair");
+            ctx.AssertEqual(24, upgraded.FileVersion, "The saved character contains the new checkpoint");
 
             var character = SavedCharacterMigration.Load(ctx, upgraded);
             var migratedVisor = GetItemInSlot(InventorySlot.Head, character);

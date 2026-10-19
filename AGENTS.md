@@ -30,7 +30,7 @@ SWLOR is a live Neverwinter Nights: Enhanced Edition persistent world. Server lo
 - **Shared machine:** several Claude and Codex sessions run at once. Work in your own worktree and branch, never stash, reset, or run repo-wide generators in a shared checkout, and stop only processes you started (`Readmes/AgentEnvironment.md`).
 - **Clean up as you go:** delete generated files (renders, models, textures, HAK and module copies, client profiles, containers) once nothing needs them, without being asked. Keep only the evidence the user needs.
 - **Token economy:** never read a whole `Module/` JSON file (some reach 25 MB); search instead. Read only the guide sections you need, and keep command output small.
-- **Pull requests:** one branch and pull request per request, from up-to-date `origin/master`. Request a Codex review (`@codex review`) and keep fixing until it finds nothing; never wait on a rate-limited CodeRabbit; resolve every thread (`Readmes/PullRequests.md`).
+- **Pull requests:** one branch and pull request per request, from up-to-date `origin/master`. Request each Codex review with `tools/RequestCodexReview.ps1`, which waits for the answer, and keep fixing in the same turn until a review of the current head finds nothing; never wait on a rate-limited CodeRabbit; resolve every thread (`Readmes/PullRequests.md`).
 - **Public repository:** keep secrets and anti-abuse specifics out of commits, pull requests, and player-facing text.
 
 ## Guides

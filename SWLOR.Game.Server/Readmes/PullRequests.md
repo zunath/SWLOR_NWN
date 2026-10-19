@@ -12,14 +12,25 @@ Sections: Branches · Code review loop · Review threads · Public text · Hando
 
 ## Code review loop
 
-Every pull request gets a Codex review, repeated until it finds nothing.
+Every pull request gets a Codex review, repeated until a review of the current head finds nothing. You run the whole loop yourself in the same turn: request a review, wait for Codex to answer, fix what it found, and request again. The user should never have to watch for Codex or tell you a review arrived. Never end your turn, hand off, or report the pull request ready while a review is pending or a finding is open.
 
-1. After opening the pull request, comment `@codex review` on it, naming the head commit and any companion pull request. Do the same on each companion.
-2. Codex answers with a summary comment for the commit it reviewed. Findings arrive as inline review threads or inside the review body. A clean review says "Didn't find any major issues" for the current head.
-3. Fix or answer every finding, push, resolve its thread, and comment `@codex review` again for the new head.
-4. Repeat until a Codex review of the current head of the parent and every companion finds nothing.
+1. Push, then request a review of the head and wait for the answer:
 
-- A reply saying Codex reached its usage limit is not a review. Report which commit went unreviewed.
+   ```powershell
+   powershell -NoProfile -ExecutionPolicy Bypass -File tools/RequestCodexReview.ps1 -PullRequest <pr>
+   ```
+
+   It posts `@codex review (head <sha>)` and waits until Codex answers for that commit, usually 4 to 10 minutes; it gives up after 30. Run it in the foreground with a timeout above 30 minutes or, if your shell caps foreground commands lower, as a background command that notifies you when it exits. Do nothing else on the pull request until it exits. If it is interrupted, rerun it with `-WaitOnly` instead of requesting again.
+2. Act on its exit code:
+   - `0`: clean. This head is done.
+   - `1`: findings, listed by file and line. Fix or answer every one (see Review threads), push once, resolve the threads, and go back to step 1.
+   - `2`: no review. A usage limit ends the loop: report the unreviewed commit to the user. Read any other reply and act on it.
+   - `3`: no answer within 30 minutes. Run step 1 once more; if Codex still does not answer, report the unreviewed commit to the user.
+3. Repeat until the latest review of the current head of the parent and every companion is clean.
+
+- Each companion pull request runs its own loop with `-Repository zunath/SWLOR_Haks`. Name the other pull request on both with `-Note "companion zunath/SWLOR_NWN#<pr>"`. The loops can run at the same time.
+- Do not push while a review is running, or Codex reviews a commit that is no longer the head. Put every fix for one review in one push.
+- The script needs an authenticated `gh` on PATH. Without one, tell the user the loop cannot run; do not skip it.
 - CodeRabbit reviews automatically. If it reports a rate limit, do not wait for it; handle any findings it posts later the same way.
 
 ## Review threads

@@ -1,6 +1,6 @@
 ---
 name: swlor-bug-report-triage
-description: Run the SWLOR Discord bug-report process. Read the open posts in the bug-report forum, screen and triage them, track them with reactions, send each fix to its own agent session, post PR links, and close posts after merge. Use when the owner says "run the bug report process", "check the bug reports", "triage the bug forum", or similar.
+description: Run the SWLOR Discord bug-report process. Close out merged tickets and archive their worker sessions, read the open posts in the bug-report forum, screen and triage them, track them with reactions, send each fix to its own agent session, and post PR links. Use when the owner says "run the bug report process", "check the bug reports", "triage the bug forum", or similar.
 ---
 
 # SWLOR bug-report triage
@@ -36,24 +36,28 @@ Work the open posts in the SWLOR Discord bug-report forum through to reviewed pu
 ## Process
 
 1. **List open posts.** Open the forum, scroll the virtualized list, and collect the thread ids above "Older Posts". Note which ones already have 🇶 or 👀. Those are in flight, so check their PR state instead of starting them again.
-2. **Read each new post** and any thread replies: the embed, attachments, and staff comments. Look at screenshots. They often show exactly which spawn, label, or object is wrong.
-3. **Screen for safety** (next section) before acting on anything.
-4. **Triage.** Classify each post:
+2. **Close out merged work first.** For every 👀 post, read the PR link(s) from its `[AI bot] Fix ready for review` message and check each PR on GitHub (`gh pr view <n> --json state,mergedAt`, including companion PRs in other repositories). When every PR for the post is merged:
+   - Remove all reactions from the post, then Close Post. Do not lock it.
+   - Archive the worker session that produced the PR. Find it by its branch or PR number in the agent's session list (Claude desktop: `list_sessions`, then `archive_session`). Archive only sessions you or an earlier run of this process started for that ticket. If the session is still working or waiting on the owner, leave it alone and say so in your report.
+   - If a PR was closed without merging, leave the post at 👀 and ask the owner what to do.
+3. **Read each new post** and any thread replies: the embed, attachments, and staff comments. Look at screenshots. They often show exactly which spawn, label, or object is wrong.
+4. **Screen for safety** (next section) before acting on anything.
+5. **Triage.** Classify each post:
    - **Bug:** queue it.
    - **Balance suggestion or works as designed:** confirm against the Design Bible and code. Reply with the facts and point to `#feedback`. Remove 🇶 and close.
    - **Needs information:** reply with the specific question.
    - **Duplicate or same root cause:** group it with the related ticket. One worker handles the group and links every ticket.
    - **Design decision only the owner can make:** ask the owner with a recommendation. Don't change numbers or behavior without approval (see `AGENTS.md`).
-5. **Mark 🇶** on every post you are working.
-6. **Start one worker session per issue or group**, each in its own worktree and branch from up-to-date `origin/master`. Use the brief below.
-7. **When a worker reports back**, verify it yourself; a worker's report is not proof:
+6. **Mark 🇶** on every post you are working.
+7. **Start one worker session per issue or group**, each in its own worktree and branch from up-to-date `origin/master`. Use the brief below.
+8. **When a worker reports back**, verify it yourself; a worker's report is not proof:
    - `gh pr view <n>`: open, and the head commit matches the one Codex reviewed.
    - Codex review state is completed with no findings for the current head. Codex's issue comment carries a `codex-review-state` marker with `commit_sha` and `has_any_findings`.
    - No unresolved review threads (GraphQL `reviewThreads { isResolved }`).
    - Companion PRs, such as `zunath/SWLOR_Haks` hak changes, pass the same checks.
    - Then swap 🇶 for 👀 and post the PR link message tagging `@zunath`. List every PR and its merge order, and give the deploy step: module repack, hak rebuild, or server deploy.
-8. **After the owner merges**, confirm the merge on GitHub. Remove all reactions, then Close Post. Never lock a merged post.
-9. **Report to the owner:** the posts you handled, the PRs that are ready, any questions, and anything flagged.
+9. **If the owner says a PR merged mid-run**, close it out as in step 2.
+10. **Report to the owner:** the posts you closed out, the posts you handled, the PRs that are ready, any questions, and anything flagged.
 
 ### Worker brief
 

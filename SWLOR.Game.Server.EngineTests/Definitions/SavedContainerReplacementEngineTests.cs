@@ -1,14 +1,96 @@
+using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 using SWLOR.Game.Server.EngineTests.Framework;
 using SWLOR.Game.Server.Entity;
+using SWLOR.Game.Server.Feature.MigrationDefinition;
+using SWLOR.Game.Server.Service;
 using SWLOR.NWN.API.NWNX;
+using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.NWN.API.NWScript.Enum.Item;
 using NWNXLib = NWN.Native.API.NWNXLib;
 
 namespace SWLOR.Game.Server.EngineTests.Definitions;
 
 public static partial class MigrationEngineTests
 {
+    /// <summary>
+    /// Migration 23 turns legacy gloves into 2x2 helmets in place. In a full bag the larger item overlaps others or runs
+    /// past the bag, and the engine drops an item when it loads such a bag; the upgrade moves it instead.
+    /// </summary>
+    [EngineTest("A full bag keeps every item when the upgrade makes one of them larger", Category = "SavedContainerReplacement", TimeoutSeconds = 90)]
+    public static async Task FullBagKeepsEnlargedItems(EngineTestContext ctx)
+    {
+        using var fixture = await PlayerAbilityFixture.CreateAsync(ctx);
+        var owner = fixture.Creature;
+        byte[] file = null;
+        SavedCharacterMigration.Upgraded upgraded = null;
+        var ringsBefore = 0;
+        await ctx.ExecuteInCreatureContextAsync(owner, () =>
+        {
+            var bag = CreateItemOnObject("bag_sm", owner);
+            var legacy = CreateItemOnObject("sabstorm_l3", owner);
+            ItemPlugin.SetBaseItemType(legacy, EquipmentTypeMigration.Corrections["sabstorm_l3"].LegacyType);
+            ctx.Assert(ItemPlugin.MoveTo(legacy, bag, true), "The legacy item goes in the bag first");
+            // Rings fill every other cell of the bag.
+            var fillers = 0;
+            while (fillers < 40)
+            {
+                var ring = CreateItemOnObject("advent_ring", owner);
+                SetLocalInt(ring, "FILLER", fillers);
+                if (!ItemPlugin.MoveTo(ring, bag, true) || GetItemPossessor(ring, true) != bag)
+                {
+                    DestroyObject(ring);
+                    break;
+                }
+                fillers++;
+            }
+            ctx.Assert(fillers > 0 && fillers < 40, $"The bag fills with rings ({fillers})");
+            ringsBefore = SavedCharacterMigration.FindItems(owner, "advent_ring").Count;
+
+            // The released version before migration 23, which turns these gloves into helmets.
+            const int beforeMigration23 = 22;
+            var record = SavedCharacterMigration.CopyRecord(DB.Get<Player>(fixture.Id));
+            record.Version = beforeMigration23;
+            record.CharacterFileVersion = 0;
+            file = SavedCharacterMigration.WithFileVersion(SavedCharacterMigration.SaveFile(owner), beforeMigration23);
+            upgraded = SavedCharacterMigration.Upgrade(file, record);
+            ctx.Assert(upgraded != null, "The character is upgraded");
+            var character = SavedCharacterMigration.Load(ctx, upgraded);
+            var helmet = SavedCharacterMigration.FindItem(character, "sabstorm_l3");
+            ctx.AssertEqual(BaseItem.Helmet, GetBaseItemType(helmet), "The legacy gloves become a helmet");
+            ctx.AssertEqual(character, GetItemPossessor(helmet), "The enlarged item is kept by the character");
+            ctx.AssertEqual(ringsBefore, SavedCharacterMigration.FindItems(character, "advent_ring").Count, "Every ring in the bag is kept");
+            ctx.AssertEqual(0, upgraded.Overflow.Count, "Nothing needs overflow storage while the inventory has room");
+
+            // A boot that retries after a failed save upgrades the same file the same way, and a saved upgrade is final.
+            var retried = SavedCharacterMigration.Upgrade(file, record);
+            ctx.Assert(retried.File.SequenceEqual(upgraded.File), "A retry writes the same character file");
+            ctx.AssertEqual(upgraded.Overflow.Count, retried.Overflow.Count, "A retry stores no more overflow items");
+            ctx.Assert(SavedCharacterMigration.Upgrade(upgraded.File, upgraded.Record) == null, "An upgraded character is not upgraded again");
+        });
+
+        // The player logs in, wears the helmet, and the character is saved and loaded twice.
+        using var login = await PlayerAbilityFixture.CreateFromCharacterAsync(ctx, upgraded.File, upgraded.Record, 3f);
+        var player = login.Creature;
+        var worn = SavedCharacterMigration.FindItem(player, "sabstorm_l3");
+        await ctx.ExecuteInCreatureContextAsync(player, () => RemoveRequirement(worn));
+        await EquipAsync(ctx, player, worn, InventorySlot.Head);
+        var current = player;
+        for (var cycle = 1; cycle <= 2; cycle++)
+        {
+            await ctx.ExecuteInCreatureContextAsync(player, () =>
+            {
+                var reloaded = ObjectPlugin.Deserialize(Convert.ToBase64String(SavedCharacterMigration.SaveFile(current)));
+                ctx.Track(reloaded);
+                ctx.AssertEqual("sabstorm_l3", GetResRef(GetItemInSlot(InventorySlot.Head, reloaded)), $"Cycle {cycle}: the helmet stays worn");
+                ctx.AssertEqual(1, SavedCharacterMigration.FindItems(reloaded, "sabstorm_l3").Count, $"Cycle {cycle}: there is exactly one helmet");
+                ctx.AssertEqual(ringsBefore, SavedCharacterMigration.FindItems(reloaded, "advent_ring").Count, $"Cycle {cycle}: every ring is kept");
+                current = reloaded;
+            });
+        }
+    }
+
     [EngineTest("A full inventory converts its retired upgrade kits into the cells they free", Category = "SavedContainerReplacement", TimeoutSeconds = 90)]
     public static async Task FullInventoryConvertsRetiredKitsInPlace(EngineTestContext ctx)
     {

@@ -203313,7 +203313,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Stuck — r_prax_interiors"
+            "0": "Stuck - r_prax_interiors"
           }
         },
         "MapNote": {

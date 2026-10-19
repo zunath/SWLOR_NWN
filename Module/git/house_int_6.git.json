@@ -1314,7 +1314,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Stuck — house_int_6"
+            "0": "Stuck - house_int_6"
           }
         },
         "MapNote": {

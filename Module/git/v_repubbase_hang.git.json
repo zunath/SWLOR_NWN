@@ -50922,7 +50922,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Stuck — v_repubbase_hang"
+            "0": "Stuck - v_repubbase_hang"
           }
         },
         "MapNote": {

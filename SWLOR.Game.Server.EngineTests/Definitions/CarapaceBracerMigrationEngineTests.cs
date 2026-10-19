@@ -23,6 +23,43 @@ public static partial class MigrationEngineTests
     [EngineTest("Previously converted Carapace Bracer keeps crafted resistance through two bank equip cycles", Category = "CarapaceBracerMigration", TimeoutSeconds = 120)]
     public static Task ConvertedCarapaceBracerLifecycle(EngineTestContext ctx) => VerifyCarapaceBracerLifecycle(ctx, false, true);
 
+    [EngineTest("An older file restored beside a current record corrects its worn bracer without changing the record again",
+        Category = "CarapaceBracerMigration", TimeoutSeconds = 120)]
+    public static async Task RestoredFileBesideCurrentRecord(EngineTestContext ctx)
+    {
+        using var fixture = await PlayerAbilityFixture.CreateAsync(ctx);
+        var owner = fixture.Creature;
+        var current = GetItemInSlot(InventorySlot.Arms, owner);
+        if (GetIsObjectValid(current)) await UnequipAsync(ctx, owner, current);
+        var item = await CreateItemAsync(ctx, owner, "cara_bracer", owner);
+        await ctx.ExecuteInCreatureContextAsync(owner, () =>
+        {
+            RemoveRequirement(item);
+            // A copy the combat migration converted: its 30-point base Poison Defense became Poison Resistance.
+            AddItemProperty(DurationType.Permanent, ItemPropertyCustom(ItemPropertyType.Resistance, (int)ResistanceType.Poison,
+                Resistance.EncodeItemPropertyCostTableValue(35)), item);
+        });
+        await EquipAsync(ctx, owner, item, InventorySlot.Arms);
+        await ctx.ExecuteInCreatureContextAsync(owner, () =>
+        {
+            DeleteLocalInt(item, CarapaceBracerStatRevisionCatalog.RevisionVariable);
+            // The record was upgraded with a newer file and no longer counts the base resistance; this older file still has it.
+            var record = SavedCharacterMigration.CopyRecord(DB.Get<Player>(fixture.Id));
+            var revised = record.Resistances.GetValueOrDefault(ResistanceType.Poison) - 30;
+            record.Resistances[ResistanceType.Poison] = revised;
+            record.Version = SavedCharacterMigration.LatestVersion;
+            record.CharacterFileVersion = 0;
+            var restored = SavedCharacterMigration.WithFileVersion(SavedCharacterMigration.SaveFile(owner), SavedCharacterMigration.LatestVersion - 1);
+
+            var upgraded = SavedCharacterMigration.Upgrade(restored, record);
+            ctx.Assert(upgraded != null, "The restored file is behind and is upgraded");
+            var migrated = SavedCharacterMigration.FindItem(SavedCharacterMigration.Load(ctx, upgraded), "cara_bracer");
+            ctx.AssertEqual(5, PropertyValue(migrated, ItemPropertyType.Resistance, (int)ResistanceType.Poison), "The restored file's bracer is corrected");
+            ctx.AssertEqual(revised, upgraded.Record.Resistances.GetValueOrDefault(ResistanceType.Poison),
+                "The current record already counts the correction and is not changed again");
+        });
+    }
+
     private static async Task VerifyCarapaceBracerLifecycle(EngineTestContext ctx, bool storedFirst, bool converted = false)
     {
         using var fixture = await PlayerAbilityFixture.CreateAsync(ctx);

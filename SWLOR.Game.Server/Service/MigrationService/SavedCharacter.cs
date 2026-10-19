@@ -511,6 +511,24 @@ internal sealed class SavedCharacter
         return false;
     }
 
+    /// <summary>
+    /// Replaces an item in a saved container outside the character (a droid's bag) with a new item node, which may
+    /// use the cells the old item frees. False, with the container unchanged, when the new item still has no room.
+    /// </summary>
+    internal static bool ReplaceInContainer(SavedItem old, Node replacement)
+    {
+        var list = old.List;
+        var index = list.Children.IndexOf(old.Node);
+        list.Children.RemoveAt(index);
+        if (!Place(list, SavedCharacterData.ContainerWidth, SavedCharacterData.ContainerHeight, replacement))
+        {
+            list.Children.Insert(index, old.Node);
+            return false;
+        }
+        StoredObjectData.NumberListElements(list);
+        return true;
+    }
+
     // ---- Record effects ------------------------------------------------------------------------------
 
     /// <summary>Adds or removes every stat an equipped item grants, as <see cref="Feature.EquipmentStats.ApplyItemStats"/> does.</summary>

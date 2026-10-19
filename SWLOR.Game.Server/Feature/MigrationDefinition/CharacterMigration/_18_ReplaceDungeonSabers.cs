@@ -120,10 +120,8 @@ internal sealed class _18_ReplaceDungeonSabers : ICharacterMigration
                 var droidItemId = content.GetLocalString(DroidItemIdVariable);
                 if (!string.IsNullOrWhiteSpace(droidItemId))
                     item.SetLocalString(DroidItemIdVariable, droidItemId);
-                if (!SavedCharacter.Place(content.List, SavedCharacterData.ContainerWidth, SavedCharacterData.ContainerHeight, created))
+                if (!SavedCharacter.ReplaceInContainer(content, created))
                     throw new InvalidOperationException($"A saved droid container has no room for replacement '{replacement}'.");
-                content.List.Children.Remove(content.Node);
-                StoredObjectData.NumberListElements(content.List);
                 changed = true;
                 continue;
             }

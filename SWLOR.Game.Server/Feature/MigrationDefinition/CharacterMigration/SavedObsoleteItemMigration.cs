@@ -86,11 +86,8 @@ internal static class SavedObsoleteItemMigration
         {
             if (ObsoleteItemMigration.TryGetConversionResRef(content.ResRef, out var replacement))
             {
-                var created = CreateReplacement(content, replacement);
-                if (!SavedCharacter.Place(content.List, SavedCharacterData.ContainerWidth, SavedCharacterData.ContainerHeight, created))
+                if (!SavedCharacter.ReplaceInContainer(content, CreateReplacement(content, replacement)))
                     throw new InvalidOperationException($"A saved container has no room for replacement '{replacement}'.");
-                content.List.Children.Remove(content.Node);
-                StoredObjectData.NumberListElements(content.List);
                 changed = true;
                 continue;
             }

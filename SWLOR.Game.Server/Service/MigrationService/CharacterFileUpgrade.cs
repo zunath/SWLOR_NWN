@@ -60,10 +60,14 @@ internal static class CharacterFileUpgrade
     internal static CharacterUpgradeResult Upgrade(byte[] file, Player record, Beast activeBeast = null, int? recordVersionBeforeUpgrade = null)
     {
         var character = new SavedCharacter(file, record) { ActiveBeast = activeBeast };
-        var fileVersion = ResolveFileVersion(ReadFileVersion(character), recordVersionBeforeUpgrade ?? record.Version);
+        var recordVersion = recordVersionBeforeUpgrade ?? record.Version;
+        var fileVersion = ResolveFileVersion(ReadFileVersion(character), recordVersion);
         var start = Math.Min(record.Version, fileVersion);
         if (start >= LatestVersion)
             return null;
+        // A record that reached a version received that migration's record changes with the file it was saved with
+        // (at login before this upgrade existed), so an older file restored beside it changes only the file.
+        var recordEffectsThrough = Math.Max(record.CharacterFileVersion, recordVersion);
 
         // Loading a character changes some saved items before login-time migrations saw them.
         Feature.MigrationDefinition.CharacterMigration.SavedCharacterLoad.Apply(character);
@@ -72,7 +76,7 @@ internal static class CharacterFileUpgrade
         {
             if (fileVersion < migration.Version)
             {
-                character.AppliesRecordEffects = record.CharacterFileVersion < migration.Version;
+                character.AppliesRecordEffects = recordEffectsThrough < migration.Version;
                 migration.Migrate(character);
                 fileVersion = migration.Version;
             }

@@ -162,7 +162,7 @@ public class LightsaberWorkbenchTests
     }
 
     [Test]
-    public void PlayerMigration15_InvokesLegacySaberMigration()
+    public void CharacterMigration15_InvokesLegacySaberMigration()
     {
         var root = FindRepositoryRoot();
         var migration = File.ReadAllText(Path.Combine(
@@ -170,10 +170,10 @@ public class LightsaberWorkbenchTests
             "SWLOR.Game.Server",
             "Feature",
             "MigrationDefinition",
-            "PlayerMigration",
-            "_15_RemoveObsoleteCombatInstructionDiscs.cs"));
+            "CharacterMigration",
+            "_14_15_CombatUpgradeMigrations.cs"));
 
-        migration.Should().Contain("LegacySaberMigration.MigratePlayer(player);");
+        migration.Should().Contain("SavedLegacySaberMigration.MigrateCharacter(character);");
     }
 
     [Test]

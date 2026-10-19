@@ -16,6 +16,12 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition
         internal static string RemoveForceWeaponEnhancements(string data)
         {
             var document = new StoredObjectData(Convert.FromBase64String(data));
+            return RemoveForceWeaponEnhancements(document._root) ? document.Serialize() : data;
+        }
+
+        /// <summary>Retires Force weapon enhancements on a saved item or creature and everything it holds.</summary>
+        internal static bool RemoveForceWeaponEnhancements(Node root)
+        {
             var visited = new HashSet<Node>();
             bool Migrate(Node node)
             {
@@ -97,11 +103,11 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition
                     foreach (var item in list.Children) changed |= Migrate(item);
                 return changed;
             }
-            return Migrate(document._root) ? document.Serialize() : data;
+            return Migrate(root);
         }
 
-        private static int ReadScalar(Field field) => BinaryPrimitives.ReadInt32LittleEndian(field.Data);
-        private static string ReadVariableName(Node variable)
+        internal static int ReadScalar(Field field) => BinaryPrimitives.ReadInt32LittleEndian(field.Data);
+        internal static string ReadVariableName(Node variable)
         {
             var name = variable.Fields.SingleOrDefault(x => x.Name == "Name" && x.Type == 10);
             return name == null ? null : Encoding.UTF8.GetString(name.Data.AsSpan(4));

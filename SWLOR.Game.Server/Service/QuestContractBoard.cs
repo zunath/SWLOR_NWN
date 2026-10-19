@@ -233,7 +233,8 @@ namespace SWLOR.Game.Server.Service
             var rewardItem = draft.RewardItems[index];
             var deserialized = ObjectPlugin.Deserialize(rewardItem.Data);
 
-            if (!GetIsObjectValid(deserialized) || !ObjectPlugin.AcquireItem(player, deserialized))
+            if (!GetIsObjectValid(deserialized) || !Item.FitsInInventory(player, deserialized) ||
+                !ObjectPlugin.AcquireItem(player, deserialized))
             {
                 if (GetIsObjectValid(deserialized))
                     DestroyObject(deserialized);
@@ -540,6 +541,7 @@ namespace SWLOR.Game.Server.Service
 
             var totalCredits = 0;
             var totalItems = 0;
+            var inventoryFull = false;
             foreach (var delivery in deliveries)
             {
                 var checkpointName = "CONTRACT_CLAIM_" + delivery.Id;
@@ -551,9 +553,12 @@ namespace SWLOR.Game.Server.Service
                         itemData =>
                         {
                             var item = ObjectPlugin.Deserialize(itemData.Data);
-                            if (GetIsObjectValid(item) && ObjectPlugin.AcquireItem(player, item))
+                            if (!GetIsObjectValid(item))
+                                return false;
+                            if (Item.FitsInInventory(player, item) && ObjectPlugin.AcquireItem(player, item))
                                 return true;
-                            if (GetIsObjectValid(item)) DestroyObject(item);
+                            inventoryFull = true;
+                            DestroyObject(item);
                             return false;
                         },
                         credits => GiveGoldToCreature(player, credits), saveCharacter, DB.Set);
@@ -577,7 +582,9 @@ namespace SWLOR.Game.Server.Service
 
             if (totalCredits > 0 || totalItems > 0)
                 SendMessageToPC(player, $"You claimed {totalCredits} credits and {totalItems} item(s) from your quest contract deliveries.");
-            else
+            if (inventoryFull)
+                SendMessageToPC(player, "Your inventory is full. Make room, then claim your remaining deliveries.");
+            else if (totalCredits == 0 && totalItems == 0)
                 SendMessageToPC(player, "Some of your deliveries could not be claimed. Please try again.");
 
             Log.Write(LogGroup.QuestContract, $"{GetName(player)} [{playerId}] claimed quest contract deliveries: {totalCredits} credits, {totalItems} items.");

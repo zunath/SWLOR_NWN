@@ -17,6 +17,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
         private const float SideRailWidth = 270f;
         private const float ButtonHeight = 32f;
         private const float RailButtonWidth = 250f;
+        private const float CheckCellWidth = 30f;
 
         public GuiConstructedWindow BuildWindow()
         {
@@ -87,6 +88,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
 
                             content.AddRow(header =>
                             {
+                                header.AddSpacer()
+                                    .SetWidth(CheckCellWidth);
+
                                 header.AddLabel()
                                     .SetText("Name")
                                     .SetHorizontalAlign(NuiHorizontalAlign.Left)
@@ -116,6 +120,18 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                             {
                                 listRow.AddList(template =>
                                 {
+                                    // Checked online characters stay checked across searches and pages, so a DM can
+                                    // gather a group from several searches and bring them all at once.
+                                    template.AddCell(cell =>
+                                    {
+                                        cell.SetIsVariable(false);
+                                        cell.SetWidth(CheckCellWidth);
+                                        cell.AddCheckBox()
+                                            .BindIsChecked(model => model.ResultChecks)
+                                            .BindIsEnabled(model => model.ResultCheckEnabled)
+                                            .SetTooltip("Check online characters to bring them here together");
+                                    });
+
                                     template.AddCell(cell =>
                                     {
                                         cell.AddToggleButton()
@@ -170,6 +186,21 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                                     .SetHorizontalAlign(NuiHorizontalAlign.Left)
                                     .SetHeight(20f);
                             });
+
+                            content.AddRow(checks =>
+                            {
+                                checks.AddLabel()
+                                    .BindText(model => model.CheckedSummary)
+                                    .SetHorizontalAlign(NuiHorizontalAlign.Left)
+                                    .SetHeight(20f);
+
+                                checks.AddButton()
+                                    .SetText("Clear Checks")
+                                    .SetWidth(120f)
+                                    .SetHeight(ButtonHeight)
+                                    .BindIsEnabled(model => model.HasChecked)
+                                    .BindOnClicked(model => model.OnClickClearChecks());
+                            });
                         });
                     })
                         .SetWidth(ContentPanelWidth);
@@ -203,6 +234,16 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                 model => model.OnClickJumpTo(), model => model.CanJumpTo);
             AddActionButton(col, "Jump Here", "Bring the online character to you",
                 model => model.OnClickJumpHere(), model => model.IsSelectedOnline);
+            col.AddRow(row =>
+            {
+                row.AddButton()
+                    .BindText(model => model.BringCheckedText)
+                    .SetTooltip("Bring every checked online character to you")
+                    .SetWidth(RailButtonWidth)
+                    .SetHeight(ButtonHeight)
+                    .BindIsEnabled(model => model.HasChecked)
+                    .BindOnClicked(model => model.OnClickBringChecked());
+            });
             AddActionButton(col, "Examine", "Open the DM examine window for the online character",
                 model => model.OnClickExamine(), model => model.IsSelectedOnline);
             AddActionButton(col, "Send Message", "Send the online character a private DM message",

@@ -6,7 +6,6 @@ using Newtonsoft.Json;
 using NWN.Native.API;
 using SWLOR.Game.Server.EngineTests.Framework;
 using SWLOR.Game.Server.Entity;
-using SWLOR.Game.Server.Feature.MigrationDefinition.PlayerMigration;
 using SWLOR.Game.Server.Service.CurrencyService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.NWN.API.NWNX;
@@ -34,16 +33,16 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
         {
             const string checkpointVariable = "PLAYER_MIGRATION_VERSION";
             CreaturePlugin.SetClassByPosition(player, 0, characterClass);
+            var latest = SavedCharacterMigration.LatestVersion;
             var record = new Player(GetObjectUUID(player)) { Version = 14, UnallocatedSP = 166 };
             DB.Set(record);
             var native = NWNXLib.g_pAppManager.m_pServerExoApp.GetGameObject(player).AsNWSCreature();
             var wasPlayer = native.m_bPlayerCharacter;
             try
             {
-                // Upgrade first, then perform the feat/perk reset used by a full rebuild.
-                new _15_RemoveObsoleteCombatInstructionDiscs().Migrate(player);
-                record.Version = 15;
-                SetLocalInt(player, checkpointVariable, 15);
+                // The character is upgraded at boot; then perform the feat/perk reset used by a full rebuild.
+                record.Version = latest;
+                SetLocalInt(player, checkpointVariable, latest);
                 record.Perks.Clear();
                 PlayerInitialization.ResetFeatsToBaseline(player);
                 record.RebuildComplete = true;
@@ -79,19 +78,14 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 ctx.AssertEqual(0u, restored.m_pStats.ReadStatsFromGff(file, root, restored.m_cAppearance, 0, 1, 0, 1),
                     "Native player stats load succeeds (zero is success)");
                 using var checkpointName = new CExoString(checkpointVariable);
-                ctx.AssertEqual(15, restored.m_ScriptVars.GetInt(checkpointName), "Player login restores the saved migration checkpoint");
+                ctx.AssertEqual(latest, restored.m_ScriptVars.GetInt(checkpointName), "Player login restores the saved migration checkpoint");
                 foreach (var feat in new[] { FeatType.FortressStrike3, FeatType.BastionStance1, FeatType.LastStandTrait })
                     ctx.Assert(restored.m_pStats.HasFeat((ushort)feat) != 0, $"Purchased feat {feat} survives before any login repair");
 
-                typeof(Migration).GetMethod("ApplyPlayerMigration", BindingFlags.Static | BindingFlags.NonPublic)
-                    .Invoke(null, new object[]
-                    {
-                        new _15_RemoveObsoleteCombatInstructionDiscs(), restored.m_idSelf,
-                        (Func<Player>)(() => record),
-                        (Action<Player>)(_ => ctx.Assert(false, "A completed migration must not repeat database rewards")),
-                        (Func<int>)(() => restored.m_ScriptVars.GetInt(checkpointName)),
-                        (Action<int>)(_ => ctx.Assert(false, "A completed migration must not rerun its feat reset"))
-                    });
+                // The boot-time upgrade reads the same checkpoint from the saved file: a current character is left alone,
+                // so it neither repeats the feat reset nor the database rewards.
+                var upgraded = SavedCharacterMigration.Upgrade(SavedCharacterMigration.SaveFile(player), record);
+                ctx.Assert(upgraded == null, "A completed character upgrade must not repeat its feat reset or database rewards");
                 ctx.AssertEqual(savedRecord, JsonConvert.SerializeObject(record), "Restart retains rebuilt perks and remaining SP");
             }
             finally
@@ -101,47 +95,30 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             }
         }
 
-        [EngineTest("Character migration preserves purchased ability ranks in the saved file", Category = "PlayerPerkFeats")]
+        [EngineTest("Character migration preserves purchased ability ranks in the saved file", Category = "PlayerPerkFeats", TimeoutSeconds = 120)]
         public static async Task MigrationPreservesPurchasedFeats(EngineTestContext ctx)
         {
-            var player = ctx.SpawnCreature("civilian");
-            await ctx.WaitFrameAsync();
+            using var fixture = await PlayerAbilityFixture.CreateAsync(ctx);
+            var player = fixture.Creature;
             await ctx.ExecuteInCreatureContextAsync(player, () =>
             {
                 CreaturePlugin.SetClassByPosition(player, 0, ClassType.Standard);
                 var record = CreateRecord(player);
+                // The record already holds the effects of every migration through 15; only the file is behind.
+                record.CharacterFileVersion = 15;
                 DB.Set(record);
-                try
-                {
-                    PlayerInitialization.ResetFeatsToBaseline(player);
-                    Perk.RestorePlayerFeats(player);
-                    AssertPurchasedFeats(ctx, player);
-                    var fileVersion = 14;
-                    var savedFile = string.Empty;
-                    // Reproduce an older character file with an already-current database record.
-                    typeof(Migration).GetMethod("ApplyPlayerMigration", BindingFlags.Static | BindingFlags.NonPublic)
-                        .Invoke(null, new object[]
-                        {
-                            new _15_RemoveObsoleteCombatInstructionDiscs(), player,
-                            (Func<Player>)(() => DB.Get<Player>(record.Id)),
-                            (Action<Player>)(_ => ctx.Assert(false, "Completed database rewards must not run again")),
-                            (Func<int>)(() => fileVersion),
-                            (Action<int>)(version =>
-                            {
-                                AssertPurchasedFeats(ctx, player);
-                                savedFile = ObjectPlugin.Serialize(player);
-                                fileVersion = version;
-                            })
-                        });
-
-                    ctx.AssertEqual(15, fileVersion, "Migration checkpoint advances");
-                    var restored = ObjectPlugin.Deserialize(savedFile);
-                    ctx.Track(restored);
-                    AssertPurchasedFeats(ctx, restored);
-                    ctx.AssertEqual(166, record.UnallocatedSP, "Migration does not charge for restored abilities");
-                    ctx.AssertEqual(2, record.Currencies[CurrencyType.RebuildToken], "File replay does not grant another token");
-                }
-                finally { DB.Delete<Player>(record.Id); }
+                PlayerInitialization.ResetFeatsToBaseline(player);
+                Perk.RestorePlayerFeats(player);
+                AssertPurchasedFeats(ctx, player);
+                // Reproduce an older character file with an already-current database record.
+                SetLocalInt(player, "PLAYER_MIGRATION_VERSION", 14);
+                var upgraded = SavedCharacterMigration.Upgrade(SavedCharacterMigration.SaveFile(player), DB.Get<Player>(record.Id));
+                ctx.Assert(upgraded != null, "The file is behind and is upgraded");
+                var restored = SavedCharacterMigration.Load(ctx, upgraded);
+                AssertPurchasedFeats(ctx, restored);
+                ctx.AssertEqual(166, upgraded.Record.UnallocatedSP, "Migration does not charge for restored abilities");
+                ctx.AssertEqual(2, upgraded.Record.Currencies[CurrencyType.RebuildToken], "File replay does not grant another token");
+                ctx.AssertEqual(SavedCharacterMigration.LatestVersion, upgraded.Record.Version, "The record reaches the latest version");
             });
         }
 

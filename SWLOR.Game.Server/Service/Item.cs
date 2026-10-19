@@ -622,6 +622,47 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>
+        /// True when the engine finds room for the item in the creature's own inventory grid. Acquiring an item that
+        /// has no room can remove items the creature already carries, so check this before ObjectPlugin.AcquireItem.
+        /// A matching carried stack does not count as room: with no free cell the engine removes that stack instead of
+        /// merging into it.
+        /// </summary>
+        public static unsafe bool FitsInInventory(uint creature, uint item)
+        {
+            var server = global::NWN.Native.API.NWNXLib.g_pAppManager.m_pServerExoApp;
+            var repository = server.GetGameObject(creature)?.AsNWSCreature()?.m_pcItemRepository;
+            var nativeItem = server.GetItemByGameObjectID(item);
+            if (repository == null || nativeItem == null)
+                return false;
+
+            byte x = 0, y = 0;
+            return repository.FindPosition(nativeItem, &x, &y) != 0;
+        }
+
+        /// <summary>The message shown when an item cannot be returned because the player's inventory is full.</summary>
+        public const string InventoryFullMessage = "Your inventory is full. Make room and try again.";
+
+        /// <summary>The inventory-full message for window labels too narrow for the full one.</summary>
+        public const string InventoryFullShortMessage = "Your inventory is full.";
+
+        /// <summary>The message shown when a closing window keeps the items that did not fit until it is opened again.</summary>
+        public const string ItemsHeldMessage = "Your inventory is full. Items that did not fit stay at the station; open it again after making room.";
+
+        /// <summary>
+        /// Moves an item that nothing holds, such as a deserialized copy, into the creature's inventory when it has room.
+        /// Otherwise destroys the item and returns false, so the caller keeps the record it came from.
+        /// </summary>
+        public static bool TryAcquireItem(uint creature, uint item)
+        {
+            if (GetIsObjectValid(item) && FitsInInventory(creature, item) && ObjectPlugin.AcquireItem(creature, item))
+                return true;
+
+            if (GetIsObjectValid(item))
+                DestroyObject(item);
+            return false;
+        }
+
+        /// <summary>
         /// Retrieves the list of weapon base item types.
         /// </summary>
         public static List<BaseItem> WeaponBaseItemTypes { get; } = new List<BaseItem>
@@ -1368,15 +1409,6 @@ namespace SWLOR.Game.Server.Service
         public static bool IsLegacyItem(uint item)
         {
             return GetTag(item) == "LEGACY_ITEM";
-        }
-
-        /// <summary>
-        /// Marks an item as a legacy item.
-        /// </summary>
-        /// <param name="item">The item to mark as legacy.</param>
-        public static void MarkLegacyItem(uint item)
-        {
-            SetTag(item, "LEGACY_ITEM");
         }
 
         /// <summary>

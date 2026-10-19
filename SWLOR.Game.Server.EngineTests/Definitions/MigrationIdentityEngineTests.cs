@@ -87,7 +87,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             ctx.Assert(!GetIsObjectValid(item), "The original fixture releases its UUID before migration");
             await ctx.ExecuteInCreatureContextAsync(owner, () =>
             {
-                var migration = typeof(SWLOR.Game.Server.Feature.MigrationDefinition.ServerMigration._22_CombatSystemReplacement)
+                var migration = typeof(SWLOR.Game.Server.Service.Migration)
                     .Assembly.GetType("SWLOR.Game.Server.Feature.MigrationDefinition.ServerMigration.StoredItemDataMigration");
                 var arguments = new object[] { saved, null, null, true };
                 var expanded = (bool)migration.GetMethod("TryMigrateRootBlueprintVariants", BindingFlags.NonPublic | BindingFlags.Static)
@@ -117,7 +117,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 var saved = ObjectPlugin.Serialize(blueprint);
                 ctx.AssertEqual(3488, (int)Invoke("StoredObjectData", "ReadRootInteger", saved, "BLUEPRINT_RECIPE_ID"),
                     "The saved integer is read without confusing a string local of the same name");
-                var migration = typeof(SWLOR.Game.Server.Feature.MigrationDefinition.ServerMigration._22_CombatSystemReplacement)
+                var migration = typeof(SWLOR.Game.Server.Service.Migration)
                     .Assembly.GetType("SWLOR.Game.Server.Feature.MigrationDefinition.ServerMigration.StoredItemDataMigration");
                 var expand = migration.GetMethod("TryMigrateRootBlueprintVariants", BindingFlags.NonPublic | BindingFlags.Static);
                 var arguments = new object[] { saved, null, null, true };

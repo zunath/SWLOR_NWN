@@ -51,6 +51,27 @@ public class DungeonEncounterWalkmeshTests
     }
 
     [Test]
+    public void DathomirRuinBase_SpawnPointsStandOnNativeWalkableFloor()
+    {
+        var root = FindRoot();
+        using var git = JsonDocument.Parse(File.ReadAllText(Path.Combine(root, "Module", "git", "dath_ruin_base.git.json")));
+        var points = git.RootElement.GetProperty("WaypointList").GetProperty("value").EnumerateArray()
+            .Where(p => Text(p, "Tag") == "DATHOMIR_RUIN_BASE")
+            .ToArray();
+        points.Should().NotBeEmpty();
+        // Tiles without a .wok had no server walkmesh, so nothing spawned on them could attack or be attacked.
+        var triangles = ReadWalkableFloor(root, "dath_ruin_base", "sw_t_scifibase");
+        foreach (var point in points)
+        {
+            var position = new Vector3(Number(point, "XPosition"), Number(point, "YPosition"), Number(point, "ZPosition"));
+            // Three points are authored 0.12 m below the floor; the engine places them on it.
+            foreach (var offset in new[] { Vector3.Zero, new Vector3(.5f, 0, 0), new Vector3(-.5f, 0, 0), new Vector3(0, .5f, 0), new Vector3(0, -.5f, 0) })
+                triangles.Any(t => Covers(t, position + offset, .15f)).Should().BeTrue(
+                    $"the Ruin Base spawn point at {position} must have native walkable floor at {position + offset}");
+        }
+    }
+
+    [Test]
     public void FightClubArena_HasAContinuousCombatFloorThroughTheFormerPit()
     {
         var triangles = ReadWalkableFloor(FindRoot(), "pw_sc_smarena", "sw_t_office");
@@ -170,6 +191,39 @@ public class DungeonEncounterWalkmeshTests
             reachable(Number(spawn, "XPosition"), Number(spawn, "YPosition")).Should().BeTrue(
                 $"{Text(spawn, "Tag")} at ({Number(spawn, "XPosition")}, {Number(spawn, "YPosition")}) must be reachable on foot from the entrance");
         }
+    }
+
+    [Test]
+    public void SmugglersMoonStationAbandoned_EncounterSpawnsClearScenery()
+    {
+        var root = FindRoot();
+        using var git = JsonDocument.Parse(File.ReadAllText(Path.Combine(root, "Module", "git", "spacenarshaddung.git.json")));
+        var area = git.RootElement;
+        var spawns = area.GetProperty("WaypointList").GetProperty("value").EnumerateArray()
+            .Where(w => Text(w, "Tag").StartsWith("NAR_")).ToArray();
+        spawns.Should().HaveCount(26);
+        var floor = ReadWalkableFloor(root, "spacenarshaddung", "sw_t_alienruin");
+        var appearances = TwoDAReader.Read(Path.Combine(root, "SWLOR_Haks", "sw_2da", "placeables.2da"));
+        var meshes = Directory.EnumerateFiles(Path.Combine(root, "SWLOR_Haks"), "*.pwk", SearchOption.AllDirectories)
+            .ToDictionary(Path.GetFileNameWithoutExtension, StringComparer.OrdinalIgnoreCase);
+        var scenery = area.GetProperty("Placeable List").GetProperty("value").EnumerateArray()
+            .Select(p => (Model: appearances.GetValue((int)Number(p, "Appearance"), "ModelName"), Placeable: p))
+            .Where(p => meshes.ContainsKey(p.Model))
+            .SelectMany(p => ReadCollisionBounds(meshes[p.Model], Matrix4x4.CreateRotationZ(Number(p.Placeable, "Bearing"))
+                * Matrix4x4.CreateTranslation(Number(p.Placeable, "X"), Number(p.Placeable, "Y"), Number(p.Placeable, "Z"))))
+            .ToArray();
+
+        var blocked = new List<string>();
+        foreach (var spawn in spawns)
+        {
+            var position = new Vector3(Number(spawn, "XPosition"), Number(spawn, "YPosition"), Number(spawn, "ZPosition"));
+            // A pirate spawned 0.25 m from a cargo stack was pushed inside its hollow collision.
+            var body = Enumerable.Range(0, 16).Select(i => position + new Vector3(
+                .75f * MathF.Cos(i * MathF.PI / 8), .75f * MathF.Sin(i * MathF.PI / 8), 0)).Prepend(position);
+            if (body.Any(sample => !floor.Any(t => Covers(t, sample, .5f)) || scenery.Any(bounds => Inside(bounds, sample))))
+                blocked.Add($"{Text(spawn, "Tag")} at {position}");
+        }
+        blocked.Should().BeEmpty("every encounter spawn needs walkable floor clear of scenery for a creature body");
     }
 
     [Test]

@@ -29,6 +29,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         private const int NumberOfStages = 3;
 
         private const string _blank = "Blank";
+        private const string HeldElsewhereMessage = "Your inventory is full. Items you left in another incubator are still there; make room first.";
 
         private string _dnaItem;
         private string _hydrolaseItem;
@@ -311,6 +312,14 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         protected override void Initialize(IncubatorPayload initialPayload)
         {
+            // Held items belong to the incubator they were placed in, so they never join another incubator's job.
+            if (_incubatorPropertyId != initialPayload.PropertyId && !ReturnItemsHeldElsewhere())
+            {
+                FloatingTextStringOnCreature(HeldElsewhereMessage, Player, false);
+                Gui.TogglePlayerWindow(Player, GuiWindowType.Incubator);
+                return;
+            }
+
             _incubatorPropertyId = initialPayload.PropertyId;
 
             ClearStats();
@@ -522,6 +531,31 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             ToggleStartJob();
             ToggleContinueJob();
             return allReturned;
+        }
+
+        /// <summary>Returns items another incubator kept. Returns false when some still do not fit.</summary>
+        private bool ReturnItemsHeldElsewhere()
+        {
+            if (!string.IsNullOrWhiteSpace(_hydrolaseItem) && Item.TryAcquireItem(Player, ObjectPlugin.Deserialize(_hydrolaseItem)))
+            {
+                _hydrolaseItem = string.Empty;
+                _hydrolaseColor = EnzymeColorType.Invalid;
+            }
+            if (!string.IsNullOrWhiteSpace(_lyaseItem) && Item.TryAcquireItem(Player, ObjectPlugin.Deserialize(_lyaseItem)))
+            {
+                _lyaseItem = string.Empty;
+                _lyaseColor = EnzymeColorType.Invalid;
+            }
+            if (!string.IsNullOrWhiteSpace(_isomeraseItem) && Item.TryAcquireItem(Player, ObjectPlugin.Deserialize(_isomeraseItem)))
+            {
+                _isomeraseItem = string.Empty;
+                _isomeraseColor = EnzymeColorType.Invalid;
+            }
+            if (!string.IsNullOrWhiteSpace(_dnaItem) && Item.TryAcquireItem(Player, ObjectPlugin.Deserialize(_dnaItem)))
+                _dnaItem = string.Empty;
+
+            return string.IsNullOrWhiteSpace(_dnaItem) && string.IsNullOrWhiteSpace(_hydrolaseItem) &&
+                   string.IsNullOrWhiteSpace(_lyaseItem) && string.IsNullOrWhiteSpace(_isomeraseItem);
         }
 
         /// <summary>Shows the items that stayed in the incubator when its window last closed.</summary>

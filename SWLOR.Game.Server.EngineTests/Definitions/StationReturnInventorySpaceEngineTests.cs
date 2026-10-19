@@ -140,6 +140,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             using var fixture = await PlayerAbilityFixture.CreateAsync(ctx);
             var player = fixture.Creature;
             var payload = new IncubatorPayload("engine-claim-incubator/" + fixture.Id, string.Empty);
+            var otherPayload = new IncubatorPayload("engine-claim-other-incubator/" + fixture.Id, string.Empty);
             try
             {
                 await ctx.ExecuteInCreatureContextAsync(player, () =>
@@ -166,18 +167,31 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                         "A closed incubator keeps the items that did not fit");
                     ctx.Assert(model.DNAItemResref != "Blank" && model.HydrolaseItemResref != "Blank",
                         "The reopened incubator shows the kept items");
+
+                    ReopenWindow<IncubatorViewModel>(fixture, GuiWindowType.Incubator, otherPayload);
+                    ctx.Assert(!Gui.IsWindowOpen(player, GuiWindowType.Incubator), "Another incubator does not open while it would take the kept items");
+                    ctx.Assert(!string.IsNullOrEmpty((string)Get(model, "_dnaItem")), "The first incubator keeps its items");
+                    AssertCarriedIntact(ctx, player, carried);
                     Free(fillers);
                 });
                 await ctx.WaitFrameAsync();
                 await ctx.ExecuteInCreatureContextAsync(player, () =>
                 {
-                    var model = (IncubatorViewModel)Gui.GetPlayerWindow(player, GuiWindowType.Incubator).ViewModel;
+                    var model = OpenWindow<IncubatorViewModel>(fixture, GuiWindowType.Incubator, otherPayload);
+                    ctx.Assert(string.IsNullOrEmpty((string)Get(model, "_dnaItem")) && string.IsNullOrEmpty((string)Get(model, "_hydrolaseItem")),
+                        "Opening another incubator with room returns the kept items");
+                    ctx.AssertEqual(1, CountCarried(player, Dna), "The kept DNA returns to the inventory");
+                    ctx.AssertEqual(1, CountCarried(player, Hydrolase), "The kept enzyme returns to the inventory");
+
+                    Set(model, "_dnaItem", SerializeNewItem(ctx, Dna));
+                    Set(model, "_hydrolaseItem", SerializeNewItem(ctx, Hydrolase));
+                    Call(model, "RestoreHeldItems");
                     model.OnClickDNA()();
                     model.OnModalConfirmClick()();
                     ctx.Assert(string.IsNullOrEmpty((string)Get(model, "_dnaItem")) && string.IsNullOrEmpty((string)Get(model, "_hydrolaseItem")),
                         "Removing the DNA with room returns everything");
-                    ctx.AssertEqual(1, CountCarried(player, Dna), "The DNA returns to the inventory");
-                    ctx.AssertEqual(1, CountCarried(player, Hydrolase), "The enzyme returns to the inventory");
+                    ctx.AssertEqual(2, CarriedStackTotal(player, Dna), "The DNA returns to the inventory");
+                    ctx.AssertEqual(2, CarriedStackTotal(player, Hydrolase), "The enzyme returns to the inventory");
                 });
             }
             finally

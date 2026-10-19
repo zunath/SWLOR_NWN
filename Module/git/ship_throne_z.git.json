@@ -22891,7 +22891,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Stuck — ship_throne_z"
+            "0": "Stuck - ship_throne_z"
           }
         },
         "MapNote": {

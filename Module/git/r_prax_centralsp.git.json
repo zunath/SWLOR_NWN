@@ -15459,7 +15459,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Stuck — r_prax_centralsp"
+            "0": "Stuck - r_prax_centralsp"
           }
         },
         "MapNote": {

@@ -87,6 +87,8 @@ internal static class CharacterFileUpgrade
             }
         }
 
+        // A migration that changes an item's base item can leave it overlapping another item or past its grid.
+        character.RepairPlacement();
         character.WriteInteger(PlayerFileCheckpoint.FieldName, fileVersion);
         record.CharacterFileVersion = Math.Max(record.CharacterFileVersion, fileVersion);
         record.UpgradeNotices ??= new List<string>();

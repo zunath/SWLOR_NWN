@@ -83,6 +83,27 @@ public class GameTextEncodingTests
     }
 
     [Test]
+    public void ConversationData_HasNoCharactersOutsideWindows1252()
+    {
+        var dataRoot = Path.Combine(FindRepositoryRoot().FullName, "SWLOR.Game.Server", "ConversationData");
+        var violations = new List<string>();
+
+        foreach (var path in Directory.EnumerateFiles(dataRoot, "*.json", SearchOption.AllDirectories))
+        {
+            var lines = File.ReadAllLines(path);
+            for (var lineIndex = 0; lineIndex < lines.Length; lineIndex++)
+            {
+                var bad = lines[lineIndex].FirstOrDefault(character => character >= 0x80 && !IsWindows1252(character));
+                if (bad != default)
+                    violations.Add($"{Path.GetFileName(path)}:{lineIndex + 1}: U+{(int)bad:X4} in {lines[lineIndex].Trim()}");
+            }
+        }
+
+        violations.Should().BeEmpty(
+            "conversation text reaches the game as Windows-1252, so other characters display as '?'");
+    }
+
+    [Test]
     public void CustomTlkText_HasNoCharactersOutsideWindows1252()
     {
         var path = Path.Combine(FindRepositoryRoot().FullName, "SWLOR_Haks", "sw_tlk", "sw_tlk.tlk.json");

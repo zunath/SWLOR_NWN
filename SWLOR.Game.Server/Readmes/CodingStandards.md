@@ -28,7 +28,7 @@ Sections: Code · Renames · Module JSON · Stat-driven gameplay · Haks, TLK, a
 - Edit surgically. Never round-trip a file through `json.dump` or another serializer: it rewrites float formatting (`3.36e-043`) and CRLF line endings across the whole file. Prove a writer by round-tripping an untouched file byte-for-byte first.
 - Game text is plain ASCII. Use straight quotes (`'` and `\"`), `-` for dashes, and `...`; never paste curly quotes, em or en dashes, ellipsis characters, accented letters, or symbols from a document, website, or AI chat. The game reads text as Windows-1252 and `nwn_gff` copies JSON bytes into the module unchanged, so a UTF-8 `’` shows in game as `â€™`. `GameTextEncodingTests` enforces this for Module JSON.
 - The one exception is NWN color tokens: the three channel bytes in `<cRGB>` are raw Windows-1252 bytes (for example `0xFF`), so files such as `Module/itp/placeablepalcus.itp.json` are not valid UTF-8. Read and write those files as bytes.
-- C# strings reach the game as Windows-1252, and TLK JSON is converted to it by `nwn_tlk`; write new player-facing text in ASCII there too. Characters outside Windows-1252 (such as `●`) show as `?`, and `GameTextEncodingTests` rejects them.
+- C# strings and `ConversationData` JSON reach the game as Windows-1252, and TLK JSON is converted to it by `nwn_tlk`; write new player-facing text in ASCII there too. Characters outside Windows-1252 (such as `●`) show as `?`, and `GameTextEncodingTests` rejects them.
 
 ## Stat-driven gameplay
 

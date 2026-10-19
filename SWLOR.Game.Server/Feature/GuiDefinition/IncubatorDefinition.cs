@@ -14,7 +14,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                 .SetIsCollapsible(true)
                 .SetInitialGeometry(0, 0, 1000f, 600f)
                 .SetTitle("Incubator")
-                .BindOnClosed(model => model.OnCloseWindow())
+                .BindOnClosed(model => model.OnWindowClosed())
 
                 .DefinePartialView(IncubatorViewModel.NewJobPartial, partial =>
                 {

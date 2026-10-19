@@ -114,14 +114,54 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         {
             IsCloseEnabled = true;
             _isRefining = false;
-            _inputItems = new List<string>();
-            _inputStackSizes = new List<int>();
-            _inputItemResrefs = new List<string>();
+            // Ores that did not fit when the window last closed are still listed.
+            _inputItems ??= new List<string>();
+            _inputStackSizes ??= new List<int>();
+            _inputItemResrefs ??= new List<string>();
             InputItemNames = new GuiBindingList<string>();
             InputItemToggles = new GuiBindingList<bool>();
             OutputItemNames = new GuiBindingList<string>();
+            for (var index = 0; index < _inputItems.Count; index++)
+                AddInputRow(_inputItemResrefs[index], _inputStackSizes[index]);
 
             CalculateCoresRequired();
+        }
+
+        private void AddInputRow(string resref, int stackSize)
+        {
+            InputItemNames.Add($"{stackSize}x {Cache.GetItemNameByResref(resref)}");
+            InputItemToggles.Add(false);
+            OutputItemNames.Add($"{stackSize}x {Cache.GetItemNameByResref(_ores[resref].RefinedItemResref)}");
+        }
+
+        /// <summary>
+        /// Returns the listed ores, or only the selected ones, to the player. An ore without room stays listed.
+        /// </summary>
+        /// <returns>The number of ores that stayed listed.</returns>
+        private int ReturnInputs(bool selectedOnly)
+        {
+            var kept = 0;
+            for (var index = _inputItems.Count - 1; index >= 0; index--)
+            {
+                if (selectedOnly && !InputItemToggles[index])
+                    continue;
+
+                if (!Item.TryAcquireItem(Player, ObjectPlugin.Deserialize(_inputItems[index])))
+                {
+                    kept++;
+                    continue;
+                }
+
+                _inputItems.RemoveAt(index);
+                _inputStackSizes.RemoveAt(index);
+                _inputItemResrefs.RemoveAt(index);
+                InputItemToggles.RemoveAt(index);
+                InputItemNames.RemoveAt(index);
+                OutputItemNames.RemoveAt(index);
+            }
+
+            CalculateCoresRequired();
+            return kept;
         }
 
         private void CalculateCoresRequired()
@@ -194,15 +234,10 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     return;
 
                 var resref = GetResRef(item);
-                var itemName = Cache.GetItemNameByResref(resref);
                 var stackSize = GetItemStackSize(item);
                 var serialized = ObjectPlugin.Serialize(item);
-                var outputOre = _ores[resref];
-                var outputItemName = Cache.GetItemNameByResref(outputOre.RefinedItemResref);
 
-                InputItemNames.Add($"{stackSize}x {itemName}");
-                InputItemToggles.Add(false);
-                OutputItemNames.Add($"{stackSize}x {outputItemName}");
+                AddInputRow(resref, stackSize);
                 _inputItems.Add(serialized);
                 _inputStackSizes.Add(stackSize);
                 _inputItemResrefs.Add(resref);
@@ -218,25 +253,10 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             if (_isRefining)
                 return;
 
-            for (var index = InputItemToggles.Count-1; index >= 0; index--)
+            if (ReturnInputs(true) > 0)
             {
-                var isToggled = InputItemToggles[index];
-
-                if (!isToggled)
-                    continue;
-
-                var serialized = _inputItems[index];
-                var item = ObjectPlugin.Deserialize(serialized);
-                ObjectPlugin.AcquireItem(Player, item);
-
-                _inputItems.RemoveAt(index);
-                _inputStackSizes.RemoveAt(index);
-                _inputItemResrefs.RemoveAt(index);
-                InputItemToggles.RemoveAt(index);
-                InputItemNames.RemoveAt(index);
-                OutputItemNames.RemoveAt(index);
-
-                CalculateCoresRequired();
+                Instructions = Item.InventoryFullShortMessage;
+                InstructionsColor = GuiColor.Red;
             }
         };
 
@@ -355,18 +375,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         public override Action OnWindowClosed() => () =>
         {
-            foreach (var serialized in _inputItems)
-            {
-                var item = ObjectPlugin.Deserialize(serialized);
-                ObjectPlugin.AcquireItem(Player, item);
-            }
-
-            _inputItemResrefs.Clear();
-            _inputItems.Clear();
-            _inputStackSizes.Clear();
-            InputItemToggles.Clear();
-            InputItemNames.Clear();
-            OutputItemNames.Clear();
+            if (ReturnInputs(false) > 0)
+                SendMessageToPC(Player, Item.ItemsHeldMessage);
         };
 
     }

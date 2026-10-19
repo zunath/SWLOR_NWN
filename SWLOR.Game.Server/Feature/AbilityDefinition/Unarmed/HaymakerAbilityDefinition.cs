@@ -27,8 +27,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Unarmed
                     RefundEligible = true,
                     RefundRequiresSetup = false,
                 },
-                90,
-                12,
+                50,
+                15,
                 activationDelay: 2f);
 
             return builder.Build();

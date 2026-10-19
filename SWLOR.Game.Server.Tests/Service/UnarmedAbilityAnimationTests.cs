@@ -8,9 +8,8 @@ namespace SWLOR.Game.Server.Tests.Service;
 
 public class UnarmedAbilityAnimationTests
 {
-    [TestCase("Uppercut", 1f)]
     [TestCase("Haymaker", 2f)]
-    [TestCase("PerfectForm", 1f)]
+    [TestCase("PerfectForm", 2f)]
     public void HeavyStrikesPlayDuringTheirExistingCastWithoutAddingASecondGesture(string id, float castSeconds)
     {
         var entry = ActiveAbilityAnimationCatalog.Entries.Single(entry => entry.Id == id);
@@ -42,6 +41,7 @@ public class UnarmedAbilityAnimationTests
     [TestCase("FinishingCombination")]
     [TestCase("DirtyJab")]
     [TestCase("LowKick")]
+    [TestCase("Uppercut")]
     public void InstantStrikesRetainOneImpactGesture(string id)
     {
         var entry = ActiveAbilityAnimationCatalog.Entries.Single(entry => entry.Id == id);

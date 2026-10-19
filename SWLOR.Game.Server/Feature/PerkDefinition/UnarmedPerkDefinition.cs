@@ -46,7 +46,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.Jab1)
-                .Description("Deals weapon DMG + 8. On hit, grants Opening against this enemy for 4 seconds. Opening gives +3 ordinary weapon ACC against this enemy with any weapon and sets up either follow-up attack.")
+                .Description("Deals weapon DMG + 8. On hit, grants Opening against this enemy for 4 seconds. Opening gives your weapon auto-attacks +3 Accuracy against this enemy with any weapon and sets up either follow-up attack.")
                 .IncreasesStat(StatType.TechniqueLine, 1)
                 .IncreasesStat(StatType.TechniqueWeavePower, 4)
                 .Price(2)
@@ -54,7 +54,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.Jab2)
-                .Description("Deals weapon DMG + 18. On hit, grants Opening against this enemy for 4 seconds. Opening gives +3 ordinary weapon ACC against this enemy with any weapon and sets up either follow-up attack.")
+                .Description("Deals weapon DMG + 18. On hit, grants Opening against this enemy for 4 seconds. Opening gives your weapon auto-attacks +3 Accuracy against this enemy with any weapon and sets up either follow-up attack.")
                 .IncreasesStat(StatType.TechniqueLine, 1)
                 .IncreasesStat(StatType.TechniqueWeavePower, 8)
                 .Price(2)
@@ -62,7 +62,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.Jab3)
-                .Description("Deals weapon DMG + 28. On hit, grants Opening against this enemy for 4 seconds. Opening gives +3 ordinary weapon ACC against this enemy with any weapon and sets up either follow-up attack.")
+                .Description("Deals weapon DMG + 28. On hit, grants Opening against this enemy for 4 seconds. Opening gives your weapon auto-attacks +3 Accuracy against this enemy with any weapon and sets up either follow-up attack.")
                 .IncreasesStat(StatType.TechniqueLine, 1)
                 .IncreasesStat(StatType.TechniqueWeavePower, 12)
                 .Price(3)
@@ -70,7 +70,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.Jab4)
-                .Description("Deals weapon DMG + 38. On hit, grants Opening against this enemy for 4 seconds. Opening gives +3 ordinary weapon ACC against this enemy with any weapon and sets up either follow-up attack.")
+                .Description("Deals weapon DMG + 38. On hit, grants Opening against this enemy for 4 seconds. Opening gives your weapon auto-attacks +3 Accuracy against this enemy with any weapon and sets up either follow-up attack.")
                 .IncreasesStat(StatType.TechniqueLine, 1)
                 .IncreasesStat(StatType.TechniqueWeavePower, 16)
                 .Price(5)
@@ -85,7 +85,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.FlowingFormTrait)
-                .Description("Extends Opening and Finish from 4 to 6 seconds. During Opening, your next ordinary weapon attempt against that enemy gains +4/8/12/16 DMG by Jab rank, with any weapon. One bonus per opener, consumed even on a miss.")
+                .Description("Extends Opening and Finish from 4 to 6 seconds. During Opening, your next weapon auto-attack against that enemy gains +4/8/12/16 DMG by Jab rank, with any weapon. One bonus per opener, consumed even on a miss.")
                 .IncreasesStat(StatType.TechniqueLine, 1)
                 .IncreasesStat(StatType.TechniqueWindowExtensionSeconds, 2)
                 .IncreasesStat(StatType.TechniqueWeaveEnabled, 1)
@@ -102,21 +102,21 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.PalmStrike1)
-                .Description("Deals weapon DMG + 12. Spends Opening at activation. If the sequenced strike lands, grants Finish for 4 seconds; Finish gives +3 ordinary weapon ACC against this enemy with any weapon.")
+                .Description("Deals weapon DMG + 12. Spends Opening at activation. If the sequenced strike lands, grants Finish for 4 seconds; Finish gives your weapon auto-attacks +3 Accuracy against this enemy with any weapon.")
                 .Price(2)
                 .RequirementSkill(SkillType.Unarmed, 8)
                 .RequirementMustHavePerk(PerkType.Jab)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.PalmStrike2)
-                .Description("Deals weapon DMG + 24. Spends Opening at activation. If the sequenced strike lands, grants Finish for 4 seconds; Finish gives +3 ordinary weapon ACC against this enemy with any weapon.")
+                .Description("Deals weapon DMG + 24. Spends Opening at activation. If the sequenced strike lands, grants Finish for 4 seconds; Finish gives your weapon auto-attacks +3 Accuracy against this enemy with any weapon.")
                 .Price(4)
                 .RequirementSkill(SkillType.Unarmed, 22)
                 .RequirementMustHavePerk(PerkType.Jab)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.PalmStrike3)
-                .Description("Deals weapon DMG + 36. Spends Opening at activation. If the sequenced strike lands, grants Finish for 4 seconds; Finish gives +3 ordinary weapon ACC against this enemy with any weapon.")
+                .Description("Deals weapon DMG + 36. Spends Opening at activation. If the sequenced strike lands, grants Finish for 4 seconds; Finish gives your weapon auto-attacks +3 Accuracy against this enemy with any weapon.")
                 .Price(4)
                 .RequirementSkill(SkillType.Unarmed, 45)
                 .RequirementMustHavePerk(PerkType.Jab);
@@ -164,7 +164,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.MeasuredTechniqueTrait)
-                .Description("While your Opening or Finish is active, gain +10 ability ACC against its enemy with any skill. This also applies to the ability that spends the setup.")
+                .Description("While your Opening or Finish is active, gain +10 ability Accuracy against its enemy with any skill. This also applies to the ability that spends the setup.")
                 .IncreasesStat(StatType.TechniqueLine, 1)
                 .IncreasesStat(StatType.TechniqueSetupAbilityAccuracy, 10)
                 .Price(4)
@@ -180,14 +180,14 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.FinishingCombination1)
-                .Description("Two strikes at one enemy, each floor(0.50 x weapon DMG) + 8. Spend Opening for +3 DMG per strike and redirect the second strike to the nearest other enemy within 5m of you, if available. Spend Finish for +6 DMG per strike, both against the selected enemy.")
+                .Description("Two strikes at one enemy, each 50% of weapon DMG + 8. Spend Opening for +3 DMG per strike and redirect the second strike to the nearest other enemy within 5m of you, if available. Spend Finish for +6 DMG per strike, both against the selected enemy.")
                 .Price(3)
                 .RequirementSkill(SkillType.Unarmed, 18)
                 .RequirementMustHavePerk(PerkType.Jab)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.FinishingCombination2)
-                .Description("Two strikes at one enemy, each floor(0.50 x weapon DMG) + 14. Spend Opening for +4 DMG per strike and redirect the second strike to the nearest other enemy within 5m of you, if available. Spend Finish for +8 DMG per strike, both against the selected enemy.")
+                .Description("Two strikes at one enemy, each 50% of weapon DMG + 14. Spend Opening for +4 DMG per strike and redirect the second strike to the nearest other enemy within 5m of you, if available. Spend Finish for +8 DMG per strike, both against the selected enemy.")
                 .Price(3)
                 .RequirementSkill(SkillType.Unarmed, 32)
                 .RequirementMustHavePerk(PerkType.Jab);
@@ -201,7 +201,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.FlowStance1)
-                .Description("While active, a landed Finishing Combination spending Opening grants Slip Away: +35% Evasion and +15% movement speed for 8 seconds. A landed Finishing Combination or Perfect Form spending Finish instead grants Press Forward: +30% Haste for 8 seconds. These windows are mutually exclusive and share a 12-second trigger cooldown. Weapon swaps and unrelated hostile skills against the same enemy preserve the window. Stance, combat or enemy changes clear it. No ordinary damage penalty.")
+                .Description("While active, a landed Finishing Combination spending Opening grants Slip Away: +20% Evasion and +15% movement speed for 8 seconds. A landed Finishing Combination or Perfect Form spending Finish instead grants Press Forward: +15% Haste for 8 seconds. These windows are mutually exclusive and share a 12-second trigger cooldown. Weapon swaps and unrelated hostile skills against the same enemy preserve the window. Stance, combat or enemy changes clear it. Reduces Defense by 10%.")
                 .Price(4)
                 .RequirementSkill(SkillType.Unarmed, 20);
         }
@@ -245,7 +245,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.PerfectForm1)
-                .Description("Deals weapon DMG + 45 to one enemy. Spending Finish adds +70 DMG. Practiced Form applies only with Finish.")
+                .Description("Deals weapon DMG + 30 to one enemy. Spending Finish adds +15 DMG. Practiced Form applies only with Finish.")
                 .Price(6)
                 .RequirementSkill(SkillType.Unarmed, 50)
                 .RequirementQuest(UnarmedMasteryQuestDefinition.PerfectFormMasteryQuestId)
@@ -260,25 +260,25 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.DirtyJab1)
-                .Description("Deals weapon DMG + 8. On hit, applies your Rattled for 6 seconds, reducing this enemy's ordinary weapon ACC by 10.")
+                .Description("Deals weapon DMG + 8. On hit, applies your Rattled for 6 seconds, reducing this enemy's weapon auto-attack Accuracy by 10.")
                 .Price(2)
                 .RequirementSkill(SkillType.Unarmed, 2)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.DirtyJab2)
-                .Description("Deals weapon DMG + 18. On hit, applies your Rattled for 6 seconds, reducing this enemy's ordinary weapon ACC by 10.")
+                .Description("Deals weapon DMG + 18. On hit, applies your Rattled for 6 seconds, reducing this enemy's weapon auto-attack Accuracy by 10.")
                 .Price(2)
                 .RequirementSkill(SkillType.Unarmed, 12)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.DirtyJab3)
-                .Description("Deals weapon DMG + 28. On hit, applies your Rattled for 6 seconds, reducing this enemy's ordinary weapon ACC by 10.")
+                .Description("Deals weapon DMG + 28. On hit, applies your Rattled for 6 seconds, reducing this enemy's weapon auto-attack Accuracy by 10.")
                 .Price(3)
                 .RequirementSkill(SkillType.Unarmed, 28)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.DirtyJab4)
-                .Description("Deals weapon DMG + 38. On hit, applies your Rattled for 6 seconds, reducing this enemy's ordinary weapon ACC by 10.")
+                .Description("Deals weapon DMG + 38. On hit, applies your Rattled for 6 seconds, reducing this enemy's weapon auto-attack Accuracy by 10.")
                 .Price(5)
                 .RequirementSkill(SkillType.Unarmed, 40);
         }
@@ -291,7 +291,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.DirtyFightingTrait)
-                .Description("Extends your Rattled from 6 to 8 seconds. Gain +3 ordinary weapon ACC against the enemy affected by your Rattled, with any weapon. Uppercut and Haymaker do not consume Rattled.")
+                .Description("Extends your Rattled from 6 to 8 seconds. Your weapon auto-attacks gain +3 Accuracy against the enemy affected by your Rattled, with any weapon. Uppercut and Haymaker do not consume Rattled.")
                 .IncreasesStat(StatType.TechniqueLine, 2)
                 .IncreasesStat(StatType.TechniqueWindowExtensionSeconds, 2)
                 .IncreasesStat(StatType.TechniqueDebuffTargetOrdinaryAccuracy, 3)
@@ -308,21 +308,21 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.Uppercut1)
-                .Description("One committed strike, weapon DMG + 20. No Rattled requirement. Can spend optional Retaliation against its enemy.")
+                .Description("Deals weapon DMG + 12. No Rattled requirement. Can spend optional Retaliation against its enemy.")
                 .Price(2)
                 .RequirementSkill(SkillType.Unarmed, 8)
                 .RequirementMustHavePerk(PerkType.DirtyJab)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.Uppercut2)
-                .Description("One committed strike, weapon DMG + 36. No Rattled requirement. Can spend optional Retaliation against its enemy.")
+                .Description("Deals weapon DMG + 24. No Rattled requirement. Can spend optional Retaliation against its enemy.")
                 .Price(4)
                 .RequirementSkill(SkillType.Unarmed, 22)
                 .RequirementMustHavePerk(PerkType.DirtyJab)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.Uppercut3)
-                .Description("One committed strike, weapon DMG + 52. No Rattled requirement. Can spend optional Retaliation against its enemy.")
+                .Description("Deals weapon DMG + 36. No Rattled requirement. Can spend optional Retaliation against its enemy.")
                 .Price(4)
                 .RequirementSkill(SkillType.Unarmed, 45)
                 .RequirementMustHavePerk(PerkType.DirtyJab);
@@ -384,13 +384,13 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.LowKick1)
-                .Description("Deals weapon DMG + 16. On hit, this enemy deals 10% less ordinary physical damage for 6 seconds.")
+                .Description("Deals weapon DMG + 16. On hit, this enemy's weapon auto-attacks deal 10% less physical damage for 6 seconds.")
                 .Price(3)
                 .RequirementSkill(SkillType.Unarmed, 18)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.LowKick2)
-                .Description("Deals weapon DMG + 30. On hit, this enemy deals 10% less ordinary physical damage for 8 seconds.")
+                .Description("Deals weapon DMG + 30. On hit, this enemy's weapon auto-attacks deal 10% less physical damage for 8 seconds.")
                 .Price(3)
                 .RequirementSkill(SkillType.Unarmed, 32);
         }
@@ -403,7 +403,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.BruiserStance1)
-                .Description("Increases Physical Defense by 10%, with any equipment. Direct hostile damage to real HP arms Retaliation against the attacker: +24 total DMG on your next Uppercut or Haymaker against that enemy within 8 seconds. One charge, with an 18-second grant cooldown. No Dirty Jab or Rattled requirement. The bonus is spent on activation, including a miss. Weapon swaps and unrelated hostile skills against the same enemy preserve it. Stance, combat or enemy changes clear it. No ordinary damage penalty.")
+                .Description("Increases Physical Defense by 10%, with any equipment. Direct hostile damage to real HP arms Retaliation against the attacker: +12 total DMG on your next Uppercut or Haymaker against that enemy within 8 seconds. One charge, with an 18-second grant cooldown. No Dirty Jab or Rattled requirement. The bonus is spent on activation, including a miss. Weapon swaps and unrelated hostile skills against the same enemy preserve it. Stance, combat or enemy changes clear it. Reduces Attack by 10%.")
                 .Price(4)
                 .RequirementSkill(SkillType.Unarmed, 20);
         }
@@ -450,7 +450,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.Haymaker1)
-                .Description("Deals weapon DMG + 90 to one enemy. No Rattled requirement. Heavy Blows applies, and the strike can spend optional Retaliation against its enemy.")
+                .Description("Deals weapon DMG + 50 to one enemy. No Rattled requirement. Heavy Blows applies, and the strike can spend optional Retaliation against its enemy.")
                 .Price(6)
                 .RequirementSkill(SkillType.Unarmed, 50)
                 .RequirementQuest(UnarmedMasteryQuestDefinition.HaymakerMasteryQuestId)

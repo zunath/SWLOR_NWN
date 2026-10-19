@@ -22,12 +22,12 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Unarmed
                 {
                     Line = MeleeTechniqueLine.MartialArtist,
                     ConsumedStages = MeleeTechniqueStage.Finish,
-                    FinishPower = 70,
+                    FinishPower = 15,
                     RefundEligible = true,
                 },
-                45,
-                10,
-                activationDelay: 1f);
+                30,
+                15,
+                activationDelay: 2f);
 
             return builder.Build();
         }

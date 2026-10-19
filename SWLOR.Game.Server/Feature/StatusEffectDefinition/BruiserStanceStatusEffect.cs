@@ -15,9 +15,10 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
         public BruiserStanceStatusEffect()
         {
             StatGroup.Stats[StatType.PhysicalDefensePercentAdjustment] = 10;
+            StatGroup.Stats[StatType.AttackPercentAdjustment] = -10;
             StatGroup.Stats[StatType.TechniqueLine] = 2;
             StatGroup.Stats[StatType.TechniquePresentationSkillType] = (int)SkillType.Unarmed;
-            StatGroup.Stats[StatType.TechniqueRetaliationPower] = 24;
+            StatGroup.Stats[StatType.TechniqueRetaliationPower] = 12;
             StatGroup.Stats[StatType.TechniqueRetaliationDurationSeconds] = 8;
             StatGroup.Stats[StatType.TechniqueRetaliationCooldownSeconds] = 18;
         }

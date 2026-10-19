@@ -27,9 +27,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Unarmed
                     RefundEligible = true,
                     RefundRequiresSetup = false,
                 },
-                20,
-                4,
-                activationDelay: 1f);
+                12,
+                4);
 
             ConfigureStrike(
                 builder.Create(FeatType.Uppercut2, PerkType.Uppercut)
@@ -46,9 +45,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Unarmed
                     RefundEligible = true,
                     RefundRequiresSetup = false,
                 },
-                36,
-                8,
-                activationDelay: 1f);
+                24,
+                8);
 
             ConfigureStrike(
                 builder.Create(FeatType.Uppercut3, PerkType.Uppercut)
@@ -65,9 +63,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Unarmed
                     RefundEligible = true,
                     RefundRequiresSetup = false,
                 },
-                52,
-                10,
-                activationDelay: 1f);
+                36,
+                10);
 
             return builder.Build();
         }

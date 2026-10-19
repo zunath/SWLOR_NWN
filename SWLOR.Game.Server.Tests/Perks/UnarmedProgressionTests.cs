@@ -178,11 +178,12 @@ public class UnarmedProgressionTests
             Assert.That(palm.RecastDelay(0), Is.EqualTo(24));
             Assert.That(finisher.RecastGroup, Is.EqualTo(kick.RecastGroup));
             Assert.That(finisher.RecastDelay(0), Is.EqualTo(30));
-            Assert.That(uppercut.ActivationDelay(0, 0, 0), Is.EqualTo(1));
+            Assert.That(uppercut.ActivationDelay(0, 0, 0), Is.Zero);
             Assert.That(perfect.RecastGroup, Is.EqualTo(RecastGroup.Capstone));
             Assert.That(haymaker.RecastGroup, Is.EqualTo(RecastGroup.Capstone));
             Assert.That(perfect.RecastDelay(0), Is.EqualTo(90));
             Assert.That(haymaker.ActivationDelay(0, 0, 0), Is.EqualTo(2));
+            Assert.That(perfect.ActivationDelay(0, 0, 0), Is.EqualTo(2));
         });
         foreach (var ability in new[] { jab, dirtyJab, palm, uppercut, finisher, kick, perfect, haymaker })
         {
@@ -194,7 +195,7 @@ public class UnarmedProgressionTests
     }
 
     [Test]
-    public void StancesUseReactiveWindowsWithoutOrdinaryDamagePenalties()
+    public void StancesUseReactiveWindowsWithStancePenalties()
     {
         var flow = new FlowStanceStatusEffect();
         var bruiser = new BruiserStanceStatusEffect();
@@ -205,16 +206,18 @@ public class UnarmedProgressionTests
             Assert.That(flow.StatGroup.Stats[StatType.AttackDelayReductionPercent], Is.Zero);
             Assert.That(flow.StatGroup.Stats[StatType.EvasionPercentAdjustment], Is.Zero);
             Assert.That(flow.StatGroup.Stats[StatType.TechniqueLine], Is.EqualTo(1));
-            Assert.That(flow.StatGroup.Stats[StatType.TechniqueOpeningFinisherEvasionPercent], Is.EqualTo(35));
+            Assert.That(flow.StatGroup.Stats[StatType.TechniqueOpeningFinisherEvasionPercent], Is.EqualTo(20));
             Assert.That(flow.StatGroup.Stats[StatType.TechniqueOpeningFinisherMovementSpeedPercent], Is.EqualTo(15));
-            Assert.That(flow.StatGroup.Stats[StatType.TechniqueFinishFinisherHastePercent], Is.EqualTo(30));
+            Assert.That(flow.StatGroup.Stats[StatType.TechniqueFinishFinisherHastePercent], Is.EqualTo(15));
+            Assert.That(flow.StatGroup.Stats[StatType.DefensePercentAdjustment], Is.EqualTo(-10));
             Assert.That(flow.StatGroup.Stats[StatType.TechniqueFinisherWindowDurationSeconds], Is.EqualTo(8));
             Assert.That(flow.StatGroup.Stats[StatType.TechniqueFinisherWindowCooldownSeconds], Is.EqualTo(12));
             Assert.That(bruiser.StatGroup.Stats[StatType.PhysicalDefensePercentAdjustment], Is.EqualTo(10));
             Assert.That(bruiser.StatGroup.Stats[StatType.TechniqueLine], Is.EqualTo(2));
             Assert.That(bruiser.StatGroup.Stats[StatType.TechniqueSetupBraceWindowSeconds], Is.Zero);
             Assert.That(bruiser.StatGroup.Stats[StatType.TechniqueSetupRetaliationPower], Is.Zero);
-            Assert.That(bruiser.StatGroup.Stats[StatType.TechniqueRetaliationPower], Is.EqualTo(24));
+            Assert.That(bruiser.StatGroup.Stats[StatType.TechniqueRetaliationPower], Is.EqualTo(12));
+            Assert.That(bruiser.StatGroup.Stats[StatType.AttackPercentAdjustment], Is.EqualTo(-10));
             Assert.That(bruiser.StatGroup.Stats[StatType.TechniqueRetaliationDurationSeconds], Is.EqualTo(8));
             Assert.That(bruiser.StatGroup.Stats[StatType.TechniqueRetaliationCooldownSeconds], Is.EqualTo(18));
             Assert.That(bruiser.StatGroup.Stats[StatType.Guard], Is.Zero);

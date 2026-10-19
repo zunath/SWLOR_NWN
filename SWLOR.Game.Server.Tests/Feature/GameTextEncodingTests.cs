@@ -28,6 +28,10 @@ public class GameTextEncodingTests
 
     private static readonly Encoding Windows1252 = CreateWindows1252();
 
+    // A binary GFF field as nwn_gff writes it: "type": "void" followed by its string value.
+    private static readonly Regex VoidValue = new(
+        @"(""type"":\s*""void"",\s*""value"":\s*)""(?:[^""\\]|\\.)*""", RegexOptions.Compiled);
+
     // A JSON \u escape that is not itself escaped by a preceding backslash.
     private static readonly Regex JsonEscape = new(
         @"(?<!\\)(?:\\\\)*\\u([0-9A-Fa-f]{4})", RegexOptions.Compiled);
@@ -61,9 +65,10 @@ public class GameTextEncodingTests
             var bytes = File.ReadAllBytes(path);
             var relativePath = Path.GetRelativePath(moduleRoot, path);
 
-            // nwn_gff writes a JSON escape as UTF-8, so an escaped
-            // non-ASCII character such as \u2019 is as wrong as the character itself.
-            foreach (Match escape in JsonEscape.Matches(Encoding.Latin1.GetString(bytes)))
+            // nwn_gff writes a JSON escape as UTF-8, so an escaped non-ASCII character such as
+            // \u2019 is as wrong as the character itself. Binary void values are not text.
+            var source = VoidValue.Replace(Encoding.Latin1.GetString(bytes), match => match.Groups[1].Value + "\"\"");
+            foreach (Match escape in JsonEscape.Matches(source))
             {
                 if (Convert.ToInt32(escape.Groups[1].Value, 16) >= 0x80)
                     violations.Add($"{relativePath}: escaped U+{escape.Groups[1].Value.ToUpperInvariant()}");
@@ -84,8 +89,10 @@ public class GameTextEncodingTests
                     continue;
 
                 var text = ColorToken.Replace((string)value.Value!, string.Empty);
-                // A byte pair such as C2 9A is both "Âš" and UTF-8 for an invisible control
-                // character, so only a sequence that decodes to a visible character counts as UTF-8.
+                // Bytes that form UTF-8 for a visible character count as UTF-8 even when each byte is
+                // also a Windows-1252 letter: "ÃŠ" (C3 8A) cannot be told apart from UTF-8 "Ê", and
+                // such pairs come from UTF-8 saved by mistake. A pair that would decode to an invisible
+                // control character, such as C2 9A ("Âš"), is judged by the letter rule instead.
                 var utf8 = Utf8Sequence.Matches(text).FirstOrDefault(match => !char.IsControl(DecodeUtf8(match.Value), 0));
                 var index = utf8 != null
                     ? utf8.Index

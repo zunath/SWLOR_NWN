@@ -531,6 +531,124 @@ internal sealed class SavedCharacter
         return true;
     }
 
+    /// <summary>
+    /// Moves carried items whose saved cells overlap an earlier item or run past their grid, as a migration that changes
+    /// an item's base item (and so its size) can leave them. Loading such a file, the engine moves a misplaced item in the
+    /// inventory but drops an item in a bag. Items in place keep their cells; a misplaced item moves to free cells in its
+    /// grid, an item from a bag then to the inventory, and an item with no room to overflow storage. Quickbar buttons
+    /// follow it. Returns whether anything moved.
+    /// </summary>
+    public bool RepairPlacement()
+    {
+        var inventory = SavedGff.List(Root, "ItemList", false);
+        if (inventory == null)
+            return false;
+        var moved = false;
+        foreach (var bag in inventory.Children.ToArray().Select(node => new SavedItem(node, inventory, null)))
+        {
+            var list = SavedGff.List(bag.Node, "ItemList", false);
+            if (list == null)
+                continue;
+            var misplaced = Misplaced(list, SavedCharacterData.ContainerWidth, SavedCharacterData.ContainerHeight, 0);
+            if (misplaced.Count == 0)
+                continue;
+            var references = misplaced.ToDictionary(node => node, node => QuickBarReferences(new SavedItem(node, list, bag)).ToList());
+            list.Children.RemoveAll(misplaced.Contains);
+            var (bagX, bagY) = (StoredObjectData.ReadInteger(bag.Node, "Repos_PosX"), StoredObjectData.ReadInteger(bag.Node, "Repos_Posy"));
+            foreach (var node in misplaced)
+            {
+                var inBag = Place(list, SavedCharacterData.ContainerWidth, SavedCharacterData.ContainerHeight, node);
+                var kept = inBag || AddToInventory(node);
+                var (x, y) = (StoredObjectData.ReadInteger(node, "Repos_PosX"), StoredObjectData.ReadInteger(node, "Repos_Posy"));
+                foreach (var button in references[node])
+                {
+                    if (!kept)
+                        ClearQuickBarButton(button);
+                    else if (inBag)
+                        PointQuickBarAtInventory(button, x, y, bagX, bagY);
+                    else
+                        PointQuickBarAtInventory(button, x, y, byte.MaxValue, byte.MaxValue);
+                }
+            }
+            StoredObjectData.NumberListElements(list);
+            moved = true;
+        }
+
+        var misplacedCarried = Misplaced(inventory, InventoryWidth, InventoryHeight, InventoryPageHeight);
+        // Buttons name an item by its cells, and an item in a bag also by the bag's cells: find them all before anything
+        // moves. Every misplaced item leaves before any is placed, so none blocks the cells another one needs.
+        var moves = misplacedCarried.Select(node =>
+        {
+            var item = new SavedItem(node, inventory, null);
+            var contents = SavedGff.List(node, "ItemList", false);
+            var contentButtons = contents == null
+                ? new List<(Node Content, List<Node> Buttons)>()
+                : contents.Children.Select(child => (child, QuickBarReferences(new SavedItem(child, contents, item)).ToList())).ToList();
+            return (Node: node, Buttons: QuickBarReferences(item).ToList(), Secondary: SecondaryQuickBarReferences(item).ToList(), Contents: contentButtons);
+        }).ToList();
+        inventory.Children.RemoveAll(misplacedCarried.Contains);
+        foreach (var move in moves)
+        {
+            var kept = AddToInventory(move.Node);
+            var (x, y) = (StoredObjectData.ReadInteger(move.Node, "Repos_PosX"), StoredObjectData.ReadInteger(move.Node, "Repos_Posy"));
+            foreach (var button in move.Buttons)
+            {
+                if (kept)
+                    PointQuickBarAtInventory(button, x, y, byte.MaxValue, byte.MaxValue);
+                else
+                    ClearQuickBarButton(button);
+            }
+            foreach (var button in move.Secondary)
+            {
+                if (kept)
+                    PointSecondaryAtInventory(button, x, y);
+                else
+                    RemoveSecondaryItem(button);
+            }
+            foreach (var (content, buttons) in move.Contents)
+            {
+                var (contentX, contentY) = (StoredObjectData.ReadInteger(content, "Repos_PosX"), StoredObjectData.ReadInteger(content, "Repos_Posy"));
+                foreach (var button in buttons)
+                {
+                    if (kept)
+                        PointQuickBarAtInventory(button, contentX, contentY, x, y);
+                    else
+                        ClearQuickBarButton(button);
+                }
+            }
+            moved = true;
+        }
+        return moved;
+    }
+
+    /// <summary>Items whose cells run past the grid (or a page of it) or overlap an item earlier in the list.</summary>
+    private static List<Node> Misplaced(Field list, int width, int height, int pageHeight)
+    {
+        if (pageHeight <= 0)
+            pageHeight = height;
+        var occupied = new bool[width, height];
+        var misplaced = new List<Node>();
+        foreach (var node in list.Children)
+        {
+            var x = StoredObjectData.ReadInteger(node, "Repos_PosX");
+            var y = StoredObjectData.ReadInteger(node, "Repos_Posy");
+            var size = SavedCharacterData.GetInventorySize(StoredObjectData.ReadBaseItem(node));
+            var fits = x >= 0 && y >= 0 && x + size.Width <= width && y + size.Height <= height && y % pageHeight + size.Height <= pageHeight;
+            for (var dx = 0; dx < size.Width && fits; dx++)
+            for (var dy = 0; dy < size.Height && fits; dy++)
+                fits = !occupied[x + dx, y + dy];
+            if (!fits)
+            {
+                misplaced.Add(node);
+                continue;
+            }
+            for (var dx = 0; dx < size.Width; dx++)
+            for (var dy = 0; dy < size.Height; dy++)
+                occupied[x + dx, y + dy] = true;
+        }
+        return misplaced;
+    }
+
     // ---- Record effects ------------------------------------------------------------------------------
 
     /// <summary>Adds or removes every stat an equipped item grants, as <see cref="Feature.EquipmentStats.ApplyItemStats"/> does.</summary>

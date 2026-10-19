@@ -28,11 +28,6 @@ public class GameTextEncodingTests
 
     private static readonly Encoding Windows1252 = CreateWindows1252();
 
-    // Typographic punctuation pasted from documents and AI chats. The game can display these, but
-    // game text uses the ASCII forms (', ", -, ...) so every source follows one rule.
-    private const string TypographicPunctuation =
-        "\u2018\u2019\u201A\u201C\u201D\u201E\u2039\u203A\u00AB\u00BB\u2013\u2014\u2026";
-
     // A JSON \u escape that is not itself escaped by a preceding backslash.
     private static readonly Regex JsonEscape = new(
         @"(?<!\\)(?:\\\\)*\\u([0-9A-Fa-f]{4})", RegexOptions.Compiled);
@@ -44,10 +39,15 @@ public class GameTextEncodingTests
         (Path.Combine("Service", "ColorToken.cs"), "ColorArray")
     };
 
-    // Left as authored at the owner's request.
+    // Existing text left as authored at the owner's request: the Disguise status label and the
+    // DM window separators.
     private static readonly HashSet<(string File, string Text)> AllowedLiterals = new()
     {
-        (Path.Combine("Feature", "GuiDefinition", "ViewModel", "DisguiseViewModel.cs"), "\u25CF Active")
+        (Path.Combine("Feature", "GuiDefinition", "ViewModel", "DisguiseViewModel.cs"), "\u25CF Active"),
+        (Path.Combine("Feature", "GuiDefinition", "ViewModel", "DMChooserViewModel.cs"), "Level \u00B7 HP"),
+        (Path.Combine("Feature", "GuiDefinition", "ViewModel", "DMCreatorViewModel.cs"), "Level \u00B7 Faction"),
+        (Path.Combine("Service", "DMObjectDetails.cs"), " \u00B7 HP "),
+        (Path.Combine("Service", "DMObjectDetails.cs"), " \u00B7 ")
     };
 
     [Test]
@@ -224,8 +224,10 @@ public class GameTextEncodingTests
     private static bool IsWindows1252Letter(char character) =>
         character <= 0xFF && char.IsLetter(Windows1252.GetString(new[] { (byte)character })[0]);
 
+    // Game text punctuation is ASCII. Non-ASCII punctuation (curly and angled quotes, dashes, "...",
+    // bullets, and the like) usually comes from text pasted out of documents and AI chats.
     private static bool IsGameTextCharacter(char character) =>
-        character < 0x80 || (IsWindows1252(character) && !TypographicPunctuation.Contains(character));
+        character < 0x80 || (IsWindows1252(character) && !char.IsPunctuation(character));
 
     private static bool IsWindows1252(char character)
     {

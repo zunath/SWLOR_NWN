@@ -82,6 +82,7 @@ function Get-CodexAnswer {
     param([datetime]$Since)
 
     $cleanVerdict = "Didn't find any major issues"
+    $findingBadge = "!\[P\d Badge\]"
     $answers = @()
     $reviews = @(Get-GitHubList "repos/$Repository/pulls/$PullRequest/reviews" | Where-Object {
             $_.user.login -eq $codexLogin -and $_.commit_id -eq $head -and $_.submitted_at -and
@@ -97,8 +98,13 @@ function Get-CodexAnswer {
             $_.body -notmatch "codex-pull-request-review-summary"
         })
     foreach ($comment in $comments | Where-Object { $_.body -match "codex-review-receipt" -and $_.body -match $shortHead }) {
-        $kind = if ($comment.body -match $cleanVerdict) { "clean" } else { "other" }
+        $kind = if ($comment.body -match $cleanVerdict) { "clean" } elseif ($comment.body -match $findingBadge) { "findings" } else { "other" }
         $answers += [pscustomobject]@{ Kind = $kind; Time = (ConvertTo-UtcTime $comment.created_at); Item = $comment }
+    }
+
+    # A finding can also arrive as a plain comment that carries a priority badge.
+    foreach ($comment in $comments | Where-Object { $_.body -notmatch "codex-review-receipt" -and $_.body -match $findingBadge }) {
+        $answers += [pscustomobject]@{ Kind = "findings"; Time = (ConvertTo-UtcTime $comment.created_at); Item = $comment }
     }
 
     if ($answers.Count -gt 0) {
@@ -137,6 +143,12 @@ function Write-Findings {
     param($Review)
 
     "Codex found issues in ${shortHead} on ${target}: $($Review.html_url)"
+    if (-not $Review.PSObject.Properties["commit_id"]) {
+        # A comment, not a review: the findings are in its body.
+        ($Review.body -replace "(?s)<details>.*?</details>", "" -replace "(?s)<!--.*?-->", "").Trim()
+        return
+    }
+
     # The per-review endpoint omits line numbers, so filter the pull request's review comments.
     $threads = @(Get-GitHubList "repos/$Repository/pulls/$PullRequest/comments" | Where-Object { $_.pull_request_review_id -eq $Review.id })
     foreach ($thread in $threads) {
@@ -155,6 +167,12 @@ function Write-Findings {
 
 if (-not (Get-Command gh -ErrorAction SilentlyContinue)) {
     throw "The GitHub CLI (gh) must be on PATH."
+}
+
+# Get-GitHubList needs api --slurp, so reject an older gh before anything is posted.
+$ghVersionText = (& gh --version | Select-Object -First 1)
+if ($ghVersionText -notmatch "(\d+\.\d+\.\d+)" -or [version]$Matches[1] -lt [version]"2.48.0") {
+    throw "The GitHub CLI must be version 2.48 or newer (api --slurp); found: $ghVersionText"
 }
 
 function Get-HeadSha {
@@ -206,6 +224,10 @@ while ($true) {
         # Codex can post an error seconds before the review itself, so give the review time to land.
         if (-not $replySeenAt) {
             $replySeenAt = Get-Date
+            # A late reply still gets the whole grace period.
+            if ($deadline -lt $replySeenAt.AddSeconds(90)) {
+                $deadline = $replySeenAt.AddSeconds(90)
+            }
         }
         elseif ((Get-Date) -ge $replySeenAt.AddSeconds(90)) {
             break

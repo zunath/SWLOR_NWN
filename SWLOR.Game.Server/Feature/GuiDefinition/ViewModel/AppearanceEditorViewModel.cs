@@ -62,7 +62,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         public const int TextureColorsPerRow = 16;
         public const int ColorSize = 16; // 16x16 colors on the sprite sheet
 
-        private static readonly Dictionary<AppearanceType, IArmorAppearanceDefinition> _armorAppearances = new();
+        private static readonly IReadOnlyDictionary<AppearanceType, BaseArmorAppearanceDefinition> _armorAppearances =
+            ArmorAppearanceCatalog.Definitions;
         private static readonly Dictionary<BaseItem, IWeaponAppearanceDefinition> _weaponAppearances = new();
         private Dictionary<int, int> _partIdToIndex = new();
         private bool _isDMArmorDisplay;
@@ -131,7 +132,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         public static void LoadAppearances()
         {
             RacialAppearanceRegistry.EnsureLoaded();
-            LoadArmorAppearances();
             LoadWeaponAppearances();
         }
 
@@ -153,29 +153,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 if (Gui.IsWindowOpen(dm, GuiWindowType.AppearanceEditor))
                     Gui.TogglePlayerWindow(dm, GuiWindowType.AppearanceEditor);
             }
-        }
-
-        private static void LoadArmorAppearances()
-        {
-            _armorAppearances[AppearanceType.Human] = new GeneralArmorAppearanceDefinition();
-            _armorAppearances[AppearanceType.Bothan] = new GeneralArmorAppearanceDefinition();
-            _armorAppearances[AppearanceType.Chiss] = new GeneralArmorAppearanceDefinition();
-            _armorAppearances[AppearanceType.Zabrak] = new GeneralArmorAppearanceDefinition();
-            _armorAppearances[AppearanceType.Twilek] = new GeneralArmorAppearanceDefinition();
-            _armorAppearances[AppearanceType.Mirialan] = new GeneralArmorAppearanceDefinition();
-            _armorAppearances[AppearanceType.Echani] = new GeneralArmorAppearanceDefinition();
-            _armorAppearances[AppearanceType.KelDor] = new GeneralArmorAppearanceDefinition();
-            _armorAppearances[AppearanceType.Cyborg] = new GeneralArmorAppearanceDefinition();
-            _armorAppearances[AppearanceType.Cathar] = new GeneralArmorAppearanceDefinition();
-            _armorAppearances[AppearanceType.Rodian] = new GeneralArmorAppearanceDefinition();
-            _armorAppearances[AppearanceType.Trandoshan] = new GeneralArmorAppearanceDefinition();
-            _armorAppearances[AppearanceType.Togruta] = new GeneralArmorAppearanceDefinition();
-            _armorAppearances[AppearanceType.Wookiee] = new GeneralArmorAppearanceDefinition();
-            _armorAppearances[AppearanceType.MonCalamari] = new GeneralArmorAppearanceDefinition();
-            _armorAppearances[AppearanceType.Ugnaught] = new GeneralArmorAppearanceDefinition();
-            _armorAppearances[AppearanceType.Droid] = new DroidArmorAppearanceDefinition();
-            _armorAppearances[AppearanceType.Nautolan] = new GeneralArmorAppearanceDefinition();
-            _armorAppearances[AppearanceType.Ewok] = new GeneralArmorAppearanceDefinition();
         }
 
         private static void LoadWeaponAppearances()
@@ -1990,36 +1967,39 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             if (SelectedItemTypeIndex == 0) // 0 = Armor
             {
+                GuiBindingList<GuiComboEntry> Available(AppearanceArmor part, IEnumerable<GuiComboEntry> options) =>
+                    ArmorPartAppearance.GetAvailableOptions(_target, part, options);
                 var neckOptions = new GuiBindingList<GuiComboEntry>();
                 foreach (var style in NeckAppearance.GetAvailableStyles(_target, _armorAppearances[appearanceType].Neck.Prepend(0)))
                     neckOptions.Add(new GuiComboEntry(style.ToString(), style));
                 NeckOptions = neckOptions;
-                ChestOptions = _armorAppearances[appearanceType].TorsoOptions;
-                BeltOptions = _armorAppearances[appearanceType].BeltOptions;
-                PelvisOptions = _armorAppearances[appearanceType].PelvisOptions;
+                ChestOptions = Available(AppearanceArmor.Torso, _armorAppearances[appearanceType].TorsoOptions);
+                BeltOptions = Available(AppearanceArmor.Belt, _armorAppearances[appearanceType].BeltOptions);
+                PelvisOptions = Available(AppearanceArmor.Pelvis, _armorAppearances[appearanceType].PelvisOptions);
                 var robeOptions = new GuiBindingList<GuiComboEntry>();
                 foreach (var style in RobeAppearance.GetAvailableStyles(_target, _armorAppearances[appearanceType].Robe))
                     robeOptions.Add(new GuiComboEntry(style.ToString(), style));
                 RobeOptions = robeOptions;
                 var repairedNeck = NeckAppearance.RemoveUnavailableNeck(_target, item);
-                if (RobeAppearance.RemoveUnavailableRobe(_target, item) || repairedNeck)
+                var repairedParts = ArmorPartAppearance.RemoveUnavailableParts(_target, item);
+                if (RobeAppearance.RemoveUnavailableRobe(_target, item) || repairedNeck || repairedParts)
                     EquippedItemAppearance.Refresh(_target, item);
 
-                LeftShoulderOptions = _armorAppearances[appearanceType].ShoulderOptions;
-                LeftBicepOptions = _armorAppearances[appearanceType].BicepOptions;
-                LeftForearmOptions = _armorAppearances[appearanceType].ForearmOptions;
-                LeftHandOptions = _armorAppearances[appearanceType].HandOptions;
-                LeftThighOptions = _armorAppearances[appearanceType].ThighOptions;
-                LeftShinOptions = _armorAppearances[appearanceType].ShinOptions;
-                LeftFootOptions = _armorAppearances[appearanceType].FootOptions;
+                LeftShoulderOptions = Available(AppearanceArmor.LeftShoulder, _armorAppearances[appearanceType].ShoulderOptions);
+                LeftBicepOptions = Available(AppearanceArmor.LeftBicep, _armorAppearances[appearanceType].BicepOptions);
+                LeftForearmOptions = Available(AppearanceArmor.LeftForearm, _armorAppearances[appearanceType].ForearmOptions);
+                LeftHandOptions = Available(AppearanceArmor.LeftHand, _armorAppearances[appearanceType].HandOptions);
+                LeftThighOptions = Available(AppearanceArmor.LeftThigh, _armorAppearances[appearanceType].ThighOptions);
+                LeftShinOptions = Available(AppearanceArmor.LeftShin, _armorAppearances[appearanceType].ShinOptions);
+                LeftFootOptions = Available(AppearanceArmor.LeftFoot, _armorAppearances[appearanceType].FootOptions);
 
-                RightShoulderOptions = _armorAppearances[appearanceType].ShoulderOptions;
-                RightBicepOptions = _armorAppearances[appearanceType].BicepOptions;
-                RightForearmOptions = _armorAppearances[appearanceType].ForearmOptions;
-                RightHandOptions = _armorAppearances[appearanceType].HandOptions;
-                RightThighOptions = _armorAppearances[appearanceType].ThighOptions;
-                RightShinOptions = _armorAppearances[appearanceType].ShinOptions;
-                RightFootOptions = _armorAppearances[appearanceType].FootOptions;
+                RightShoulderOptions = Available(AppearanceArmor.RightShoulder, _armorAppearances[appearanceType].ShoulderOptions);
+                RightBicepOptions = Available(AppearanceArmor.RightBicep, _armorAppearances[appearanceType].BicepOptions);
+                RightForearmOptions = Available(AppearanceArmor.RightForearm, _armorAppearances[appearanceType].ForearmOptions);
+                RightHandOptions = Available(AppearanceArmor.RightHand, _armorAppearances[appearanceType].HandOptions);
+                RightThighOptions = Available(AppearanceArmor.RightThigh, _armorAppearances[appearanceType].ThighOptions);
+                RightShinOptions = Available(AppearanceArmor.RightShin, _armorAppearances[appearanceType].ShinOptions);
+                RightFootOptions = Available(AppearanceArmor.RightFoot, _armorAppearances[appearanceType].FootOptions);
 
                 NeckSelection = GetItemAppearance(item, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.Neck);
                 ChestSelection = GetItemAppearance(item, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.Torso);

@@ -65,7 +65,7 @@ public static partial class MigrationEngineTests
             archive = new DMCreature("Authored archive", "authored_archive", ObjectPlugin.Serialize(owner));
             DB.Set(archive);
             var originalState = CreatureState(archive.Data);
-            new _28_CorrectStoredEquipmentTypes().Migrate();
+            StoredItemSweepRunner.Run();
             archive = DB.Get<DMCreature>(archive.Id);
             ctx.AssertEqual(originalState, CreatureState(archive.Data), "All non-inventory creature fields remain byte-for-byte equivalent");
         });
@@ -100,7 +100,7 @@ public static partial class MigrationEngineTests
                 archive.Data = ObjectPlugin.Serialize(restored);
                 DB.Set(archive);
                 var saved = archive.Data;
-                new _28_CorrectStoredEquipmentTypes().Migrate();
+                StoredItemSweepRunner.Run();
                 archive = DB.Get<DMCreature>(archive.Id);
                 ctx.AssertEqual(saved, archive.Data, "An archive migration retry retains the saved payload exactly");
                 ctx.AssertEqual("Authored archive", archive.Name, "Archive identity metadata survives");

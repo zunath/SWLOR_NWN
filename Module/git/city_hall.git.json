@@ -2211,7 +2211,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Stuck — city_hall"
+            "0": "Stuck - city_hall"
           }
         },
         "MapNote": {

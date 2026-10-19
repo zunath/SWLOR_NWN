@@ -253,10 +253,7 @@ public class ItemAppearanceCatalogTests
 
     private static IReadOnlyList<BaseArmorAppearanceDefinition> LoadArmorCatalogs()
     {
-        var editor = typeof(AppearanceEditorViewModel);
-        editor.GetMethod("LoadArmorAppearances", BindingFlags.NonPublic | BindingFlags.Static)!.Invoke(null, null);
-        var loaded = (IDictionary)editor.GetField("_armorAppearances", BindingFlags.NonPublic | BindingFlags.Static)!.GetValue(null)!;
-        return loaded.Values.Cast<BaseArmorAppearanceDefinition>()
+        return ArmorAppearanceCatalog.Definitions.Values.Cast<BaseArmorAppearanceDefinition>()
             .GroupBy(definition => definition.GetType())
             .Select(group => group.First())
             .ToList();

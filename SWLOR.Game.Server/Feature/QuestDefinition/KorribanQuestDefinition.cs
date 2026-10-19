@@ -129,11 +129,11 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
             _builder.Create("hides_tukata", "Skins in the Shadows")
 
                 .AddState()
-                .SetStateJournalText("A nervous smuggler in the shadows has asked you to gather hides from the fierce Tuk’ata beasts roaming the inside of the tombs. Be cautious.")
+                .SetStateJournalText("A nervous smuggler in the shadows has asked you to gather hides from the fierce Tuk'ata beasts roaming the inside of the tombs. Be cautious.")
                 .AddCollectItemObjective("tukata_hide", 5)
 
                 .AddState()
-                .SetStateJournalText("You've gathered the Tuk'ata hides. Return to the smuggler — and don't draw any attention.")
+                .SetStateJournalText("You've gathered the Tuk'ata hides. Return to the smuggler - and don't draw any attention.")
                 .AddXPReward(6000)
                 .AddGoldReward(3000);
 

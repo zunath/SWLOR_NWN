@@ -346,7 +346,7 @@ public class CombatReadinessEquipmentTests
     }
 
     [Test]
-    public void Reconciliation_IsWiredToNativeAfterEventsAndAfterAllLoginMigrations()
+    public void Reconciliation_IsWiredToNativeAfterEventsAndRunsLastAtLogin()
     {
         var scripts = typeof(EquipmentStats).GetMethod(nameof(EquipmentStats.RefreshCombatReadinessAfterEquipmentChange))!
             .GetCustomAttributes<NWNEventHandler>().Select(attribute => attribute.Script).ToArray();
@@ -357,11 +357,10 @@ public class CombatReadinessEquipmentTests
 
         var migration = CSharpSyntaxTree.ParseText(File.ReadAllText(Path.Combine(_root,
                 "SWLOR.Game.Server", "Service", "Migration.cs"))).GetRoot()
-            .DescendantNodes().OfType<MethodDeclarationSyntax>().Single(method => method.Identifier.ValueText == "RunPlayerMigrations");
+            .DescendantNodes().OfType<MethodDeclarationSyntax>().Single(method => method.Identifier.ValueText == "AfterCharacterInitialization");
         migration.AttributeLists.ToString().Should().Contain("ScriptName.OnCharacterInitAfter");
         migration.Body!.Statements.Last().ToString().Should().Be("Stat.RefreshCombatReadinessEquipment(player);");
         migration.Body.Statements[^2].ToString().Should().Be("Perk.RestorePlayerFeats(player);");
-        migration.Body.Statements.OfType<ForEachStatementSyntax>().Should().ContainSingle();
     }
 
     private int Read() => (int)Call("GetCombatReadinessPercent", 1u)!;

@@ -17,9 +17,9 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition
 {
     internal static class SerializedItemWeaponDamageTypeMigration
     {
-        private const string ConstructedDroidVariable = "CONSTRUCTED_DROID";
-        private const string BlueprintRecipeIdVariable = "BLUEPRINT_RECIPE_ID";
-        private static readonly HashSet<BaseItem> WeaponBaseItemTypes = BuildWeaponBaseItemTypes();
+        internal const string ConstructedDroidVariable = "CONSTRUCTED_DROID";
+        internal const string BlueprintRecipeIdVariable = "BLUEPRINT_RECIPE_ID";
+        internal static readonly HashSet<BaseItem> WeaponBaseItemTypes = BuildWeaponBaseItemTypes();
 
         private static readonly WeaponDamageScale[] WeaponDamageScales =
         {
@@ -54,7 +54,7 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition
             "asc_trnsaber",
         };
 
-        private static readonly Dictionary<string, int> RawDamageEnhancementAmountsByResref = new()
+        internal static readonly Dictionary<string, int> RawDamageEnhancementAmountsByResref = new()
         {
             ["gimp_tooth"] = 2,
             ["imp_melee_1"] = 2,
@@ -69,7 +69,7 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition
             ["womprattooth"] = 4,
         };
 
-        private static readonly Dictionary<int, CombatDamageType> LegacyEnhancementDamageTypesBySubType = new()
+        internal static readonly Dictionary<int, CombatDamageType> LegacyEnhancementDamageTypesBySubType = new()
         {
             [19] = CombatDamageType.Force,
             [20] = CombatDamageType.Fire,
@@ -78,7 +78,7 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition
             [23] = CombatDamageType.Ice,
         };
 
-        private static readonly Dictionary<string, ItemPropertyAttackDelay> DelayByResref = new(StringComparer.OrdinalIgnoreCase)
+        internal static readonly Dictionary<string, ItemPropertyAttackDelay> DelayByResref = new(StringComparer.OrdinalIgnoreCase)
         {
             ["t_longsword"] = ItemPropertyAttackDelay.Delay230,
             ["t_katar"] = ItemPropertyAttackDelay.Delay220,
@@ -418,7 +418,7 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition
             return WeaponDelay.GetWeaponDelay(baseItem);
         }
 
-        private static bool TryGetWeaponDamageScale(BaseItem baseItem, string resref, out WeaponDamageScale scale)
+        internal static bool TryGetWeaponDamageScale(BaseItem baseItem, string resref, out WeaponDamageScale scale)
         {
             if (!string.IsNullOrWhiteSpace(resref) &&
                 TrainingSaberDamageResrefs.Contains(resref))
@@ -440,7 +440,7 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition
             return false;
         }
 
-        private static int CalculateScaledWeaponDamage(int damage, IReadOnlyList<int> oldDamage, IReadOnlyList<int> newDamage)
+        internal static int CalculateScaledWeaponDamage(int damage, IReadOnlyList<int> oldDamage, IReadOnlyList<int> newDamage)
         {
             if (damage <= oldDamage[0])
             {
@@ -578,7 +578,7 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition
             return true;
         }
 
-        private static List<EnhancementDamageProperty> SelectBlueprintDamageEnhancements(
+        internal static List<EnhancementDamageProperty> SelectBlueprintDamageEnhancements(
             List<EnhancementDamageProperty> damageEnhancements)
         {
             var elementalDamageEnhancements = damageEnhancements
@@ -615,7 +615,7 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition
             return CombatDamageType.Physical;
         }
 
-        private static bool IsWeaponDamageEnhancementSubType(int subType)
+        internal static bool IsWeaponDamageEnhancementSubType(int subType)
         {
             return subType == (int)EnhancementSubType.DMG ||
                    LegacyEnhancementDamageTypesBySubType.ContainsKey(subType);
@@ -696,7 +696,7 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition
                    existingDamageType != damageType;
         }
 
-        private static bool ShouldRemoveWeaponDamageType(BaseItem baseItem)
+        internal static bool ShouldRemoveWeaponDamageType(BaseItem baseItem)
         {
             return SWLOR.Game.Server.Service.Item.VibroknifeBaseItemTypes.Contains(baseItem);
         }
@@ -738,10 +738,10 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition
         }
 
         // Only elements retype weapon damage, and iprp_c_dmgtype has no Force row; Force conversion belongs to Imbuement Stance.
-        private static CombatDamageType ToWeaponDamageType(CombatDamageType damageType) =>
+        internal static CombatDamageType ToWeaponDamageType(CombatDamageType damageType) =>
             damageType.IsElementalDamageType() ? damageType : CombatDamageType.Physical;
 
-        private static bool TryGetCharacterDamageType(int damageTypeId, out CombatDamageType damageType)
+        internal static bool TryGetCharacterDamageType(int damageTypeId, out CombatDamageType damageType)
         {
             damageType = CombatDamageType.Invalid;
             if (!Enum.IsDefined(typeof(CombatDamageType), damageTypeId))
@@ -807,12 +807,12 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition
             setSerializedObject(migratedSerializedObject);
             return true;
         }
-        private sealed record WeaponDamageScale(
+        internal sealed record WeaponDamageScale(
             IReadOnlyCollection<BaseItem> BaseItems,
             IReadOnlyList<int> OldDamage,
             IReadOnlyList<int> NewDamage);
 
-        private sealed record EnhancementDamageProperty(
+        internal sealed record EnhancementDamageProperty(
             int Value,
             int Index,
             CombatDamageType DamageType);

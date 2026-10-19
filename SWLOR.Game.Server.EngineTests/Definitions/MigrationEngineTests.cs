@@ -44,28 +44,6 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             ctx.AssertEqual(original, GetAbilityScore(owner, AbilityType.Might), "Its equipped effect is removed too");
         }
 
-        [EngineTest("Migration clears every legacy local variable", Category = "Migration")]
-        public static async Task ClearLegacyVariables(EngineTestContext ctx)
-        {
-            var owner = ctx.SpawnCreature("nw_rat001");
-            await ctx.WaitFrameAsync();
-            var item = await CreateItemAsync(ctx, owner, "b_longsword", owner);
-            await ctx.ExecuteInCreatureContextAsync(owner, () =>
-            {
-                SetLocalInt(item, "OLD_INT", 12);
-                SetLocalString(item, "OLD_STRING", "legacy");
-                SetLocalFloat(item, "OLD_FLOAT", 1.5f);
-            });
-            await ctx.WaitFrameAsync();
-            await ctx.ExecuteInCreatureContextAsync(owner, () =>
-            {
-                typeof(_2_LegacyServerMigration).BaseType
-                    .GetMethod("WipeVariables", BindingFlags.NonPublic | BindingFlags.Instance)
-                    .Invoke(new _2_LegacyServerMigration(), new object[] { item });
-                ctx.AssertEqual(0, ObjectPlugin.GetLocalVariableCount(item), "No legacy locals remain");
-            });
-        }
-
         [EngineTest("Migration converts stored weapon requirements after cache load", Category = "Migration")]
         public static async Task StoredWeaponRequirements(EngineTestContext ctx)
         {
@@ -336,7 +314,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
         }
 
         private static object Invoke(string type, string method, params object[] args) =>
-            typeof(_22_CombatSystemReplacement).Assembly.GetType("SWLOR.Game.Server.Feature.MigrationDefinition." + type)
+            typeof(SWLOR.Game.Server.Service.Migration).Assembly.GetType("SWLOR.Game.Server.Feature.MigrationDefinition." + type)
                 .GetMethod(method, BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static).Invoke(null, args);
 
         private static void ClearProperties(uint item)

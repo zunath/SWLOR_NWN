@@ -27124,7 +27124,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Stuck — ship_secchan_int"
+            "0": "Stuck - ship_secchan_int"
           }
         },
         "MapNote": {

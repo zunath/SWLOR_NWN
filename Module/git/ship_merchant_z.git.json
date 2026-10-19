@@ -18899,7 +18899,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Stuck — ship_merchant_z"
+            "0": "Stuck - ship_merchant_z"
           }
         },
         "MapNote": {

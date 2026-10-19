@@ -1483,6 +1483,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                         return;
                     }
 
+                    if (!Item.TryAcquireItem(Player, ObjectPlugin.Deserialize(dbShip.SerializedItem)))
+                    {
+                        FloatingTextStringOnCreature(Item.InventoryFullMessage, Player, false);
+                        return;
+                    }
+
                     if (dbPlayer.ActiveShipId == shipId)
                         dbPlayer.ActiveShipId = Guid.Empty.ToString();
 
@@ -1491,9 +1497,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     DB.Delete<PlayerShip>(shipId);
                     DB.Set(dbPlayer);
                     DB.Set(dbProperty);
-
-                    var item = ObjectPlugin.Deserialize(dbShip.SerializedItem);
-                    ObjectPlugin.AcquireItem(Player, item);
 
                     _myShips.RemoveAll(ship => ship.Id == shipId);
                     _shipIds.RemoveAt(SelectedShipIndex);
@@ -1649,9 +1652,13 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 ShowModal($"{moduleDetail.Name} is equipped to high slot #{slot}. Would you like to uninstall it?", () =>
                 {
                     var item = ObjectPlugin.Deserialize(module.SerializedItem);
-                    ObjectPlugin.AcquireItem(Player, item);
-
                     var moduleBonus = Space.GetModuleBonus(item);
+                    if (!Item.TryAcquireItem(Player, item))
+                    {
+                        SendMessageToPC(Player, Item.InventoryFullMessage);
+                        return;
+                    }
+
                     moduleDetail.ModuleUnequippedAction?.Invoke(dbShip.Status, moduleBonus);
                     dbShip.Status.HighPowerModules.Remove(slot);
                     DB.Set(dbShip);
@@ -1721,7 +1728,11 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 {
                     var item = ObjectPlugin.Deserialize(module.SerializedItem);
                     var moduleBonus = Space.GetModuleBonus(item);
-                    ObjectPlugin.AcquireItem(Player, item);
+                    if (!Item.TryAcquireItem(Player, item))
+                    {
+                        SendMessageToPC(Player, Item.InventoryFullMessage);
+                        return;
+                    }
 
                     moduleDetail.ModuleUnequippedAction?.Invoke(dbShip.Status, moduleBonus);
                     dbShip.Status.LowPowerModules.Remove(slot);
@@ -1791,7 +1802,11 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 {
                     var item = ObjectPlugin.Deserialize(module.SerializedItem);
                     var moduleBonus = Space.GetModuleBonus(item);
-                    ObjectPlugin.AcquireItem(Player, item);
+                    if (!Item.TryAcquireItem(Player, item))
+                    {
+                        SendMessageToPC(Player, Item.InventoryFullMessage);
+                        return;
+                    }
 
                     moduleDetail.ModuleUnequippedAction?.Invoke(dbShip.Status, moduleBonus);
                     dbShip.Status.ConfigurationModules.Remove(slot);

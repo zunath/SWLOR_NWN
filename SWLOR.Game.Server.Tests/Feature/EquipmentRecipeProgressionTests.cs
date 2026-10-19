@@ -24,7 +24,7 @@ public class EquipmentRecipeProgressionTests
     {
         var intermediate = Recipes.Values.Where(IsIntermediateEquipment).ToList();
 
-        intermediate.Count(recipe => recipe.Skill == SkillType.Smithery).Should().Be(160);
+        intermediate.Count(recipe => recipe.Skill == SkillType.Smithery).Should().Be(164);
         intermediate.Where(recipe => recipe.Category == RecipeCategoryType.TwinPistol)
             .Select(recipe => recipe.Level).Should().BeEquivalentTo(new[] { 11, 21, 31, 41 },
                 "Twin Pistol pairs fill the same four crafting progression gaps in their own weapon category");

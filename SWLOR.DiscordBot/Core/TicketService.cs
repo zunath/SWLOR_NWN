@@ -300,6 +300,8 @@ public sealed class TicketService(BotConfiguration configuration, ITicketStore s
             Ticket ticket;
             await using (var session = await store.LockAsync(ct))
             {
+                // Lock contention can outlive a role change. A fresh export reads history and writes an archive, so authorize the current member first.
+                if (!useSavedArchive && !CanSupport(await discord.ActorAsync(actor.UserId, ct))) return new(false, "Only support staff can export transcripts.");
                 var found = await session.FindByChannelAsync(channelId, ct);
                 if (found is null) return new(false, "This channel is not a ticket managed by this bot.");
                 ticket = found;

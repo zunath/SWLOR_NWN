@@ -135,6 +135,34 @@ public sealed class TicketServiceTests
         Assert.That((await Mutate(operation, actor)).Success, Is.True, "Denied access must release the shared lock.");
     }
 
+    [Test]
+    public async Task QueuedFreshExportRechecksRevokedSupportAccessBeforeReadingHistory()
+    {
+        await Open("first", new Actor(1, []), "queued-export-authorization");
+        _discord.CurrentActors[Support.UserId] = Support;
+        var before = _store.Tickets.Single();
+        var auditsBefore = _store.Audits.Count;
+        var transcriptReads = 0;
+        _discord.BeforeTranscriptAsync = (_, _) => { transcriptReads++; return Task.CompletedTask; };
+        var blockingSession = await _store.LockAsync(default);
+        Task<TicketResult> queued;
+        try
+        {
+            queued = _service.ExportAsync(ChannelOne, Support);
+            Assert.That(queued.IsCompleted, Is.False, "The export must queue behind another ticket operation.");
+            _discord.CurrentActors[Support.UserId] = new Actor(Support.UserId, []);
+        }
+        finally { await blockingSession.DisposeAsync(); }
+        var result = await queued.WaitAsync(TimeSpan.FromSeconds(5));
+        Assert.Multiple(() =>
+        {
+            Assert.That(result.Success, Is.False);
+            Assert.That(transcriptReads, Is.EqualTo(0), "Revoked staff must not start a Discord history read.");
+            Assert.That(_store.Tickets.Single(), Is.EqualTo(before));
+            Assert.That(_store.Audits.Count, Is.EqualTo(auditsBefore));
+        });
+    }
+
     [TestCase("close")]
     [TestCase("rename")]
     [TestCase("reopen")]

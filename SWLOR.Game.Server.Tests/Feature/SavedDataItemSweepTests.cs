@@ -167,7 +167,8 @@ public class SavedDataItemSweepTests
             table.GetValue((int)type, "CostTableResRef").Should().Be(costTable.ToString(), $"{type} saves its itempropdef.2da cost table");
 
         var catalogTypes = new[] { LootStatRevisionCatalog.Changes, RareLootStatRevisionCatalog.Changes,
-                EquipmentTypeStatRevisionCatalog.Changes, FoundryLootStatRevisionCatalog.Changes, ArkanianArmorStatRevisionCatalog.Changes }
+                EquipmentTypeStatRevisionCatalog.Changes, FoundryLootStatRevisionCatalog.Changes, ArkanianArmorStatRevisionCatalog.Changes,
+                CarapaceBracerStatRevisionCatalog.Changes }
             .SelectMany(catalog => catalog.Values).SelectMany(changes => changes).Select(change => change.Type).Distinct();
         costTables.Keys.Should().Contain(catalogTypes);
         costTables.Keys.Should().Contain(ItemPropertyType.Resistance, "the Arkanian revision rebuilds Ice Resistance");
@@ -273,6 +274,33 @@ public class SavedDataItemSweepTests
         saved.Single(p => Int(p, "PropertyName") == (int)ItemPropertyType.RequiresSkill)
             .Should().Match<GffStruct>(p => Int(p, "Subtype") == (int)SkillType.Armor && Int(p, "CostTable") == 48);
         Locals(Read(migrated)).Should().Contain((ArkanianArmorStatRevisionCatalog.RevisionVariable, ArkanianArmorStatRevisionCatalog.CurrentRevision));
+        Migrate(migrated, out _, true, out _).Should().BeFalse();
+    }
+
+    // Shipped bracers: retired Poison Defense alone or beside crafted Poison Resistance, Poison Defense the combat
+    // replacement already converted (with and without crafting), and a copy with neither.
+    [TestCase(30, 0, 0)]
+    [TestCase(30, 5, 5)]
+    [TestCase(0, 35, 5)]
+    [TestCase(0, 30, 0)]
+    [TestCase(0, 0, 0)]
+    public void CarapaceBracer_RemovesRetiredPoisonProtection(int poisonDefense, int poisonResistance, int expectedResistance)
+    {
+        var properties = new List<object> { Property(ItemPropertyType.Defense, (int)CombatDamageType.Physical, 35, 23) };
+        if (poisonDefense > 0) properties.Add(Property(ItemPropertyType.Defense, (int)CombatDamageType.Poison, 35, poisonDefense));
+        if (poisonResistance > 0) properties.Add(Property(ItemPropertyType.Resistance, (int)ResistanceType.Poison, 54, poisonResistance));
+        var original = Encode(Item("cara_bracer", BaseItem.Bracer, null, properties.ToArray()));
+
+        Migrate(original, out var migrated, true, out _).Should().BeTrue();
+
+        var saved = Children(Read(migrated), "PropertiesList").ToList();
+        int Total(ItemPropertyType type, int subtype) => saved
+            .Where(p => Int(p, "PropertyName") == (int)type && Int(p, "Subtype") == subtype)
+            .Sum(p => Int(p, "CostValue"));
+        Total(ItemPropertyType.Defense, (int)CombatDamageType.Physical).Should().Be(23, "the enhanced Physical Defense is kept");
+        Total(ItemPropertyType.Defense, (int)CombatDamageType.Poison).Should().Be(0, "the retired Poison Defense is removed");
+        Total(ItemPropertyType.Resistance, (int)ResistanceType.Poison).Should().Be(expectedResistance, "only crafted Poison Resistance is kept");
+        Locals(Read(migrated)).Should().Contain((CarapaceBracerStatRevisionCatalog.RevisionVariable, CarapaceBracerStatRevisionCatalog.CurrentRevision));
         Migrate(migrated, out _, true, out _).Should().BeFalse();
     }
 

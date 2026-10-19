@@ -155,6 +155,41 @@ public class AbilityAnimationBindingTests
     }
 
     [Test]
+    public void GripGatedImmediateGesturesStillAnimateWithAnIncompatibleGrip()
+    {
+        var abilities = typeof(IAbilityListDefinition).Assembly.GetTypes()
+            .Where(type => !type.IsAbstract && !type.IsInterface && typeof(IAbilityListDefinition).IsAssignableFrom(type))
+            .SelectMany(type => ((IAbilityListDefinition)Activator.CreateInstance(type)!).BuildAbilities())
+            .ToDictionary(pair => pair.Key, pair => pair.Value);
+        AbilityAnimationBinding.Apply(abilities, ActiveAbilityAnimationCatalog.Entries);
+
+        var gated = abilities.Where(pair => pair.Value.UsesImmediateAuthoredAnimation && pair.Value.HasGeneratedAnimationBinding &&
+            pair.Value.AnimationEquipmentRequirement != AnimationEquipmentRequirement.Unrestricted).ToArray();
+        gated.Should().NotBeEmpty();
+        gated.Where(pair => AbilityAnimationBinding.ActivationType(pair.Value, true, equipmentCompatible: false) == Animation.Invalid)
+            .Select(pair => pair.Key).Should().BeEmpty();
+
+        foreach (var feat in new[] { FeatType.CycloneStance1, FeatType.ImbuementStance1, FeatType.ConduitStance1, FeatType.SoulDevourerStance1 })
+        {
+            AbilityAnimationBinding.ActivationClip(abilities[feat], true, equipmentCompatible: false).Should().BeNull();
+            AbilityAnimationBinding.ActivationType(abilities[feat], true, equipmentCompatible: false).Should().Be(Animation.CastOutAnimation);
+            AbilityAnimationBinding.ActivationClip(abilities[feat], true).Should().BeSameAs(abilities[feat].PreviewAnimation);
+        }
+        AbilityAnimationBinding.UsesGestureFallback(abilities[FeatType.ShelterCircle1]).Should().BeTrue();
+        AbilityAnimationBinding.UsesGestureFallback(abilities[FeatType.SoulDevourerStance1]).Should().BeFalse();
+    }
+
+    [Test]
+    public void IncompatibleGripFallbackLeavesNpcAndCompatiblePlaybackUnchanged()
+    {
+        var ability = new AbilityDetail { ActivationType = AbilityActivationType.Casted, UsesImmediateAuthoredAnimation = true };
+        AbilityAnimationBinding.Apply(new Dictionary<FeatType, AbilityDetail> { [(FeatType)1] = ability }, new[] { Entry((FeatType)1) });
+        AbilityAnimationBinding.ActivationType(ability, false, equipmentCompatible: false).Should().Be(Animation.Invalid);
+        AbilityAnimationBinding.ActivationType(ability, true).Should().Be(Animation.PointForward);
+        AbilityAnimationBinding.ActivationType(ability, true, equipmentCompatible: false).Should().Be(Animation.CastOutAnimation);
+    }
+
+    [Test]
     public void EveryRankUsesItsExistingActivationContractWithoutChangingTiming()
     {
         var cast = new AbilityDetail { ActivationType = AbilityActivationType.Casted, ImpactDelay = .25f };

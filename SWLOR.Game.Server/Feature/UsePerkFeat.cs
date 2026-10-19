@@ -632,6 +632,20 @@ namespace SWLOR.Game.Server.Feature
                     if (AbilityAnimationBinding.ActivationType(ability, activator, animationLength) == Animation.Invalid)
                         return;
 
+                    // Like the skipped gesture it replaces, the fallback must not occupy the action queue.
+                    if (AbilityAnimationBinding.UsesGestureFallback(ability))
+                    {
+                        var fallbackLength = Math.Max(animationLength, ability.AuthoredAnimation?.Duration ?? 0f);
+                        AssignCommand(activator, () => PistolAnimationRemap.PlayAnimationPreservingExplicitThrow(
+                            activator,
+                            AbilityAnimationBinding.ActivationType(ability, activator, animationLength),
+                            1.0f,
+                            fallbackLength,
+                            immediate: true,
+                            releaseAuthoredPose: false));
+                        return;
+                    }
+
                     var sourceAnimationName = ability.AnimationSourceAnimationName;
                     var replacementAnimationName = ability.AnimationReplacementAnimationName;
 

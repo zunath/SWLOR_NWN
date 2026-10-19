@@ -48,16 +48,16 @@ public static partial class MigrationEngineTests
             for (var cycle = 1; cycle <= 2; cycle++)
                 await ctx.ExecuteInCreatureContextAsync(owner, () =>
                 {
-                    config.MigrationVersion = 27;
+                    config.MigrationVersion = 28;
                     DB.Set(config);
                     var pending = (IEnumerable<IServerMigration>)typeof(Migration)
                         .GetMethod("GetMigrations", BindingFlags.NonPublic | BindingFlags.Static)
                         .Invoke(null, new object[] { MigrationExecutionType.PostCacheLoad });
                     ctx.Assert(pending.Select(migration => migration.Version)
-                        .SequenceEqual(new[] { 28 }),
+                        .SequenceEqual(new[] { 29 }),
                         "The last released server checkpoint schedules exactly one combined stored-item migration");
                     Migration.AfterCacheLoaded();
-                    ctx.AssertEqual(28, DB.Get<ServerConfiguration>("SWLOR_CONFIG").MigrationVersion,
+                    ctx.AssertEqual(29, DB.Get<ServerConfiguration>("SWLOR_CONFIG").MigrationVersion,
                         "The stored-item correction advances the server checkpoint");
                     foreach (var record in records)
                     {
@@ -139,16 +139,16 @@ public static partial class MigrationEngineTests
             await ctx.ExecuteInCreatureContextAsync(player, () =>
             {
                 var record = DB.Get<Player>(GetObjectUUID(player));
-                record.Version = 22;
+                record.Version = 23;
                 DB.Set(record);
-                SetLocalInt(player, "PLAYER_MIGRATION_VERSION", 22);
-                var fileVersion = 22;
+                SetLocalInt(player, "PLAYER_MIGRATION_VERSION", 23);
+                var fileVersion = 23;
                 var fileSaves = 0;
                 var pending = typeof(_23_CorrectEquipmentTypes).Assembly.GetTypes()
                     .Where(type => !type.IsAbstract && !type.IsInterface && typeof(IPlayerMigration).IsAssignableFrom(type))
                     .Select(type => (IPlayerMigration)Activator.CreateInstance(type))
                     .Where(migration => migration.Version > Math.Min(record.Version, fileVersion)).ToArray();
-                ctx.AssertEqual(23, pending.Single().Version, "The last released player checkpoint schedules exactly one combined item migration");
+                ctx.AssertEqual(24, pending.Single().Version, "The last released player checkpoint schedules exactly one combined item migration");
                 var apply = typeof(Migration).GetMethod("ApplyPlayerMigration", BindingFlags.NonPublic | BindingFlags.Static);
                 bool ApplyMigration() => (bool)apply.Invoke(null, new object[] { pending.Single(), player,
                     (Func<Player>)(() => DB.Get<Player>(GetObjectUUID(player))), (Action<Player>)(updated => DB.Set(updated)),
@@ -162,7 +162,7 @@ public static partial class MigrationEngineTests
                         fileSaves++;
                     }) });
                 ctx.Assert(ApplyMigration(), "The actual player checkpoint path converts the legacy equipment");
-                ctx.AssertEqual(23, DB.Get<Player>(GetObjectUUID(player)).Version, "The player database checkpoint advances");
+                ctx.AssertEqual(24, DB.Get<Player>(GetObjectUUID(player)).Version, "The player database checkpoint advances");
                 ctx.Assert(ApplyMigration(), "Retrying the completed checkpoint succeeds");
                 ctx.AssertEqual(1, fileSaves, "A completed checkpoint does not revisit or save the items twice");
                 AssertRevisedLoot(ctx, item, enhancements);

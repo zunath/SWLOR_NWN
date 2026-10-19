@@ -103,6 +103,20 @@ public static partial class MigrationEngineTests
             });
         }
 
+        // Shipped bracers: retired Poison Defense, and Poison Defense the combat replacement already converted
+        // into Resistance beside five crafted points.
+        foreach (var converted in new[] { false, true })
+        {
+            var bracer = await CreateItemAsync(ctx, owner, "cara_bracer", owner);
+            await ctx.ExecuteInCreatureContextAsync(owner, () =>
+            {
+                StampLegacyCarapaceBracer(bracer, converted);
+                fixtures.Add(($"legacy Carapace Bracer ({(converted ? "converted Poison Resistance" : "Poison Defense")})",
+                    ObjectPlugin.Serialize(bracer), true));
+                DestroyObject(bracer);
+            });
+        }
+
         var gloves = await CreateItemAsync(ctx, owner, RevisedGloves, owner);
         var buffedGloves = await CreateItemAsync(ctx, owner, RevisedGloves, owner);
         var artwork = await CreateItemAsync(ctx, owner, "aen_hp1", owner);
@@ -182,6 +196,19 @@ public static partial class MigrationEngineTests
             await ctx.WaitFrameAsync();
         }
         ctx.Assert(failures.Count == 0, $"{failures.Count} of {fixtures.Count} fixtures differ:\n" + string.Join("\n", failures));
+    }
+
+    private static void StampLegacyCarapaceBracer(uint item, bool converted)
+    {
+        RemoveMatching(item, ItemPropertyType.Defense, (int)CombatDamageType.Physical);
+        AddItemProperty(DurationType.Permanent, ItemPropertyCustom(ItemPropertyType.Defense, (int)CombatDamageType.Physical, 23), item);
+        if (converted)
+            AddItemProperty(DurationType.Permanent, ItemPropertyCustom(ItemPropertyType.Resistance, (int)ResistanceType.Poison,
+                Resistance.EncodeItemPropertyCostTableValue(35)), item);
+        else
+            // Current constructors reject the retired Poison Defense subtype, so it is written natively.
+            AddLegacyProperty(item, ItemPropertyType.Defense, (int)CombatDamageType.Poison, 35, 30);
+        DeleteLocalInt(item, CarapaceBracerStatRevisionCatalog.RevisionVariable);
     }
 
     private static (bool Changed, string Migrated, string Listing) ConvertStoredItem(string converterName, string data, bool repairHeadgear)

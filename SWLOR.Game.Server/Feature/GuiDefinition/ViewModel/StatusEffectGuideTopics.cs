@@ -24,7 +24,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     new PlayerGuideViewModel.ArticleBlock("Other Harmful Effects (H-P)",
                         "Hemorrhage; Incapacitate; Infection; Kill Box; Last Bastion; Last Word; Marked; Marked for Death; Marking Toss; Nightmare Field; Pacification Field; Poison; Poison Resistance; Predator's Mark I"),
                     new PlayerGuideViewModel.ArticleBlock("Other Harmful Effects (S-W)",
-                        "Saturation Toss; Shock; Signal Jammer; Smoke Bomb; Smoke Round; Stasis Volley; Sunder; Suppression; Tempest Mark; Terrified; Toxin; Unstable Pressure; Venom; Vital Strike; Vulnerable; Weakened; Worldbreaker"),
+                        "Saturation Toss; Shock; Signal Jammer; Smoke Bomb; Smoke Round; Stasis Volley; Sunder; Suppression; Tempest Mark; Terrified; Toxin; Unnerved; Unstable Pressure; Venom; Vital Strike; Vulnerable; Weakened; Worldbreaker"),
                     new PlayerGuideViewModel.ArticleBlock("Bleed Damage",
                         "Bleed deals physical damage every 6 seconds. Its base damage is 4% of the target's maximum HP, rounded up, capped at 20 + twice the higher of the source's Might or Perception modifiers. Negative modifiers count as zero. The cap applies before outgoing Bleed bonuses, Trauma resistance, and the target's damage modifiers. For example, a +8 relevant modifier caps the base tick at 36 damage. These rules also apply to Bleed from Piercing Toss and other Throwing or Shuriken abilities."),
                     new PlayerGuideViewModel.ArticleBlock("Toxin Damage",

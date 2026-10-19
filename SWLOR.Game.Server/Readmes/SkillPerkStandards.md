@@ -10,23 +10,34 @@ Sections: Established patterns · Cross-skill gameplay · Mechanical contract ·
 - Follow the relevant family's existing line/category structure, rank schedule, character eligibility, and purchase rules. Do not make weapon conventions universal: Force, Armor, support skills, and creature systems have their own structures. A new structure, tier, or departure from the checked standards needs the user's approval under [ContentStandards.md](ContentStandards.md).
 - Give each line a distinct purpose and each purchase a useful decision. Explain when players prefer one active, trait, or stance over its alternative. Avoid duplicate benefits or an ability that replaces another's entire purpose at the same opportunity cost. Use the existing mutual-exclusion mechanism when the approved design calls for alternative purchases.
 - Distinguish skill-rank investment, perk-rank purchases, and spendable SP. Read the current character caps and starting SP from `Service/Skill.cs`; do not infer the character budget from one line's price. Check that an upgrade's base mechanic is available by its unlock rank and declare any external prerequisite.
-- Higher ranks retain the earlier rank's benefits unless the approved design explicitly replaces them. Only the purchased rank's stat bonuses apply; restate earlier riders at later ranks. `PerkRankProgressionTests` guards against silently losing a benefit.
+- Higher ranks retain the earlier rank's benefits unless the approved design explicitly replaces them. Only the purchased rank's stat bonuses apply; restate earlier riders at later ranks. `PerkRankProgressionTests` checks whether evaluable stat bonuses on active perk definitions remain beneficial across adjacent ranks. It does not prove their magnitude is preserved; conditional/unevaluable bonuses and non-stat riders need focused coverage.
 
 ### Current weapon progression
 
 The Bible's Pistol, Rifle, Spear, Staff, Twin Blade, and Vibroblade tabs each use two independent lines with 18 purchased rows and 60 SP per line. Their shared schedule is:
 
-| Purchase | Required skill ranks | SP prices in rank order |
-| --- | --- | --- |
-| Four-rank active | 2, 12, 28, 40 | 2, 2, 3, 5 |
-| Standalone traits | 5, 15, 25, 35 | 2, 4, 4, 2 |
-| Three-rank trait | 8, 22, 45 | 2, 4, 4 |
-| Three-rank active | 10, 30, 38 | 2, 4, 4 |
-| Two-rank active | 18, 32 | 3, 3 |
-| Stance | 20 | 4 |
-| Capstone | 50 | 6 |
+| Required skill rank | SP price |
+| --- | --- |
+| 2 | 2 |
+| 5 | 2 |
+| 8 | 2 |
+| 10 | 2 |
+| 12 | 2 |
+| 15 | 4 |
+| 18 | 3 |
+| 20 | 4 |
+| 22 | 4 |
+| 25 | 4 |
+| 28 | 3 |
+| 30 | 4 |
+| 32 | 3 |
+| 35 | 2 |
+| 38 | 4 |
+| 40 | 5 |
+| 45 | 4 |
+| 50 | 6 |
 
-Use this purchase-rank and SP schedule as the starting point for a new skill in that family, verifying it against the current Bible first. The active/trait role assignments describe the listed comparators, not an invariant for every weapon skill: preserve an approved design that exchanges those slots so base attacks unlock before their enhancements. Keep the lines independent; do not invent a shared third perk line or duplicate a purchase across both lines to fill the schedule. This table does not prescribe damage, resources, cooldowns, or cast times: take those from the relevant approved design and comparable abilities. `CombatUpgradeBiblePerkManifest.csv` is a generated index for checking the source rows, not a replacement for the workbook.
+Use this purchase-rank and SP schedule as the starting point for a new skill in that family, verifying it against the current Bible first. It does not dictate active/trait slots or how purchase rows group into distinct perks: preserve the relevant approved layout, including base attacks unlocking before their enhancements. Keep the lines independent; do not invent a shared third perk line or duplicate a purchase across both lines to fill the schedule. This table does not prescribe damage, resources, cooldowns, or cast times: take those from the relevant approved design and comparable abilities. `CombatUpgradeBiblePerkManifest.csv` is a generated index for checking the source rows, not a replacement for the workbook.
 
 Preserve established exceptions rather than rewriting them to fit this table. Katar's Iron Guard also has 18 purchases and 60 SP, but distributes them across 14 distinct perks and uses different prices at ranks 15 and 28. A purchase-row count is not a distinct-perk count.
 

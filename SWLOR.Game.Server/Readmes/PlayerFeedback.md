@@ -55,6 +55,11 @@ Warnings remain visible in Production, with only repeated copies limited:
   can award several skills, but the total-rank cap and unlock remedy are the same.
 - Mimicry rank gates and failed decoding: once per technique/failure reason per
   minute across NPCs. Testing shows every occurrence of these warnings.
+- Aura buffs from Ability auras (Leadership Vanguard Command and Field Steward):
+  the "receives the effect of" notice once per minute per leader, ally and aura.
+  Allies crossing the aura edge in combat still gain and lose the buff each time;
+  only the repeated chat line is withheld, and toggling the aura off and on, or the
+  ally logging out, dying, or entering space, announces it afresh.
 
 ## Audit and validation
 

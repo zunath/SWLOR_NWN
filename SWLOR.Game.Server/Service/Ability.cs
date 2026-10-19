@@ -3,6 +3,7 @@ using System.Linq;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Feature;
 using SWLOR.Game.Server.Feature.AbilityDefinition;
+using SWLOR.Game.Server.Feature.StatusEffectDefinition;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.CombatRecorderService;
 using SWLOR.Game.Server.Service.CombatService;
@@ -944,7 +945,11 @@ namespace SWLOR.Game.Server.Service
             }
 
             RemoveWeakerDuplicateAuraEffects(source, recipient, type);
-            if (StatusEffect.ApplyStatusEffect(source, recipient, type, 0f) && successfulImpactVisualEffect != VisualEffect.None)
+            var statusEffect = StatusEffect.CreateStatusEffect(type);
+            if (statusEffect is AuraStatusEffectBase aura)
+                aura.AnnouncesApplication = AuraAnnouncementLimiter.TryAnnounce(source, recipient, type);
+
+            if (StatusEffect.ApplyStatusEffect(source, recipient, statusEffect, 0f) && successfulImpactVisualEffect != VisualEffect.None)
                 ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(successfulImpactVisualEffect), recipient);
         }
 
@@ -1155,6 +1160,7 @@ namespace SWLOR.Game.Server.Service
             }
 
             aura.Auras.Remove(existing);
+            AuraAnnouncementLimiter.ClearSource(activator);
             return true;
         }
 
@@ -1211,6 +1217,7 @@ namespace SWLOR.Game.Server.Service
             }
 
             _playerAuras.Remove(activator);
+            AuraAnnouncementLimiter.ClearSource(activator);
         }
 
         /// <summary>
@@ -1259,6 +1266,8 @@ namespace SWLOR.Game.Server.Service
             {
                 RemoveAuraEffect(leader, target, statusEffect);
             }
+
+            AuraAnnouncementLimiter.ClearRecipient(target);
         }
 
 

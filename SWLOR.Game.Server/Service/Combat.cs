@@ -5448,8 +5448,9 @@ namespace SWLOR.Game.Server.Service
             ApplyAbilityUsedSkillAttackDeflection(activator, ability);
             ApplyAbilityUsedPerkCategoryAttackDeflection(activator, ability);
             ApplySingleTargetAbilityUsedAttackDeflection(activator, ability, isSingleTargetAbility);
-            ApplyAreaAbilityUsedEvasion(activator, ability, skillType, summary.IsAreaAbility);
-            ApplyAreaAbilityUsedRewards(activator, ability, summary.IsAreaAbility);
+            var isAreaAbility = Ability.IsAreaImpact(summary, ability);
+            ApplyAreaAbilityUsedEvasion(activator, ability, skillType, isAreaAbility);
+            ApplyAreaAbilityUsedRewards(activator, ability, isAreaAbility);
             ApplyHostileAbilityForceAttack(activator, ability);
             ApplyHostileAbilityFPSpendForceAttack(activator, ability);
             ApplyAbilityUsedNearbyAllyDefense(activator);

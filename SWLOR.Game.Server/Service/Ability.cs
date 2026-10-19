@@ -650,19 +650,22 @@ namespace SWLOR.Game.Server.Service
             return impact?.Summary.IsAreaAbility ?? false;
         }
 
-        public static bool IsAreaImpact(uint activator, AbilityDetail ability)
-        {
-            var impact = GetTrackedAbilityImpact(activator);
-            return impact != null && impact.Ability == ability
-                ? impact.Summary.IsAreaAbility : ability?.IsAreaAbility == true;
-        }
+        /// <summary>Only a melee technique's cast can change shape (its conditional sweep); other abilities keep their authored flags.</summary>
+        public static bool IsAreaImpact(uint activator, AbilityDetail ability) =>
+            IsAreaImpact(GetTrackedAbilityImpact(activator)?.Summary, ability);
+
+        public static bool IsAreaImpact(AbilityImpactSummary summary, AbilityDetail ability) =>
+            UsesTrackedImpactShape(summary, ability) ? summary.IsAreaAbility : ability?.IsAreaAbility == true;
 
         public static bool IsSingleTargetImpact(uint activator, AbilityDetail ability)
         {
-            var impact = GetTrackedAbilityImpact(activator);
-            return impact != null && impact.Ability == ability
-                ? impact.Summary.IsSingleTargetAbility : ability?.IsSingleTargetAbility == true;
+            var summary = GetTrackedAbilityImpact(activator)?.Summary;
+            return UsesTrackedImpactShape(summary, ability)
+                ? summary.IsSingleTargetAbility : ability?.IsSingleTargetAbility == true;
         }
+
+        private static bool UsesTrackedImpactShape(AbilityImpactSummary summary, AbilityDetail ability) =>
+            ability?.MeleeTechnique != null && summary?.Ability == ability;
 
         private static bool IsTrackedAbilitySingleTarget(uint activator)
         {

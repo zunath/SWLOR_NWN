@@ -107746,7 +107746,7 @@
           "id": 5670,
           "type": "cexolocstring",
           "value": {
-            "0": "[To Hub]"
+            "0": "[To Casino]"
           }
         },
         "OnClick": {
@@ -108157,7 +108157,7 @@
           "id": 14815,
           "type": "cexolocstring",
           "value": {
-            "0": "To Hub"
+            "0": "To Casino"
           }
         },
         "MapNoteEnabled": {

@@ -24672,7 +24672,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Stuck — ship_consul_z"
+            "0": "Stuck - ship_consul_z"
           }
         },
         "MapNote": {

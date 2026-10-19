@@ -5555,7 +5555,7 @@
               "LocalizedName": {
                 "type": "cexolocstring",
                 "value": {
-                  "0": "PiÃ¨ces dÃ©tachÃ©es de droÃ¯d"
+                  "0": "Pièces détachées de droïd"
                 }
               },
               "ModelPart1": {
@@ -6547,7 +6547,7 @@
               "LocalizedName": {
                 "type": "cexolocstring",
                 "value": {
-                  "0": "PiÃ¨ces dÃ©tachÃ©es de droÃ¯d"
+                  "0": "Pièces détachées de droïd"
                 }
               },
               "ModelPart1": {
@@ -7539,7 +7539,7 @@
               "LocalizedName": {
                 "type": "cexolocstring",
                 "value": {
-                  "0": "PiÃ¨ces dÃ©tachÃ©es de droÃ¯d"
+                  "0": "Pièces détachées de droïd"
                 }
               },
               "ModelPart1": {
@@ -8588,7 +8588,7 @@
               "LocalizedName": {
                 "type": "cexolocstring",
                 "value": {
-                  "0": "PiÃ¨ces dÃ©tachÃ©es de droÃ¯d"
+                  "0": "Pièces détachées de droïd"
                 }
               },
               "ModelPart1": {
@@ -88116,7 +88116,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Stuck â€” tat_anc_northdis"
+            "0": "Stuck - tat_anc_northdis"
           }
         },
         "MapNote": {

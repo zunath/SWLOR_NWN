@@ -17,7 +17,7 @@ public sealed record AnimationClip
     {
         if (string.IsNullOrEmpty(name) || name.Length > MaxNameLength ||
             name.Any(c => !(c is >= 'a' and <= 'z' or >= 'A' and <= 'Z' or >= '0' and <= '9' or '_')))
-            throw new ArgumentException("Animation names require 1–12 ASCII letters, digits or underscores, leaving room for their playback phases.", nameof(name));
+            throw new ArgumentException("Animation names require 1-12 ASCII letters, digits or underscores, leaving room for their playback phases.", nameof(name));
         if (!float.IsFinite(duration) || duration <= 0 || duration > 600)
             throw new ArgumentOutOfRangeException(nameof(duration), "Animation duration must be between 0 and 600 seconds.");
         Name = name; Duration = duration;

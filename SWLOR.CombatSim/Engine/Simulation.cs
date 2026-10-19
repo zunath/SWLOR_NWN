@@ -193,6 +193,8 @@ namespace SWLOR.CombatSim.Engine
                                 $"'{spec.Name}' needs an autoattack AttacksPerSecond from 0 to {MaximumAttacksPerSecond}.");
                         if (attack.AttacksPerSecond > 0)
                             RequireValidDamage($"'{spec.Name}' autoattack", attack.Damage);
+                        if (attack.Damage?.WeaponPower != null)
+                            throw new InvalidDataException("WeaponPower is an activated weapon damage profile; use WeaponLoadout for native autoattacks.");
                     }
 
                     // Each step makes at most one decision per combatant, so a step longer than the
@@ -242,6 +244,13 @@ namespace SWLOR.CombatSim.Engine
                     foreach (var use in spec.Abilities)
                     {
                         ResolveUse(use);
+                        if (use.Damage?.WeaponPower != null &&
+                            (spec.WeaponLoadout == null || !Combat.IsWeaponSkillType(_resolvedUses[use].Info.SkillType)))
+                            throw new InvalidDataException($"'{use.Feat}' WeaponPower needs a WeaponLoadout and a weapon skill.");
+                        if (use.Damage is { WeaponPower: null } &&
+                            Combat.IsWeaponSkillType(_resolvedUses[use].Info.SkillType) &&
+                            perkStats.GetValueOrDefault(StatType.MovementHitWeaponAbilityDamagePerCharge) > 0)
+                            throw new InvalidDataException($"'{use.Feat}' cannot apply Flow to calibrated final damage; supply explicit authored WeaponPower or omit Flow.");
                         if (_resolvedUses[use].Info.TwinPistol != null && spec.WeaponLoadout == null)
                             throw new InvalidDataException($"'{use.Feat}' needs a WeaponLoadout to resolve its captured hands and traits.");
                         // Only a landed autoattack can carry a queued weapon ability.
@@ -1280,8 +1289,12 @@ namespace SWLOR.CombatSim.Engine
                         attacker.Stats.FlowDamagePowerApplied += bonus;
                         return bonus;
                     }
-                    var (hitLanded, dealt) = RollAndApply(attacker, victim, damage, hitBonus, multiplier, alwaysHits,
-                        weaponAbility ? TakeFlowBonus : null, cast?.WeaponTraits?.AccuracyAdjustment ?? 0);
+                    var (hitLanded, dealt) = damage.WeaponPower != null
+                        ? RollNativeWeaponProfile(attacker, victim, damage.WeaponPower, weapon,
+                            weaponAbility ? TakeFlowBonus : null, cast?.WeaponTraits?.AccuracyAdjustment ?? 0,
+                            multiplier, alwaysHits)
+                        : RollAndApply(attacker, victim, damage, hitBonus, multiplier, alwaysHits,
+                            cast?.WeaponTraits?.AccuracyAdjustment ?? 0);
                     if (weaponAbility && hitLanded)
                     {
                         attacker.Stats.AbilityHits++;
@@ -1376,16 +1389,23 @@ namespace SWLOR.CombatSim.Engine
         /// <returns>Whether the roll hit, and the damage that landed on temporary HP or HP.</returns>
         private (bool Hit, double Dealt) RollAndApply(
             Combatant attacker, Combatant target, DamageSpec damage, float hitBonus = 0f, double multiplier = 1.0,
-            bool alwaysHits = false, Func<int> takeRawDamageBonus = null, int accuracyBonus = 0)
+            bool alwaysHits = false, int accuracyBonus = 0)
         {
             var hitChance = damage.Accuracy is { } accuracy
                 ? Combat.CalculateHitRate(accuracy + attacker.GetStat(StatType.Accuracy) + accuracyBonus, target.Spec.Evasion, 0) / 100f
                 : damage.GetHitChance(target.Name);
-            if (target.IsDead || (!alwaysHits && _random.NextDouble() >= Math.Min(1f, hitChance + hitBonus)))
+            if (target.IsDead)
                 return (false, 0);
+            if (!alwaysHits && _random.NextDouble() >= Math.Min(1f, hitChance + hitBonus))
+            {
+                // A calibrated miss might be concealment or another avoidance mechanism. Only
+                // an explicit ACC-versus-EVA roll proves the production Second Wind trigger.
+                if (damage.Accuracy.HasValue && attacker.TeamIndex != target.TeamIndex)
+                    target.WeaponTraits.Paired.RecordAccuracyEvasionMiss(WeaponNow, WeaponTraitState.Configuration(target));
+                return (false, 0);
+            }
 
             var amount = damage.Min + _random.NextDouble() * Math.Max(0, damage.Max - damage.Min);
-            amount += takeRawDamageBonus?.Invoke() ?? 0;
             if (damage.CritChance > 0 && _random.NextDouble() < damage.CritChance)
                 amount *= damage.CritMultiplier;
 

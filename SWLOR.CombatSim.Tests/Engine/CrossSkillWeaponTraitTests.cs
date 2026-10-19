@@ -1,5 +1,6 @@
 using FluentAssertions;
 using NUnit.Framework;
+using System.Text.Json;
 using SWLOR.CombatSim.Data;
 using SWLOR.CombatSim.Engine;
 using SWLOR.CombatSim.Rules;
@@ -90,7 +91,7 @@ public class CrossSkillWeaponTraitTests
     }
 
     [Test]
-    public void CalibratedTwoWeaponProfile_CannotInventAnUnequippedSecondWeaponBudget()
+    public void NativeTwoWeaponProfile_CannotInventAnUnequippedSecondWeaponBudget()
     {
         var (sim, actor) = Spawn(items: 2);
         actor.Spec.WeaponLoadout.OffhandDamage = actor.Spec.WeaponLoadout.OffhandDelay = 0;
@@ -191,6 +192,91 @@ public class CrossSkillWeaponTraitTests
         WeaponAbilityTraitPolicy.IsEligibleCostReduction(skill, 0).Should().BeFalse();
     }
 
+    [Test]
+    public void UnknownFinalDamageWithFlow_FailsClosedInsteadOfAddingUnscaledDamage()
+    {
+        var scenario = Create("DoubleShot1", "DoubleShot:1", 2, 1, 1, true);
+        var damage = scenario.Teams[0].Members[0].Abilities[0].Damage;
+        damage.WeaponPower = null; damage.Min = damage.Max = 1;
+        Action spawn = () => TestScenarios.Spawn(scenario, RuleSets.Current(), _catalog, 47);
+        spawn.Should().Throw<InvalidDataException>().WithMessage("*cannot apply Flow to calibrated final damage*");
+        scenario.Teams[0].Members[0].Perks.Remove("TwinPistolMomentum");
+        spawn.Should().NotThrow("calibrated damage remains usable without an unknown Flow power conversion");
+    }
+
+    [TestCase(50, 94)] [TestCase(150, 94)] [TestCase(150, 250)]
+    public void ForeignFlowDamage_IsNativePowerBeforeAttackDefenseAndCriticalScaling(int attack, int defense)
+    {
+        var rows = new List<object>();
+        foreach (var critical in new[] { -100, 100 })
+        foreach (var seed in Enumerable.Range(20261019, 64))
+        {
+            double Run(bool flow)
+            {
+                // One isolated Double Shot I impact: authored flat6 plus100% weapon rating.
+                // +12 is the approved three-charge Flow power, not twelve final damage points.
+                var scenario = Create("DoubleShot1", "DoubleShot:1", 1, 1, 1, true);
+                var spec = scenario.Teams[0].Members[0];
+                spec.WeaponLoadout.Attack = attack;
+                spec.WeaponLoadout.AbilityCriticalRateAdjustment = critical;
+                scenario.Teams[1].Members[0].Defense = defense;
+                if (!flow) spec.Abilities[0].Damage.WeaponPower.FlatDamage += 12;
+                var sim = TestScenarios.Spawn(scenario, RuleSets.Current(), _catalog, seed);
+                var actor = sim.Combatants[0]; actor.NextActionAt = 0; actor.NextAttackAt = double.PositiveInfinity;
+                if (flow) GrantFlow(sim, actor);
+                Finish(sim, actor);
+                actor.Stats.FlowDamagePowerApplied.Should().Be(flow && actor.Stats.AbilityHits > 0 ? 12 : 0);
+                return actor.Stats.DamageDealt;
+            }
+            var flowDamage = Run(true);
+            var explicitPowerDamage = Run(false);
+            flowDamage.Should().Be(explicitPowerDamage, "Flow must be identical to the same native ability power, even across ATT/DEF and critical scaling");
+            rows.Add(new { attack, defense, criticalAdjustment = critical, seed, flowDamage, explicitPowerDamage });
+        }
+        var directory = Environment.GetEnvironmentVariable("TWIN_SIM_OUTPUT") ?? Path.Combine(Path.GetTempPath(), "swlor-twin-cross-skill-sim-20261018");
+        Directory.CreateDirectory(directory);
+        var path = Path.Combine(directory, $"foreign-native-power-{attack}-{defense}.json");
+        File.WriteAllText(path, JsonSerializer.Serialize(new
+        {
+            method = "64 paired seeds x two critical-rate controls x two equivalent profiles. One isolated Double Shot I impact (source authored flat6, 100% native weapon rating) with three Flow versus explicit flat18. " +
+                "ATT/DEF pairs are unit sensitivity controls, not authored encounter balance. Native rank, attribute, ATT/DEF and active critical formulas; ordinary attacks disabled. " +
+                "Source double-hit critical stamina refund and other foreign perk/status behavior are not modeled or claimed. Enlarged hit/target budget tests elsewhere are explicit stress fixtures.",
+            simulations = rows.Count * 2, rows
+        }, new JsonSerializerOptions { WriteIndented = true }));
+        TestContext.AddTestAttachment(path);
+    }
+
+    [TestCase(true, 1)] [TestCase(false, 0)]
+    public void OnlyGenuineAccuracyEvasionMisses_GrantSecondWind(bool nativeAccuracy, int expected)
+    {
+        var scenario = Create("ForcePush1", "ForcePush:1", 1000, 1, 1, true);
+        var target = scenario.Teams[1].Members[0];
+        target.Evasion = 10000;
+        target.Perks = new() { "TwinPistolMomentum", "TwinPistolSecondWind" };
+        var damage = scenario.Teams[0].Members[0].Abilities[0].Damage;
+        if (nativeAccuracy) damage.Accuracy = 0; else damage.HitChance = 0;
+        var sim = TestScenarios.Spawn(scenario, RuleSets.Current(), _catalog, 47);
+        var actor = sim.Combatants[0]; actor.NextActionAt = 0; actor.NextAttackAt = double.PositiveInfinity;
+        Finish(sim, actor, weapon: false);
+        sim.Combatants[1].WeaponTraits.Paired.Momentum.Should().Be(expected,
+            "a thousand misses in one cast can grant at most one charge through Second Wind's ten-second gate");
+    }
+
+    [TestCase(false)] [TestCase(true)]
+    public void NativeWeaponPower_RequiresWeaponSkillAndLoadout(bool force)
+    {
+        var scenario = Create(force ? "ForcePush1" : "DoubleShot1", force ? "ForcePush:1" : "DoubleShot:1", 2, 1, 1, true);
+        var spec = scenario.Teams[0].Members[0];
+        if (force)
+        {
+            spec.Abilities[0].Damage.Min = spec.Abilities[0].Damage.Max = 0;
+            spec.Abilities[0].Damage.WeaponPower = new() { FlatDamage = 6 };
+        }
+        else spec.WeaponLoadout = null;
+        Action spawn = () => TestScenarios.Spawn(scenario, RuleSets.Current(), _catalog, 47);
+        spawn.Should().Throw<InvalidDataException>().WithMessage("*WeaponPower needs a WeaponLoadout and a weapon skill*");
+    }
+
     private (Simulation Sim, Combatant Actor) Spawn(string feat = "DoubleShot1", string perk = "DoubleShot:1",
         int hits = 2, int targets = 1, int items = 1, RuleSet rules = null, bool damage = true)
     {
@@ -201,16 +287,22 @@ public class CrossSkillWeaponTraitTests
         return (sim, actor);
     }
 
-    private static ScenarioSpec Create(string feat, string perk, int hits, int targets, int items, bool damage)
+    private ScenarioSpec Create(string feat, string perk, int hits, int targets, int items, bool damage)
     {
-        var scenario = TwinPistolScenarios.Create(false, false, duration: 8, targets: targets);
+        var scenario = TwinPistolScenarios.Create(false, false, duration: 8, targets: targets, catalog: _catalog);
         var spec = scenario.Teams[0].Members[0];
         spec.Perks = new() { "TwinPistolMomentum", "ChangingAngles", "TwinPistolFollowThrough", "CoolUnderFire", "BalancedGrip", perk };
         spec.StmRegenPer30Seconds = 0;
         spec.MaxFp = 100;
         spec.WeaponLoadout.Accuracy = 10000;
+        // Native authored payloads: DoubleShotAbilityDefinition flat6/100% (rankI),
+        // FortressStrikeAbilityDefinition flat30/100% (rankIII). Hits/targets can be
+        // deliberately enlarged by bounded proc stress tests; that is not an authored DPS claim.
+        var weaponPower = feat is "DoubleShot1" or "FortressStrike3";
         spec.Abilities = new() { new() { Feat = feat, Target = damage ? AbilityTarget.Enemy : AbilityTarget.Self,
-            MinIntervalSeconds = 600, Damage = damage ? new() { Min = 1, Max = 1, Hits = hits, Targets = targets, WeaponItems = items } : null } };
+            MinIntervalSeconds = 600, Damage = damage ? new() { Min = weaponPower ? 0 : 1, Max = weaponPower ? 0 : 1,
+                WeaponPower = weaponPower ? new() { FlatDamage = feat == "FortressStrike3" ? 30 : 6 } : null,
+                Hits = hits, Targets = targets, WeaponItems = items } : null } };
         return scenario;
     }
 

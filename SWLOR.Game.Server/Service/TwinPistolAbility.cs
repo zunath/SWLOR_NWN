@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Native;
 using SWLOR.Game.Server.Feature;
+using SWLOR.Game.Server.Service.AnimationService;
 using SWLOR.Game.Server.Service.CombatRecorderService;
 using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.SkillService;
@@ -227,6 +228,7 @@ namespace SWLOR.Game.Server.Service
             var spec = activation.Spec;
             var traits = activation.Traits;
             var anyHit = false;
+            var fired = false;
             foreach (var target in activation.Targets)
             {
                 if (!IsCurrent(actor, activation)) return anyHit;
@@ -241,6 +243,7 @@ namespace SWLOR.Game.Server.Service
                     using var source = new WeaponImpactProfile(actor, scaledWeapon, limits,
                         offhandAccuracy, volleyIndex, spec.VolleyCount);
                     var handHit = false;
+                    fired = true;
                     Ability.ApplyCombatImpact(actor, target, GetLocation(target), SkillType.TwinPistol,
                         spec.FlatPower, 0, null, false,
                         damageType: weapon.DamageType, afterSuccessfulHit: _ => { anyHit = true; handHit = true; },
@@ -249,6 +252,12 @@ namespace SWLOR.Game.Server.Service
                     PairedRangedPresentation.OnAbilityWeaponLaunch(actor, target, weapon.Weapon, handHit);
                 }
             }
+            // Paired equipment already owns the uninterrupted channel clip. Other grips
+            // need one native gesture per volley, inside this wave's captured ability context.
+            var ability = Ability.GetActiveAbilityImpactSummary(actor)?.Ability;
+            if (spec.VolleyCount > 1 && fired && GetIsObjectValid(actor) && !GetIsDead(actor) &&
+                ability != null && !AbilityAnimationEquipment.IsCompatible(ability.AnimationEquipmentRequirement, actor))
+                Ability.PlayAbilityImpactAnimation(actor);
             return anyHit;
         }
 

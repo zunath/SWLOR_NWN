@@ -257,4 +257,28 @@ public sealed partial class Simulation
 
     internal static int SampleWeaponDamage(System.Random random, int minimum, int maximum) =>
         (int)(minimum + random.NextDouble() * (maximum - minimum));
+
+    private (bool Hit, double Dealt) RollNativeWeaponProfile(Combatant actor, Combatant target,
+        WeaponPowerSpec profile, uint item, Func<int> takeFlowBonus, int accuracyBonus,
+        double multiplier, bool alwaysHits)
+    {
+        if (target.IsDead) return (false, 0);
+        var weapon = actor.Spec.WeaponLoadout;
+        if (!alwaysHits && _random.Next(1, 101) > Combat.CalculateHitRate(
+                weapon.Accuracy + actor.GetStat(StatType.Accuracy) + accuracyBonus, target.Spec.Evasion, 0))
+        {
+            if (actor.TeamIndex != target.TeamIndex)
+                target.WeaponTraits.Paired.RecordAccuracyEvasionMiss(WeaponNow, WeaponTraitState.Configuration(target));
+            return (false, 0);
+        }
+
+        var rating = item == 1 ? EffectiveMainWeaponDamage(weapon) : weapon.OffhandDamage;
+        var power = rating * profile.WeaponDamagePercent / 100 + profile.FlatDamage +
+                    (takeFlowBonus?.Invoke() ?? 0) + (int)(0.15f * weapon.SkillRank);
+        var critical = _random.Next(1, 101) <= Combat.CalculateAbilityCriticalChance(weapon.AbilityCriticalRateAdjustment)
+            ? Combat.StandardCriticalRating : 0;
+        var (minimum, maximum) = Combat.CalculateDamageRange(weapon.Attack, power, weapon.DamageAbility,
+            target.Spec.Defense, target.Spec.Vitality, critical, 0);
+        return (true, ApplyDamage(actor, target, SampleWeaponDamage(_random, minimum, maximum) * multiplier));
+    }
 }

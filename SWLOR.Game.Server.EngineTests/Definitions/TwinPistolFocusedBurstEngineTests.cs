@@ -10,6 +10,7 @@ using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.Game.Server.Service.StatService;
 using SWLOR.NWN.API.NWNX;
+using NWNXLib = NWN.Native.API.NWNXLib;
 using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.Game.Server.EngineTests.Definitions;
@@ -40,6 +41,63 @@ public static class TwinPistolFocusedBurstEngineTests
 
     [EngineTest("Cross-trained Focused Burst channels three single-weapon portions with the same commitment", Category = "TwinPistolFocusedBurst", TimeoutSeconds = 45f)]
     public static Task CrossTrainedChannel(EngineTestContext ctx) => CompleteChannel(ctx, crossTrained: true, procTraits: false);
+
+    [EngineTest("Cross-trained Focused Burst delivers a native gesture for every fired volley", Category = "TwinPistolFocusedBurstPresentation", TimeoutSeconds = 45f)]
+    public static async Task CrossTrainedVolleyGestures(EngineTestContext ctx)
+    {
+        using var player = await PlayerAbilityFixture.CreateAsync(ctx);
+        var actor = player.Creature;
+        try
+        {
+            var (target, _, stamina) = await Prepare(ctx, player, crossTrained: true);
+            var native = NWNXLib.g_pAppManager.m_pServerExoApp.GetGameObject(actor).AsNWSCreature();
+            var ready = 0;
+            await InActorFrame(ctx, actor, () =>
+            {
+                ClearAllActions();
+                native.SetAnimation(1);
+                ready = native.m_nAnimation;
+                // Establish this engine/build's actual CastOut state rather than assuming
+                // that a script animation enum equals the creature's native pose ID.
+                PlayAnimation(Animation.CastOutAnimation, 1f, 0f);
+            });
+            await WaitFrames(ctx, () => native.m_nAnimation != ready, "a real native CastOut baseline");
+            var castOut = native.m_nAnimation;
+            await InActorFrame(ctx, actor, () =>
+            {
+                ClearAllActions();
+                native.SetAnimation(1);
+                ctx.Assert(native.m_nAnimation != castOut, "The baseline gesture is cleared before the paid channel");
+                BeginObservation(actor, target);
+                Press(ctx, actor, target);
+            });
+            var gestures = new List<int>();
+            for (var volley = 0; volley < 3; volley++)
+            {
+                var expectedImpacts = volley + 1;
+                await WaitFrames(ctx, () => Impacts.Count >= expectedImpacts && native.m_nAnimation == castOut,
+                    $"native CastOut playback for paid volley {expectedImpacts}");
+                gestures.Add(native.m_nAnimation);
+                await InActorFrame(ctx, actor, () =>
+                {
+                    // Every later assertion must observe fresh native playback. A lingering
+                    // first-volley pose cannot satisfy the second or third wave.
+                    native.SetAnimation(1);
+                    ctx.Assert(native.m_nAnimation != castOut, "Native Ready separates consecutive volley gestures");
+                });
+            }
+            await WaitFrames(ctx, () => !Activity.IsBusy(actor), "the channel's original commitment to finish");
+            await InActorFrame(ctx, actor, () => ClearAllActions());
+            PairedRangedAttackCycle.Cancel(actor);
+            EndObservation();
+            ctx.AssertEqual(3, Impacts.Count, "Presentation adds no weapon impacts or ordinary attacks");
+            ctx.AssertEqual(0, _ordinaryHitsDuringChannel, "Native gestures do not bypass ordinary-attack suppression");
+            ctx.AssertEqual(stamina - Cost(), Stat.GetCurrentStamina(actor), "All three gestures share the original single STM payment");
+            ctx.Assert(OnRecast(actor), "Presentation retains the paid channel cooldown");
+            ctx.SetResultDetail($"Native rifle CastOut baseline {castOut}; three independently reset volley poses [{string.Join(",", gestures)}]; three damage portions, one cost/CD, no ordinary hits.");
+        }
+        finally { Cleanup(actor); }
+    }
 
     [EngineTest("Focused Burst shares direct-damage and ability-hit proc limits across all six impacts", Category = "TwinPistolFocusedBurst", TimeoutSeconds = 45f)]
     public static Task SharedProcLimits(EngineTestContext ctx) => CompleteChannel(ctx, crossTrained: false, procTraits: true);

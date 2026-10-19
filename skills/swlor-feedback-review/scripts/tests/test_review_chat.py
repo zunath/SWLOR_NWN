@@ -32,6 +32,21 @@ class ReviewTests(unittest.TestCase):
     def rows(self, name, category="messages"):
         return [json.loads(s) for s in (self.root / name / (category + ".jsonl")).read_text(encoding="utf-8").splitlines()]
 
+    def test_player_to_dm_messages_are_always_candidates(self):
+        self.chat.write_text(line("It flickers", channel="PlayerDM"), encoding="utf-8")
+        self.assertEqual(1, self.scan("one", all_history=True)["candidates"])
+
+    def test_identifier_redaction_does_not_remove_candidate(self):
+        self.chat.write_text(line("damage feels low").replace("TestAccount", "Damage"), encoding="utf-8")
+        self.assertEqual(1, self.scan("one", all_history=True)["candidates"])
+        self.assertEqual("[identifier] feels low", self.rows("one", "candidates")[0]["message"])
+
+    def test_tell_preserves_metadata_like_text_in_message(self):
+        message = "prefix - dead): actual issue"
+        self.chat.write_text(line(message, channel="PlayerTell (SENT TO Recipient - 192.0.2.9)"), encoding="utf-8")
+        self.scan("one", all_history=True)
+        self.assertEqual(message, self.rows("one")[0]["message"])
+
     def test_cli_scan_and_commit(self):
         self.chat.write_text(line("CLI"), encoding="utf-8")
         script = str(Path(review.__file__))

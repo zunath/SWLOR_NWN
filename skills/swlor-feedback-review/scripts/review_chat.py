@@ -9,7 +9,7 @@ import re
 import shutil
 
 STAMP = re.compile(r"^(\d{4}-\d\d-\d\d \d\d:\d\d:\d\d)(?:\.\d+)? ([+-]\d\d:\d\d) \[\w+\] (.*)$")
-CHAT = re.compile(r"^(.*?) - (.*?) - ([A-Za-z0-9]{8}|) - ([\da-fA-F.:]*) - ((?:Player|DM)\w+)(?: \(SENT TO .* - [\da-fA-F.:]*\))?: (.*)$")
+CHAT = re.compile(r"^(.*?) - (.*?) - ([A-Za-z0-9]{8}|) - ([\da-fA-F.:]*) - ((?:Player|DM)\w+)(?: \(SENT TO .*? - [\da-fA-F.:]*\))?: (.*)$")
 TERMS = re.compile(r"bug|crash|lag|stuck|broken|stamina|\bstm\b|\bfp\b|regen|recover|enmity|threat|taunt|balance|nerf|buff|capstone|loot|drop|disc|player list|grouped|party|invite|accept|teleport|spawn|cooldown|recast|missing|disappear|deleted|accuracy|damage|cost|slow|stance|mimicry|armor|armour|helmet|visor|craft|quest|dungeon|permission|disguise|introduc|update|patch|restart", re.I)
 
 
@@ -100,12 +100,17 @@ def scan(logs, state_path, out, since=None, all_history=False):
             aliases.setdefault(identity, "P" + str(len(aliases) + 1))
             previous = {"file": path.name, "line": line, "time": time, "speaker": aliases[identity], "channel": channel, "message": message}
             messages.append(previous)
+    candidate_sources = {(m["file"], m["line"]) for m in messages
+                         if TERMS.search(m["message"])
+                         or any(marker in m["message"] for marker in ("//", "((", "\\\\"))
+                         or m["channel"] in {"PlayerTell", "PlayerDM"}
+                         or m["channel"].startswith("DM")}
     patterns = [re.compile(r"(?<!\w)" + re.escape(value) + r"(?!\w)", re.I) for value in sorted(secrets, key=len, reverse=True)]
     for message in messages:
         for pattern in patterns:
             message["message"] = pattern.sub("[identifier]", message["message"])
     messages.sort(key=lambda m: (m["time"], m["file"], m["line"]))
-    candidates = [m for m in messages if TERMS.search(m["message"]) or any(marker in m["message"] for marker in ("//", "((", "\\\\")) or m["channel"] == "PlayerTell" or m["channel"].startswith("DM")]
+    candidates = [m for m in messages if (m["file"], m["line"]) in candidate_sources]
     times = [m["time"] for m in messages + unknown if "time" in m]
     consumed_files = list(files)
     merged_files = {Path(f["path"].replace("\\", "/")).name.casefold(): f for f in old.get("files", [])}

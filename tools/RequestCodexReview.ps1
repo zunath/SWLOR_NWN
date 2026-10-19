@@ -4,15 +4,15 @@ Requests a Codex review of a pull request's head commit and waits for Codex to a
 
 .DESCRIPTION
 Posts "@codex review (head <sha>)" on the pull request, then polls GitHub until Codex answers
-for that commit, reports a usage limit, or the timeout passes. If Codex already answered for
-the head commit, prints that answer instead of requesting again.
+for that commit, reports a usage limit, or the timeout passes. Every run without -WaitOnly posts
+a new request, so a round that only answered findings still gets a fresh review.
 
-Codex answers a clean review with a "Didn't find any major issues" comment and findings with a
-pull request review on the reviewed commit. Its summary comment is edited in place and is
-ignored here, as are answers for older commits.
+Codex answers on the reviewed commit with a "Didn't find any major issues" comment or review, or
+with a review that holds its findings. The latest answer after the request wins. Its summary
+comment is edited in place and is ignored here, as are answers for older commits.
 
-Exit codes: 0 clean, 1 findings, 2 no review (usage limit or another reply), 3 no answer before
-the timeout.
+Exit codes: 0 clean, 1 findings, 2 no review of the head (usage limit, the head moved during the
+wait, or another reply), 3 no answer before the timeout.
 
 .EXAMPLE
 powershell -NoProfile -File tools/RequestCodexReview.ps1 -PullRequest 2745
@@ -79,33 +79,31 @@ function ConvertTo-UtcTime {
 }
 
 function Get-CodexAnswer {
-    param(
-        [datetime]$Since,
-        # Only report a review of the head commit, not limits or other replies.
-        [switch]$HeadOnly
-    )
+    param([datetime]$Since)
 
+    $cleanVerdict = "Didn't find any major issues"
+    $answers = @()
     $reviews = @(Get-GitHubList "repos/$Repository/pulls/$PullRequest/reviews" | Where-Object {
-            $_.user.login -eq $codexLogin -and $_.submitted_at -and (ConvertTo-UtcTime $_.submitted_at) -gt $Since
+            $_.user.login -eq $codexLogin -and $_.commit_id -eq $head -and $_.submitted_at -and
+            (ConvertTo-UtcTime $_.submitted_at) -gt $Since
         })
+    foreach ($review in $reviews) {
+        $kind = if ($review.body -match $cleanVerdict) { "clean" } else { "findings" }
+        $answers += [pscustomobject]@{ Kind = $kind; Time = (ConvertTo-UtcTime $review.submitted_at); Item = $review }
+    }
+
     $comments = @(Get-GitHubList "repos/$Repository/issues/$PullRequest/comments" | Where-Object {
             $_.user.login -eq $codexLogin -and (ConvertTo-UtcTime $_.created_at) -gt $Since -and
             $_.body -notmatch "codex-pull-request-review-summary"
         })
-
-    $findings = $reviews | Where-Object { $_.commit_id -eq $head } | Select-Object -Last 1
-    if ($findings) {
-        return @{ Kind = "findings"; Item = $findings }
+    foreach ($comment in $comments | Where-Object { $_.body -match "codex-review-receipt" -and $_.body -match $shortHead }) {
+        $kind = if ($comment.body -match $cleanVerdict) { "clean" } else { "other" }
+        $answers += [pscustomobject]@{ Kind = $kind; Time = (ConvertTo-UtcTime $comment.created_at); Item = $comment }
     }
 
-    $receipt = $comments | Where-Object { $_.body -match "codex-review-receipt" -and $_.body -match $shortHead } | Select-Object -Last 1
-    if ($receipt) {
-        $kind = if ($receipt.body -match "Didn't find any major issues") { "clean" } else { "other" }
-        return @{ Kind = $kind; Item = $receipt }
-    }
-
-    if ($HeadOnly) {
-        return $null
+    if ($answers.Count -gt 0) {
+        $latest = $answers | Sort-Object Time | Select-Object -Last 1
+        return @{ Kind = $latest.Kind; Item = $latest.Item }
     }
 
     $limit = $comments | Where-Object { $_.body -match "usage limit" } | Select-Object -Last 1
@@ -145,10 +143,13 @@ if (-not (Get-Command gh -ErrorAction SilentlyContinue)) {
     throw "The GitHub CLI (gh) must be on PATH."
 }
 
+function Get-HeadSha {
+    return (Invoke-Gh @("api", "repos/$Repository/pulls/$PullRequest") | ConvertFrom-Json).head.sha
+}
+
 $target = "$Repository#$PullRequest"
-$head = (Invoke-Gh @("api", "repos/$Repository/pulls/$PullRequest") | ConvertFrom-Json).head.sha
+$head = Get-HeadSha
 $shortHead = $head.Substring(0, 7)
-$answer = $null
 
 if ($WaitOnly) {
     $request = Get-GitHubList "repos/$Repository/issues/$PullRequest/comments" | Where-Object {
@@ -161,30 +162,32 @@ if ($WaitOnly) {
     $since = ConvertTo-UtcTime $request.created_at
 }
 else {
-    $answer = Get-CodexAnswer -Since ([datetime]::MinValue) -HeadOnly
-    if (-not $answer) {
-        $body = "@codex review (head $($head.Substring(0, 9)))"
-        if ($Note) {
-            $body += "; $Note"
-        }
-
-        $posted = Invoke-Gh @("api", "repos/$Repository/issues/$PullRequest/comments", "-f", "body=$body") | ConvertFrom-Json
-        $since = ConvertTo-UtcTime $posted.created_at
-        "Requested a Codex review of $shortHead on $target."
+    $body = "@codex review (head $($head.Substring(0, 9)))"
+    if ($Note) {
+        $body += "; $Note"
     }
+
+    $posted = Invoke-Gh @("api", "repos/$Repository/issues/$PullRequest/comments", "-f", "body=$body") | ConvertFrom-Json
+    $since = ConvertTo-UtcTime $posted.created_at
+    "Requested a Codex review of $shortHead on $target."
 }
 
-if (-not $answer) {
-    "Waiting up to $TimeoutMinutes minutes for Codex to answer for $shortHead on $target."
-    $deadline = (Get-Date).AddMinutes($TimeoutMinutes)
-    while ($true) {
-        $answer = Get-CodexAnswer -Since $since
-        if ($answer -or (Get-Date) -ge $deadline) {
-            break
-        }
-
-        Start-Sleep -Seconds $PollSeconds
+"Waiting up to $TimeoutMinutes minutes for Codex to answer for $shortHead on $target."
+$deadline = (Get-Date).AddMinutes($TimeoutMinutes)
+while ($true) {
+    $answer = Get-CodexAnswer -Since $since
+    # An answer for a superseded head does not review the pull request.
+    $currentHead = Get-HeadSha
+    if ($currentHead -ne $head) {
+        "The head of $target moved from $shortHead to $($currentHead.Substring(0, 7)) during the review; request a review of the new head."
+        exit 2
     }
+
+    if ($answer -or (Get-Date) -ge $deadline) {
+        break
+    }
+
+    Start-Sleep -Seconds $PollSeconds
 }
 
 if (-not $answer) {

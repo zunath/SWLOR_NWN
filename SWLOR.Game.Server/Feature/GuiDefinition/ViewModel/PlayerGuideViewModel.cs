@@ -715,7 +715,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                         new ArticleBlock("Core Resources",
                             "HP is health. FP fuels Force abilities. STM fuels non-Force abilities. The Character Sheet shows your current and maximum values."),
                         new ArticleBlock("Hits and Misses",
-                            "Accuracy is compared against Evasion to decide whether an attack lands. Final hit chance is clamped between 20 and 95 percent, so very high or very low stats still leave uncertainty."),
+                            $"Accuracy is compared against Evasion to decide whether an attack lands. Final hit chance is clamped between {Combat.MinimumHitRate} and {Combat.MaximumHitRate} percent, so very high or very low stats still leave uncertainty. Bosses always have at least a {Combat.BossMinimumHitRate} percent chance to hit."),
                         new ArticleBlock("Damage and Defense",
                             "Physical attacks use Physical DEF and Force attacks use Force DEF; higher defense is better. Fire, poison, electrical, and ice use matching resistances. Sonic has no dedicated resistance. For percentage damage-taken modifiers, lower values are better."),
                         new ArticleBlock("Status Resistance",
@@ -729,7 +729,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     },
                     new[]
                     {
-                        new QuestionAnswer("Why did I miss?", "Your Accuracy was checked against the target's Evasion, and final hit chance is always between 20 and 95 percent."),
+                        new QuestionAnswer("Why did I miss?", $"Your Accuracy was checked against the target's Evasion, and final hit chance is always between {Combat.MinimumHitRate} and {Combat.MaximumHitRate} percent."),
                         new QuestionAnswer("What defense matters?", "Physical DEF helps against physical attacks, Force DEF helps against Force attacks, and resistances help against matching elemental or status types."),
                         new QuestionAnswer("Are deflection and guard the same?", "No. Deflection can stop a hostile weapon auto-attack from landing, while Guard reduces physical damage after the hit."),
                         new QuestionAnswer("Does readiness lower cooldowns?", "No. Combat Readiness improves activated ability damage, healing, and temporary HP.")

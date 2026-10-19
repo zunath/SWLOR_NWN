@@ -72,7 +72,7 @@ internal sealed partial class StoredObjectData
         return Migrate(document._root) ? document.Serialize() : data;
     }
 
-    private static byte[] StringData(string text)
+    internal static byte[] StringData(string text)
     {
         var bytes = Encoding.UTF8.GetBytes(text);
         return BitConverter.GetBytes(bytes.Length).Concat(bytes).ToArray();

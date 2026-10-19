@@ -35,6 +35,19 @@ namespace SWLOR.Game.Server.Service.LootService
         }
 
         /// <summary>
+        /// Scales the rare find bonus this table receives so that a full bonus (Treasure Hunter III)
+        /// adds the specified number of percentage points to its drop chance. Lower bonuses scale proportionally.
+        /// </summary>
+        /// <param name="maxRareChanceBonus">The percentage points added at a full rare find bonus.</param>
+        /// <returns>A loot table builder with the configured settings.</returns>
+        public LootTableBuilder MaxRareChanceBonus(int maxRareChanceBonus)
+        {
+            _activeTable.MaxRareChanceBonus = maxRareChanceBonus;
+
+            return this;
+        }
+
+        /// <summary>
         /// Adds an item to this loot table.
         /// </summary>
         /// <param name="resref">The resref of the item</param>

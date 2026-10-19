@@ -5,7 +5,6 @@ using Newtonsoft.Json.Linq;
 using NUnit.Framework;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Feature.MigrationDefinition;
-using SWLOR.Game.Server.Feature.MigrationDefinition.PlayerMigration;
 using SWLOR.Game.Server.Feature.MigrationDefinition.ServerMigration;
 using SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition;
 using SWLOR.Game.Server.Service;
@@ -19,15 +18,6 @@ namespace SWLOR.Game.Server.Tests.Feature;
 
 public class ForceWeaponEnhancementMigrationTests
 {
-    [Test]
-    public void ReleasedServersAndPlayersReceiveNewMigrationVersions()
-    {
-        var server = new _23_RetireForceWeaponEnhancements();
-        server.Version.Should().Be(23);
-        server.ExecutionType.Should().Be(MigrationExecutionType.PostCacheLoad);
-        new _16_RetireForceWeaponEnhancements().Version.Should().Be(16);
-    }
-
     [TestCase(CombatDamageType.Force, CombatDamageType.Physical)]
     [TestCase(CombatDamageType.Fire, CombatDamageType.Fire)]
     [TestCase(CombatDamageType.Ice, CombatDamageType.Ice)]

@@ -362,6 +362,19 @@ poses, so each joint keeps the garment's authored world bind and its native
 inverse skin binds unchanged. They carry no animation tracks of their own.
 Independent cloth helpers stay beneath them and keep their authored curves.
 
+Those static joints still need engine part IDs. The compiler numbers only nodes
+with tracks, so a track-less joint gets part -1, and the engine animates nothing
+beneath a -1 node. In 145 of 1,609 generated roots, coat tails, skirt bones and
+belt flaps sat at their bind shape. On robes 20, 21 and 236 that shape hugs the hips,
+so long pelvis parts poked through the back of the coat. The native robes swing
+those helpers through `a_fa_coat`. After compiling each animation bridge,
+`RobeAnimations.number_static_garment_ancestors` gives every such `rg_` joint an
+unused part ID in the geometry and in every clip. No controllers are added, so each
+wearer keeps its own adapter transform. Wearer roots compiled against the
+bridge inherit the IDs by name, which `validate_body_parts` confirms.
+`validate_static_garment_parts` fails a bridge that still has a tracked node beneath
+an unnumbered garment joint.
+
 Do not copy body tracks onto garment joints instead. The engine keeps channels
 that a clip omits from the previous clip: `custom1start`/`custom1lp` (Point
 and the carrier for every authored ability animation), the talk clips that
@@ -489,22 +502,25 @@ skills and idle. Rebuild `sw_pt_robe` and `sw_pt_root`; confirmation of the nati
 client's animation transitions remains an in-game check.
 
 Normal-body robe 236 uses the generated `p??200` roots, whether or not the
-item has custom RGB. Its lower panels originally weighted separate coat helpers.
-Authored ability clips such as Force Leap animate the body but omit those helpers,
-so the legs could spread while the skirt retained its previous pose.
-`RobeSkirtBindings.py` maps the three skirts' waist weights to `pelvis_g`, middle
-weights to the corresponding thigh, and distal weights to the shin. It preserves
-the authored skinned rest shape, including the female models' nonstandard inverse
-binds, and merges duplicate palette entries without changing total vertex weight.
-Only those skin tables change; geometry, body traversal, animation IDs, materials,
-upper panels and sleeves remain unchanged. The RGB generator applies this policy
-after its native conversion audit so regeneration retains the fix.
+item has custom RGB. Its skirts are weighted to separate coat helpers, as in the native robe.
+An earlier repair weighted them to `pelvis_g`, the thighs and the shins instead, so they
+followed the legs in authored ability clips such as Force Leap. Those clips animate the body
+but omit the coat helpers. That binding made the coat hug the hips and let long pelvis parts
+poke through the back. Once the helpers received engine part IDs (see above), it was retired.
+`RobeSkirtBindings.py` now copies the native robe's skirt palettes, bone maps, inverse binds
+and weights back onto the unchanged RGB rig. Its rest-shape error is below 1e-7 m. Geometry,
+traversal, animation IDs and every other skin stay byte-identical. The trade-off matches the
+native robes: in ability clips that omit the coat tracks, the skirt holds its previous pose
+while the legs move. The generator applies no skirt policy, so regeneration keeps the native
+weights.
 
 Run `python -B SWLOR_Haks/tools/RobeSkirtBindings.py --apply` to repair the existing
-catalog, or `--check` to verify it. `TestRobeSkirtBindings.py` reconstructs the
-legacy bindings from the original native robe and checks every variant's rest
-shape, byte preservation, idempotence and movement during body-only leg poses.
-Rebuild/install `sw_pt_root.hak`; no module repack or C# deploy is required.
+catalog, or `--check` to verify it. `TestRobeSkirtBindings.py` checks that all eight
+variants use the native coat-helper bones, that the restoration is idempotent, and that
+every weighted helper sits below numbered joints.
+Rebuild/install `sw_pt_root.hak` together with `sw_anim_m.hak` and `sw_anim_f.hak`:
+the helper part IDs live in the animation bridges too, and with older bridges the
+skirts stay static. No module repack or C# deploy is required.
 
 The catalog audit extends this treatment to every visible static attachment
 under a body bone, including nested belts, chest ornaments and leg coverings.
@@ -747,6 +763,20 @@ rows. The GPU regression resolves the reported feet and shins through
 the catalog and checks their actual packed masks select Leather2 row 23 with
 zero environment-map coverage.
 
+A surviving stock PLT does not protect a stock part that stays in the KEY/BIF
+layer. Many stock parts name another part's texture as their bitmap (female
+chest 4 names `pfh0_chest001`, belt 5 names `pmh0_belt007`). Once that name is
+a generated tint MTR, its non-null `texture0` wins over the selected PLT, and the
+part draws the other part's mask on its own UVs. Every such stock armor part of a
+playable model family on the normal phenotype (`ContentStandards.md` Characters) is
+imported into its part folder and bound to the palette its native lookup selects,
+converting that stock PLT when no tint source exists yet. Converting a stock PLT
+creates a new MTR name that other stock parts may also borrow, so repeat the
+import until `python -B SWLOR_Haks/tools/TestStockPartTintBindings.py --game-data
+"<NWN>/data"` reports no borrowed tint maps. Import the stock MDL first and
+convert its PLT with `--generate-preserving`; the remaining imports bind through
+`--refresh-model-bindings`.
+
 PLT replacement changes the underlying diffuse texture, not the existing
 SharedMaterial configuration. Preserve the original normal, specular,
 emission, transparency, and cutout settings; the fallback PLT's same-name MTR
@@ -868,6 +898,32 @@ The HAK build rejects stale source/output hashes, a deleted repository input,
 and edits to the generator, skin remapping, or model parser code. Generated aliases must stay
 excluded from tint source discovery: they share the source neck's materials.
 Rebuild `sw_pt_neck.hak` and `sw_2da.hak` and deploy the matching server assembly.
+
+### Other part skins on robe skeletons
+
+Chest, pelvis, belt, hand, shin and shoulder meshes can be external skins too,
+with the same traversal problem (female human pelvis 10 under robes 20, 21 and
+236 bound its thighs to `rp_` spacers; the male one bound to cloak bones).
+`SWLOR_Haks/tools/GeneratePartSkinModels.py` covers every modular armor slot
+except necks and male human shoulders, which keep their own generators. It
+resolves each robe body's part through the phenotype default chain, compares
+the source's bone table with that body, and emits one compiled alias
+(`<prefix>0_<part><id>`, IDs from 1000) per source and mapping. Robe bodies
+of one family share a layout, so `partlayout.2da` maps each robe body to a
+layout and `partrender.2da` lists that layout's aliases; the tables stay
+small and the aliases cost about 142 MB. ASCII parts are compiled by the
+engine and none are external skins.
+
+`PartSkinModelRenderer` projects only the equipped armor's parts in the item
+appearance packet; saved armor keeps authored IDs. Naked body parts are not
+projected: the appearance editor and droid records read those IDs directly.
+
+After changing robe bodies, base bodies or part meshes, run
+`python -B SWLOR_Haks/tools/GeneratePartSkinModels.py --apply`, then `--check`
+and `python -B -m unittest TestPartSkinModels` from `SWLOR_Haks/tools`. The
+HAK build runs `--check`, which re-plans from the current sources. Rebuild the
+`sw_pt_*` HAKs that gained aliases and `sw_2da.hak`, and deploy the matching
+server assembly.
 
 ### Exercise the reported NPCs
 

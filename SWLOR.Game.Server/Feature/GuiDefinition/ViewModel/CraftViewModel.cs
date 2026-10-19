@@ -344,6 +344,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         }
 
         private readonly List<string> _components = new();
+        // Items a closed session could not return to a full inventory. They go back when the station next opens.
+        private readonly List<string> _heldItems = new();
+        private const string HeldItemsStatus = "Items from your last session wait here until you have room.";
         private readonly List<ItemProperty> _itemPropertiesEnhancement1 = new();
         private readonly List<ItemProperty> _itemPropertiesEnhancement2 = new();
         private readonly List<ItemProperty> _itemPropertiesEnhancement3 = new();
@@ -376,8 +379,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         protected override void Initialize(CraftPayload initialPayload)
         {
+            // A session whose window closed without settling, such as on logout, is settled before a new one starts.
+            SettleSession();
             CraftedFoodDeliveryService.ClaimPending(Player);
-            _components.Clear();
 
             _recipe = initialPayload.Recipe;
             _blueprintItem = initialPayload.BlueprintItem;
@@ -388,8 +392,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var itemName = Cache.GetItemNameByResref(recipe.Resref);
 
             SwitchToSetUpMode();
-            StatusColor = GuiColor.Green;
-            StatusText = string.Empty;
+            StatusColor = _heldItems.Count > 0 ? GuiColor.Red : GuiColor.Green;
+            StatusText = _heldItems.Count > 0 ? HeldItemsStatus : string.Empty;
 
             var enhancementSlots = recipe.EnhancementSlots + blueprint.EnhancementSlots;
 
@@ -504,8 +508,25 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             QualityText = $"Quality ({_quality}/{_maxQuality})";
         }
 
-        public Action OnCloseWindow() => () =>
+        /// <summary>
+        /// Runs whenever the window closes, whether the player closes it or the server does (walking away from the
+        /// station, changing areas).
+        /// </summary>
+        public override Action OnWindowClosed() => () =>
         {
+            SettleSession();
+            if (_heldItems.Count > 0)
+                SendMessageToPC(Player, Item.ItemsHeldMessage);
+        };
+
+        /// <summary>
+        /// Ends the current session: a craft in progress fails, and items slotted before crafting go back to the player
+        /// or are held when they do not fit.
+        /// </summary>
+        private void SettleSession()
+        {
+            ReturnHeldItems();
+
             // Closing the window while in craft mode results in an immediate failure,
             // possibly resulting in losing components and enhancements
             if (IsInCraftMode)
@@ -517,65 +538,54 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             {
                 if (!string.IsNullOrWhiteSpace(_enhancement1))
                 {
-                    var item = ObjectPlugin.Deserialize(_enhancement1);
-                    ObjectPlugin.AcquireItem(Player, item);
+                    ReturnOrHold(_enhancement1);
                     _enhancement1 = string.Empty;
                 }
 
                 if (!string.IsNullOrWhiteSpace(_enhancement2))
                 {
-                    var item = ObjectPlugin.Deserialize(_enhancement2);
-                    ObjectPlugin.AcquireItem(Player, item);
+                    ReturnOrHold(_enhancement2);
                     _enhancement2 = string.Empty;
                 }
 
                 if (!string.IsNullOrWhiteSpace(_enhancement3))
                 {
-                    var item = ObjectPlugin.Deserialize(_enhancement3);
-                    ObjectPlugin.AcquireItem(Player, item);
+                    ReturnOrHold(_enhancement3);
                     _enhancement3 = string.Empty;
                 }
 
                 if (!string.IsNullOrWhiteSpace(_enhancement4))
                 {
-                    var item = ObjectPlugin.Deserialize(_enhancement4);
-                    ObjectPlugin.AcquireItem(Player, item);
+                    ReturnOrHold(_enhancement4);
                     _enhancement4 = string.Empty;
                 }
 
                 if (!string.IsNullOrWhiteSpace(_enhancement5))
                 {
-                    var item = ObjectPlugin.Deserialize(_enhancement5);
-                    ObjectPlugin.AcquireItem(Player, item);
+                    ReturnOrHold(_enhancement5);
                     _enhancement5 = string.Empty;
                 }
 
                 if (!string.IsNullOrWhiteSpace(_enhancement6))
                 {
-                    var item = ObjectPlugin.Deserialize(_enhancement6);
-                    ObjectPlugin.AcquireItem(Player, item);
+                    ReturnOrHold(_enhancement6);
                     _enhancement6 = string.Empty;
                 }
 
                 if (!string.IsNullOrWhiteSpace(_enhancement7))
                 {
-                    var item = ObjectPlugin.Deserialize(_enhancement7);
-                    ObjectPlugin.AcquireItem(Player, item);
+                    ReturnOrHold(_enhancement7);
                     _enhancement7 = string.Empty;
                 }
 
                 if (!string.IsNullOrWhiteSpace(_enhancement8))
                 {
-                    var item = ObjectPlugin.Deserialize(_enhancement8);
-                    ObjectPlugin.AcquireItem(Player, item);
+                    ReturnOrHold(_enhancement8);
                     _enhancement8 = string.Empty;
                 }
 
                 foreach (var serialized in _components)
-                {
-                    var item = ObjectPlugin.Deserialize(serialized);
-                    ObjectPlugin.AcquireItem(Player, item);
-                }
+                    ReturnOrHold(serialized);
 
                 _itemPropertiesEnhancement1.Clear();
                 _itemPropertiesEnhancement2.Clear();
@@ -587,7 +597,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 _itemPropertiesEnhancement8.Clear();
                 _components.Clear();
             }
-        };
+        }
 
         private bool IsValidEnhancement(uint item)
         {
@@ -764,7 +774,13 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 ShowModal("Will you remove the enhancement?", () =>
                 {
                     var item = ObjectPlugin.Deserialize(_enhancement1);
-                    ObjectPlugin.AcquireItem(Player, item);
+                    if (!Item.TryAcquireItem(Player, item))
+                    {
+                        StatusText = Item.InventoryFullMessage;
+                        StatusColor = GuiColor.Red;
+                        return;
+                    }
+
                     var progressPenalty = CalculateProgressPenaltyAndProcessItemProperties(item, _itemPropertiesEnhancement1);
                     _enhancement1 = string.Empty;
                     Enhancement1Resref = BlankTexture;
@@ -802,7 +818,13 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 ShowModal("Will you remove the enhancement?", () =>
                 {
                     var item = ObjectPlugin.Deserialize(_enhancement2);
-                    ObjectPlugin.AcquireItem(Player, item);
+                    if (!Item.TryAcquireItem(Player, item))
+                    {
+                        StatusText = Item.InventoryFullMessage;
+                        StatusColor = GuiColor.Red;
+                        return;
+                    }
+
                     var progressPenalty = CalculateProgressPenaltyAndProcessItemProperties(item, _itemPropertiesEnhancement2);
                     _enhancement2 = string.Empty;
                     Enhancement2Resref = BlankTexture;
@@ -840,7 +862,13 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 ShowModal("Will you remove the enhancement?", () =>
                 {
                     var item = ObjectPlugin.Deserialize(_enhancement3);
-                    ObjectPlugin.AcquireItem(Player, item);
+                    if (!Item.TryAcquireItem(Player, item))
+                    {
+                        StatusText = Item.InventoryFullMessage;
+                        StatusColor = GuiColor.Red;
+                        return;
+                    }
+
                     var progressPenalty = CalculateProgressPenaltyAndProcessItemProperties(item, _itemPropertiesEnhancement3);
                     _enhancement3 = string.Empty;
                     Enhancement3Resref = BlankTexture;
@@ -878,7 +906,13 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 ShowModal("Will you remove the enhancement?", () =>
                 {
                     var item = ObjectPlugin.Deserialize(_enhancement4);
-                    ObjectPlugin.AcquireItem(Player, item);
+                    if (!Item.TryAcquireItem(Player, item))
+                    {
+                        StatusText = Item.InventoryFullMessage;
+                        StatusColor = GuiColor.Red;
+                        return;
+                    }
+
                     var progressPenalty = CalculateProgressPenaltyAndProcessItemProperties(item, _itemPropertiesEnhancement4);
                     _enhancement4 = string.Empty;
                     Enhancement4Resref = BlankTexture;
@@ -916,7 +950,13 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 ShowModal("Will you remove the enhancement?", () =>
                 {
                     var item = ObjectPlugin.Deserialize(_enhancement5);
-                    ObjectPlugin.AcquireItem(Player, item);
+                    if (!Item.TryAcquireItem(Player, item))
+                    {
+                        StatusText = Item.InventoryFullMessage;
+                        StatusColor = GuiColor.Red;
+                        return;
+                    }
+
                     var progressPenalty = CalculateProgressPenaltyAndProcessItemProperties(item, _itemPropertiesEnhancement5);
                     _enhancement5 = string.Empty;
                     Enhancement5Resref = BlankTexture;
@@ -954,7 +994,13 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 ShowModal("Will you remove the enhancement?", () =>
                 {
                     var item = ObjectPlugin.Deserialize(_enhancement6);
-                    ObjectPlugin.AcquireItem(Player, item);
+                    if (!Item.TryAcquireItem(Player, item))
+                    {
+                        StatusText = Item.InventoryFullMessage;
+                        StatusColor = GuiColor.Red;
+                        return;
+                    }
+
                     var progressPenalty = CalculateProgressPenaltyAndProcessItemProperties(item, _itemPropertiesEnhancement6);
                     _enhancement6 = string.Empty;
                     Enhancement6Resref = BlankTexture;
@@ -992,7 +1038,13 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 ShowModal("Will you remove the enhancement?", () =>
                 {
                     var item = ObjectPlugin.Deserialize(_enhancement7);
-                    ObjectPlugin.AcquireItem(Player, item);
+                    if (!Item.TryAcquireItem(Player, item))
+                    {
+                        StatusText = Item.InventoryFullMessage;
+                        StatusColor = GuiColor.Red;
+                        return;
+                    }
+
                     var progressPenalty = CalculateProgressPenaltyAndProcessItemProperties(item, _itemPropertiesEnhancement7);
                     _enhancement7 = string.Empty;
                     Enhancement7Resref = BlankTexture;
@@ -1030,7 +1082,13 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 ShowModal("Will you remove the enhancement?", () =>
                 {
                     var item = ObjectPlugin.Deserialize(_enhancement8);
-                    ObjectPlugin.AcquireItem(Player, item);
+                    if (!Item.TryAcquireItem(Player, item))
+                    {
+                        StatusText = Item.InventoryFullMessage;
+                        StatusColor = GuiColor.Red;
+                        return;
+                    }
+
                     var progressPenalty = CalculateProgressPenaltyAndProcessItemProperties(item, _itemPropertiesEnhancement8);
                     _enhancement8 = string.Empty;
                     Enhancement8Resref = BlankTexture;
@@ -1112,10 +1170,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 DelayCommand(0.1f, () =>
                 {
                     foreach (var component in _components)
-                    {
-                        var item = ObjectPlugin.Deserialize(component);
-                        ObjectPlugin.AcquireItem(Player, item);
-                    }
+                        ReturnOrHold(component);
 
                     _components.Clear();
                 });
@@ -1622,6 +1677,22 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             }
         }
 
+        /// <summary>Returns an item to the player, or holds it at the station when it does not fit.</summary>
+        private void ReturnOrHold(string serialized)
+        {
+            if (!Item.TryAcquireItem(Player, ObjectPlugin.Deserialize(serialized)))
+                _heldItems.Add(serialized);
+        }
+
+        private void ReturnHeldItems()
+        {
+            for (var index = _heldItems.Count - 1; index >= 0; index--)
+            {
+                if (Item.TryAcquireItem(Player, ObjectPlugin.Deserialize(_heldItems[index])))
+                    _heldItems.RemoveAt(index);
+            }
+        }
+
         private void ProcessFailure()
         {
             // Guard against the client queuing up numerous craft requests which results in duplicate items being spawned.
@@ -1635,69 +1706,42 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             // Process enhancements
             if (!string.IsNullOrWhiteSpace(_enhancement1) && Random.D100(1) > ChanceToLoseItem)
-            {
-                var item = ObjectPlugin.Deserialize(_enhancement1);
-                ObjectPlugin.AcquireItem(Player, item);
-            }
+                ReturnOrHold(_enhancement1);
             _enhancement1 = string.Empty;
 
             if (!string.IsNullOrWhiteSpace(_enhancement2) && Random.D100(1) > ChanceToLoseItem)
-            {
-                var item = ObjectPlugin.Deserialize(_enhancement2);
-                ObjectPlugin.AcquireItem(Player, item);
-            }
+                ReturnOrHold(_enhancement2);
             _enhancement2 = string.Empty;
 
             if (!string.IsNullOrWhiteSpace(_enhancement3) && Random.D100(1) > ChanceToLoseItem)
-            {
-                var item = ObjectPlugin.Deserialize(_enhancement3);
-                ObjectPlugin.AcquireItem(Player, item);
-            }
+                ReturnOrHold(_enhancement3);
             _enhancement3 = string.Empty;
 
             if (!string.IsNullOrWhiteSpace(_enhancement4) && Random.D100(1) > ChanceToLoseItem)
-            {
-                var item = ObjectPlugin.Deserialize(_enhancement4);
-                ObjectPlugin.AcquireItem(Player, item);
-            }
+                ReturnOrHold(_enhancement4);
             _enhancement4 = string.Empty;
 
             if (!string.IsNullOrWhiteSpace(_enhancement5) && Random.D100(1) > ChanceToLoseItem)
-            {
-                var item = ObjectPlugin.Deserialize(_enhancement5);
-                ObjectPlugin.AcquireItem(Player, item);
-            }
+                ReturnOrHold(_enhancement5);
             _enhancement5 = string.Empty;
 
             if (!string.IsNullOrWhiteSpace(_enhancement6) && Random.D100(1) > ChanceToLoseItem)
-            {
-                var item = ObjectPlugin.Deserialize(_enhancement6);
-                ObjectPlugin.AcquireItem(Player, item);
-            }
+                ReturnOrHold(_enhancement6);
             _enhancement6 = string.Empty;
 
             if (!string.IsNullOrWhiteSpace(_enhancement7) && Random.D100(1) > ChanceToLoseItem)
-            {
-                var item = ObjectPlugin.Deserialize(_enhancement7);
-                ObjectPlugin.AcquireItem(Player, item);
-            }
+                ReturnOrHold(_enhancement7);
             _enhancement7 = string.Empty;
 
             if (!string.IsNullOrWhiteSpace(_enhancement8) && Random.D100(1) > ChanceToLoseItem)
-            {
-                var item = ObjectPlugin.Deserialize(_enhancement8);
-                ObjectPlugin.AcquireItem(Player, item);
-            }
+                ReturnOrHold(_enhancement8);
             _enhancement8 = string.Empty;
 
             // Process components
             foreach (var serialized in _components)
             {
                 if (Random.D100(1) > ChanceToLoseItem)
-                {
-                    var item = ObjectPlugin.Deserialize(serialized);
-                    ObjectPlugin.AcquireItem(Player, item);
-                }
+                    ReturnOrHold(serialized);
             }
 
             _itemPropertiesEnhancement1.Clear();

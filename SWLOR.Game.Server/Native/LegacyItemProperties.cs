@@ -48,6 +48,13 @@ public static unsafe class LegacyItemProperties
             HookOrder.Early);
     }
 
+    /// <summary>
+    /// The DMG amount a saber's legacy Damage Bonus row converts to on load, for saved data converted outside
+    /// the engine. Filled when the hook registers at module load.
+    /// </summary>
+    internal static bool TryGetLegacyDamageBonus(ushort costValue, out int damage) =>
+        DamageBonusAmountByRow.TryGetValue(costValue, out damage);
+
     private static void CacheDamageBonusAmounts()
     {
         DamageBonusAmountByRow.Clear();

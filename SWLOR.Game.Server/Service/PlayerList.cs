@@ -374,17 +374,30 @@ namespace SWLOR.Game.Server.Service
         // Player characters by their party leader. A player with no party leads their own party of one.
         private static Dictionary<uint, uint> GetPartyLeaders()
         {
-            var leaders = new Dictionary<uint, uint>();
-            foreach (var player in GetOnlinePlayers())
-            {
-                if (DMPresence.IsControlledByDM(player))
-                    continue;
+            var memberships = GetOnlinePlayers()
+                .Select(player => new PlayerListPartyMembership
+                {
+                    Player = player,
+                    IsDM = DMPresence.IsControlledByDM(player),
+                    PartyFactionId = GetPartyFactionId(player),
+                    FactionLeader = GetFactionLeader(player),
+                })
+                .ToList();
 
-                var leader = GetFactionLeader(player);
-                leaders[player] = GetIsObjectValid(leader) ? leader : player;
-            }
+            return PlayerListRules.GetPartyLeaders(memberships);
+        }
 
-            return leaders;
+        // The player-party faction whose member list holds the character. NPC factions are not parties, and
+        // a DM's Set Faction rewrites a creature's faction id without moving it between member lists.
+        private static int? GetPartyFactionId(uint creature)
+        {
+            var faction = NWNXLib.g_pAppManager.m_pServerExoApp.GetCreatureByGameObjectID(creature)?.GetFaction();
+            if (faction == null ||
+                faction.GetFactionManager().GetIsNPCFaction(faction.m_nFactionId) != 0 ||
+                !faction.m_listFactionMembers.Contains(creature))
+                return null;
+
+            return faction.m_nFactionId;
         }
 
         private static PlayerListSubject ToPartySubject(

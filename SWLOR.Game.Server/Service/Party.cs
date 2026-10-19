@@ -13,14 +13,20 @@ namespace SWLOR.Game.Server.Service
         private static readonly Dictionary<Guid, uint> _partyLeaders = new();
 
         /// <summary>
-        /// When a member of a party accepts an invitation, add them to the caches.
+        /// When a player accepts an invitation and the engine puts them in the inviter's party, add them to the caches.
+        /// The engine can still refuse the acceptance after the Before event, such as for an expired invitation.
         /// </summary>
-        [NWNEventHandler(ScriptName.OnPartyAcceptInvitationBefore)]
+        [NWNEventHandler(ScriptName.OnPartyAcceptInvitationAfter)]
         public static void JoinParty()
         {
             var creature = OBJECT_SELF;
             var requester = StringToObject(EventsPlugin.GetEventData("INVITED_BY"));
 
+            if (!GetFactionEqual(creature, requester) || IsInParty(requester, creature))
+                return;
+
+            // Accepting moves the player out of any party they were already in.
+            RemoveCreatureFromParty(creature);
             AddToParty(requester, creature);
         }
 
@@ -89,6 +95,23 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>
+        /// When a party member is kicked, update the caches.
+        /// A kick raises only the kick events, never the leave events.
+        /// </summary>
+        [NWNEventHandler(ScriptName.OnPartyKickAfter)]
+        public static void KickFromParty()
+        {
+            var kicker = OBJECT_SELF;
+            var kicked = StringToObject(EventsPlugin.GetEventData("KICKED"));
+
+            // The engine refuses kicks from anyone but the leader.
+            if (!IsInParty(kicker, kicked) || GetFactionEqual(kicker, kicked))
+                return;
+
+            RemoveCreatureFromParty(kicked);
+        }
+
+        /// <summary>
         /// When the leader of a party changes, update the caches.
         /// </summary>
         [NWNEventHandler(ScriptName.OnPartyTransferLeadershipBefore)]
@@ -132,6 +155,9 @@ namespace SWLOR.Game.Server.Service
             var faction = creature?.GetFaction();
             if (faction == null || faction.TransferLeadership(newLeader, currentLeader) == 0)
                 return false;
+
+            // The faction only reorders its members. Send the new order so every member's party bar moves the crown.
+            faction.SendFactionUpdateList();
 
             if (_creatureToParty.TryGetValue(newLeader, out var partyId))
                 _partyLeaders[partyId] = newLeader;

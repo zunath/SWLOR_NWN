@@ -86,17 +86,28 @@ namespace SWLOR.Game.Server.Service
             return dbItem;
         }
 
-        public static void WithdrawItem(uint player, string inventoryItemId)
+        /// <summary>
+        /// Moves a banked item into the player's inventory. The bank keeps the item when it does not fit.
+        /// </summary>
+        /// <returns>An empty string on success, otherwise an error message to show the player.</returns>
+        public static string WithdrawItem(uint player, string inventoryItemId)
         {
             var dbItem = DB.Get<InventoryItem>(inventoryItemId);
             var playerId = GetObjectUUID(player);
 
             if (dbItem == null || dbItem.PlayerId != playerId || dbItem.StorageId != StorageId)
-                return;
+                return "That item is no longer in your bank.";
 
             var item = ObjectPlugin.Deserialize(dbItem.Data);
+            if (!GetIsObjectValid(item))
+                return "That item could not be withdrawn.";
 
-            ObjectPlugin.AcquireItem(player, item);
+            if (!Item.FitsInInventory(player, item) || !ObjectPlugin.AcquireItem(player, item))
+            {
+                DestroyObject(item);
+                return "Your inventory is full. Make room and try again.";
+            }
+
             DB.Delete<InventoryItem>(dbItem.Id);
             Log.WriteStructured(
                 LogGroup.Bank,
@@ -106,6 +117,7 @@ namespace SWLOR.Game.Server.Service
                 dbItem.Resref,
                 dbItem.Quantity);
             RemoveLegacyItemProperties(item);
+            return string.Empty;
         }
 
         public static void SetCityBankId(uint bank, string cityId)

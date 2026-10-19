@@ -31316,7 +31316,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Stuck — ooc_area"
+            "0": "Stuck - ooc_area"
           }
         },
         "MapNote": {

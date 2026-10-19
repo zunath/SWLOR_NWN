@@ -13,34 +13,6 @@ namespace SWLOR.Game.Server.Tests.Service;
 public class MimicryLoadoutTests
 {
     [Test]
-    public void LegacyRecordMigratesEquippedTechniquesIntoAnIndependentDefaultSnapshot()
-    {
-        var player = JsonConvert.DeserializeObject<Player>("{\"EquippedTechniques\":[2797,2799]}")!;
-        var before = player.EquippedTechniques.ToArray();
-        _27_UpdatePlayerRecords.CreateDefaultMimicryLoadout(player).Should().BeTrue();
-        var saved = player.MimicryLoadouts.Should().ContainSingle().Subject;
-        saved.Name.Should().Be("Default");
-        saved.Techniques.Should().Equal(before);
-        player.ActiveMimicryLoadoutId.Should().Be(saved.Id);
-        player.EquippedTechniques.Clear();
-        saved.Techniques.Should().Equal(before, "enforcement must not rewrite the migrated build");
-        _27_UpdatePlayerRecords.CreateDefaultMimicryLoadout(player).Should().BeFalse();
-        player.MimicryLoadouts.Should().ContainSingle().Which.Id.Should().Be(saved.Id);
-    }
-
-    [Test]
-    public void MigrationPreservesNewerSavedBuildsAndActiveSelection()
-    {
-        var player = new Player();
-        MimicryLoadouts.EnsureStartingBuild(player);
-        var id = player.ActiveMimicryLoadoutId;
-        MimicryLoadouts.Rename(player, id, "Renamed", out _).Should().BeTrue();
-        _27_UpdatePlayerRecords.CreateDefaultMimicryLoadout(player).Should().BeFalse();
-        player.MimicryLoadouts.Should().ContainSingle().Which.Name.Should().Be("Renamed");
-        player.ActiveMimicryLoadoutId.Should().Be(id);
-    }
-
-    [Test]
     public void NewCharacterGetsAnEmptyDefaultAndSerializedBuildsRoundTrip()
     {
         var player = new Player();

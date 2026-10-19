@@ -32984,7 +32984,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "0": "DÃ©tritus"
+            "0": "Détritus"
           }
         },
         "OnClick": {
@@ -33212,7 +33212,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "0": "DÃ©tritus"
+            "0": "Détritus"
           }
         },
         "OnClick": {
@@ -33440,7 +33440,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "0": "DÃ©tritus"
+            "0": "Détritus"
           }
         },
         "OnClick": {
@@ -35550,7 +35550,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Stuck â€” anchor_entreenor"
+            "0": "Stuck - anchor_entreenor"
           }
         },
         "MapNote": {

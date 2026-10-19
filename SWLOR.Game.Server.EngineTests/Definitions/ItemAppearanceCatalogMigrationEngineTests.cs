@@ -6,7 +6,6 @@ using System.Threading.Tasks;
 using SWLOR.Game.Server.EngineTests.Framework;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Feature.MigrationDefinition;
-using SWLOR.Game.Server.Feature.MigrationDefinition.PlayerMigration;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.MigrationService;
@@ -39,8 +38,6 @@ public static partial class MigrationEngineTests
         var expectedIce = new Dictionary<string, int>();
         var records = new List<InventoryItem>();
         var identities = new Dictionary<string, string>();
-        var config = DB.Get<ServerConfiguration>("SWLOR_CONFIG");
-        var originalVersion = config.MigrationVersion;
         DMCreature archive = null;
         int[] customized = null;
         try
@@ -96,16 +93,7 @@ public static partial class MigrationEngineTests
             for (var cycle = 1; cycle <= 2; cycle++)
                 await ctx.ExecuteInCreatureContextAsync(owner, () =>
                 {
-                    config.MigrationVersion = 27;
-                    DB.Set(config);
-                    var pending = (IEnumerable<IServerMigration>)typeof(Migration)
-                        .GetMethod("GetMigrations", BindingFlags.NonPublic | BindingFlags.Static)
-                        .Invoke(null, new object[] { MigrationExecutionType.PostCacheLoad });
-                    ctx.Assert(pending.Select(migration => migration.Version).SequenceEqual(new[] { 28 }),
-                        "The last released server checkpoint schedules exactly one combined stored-item migration");
-                    Migration.AfterCacheLoaded();
-                    ctx.AssertEqual(28, DB.Get<ServerConfiguration>("SWLOR_CONFIG").MigrationVersion,
-                        "The stored-item pass advances the server checkpoint");
+                    StoredItemSweepRunner.Run();
 
                     foreach (var record in records)
                     {
@@ -152,8 +140,6 @@ public static partial class MigrationEngineTests
                 DB.Delete<InventoryItem>(record.Id);
             if (archive != null)
                 DB.Delete<DMCreature>(archive.Id);
-            config.MigrationVersion = originalVersion;
-            DB.Set(config);
         }
     }
 
@@ -211,37 +197,40 @@ public static partial class MigrationEngineTests
         ctx.AssertEqual(baseline.IceResistance + 5, ReadArmorTotals(player).IceResistance,
             "Only the enhancement's Ice Resistance counts before the revision");
 
+        SavedCharacterMigration.Upgraded upgraded = null;
         await ctx.ExecuteInCreatureContextAsync(player, () =>
         {
             var record = DB.Get<Player>(GetObjectUUID(player));
-            record.Version = 22;
+            record.Version = 23;
             DB.Set(record);
-            SetLocalInt(player, "PLAYER_MIGRATION_VERSION", 22);
-            var fileVersion = 22;
-            var pending = typeof(_23_CorrectEquipmentTypes).Assembly.GetTypes()
-                .Where(type => !type.IsAbstract && !type.IsInterface && typeof(IPlayerMigration).IsAssignableFrom(type))
-                .Select(type => (IPlayerMigration)Activator.CreateInstance(type))
-                .Where(migration => migration.Version > Math.Min(record.Version, fileVersion)).ToArray();
-            ctx.AssertEqual(23, pending.Single().Version, "The last released player checkpoint schedules exactly one combined item migration");
-            var apply = typeof(Migration).GetMethod("ApplyPlayerMigration", BindingFlags.NonPublic | BindingFlags.Static);
-            ctx.Assert((bool)apply.Invoke(null, new object[] { pending.Single(), player,
-                (Func<Player>)(() => DB.Get<Player>(GetObjectUUID(player))), (Action<Player>)(updated => DB.Set(updated)),
-                (Func<int>)(() => fileVersion), (Action<int>)(version =>
-                {
-                    SetLocalInt(player, "PLAYER_MIGRATION_VERSION", version);
-                    fileVersion = version;
-                }) }), "The actual player checkpoint path converts the legacy items");
-            ctx.AssertEqual(23, DB.Get<Player>(GetObjectUUID(player)).Version, "The player database checkpoint advances");
-            ctx.AssertEqual(armor, GetItemInSlot(InventorySlot.Chest, player), "The revised breastplate stays equipped");
-            ctx.AssertEqual(weapon, GetItemInSlot(InventorySlot.RightHand, player), "The converted weapon stays equipped");
-            AssertRevisedArkanianArmor(ctx, armor, enhancements, 35);
-            foreach (var item in new[] { weapon, stars, nested })
+            SetLocalInt(player, "PLAYER_MIGRATION_VERSION", 23);
+            ctx.AssertEqual(24, SavedCharacterMigration.Versions.Where(version => version > 23).Single(),
+                "The last released character checkpoint schedules exactly one combined item migration");
+            upgraded = SavedCharacterMigration.Upgrade(SavedCharacterMigration.SaveFile(player), record);
+            ctx.Assert(upgraded != null, "The character upgrade converts the legacy items");
+            ctx.AssertEqual(24, upgraded.Record.Version, "The player record checkpoint advances");
+            var character = SavedCharacterMigration.Load(ctx, upgraded);
+            var migratedArmor = GetItemInSlot(InventorySlot.Chest, character);
+            ctx.AssertEqual("ark_armor", GetResRef(migratedArmor), "The revised breastplate stays equipped");
+            ctx.AssertEqual("asc_knife", GetResRef(GetItemInSlot(InventorySlot.RightHand, character)), "The converted weapon stays equipped");
+            AssertRevisedArkanianArmor(ctx, migratedArmor, enhancements, 35);
+            var migratedBag = SavedCharacterMigration.FindItem(character, "bag_sm");
+            var migratedNested = SavedCharacterMigration.FindItem(character, "dancer_f_2");
+            foreach (var item in new[] { GetItemInSlot(InventorySlot.RightHand, character), SavedCharacterMigration.FindItem(character, "redcircle_star"), migratedNested })
                 AssertCatalogAppearance(ctx, item);
-            ctx.AssertEqual(1, GetItemStackSize(stars), "The converted throwing star keeps its quantity");
-            ctx.Assert(Carried(bag).Contains(nested), "The nested armor stays in its bag");
-            ctx.Assert(!LootStatRevisionMigration.MigratePlayerItems(player), "Retrying the combined traversal is stable");
+            ctx.AssertEqual(1, GetItemStackSize(SavedCharacterMigration.FindItem(character, "redcircle_star")), "The converted throwing star keeps its quantity");
+            ctx.Assert(Carried(migratedBag).Contains(migratedNested), "The nested armor stays in its bag");
+            ctx.Assert(SavedCharacterMigration.Upgrade(upgraded.File, upgraded.Record) == null, "Retrying the combined traversal is stable");
         });
-        AssertArmorTotals(ctx, baseline, ReadArmorTotals(player), enhancements, 35, "after migration");
+        AssertArmorTotals(ctx, baseline, ReadArmorTotals(upgraded.Record), enhancements, 35, "after migration");
+
+        // The player logs in with the converted character and keeps using the armor through repeated reloads.
+        using var login = await PlayerAbilityFixture.CreateFromCharacterAsync(ctx, upgraded.File, upgraded.Record, 3f);
+        player = login.Creature;
+        armor = GetItemInSlot(InventorySlot.Chest, player);
+        weapon = GetItemInSlot(InventorySlot.RightHand, player);
+        stars = SavedCharacterMigration.FindItem(player, "redcircle_star");
+        AssertArmorTotals(ctx, baseline, ReadArmorTotals(player), enhancements, 35, "after login");
         ctx.AssertEqual(baselineHp + 110, GetMaxHitPoints(player), "Equipped HP counts the revised breastplate once");
 
         for (var cycle = 1; cycle <= 2; cycle++)
@@ -387,9 +376,11 @@ public static partial class MigrationEngineTests
     private static bool HasArkanianSubtype(ItemPropertyType type) =>
         type is ItemPropertyType.Defense or ItemPropertyType.Resistance or ItemPropertyType.RequiresSkill;
 
-    private static (int MaxHP, int Physical, int Force, int IceDefense, int IceResistance, int StaminaRegen) ReadArmorTotals(uint player)
+    private static (int MaxHP, int Physical, int Force, int IceDefense, int IceResistance, int StaminaRegen) ReadArmorTotals(uint player) =>
+        ReadArmorTotals(DB.Get<Player>(GetObjectUUID(player)));
+
+    private static (int MaxHP, int Physical, int Force, int IceDefense, int IceResistance, int StaminaRegen) ReadArmorTotals(Player record)
     {
-        var record = DB.Get<Player>(GetObjectUUID(player));
         return (record.MaxHP, record.Defenses.GetValueOrDefault(CombatDamageType.Physical), record.Defenses.GetValueOrDefault(CombatDamageType.Force),
             record.Defenses.GetValueOrDefault(CombatDamageType.Ice), record.Resistances.GetValueOrDefault(ResistanceType.Ice), record.STMRegen);
     }

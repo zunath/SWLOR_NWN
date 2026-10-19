@@ -12436,6 +12436,7 @@ namespace SWLOR.Game.Server.Service
 
             var reductionPercentage = Math.Clamp(
                 Stat.GetStatAdjustment(attacker, StatType.AttackDelayReductionPercent) +
+                GetDualWieldAttackDelayReduction(attacker) +
                 attackDelayReductionAdjustment,
                 -MaximumAttackDelayAdjustmentPercent,
                 MaximumAttackDelayAdjustmentPercent);
@@ -12833,13 +12834,19 @@ namespace SWLOR.Game.Server.Service
             if (!GetIsObjectValid(attacker))
                 return 0;
 
-            var totalReduction = Stat.GetStatAdjustment(attacker, StatType.AttackDelayReductionPercent);
+            var totalReduction = Stat.GetStatAdjustment(attacker, StatType.AttackDelayReductionPercent) +
+                                 GetDualWieldAttackDelayReduction(attacker);
 
             return Math.Clamp(
                 totalReduction,
                 -MaximumAttackDelayAdjustmentPercent,
                 MaximumAttackDelayAdjustmentPercent);
         }
+
+        private static int GetDualWieldAttackDelayReduction(uint attacker) =>
+            EquipmentPredicates.HasDualWield(attacker)
+                ? Stat.GetStatAdjustment(attacker, StatType.DualWieldAttackDelayReductionPercent)
+                : 0;
 
         public static int CalculateOffhandAttackDelayReduction(uint attacker)
         {

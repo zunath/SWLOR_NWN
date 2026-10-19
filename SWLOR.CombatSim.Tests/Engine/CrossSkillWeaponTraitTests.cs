@@ -61,7 +61,7 @@ public class CrossSkillWeaponTraitTests
         actor.NextActionAt = double.PositiveInfinity; actor.NextAttackAt = sim.Now;
         SimulationClock.RunUntil(sim, () => actor.QueuedWeaponAbility == null, 8, "queued weapon impact");
         actor.Stats.FlowSpent.Should().Be(3);
-        actor.Stats.FlowDamagePowerApplied.Should().Be(12);
+        actor.Stats.FlowDamagePowerApplied.Should().Be(6);
         actor.Stats.OrdinaryDamage.Should().Be(0, "the queued activation replaces its carrier");
         actor.Stats.OrdinaryHits.Should().Be(0);
         actor.WeaponTraits.Paired.Momentum.Should().Be(1);
@@ -83,7 +83,7 @@ public class CrossSkillWeaponTraitTests
         GrantFlow(sim, actor);
         Finish(sim, actor);
         actor.Stats.FlowSpent.Should().Be(3);
-        actor.Stats.FlowDamagePowerApplied.Should().Be(12 * items);
+        actor.Stats.FlowDamagePowerApplied.Should().Be(6 * items);
         actor.Stats.StmSpent.Should().Be(4);
         actor.Stats.StmRefunded.Should().Be(3);
         actor.WeaponTraits.Paired.Momentum.Should().Be(0);
@@ -96,7 +96,7 @@ public class CrossSkillWeaponTraitTests
         var (sim, actor) = Spawn(items: 2);
         actor.Spec.WeaponLoadout.OffhandDamage = actor.Spec.WeaponLoadout.OffhandDelay = 0;
         GrantFlow(sim, actor); Finish(sim, actor);
-        actor.Stats.FlowDamagePowerApplied.Should().Be(12);
+        actor.Stats.FlowDamagePowerApplied.Should().Be(6);
     }
 
     [TestCase(0, 0, 3)] [TestCase(.25f, 1, 0)]
@@ -111,7 +111,7 @@ public class CrossSkillWeaponTraitTests
         actor.Stats.StmSpent.Should().Be(paid);
         actor.Stats.StmRefunded.Should().Be(0);
         actor.WeaponTraits.Paired.Momentum.Should().Be(remaining);
-        actor.Stats.FlowDamagePowerApplied.Should().Be(paid > 0 ? 12 : 0);
+        actor.Stats.FlowDamagePowerApplied.Should().Be(paid > 0 ? 6 : 0);
     }
 
     [Test]
@@ -214,18 +214,18 @@ public class CrossSkillWeaponTraitTests
             double Run(bool flow)
             {
                 // One isolated Double Shot I impact: authored flat6 plus100% weapon rating.
-                // +12 is the approved three-charge Flow power, not twelve final damage points.
+                // +6 is the approved three-charge Flow power, not six final damage points.
                 var scenario = Create("DoubleShot1", "DoubleShot:1", 1, 1, 1, true);
                 var spec = scenario.Teams[0].Members[0];
                 spec.WeaponLoadout.Attack = attack;
                 spec.WeaponLoadout.AbilityCriticalRateAdjustment = critical;
                 scenario.Teams[1].Members[0].Defense = defense;
-                if (!flow) spec.Abilities[0].Damage.WeaponPower.FlatDamage += 12;
+                if (!flow) spec.Abilities[0].Damage.WeaponPower.FlatDamage += 6;
                 var sim = TestScenarios.Spawn(scenario, RuleSets.Current(), _catalog, seed);
                 var actor = sim.Combatants[0]; actor.NextActionAt = 0; actor.NextAttackAt = double.PositiveInfinity;
                 if (flow) GrantFlow(sim, actor);
                 Finish(sim, actor);
-                actor.Stats.FlowDamagePowerApplied.Should().Be(flow && actor.Stats.AbilityHits > 0 ? 12 : 0);
+                actor.Stats.FlowDamagePowerApplied.Should().Be(flow && actor.Stats.AbilityHits > 0 ? 6 : 0);
                 return actor.Stats.DamageDealt;
             }
             var flowDamage = Run(true);
@@ -275,6 +275,25 @@ public class CrossSkillWeaponTraitTests
         else spec.WeaponLoadout = null;
         Action spawn = () => TestScenarios.Spawn(scenario, RuleSets.Current(), _catalog, 47);
         spawn.Should().Throw<InvalidDataException>().WithMessage("*WeaponPower needs a WeaponLoadout and a weapon skill*");
+    }
+
+    [TestCase("PairedHandling:3")]
+    [TestCase("MatchedRhythm:3")]
+    [TestCase("AlternatingFire")]
+    public void HandlingAndAlternatingFire_ApplyOnlyWhileWieldingTwoWeapons(string perk)
+    {
+        var scenario = Create("DoubleShot1", "DoubleShot:1", 2, 1, 1, true);
+        scenario.Teams[0].Members[0].Perks.Add(perk);
+        var actor = TestScenarios.Spawn(scenario, RuleSets.Current(), _catalog, 47).Combatants[0];
+        actor.Spec.WeaponLoadout.HasOffhand.Should().BeTrue();
+        var paired = (WeaponTraitState.Configuration(actor), WeaponTraitState.DualWieldStat(actor, StatType.DualWieldAttackDelayReductionPercent));
+        actor.Spec.WeaponLoadout.OffhandDamage = actor.Spec.WeaponLoadout.OffhandDelay = 0;
+        var single = (WeaponTraitState.Configuration(actor), WeaponTraitState.DualWieldStat(actor, StatType.DualWieldAttackDelayReductionPercent));
+        (paired.Item1.OrdinaryDamagePercentAdjustment + paired.Item1.OrdinaryHitStaminaRestore + paired.Item2).Should().BePositive();
+        single.Item1.OrdinaryDamagePercentAdjustment.Should().Be(0);
+        single.Item1.OrdinaryHitStaminaRestore.Should().Be(0);
+        single.Item1.OrdinaryHitRestoreCount.Should().Be(0);
+        single.Item2.Should().Be(0);
     }
 
     private (Simulation Sim, Combatant Actor) Spawn(string feat = "DoubleShot1", string perk = "DoubleShot:1",

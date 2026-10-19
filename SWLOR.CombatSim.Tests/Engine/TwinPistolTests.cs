@@ -24,7 +24,7 @@ public class TwinPistolTests
         var twin = _catalog.Abilities.Values.Where(info => info.TwinPistol != null).ToArray();
         twin.Should().HaveCount(20);
         _catalog.Get(FeatType.ControlledBurst2).TwinPistol.WeaponPowerPercent.Should().Be(75);
-        _catalog.Get(FeatType.FinalSalvo).TwinPistol.MomentumPowerPerCharge.Should().Be(6);
+        _catalog.Get(FeatType.FinalSalvo).TwinPistol.MomentumPowerPerCharge.Should().Be(4);
         _catalog.Get(FeatType.AkimboStance).CastSeconds.Should().Be(2);
         _catalog.Get(FeatType.CrossfireStance).CastSeconds.Should().Be(2);
     }

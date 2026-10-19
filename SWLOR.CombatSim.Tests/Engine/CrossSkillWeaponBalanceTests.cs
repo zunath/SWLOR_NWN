@@ -39,7 +39,7 @@ public class CrossSkillWeaponBalanceTests
                 actor.NextActionAt = 0; actor.NextAttackAt = double.PositiveInfinity;
                 for (var i = 0; i < flow; i++) { sim.RecordWeaponMovement(actor, 2); sim.RecordLandedWeaponHit(actor); }
                 SimulationClock.RunUntil(sim, () => actor.Stats.AbilitiesUsed == 1 && actor.Casting == null, 5, "one complete activation");
-                actor.Stats.FlowDamagePowerApplied.Should().Be(flow * 4 * loadout.Create().DistinctAttackItemCount);
+                actor.Stats.FlowDamagePowerApplied.Should().Be(flow * 2 * loadout.Create().DistinctAttackItemCount);
                 actor.Stats.StmRefunded.Should().BeLessThan(actor.Stats.StmSpent);
                 damage.Add(actor.Stats.AbilityDamage); budget.Add(actor.Stats.FlowDamagePowerApplied);
                 paid.Add(actor.Stats.StmSpent); refunded.Add(actor.Stats.StmRefunded);

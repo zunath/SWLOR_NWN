@@ -58,7 +58,7 @@ public class TwinPistolPerkTests
         twinPistol.Values.SelectMany(perk => perk.PerkLevels.Values)
             .Select(level => level.Description).Should().NotContain(description => description.Contains("Momentum"));
         twinPistol[PerkType.GrappleShot].PerkLevels.Values.Should()
-            .OnlyContain(level => level.Description.Contains("Spend all Flow"));
+            .OnlyContain(level => !level.Description.Contains("Spend all Flow"), "Grapple Shot uses the generic Flow bonus");
         foreach (var charges in new[] { 1, 2, 3 })
         {
             var effect = new MomentumStatusEffect(charges);
@@ -102,7 +102,7 @@ public class TwinPistolPerkTests
         perks[PerkType.PairedHandling].Category.Should().Be(PerkCategoryType.TwinPistolCrossfire);
         var speed = perks[PerkType.MatchedRhythm].PerkLevels.Values.ToArray();
         var damage = perks[PerkType.PairedHandling].PerkLevels.Values.ToArray();
-        speed.SelectMany(x => x.StatBonuses).Should().OnlyContain(x => x.Stat == StatType.AttackDelayReductionPercent);
+        speed.SelectMany(x => x.StatBonuses).Should().OnlyContain(x => x.Stat == StatType.DualWieldAttackDelayReductionPercent);
         damage.SelectMany(x => x.StatBonuses).Should().OnlyContain(x => x.Stat == StatType.PairedRangedOrdinaryDamagePercentAdjustment);
         speed.Select(x => x.StatBonuses.Single().Calculate(0)).Should().Equal(3, 6, 8);
         damage.Select(x => x.StatBonuses.Single().Calculate(0)).Should().Equal(5, 8, 10);
@@ -167,9 +167,13 @@ public class TwinPistolPerkTests
         all.Should().OnlyContain(x => x.SkillType == SkillType.TwinPistol && x.IsHostileAbility);
         all.SelectMany(x => x.Requirements).OfType<AbilityRequirementStamina>().Should().HaveCount(all.Length);
         volley.Values.OrderBy(x => x.AbilityLevel).Select(x => x.Requirements.OfType<AbilityRequirementStamina>().Single().RequiredSTM)
-            .Should().Equal(3, 5, 8, 10);
+            .Should().Equal(3, 5, 8, 12);
         grapple.Values.OrderBy(x => x.AbilityLevel).Select(x => x.Requirements.OfType<AbilityRequirementStamina>().Single().RequiredSTM)
-            .Should().Equal(4, 7, 10);
+            .Should().Equal(4, 8, 10);
+        slide.Values.OrderBy(x => x.AbilityLevel).Select(x => x.Requirements.OfType<AbilityRequirementStamina>().Single().RequiredSTM)
+            .Should().Equal(3, 5, 8, 12);
+        rush.Values.OrderBy(x => x.AbilityLevel).Select(x => x.Requirements.OfType<AbilityRequirementStamina>().Single().RequiredSTM)
+            .Should().Equal(6, 9);
     }
 
     [Test]

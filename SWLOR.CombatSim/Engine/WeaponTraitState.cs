@@ -14,11 +14,15 @@ public sealed class WeaponTraitState
     public WeaponMovementWindow Movement { get; } = new();
     public Vector3 Position { get; set; }
 
+    /// <summary>Mirrors the server: these stats apply only with two weapons (an off-hand attack).</summary>
+    public static int DualWieldStat(Combatant actor, StatType stat) =>
+        actor.Spec.WeaponLoadout?.HasOffhand == true ? actor.GetStat(stat) : 0;
+
     public static PairedRangedTraitConfiguration Configuration(Combatant actor) => new()
     {
-        OrdinaryDamagePercentAdjustment = actor.GetStat(StatType.PairedRangedOrdinaryDamagePercentAdjustment),
-        OrdinaryHitRestoreCount = actor.GetStat(StatType.PairedRangedOrdinaryHitRestoreCount),
-        OrdinaryHitStaminaRestore = actor.GetStat(StatType.PairedRangedOrdinaryHitStaminaRestore),
+        OrdinaryDamagePercentAdjustment = DualWieldStat(actor, StatType.PairedRangedOrdinaryDamagePercentAdjustment),
+        OrdinaryHitRestoreCount = DualWieldStat(actor, StatType.PairedRangedOrdinaryHitRestoreCount),
+        OrdinaryHitStaminaRestore = DualWieldStat(actor, StatType.PairedRangedOrdinaryHitStaminaRestore),
         OrdinaryHitRestoreCooldownSeconds = actor.GetStat(StatType.PairedRangedOrdinaryHitRestoreCooldownSeconds),
         RepeatedTargetRequiredHits = actor.GetStat(StatType.PairedRangedRepeatedTargetRequiredHits),
         RepeatedTargetDamagePercent = actor.GetStat(StatType.PairedRangedRepeatedTargetDamagePercent),

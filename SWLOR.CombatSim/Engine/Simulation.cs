@@ -68,7 +68,7 @@ namespace SWLOR.CombatSim.Engine
             StatType.AbilityFPCostStaminaRestorePercentSkillType,
             StatType.AbilityFPCostStaminaRestorePercent
         }.Concat(Enum.GetValues<StatType>().Where(stat => stat.ToString().StartsWith("PairedRanged", StringComparison.Ordinal)))
-         .Concat(new[] { StatType.AttackDelayReductionPercent, StatType.OrdinaryAttackDamagePercentAdjustment,
+         .Concat(new[] { StatType.AttackDelayReductionPercent, StatType.DualWieldAttackDelayReductionPercent, StatType.OrdinaryAttackDamagePercentAdjustment,
              StatType.OrdinaryAttackHasteRampPerStack, StatType.OrdinaryAttackHasteRampMaximumStacks,
              StatType.OrdinaryAttackHasteRampGrantCooldownSeconds, StatType.OrdinaryAttackHasteRampDurationSeconds,
              StatType.Accuracy, StatType.MovementHitWeaponAbilityDamagePerCharge })

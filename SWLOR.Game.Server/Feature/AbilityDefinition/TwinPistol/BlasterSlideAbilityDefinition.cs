@@ -58,7 +58,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwinPistol
                 new TwinPistolAbilitySpec
                 {
                     FlatPower = 16,
-                    StaminaCost = 10,
+                    StaminaCost = 12,
                     IsCrossfire = true,
                     GeneratesMomentum = true,
                     Movement = TwinPistolMovementType.Retreat,

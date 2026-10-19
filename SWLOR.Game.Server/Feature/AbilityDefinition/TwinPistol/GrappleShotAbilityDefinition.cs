@@ -17,7 +17,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwinPistol
                 {
                     FlatPower = 6,
                     StaminaCost = 4,
-                    MomentumPowerPerCharge = 4,
                     IsCrossfire = true,
                     SpendsMomentum = true,
                     Movement = TwinPistolMovementType.Approach,
@@ -31,8 +30,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwinPistol
                 new TwinPistolAbilitySpec
                 {
                     FlatPower = 10,
-                    StaminaCost = 7,
-                    MomentumPowerPerCharge = 4,
+                    StaminaCost = 8,
                     IsCrossfire = true,
                     SpendsMomentum = true,
                     Movement = TwinPistolMovementType.Approach,
@@ -47,7 +45,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwinPistol
                 {
                     FlatPower = 14,
                     StaminaCost = 10,
-                    MomentumPowerPerCharge = 4,
                     IsCrossfire = true,
                     SpendsMomentum = true,
                     Movement = TwinPistolMovementType.Approach,

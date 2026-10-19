@@ -296,7 +296,7 @@ namespace SWLOR.Game.Server.Service
                 return new PairedRangedOrdinarySnapshot(0, 0);
             return States.TryGetValue(actor, out var state)
                 ? state.GetOrdinarySnapshot(DateTime.UtcNow, GetConfiguration(actor), target)
-                : new PairedRangedOrdinarySnapshot(Read(actor, StatType.PairedRangedOrdinaryDamagePercentAdjustment), 0);
+                : new PairedRangedOrdinarySnapshot(ReadDualWield(actor, StatType.PairedRangedOrdinaryDamagePercentAdjustment), 0);
         }
 
         private static bool NeedsOrdinaryState(PairedRangedTraitConfiguration configuration) =>
@@ -309,9 +309,9 @@ namespace SWLOR.Game.Server.Service
         /// <summary>The subset of <see cref="GetConfiguration"/> read by <see cref="NeedsOrdinaryState"/> and <see cref="UntrackedSnapshot"/>.</summary>
         private static PairedRangedTraitConfiguration GetOrdinaryConfiguration(uint actor) => new()
         {
-            OrdinaryDamagePercentAdjustment = Read(actor, StatType.PairedRangedOrdinaryDamagePercentAdjustment),
-            OrdinaryHitRestoreCount = Read(actor, StatType.PairedRangedOrdinaryHitRestoreCount),
-            OrdinaryHitStaminaRestore = Read(actor, StatType.PairedRangedOrdinaryHitStaminaRestore),
+            OrdinaryDamagePercentAdjustment = ReadDualWield(actor, StatType.PairedRangedOrdinaryDamagePercentAdjustment),
+            OrdinaryHitRestoreCount = ReadDualWield(actor, StatType.PairedRangedOrdinaryHitRestoreCount),
+            OrdinaryHitStaminaRestore = ReadDualWield(actor, StatType.PairedRangedOrdinaryHitStaminaRestore),
             RepeatedTargetRequiredHits = Read(actor, StatType.PairedRangedRepeatedTargetRequiredHits),
             RepeatedTargetDamagePercent = Read(actor, StatType.PairedRangedRepeatedTargetDamagePercent),
         };
@@ -325,6 +325,10 @@ namespace SWLOR.Game.Server.Service
 
         private static int Read(uint actor, StatType stat) => Stat.GetStatAdjustment(actor, stat);
 
+        // Paired Handling and Alternating Fire offset the paired firing cycle, so they need two weapons.
+        private static int ReadDualWield(uint actor, StatType stat) =>
+            EquipmentPredicates.HasDualWield(actor) ? Read(actor, stat) : 0;
+
         private static bool CanReceiveTraitEvents(uint actor) =>
             GetIsObjectValid(actor) && !GetIsDead(actor) && GetCurrentHitPoints(actor) > 0;
 
@@ -334,9 +338,9 @@ namespace SWLOR.Game.Server.Service
                 return new PairedRangedTraitConfiguration();
             return new PairedRangedTraitConfiguration
             {
-                OrdinaryDamagePercentAdjustment = Read(actor, StatType.PairedRangedOrdinaryDamagePercentAdjustment),
-                OrdinaryHitRestoreCount = Read(actor, StatType.PairedRangedOrdinaryHitRestoreCount),
-                OrdinaryHitStaminaRestore = Read(actor, StatType.PairedRangedOrdinaryHitStaminaRestore),
+                OrdinaryDamagePercentAdjustment = ReadDualWield(actor, StatType.PairedRangedOrdinaryDamagePercentAdjustment),
+                OrdinaryHitRestoreCount = ReadDualWield(actor, StatType.PairedRangedOrdinaryHitRestoreCount),
+                OrdinaryHitStaminaRestore = ReadDualWield(actor, StatType.PairedRangedOrdinaryHitStaminaRestore),
                 OrdinaryHitRestoreCooldownSeconds = Read(actor, StatType.PairedRangedOrdinaryHitRestoreCooldownSeconds),
                 RepeatedTargetRequiredHits = Read(actor, StatType.PairedRangedRepeatedTargetRequiredHits),
                 RepeatedTargetDamagePercent = Read(actor, StatType.PairedRangedRepeatedTargetDamagePercent),

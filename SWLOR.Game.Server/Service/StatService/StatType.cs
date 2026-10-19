@@ -6310,6 +6310,10 @@ namespace SWLOR.Game.Server.Service.StatService
         [StatType(StatTypeCategory.BeneficialWhenPositive, StatTypeAggregation.Maximum)]
         MovementHitWeaponAbilityDamagePerCharge = 1166,
 
+        /// <summary>Haste that applies only while wielding two weapons (Twin Pistols or any dual wield).</summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        DualWieldAttackDelayReductionPercent = 1167,
+
 
     }
 

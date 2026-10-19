@@ -183,6 +183,7 @@ public sealed partial class Simulation
             actor.WeaponTraits.Haste.RecordTargetChange(TargetId(target));
             actor.WeaponTraits.Haste.Reconcile(WeaponNow, hasteConfig);
             var haste = weapon.HastePercent + actor.GetStat(StatType.AttackDelayReductionPercent) +
+                        WeaponTraitState.DualWieldStat(actor, StatType.DualWieldAttackDelayReductionPercent) +
                         actor.WeaponTraits.Haste.Stacks * hasteConfig.HastePerStack;
             actor.NextAttackAt += WeaponInterval(weapon, haste);
             for (var hand = 0; hand < (weapon.HasOffhand ? 2 : 1); hand++)

@@ -16,7 +16,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwinPistol
                 new TwinPistolAbilitySpec
                 {
                     FlatPower = 6,
-                    StaminaCost = 8,
+                    StaminaCost = 6,
                     WeaponPowerPercent = 60,
                     IsCrossfire = true,
                     GeneratesMomentum = true,
@@ -33,7 +33,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwinPistol
                 new TwinPistolAbilitySpec
                 {
                     FlatPower = 12,
-                    StaminaCost = 10,
+                    StaminaCost = 9,
                     WeaponPowerPercent = 60,
                     IsCrossfire = true,
                     GeneratesMomentum = true,

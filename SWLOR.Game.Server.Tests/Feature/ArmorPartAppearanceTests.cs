@@ -3,6 +3,7 @@ using System.Linq;
 using NUnit.Framework;
 using SWLOR.Game.Server.Feature.AppearanceDefinition.ItemAppearance;
 using SWLOR.Game.Server.Service.GuiService.Component;
+using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Item;
 
 namespace SWLOR.Game.Server.Tests.Feature;
@@ -68,13 +69,28 @@ public class ArmorPartAppearanceTests
     }
 
     [Test]
-    public void RepairsUseAStyleEverySlotListOffers()
+    public void RepairsUseAStyleTheWearersCatalogOffers()
     {
-        var shins = new GeneralArmorAppearanceDefinition().Shin;
-        var thighs = new GeneralArmorAppearanceDefinition().Thigh;
+        var human = ArmorAppearanceCatalog.Definitions[AppearanceType.Human];
+        var droid = ArmorAppearanceCatalog.Definitions[AppearanceType.Droid];
+        var parts = new[]
+        {
+            AppearanceArmor.Torso, AppearanceArmor.Pelvis, AppearanceArmor.LeftBicep, AppearanceArmor.LeftForearm,
+            AppearanceArmor.LeftHand, AppearanceArmor.LeftThigh, AppearanceArmor.LeftShin, AppearanceArmor.LeftFoot,
+        };
 
-        Assert.That(ArmorPartAppearance.GetRepairStyle(AppearanceArmor.LeftThigh), Is.EqualTo(0));
-        Assert.That(thighs, Does.Contain(ArmorPartAppearance.GetRepairStyle(AppearanceArmor.LeftThigh)));
-        Assert.That(shins, Does.Contain(ArmorPartAppearance.GetRepairStyle(AppearanceArmor.RightShin)));
+        foreach (var definition in new[] { human, droid })
+        {
+            foreach (var part in parts)
+            {
+                var styles = ArmorAppearanceCatalog.GetStyles(definition, part);
+                Assert.That(styles, Does.Contain(ArmorPartAppearance.GetRepairStyle(styles, _ => true)), $"{definition.GetType().Name} {part}");
+            }
+        }
+
+        // Zero (the wearer's own body part) wins where offered; otherwise the first style the body renders.
+        Assert.That(ArmorPartAppearance.GetRepairStyle(ArmorAppearanceCatalog.GetStyles(human, AppearanceArmor.LeftThigh), _ => true), Is.EqualTo(0));
+        Assert.That(ArmorPartAppearance.GetRepairStyle(ArmorAppearanceCatalog.GetStyles(human, AppearanceArmor.LeftShin), _ => true), Is.EqualTo(1));
+        Assert.That(ArmorPartAppearance.GetRepairStyle(new[] { 5, 7, 9 }, style => style == 7), Is.EqualTo(7));
     }
 }

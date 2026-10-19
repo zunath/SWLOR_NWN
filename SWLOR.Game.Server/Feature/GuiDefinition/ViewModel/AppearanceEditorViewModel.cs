@@ -62,7 +62,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         public const int TextureColorsPerRow = 16;
         public const int ColorSize = 16; // 16x16 colors on the sprite sheet
 
-        private static readonly Dictionary<AppearanceType, IArmorAppearanceDefinition> _armorAppearances = new();
+        private static readonly IReadOnlyDictionary<AppearanceType, BaseArmorAppearanceDefinition> _armorAppearances =
+            ArmorAppearanceCatalog.Definitions;
         private static readonly Dictionary<BaseItem, IWeaponAppearanceDefinition> _weaponAppearances = new();
         private Dictionary<int, int> _partIdToIndex = new();
         private bool _isDMArmorDisplay;
@@ -131,7 +132,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         public static void LoadAppearances()
         {
             RacialAppearanceRegistry.EnsureLoaded();
-            LoadArmorAppearances();
             LoadWeaponAppearances();
         }
 
@@ -153,29 +153,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 if (Gui.IsWindowOpen(dm, GuiWindowType.AppearanceEditor))
                     Gui.TogglePlayerWindow(dm, GuiWindowType.AppearanceEditor);
             }
-        }
-
-        private static void LoadArmorAppearances()
-        {
-            _armorAppearances[AppearanceType.Human] = new GeneralArmorAppearanceDefinition();
-            _armorAppearances[AppearanceType.Bothan] = new GeneralArmorAppearanceDefinition();
-            _armorAppearances[AppearanceType.Chiss] = new GeneralArmorAppearanceDefinition();
-            _armorAppearances[AppearanceType.Zabrak] = new GeneralArmorAppearanceDefinition();
-            _armorAppearances[AppearanceType.Twilek] = new GeneralArmorAppearanceDefinition();
-            _armorAppearances[AppearanceType.Mirialan] = new GeneralArmorAppearanceDefinition();
-            _armorAppearances[AppearanceType.Echani] = new GeneralArmorAppearanceDefinition();
-            _armorAppearances[AppearanceType.KelDor] = new GeneralArmorAppearanceDefinition();
-            _armorAppearances[AppearanceType.Cyborg] = new GeneralArmorAppearanceDefinition();
-            _armorAppearances[AppearanceType.Cathar] = new GeneralArmorAppearanceDefinition();
-            _armorAppearances[AppearanceType.Rodian] = new GeneralArmorAppearanceDefinition();
-            _armorAppearances[AppearanceType.Trandoshan] = new GeneralArmorAppearanceDefinition();
-            _armorAppearances[AppearanceType.Togruta] = new GeneralArmorAppearanceDefinition();
-            _armorAppearances[AppearanceType.Wookiee] = new GeneralArmorAppearanceDefinition();
-            _armorAppearances[AppearanceType.MonCalamari] = new GeneralArmorAppearanceDefinition();
-            _armorAppearances[AppearanceType.Ugnaught] = new GeneralArmorAppearanceDefinition();
-            _armorAppearances[AppearanceType.Droid] = new DroidArmorAppearanceDefinition();
-            _armorAppearances[AppearanceType.Nautolan] = new GeneralArmorAppearanceDefinition();
-            _armorAppearances[AppearanceType.Ewok] = new GeneralArmorAppearanceDefinition();
         }
 
         private static void LoadWeaponAppearances()

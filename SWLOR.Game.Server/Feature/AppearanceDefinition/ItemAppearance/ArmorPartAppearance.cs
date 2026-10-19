@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.GuiService.Component;
 using SWLOR.NWN.API.NWScript.Enum;
@@ -100,21 +101,33 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.ItemAppearance
             if (GetItemInSlot(InventorySlot.Chest, creature) != item)
                 return false;
 
-            var parts = FindUnrenderableParts(NeckAppearance.GetBodyModel(creature, true),
+            var body = NeckAppearance.GetBodyModel(creature, true);
+            var parts = FindUnrenderableParts(body,
                 part => GetItemAppearance(item, ItemAppearanceType.ArmorModel, (int)part),
                 DefaultPhenotype, ModelResource.Exists);
+            ArmorAppearanceCatalog.Definitions.TryGetValue(GetAppearanceType(creature), out var definition);
             // Keep every other part and all saved dyes.
             foreach (var part in parts)
-                EquippedItemAppearance.Set(item, ItemAppearanceType.ArmorModel, (int)part, GetRepairStyle(part));
+            {
+                var styles = definition == null ? Array.Empty<int>() : ArmorAppearanceCatalog.GetStyles(definition, part);
+                var style = GetRepairStyle(styles,
+                    candidate => IsRenderable(body, part, candidate, DefaultPhenotype, ModelResource.Exists));
+                EquippedItemAppearance.Set(item, ItemAppearanceType.ArmorModel, (int)part, style);
+            }
             return parts.Count > 0;
         }
 
         /// <summary>
-        /// Zero shows the wearer's own body part. The shin list offers no zero, so shins fall back
-        /// to style 1, the stock bare shin every body has.
+        /// Zero shows the wearer's own body part where the wearer's catalog offers it. Otherwise
+        /// (shins, droid parts) use the first catalogued style the body renders, so the editor
+        /// still accepts the repaired armor.
         /// </summary>
-        public static int GetRepairStyle(AppearanceArmor part) =>
-            part is AppearanceArmor.LeftShin or AppearanceArmor.RightShin ? 1 : 0;
+        public static int GetRepairStyle(IReadOnlyCollection<int> styles, Func<int, bool> renderable)
+        {
+            if (styles.Count == 0 || styles.Contains(0))
+                return 0;
+            return styles.Where(renderable).DefaultIfEmpty(styles.First()).First();
+        }
 
         public static GuiBindingList<GuiComboEntry> GetAvailableOptions(uint creature, AppearanceArmor part,
             IEnumerable<GuiComboEntry> options) =>

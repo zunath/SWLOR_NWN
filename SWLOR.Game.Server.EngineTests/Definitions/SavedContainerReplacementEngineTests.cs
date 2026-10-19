@@ -1,12 +1,49 @@
 using System.Reflection;
 using System.Threading.Tasks;
 using SWLOR.Game.Server.EngineTests.Framework;
+using SWLOR.Game.Server.Entity;
 using SWLOR.NWN.API.NWNX;
+using NWNXLib = NWN.Native.API.NWNXLib;
 
 namespace SWLOR.Game.Server.EngineTests.Definitions;
 
 public static partial class MigrationEngineTests
 {
+    [EngineTest("A full inventory converts its retired upgrade kits into the cells they free", Category = "SavedContainerReplacement", TimeoutSeconds = 90)]
+    public static async Task FullInventoryConvertsRetiredKitsInPlace(EngineTestContext ctx)
+    {
+        using var fixture = await PlayerAbilityFixture.CreateAsync(ctx);
+        var owner = fixture.Creature;
+        var holder = ctx.SpawnCreature("nw_bandit001");
+        await ctx.ExecuteInCreatureContextAsync(owner, () =>
+        {
+            // 2x2 retired kits fill every 2x2 space the inventory has, so a replacement can only use a kit's own cells.
+            // A script can add items past a character's room, so the engine's own placement check decides when it is full.
+            var probe = CreateItemOnObject("saber_upg1", holder);
+            ctx.Assert(GetIsObjectValid(probe), "The probe kit exists");
+            var kits = 0;
+            while (kits < 120 && HasInventoryRoom(owner, probe))
+            {
+                ctx.Assert(GetIsObjectValid(CreateItemOnObject("saber_upg1", owner)), "A retired kit is created");
+                kits++;
+            }
+            ctx.Assert(kits > 0 && kits < 120, $"The inventory fills with retired kits ({kits})");
+
+            var upgraded = SavedCharacterMigration.Run(owner, new Player(fixture.Id), "_15_RemoveObsoleteCombatInstructionDiscs");
+            ctx.AssertEqual(0, upgraded.Overflow.Count, "Every replacement fits where its retired kit was");
+            var character = SavedCharacterMigration.Load(ctx, upgraded);
+            var replaced = 0;
+            var retired = 0;
+            for (var item = GetFirstItemInInventory(character); GetIsObjectValid(item); item = GetNextItemInInventory(character))
+            {
+                if (GetResRef(item) == "saber_upg2") replaced++;
+                if (GetResRef(item) == "saber_upg1") retired++;
+            }
+            ctx.AssertEqual(kits, replaced, "Every retired kit is replaced in the inventory");
+            ctx.AssertEqual(0, retired, "No retired kit is left");
+        });
+    }
+
     [EngineTest("A full saved bag converts its retired upgrade kits into the cells they free", Category = "SavedContainerReplacement", TimeoutSeconds = 60)]
     public static async Task FullSavedBagConvertsRetiredKitsInPlace(EngineTestContext ctx)
     {
@@ -52,5 +89,13 @@ public static partial class MigrationEngineTests
             ctx.AssertEqual(kits, Count("saber_upg2"), "Every retired kit is replaced");
             ctx.AssertEqual(0, Count("saber_upg1"), "No retired kit is left");
         });
+    }
+
+    private static unsafe bool HasInventoryRoom(uint creature, uint item)
+    {
+        var server = NWNXLib.g_pAppManager.m_pServerExoApp;
+        var repository = server.GetGameObject(creature).AsNWSCreature().m_pcItemRepository;
+        byte x = 0, y = 0;
+        return repository.FindPosition(server.GetItemByGameObjectID(item), &x, &y) != 0;
     }
 }

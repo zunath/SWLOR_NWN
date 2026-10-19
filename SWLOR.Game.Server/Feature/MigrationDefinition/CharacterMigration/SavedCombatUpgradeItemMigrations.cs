@@ -123,13 +123,24 @@ internal static class SavedCombatUpgradeItemMigrations
             return;
         if (generatedBullets)
         {
-            character.Unequip(legacyAmmo);
+            Stow(character, legacyAmmo);
             return;
         }
         var existing = character.GetEquipped(InventorySlot.Bullets);
         if (existing != null)
-            character.Unequip(existing);
+            Stow(character, existing);
         character.MoveEquipped(legacyAmmo, InventorySlot.Bullets);
+    }
+
+    /// <summary>
+    /// Moves worn ammunition into the inventory and takes its stats off the record, as the live rule's unequip
+    /// (<c>CreaturePlugin.RunUnequip</c>) does through the unequip events.
+    /// </summary>
+    private static void Stow(SavedCharacter character, SavedItem ammunition)
+    {
+        character.ApplyItemStats(ammunition, false);
+        character.Unequip(ammunition);
+        character.RefreshCombatReadinessEquipment();
     }
 
     /// <summary>

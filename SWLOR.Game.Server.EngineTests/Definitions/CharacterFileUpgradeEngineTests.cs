@@ -162,6 +162,100 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             }
         }
 
+        /// <summary>
+        /// A character whose files cannot be written fails alone: the rest of the vault is still upgraded, and overflow
+        /// items stored before a failed save are removed again, because the original file still holds those items.
+        /// </summary>
+        [EngineTest("A character the upgrade cannot save fails alone and leaves no claimable overflow items",
+            Category = "CharacterFileUpgrade", TimeoutSeconds = 300)]
+        public static async Task FailedCharacterSavesAreIsolated(EngineTestContext ctx)
+        {
+            using var first = await PlayerAbilityFixture.CreateAsync(ctx);
+            using var second = await PlayerAbilityFixture.CreateAsync(ctx);
+            var owner = first.Creature;
+            await ctx.EquipItemAsync(owner, "nw_wswls001", InventorySlot.RightHand);
+            await ctx.ExecuteInCreatureContextAsync(owner, () =>
+            {
+                for (var filler = 0; filler < 60; filler++)
+                    CreateItemOnObject("nw_maletatcivout", owner);
+            });
+
+            var root = Path.Combine(Path.GetTempPath(), "swlor-character-upgrade-" + Guid.NewGuid().ToString("N"));
+            var vault = Path.Combine(root, "servervault");
+            var firstFolder = Path.Combine(vault, "TESTKEY1");
+            var firstPath = Path.Combine(firstFolder, "first.bic");
+            var secondPath = Path.Combine(vault, "TESTKEY2", "second.bic");
+            var previousVault = Environment.GetEnvironmentVariable(VaultVariable);
+            var previousFileVersion = 0;
+            Player firstRecord = null;
+            Player secondRecord = null;
+            try
+            {
+                await ctx.ExecuteInCreatureContextAsync(owner, () =>
+                {
+                    var firstFile = SavedCharacterMigration.SaveFile(owner);
+                    Directory.CreateDirectory(firstFolder);
+                    Directory.CreateDirectory(Path.GetDirectoryName(secondPath)!);
+                    File.WriteAllBytes(firstPath, firstFile);
+                    File.WriteAllBytes(secondPath, SavedCharacterMigration.SaveFile(second.Creature));
+                    firstRecord = SavedCharacterMigration.CopyRecord(DB.Get<Player>(first.Id));
+                    secondRecord = SavedCharacterMigration.CopyRecord(DB.Get<Player>(second.Id));
+                    previousFileVersion = DB.Get<ServerConfiguration>("SWLOR_CONFIG")?.CharacterFileVersion ?? 0;
+                    Environment.SetEnvironmentVariable(VaultVariable, vault);
+                    var latest = SavedCharacterMigration.LatestVersion;
+
+                    // A leftover upgraded file the server cannot remove fails only its own character.
+                    File.WriteAllBytes(firstPath + ".upgrade", firstFile);
+                    File.SetUnixFileMode(firstFolder, UnixFileMode.UserRead | UnixFileMode.UserExecute);
+                    StartUpgrade(first.Id, firstRecord);
+                    StartUpgrade(second.Id, secondRecord);
+                    ctx.Assert(!SavedCharacterMigration.UpgradeServerVault(), "The pass reports the character it could not upgrade");
+                    ctx.AssertEqual(latest, SavedCharacterMigration.ReadFileVersion(File.ReadAllBytes(secondPath)), "The other character's file is upgraded");
+                    ctx.AssertEqual(latest, DB.Get<Player>(second.Id).Version, "The other character's record is upgraded");
+                    ctx.AssertEqual(5, DB.Get<Player>(first.Id).Version, "The failed character keeps its record");
+                    ctx.Assert(File.ReadAllBytes(firstPath).SequenceEqual(firstFile), "The failed character keeps its file");
+                    File.SetUnixFileMode(firstFolder, UnixFileMode.UserRead | UnixFileMode.UserWrite | UnixFileMode.UserExecute);
+                    File.Delete(firstPath + ".upgrade");
+
+                    // The upgraded file cannot be written after the overflow items were stored.
+                    Directory.CreateDirectory(firstPath + ".upgrade");
+                    ResetVaultMarker();
+                    ctx.Assert(!SavedCharacterMigration.UpgradeServerVault(), "The failed save is reported");
+                    ctx.AssertEqual(0, OverflowRecords(first.Id).Count, "No overflow item can be claimed while the original file holds it");
+                    ctx.AssertEqual(5, DB.Get<Player>(first.Id).Version, "The record is unchanged");
+                    ctx.Assert(File.ReadAllBytes(firstPath).SequenceEqual(firstFile), "The file is unchanged");
+
+                    Directory.Delete(firstPath + ".upgrade");
+                    ResetVaultMarker();
+                    ctx.Assert(SavedCharacterMigration.UpgradeServerVault(), "The next boot upgrades the character");
+                    ctx.Assert(OverflowRecords(first.Id).Any(item => item.Resref == "nw_wswls001"), "Its overflow items are stored once it is saved");
+                });
+            }
+            finally
+            {
+                await ctx.ExecuteInCreatureContextAsync(owner, () =>
+                {
+                    Environment.SetEnvironmentVariable(VaultVariable, previousVault);
+                    if (firstRecord != null)
+                        DB.Set(firstRecord);
+                    if (secondRecord != null)
+                        DB.Set(secondRecord);
+                    var config = DB.Get<ServerConfiguration>("SWLOR_CONFIG");
+                    if (config != null)
+                    {
+                        config.CharacterFileVersion = previousFileVersion;
+                        DB.Set(config);
+                    }
+                    foreach (var item in OverflowRecords(first.Id).Concat(OverflowRecords(second.Id)))
+                        DB.Delete<OverflowItem>(item.Id);
+                });
+                if (Directory.Exists(firstFolder))
+                    File.SetUnixFileMode(firstFolder, UnixFileMode.UserRead | UnixFileMode.UserWrite | UnixFileMode.UserExecute);
+                if (Directory.Exists(root))
+                    Directory.Delete(root, true);
+            }
+        }
+
         private static void StartUpgrade(string playerId, Player original)
         {
             var record = SavedCharacterMigration.CopyRecord(original);

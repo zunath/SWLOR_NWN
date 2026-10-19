@@ -444,8 +444,10 @@ internal sealed class SavedCharacter
 
     /// <summary>
     /// Saved-data <c>CreateItemOnObject</c> plus removal, as <see cref="ObsoleteItemMigration.ConvertItem"/> replaces an
-    /// item: a new item from the blueprint with the old stack size and droid item identity goes to the old item's
-    /// holder (the character's inventory for worn and carried items), then the old item is removed.
+    /// item: the old item is removed, then a new item from the blueprint with the old stack size and droid item
+    /// identity goes to the old item's holder (the character's inventory for worn and carried items). Removing the
+    /// old item first lets the replacement use the cells it frees, so only a replacement that cannot fit goes to the
+    /// character's inventory or overflow storage.
     /// </summary>
     public bool Replace(SavedItem item, string replacementResRef)
     {
@@ -457,7 +459,6 @@ internal sealed class SavedCharacter
         // The engine marks items it places in a character's inventory as pickpocketable; the blueprint does not.
         if (item.Node.Fields.Any(field => field.Name == "Pickpocketable"))
             SavedGff.WriteScalar(replacement, "Pickpocketable", 0, StoredObjectData.ReadInteger(item.Node, "Pickpocketable"));
-        var kept = item.Container == null ? AddToInventory(replacement) : AddToContainer(item.Container, replacement);
         // Removing a worn item takes its stats off the record, as unequipping it does.
         var worn = item.IsEquipped;
         if (worn)
@@ -465,6 +466,7 @@ internal sealed class SavedCharacter
         Destroy(item);
         if (worn)
             RefreshCombatReadinessEquipment();
+        var kept = item.Container == null ? AddToInventory(replacement) : AddToContainer(item.Container, replacement);
         if (item.Container != null)
             StoredObjectData.NumberListElements(item.List);
         return kept;

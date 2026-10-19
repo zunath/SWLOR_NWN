@@ -185,9 +185,18 @@ internal static class CharacterFileUpgrade
                 continue;
             }
             var record = DB.Get<Player>(character.Id);
-            // A resumed file may still be behind a newer release; it is upgraded like any other below.
-            if (character.ResumeOrDiscardPendingFile(record))
-                Log.Write(LogGroup.Migration, $"Character upgrade finished an interrupted save for '{character.Path}' [{character.Id}].", true);
+            try
+            {
+                // A resumed file may still be behind a newer release; it is upgraded like any other below.
+                if (character.ResumeOrDiscardPendingFile(record))
+                    Log.Write(LogGroup.Migration, $"Character upgrade finished an interrupted save for '{character.Path}' [{character.Id}].", true);
+            }
+            catch (Exception ex)
+            {
+                // Only this character waits for the next boot; the rest of the vault is still upgraded.
+                character.Fail(ex);
+                continue;
+            }
             // Characters still being created are set up at login (PlayerInitialization), not upgraded.
             if (record == null || record.IsDeleted || record.Version == 0 || record.CharacterInitializationPending)
                 continue;
@@ -251,32 +260,45 @@ internal static class CharacterFileUpgrade
     /// moves it into place. A crash after the record is saved leaves that file behind, and the next boot finishes the
     /// move (<see cref="CharacterFile.ResumeOrDiscardPendingFile"/>); a crash before it leaves the record unchanged and
     /// the file is upgraded again. Overflow items use identities derived from the upgrade, so a retry replaces them
-    /// instead of adding copies.
+    /// instead of adding copies, and a save that fails before the record is written removes them again.
     /// </summary>
     private static void Commit(CharacterFile character, string vault, string backupDirectory)
     {
         var result = character.Result;
-        for (var index = 0; index < result.Overflow.Count; index++)
-        {
-            var item = result.Overflow[index];
-            DB.Set(new OverflowItem
-            {
-                Id = $"{character.Id}-{character.FileKey}-{result.FromVersion}-{index}",
-                PlayerId = character.Id,
-                Name = item.Name,
-                Resref = item.Resref,
-                Tag = item.Tag,
-                Quantity = item.Quantity,
-                Data = item.Data,
-            });
-        }
-        var backup = Path.Combine(backupDirectory, Path.GetRelativePath(vault, character.Path));
-        Directory.CreateDirectory(Path.GetDirectoryName(backup)!);
-        if (!File.Exists(backup))
-            File.Copy(character.Path, backup);
         var pending = CharacterFile.PendingPath(character.Path);
-        File.WriteAllBytes(pending, result.File);
-        DB.Set(result.Record);
+        var stored = new List<string>();
+        try
+        {
+            for (var index = 0; index < result.Overflow.Count; index++)
+            {
+                var item = result.Overflow[index];
+                var id = $"{character.Id}-{character.FileKey}-{result.FromVersion}-{index}";
+                DB.Set(new OverflowItem
+                {
+                    Id = id,
+                    PlayerId = character.Id,
+                    Name = item.Name,
+                    Resref = item.Resref,
+                    Tag = item.Tag,
+                    Quantity = item.Quantity,
+                    Data = item.Data,
+                });
+                stored.Add(id);
+            }
+            var backup = Path.Combine(backupDirectory, Path.GetRelativePath(vault, character.Path));
+            Directory.CreateDirectory(Path.GetDirectoryName(backup)!);
+            if (!File.Exists(backup))
+                File.Copy(character.Path, backup);
+            File.WriteAllBytes(pending, result.File);
+            DB.Set(result.Record);
+        }
+        catch
+        {
+            // Until the record holds the upgrade, the original file still has these items; a claim must not copy them.
+            foreach (var id in stored)
+                DB.Delete<OverflowItem>(id);
+            throw;
+        }
         File.Move(pending, character.Path, true);
     }
 
@@ -375,6 +397,8 @@ internal static class CharacterFileUpgrade
                 return new CharacterFile { Path = path, Error = ex.Message };
             }
         }
+
+        public void Fail(Exception ex) => Error = ex.ToString();
 
         public void Convert()
         {

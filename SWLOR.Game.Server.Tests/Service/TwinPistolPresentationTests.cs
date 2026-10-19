@@ -27,7 +27,16 @@ public class TwinPistolPresentationTests
             ability.AnimationEquipmentRequirement.Should().Be(AnimationEquipmentRequirement.TwinPistol);
             AbilityAnimationBinding.ActivationClip(ability, true, 0, equipmentCompatible: false).Should().BeNull();
             AbilityAnimationBinding.ImpactClip(ability, true, equipmentCompatible: false).Should().BeNull();
-            if (ability.UsesAuthoredImpactAnimation)
+            if (ability.IsChanneled)
+            {
+                // The explicit channel owns its activation choreography; cross-trained
+                // weapons use the neutral impact gesture for each fired volley instead.
+                ability.HasGeneratedAnimationBinding.Should().BeFalse();
+                AbilityAnimationBinding.ActivationType(ability, true, 0, equipmentCompatible: false).Should().Be(Animation.Invalid);
+                ability.ImpactAnimationType.Should().Be(Animation.CastOutAnimation);
+                AbilityAnimationBinding.ActivationClip(ability, true, 0).Should().Be(AuthoredAnimation.FocusedBurst);
+            }
+            else if (ability.UsesAuthoredImpactAnimation)
             {
                 ability.ImpactAnimationType.Should().Be(Animation.CastOutAnimation);
                 AbilityAnimationBinding.ImpactClip(ability, true).Should().NotBeNull();

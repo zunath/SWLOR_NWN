@@ -164,6 +164,8 @@ public class CombatDamageTests
     public void CombatSystemLimits_ClampToDocumentedBounds()
     {
         Combat.CalculateHitRate(0, 1000, 0).Should().Be(Combat.MinimumHitRate);
+        Combat.CalculateHitRate(0, 1000, 0, Combat.BossMinimumHitRate).Should().Be(Combat.BossMinimumHitRate);
+        Combat.CalculateHitRate(1000, 0, 0, Combat.BossMinimumHitRate).Should().Be(Combat.MaximumHitRate);
         Combat.CalculateHitRate(1000, 0, 0).Should().Be(Combat.MaximumHitRate);
         Combat.CalculateCriticalRate(0, 1000, 0, -100).Should().Be(Combat.MinimumCriticalRate);
         Combat.CalculateCriticalRate(1000, 0, 1000, 1000).Should().Be(Combat.MaximumCriticalRate);

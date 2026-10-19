@@ -2740,5 +2740,6 @@ namespace SWLOR.NWN.API.NWScript.Enum
         AutoCastGrappleShot2 = 3263,
         AutoCastGrappleShot3 = 3264,
         AutoCastFinalSalvo = 3265,
+        UnnervingRoar = 3161,
 }
 }

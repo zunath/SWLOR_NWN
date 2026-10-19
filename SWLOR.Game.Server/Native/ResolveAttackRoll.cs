@@ -271,7 +271,8 @@ namespace SWLOR.Game.Server.Native
                 var hitRate = Combat.CalculateHitRate(
                     attackerAccuracy + accuracyModifiers,
                     defenderEvasion,
-                    hitChanceModifier);
+                    hitChanceModifier,
+                    Combat.GetMinimumHitRate(attacker.m_idSelf));
                 // Lucky Chamber advances on every ranged attack attempt, including misses and
                 // deflections. Its returned bonus is only consulted if this attempt lands.
                 var autoAttackCycleCriticalRate =

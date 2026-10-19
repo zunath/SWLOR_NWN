@@ -37,6 +37,8 @@ namespace SWLOR.Game.Server.Service
         public const int MaximumAttackDelayAdjustmentPercent = 50;
         public const int BaseHitRate = 75;
         public const int MinimumHitRate = 20;
+        /// <summary>A boss's floor, so stacking Evasion can't make a boss harmless.</summary>
+        public const int BossMinimumHitRate = 35;
         public const int MaximumHitRate = 95;
         public const int MinimumCriticalRate = 5;
         public const int MaximumCriticalRate = 50;
@@ -360,16 +362,23 @@ namespace SWLOR.Game.Server.Service
         public static int CalculateHitRate(
             int attackerAccuracy,
             int defenderEvasion,
-            int percentageModifier)
+            int percentageModifier,
+            int minimumHitRate = MinimumHitRate)
         {
             var hitRate = BaseHitRate + (int)Math.Floor((attackerAccuracy - defenderEvasion) / 2.0f) + percentageModifier;
 
-            if (hitRate < MinimumHitRate)
-                hitRate = MinimumHitRate;
+            if (hitRate < minimumHitRate)
+                hitRate = minimumHitRate;
             else if (hitRate > MaximumHitRate)
                 hitRate = MaximumHitRate;
 
             return hitRate;
+        }
+
+        /// <summary>The lowest hit chance the attacker's weapon attacks and abilities can have.</summary>
+        public static int GetMinimumHitRate(uint attacker)
+        {
+            return BossCreature.IsBoss(attacker) ? BossMinimumHitRate : MinimumHitRate;
         }
 
         /// <summary>
@@ -8741,7 +8750,7 @@ namespace SWLOR.Game.Server.Service
                 modifier += Perk.GetForceAffinityHitChanceAdjustment(attacker, perkType);
             }
 
-            hitRate = CalculateHitRate(accuracy, evasion, modifier);
+            hitRate = CalculateHitRate(accuracy, evasion, modifier, GetMinimumHitRate(attacker));
             var isHit = _abilityHitResolutionOverride ?? Random.D100(1) <= hitRate;
             if (!isHit && GetIsReactionTypeHostile(attacker, defender))
                 PairedRangedTraits.RecordAccuracyEvasionMiss(defender);

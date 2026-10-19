@@ -74,6 +74,18 @@ public class CombatRecordSummaryBuilderTests
     }
 
     [Test]
+    public void DamageACreatureDoesToItself_IsTakenButNotDealt()
+    {
+        Add(Damage(Attacker, Attacker, CombatRecordSourceKind.StatusEffect, "Soul Devourer Stance", total: 9, hpBefore: 100, hpAfter: 91));
+        Add(Damage(Attacker, Defender, CombatRecordSourceKind.Ability, "Slam IV", total: 30, hpBefore: 500, hpAfter: 470));
+
+        var attacker = Build().GetParticipant(Attacker);
+
+        attacker.DamageDealt.Keys.Should().Equal("Slam IV");
+        attacker.DamageTaken["Soul Devourer Stance (status)"].HitPointsLost.Should().Be(9);
+    }
+
+    [Test]
     public void Healing_TracksRequestedEffectiveAndOverhealForBothSides()
     {
         Add(CombatRecordEvent.Healing(Healer, Defender, CombatRecordSourceKind.Ability, "Benevolence I", 0, 40, 60, 100, 120));

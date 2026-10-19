@@ -668,6 +668,8 @@ namespace SWLOR.Game.Server.Service.AbilityService
         ChainLightning = 574,
         [RecastGroup("Blood Siphon", "Blood Siphon", true)]
         BloodSiphon = 575,
+        [RecastGroup("Unnerving Roar", "Unnerving Roar", true)]
+        UnnervingRoar = 576,
         [RecastGroup("Force Sheath", "Force Sheath", true)]
         ForceSheath = 474,
         [RecastGroup("Shattering Strike", "Shatter Str.", true)]

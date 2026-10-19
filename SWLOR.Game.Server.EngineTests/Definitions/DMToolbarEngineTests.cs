@@ -636,6 +636,12 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 await InContext(ctx, dm.Creature, model.OnClickClearChecks());
                 ctx.Assert(!model.HasChecked && !model.ResultChecks[0], "Clear Checks unchecks everyone");
 
+                await CheckRow(ctx, dm.Creature, model, 0);
+                await InContext(ctx, dm.Creature, () => Gui.ClosePlayerWindow(dm.Creature, GuiWindowType.DMPlayerSearch));
+                await InContext(ctx, dm.Creature, () => Gui.TogglePlayerWindow(dm.Creature, GuiWindowType.DMPlayerSearch));
+                model = (DMPlayerSearchViewModel)windows.ViewModel(GuiWindowType.DMPlayerSearch);
+                ctx.Assert(!model.HasChecked && model.ResultChecks.All(isChecked => !isChecked), "reopening Player Search starts with nothing checked");
+
                 await InContext(ctx, dm.Creature, () => model.SearchText = "lanky");
                 await InContext(ctx, dm.Creature, model.OnClickSearch());
                 await SelectRow(ctx, dm.Creature, model, 0);

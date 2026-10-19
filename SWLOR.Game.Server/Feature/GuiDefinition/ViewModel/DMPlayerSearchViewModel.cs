@@ -188,6 +188,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             SelectedDetails = string.Empty;
             CanJumpTo = false;
             IsSelectedOnline = false;
+            // The view model is reused when the window reopens. Old checks must not carry into a new session.
+            _checkedPlayers.Clear();
             UpdateCheckedState();
             _suppressSearch = false;
 

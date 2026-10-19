@@ -229,6 +229,20 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                     ResetVaultMarker();
                     ctx.Assert(SavedCharacterMigration.UpgradeServerVault(), "The next boot upgrades the character");
                     ctx.Assert(OverflowRecords(first.Id).Any(item => item.Resref == "nw_wswls001"), "Its overflow items are stored once it is saved");
+
+                    // A different file restored at the same path keeps its own overflow items: a failed save of it neither
+                    // replaces nor removes the items the earlier upgrade stored.
+                    var earlier = OverflowRecords(first.Id).OrderBy(item => item.Id).Select(item => (item.Id, item.Data)).ToList();
+                    File.WriteAllBytes(firstPath, SavedCharacterMigration.WithFileVersion(firstFile, 5));
+                    StartUpgrade(first.Id, firstRecord);
+                    Directory.CreateDirectory(firstPath + ".upgrade");
+                    ctx.Assert(!SavedCharacterMigration.UpgradeServerVault(), "The restored file's failed save is reported");
+                    ctx.Assert(OverflowRecords(first.Id).OrderBy(item => item.Id).Select(item => (item.Id, item.Data)).SequenceEqual(earlier),
+                        "The earlier upgrade's overflow items are untouched");
+                    Directory.Delete(firstPath + ".upgrade");
+                    ResetVaultMarker();
+                    ctx.Assert(SavedCharacterMigration.UpgradeServerVault(), "The restored file is upgraded");
+                    ctx.AssertEqual(earlier.Count * 2, OverflowRecords(first.Id).Count, "Each upgrade keeps its own overflow items");
                 });
             }
             finally

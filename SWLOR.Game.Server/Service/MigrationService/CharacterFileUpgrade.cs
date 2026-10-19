@@ -259,20 +259,22 @@ internal static class CharacterFileUpgrade
     /// Keeps the original file as a backup and writes the upgraded file beside it before saving the record, then
     /// moves it into place. A crash after the record is saved leaves that file behind, and the next boot finishes the
     /// move (<see cref="CharacterFile.ResumeOrDiscardPendingFile"/>); a crash before it leaves the record unchanged and
-    /// the file is upgraded again. Overflow items use identities derived from the upgrade, so a retry replaces them
-    /// instead of adding copies, and a save that fails before the record is written removes them again.
+    /// the file is upgraded again. Overflow items use identities derived from the file, its contents and the upgrade,
+    /// so a retry replaces them instead of adding copies, and a save that fails before the record is written removes
+    /// them again without touching items an earlier upgrade of another file at that path stored.
     /// </summary>
     private static void Commit(CharacterFile character, string vault, string backupDirectory)
     {
         var result = character.Result;
         var pending = CharacterFile.PendingPath(character.Path);
         var stored = new List<string>();
+        var contentKey = result.Overflow.Count > 0 ? character.ContentKey : string.Empty;
         try
         {
             for (var index = 0; index < result.Overflow.Count; index++)
             {
                 var item = result.Overflow[index];
-                var id = $"{character.Id}-{character.FileKey}-{result.FromVersion}-{index}";
+                var id = $"{character.Id}-{character.FileKey}-{contentKey}-{result.FromVersion}-{index}";
                 DB.Set(new OverflowItem
                 {
                     Id = id,
@@ -319,19 +321,23 @@ internal static class CharacterFileUpgrade
         /// <summary>
         /// A stable identity for this file within the vault, so files that share a record keep separate overflow items.
         /// </summary>
-        public string FileKey
+        public string FileKey => Fnv1a(System.Text.Encoding.UTF8.GetBytes(
+            System.IO.Path.GetFileName(System.IO.Path.GetDirectoryName(Path)) + "/" + System.IO.Path.GetFileName(Path).ToLowerInvariant()));
+
+        /// <summary>
+        /// The identity of the file being upgraded. A retry of the same upgrade reads the same file and keeps its overflow
+        /// ids; a different file later restored at the same path gets new ones, so its upgrade never overwrites or rolls
+        /// back the overflow items an earlier upgrade stored.
+        /// </summary>
+        public string ContentKey => Fnv1a(Data);
+
+        // FNV-1a. A cryptographic hash would load the runtime's OpenSSL bindings into the server process.
+        private static string Fnv1a(byte[] bytes)
         {
-            get
-            {
-                // FNV-1a over the vault folder and file name. A cryptographic hash would load the runtime's OpenSSL
-                // bindings into the server process.
-                var name = System.IO.Path.GetFileName(System.IO.Path.GetDirectoryName(Path)) + "/" +
-                           System.IO.Path.GetFileName(Path).ToLowerInvariant();
-                var hash = 14695981039346656037UL;
-                foreach (var b in System.Text.Encoding.UTF8.GetBytes(name))
-                    hash = (hash ^ b) * 1099511628211UL;
-                return hash.ToString("x16");
-            }
+            var hash = 14695981039346656037UL;
+            foreach (var b in bytes)
+                hash = (hash ^ b) * 1099511628211UL;
+            return hash.ToString("x16");
         }
         public string Id { get; private init; }
         public bool IsDM { get; private init; }

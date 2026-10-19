@@ -11,7 +11,7 @@ A separate 0-50 weapon skill within the normal 400-rank cap; no Pistol prerequis
 **Barrage:** sustained pressure and stamina management.
 **Crossfire:** reposition, earn Flow, then spend it on a stronger attack.
 
-All perk ranks support cross-skilling. Active attacks produce one impact per eligible equipped attack weapon (maximum two); a single/two-handed weapon gives one, a shield gives none. Each impact keeps its weapon DMG/type; ability scaling remains Twin Pistol PER/AGI.
+All perk ranks support cross-skilling. Active attacks use up to two eligible equipped attack weapons. Normally each fires once per target. Focused Burst divides each weapon's total DMG across 3 volleys (up to 6 impacts). A single/two-handed weapon counts once; shields add none. Each impact keeps its weapon DMG/type; ability scaling remains Twin Pistol PER/AGI.
 
 Each standalone line: 10 perks, 18 ranks, 60 SP. Handling perks are mutually exclusive purchases at every rank:
 ```text
@@ -38,7 +38,8 @@ Alternating Fire         | Every 3 weapon auto-attack hits:
 Matched Rhythm           | +8% Haste with any weapon.
 8/22/45; 10 SP            | Cannot purchase Paired Handling.
 
-Focused Burst            | One enemy, each weapon D+24.
+Focused Burst            | Stationary 1.5s channel, 3 volleys.
+                         | D+24 TOTAL per weapon across all volleys.
 10/30/38; 10 SP           | STM/CD: 10 / 24s.
 
 Balanced Grip            | +5 ACC to any eligible off-hand
@@ -48,7 +49,7 @@ Controlled Burst         | One enemy, each weapon floor(.75D)+13.
 18/32; 6 SP              | Restore 3 STM once if any impact hits.
                          | STM/CD: 9 / 30s.
 ```
-Volley ranks: D+4/8/12/16, costing 3/5/8/10 STM. Focused ranks: D+8/16/24, costing 4/8/10 STM. Volley attacks more frequently; Focused gives more damage per cast and per STM. Separate cooldown groups.
+Volley ranks: D+4/8/12/16, costing 3/5/8/10 STM. Focused ranks: D+8/16/24, costing 4/8/10 STM. Volley fires immediately. Focused divides its total DMG across 3 volleys at 0/0.6/1.2s: 1/6, 1/3, then 1/2, rewarding completion. Weapon auto-attacks pause for the 1.5s channel. Movement or interruption cancels remaining shots; paid STM and cooldown remain spent. Extra shots do not multiply on-hit or critical-trigger budgets. Both work with any weapon. Separate cooldown groups.
 
 Matched Rhythm changes weapon auto-attack speed, not ability cooldowns, and respects the global Haste cap.
 

@@ -41,6 +41,14 @@ public sealed partial class Simulation
     private void ResolveTwin(Combatant actor, PendingCast cast)
     {
         var spec = cast.Ability.TwinPistol;
+        if (cast.Ability.IsChanneled && cast.VolleyIndex >= spec.VolleyCount) return;
+        if (cast.Ability.IsChanneled && cast.Target.IsDead)
+        {
+            CompleteTwin(actor, cast);
+            actor.NextActionAt = _now + actor.Spec.ReactionSeconds;
+            actor.NextAttackAt = Math.Max(cast.AttackReadyBeforeChannel, _now);
+            return;
+        }
         var config = WeaponTraitState.Configuration(actor);
         var distance = cast.Use.MovementMeters ?? 0;
         if (!cast.MovementStarted && spec.Movement != TwinPistolMovementType.None && distance >= .01f)
@@ -68,14 +76,33 @@ public sealed partial class Simulation
                 var power = weaponDamage * spec.WeaponPowerPercent / 100 + spec.FlatPower + cast.WeaponTraits.MomentumSpent * spec.MomentumPowerPerCharge;
                 var accuracy = cast.WeaponTraits.AccuracyAdjustment + (hand > 0 ? config.CompanionAccuracy : 0);
                 actor.Stats.AbilityImpacts++;
-                var (hit, damage) = RollWeapon(actor, target, power, accuracy, ordinary: false);
+                var (hit, damage) = RollWeapon(actor, target, power, accuracy, ordinary: false,
+                    volleyIndex: cast.VolleyIndex, volleyCount: spec.VolleyCount);
                 landed |= hit;
                 if (hit) actor.Stats.AbilityHits++;
                 actor.Stats.AbilityDamage += damage;
             }
         }
+        cast.AnyWeaponHit |= landed;
+        cast.VolleyIndex++;
+        if (cast.VolleyIndex >= spec.VolleyCount) CompleteTwin(actor, cast);
+        if (cast.Ability.IsChanneled && _now + 1e-9 < cast.ChannelEndsAt)
+        {
+            cast.ImpactAt = cast.VolleyIndex < spec.VolleyCount
+                ? cast.ChannelStartedAt + cast.VolleyIndex * spec.VolleyIntervalSeconds
+                : cast.ChannelEndsAt;
+            actor.Casting = cast;
+        }
+    }
+
+    private void CompleteTwin(Combatant actor, PendingCast cast)
+    {
+        if (cast.WeaponTraitsCompleted) return;
+        cast.WeaponTraitsCompleted = true;
+        var spec = cast.Ability.TwinPistol;
+        var config = WeaponTraitState.Configuration(actor);
         RestoreStamina(actor, actor.WeaponTraits.Paired.CompleteAbility(WeaponNow, config, cast.WeaponTraits,
-            landed, distance, spec.GeneratesMomentum, cast.StmCost, spec.RestoreStaminaOnHit,
+            cast.AnyWeaponHit, cast.Use.MovementMeters ?? 0, spec.GeneratesMomentum, cast.StmCost, spec.RestoreStaminaOnHit,
             spec.OrdinaryBonusAttempts, spec.OrdinaryBonusDamagePercent, spec.OrdinaryBonusSeconds), true);
     }
 
@@ -119,7 +146,7 @@ public sealed partial class Simulation
     }
 
     private (bool Hit, double Damage) RollWeapon(Combatant actor, Combatant target, int power, int accuracyBonus,
-        bool ordinary, int damageBonus = 0)
+        bool ordinary, int damageBonus = 0, int volleyIndex = 0, int volleyCount = 1)
     {
         var weapon = actor.Spec.WeaponLoadout;
         var hitChance = Combat.CalculateHitRate(weapon.Accuracy + accuracyBonus, target.Spec.Evasion, 0);
@@ -146,7 +173,8 @@ public sealed partial class Simulation
             amount += (int)Math.Ceiling(amount * Math.Clamp(additive, -Combat.MaximumNormalDamageReductionPercent, Combat.MaximumDamageBonusPercent) / 100f);
             amount = Combat.ApplyOrdinaryAttackDamageMultiplier(amount, actor.GetStat(StatType.OrdinaryAttackDamagePercentAdjustment));
         }
-        return (true, ApplyDamage(actor, target, amount));
+        amount = WeaponImpactDamagePartition.Partition(amount, volleyIndex, volleyCount);
+        return (true, amount > 0 ? ApplyDamage(actor, target, amount) : 0);
     }
 
     internal static int SampleWeaponDamage(System.Random random, int minimum, int maximum) =>

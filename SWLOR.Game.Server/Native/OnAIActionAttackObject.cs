@@ -79,6 +79,7 @@ namespace SWLOR.Game.Server.Native
             return ServerManager.Executor.ExecuteInScriptContext(() =>
             {
                 var pCreature = CNWSCreature.FromPointer(creature);
+                if (UsePerkFeat.SuppressesAutoAttacks(pCreature.m_idSelf)) return ACTION_IN_PROGRESS;
                 var pNode = CNWSObjectActionNode.FromPointer(node);
                 var pArea = pCreature.GetArea();
                 PairedRangedTraits.RecordTargetChange(pCreature.m_idSelf, (uint)pNode.m_pParameter[0]);

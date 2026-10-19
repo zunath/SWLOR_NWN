@@ -121,20 +121,20 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.FocusedBurst1)
-                .Description("Attack one enemy with each equipped attack weapon. Each impact deals weapon DMG + 8. Works with any weapon.")
+                .Description("Channel on one enemy for 1.5 seconds, firing 3 volleys. Each equipped attack weapon deals a total of weapon DMG + 8, split across all volleys. Moving or being interrupted cancels remaining shots. Weapon auto-attacks pause during the channel. Works with any weapon.")
                 .Price(2)
                 .RequirementSkill(SkillType.TwinPistol, 10)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.FocusedBurst2)
-                .Description("Attack one enemy with each equipped attack weapon. Each impact deals weapon DMG + 16. Works with any weapon.")
+                .Description("Channel on one enemy for 1.5 seconds, firing 3 volleys. Each equipped attack weapon deals a total of weapon DMG + 16, split across all volleys. Moving or being interrupted cancels remaining shots. Weapon auto-attacks pause during the channel. Works with any weapon.")
                 .Price(4)
                 .RequirementSkill(SkillType.TwinPistol, 30)
                 .RequirementMustHavePerk(PerkType.FocusedBurst, 1)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.FocusedBurst3)
-                .Description("Attack one enemy with each equipped attack weapon. Each impact deals weapon DMG + 24. Works with any weapon.")
+                .Description("Channel on one enemy for 1.5 seconds, firing 3 volleys. Each equipped attack weapon deals a total of weapon DMG + 24, split across all volleys. Moving or being interrupted cancels remaining shots. Weapon auto-attacks pause during the channel. Works with any weapon.")
                 .Price(4)
                 .RequirementSkill(SkillType.TwinPistol, 38)
                 .RequirementMustHavePerk(PerkType.FocusedBurst, 2);

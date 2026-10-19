@@ -91,6 +91,7 @@ namespace SWLOR.CombatSim.Data
                 PaysFpFirst = PaysFpFirst(detail),
                 RecastSeconds = recast ?? 0f,
                 CastSeconds = cast ?? 0f,
+                IsChanneled = detail.IsChanneled,
                 ImpactDelaySeconds = detail.ImpactDelay,
                 IsQueuedWeapon = detail.ActivationType == AbilityActivationType.Weapon,
                 UnreadableTiming = unreadable.Length > 0 ? unreadable : null,

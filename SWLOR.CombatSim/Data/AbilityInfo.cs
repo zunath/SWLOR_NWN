@@ -20,6 +20,8 @@ namespace SWLOR.CombatSim.Data
         public bool PaysFpFirst { get; init; }
         public float RecastSeconds { get; init; }
         public float CastSeconds { get; init; }
+        /// <summary>Effects and costs begin at channel start; the caster remains occupied until CastSeconds ends.</summary>
+        public bool IsChanneled { get; init; }
 
         /// <summary>Seconds between paying for the ability and its impact (Force Leap's jump); the caster is busy throughout.</summary>
         public float ImpactDelaySeconds { get; init; }

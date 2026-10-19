@@ -7,23 +7,25 @@ using SWLOR.Game.Server.Service.CombatRecorderService;
 using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.Game.Server.Service.StatService;
+using SWLOR.Game.Server.Service.StatusEffectService;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWScript.Enum;
 using NumericsVector3 = System.Numerics.Vector3;
+using Activation = SWLOR.Game.Server.Service.CombatService.TwinPistolAbilityActivation;
 
 namespace SWLOR.Game.Server.Service
 {
     /// <summary>One paid activation and result across captured weapon impacts.</summary>
     public static class TwinPistolAbility
     {
-        private sealed record Activation(string ActivationId, uint Area, NumericsVector3 Origin, Location Destination,
-            uint MainHand, uint OffHand, WeaponShotProfile[] Weapons, uint[] Targets, uint ResumeTarget,
-            TwinPistolAbilitySpec Spec, PairedRangedAbilityTraitsSnapshot Traits);
         private static readonly Dictionary<uint, Activation> Activations = new();
+        private static readonly Dictionary<uint, TwinPistolChannel> Channels = new();
 
-        public static bool HasActiveActivation(uint actor) => Activations.TryGetValue(actor, out var activation) &&
-            !string.IsNullOrWhiteSpace(activation.ActivationId) &&
-            UsePerkFeat.GetActiveAbilityActivationId(actor) == activation.ActivationId;
+        public static bool HasActiveActivation(uint actor) =>
+            Activations.TryGetValue(actor, out var activation) &&
+            UsePerkFeat.GetActiveAbilityActivationId(actor) == activation.ActivationId ||
+            Channels.TryGetValue(actor, out var channel) &&
+            UsePerkFeat.GetActiveAbilityActivationId(actor) == channel.Activation.ActivationId;
 
         public static uint[] GetEligibleWeapons(uint actor) => new[]
             {
@@ -74,6 +76,11 @@ namespace SWLOR.Game.Server.Service
             var paidStamina = Combat.GetAbilityStaminaPaid(actor, ability);
             var traits = activation.Traits;
             if (!IsCurrent(actor, activation) || !PairedRangedTraits.CommitAbility(actor, traits)) return;
+            if (spec.VolleyCount > 1)
+            {
+                BeginChannel(actor, activation, paidStamina);
+                return;
+            }
             var movement = NumericsVector3.Distance(activation.Origin, GetPositionFromLocation(activation.Destination));
             if (movement < .01f)
             {
@@ -108,9 +115,97 @@ namespace SWLOR.Game.Server.Service
             if (cause == CombatRecordInterruptCause.Other && GetIsObjectValid(actor) &&
                 (GetIsDead(actor) || GetCurrentHitPoints(actor) <= 0))
                 cause = CombatRecordInterruptCause.Died;
+            if (Channels.TryGetValue(actor, out var channel))
+            {
+                FinishChannel(actor, channel);
+                UsePerkFeat.InterruptAbilityActivation(actor, channel.Activation.ActivationId, cause);
+            }
             if (Activations.Remove(actor, out var activation) && !string.IsNullOrWhiteSpace(activation.ActivationId))
                 UsePerkFeat.InterruptAbilityActivation(actor, activation.ActivationId, cause);
             WeaponRepositioning.Cancel(actor);
+        }
+
+        public static void InterruptChannel(uint actor)
+        {
+            if (Channels.TryGetValue(actor, out var channel)) FinishChannel(actor, channel);
+        }
+
+        private static void BeginChannel(uint actor, Activation activation, int paidStamina)
+        {
+            var ability = Ability.GetActiveAbilityImpactSummary(actor)?.Ability;
+            var channel = new TwinPistolChannel(activation, ability, paidStamina);
+            Channels[actor] = channel;
+            Combat.DeferAbilityStaminaCostContext(actor, ability);
+            PairedRangedAttackCycle.Cancel(actor);
+            WeaponAttackCycle.CancelPendingHand(actor);
+            var resolve = Ability.CaptureRepeatedAbilityImpact<int>(actor, index =>
+            {
+                channel.AnyHit |= ResolveVolley(actor, activation, channel.Limits, index);
+            }, activation.Spec.FlatPower + activation.Weapons.Max(weapon => weapon.Damage), retainCapturedBonuses: true);
+
+            void Fire(int index)
+            {
+                if (!Channels.TryGetValue(actor, out var current) || !ReferenceEquals(current, channel)) return;
+                if (!IsCurrent(actor, activation) ||
+                    !CanContinueChannel(actor) ||
+                    UsePerkFeat.GetActiveAbilityActivationId(actor) != activation.ActivationId ||
+                    NumericsVector3.Distance(GetPosition(actor), activation.Origin) > .01f ||
+                    !IsLegalTarget(actor, activation.Targets[0], activation.Spec.MaxRange))
+                {
+                    Cancel(actor);
+                    return;
+                }
+                try
+                {
+                    if (index == 0)
+                        channel.AnyHit |= ResolveVolley(actor, activation, channel.Limits, index);
+                    else
+                        resolve(index);
+                    if (index == activation.Spec.VolleyCount - 1) FinishChannel(actor, channel);
+                }
+                catch
+                {
+                    Cancel(actor);
+                    throw;
+                }
+            }
+
+            Fire(0);
+            for (var index = 1; index < activation.Spec.VolleyCount; index++)
+            {
+                var volley = index;
+                DelayCommand(index * activation.Spec.VolleyIntervalSeconds, () => Fire(volley));
+            }
+        }
+
+        private static bool CanContinueChannel(uint actor)
+        {
+            if (!GetCommandable(actor) || StatusEffect.HasStatusEffectCategory(actor, StatusEffectCategory.Incapacitating))
+                return false;
+            for (var effect = GetFirstEffect(actor); GetIsEffectValid(effect); effect = GetNextEffect(actor))
+                if (GetEffectType(effect) is EffectTypeScript.Paralyze or EffectTypeScript.CutsceneParalyze or
+                    EffectTypeScript.Stunned or EffectTypeScript.Sleep or EffectTypeScript.Petrify or EffectTypeScript.Dazed)
+                    return false;
+            return true;
+        }
+
+        private static void FinishChannel(uint actor, TwinPistolChannel channel)
+        {
+            if (!Channels.TryGetValue(actor, out var current) || !ReferenceEquals(current, channel)) return;
+            Channels.Remove(actor);
+            try
+            {
+                if (GetIsObjectValid(actor) && !GetIsDead(actor))
+                {
+                    var activation = channel.Activation;
+                    var spec = activation.Spec;
+                    PairedRangedTraits.CompleteAbility(actor, activation.Traits, channel.AnyHit, 0f,
+                        spec.GeneratesMomentum, channel.PaidStamina, spec.RestoreStaminaOnHit,
+                        spec.OrdinaryBonusAttempts, spec.OrdinaryBonusDamagePercent, spec.OrdinaryBonusSeconds);
+                    TwinPistolMastery.RecordAbility(actor, channel.AnyHit, 0f, spec, activation.Traits.MomentumSpent);
+                }
+            }
+            finally { Combat.CompleteDeferredAbilityStaminaCostContext(actor, channel.Ability); }
         }
 
         private static void Resolve(uint actor, Activation activation, PairedRangedAbilityTraitsSnapshot traits,
@@ -118,20 +213,33 @@ namespace SWLOR.Game.Server.Service
         {
             var spec = activation.Spec;
             var limits = new WeaponImpactActivation();
+            var anyHit = ResolveVolley(actor, activation, limits, 0);
+            if (!GetIsObjectValid(actor) || GetIsDead(actor)) return;
+            PairedRangedTraits.CompleteAbility(actor, traits, anyHit, distanceTravelled, spec.GeneratesMomentum,
+                paidStamina, spec.RestoreStaminaOnHit, spec.OrdinaryBonusAttempts,
+                spec.OrdinaryBonusDamagePercent, spec.OrdinaryBonusSeconds);
+            TwinPistolMastery.RecordAbility(actor, anyHit, distanceTravelled, spec, traits.MomentumSpent);
+            Ability.PlayAbilityImpactAnimation(actor);
+        }
+
+        private static bool ResolveVolley(uint actor, Activation activation, WeaponImpactActivation limits, int volleyIndex)
+        {
+            var spec = activation.Spec;
+            var traits = activation.Traits;
             var anyHit = false;
             foreach (var target in activation.Targets)
             {
-                if (!IsCurrent(actor, activation)) return;
+                if (!IsCurrent(actor, activation)) return anyHit;
                 if (!IsLegalTarget(actor, target, spec.ArrivalRangeMeters)) continue;
                 foreach (var weapon in activation.Weapons)
                 {
-                    if (!IsCurrent(actor, activation)) return;
+                    if (!IsCurrent(actor, activation)) return anyHit;
                     if (!GetIsObjectValid(target) || GetIsDead(target)) break;
                     var scaledWeapon = weapon with { Damage = weapon.Damage * spec.WeaponPowerPercent / 100 };
                     var offhandAccuracy = weapon.Weapon == activation.OffHand
                         ? Stat.GetStatAdjustment(actor, StatType.PairedRangedCompanionAccuracy) : 0;
                     using var source = new WeaponImpactProfile(actor, scaledWeapon, limits,
-                        traits.AccuracyAdjustment + offhandAccuracy);
+                        traits.AccuracyAdjustment + offhandAccuracy, volleyIndex, spec.VolleyCount);
                     var handHit = false;
                     Ability.ApplyCombatImpact(actor, target, GetLocation(target), SkillType.TwinPistol,
                         spec.FlatPower + traits.MomentumSpent * spec.MomentumPowerPerCharge, 0, null, false,
@@ -141,12 +249,7 @@ namespace SWLOR.Game.Server.Service
                     PairedRangedPresentation.OnAbilityWeaponLaunch(actor, target, weapon.Weapon, handHit);
                 }
             }
-            if (!GetIsObjectValid(actor) || GetIsDead(actor)) return;
-            PairedRangedTraits.CompleteAbility(actor, traits, anyHit, distanceTravelled, spec.GeneratesMomentum,
-                paidStamina, spec.RestoreStaminaOnHit, spec.OrdinaryBonusAttempts,
-                spec.OrdinaryBonusDamagePercent, spec.OrdinaryBonusSeconds);
-            TwinPistolMastery.RecordAbility(actor, anyHit, distanceTravelled, spec, traits.MomentumSpent);
-            Ability.PlayAbilityImpactAnimation(actor);
+            return anyHit;
         }
 
         private static bool IsCurrent(uint actor, Activation activation) =>

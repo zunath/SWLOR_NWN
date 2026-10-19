@@ -12,15 +12,19 @@ namespace SWLOR.Game.Server.Service.CombatService
         public WeaponShotProfile Weapon { get; }
         public WeaponImpactActivation Activation { get; }
         public int AccuracyAdjustment { get; }
+        public int VolleyIndex { get; }
+        public int VolleyCount { get; }
 
         public WeaponImpactProfile(uint actor, WeaponShotProfile weapon, WeaponImpactActivation activation,
-            int accuracyAdjustment = 0)
+            int accuracyAdjustment = 0, int volleyIndex = 0, int volleyCount = 1)
         {
             _actor = actor;
             _previous = Get(actor);
             Weapon = weapon;
             Activation = activation;
             AccuracyAdjustment = accuracyAdjustment;
+            VolleyIndex = volleyIndex;
+            VolleyCount = volleyCount;
             Profiles[actor] = this;
         }
 

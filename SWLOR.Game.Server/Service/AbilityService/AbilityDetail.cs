@@ -122,6 +122,9 @@ namespace SWLOR.Game.Server.Service.AbilityService
         /// </summary>
         public bool IsChanneled { get; set; }
 
+        public bool HasFixedActivationDelay { get; set; }
+        public bool SuppressesAutoAttacks { get; set; }
+
         /// <summary>
         /// Invoked against the activator when a channeled ability is interrupted so the effects granted
         /// at channel start can be ended early.

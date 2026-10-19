@@ -276,7 +276,8 @@ namespace SWLOR.Game.Server.Service
         /// to retain its own target or payload. Bonuses are consumed only when an impact lands.
         /// </summary>
         public static Action<T> CaptureRepeatedAbilityImpact<T>(
-            uint activator, Action<T> impactAction, int baseDamage = 0, bool requiresLivingActivator = true)
+            uint activator, Action<T> impactAction, int baseDamage = 0, bool requiresLivingActivator = true,
+            bool retainCapturedBonuses = false)
         {
             ArgumentNullException.ThrowIfNull(impactAction);
             // Scheduled damage belongs to this cast. Resolve its armed bonuses now so
@@ -288,6 +289,8 @@ namespace SWLOR.Game.Server.Service
 
             var ability = originatingImpact.Ability;
             var sequence = originatingImpact.Sequence;
+            var copyPartitionedBonuses = retainCapturedBonuses
+                ? originatingImpact.CapturePartitionedDamageBonuses() : null;
             return payload =>
             {
                 if (!GetIsObjectValid(activator) || requiresLivingActivator && GetCurrentHitPoints(activator) <= 0)
@@ -298,13 +301,17 @@ namespace SWLOR.Game.Server.Service
                 BeginAbilityImpact(activator, ability, 0, 0, countsAsAttackAttempt: false, sequence: sequence,
                     triggeringWeaponDamage: originatingImpact.TriggeringWeaponDamage,
                     triggeringWeaponDamageType: originatingImpact.TriggeringWeaponDamageType);
-                GetTrackedAbilityImpact(activator).CopyRepeatedDamageBonusesFrom(originatingImpact);
+                if (copyPartitionedBonuses != null)
+                    copyPartitionedBonuses(GetTrackedAbilityImpact(activator));
+                else
+                    GetTrackedAbilityImpact(activator).CopyRepeatedDamageBonusesFrom(originatingImpact);
                 var completed = false;
                 try
                 {
                     impactAction(payload);
                     var summary = EndAbilityImpact(activator);
-                    originatingImpact.CompleteRepeatedDamageBonusImpact(summary.ImpactedTargetCount > 0);
+                    if (!retainCapturedBonuses)
+                        originatingImpact.CompleteRepeatedDamageBonusImpact(summary.ImpactedTargetCount > 0);
                     completed = true;
                     if (CombatRecorder.IsRecording)
                         CombatRecorder.RecordRecurringAbilityImpact(activator, ability, summary);
@@ -613,9 +620,13 @@ namespace SWLOR.Game.Server.Service
         public static void ApplyHostileAbilityEnmity(uint activator, uint target, int bonus = 0)
         {
             // Damage is credited once by the actual damage event, including resistance and absorption.
-            var amount = HostileAbilityBaseEnmity + Math.Max(0, bonus);
+            var profile = WeaponImpactProfile.Get(activator);
+            var amount = CalculateHostileAbilityEnmity(bonus, profile?.VolleyIndex ?? 0, profile?.VolleyCount ?? 1);
             Enmity.ModifyEnmity(activator, target, amount);
         }
+
+        public static int CalculateHostileAbilityEnmity(int bonus, int volleyIndex = 0, int volleyCount = 1) =>
+            WeaponImpactDamagePartition.Partition(HostileAbilityBaseEnmity + Math.Max(0, bonus), volleyIndex, volleyCount);
 
         private static void ApplyMissedHostileAbilityEnmity(uint activator, uint target)
         {
@@ -3168,6 +3179,8 @@ namespace SWLOR.Game.Server.Service
                 abilityDamagePercentAdjustment,
                 lowHPAbilityDamagePercentAdjustment);
             calculatedDamage = ApplyCombatReadinessToActivatedAbilityMagnitude(activator, calculatedDamage);
+            if (WeaponImpactProfile.Get(activator) is { VolleyCount: > 1 } partition)
+                calculatedDamage = WeaponImpactDamagePartition.Partition(calculatedDamage, partition.VolleyIndex, partition.VolleyCount);
             // Saber Ward / Aegis Eternal: re-type a share of an incoming physical hit into a real Force
             // instance (mitigated by Force resistance, shown as Force) before physical resistance.
             Combat.ApplyIncomingPhysicalToForceConversion(activator, target, damageType, ref calculatedDamage, targetStatusDamageAdjustment);
@@ -3391,6 +3404,8 @@ namespace SWLOR.Game.Server.Service
                 abilityDamagePercentAdjustment,
                 lowHPAbilityDamagePercentAdjustment);
             calculatedDamage = ApplyCombatReadinessToActivatedAbilityMagnitude(activator, calculatedDamage);
+            if (WeaponImpactProfile.Get(activator) is { VolleyCount: > 1 } partition)
+                calculatedDamage = WeaponImpactDamagePartition.Partition(calculatedDamage, partition.VolleyIndex, partition.VolleyCount);
             // Saber Ward / Aegis Eternal: re-type a share of an incoming physical hit into a real Force
             // instance (mitigated by Force resistance, shown as Force) before physical resistance.
             Combat.ApplyIncomingPhysicalToForceConversion(activator, target, damageType, ref calculatedDamage, targetStatusDamageAdjustment);
@@ -3794,6 +3809,16 @@ namespace SWLOR.Game.Server.Service
             public void CompleteRepeatedDamageBonusImpact(bool impactedTarget)
             {
                 _repeatedDamageBonusesConsumed |= impactedTarget;
+            }
+
+            public Action<TrackedAbilityImpact> CapturePartitionedDamageBonuses()
+            {
+                var damage = NextAbilityDamageBonus - StatusAppliedNextAttackDamageBonus;
+                var criticalRate = NextAbilityCriticalRatePercentAdjustment;
+                var defenseIgnore = NextAbilityDefenseIgnorePercentAdjustment;
+                var enmity = NextAttackEnmityBonus;
+                var criticalDamage = NextAbilityCriticalDamagePercentAdjustment;
+                return target => target.AddDamageBonuses(damage, criticalRate, defenseIgnore, enmity, 0, criticalDamage);
             }
 
             public void EnsureDamageBonuses()

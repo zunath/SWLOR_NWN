@@ -36,5 +36,7 @@ namespace SWLOR.CombatSim.Scenario
         public int LineTargets { get; set; } = 1;
         /// <summary>Optional rotation condition for a Flow spender.</summary>
         public int MinimumFlow { get; set; }
+        /// <summary>Explicit channel cancellation opportunity, measured from its start; no terrain or player movement is inferred.</summary>
+        public float? ChannelInterruptAfterSeconds { get; set; }
     }
 }

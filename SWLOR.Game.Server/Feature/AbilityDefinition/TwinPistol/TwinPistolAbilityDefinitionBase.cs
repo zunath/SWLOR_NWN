@@ -1,6 +1,7 @@
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.CombatService;
+using SWLOR.Game.Server.Service.AnimationService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.NWN.API.NWScript.Enum;
@@ -13,7 +14,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwinPistol
         protected static void ConfigurePairAttack(
             AbilityBuilder builder, FeatType feat, PerkType perk, string name, int level,
             RecastGroup recastGroup, float cooldown, TwinPistolAbilitySpec spec, float activationDelay = 0f,
-            Spell targetingSpell = Spell.Invalid)
+            Spell targetingSpell = Spell.Invalid, AnimationClip channelAnimation = null)
         {
             builder.Create(feat, perk)
                 .Name(name)
@@ -26,13 +27,19 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwinPistol
                 .HasActivationDelay(activationDelay)
                 .HasRecastDelay(recastGroup, cooldown)
                 .HasMaxRange(spec.MaxRange)
-                .UsesAuthoredAnimationAtImpact()
                 .UsesImpactAnimation(Animation.CastOutAnimation)
                 .DisplaysVisualEffectOnSuccessfulImpact(VisualEffect.Vfx_Com_Blood_Spark_Small)
                 .HasCustomValidation((actor, target, _, location) => TwinPistolAbility.Validate(actor, target, location, spec))
                 .HasActivationAction((actor, target, _, location) => TwinPistolAbility.Begin(actor, target, location, spec))
                 .HasImpactAction((actor, target, _, location) => TwinPistolAbility.Complete(actor, target, location, spec))
                 .RequirementStamina(spec.StaminaCost);
+
+            if (spec.VolleyCount > 1)
+                builder.IsChanneledAbility(TwinPistolAbility.InterruptChannel, suppressAutoAttacks: true)
+                    .HasFixedActivationDelay(spec.ChannelSeconds)
+                    .UsesAnimation(channelAnimation);
+            else
+                builder.UsesAuthoredAnimationAtImpact();
 
             if (spec.Movement == TwinPistolMovementType.FreeDestination)
             {

@@ -6,6 +6,9 @@ namespace SWLOR.Game.Server.Service.CombatService
         public int FlatPower { get; init; }
         public int WeaponPowerPercent { get; init; } = 100;
         public int StaminaCost { get; init; }
+        public int VolleyCount { get; init; } = 1;
+        public float VolleyIntervalSeconds { get; init; }
+        public float ChannelSeconds { get; init; }
         public int MomentumPowerPerCharge { get; init; }
         public bool GeneratesMomentum { get; init; }
         public bool SpendsMomentum { get; init; }

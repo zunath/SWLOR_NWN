@@ -175,6 +175,11 @@ namespace SWLOR.Game.Server.Feature
             GetLocalInt(activator, activation.ActivationId) == (int)ActivationStatus.Started
                 ? activation.ActivationId : string.Empty;
 
+        public static bool SuppressesAutoAttacks(uint activator) =>
+            _activeAbilityActivations.TryGetValue(activator, out var activation) &&
+            activation.Ability.SuppressesAutoAttacks &&
+            GetLocalInt(activator, activation.ActivationId) == (int)ActivationStatus.Started;
+
         public static bool InterruptAbilityActivation(uint activator, string expectedActivationId) =>
             InterruptAbilityActivation(activator, expectedActivationId, CombatRecordInterruptCause.Other);
 
@@ -613,6 +618,8 @@ namespace SWLOR.Game.Server.Feature
         {
             float CalculateActivationDelay()
             {
+                if (ability.HasFixedActivationDelay)
+                    return ability.ActivationDelay(activator, target, ability.AbilityLevel);
                 var delayReductionPercent = Combat.ConsumeNextAbilityDelayReductionPercent(activator, ability);
                 if (delayReductionPercent >= 100)
                     return 0f;
@@ -1000,6 +1007,8 @@ namespace SWLOR.Game.Server.Feature
                 Recast.ApplyRecastDelay(activator, ability.RecastGroup, recastDelay);
             }
 
+            if (GetLocalInt(activator, activationId) != (int)ActivationStatus.Started)
+                return;
             Activity.SetBusy(activator, ActivityStatusType.AbilityActivation);
             DelayCommand(activationDelay, () =>
             {

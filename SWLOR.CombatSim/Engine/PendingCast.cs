@@ -21,5 +21,11 @@ namespace SWLOR.CombatSim.Engine
         public IReadOnlyList<Combatant> WeaponTargets { get; init; }
         public IReadOnlyList<int> WeaponDamages { get; init; }
         public bool MovementStarted { get; set; }
+        public double ChannelStartedAt { get; init; }
+        public double ChannelEndsAt { get; init; }
+        public double AttackReadyBeforeChannel { get; init; }
+        public int VolleyIndex { get; set; }
+        public bool AnyWeaponHit { get; set; }
+        public bool WeaponTraitsCompleted { get; set; }
     }
 }

@@ -396,6 +396,9 @@ namespace SWLOR.CombatSim.Engine
                     !float.IsFinite(use.MovementSeconds) || use.MovementSeconds < 0 ||
                     use.MovementMeters.HasValue && (!float.IsFinite(use.MovementMeters.Value) || use.MovementMeters < 0 || use.MovementMeters > info.TwinPistol.MaxMovementMeters))
                     throw new InvalidDataException($"'{use.Feat}' has invalid movement, target, or Flow assumptions.");
+                if (use.ChannelInterruptAfterSeconds is { } interruptAfter &&
+                    (!info.IsChanneled || !float.IsFinite(interruptAfter) || interruptAfter <= 0 || interruptAfter >= info.CastSeconds))
+                    throw new InvalidDataException($"'{use.Feat}' has an invalid channel interruption assumption.");
             }
 
             // A damage profile picks an enemy target, so only party-wide effects can resolve alongside it.
@@ -610,6 +613,17 @@ namespace SWLOR.CombatSim.Engine
         private void ProcessCast(Combatant caster)
         {
             var cast = caster.Casting;
+            if (cast?.Ability is { IsChanneled: true, TwinPistol: not null } &&
+                cast.Use.ChannelInterruptAfterSeconds is { } interruptAfter &&
+                _now + 1e-9 >= cast.ChannelStartedAt + interruptAfter)
+            {
+                caster.Casting = null;
+                CompleteTwin(caster, cast);
+                caster.Stats.InterruptedCasts++;
+                caster.NextActionAt = _now + caster.Spec.ReactionSeconds;
+                caster.NextAttackAt = Math.Max(cast.AttackReadyBeforeChannel, _now);
+                return;
+            }
             if (cast == null || _now < cast.ImpactAt)
                 return;
 
@@ -708,6 +722,9 @@ namespace SWLOR.CombatSim.Engine
                 Effect = effect,
                 Target = target,
                 ImpactAt = _now + info.CastSeconds,
+                ChannelStartedAt = _now,
+                ChannelEndsAt = _now + info.CastSeconds,
+                AttackReadyBeforeChannel = caster.NextAttackAt,
                 InterruptedByDamage = effect?.Kind == EffectKind.Revive
                                       && _rules.Revives == ReviveRule.BlockedInPvpLimitedInPve,
                 FpCost = fp,
@@ -724,6 +741,15 @@ namespace SWLOR.CombatSim.Engine
             // The game stops the attack for an ability and resumes it 0.1s after the impact, or after queueing a weapon
             // ability (QueueWeaponAbility), so a swing due now cannot carry the ability queued with it.
             caster.NextAttackAt = Math.Max(caster.NextAttackAt, _now + info.CastSeconds + info.ImpactDelaySeconds + ResumeAttackDelaySeconds);
+            if (info.IsChanneled && info.TwinPistol != null)
+            {
+                // Channels resume ActionAttack directly at completion, unlike the ordinary
+                // impact approximation above. The native last-swing timer is retained.
+                caster.NextAttackAt = Math.Max(cast.AttackReadyBeforeChannel, cast.ChannelEndsAt);
+                cast.ImpactAt = _now;
+                Resolve(caster, cast);
+                return;
+            }
             if (info.CastSeconds <= 0)
             {
                 Resolve(caster, cast);
@@ -796,6 +822,8 @@ namespace SWLOR.CombatSim.Engine
                 }
                 caster.RecastReadyAt[cast.Ability.RecastGroup] = _now + _rules.GetRecastSeconds(cast.Ability);
                 caster.LastUsedAt[cast.Use.Feat] = _now;
+                if (cast.Ability.IsChanneled && twin != null)
+                    cast.Activated = true;
 
                 // A delayed impact is paid for and on recast now; the caster stays busy until it lands.
                 if (cast.Ability.ImpactDelaySeconds > 0)

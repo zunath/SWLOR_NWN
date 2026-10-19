@@ -31,6 +31,9 @@ namespace SWLOR.Game.Server.Feature
         [NWNEventHandler(ScriptName.OnAreaExit)]
         public static void OnAreaExit() => ClearCombat(GetExitingObject());
 
+        [NWNEventHandler(ScriptName.OnAreaEnter)]
+        public static void OnAreaEnter() => PairedRangedTraits.TrackMovement(GetEnteringObject());
+
         [NWNEventHandler(ScriptName.OnModuleDeath)]
         public static void OnDeath() => ClearCombat(GetLastPlayerDied(), CombatRecordInterruptCause.Died);
 
@@ -62,22 +65,31 @@ namespace SWLOR.Game.Server.Feature
             PairedRangedTraits.ClearActor(actor);
         }
 
+        [NWNEventHandler(ScriptName.OnModuleEnter)]
+        public static void TrackEnteredPlayer()
+        {
+            var actor = GetEnteringObject();
+            DelayCommand(1f, () => PairedRangedTraits.TrackMovement(actor));
+        }
+
         [NWNEventHandler(ScriptName.OnIntervalPC6Seconds)]
         public static void Reconcile()
         {
             var actor = OBJECT_SELF;
             if (GetIsDead(actor) || GetCurrentHitPoints(actor) <= 0) ClearCombat(actor, CombatRecordInterruptCause.Died);
-            else if (!GetIsInCombat(actor) && !TwinPistolAbility.HasActiveActivation(actor) && !WeaponRepositioning.IsMoving(actor))
-                ClearCombat(actor);
+            else if (!GetIsInCombat(actor) && string.IsNullOrWhiteSpace(UsePerkFeat.GetActiveAbilityActivationId(actor)) &&
+                     !UsePerkFeat.HasQueuedWeaponAbility(actor) && !TwinPistolAbility.HasActiveActivation(actor) && !WeaponRepositioning.IsMoving(actor))
+                ClearCombat(actor, preserveMovement: true);
             else PairedRangedTraits.Reconcile(actor);
+            PairedRangedTraits.ReconcileMovementTracking(actor);
         }
 
-        private static void ClearCombat(uint actor, CombatRecordInterruptCause cause = CombatRecordInterruptCause.Other)
+        private static void ClearCombat(uint actor, CombatRecordInterruptCause cause = CombatRecordInterruptCause.Other, bool preserveMovement = false)
         {
             PairedRangedAttackCycle.Cancel(actor);
             TwinPistolAbility.Cancel(actor, cause);
             RangedWeaponAttackContext.Clear(actor);
-            PairedRangedTraits.ClearCombatState(actor);
+            PairedRangedTraits.ClearCombatState(actor, preserveMovement);
             TwinPistolMastery.ClearTrialState(actor);
             Combat.ClearAttackSwingDebt(actor);
         }

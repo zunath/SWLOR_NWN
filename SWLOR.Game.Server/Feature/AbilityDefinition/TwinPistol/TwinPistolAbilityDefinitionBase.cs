@@ -34,6 +34,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwinPistol
                 .HasImpactAction((actor, target, _, location) => TwinPistolAbility.Complete(actor, target, location, spec))
                 .RequirementStamina(spec.StaminaCost);
 
+            if (spec.MomentumPowerPerCharge > 0)
+                builder.HasWeaponAbilityFlowDamagePerCharge(spec.MomentumPowerPerCharge);
+
             if (spec.VolleyCount > 1)
                 builder.IsChanneledAbility(TwinPistolAbility.InterruptChannel, suppressAutoAttacks: true)
                     .HasFixedActivationDelay(spec.ChannelSeconds)

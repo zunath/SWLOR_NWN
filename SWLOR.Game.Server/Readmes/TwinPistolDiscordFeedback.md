@@ -21,7 +21,7 @@ Both: rank 8/22/45; SP 2/4/4 per purchase
 ```
 Maximum legal combined investment: 110 SP; optional Armor Dual Wield adds 9. Neither handling choice blocks later unrelated perks.
 
-Tables use maximum rank. D = each impact source weapon's DMG before normal calculations. STM/CD = stamina/cooldown. Implemented on the feature branch; not deployed. Controlled comparisons support these values; broader playtesting remains.
+Tables use maximum rank. D = each impact source weapon's DMG before normal calculations. STM/CD = stamina/cooldown. Implemented on the feature branch; not deployed. Earlier comparisons predate the broad passive revision; current validation is recorded in the PR.
 
 ## Message 2 of 5
 
@@ -38,12 +38,13 @@ Alternating Fire         | Every 3 weapon auto-attack hits:
 Matched Rhythm           | +8% Haste with any weapon.
 8/22/45; 10 SP            | Cannot purchase Paired Handling.
 
-Focused Burst            | Stationary 1.5s channel, 3 volleys.
-                         | D+24 TOTAL per weapon across all volleys.
+Focused Burst            | Three attacks over 1.5 seconds.
+                         | Each weapon deals D+24 TOTAL, split
+                         | between those attacks.
 10/30/38; 10 SP           | STM/CD: 10 / 24s.
 
-Balanced Grip            | +5 ACC to any eligible off-hand
-15; 4 SP                 | attack weapon. No shield bonus.
+Balanced Grip            | +5 ACC. No equipment-slot restriction.
+15; 4 SP                 |
 
 Controlled Burst         | One enemy, each weapon floor(.75D)+13.
 18/32; 6 SP              | Restore 3 STM once if any impact hits.
@@ -70,8 +71,9 @@ Converging Fire    | After 3 weapon auto-attack hits on one foe:
 25; 4 SP           | +5% weapon auto-attack damage to it for 6s.
                    | Hits refresh; target changes clear.
 
-Cool Under Fire   | Direct hostile damage: next Twin-skill
-35; 2 SP           | ability costs 2 less STM. One charge,
+Cool Under Fire   | Direct hostile damage: next combat
+35; 2 SP           | ability that costs STM costs 2 less.
+                   | One charge,
                    | lasts 10s; 10s trigger cooldown.
 
 Twin Suns         | One enemy, each weapon D+20. Next 6
@@ -91,9 +93,11 @@ Blaster Slide          | Retreat 4m, then each weapon D+16 at
 2/12/28/40; 12 SP       | selected foe. Needs 2m safe movement.
                        | STM/CD: 10 / 18s.
 
-Flow               | Slide/Rush moving 2m+ and landing a
-5; 2 SP                | hostile hit: +1 charge, max 3, 12s.
-                       | Each: +2 weapon auto-attack ACC with any weapon.
+Flow                   | Move 2m+, then land a hostile weapon hit:
+5; 2 SP                | +1 charge, max 3, 12s. Each grants
+                       | +2 auto-attack ACC. Next hostile weapon
+                       | ability that pays STM spends all for
+                       | +4 DMG each, once per weapon per ability.
 
 Paired Handling        | +10% weapon auto-attack damage.
 8/22/45; 10 SP         | Cannot purchase Matched Rhythm.
@@ -103,15 +107,15 @@ Grapple Shot           | Close up to 6m, stop 1.5m from foe.
                        | Works already close or at zero charges.
                        | STM/CD: 10 / 24s.
 
-Changing Angles        | Crossfire move 2m+ and hostile hit:
-15; 4 SP               | next Crossfire ability +5 ACC.
+Changing Angles        | Move 2m+, then land a hostile weapon hit:
+15; 4 SP               | next hostile weapon ability +5 ACC.
                        | One charge, 8s; 10s trigger cooldown.
 
 Pistol Rush            | Free ground dash 2-6m; up to 3 foes
 18/32; 6 SP            | in a 4m-wide travel line. Each weapon
                        | floor(.60D)+12. STM/CD: 10 / 30s.
 ```
-Slide/Rush earn at most one Flow per cast. Empty-space Rush is allowed but earns none. All movement respects roots, collision and terrain, with a shared 2s movement lockout. No invulnerability or cleanse.
+Walking and other skills' repositioning also qualify. Extra hands, targets and repeated hits cannot earn extra Flow from the same reposition. Empty-space Rush is allowed but earns none. All movement respects roots, collision and terrain, with a shared 2s movement lockout. No invulnerability or cleanse.
 
 ## Message 5 of 5
 
@@ -123,7 +127,7 @@ Crossfire Stance   | Any weapon: +10% Haste, +10% movement,
 20; 4 SP           | 18s Flow. ALL weapon auto-attack damage x0.80.
                    | Activated damage unchanged. STM/CD: 0 / 30s.
 
-Follow Through    | Grapple/Final landing any hit restores
+Follow Through    | Any Flow spender landing a hit restores
 25; 4 SP           | 1 STM per captured Flow spent, max 3.
                    | Once per cast; 12s trigger cooldown.
 
@@ -135,7 +139,7 @@ Final Salvo       | Stationary, one foe, each weapon D+20;
 50 + mastery; 6 SP | +6 per Flow spent, max D+38.
                    | STM/CD: 15 / 90s.
 ```
-Grapple/Final capture charges at cast start and spend those on valid paid completion, even on a miss. Later-earned charges are preserved. Swaps preserve charges/expiry; combat end clears them. Refunds/discounts retain at least 1 STM paid.
+Paid hostile weapon abilities from any skill capture and spend Flow once, even on a miss. Later-earned charges are preserved. Free abilities preserve Flow. Final Salvo uses +6 DMG per charge instead of +4. Extra targets, hits and channel waves do not multiply the bonus or refund. Swaps preserve charges/expiry; combat end clears them. Refunds cannot exceed paid STM.
 
 Shared cooldowns: Volley/Slide 18s; Focused/Grapple/Double Shot 24s; Controlled/Rush/Fan the Hammer 30s; both finishers share global Capstone 90s. Quick Draw stays independent. New multi-impact abilities cap generic weapon procs at one per target/cast and critical-trigger notifications at one per cast.
 

@@ -146,6 +146,13 @@ namespace SWLOR.Game.Server.Service.AbilityService
             return this;
         }
 
+        public AbilityBuilder HasWeaponAbilityFlowDamagePerCharge(int damage)
+        {
+            if (damage < 0) throw new ArgumentOutOfRangeException(nameof(damage));
+            _activeAbility.WeaponAbilityFlowDamagePerCharge = damage;
+            return this;
+        }
+
         /// <summary>Retains a timed native impact gesture without adding an action-queue delay.</summary>
         public AbilityBuilder UsesImmediateNativeImpactAnimation(float duration)
         {

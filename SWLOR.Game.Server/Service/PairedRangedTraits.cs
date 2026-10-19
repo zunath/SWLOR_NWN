@@ -4,6 +4,8 @@ using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.StatService;
 using SWLOR.Game.Server.Service.StatusEffectService;
+using SWLOR.Game.Server.Service.AbilityService;
+using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.Game.Server.Service
 {
@@ -11,9 +13,89 @@ namespace SWLOR.Game.Server.Service
     public static class PairedRangedTraits
     {
         private static readonly Dictionary<uint, PairedRangedTraitState> States = new();
+        private static readonly Dictionary<uint, WeaponMovementWindow> MovementWindows = new();
+
+        public static void TrackMovement(uint actor)
+        {
+            if (!CanReceiveTraitEvents(actor) || MovementWindows.ContainsKey(actor) ||
+                Read(actor, StatType.PairedRangedMomentumMaximum) <= 0 &&
+                Read(actor, StatType.PairedRangedMovementNextAbilityAccuracy) <= 0) return;
+            var window = new WeaponMovementWindow();
+            MovementWindows[actor] = window;
+            ObserveMovement(actor, window);
+            void Sample()
+            {
+                if (!CanReceiveTraitEvents(actor) || !MovementWindows.TryGetValue(actor, out var current) || current != window)
+                    return;
+                ObserveMovement(actor, window);
+                AssignCommand(GetModule(), () => DelayCommand(.25f, Sample));
+            }
+            AssignCommand(GetModule(), () => DelayCommand(.25f, Sample));
+        }
+
+        private static void ObserveMovement(uint actor, WeaponMovementWindow window) =>
+            window.Observe(DateTime.UtcNow, GetArea(actor), GetPosition(actor));
+
+        public static void RecordLandedWeaponHit(uint actor, uint target)
+        {
+            if (!CanReceiveTraitEvents(actor) || !GetIsObjectValid(target) || target == actor ||
+                !GetIsReactionTypeHostile(target, actor)) return;
+            TrackMovement(actor);
+            if (!MovementWindows.TryGetValue(actor, out var window)) return;
+            ObserveMovement(actor, window);
+            if (!window.TryConsumeForHit(GetArea(actor), GetPosition(actor))) return;
+            var state = GetState(actor);
+            state.RecordMovementHit(DateTime.UtcNow, GetConfiguration(actor));
+            Sync(actor, state);
+        }
+
+        public static WeaponAbilityTraitActivation CaptureWeaponAbility(uint actor, AbilityDetail ability)
+        {
+            TrackMovement(actor);
+            if (!WeaponAbilityTraitPolicy.IsHostileWeaponAbility(ability) || !CanReceiveTraitEvents(actor)) return null;
+            if (Read(actor, StatType.PairedRangedMomentumMaximum) <= 0 &&
+                Read(actor, StatType.PairedRangedMovementNextAbilityAccuracy) <= 0)
+                return new WeaponAbilityTraitActivation(
+                    new PairedRangedAbilityTraitsSnapshot(Guid.NewGuid(), false, false, 0, 0) { StateGeneration = -1 }, 0);
+            var configuration = GetConfiguration(actor);
+            return new WeaponAbilityTraitActivation(CaptureAbility(actor, true, true),
+                ability.WeaponAbilityFlowDamagePerCharge ?? configuration.MomentumDamagePerCharge)
+                { PrimaryWeapon = Combat.GetAbilityAttackWeapon(actor, ability.SkillType) };
+        }
+
+        public static void CommitWeaponAbility(uint actor, AbilityDetail ability, WeaponAbilityTraitActivation activation)
+        {
+            if (activation == null || activation.IsCommitted) return;
+            activation.SetPaidStamina(Combat.GetAbilityStaminaPaid(actor, ability));
+            activation.IsCommitted = activation.Snapshot.StateGeneration == -1 || CommitAbility(actor, activation.Snapshot);
+        }
+
+        public static void CompleteWeaponAbilityHit(uint actor, WeaponAbilityTraitActivation activation)
+        {
+            if (activation?.IsCommitted != true || activation.RecoveryCompleted || activation.Snapshot.StateGeneration == -1) return;
+            activation.RecoveryCompleted = true;
+            CompleteAbility(actor, activation.Snapshot, true, 0f, false, activation.PaidStamina, 0);
+        }
+
+        public static void CompleteIntrinsicAbility(uint actor, WeaponAbilityTraitActivation activation, bool anyHit,
+            int paidStamina, int restoreStamina, int bonusAttempts, int bonusDamagePercent, int bonusSeconds)
+        {
+            if (activation == null || activation.IntrinsicCompleted) return;
+            activation.IntrinsicCompleted = true;
+            if (bonusAttempts > 0 && bonusSeconds > 0)
+            {
+                var state = GetState(actor);
+                state.GrantOrdinaryBonus(DateTime.UtcNow, bonusAttempts, bonusDamagePercent, bonusSeconds);
+                Sync(actor, state);
+            }
+            if (anyHit && restoreStamina > 0)
+                Combat.RestoreAbilityHitStamina(actor, Ability.GetActiveAbilityImpactSummary(actor)?.Ability,
+                    Math.Min(Math.Max(0, paidStamina), restoreStamina));
+        }
 
         public static PairedRangedOrdinarySnapshot RecordOrdinaryAttempt(uint actor, uint target, long rollId, bool companion = false)
         {
+            TrackMovement(actor);
             if (!CanReceiveTraitEvents(actor))
                 return new PairedRangedOrdinarySnapshot(0, 0);
             TwinPistolMastery.RecordTargetChange(actor, target);
@@ -31,6 +113,9 @@ namespace SWLOR.Game.Server.Service
             if (!CanReceiveTraitEvents(actor) || !GetIsObjectValid(target) || target == actor ||
                 !GetIsReactionTypeHostile(target, actor))
                 return;
+            TrackMovement(actor);
+            if (MovementWindows.TryGetValue(actor, out var movement) && !movement.TryRememberOrdinaryHit(rollId)) return;
+            RecordLandedWeaponHit(actor, target);
             if (!States.TryGetValue(actor, out var state)) return;
             var stamina = state.RecordOrdinaryHit(DateTime.UtcNow, GetConfiguration(actor), target, rollId);
             if (stamina > 0)
@@ -138,10 +223,23 @@ namespace SWLOR.Game.Server.Service
 
         public static void Reconcile(uint actor)
         {
+            ReconcileMovementTracking(actor);
             if (!States.TryGetValue(actor, out var state))
                 return;
             state.Reconcile(DateTime.UtcNow, GetConfiguration(actor));
             Sync(actor, state);
+        }
+
+        public static void ReconcileMovementTracking(uint actor)
+        {
+            if (MovementWindows.TryGetValue(actor, out var movement) &&
+                Read(actor, StatType.PairedRangedMomentumMaximum) <= 0 &&
+                Read(actor, StatType.PairedRangedMovementNextAbilityAccuracy) <= 0)
+            {
+                MovementWindows.Remove(actor);
+                movement.Clear();
+            }
+            TrackMovement(actor);
         }
 
         public static void ExitExtendedMomentum(uint actor)
@@ -153,7 +251,7 @@ namespace SWLOR.Game.Server.Service
             Sync(actor, state);
         }
 
-        public static void ClearCombatState(uint actor) => ClearTransientState(actor);
+        public static void ClearCombatState(uint actor, bool preserveMovement = false) => ClearTransientState(actor, preserveMovement);
 
         public static void ClearEquipmentState(uint actor)
         {
@@ -166,8 +264,9 @@ namespace SWLOR.Game.Server.Service
             States.Remove(actor);
         }
 
-        private static void ClearTransientState(uint actor)
+        private static void ClearTransientState(uint actor, bool preserveMovement = false)
         {
+            if (!preserveMovement && MovementWindows.Remove(actor, out var movement)) movement.Clear();
             TwinPistolMastery.ClearTrialState(actor);
             if (!States.TryGetValue(actor, out var state))
                 return;
@@ -224,6 +323,7 @@ namespace SWLOR.Game.Server.Service
                 MomentumMaximum = Read(actor, StatType.PairedRangedMomentumMaximum),
                 MomentumDurationSeconds = Read(actor, StatType.PairedRangedMomentumDurationSeconds),
                 MomentumAccuracyPerCharge = Read(actor, StatType.PairedRangedMomentumAccuracyPerCharge),
+                MomentumDamagePerCharge = Read(actor, StatType.MovementHitWeaponAbilityDamagePerCharge),
                 MomentumStaminaRestorePerCharge = Read(actor, StatType.PairedRangedMomentumStaminaRestorePerCharge),
                 MomentumStaminaRestoreMaximum = Read(actor, StatType.PairedRangedMomentumStaminaRestoreMaximum),
                 MomentumRestoreCooldownSeconds = Read(actor, StatType.PairedRangedMomentumRestoreCooldownSeconds),

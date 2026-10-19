@@ -23,6 +23,11 @@ public sealed class WeaponLoadoutSpec
     public int HastePercent { get; set; }
     public int OrdinaryCriticalRateAdjustment { get; set; }
     public int AbilityCriticalRateAdjustment { get; set; }
+    /// <summary>
+    /// Explicit total eligible Single Weapon rating bonus: 20 natural, or 60 with Doublehand III.
+    /// Supply 0 for paired, shielded, double or two-handed loadouts. Applies before damage rolls,
+    /// including activated weapon abilities; this effective-stat model does not infer item types.
+    /// </summary>
     public int SingleWeaponDamagePercent { get; set; }
     public bool HasOffhand => OffhandDelay > 0;
     public int DistinctAttackItemCount => HasOffhand && !OffhandSharesMainItem ? 2 : 1;
@@ -36,6 +41,7 @@ public sealed class WeaponLoadoutSpec
             Attack is < 1 or > 10000 || Accuracy is < 0 or > 10000 ||
             DamageAbility is < 0 or > 255 || Perception is < 0 or > 255 || SkillRank is < 0 or > 50 || WeaponRank is < 0 or > 50 ||
             HastePercent is < -50 or > 50 || SingleWeaponDamagePercent is < 0 or > 100 ||
+            (HasOffhand && SingleWeaponDamagePercent > 0) ||
             OrdinaryCriticalRateAdjustment is < -100 or > 100 || AbilityCriticalRateAdjustment is < -100 or > 100)
             throw new InvalidDataException("WeaponLoadout has an invalid rating, damage, delay, or percentage.");
     }

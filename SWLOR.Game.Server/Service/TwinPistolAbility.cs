@@ -65,7 +65,7 @@ namespace SWLOR.Game.Server.Service
                 GetEligibleWeapons(actor).Select(weapon =>
                     WeaponShotProfile.Capture(actor, weapon, SkillType.TwinPistol, AbilityType.Perception)).ToArray(),
                 targets, spec.Movement == TwinPistolMovementType.FreeDestination ? GetAttackTarget(actor) : target, spec,
-                PairedRangedTraits.CaptureAbility(actor, spec.IsCrossfire, spec.SpendsMomentum));
+                UsePerkFeat.GetActiveWeaponTraits(actor));
             return true;
         }
 
@@ -75,7 +75,7 @@ namespace SWLOR.Game.Server.Service
             var ability = Ability.GetActiveAbilityImpactSummary(actor)?.Ability;
             var paidStamina = Combat.GetAbilityStaminaPaid(actor, ability);
             var traits = activation.Traits;
-            if (!IsCurrent(actor, activation) || !PairedRangedTraits.CommitAbility(actor, traits)) return;
+            if (!IsCurrent(actor, activation)) return;
             if (spec.VolleyCount > 1)
             {
                 BeginChannel(actor, activation, paidStamina);
@@ -199,26 +199,26 @@ namespace SWLOR.Game.Server.Service
                 {
                     var activation = channel.Activation;
                     var spec = activation.Spec;
-                    PairedRangedTraits.CompleteAbility(actor, activation.Traits, channel.AnyHit, 0f,
-                        spec.GeneratesMomentum, channel.PaidStamina, spec.RestoreStaminaOnHit,
+                    PairedRangedTraits.CompleteIntrinsicAbility(actor, activation.Traits, channel.AnyHit,
+                        channel.PaidStamina, spec.RestoreStaminaOnHit,
                         spec.OrdinaryBonusAttempts, spec.OrdinaryBonusDamagePercent, spec.OrdinaryBonusSeconds);
-                    TwinPistolMastery.RecordAbility(actor, channel.AnyHit, 0f, spec, activation.Traits.MomentumSpent);
+                    TwinPistolMastery.RecordAbility(actor, channel.AnyHit, 0f, spec, activation.Traits?.Snapshot.MomentumSpent ?? 0);
                 }
             }
             finally { Combat.CompleteDeferredAbilityStaminaCostContext(actor, channel.Ability); }
         }
 
-        private static void Resolve(uint actor, Activation activation, PairedRangedAbilityTraitsSnapshot traits,
+        private static void Resolve(uint actor, Activation activation, WeaponAbilityTraitActivation traits,
             int paidStamina, float distanceTravelled)
         {
             var spec = activation.Spec;
             var limits = new WeaponImpactActivation();
             var anyHit = ResolveVolley(actor, activation, limits, 0);
             if (!GetIsObjectValid(actor) || GetIsDead(actor)) return;
-            PairedRangedTraits.CompleteAbility(actor, traits, anyHit, distanceTravelled, spec.GeneratesMomentum,
+            PairedRangedTraits.CompleteIntrinsicAbility(actor, traits, anyHit,
                 paidStamina, spec.RestoreStaminaOnHit, spec.OrdinaryBonusAttempts,
                 spec.OrdinaryBonusDamagePercent, spec.OrdinaryBonusSeconds);
-            TwinPistolMastery.RecordAbility(actor, anyHit, distanceTravelled, spec, traits.MomentumSpent);
+            TwinPistolMastery.RecordAbility(actor, anyHit, distanceTravelled, spec, traits?.Snapshot.MomentumSpent ?? 0);
             Ability.PlayAbilityImpactAnimation(actor);
         }
 
@@ -239,10 +239,10 @@ namespace SWLOR.Game.Server.Service
                     var offhandAccuracy = weapon.Weapon == activation.OffHand
                         ? Stat.GetStatAdjustment(actor, StatType.PairedRangedCompanionAccuracy) : 0;
                     using var source = new WeaponImpactProfile(actor, scaledWeapon, limits,
-                        traits.AccuracyAdjustment + offhandAccuracy, volleyIndex, spec.VolleyCount);
+                        offhandAccuracy, volleyIndex, spec.VolleyCount);
                     var handHit = false;
                     Ability.ApplyCombatImpact(actor, target, GetLocation(target), SkillType.TwinPistol,
-                        spec.FlatPower + traits.MomentumSpent * spec.MomentumPowerPerCharge, 0, null, false,
+                        spec.FlatPower, 0, null, false,
                         damageType: weapon.DamageType, afterSuccessfulHit: _ => { anyHit = true; handHit = true; },
                         playImpactAnimation: false, combatImpactDamageAbility: weapon.DamageAbility,
                         isAreaImpact: spec.MaximumTargets > 1);

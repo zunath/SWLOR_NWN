@@ -186,6 +186,8 @@ namespace SWLOR.Game.Server.Native
                     Stat.GetAccuracyNative(attacker, weapon, abilitySkillType, accuracyAbility);
                 if (shot.Ordinary)
                     attackerAccuracy += shot.Bonuses.AccuracyAdjustment;
+                else
+                    attackerAccuracy += UsePerkFeat.GetQueuedWeaponTraitAccuracy(attacker.m_idSelf);
                 attackerAccuracy = Combat.ApplyStatusSourceAccuracyModifiers(
                     attacker.m_idSelf,
                     defender.m_idSelf,

@@ -5942,6 +5942,8 @@ namespace SWLOR.Game.Server.Service
             if (WeaponImpactProfile.Get(activator)?.Activation.TryHitRiders(target) == false)
                 return;
 
+            Ability.RecordSuccessfulWeaponAbilityHit(activator, target, skillType);
+
             ApplyHostileAbilityPartyBuff(activator, ability, damage, statusApplied);
 
             if (firstHostileAbilityHitDamageBonusApplied)
@@ -8771,7 +8773,7 @@ namespace SWLOR.Game.Server.Service
         {
             if (WeaponImpactProfile.Get(attacker) is { } explicitProfile)
                 return ApplyStatusSourceAccuracyModifiers(attacker, defender,
-                    explicitProfile.Weapon.Accuracy + explicitProfile.AccuracyAdjustment);
+                    explicitProfile.Weapon.Accuracy + explicitProfile.AccuracyAdjustment + Ability.GetWeaponTraitAccuracy(attacker));
             var weapon = GetRelevantSkillWeapon(attacker, skillType);
             var usesForceAccuracy = skillType == SkillType.Force;
             var accuracyStatOverride = usesForceAccuracy ? AbilityType.Willpower : statOverride;
@@ -8782,8 +8784,10 @@ namespace SWLOR.Game.Server.Service
                 skillType,
                 skillLevelOverride,
                 ignoreWeaponAccuracyStatOverride: usesForceAccuracy);
-            return ApplyStatusSourceAccuracyModifiers(attacker, defender, accuracy);
+            return ApplyStatusSourceAccuracyModifiers(attacker, defender, accuracy + Ability.GetWeaponTraitAccuracy(attacker));
         }
+
+        public static uint GetAbilityAttackWeapon(uint creature, SkillType skillType) => GetRelevantSkillWeapon(creature, skillType);
 
         private static uint GetRelevantSkillWeapon(uint creature, SkillType skillType)
         {

@@ -1,5 +1,6 @@
 using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.StatService;
+using System.Numerics;
 
 namespace SWLOR.CombatSim.Engine;
 
@@ -10,6 +11,8 @@ public sealed class WeaponTraitState
     public OrdinaryAttackHasteState Haste { get; } = new();
     public long RollId { get; set; }
     public double MovementReadyAt { get; set; }
+    public WeaponMovementWindow Movement { get; } = new();
+    public Vector3 Position { get; set; }
 
     public static PairedRangedTraitConfiguration Configuration(Combatant actor) => new()
     {
@@ -27,6 +30,7 @@ public sealed class WeaponTraitState
         MomentumMaximum = actor.GetStat(StatType.PairedRangedMomentumMaximum),
         MomentumDurationSeconds = actor.GetStat(StatType.PairedRangedMomentumDurationSeconds),
         MomentumAccuracyPerCharge = actor.GetStat(StatType.PairedRangedMomentumAccuracyPerCharge),
+        MomentumDamagePerCharge = actor.GetStat(StatType.MovementHitWeaponAbilityDamagePerCharge),
         MomentumStaminaRestorePerCharge = actor.GetStat(StatType.PairedRangedMomentumStaminaRestorePerCharge),
         MomentumStaminaRestoreMaximum = actor.GetStat(StatType.PairedRangedMomentumStaminaRestoreMaximum),
         MomentumRestoreCooldownSeconds = actor.GetStat(StatType.PairedRangedMomentumRestoreCooldownSeconds),

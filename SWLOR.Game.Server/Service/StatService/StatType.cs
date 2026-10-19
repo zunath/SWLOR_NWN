@@ -6330,6 +6330,10 @@ namespace SWLOR.Game.Server.Service.StatService
         [StatType(StatTypeCategory.BeneficialWhenPositive, StatTypeAggregation.Maximum)]
         OrdinaryAttackHasteRampDurationSeconds = 1130,
 
+        /// <summary>Captured Flow damage budget per charge for one hostile weapon ability activation.</summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive, StatTypeAggregation.Maximum)]
+        MovementHitWeaponAbilityDamagePerCharge = 1166,
+
 
     }
 

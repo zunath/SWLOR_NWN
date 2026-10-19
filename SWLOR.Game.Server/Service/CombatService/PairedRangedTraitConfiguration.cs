@@ -17,6 +17,7 @@ namespace SWLOR.Game.Server.Service.CombatService
         public int MomentumMaximum { get; init; }
         public int MomentumDurationSeconds { get; init; }
         public int MomentumAccuracyPerCharge { get; init; }
+        public int MomentumDamagePerCharge { get; init; }
         public int MomentumStaminaRestorePerCharge { get; init; }
         public int MomentumStaminaRestoreMaximum { get; init; }
         public int MomentumRestoreCooldownSeconds { get; init; }

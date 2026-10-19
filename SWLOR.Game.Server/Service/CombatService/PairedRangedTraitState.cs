@@ -145,6 +145,18 @@ namespace SWLOR.Game.Server.Service.CombatService
             _evasionGrantReady = now.AddSeconds(configuration.EvasionMomentumCooldownSeconds);
         }
 
+        public void RecordMovementHit(DateTime now, PairedRangedTraitConfiguration configuration)
+        {
+            Reconcile(now, configuration);
+            GainMomentum(now, configuration);
+            if (configuration.MovementNextAbilityAccuracy > 0 && now >= _movementAccuracyGrantReady)
+            {
+                MovementAccuracyExpires = now.AddSeconds(configuration.MovementAccuracyDurationSeconds);
+                _movementAccuracyChargeId++;
+                _movementAccuracyGrantReady = now.AddSeconds(configuration.MovementAccuracyCooldownSeconds);
+            }
+        }
+
         public PairedRangedAbilityTraitsSnapshot BeginAbility(
             DateTime now, PairedRangedTraitConfiguration configuration, bool crossfire, bool spendsMomentum)
         {
@@ -184,7 +196,7 @@ namespace SWLOR.Game.Server.Service.CombatService
                 var captured = new HashSet<long>(snapshot.MomentumChargeIds);
                 _momentumCharges.RemoveAll(captured.Contains);
             }
-            if (snapshot.IsCrossfire && snapshot.MovementAccuracyChargeId != 0 &&
+            if (snapshot.UsesMovementAccuracy && snapshot.MovementAccuracyChargeId != 0 &&
                 snapshot.MovementAccuracyChargeId == _movementAccuracyChargeId)
                 MovementAccuracyExpires = default;
             return true;
@@ -215,7 +227,7 @@ namespace SWLOR.Game.Server.Service.CombatService
                 GainMomentum(now, configuration);
 
             // The source activation consumed its own snapshot before granting this new charge.
-            if (snapshot.IsCrossfire && distanceTravelled >= 2f && configuration.MovementNextAbilityAccuracy > 0 && now >= _movementAccuracyGrantReady)
+            if (snapshot.UsesMovementAccuracy && distanceTravelled >= 2f && configuration.MovementNextAbilityAccuracy > 0 && now >= _movementAccuracyGrantReady)
             {
                 MovementAccuracyExpires = now.AddSeconds(configuration.MovementAccuracyDurationSeconds);
                 _movementAccuracyChargeId++;
@@ -246,6 +258,13 @@ namespace SWLOR.Game.Server.Service.CombatService
             BonusAttempts = 0;
             BonusExpires = default;
             // Proc grant/recovery cooldowns and deduplication history deliberately survive resets.
+        }
+
+        public void GrantOrdinaryBonus(DateTime now, int attempts, int damagePercent, int seconds)
+        {
+            BonusAttempts = attempts;
+            BonusDamagePercent = damagePercent;
+            BonusExpires = now.AddSeconds(seconds);
         }
 
         public void RecordTargetChange(uint target)

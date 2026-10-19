@@ -1,4 +1,5 @@
 using SWLOR.CombatSim.Scenario;
+using SWLOR.CombatSim.Effects;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.StatService;
@@ -11,6 +12,21 @@ public sealed partial class Simulation
     // require native engine coverage. This simulator never claims to execute those mechanisms.
     private DateTime WeaponNow => DateTime.UnixEpoch.AddSeconds(_now);
     private uint TargetId(Combatant target) => (uint)(_combatants.IndexOf(target) + 1);
+
+    /// <summary>Declared completed travel only; fixtures and Twin travel supply actual movement opportunities.</summary>
+    internal void RecordWeaponMovement(Combatant actor, float meters)
+    {
+        if (!float.IsFinite(meters) || meters < 0) throw new ArgumentOutOfRangeException(nameof(meters));
+        actor.WeaponTraits.Position += new System.Numerics.Vector3(meters, 0, 0);
+        actor.WeaponTraits.Movement.Observe(WeaponNow, 1, actor.WeaponTraits.Position, false);
+    }
+
+    internal void RecordLandedWeaponHit(Combatant actor)
+    {
+        actor.WeaponTraits.Movement.Observe(WeaponNow, 1, actor.WeaponTraits.Position, false);
+        if (actor.WeaponTraits.Movement.TryConsumeForHit(1, actor.WeaponTraits.Position))
+            actor.WeaponTraits.Paired.RecordMovementHit(WeaponNow, WeaponTraitState.Configuration(actor));
+    }
 
     private static double WeaponInterval(WeaponLoadoutSpec weapon, int haste) =>
         Combat.CalculateEffectiveAttackDelay(Combat.CalculateAttackDelayMilliseconds(
@@ -35,8 +51,11 @@ public sealed partial class Simulation
 
     private static int[] CaptureTwinWeaponDamage(WeaponLoadoutSpec weapon) =>
         weapon.DistinctAttackItemCount == 2
-            ? new[] { weapon.MainDamage, weapon.OffhandDamage }
-            : new[] { weapon.MainDamage };
+            ? new[] { EffectiveMainWeaponDamage(weapon), weapon.OffhandDamage }
+            : new[] { EffectiveMainWeaponDamage(weapon) };
+
+    private static int EffectiveMainWeaponDamage(WeaponLoadoutSpec weapon) =>
+        WeaponDamage.CalculateEffectiveDMG(weapon.MainDamage, weapon.SingleWeaponDamagePercent);
 
     private void ResolveTwin(Combatant actor, PendingCast cast)
     {
@@ -66,6 +85,12 @@ public sealed partial class Simulation
             }
         }
 
+        if (!cast.MovementRecorded && distance > 0)
+        {
+            RecordWeaponMovement(actor, distance);
+            cast.MovementRecorded = true;
+        }
+
         var landed = false;
         foreach (var target in cast.WeaponTargets.Where(target => IsEngaged(target) && target.TeamIndex != actor.TeamIndex))
         {
@@ -73,13 +98,19 @@ public sealed partial class Simulation
             {
                 if (target.IsDead) break;
                 var weaponDamage = cast.WeaponDamages[hand];
-                var power = weaponDamage * spec.WeaponPowerPercent / 100 + spec.FlatPower + cast.WeaponTraits.MomentumSpent * spec.MomentumPowerPerCharge;
+                var flowBonus = cast.WeaponActivation?.TryTakeDamageBonus((uint)(hand + 1), cast.VolleyIndex, spec.VolleyCount) ?? 0;
+                actor.Stats.FlowDamagePowerApplied += WeaponImpactDamagePartition.Partition(flowBonus, cast.VolleyIndex, spec.VolleyCount);
+                var power = weaponDamage * spec.WeaponPowerPercent / 100 + spec.FlatPower + flowBonus;
                 var accuracy = cast.WeaponTraits.AccuracyAdjustment + (hand > 0 ? config.CompanionAccuracy : 0);
                 actor.Stats.AbilityImpacts++;
                 var (hit, damage) = RollWeapon(actor, target, power, accuracy, ordinary: false,
-                    volleyIndex: cast.VolleyIndex, volleyCount: spec.VolleyCount);
+                    volleyIndex: cast.VolleyIndex, volleyCount: spec.VolleyCount, recordMovement: false);
                 landed |= hit;
-                if (hit) actor.Stats.AbilityHits++;
+                if (hit)
+                {
+                    actor.Stats.AbilityHits++;
+                    RecordSuccessfulWeaponAbilityHit(actor, cast);
+                }
                 actor.Stats.AbilityDamage += damage;
             }
         }
@@ -96,14 +127,40 @@ public sealed partial class Simulation
     }
 
     private void CompleteTwin(Combatant actor, PendingCast cast)
+        => CompleteWeaponTraits(actor, cast);
+
+    private void CompleteWeaponTraits(Combatant actor, PendingCast cast)
     {
         if (cast.WeaponTraitsCompleted) return;
         cast.WeaponTraitsCompleted = true;
         var spec = cast.Ability.TwinPistol;
-        var config = WeaponTraitState.Configuration(actor);
-        RestoreStamina(actor, actor.WeaponTraits.Paired.CompleteAbility(WeaponNow, config, cast.WeaponTraits,
-            cast.AnyWeaponHit, cast.Use.MovementMeters ?? 0, spec.GeneratesMomentum, cast.StmCost, spec.RestoreStaminaOnHit,
-            spec.OrdinaryBonusAttempts, spec.OrdinaryBonusDamagePercent, spec.OrdinaryBonusSeconds), true);
+        if (spec?.OrdinaryBonusAttempts > 0 && spec.OrdinaryBonusSeconds > 0)
+            actor.WeaponTraits.Paired.GrantOrdinaryBonus(WeaponNow, spec.OrdinaryBonusAttempts,
+                spec.OrdinaryBonusDamagePercent, spec.OrdinaryBonusSeconds);
+        if (cast.AnyWeaponHit) RestoreWeaponHitStamina(actor, cast, spec?.RestoreStaminaOnHit ?? 0);
+    }
+
+    private void RecordSuccessfulWeaponAbilityHit(Combatant actor, PendingCast cast)
+    {
+        var activation = cast.WeaponActivation;
+        if (activation?.IsCommitted != true) return;
+        if (!activation.RecoveryCompleted)
+        {
+            activation.RecoveryCompleted = true;
+            var requested = actor.WeaponTraits.Paired.CompleteAbility(WeaponNow, WeaponTraitState.Configuration(actor),
+                cast.WeaponTraits, true, 0, false, cast.StmCost, 0);
+            RestoreWeaponHitStamina(actor, cast, requested);
+        }
+        if (activation.MovementHitObserved) return;
+        activation.MovementHitObserved = true;
+        RecordLandedWeaponHit(actor);
+    }
+
+    private void RestoreWeaponHitStamina(Combatant actor, PendingCast cast, int requested)
+    {
+        var amount = Combat.CalculateAbilityHitStaminaRestore(cast.StmCost, cast.HitStaminaRefunded, requested);
+        cast.HitStaminaRefunded += amount;
+        RestoreStamina(actor, amount, true);
     }
 
     private void ProcessWeaponAutoAttack(Combatant actor, double step)
@@ -131,10 +188,27 @@ public sealed partial class Simulation
             for (var hand = 0; hand < (weapon.HasOffhand ? 2 : 1); hand++)
             {
                 if (target.IsDead) break;
+                if (actor.QueuedWeaponAbility is { } queued)
+                {
+                    // A queued weapon ability replaces its carrier; it is not an ordinary hit
+                    // and cannot trigger ordinary-only damage, recovery or ramping procs.
+                    var (carrierHit, _) = RollWeapon(actor, target, 0,
+                        queued.Cast.WeaponTraits?.AccuracyAdjustment ?? 0, ordinary: false, resolveDamage: false);
+                    if (!carrierHit) continue;
+                    actor.QueuedWeaponAbility = null;
+                    DamageHealingCatalog.TryGet(queued.Ability.Feat, out var damageHealing);
+                    var beforeDamage = actor.Stats.DamageDealt;
+                    queued.Cast.AnyWeaponHit = ApplyDamageProfile(actor, target, queued.Use.Damage, 0f,
+                        damageHealing, alwaysHits: true, cast: queued.Cast);
+                    actor.Stats.AbilityDamage += actor.Stats.DamageDealt - beforeDamage;
+                    if (queued.Cast.WeaponActivation != null) CompleteWeaponTraits(actor, queued.Cast);
+                    if (HitPointCostCatalog.TryGet(queued.Ability.Feat, out var hitPointCost)) PayHitPoints(actor, hitPointCost);
+                    continue;
+                }
                 var roll = ++actor.WeaponTraits.RollId;
                 var bonuses = actor.WeaponTraits.Paired.RecordOrdinaryAttempt(WeaponNow, config, TargetId(target), roll, hand > 0);
                 actor.Stats.OrdinaryAttempts++;
-                var (hit, damage) = RollWeapon(actor, target, hand == 0 ? weapon.MainDamage : weapon.OffhandDamage,
+                var (hit, damage) = RollWeapon(actor, target, hand == 0 ? EffectiveMainWeaponDamage(weapon) : weapon.OffhandDamage,
                     bonuses.AccuracyAdjustment, true, bonuses.DamagePercentAdjustment);
                 actor.Stats.OrdinaryDamage += damage;
                 if (!hit) continue;
@@ -146,16 +220,18 @@ public sealed partial class Simulation
     }
 
     private (bool Hit, double Damage) RollWeapon(Combatant actor, Combatant target, int power, int accuracyBonus,
-        bool ordinary, int damageBonus = 0, int volleyIndex = 0, int volleyCount = 1)
+        bool ordinary, int damageBonus = 0, int volleyIndex = 0, int volleyCount = 1,
+        bool resolveDamage = true, bool recordMovement = true)
     {
         var weapon = actor.Spec.WeaponLoadout;
-        var hitChance = Combat.CalculateHitRate(weapon.Accuracy + accuracyBonus, target.Spec.Evasion, 0);
+        var hitChance = Combat.CalculateHitRate(weapon.Accuracy + actor.GetStat(StatType.Accuracy) + accuracyBonus, target.Spec.Evasion, 0);
         if (_random.Next(1, 101) > hitChance)
         {
             target.WeaponTraits.Paired.RecordAccuracyEvasionMiss(WeaponNow, WeaponTraitState.Configuration(target));
             return (false, 0);
         }
         if (ordinary && _random.Next(1, 101) <= target.Spec.WeaponAvoidancePercent) return (false, 0);
+        if (!resolveDamage) return (true, 0);
         var criticalChance = ordinary
             ? Combat.CalculateCriticalRate(weapon.Perception, target.Spec.Vitality, weapon.SkillRank, weapon.OrdinaryCriticalRateAdjustment)
             : Combat.CalculateAbilityCriticalChance(weapon.AbilityCriticalRateAdjustment);
@@ -169,12 +245,14 @@ public sealed partial class Simulation
         var amount = SampleWeaponDamage(_random, minimum, maximum);
         if (ordinary)
         {
-            var additive = damageBonus + (!weapon.HasOffhand ? weapon.SingleWeaponDamagePercent : 0);
+            var additive = damageBonus;
             amount += (int)Math.Ceiling(amount * Math.Clamp(additive, -Combat.MaximumNormalDamageReductionPercent, Combat.MaximumDamageBonusPercent) / 100f);
             amount = Combat.ApplyOrdinaryAttackDamageMultiplier(amount, actor.GetStat(StatType.OrdinaryAttackDamagePercentAdjustment));
         }
         amount = WeaponImpactDamagePartition.Partition(amount, volleyIndex, volleyCount);
-        return (true, amount > 0 ? ApplyDamage(actor, target, amount) : 0);
+        var dealt = amount > 0 ? ApplyDamage(actor, target, amount) : 0;
+        if (recordMovement) RecordLandedWeaponHit(actor);
+        return (true, dealt);
     }
 
     internal static int SampleWeaponDamage(System.Random random, int minimum, int maximum) =>

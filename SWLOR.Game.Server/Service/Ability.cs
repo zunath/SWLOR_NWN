@@ -112,7 +112,8 @@ namespace SWLOR.Game.Server.Service
             AbilityImpactSequence sequence = null,
             uint triggeringWeapon = OBJECT_INVALID,
             int? triggeringWeaponDamage = null,
-            CombatDamageType? triggeringWeaponDamageType = null)
+            CombatDamageType? triggeringWeaponDamageType = null,
+            WeaponAbilityTraitActivation weaponTraits = null)
         {
             if (!GetIsObjectValid(activator) || ability == null)
                 return;
@@ -121,6 +122,10 @@ namespace SWLOR.Game.Server.Service
                 countsAsAttackAttempt: countsAsAttackAttempt,
                 activationAreaTelegraphs: activationAreaTelegraphs, sequence: sequence);
             var trackedImpact = GetTrackedAbilityImpact(activator);
+            if (weaponTraits != null)
+            {
+                trackedImpact.Sequence.WeaponTraits = weaponTraits;
+            }
             trackedImpact.TriggeringWeaponDamage = triggeringWeaponDamage ?? (GetIsObjectValid(triggeringWeapon)
                 ? WeaponDamage.GetEffectiveDMG(activator, triggeringWeapon)
                 : trackedImpact.TriggeringWeaponDamage);
@@ -227,6 +232,31 @@ namespace SWLOR.Game.Server.Service
         public static AbilityImpactSequence GetAbilityImpactSequence(uint activator)
         {
             return GetTrackedAbilityImpact(activator)?.Sequence;
+        }
+
+        public static int GetWeaponTraitAccuracy(uint activator) =>
+            GetTrackedAbilityImpact(activator)?.Sequence.WeaponTraits is { IsCommitted: true } traits
+                ? traits.Snapshot.AccuracyAdjustment : 0;
+
+        public static void RecordSuccessfulWeaponAbilityHit(uint activator, uint target, SkillType skill)
+        {
+            if (!Combat.IsWeaponSkillType(skill)) return;
+            var traits = GetTrackedAbilityImpact(activator)?.Sequence.WeaponTraits;
+            if (traits?.IsCommitted != true) return;
+            PairedRangedTraits.CompleteWeaponAbilityHit(activator, traits);
+            // A field, channel, or multi-target action is one source activation.
+            // Later ticks cannot turn a new movement into another reward.
+            if (traits.MovementHitObserved) return;
+            traits.MovementHitObserved = true;
+            PairedRangedTraits.RecordLandedWeaponHit(activator, target);
+        }
+
+        private static int TakeWeaponTraitDamageBonus(uint activator, SkillType skill, TrackedAbilityImpact impact)
+        {
+            if (!Combat.IsWeaponSkillType(skill) || impact?.Sequence.WeaponTraits is not { IsCommitted: true } traits) return 0;
+            var profile = WeaponImpactProfile.Get(activator);
+            return traits.TryTakeDamageBonus(profile?.Weapon.Weapon ?? traits.PrimaryWeapon,
+                profile?.VolleyIndex ?? 0, profile?.VolleyCount ?? 1);
         }
 
         /// <summary>
@@ -3105,7 +3135,7 @@ namespace SWLOR.Game.Server.Service
                 Combat.GetAbilityDamageFlatAdjustment(activator, perkType, skillType) +
                 Combat.GetCostlyAbilityDamageBonus(activator, trackedImpact?.Ability, skillType) +
                 Combat.GetSameTargetPressureWeaponAbilityDamageBonus(activator, target, skillType) +
-                idleBonuses.DamageBonus;
+                idleBonuses.DamageBonus + TakeWeaponTraitDamageBonus(activator, skillType, trackedImpact);
             if (trackedImpact != null)
             {
                 damage += trackedImpact.NextAbilityDamageBonus;
@@ -3319,7 +3349,7 @@ namespace SWLOR.Game.Server.Service
                 Combat.GetAbilityDamageFlatAdjustment(activator, perkType, skillType) +
                 Combat.GetCostlyAbilityDamageBonus(activator, trackedImpact?.Ability, skillType) +
                 Combat.GetSameTargetPressureWeaponAbilityDamageBonus(activator, target, skillType) +
-                idleBonuses.DamageBonus;
+                idleBonuses.DamageBonus + TakeWeaponTraitDamageBonus(activator, skillType, trackedImpact);
             if (trackedImpact != null)
             {
                 damage += trackedImpact.NextAbilityDamageBonus;

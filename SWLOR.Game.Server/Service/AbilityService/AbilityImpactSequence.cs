@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using SWLOR.Game.Server.Service.CombatService;
 
 namespace SWLOR.Game.Server.Service.AbilityService
 {
@@ -8,6 +9,7 @@ namespace SWLOR.Game.Server.Service.AbilityService
     /// </summary>
     public sealed class AbilityImpactSequence
     {
+        public WeaponAbilityTraitActivation WeaponTraits { get; set; }
         private bool _areaPulseTriggered;
         private bool _partyBuffTriggered;
         private HashSet<uint> _chainTargets;

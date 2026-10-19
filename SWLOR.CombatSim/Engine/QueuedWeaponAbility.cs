@@ -9,5 +9,6 @@ namespace SWLOR.CombatSim.Engine
         public AbilityUseSpec Use { get; init; }
         public AbilityInfo Ability { get; init; }
         public double ExpiresAt { get; init; }
+        public PendingCast Cast { get; init; }
     }
 }

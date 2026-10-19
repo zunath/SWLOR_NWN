@@ -121,20 +121,20 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.FocusedBurst1)
-                .Description("Channel on one enemy for 1.5 seconds, firing 3 volleys. Each equipped attack weapon deals a total of weapon DMG + 8, split across all volleys. Moving or being interrupted cancels remaining shots. Weapon auto-attacks pause during the channel. Works with any weapon.")
+                .Description("Attack one enemy three times over 1.5 seconds. Each weapon deals a total of weapon DMG + 8, divided between the three attacks. Moving or being interrupted cancels the remaining attacks. Auto-attacks pause during the channel.")
                 .Price(2)
                 .RequirementSkill(SkillType.TwinPistol, 10)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.FocusedBurst2)
-                .Description("Channel on one enemy for 1.5 seconds, firing 3 volleys. Each equipped attack weapon deals a total of weapon DMG + 16, split across all volleys. Moving or being interrupted cancels remaining shots. Weapon auto-attacks pause during the channel. Works with any weapon.")
+                .Description("Attack one enemy three times over 1.5 seconds. Each weapon deals a total of weapon DMG + 16, divided between the three attacks. Moving or being interrupted cancels the remaining attacks. Auto-attacks pause during the channel.")
                 .Price(4)
                 .RequirementSkill(SkillType.TwinPistol, 30)
                 .RequirementMustHavePerk(PerkType.FocusedBurst, 1)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.FocusedBurst3)
-                .Description("Channel on one enemy for 1.5 seconds, firing 3 volleys. Each equipped attack weapon deals a total of weapon DMG + 24, split across all volleys. Moving or being interrupted cancels remaining shots. Weapon auto-attacks pause during the channel. Works with any weapon.")
+                .Description("Attack one enemy three times over 1.5 seconds. Each weapon deals a total of weapon DMG + 24, divided between the three attacks. Moving or being interrupted cancels the remaining attacks. Auto-attacks pause during the channel.")
                 .Price(4)
                 .RequirementSkill(SkillType.TwinPistol, 38)
                 .RequirementMustHavePerk(PerkType.FocusedBurst, 2);
@@ -147,8 +147,8 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.BalancedGripTrait)
-                .Description("Grants +5 ACC to an eligible off-hand attack weapon, including a companion pistol. Shields receive no bonus.")
-                .IncreasesStat(StatType.PairedRangedCompanionAccuracy, 5)
+                .Description("Grants +5 ACC.")
+                .IncreasesStat(StatType.Accuracy, 5)
                 .Price(4)
                 .RequirementSkill(SkillType.TwinPistol, 15);
         }
@@ -206,7 +206,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.CoolUnderFireTrait)
-                .Description("Taking direct hostile damage makes your next Twin Pistol ability cost 2 less STM. One charge, lasts 10 seconds; triggers at most once every 10 seconds.")
+                .Description("Taking direct hostile damage grants a 2 STM discount on your next combat ability that costs STM. One charge, lasts 10 seconds; triggers at most once every 10 seconds.")
                 .IncreasesStat(StatType.PairedRangedDirectDamageNextAbilityStaminaReduction, 2)
                 .IncreasesStat(StatType.PairedRangedDirectDamageCostWindowSeconds, 10)
                 .IncreasesStat(StatType.PairedRangedDirectDamageCostCooldownSeconds, 10)
@@ -267,10 +267,11 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.TwinPistolMomentumTrait)
-                .Description("Slide or Rush moving you at least 2m and landing any hostile hit grants 1 Flow, max 3. Lasts 12 seconds. Each charge gives +2 ACC to weapon auto-attacks with any weapon. Grapple Shot and Final Salvo spend all charges.")
+                .Description("After moving at least 2m, landing a hostile weapon attack grants 1 Flow, max 3. Lasts 12 seconds. Each charge gives +2 ACC to weapon auto-attacks. Your next hostile weapon ability that costs STM spends all Flow for +4 DMG per charge, applied once per weapon across the whole ability.")
                 .IncreasesStat(StatType.PairedRangedMomentumMaximum, 3)
                 .IncreasesStat(StatType.PairedRangedMomentumDurationSeconds, 12)
                 .IncreasesStat(StatType.PairedRangedMomentumAccuracyPerCharge, 2)
+                .IncreasesStat(StatType.MovementHitWeaponAbilityDamagePerCharge, 4)
                 .Price(2)
                 .RequirementSkill(SkillType.TwinPistol, 5);
         }
@@ -338,7 +339,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.ChangingAnglesTrait)
-                .Description("A landed Crossfire attack after repositioning at least 2m gives your next Crossfire-line ability +5 ACC. One charge, lasts 8 seconds; triggers at most once every 10 seconds.")
+                .Description("After moving at least 2m and landing a hostile weapon attack, your next hostile weapon ability gains +5 ACC. One charge, lasts 8 seconds; triggers at most once every 10 seconds.")
                 .IncreasesStat(StatType.PairedRangedMovementNextAbilityAccuracy, 5)
                 .IncreasesStat(StatType.PairedRangedMovementAccuracyDurationSeconds, 8)
                 .IncreasesStat(StatType.PairedRangedMovementAccuracyCooldownSeconds, 10)

@@ -63,6 +63,7 @@ namespace SWLOR.Game.Server.Service.AbilityService
         public bool CanBeUsedInSpace { get; set; }
         public float MaxRange { get; set; }
         public bool IsHostileAbility { get; set; }
+        public int? WeaponAbilityFlowDamagePerCharge { get; set; }
         /// <summary>
         /// The impact schedules damage through a status or callback even when its immediate
         /// base damage is zero. Hostile hit damage bonuses remain eligible on that impact.

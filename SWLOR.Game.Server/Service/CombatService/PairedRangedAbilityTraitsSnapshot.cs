@@ -5,7 +5,7 @@ namespace SWLOR.Game.Server.Service.CombatService
     /// <summary>One activation's frozen trait payload, consumed only after valid payment.</summary>
     public sealed record PairedRangedAbilityTraitsSnapshot(
         Guid ActivationId,
-        bool IsCrossfire,
+        bool UsesMovementAccuracy,
         bool SpendsMomentum,
         int MomentumSpent,
         int AccuracyAdjustment)

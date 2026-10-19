@@ -5,5 +5,5 @@ namespace SWLOR.Game.Server.Service.CombatService
 {
     internal sealed record TwinPistolAbilityActivation(string ActivationId, uint Area, Vector3 Origin,
         Location Destination, uint MainHand, uint OffHand, WeaponShotProfile[] Weapons, uint[] Targets,
-        uint ResumeTarget, TwinPistolAbilitySpec Spec, PairedRangedAbilityTraitsSnapshot Traits);
+        uint ResumeTarget, TwinPistolAbilitySpec Spec, WeaponAbilityTraitActivation Traits);
 }

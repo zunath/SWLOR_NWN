@@ -77,13 +77,16 @@ namespace SWLOR.CombatSim.Data
             .Sum(pair => pair.Perk.PerkLevels.Where(level => level.Key <= pair.Perk.PerkLevels.Single(level => ReferenceEquals(level.Value, pair.Level)).Key)
                 .Sum(level => level.Value.Price));
 
-        public void ValidateWeaponBuild(IEnumerable<string> entries, IEnumerable<FeatType> abilities, int skillRank)
+        public void ValidateWeaponBuild(IEnumerable<string> entries, IEnumerable<FeatType> abilities, int skillRank,
+            IReadOnlyCollection<PerkType> modeledActivePerks = null)
         {
             var parsed = entries.Select(Parse).ToList();
             var owned = parsed.Select(pair => pair.Perk.Type).ToHashSet();
             foreach (var pair in parsed)
             {
-                if (pair.Perk.Category is not (PerkCategoryType.TwinPistolBarrage or PerkCategoryType.TwinPistolCrossfire))
+                if (pair.Perk.Category is not (PerkCategoryType.TwinPistolBarrage or PerkCategoryType.TwinPistolCrossfire) &&
+                    !(modeledActivePerks?.Contains(pair.Perk.Type) == true &&
+                      !pair.Perk.StatBonuses.Any() && !pair.Level.StatBonuses.Any()))
                     throw new InvalidDataException($"The stat-based weapon model does not implement {pair.Perk.Type}; use native comparison coverage for other perk lines.");
                 if (pair.Level.Requirements.OfType<PerkRequirementSkill>().Any(requirement => requirement.RequiredRank > skillRank))
                     throw new InvalidDataException($"Perk {pair.Perk.Type} requires a higher skill rank.");

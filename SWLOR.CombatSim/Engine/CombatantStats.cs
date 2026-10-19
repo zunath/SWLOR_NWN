@@ -28,6 +28,7 @@ namespace SWLOR.CombatSim.Engine
         public int AbilityImpacts { get; set; }
         public int AbilityHits { get; set; }
         public int FlowSpent { get; set; }
+        public int FlowDamagePowerApplied { get; set; }
         public double OrdinaryDamage { get; set; }
         public double AbilityDamage { get; set; }
         public Dictionary<string, int> AbilityUses { get; } = new();

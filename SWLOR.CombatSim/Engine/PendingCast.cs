@@ -17,15 +17,18 @@ namespace SWLOR.CombatSim.Engine
         public bool InterruptedByDamage { get; init; }
         public int FpCost { get; init; }
         public int StmCost { get; set; }
-        public SWLOR.Game.Server.Service.CombatService.PairedRangedAbilityTraitsSnapshot WeaponTraits { get; init; }
+        public SWLOR.Game.Server.Service.CombatService.PairedRangedAbilityTraitsSnapshot WeaponTraits { get; set; }
         public IReadOnlyList<Combatant> WeaponTargets { get; init; }
         public IReadOnlyList<int> WeaponDamages { get; init; }
         public bool MovementStarted { get; set; }
+        public bool MovementRecorded { get; set; }
+        public SWLOR.Game.Server.Service.CombatService.WeaponAbilityTraitActivation WeaponActivation { get; set; }
         public double ChannelStartedAt { get; init; }
         public double ChannelEndsAt { get; init; }
         public double AttackReadyBeforeChannel { get; init; }
         public int VolleyIndex { get; set; }
         public bool AnyWeaponHit { get; set; }
         public bool WeaponTraitsCompleted { get; set; }
+        public int HitStaminaRefunded { get; set; }
     }
 }

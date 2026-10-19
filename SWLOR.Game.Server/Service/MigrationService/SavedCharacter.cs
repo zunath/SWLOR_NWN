@@ -575,27 +575,46 @@ internal sealed class SavedCharacter
         }
 
         var misplacedCarried = Misplaced(inventory, InventoryWidth, InventoryHeight, InventoryPageHeight);
-        foreach (var node in misplacedCarried)
+        // Buttons name an item by its cells, and an item in a bag also by the bag's cells: find them all before anything
+        // moves. Every misplaced item leaves before any is placed, so none blocks the cells another one needs.
+        var moves = misplacedCarried.Select(node =>
         {
             var item = new SavedItem(node, inventory, null);
-            var references = QuickBarReferences(item).ToList();
-            var secondary = SecondaryQuickBarReferences(item).ToList();
-            inventory.Children.Remove(node);
-            var kept = AddToInventory(node);
-            var (x, y) = (StoredObjectData.ReadInteger(node, "Repos_PosX"), StoredObjectData.ReadInteger(node, "Repos_Posy"));
-            foreach (var button in references)
+            var contents = SavedGff.List(node, "ItemList", false);
+            var contentButtons = contents == null
+                ? new List<(Node Content, List<Node> Buttons)>()
+                : contents.Children.Select(child => (child, QuickBarReferences(new SavedItem(child, contents, item)).ToList())).ToList();
+            return (Node: node, Buttons: QuickBarReferences(item).ToList(), Secondary: SecondaryQuickBarReferences(item).ToList(), Contents: contentButtons);
+        }).ToList();
+        inventory.Children.RemoveAll(misplacedCarried.Contains);
+        foreach (var move in moves)
+        {
+            var kept = AddToInventory(move.Node);
+            var (x, y) = (StoredObjectData.ReadInteger(move.Node, "Repos_PosX"), StoredObjectData.ReadInteger(move.Node, "Repos_Posy"));
+            foreach (var button in move.Buttons)
             {
                 if (kept)
                     PointQuickBarAtInventory(button, x, y, byte.MaxValue, byte.MaxValue);
                 else
                     ClearQuickBarButton(button);
             }
-            foreach (var button in secondary)
+            foreach (var button in move.Secondary)
             {
                 if (kept)
                     PointSecondaryAtInventory(button, x, y);
                 else
                     RemoveSecondaryItem(button);
+            }
+            foreach (var (content, buttons) in move.Contents)
+            {
+                var (contentX, contentY) = (StoredObjectData.ReadInteger(content, "Repos_PosX"), StoredObjectData.ReadInteger(content, "Repos_Posy"));
+                foreach (var button in buttons)
+                {
+                    if (kept)
+                        PointQuickBarAtInventory(button, contentX, contentY, x, y);
+                    else
+                        ClearQuickBarButton(button);
+                }
             }
             moved = true;
         }

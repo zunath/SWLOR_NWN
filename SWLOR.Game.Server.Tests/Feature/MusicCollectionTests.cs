@@ -153,9 +153,12 @@ public class MusicCollectionTests
             if (resref.StartsWith("cp_"))
                 failures.Add($"{resref} is a capstone creature");
 
-            var expectedName = $"LOOT_TABLE_{lootTables.Count}";
-            if (musicTables[0].Name != expectedName)
-                failures.Add($"{resref} song table is {musicTables[0].Name}, expected the next free index {expectedName}");
+            // Loot stops reading at the first missing LOOT_TABLE_N, so a gap would skip the song table.
+            var expectedNames = Enumerable.Range(1, lootTables.Count).Select(index => $"LOOT_TABLE_{index}");
+            if (!lootTables.Select(var => var.Name).ToHashSet().SetEquals(expectedNames))
+                failures.Add($"{resref} loot tables are not numbered 1 to {lootTables.Count} without gaps");
+            if (lootTables.Any(var => string.IsNullOrWhiteSpace(var.Value)))
+                failures.Add($"{resref} loot tables contain blank values");
 
             if (musicTables[0].Value.StartsWith($"{MusicLootTableDefinition.BossMusicDiscs},"))
                 boss++;

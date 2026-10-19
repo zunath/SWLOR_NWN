@@ -318,14 +318,27 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             WatchOnClient(model => model.PersonalityIndex);
         }
 
-        private void Reset()
+        /// <summary>
+        /// Returns the installed parts and clears the assembly. A part without room stays installed with its stats.
+        /// </summary>
+        /// <returns>False when a part stayed installed.</returns>
+        private bool Reset()
         {
             Error = string.Empty;
             Name = string.Empty;
+            PersonalityIndex = 0;
+
+            if (!ReturnParts())
+            {
+                // The build stays open so the parts that stayed can be removed once there is room.
+                ProcessNotStarted = false;
+                IsBuildInProgress = true;
+                return false;
+            }
+
             ProcessNotStarted = true;
             IsBuildInProgress = false;
             IsCPUSelected = false;
-            PersonalityIndex = 0;
 
             _tier = 0;
             _level = 0;
@@ -367,42 +380,37 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             BodyResref = BlankTexture;
             ArmsResref = BlankTexture;
             LegsResref = BlankTexture;
+            return true;
+        }
 
-            if (!string.IsNullOrWhiteSpace(_cpuItem))
-            {
-                var item = ObjectPlugin.Deserialize(_cpuItem);
-                ObjectPlugin.AcquireItem(Player, item);
-            }
+        /// <summary>
+        /// Returns each installed part that fits and removes its stats. The CPU is returned last, and only once the other
+        /// parts are out, because it holds them.
+        /// </summary>
+        /// <returns>True when no part is left installed.</returns>
+        private bool ReturnParts()
+        {
+            foreach (var serialized in new[] { _headItem, _bodyItem, _armsItem, _legsItem })
+                ReturnPart(serialized);
 
-            if (!string.IsNullOrWhiteSpace(_headItem))
-            {
-                var item = ObjectPlugin.Deserialize(_headItem);
-                ObjectPlugin.AcquireItem(Player, item);
-            }
+            if (string.IsNullOrWhiteSpace(_headItem) && string.IsNullOrWhiteSpace(_bodyItem) &&
+                string.IsNullOrWhiteSpace(_armsItem) && string.IsNullOrWhiteSpace(_legsItem))
+                ReturnPart(_cpuItem);
 
-            if (!string.IsNullOrWhiteSpace(_bodyItem))
-            {
-                var item = ObjectPlugin.Deserialize(_bodyItem);
-                ObjectPlugin.AcquireItem(Player, item);
-            }
+            return string.IsNullOrWhiteSpace(_cpuItem) && string.IsNullOrWhiteSpace(_headItem) &&
+                   string.IsNullOrWhiteSpace(_bodyItem) && string.IsNullOrWhiteSpace(_armsItem) &&
+                   string.IsNullOrWhiteSpace(_legsItem);
+        }
 
-            if (!string.IsNullOrWhiteSpace(_armsItem))
-            {
-                var item = ObjectPlugin.Deserialize(_armsItem);
-                ObjectPlugin.AcquireItem(Player, item);
-            }
+        private void ReturnPart(string serialized)
+        {
+            if (string.IsNullOrWhiteSpace(serialized))
+                return;
 
-            if (!string.IsNullOrWhiteSpace(_legsItem))
-            {
-                var item = ObjectPlugin.Deserialize(_legsItem);
-                ObjectPlugin.AcquireItem(Player, item);
-            }
-
-            _cpuItem = string.Empty;
-            _headItem = string.Empty;
-            _bodyItem = string.Empty;
-            _armsItem = string.Empty;
-            _legsItem = string.Empty;
+            var item = ObjectPlugin.Deserialize(serialized);
+            var part = Droid.LoadDroidPartItemPropertyDetails(item);
+            if (Item.TryAcquireItem(Player, item))
+                RemovePart(part);
         }
 
         private void ShowError(string text)
@@ -632,9 +640,11 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             RefreshStats();
         }
 
-        public Action OnCloseWindow() => () =>
+        /// <summary>Runs whenever the window closes, whether the player closes it or the server does.</summary>
+        public override Action OnWindowClosed() => () =>
         {
-            Reset();
+            if (!Reset())
+                SendMessageToPC(Player, Item.ItemsHeldMessage);
         };
 
         public Action OnClickCPU() => () =>
@@ -655,10 +665,14 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     else
                     {
                         var item = ObjectPlugin.Deserialize(_cpuItem);
-                        ObjectPlugin.AcquireItem(Player, item);
-                        CPUResref = BlankTexture;
                         var part = Droid.LoadDroidPartItemPropertyDetails(item);
+                        if (!Item.TryAcquireItem(Player, item))
+                        {
+                            ShowError(Item.InventoryFullMessage);
+                            return;
+                        }
 
+                        CPUResref = BlankTexture;
                         RemovePart(part);
                     }
                 });
@@ -696,10 +710,14 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 ShowModal("Will you remove the Head part?", () =>
                 {
                     var item = ObjectPlugin.Deserialize(_headItem);
-                    ObjectPlugin.AcquireItem(Player, item);
-                    HeadResref = BlankTexture;
                     var part = Droid.LoadDroidPartItemPropertyDetails(item);
+                    if (!Item.TryAcquireItem(Player, item))
+                    {
+                        ShowError(Item.InventoryFullMessage);
+                        return;
+                    }
 
+                    HeadResref = BlankTexture;
                     RemovePart(part);
                 });
             }
@@ -735,10 +753,14 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 ShowModal("Will you remove the Body part?", () =>
                 {
                     var item = ObjectPlugin.Deserialize(_bodyItem);
-                    ObjectPlugin.AcquireItem(Player, item);
-                    BodyResref = BlankTexture;
                     var part = Droid.LoadDroidPartItemPropertyDetails(item);
+                    if (!Item.TryAcquireItem(Player, item))
+                    {
+                        ShowError(Item.InventoryFullMessage);
+                        return;
+                    }
 
+                    BodyResref = BlankTexture;
                     RemovePart(part);
                 });
             }
@@ -774,10 +796,14 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 ShowModal("Will you remove the Arms part?", () =>
                 {
                     var item = ObjectPlugin.Deserialize(_armsItem);
-                    ObjectPlugin.AcquireItem(Player, item);
-                    ArmsResref = BlankTexture;
                     var part = Droid.LoadDroidPartItemPropertyDetails(item);
+                    if (!Item.TryAcquireItem(Player, item))
+                    {
+                        ShowError(Item.InventoryFullMessage);
+                        return;
+                    }
 
+                    ArmsResref = BlankTexture;
                     RemovePart(part);
                 });
             }
@@ -813,10 +839,14 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 ShowModal("Will you remove the Legs part?", () =>
                 {
                     var item = ObjectPlugin.Deserialize(_legsItem);
-                    ObjectPlugin.AcquireItem(Player, item);
-                    LegsResref = BlankTexture;
                     var part = Droid.LoadDroidPartItemPropertyDetails(item);
+                    if (!Item.TryAcquireItem(Player, item))
+                    {
+                        ShowError(Item.InventoryFullMessage);
+                        return;
+                    }
 
+                    LegsResref = BlankTexture;
                     RemovePart(part);
                 });
             }
@@ -858,7 +888,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             ShowModal("Are you sure you want to reset everything?", () =>
             {
-                Reset();
+                if (!Reset())
+                    ShowError(Item.InventoryFullMessage);
             });
         };
 

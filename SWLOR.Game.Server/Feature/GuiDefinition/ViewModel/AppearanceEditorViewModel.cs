@@ -1980,8 +1980,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             if (SelectedItemTypeIndex == 0) // 0 = Armor
             {
                 GuiBindingList<GuiComboEntry> Available(AppearanceArmor part, IEnumerable<GuiComboEntry> options) =>
-                    ArmorPartAppearance.GetAvailableOptions(_target, part, options,
-                        GetItemAppearance(item, ItemAppearanceType.ArmorModel, (int)part));
+                    ArmorPartAppearance.GetAvailableOptions(_target, part, options);
                 var neckOptions = new GuiBindingList<GuiComboEntry>();
                 foreach (var style in NeckAppearance.GetAvailableStyles(_target, _armorAppearances[appearanceType].Neck.Prepend(0)))
                     neckOptions.Add(new GuiComboEntry(style.ToString(), style));
@@ -1994,7 +1993,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     robeOptions.Add(new GuiComboEntry(style.ToString(), style));
                 RobeOptions = robeOptions;
                 var repairedNeck = NeckAppearance.RemoveUnavailableNeck(_target, item);
-                if (RobeAppearance.RemoveUnavailableRobe(_target, item) || repairedNeck)
+                var repairedParts = ArmorPartAppearance.RemoveUnavailableParts(_target, item);
+                if (RobeAppearance.RemoveUnavailableRobe(_target, item) || repairedNeck || repairedParts)
                     EquippedItemAppearance.Refresh(_target, item);
 
                 LeftShoulderOptions = Available(AppearanceArmor.LeftShoulder, _armorAppearances[appearanceType].ShoulderOptions);
@@ -3266,11 +3266,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 if (!selected.HasValue)
                     return;
 
-                var left = GetItemAppearance(GetItem(), ItemAppearanceType.ArmorModel, (int)partType);
                 setSelection(selected.Value);
                 ModifyItemPart((int)partType, selected.Value);
-                ArmorPartAppearance.ForgetLeftStyle(options, left, selected.Value,
-                    ArmorPartAppearance.IsAvailable(_target, partType, left));
             }
 
             var wasSkippingAdjustment = _skipAdjustArmorPart;

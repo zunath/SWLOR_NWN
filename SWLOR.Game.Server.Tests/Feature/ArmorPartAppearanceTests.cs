@@ -31,8 +31,8 @@ public class ArmorPartAppearanceTests
         var models = new HashSet<string> { "pfh0_legl023", "pfh0_legl024", "pmh0_legl023", "pmh0_legl024", "pmh0_legl030" };
         var options = new[] { 0, 23, 24, 30 }.Select(value => new GuiComboEntry(value.ToString(), value)).ToArray();
 
-        var female = ArmorPartAppearance.FilterOptions("pfh0", AppearanceArmor.LeftThigh, options, 24, _ => 0, models.Contains);
-        var male = ArmorPartAppearance.FilterOptions("pmh0", AppearanceArmor.LeftThigh, options, 24, _ => 0, models.Contains);
+        var female = ArmorPartAppearance.FilterOptions("pfh0", AppearanceArmor.LeftThigh, options, _ => 0, models.Contains);
+        var male = ArmorPartAppearance.FilterOptions("pmh0", AppearanceArmor.LeftThigh, options, _ => 0, models.Contains);
 
         Assert.That(female.Select(option => option.Value), Is.EqualTo(new[] { 0, 23, 24 }));
         Assert.That(male.Select(option => option.Value), Is.EqualTo(new[] { 0, 23, 24, 30 }));
@@ -42,31 +42,39 @@ public class ArmorPartAppearanceTests
     public void CreaturesWithoutModularBodiesKeepEveryOption()
     {
         var options = new[] { 0, 30 }.Select(value => new GuiComboEntry(value.ToString(), value)).ToArray();
-        var kept = ArmorPartAppearance.FilterOptions(string.Empty, AppearanceArmor.LeftThigh, options, 0, _ => 0, _ => false);
+        var kept = ArmorPartAppearance.FilterOptions(string.Empty, AppearanceArmor.LeftThigh, options, _ => 0, _ => false);
         Assert.That(kept.Select(option => option.Value), Is.EqualTo(new[] { 0, 30 }));
     }
 
     [Test]
-    public void AnEquippedUnrenderablePartStaysInPlaceSoTheArrowsCanLeaveIt()
+    public void SavedPartsTheBodyCannotRenderAreFound()
     {
-        var models = new HashSet<string> { "pfh0_legl024", "pfh0_legl050" };
-        var options = new[] { 0, 24, 30, 31, 50 }.Select(value => new GuiComboEntry(value.ToString(), value)).ToArray();
+        var models = new HashSet<string> { "pfh0_legr024", "pfh0_shinl001", "pfh0_chest004" };
+        var saved = new Dictionary<AppearanceArmor, int>
+        {
+            [AppearanceArmor.LeftThigh] = 30,
+            [AppearanceArmor.RightThigh] = 24,
+            [AppearanceArmor.LeftShin] = 23,
+            [AppearanceArmor.Torso] = 4,
+            [AppearanceArmor.Neck] = 258,
+        };
 
-        var female = ArmorPartAppearance.FilterOptions("pfh0", AppearanceArmor.LeftThigh, options, 30, _ => 0, models.Contains);
+        var parts = ArmorPartAppearance.FindUnrenderableParts("pfh0",
+            part => saved.TryGetValue(part, out var style) ? style : 0, _ => 0, models.Contains);
 
-        Assert.That(female.Select(option => option.Value), Is.EqualTo(new[] { 0, 24, 30, 50 }));
+        // The neck has its own repair; unset slots (zero) always render the body part.
+        Assert.That(parts, Is.EquivalentTo(new[] { AppearanceArmor.LeftThigh, AppearanceArmor.LeftShin }));
+        Assert.That(ArmorPartAppearance.FindUnrenderableParts(string.Empty, _ => 30, _ => 0, _ => false), Is.Empty);
     }
 
     [Test]
-    public void LeavingAPreservedUnrenderablePartRemovesItFromTheList()
+    public void RepairsUseAStyleEverySlotListOffers()
     {
-        var options = new[] { 0, 24, 30, 50 }.Select(value => new GuiComboEntry(value.ToString(), value)).ToList();
+        var shins = new GeneralArmorAppearanceDefinition().Shin;
+        var thighs = new GeneralArmorAppearanceDefinition().Thigh;
 
-        ArmorPartAppearance.ForgetLeftStyle(options, 30, 30, false);
-        Assert.That(options.Select(option => option.Value), Is.EqualTo(new[] { 0, 24, 30, 50 }));
-        ArmorPartAppearance.ForgetLeftStyle(options, 24, 50, true);
-        Assert.That(options.Select(option => option.Value), Is.EqualTo(new[] { 0, 24, 30, 50 }));
-        ArmorPartAppearance.ForgetLeftStyle(options, 30, 24, false);
-        Assert.That(options.Select(option => option.Value), Is.EqualTo(new[] { 0, 24, 50 }));
+        Assert.That(ArmorPartAppearance.GetRepairStyle(AppearanceArmor.LeftThigh), Is.EqualTo(0));
+        Assert.That(thighs, Does.Contain(ArmorPartAppearance.GetRepairStyle(AppearanceArmor.LeftThigh)));
+        Assert.That(shins, Does.Contain(ArmorPartAppearance.GetRepairStyle(AppearanceArmor.RightShin)));
     }
 }

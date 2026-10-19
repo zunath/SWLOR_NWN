@@ -63,6 +63,7 @@ Skills live only in `skills/`, shared by both agents; edit them in place and kee
 - Quests (NPC quests, dialogue, journals, objectives, rewards, prerequisites, placement): `skills/swlor-quest-generation/SKILL.md`
 - Rare spawns and named elites (stats, unique rare loot, spawn assets): `skills/swlor-rare-spawn-generation/SKILL.md`
 - SWLOR Wiki release notes (creating, updating, finalizing): `skills/swlor-release-notes/SKILL.md`
+- Player feedback logs (incremental summaries, master comparison, deployment status): `skills/swlor-feedback-review/SKILL.md`
 
 ## Rule Ownership and Read-Only Areas
 

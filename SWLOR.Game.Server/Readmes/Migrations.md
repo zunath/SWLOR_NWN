@@ -2,7 +2,7 @@
 
 Read before adding or changing a server or player migration, or any change to persisted data.
 
-Sections: How migrations run · One migration per release · One pass per data set · Server before player · Enum renames · Testing
+Sections: How migrations run · One migration per release · One pass per data set · Server before player · Saved-data item sweeps · Enum renames · Testing
 
 ## How migrations run
 
@@ -32,6 +32,15 @@ Large data sets are loaded and saved once per release, with every change for tha
 ## Server before player
 
 Prefer server migrations: they run once at boot over every stored record, including players who are offline. Use a player migration only for data that exists only on the character file or live object (equipped and carried items, character-file locals), and keep it to that data.
+
+## Saved-data item sweeps
+
+The stored-item sweep (`_27_UpdateStoredItems`) edits saved GFF directly instead of loading each stored item into the engine. `ParallelStoredItemPass` converts each batch of records on worker threads with the rules in `StoredObjectData.ItemSweep.cs` and saves the changed records from the main thread, so a production sweep takes about a minute at boot.
+
+- Conversion runs off the main thread: no NWScript, NWNX, engine or `DB` calls. The pass does the loading and saving.
+- Each saved-data rule mirrors the engine rule for live items (`HeadgearSlotMigration`, `EquipmentTypeMigration`, `ItemIconMigration`, `ItemAppearanceCatalogMigration`, `LootStatRevisionMigration`). A change to either changes the other in the same commit and adds the legacy kind to the `SavedDataItemSweepMatchesEngine` engine test (filter `SavedDataItemSweep`), which runs both on the same saved data and compares what the engine loads.
+- Write new GFF data the way the engine saves it: a property built with `ItemPropertyCustom` and -1 arguments saves Subtype 65535 and Param1Value 255, item properties are numbered by list index, and locals use struct type 0.
+- For a new kind of rule, also check parity on a production copy: boot one copy with a local build whose `_27_UpdateStoredItems.Migrate` passes `EngineStoredItemConverter.Instance` (the engine baseline, hours on production data) and another with the normal build, then compare the decoded records. The engine also re-saves older items in the current format (new default fields, reset orientation, reversed locals, reordered creature inventories); those differences are expected.
 
 ## Enum renames
 

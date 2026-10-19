@@ -17,7 +17,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions;
 
 public static partial class MigrationEngineTests
 {
-    [EngineTest("Player migration 23 repairs version 22 worn and nested visors and artwork before two bank reloads", Category = HeadgearCategory, TimeoutSeconds = 90)]
+    [EngineTest("Player migration 24 repairs version 23 worn and nested visors and artwork before two bank reloads", Category = HeadgearCategory, TimeoutSeconds = 90)]
     public static async Task ReservedVisorModelsAndArtwork(EngineTestContext ctx)
     {
         using var fixture = await PlayerAbilityFixture.CreateAsync(ctx);
@@ -47,18 +47,18 @@ public static partial class MigrationEngineTests
         {
             const string checkpointVariable = "PLAYER_MIGRATION_VERSION";
             var record = DB.Get<Player>(fixture.Id);
-            record.Version = 22;
+            record.Version = 23;
             DB.Set(record);
-            SetLocalInt(player, checkpointVariable, 22);
-            var fileVersion = 22;
+            SetLocalInt(player, checkpointVariable, 23);
+            var fileVersion = 23;
             var fileSaves = 0;
             string savedCharacter = null;
             var pending = typeof(_23_CorrectEquipmentTypes).Assembly.GetTypes()
                 .Where(type => !type.IsAbstract && !type.IsInterface && typeof(IPlayerMigration).IsAssignableFrom(type))
                 .Select(type => (IPlayerMigration)Activator.CreateInstance(type))
                 .Where(migration => migration.Version > Math.Min(record.Version, fileVersion)).OrderBy(migration => migration.Version).ToArray();
-            ctx.Assert(pending.Select(migration => migration.Version).SequenceEqual(new[] { 23 }),
-                "A released version 22 character receives exactly one combined item migration");
+            ctx.Assert(pending.Select(migration => migration.Version).SequenceEqual(new[] { 24 }),
+                "A released version 23 character receives exactly one combined item migration");
             var apply = typeof(Migration).GetMethod("ApplyPlayerMigration", BindingFlags.Static | BindingFlags.NonPublic);
             bool ApplyMigration(IPlayerMigration migration) => (bool)apply.Invoke(null, new object[] { migration, player,
                 (Func<Player>)(() => DB.Get<Player>(fixture.Id)), (Action<Player>)(updated => DB.Set(updated)),
@@ -71,10 +71,10 @@ public static partial class MigrationEngineTests
                 }) });
             ctx.AssertEqual(223, GetItemAppearance(visor, ItemAppearanceType.SimpleModel, 0), "Fixture reproduces the shipped reserved helmet model");
             foreach (var migration in pending)
-                ctx.Assert(ApplyMigration(migration), "The actual player migration checkpoint path repairs a version 22 character");
-            ctx.AssertEqual(23, DB.Get<Player>(fixture.Id).Version, "The database checkpoint advances after repair");
-            ctx.AssertEqual(23, fileVersion, "The character checkpoint advances after repair");
-            ctx.AssertEqual(23, (int)Invoke("StoredObjectData", "ReadRootInteger", savedCharacter, checkpointVariable), "The saved character contains the new checkpoint");
+                ctx.Assert(ApplyMigration(migration), "The actual player migration checkpoint path repairs a version 23 character");
+            ctx.AssertEqual(24, DB.Get<Player>(fixture.Id).Version, "The database checkpoint advances after repair");
+            ctx.AssertEqual(24, fileVersion, "The character checkpoint advances after repair");
+            ctx.AssertEqual(24, (int)Invoke("StoredObjectData", "ReadRootInteger", savedCharacter, checkpointVariable), "The saved character contains the new checkpoint");
             ctx.AssertEqual(110, GetItemAppearance(visor, ItemAppearanceType.SimpleModel, 0), "The combined player migration repairs the worn helmet");
             ctx.AssertEqual(110, GetItemAppearance(nested, ItemAppearanceType.SimpleModel, 0), "The same traversal repairs nested headgear");
             ctx.AssertEqual(33, GetItemAppearance(custom, ItemAppearanceType.SimpleModel, 0), "Valid customized visor models survive");

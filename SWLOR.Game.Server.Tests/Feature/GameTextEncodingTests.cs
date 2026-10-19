@@ -27,6 +27,10 @@ public class GameTextEncodingTests
     private const string TypographicPunctuation =
         "\u2018\u2019\u201A\u201C\u201D\u201E\u2039\u203A\u00AB\u00BB\u2013\u2014\u2026";
 
+    // A JSON \u escape that is not itself escaped by a preceding backslash.
+    private static readonly Regex JsonEscape = new(
+        @"(?<!\\)(?:\\\\)*\\u([0-9A-Fa-f]{4})", RegexOptions.Compiled);
+
     // A C# \u, \U, or \x escape that is not itself escaped by a preceding backslash.
     private static readonly Regex CSharpEscape = new(
         @"(?<!\\)((?:\\\\)*)\\(?:u([0-9A-Fa-f]{4})|U([0-9A-Fa-f]{8})|x([0-9A-Fa-f]{1,4}))",
@@ -55,6 +59,16 @@ public class GameTextEncodingTests
         foreach (var path in Directory.EnumerateFiles(moduleRoot, "*.json", SearchOption.AllDirectories))
         {
             var bytes = File.ReadAllBytes(path);
+            var relativePath = Path.GetRelativePath(moduleRoot, path);
+
+            // nwn_gff writes a JSON escape as UTF-8, so an escaped
+            // non-ASCII character such as \u2019 is as wrong as the character itself.
+            foreach (Match escape in JsonEscape.Matches(Encoding.Latin1.GetString(bytes)))
+            {
+                if (Convert.ToInt32(escape.Groups[1].Value, 16) >= 0x80)
+                    violations.Add($"{relativePath}: escaped U+{escape.Groups[1].Value.ToUpperInvariant()}");
+            }
+
             if (!bytes.Any(value => value >= 0x80))
                 continue;
 
@@ -64,7 +78,6 @@ public class GameTextEncodingTests
             {
                 DateParseHandling = DateParseHandling.None
             };
-            var relativePath = Path.GetRelativePath(moduleRoot, path);
             foreach (var value in JToken.ReadFrom(reader).SelectTokens("..*").OfType<JValue>())
             {
                 if (value.Type != JTokenType.String || IsVoidField(value))

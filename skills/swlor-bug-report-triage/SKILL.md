@@ -41,6 +41,7 @@ Take the open posts in the SWLOR Discord bug-report forum through to reviewed pu
 1. **List open posts.** Open the forum, scroll the virtualized list, and collect the thread ids above "Older Posts" along with their reactions.
    - Count a reaction as a marker only when the owner's account added it. Its aria-label ends in `press to remove your reaction`. Players can add the same emoji.
    - Skip posts that are locked or that carry the flagged message. They are waiting on the owner.
+   - Also scan below the divider for posts that carry one of your markers (🇶, ❓, ⏳, 👀). Discord moves inactive posts there without closing them, and these are tickets you're tracking. Include them in steps 2 and 3. New posts still come only from above the divider.
 2. **Recheck 👀 posts.** Read the PR URLs from each post's `[AI bot] @zunath Fix ready for review` message. Check every PR, companions included, with `gh pr view <url> --json state,mergedAt,headRefOid`.
    - **All merged:**
      1. Remove all reactions from the post, then Close Post. Don't lock it.
@@ -52,8 +53,9 @@ Take the open posts in the SWLOR Discord bug-report forum through to reviewed pu
    - **🇶:** find the post's worker session in your agent's session list, by the thread id in its brief or its branch, and any PR that names the ticket.
      - **Worker finished with a PR:** verify it as in step 9.
      - **Worker still working:** leave it.
+     - **Worker ended with a conclusive no-change result** (already fixed, works as designed, or waiting on a deploy): verify the evidence it gives. Then handle the post like the matching triage outcome in step 6. For a pending deploy, tell the owner which deploy step is needed.
      - **Worker ended without a PR but reported a blocker:** don't restart it. A question for the reporter moves the post to ❓ and gets asked as in step 6. A question for the owner moves it to ⏳.
-     - **No session, or the session ended without a PR or a blocker:** start a new worker with the brief below and say so in your report.
+     - **No session, or the session ended without a PR, a blocker, or a conclusive result:** start a new worker with the brief below and say so in your report.
    - **❓:** read the thread for reporter replies after your question.
      - **Answered:** screen the reply (step 5) and triage the post again (step 6). Remove ❓ only when the new state is decided, and set that state's marker.
      - **Unanswered:** leave it as it is. If the reporter can't see the thread (see step 6), list the open question in your report each run.
@@ -95,7 +97,7 @@ Give each worker:
   5. Resolve every thread (`Readmes/PullRequests.md`).
   6. Don't merge.
 - **The constraints:** never post to Discord, stay in its own worktree, and stop only processes it started. If only the reporter can answer something, stop and report the exact question.
-- **The final report:** PR URLs, the tickets fixed, a one-sentence player-facing summary, the root cause, the tests and client evidence (or what is unverified), and the deploy step.
+- **The final report:** PR URLs or a conclusive no-change result with its evidence, the tickets fixed, a one-sentence player-facing summary, the root cause, the tests and client evidence (or what is unverified), and the deploy step.
 
 ## Safety screening
 

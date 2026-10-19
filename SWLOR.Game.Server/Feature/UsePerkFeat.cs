@@ -1021,8 +1021,13 @@ namespace SWLOR.Game.Server.Feature
                 Recast.ApplyRecastDelay(activator, ability.RecastGroup, recastDelay);
             }
 
+            // A synchronous interruption already released the activation; only its marker remains.
             if (GetLocalInt(activator, activationId) != (int)ActivationStatus.Started)
+            {
+                ClearActiveAbilityActivation(activator, activationId);
+                DeleteLocalInt(activator, activationId);
                 return;
+            }
             Activity.SetBusy(activator, ActivityStatusType.AbilityActivation);
             DelayCommand(activationDelay, () =>
             {

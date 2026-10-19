@@ -109,7 +109,8 @@ public static class TwinPistolEquipmentValidation
         {
             try
             {
-                PlayerEquipmentStorage.Unequip(creature, item, slot);
+                if (!PlayerEquipmentStorage.TryUnequip(creature, item, slot, allowRecoveryBag: false))
+                    throw new InvalidOperationException("No owned storage can hold the returned item.");
                 if (FailedReturns.TryGetValue(creature, out var failure) && failure.Item == item)
                     FailedReturns.Remove(creature);
             }

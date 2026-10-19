@@ -40,7 +40,8 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition
                 throw new InvalidOperationException("The inventory has no safe space for recovered equipment. Free inventory space before reconnecting.");
         }
 
-        internal static bool TryUnequip(uint player, uint item, InventorySlot slot)
+        /// <summary>Gameplay callers pass <paramref name="allowRecoveryBag"/> false so unequipping never creates a new bag.</summary>
+        internal static bool TryUnequip(uint player, uint item, InventorySlot slot, bool allowRecoveryBag = true)
         {
             var creature = NWNXLib.g_pAppManager.m_pServerExoApp.GetGameObject(player).AsNWSCreature();
             var inventory = creature.m_pcItemRepository;
@@ -54,6 +55,7 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition
                     Fits(NativeItem(candidate).m_pItemRepository, item), OBJECT_INVALID);
                 if (destination == OBJECT_INVALID)
                 {
+                    if (!allowRecoveryBag) return false;
                     destination = CreateRecoveryBag(player, item, inventory, carried);
                     if (destination == OBJECT_INVALID) return false;
                 }

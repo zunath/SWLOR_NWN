@@ -129,7 +129,11 @@ public static class TwinPistolEquipment
             // Reserve space for the real item before changing either hand. Failure retains the pair.
             if (GetIsObjectValid(pair.Main) && GetItemInSlot(InventorySlot.RightHand, creature) == pair.Main)
             {
-                if (GetIsPC(creature)) PlayerEquipmentStorage.Unequip(creature, pair.Main, InventorySlot.RightHand);
+                if (GetIsPC(creature))
+                {
+                    if (!PlayerEquipmentStorage.TryUnequip(creature, pair.Main, InventorySlot.RightHand, allowRecoveryBag: false))
+                        throw new InvalidOperationException("No owned storage can hold the Twin Pistols item.");
+                }
                 else if (!CreaturePlugin.RunUnequip(creature, pair.Main))
                     throw new InvalidOperationException("The Twin Pistols item could not be unequipped.");
             }

@@ -912,7 +912,7 @@ namespace SWLOR.Game.Server.Service.AbilityService
         ShipModule20 = 573,
 
         [RecastGroup("Twin Volley", "Twin Volley", true)]
-        TwinVolley = 576,
+        TwinVolley = 584,
 
         [RecastGroup("Akimbo Stance", "Akimbo Stance", true)]
         AkimboStance = 577,

@@ -208,11 +208,9 @@ public sealed partial class WeaponCombatState
         }
         if (info.Technique is not { } d) return;
         if (!landed) { if (activation.Stage != MeleeTechniqueStage.None) Count("MissedSpenders"); return; }
-        if (d.RefundEligible && (!d.RefundRequiresSetup || activation.Stage != MeleeTechniqueStage.None) &&
-            Resources.TryRefund(activation.PaidStamina, LineStat(d.Line, StatType.TechniqueRefundStamina), LineStat(d.Line, StatType.TechniqueRefundCooldownSeconds), At(now), out var refund))
-        {
-            RestoreHitStamina(activation, refund, "TechniqueRefundedStamina", retainMinimumCost: false);
-        }
+        if (d.RefundEligible && (!d.RefundRequiresSetup || activation.Stage != MeleeTechniqueStage.None))
+            Resources.TryRefund(activation.PaidStamina, LineStat(d.Line, StatType.TechniqueRefundStamina), LineStat(d.Line, StatType.TechniqueRefundCooldownSeconds), At(now),
+                refund => (int)Math.Ceiling(RestoreHitStamina(activation, refund, "TechniqueRefundedStamina", retainMinimumCost: false)), out _);
         if (activation.Stage != MeleeTechniqueStage.None)
         {
             if (d.CreatedStage == MeleeTechniqueStage.None && !target.IsDead && Reactions.TryOpenWindow(target.SimId, activation.Stage,

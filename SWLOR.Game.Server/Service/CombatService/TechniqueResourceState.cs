@@ -36,12 +36,16 @@ namespace SWLOR.Game.Server.Service.CombatService
             return discount;
         }
 
-        public bool TryRefund(int actualPaid, int requested, int cooldownSeconds, DateTime now, out int refund)
+        /// <summary>The shared gate starts only when <paramref name="restore"/> reports stamina actually restored.</summary>
+        public bool TryRefund(int actualPaid, int requested, int cooldownSeconds, DateTime now,
+            Func<int, int> restore, out int restored)
         {
-            refund = 0;
+            restored = 0;
             if (actualPaid <= 0 || requested <= 0 || now < _refundAvailable)
                 return false;
-            refund = Math.Min(actualPaid, requested);
+            restored = restore(Math.Min(actualPaid, requested));
+            if (restored <= 0)
+                return false;
             _refundAvailable = now.AddSeconds(Math.Max(0, cooldownSeconds));
             return true;
         }

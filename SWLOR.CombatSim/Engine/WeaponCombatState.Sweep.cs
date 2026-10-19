@@ -58,7 +58,7 @@ public sealed partial class WeaponCombatState
         RestoreHitStamina(activation, Stat(StatType.CostlyAbilityHitStaminaRestore), "CostlyHitStaminaRefunded");
     }
 
-    public void RestoreHitStamina(TechniqueActivation activation, int requested, string diagnostic, bool retainMinimumCost = true)
+    public double RestoreHitStamina(TechniqueActivation activation, int requested, string diagnostic, bool retainMinimumCost = true)
     {
         var refund = retainMinimumCost
             ? Combat.CalculateAbilityHitStaminaRestore(activation.PaidStamina, activation.HitStaminaRefunded, requested)
@@ -68,6 +68,7 @@ public sealed partial class WeaponCombatState
         _owner.Stm += restored;
         _owner.Stats.StmRefunded += restored;
         if (restored > 0) Count(diagnostic, restored);
+        return restored;
     }
 
     public void CompleteSweep(TechniqueActivation activation, double now)

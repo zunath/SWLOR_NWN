@@ -152,12 +152,12 @@ public class MeleeTechniqueTests
     public void BothLinesAndBothFinisherHitsShareOneRefundGate()
     {
         var resource = new TechniqueResourceState();
-        resource.TryRefund(1, 2, 12, Start, out var first).Should().BeTrue();
+        resource.TryRefund(1, 2, 12, Start, RestoreAll, out var first).Should().BeTrue();
         first.Should().Be(1, "a Payback-discounted activation cannot restore more than its actual payment");
-        resource.TryRefund(9, 2, 12, Start, out _).Should().BeFalse();
+        resource.TryRefund(9, 2, 12, Start, RestoreAll, out _).Should().BeFalse();
         resource.ClearBenefits();
-        resource.TryRefund(10, 2, 12, Start.AddSeconds(11), out _).Should().BeFalse();
-        resource.TryRefund(10, 2, 12, Start.AddSeconds(12), out var second).Should().BeTrue();
+        resource.TryRefund(10, 2, 12, Start.AddSeconds(11), RestoreAll, out _).Should().BeFalse();
+        resource.TryRefund(10, 2, 12, Start.AddSeconds(12), RestoreAll, out var second).Should().BeTrue();
         second.Should().Be(2);
     }
 
@@ -165,11 +165,23 @@ public class MeleeTechniqueTests
     public void FreeCastsDoNotConsumeTheRefundGate()
     {
         var resource = new TechniqueResourceState();
-        resource.TryRefund(0, 2, 12, Start, out _).Should().BeFalse();
-        resource.TryRefund(9, 0, 12, Start, out _).Should().BeFalse();
-        resource.TryRefund(9, 2, 12, Start, out var refund).Should().BeTrue();
+        resource.TryRefund(0, 2, 12, Start, RestoreAll, out _).Should().BeFalse();
+        resource.TryRefund(9, 0, 12, Start, RestoreAll, out _).Should().BeFalse();
+        resource.TryRefund(9, 2, 12, Start, RestoreAll, out var refund).Should().BeTrue();
         refund.Should().Be(2);
     }
+
+    [Test]
+    public void RefundRestoringNothingDoesNotConsumeTheRefundGate()
+    {
+        var resource = new TechniqueResourceState();
+        resource.TryRefund(9, 2, 12, Start, _ => 0, out var nothing).Should().BeFalse();
+        nothing.Should().Be(0);
+        resource.TryRefund(9, 2, 12, Start.AddSeconds(1), RestoreAll, out var refund).Should().BeTrue();
+        refund.Should().Be(2);
+    }
+
+    private static int RestoreAll(int amount) => amount;
 
     [Test]
     public void OneSecondActionLockSurvivesSetupInvalidation()

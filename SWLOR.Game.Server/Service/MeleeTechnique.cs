@@ -240,11 +240,9 @@ namespace SWLOR.Game.Server.Service
             {
                 var requested = GetLineStat(creature, detail.Line, StatType.TechniqueRefundStamina);
                 var cooldown = GetLineStat(creature, detail.Line, StatType.TechniqueRefundCooldownSeconds);
-                if (owner.Resources.TryRefund(paid, requested, cooldown, DateTime.UtcNow, out var amount))
-                {
-                    using var recorderAttribution = CombatRecorder.BeginStatTriggerAttribution(creature, StatType.TechniqueRefundStamina);
-                    Combat.RestoreAbilityHitStamina(creature, activation.Ability, amount, retainMinimumCost: false);
-                }
+                using var recorderAttribution = CombatRecorder.BeginStatTriggerAttribution(creature, StatType.TechniqueRefundStamina);
+                owner.Resources.TryRefund(paid, requested, cooldown, DateTime.UtcNow,
+                    amount => Combat.RestoreAbilityHitStamina(creature, activation.Ability, amount, retainMinimumCost: false), out _);
             }
             if (paid > 0)
                 TechniqueLanded?.Invoke(creature, activation.Target, activation.Ability, activation.Stage);

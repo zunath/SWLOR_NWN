@@ -210,6 +210,17 @@ namespace SWLOR.Game.Server.Service
             Console.WriteLine($"Loaded {_statusEffects.Count} status effects.");
         }
 
+        /// <summary>
+        /// Creates a fresh instance of a registered status effect so a caller can set per-application options before applying it.
+        /// </summary>
+        public static IStatusEffect CreateStatusEffect(Type statusEffectClass)
+        {
+            if (!TryCreateStatusEffect(statusEffectClass, out var statusEffect))
+                throw new KeyNotFoundException($"Status effect '{statusEffectClass?.Name ?? "null"}' is not registered.");
+
+            return statusEffect;
+        }
+
         private static bool TryCreateStatusEffect(Type statusEffectClass, out IStatusEffect statusEffect)
         {
             if (statusEffectClass != null &&

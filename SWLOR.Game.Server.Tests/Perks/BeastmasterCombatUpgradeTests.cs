@@ -358,7 +358,7 @@ public class BeastmasterCombatUpgradeTests
         foreach (var file in requirementFiles)
         {
             var source = File.ReadAllText(file.FullName);
-            var guardIndex = source.IndexOf("string.IsNullOrWhiteSpace(dbPlayer.ActiveBeastId)", StringComparison.Ordinal);
+            var guardIndex = source.IndexOf("string.IsNullOrWhiteSpace(dbPlayer?.ActiveBeastId)", StringComparison.Ordinal);
             var lookupIndex = source.IndexOf("DB.Get<Beast>(dbPlayer.ActiveBeastId)", StringComparison.Ordinal);
 
             guardIndex.Should().BeGreaterThanOrEqualTo(0, $"{Path.GetFileName(file.FullName)} must handle players without an active beast");

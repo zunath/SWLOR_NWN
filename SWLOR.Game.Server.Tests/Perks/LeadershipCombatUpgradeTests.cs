@@ -493,7 +493,9 @@ public class LeadershipCombatUpgradeTests
             spellIcon.Should().NotBe("****");
             featIcon.Should().Be(spellIcon);
 
-            featRows.Values.Where(x => x.Icon == featIcon && !labels.Contains(x.Label)).Should().BeEmpty();
+            // A feat's automatic-targeting alias row copies its canonical row, icon included.
+            featRows.Values.Where(x => x.Icon == featIcon && !labels.Contains(x.Label) && x.Label != "AutoCast" + label)
+                .Should().BeEmpty();
             spellRows.Values.Where(x => x.Icon == spellIcon && !labels.Contains(x.Label)).Should().BeEmpty();
             File.Exists((root / "SWLOR_Haks" / "sw_ability" / $"{featIcon}.tga").FullName).Should().BeTrue();
         }

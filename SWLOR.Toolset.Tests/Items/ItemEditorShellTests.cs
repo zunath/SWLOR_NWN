@@ -582,6 +582,7 @@ namespace SWLOR.Toolset.Tests.Items
         [Test]
         public async Task AFailedDeleteOfTheOriginalRollsTheRenameBack()
         {
+            Support.WindowsFileSharing.Require();
             var document = OpenScratch("adren_harness");
             SetResRef(document, "adren_mk5");
 

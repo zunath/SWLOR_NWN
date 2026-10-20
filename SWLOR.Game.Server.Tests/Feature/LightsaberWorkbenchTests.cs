@@ -300,7 +300,7 @@ public class LightsaberWorkbenchTests
                 hilt.PreviewResref.Length.Should().BeLessThanOrEqualTo(16);
                 if (hilt.PreviewResref.StartsWith("ui_"))
                 {
-                    File.Exists(Path.Combine(uiRoot, $"{hilt.PreviewResref}.tga"))
+                    HakFileExists(uiRoot, $"{hilt.PreviewResref}.tga")
                         .Should().BeTrue($"preview texture {hilt.PreviewResref}.tga must exist in sw_ui");
                 }
             }
@@ -317,7 +317,7 @@ public class LightsaberWorkbenchTests
         foreach (var color in straightColors.Concat(curvedColors).Concat(staffColors))
         {
             color.PreviewResref.Length.Should().BeLessThanOrEqualTo(16);
-            File.Exists(Path.Combine(uiRoot, $"{color.PreviewResref}.tga"))
+            HakFileExists(uiRoot, $"{color.PreviewResref}.tga")
                 .Should().BeTrue($"preview texture {color.PreviewResref}.tga must exist in sw_ui");
         }
 
@@ -327,9 +327,9 @@ public class LightsaberWorkbenchTests
             .Concat(staffColors.Select(c => ("wdblsbr", c.SaberstaffTopValue)));
         foreach (var (prefix, value) in topChecks)
         {
-            File.Exists(Path.Combine(weaponRoot, $"{prefix}_t_{value:D3}.mdl"))
+            HakFileExists(weaponRoot, $"{prefix}_t_{value:D3}.mdl")
                 .Should().BeTrue($"blade model {prefix}_t_{value:D3}.mdl must exist in sw_weapon");
-            File.Exists(Path.Combine(weaponRoot, $"i{prefix}_t_{value:D3}.tga"))
+            HakFileExists(weaponRoot, $"i{prefix}_t_{value:D3}.tga")
                 .Should().BeTrue($"inventory icon i{prefix}_t_{value:D3}.tga must exist in sw_weapon");
         }
 
@@ -338,7 +338,7 @@ public class LightsaberWorkbenchTests
         {
             hilt.PreviewResref.Length.Should().BeLessThanOrEqualTo(16);
             hilt.PreviewResref.Should().StartWith("ui_ssh_");
-            File.Exists(Path.Combine(uiRoot, $"{hilt.PreviewResref}.tga"))
+            HakFileExists(uiRoot, $"{hilt.PreviewResref}.tga")
                 .Should().BeTrue($"preview texture {hilt.PreviewResref}.tga must exist in sw_ui");
         }
     }
@@ -392,6 +392,10 @@ public class LightsaberWorkbenchTests
         var method = type.GetMethod("IsCraftableSaberResref", BindingFlags.Public | BindingFlags.Static)!;
         return resref => (bool)method.Invoke(null, new object[] { resref })!;
     }
+
+    /// <summary>Resource names are case-insensitive, and some HAK files use mixed case.</summary>
+    private static bool HakFileExists(string directory, string fileName) =>
+        Directory.EnumerateFiles(directory, fileName, new EnumerationOptions { MatchCasing = MatchCasing.CaseInsensitive }).Any();
 
     private static DirectoryInfo FindRepositoryRoot()
     {

@@ -56,7 +56,7 @@ namespace SWLOR.Toolset.Tests
 
             public static Fixture Build()
             {
-                var installPath = NwnInstallLocator.Locate(null)
+                var installPath = NwnInstallLocator.Locate(Environment.GetEnvironmentVariable("NWN_INSTALL_PATH"))
                     ?? throw new DirectoryNotFoundException(
                         "No NWN:EE install was found; the base tilesets and dialog.tlk only exist there.");
 

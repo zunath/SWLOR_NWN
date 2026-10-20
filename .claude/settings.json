@@ -1,0 +1,27 @@
+{
+  "hooks": {
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash \"$CLAUDE_PROJECT_DIR/.claude/hooks/session-start.sh\"",
+            "timeout": 900
+          },
+          {
+            "type": "command",
+            "command": "timeout 3000 bash \"$CLAUDE_PROJECT_DIR/.claude/hooks/session-start-haks.sh\"",
+            "async": true,
+            "timeout": 3000
+          },
+          {
+            "type": "command",
+            "command": "timeout 1500 bash \"$CLAUDE_PROJECT_DIR/.claude/hooks/session-start-game-data.sh\"",
+            "async": true,
+            "timeout": 1500
+          }
+        ]
+      }
+    ]
+  }
+}

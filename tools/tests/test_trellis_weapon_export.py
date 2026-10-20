@@ -509,6 +509,12 @@ class TrellisWeaponExportTests(unittest.TestCase):
             objects[1].location.x=4
             bpy.context.view_layer.update()
             with self.assertRaisesRegex(ValueError,'not proven enclosed'):exporter.closed_surface_report(objects)
+            # A cavity nested inside another cavity sees aggregate winding zero, not one.
+            objects[1].location.x=0
+            bpy.ops.mesh.primitive_cube_add(size=.25);nested=bpy.context.object;objects.append(nested)
+            for polygon in nested.data.polygons:polygon.flip()
+            nested.data.update();bpy.context.view_layer.update()
+            with self.assertRaisesRegex(ValueError,'not proven enclosed'):exporter.closed_surface_report(objects)
         finally:
             for ob in objects:bpy.data.objects.remove(ob,do_unlink=True)
 

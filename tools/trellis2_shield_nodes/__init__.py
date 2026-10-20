@@ -37,13 +37,17 @@ def blender_identity(executable):
     return {'path':str(path),'sha256':fingerprint,'version':blender_version(str(path),fingerprint)}
 
 
+def discard_outputs(outputs):
+    for stale in outputs:
+        if stale.exists():stale.unlink()
+
+
 def require_same_blender(executable,runtime,outputs):
     """The cache key names the hashed build; discard output made by a replaced executable."""
     try:same=blender_identity(executable)['sha256']==runtime['sha256']
     except Exception:same=False  # An unprovable identity counts as a mismatch.
     if not same:
-        for stale in outputs:
-            if stale.exists():stale.unlink()
+        discard_outputs(outputs)
         raise ValueError('Blender executable changed or could not be verified during shield reconstruction')
 
 
@@ -169,9 +173,13 @@ class SWLORClosedVoxelMesh:
         source=directory/'input.npz';high=directory/'closed_high.npz';low=directory/('closed_low_'+str(target_face_count)+'.npz')
         def run(mode,input_path,output_path,flags):
             command=[executable,'-b','--factory-startup','--python-exit-code','1','--python',str(SURFACE_SCRIPT),'--',mode,str(input_path),str(output_path),*flags]
-            with output_path.with_suffix('.log').open('w',encoding='utf-8') as log:
-                subprocess.run(command,stdout=log,stderr=subprocess.STDOUT,timeout=600,check=True,creationflags=getattr(subprocess,'CREATE_NO_WINDOW',0))
-            require_same_blender(executable,runtime,(output_path,output_path.with_suffix('.json')))
+            outputs=(output_path,output_path.with_suffix('.json'))
+            try:
+                with output_path.with_suffix('.log').open('w',encoding='utf-8') as log:
+                    subprocess.run(command,stdout=log,stderr=subprocess.STDOUT,timeout=600,check=True,creationflags=getattr(subprocess,'CREATE_NO_WINDOW',0))
+            except BaseException:
+                discard_outputs(outputs);raise  # Unverified runs never leave a reusable cache pair.
+            require_same_blender(executable,runtime,outputs)
         high_arrays=cached_entry(high)
         if high_arrays is None:
             np.savez(source,vertices=vertices,faces=faces)

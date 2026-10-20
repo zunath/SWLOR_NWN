@@ -38,7 +38,7 @@ def winding_number(point, triangles):
     return float(np.arctan2(det,den).sum()/(2*np.pi))
 
 
-def edges_cross_triangles(edges, triangles, chunk=256):
+def edges_cross_triangles(edges, triangles, chunk=256, inclusive=False):
     """True when any segment passes through the interior of any triangle (Moller-Trumbore, strict).
     Both dimensions are batched, so each working array holds at most chunk*chunk*3 values."""
     for tstart in range(0,len(triangles),chunk):
@@ -48,14 +48,31 @@ def edges_cross_triangles(edges, triangles, chunk=256):
             p=np.cross(d,e2[None]);det=np.einsum('ijk,jk->ij',p,e1);ok=np.abs(det)>eps;inv=np.where(ok,1/np.where(ok,det,1),0)
             s=a-v0[None];u=np.einsum('ijk,ijk->ij',s,p)*inv;q=np.cross(s,e1[None]);v=np.einsum('ijk,ijk->ij',d,q)*inv
             t=np.einsum('jk,ijk->ij',e2,q)*inv
-            if np.any(ok&(u>eps)&(v>eps)&(u+v<1-eps)&(t>eps)&(t<1-eps)):return True
+            lo,hi=(-eps,1+eps) if inclusive else (eps,1-eps)
+            if np.any(ok&(u>lo)&(v>lo)&(u+v<hi)&(t>lo)&(t<hi)):return True
     return False
 
 
-def shells_intersect(first, second):
-    """Two closed triangle sets intersect iff an edge of one crosses a triangle of the other."""
+def points_touch_triangles(points, triangles, tolerance=1e-7, chunk=256):
+    """True when any point lies on (within tolerance of) any triangle, edges and vertices included."""
+    for tstart in range(0,len(triangles),chunk):
+        tris=triangles[tstart:tstart+chunk];a=tris[:,0];ab=tris[:,1]-a;ac=tris[:,2]-a
+        normal=np.cross(ab,ac);area=np.linalg.norm(normal,axis=1);unit=normal/np.maximum(area,1e-30)[:,None]
+        d00=np.einsum('ij,ij->i',ab,ab);d01=np.einsum('ij,ij->i',ab,ac);d11=np.einsum('ij,ij->i',ac,ac);den=d00*d11-d01*d01
+        for start in range(0,len(points),chunk):
+            ap=points[start:start+chunk][:,None]-a[None];plane=np.abs(np.einsum('ijk,jk->ij',ap,unit))
+            d20=np.einsum('ijk,jk->ij',ap,ab);d21=np.einsum('ijk,jk->ij',ap,ac)
+            v=(d11*d20-d01*d21)/den;w=(d00*d21-d01*d20)/den;slack=tolerance/np.sqrt(np.maximum(d00,d11))
+            if np.any((plane<=tolerance)&(v>=-slack)&(w>=-slack)&(v+w<=1+slack)):return True
+    return False
+
+
+def shells_intersect(first, second, tolerance=1e-7):
+    """Closed triangle sets intersect or touch when an edge of one crosses (or grazes) a triangle of
+    the other, or a vertex of one lies on the other; coplanar and boundary contacts count too."""
     def edges(tris):return np.concatenate([tris[:,[0,1]],tris[:,[1,2]],tris[:,[2,0]]])
-    return edges_cross_triangles(edges(first),second) or edges_cross_triangles(edges(second),first)
+    return (edges_cross_triangles(edges(first),second,inclusive=True) or edges_cross_triangles(edges(second),first,inclusive=True)
+            or points_touch_triangles(first.reshape(-1,3),second,tolerance) or points_touch_triangles(second.reshape(-1,3),first,tolerance))
 
 
 def audit_surface(vertices, faces, components=False):

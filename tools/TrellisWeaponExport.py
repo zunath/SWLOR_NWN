@@ -560,18 +560,22 @@ def closed_surface_report(objects,double_sided_materials=None,material_count=Non
     groups={root:all_groups[root] for root in selected|set(enclosing)}
     trees={root:BVHTree.FromPolygons(vertices,group,all_triangles=True) for root,group in groups.items()}
     inward=[root for root,volume in volumes.items() if volume<0]
+    # Validate each cavity against every other closed component together: it must not touch
+    # any of them, and the aggregate signed winding of all of them around it must be exactly one
+    # (solid material). Nested cavities, cavities in cavities and crossing cavities all fail.
+    closed=[root for root in groups if root not in invalid|degenerate_roots]
     for root in inward:
-        point=np.asarray(vertices[groups[root][0][0]],dtype=np.float64);contained=False
-        for outer,volume in enclosing.items():
-            if volume<=0 or trees[root].overlap(trees[outer]):continue
-            triangles=np.asarray([[vertices[i] for i in face] for face in groups[outer]],dtype=np.float64)-point
-            a,b,c=triangles[:,0],triangles[:,1],triangles[:,2]
-            la,lb,lc=(np.linalg.norm(v,axis=1) for v in (a,b,c))
-            numerator=np.einsum('ij,ij->i',a,np.cross(b,c))
-            denominator=la*lb*lc+np.einsum('ij,ij->i',a,b)*lc+np.einsum('ij,ij->i',b,c)*la+np.einsum('ij,ij->i',c,a)*lb
-            winding=float(np.sum(2*np.arctan2(numerator,denominator))/(4*math.pi))
-            if abs(abs(winding)-1)<1e-5:contained=True;break
-        if not contained:raise ValueError('Inward shell is not proven enclosed by a nonintersecting outward shell')
+        others=[other for other in closed if other!=root]
+        if not others or any(trees[root].overlap(trees[other]) for other in others):
+            raise ValueError('Inward shell is not proven enclosed by a nonintersecting outward shell')
+        point=np.asarray(vertices[groups[root][0][0]],dtype=np.float64)
+        triangles=np.asarray([[vertices[i] for i in face] for other in others for face in groups[other]],dtype=np.float64)-point
+        a,b,c=triangles[:,0],triangles[:,1],triangles[:,2]
+        la,lb,lc=(np.linalg.norm(v,axis=1) for v in (a,b,c))
+        numerator=np.einsum('ij,ij->i',a,np.cross(b,c))
+        denominator=la*lb*lc+np.einsum('ij,ij->i',a,b)*lc+np.einsum('ij,ij->i',b,c)*la+np.einsum('ij,ij->i',c,a)*lb
+        winding=float(np.sum(2*np.arctan2(numerator,denominator))/(4*math.pi))
+        if abs(winding-1)>=1e-5:raise ValueError('Inward shell is not proven enclosed by a nonintersecting outward shell')
     selected_faces=[i for i in range(len(faces)) if find(i) in selected]
     area=sum(face_areas[i] for i in selected_faces);opposed=sum(opposed_faces[i] for i in selected_faces)
     opposed_area=sum(face_areas[i] for i in selected_faces if opposed_faces[i])

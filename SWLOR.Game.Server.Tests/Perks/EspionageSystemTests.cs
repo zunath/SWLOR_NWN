@@ -333,13 +333,14 @@ public class EspionageSystemTests
     }
 
     [Test]
-    public void SlicingRanksGrantTheDocumentedTraceBonuses()
+    public void SlicingRanksGrantTraceOnlyAboveTheTargetTier()
     {
-        Slicing.GetTraceBonus(0, 0, 0).Should().Be(0);
-        Slicing.GetTraceBonus(2, 0, 0).Should().Be(0);
-        Slicing.GetTraceBonus(3, 0, 0).Should().Be(1);
-        Slicing.GetTraceBonus(4, 0, 0).Should().Be(2);
-        Slicing.GetTraceBonus(5, 0, 0).Should().Be(3);
+        for (var tier = 1; tier <= 5; tier++)
+            Slicing.GetTraceBonus(tier, tier, 0, 0).Should().Be(0, "the rank tier {0} requires adds nothing there", tier);
+
+        Slicing.GetTraceBonus(2, 1, 0, 0).Should().Be(1);
+        Slicing.GetTraceBonus(5, 3, 0, 0).Should().Be(2);
+        Slicing.GetTraceBonus(5, 1, 0, 0).Should().Be(4);
     }
 
     [Test]

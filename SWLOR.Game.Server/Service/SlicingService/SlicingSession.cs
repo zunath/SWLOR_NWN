@@ -105,10 +105,10 @@ namespace SWLOR.Game.Server.Service.SlicingService
                 SetLocalInt(target, IntegrityVariable, 100);
 
             var board = Slicing.GetBoard(tier, boardNumber);
-            var lockpicking = Stat.GetStatAdjustment(player, StatType.Lockpicking);
+            var lockpicking = Stat.GetLockpicking(player);
             var perception = Math.Max(0, GetAbilityModifier(AbilityType.Perception, player));
             var slicingRank = Perk.GetPerkLevel(player, PerkType.Slicing);
-            var traceBonus = Slicing.GetTraceBonus(slicingRank, lockpicking, perception);
+            var traceBonus = Slicing.GetTraceBonus(slicingRank, tier, lockpicking, perception);
 
             _sessions[playerId] = new ActiveSlicingSession
             {

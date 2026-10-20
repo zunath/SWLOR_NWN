@@ -470,6 +470,16 @@ script only - `jq` (used to parse the JSON report; the run fails at the reportin
 current module and hak assets** - the normal dev/deploy-machine flow. The script itself only
 builds and stages the compiled .NET assembly; it does not pack the module or build the haks.
 
+**Linux without the Windows deploy flow** (for example Claude Code cloud sessions):
+`scripts/prepare-engine-test-home.sh` fills `enginetests-home/` with `swlor.env`, server-only
+HAKs, the TLK, the packed module, and the Docker images, after which `scripts/run-engine-tests.sh`
+runs as usual. The server-only HAKs keep every resource except models, textures, and sounds,
+which become zero-byte files - Beamdog's dedicated-server data does the same with the base game's
+models and textures, because the server never reads them - so the HAKs take about 0.4 GB instead
+of 11 GB. Never deploy them. Later runs skip steps whose inputs are unchanged (`--force` redoes
+them); packing the module takes about 20 minutes because every resource converts through Wine.
+A full sweep took about 75 minutes in a 4-core cloud session, so pass `--timeout-minutes 120`.
+
 Usage:
 
 ```bash

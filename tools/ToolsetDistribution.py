@@ -10,6 +10,7 @@ import subprocess
 import sys
 
 import BuildToolsetContent as content
+import toolset_release as release
 from toolset_common import ROOT, executable, native_environment, new_output, prepare_native_tools, run, runtime_id
 
 
@@ -166,8 +167,21 @@ def main():
     contribution.add_argument('--archive', required=True)
     contribution.add_argument('--toolset', required=True)
     contribution.add_argument('--apply', action='store_true')
+    local = commands.add_parser('release-local', help='Build both platforms on this Windows machine; dry run unless --publish')
+    local.add_argument('--version', required=True)
+    local.add_argument('--output', help='Output folder outside the checkout (default: ~/swlor-toolset-releases/<version>-<commit>)')
+    local.add_argument('--publish', action='store_true', help='Create the GitHub releases (default is a dry run)')
+    local.add_argument('--asset-descriptor', help='asset-pack.json to use instead of downloading it from toolset-assets-<haks commit>')
+    local.add_argument('--sign-windows', action='store_true', help=f'Sign using the PFX named by {release.SIGN_PFX_VARIABLE} and {release.SIGN_PASSWORD_VARIABLE}')
+    local.add_argument('--skip-tests', action='store_true', help='Skip the release-gate tests the workflow runs')
+    local.add_argument('--allow-dev-checkout', action='store_true', help='Dry run only: waive the master/clean/origin guards')
+    upload = commands.add_parser('release-publish', help='Publish an already-built release folder with gh (used by the workflow)')
+    upload.add_argument('--version', required=True)
+    upload.add_argument('--assets', required=True, help='Folder holding every release file')
+    upload.add_argument('--revision', required=True, help='Full commit hash that was built')
+    upload.add_argument('--dry-run', action='store_true')
     args = parser.parse_args()
-    if args.command == 'publish' and not re.fullmatch(r'\d+\.\d+\.\d+(-[A-Za-z0-9.-]+)?', args.version):
+    if args.command in ('publish', 'release-local', 'release-publish') and not re.fullmatch(r'\d+\.\d+\.\d+(-[A-Za-z0-9.-]+)?', args.version):
         parser.error('Use a semantic version such as 1.0.0.')
     try:
         if args.command == 'prepare-tools':
@@ -176,6 +190,10 @@ def main():
             publish(args)
         elif args.command == 'assets':
             assets(args)
+        elif args.command == 'release-local':
+            release.release_local(args)
+        elif args.command == 'release-publish':
+            release.publish_release(args.version, args.assets, args.revision, dry_run=args.dry_run)
         else:
             import_contribution(args)
     except (OSError, RuntimeError, subprocess.SubprocessError, ValueError) as error:

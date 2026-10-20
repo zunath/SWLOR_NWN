@@ -1,7 +1,9 @@
 """Run under Blender4.0 for local thin-body repair checks; no GPU/model weights."""
 import importlib.util
 import json
+import os
 import hashlib
+import subprocess
 import tempfile
 from types import SimpleNamespace
 from pathlib import Path
@@ -202,7 +204,7 @@ class ShieldSurfaceTests(unittest.TestCase):
         spec=importlib.util.spec_from_file_location('shield_identity_bridge',TOOLS/'trellis2_shield_nodes/__init__.py')
         bridge=importlib.util.module_from_spec(spec);spec.loader.exec_module(bridge)
         vertices,faces=box();runtime={'sha256':'0'*64,'version':'4.0'}
-        self.assertEqual(bridge.BRIDGE_BYTES,(TOOLS/'trellis2_shield_nodes/__init__.py').read_bytes())
+        self.assertEqual(bridge.BRIDGE_BYTES,(TOOLS/'trellis2_shield_nodes/bridge.py').read_bytes())
         before=bridge.surface_cache_key(vertices,faces,.003,runtime,b'script')
         with patch.object(Path,'read_bytes',side_effect=AssertionError('bridge re-read from disk')):
             self.assertEqual(bridge.surface_cache_key(vertices,faces,.003,runtime,b'script'),before)
@@ -224,38 +226,82 @@ class ShieldSurfaceTests(unittest.TestCase):
             path.write_bytes(path.read_bytes()+b'changed')
             with self.assertRaisesRegex(ValueError,'Cached shield surface changed'):bridge.cached_arrays(path)
 
-    def test_outputs_from_a_replaced_blender_build_are_discarded(self):
-        spec=importlib.util.spec_from_file_location('shield_identity_bridge',TOOLS/'trellis2_shield_nodes/__init__.py')
-        bridge=importlib.util.module_from_spec(spec);spec.loader.exec_module(bridge)
-        with tempfile.TemporaryDirectory() as temporary:
-            output=Path(temporary)/'closed_high.npz';report=output.with_suffix('.json');output.write_bytes(b'x');report.write_text('{}')
-            with patch.object(bridge,'blender_identity',return_value={'sha256':'same'}):
-                bridge.require_same_blender('blender',{'sha256':'same'},(output,report))
-            self.assertTrue(output.exists())
-            with patch.object(bridge,'blender_identity',return_value={'sha256':'new'}),self.assertRaisesRegex(ValueError,'changed or could not be verified'):
-                bridge.require_same_blender('blender',{'sha256':'old'},(output,report))
-            self.assertFalse(output.exists() or report.exists())
+    def test_loader_executes_exactly_the_buffer_it_records(self):
+        spec=importlib.util.spec_from_file_location('shield_loader_bridge',TOOLS/'trellis2_shield_nodes/__init__.py')
+        bridge=importlib.util.module_from_spec(spec);compiled=[];real_compile=compile
+        def recording(source,*args,**kwargs):
+            compiled.append(source);return real_compile(source,*args,**kwargs)
+        with patch('builtins.compile',side_effect=recording):spec.loader.exec_module(bridge)
+        # The import system compiles the loader itself; the bridge is compiled once, from the recorded buffer.
+        self.assertEqual([source for source in compiled if source is bridge.BRIDGE_BYTES],[bridge.BRIDGE_BYTES])
+        self.assertFalse(any(isinstance(source,bytes) and source==bridge.BRIDGE_BYTES and source is not bridge.BRIDGE_BYTES for source in compiled))
+        self.assertEqual(Path(bridge.run_surface.__code__.co_filename).name,'bridge.py')
 
-    def test_outputs_from_a_replaced_surface_script_are_discarded(self):
-        spec=importlib.util.spec_from_file_location('shield_script_bridge',TOOLS/'trellis2_shield_nodes/__init__.py')
+    def run_surface_case(self,bridge,temporary,unchanged=True,tamper=False,fail=False):
+        directory=Path(temporary);output=directory/'closed_high.npz';script_bytes=b'# surface script snapshot\n'
+        seen={}
+        def blender(command,**kwargs):
+            script=Path(command[command.index('--python')+1]);seen['script']=script;seen['options']=kwargs
+            seen['bytes']=script.read_bytes();self.assertNotEqual(script,bridge.SURFACE_SCRIPT);self.assertEqual(script.parent,directory)
+            output.write_bytes(b'surface');output.with_suffix('.json').write_text('{}')
+            if tamper:script.write_bytes(b'# replaced\n')
+            if fail:raise subprocess.CalledProcessError(1,command)
+        pin=('pinned-blender',{'pass_fds':(7,)},{'sha256':'0'*64},lambda:unchanged)
+        with patch.object(bridge.subprocess,'run',side_effect=blender):
+            bridge.run_surface(pin,script_bytes,hashlib.sha256(script_bytes).hexdigest(),directory,'voxel',directory/'input.npz',output,[])
+        return seen,output
+
+    def test_blender_runs_a_private_copy_of_the_hashed_script(self):
+        spec=importlib.util.spec_from_file_location('shield_run_bridge',TOOLS/'trellis2_shield_nodes/__init__.py')
         bridge=importlib.util.module_from_spec(spec);spec.loader.exec_module(bridge)
-        current=hashlib.sha256(bridge.SURFACE_SCRIPT.read_bytes()).hexdigest()
         with tempfile.TemporaryDirectory() as temporary:
-            output=Path(temporary)/'closed_high.npz';report=output.with_suffix('.json');output.write_bytes(b'x');report.write_text('{}')
-            bridge.require_same_script(current,(output,report));self.assertTrue(output.exists())
-            with self.assertRaisesRegex(ValueError,'script changed'):bridge.require_same_script('0'*64,(output,report))
-            self.assertFalse(output.exists() or report.exists())
+            seen,output=self.run_surface_case(bridge,temporary)
+            self.assertEqual(seen['bytes'],b'# surface script snapshot\n');self.assertEqual(seen['options']['pass_fds'],(7,))
+            self.assertFalse(seen['script'].exists());self.assertTrue(output.exists() and output.with_suffix('.json').exists())
+
+    def test_outputs_are_discarded_when_the_run_cannot_be_tied_to_the_hashed_inputs(self):
+        spec=importlib.util.spec_from_file_location('shield_discard_bridge',TOOLS/'trellis2_shield_nodes/__init__.py')
+        bridge=importlib.util.module_from_spec(spec);spec.loader.exec_module(bridge)
+        for case,error in (({'unchanged':False},'Blender executable changed'),({'tamper':True},'script changed'),({'fail':True},None)):
+            with self.subTest(**case),tempfile.TemporaryDirectory() as temporary:
+                raised=subprocess.CalledProcessError if error is None else ValueError
+                with self.assertRaises(raised) as caught:self.run_surface_case(bridge,temporary,**case)
+                if error:self.assertIn(error,str(caught.exception))
+                directory=Path(temporary)
+                self.assertFalse((directory/'closed_high.npz').exists() or (directory/'closed_high.json').exists())
+                self.assertEqual(sorted(p.name for p in directory.glob('surface-*.py')),[])
         vertices,faces=box()
         self.assertNotEqual(bridge.surface_cache_key(vertices,faces,.003,{},b'a'),bridge.surface_cache_key(vertices,faces,.003,{},b'b'))
 
-    def test_unverifiable_blender_identity_discards_outputs(self):
-        spec=importlib.util.spec_from_file_location('shield_identity_error_bridge',TOOLS/'trellis2_shield_nodes/__init__.py')
+    @unittest.skipUnless(os.name=='nt','Windows share-mode pin')
+    def test_pinned_blender_cannot_be_replaced_or_written_while_held(self):
+        spec=importlib.util.spec_from_file_location('shield_pin_bridge',TOOLS/'trellis2_shield_nodes/__init__.py')
+        bridge=importlib.util.module_from_spec(spec);spec.loader.exec_module(bridge)
+        with tempfile.TemporaryDirectory() as temporary,patch.object(bridge.subprocess,'run',return_value=SimpleNamespace(stdout='Blender 4.0.0')):
+            executable=Path(temporary)/'blender.exe';executable.write_bytes(b'build-one');other=Path(temporary)/'other.exe';other.write_bytes(b'build-two')
+            with bridge.pinned_blender(executable) as (argv0,options,identity,unchanged):
+                self.assertEqual(identity['sha256'],hashlib.sha256(b'build-one').hexdigest())
+                with self.assertRaises(PermissionError):os.replace(other,executable)
+                with self.assertRaises(PermissionError):open(executable,'r+b')
+                with self.assertRaises(PermissionError):executable.unlink()
+                self.assertTrue(unchanged())
+            os.replace(other,executable);self.assertEqual(executable.read_bytes(),b'build-two')
+
+    @unittest.skipUnless(os.path.isdir('/proc/self/fd'),'Linux descriptor pin')
+    def test_pinned_blender_runs_the_held_file_after_the_path_is_replaced(self):
+        spec=importlib.util.spec_from_file_location('shield_fd_bridge',TOOLS/'trellis2_shield_nodes/__init__.py')
         bridge=importlib.util.module_from_spec(spec);spec.loader.exec_module(bridge)
         with tempfile.TemporaryDirectory() as temporary:
-            output=Path(temporary)/'closed_low.npz';report=output.with_suffix('.json');output.write_bytes(b'x');report.write_text('{}')
-            with patch.object(bridge,'blender_identity',side_effect=FileNotFoundError('gone')),self.assertRaisesRegex(ValueError,'could not be verified'):
-                bridge.require_same_blender('blender',{'sha256':'old'},(output,report))
-            self.assertFalse(output.exists() or report.exists())
+            executable=Path(temporary)/'blender';executable.write_bytes(b'#!/bin/sh\necho Blender 4.0.0 original\n');os.chmod(executable,0o755)
+            with bridge.pinned_blender(executable) as (argv0,options,identity,unchanged):
+                self.assertIn('original',identity['version'])
+                other=Path(temporary)/'other';other.write_bytes(b'#!/bin/sh\necho Blender 4.0.0 replacement\n');os.chmod(other,0o755);os.replace(other,executable)
+                ran=subprocess.run([argv0],capture_output=True,text=True,check=True,**options).stdout
+                self.assertIn('original',ran);self.assertTrue(unchanged())
+            executable.write_bytes(b'#!/bin/sh\necho Blender 4.0.0 one\n');os.chmod(executable,0o755)
+            with bridge.pinned_blender(executable) as (_,_,_,unchanged):
+                with open(executable,'ab') as stream:stream.write(b'# in-place write\n')
+                self.assertFalse(unchanged())
 
     def test_cached_surface_is_loaded_from_the_hashed_snapshot(self):
         spec=importlib.util.spec_from_file_location('shield_snapshot_bridge',TOOLS/'trellis2_shield_nodes/__init__.py')

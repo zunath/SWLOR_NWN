@@ -99,6 +99,40 @@ public class StoreInventoryTests
     }
 
     [Test]
+    public void PlacedStores_SellOnlyIdentifiedItems()
+    {
+        var root = FindRepositoryRoot();
+        var failures = new List<string>();
+        foreach (var path in Directory.EnumerateFiles(Path.Combine(root.FullName, "Module", "git"), "*.git.json"))
+        {
+            using var document = JsonDocument.Parse(File.ReadAllText(path));
+            CollectUnidentifiedStoreItems(document.RootElement, false, Path.GetFileName(path), failures);
+        }
+
+        failures.Should().BeEmpty(string.Join(Environment.NewLine, failures));
+    }
+
+    private static void CollectUnidentifiedStoreItems(JsonElement element, bool insideStore, string file, List<string> failures)
+    {
+        if (element.ValueKind == JsonValueKind.Array)
+        {
+            foreach (var child in element.EnumerateArray())
+                CollectUnidentifiedStoreItems(child, insideStore, file, failures);
+        }
+        else if (element.ValueKind == JsonValueKind.Object)
+        {
+            if (insideStore &&
+                element.TryGetProperty("TemplateResRef", out var resref) &&
+                element.TryGetProperty("Identified", out var identified) &&
+                identified.GetProperty("value").GetInt32() == 0)
+                failures.Add($"{file}: a placed store sells '{resref.GetProperty("value").GetString()}', which is unidentified, so buyers cannot see its properties.");
+
+            foreach (var property in element.EnumerateObject())
+                CollectUnidentifiedStoreItems(property.Value, insideStore || property.Name == "StoreList", file, failures);
+        }
+    }
+
+    [Test]
     public void PlanetaryGeneralStoreBlueprints_CarryCumulativeWeaponTiers()
     {
         var root = FindRepositoryRoot();

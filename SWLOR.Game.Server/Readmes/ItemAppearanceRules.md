@@ -17,6 +17,17 @@ or migration that assigns item models.
   extended word field takes precedence when present; changing only the byte field can
   leave the old appearance active. Models above 255 require the extended field and the
   byte fallback used by existing blueprints; never truncate an extended model to a byte.
+- Every armor part the catalog offers must have a model for each playable body (`h`, `e`,
+  `o`, `d` for both genders; `z` uses the droid catalog). The editor hides a part whose
+  model is missing for the wearer, so a gap silently removes the choice for that species.
+  `SWLOR_Haks/tools/GenerateRacialPartVariants.py` refits missing variants from the human
+  donor the native palette lookup already selects (manifest `RacialPartVariants.json`);
+  run it with `--apply`, then the tint, part-skin, neck, robe RGB and robe cloak generators,
+  and keep `--check` green. Racial body parts (201-214, 251) stay species-only.
+- Every catalog part needs a `tintmap.2da` row so palette and exact RGB colors reach it.
+  Stock parts are imported with their stock PLT and converted like hak parts; a part that
+  only has fixed artwork gets an authored palette from
+  `SWLOR_Haks/tools/GenerateAuthoredPartPalettes.py` before `--generate-preserving`.
 - Check embedded item instances in creature equipment, stores, containers, and area
   JSON as well as standalone `Module/uti` blueprints. Update any generator or migration
   fallback that could recreate a prohibited appearance. Preserve stats and item identity.

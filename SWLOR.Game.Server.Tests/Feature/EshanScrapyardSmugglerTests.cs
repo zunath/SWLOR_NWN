@@ -50,7 +50,7 @@ public class EshanScrapyardSmugglerTests
         smugglers.Should().ContainSingle();
         smugglers[0].GetProperty("NAME").GetProperty("value").GetString().Should().Be("Scrapyard Smuggler");
         smugglers[0].GetProperty("FACTION").GetProperty("value").GetString().Should().Be("Hostile");
-        smugglers[0].GetProperty("CR").GetProperty("value").GetSingle().Should().Be(4.0f);
+        smugglers[0].GetProperty("CR").GetProperty("value").GetSingle().Should().Be(48.0f);
 
         using var blueprint = JsonDocument.Parse(File.ReadAllText(Path.Combine(
             root.FullName, "Module", "utc", "esh_scrap_smug.utc.json")));

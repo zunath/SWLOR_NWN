@@ -306,12 +306,12 @@ class LocalBuildTests(unittest.TestCase):
         return argparse.Namespace(**values)
 
     def test_publish_cannot_waive_the_checkout_guards(self):
-        with patch.object(release.os, 'name', 'nt'):
+        with patch.object(release, 'is_windows', return_value=True):
             with self.assertRaisesRegex(RuntimeError, 'dry runs only'):
                 release.release_local(self.local_arguments(publish=True, allow_dev_checkout=True))
 
     def test_a_refused_checkout_builds_nothing(self):
-        with patch.object(release.os, 'name', 'nt'), patch.object(release, 'run_gh', return_value=(0, GOOD_STATUS, '')), \
+        with patch.object(release, 'is_windows', return_value=True), patch.object(release, 'run_gh', return_value=(0, GOOD_STATUS, '')), \
                 patch.object(release, 'git', git_answers(branch='feature')), patch.object(release, 'build_windows') as windows, \
                 patch.object(release, 'build_linux') as linux:
             with self.assertRaisesRegex(RuntimeError, 'not master'):
@@ -320,7 +320,7 @@ class LocalBuildTests(unittest.TestCase):
         linux.assert_not_called()
 
     def test_a_refused_gh_login_builds_nothing(self):
-        with patch.object(release.os, 'name', 'nt'), patch.object(release, 'run_gh', return_value=(1, '', 'not logged in')), \
+        with patch.object(release, 'is_windows', return_value=True), patch.object(release, 'run_gh', return_value=(1, '', 'not logged in')), \
                 patch.object(release, 'git') as git, patch.object(release, 'build_windows') as windows:
             with self.assertRaisesRegex(RuntimeError, 'not logged in'):
                 release.release_local(self.local_arguments())
@@ -339,7 +339,7 @@ class LocalBuildTests(unittest.TestCase):
             self.finished_build(output)
             self.assertEqual([p.name for p in release.reusable_build(output, '1.0.0', REVISION)], ['toolset-feed.json'])
             args = self.local_arguments(publish=True, output=str(output))
-            with patch.object(release.os, 'name', 'nt'), patch.object(release, 'run_gh', return_value=(0, GOOD_STATUS, '')),                     patch.object(release, 'git', git_answers()), patch.object(release, 'build_release') as build,                     patch.object(release, 'publish_release') as publish:
+            with patch.object(release, 'is_windows', return_value=True), patch.object(release, 'run_gh', return_value=(0, GOOD_STATUS, '')),                     patch.object(release, 'git', git_answers()), patch.object(release, 'build_release') as build,                     patch.object(release, 'publish_release') as publish:
                 release.release_local(args)
             build.assert_not_called()
             self.assertEqual(publish.call_args.kwargs, {'dry_run': False})

@@ -36,6 +36,10 @@ PYTHON_TEST_MODULES = ('tools.tests.test_toolset_content', 'tools.tests.test_too
 RELEASE_NOTES = 'Standalone Windows and Linux toolsets, shared contributor workspace, and matching asset downloads.'
 
 
+def is_windows():
+    return os.name == 'nt'
+
+
 def versioned_tag(version):
     return f'toolset-v{version}'
 
@@ -108,7 +112,7 @@ def check_checkout(allow_dev_checkout=False):
     branch = git('rev-parse', '--abbrev-ref', 'HEAD')
     dirty = git('status', '--porcelain')
     # Git for Windows needs the Windows certificate store for github.com on some machines.
-    prefix = ('-c', 'http.sslBackend=schannel') if os.name == 'nt' else ()
+    prefix = ('-c', 'http.sslBackend=schannel') if is_windows() else ()
     try:
         git(*prefix, 'fetch', '--quiet', 'origin', '+refs/heads/master:refs/remotes/origin/master')
     except subprocess.CalledProcessError as error:
@@ -408,7 +412,7 @@ def directory_size(directory):
 
 
 def release_local(args):
-    if os.name != 'nt':
+    if not is_windows():
         raise RuntimeError('ReleaseToolset builds the Windows installer, so it runs on Windows. Linux packages are built in Docker.')
     if not re.fullmatch(VERSION_PATTERN, args.version):
         raise RuntimeError('Use a semantic version such as 1.0.0.')

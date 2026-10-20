@@ -201,9 +201,7 @@ namespace SWLOR.Game.Server.Service.PlayerListService
             if (relation.TargetIsInOtherParty)
                 return PlayerListActionState.Disabled("Already in another party.");
 
-            if (relation.ViewerIsInParty && !relation.ViewerIsPartyLeader)
-                return PlayerListActionState.Disabled("Only your party leader can invite players.");
-
+            // Any party member may invite, as the native player list allowed.
             return PlayerListActionState.Enabled();
         }
 

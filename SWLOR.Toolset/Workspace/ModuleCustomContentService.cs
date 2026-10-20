@@ -58,7 +58,7 @@ namespace SWLOR.Toolset.Workspace
 
         public ModuleCustomContentSnapshot Discover()
         {
-            var profile = NwnIniProfile.Load(_iniPathOverride);
+            var profile = Distribution.ToolsetAssetPaths.Profile(_workspaceContext.Workspace?.ModuleRoot, _iniPathOverride);
             return new ModuleCustomContentSnapshot(
                 profile,
                 profile.EnumerateHakNames(),
@@ -80,7 +80,7 @@ namespace SWLOR.Toolset.Workspace
                 // Reloading a known saved list needs path resolution only. Discover() also enumerates every
                 // available HAK, TLK, and movie for the module-properties pickers, which is unrelated work
                 // on the startup path.
-                var profile = NwnIniProfile.Load(_iniPathOverride);
+                var profile = Distribution.ToolsetAssetPaths.Profile(_workspaceContext.Workspace?.ModuleRoot, _iniPathOverride);
                 var hakResolution = profile.ResolveHakLayers(hakNames);
                 var layers = hakResolution.Layers;
                 var missing = hakResolution.MissingHakNames;

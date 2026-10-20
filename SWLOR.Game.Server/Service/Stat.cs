@@ -632,6 +632,54 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>
+        /// Sets a player's stored maximum HP to the sum of its sources: the base, the HP bonuses on equipped items,
+        /// and active food. Equipment and food add and remove their HP as changes, so one missed, failed or repeated
+        /// change leaves the record off for good. A record below the native floor of one HP per level then hides
+        /// gear HP until enough is worn to climb past that floor.
+        /// </summary>
+        /// <param name="player">The player to reconcile</param>
+        /// <returns>True if the record was corrected</returns>
+        public static bool RefreshPlayerMaxHP(uint player)
+        {
+            if (!GetIsObjectValid(player) || !GetIsPC(player) ||
+                GetIsDM(player) || GetIsDMPossessed(player))
+                return false;
+
+            var playerId = GetObjectUUID(player);
+            var dbPlayer = DB.Get<Player>(playerId);
+            if (dbPlayer == null)
+                return false;
+
+            // TemporaryFoodHP is the food HP the record holds. ReapplyFoodHP removes it once the food is gone.
+            var maxHP = BaseHP + GetEquippedHPBonus(player) + Math.Max(0, dbPlayer.TemporaryFoodHP);
+            if (dbPlayer.MaxHP == maxHP)
+                return false;
+
+            AdjustPlayerMaxHP(dbPlayer, player, maxHP - dbPlayer.MaxHP);
+            DB.Set(dbPlayer);
+            return true;
+        }
+
+        public static int GetEquippedHPBonus(uint creature)
+        {
+            var amount = 0;
+            for (var index = 0; index < NumberOfInventorySlots; index++)
+            {
+                var item = GetItemInSlot((InventorySlot)index, creature);
+                if (!GetIsObjectValid(item))
+                    continue;
+
+                for (var ip = GetFirstItemProperty(item); GetIsItemPropertyValid(ip); ip = GetNextItemProperty(item))
+                {
+                    if (GetItemPropertyType(ip) == ItemPropertyType.HPBonus)
+                        amount += GetItemPropertyCostTableValue(ip);
+                }
+            }
+
+            return amount;
+        }
+
+        /// <summary>
         /// Modifies a player's maximum FP by a certain amount.
         /// This method will not persist the changes so be sure you call DB.Set after calling this.
         /// </summary>
@@ -1752,6 +1800,29 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         /// <param name="creature">The creature to retrieve from.</param>
         /// <returns>The stealth rating of a creature.</returns>
+        /// <summary>
+        /// Retrieves a creature's lockpicking: equipment plus perk, status, and temporary adjustments.
+        /// </summary>
+        /// <param name="creature">The creature to retrieve from.</param>
+        /// <returns>The lockpicking rating of a creature.</returns>
+        public static int GetLockpicking(uint creature)
+        {
+            int equipmentBonus;
+            if (GetIsPC(creature) && !GetIsDM(creature) && !GetIsDMPossessed(creature))
+            {
+                var playerId = GetObjectUUID(creature);
+                var dbPlayer = DB.Get<Player>(playerId);
+
+                equipmentBonus = dbPlayer.Lockpicking;
+            }
+            else
+            {
+                equipmentBonus = GetNPCSkinStat(creature, ItemPropertyType.Lockpicking);
+            }
+
+            return equipmentBonus + GetStatAdjustment(creature, StatType.Lockpicking);
+        }
+
         public static int GetStealth(uint creature)
         {
             var agility = GetAbilityScore(creature, AbilityType.Agility);

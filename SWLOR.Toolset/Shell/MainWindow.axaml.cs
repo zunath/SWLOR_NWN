@@ -10,6 +10,7 @@ namespace SWLOR.Toolset.Shell
 {
     public partial class MainWindow : Window
     {
+        private Func<Task>? _startupRecovery;
         private bool _closeApproved;
         private bool _closePromptOpen;
         private ShellViewModel? _viewModel;
@@ -112,13 +113,37 @@ namespace SWLOR.Toolset.Shell
             Bind(Key.B, KeyModifiers.Control | KeyModifiers.Shift, viewModel.BuildAllScriptsCommand);
         }
 
+        /// <summary>Disconnects a failed startup shell before its services are disposed or initialization is retried.</summary>
+        internal void ResetAfterStartupFailure()
+        {
+            if (_viewModel != null) _viewModel.ExitRequested -= Close;
+            _viewModel = null;
+            DataContext = null;
+            KeyBindings.Clear();
+            StartupPanel.IsVisible = true;
+        }
+
         /// <summary>Leaves the responsive startup surface visible and replaces its progress text.</summary>
-        public void ShowStartupError(string message)
+        public void ShowStartupError(string message, Func<Task>? recovery = null)
         {
             StartupPanel.IsVisible = true;
             StartupTitle.Text = "Toolset setup needs attention";
             StartupProgress.IsIndeterminate = false;
             StartupStatus.Text = message;
+            _startupRecovery = recovery;
+            StartupWorkspaceButton.IsVisible = recovery != null;
+        }
+
+        private async void OnStartupWorkspaceClick(object? sender, Avalonia.Interactivity.RoutedEventArgs args)
+        {
+            if (_startupRecovery == null) return;
+            StartupWorkspaceButton.IsEnabled = false;
+            try { await _startupRecovery(); }
+            catch (Exception exception)
+            {
+                ShowStartupError("Workspace recovery failed: " + exception.GetBaseException().Message, _startupRecovery);
+            }
+            finally { StartupWorkspaceButton.IsEnabled = true; }
         }
 
         private async void OnClosing(object? sender, WindowClosingEventArgs args)

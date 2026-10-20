@@ -447,8 +447,9 @@ level resolution (`PerkEngineTests`) - each is a good reference for a different 
 identical and are kept in sync. Both run against a **server home** directory - the folder mounted
 as `/nwn/home`, holding `modules/`, `hak/`, `tlk/`, `swlor.env` and receiving `dotnet/` and
 `app_logs/`. The home resolves in this order: the `-ServerHome`/`--server-home` argument, the
-`SWLOR_ENGINE_TEST_SERVER_HOME` env var, the repo's `debugserver/` directory when it exists (the
-dev-machine convention used by the normal `SWLOR.Runner` flow), and finally
+`SWLOR_ENGINE_TEST_SERVER_HOME` env var, the repo's `enginetests-home/` directory when it holds
+`swlor.env`, the repo's `debugserver/` directory when it exists (the dev-machine convention used by
+the normal `SWLOR.Runner` flow), and finally
 `SWLOR.Game.Server/Docker/` (the layout the CI workflow stages - that folder is tracked compose
 *configuration*, not inherently a runtime home). Both scripts:
 

@@ -62,10 +62,12 @@ if [ "$pulled" != 1 ]; then
   log "Could not pull $image; using the local copy"
 fi
 
-container="" staging=""
+container="" staging="" previous=""
 cleanup() {
   [ -z "$container" ] || docker rm -f "$container" >/dev/null 2>&1 || true
   [ -z "$staging" ] || rm -rf "$staging"
+  # Stopped between the two renames below: put the previous data back.
+  if [ -n "$previous" ] && [ ! -e "$DEST" ]; then mv "$previous" "$DEST"; fi
 }
 trap cleanup EXIT
 trap 'exit 143' TERM INT HUP # so a timeout still runs cleanup
@@ -73,8 +75,17 @@ container=$(docker create "$image")
 staging=$(mktemp -d "$STAGING_PREFIX.XXXXXX")
 docker cp -q "$container:/nwn/data/." "$staging/"
 echo "$image" > "$staging/.swlor-server-image"
-rm -rf "$DEST" # An incomplete copy or data from another image.
+# Replace an incomplete copy or data from another image with two renames, so readers never see a
+# half-deleted tree, then delete the old copy.
+if [ -e "$DEST" ]; then
+  previous="$STAGING_PREFIX.previous"
+  mv "$DEST" "$previous"
+fi
 mv "$staging" "$DEST"
 staging=""
+if [ -n "$previous" ]; then
+  rm -rf "$previous"
+  previous=""
+fi
 touch "$DONE"
 log "Game data from $image is in $DEST"

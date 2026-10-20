@@ -472,7 +472,8 @@ public class DungeonEncounterWalkmeshTests
         var surfaces = TwoDAReader.Read(Path.Combine(root, "SWLOR_Haks", "sw_2da", "surfacemat.2da"));
         // .set files name tiles in upper case; resource names are case-insensitive.
         var walkmeshFiles = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
-        foreach (var path in Directory.EnumerateFiles(folder, "*.wok"))
+        foreach (var path in Directory.EnumerateFiles(
+                     folder, "*.wok", new EnumerationOptions { MatchCasing = MatchCasing.CaseInsensitive }))
             walkmeshFiles.TryAdd(Path.GetFileNameWithoutExtension(path), path);
         var cache = new Dictionary<string, List<Vector3[]>>();
         var triangles = new List<Vector3[]>();

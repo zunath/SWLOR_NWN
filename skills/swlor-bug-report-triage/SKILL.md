@@ -93,7 +93,7 @@ Give each worker:
   1. Find the root cause and fix it on one branch from up-to-date `origin/master`.
   2. Add tests that guard the fix.
   3. Capture NWN client evidence per `Readmes/InEngineVisualVerification.md`.
-  4. Open the PR, request `@codex review`, and keep fixing until Codex finds nothing.
+  4. Open the PR, run the Codex review loop with `tools/RequestCodexReview.ps1` (`Readmes/PullRequests.md`), and keep fixing until Codex finds nothing.
   5. Resolve every thread (`Readmes/PullRequests.md`).
   6. Don't merge.
 - **The constraints:** never post to Discord, stay in its own worktree, and stop only processes it started. If only the reporter can answer something, stop and report the exact question.

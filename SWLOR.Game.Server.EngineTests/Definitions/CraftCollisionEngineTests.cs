@@ -11,15 +11,15 @@ using static SWLOR.Game.Server.EngineTests.Framework.ViewModelTestHelper;
 namespace SWLOR.Game.Server.EngineTests.Definitions
 {
     /// <summary>
-    /// A craft in progress makes the crafter a cutscene ghost, so other creatures walk through them instead of bumping
-    /// them away from the station, which would close the window and fail the craft.
+    /// Starting a craft restores the player's login cutscene ghost, so other creatures walk through the crafter instead
+    /// of bumping them away from the station, which would close the window and fail the craft.
     /// </summary>
     public static class CraftCollisionEngineTests
     {
         private const string Walker = "nw_bandit001";
         private const float WalkerLane = 0.1f;
 
-        [EngineTest("Creatures walk through a crafter instead of bumping them while a craft is in progress", Category = "CraftCollision", TimeoutSeconds = 90f)]
+        [EngineTest("Creatures walk through a crafter who had lost the login ghost", Category = "CraftCollision", TimeoutSeconds = 90f)]
         public static async Task CrafterIsGhosted(EngineTestContext ctx)
         {
             using var fixture = await PlayerAbilityFixture.CreateAsync(ctx);
@@ -40,8 +40,8 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                     Call(craft, "SwitchToCraftMode");
                     ctx.Assert(HasEffect(player, EffectTypeScript.CutsceneImmobilize, PlayerActivityEffectTag.CraftingImmobilize),
                         "Crafting holds the crafter in place");
-                    ctx.Assert(HasEffect(player, EffectTypeScript.CutsceneGhost, PlayerActivityEffectTag.CraftingImmobilize),
-                        "Crafting makes the crafter a ghost");
+                    ctx.Assert(HasEffect(player, EffectTypeScript.CutsceneGhost, string.Empty),
+                        "Crafting restores the untagged login ghost");
                     ctx.Assert(GetGhostFlag(player), "The engine treats the crafter as a ghost");
                 });
 
@@ -61,7 +61,8 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
 
                 // The engine finishes removing effects after the script that removed them.
                 await ctx.WaitFrameAsync();
-                ctx.Assert(!GetGhostFlag(player), "Ending the craft removes the ghost it added");
+                ctx.Assert(GetGhostFlag(player) && HasEffect(player, EffectTypeScript.CutsceneGhost, string.Empty),
+                    "The restored login ghost stays after the craft");
             }
             finally
             {

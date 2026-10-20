@@ -53,9 +53,10 @@ public class ImmobilizedStatusEffectTests
 
         craft.Should().Contain(
             "var effect = TagEffect(EffectCutsceneImmobilize(), PlayerActivityEffectTag.CraftingImmobilize);");
-        craft.Should().Contain(
-            "var ghost = TagEffect(SupernaturalEffect(EffectCutsceneGhost()), PlayerActivityEffectTag.CraftingImmobilize);",
+        craft.Should().Contain("PlayerTemporaryEffects.ApplyCutsceneGhostToPlayer(Player);",
             "other creatures must walk through a crafter instead of bumping them away from the station");
+        craft.Should().NotContain("TagEffect(SupernaturalEffect(EffectCutsceneGhost())",
+            "a tagged crafting ghost left by a disconnect would block the login ghost and then be stripped by login cleanup");
         craft.Should().NotContain("EffectLinkEffects(EffectCutsceneImmobilize()",
             "the engine rejects a ghost on an already ghosted player, which would take a linked immobilize with it");
         craft.Should().Contain("RemoveEffectByTag(Player, PlayerActivityEffectTag.CraftingImmobilize);");

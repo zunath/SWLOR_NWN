@@ -1189,11 +1189,11 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var effect = TagEffect(EffectCutsceneImmobilize(), PlayerActivityEffectTag.CraftingImmobilize);
             ApplyEffectToObject(DurationType.Permanent, effect, Player);
 
-            // The ghost lets other creatures walk through the crafter instead of bumping them away from the station,
-            // which would close the window and fail the craft. It stays a separate effect because the engine rejects a
-            // ghost on a creature that already has one, and would reject a linked immobilize with it.
-            var ghost = TagEffect(SupernaturalEffect(EffectCutsceneGhost()), PlayerActivityEffectTag.CraftingImmobilize);
-            ApplyEffectToObject(DurationType.Permanent, ghost, Player);
+            // Death and space mode strip the login ghost, and another player bumping a solid crafter away from the
+            // station closes the window and fails the craft. Restore the login ghost; it stays after the craft because
+            // players are meant to have it. It is not linked to the immobilize because the engine rejects a ghost on a
+            // ghosted player and would reject the immobilize with it.
+            PlayerTemporaryEffects.ApplyCutsceneGhostToPlayer(Player);
         }
 
         private void RemoveImmobility()

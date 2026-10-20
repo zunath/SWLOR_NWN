@@ -86,6 +86,7 @@ public class CustomShaderMobileCompatibilityTests
         FindMobileUnsupportedLines(continuedMacro).Should().ContainSingle();
         FindMobileUnsupportedLines(guardedContinuedMacro).Should().BeEmpty();
         FindMobileUnsupportedLines(splitOperator).Should().ContainSingle();
+        FindMobileUnsupportedLines("#ifndef MOBILE\n#endif\n#define/**/UNPACK(v) ((v >> 3) & 3)\n").Should().ContainSingle();
         FindMobileUnsupportedLines("#define SAFE 1 // explanation \\\n continues with & here\nint A() { return SAFE; }\n").Should().BeEmpty();
         FindMobileUnsupportedLines(elifAfterMobile).Should().BeEmpty();
     }
@@ -217,7 +218,9 @@ public class CustomShaderMobileCompatibilityTests
 
     private static string StripComments(string shader)
     {
-        var withoutBlocks = Regex.Replace(shader, @"/\*.*?\*/", match => new string('\n', match.Value.Count(c => c == '\n')), RegexOptions.Singleline);
+        // A block comment counts as whitespace ("#define/**/X" is "#define X"); keep
+        // its newlines so line numbers stay true.
+        var withoutBlocks = Regex.Replace(shader, @"/\*.*?\*/", match => " " + new string('\n', match.Value.Count(c => c == '\n')), RegexOptions.Singleline);
         return Regex.Replace(withoutBlocks, @"//[^\r\n]*", string.Empty);
     }
 

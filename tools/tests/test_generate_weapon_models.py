@@ -650,6 +650,15 @@ class WeaponGenerationTests(unittest.TestCase):
                 generator.extract_glb(glb(dict(view, buffer=0)), self.folder)
         self.assertEqual(len(generator.extract_glb(glb({'buffer': 0, 'byteOffset': 1, 'byteLength': 3}), self.folder)['images']), 2)
 
+    def test_image_buffer_view_index_must_exist(self):
+        for index in (-1, 1, '0', True, 0.0):
+            data = glb(); doc_end = 20 + struct.unpack_from('<I', data, 12)[0]
+            document = json.loads(data[20:doc_end]); document['images'][0]['bufferView'] = index
+            raw = json.dumps(document).encode(); raw += b' ' * (-len(raw) % 4)
+            chunks = struct.pack('<II', len(raw), 0x4E4F534A) + raw + data[doc_end:]
+            with self.subTest(index=index), self.assertRaisesRegex(ValueError, 'bufferView'):
+                generator.extract_glb(struct.pack('<4sII', b'glTF', 2, len(chunks) + 12) + chunks, self.folder)
+
 
 if __name__ == '__main__':
     unittest.main()

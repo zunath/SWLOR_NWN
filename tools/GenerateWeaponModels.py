@@ -348,7 +348,10 @@ def extract_glb(data, folder):
     for index, image in enumerate(doc.get('images', [])):
         if 'bufferView' not in image:
             raise ValueError('Expected embedded PBR images, not external URIs')
-        view = doc['bufferViews'][image['bufferView']]
+        index_ = image['bufferView']; views = doc.get('bufferViews', [])
+        if type(index_) is not int or not 0 <= index_ < len(views):
+            raise ValueError('Invalid embedded image bufferView')
+        view = views[index_]
         start = view.get('byteOffset', 0); length = view.get('byteLength')
         if (view.get('buffer', 0) != 0 or any(type(x) is not int or x < 0 for x in (start, length))
                 or start + length > len(blob)):

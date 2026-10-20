@@ -203,11 +203,13 @@ def finite3(value, label):
 def image_bytes(doc, binary, index, source):
     entry = doc['images'][index]
     if 'bufferView' in entry:
-        view = doc['bufferViews'][entry['bufferView']]
+        index_=entry['bufferView'];views=doc.get('bufferViews',[])
+        if type(index_) is not int or not 0<=index_<len(views):raise ValueError('Invalid image bufferView index')
+        view = views[index_]
         if view.get('buffer',0) != 0 or binary is None: raise ValueError('Only GLB buffer0 images supported')
-        start = view.get('byteOffset',0)
-        end=start+view['byteLength']
-        if start<0 or end>len(binary):raise ValueError('Image bufferView out of bounds')
+        start = view.get('byteOffset',0);length=view.get('byteLength')
+        if any(type(x) is not int or x<0 for x in (start,length)) or start+length>len(binary):raise ValueError('Image bufferView out of bounds')
+        end=start+length
         data = binary[start:end]
     else:
         uri = entry['uri']
@@ -1143,8 +1145,11 @@ def package(args, repo, out):
             if source.suffix=='.mtr':shutil.copy2(source,runtime/source.name)
     compiler=load_module('weapon_compiler',repo/'tools/CompileBlasterModels.py')
     compiler_path=compiler.CleanModels.find_compiler(args.compiler)
+    # Bind the report to the executable that ran: hash it before and after compilation.
+    compiler_sha=hashlib.sha256(compiler_path.read_bytes()).hexdigest()
     compiler.compile_models(compiler_path,ascii_dir,out/'compiled',[])
-    compiler_identity={'name':'CleanModels','version':compiler.CleanModels.VERSION,'path':str(compiler_path),'sha256':hashlib.sha256(compiler_path.read_bytes()).hexdigest()}
+    require(hashlib.sha256(compiler_path.read_bytes()).hexdigest()==compiler_sha,'CleanModels executable changed during compilation')
+    compiler_identity={'name':'CleanModels','version':compiler.CleanModels.VERSION,'path':str(compiler_path),'sha256':compiler_sha}
     for source in (out/'compiled').glob('*.mdl'):shutil.copy2(source,runtime/source.name)
     helper=load_module('trellis_weapon_normals',Path(__file__).with_name('TrellisWeaponNormals.py'))
     import numpy as np

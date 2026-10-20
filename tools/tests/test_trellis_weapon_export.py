@@ -714,6 +714,19 @@ class TrellisWeaponExportTests(unittest.TestCase):
 
 
 @unittest.skipIf(np is None, 'NumPy required for native normal basis math')
+class ImageViewBoundsTests(unittest.TestCase):
+    def test_image_views_must_be_valid_nonnegative_ranges(self):
+        binary = b'\x89PNG456789'
+        for views, index in (([{'byteOffset': 0, 'byteLength': -1}], 0), ([{'byteOffset': -2, 'byteLength': 2}], 0),
+                             ([{'byteOffset': 4, 'byteLength': 8}], 0), ([{'byteOffset': 0, 'byteLength': 2}], -1),
+                             ([{'byteOffset': 0, 'byteLength': 2}], 1), ([{'byteOffset': 0}], 0)):
+            doc = {'images': [{'bufferView': index}], 'bufferViews': views}
+            with self.subTest(views=views, index=index), self.assertRaisesRegex(ValueError, 'bufferView'):
+                exporter.image_bytes(doc, binary, 0, Path('source.glb'))
+        doc = {'images': [{'bufferView': 0}], 'bufferViews': [{'byteOffset': 0, 'byteLength': 6}]}
+        self.assertEqual(exporter.image_bytes(doc, binary, 0, Path('source.glb')), (b'\x89PNG45', '.png'))
+
+
 class NativeWeaponNormalTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):

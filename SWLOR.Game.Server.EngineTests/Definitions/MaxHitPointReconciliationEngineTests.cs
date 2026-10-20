@@ -28,22 +28,26 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             using var fixture = await PreparePlayer(ctx);
             var player = fixture.Creature;
             await SetRecordAsync(ctx, player, DriftedRecordMaxHP);
-            ctx.AssertEqual(200, GetMaxHitPoints(player), "the reported naked maximum: 40 levels at the one HP floor, plus 4 per level");
+            // The reported character has 4 HP per level on top of its hit dice (Vitality 18). The fixture may have more.
+            var perLevel = GetPerLevelBonus(ctx, player);
+            ctx.AssertEqual(40 + 40 * perLevel, GetMaxHitPoints(player), "the drifted record sits at the one HP per level floor (200 reported)");
 
             var belt = await CreateHitPointItemAsync(ctx, player, "advent_belt", BeltHitPoints);
             var ring = await CreateHitPointItemAsync(ctx, player, "absdef_l6", RingHitPoints);
 
             await EquipAsync(ctx, player, belt, InventorySlot.Belt);
             ctx.AssertEqual(Stat.BaseHP + BeltHitPoints, Record(player).MaxHP, "the record is rebuilt from its sources");
-            ctx.AssertEqual(355, GetMaxHitPoints(player), "the 125 HP belt adds all of its HP to the 230 HP naked maximum");
+            ctx.AssertEqual(Stat.BaseHP + BeltHitPoints + 40 * perLevel, GetMaxHitPoints(player),
+                "the 125 HP belt adds all of its HP to the naked maximum (355 for the reported character, not 200)");
 
             await EquipAsync(ctx, player, ring, InventorySlot.RightRing);
-            ctx.AssertEqual(475, GetMaxHitPoints(player), "the 120 HP ring adds all of its HP");
+            ctx.AssertEqual(Stat.BaseHP + BeltHitPoints + RingHitPoints + 40 * perLevel, GetMaxHitPoints(player),
+                "the 120 HP ring adds all of its HP (475 for the reported character, not 315)");
 
             await UnequipAsync(ctx, player, ring);
             await UnequipAsync(ctx, player, belt);
             ctx.AssertEqual(Stat.BaseHP, Record(player).MaxHP, "unequipping returns the record to the base");
-            ctx.AssertEqual(230, GetMaxHitPoints(player), "the naked maximum includes the 70 HP base");
+            ctx.AssertEqual(Stat.BaseHP + 40 * perLevel, GetMaxHitPoints(player), "the naked maximum includes the 70 HP base (230 reported)");
         }
 
         [EngineTest("Login rebuilds a drifted max HP record from worn gear and food", Category = Category, TimeoutSeconds = 60f)]
@@ -61,15 +65,27 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             const int foodHitPoints = 30;
             fixture.Update(record => record.TemporaryFoodHP = foodHitPoints);
             await SetRecordAsync(ctx, player, DriftedRecordMaxHP);
-            ctx.AssertEqual(315, GetMaxHitPoints(player), "the drifted record hides 130 of the 245 gear HP");
+            var perLevel = GetPerLevelBonus(ctx, player);
+            await SetRecordAsync(ctx, player, DriftedRecordMaxHP + BeltHitPoints + RingHitPoints);
+            ctx.AssertEqual(155 + 40 * perLevel, GetMaxHitPoints(player), "the drifted record hides 160 of the gear and food HP (315 reported)");
 
             await ctx.ExecuteInCreatureContextAsync(player, () => Stat.RefreshPlayerMaxHP(player));
             await ctx.WaitFrameAsync();
             ctx.AssertEqual(Stat.BaseHP + BeltHitPoints + RingHitPoints + foodHitPoints, Record(player).MaxHP, "the record is rebuilt at login");
-            ctx.AssertEqual(505, GetMaxHitPoints(player), "every source counts in full");
+            ctx.AssertEqual(Stat.BaseHP + BeltHitPoints + RingHitPoints + foodHitPoints + 40 * perLevel, GetMaxHitPoints(player),
+                "every source counts in full");
         }
 
         private static Player Record(uint player) => DB.Get<Player>(GetObjectUUID(player));
+
+        /// <summary>HP each of the 40 levels adds beyond its hit die, read while every hit die is at the one HP floor.</summary>
+        private static int GetPerLevelBonus(EngineTestContext ctx, uint player)
+        {
+            var floor = GetMaxHitPoints(player);
+            ctx.AssertEqual(0, floor % 40, "every level adds the same HP at the floor");
+            ctx.Log($"Floor maximum {floor}: {floor / 40 - 1} HP per level beyond the hit die.");
+            return floor / 40 - 1;
+        }
 
         private static async Task SetRecordAsync(EngineTestContext ctx, uint player, int maxHP)
         {

@@ -50,18 +50,25 @@ public sealed class TwinPistolAbilityBehaviors : IAbilityBehaviorSource
             cases.Add(grapple);
         }
 
-        foreach (var feat in new[] { FeatType.PistolRush1, FeatType.PistolRush2 })
-        {
-            var rush = MovementAttack(feat);
-            rush.TargetDistanceMeters = 2.5f;
-            // The enemy stays within the four-meter firing corridor, off the travel path.
-            rush.GroundTargetOffsetMeters = new System.Numerics.Vector2(4.2f, 2f);
-            rush.MinimumActivatorTravelDistanceAfterImpact = 4f;
-            rush.MaximumActivatorDistanceToGroundTargetAfterImpact = .75f;
-            rush.SetupNPCPerkLevels[PerkType.TwinPistolMomentum] = 1;
-            rush.ExpectedActivatorStatusEffects = new[] { typeof(MomentumStatusEffect) };
-            cases.Add(rush);
-        }
+        // Rank I uses a player-style ground cursor beside the enemy.
+        var rush = MovementAttack(FeatType.PistolRush1);
+        rush.TargetDistanceMeters = 2.5f;
+        // The enemy stays within the four-meter firing corridor, off the travel path.
+        rush.GroundTargetOffsetMeters = new System.Numerics.Vector2(4.2f, 2f);
+        rush.MinimumActivatorTravelDistanceAfterImpact = 4f;
+        rush.MaximumActivatorDistanceToGroundTargetAfterImpact = .75f;
+        rush.SetupNPCPerkLevels[PerkType.TwinPistolMomentum] = 1;
+        rush.ExpectedActivatorStatusEffects = new[] { typeof(MomentumStatusEffect) };
+        cases.Add(rush);
+
+        // Rank II is cast the way NPC and droid AI casts it, at the enemy's own location; the dash must
+        // pass beside the enemy and still strike it.
+        var aiRush = MovementAttack(FeatType.PistolRush2);
+        aiRush.TargetDistanceMeters = 3.5f;
+        aiRush.MinimumActivatorTravelDistanceAfterImpact = 3f;
+        aiRush.SetupNPCPerkLevels[PerkType.TwinPistolMomentum] = 1;
+        aiRush.ExpectedActivatorStatusEffects = new[] { typeof(MomentumStatusEffect) };
+        cases.Add(aiRush);
 
         cases.Add(new AbilityBehaviorCase
         {

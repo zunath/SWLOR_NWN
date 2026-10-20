@@ -70767,6 +70767,28 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Instruction Disc: Pistol Rush I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "id_pistolrush1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Instruction Disc: Pistol Rush II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "id_pistolrush2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Instruction Disc: Point Blank Burst I"
                     },
                     "RESREF": {

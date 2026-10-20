@@ -126,6 +126,16 @@ namespace SWLOR.Game.Server.Service
             WeaponRepositioning.Cancel(actor);
         }
 
+        /// <summary>
+        /// A destroyed owner (a dismissed droid) never reaches its delayed completion, and its object ID may be
+        /// reused; drop its cached activation and channel without touching the destroyed object.
+        /// </summary>
+        public static void ForgetDestroyed(uint actor)
+        {
+            Channels.Remove(actor);
+            Activations.Remove(actor);
+        }
+
         public static void InterruptChannel(uint actor)
         {
             if (Channels.TryGetValue(actor, out var channel)) FinishChannel(actor, channel);
@@ -275,7 +285,8 @@ namespace SWLOR.Game.Server.Service
         {
             var origin = GetPosition(actor);
             if (spec.Movement == TwinPistolMovementType.None) return GetLocation(actor);
-            if (spec.Movement == TwinPistolMovementType.FreeDestination) return targetLocation;
+            if (spec.Movement == TwinPistolMovementType.FreeDestination)
+                return GetAiRushDestination(actor, target, targetLocation, spec) ?? targetLocation;
             var enemy = GetPosition(target);
             var delta = new NumericsVector3(origin.X - enemy.X, origin.Y - enemy.Y, 0);
             var distance = delta.Length();
@@ -301,6 +312,63 @@ namespace SWLOR.Game.Server.Service
                     targets.Add(target);
             return targets.OrderBy(target => NumericsVector3.DistanceSquared(origin, GetPosition(target)))
                 .Take(spec.MaximumTargets).ToArray();
+        }
+
+        /// <summary>
+        /// The AI casts a free-destination dash at a creature, passing the creature's own location, which the
+        /// dash rejects as an occupied endpoint. Non-player casters dash past the creature instead, along the
+        /// first candidate line that clears it and passes movement validation; players keep their chosen point.
+        /// </summary>
+        private static Location GetAiRushDestination(uint actor, uint target, Location targetLocation, TwinPistolAbilitySpec spec)
+        {
+            if (GetIsPC(actor) || !GetIsObjectValid(target) || target == actor ||
+                GetObjectType(target) != ObjectType.Creature || GetArea(target) != GetArea(actor) ||
+                NumericsVector3.Distance(GetPositionFromLocation(targetLocation), GetPosition(target)) > 0.5f)
+                return null;
+            var origin = GetPosition(actor);
+            var enemy = GetPosition(target);
+            foreach (var endpoint in RushEndpointsPast(new(origin.X, origin.Y), new(enemy.X, enemy.Y),
+                         spec.MinimumMovementMeters, spec.MaxMovementMeters, spec.LineWidthMeters))
+            {
+                var position = new NumericsVector3(endpoint.X, endpoint.Y, origin.Z);
+                position.Z = GetGroundHeight(Location(GetArea(actor), position, GetFacing(actor)));
+                var destination = Location(GetArea(actor), position, GetFacing(actor));
+                if (string.IsNullOrEmpty(WeaponRepositioning.Validate(actor, GetLocation(actor), destination,
+                        spec.MinimumMovementMeters, spec.MaxMovementMeters)))
+                    return destination;
+            }
+            return null;
+        }
+
+        /// <summary>
+        /// Dash endpoints, in preference order, whose travel line passes beside <paramref name="target"/> (clear of
+        /// both bodies, inside half the line width) and ends past it, so the target is struck without blocking the path.
+        /// </summary>
+        public static IEnumerable<System.Numerics.Vector2> RushEndpointsPast(System.Numerics.Vector2 origin,
+            System.Numerics.Vector2 target, float minimumMeters, float maximumMeters, float lineWidthMeters)
+        {
+            var toTarget = target - origin;
+            var distance = toTarget.Length();
+            if (distance < .001f) yield break;
+            var forward = toTarget / distance;
+            foreach (var clearance in new[] { 1.5f, 1.8f, 1.2f })
+            {
+                if (clearance >= lineWidthMeters / 2 || clearance >= distance) continue;
+                var along = MathF.Sqrt(distance * distance - clearance * clearance);
+                foreach (var side in new[] { 1f, -1f })
+                {
+                    // Rotate the heading so the line's closest approach to the target equals the clearance.
+                    var sin = side * clearance / distance;
+                    var cos = along / distance;
+                    var heading = new System.Numerics.Vector2(forward.X * cos - forward.Y * sin, forward.X * sin + forward.Y * cos);
+                    foreach (var beyond in new[] { 1f, 2f, .5f })
+                    {
+                        var length = along + beyond;
+                        if (length >= minimumMeters && length <= maximumMeters)
+                            yield return origin + heading * length;
+                    }
+                }
+            }
         }
 
         public static bool IsInTravelLine(NumericsVector3 point, NumericsVector3 origin, NumericsVector3 destination, float width)

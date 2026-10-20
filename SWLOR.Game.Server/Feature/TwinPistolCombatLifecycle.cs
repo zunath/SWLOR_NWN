@@ -64,6 +64,7 @@ namespace SWLOR.Game.Server.Feature
             var actor = OBJECT_SELF;
             RangedWeaponAttackContext.Clear(actor);
             PairedRangedTraits.ForgetDestroyed(actor);
+            TwinPistolAbility.ForgetDestroyed(actor);
         }
 
         [NWNEventHandler(ScriptName.OnModuleExit)]

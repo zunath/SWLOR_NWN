@@ -77,7 +77,7 @@ namespace SWLOR.Toolset.Tests
         /// <summary>Resolves real tilesets, so the fill tile comes from genuine .set corner rules.</summary>
         private static AreaTilesetResolver? RealTilesets()
         {
-            var installPath = NwnInstallLocator.Locate();
+            var installPath = NwnInstallLocator.Locate(Environment.GetEnvironmentVariable("NWN_INSTALL_PATH"));
             if (installPath == null)
                 return null;
 

@@ -3,6 +3,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using NUnit.Framework;
 using SWLOR.CLI;
+using SWLOR.NWN.Formats.Common;
 using System.Diagnostics;
 using System.Text;
 
@@ -265,30 +266,34 @@ public sealed class ModulePaletteRefresherTests
         foreach (var (source, originalContent) in sources)
             File.ReadAllBytes(source).Should().Equal(originalContent);
 
-        var converter = Path.Combine(TestContext.CurrentContext.TestDirectory, "nwn_gff.exe");
-        File.Exists(converter).Should().BeTrue();
+        // The bundled nwn_gff.exe on Windows, the native converter elsewhere - as the packer resolves it.
+        var converter = NativeToolPath.Find("nwn_gff", TestContext.CurrentContext.TestDirectory);
+        converter.Should().NotBeNull();
         foreach (var replacement in refresh.Replacements.Values)
         {
             var binaryOutput = Path.Combine(
                 _outputRoot,
                 Path.GetFileNameWithoutExtension(replacement));
-            var startInfo = new ProcessStartInfo(converter)
+            var arguments = new[]
+            {
+                "-l", "json",
+                "-i", replacement,
+                "-o", binaryOutput,
+                "-k", "gff"
+            };
+            using var nativeInput = NativeGffInput.PrepareForTool(converter!, Environment.CurrentDirectory, arguments);
+            var startInfo = new ProcessStartInfo(converter!)
             {
                 UseShellExecute = false,
                 RedirectStandardOutput = true,
                 RedirectStandardError = true,
                 CreateNoWindow = true
             };
-            foreach (var argument in new[]
-                     {
-                         "-l", "json",
-                         "-i", replacement,
-                         "-o", binaryOutput,
-                         "-k", "gff"
-                     })
+            foreach (var argument in arguments)
             {
                 startInfo.ArgumentList.Add(argument);
             }
+            NativeToolPath.ConfigureLibraryPath(startInfo);
 
             using var process = Process.Start(startInfo)!;
             var standardOutput = process.StandardOutput.ReadToEnd();
@@ -624,7 +629,8 @@ public sealed class ModulePaletteRefresherTests
 
     private static void RunTool(string toolName, string workingDirectory, params string[] arguments)
     {
-        var toolPath = Path.Combine(TestContext.CurrentContext.TestDirectory, toolName);
+        var toolPath = NativeToolPath.Find(toolName, TestContext.CurrentContext.TestDirectory)
+            ?? Path.Combine(TestContext.CurrentContext.TestDirectory, toolName);
         var startInfo = new ProcessStartInfo(toolPath)
         {
             WorkingDirectory = workingDirectory,
@@ -635,6 +641,7 @@ public sealed class ModulePaletteRefresherTests
         };
         foreach (var argument in arguments)
             startInfo.ArgumentList.Add(argument);
+        NativeToolPath.ConfigureLibraryPath(startInfo);
 
         using var process = Process.Start(startInfo)!;
         var standardOutput = process.StandardOutput.ReadToEnd();

@@ -127,28 +127,28 @@ namespace SWLOR.CombatSim.Tests.Engine
         [Test]
         public void Current_ReplacingAShieldIsNotShrunkByTheShieldItReplaces()
         {
-            // Pain Suppressant and Deflector Shield fill all but 92 of the cap; Guardian Ward takes that remainder.
-            // Recasting Guardian Ward must get the same 92 back, not 0 because its old pool still counted against the cap.
-            var simulation = Spawn(RuleSets.Current(), new[]
-            {
-                TestCombatants.Medic("Medic",
-                    TestCombatants.Use("PainSuppressant2", AbilityTarget.Self, keepUp: true),
-                    TestCombatants.Use("DeflectorShield3", AbilityTarget.Self, keepUp: true),
-                    TestCombatants.Use("GuardianWard4", AbilityTarget.Self))
-            });
+            // On a 700 HP medic the cap is 350. Pain Suppressant (119) and Deflector Shield (175) fill all but 56 of it;
+            // Guardian Ward (149 uncapped) takes that remainder. Recasting Guardian Ward must get the same 56 back, not 0
+            // because its old pool still counted against the cap.
+            var medicSpec = TestCombatants.Medic("Medic",
+                TestCombatants.Use("PainSuppressant2", AbilityTarget.Self, keepUp: true),
+                TestCombatants.Use("DeflectorShield3", AbilityTarget.Self, keepUp: true),
+                TestCombatants.Use("GuardianWard4", AbilityTarget.Self));
+            medicSpec.MaxHp = 700;
+            var simulation = Spawn(RuleSets.Current(), new[] { medicSpec });
             var medic = simulation.Get("Medic");
             SimulationClock.RunUntil(simulation, () => medic.TemporaryHp.Count == 3, 15, "three shields applied");
             var ward = medic.TemporaryHp.Single(p => p.Key == "GuardianWard");
-            ward.Amount.Should().Be(92.0);
-            medic.TemporaryHpTotal.Should().Be(500.0);
+            ward.Amount.Should().Be(56.0);
+            medic.TemporaryHpTotal.Should().Be(350.0);
 
             RequestImmediateRecast(simulation, medic);
             SimulationClock.RunUntil(simulation, () => medic.Stats.AbilitiesUsed == 4, 10, "fourth cast resolved");
 
             var replacement = medic.TemporaryHp.Single(p => p.Key == "GuardianWard");
             replacement.Should().NotBeSameAs(ward);
-            replacement.Amount.Should().Be(92.0);
-            medic.TemporaryHpTotal.Should().Be(500.0);
+            replacement.Amount.Should().Be(56.0);
+            medic.TemporaryHpTotal.Should().Be(350.0);
         }
 
         private Simulation Spawn(RuleSet rules, IEnumerable<CombatantSpec> firstTeam) =>

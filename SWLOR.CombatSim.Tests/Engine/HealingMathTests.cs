@@ -2,6 +2,7 @@ using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.CombatSim.Effects;
 using SWLOR.CombatSim.Engine;
+using SWLOR.Game.Server.Feature.AbilityDefinition;
 using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.CombatSim.Tests.Engine
@@ -45,14 +46,27 @@ namespace SWLOR.CombatSim.Tests.Engine
         }
 
         [Test]
-        public void ScaleByStat_GameFormula_MatchesTheGamesTwentyFivePercentBonusForEveryAmountAndStat()
+        public void ScaleByStat_PercentHeals_MatchesTheOldTwentyFivePercentBonusForEveryAmountAndStat()
         {
             for (var baseAmount = 0; baseAmount <= 2000; baseAmount++)
             {
                 for (var stat = 0; stat <= 30; stat++)
                 {
                     var expected = baseAmount + (int)Math.Ceiling(baseAmount * 0.25f * HealingMath.StatProgress(stat));
-                    HealingMath.ScaleByStat(baseAmount, stat, HealFormula.Game).Should().Be(expected, $"{baseAmount} at stat {stat}");
+                    HealingMath.ScaleByStat(baseAmount, stat, HealFormula.PercentHeals).Should().Be(expected, $"{baseAmount} at stat {stat}");
+                }
+            }
+        }
+
+        [Test]
+        public void ScaleByStat_GameFormula_MatchesTheGamesRestorativeScalingForEveryAmountAndStat()
+        {
+            for (var baseAmount = 0; baseAmount <= 2000; baseAmount++)
+            {
+                for (var stat = 0; stat <= 30; stat++)
+                {
+                    HealingMath.ScaleByStat(baseAmount, stat, HealFormula.Game)
+                        .Should().Be(AbilityEffectScaling.ScaleRestorativeEffect(baseAmount, stat), $"{baseAmount} at stat {stat}");
                 }
             }
         }
@@ -63,78 +77,43 @@ namespace SWLOR.CombatSim.Tests.Engine
         [TestCase(22, 1094)]
         [TestCase(26, 1250)]
         [TestCase(40, 1250)]
-        public void ScaleByStat_SteeperFormula_CutsLowWillpowerAndKeepsTheTop(int stat, int expected)
+        public void ScaleByStat_GameFormula_HalvesTenWillpowerAgainstTwentySix(int stat, int expected)
         {
-            var steep = HealFormula.Game with { StatMultiplierAtBaseline = 0.625f };
-
-            HealingMath.ScaleByStat(1000, stat, steep).Should().Be(expected);
+            HealingMath.ScaleByStat(1000, stat, HealFormula.Game).Should().Be(expected);
         }
 
-        [TestCase(400)]
-        [TestCase(925)]
-        [TestCase(1500)]
-        public void HealBase_GameFormula_IsAPercentOfTheTargetsMaxHp(int targetMaxHp)
+        [TestCase(400, 153)]
+        [TestCase(1000, 193)]
+        [TestCase(1500, 228)]
+        public void BenevolenceIII_OnAlly_UnderTheGameFormula_IsMostlyFlat(int targetMaxHp, int expected)
         {
-            HealingMath.HealBase(targetMaxHp, 14f, HealFormula.Game).Should().Be(HealingMath.PercentOfMaxHp(targetMaxHp, 14f));
-        }
-
-        [TestCase(400, 119)]
-        [TestCase(1000, 140)]
-        [TestCase(1600, 161)]
-        public void HealBase_QuarterPercentShare_IsMostlyFlat(int targetMaxHp, int expected)
-        {
-            // 14% of (0.25 x target + 0.75 x 1,000): 14% of 850 = 119 at 400 HP, 140 at the reference, 14% of 1,150 = 161 at 1,600.
-            var formula = HealFormula.Game with { PercentOfMaxHpShare = 0.25f, ReferenceMaxHp = 1000 };
-
-            HealingMath.HealBase(targetMaxHp, 14f, formula).Should().Be(expected);
+            // (63 HP + 3.5% of max HP) x1.25 on an ally, then x1.25 at 26 Willpower and x1.25 Light affinity:
+            // 400 HP: 97 -> 122 -> 153. 1,000 HP: 123 -> 154 -> 193. 1,500 HP: 145 -> 182 -> 228.
+            HealingMath.DirectHeal(Effect(FeatType.Benevolence3), targetMaxHp, 100f, false,
+                MaxScalingWillpower, LightAffinity, CurrentAffinityCap, 0f, 0f, HealFormula.Game).Should().Be(expected);
         }
 
         [Test]
-        public void HealBase_AtTheReferenceMaxHp_HealsExactlyAsTheGameForAnyShare()
+        public void RenewalIII_Tick_UnderTheGameFormula_GrowsWithTheTickSizeAndAffinity()
         {
-            // Float rounding matters here: 3.75% of 400 is 15.0000006 in the game's float math, so the game heals 16.
-            HealingMath.PercentOfMaxHp(400, 3.75f).Should().Be(16);
-            foreach (var share in new[] { 0f, 0.25f, 0.3f, 0.7f, 0.99f })
-            foreach (var maxHp in new[] { 1, 375, 400, 925, 1525, 10_000_000 })
-            foreach (var percent in new[] { 0.6f, 1f, 2.5f, 3.75f, 6f, 14f, 17.5f, 36f })
-            {
-                var formula = HealFormula.Game with { PercentOfMaxHpShare = share, ReferenceMaxHp = maxHp };
-                HealingMath.HealBase(maxHp, percent, formula).Should().Be(HealingMath.PercentOfMaxHp(maxHp, percent),
-                    $"{percent}% of {maxHp} with share {share}");
-            }
+            // (14 HP + 0.75% of 1,000) x1.25 affinity = 26.875 -> 27, then x1.25 at 26 Willpower -> 34.
+            HealingMath.HealOverTimeTick(Effect(FeatType.Renewal3), TargetMaxHp, MaxScalingWillpower, 1.25f, 0f, HealFormula.Game)
+                .Should().Be(34);
         }
 
         [Test]
-        public void HealBase_AllFlat_HealsEveryTargetTheSame()
+        public void DeflectorShieldIII_UnderTheGameFormula_Is154PlusThreePercent()
         {
-            var formula = HealFormula.Game with { PercentOfMaxHpShare = 0f, ReferenceMaxHp = 900 };
-
-            new[] { 375, 900, 1525 }.Select(maxHp => HealingMath.HealBase(maxHp, 14f, formula))
-                .Should().AllBeEquivalentTo(126, "14% of the 900 HP reference");
+            HealingMath.TemporaryHp(Effect(FeatType.DeflectorShield3), 1500, BaselineWillpower, 10, 0, CurrentAffinityCap, 0f, HealFormula.Game)
+                .Should().Be(199);
         }
 
         [Test]
-        public void BenevolenceIII_OnAlly_UnderAFlatFormula_HealsTheSameForATankAndAGlassCannon()
+        public void RousingShoutIII_UnderTheGameFormula_RaisesBothPartsWithSocial()
         {
-            // 14% x 1.25 of the 1,000 HP reference = 175, then +25% Willpower and x1.25 Light affinity.
-            var formula = HealFormula.Game with { PercentOfMaxHpShare = 0f, ReferenceMaxHp = TargetMaxHp };
-            int Heal(int targetMaxHp) => HealingMath.DirectHeal(Effect(FeatType.Benevolence3), targetMaxHp, 100f, false,
-                MaxScalingWillpower, LightAffinity, CurrentAffinityCap, 0f, 0f, formula);
-
-            Heal(400).Should().Be(274);
-            Heal(1500).Should().Be(274);
-            HealingMath.DirectHeal(Effect(FeatType.Benevolence3), TargetMaxHp, 100f, false,
-                MaxScalingWillpower, LightAffinity, CurrentAffinityCap, 0f, 0f).Should().Be(274, "the reference target heals as it does today");
-        }
-
-        [Test]
-        public void DeflectorShield_UnderAFlatFormula_KeepsItsFlatPartAndConvertsItsPercent()
-        {
-            // 100 flat + 12% of the 1,000 HP reference; Deflector Shield has no Willpower scaling.
-            var formula = HealFormula.Game with { PercentOfMaxHpShare = 0f, ReferenceMaxHp = 1000 };
-
-            HealingMath.TemporaryHp(Effect(FeatType.DeflectorShield3), 1500, BaselineWillpower, 10, 0, CurrentAffinityCap, 0f, formula)
-                .Should().Be(220);
+            // Halfway to SOC 26: 90 + round(11.5) = 102 HP plus 5.625% of 1,000 = 158.25 -> 159.
+            HealingMath.TemporaryHp(Effect(FeatType.RousingShout3), TargetMaxHp, BaselineWillpower, 18, 0, CurrentAffinityCap, 0f, HealFormula.Game)
+                .Should().Be(159);
         }
 
         [TestCase(0, 1.5f, 1f)]

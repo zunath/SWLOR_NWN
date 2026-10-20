@@ -128,7 +128,11 @@ public class AnimationBankRebalanceTests
             Inputs = plan.Inputs, AbsentInputs = plan.AbsentInputs,
             Changes = [new(output, [1], [2])]
         };
-        transaction.Apply(_ => ((Action)(() => File.WriteAllText(source, "concurrent writer"))).Should().Throw<IOException>());
+        transaction.Apply(_ =>
+        {
+            if (Support.WindowsFileSharing.IsEnforced)
+                ((Action)(() => File.WriteAllText(source, "concurrent writer"))).Should().Throw<IOException>();
+        });
         File.ReadAllBytes(output).Should().Equal(2);
         AnimationBankRebalance.Prepare(_root, "hero").Changes.Should().BeEmpty();
     }

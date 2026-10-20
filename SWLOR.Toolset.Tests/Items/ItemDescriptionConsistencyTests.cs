@@ -66,7 +66,7 @@ namespace SWLOR.Toolset.Tests.Items
                 "a single unambiguous description should be copied to its empty companion - {0}", because);
         }
 
-        [TestCase("TaserPistol")]
+        [TestCase("taserpistol")]
         [TestCase("drakebruiser_wp")]
         [TestCase("key_smuggler01")]
         [TestCase("novauniform")]

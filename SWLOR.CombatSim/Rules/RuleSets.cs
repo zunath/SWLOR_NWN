@@ -1,4 +1,5 @@
 using Newtonsoft.Json;
+using SWLOR.Game.Server.Feature.AbilityDefinition;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.PvpCombatService;
 
@@ -69,6 +70,9 @@ namespace SWLOR.CombatSim.Rules
         public static RuleSet Current() => new()
         {
             Name = CurrentName,
+            FlatHeals = true,
+            HealStatMultiplierAtBaseline = AbilityEffectScaling.RestorativeMultiplierAtBaseline,
+            HealStatMultiplierAtCap = AbilityEffectScaling.RestorativeMultiplierAtCap,
             ForceAffinityHealingCap = 1.25f,
             TemporaryHpCapPercent = 50f,
             ConvergenceDurationSeconds = 20f,

@@ -196,7 +196,7 @@ namespace SWLOR.Toolset.Tests
         [Test]
         public void Matcher_FromPlacedNeighbours_IncludesTheActualTile_AcrossTheCorpus()
         {
-            var installPath = NwnInstallLocator.Locate();
+            var installPath = NwnInstallLocator.Locate(Environment.GetEnvironmentVariable("NWN_INSTALL_PATH"));
             if (installPath == null)
             {
                 Assert.Ignore("No local NWN:EE install; corpus soundness gate needs base-game tilesets for some areas.");

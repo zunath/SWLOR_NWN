@@ -321,7 +321,7 @@ namespace SWLOR.Toolset.Tests
             // coxxian_hq's Placeable List[0] (zep_barricade) carries Appearance 2627 on the
             // instance itself; with the appearance services + base-game index supplied, the marker
             // must resolve real render geometry. Doors resolve via GenericType_New/Appearance.
-            var installPath = NwnInstallLocator.Locate();
+            var installPath = NwnInstallLocator.Locate(Environment.GetEnvironmentVariable("NWN_INSTALL_PATH"));
             if (installPath == null)
             {
                 Assert.Ignore("No local NWN:EE installation found; placeable models are mostly base-game resources.");
@@ -532,7 +532,7 @@ namespace SWLOR.Toolset.Tests
         [Test]
         public void Build_AllAreasInModuleCorpus_AssemblesWithZeroExceptions()
         {
-            var installPath = NwnInstallLocator.Locate();
+            var installPath = NwnInstallLocator.Locate(Environment.GetEnvironmentVariable("NWN_INSTALL_PATH"));
             if (installPath == null)
             {
                 Assert.Ignore("No local NWN:EE installation was found (Steam/GOG); skipping the full 438-area assembly gate.");

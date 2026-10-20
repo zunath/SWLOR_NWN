@@ -1,8 +1,8 @@
 # Agent Environment
 
-Setup and hygiene for agents working on the maintainer's Windows machine, where several Claude and Codex sessions run at once.
+Setup and hygiene for agents working on the maintainer's Windows machine, where several Claude and Codex sessions run at once, and for Claude Code cloud sessions (Linux).
 
-Sections: Worktrees and the haks submodule · Git network · Shared machine · Disk hygiene · Builds and local deploy
+Sections: Worktrees and the haks submodule · Git network · Shared machine · Disk hygiene · Builds and local deploy · Cloud sessions
 
 ## Worktrees and the haks submodule
 
@@ -70,3 +70,21 @@ Graphics and model work (renders, Blender files, exported meshes and textures, G
 - Runner always uses the compose project `debugserver` (container `debugserver-swlor-server-1`), so Runner servers from different checkouts collide. Check that none is running before starting one, or use your own compose project and port for parallel work.
 - Module JSON changes need `Module\PackModule.cmd`. Hak changes need `SWLOR_Haks\BuildHaks.cmd`, which needs `nwn_erf` on PATH; when it is missing, report the hak rebuild as an outstanding deploy step instead of retrying.
 - When an in-game check of a hak-dependent change fails, compare the deployed `.hak` size and timestamp against the expected build before debugging code.
+
+## Cloud sessions
+
+Claude Code cloud sessions run on Linux with a limited disk. SessionStart hooks in `.claude/settings.json` prepare them and do nothing on local machines:
+
+- `session-start.sh` prepares the native NWN tools, installs Wine, PowerShell 7, Xvfb with Mesa's software OpenGL, the Python packages, and the NuGet packages, and exports the variables below. The session waits for it (about a minute on a fresh machine); after `/clear` or compaction it only refreshes the environment.
+- `session-start-haks.sh` checks out `SWLOR_Haks` in the background (about 10 minutes on a fresh machine) and installs CleanModels. Before building haks or running tests that read `SWLOR_Haks`, wait for `/tmp/swlor-haks-checkout.done`; progress, and the reason when the marker does not appear (such as a failed CleanModels download), is in `/tmp/swlor-haks-checkout.log`. It deletes the checked-out blobs from `.git` to fit the disk, and git downloads a blob again when it needs one. The first `git commit` in the submodule downloads all of them again (about 5 GB, several minutes); for a small commit, `git write-tree --missing-ok`, `git commit-tree`, and `git update-ref` avoid that. Set `SWLOR_HAKS_SPARSE` to a folder list for a partial checkout. On later session starts it applies a changed `SWLOR_HAKS_SPARSE` and moves a clean, detached submodule to the pinned commit; a branch, local changes, or untracked files leave it untouched.
+- `session-start-game-data.sh` copies the dedicated-server game data out of the pinned server image (`scripts/deployment/server-image.txt`) to `/opt/nwn` in the background; `/tmp/swlor-game-data.done` marks success. It holds the base game's 2DAs, scripts, walkmeshes, tilesets, palettes, and `dialog.tlk`, but its models and textures are zero-byte stubs.
+
+Working there:
+
+- `SWLOR.CLI` and the toolset use the native Linux tools (`nwn_erf`, `nwn_gff`, `nwn_tlk`, `nwn_script_comp`), which the hook puts in the same verified cache as `./Setup.sh` and on PATH. Wine, through a binfmt handler, runs the Windows-only tools: CleanModels, and the bundled `.exe` tools that some tests launch directly. The hooks mark the `.exe` files executable and turn `core.fileMode` off so git does not report the mode change. Wine tools fail with "Invalid handle" when their output goes to `/dev/null`; pipe it instead.
+- Use the `.sh` shortcuts, not the `.cmd` ones. Run `./Setup.sh` only after `/tmp/swlor-haks-checkout.done` exists: it starts with `git submodule update`, which would otherwise begin a full haks clone that does not fit. To pack the module, build `SWLOR.CLI` and run `dotnet ../SWLOR.CLI/bin/Debug/net10.0/SWLOR.CLI.dll -p "./Star Wars LOR v2.mod" --no-prompt` from `Module/` (about 2 minutes).
+- `NWN_INSTALL_PATH` and `NWN_ROOT` point at `/opt/nwn`, `NWN_HOME` at an empty user directory (the script compiler requires one), and `DISPLAY` at the Xvfb display. `NWN_INSTALL_ROOT` stays unset, so the licensed-corpus tests skip.
+- PowerShell 7 answers to `pwsh`, `powershell`, and `powershell.exe`. Scripts that need Windows PowerShell 5.1 or Windows-only APIs still fail.
+- Linux file names are case-sensitive and many HAK files use mixed case; resolve resource names case-insensitively, as the game does. Windows share modes are not enforced, so tests that rely on them skip (`SWLOR.Toolset.Tests/Support/WindowsFileSharing.cs`). Golden animation bakes differ from the Windows C runtime in the last bits and compare with a tolerance (`GoldenBake.cs`).
+- Engine tests: `scripts/prepare-engine-test-home.sh`, then `scripts/run-engine-tests.sh` (`EngineTesting.md`). The prep script starts Docker when it is not running. Docker Hub can rate-limit anonymous pulls.
+- Not available: the NWN:EE client and its art. Tests that read base-game models, textures, sounds, or portraits fail or skip, and client evidence needs a Windows machine.

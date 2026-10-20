@@ -73,9 +73,11 @@ namespace SWLOR.Toolset.Tests
             try
             {
                 var iniPath = Path.Combine(tempRoot, "nwn.ini");
+                // nwn.ini aliases use the host's separator (backslashes on Windows).
+                var separator = Path.DirectorySeparatorChar;
                 File.WriteAllText(
                     iniPath,
-                    "[Alias]\r\nHAK=custom\\hak\r\nTLK=custom\\tlk\r\nMOVIES=custom\\movies\r\n");
+                    $"[Alias]\r\nHAK=custom{separator}hak\r\nTLK=custom{separator}tlk\r\nMOVIES=custom{separator}movies\r\n");
 
                 var profile = NwnIniProfile.Load(iniPath);
 

@@ -380,7 +380,8 @@ namespace SWLOR.Toolset.Services
             {
                 var diagnosticResRef = string.IsNullOrWhiteSpace(d.File)
                     ? sourceResRef
-                    : Path.GetFileNameWithoutExtension(d.File);
+                    // The compiler is a Windows tool; under Wine it can report backslash paths.
+                    : Path.GetFileNameWithoutExtension(d.File.Replace('\\', '/'));
                 var belongsToSource = string.Equals(
                     diagnosticResRef, sourceResRef, StringComparison.OrdinalIgnoreCase);
                 var (start, length) = belongsToSource

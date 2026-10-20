@@ -203,7 +203,7 @@ namespace SWLOR.Toolset.Tests
                 var compiler = new ScriptCompiler(
                     CompilerPath,
                     new[] { NssDirectory, staging },
-                    NwnInstallLocator.Locate());
+                    NwnInstallLocator.Locate(Environment.GetEnvironmentVariable("NWN_INSTALL_PATH")));
 
                 foreach (var template in ModuleResourceTemplateFactory.ScriptTemplates)
                 {

@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using SWLOR.NWN.Formats.Common;
 using System.Reflection;
 using FluentAssertions;
 using NUnit.Framework;
@@ -17,8 +18,8 @@ namespace SWLOR.Toolset.Tests
     /// </summary>
     public class ScriptCompilerTests
     {
-        private static string CompilerPath => Path.Combine(
-            CorpusLocator.RepositoryRoot, "tools", "SWLOR.CLI", "nwn_script_comp.exe");
+        private static string CompilerPath => NativeToolPath.Find("nwn_script_comp",
+            Path.Combine(CorpusLocator.RepositoryRoot, "tools", "SWLOR.CLI")) ?? "";
 
         private static string NssDirectory => Path.Combine(CorpusLocator.ModuleDirectory, "nss");
 
@@ -30,6 +31,8 @@ namespace SWLOR.Toolset.Tests
         [SetUp]
         public void SetUp()
         {
+            if (Environment.GetEnvironmentVariable("SWLOR_REQUIRE_NATIVE_TOOLS") == "1")
+                File.Exists(CompilerPath).Should().BeTrue("CI must exercise the real host-native compiler");
             // nwn_script_comp resolves the language spec as "nwscript.nss"; the in-repo header is
             // version-stamped, so it is staged under the plain name the compiler looks for.
             _staging = Path.Combine(Path.GetTempPath(), "swlor_nsscomp_" + Guid.NewGuid().ToString("N"));

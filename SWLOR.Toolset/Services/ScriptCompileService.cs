@@ -55,8 +55,7 @@ namespace SWLOR.Toolset.Services
                 if (root == null)
                     return null;
 
-                var path = Path.Combine(root, "tools", "SWLOR.CLI", "nwn_script_comp.exe");
-                return File.Exists(path) ? path : null;
+                return NativeToolPath.Find("nwn_script_comp", Path.Combine(root, "tools", "SWLOR.CLI"));
             }
         }
 
@@ -130,7 +129,7 @@ namespace SWLOR.Toolset.Services
             var compiler = CreateCompiler();
             if (workspace == null || compiler == null)
             {
-                _log.AppendLine("Cannot compile: no module open, or nwn_script_comp.exe is missing from tools/SWLOR.CLI.");
+                _log.AppendLine("Cannot compile: no module open, or The native NWScript compiler is missing. Run repository setup or reinstall the toolset.");
                 return CompileOutcome.Failed(resRef);
             }
 
@@ -380,7 +379,6 @@ namespace SWLOR.Toolset.Services
             {
                 var diagnosticResRef = string.IsNullOrWhiteSpace(d.File)
                     ? sourceResRef
-                    // The compiler is a Windows tool; under Wine it can report backslash paths.
                     : Path.GetFileNameWithoutExtension(d.File.Replace('\\', '/'));
                 var belongsToSource = string.Equals(
                     diagnosticResRef, sourceResRef, StringComparison.OrdinalIgnoreCase);
@@ -717,16 +715,16 @@ namespace SWLOR.Toolset.Services
         private string? RepositoryRoot()
         {
             var start = _workspaceContext.Workspace?.ModuleRoot ?? AppContext.BaseDirectory;
-            var current = new DirectoryInfo(start);
-
-            while (current != null)
+            foreach (var candidate in new[] { start, AppContext.BaseDirectory })
             {
-                if (Directory.Exists(Path.Combine(current.FullName, "tools", "SWLOR.CLI")))
-                    return current.FullName;
-
-                current = current.Parent;
+                var current = new DirectoryInfo(candidate);
+                while (current != null)
+                {
+                    if (Directory.Exists(Path.Combine(current.FullName, "tools", "SWLOR.CLI")))
+                        return current.FullName;
+                    current = current.Parent;
+                }
             }
-
             return null;
         }
     }

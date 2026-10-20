@@ -64,6 +64,19 @@ namespace SWLOR.Toolset.Domain.GameData.Resources
             if (!string.IsNullOrWhiteSpace(overridePath))
                 yield return overridePath;
 
+            if (!OperatingSystem.IsWindows())
+            {
+                var home = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
+                foreach (var root in LinuxSteamRoots(home))
+                {
+                    yield return Path.Combine(root, "steamapps", "common", "Neverwinter Nights");
+                    foreach (var library in TryGetSteamLibraryPaths(root)) yield return library;
+                }
+                yield return Path.Combine(home, "GOG Games", "Neverwinter Nights Enhanced Edition");
+                yield return Path.Combine(home, "GOG Games", "Neverwinter Nights Enhanced Edition", "game");
+                yield return Path.Combine(home, "Beamdog Library", "00785");
+                yield break;
+            }
             yield return SteamDefaultInstallPath;
             yield return TryGetSteamInstallPath();
 
@@ -81,9 +94,16 @@ namespace SWLOR.Toolset.Domain.GameData.Resources
         /// values rather than parsed as real VDF: the file's only job here is to hand over directory
         /// names, and every one is validated afterwards anyway.
         /// </summary>
-        private static IEnumerable<string> TryGetSteamLibraryPaths()
+        public static IReadOnlyList<string> LinuxSteamRoots(string home) => new[]
         {
-            var steamRoot = TryGetSteamRoot();
+            Path.Combine(home, ".local", "share", "Steam"),
+            Path.Combine(home, ".steam", "steam"),
+            Path.Combine(home, ".var", "app", "com.valvesoftware.Steam", ".local", "share", "Steam")
+        };
+
+        private static IEnumerable<string> TryGetSteamLibraryPaths(string? explicitRoot = null)
+        {
+            var steamRoot = explicitRoot ?? TryGetSteamRoot();
             if (steamRoot == null)
                 yield break;
 

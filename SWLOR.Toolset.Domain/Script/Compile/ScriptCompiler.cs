@@ -1,3 +1,4 @@
+using SWLOR.NWN.Formats.Common;
 using System.Diagnostics;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -56,7 +57,7 @@ namespace SWLOR.Toolset.Domain.Script.Compile
         private readonly string? _gameRoot;
         private readonly IReadOnlyList<string> _sourceDirectories;
 
-        /// <param name="compilerPath">Full path to nwn_script_comp.exe.</param>
+        /// <param name="compilerPath">Full path to the host-native nwn_script_comp executable.</param>
         /// <param name="sourceDirectories">Directories added to the resource manager for include lookup.</param>
         /// <param name="gameRoot">NWN installation, or null to compile without base-game resources.</param>
         public ScriptCompiler(string compilerPath, IReadOnlyList<string> sourceDirectories, string? gameRoot = null)
@@ -84,6 +85,7 @@ namespace SWLOR.Toolset.Domain.Script.Compile
                     $"Script compiler not found at {_compilerPath}.", false);
 
             var args = new List<string>();
+            string? isolatedRoot = null;
             if (_gameRoot != null)
             {
                 args.Add("--root");
@@ -92,6 +94,14 @@ namespace SWLOR.Toolset.Domain.Script.Compile
             else
             {
                 args.Add("--no-keys");
+                if (OperatingSystem.IsLinux())
+                {
+                    // The pinned Linux compiler resolves root and user directories even with
+                    // --no-keys. Supply an empty, private resource root when no game is installed.
+                    isolatedRoot = Path.Combine(Path.GetTempPath(), "swlor_compiler_" + Guid.NewGuid().ToString("N"));
+                    Directory.CreateDirectory(Path.Combine(isolatedRoot, "lang", "en"));
+                    args.AddRange(new[] { "--root", isolatedRoot, "--userdirectory", isolatedRoot, "--no-ovr" });
+                }
             }
 
             if (_sourceDirectories.Count > 0)
@@ -110,17 +120,24 @@ namespace SWLOR.Toolset.Domain.Script.Compile
 
             args.Add(sourcePath);
 
-            var (exitCode, output) = await RunAsync(args, cancellationToken).ConfigureAwait(false);
+            try
+            {
+                var (exitCode, output) = await RunAsync(args, cancellationToken).ConfigureAwait(false);
 
-            // Exit code 623 / "skipped" is the compiler's way of saying the file declares no main()
-            // and so is an include. That is a normal outcome, not a failure.
-            var skipped = output.Contains("1 skipped", StringComparison.OrdinalIgnoreCase) &&
-                !output.Contains("1 successful", StringComparison.OrdinalIgnoreCase);
+                // Exit code 623 / "skipped" is the compiler's way of saying the file declares no main()
+                // and so is an include. That is a normal outcome, not a failure.
+                var skipped = output.Contains("1 skipped", StringComparison.OrdinalIgnoreCase) &&
+                    !output.Contains("1 successful", StringComparison.OrdinalIgnoreCase);
 
-            var diagnostics = ParseDiagnostics(output);
-            var succeeded = (exitCode == 0 || skipped) && !diagnostics.Any(d => d.IsError);
+                var diagnostics = ParseDiagnostics(output);
+                var succeeded = (exitCode == 0 || skipped) && !diagnostics.Any(d => d.IsError);
 
-            return new ScriptCompileResult(succeeded, diagnostics, output, skipped);
+                return new ScriptCompileResult(succeeded, diagnostics, output, skipped);
+            }
+            finally
+            {
+                if (isolatedRoot != null) Directory.Delete(isolatedRoot, recursive: true);
+            }
         }
 
         /// <summary>
@@ -176,6 +193,7 @@ namespace SWLOR.Toolset.Domain.Script.Compile
             process.OutputDataReceived += (_, e) => { if (e.Data != null) lock (output) output.AppendLine(e.Data); };
             process.ErrorDataReceived += (_, e) => { if (e.Data != null) lock (output) output.AppendLine(e.Data); };
 
+            NativeToolPath.ConfigureLibraryPath(info);
             process.Start();
             process.BeginOutputReadLine();
             process.BeginErrorReadLine();

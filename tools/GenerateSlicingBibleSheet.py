@@ -172,10 +172,10 @@ def recipe_documentation_payload() -> dict[str, object]:
         "worksheets": sheets,
         "espionageDescriptions": {
             "G18": "Can slice tier 1 lockboxes and terminals.",
-            "G22": "Can slice tier 2 lockboxes and terminals.",
-            "G25": "Can slice tier 3 lockboxes and terminals. Grants +1 trace during slicing.",
-            "G30": "Can slice tier 4 lockboxes and terminals. Grants +2 trace during slicing.",
-            "G32": "Can slice tier 5 lockboxes and terminals. Grants +3 trace during slicing.",
+            "G22": "Can slice tier 2 lockboxes and terminals. Each rank above a target's tier grants +1 trace.",
+            "G25": "Can slice tier 3 lockboxes and terminals. Each rank above a target's tier grants +1 trace.",
+            "G30": "Can slice tier 4 lockboxes and terminals. Each rank above a target's tier grants +1 trace.",
+            "G32": "Can slice tier 5 lockboxes and terminals. Each rank above a target's tier grants +1 trace.",
         },
     }
 
@@ -257,7 +257,7 @@ def build_sheet() -> Sheet:
         ["Win condition", "Powered route", "", "", "", "", "", "Rotate and swap tiles until one continuous entry-to-core circuit is powered."],
         ["Rotate", "1 trace", "", "", "", "", "", "Clockwise rotation only."],
         ["Adjacent swap", "2 trace", "", "", "", "", "", "Entry and core tiles cannot be swapped."],
-        ["Trace bonuses", "Ranks III/IV/V: +1/+2/+3", "", "", "", "", "", "Every 5 combined Lockpicking plus positive Perception modifier grants +1 trace, capped at +5."],
+        ["Trace bonuses", "+1 per Slicing rank above the target tier", "", "", "", "", "", "The rank a tier requires adds nothing on that tier. Every 10 combined Lockpicking (gear and effects) plus positive Perception modifier grants +1 trace, capped at +2."],
         ["Attempt commitment", "First board/tool action", "", "", "", "", "", "Cancel before commitment is free. Abort, death, disconnect, or area exit after commitment counts as failure."],
         ["Combat/range", "Validated on actions", "", "", "", "", "", "Starting does not force combat. Terminal actions validate interaction range."],
         ["Terminal ownership", "Shared node; 3-minute stale claim", "", "", "", "", "", "One active owner. A stale committed claim resolves as a failure before another player may claim it."],
@@ -269,12 +269,12 @@ def build_sheet() -> Sheet:
     sheet.blank()
 
     sheet.merged("Tier Board and Progression")
-    sheet.table(["Tier", "Grid", "Extra Trace", "Authored Swaps", "Slicing Rank", "Armor Bands", "", "Notes"], [
-        [1, "3 x 3", 4, 0, 1, "0 / 5", "", "Slicing I starts at Espionage rank 0 and trains to 22. Optional tier 1 supplies are sold at the Veles General Store. Base trace equals solution cost plus extra trace."],
-        [2, "4 x 3", 3, 1, 2, "10 / 15", "", "Deterministic guaranteed-solvable route."],
-        [3, "4 x 4", 3, 2, 3, "20 / 25", "", ""],
-        [4, "5 x 4", 2, 3, 4, "30 / 35", "", "Rare exceptional named item uses the half-tier Armor band."],
-        [5, "5 x 5", 2, 4, 5, "40 / 45", "", "Rare exceptional named item uses the half-tier Armor band."],
+    sheet.table(["Tier", "Grid", "Extra Trace", "Authored Swaps", "Slicing Rank", "Armor Bands", "Max Routes in Trace", "Notes"], [
+        [1, "3 x 3", 4, 0, 1, "0 / 5", 3, "Slicing I starts at Espionage rank 0 and trains to 22. Optional tier 1 supplies are sold at the Veles General Store. Each tier has 500 boards, each with its own START, GOAL, and route. Base trace equals the board's cheapest repair, proven by the board solver, plus extra trace. Cheapest repair: 5+ trace."],
+        [2, "4 x 3", 3, 1, 2, "10 / 15", 3, "From tier 2, rotation alone cannot finish within base trace; every board needs at least one swap. Cheapest repair: 7+ trace."],
+        [3, "4 x 4", 3, 2, 3, "20 / 25", 4, "Cheapest repair: 9+ trace."],
+        [4, "5 x 4", 2, 3, 4, "30 / 35", 4, "Rare exceptional named item uses the half-tier Armor band. Cheapest repair: 11+ trace."],
+        [5, "5 x 5", 2, 4, 5, "40 / 45", 5, "Rare exceptional named item uses the half-tier Armor band. Cheapest repair: 13+ trace."],
     ])
     sheet.blank()
 

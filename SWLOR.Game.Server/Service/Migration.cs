@@ -218,6 +218,7 @@ namespace SWLOR.Game.Server.Service
             Perk.RestorePlayerFeats(player);
             // Saved equipment does not emit equip events on login.
             Stat.RefreshCombatReadinessEquipment(player);
+            Stat.RefreshPlayerMaxHP(player);
         }
 
         private static void DeliverUpgradeNotices(uint player, Player dbPlayer)

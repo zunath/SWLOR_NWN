@@ -154,9 +154,10 @@ public static partial class MigrationEngineTests
         {
             // Keep the complete HP budget below the one-level fixture's native cap.
             var record = DB.Get<Player>(GetObjectUUID(player));
-            Stat.AdjustPlayerMaxHP(record, player, 50 - record.MaxHP);
+            record.TemporaryFoodHP = 0;
+            Stat.AdjustPlayerMaxHP(record, player, Stat.BaseHP - record.MaxHP);
             DB.Set(record);
-            SetCurrentHitPoints(player, 50);
+            SetCurrentHitPoints(player, GetMaxHitPoints(player));
         });
         var enhancements = new Dictionary<(ItemPropertyType, int), int> { [(ItemPropertyType.Defense, (int)CombatDamageType.Physical)] = 2 };
         var armor = await CreateItemAsync(ctx, player, "ark_armor", player);

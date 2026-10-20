@@ -16,8 +16,11 @@ namespace SWLOR.Toolset.Domain.GameData.Resources
         string? MovieDirectory)
     {
         public static string DefaultIniPath => Path.Combine(
-            Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments),
-            "Neverwinter Nights",
+            Environment.GetEnvironmentVariable("NWN_USER_DIRECTORY") ?? Path.Combine(
+                OperatingSystem.IsWindows()
+                    ? Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments)
+                    : Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), ".local", "share"),
+                "Neverwinter Nights"),
             "nwn.ini");
 
         public static NwnIniProfile Load(string? iniPath = null)
@@ -129,6 +132,7 @@ namespace SWLOR.Toolset.Domain.GameData.Resources
 
             try
             {
+                value = value.Replace('\\', Path.DirectorySeparatorChar).Replace('/', Path.DirectorySeparatorChar);
                 return Path.GetFullPath(Path.IsPathRooted(value)
                     ? value
                     : Path.Combine(Path.GetDirectoryName(iniPath)!, value));

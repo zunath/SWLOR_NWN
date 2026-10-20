@@ -130,16 +130,16 @@ namespace SWLOR.Toolset.Workspace
         private string? RepositoryRoot()
         {
             var start = _workspaceContext.Workspace?.ModuleRoot ?? AppContext.BaseDirectory;
-            var current = new DirectoryInfo(start);
-
-            while (current != null)
+            foreach (var candidate in new[] { start, AppContext.BaseDirectory })
             {
-                if (Directory.Exists(Path.Combine(current.FullName, "SWLOR.NWN.API", "NWN")))
-                    return current.FullName;
-
-                current = current.Parent;
+                var current = new DirectoryInfo(candidate);
+                while (current != null)
+                {
+                    if (Directory.Exists(Path.Combine(current.FullName, "SWLOR.NWN.API", "NWN")))
+                        return current.FullName;
+                    current = current.Parent;
+                }
             }
-
             return null;
         }
     }

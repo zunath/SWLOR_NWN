@@ -1,5 +1,7 @@
 using FluentAssertions;
 using NUnit.Framework;
+using System.Text.Json;
+using SWLOR.Toolset.Domain.Distribution;
 using SWLOR.Toolset.Domain.GameData.Resources;
 
 namespace SWLOR.Toolset.Tests;
@@ -129,6 +131,57 @@ public class HakSetupValidationTests
         var action = () => HakSetupValidation.Validate(_root,
             new[] { new ResourceIndex.HakLayer("tiles", Path.Combine(_root, "installed/tiles.hak")) });
         action.Should().Throw<InvalidOperationException>().WithMessage("*tiles.hak*");
+    }
+
+    [TestCase("hak/sw_2da.hak", false)]
+    [TestCase("tlk/sw_tlk.tlk", false)]
+    [TestCase("tlk/sw_tlk.tlk.json", false)]
+    [TestCase("hak/unlisted.hak", true)]
+    [TestCase("tlk/unlisted.tlk", true)]
+    public void StartupRejectsChangedOrUndeclaredCachedAssets(string damagedFile, bool undeclared)
+    {
+        var revision = Guid.NewGuid().ToString("N") + "00000000";
+        var workspace = Path.Combine(_root, "workspace");
+        Directory.CreateDirectory(workspace);
+        File.WriteAllText(Path.Combine(workspace, WorkspaceManifest.FileName),
+            JsonSerializer.Serialize(new WorkspaceManifest { ContentRevision = revision, AssetRevision = revision }));
+        var assets = Path.Combine(WorkspaceDownload.AssetCacheDirectory, revision);
+        Directory.CreateDirectory(assets);
+        try
+        {
+            var manifest = new AssetManifest { AssetRevision = revision };
+            foreach (var relative in new[] { "hak/sw_2da.hak", "tlk/sw_tlk.tlk", "tlk/sw_tlk.tlk.json" })
+            {
+                var path = Path.Combine(assets, relative);
+                Directory.CreateDirectory(Path.GetDirectoryName(path)!);
+                File.WriteAllText(path, "asset " + relative);
+                manifest.Files[relative] = ContentPaths.HashFile(path);
+            }
+            File.WriteAllText(Path.Combine(assets, AssetManifest.FileName), JsonSerializer.Serialize(manifest));
+            var settings = SWLOR.Toolset.Settings.ToolsetSettings.Load(Path.Combine(_root, "settings.json"));
+            settings.ModuleRoot = Path.Combine(workspace, "Module");
+            var gate = typeof(App).GetMethod("ValidateStartupHakSetup",
+                System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Static)!;
+            Action validate = () => gate.Invoke(null, new object[] { settings });
+            validate.Should().NotThrow();
+
+            var damaged = Path.Combine(assets, damagedFile);
+            if (undeclared)
+            {
+                File.WriteAllText(damaged, "undeclared");
+                validate.Should().Throw<System.Reflection.TargetInvocationException>()
+                    .WithInnerException<InvalidDataException>().WithMessage("*Undeclared asset file*" + damagedFile + "*");
+                return;
+            }
+            var writeTime = File.GetLastWriteTimeUtc(damaged);
+            var bytes = File.ReadAllBytes(damaged);
+            bytes[0] ^= 1;
+            File.WriteAllBytes(damaged, bytes);
+            File.SetLastWriteTimeUtc(damaged, writeTime);
+            validate.Should().Throw<System.Reflection.TargetInvocationException>()
+                .WithInnerException<InvalidDataException>().WithMessage("*damaged asset*" + damagedFile + "*");
+        }
+        finally { Directory.Delete(assets, recursive: true); }
     }
 
     private void WriteRequiredSources()

@@ -69,6 +69,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                                 filters.AddComboBox()
                                     .AddOption("Custom", (int)DMBlueprintSource.Custom)
                                     .AddOption("Standard", (int)DMBlueprintSource.Standard)
+                                    .AddOption("Favorites", DMCreatorViewModel.FavoritesSource)
                                     .BindSelectedIndex(model => model.SelectedSource)
                                     .SetWidth(110f)
                                     .SetHeight(ButtonHeight);
@@ -194,7 +195,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                     .SetTooltip("Click the ground or an object to create the blueprint there. Items clicked onto a creature or container go into its inventory.")
                     .SetWidth(RailButtonWidth)
                     .SetHeight(ButtonHeight)
-                    .BindIsEnabled(model => model.HasSelection)
+                    .BindIsEnabled(model => model.CanCreate)
                     .BindOnClicked(model => model.OnClickCreateAtTarget());
             });
 
@@ -204,7 +205,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                     .SetText("Create at My Location")
                     .SetWidth(RailButtonWidth)
                     .SetHeight(ButtonHeight)
-                    .BindIsEnabled(model => model.HasSelection)
+                    .BindIsEnabled(model => model.CanCreate)
                     .BindOnClicked(model => model.OnClickCreateHere());
             });
 
@@ -217,6 +218,17 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                     .BindIsEnabled(model => model.CanCreateInInventory)
                     .SetDisabledTooltip("Only items can be created in your inventory")
                     .BindOnClicked(model => model.OnClickCreateInInventory());
+            });
+
+            col.AddRow(row =>
+            {
+                row.AddButton()
+                    .BindText(model => model.FavoriteButtonText)
+                    .SetTooltip("Favorites are yours alone. Choose Favorites in the palette list to see them.")
+                    .SetWidth(RailButtonWidth)
+                    .SetHeight(ButtonHeight)
+                    .BindIsEnabled(model => model.HasSelection)
+                    .BindOnClicked(model => model.OnClickToggleFavorite());
             });
 
             col.AddRow(row => row.AddSpacer());

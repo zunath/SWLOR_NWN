@@ -84,13 +84,64 @@ def edges_touch_edges(first, second, tolerance=1e-7, chunk=256):
     return False
 
 
+def overlapping_pairs(boxes_a, boxes_b, tolerance):
+    """Index pairs whose axis-aligned boxes overlap (within tolerance), found through a uniform grid so
+    only nearby primitives reach the exact tests."""
+    lo=np.minimum(boxes_a[:,0].min(axis=0),boxes_b[:,0].min(axis=0));extent=np.concatenate([boxes_a[:,1]-boxes_a[:,0],boxes_b[:,1]-boxes_b[:,0]])
+    cell=max(float(np.median(extent.max(axis=1))),tolerance*10,1e-9)
+    def cells(boxes):return (np.floor((boxes[:,0]-tolerance-lo)/cell).astype(np.int64),np.floor((boxes[:,1]+tolerance-lo)/cell).astype(np.int64))
+    grid={};alo,ahi=cells(boxes_a)
+    for index,(l,h) in enumerate(zip(alo,ahi)):
+        for x in range(l[0],h[0]+1):
+            for y in range(l[1],h[1]+1):
+                for z in range(l[2],h[2]+1):grid.setdefault((x,y,z),[]).append(index)
+    pairs=set();blo,bhi=cells(boxes_b)
+    for index,(l,h) in enumerate(zip(blo,bhi)):
+        for x in range(l[0],h[0]+1):
+            for y in range(l[1],h[1]+1):
+                for z in range(l[2],h[2]+1):
+                    for other in grid.get((x,y,z),()):pairs.add((other,index))
+    if not pairs:return np.zeros((0,),np.int64),np.zeros((0,),np.int64)
+    a,b=np.asarray(sorted(pairs)).T
+    keep=np.all(boxes_a[a,0]<=boxes_b[b,1]+tolerance,axis=1)&np.all(boxes_b[b,0]<=boxes_a[a,1]+tolerance,axis=1)
+    return a[keep],b[keep]
+
+
+def pair_segment_crosses_triangle(seg, tri, eps=1e-9):
+    v0=tri[:,0];e1=tri[:,1]-v0;e2=tri[:,2]-v0;a=seg[:,0];d=seg[:,1]-seg[:,0]
+    p=np.cross(d,e2);det=(p*e1).sum(-1);ok=np.abs(det)>eps;inv=np.where(ok,1/np.where(ok,det,1),0)
+    sv=a-v0;u=(sv*p).sum(-1)*inv;q=np.cross(sv,e1);v=(d*q).sum(-1)*inv;t=(e2*q).sum(-1)*inv
+    return ok&(u>-eps)&(v>-eps)&(u+v<1+eps)&(t>-eps)&(t<1+eps)
+
+
+def pair_point_on_triangle(point, tri, tolerance):
+    a=tri[:,0];ab=tri[:,1]-a;ac=tri[:,2]-a;normal=np.cross(ab,ac);area=np.linalg.norm(normal,axis=1)
+    ap=point-a;plane=np.abs((ap*normal).sum(-1))/np.maximum(area,1e-30)
+    d00=(ab*ab).sum(-1);d01=(ab*ac).sum(-1);d11=(ac*ac).sum(-1);d20=(ap*ab).sum(-1);d21=(ap*ac).sum(-1);den=np.where(np.abs(d00*d11-d01*d01)>1e-30,d00*d11-d01*d01,1)
+    v=(d11*d20-d01*d21)/den;w=(d00*d21-d01*d20)/den;slack=tolerance/np.sqrt(np.maximum(np.maximum(d00,d11),1e-30))
+    return (plane<=tolerance)&(v>=-slack)&(w>=-slack)&(v+w<=1+slack)
+
+
+def pair_segments_touch(first, second, tolerance):
+    p0=first[:,0];d1=first[:,1]-first[:,0];q0=second[:,0];d2=second[:,1]-second[:,0];r=p0-q0
+    a=(d1*d1).sum(-1);e=(d2*d2).sum(-1);f=(d2*r).sum(-1);c=(d1*r).sum(-1);b=(d1*d2).sum(-1);den=a*e-b*b
+    s=np.clip(np.where(den>1e-30,(b*f-c*e)/np.where(den>1e-30,den,1),0),0,1);t=np.clip((b*s+f)/np.maximum(e,1e-30),0,1)
+    s=np.clip((b*t-c)/np.maximum(a,1e-30),0,1);gap=p0+d1*s[:,None]-(q0+d2*t[:,None])
+    return (gap*gap).sum(-1)<=tolerance*tolerance
+
+
 def shells_intersect(first, second, tolerance=1e-7):
     """Closed triangle sets intersect or touch when an edge of one crosses (or grazes) a triangle of
-    the other, or a vertex of one lies on the other; coplanar and boundary contacts count too."""
+    the other, a vertex of one lies on the other, or their edges meet (coplanar contacts included).
+    A uniform-grid broad phase keeps the exact tests to spatially overlapping pairs."""
     def edges(tris):return np.concatenate([tris[:,[0,1]],tris[:,[1,2]],tris[:,[2,0]]])
-    return (edges_cross_triangles(edges(first),second,inclusive=True) or edges_cross_triangles(edges(second),first,inclusive=True)
-            or points_touch_triangles(first.reshape(-1,3),second,tolerance) or points_touch_triangles(second.reshape(-1,3),first,tolerance)
-            or edges_touch_edges(edges(first),edges(second),tolerance))
+    def boxes(items):return np.stack([items.min(axis=1),items.max(axis=1)],axis=1)
+    ea,eb=edges(first),edges(second);ta,tb=boxes(first),boxes(second);ba,bb=boxes(ea),boxes(eb)
+    for segs,segboxes,tris,triboxes in ((ea,ba,second,tb),(eb,bb,first,ta)):
+        i,j=overlapping_pairs(segboxes,triboxes,tolerance)
+        if len(i) and (pair_segment_crosses_triangle(segs[i],tris[j]).any() or pair_point_on_triangle(segs[i,0],tris[j],tolerance).any()):return True
+    i,j=overlapping_pairs(ba,bb,tolerance)
+    return bool(len(i) and pair_segments_touch(ea[i],eb[j],tolerance).any())
 
 
 def audit_surface(vertices, faces, components=False):

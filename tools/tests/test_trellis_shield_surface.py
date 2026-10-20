@@ -116,6 +116,28 @@ class ShieldSurfaceTests(unittest.TestCase):
         self.assertTrue(surface.shells_intersect(tri(*crossing),tri(*outer)))
         self.assertFalse(surface.shells_intersect(tri(*box(size=(.5,.5,.5))),tri(*outer)))
 
+    def test_spatial_pruning_matches_the_exhaustive_contact_tests(self):
+        rng=np.random.default_rng(7)
+        def edges(t):return np.concatenate([t[:,[0,1]],t[:,[1,2]],t[:,[2,0]]])
+        def exhaustive(a,b,tol=1e-7):
+            return (surface.edges_cross_triangles(edges(a),b,inclusive=True) or surface.edges_cross_triangles(edges(b),a,inclusive=True)
+                    or surface.points_touch_triangles(a.reshape(-1,3),b,tol) or surface.points_touch_triangles(b.reshape(-1,3),a,tol)
+                    or surface.edges_touch_edges(edges(a),edges(b),tol))
+        seen=set()
+        for _ in range(300):
+            a=rng.uniform(-1,1,(int(rng.integers(1,6)),3,3));b=rng.uniform(-1,1,(int(rng.integers(1,6)),3,3))+rng.uniform(-1.5,1.5,3)
+            expected=bool(exhaustive(a,b));seen.add(expected)
+            self.assertEqual(surface.shells_intersect(a,b),expected)
+        self.assertEqual(seen,{True,False})
+
+    def test_large_disjoint_shells_are_checked_without_all_pairs_work(self):
+        rng=np.random.default_rng(3)
+        def soup(count,radius):
+            centres=rng.normal(size=(count,3));centres*=radius/np.linalg.norm(centres,axis=1)[:,None]
+            return centres[:,None,:]+rng.normal(scale=.003,size=(count,3,3))
+        with patch.object(surface,'edges_cross_triangles',side_effect=AssertionError('all-pairs path used')):
+            self.assertFalse(surface.shells_intersect(soup(50000,1.0),soup(50000,.5)))
+
     def test_input_hash_uses_the_loaded_snapshot(self):
         vertices,faces=box()
         with tempfile.TemporaryDirectory() as temporary:

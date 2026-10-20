@@ -367,6 +367,26 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Component("dmotive_sys3", 3)
                 .Component("d_sensor3", 2);
 
+            // Droid Unarmed Boost I
+            _builder.Create(RecipeType.DroidUnarmedBoost1, SkillType.Engineering)
+                .Category(RecipeCategoryType.DroidEnhancement)
+                .Resref("de_unarmed_b1")
+                .Level(29)
+                .Quantity(1)
+                .RequirementUnlocked()
+                .Component("dmotive_sys3", 3)
+                .Component("d_sensor3", 2);
+
+            // Droid Twin Pistol Boost I
+            _builder.Create(RecipeType.DroidTwinPistolBoost1, SkillType.Engineering)
+                .Category(RecipeCategoryType.DroidEnhancement)
+                .Resref("de_twinpist_b1")
+                .Level(30)
+                .Quantity(1)
+                .RequirementUnlocked()
+                .Component("dmotive_sys3", 3)
+                .Component("d_sensor3", 2);
+
             // Droid Vibroblade Boost II
             _builder.Create(RecipeType.DroidVibrobladeBoost2, SkillType.Engineering)
                 .Category(RecipeCategoryType.DroidEnhancement)
@@ -481,6 +501,26 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
             _builder.Create(RecipeType.DroidThrowingBoost2, SkillType.Engineering)
                 .Category(RecipeCategoryType.DroidEnhancement)
                 .Resref("de_throw_b2")
+                .Level(50)
+                .Quantity(1)
+                .RequirementUnlocked()
+                .Component("dmotive_sys5", 3)
+                .Component("d_sensor5", 2);
+
+            // Droid Unarmed Boost II
+            _builder.Create(RecipeType.DroidUnarmedBoost2, SkillType.Engineering)
+                .Category(RecipeCategoryType.DroidEnhancement)
+                .Resref("de_unarmed_b2")
+                .Level(49)
+                .Quantity(1)
+                .RequirementUnlocked()
+                .Component("dmotive_sys5", 3)
+                .Component("d_sensor5", 2);
+
+            // Droid Twin Pistol Boost II
+            _builder.Create(RecipeType.DroidTwinPistolBoost2, SkillType.Engineering)
+                .Category(RecipeCategoryType.DroidEnhancement)
+                .Resref("de_twinpist_b2")
                 .Level(50)
                 .Quantity(1)
                 .RequirementUnlocked()

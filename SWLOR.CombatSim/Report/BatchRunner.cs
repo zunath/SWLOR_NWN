@@ -97,7 +97,7 @@ namespace SWLOR.CombatSim.Report
                     if (!perCombatant.TryGetValue(key, out var accumulator))
                         perCombatant[key] = accumulator = new CombatantAccumulator(combatant.Name, combatant.TeamIndex);
                     // Resource rates count only the time a combatant was in the fight.
-                    accumulator.Add(combatant.Stats, Math.Max(result.EndedAt - combatant.Spec.JoinAtSeconds, 0) / 60.0);
+                    accumulator.Add(combatant.Stats, Math.Max(result.EndedAt - combatant.Spec.JoinAtSeconds, 0) / 60.0, combatant.Weapon);
                 }
             }
 

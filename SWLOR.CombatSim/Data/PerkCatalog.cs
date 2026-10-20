@@ -19,6 +19,9 @@ namespace SWLOR.CombatSim.Data
         private readonly List<string> _loadErrors = new();
 
         public IReadOnlyList<string> LoadErrors => _loadErrors;
+        public PerkDetail Get(PerkType perk) => _perks.TryGetValue(perk, out var value) ? value
+            : throw new InvalidDataException($"Perk {perk} could not be loaded from the game definitions.");
+        public IEnumerable<PerkDetail> InCategory(PerkCategoryType category) => _perks.Values.Where(perk => perk.Category == category);
 
         public static PerkCatalog Load()
         {
@@ -68,6 +71,63 @@ namespace SWLOR.CombatSim.Data
             }
 
             return totals;
+        }
+
+        public List<Dictionary<StatType, int>> GetSources(IEnumerable<string> entries)
+        {
+            var result = new List<Dictionary<StatType,int>>();
+            var owned = new HashSet<PerkType>();
+            foreach (var entry in entries ?? Enumerable.Empty<string>())
+            {
+                var (perk, level) = Parse(entry);
+                if (!owned.Add(perk.Type)) throw new InvalidDataException($"Duplicate perk {entry}.");
+                var source = new Dictionary<StatType,int>();
+                foreach (var bonus in perk.StatBonuses.Concat(level.StatBonuses))
+                {
+                    try { source[bonus.Stat] = Stat.AggregateStatAdjustment(bonus.Stat, source.GetValueOrDefault(bonus.Stat), bonus.Calculate(PlaceholderObject)); }
+                    catch (Exception ex) { throw new InvalidDataException($"Cannot evaluate source stat {entry}/{bonus.Stat} outside the engine.", ex); }
+                }
+                if (source.Count > 0) result.Add(source);
+            }
+            return result;
+        }
+
+        public int GetPurchaseCost(IEnumerable<string> entries) => entries.Select(Parse)
+            .Sum(pair => pair.Perk.PerkLevels.Where(level => level.Key <= pair.Perk.PerkLevels.Single(level => ReferenceEquals(level.Value, pair.Level)).Key)
+                .Sum(level => level.Value.Price));
+
+        public void ValidateWeaponBuild(IEnumerable<string> entries, IEnumerable<FeatType> abilities, int skillRank,
+            IReadOnlyCollection<PerkType> modeledActivePerks = null)
+        {
+            var parsed = entries.Select(Parse).ToList();
+            var owned = parsed.Select(pair => pair.Perk.Type).ToHashSet();
+            foreach (var pair in parsed)
+            {
+                if (pair.Perk.Category is not (PerkCategoryType.TwinPistolBarrage or PerkCategoryType.TwinPistolCrossfire) &&
+                    !(modeledActivePerks?.Contains(pair.Perk.Type) == true &&
+                      !pair.Perk.StatBonuses.Any() && !pair.Level.StatBonuses.Any()))
+                    throw new InvalidDataException($"The stat-based weapon model does not implement {pair.Perk.Type}; use native comparison coverage for other perk lines.");
+                if (pair.Level.Requirements.OfType<PerkRequirementSkill>().Any(requirement => requirement.RequiredRank > skillRank))
+                    throw new InvalidDataException($"Perk {pair.Perk.Type} requires a higher skill rank.");
+                foreach (var exclusion in pair.Level.Requirements.OfType<PerkRequirementCannotHavePerk>())
+                {
+                    var excluded = (PerkType)typeof(PerkRequirementCannotHavePerk)
+                        .GetField("_cannotHavePerkType", BindingFlags.Instance | BindingFlags.NonPublic)!.GetValue(exclusion)!;
+                    if (owned.Contains(excluded)) throw new InvalidDataException($"Perks {pair.Perk.Type} and {excluded} are mutually exclusive.");
+                }
+                foreach (var requirement in pair.Level.Requirements.OfType<PerkRequirementMustHavePerk>())
+                {
+                    var type = typeof(PerkRequirementMustHavePerk);
+                    var requiredPerk = (PerkType)type.GetField("_mustHavePerkType", BindingFlags.Instance | BindingFlags.NonPublic)!.GetValue(requirement)!;
+                    var requiredLevel = (int)type.GetField("_mustHavePerkLevel", BindingFlags.Instance | BindingFlags.NonPublic)!.GetValue(requirement)!;
+                    var purchased = parsed.FirstOrDefault(candidate => candidate.Perk.Type == requiredPerk);
+                    if (purchased.Perk == null || !purchased.Perk.PerkLevels.Any(level => ReferenceEquals(level.Value, purchased.Level) && level.Key >= requiredLevel))
+                        throw new InvalidDataException($"Perk {pair.Perk.Type} requires {requiredPerk}:{requiredLevel}.");
+                }
+            }
+            var granted = parsed.SelectMany(pair => pair.Level.GrantedFeats).ToHashSet();
+            foreach (var feat in abilities)
+                if (!granted.Contains(feat)) throw new InvalidDataException($"Weapon build has not purchased {feat}.");
         }
 
         private (PerkDetail Perk, PerkLevel Level) Parse(string entry)

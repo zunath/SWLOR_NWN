@@ -82,8 +82,8 @@ namespace SWLOR.Toolset.Domain.Editors.Items
             Add(ItemStatGroup.Bonuses, "Module Bonus", 113, costTableId: 45);
             Add(ItemStatGroup.Bonuses, "Increased Price", 126, costTableId: 49);
 
-            // Droid. DroidStat (121) carries every one of iprp_droidstat's 31 labeled rows - the
-            // ability/resistance/tier block (2-11, 16-24) and the weapon-skill block (115-126). DroidPartType
+            // Droid. DroidStat (121) carries every one of iprp_droidstat's 33 labeled rows - the
+            // ability/resistance/tier block (2-11, 16-24) and the weapon-skill block (115-126, 128-129). DroidPartType
             // (122, iprp_droidpart, 1-5 subs) and DroidInstruction (123, iprp_droidperk, 40 subs) are
             // multi-subtype and are catalogued only in ItemMultiEntryCatalog; DroidPersonality (124)
             // has no per-subtype expansion asked of this pass and stays flat.
@@ -97,7 +97,8 @@ namespace SWLOR.Toolset.Domain.Editors.Items
                 (18, "Trauma Resistance"), (19, "Disruption Resistance"), (20, "Armor"),
                 (115, "Vibroblade"), (116, "Vibroknife"), (117, "Lightsaber"), (118, "Heavy Vibro"),
                 (119, "Spear"), (120, "Twin Blade"), (121, "Saberstaff"), (122, "Katar"),
-                (123, "Staff"), (124, "Pistol"), (125, "Rifle"), (126, "Throwing")
+                (123, "Staff"), (124, "Pistol"), (125, "Rifle"), (126, "Throwing"),
+                (128, "Unarmed"), (129, "Twin Pistol")
             };
             foreach (var (subtype, label) in droidStats)
                 Add(ItemStatGroup.Droid, $"Droid {label}", 121, subtype, 45);

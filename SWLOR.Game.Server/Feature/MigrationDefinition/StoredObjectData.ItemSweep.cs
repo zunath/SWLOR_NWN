@@ -14,15 +14,15 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition;
 /// The stored-item sweep applied to saved GFF with no game engine, so the server can convert stored records
 /// on worker threads at boot. Each rule mirrors its native counterpart on an unequipped item: <see cref="HeadgearSlotMigration.ConvertItem"/>,
 /// <see cref="EquipmentTypeMigration.ConvertItem"/>, <see cref="ItemIconMigration.MigrateItem"/> (with
-/// <see cref="ItemAppearanceCatalogMigration.ConvertItem"/>) and <see cref="LootStatRevisionMigration"/>'s stat
-/// revision, in the same order. Fields the sweep does not
+/// <see cref="ItemAppearanceCatalogMigration.ConvertItem"/>), <see cref="LootStatRevisionMigration"/>'s stat
+/// revision and <see cref="DroidWeaponSkillMigration.MigrateItem"/>, in the same order. Fields the sweep does not
 /// change keep their saved bytes. New properties and locals are written the way the engine saves them.
 /// </summary>
 internal sealed partial class StoredObjectData
 {
     private const string ConstructedDroidVariable = "CONSTRUCTED_DROID";
 
-    /// <summary>itempropdef.2da CostTableResRef for every property type the stat revision catalogs change.</summary>
+    /// <summary>itempropdef.2da CostTableResRef for every property type the stat revision catalogs and droid weapon skills add.</summary>
     internal static IReadOnlyDictionary<ItemPropertyType, byte> RevisedPropertyCostTables { get; } = new Dictionary<ItemPropertyType, byte>
     {
         [ItemPropertyType.HPBonus] = 37,
@@ -36,6 +36,7 @@ internal sealed partial class StoredObjectData
         [ItemPropertyType.STMRegen] = 45,
         [ItemPropertyType.RequiresSkill] = 48,
         [ItemPropertyType.Resistance] = 54,
+        [ItemPropertyType.DroidStat] = 45,
     };
 
     /// <summary>Saved-data counterpart of <see cref="LootStatRevisionMigration.MigrateStoredObjectData"/>.</summary>
@@ -114,6 +115,7 @@ internal sealed partial class StoredObjectData
         }
         if (updateArtwork) changed |= UpdateArtwork(item);
         changed |= ReviseStats(item);
+        if (updateArtwork) changed |= AddDroidWeaponSkills(item);
         changed |= MigrateSavedDroid(item, repairHeadgear, updateArtwork);
 
         foreach (var list in item.Fields.Where(IsInventoryList))
@@ -362,20 +364,45 @@ internal sealed partial class StoredObjectData
         return (total, matches);
     }
 
+    /// <summary>Mirrors <see cref="DroidWeaponSkillMigration.MigrateItem"/>.</summary>
+    internal static bool AddDroidWeaponSkills(Node item)
+    {
+        var properties = item.Fields.SingleOrDefault(x => x.Name == "PropertiesList" && x.Type == 15);
+        var droidStats = properties?.Children
+            .Where(property => ReadInteger(property, "PropertyName") == (int)ItemPropertyType.DroidStat)
+            .Select(property => (ReadInteger(property, "Subtype"), ReadInteger(property, "CostValue")))
+            .ToList();
+        if (droidStats == null || droidStats.Count == 0)
+            return false;
+
+        var missing = DroidWeaponSkillMigration.GetMissingSkills(droidStats).ToList();
+        foreach (var (skill, value) in missing)
+            properties.Children.Add(NewProperty(ItemPropertyType.DroidStat, (int)skill, value));
+        if (missing.Count == 0)
+            return false;
+        NumberListElements(properties);
+        return true;
+    }
+
     internal static bool HasSubtype(ItemPropertyType type) =>
         type is ItemPropertyType.Defense or ItemPropertyType.Resistance or ItemPropertyType.RequiresSkill;
 
     /// <summary>The property ItemPropertyCustom(type, subtype or -1, value, -1) saves as.</summary>
-    private static Node NewProperty(LootStatChange change, int value)
+    private static Node NewProperty(LootStatChange change, int value) =>
+        NewProperty(change.Type, HasSubtype(change.Type) ? change.Subtype : -1, value);
+
+    /// <summary>The property ItemPropertyCustom(type, subtype, value, -1) saves as; a -1 subtype saves as 65535.</summary>
+    private static Node NewProperty(ItemPropertyType type, int subtype, int value)
     {
-        if (!RevisedPropertyCostTables.TryGetValue(change.Type, out var costTable))
-            throw new InvalidOperationException($"No cost table is known for revised property type {change.Type}.");
-        var subtype = HasSubtype(change.Type) ? change.Subtype : ushort.MaxValue;
+        if (!RevisedPropertyCostTables.TryGetValue(type, out var costTable))
+            throw new InvalidOperationException($"No cost table is known for revised property type {type}.");
+        if (subtype < 0)
+            subtype = ushort.MaxValue;
         return new Node
         {
             Fields = new List<Field>
             {
-                MakeField(2, "PropertyName", BitConverter.GetBytes((int)change.Type)),
+                MakeField(2, "PropertyName", BitConverter.GetBytes((int)type)),
                 MakeField(2, "Subtype", BitConverter.GetBytes(subtype)),
                 MakeField(0, "CostTable", BitConverter.GetBytes((int)costTable)),
                 MakeField(2, "CostValue", BitConverter.GetBytes(value)),

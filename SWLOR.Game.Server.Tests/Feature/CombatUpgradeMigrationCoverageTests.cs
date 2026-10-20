@@ -218,7 +218,9 @@ public class CombatUpgradeMigrationCoverageTests
             (int)DroidStatSubType.Staff,
             (int)DroidStatSubType.Pistol,
             (int)DroidStatSubType.Rifle,
-            (int)DroidStatSubType.Throwing
+            (int)DroidStatSubType.Throwing,
+            (int)DroidStatSubType.Unarmed,
+            (int)DroidStatSubType.TwinPistol
         };
 
         cpuFiles.Should().NotBeEmpty("droid CPU item templates are the live crafted CPU data");
@@ -272,8 +274,12 @@ public class CombatUpgradeMigrationCoverageTests
             GetTsvInt(row, 13).Should().Be(stats[(int)DroidStatSubType.SOC].Single(), $"{templateResref} generator SOC should match the template");
             GetTsvInt(row, 14).Should().Be(GetWeaponGroupRank(stats, 115, 116, 117), $"{templateResref} generator one-handed rank should match concrete skills");
             GetTsvInt(row, 15).Should().Be(GetWeaponGroupRank(stats, 118, 119, 120, 121), $"{templateResref} generator two-handed rank should match concrete skills");
-            GetTsvInt(row, 16).Should().Be(GetWeaponGroupRank(stats, 122, 123), $"{templateResref} generator martial rank should match concrete skills");
-            GetTsvInt(row, 17).Should().Be(GetWeaponGroupRank(stats, 124, 125, 126), $"{templateResref} generator ranged rank should match concrete skills");
+            GetTsvInt(row, 16).Should().Be(GetWeaponGroupRank(stats, 122, 123, 128), $"{templateResref} generator martial rank should match concrete skills");
+            GetTsvInt(row, 17).Should().Be(GetWeaponGroupRank(stats, 124, 125, 126, 129), $"{templateResref} generator ranged rank should match concrete skills");
+            if (GetTsvInt(row, 16) > 0)
+                stats.Should().ContainKey((int)DroidStatSubType.Unarmed, $"{templateResref} martial CPUs should grant Unarmed like Katar and Staff");
+            if (GetTsvInt(row, 17) > 0)
+                stats.Should().ContainKey((int)DroidStatSubType.TwinPistol, $"{templateResref} ranged CPUs should grant Twin Pistol like Pistol, Rifle, and Throwing");
         }
 
         var migration = File.ReadAllText(Path.Combine(

@@ -111,13 +111,13 @@ public class AuthoredCombatAnimationTests
         runtime.Token.Should().BeEmpty();
     }
 
-    /// <summary>Checks that the preview catalog retains the installed perk and fishing clips.</summary>
+    /// <summary>Checks that the preview catalog retains installed ability, ordinary attack, and fishing clips.</summary>
     [Test]
     public void PreviewIncludesAllCatalogMovesWithCurrentAbilities()
     {
         AnimationPreviewChatCommand.Clips.Keys.Should().BeEquivalentTo(
             ActiveAbilityAnimationCatalog.Entries.Select(entry => entry.Id)
-                .Concat(new[] { "Fishing6", "Fishing7", "Fishing8" }));
+                .Concat(new[] { "TwinPistolCycle", "Fishing6", "Fishing7", "Fishing8" }));
     }
 
     [Test]

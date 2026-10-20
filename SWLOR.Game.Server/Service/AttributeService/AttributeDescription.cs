@@ -22,7 +22,7 @@ namespace SWLOR.Game.Server.Service.AttributeService
 
         public const string MightDetails =
             "Might: " + MightSummary + "\n\n" +
-            "Primary Skills: Vibroblade, Heavy Vibroblade, Spear, Twin Blade, Katar, Staff, Smithery, Gathering\n\n" +
+            "Primary Skills: Vibroblade, Heavy Vibroblade, Spear, Twin Blade, Katar, Unarmed, Staff, Smithery, Gathering\n\n" +
             "Other Notes:\n\n" +
             "Improves damage dealt by melee weapons.\n" +
             "Increases maximum STM.\n" +
@@ -32,7 +32,7 @@ namespace SWLOR.Game.Server.Service.AttributeService
 
         public const string PerceptionDetails =
             "Perception: " + PerceptionSummary + "\n\n" +
-            "Primary Skills: Vibroknife, Lightsaber, Saberstaff, Katar, Pistol, Rifle, Fabrication, Devices\n\n" +
+            "Primary Skills: Vibroknife, Lightsaber, Saberstaff, Katar, Unarmed, Pistol, Rifle, Fabrication, Devices\n\n" +
             "Other Notes:\n\n" +
             "Improves accuracy of melee weapons.\n" +
             "Improves damage dealt by ranged weapons, including throwing weapons.\n" +

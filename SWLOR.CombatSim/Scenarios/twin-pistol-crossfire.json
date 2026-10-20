@@ -1,0 +1,31 @@
+{
+  "Name": "Twin Pistol Crossfire: Paired Handling",
+  "Description": "60-SP full line plus the profile's common 9-SP Armor offhand-delay assumption. Effective ATT150/ACC150, DMG22 per hand, Delay250, attributes26, 30% offhand delay reduction. Production Twin payloads, perk/status values, trait states and damage/timing formulas; logical impact cadence, not native projectiles or animations. Finite61STM and20STM/30s against HP30000/DEF94/EVA134/VIT26 with no Guard, critical mitigation or item procs. Mastery unlocked. Movement assumes a clear path with0.7s unbuffed travel, adjusted by stance movement speed. The rotation waits for one Flow before spending; zero-Flow spenders remain legal in gameplay. Does not model other perk families. Use native WeaponRotationBalance tests for an equal-investment Pistol comparison.",
+  "DurationSeconds": 120,
+  "TimeStepSeconds": 0.05,
+  "IsPvp": false,
+  "Teams": [
+    {
+      "Name": "Twin",
+      "Members": [
+        {
+          "Name": "Crossfire",
+          "MaxHp": 30000,
+          "MaxStm": 61,
+          "StmRegenPer30Seconds": 20,
+          "ReactionSeconds": 0.5,
+          "Perks": ["BlasterSlide:4", "TwinPistolMomentum", "PairedHandling:3", "GrappleShot:3", "ChangingAngles", "PistolRush:2", "CrossfireStance", "TwinPistolFollowThrough", "TwinPistolSecondWind", "FinalSalvo"],
+          "WeaponLoadout": { "MainDamage": 22, "OffhandDamage": 22, "MainDelay": 250, "OffhandDelay": 250, "OffhandDelayReductionPercent": 30, "Attack": 150, "Accuracy": 150, "DamageAbility": 26, "Perception": 26, "SkillRank": 50, "WeaponRank": 50 },
+          "Abilities": [
+            { "Feat": "CrossfireStance", "Target": "Self", "KeepUp": true },
+            { "Feat": "BlasterSlide4", "Target": "Enemy", "MovementMeters": 4, "MovementSeconds": 0.7 },
+            { "Feat": "PistolRush2", "Target": "Enemy", "MovementMeters": 3, "MovementSeconds": 0.7, "LineTargets": 1 },
+            { "Feat": "FinalSalvo", "Target": "Enemy", "MinimumFlow": 1 },
+            { "Feat": "GrappleShot3", "Target": "Enemy", "MinimumFlow": 1, "MovementMeters": 3, "MovementSeconds": 0.7 }
+          ]
+        }
+      ]
+    },
+    { "Name": "Target", "Members": [{ "Name": "Target", "IsNpc": true, "MaxHp": 30000, "Defense": 94, "Evasion": 134, "Vitality": 26 }] }
+  ]
+}

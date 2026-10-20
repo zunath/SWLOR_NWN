@@ -9,6 +9,7 @@ import os
 from pathlib import Path
 import struct
 import unittest
+from unittest import mock
 
 ROOT = Path(__file__).resolve().parents[2]
 spec = importlib.util.spec_from_file_location("icon_patch", ROOT / "tools/PatchDdsInventoryIcons.py")
@@ -19,7 +20,7 @@ try:
     from unicorn import Uc, UC_ARCH_X86, UC_MODE_64, UC_HOOK_CODE
     from unicorn.x86_const import (
         UC_X86_REG_RIP, UC_X86_REG_RSP, UC_X86_REG_RAX, UC_X86_REG_RCX,
-        UC_X86_REG_RDX, UC_X86_REG_R8, UC_X86_REG_R9, UC_X86_REG_R15,
+        UC_X86_REG_RDX, UC_X86_REG_R8, UC_X86_REG_R9, UC_X86_REG_R15, UC_X86_REG_RBP,
     )
 except ImportError:
     pefile = None
@@ -42,8 +43,8 @@ class NativeIconLookupTests(unittest.TestCase):
         cls.original_pe = pefile.PE(data=cls.source)
         cls.patched_pe = pefile.PE(data=cls.patched)
 
-    def select_requested_icon(self, executable, resref, resources):
-        """Execute the real Windows client's composite lookup instructions.
+    def select_requested_icon(self, executable, resref, resources, *, simple=False):
+        """Execute the real Windows client's requested-icon lookup instructions.
 
         Only CExoResMan::Exists is stubbed with a resource index. Its volatile
         registers are deliberately clobbered to check the thunk's calling ABI.
@@ -59,9 +60,11 @@ class NativeIconLookupTests(unittest.TestCase):
         emulator.mem_map(scratch, 0x20000)
         emulator.mem_write(scratch, resref.encode("ascii") + b"\0")
         emulator.reg_write(UC_X86_REG_R15, scratch)
+        emulator.reg_write(UC_X86_REG_RBP, scratch + 0x60)
         emulator.reg_write(UC_X86_REG_RSP, scratch + 0x18000)
         queries = []
         result = []
+        fallback, selected = (0x840E93, 0x84120E) if simple else (0x8406A5, 0x8406DE)
 
         def on_instruction(cpu, address, size, user_data):
             if address == base + patch.RESOURCE_EXISTS_RVA:
@@ -79,15 +82,57 @@ class NativeIconLookupTests(unittest.TestCase):
                 return_address = struct.unpack("<Q", cpu.mem_read(stack, 8))[0]
                 cpu.reg_write(UC_X86_REG_RSP, stack + 8)
                 cpu.reg_write(UC_X86_REG_RIP, return_address)
-            elif address in (base + 0x8406A5, base + 0x8406DE):
-                result.append(address == base + 0x8406DE)
+            elif address in (base + fallback, base + selected):
+                result.append(address == base + selected)
                 cpu.emu_stop()
 
         emulator.hook_add(UC_HOOK_CODE, on_instruction)
-        emulator.emu_start(base + 0x840689, base + 0x8406F3, count=1000)
+        emulator.emu_start(base + (0x840E72 if simple else 0x840689),
+                           base + (0x84120F if simple else 0x8406F3), count=1000)
         self.assertEqual(len(result), 1, "Lookup did not reach an existing client branch")
         self.assertEqual(emulator.reg_read(UC_X86_REG_RSP), scratch + 0x18000)
         return result[0], queries
+
+    def test_simple_shields_reproduce_fallback_then_select_dds(self):
+        for name in ("iashlw_057", "iashlw_058", "iashlw_059", "iashlw_060"):
+            with self.subTest(name=name):
+                resources = {(name, 2033)}
+                selected, queries = self.select_requested_icon(self.original_pe, name, resources, simple=True)
+                self.assertFalse(selected)
+                self.assertEqual(queries, [(name, 3)])
+                selected, queries = self.select_requested_icon(self.patched_pe, name, resources, simple=True)
+                self.assertTrue(selected)
+                self.assertEqual(queries, [(name, 3), (name, 2033)])
+
+    def test_simple_tga_and_missing_resource_behavior_is_preserved(self):
+        name = "iashlw_054"
+        for resources in ({(name, 3)}, {(name, 3), (name, 2033)}):
+            selected, queries = self.select_requested_icon(self.patched_pe, name, resources, simple=True)
+            self.assertTrue(selected)
+            self.assertEqual(queries, [(name, 3)])
+        selected, queries = self.select_requested_icon(self.patched_pe, name, set(), simple=True)
+        self.assertFalse(selected)
+        self.assertEqual(queries, [(name, 3), (name, 2033)])
+
+    def test_both_verified_call_sites_are_checked(self):
+        for label, rva, original_call in patch.ICON_EXISTS_CALL_SITES:
+            with self.subTest(call=label):
+                changed = bytearray(self.source)
+                changed[self.original_pe.get_offset_from_rva(rva)] = 0x90
+                # Reach the per-call safeguard independently of the complete-image guard.
+                with mock.patch.object(patch, "SOURCE_SHA256", hashlib.sha256(changed).hexdigest()):
+                    with self.assertRaisesRegex(ValueError, label + " icon call site"):
+                        patch.patch_image(changed)
+
+    def test_generic_and_plt_lookup_calls_are_unchanged(self):
+        for rva in (0x8406D5, 0x840B01, 0x840B4D, 0x840B88, 0x840EC5):
+            with self.subTest(rva=hex(rva)):
+                before = self.original_pe.get_data(rva, 5)
+                after = self.patched_pe.get_data(rva, 5)
+                self.assertEqual(after, before)
+                self.assertEqual(after[0], 0xE8)
+                self.assertEqual(rva + 5 + struct.unpack_from("<i", after, 1)[0],
+                                 patch.RESOURCE_EXISTS_RVA)
 
     def test_reported_slots_reproduce_fallback_then_select_dds(self):
         for name in ("iwbwsh_m_111", "iwbwsh_m_201"):
@@ -167,14 +212,17 @@ class NativeIconLookupTests(unittest.TestCase):
         start, end, unwind = functions[-1]
         self.assertEqual((start, end), (section.VirtualAddress, section.VirtualAddress + len(thunk)))
         self.assertEqual(pe.get_data(unwind, 8), bytes.fromhex("01 04 01 00 04 82 00 00"))
-        # Original sections retain their bytes except the one verified call operand.
+        # Original sections retain their bytes except both verified call operands.
         for old_section in original.sections:
             before = bytearray(old_section.get_data())
             after = bytearray(pe.get_data(old_section.VirtualAddress, old_section.SizeOfRawData))
-            call = patch.ICON_EXISTS_CALL_RVA - old_section.VirtualAddress
-            if 0 <= call < len(before):
-                self.assertEqual(after[call], 0xE8)
-                after[call:call + 5] = before[call:call + 5]
+            for label, rva, original_call in patch.ICON_EXISTS_CALL_SITES:
+                call = rva - old_section.VirtualAddress
+                if 0 <= call < len(before):
+                    self.assertEqual(after[call], 0xE8)
+                    self.assertEqual(rva + 5 + struct.unpack_from("<i", after, call + 1)[0],
+                                     section.VirtualAddress)
+                    after[call:call + 5] = before[call:call + 5]
             self.assertEqual(after, before, old_section.Name)
 
     def test_patched_executable_cannot_be_patched_again(self):

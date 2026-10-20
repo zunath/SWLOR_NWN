@@ -72,6 +72,7 @@ namespace SWLOR.Game.Server.Service
             BaseItem.Gloves,
             BaseItem.QuarterStaff,
             BaseItem.Katar,
+            BaseItem.PowerGlove,
             BaseItem.CreatureBludgeonWeapon,
             BaseItem.CreaturePierceWeapon,
             BaseItem.CreatureSlashPierceWeapon,
@@ -88,6 +89,7 @@ namespace SWLOR.Game.Server.Service
             BaseItem.Bolt,
             BaseItem.Bullet,
             BaseItem.Sling,
+            BaseItem.CompanionPistol,
             BaseItem.Grenade,
             BaseItem.Shuriken,
             BaseItem.ThrowingAxe,
@@ -455,10 +457,13 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         public static bool CanCreatureUseItem(uint creature, uint item)
         {
-            return string.IsNullOrWhiteSpace(GetCreatureItemUseError(creature, item));
+            var skill = item == GetItemInSlot(InventorySlot.RightHand, creature) &&
+                        TwinPistolEquipment.IsActivePair(creature) ? SkillType.TwinPistol : SkillType.Invalid;
+            return string.IsNullOrWhiteSpace(GetCreatureItemUseError(creature, item, skill));
         }
 
-        public static string GetCreatureItemUseError(uint creature, uint item)
+        public static string GetCreatureItemUseError(uint creature, uint item,
+            SkillType weaponSkillRequirementOverride = SkillType.Invalid)
         {
             for (var ip = GetFirstItemProperty(item); GetIsItemPropertyValid(ip); ip = GetNextItemProperty(item))
             {
@@ -481,6 +486,8 @@ namespace SWLOR.Game.Server.Service
                 else if (type == ItemPropertyType.RequiresSkill)
                 {
                     var skillType = (SkillType)GetItemPropertySubType(ip);
+                    skillType = TwinPistolEquipment.ResolveRequirementSkill(GetBaseItemType(item), skillType,
+                        weaponSkillRequirementOverride == SkillType.TwinPistol);
                     var rankRequired = GetItemPropertyCostTableValue(ip);
 
                     if (Skill.GetCreatureSkillRank(creature, skillType) < rankRequired)
@@ -509,11 +516,20 @@ namespace SWLOR.Game.Server.Service
             return string.Empty;
         }
 
-        public static string CanEquip(uint creature, uint item)
+        public static string CanEquip(uint creature, uint item, InventorySlot? prospectiveSlot = null)
         {
             var isPlayer = GetIsPC(creature);
             var isDroid = Droid.IsDroid(creature);
             var itemType = GetBaseItemType(item);
+            var hands = prospectiveSlot.HasValue
+                ? TwinPistolEquipment.GetProspectiveHands(creature, item, prospectiveSlot.Value)
+                : (MainHand: GetItemInSlot(InventorySlot.RightHand, creature),
+                   OffHand: GetItemInSlot(InventorySlot.LeftHand, creature));
+            var pairError = TwinPistolEquipment.GetPairCompatibilityError(
+                GetIsObjectValid(hands.MainHand) ? GetBaseItemType(hands.MainHand) : null,
+                GetIsObjectValid(hands.OffHand) ? GetBaseItemType(hands.OffHand) : null);
+            if ((prospectiveSlot == null || prospectiveSlot is InventorySlot.RightHand or InventorySlot.LeftHand) &&
+                !string.IsNullOrEmpty(pairError)) return pairError;
 
             if (ForceSensitiveWeaponBaseItemTypes.Contains(itemType) &&
                 !CanEquipForceSensitiveWeapon(creature))
@@ -527,9 +543,38 @@ namespace SWLOR.Game.Server.Service
             if (Gui.IsWindowOpen(creature, GuiWindowType.Craft))
                 return "Items cannot be equipped while crafting.";
 
-            var itemUseError = GetCreatureItemUseError(creature, item);
+            if (itemType == BaseItem.CompanionPistol)
+            {
+                if (!TwinPistolEquipment.IsLinkedPair(creature, hands.MainHand, item))
+                    return "The off-hand pistol is created automatically by equipping a Twin Pistols item.";
+                var propertyError = TwinPistolEquipment.GetCompanionPropertyError(item);
+                if (!string.IsNullOrEmpty(propertyError)) return propertyError;
+            }
+
+            if (TwinPistolEquipment.IsPairItem(item))
+            {
+                if (GetIsObjectValid(hands.OffHand) &&
+                    !TwinPistolEquipment.IsLinkedPair(creature, item, hands.OffHand))
+                    return "Twin Pistols require both hands. Unequip your off-hand item first.";
+            }
+
+            var paired = GetIsObjectValid(hands.MainHand) && GetIsObjectValid(hands.OffHand) &&
+                TwinPistolEquipment.IsPair(GetBaseItemType(hands.MainHand), GetBaseItemType(hands.OffHand));
+            var requirementSkill = paired && item == hands.MainHand ? SkillType.TwinPistol : SkillType.Invalid;
+            var itemUseError = GetCreatureItemUseError(creature, item, requirementSkill);
             if (!string.IsNullOrWhiteSpace(itemUseError))
                 return itemUseError;
+
+            // Pair requirements must pass for both items, whichever hand is equipped first.
+            if (paired)
+            {
+                var companionError = TwinPistolEquipment.GetCompanionPropertyError(hands.OffHand);
+                if (!string.IsNullOrEmpty(companionError)) return companionError;
+                var mainError = GetCreatureItemUseError(creature, hands.MainHand, SkillType.TwinPistol);
+                if (!string.IsNullOrEmpty(mainError)) return mainError;
+                var offError = GetCreatureItemUseError(creature, hands.OffHand);
+                if (!string.IsNullOrEmpty(offError)) return offError;
+            }
 
             var race = GetRacialType(creature);
 
@@ -693,11 +738,13 @@ namespace SWLOR.Game.Server.Service
             BaseItem.Saberstaff,
             BaseItem.TwinElectroBlade,
             BaseItem.Katar,
+            BaseItem.PowerGlove,
             BaseItem.QuarterStaff,
             BaseItem.LightMace,
             BaseItem.Pistol,
             BaseItem.LegacyPistol,
             BaseItem.Sling,
+            BaseItem.CompanionPistol,
             BaseItem.ThrowingAxe,
             BaseItem.Shuriken,
             BaseItem.Dart,
@@ -849,6 +896,12 @@ namespace SWLOR.Game.Server.Service
             BaseItem.Katar
         };
 
+        /// <summary>Equipped hand-to-hand weapons. Armor-slot gloves remain armor.</summary>
+        public static List<BaseItem> PowerGloveBaseItemTypes { get; } = new()
+        {
+            BaseItem.PowerGlove
+        };
+
         /// <summary>
         /// Retrieves the list of Staff base item types.
         /// </summary>
@@ -914,6 +967,7 @@ namespace SWLOR.Game.Server.Service
             BaseItem.Electroblade,
             BaseItem.ShortSpear,
             BaseItem.Katar,
+            BaseItem.PowerGlove,
         };
 
         /// <summary>
@@ -1016,6 +1070,7 @@ namespace SWLOR.Game.Server.Service
         private static readonly HashSet<BaseItem> EconomyRestrictedBaseItems = new()
         {
             BaseItem.Invalid,
+            BaseItem.CompanionPowerGlove,
             BaseItem.CreatureSlashWeapon,
             BaseItem.CreaturePierceWeapon,
             BaseItem.CreatureBludgeonWeapon,

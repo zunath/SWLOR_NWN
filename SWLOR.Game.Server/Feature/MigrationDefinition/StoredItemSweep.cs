@@ -10,7 +10,7 @@ using SWLOR.Game.Server.Service.SpaceService;
 namespace SWLOR.Game.Server.Feature.MigrationDefinition;
 
 /// <summary>
-/// Updates item artwork, loot stats and legacy headgear slots across every stored item (banks, market,
+/// Updates item artwork, loot stats, droid weapon skills and legacy headgear slots across every stored item (banks, market,
 /// property storage, research, outfits, saved creatures, ships, contracts) in one pass. Each stored object
 /// is loaded and saved once, with one item traversal. Server migrations that change stored items run it.
 /// The pass edits saved data directly instead of loading each item into the engine, and converts records on

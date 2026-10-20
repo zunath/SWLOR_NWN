@@ -224,7 +224,12 @@
         }
       ],
       "OnEnterActions": [],
-      "Choices": []
+      "Choices": [
+        {
+          "ChoiceId": "unarmed-training",
+          "Conditions": []
+        }
+      ]
     },
     "entry-00001": {
       "Id": "entry-00001",
@@ -245,7 +250,12 @@
         }
       ],
       "OnEnterActions": [],
-      "Choices": []
+      "Choices": [
+        {
+          "ChoiceId": "unarmed-training",
+          "Conditions": []
+        }
+      ]
     },
     "entry-00002": {
       "Id": "entry-00002",
@@ -286,6 +296,10 @@
         {
           "ChoiceId": "reply-00005",
           "Conditions": []
+        },
+        {
+          "ChoiceId": "unarmed-training",
+          "Conditions": []
         }
       ]
     },
@@ -308,7 +322,12 @@
         }
       ],
       "OnEnterActions": [],
-      "Choices": []
+      "Choices": [
+        {
+          "ChoiceId": "unarmed-training",
+          "Conditions": []
+        }
+      ]
     },
     "entry-00004": {
       "Id": "entry-00004",
@@ -332,6 +351,10 @@
       "Choices": [
         {
           "ChoiceId": "reply-00000",
+          "Conditions": []
+        },
+        {
+          "ChoiceId": "unarmed-training",
           "Conditions": []
         }
       ]
@@ -359,6 +382,10 @@
         {
           "ChoiceId": "reply-00000",
           "Conditions": []
+        },
+        {
+          "ChoiceId": "unarmed-training",
+          "Conditions": []
         }
       ]
     },
@@ -385,6 +412,10 @@
         {
           "ChoiceId": "reply-00000",
           "Conditions": []
+        },
+        {
+          "ChoiceId": "unarmed-training",
+          "Conditions": []
         }
       ]
     },
@@ -407,7 +438,12 @@
         }
       ],
       "OnEnterActions": [],
-      "Choices": []
+      "Choices": [
+        {
+          "ChoiceId": "unarmed-training",
+          "Conditions": []
+        }
+      ]
     },
     "entry-00008": {
       "Id": "entry-00008",
@@ -432,6 +468,10 @@
         {
           "ChoiceId": "reply-00006",
           "Conditions": []
+        },
+        {
+          "ChoiceId": "unarmed-training",
+          "Conditions": []
         }
       ]
     },
@@ -454,7 +494,12 @@
         }
       ],
       "OnEnterActions": [],
-      "Choices": []
+      "Choices": [
+        {
+          "ChoiceId": "unarmed-training",
+          "Conditions": []
+        }
+      ]
     },
     "entry-00010": {
       "Id": "entry-00010",
@@ -495,6 +540,10 @@
         {
           "ChoiceId": "reply-00012",
           "Conditions": []
+        },
+        {
+          "ChoiceId": "unarmed-training",
+          "Conditions": []
         }
       ]
     },
@@ -517,7 +566,12 @@
         }
       ],
       "OnEnterActions": [],
-      "Choices": []
+      "Choices": [
+        {
+          "ChoiceId": "unarmed-training",
+          "Conditions": []
+        }
+      ]
     },
     "entry-00012": {
       "Id": "entry-00012",
@@ -541,6 +595,10 @@
       "Choices": [
         {
           "ChoiceId": "reply-00007",
+          "Conditions": []
+        },
+        {
+          "ChoiceId": "unarmed-training",
           "Conditions": []
         }
       ]
@@ -568,6 +626,10 @@
         {
           "ChoiceId": "reply-00007",
           "Conditions": []
+        },
+        {
+          "ChoiceId": "unarmed-training",
+          "Conditions": []
         }
       ]
     },
@@ -594,6 +656,10 @@
         {
           "ChoiceId": "reply-00007",
           "Conditions": []
+        },
+        {
+          "ChoiceId": "unarmed-training",
+          "Conditions": []
         }
       ]
     },
@@ -616,7 +682,12 @@
         }
       ],
       "OnEnterActions": [],
-      "Choices": []
+      "Choices": [
+        {
+          "ChoiceId": "unarmed-training",
+          "Conditions": []
+        }
+      ]
     },
     "entry-00016": {
       "Id": "entry-00016",
@@ -641,6 +712,10 @@
         {
           "ChoiceId": "reply-00013",
           "Conditions": []
+        },
+        {
+          "ChoiceId": "unarmed-training",
+          "Conditions": []
         }
       ]
     },
@@ -663,7 +738,12 @@
         }
       ],
       "OnEnterActions": [],
-      "Choices": []
+      "Choices": [
+        {
+          "ChoiceId": "unarmed-training",
+          "Conditions": []
+        }
+      ]
     },
     "entry-00018": {
       "Id": "entry-00018",
@@ -704,6 +784,10 @@
         {
           "ChoiceId": "reply-00019",
           "Conditions": []
+        },
+        {
+          "ChoiceId": "unarmed-training",
+          "Conditions": []
         }
       ]
     },
@@ -726,7 +810,12 @@
         }
       ],
       "OnEnterActions": [],
-      "Choices": []
+      "Choices": [
+        {
+          "ChoiceId": "unarmed-training",
+          "Conditions": []
+        }
+      ]
     },
     "entry-00020": {
       "Id": "entry-00020",
@@ -750,6 +839,10 @@
       "Choices": [
         {
           "ChoiceId": "reply-00014",
+          "Conditions": []
+        },
+        {
+          "ChoiceId": "unarmed-training",
           "Conditions": []
         }
       ]
@@ -777,6 +870,10 @@
         {
           "ChoiceId": "reply-00014",
           "Conditions": []
+        },
+        {
+          "ChoiceId": "unarmed-training",
+          "Conditions": []
         }
       ]
     },
@@ -803,6 +900,10 @@
         {
           "ChoiceId": "reply-00014",
           "Conditions": []
+        },
+        {
+          "ChoiceId": "unarmed-training",
+          "Conditions": []
         }
       ]
     },
@@ -825,7 +926,12 @@
         }
       ],
       "OnEnterActions": [],
-      "Choices": []
+      "Choices": [
+        {
+          "ChoiceId": "unarmed-training",
+          "Conditions": []
+        }
+      ]
     },
     "entry-00024": {
       "Id": "entry-00024",
@@ -850,6 +956,10 @@
         {
           "ChoiceId": "reply-00020",
           "Conditions": []
+        },
+        {
+          "ChoiceId": "unarmed-training",
+          "Conditions": []
         }
       ]
     },
@@ -872,7 +982,12 @@
         }
       ],
       "OnEnterActions": [],
-      "Choices": []
+      "Choices": [
+        {
+          "ChoiceId": "unarmed-training",
+          "Conditions": []
+        }
+      ]
     },
     "entry-00026": {
       "Id": "entry-00026",
@@ -913,6 +1028,10 @@
         {
           "ChoiceId": "reply-00026",
           "Conditions": []
+        },
+        {
+          "ChoiceId": "unarmed-training",
+          "Conditions": []
         }
       ]
     },
@@ -935,7 +1054,12 @@
         }
       ],
       "OnEnterActions": [],
-      "Choices": []
+      "Choices": [
+        {
+          "ChoiceId": "unarmed-training",
+          "Conditions": []
+        }
+      ]
     },
     "entry-00028": {
       "Id": "entry-00028",
@@ -959,6 +1083,10 @@
       "Choices": [
         {
           "ChoiceId": "reply-00021",
+          "Conditions": []
+        },
+        {
+          "ChoiceId": "unarmed-training",
           "Conditions": []
         }
       ]
@@ -986,6 +1114,10 @@
         {
           "ChoiceId": "reply-00021",
           "Conditions": []
+        },
+        {
+          "ChoiceId": "unarmed-training",
+          "Conditions": []
         }
       ]
     },
@@ -1012,6 +1144,10 @@
         {
           "ChoiceId": "reply-00021",
           "Conditions": []
+        },
+        {
+          "ChoiceId": "unarmed-training",
+          "Conditions": []
         }
       ]
     },
@@ -1034,7 +1170,12 @@
         }
       ],
       "OnEnterActions": [],
-      "Choices": []
+      "Choices": [
+        {
+          "ChoiceId": "unarmed-training",
+          "Conditions": []
+        }
+      ]
     },
     "entry-00032": {
       "Id": "entry-00032",
@@ -1059,6 +1200,10 @@
         {
           "ChoiceId": "reply-00027",
           "Conditions": []
+        },
+        {
+          "ChoiceId": "unarmed-training",
+          "Conditions": []
         }
       ]
     },
@@ -1081,7 +1226,12 @@
         }
       ],
       "OnEnterActions": [],
-      "Choices": []
+      "Choices": [
+        {
+          "ChoiceId": "unarmed-training",
+          "Conditions": []
+        }
+      ]
     },
     "entry-00034": {
       "Id": "entry-00034",
@@ -1122,6 +1272,10 @@
         {
           "ChoiceId": "reply-00033",
           "Conditions": []
+        },
+        {
+          "ChoiceId": "unarmed-training",
+          "Conditions": []
         }
       ]
     },
@@ -1144,7 +1298,12 @@
         }
       ],
       "OnEnterActions": [],
-      "Choices": []
+      "Choices": [
+        {
+          "ChoiceId": "unarmed-training",
+          "Conditions": []
+        }
+      ]
     },
     "entry-00036": {
       "Id": "entry-00036",
@@ -1168,6 +1327,10 @@
       "Choices": [
         {
           "ChoiceId": "reply-00028",
+          "Conditions": []
+        },
+        {
+          "ChoiceId": "unarmed-training",
           "Conditions": []
         }
       ]
@@ -1195,6 +1358,10 @@
         {
           "ChoiceId": "reply-00028",
           "Conditions": []
+        },
+        {
+          "ChoiceId": "unarmed-training",
+          "Conditions": []
         }
       ]
     },
@@ -1221,6 +1388,10 @@
         {
           "ChoiceId": "reply-00028",
           "Conditions": []
+        },
+        {
+          "ChoiceId": "unarmed-training",
+          "Conditions": []
         }
       ]
     },
@@ -1243,7 +1414,12 @@
         }
       ],
       "OnEnterActions": [],
-      "Choices": []
+      "Choices": [
+        {
+          "ChoiceId": "unarmed-training",
+          "Conditions": []
+        }
+      ]
     },
     "entry-00040": {
       "Id": "entry-00040",
@@ -1268,6 +1444,10 @@
         {
           "ChoiceId": "reply-00034",
           "Conditions": []
+        },
+        {
+          "ChoiceId": "unarmed-training",
+          "Conditions": []
         }
       ]
     },
@@ -1290,7 +1470,252 @@
         }
       ],
       "OnEnterActions": [],
-      "Choices": []
+      "Choices": [
+        {
+          "ChoiceId": "unarmed-training",
+          "Conditions": []
+        }
+      ]
+    },
+    "unarmed-ineligible": {
+      "Id": "unarmed-ineligible",
+      "SpeakerName": "",
+      "SpeakerTag": "",
+      "PortraitResref": "",
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Text": [
+        {
+          "Text": "Power Gloves do not excuse poor footing. Master your Unarmed skill first, rank fifty, then we will see whether your combinations hold together when somebody tries to break them.",
+          "Style": 0,
+          "Color": null
+        }
+      ],
+      "OnEnterActions": [],
+      "Choices": [
+        {
+          "ChoiceId": "unarmed-back",
+          "Conditions": []
+        },
+        {
+          "ChoiceId": "unarmed-leave",
+          "Conditions": []
+        }
+      ]
+    },
+    "unarmed-offer": {
+      "Id": "unarmed-offer",
+      "SpeakerName": "",
+      "SpeakerTag": "",
+      "PortraitResref": "",
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Text": [
+        {
+          "Text": "Anyone can hit a bulkhead hard. I need hands that place the next blow before the first one has finished its job. Land thirty Palm Strikes from a Jab opening, and thirty finishers after a successful Palm Strike. Prove both against seasoned hostiles, then bring that discipline back to my desk. I will teach you Perfect Form.",
+          "Style": 0,
+          "Color": null
+        }
+      ],
+      "OnEnterActions": [],
+      "Choices": [
+        {
+          "ChoiceId": "unarmed-purpose",
+          "Conditions": []
+        },
+        {
+          "ChoiceId": "unarmed-rules",
+          "Conditions": []
+        },
+        {
+          "ChoiceId": "unarmed-accept",
+          "Conditions": []
+        },
+        {
+          "ChoiceId": "unarmed-back",
+          "Conditions": []
+        }
+      ]
+    },
+    "unarmed-purpose": {
+      "Id": "unarmed-purpose",
+      "SpeakerName": "",
+      "SpeakerTag": "",
+      "PortraitResref": "",
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Text": [
+        {
+          "Text": "On a busy floor you take the opening you have. A short combination is useful. A full one asks more: the same opponent, the right sequence, enough control to finish without borrowing somebody else's work. I want to know you can choose either deliberately.",
+          "Style": 0,
+          "Color": null
+        }
+      ],
+      "OnEnterActions": [],
+      "Choices": [
+        {
+          "ChoiceId": "unarmed-return-offer",
+          "Conditions": []
+        }
+      ]
+    },
+    "unarmed-rules": {
+      "Id": "unarmed-rules",
+      "SpeakerName": "",
+      "SpeakerTag": "",
+      "PortraitResref": "",
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Text": [
+        {
+          "Text": "Hostile opponents of combat level forty-five or higher. No summoned creatures, training dummies or other spacers. The Palm Strike must spend your Opening; the finisher must spend your Finish. A miss proves nothing. Ordinary attacks between techniques are your choice. I am measuring combinations, not noise on a training floor.",
+          "Style": 0,
+          "Color": null
+        }
+      ],
+      "OnEnterActions": [],
+      "Choices": [
+        {
+          "ChoiceId": "unarmed-return-offer",
+          "Conditions": []
+        }
+      ]
+    },
+    "unarmed-accepted": {
+      "Id": "unarmed-accepted",
+      "SpeakerName": "",
+      "SpeakerTag": "",
+      "PortraitResref": "",
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Text": [
+        {
+          "Text": "Thirty bridges, thirty full finishes. Work them into fights you already have reason to take. You do not need a key to my yard for this trial. When both measures are complete, find me here in Offices & Labs on CZ-220.",
+          "Style": 0,
+          "Color": null
+        }
+      ],
+      "OnEnterActions": [],
+      "Choices": [
+        {
+          "ChoiceId": "unarmed-back",
+          "Conditions": []
+        },
+        {
+          "ChoiceId": "unarmed-leave",
+          "Conditions": []
+        }
+      ]
+    },
+    "unarmed-progress": {
+      "Id": "unarmed-progress",
+      "SpeakerName": "",
+      "SpeakerTag": "",
+      "PortraitResref": "",
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Text": [
+        {
+          "Text": "Keep the opening attached to the opponent who gave it to you. Jab, Palm Strike, finish. Thirty landed bridges and thirty full finishes against seasoned hostiles. Then my desk.",
+          "Style": 0,
+          "Color": null
+        }
+      ],
+      "OnEnterActions": [],
+      "Choices": [
+        {
+          "ChoiceId": "unarmed-back",
+          "Conditions": []
+        },
+        {
+          "ChoiceId": "unarmed-leave",
+          "Conditions": []
+        }
+      ]
+    },
+    "unarmed-ready": {
+      "Id": "unarmed-ready",
+      "SpeakerName": "",
+      "SpeakerTag": "",
+      "PortraitResref": "",
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Text": [
+        {
+          "Text": "The sequence holds under pressure. Good. There is one more adjustment: stop thinking of the finish as a separate blow. It is where the whole combination was going.",
+          "Style": 0,
+          "Color": null
+        }
+      ],
+      "OnEnterActions": [],
+      "Choices": [
+        {
+          "ChoiceId": "unarmed-turnin",
+          "Conditions": []
+        },
+        {
+          "ChoiceId": "unarmed-back",
+          "Conditions": []
+        }
+      ]
+    },
+    "unarmed-complete": {
+      "Id": "unarmed-complete",
+      "SpeakerName": "",
+      "SpeakerTag": "",
+      "PortraitResref": "",
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Text": [
+        {
+          "Text": "Perfect Form. Set the base, carry the opening through the palm, then commit the finish. You have earned the training. Keep practicing until the finish belongs to you. Now put it to work somewhere away from my desk.",
+          "Style": 0,
+          "Color": null
+        }
+      ],
+      "OnEnterActions": [],
+      "Choices": [
+        {
+          "ChoiceId": "unarmed-back",
+          "Conditions": []
+        },
+        {
+          "ChoiceId": "unarmed-leave",
+          "Conditions": []
+        }
+      ]
     }
   },
   "Choices": {
@@ -2138,6 +2563,445 @@
       "Next": [
         {
           "TargetNodeId": "entry-00041",
+          "Conditions": []
+        }
+      ],
+      "EndsConversation": false,
+      "IsAutomatic": false
+    },
+    "unarmed-training": {
+      "Id": "unarmed-training",
+      "Text": {
+        "Text": "I want to discuss Power Glove techniques.",
+        "Style": 4,
+        "Color": null
+      },
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Actions": [],
+      "Next": [
+        {
+          "TargetNodeId": "unarmed-complete",
+          "Conditions": [
+            {
+              "Key": "condition-completed-quest",
+              "Arguments": [
+                "perfect_form_mastery"
+              ],
+              "IsNegated": false
+            }
+          ]
+        },
+        {
+          "TargetNodeId": "unarmed-ready",
+          "Conditions": [
+            {
+              "Key": "condition-on-quest-state",
+              "Arguments": [
+                "perfect_form_mastery",
+                "2"
+              ],
+              "IsNegated": false
+            }
+          ]
+        },
+        {
+          "TargetNodeId": "unarmed-progress",
+          "Conditions": [
+            {
+              "Key": "condition-has-quest",
+              "Arguments": [
+                "perfect_form_mastery"
+              ],
+              "IsNegated": false
+            }
+          ]
+        },
+        {
+          "TargetNodeId": "unarmed-offer",
+          "Conditions": [
+            {
+              "Key": "condition-can-accept-quest",
+              "Arguments": [
+                "perfect_form_mastery"
+              ],
+              "IsNegated": false
+            }
+          ]
+        },
+        {
+          "TargetNodeId": "unarmed-ineligible",
+          "Conditions": []
+        }
+      ],
+      "EndsConversation": false,
+      "IsAutomatic": false
+    },
+    "unarmed-back": {
+      "Id": "unarmed-back",
+      "Text": {
+        "Text": "Back to station business.",
+        "Style": 4,
+        "Color": null
+      },
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Actions": [],
+      "Next": [
+        {
+          "TargetNodeId": "entry-00000",
+          "Conditions": [
+            {
+              "Key": "condition-completed-quest",
+              "Arguments": [
+                "adamantine_guard_mastery"
+              ],
+              "IsNegated": false
+            }
+          ]
+        },
+        {
+          "TargetNodeId": "entry-00040",
+          "Conditions": [
+            {
+              "Key": "condition-on-quest-state",
+              "Arguments": [
+                "adamantine_guard_mastery",
+                "2"
+              ],
+              "IsNegated": false
+            }
+          ]
+        },
+        {
+          "TargetNodeId": "entry-00039",
+          "Conditions": [
+            {
+              "Key": "condition-has-quest",
+              "Arguments": [
+                "adamantine_guard_mastery"
+              ],
+              "IsNegated": false
+            }
+          ]
+        },
+        {
+          "TargetNodeId": "entry-00034",
+          "Conditions": [
+            {
+              "Key": "condition-can-accept-quest",
+              "Arguments": [
+                "adamantine_guard_mastery"
+              ],
+              "IsNegated": false
+            }
+          ]
+        },
+        {
+          "TargetNodeId": "entry-00032",
+          "Conditions": [
+            {
+              "Key": "condition-on-quest-state",
+              "Arguments": [
+                "adamantine_guard_circle",
+                "2"
+              ],
+              "IsNegated": false
+            }
+          ]
+        },
+        {
+          "TargetNodeId": "entry-00031",
+          "Conditions": [
+            {
+              "Key": "condition-has-quest",
+              "Arguments": [
+                "adamantine_guard_circle"
+              ],
+              "IsNegated": false
+            }
+          ]
+        },
+        {
+          "TargetNodeId": "entry-00026",
+          "Conditions": [
+            {
+              "Key": "condition-can-accept-quest",
+              "Arguments": [
+                "adamantine_guard_circle"
+              ],
+              "IsNegated": false
+            }
+          ]
+        },
+        {
+          "TargetNodeId": "entry-00024",
+          "Conditions": [
+            {
+              "Key": "condition-on-quest-state",
+              "Arguments": [
+                "adamantine_guard_breach",
+                "2"
+              ],
+              "IsNegated": false
+            }
+          ]
+        },
+        {
+          "TargetNodeId": "entry-00023",
+          "Conditions": [
+            {
+              "Key": "condition-has-quest",
+              "Arguments": [
+                "adamantine_guard_breach"
+              ],
+              "IsNegated": false
+            }
+          ]
+        },
+        {
+          "TargetNodeId": "entry-00018",
+          "Conditions": [
+            {
+              "Key": "condition-can-accept-quest",
+              "Arguments": [
+                "adamantine_guard_breach"
+              ],
+              "IsNegated": false
+            }
+          ]
+        },
+        {
+          "TargetNodeId": "entry-00016",
+          "Conditions": [
+            {
+              "Key": "condition-on-quest-state",
+              "Arguments": [
+                "adamantine_guard_measure",
+                "2"
+              ],
+              "IsNegated": false
+            }
+          ]
+        },
+        {
+          "TargetNodeId": "entry-00015",
+          "Conditions": [
+            {
+              "Key": "condition-has-quest",
+              "Arguments": [
+                "adamantine_guard_measure"
+              ],
+              "IsNegated": false
+            }
+          ]
+        },
+        {
+          "TargetNodeId": "entry-00010",
+          "Conditions": [
+            {
+              "Key": "condition-can-accept-quest",
+              "Arguments": [
+                "adamantine_guard_measure"
+              ],
+              "IsNegated": false
+            }
+          ]
+        },
+        {
+          "TargetNodeId": "entry-00008",
+          "Conditions": [
+            {
+              "Key": "condition-on-quest-state",
+              "Arguments": [
+                "adamantine_guard_foundation",
+                "2"
+              ],
+              "IsNegated": false
+            }
+          ]
+        },
+        {
+          "TargetNodeId": "entry-00007",
+          "Conditions": [
+            {
+              "Key": "condition-has-quest",
+              "Arguments": [
+                "adamantine_guard_foundation"
+              ],
+              "IsNegated": false
+            }
+          ]
+        },
+        {
+          "TargetNodeId": "entry-00002",
+          "Conditions": [
+            {
+              "Key": "condition-can-accept-quest",
+              "Arguments": [
+                "adamantine_guard_foundation"
+              ],
+              "IsNegated": false
+            }
+          ]
+        },
+        {
+          "TargetNodeId": "entry-00001",
+          "Conditions": []
+        }
+      ],
+      "EndsConversation": false,
+      "IsAutomatic": false
+    },
+    "unarmed-leave": {
+      "Id": "unarmed-leave",
+      "Text": {
+        "Text": "I have what I need.",
+        "Style": 4,
+        "Color": null
+      },
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Actions": [],
+      "Next": [],
+      "EndsConversation": true,
+      "IsAutomatic": false
+    },
+    "unarmed-accept": {
+      "Id": "unarmed-accept",
+      "Text": {
+        "Text": "Set the trial. I will put the technique to work.",
+        "Style": 4,
+        "Color": null
+      },
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Actions": [
+        {
+          "Key": "action-accept-quest",
+          "Arguments": [
+            "perfect_form_mastery"
+          ]
+        }
+      ],
+      "Next": [
+        {
+          "TargetNodeId": "unarmed-accepted",
+          "Conditions": []
+        }
+      ],
+      "EndsConversation": false,
+      "IsAutomatic": false
+    },
+    "unarmed-purpose": {
+      "Id": "unarmed-purpose",
+      "Text": {
+        "Text": "Why test combinations instead of raw damage?",
+        "Style": 4,
+        "Color": null
+      },
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Actions": [],
+      "Next": [
+        {
+          "TargetNodeId": "unarmed-purpose",
+          "Conditions": []
+        }
+      ],
+      "EndsConversation": false,
+      "IsAutomatic": false
+    },
+    "unarmed-rules": {
+      "Id": "unarmed-rules",
+      "Text": {
+        "Text": "Which fights count?",
+        "Style": 4,
+        "Color": null
+      },
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Actions": [],
+      "Next": [
+        {
+          "TargetNodeId": "unarmed-rules",
+          "Conditions": []
+        }
+      ],
+      "EndsConversation": false,
+      "IsAutomatic": false
+    },
+    "unarmed-return-offer": {
+      "Id": "unarmed-return-offer",
+      "Text": {
+        "Text": "Let us discuss the trial.",
+        "Style": 4,
+        "Color": null
+      },
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Actions": [],
+      "Next": [
+        {
+          "TargetNodeId": "unarmed-offer",
+          "Conditions": []
+        }
+      ],
+      "EndsConversation": false,
+      "IsAutomatic": false
+    },
+    "unarmed-turnin": {
+      "Id": "unarmed-turnin",
+      "Text": {
+        "Text": "The trial is complete. Show me the final technique.",
+        "Style": 4,
+        "Color": null
+      },
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Actions": [
+        {
+          "Key": "action-advance-quest",
+          "Arguments": [
+            "perfect_form_mastery"
+          ]
+        }
+      ],
+      "Next": [
+        {
+          "TargetNodeId": "unarmed-complete",
           "Conditions": []
         }
       ],

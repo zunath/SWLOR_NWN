@@ -86,6 +86,7 @@ public class CustomShaderMobileCompatibilityTests
         FindMobileUnsupportedLines(continuedMacro).Should().ContainSingle();
         FindMobileUnsupportedLines(guardedContinuedMacro).Should().BeEmpty();
         FindMobileUnsupportedLines(splitOperator).Should().ContainSingle();
+        FindMobileUnsupportedLines("#define SAFE 1 // explanation \\\n continues with & here\nint A() { return SAFE; }\n").Should().BeEmpty();
         FindMobileUnsupportedLines(elifAfterMobile).Should().BeEmpty();
     }
 
@@ -123,18 +124,21 @@ public class CustomShaderMobileCompatibilityTests
     /// </summary>
     private static MobileScan ScanForMobile(string shader)
     {
-        // Splice backslash-continued lines the way the GLSL preprocessor does (the
-        // backslash and newline vanish, so "a >\" + "> 3" becomes ">>"), keeping line
-        // numbering, so a continued #define is read as one directive.
-        var lines = StripComments(shader).Replace("\r\n", "\n").Split('\n');
-        for (var index = lines.Length - 2; index >= 0; index--)
+        // Splice backslash-continued lines first, then strip comments, in the GLSL
+        // preprocessor's order (the backslash and newline vanish, so "a >\" + "> 3"
+        // becomes ">>", and a continued // comment swallows the next line). Spliced
+        // lines leave blanks behind so line numbers stay true.
+        var raw = shader.Replace("\r\n", "\n").Split('\n');
+        for (var index = raw.Length - 2; index >= 0; index--)
         {
-            if (lines[index].EndsWith("\\"))
+            if (raw[index].EndsWith("\\"))
             {
-                lines[index] = lines[index].Substring(0, lines[index].Length - 1) + lines[index + 1];
-                lines[index + 1] = string.Empty;
+                raw[index] = raw[index].Substring(0, raw[index].Length - 1) + raw[index + 1];
+                raw[index + 1] = string.Empty;
             }
         }
+
+        var lines = StripComments(string.Join("\n", raw)).Split('\n');
         // Per conditional chain: Current is whether the branch now open is compiled on
         // mobile, and Matched whether an earlier branch of the chain already was
         // (null: depends on a condition unrelated to MOBILE).

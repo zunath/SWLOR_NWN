@@ -62,6 +62,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
             var duration = (int)CapstoneAbility.ActiveDurationSeconds;
             var blastRadius = DeviceAbilityEffects.ApplyBlastRadiusBonus(activator, 5f);
 
+            // Only the single-target strike adds gadget DMG. Adding it to all three attacks made one cast worth
+            // about two and a half capstones.
+
             Ability.ApplyTelegraphedCombatImpact(
                 activator,
                 target,
@@ -79,7 +82,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 targetVisualEffect: VisualEffect.Vfx_Com_Hit_Fire,
                 areaVisualEffect: VisualEffect.Fnf_Fireball,
                 damagePercentAdjustment: damageAdjustment,
-                baseDamageAdjustment: baseDamageAdjustment,
                 afterSuccessfulHit: _ => DeviceAbilityEffects.ApplyTacticalUplink(activator),
                 hitChancePercentAdjustment: hitChanceAdjustment,
                 criticalRatePercentAdjustment: criticalRateAdjustment,
@@ -121,7 +123,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 targetVisualEffect: VisualEffect.Vfx_Imp_Sonic,
                 areaVisualEffect: VisualEffect.Vfx_Fnf_Sound_Burst,
                 damagePercentAdjustment: damageAdjustment,
-                baseDamageAdjustment: baseDamageAdjustment,
                 afterSuccessfulHit: hitTarget =>
                 {
                     InterruptActivation(hitTarget);

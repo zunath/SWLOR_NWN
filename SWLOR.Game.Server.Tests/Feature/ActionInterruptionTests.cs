@@ -35,7 +35,7 @@ public class ActionInterruptionTests
             public static class World
             {
                 public const uint OBJECT_INVALID = 0;
-                public static uint AttackTarget;
+                public static uint AttackTarget, QueuedAttackTarget;
                 public static bool Player, AttackQueued, TargetDead;
                 public static int VictimHitPoints;
                 public static List<string> Actions = new();
@@ -59,17 +59,19 @@ public class ActionInterruptionTests
             public static class WeaponAttackAnimation
             {
                 public static bool HasQueuedAttack(NativeObject creature, uint target) => AttackQueued;
+                public static uint GetQueuedAttackTarget(NativeObject creature) => QueuedAttackTarget;
             }
             public static class ActionInterruption
             {
                 {{methods}}
 
                 public static string Interrupt(bool player, uint attackTarget, bool attackQueued,
-                    bool targetDead, int victimHitPoints)
+                    uint queuedAttackTarget, bool targetDead, int victimHitPoints)
                 {
                     Player = player;
                     AttackTarget = attackTarget;
                     AttackQueued = attackQueued;
+                    QueuedAttackTarget = queuedAttackTarget;
                     TargetDead = targetDead;
                     VictimHitPoints = victimHitPoints;
                     Actions.Clear();
@@ -102,6 +104,14 @@ public class ActionInterruptionTests
     }
 
     [Test]
+    public void PlayerInterruptedBeforeAResumedAttackStarts_StillResumesIt()
+    {
+        // An ability cleared the native attack target; the resumed attack is still waiting in the queue.
+        Interrupt(player: true, attackTarget: 0, attackQueued: false, queuedAttackTarget: Enemy)
+            .Should().Be($"clear, wait, attack {Enemy}");
+    }
+
+    [Test]
     public void AICreature_ReacquiresItsOwnTarget()
     {
         Interrupt(player: false).Should().Be("clear, wait");
@@ -119,8 +129,10 @@ public class ActionInterruptionTests
         Interrupt(player: true, victimHitPoints: 0).Should().Be("clear, wait");
     }
 
-    private string Interrupt(bool player, bool attackQueued = true, bool targetDead = false, int victimHitPoints = 10)
+    private string Interrupt(bool player, uint attackTarget = Enemy, bool attackQueued = true,
+        uint queuedAttackTarget = 0, bool targetDead = false, int victimHitPoints = 10)
     {
-        return (string)_interrupt.Invoke(null, [player, Enemy, attackQueued, targetDead, victimHitPoints])!;
+        return (string)_interrupt.Invoke(null,
+            [player, attackTarget, attackQueued, queuedAttackTarget, targetDead, victimHitPoints])!;
     }
 }

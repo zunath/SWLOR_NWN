@@ -32,16 +32,17 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
         /// <summary>
         /// The creature's attack target while an attack is queued. The current action reads as
         /// invalid between native AI updates even mid-attack, so the queue head is checked instead.
+        /// Using an ability clears the native attack target, which only returns once the resumed
+        /// attack starts its round, so an attack still waiting in the queue also counts.
         /// </summary>
         public static uint GetQueuedAttackTarget(uint creature)
         {
+            var native = NWNXLib.g_pAppManager.m_pServerExoApp.GetGameObject(creature).AsNWSObject();
             var attackTarget = GetAttackTarget(creature);
-            return GetIsObjectValid(attackTarget) &&
-                   WeaponAttackAnimation.HasQueuedAttack(
-                       NWNXLib.g_pAppManager.m_pServerExoApp.GetGameObject(creature).AsNWSObject(),
-                       attackTarget)
-                ? attackTarget
-                : OBJECT_INVALID;
+            if (GetIsObjectValid(attackTarget) && WeaponAttackAnimation.HasQueuedAttack(native, attackTarget))
+                return attackTarget;
+
+            return WeaponAttackAnimation.GetQueuedAttackTarget(native);
         }
     }
 }

@@ -28,7 +28,7 @@ public class AbilityAttackResumeTests
             {
                 public const uint OBJECT_INVALID = 0;
                 public enum ActionType { AttackObject = 3 }
-                public static uint AttackTarget, AuthorizedTarget, ThreatTarget;
+                public static uint AttackTarget, AuthorizedTarget, ThreatTarget, QueuedAttackTarget;
                 public static bool Player, Enemy, Companion, AttackQueued;
                 public static ActionType CurrentAction;
                 public static ActionType GetCurrentAction(uint creature) => CurrentAction;
@@ -47,6 +47,7 @@ public class AbilityAttackResumeTests
             public static class WeaponAttackAnimation
             {
                 public static bool HasQueuedAttack(NativeObject creature, uint target) => AttackQueued;
+                public static uint GetQueuedAttackTarget(NativeObject creature) => QueuedAttackTarget;
             }
             public class AbilityDetail { public bool IsHostileAbility { get; set; } }
             public static class CompanionControl
@@ -67,7 +68,7 @@ public class AbilityAttackResumeTests
                 {{capture}}
                 public static uint Capture(uint attackTarget, int action, bool player,
                     uint selectedTarget, bool hostile, bool enemy, bool companion,
-                    uint authorizedTarget, uint threatTarget, bool attackQueued)
+                    uint authorizedTarget, uint threatTarget, bool attackQueued, uint queuedAttackTarget)
                 {
                     AttackTarget = attackTarget;
                     CurrentAction = (ActionType)action;
@@ -77,6 +78,7 @@ public class AbilityAttackResumeTests
                     AuthorizedTarget = authorizedTarget;
                     ThreatTarget = threatTarget;
                     AttackQueued = attackQueued;
+                    QueuedAttackTarget = queuedAttackTarget;
                     return GetResumeAttackTarget(1, selectedTarget,
                         new AbilityDetail { IsHostileAbility = hostile });
                 }
@@ -118,6 +120,13 @@ public class AbilityAttackResumeTests
     }
 
     [Test]
+    public void AbilityRightAfterAnotherAbility_ResumesTheAttackStillWaitingInTheQueue()
+    {
+        // The previous ability cleared the native attack target; its resumed attack has not started yet.
+        Capture(attackTarget: 0, attackQueued: false, queuedAttackTarget: 2).Should().Be(2);
+    }
+
+    [Test]
     public void CanceledAttackWithRetainedNativeTarget_DoesNotRestart()
     {
         Capture(attackTarget: 2, attackQueued: false).Should().Be(0);
@@ -155,10 +164,10 @@ public class AbilityAttackResumeTests
     private uint Capture(uint attackTarget = 0, ActionType action = ActionType.CastSpell,
         bool player = true, uint selectedTarget = 3, bool hostile = true,
         bool enemy = true, bool companion = false, uint authorizedTarget = 0, uint threatTarget = 0,
-        bool attackQueued = true)
+        bool attackQueued = true, uint queuedAttackTarget = 0)
     {
         return (uint)_capture.Invoke(null,
             [attackTarget, (int)action, player, selectedTarget, hostile, enemy, companion,
-                authorizedTarget, threatTarget, attackQueued])!;
+                authorizedTarget, threatTarget, attackQueued, queuedAttackTarget])!;
     }
 }

@@ -74,6 +74,31 @@ public class StoreInventoryTests
     };
 
     [Test]
+    public void StoreBlueprints_SellOnlyIdentifiedItems()
+    {
+        var root = FindRepositoryRoot();
+        var unidentified = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+        foreach (var path in Directory.EnumerateFiles(Path.Combine(root.FullName, "Module", "uti"), "*.uti.json"))
+        {
+            using var document = JsonDocument.Parse(File.ReadAllText(path));
+            if (document.RootElement.TryGetProperty("Identified", out var identified) &&
+                identified.GetProperty("value").GetInt32() == 0)
+                unidentified.Add(document.RootElement.GetProperty("TemplateResRef").GetProperty("value").GetString()!);
+        }
+
+        var failures = new List<string>();
+        foreach (var path in Directory.EnumerateFiles(Path.Combine(root.FullName, "Module", "utm"), "*.utm.json"))
+        {
+            var store = Path.GetFileName(path).Replace(".utm.json", "", StringComparison.OrdinalIgnoreCase);
+            failures.AddRange(ReadStoreBlueprintItems(root, store)
+                .Where(unidentified.Contains)
+                .Select(item => $"{store}: sells '{item}', which is unidentified, so buyers cannot see its properties."));
+        }
+
+        failures.Should().BeEmpty(string.Join(Environment.NewLine, failures));
+    }
+
+    [Test]
     public void PlanetaryGeneralStoreBlueprints_CarryCumulativeWeaponTiers()
     {
         var root = FindRepositoryRoot();

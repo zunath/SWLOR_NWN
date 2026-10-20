@@ -143,7 +143,10 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                 .Permissions(AuthorizationLevel.All)
                 .Action((user, target, location, args) =>
                 {
-                    Gui.TogglePlayerWindow(user, GuiWindowType.Emotes);
+                    if (DMPresence.IsControlledByDM(user))
+                        DMPresence.ToggleWindow(user, GuiWindowType.Emotes);
+                    else
+                        Gui.TogglePlayerWindow(user, GuiWindowType.Emotes);
                 });
         }
     }

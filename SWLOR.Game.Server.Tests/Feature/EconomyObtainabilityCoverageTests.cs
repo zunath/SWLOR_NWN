@@ -130,6 +130,7 @@ public class EconomyObtainabilityCoverageTests
             @"\.AddItem\(\s*""([^""]+)""",
             @"\.Resref\(\s*""([^""]+)""",
             @"new\s+DroidInstructionRecipe\(RecipeType\.\w+,\s*""([^""]+)""",
+            @"\(RecipeType\.\w+,\s*RecipeType\.\w+,\s*""([^""]+)""",
             @"\.Component\(\s*""([^""]+)""",
             @"CreateItemOnObject\(\s*""([^""]+)""",
             @"CopyItemAndModify\(\s*""([^""]+)""",

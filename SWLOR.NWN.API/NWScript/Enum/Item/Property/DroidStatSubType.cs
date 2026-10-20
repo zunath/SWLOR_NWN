@@ -37,5 +37,8 @@ namespace SWLOR.NWN.API.NWScript.Enum.Item.Property
         Pistol = 124,
         Rifle = 125,
         Throwing = 126,
+        // 127 is skipped so these ids match EnhancementSubType, where 127 is Shield Deflection.
+        Unarmed = 128,
+        TwinPistol = 129,
     }
 }

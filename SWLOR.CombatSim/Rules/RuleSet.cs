@@ -20,6 +20,9 @@ namespace SWLOR.CombatSim.Rules
 
         public string Name { get; set; }
 
+        /// <summary>Disable only for paired counterfactual comparisons with the pre-sweep technique.</summary>
+        public bool EnableTechniqueSweeps { get; set; } = true;
+
         /// <summary>Highest multiplier Light affinity may apply to heals and shields (x1.5 before the tuning, x1.25 now).</summary>
         public float ForceAffinityHealingCap { get; set; } = 1.5f;
 

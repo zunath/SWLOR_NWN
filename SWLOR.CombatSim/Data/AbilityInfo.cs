@@ -9,6 +9,15 @@ namespace SWLOR.CombatSim.Data
     public sealed class AbilityInfo
     {
         public FeatType Feat { get; init; }
+        public SWLOR.Game.Server.Service.AbilityService.MeleeTechniqueDetail Technique { get; init; }
+        public int? SourceWeaponPower { get; init; }
+        public int ImpactStatusDuration { get; init; }
+        public Func<SWLOR.Game.Server.Service.StatusEffectService.IStatusEffect> ImpactStatusFactory { get; init; }
+        public IReadOnlyList<Type> ImpactStatusTypes { get; init; } = Array.Empty<Type>();
+        public bool InterruptsTarget { get; init; }
+        public bool IsAreaAbility { get; init; }
+        public float WeaponAreaRadius { get; init; }
+        public int MaximumAreaTargets { get; init; }
         public string Name { get; init; }
         public string PerkName { get; init; }
         public string RecastGroup { get; init; }
@@ -20,6 +29,8 @@ namespace SWLOR.CombatSim.Data
         public bool PaysFpFirst { get; init; }
         public float RecastSeconds { get; init; }
         public float CastSeconds { get; init; }
+        /// <summary>Effects and costs begin at channel start; the caster remains occupied until CastSeconds ends.</summary>
+        public bool IsChanneled { get; init; }
 
         /// <summary>Seconds between paying for the ability and its impact (Force Leap's jump); the caster is busy throughout.</summary>
         public float ImpactDelaySeconds { get; init; }
@@ -37,5 +48,6 @@ namespace SWLOR.CombatSim.Data
         public bool IsAimed { get; init; }
         public bool IsHealing { get; init; }
         public string ForceAffinity { get; init; }
+        public SWLOR.Game.Server.Service.CombatService.TwinPistolAbilitySpec TwinPistol { get; init; }
     }
 }

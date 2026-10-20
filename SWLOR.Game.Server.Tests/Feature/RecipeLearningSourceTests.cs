@@ -36,8 +36,7 @@ public class RecipeLearningSourceTests
         var missing = Definitions<IRecipeListDefinition>()
             .SelectMany(definition => definition.BuildRecipes())
             .Where(recipe => recipe.Value.IsActive &&
-                recipe.Value.Requirements.OfType<RecipeUnlockRequirement>().Any() &&
-                !taught.Contains(recipe.Key))
+                recipe.Value.Requirements.OfType<RecipeUnlockRequirement>().Any(requirement => !taught.Contains(requirement.Recipe)))
             .Select(recipe => recipe.Key).Distinct().ToList();
 
         missing.Should().BeEmpty("locked recipes need a teaching book, including DM-issued recipes");

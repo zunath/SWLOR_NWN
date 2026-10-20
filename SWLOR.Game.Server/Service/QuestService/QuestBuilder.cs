@@ -358,6 +358,13 @@ namespace SWLOR.Game.Server.Service.QuestService
             return this;
         }
 
+        /// <summary>Adds a counted, gameplay-reported combat objective to this state.</summary>
+        public QuestBuilder AddCombatObjective(string key, string description, int amount)
+        {
+            _activeState.AddObjective(new CombatObjective(key, description, amount));
+            return this;
+        }
+
         /// <summary>
         /// Builds all of the configured quests.
         /// </summary>

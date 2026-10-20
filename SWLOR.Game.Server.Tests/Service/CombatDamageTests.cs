@@ -3,6 +3,7 @@ using System.Text.Json;
 using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Game.Server.Feature.StatusEffectDefinition;
+using SWLOR.Game.Server.Native;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.CraftService;
@@ -48,6 +49,40 @@ public class CombatDamageTests
 
         minDamage.Should().Be(1);
         maxDamage.Should().Be(1);
+    }
+
+    [TestCase(100, -15, 85)]
+    [TestCase(100, -10, 90)]
+    [TestCase(150, -15, 127)]
+    [TestCase(1, -15, 0)]
+    [TestCase(0, -15, 0)]
+    [TestCase(100, 0, 100)]
+    [TestCase(100, -100, 0)]
+    public void OrdinaryAttackDamageMultiplier_AppliesAfterEarnedBonuses(
+        int damageAfterOutgoingBonuses, int percentAdjustment, int expected)
+    {
+        Combat.ApplyOrdinaryAttackDamageMultiplier(damageAfterOutgoingBonuses, percentAdjustment)
+            .Should().Be(expected);
+    }
+
+    [TestCase(100, 25, 0, 125)]
+    [TestCase(100, 30, -30, 91)]
+    [TestCase(100, 25, -20, 100)]
+    [TestCase(27, 30, -30, 25)]
+    [TestCase(7, 25, -20, 7)]
+    [TestCase(100, 300, -30, 140)]
+    [TestCase(100, -50, 0, 50)]
+    [TestCase(100, -100, -20, 4)]
+    [TestCase(100, 0, -30, 70)]
+    [TestCase(100, 25, -100, 0)]
+    [TestCase(1, 25, -30, 1)]
+    [TestCase(0, 30, -30, 0)]
+    [TestCase(-10, 25, -20, 0)]
+    public void NonCreatureOrdinaryDamage_AppliesCapturedBonusBeforeStanceMultiplier(
+        int damage, int capturedBonus, int stanceAdjustment, int expected)
+    {
+        GetDamageRoll.ApplyNonCreatureOrdinaryAttackDamage(damage, capturedBonus, stanceAdjustment)
+            .Should().Be(expected);
     }
 
     [Test]
@@ -285,7 +320,7 @@ public class CombatDamageTests
         resolve.Should().Contain("trackedImpact?.TriggeringWeaponDamageType");
         abilitySource.Should().Contain("if (!useUnscaledDamage)", "unscaled impacts add no weapon DMG");
         abilitySource.Should().Contain("damageType = ResolveWeaponAbilityDamageType(activator, skillType, damageType, trackedImpact);");
-        abilitySource.Should().Contain("trackedImpact.TriggeringWeaponDamageType = WeaponDamage.GetDamageType(triggeringWeapon);");
+        abilitySource.Should().Contain("trackedImpact.TriggeringWeaponDamageType = triggeringWeaponDamageType ?? WeaponDamage.GetDamageType(triggeringWeapon);");
         abilitySource.Should().Contain("TriggeringWeaponDamageType = triggeringWeaponDamageType ?? sequenceOwner?.TriggeringWeaponDamageType");
         Combat.IncludesCombatImpactWeaponDamage(SkillType.Pistol, false).Should().BeTrue();
         Combat.IncludesCombatImpactWeaponDamage(SkillType.BeastMastery, true).Should().BeTrue("queued natural weapons add their DMG");
@@ -313,8 +348,9 @@ public class CombatDamageTests
         var combatSource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Service", "Combat.cs"));
         var usePerkFeatSource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Feature", "UsePerkFeat.cs"));
 
-        usePerkFeatSource.Should().Contain("Ability.BeginAbilityImpact(activator, abilityDetail, triggeringWeapon: item)");
-        abilitySource.Should().Contain("trackedImpact.TriggeringWeaponDamage = GetIsObjectValid(triggeringWeapon)");
+        usePerkFeatSource.Should().Contain("Ability.BeginAbilityImpact(activator, abilityDetail, triggeringWeapon: item,");
+        usePerkFeatSource.Should().Contain("triggeringWeaponDamage: reservation?.TriggeringWeaponDamage");
+        abilitySource.Should().Contain("trackedImpact.TriggeringWeaponDamage = triggeringWeaponDamage ?? (GetIsObjectValid(triggeringWeapon)");
         abilitySource.Should().Contain("? WeaponDamage.GetEffectiveDMG(activator, triggeringWeapon)");
         abilitySource.Should().Contain("triggeringWeaponDamage: trackedImpact?.TriggeringWeaponDamage");
         Combat.GetCombatImpactWeaponDamage(0, SkillType.Vibroblade, triggeringWeaponDamage: 23).Should().Be(23);
@@ -360,7 +396,9 @@ public class CombatDamageTests
         attackSource.Should().Contain("Combat.PrepareAutoAttackCycleCriticalRate(attacker.m_idSelf, weaponSkillType)");
         attackSource.Should().Contain("Combat.ApplyRangedDeflectionReflection(defender.m_idSelf, attacker.m_idSelf, weaponSkillType)");
         var accuracy = ExtractMethod(statSource, "public static int GetAccuracyNative");
-        accuracy.Should().Contain("skillOverride != SkillType.Invalid ? skillOverride : Skill.GetSkillTypeByBaseItem(baseItemType)");
+        accuracy.Should().Contain("skillOverride != SkillType.Invalid ? skillOverride :");
+        accuracy.Should().Contain("Skill.GetWeaponSkill(creature.m_idSelf, weapon.m_idSelf)",
+            "ordinary paired shots use Twin Pistol while queued abilities retain their explicit skill");
         accuracy.Should().Contain("skillLevel = dbPlayer.Skills[skillType].Rank");
         accuracy.Should().Contain("var statType = accuracyAbilityOverride != AbilityType.Invalid");
         accuracy.Should().Contain("accuracyBonus += ip.m_nCostTableValue");
@@ -639,7 +677,8 @@ public class CombatDamageTests
 
         usePerkFeatSource.Should().Contain("Weapon abilities are queued for the next time the activator's attack lands on an enemy.");
         usePerkFeatSource.Should().Contain("ProcessQueuedWeaponAbility()");
-        usePerkFeatSource.Should().Contain("Ability.BeginAbilityImpact(activator, abilityDetail, triggeringWeapon: item);");
+        usePerkFeatSource.Should().Contain("Ability.BeginAbilityImpact(activator, abilityDetail, triggeringWeapon: item,");
+        usePerkFeatSource.Should().Contain("triggeringWeaponDamageType: reservation?.TriggeringWeaponDamageType");
         usePerkFeatSource.Should().Contain("public static bool HasQueuedWeaponAbility(uint activator)");
         usePerkFeatSource.Should().Contain("public static bool HasQueuedWeaponAbility(uint activator, SkillType weaponSkillType, int? attackIndex = null)");
         usePerkFeatSource.Should().Contain("public static bool TryGetQueuedWeaponAbility(uint activator, out AbilityDetail ability)");
@@ -1066,7 +1105,7 @@ public class CombatDamageTests
         combatSource.Should().Contain("public static void SendTemporaryHitPointDamageFeedback(uint attacker, uint defender, int damage)");
         combatSource.Should().Contain("GetEffectType(effect) == EffectTypeScript.TemporaryHitpoints");
         abilitySource.Should().Contain("Combat.SendTemporaryHitPointDamageFeedback(activator, target, damage);");
-        damageRollSource.Should().Contain("Combat.SendTemporaryHitPointDamageFeedback(attacker.m_idSelf, defender.m_idSelf, totalDamage);");
+        damageRollSource.Should().Contain("Combat.SendTemporaryHitPointDamageFeedback(attackerId, defenderId, rolledDamage);");
     }
 
     [Test]

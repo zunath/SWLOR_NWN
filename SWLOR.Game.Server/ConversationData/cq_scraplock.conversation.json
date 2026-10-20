@@ -224,7 +224,12 @@
         }
       ],
       "OnEnterActions": [],
-      "Choices": []
+      "Choices": [
+        {
+          "ChoiceId": "unarmed-training",
+          "Conditions": []
+        }
+      ]
     },
     "entry-00001": {
       "Id": "entry-00001",
@@ -245,7 +250,12 @@
         }
       ],
       "OnEnterActions": [],
-      "Choices": []
+      "Choices": [
+        {
+          "ChoiceId": "unarmed-training",
+          "Conditions": []
+        }
+      ]
     },
     "entry-00002": {
       "Id": "entry-00002",
@@ -286,6 +296,10 @@
         {
           "ChoiceId": "reply-00005",
           "Conditions": []
+        },
+        {
+          "ChoiceId": "unarmed-training",
+          "Conditions": []
         }
       ]
     },
@@ -308,7 +322,12 @@
         }
       ],
       "OnEnterActions": [],
-      "Choices": []
+      "Choices": [
+        {
+          "ChoiceId": "unarmed-training",
+          "Conditions": []
+        }
+      ]
     },
     "entry-00004": {
       "Id": "entry-00004",
@@ -332,6 +351,10 @@
       "Choices": [
         {
           "ChoiceId": "reply-00000",
+          "Conditions": []
+        },
+        {
+          "ChoiceId": "unarmed-training",
           "Conditions": []
         }
       ]
@@ -359,6 +382,10 @@
         {
           "ChoiceId": "reply-00000",
           "Conditions": []
+        },
+        {
+          "ChoiceId": "unarmed-training",
+          "Conditions": []
         }
       ]
     },
@@ -385,6 +412,10 @@
         {
           "ChoiceId": "reply-00000",
           "Conditions": []
+        },
+        {
+          "ChoiceId": "unarmed-training",
+          "Conditions": []
         }
       ]
     },
@@ -407,7 +438,12 @@
         }
       ],
       "OnEnterActions": [],
-      "Choices": []
+      "Choices": [
+        {
+          "ChoiceId": "unarmed-training",
+          "Conditions": []
+        }
+      ]
     },
     "entry-00008": {
       "Id": "entry-00008",
@@ -432,6 +468,10 @@
         {
           "ChoiceId": "reply-00006",
           "Conditions": []
+        },
+        {
+          "ChoiceId": "unarmed-training",
+          "Conditions": []
         }
       ]
     },
@@ -454,7 +494,12 @@
         }
       ],
       "OnEnterActions": [],
-      "Choices": []
+      "Choices": [
+        {
+          "ChoiceId": "unarmed-training",
+          "Conditions": []
+        }
+      ]
     },
     "entry-00010": {
       "Id": "entry-00010",
@@ -495,6 +540,10 @@
         {
           "ChoiceId": "reply-00012",
           "Conditions": []
+        },
+        {
+          "ChoiceId": "unarmed-training",
+          "Conditions": []
         }
       ]
     },
@@ -517,7 +566,12 @@
         }
       ],
       "OnEnterActions": [],
-      "Choices": []
+      "Choices": [
+        {
+          "ChoiceId": "unarmed-training",
+          "Conditions": []
+        }
+      ]
     },
     "entry-00012": {
       "Id": "entry-00012",
@@ -541,6 +595,10 @@
       "Choices": [
         {
           "ChoiceId": "reply-00007",
+          "Conditions": []
+        },
+        {
+          "ChoiceId": "unarmed-training",
           "Conditions": []
         }
       ]
@@ -568,6 +626,10 @@
         {
           "ChoiceId": "reply-00007",
           "Conditions": []
+        },
+        {
+          "ChoiceId": "unarmed-training",
+          "Conditions": []
         }
       ]
     },
@@ -594,6 +656,10 @@
         {
           "ChoiceId": "reply-00007",
           "Conditions": []
+        },
+        {
+          "ChoiceId": "unarmed-training",
+          "Conditions": []
         }
       ]
     },
@@ -616,7 +682,12 @@
         }
       ],
       "OnEnterActions": [],
-      "Choices": []
+      "Choices": [
+        {
+          "ChoiceId": "unarmed-training",
+          "Conditions": []
+        }
+      ]
     },
     "entry-00016": {
       "Id": "entry-00016",
@@ -641,6 +712,10 @@
         {
           "ChoiceId": "reply-00013",
           "Conditions": []
+        },
+        {
+          "ChoiceId": "unarmed-training",
+          "Conditions": []
         }
       ]
     },
@@ -663,7 +738,12 @@
         }
       ],
       "OnEnterActions": [],
-      "Choices": []
+      "Choices": [
+        {
+          "ChoiceId": "unarmed-training",
+          "Conditions": []
+        }
+      ]
     },
     "entry-00018": {
       "Id": "entry-00018",
@@ -704,6 +784,10 @@
         {
           "ChoiceId": "reply-00019",
           "Conditions": []
+        },
+        {
+          "ChoiceId": "unarmed-training",
+          "Conditions": []
         }
       ]
     },
@@ -726,7 +810,12 @@
         }
       ],
       "OnEnterActions": [],
-      "Choices": []
+      "Choices": [
+        {
+          "ChoiceId": "unarmed-training",
+          "Conditions": []
+        }
+      ]
     },
     "entry-00020": {
       "Id": "entry-00020",
@@ -750,6 +839,10 @@
       "Choices": [
         {
           "ChoiceId": "reply-00014",
+          "Conditions": []
+        },
+        {
+          "ChoiceId": "unarmed-training",
           "Conditions": []
         }
       ]
@@ -777,6 +870,10 @@
         {
           "ChoiceId": "reply-00014",
           "Conditions": []
+        },
+        {
+          "ChoiceId": "unarmed-training",
+          "Conditions": []
         }
       ]
     },
@@ -803,6 +900,10 @@
         {
           "ChoiceId": "reply-00014",
           "Conditions": []
+        },
+        {
+          "ChoiceId": "unarmed-training",
+          "Conditions": []
         }
       ]
     },
@@ -825,7 +926,12 @@
         }
       ],
       "OnEnterActions": [],
-      "Choices": []
+      "Choices": [
+        {
+          "ChoiceId": "unarmed-training",
+          "Conditions": []
+        }
+      ]
     },
     "entry-00024": {
       "Id": "entry-00024",
@@ -850,6 +956,10 @@
         {
           "ChoiceId": "reply-00020",
           "Conditions": []
+        },
+        {
+          "ChoiceId": "unarmed-training",
+          "Conditions": []
         }
       ]
     },
@@ -872,7 +982,12 @@
         }
       ],
       "OnEnterActions": [],
-      "Choices": []
+      "Choices": [
+        {
+          "ChoiceId": "unarmed-training",
+          "Conditions": []
+        }
+      ]
     },
     "entry-00026": {
       "Id": "entry-00026",
@@ -913,6 +1028,10 @@
         {
           "ChoiceId": "reply-00026",
           "Conditions": []
+        },
+        {
+          "ChoiceId": "unarmed-training",
+          "Conditions": []
         }
       ]
     },
@@ -935,7 +1054,12 @@
         }
       ],
       "OnEnterActions": [],
-      "Choices": []
+      "Choices": [
+        {
+          "ChoiceId": "unarmed-training",
+          "Conditions": []
+        }
+      ]
     },
     "entry-00028": {
       "Id": "entry-00028",
@@ -959,6 +1083,10 @@
       "Choices": [
         {
           "ChoiceId": "reply-00021",
+          "Conditions": []
+        },
+        {
+          "ChoiceId": "unarmed-training",
           "Conditions": []
         }
       ]
@@ -986,6 +1114,10 @@
         {
           "ChoiceId": "reply-00021",
           "Conditions": []
+        },
+        {
+          "ChoiceId": "unarmed-training",
+          "Conditions": []
         }
       ]
     },
@@ -1012,6 +1144,10 @@
         {
           "ChoiceId": "reply-00021",
           "Conditions": []
+        },
+        {
+          "ChoiceId": "unarmed-training",
+          "Conditions": []
         }
       ]
     },
@@ -1034,7 +1170,12 @@
         }
       ],
       "OnEnterActions": [],
-      "Choices": []
+      "Choices": [
+        {
+          "ChoiceId": "unarmed-training",
+          "Conditions": []
+        }
+      ]
     },
     "entry-00032": {
       "Id": "entry-00032",
@@ -1059,6 +1200,10 @@
         {
           "ChoiceId": "reply-00027",
           "Conditions": []
+        },
+        {
+          "ChoiceId": "unarmed-training",
+          "Conditions": []
         }
       ]
     },
@@ -1081,7 +1226,12 @@
         }
       ],
       "OnEnterActions": [],
-      "Choices": []
+      "Choices": [
+        {
+          "ChoiceId": "unarmed-training",
+          "Conditions": []
+        }
+      ]
     },
     "entry-00034": {
       "Id": "entry-00034",
@@ -1122,6 +1272,10 @@
         {
           "ChoiceId": "reply-00033",
           "Conditions": []
+        },
+        {
+          "ChoiceId": "unarmed-training",
+          "Conditions": []
         }
       ]
     },
@@ -1144,7 +1298,12 @@
         }
       ],
       "OnEnterActions": [],
-      "Choices": []
+      "Choices": [
+        {
+          "ChoiceId": "unarmed-training",
+          "Conditions": []
+        }
+      ]
     },
     "entry-00036": {
       "Id": "entry-00036",
@@ -1168,6 +1327,10 @@
       "Choices": [
         {
           "ChoiceId": "reply-00028",
+          "Conditions": []
+        },
+        {
+          "ChoiceId": "unarmed-training",
           "Conditions": []
         }
       ]
@@ -1195,6 +1358,10 @@
         {
           "ChoiceId": "reply-00028",
           "Conditions": []
+        },
+        {
+          "ChoiceId": "unarmed-training",
+          "Conditions": []
         }
       ]
     },
@@ -1221,6 +1388,10 @@
         {
           "ChoiceId": "reply-00028",
           "Conditions": []
+        },
+        {
+          "ChoiceId": "unarmed-training",
+          "Conditions": []
         }
       ]
     },
@@ -1243,7 +1414,12 @@
         }
       ],
       "OnEnterActions": [],
-      "Choices": []
+      "Choices": [
+        {
+          "ChoiceId": "unarmed-training",
+          "Conditions": []
+        }
+      ]
     },
     "entry-00040": {
       "Id": "entry-00040",
@@ -1268,6 +1444,10 @@
         {
           "ChoiceId": "reply-00034",
           "Conditions": []
+        },
+        {
+          "ChoiceId": "unarmed-training",
+          "Conditions": []
         }
       ]
     },
@@ -1290,7 +1470,252 @@
         }
       ],
       "OnEnterActions": [],
-      "Choices": []
+      "Choices": [
+        {
+          "ChoiceId": "unarmed-training",
+          "Conditions": []
+        }
+      ]
+    },
+    "unarmed-ineligible": {
+      "Id": "unarmed-ineligible",
+      "SpeakerName": "",
+      "SpeakerTag": "",
+      "PortraitResref": "",
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Text": [
+        {
+          "Text": "A heavy fist is not a fighting method. Bring your Unarmed skill to rank fifty, then ask me how to make a distraction count before the other fighter recovers.",
+          "Style": 0,
+          "Color": null
+        }
+      ],
+      "OnEnterActions": [],
+      "Choices": [
+        {
+          "ChoiceId": "unarmed-back",
+          "Conditions": []
+        },
+        {
+          "ChoiceId": "unarmed-leave",
+          "Conditions": []
+        }
+      ]
+    },
+    "unarmed-offer": {
+      "Id": "unarmed-offer",
+      "SpeakerName": "",
+      "SpeakerTag": "",
+      "PortraitResref": "",
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Text": [
+        {
+          "Text": "A heavy punch needs to land when the other fighter knows what they are doing. Land forty Uppercuts against seasoned hostiles. Dirty Jab and Low Kick can wear them down, but you choose when to throw the heavy blow. Prove that judgment, and I will teach you Haymaker.",
+          "Style": 0,
+          "Color": null
+        }
+      ],
+      "OnEnterActions": [],
+      "Choices": [
+        {
+          "ChoiceId": "unarmed-purpose",
+          "Conditions": []
+        },
+        {
+          "ChoiceId": "unarmed-rules",
+          "Conditions": []
+        },
+        {
+          "ChoiceId": "unarmed-accept",
+          "Conditions": []
+        },
+        {
+          "ChoiceId": "unarmed-back",
+          "Conditions": []
+        }
+      ]
+    },
+    "unarmed-purpose": {
+      "Id": "unarmed-purpose",
+      "SpeakerName": "",
+      "SpeakerTag": "",
+      "PortraitResref": "",
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Text": [
+        {
+          "Text": "A jab that spoils their aim can keep you alive. Cash it in and you lose that protection. That is a decision, not a free hit. I want forty occasions where you make the decision and actually land the heavy blow.",
+          "Style": 0,
+          "Color": null
+        }
+      ],
+      "OnEnterActions": [],
+      "Choices": [
+        {
+          "ChoiceId": "unarmed-return-offer",
+          "Conditions": []
+        }
+      ]
+    },
+    "unarmed-rules": {
+      "Id": "unarmed-rules",
+      "SpeakerName": "",
+      "SpeakerTag": "",
+      "PortraitResref": "",
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Text": [
+        {
+          "Text": "Hostile opponents of combat level forty-five or higher. No summoned creatures, training dummies or other spacers. Use equipped Power Gloves and land the Uppercut. Your own paid attacks count; misses and free casts do not. Dirty Jab, Low Kick and Retaliation can help, but none is required.",
+          "Style": 0,
+          "Color": null
+        }
+      ],
+      "OnEnterActions": [],
+      "Choices": [
+        {
+          "ChoiceId": "unarmed-return-offer",
+          "Conditions": []
+        }
+      ]
+    },
+    "unarmed-accepted": {
+      "Id": "unarmed-accepted",
+      "SpeakerName": "",
+      "SpeakerTag": "",
+      "PortraitResref": "",
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Text": [
+        {
+          "Text": "Forty landed Uppercuts. Deal with threats that already need dealing with; do not manufacture an incident for my files. Come back to the CZ-220 Hangar when the trial is finished.",
+          "Style": 0,
+          "Color": null
+        }
+      ],
+      "OnEnterActions": [],
+      "Choices": [
+        {
+          "ChoiceId": "unarmed-back",
+          "Conditions": []
+        },
+        {
+          "ChoiceId": "unarmed-leave",
+          "Conditions": []
+        }
+      ]
+    },
+    "unarmed-progress": {
+      "Id": "unarmed-progress",
+      "SpeakerName": "",
+      "SpeakerTag": "",
+      "PortraitResref": "",
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Text": [
+        {
+          "Text": "Forty landed Uppercuts against seasoned hostiles. Weaken them if it helps, counter when the chance comes, and throw the heavy blow when you are ready. Your own paid strikes belong on the record.",
+          "Style": 0,
+          "Color": null
+        }
+      ],
+      "OnEnterActions": [],
+      "Choices": [
+        {
+          "ChoiceId": "unarmed-back",
+          "Conditions": []
+        },
+        {
+          "ChoiceId": "unarmed-leave",
+          "Conditions": []
+        }
+      ]
+    },
+    "unarmed-ready": {
+      "Id": "unarmed-ready",
+      "SpeakerName": "",
+      "SpeakerTag": "",
+      "PortraitResref": "",
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Text": [
+        {
+          "Text": "Forty landed Uppercuts, all on the record. You know what the heavy blow costs now. Haymaker makes that commitment larger, so pick the moment before you throw it.",
+          "Style": 0,
+          "Color": null
+        }
+      ],
+      "OnEnterActions": [],
+      "Choices": [
+        {
+          "ChoiceId": "unarmed-turnin",
+          "Conditions": []
+        },
+        {
+          "ChoiceId": "unarmed-back",
+          "Conditions": []
+        }
+      ]
+    },
+    "unarmed-complete": {
+      "Id": "unarmed-complete",
+      "SpeakerName": "",
+      "SpeakerTag": "",
+      "PortraitResref": "",
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Text": [
+        {
+          "Text": "That closes your trial. You have earned Haymaker training. Practice it until you can trust that commitment. Choose the moment, commit to the blow, and accept what it costs when it does not land.",
+          "Style": 0,
+          "Color": null
+        }
+      ],
+      "OnEnterActions": [],
+      "Choices": [
+        {
+          "ChoiceId": "unarmed-back",
+          "Conditions": []
+        },
+        {
+          "ChoiceId": "unarmed-leave",
+          "Conditions": []
+        }
+      ]
     }
   },
   "Choices": {
@@ -2138,6 +2563,445 @@
       "Next": [
         {
           "TargetNodeId": "entry-00041",
+          "Conditions": []
+        }
+      ],
+      "EndsConversation": false,
+      "IsAutomatic": false
+    },
+    "unarmed-training": {
+      "Id": "unarmed-training",
+      "Text": {
+        "Text": "I want to discuss Power Glove techniques.",
+        "Style": 4,
+        "Color": null
+      },
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Actions": [],
+      "Next": [
+        {
+          "TargetNodeId": "unarmed-complete",
+          "Conditions": [
+            {
+              "Key": "condition-completed-quest",
+              "Arguments": [
+                "haymaker_mastery"
+              ],
+              "IsNegated": false
+            }
+          ]
+        },
+        {
+          "TargetNodeId": "unarmed-ready",
+          "Conditions": [
+            {
+              "Key": "condition-on-quest-state",
+              "Arguments": [
+                "haymaker_mastery",
+                "2"
+              ],
+              "IsNegated": false
+            }
+          ]
+        },
+        {
+          "TargetNodeId": "unarmed-progress",
+          "Conditions": [
+            {
+              "Key": "condition-has-quest",
+              "Arguments": [
+                "haymaker_mastery"
+              ],
+              "IsNegated": false
+            }
+          ]
+        },
+        {
+          "TargetNodeId": "unarmed-offer",
+          "Conditions": [
+            {
+              "Key": "condition-can-accept-quest",
+              "Arguments": [
+                "haymaker_mastery"
+              ],
+              "IsNegated": false
+            }
+          ]
+        },
+        {
+          "TargetNodeId": "unarmed-ineligible",
+          "Conditions": []
+        }
+      ],
+      "EndsConversation": false,
+      "IsAutomatic": false
+    },
+    "unarmed-back": {
+      "Id": "unarmed-back",
+      "Text": {
+        "Text": "Back to station business.",
+        "Style": 4,
+        "Color": null
+      },
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Actions": [],
+      "Next": [
+        {
+          "TargetNodeId": "entry-00000",
+          "Conditions": [
+            {
+              "Key": "condition-completed-quest",
+              "Arguments": [
+                "scrapheap_lockdown_mastery"
+              ],
+              "IsNegated": false
+            }
+          ]
+        },
+        {
+          "TargetNodeId": "entry-00040",
+          "Conditions": [
+            {
+              "Key": "condition-on-quest-state",
+              "Arguments": [
+                "scrapheap_lockdown_mastery",
+                "2"
+              ],
+              "IsNegated": false
+            }
+          ]
+        },
+        {
+          "TargetNodeId": "entry-00039",
+          "Conditions": [
+            {
+              "Key": "condition-has-quest",
+              "Arguments": [
+                "scrapheap_lockdown_mastery"
+              ],
+              "IsNegated": false
+            }
+          ]
+        },
+        {
+          "TargetNodeId": "entry-00034",
+          "Conditions": [
+            {
+              "Key": "condition-can-accept-quest",
+              "Arguments": [
+                "scrapheap_lockdown_mastery"
+              ],
+              "IsNegated": false
+            }
+          ]
+        },
+        {
+          "TargetNodeId": "entry-00032",
+          "Conditions": [
+            {
+              "Key": "condition-on-quest-state",
+              "Arguments": [
+                "scrapheap_lockdown_circle",
+                "2"
+              ],
+              "IsNegated": false
+            }
+          ]
+        },
+        {
+          "TargetNodeId": "entry-00031",
+          "Conditions": [
+            {
+              "Key": "condition-has-quest",
+              "Arguments": [
+                "scrapheap_lockdown_circle"
+              ],
+              "IsNegated": false
+            }
+          ]
+        },
+        {
+          "TargetNodeId": "entry-00026",
+          "Conditions": [
+            {
+              "Key": "condition-can-accept-quest",
+              "Arguments": [
+                "scrapheap_lockdown_circle"
+              ],
+              "IsNegated": false
+            }
+          ]
+        },
+        {
+          "TargetNodeId": "entry-00024",
+          "Conditions": [
+            {
+              "Key": "condition-on-quest-state",
+              "Arguments": [
+                "scrapheap_lockdown_breach",
+                "2"
+              ],
+              "IsNegated": false
+            }
+          ]
+        },
+        {
+          "TargetNodeId": "entry-00023",
+          "Conditions": [
+            {
+              "Key": "condition-has-quest",
+              "Arguments": [
+                "scrapheap_lockdown_breach"
+              ],
+              "IsNegated": false
+            }
+          ]
+        },
+        {
+          "TargetNodeId": "entry-00018",
+          "Conditions": [
+            {
+              "Key": "condition-can-accept-quest",
+              "Arguments": [
+                "scrapheap_lockdown_breach"
+              ],
+              "IsNegated": false
+            }
+          ]
+        },
+        {
+          "TargetNodeId": "entry-00016",
+          "Conditions": [
+            {
+              "Key": "condition-on-quest-state",
+              "Arguments": [
+                "scrapheap_lockdown_measure",
+                "2"
+              ],
+              "IsNegated": false
+            }
+          ]
+        },
+        {
+          "TargetNodeId": "entry-00015",
+          "Conditions": [
+            {
+              "Key": "condition-has-quest",
+              "Arguments": [
+                "scrapheap_lockdown_measure"
+              ],
+              "IsNegated": false
+            }
+          ]
+        },
+        {
+          "TargetNodeId": "entry-00010",
+          "Conditions": [
+            {
+              "Key": "condition-can-accept-quest",
+              "Arguments": [
+                "scrapheap_lockdown_measure"
+              ],
+              "IsNegated": false
+            }
+          ]
+        },
+        {
+          "TargetNodeId": "entry-00008",
+          "Conditions": [
+            {
+              "Key": "condition-on-quest-state",
+              "Arguments": [
+                "scrapheap_lockdown_foundation",
+                "2"
+              ],
+              "IsNegated": false
+            }
+          ]
+        },
+        {
+          "TargetNodeId": "entry-00007",
+          "Conditions": [
+            {
+              "Key": "condition-has-quest",
+              "Arguments": [
+                "scrapheap_lockdown_foundation"
+              ],
+              "IsNegated": false
+            }
+          ]
+        },
+        {
+          "TargetNodeId": "entry-00002",
+          "Conditions": [
+            {
+              "Key": "condition-can-accept-quest",
+              "Arguments": [
+                "scrapheap_lockdown_foundation"
+              ],
+              "IsNegated": false
+            }
+          ]
+        },
+        {
+          "TargetNodeId": "entry-00001",
+          "Conditions": []
+        }
+      ],
+      "EndsConversation": false,
+      "IsAutomatic": false
+    },
+    "unarmed-leave": {
+      "Id": "unarmed-leave",
+      "Text": {
+        "Text": "I have what I need.",
+        "Style": 4,
+        "Color": null
+      },
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Actions": [],
+      "Next": [],
+      "EndsConversation": true,
+      "IsAutomatic": false
+    },
+    "unarmed-accept": {
+      "Id": "unarmed-accept",
+      "Text": {
+        "Text": "Set the trial. I will put the technique to work.",
+        "Style": 4,
+        "Color": null
+      },
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Actions": [
+        {
+          "Key": "action-accept-quest",
+          "Arguments": [
+            "haymaker_mastery"
+          ]
+        }
+      ],
+      "Next": [
+        {
+          "TargetNodeId": "unarmed-accepted",
+          "Conditions": []
+        }
+      ],
+      "EndsConversation": false,
+      "IsAutomatic": false
+    },
+    "unarmed-purpose": {
+      "Id": "unarmed-purpose",
+      "Text": {
+        "Text": "Why count landed Uppercuts instead of raw damage?",
+        "Style": 4,
+        "Color": null
+      },
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Actions": [],
+      "Next": [
+        {
+          "TargetNodeId": "unarmed-purpose",
+          "Conditions": []
+        }
+      ],
+      "EndsConversation": false,
+      "IsAutomatic": false
+    },
+    "unarmed-rules": {
+      "Id": "unarmed-rules",
+      "Text": {
+        "Text": "Which fights count?",
+        "Style": 4,
+        "Color": null
+      },
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Actions": [],
+      "Next": [
+        {
+          "TargetNodeId": "unarmed-rules",
+          "Conditions": []
+        }
+      ],
+      "EndsConversation": false,
+      "IsAutomatic": false
+    },
+    "unarmed-return-offer": {
+      "Id": "unarmed-return-offer",
+      "Text": {
+        "Text": "Let us discuss the trial.",
+        "Style": 4,
+        "Color": null
+      },
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Actions": [],
+      "Next": [
+        {
+          "TargetNodeId": "unarmed-offer",
+          "Conditions": []
+        }
+      ],
+      "EndsConversation": false,
+      "IsAutomatic": false
+    },
+    "unarmed-turnin": {
+      "Id": "unarmed-turnin",
+      "Text": {
+        "Text": "The trial is complete. Show me the final technique.",
+        "Style": 4,
+        "Color": null
+      },
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Actions": [
+        {
+          "Key": "action-advance-quest",
+          "Arguments": [
+            "haymaker_mastery"
+          ]
+        }
+      ],
+      "Next": [
+        {
+          "TargetNodeId": "unarmed-complete",
           "Conditions": []
         }
       ],

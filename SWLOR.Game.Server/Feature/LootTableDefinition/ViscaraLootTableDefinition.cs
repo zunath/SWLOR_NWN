@@ -679,6 +679,7 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
                 .IsRare()
                 .AddItem("duel_splitter", 1, 1, true)
                 .AddItem("charm_katar", 1, 1, true)
+                .AddItem("charm_pglove", 1, 1, true)
                 .AddItem("redcircle_star", 1, 1, true)
                 .AddItem("duel_fang", 1, 1, true)
                 .AddItem("circle_twin", 1, 1, true)

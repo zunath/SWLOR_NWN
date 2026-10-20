@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Service.SkillService;
+using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Item;
 
 namespace SWLOR.Game.Server.Service
@@ -71,6 +72,9 @@ namespace SWLOR.Game.Server.Service
             _itemToSkillMapping[BaseItem.Gloves] = SkillType.Katar;
             _itemToSkillMapping[BaseItem.Katar] = SkillType.Katar;
 
+            // Power Glove
+            _itemToSkillMapping[BaseItem.PowerGlove] = SkillType.Unarmed;
+
             // Staff
             _itemToSkillMapping[BaseItem.Club] = SkillType.Staff;
             _itemToSkillMapping[BaseItem.LightFlail] = SkillType.Staff;
@@ -85,6 +89,9 @@ namespace SWLOR.Game.Server.Service
             _itemToSkillMapping[BaseItem.Arrow] = SkillType.Pistol;
             _itemToSkillMapping[BaseItem.Bullet] = SkillType.Pistol;
             _itemToSkillMapping[BaseItem.Sling] = SkillType.Pistol;
+
+            // Simulated left-hand pistol profile. Equipped behavior uses GetWeaponSkill.
+            _itemToSkillMapping[BaseItem.CompanionPistol] = SkillType.TwinPistol;
 
             // Rifle
             _itemToSkillMapping[BaseItem.Cannon] = SkillType.Rifle;
@@ -113,6 +120,21 @@ namespace SWLOR.Game.Server.Service
                 return SkillType.Invalid;
 
             return _itemToSkillMapping[baseItem];
+        }
+
+        /// <summary>Resolves equipped attack identity without rewriting a weapon's stored requirements.</summary>
+        public static SkillType GetWeaponSkill(uint creature, uint weapon, SkillType? explicitOverride = null)
+        {
+            if (explicitOverride.HasValue && explicitOverride != SkillType.Invalid)
+                return explicitOverride.Value;
+            if (!GetIsObjectValid(weapon)) return SkillType.Invalid;
+
+            var weaponType = GetBaseItemType(weapon);
+            var main = GetItemInSlot(InventorySlot.RightHand, creature);
+            var off = GetItemInSlot(InventorySlot.LeftHand, creature);
+            if ((weapon == main || weapon == off) && TwinPistolEquipment.IsActivePair(creature))
+                return SkillType.TwinPistol;
+            return weaponType == BaseItem.CompanionPistol ? SkillType.Invalid : GetSkillTypeByBaseItem(weaponType);
         }
     }
 }

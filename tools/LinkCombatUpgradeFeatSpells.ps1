@@ -6,7 +6,7 @@ param(
     [string]$SpellEnumPath = "SWLOR.NWN.API\NWScript\Enum\spell.cs",
     [string]$FeatEnumPath = "SWLOR.NWN.API\NWScript\Enum\FeatType.cs",
     [int]$GeneratedFeatStart = 2000,
-    [int]$GeneratedFeatEnd = 2899,
+    [int]$GeneratedFeatEnd = 3267,
     [int]$ManualHotbarClassFeatRowLimit = 1024
 )
 
@@ -300,6 +300,7 @@ $createdSpellRows = 0
 $spellIdsByLabel = [ordered]@{}
 $linkedPlayerFeats = [ordered]@{}
 $manualHotbarFeatLabels = [System.Collections.Generic.HashSet[string]]::new([System.StringComparer]::Ordinal)
+$automaticTargetingFeatIndexes = [System.Collections.Generic.HashSet[int]]::new()
 
 for ($i = $featHeaderIndex + 1; $i -lt $featLines.Count; $i++) {
     $tokens = Convert-ToStringList $featLines[$i]
@@ -312,6 +313,11 @@ for ($i = $featHeaderIndex + 1; $i -lt $featLines.Count; $i++) {
     }
 
     $label = Get-TokenByHeader $tokens $featHeaders "LABEL"
+    # Automatic targeting aliases own curated native spell links, separate from ability definitions.
+    if ($label.StartsWith("AutoCast", [StringComparison]::Ordinal)) {
+        [void]$automaticTargetingFeatIndexes.Add($rowNumber)
+        continue
+    }
     if ($label -eq "****") {
         continue
     }
@@ -500,6 +506,10 @@ if ([System.IO.File]::Exists($classFeatPath)) {
         }
 
         if ($featIndex -lt $GeneratedFeatStart -or $featIndex -gt $GeneratedFeatEnd) {
+            continue
+        }
+
+        if ($automaticTargetingFeatIndexes.Contains($featIndex)) {
             continue
         }
 

@@ -23,9 +23,9 @@ def tracked_file_path(descriptor, paths):
     return paths.get(descriptor)
 
 
-def glb():
+def glb(view=None):
     document = {'asset': {'version': '2.0'}, 'meshes': [{'primitives': []}],
-                'bufferViews': [{'buffer': 0, 'byteOffset': 0, 'byteLength': 4}],
+                'bufferViews': [view or {'buffer': 0, 'byteOffset': 0, 'byteLength': 4}],
                 'images': [{'bufferView': 0, 'mimeType': 'image/png'},
                            {'bufferView': 0, 'mimeType': 'image/jpeg'}],
                 'textures': [{'source': 0}], 'materials': [{'pbrMetallicRoughness': {
@@ -641,6 +641,14 @@ class WeaponGenerationTests(unittest.TestCase):
         with self.assertRaises(ValueError): generator.extract_glb(b'glTF', self.folder)
         data = bytearray(glb()); struct.pack_into('<I', data, 12, len(data)*2)
         with self.assertRaises(ValueError): generator.extract_glb(bytes(data), self.folder)
+
+    def test_embedded_image_ranges_must_be_nonnegative_and_inside_blob(self):
+        for view in ({'byteOffset': -4, 'byteLength': 4}, {'byteOffset': 4, 'byteLength': -4},
+                     {'byteOffset': 0, 'byteLength': -1}, {'byteOffset': 1.0, 'byteLength': 2},
+                     {'byteOffset': 0, 'byteLength': True}, {'byteOffset': 0}, {'byteOffset': 2, 'byteLength': 3}):
+            with self.subTest(view=view), self.assertRaisesRegex(ValueError, 'bounds'):
+                generator.extract_glb(glb(dict(view, buffer=0)), self.folder)
+        self.assertEqual(len(generator.extract_glb(glb({'buffer': 0, 'byteOffset': 1, 'byteLength': 3}), self.folder)['images']), 2)
 
 
 if __name__ == '__main__':

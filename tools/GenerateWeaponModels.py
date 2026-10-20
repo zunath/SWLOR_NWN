@@ -6,7 +6,8 @@ Manifest schema 1: {"schema_version":1,"assets":[{"id":"weapon_name",
 ignored staging or outside Git. Run --preflight first, then repeat without it.
 Repeat the identical command to recover a known submission; a lost POST response
 is reconciled by its journal token, never blindly resubmitted. Expired jobs may
-be collected if complete; they are never interrupted or given a new deadline.
+be collected if complete; they are never interrupted. Only an expired job still
+`prepared` (never submitted) gets a renewed deadline on rerun.
 This produces authoring sources, not fitted or native-validated NWN resources.
 """
 from __future__ import annotations
@@ -348,9 +349,11 @@ def extract_glb(data, folder):
         if 'bufferView' not in image:
             raise ValueError('Expected embedded PBR images, not external URIs')
         view = doc['bufferViews'][image['bufferView']]
-        start = view.get('byteOffset', 0); end = start + view['byteLength']
-        if view.get('buffer', 0) != 0 or end > len(blob):
+        start = view.get('byteOffset', 0); length = view.get('byteLength')
+        if (view.get('buffer', 0) != 0 or any(type(x) is not int or x < 0 for x in (start, length))
+                or start + length > len(blob)):
             raise ValueError('Invalid embedded image bounds')
+        end = start + length
         suffix = {'image/png': '.png', 'image/jpeg': '.jpg'}.get(image.get('mimeType'))
         if not suffix:
             raise ValueError('Unsupported embedded image type')

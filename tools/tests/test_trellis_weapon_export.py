@@ -9,6 +9,7 @@ from pathlib import Path
 import struct
 import tempfile
 import unittest
+import unittest.mock
 
 ROOT = Path(__file__).resolve().parents[2]
 spec = importlib.util.spec_from_file_location('trellis_export', ROOT / 'tools/TrellisWeaponExport.py')
@@ -84,6 +85,12 @@ class TrellisWeaponExportTests(unittest.TestCase):
         asset.update(base_item=59, model='wthsh_011', icon_size=[32,32]); asset.pop('parts')
         with self.assertRaisesRegex(ValueError,'occupied'):
             self.validate(asset, empty_parts=[{'model':'wthsh_011','base_item':59,'icon_size':[32,32]}])
+
+    def test_empty_parts_require_the_baseitems_logical_icon_area(self):
+        for size in ([16,16],[32,16],[16,32]):
+            with self.subTest(size=size),self.assertRaisesRegex(ValueError,'logical inventory area'):
+                self.validate(empty_parts=[{'model':'wthsh_012','base_item':59,'icon_size':size}])
+        for size in ([32,32],[64,64]):self.validate(empty_parts=[{'model':'wthsh_012','base_item':59,'icon_size':size}])
 
     def test_large_shield_uses_one_native_model_and_padded_inventory_canvas(self):
         asset=copy.deepcopy(self.asset)
@@ -373,6 +380,49 @@ class TrellisWeaponExportTests(unittest.TestCase):
         from_path = exporter.glb_document(self.source)
         self.source.write_bytes(b'changed after validation')
         self.assertEqual(exporter.glb_document(raw), from_path)
+
+    def test_fit_manifest_hash_comes_from_the_parsed_snapshot(self):
+        raw='\ufeff'.encode('utf-8')+json.dumps({'schema_version':1,'assets':[]}).encode()
+        self.manifest.write_bytes(raw)
+        real=Path.read_bytes;calls=[]
+        def read_once(path):
+            calls.append(path);data=real(path);path.write_bytes(b'changed after read');return data
+        with unittest.mock.patch.object(Path,'read_bytes',read_once):
+            config,digest=exporter.load_manifest(self.manifest)
+        self.assertEqual(len(calls),1);self.assertEqual(config,{'schema_version':1,'assets':[]})
+        self.assertEqual(digest,hashlib.sha256(raw).hexdigest())
+
+    def test_package_snapshot_holds_only_the_verified_resource_bytes(self):
+        export=self.root/'export';(export/'01_a/resources').mkdir(parents=True);(export/'empty_resources').mkdir()
+        files={'01_a/resources/wdbsw_m_011.mdl':b'model','01_a/resources/field.tga':b'pixels','empty_resources/wthsh_012.mdl':b'empty'}
+        for key,data in files.items():(export/key).write_bytes(data)
+        manifest={'resources':{key:hashlib.sha256(data).hexdigest() for key,data in files.items()}}
+        paths=exporter.snapshot_export(export,manifest,self.root/'package/verified_export')
+        for key,data in files.items():(export/key).write_bytes(b'changed after verification')
+        self.assertEqual({key:path.read_bytes() for key,path in paths.items()},files)
+        self.assertTrue(all(path.is_relative_to(self.root/'package/verified_export') for path in paths.values()))
+        with self.assertRaisesRegex(ValueError,'Changed export'):exporter.snapshot_export(export,manifest,self.root/'again')
+        (export/'01_a/resources/extra.tga').write_bytes(b'x')
+        with self.assertRaisesRegex(ValueError,'resource set'):exporter.snapshot_export(export,manifest,self.root/'third')
+
+    @unittest.skipIf(np is None,'numpy required')
+    def test_materials_clipped_from_every_part_emit_no_maps_or_normal_provenance(self):
+        resources=self.root/'resources';resources.mkdir();names={0:'kept',1:'gone'};material_dims={};mapdims={}
+        for index,name in names.items():
+            material_dims[index]={key:[4,4] for key in (name,name+'_n',name+'_s',name+'_r')};mapdims.update(material_dims[index])
+            (resources/(name+'.mtr')).write_text('texture0 '+name)
+            for key in material_dims[index]:(resources/(key+'.tga')).write_bytes(b'tga')
+        basis_path=self.root/'source_basis.npz'
+        np.savez_compressed(basis_path,**{name+'__'+key:np.zeros((1,3,3)) for name in names.values() for key in ('positions','normals','tangents','signs','uv')})
+        basis={'sha256':'old','materials':['gone','kept']}
+        self.assertEqual(exporter.drop_clipped_materials(resources,names,material_dims,mapdims,{'kept'},basis_path,basis),['gone'])
+        self.assertEqual(names,{0:'kept'});self.assertEqual(set(mapdims),{'kept','kept_n','kept_s','kept_r'})
+        self.assertEqual(sorted(p.name for p in resources.iterdir()),['kept.mtr','kept.tga','kept_n.tga','kept_r.tga','kept_s.tga'])
+        with np.load(basis_path) as arrays:self.assertEqual({key.split('__')[0] for key in arrays.files},{'kept'})
+        self.assertEqual(basis,{'sha256':hashlib.sha256(basis_path.read_bytes()).hexdigest(),'materials':['kept']})
+        before=basis_path.read_bytes()
+        self.assertEqual(exporter.drop_clipped_materials(resources,names,material_dims,mapdims,{'kept'},basis_path,basis),[])
+        self.assertEqual(basis_path.read_bytes(),before)
 
     def test_material_rejects_silent_appearance_loss(self):
         for change in ({'alphaMode':'BLEND'}, {'doubleSided':True}, {'occlusionTexture':{'index':0}},

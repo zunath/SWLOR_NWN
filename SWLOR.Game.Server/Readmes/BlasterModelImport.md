@@ -89,9 +89,11 @@ python -B tools/GenerateWeaponModels.py "$env:TEMP/weapon-sources/manifest.json"
 
 The runner holds one local GPU-owner lock, waits for an empty ComfyUI queue,
 and finishes one owned prompt before submitting the next. It never clears the
-queue or interrupts someone else's job. Each asset has a fixed persisted deadline,
-including queue wait; restarting cannot extend it. The prompt and unique recovery
-token are journaled before submission. Repeat the identical command to collect a
+queue or interrupts someone else's job. Each asset has a persisted deadline,
+including queue wait. A rerun renews an expired deadline only while the job is
+still `prepared` (never submitted); once submission has started, restarting
+cannot extend it. The prompt and unique recovery token are journaled before
+submission. Repeat the identical command to collect a
 known job or reconcile a lost response against queue/history. If that cannot
 identify exactly one job, the runner stops; inspect its journals and ComfyUI
 history before deciding what happened. Do not delete the journal or blindly

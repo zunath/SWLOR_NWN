@@ -11,6 +11,7 @@ The separate shield workflow rebakes the original material field after repair.
 import argparse
 import collections
 import hashlib
+import io
 import json
 import os
 from pathlib import Path
@@ -27,6 +28,14 @@ def arrays(vertices, faces):
         raise ValueError('Expected nonempty integer triangle faces[M,3]')
     if faces.min()<0 or faces.max()>=len(vertices):raise ValueError('Face index out of bounds')
     return vertices,faces.astype(np.int32)
+
+
+def winding_number(point, triangles):
+    """Generalized winding number: 1 inside an outward closed shell, -1 inside an inward one, 0 outside."""
+    a,b,c=(triangles-point).transpose(1,0,2);la,lb,lc=(np.linalg.norm(x,axis=1) for x in (a,b,c))
+    det=np.einsum('ij,ij->i',a,np.cross(b,c))
+    den=la*lb*lc+np.einsum('ij,ij->i',a,b)*lc+np.einsum('ij,ij->i',b,c)*la+np.einsum('ij,ij->i',c,a)*lb
+    return float(np.arctan2(det,den).sum()/(2*np.pi))
 
 
 def audit_surface(vertices, faces, components=False):
@@ -60,14 +69,27 @@ def audit_surface(vertices, faces, components=False):
             points=triangles[ids];origin=points.mean(axis=(0,1));shifted=points-origin
             volume=float(np.einsum('ij,ij->i',shifted[:,0],np.cross(shifted[:,1],shifted[:,2])).sum()/6)
             shells.append({'triangles':len(ids),'signed_volume':volume,'area':float(area2[ids].sum()/2)})
+        # An inward-wound shell is valid only as a cavity: its interior must lie in solid
+        # material, i.e. the other shells wind exactly once around it. Otherwise it is an
+        # exposed inside-out surface.
+        exposed=0;ids_list=list(groups.values())
+        for index,(ids,shell) in enumerate(zip(ids_list,shells)):
+            if shell['signed_volume']>=0:continue
+            others=[face for other,group in enumerate(ids_list) if other!=index for face in group]
+            largest=ids[int(np.argmax(area2[ids]))]
+            enclosed=bool(others) and abs(winding_number(triangles[largest].mean(axis=0),triangles[others])-1)<1e-3
+            shell['enclosed_cavity']=enclosed;exposed+=not enclosed
         report['shells']=shells
         report['zero_volume_shells']=sum(shell['signed_volume']==0 for shell in shells)
+        report['exposed_inward_shells']=exposed
     return report
 
 
 def require_closed(report):
     if report['bad_edges'] or report['zero_area_triangles'] or report.get('zero_volume_shells',0):
         raise ValueError('Expected a closed nondegenerate surface: '+json.dumps(report))
+    if report.get('exposed_inward_shells',0):
+        raise ValueError('Inward-wound shell is not an enclosed cavity of an outward shell: '+json.dumps(report))
 
 
 def remove_collapsed_islands(vertices, faces):
@@ -160,6 +182,22 @@ def decimate_surface(vertices, faces, target_faces=3500):
     return output_vertices,output_faces,report
 
 
+def sync_directory(directory):
+    """Flush a directory entry on POSIX; Windows exposes no directory fsync."""
+    if os.name=='nt':return
+    descriptor=os.open(directory,os.O_RDONLY|getattr(os,'O_DIRECTORY',0))
+    try:os.fsync(descriptor)
+    finally:os.close(descriptor)
+
+
+def create_directories(directory):
+    """Create missing ancestors and persist each new entry in its parent, top-down."""
+    missing=[];path=Path(directory)
+    while not os.path.lexists(path) and path.parent!=path:missing.append(path);path=path.parent
+    directory.mkdir(parents=True,exist_ok=True)
+    for path in reversed(missing):sync_directory(path.parent)
+
+
 def durable_publish(source,target):
     """Durably publish a fresh destination without replacing an occupied path."""
     if os.name=='nt':
@@ -173,9 +211,7 @@ def durable_publish(source,target):
     else:
         os.link(source,target)
         source.unlink()
-        descriptor=os.open(target.parent,os.O_RDONLY|getattr(os,'O_DIRECTORY',0))
-        try:os.fsync(descriptor)
-        finally:os.close(descriptor)
+        sync_directory(target.parent)
 
 
 def require_npz_output(output):
@@ -191,7 +227,7 @@ def require_fresh_output(output):
 
 def publish_surface(output,vertices,faces,report):
     require_fresh_output(output)
-    output.parent.mkdir(parents=True,exist_ok=True)
+    create_directories(output.parent)
     temporary=output.with_suffix(output.suffix+'.part')
     with temporary.open('xb') as stream:
         np.savez(stream,vertices=vertices,faces=faces)
@@ -214,12 +250,14 @@ def main():
     parser.add_argument('--target-faces',type=int,default=3500)
     args=parser.parse_args(sys.argv[sys.argv.index('--')+1:])
     require_fresh_output(args.output)
-    with np.load(args.input,allow_pickle=False) as source:
+    # One immutable snapshot owns both the loaded geometry and the recorded input hash.
+    input_bytes=args.input.read_bytes()
+    with np.load(io.BytesIO(input_bytes),allow_pickle=False) as source:
         if set(source.files)!={'vertices','faces'}:raise ValueError('Expected geometry-only NPZ; do not discard authored attributes')
         vertices,faces=arrays(source['vertices'],source['faces'])
     if args.mode=='voxel':vertices,faces,report=voxel_surface(vertices,faces,args.voxel_size)
     else:vertices,faces,report=decimate_surface(vertices,faces,args.target_faces)
-    report['input_sha256']=hashlib.sha256(args.input.read_bytes()).hexdigest()
+    report['input_sha256']=hashlib.sha256(input_bytes).hexdigest()
     report=publish_surface(args.output,vertices,faces,report)
     print(json.dumps(report),flush=True)
 

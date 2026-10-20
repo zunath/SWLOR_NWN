@@ -33,7 +33,7 @@ MDL + MTR + compressed DDS only. Native hand/attack/icon verification is separat
 """
 from __future__ import annotations
 
-import argparse, base64, hashlib, importlib.util, json, math, re, shlex, shutil, struct, subprocess, sys
+import argparse, base64, hashlib, importlib.util, io, json, math, re, shlex, shutil, struct, subprocess, sys
 sys.dont_write_bytecode=True
 from pathlib import Path
 
@@ -663,8 +663,22 @@ def write_parts(config,resources,helpers,mesh_data,mesh_names,materials):
         text=text.replace(f'endmodelgeom {model}',attachment_dummy_nodes(config,model)+f'endmodelgeom {model}')
         mdl.write_text(text,encoding='ascii')
         points=[Vector(v) for mesh in selected for v in mesh[0]]
-        reports.append({'model':model,'clip':part,'triangles':sum(len(m[2]) for m in selected),'bounds_min':[min(v[i] for v in points) for i in range(3)],'bounds_max':[max(v[i] for v in points) for i in range(3)]})
+        reports.append({'model':model,'clip':part,'materials':sorted(set(textures)),'triangles':sum(len(m[2]) for m in selected),'bounds_min':[min(v[i] for v in points) for i in range(3)],'bounds_max':[max(v[i] for v in points) for i in range(3)]})
     return objects,reports
+
+
+def drop_clipped_materials(resources,names,material_dims,mapdims,retained,basis_path,basis):
+    """Materials clipped out of every exported part get no maps or normal provenance."""
+    dropped={index:name for index,name in names.items() if name not in retained}
+    for index,name in dropped.items():
+        for key in material_dims.pop(index):(resources/(key+'.tga')).unlink();mapdims.pop(key)
+        (resources/(name+'.mtr')).unlink();del names[index]
+    if dropped:
+        with np.load(basis_path,allow_pickle=False) as arrays:
+            kept={key:arrays[key] for key in arrays.files if key.rsplit('__',1)[0] not in dropped.values()}
+        np.savez_compressed(basis_path,**kept)
+        basis.update(sha256=hashlib.sha256(basis_path.read_bytes()).hexdigest(),materials=[m for m in basis['materials'] if m not in dropped.values()])
+    return sorted(dropped.values())
 
 
 def validate_attachment(config,rotation):
@@ -751,7 +765,7 @@ def export_one(config,source,repo,out,mode,helpers,icon_size):
         validate_model_name(config['model'],config['_item_class'],config['_model_type'])
         if not re.fullmatch('[a-z][a-z0-9_]{0,13}',texture):raise ValueError('Texture base must be lowercase and at most14 characters (map suffix space)' )
         if limit not in (512,1024):raise ValueError('texture_size must be512 or1024')
-        resources=out/'resources';resources.mkdir();names={};previews={};mapdims={}
+        resources=out/'resources';resources.mkdir();names={};previews={};mapdims={};material_dims={}
         material_count=len(doc['materials'])
         mesh_data=[];mesh_names=[];removed=0
         for ob in objects:
@@ -763,7 +777,7 @@ def export_one(config,source,repo,out,mode,helpers,icon_size):
                     name=texture if material_count==1 else texture+f'_{index}'
                     if len(name)>14:raise ValueError('Material texture name exceeds14 characters')
                     dims,maps=material_maps(doc,binary,index,source,cache,resources,name,limit)
-                    names[index]=name;mapdims.update(dims);previews[index]=preview_material(resources,name,maps)
+                    names[index]=name;mapdims.update(dims);material_dims[index]=dims;previews[index]=preview_material(resources,name,maps)
                 mesh,zero=compact_subset(exported,ob.data.loop_triangles,mat_slot);removed+=zero
                 mesh_data.append(mesh);mesh_names.append(names[index])
         # Collapse static subsets sharing a material without welding UV/normal seams.
@@ -778,6 +792,8 @@ def export_one(config,source,repo,out,mode,helpers,icon_size):
         old_objects=objects
         objects,part_reports=write_parts(config,resources,helpers,mesh_data,mesh_names,{names[i]:previews[i] for i in names})
         for ob in old_objects:bpy.data.objects.remove(ob,do_unlink=True)
+        # Normal reprojection needs a native UV surface for every recorded material.
+        report['clipped_away_materials']=drop_clipped_materials(resources,names,material_dims,mapdims,{m for part in part_reports for m in part['materials']},out/'source_basis.npz',report['source_normal_basis'])
         points,lo,hi=bounds(objects)
         report.update(model=model,parts=part_reports,fit=config,bounds_min=list(lo),bounds_max=list(hi),materials_exported=names,map_dimensions=mapdims,removed_exact_zero_area_triangles=removed,export_triangles=sum(p['triangles'] for p in part_reports))
     if mode=='inspect' and not doc.get('materials'):
@@ -947,7 +963,9 @@ def validate_manifest(config, repo, manifest, mode):
             if int(row['ModelType'])==2:
                 raise ValueError('Composite weapons require real bottom, middle and top parts; empty_parts is not allowed: '+model)
             validate_model_name(model,row['ItemClass'].lower(),int(row['ModelType']))
-            native_icon_size(part.get('icon_size'))
+            icon=native_icon_size(part.get('icon_size'))
+            if any(a>b for a,b in zip([int(row['InvSlotWidth'])*32,int(row['InvSlotHeight'])*32],icon)):
+                raise ValueError('Empty part icon_size is smaller than baseitems logical inventory area: '+model)
             if model in seen:raise ValueError('Empty part would replace occupied resource '+model)
             seen.add(model)
 
@@ -1093,12 +1111,28 @@ def texture_roles(paths):
     return roles
 
 
+def load_manifest(path):
+    """One snapshot of the fit manifest owns both the parsed config and its recorded hash."""
+    data=Path(path).read_bytes()
+    return json.loads(data.decode('utf-8-sig')),hashlib.sha256(data).hexdigest()
+
+
+def snapshot_export(export,manifest,staging):
+    """Copy each export resource's bytes once, after hashing those same bytes."""
+    found={str(p.relative_to(export)).replace('\\','/'):p for p in export.glob('*/resources/*')}
+    found.update({str(p.relative_to(export)).replace('\\','/'):p for p in (export/'empty_resources').glob('*')})
+    require(set(found)==set(manifest['resources']),'Export resource set differs from recorded manifest')
+    paths={}
+    for key,path in sorted(found.items()):
+        data=path.read_bytes();require(hashlib.sha256(data).hexdigest()==manifest['resources'][key],'Changed export '+key)
+        target=staging/key;target.parent.mkdir(parents=True,exist_ok=True);target.write_bytes(data);paths[key]=target
+    return paths
+
+
 def package(args, repo, out):
-    export=args.export.resolve();manifest=json.loads((export/'export_manifest.json').read_text())
-    paths={str(p.relative_to(export)).replace('\\','/'):p for p in export.glob('*/resources/*')}
-    paths.update({str(p.relative_to(export)).replace('\\','/'):p for p in (export/'empty_resources').glob('*')})
-    require(set(paths)==set(manifest['resources']),'Export resource set differs from recorded manifest')
-    for key,path in paths.items():require(hashlib.sha256(path.read_bytes()).hexdigest()==manifest['resources'][key],'Changed export '+key)
+    export=args.export.resolve();manifest_bytes=(export/'export_manifest.json').read_bytes();manifest=json.loads(manifest_bytes)
+    # Every later copy, role scan, compile and compression reads only these verified bytes.
+    paths=snapshot_export(export,manifest,out/'verified_export')
     ascii_dir=out/'ascii_resources';runtime=out/'runtime_resources';logs=out/'compression_logs'
     for folder in (ascii_dir,runtime,logs):folder.mkdir()
     seen=set();textures=[];roles=texture_roles(list(paths.values()))
@@ -1119,9 +1153,10 @@ def package(args, repo, out):
     for record in manifest['normal_bases']:
         metadata=export/record['file']
         require(metadata.resolve().is_relative_to(export),'Normal metadata escapes export directory')
-        require(hashlib.sha256(metadata.read_bytes()).hexdigest()==record['sha256'],'Source tangent provenance changed')
+        metadata_bytes=metadata.read_bytes()
+        require(hashlib.sha256(metadata_bytes).hexdigest()==record['sha256'],'Source tangent provenance changed')
         require(manifest['sources'].get(record['asset'])==record['source_sha256'],'Source tangent GLB hash mismatch')
-        with np.load(metadata,allow_pickle=False) as arrays:
+        with np.load(io.BytesIO(metadata_bytes),allow_pickle=False) as arrays:
             policy=record.get('normal_basis_policy','reproject')
             require(policy in ('reproject','authored_tangents'),'Unknown normal basis policy')
             authored_reports=[]
@@ -1169,7 +1204,7 @@ def package(args, repo, out):
     for mtr in runtime.glob('*.mtr'):
         for name in re.findall(r'^texture\d+\s+(\S+)',mtr.read_text(),re.M):require((runtime/(name+'.dds')).is_file(),'Missing texture '+name)
     models=[validate_native(p,ascii_dir/p.name,runtime) for p in sorted(runtime.glob('*.mdl'))]
-    report={'export_manifest_sha256':hashlib.sha256((export/'export_manifest.json').read_bytes()).hexdigest(),
+    report={'export_manifest_sha256':hashlib.sha256(manifest_bytes).hexdigest(),
             'resources':{p.name:hashlib.sha256(p.read_bytes()).hexdigest() for p in runtime.iterdir()},
             'textures':textures,'models':models,'normal_basis_reprojection':normal_reports,'compiler':compiler_identity,'production_copied':False,'native_visual_review_required':True}
     (out/'package_report.json').write_text(json.dumps(report,indent=2)+'\n')
@@ -1192,7 +1227,7 @@ def main():
         if any(getattr(args,key) is None for key in ('export','crunch')):parser.error('package requires --export and --crunch')
         out.mkdir(parents=True,exist_ok=True);package(args,repo,out);return
     if args.manifest is None:parser.error('inspect/export requires --manifest')
-    manifest=args.manifest.resolve();config=json.loads(manifest.read_text(encoding='utf-8-sig'))
+    manifest=args.manifest.resolve();config,manifest_sha=load_manifest(manifest)
     validate_manifest(config,repo,manifest,args.mode);load_blender()
     out.mkdir(parents=True,exist_ok=True)
     helpers=load_module('weapon_export',repo/'tools/ImportBlasterModel.py')
@@ -1211,7 +1246,7 @@ def main():
     if args.mode=='export':
         paths=list(out.glob('*/resources/*'))+list((out/'empty_resources').glob('*'))
         resources={p.relative_to(out).as_posix():hashlib.sha256(p.read_bytes()).hexdigest() for p in paths}
-        (out/'export_manifest.json').write_text(json.dumps({'schema_version':1,'source_manifest_sha256':hashlib.sha256(manifest.read_bytes()).hexdigest(),
+        (out/'export_manifest.json').write_text(json.dumps({'schema_version':1,'source_manifest_sha256':manifest_sha,
             'sources':{item['asset']:item['sha256'] for item in config['assets']},'resources':resources,
             'normal_bases':[{'asset':item['asset'],'file':f"{i+1:02d}_{item['asset']}/source_basis.npz",**report['source_normal_basis'],'models':[part['model'] for part in report['parts']],'normal_basis_policy':item.get('normal_basis_policy','reproject'), 'aliases':sum([part.get('aliases',[]) for part in item.get('parts',[])],[])+item.get('aliases',[])} for i,(item,report) in enumerate(zip(config['assets'],reports))]},indent=2)+'\n')
     print('WEAPON_TOOL_COMPLETE '+str(out))

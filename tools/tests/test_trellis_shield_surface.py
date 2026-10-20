@@ -67,6 +67,41 @@ class ShieldSurfaceTests(unittest.TestCase):
         self.assertEqual(removed,0)
         with self.assertRaises(ValueError):surface.require_closed(surface.audit_surface(v,f,components=True))
 
+    def test_inward_shell_is_accepted_only_as_an_enclosed_cavity(self):
+        def inward(mesh):return mesh[0],mesh[1][:,::-1].copy()
+        outer=box(size=(1,1,1));cavity=inward(box(size=(.5,.5,.5)))
+        report=surface.audit_surface(*combine(outer,cavity),components=True);surface.require_closed(report)
+        self.assertEqual(report['exposed_inward_shells'],0)
+        self.assertEqual(sorted(shell['signed_volume']<0 for shell in report['shells']),[False,True])
+        island=box(size=(.2,.2,.2));nested=inward(box(size=(.1,.1,.1)))
+        surface.require_closed(surface.audit_surface(*combine(outer,cavity,island,nested),components=True))
+        for meshes in ((inward(outer),),(box(),inward(box((2,0,0)))),(outer,cavity,inward(box(size=(.2,.2,.2))))):
+            with self.subTest(shells=len(meshes)),self.assertRaisesRegex(ValueError,'not an enclosed cavity'):
+                surface.require_closed(surface.audit_surface(*combine(*meshes),components=True))
+
+    def test_input_hash_uses_the_loaded_snapshot(self):
+        vertices,faces=box()
+        with tempfile.TemporaryDirectory() as temporary:
+            source=Path(temporary)/'source.npz';np.savez(source,vertices=vertices,faces=faces);original=source.read_bytes()
+            def voxel(v,f,size):
+                np.testing.assert_array_equal(v,vertices);source.write_bytes(b'changed after load')
+                return v,f,{}
+            argv=['blender','--','voxel',str(source),str(Path(temporary)/'out.npz')]
+            with patch.object(surface.sys,'argv',argv),patch.object(surface,'voxel_surface',side_effect=voxel),patch.object(surface,'publish_surface',side_effect=lambda o,v,f,r:r) as publish,patch('builtins.print'):
+                surface.main()
+            self.assertEqual(publish.call_args[0][3]['input_sha256'],hashlib.sha256(original).hexdigest())
+
+    def test_new_output_directories_are_persisted_in_their_parents(self):
+        vertices,faces=box()
+        with tempfile.TemporaryDirectory() as temporary,patch.object(surface,'sync_directory') as sync:
+            root=Path(temporary);output=root/'a'/'b'/'surface.npz'
+            surface.publish_surface(output,vertices,faces,{})
+            self.assertEqual([call.args[0] for call in sync.call_args_list][:2],[root,root/'a'])
+            sync.reset_mock();surface.publish_surface(root/'a'/'b'/'again.npz',vertices,faces,{})
+            self.assertNotIn(root,[call.args[0] for call in sync.call_args_list])
+        with tempfile.TemporaryDirectory() as temporary,patch.object(surface.os,'name','nt'),patch.object(surface.os,'open') as opened:
+            surface.sync_directory(Path(temporary));opened.assert_not_called()
+
     def test_quantization_preserves_every_byte_and_positive_grazing_normal(self):
         images=np.zeros((1,1,256,3),np.float32);images[0,0,:,0]=np.arange(256)/255
         images[...,1:]=.5

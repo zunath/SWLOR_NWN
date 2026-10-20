@@ -31,9 +31,9 @@ public class CustomShaderMobileCompatibilityTests
         @"^#\s*define\s+(?<name>\w+)(\([^)]*\))?(?<body>.*)$",
         RegexOptions.Compiled);
 
-    // "#if defined(MOBILE)", "#if !defined MOBILE" and similar single-term tests.
-    private static readonly Regex MobileIfExpression = new(
-        @"^#\s*(el)?if\s+(?<not>!\s*)?defined\s*(\(\s*MOBILE\s*\)|MOBILE)\s*$",
+    // The condition of an #if or #elif directive.
+    private static readonly Regex IfCondition = new(
+        @"^#\s*(el)?if\b(?<condition>.*)$",
         RegexOptions.Compiled);
 
     [Test]
@@ -92,6 +92,9 @@ public class CustomShaderMobileCompatibilityTests
         FindMobileUnsupportedLines(guardedContinuedMacro).Should().BeEmpty();
         FindMobileUnsupportedLines(splitOperator).Should().ContainSingle();
         FindMobileUnsupportedLines("#if !defined(MOBILE)\n" + unguarded + "#endif\n").Should().BeEmpty();
+        FindMobileUnsupportedLines("#if (!defined(MOBILE))\n" + unguarded + "#endif\n").Should().BeEmpty();
+        FindMobileUnsupportedLines("#if !(defined MOBILE)\n" + unguarded + "#endif\n").Should().BeEmpty();
+        FindMobileUnsupportedLines("#if !defined(MOBILE) || QUALITY\n" + unguarded + "#endif\n").Should().ContainSingle();
         FindMobileUnsupportedLines("#if defined MOBILE\nint A() { return 0; }\n#else\n" + unguarded + "#endif\n").Should().BeEmpty();
         FindMobileUnsupportedLines("// /*\nint B(int v) { return v & 1; }\n// */\n").Should().ContainSingle();
         FindMobileUnsupportedLines("#ifndef MOBILE\n#endif\n#define/**/UNPACK(v) ((v >> 3) & 3)\n").Should().ContainSingle();
@@ -179,23 +182,14 @@ public class CustomShaderMobileCompatibilityTests
                         conditions.Push(argument == "MOBILE" ? (false, false) : (null, null));
                         break;
                     case "if":
-                        var mobileTest = MobileIfExpression.Match(directive);
-                        if (mobileTest.Success)
-                        {
-                            var compiledOnMobile = mobileTest.Groups["not"].Value.Length == 0;
-                            conditions.Push((compiledOnMobile, compiledOnMobile));
-                        }
-                        else
-                        {
-                            conditions.Push((null, null));
-                        }
+                        var ifValue = EvaluateMobileTest(directive);
+                        conditions.Push((ifValue, ifValue));
                         break;
                     case "elif":
                         if (conditions.Count > 0)
                         {
                             var chain = conditions.Pop();
-                            var elifTest = MobileIfExpression.Match(directive);
-                            bool? elifValue = elifTest.Success ? elifTest.Groups["not"].Value.Length == 0 : null;
+                            var elifValue = EvaluateMobileTest(directive);
                             if (chain.Matched == true)
                             {
                                 // A branch that already matched skips every later #elif.
@@ -251,6 +245,61 @@ public class CustomShaderMobileCompatibilityTests
         }
 
         return new MobileScan(possible, definite, macros);
+    }
+
+    /// <summary>
+    /// Evaluates an #if/#elif condition that is a single MOBILE test, allowing grouping
+    /// parentheses and negation: "defined(MOBILE)", "!defined MOBILE",
+    /// "(!(defined(MOBILE)))". Returns null for anything else.
+    /// </summary>
+    private static bool? EvaluateMobileTest(string directive)
+    {
+        var match = IfCondition.Match(directive);
+        if (!match.Success)
+        {
+            return null;
+        }
+
+        var expression = Regex.Replace(match.Groups["condition"].Value, @"\s+", string.Empty);
+        var negated = false;
+        while (true)
+        {
+            if (expression.StartsWith("!"))
+            {
+                negated = !negated;
+                expression = expression.Substring(1);
+            }
+            else if (expression.StartsWith("(") && expression.EndsWith(")") && WrapsWhole(expression))
+            {
+                expression = expression.Substring(1, expression.Length - 2);
+            }
+            else
+            {
+                break;
+            }
+        }
+
+        if (expression is "defined(MOBILE)" or "definedMOBILE")
+        {
+            return !negated;
+        }
+
+        return null;
+    }
+
+    private static bool WrapsWhole(string expression)
+    {
+        var depth = 0;
+        for (var index = 0; index < expression.Length; index++)
+        {
+            depth += expression[index] == '(' ? 1 : expression[index] == ')' ? -1 : 0;
+            if (depth == 0 && index < expression.Length - 1)
+            {
+                return false;
+            }
+        }
+
+        return depth == 0;
     }
 
     private static string StripComments(string shader)

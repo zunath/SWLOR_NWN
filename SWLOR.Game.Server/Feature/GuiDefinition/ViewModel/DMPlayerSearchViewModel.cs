@@ -30,13 +30,11 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         private List<DMPlayerSearchResult> _results = new();
         private readonly List<DMPlayerSearchResult> _pageResults = new();
-        private int _selectedIndex = -1;
+        // Selected characters in the order they were picked, kept across searches and pages so a DM can
+        // gather a group from several searches. One selection drives the details and single-character actions.
+        private readonly List<DMPlayerSearchResult> _selected = new();
         private bool _isTruncated;
         private bool _suppressSearch;
-        // Checked characters by player ID, kept across searches and pages. The names are for messages.
-        private readonly Dictionary<string, string> _checkedPlayers = new();
-        // Setting the checkbox list fires its watch event at once, before the page is fully written.
-        private bool _isWritingChecks;
 
         public int SelectedScope
         {
@@ -97,31 +95,25 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             set => Set(value);
         }
 
-        public GuiBindingList<bool> ResultChecks
-        {
-            get => Get<GuiBindingList<bool>>();
-            set => Set(value);
-        }
-
-        public GuiBindingList<bool> ResultCheckEnabled
-        {
-            get => Get<GuiBindingList<bool>>();
-            set => Set(value);
-        }
-
-        public string CheckedSummary
+        public string SelectionSummary
         {
             get => Get<string>();
             set => Set(value);
         }
 
-        public string BringCheckedText
+        public bool HasSelection
+        {
+            get => Get<bool>();
+            set => Set(value);
+        }
+
+        public string BringSelectedText
         {
             get => Get<string>();
             set => Set(value);
         }
 
-        public bool HasChecked
+        public bool CanBringSelected
         {
             get => Get<bool>();
             set => Set(value);
@@ -168,6 +160,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             set => Set(value);
         }
 
+        public string SingleActionReason
+        {
+            get => Get<string>();
+            set => Set(value);
+        }
+
         protected override void Initialize(GuiPayloadBase initialPayload)
         {
             Geometry = DMToolbarViewModel.PlaceBelowToolbar(Player, Geometry);
@@ -181,23 +179,17 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             ResultStatuses = new GuiBindingList<string>();
             ResultStatusColors = new GuiBindingList<GuiColor>();
             ResultSelections = new GuiBindingList<bool>();
-            ResultChecks = new GuiBindingList<bool>();
-            ResultCheckEnabled = new GuiBindingList<bool>();
             PageNumbers = new GuiBindingList<GuiComboEntry>();
             SelectedPageIndex = 0;
             ResultSummary = string.Empty;
-            SelectedDetails = string.Empty;
-            CanJumpTo = false;
-            IsSelectedOnline = false;
-            // The view model is reused when the window reopens. Old checks must not carry into a new session.
-            _checkedPlayers.Clear();
-            UpdateCheckedState();
+            // The view model is reused when the window reopens. An old selection must not carry into a new session.
+            _selected.Clear();
+            ShowSelection();
             _suppressSearch = false;
 
             WatchOnClient(model => model.SelectedScope);
             WatchOnClient(model => model.SearchText);
             WatchOnClient(model => model.SelectedPageIndex);
-            WatchOnClient(model => model.ResultChecks);
 
             ChangePartialView(MainContentElement, MainContentPartial);
             RunSearch();
@@ -233,6 +225,14 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 .Skip(SelectedPageIndex * ResultsPerPage)
                 .Take(ResultsPerPage));
 
+            // A fresh search has the current online state and location of any selected character it lists.
+            foreach (var result in _results)
+            {
+                var index = _selected.FindIndex(selected => selected.PlayerId == result.PlayerId);
+                if (index >= 0)
+                    _selected[index] = result;
+            }
+
             var names = new GuiBindingList<string>();
             var descriptors = new GuiBindingList<string>();
             var descriptorColors = new GuiBindingList<GuiColor>();
@@ -240,8 +240,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var statuses = new GuiBindingList<string>();
             var statusColors = new GuiBindingList<GuiColor>();
             var selections = new GuiBindingList<bool>();
-            var checks = new GuiBindingList<bool>();
-            var checkEnabled = new GuiBindingList<bool>();
             foreach (var result in _pageResults)
             {
                 names.Add(result.Name);
@@ -250,9 +248,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 accounts.Add(string.IsNullOrWhiteSpace(result.AccountName) ? "?" : DMListText.Fit(result.AccountName, AccountColumnLength));
                 statuses.Add(result.IsOnline ? "Online" : "Offline");
                 statusColors.Add(result.IsOnline ? OnlineColor : OfflineColor);
-                selections.Add(false);
-                checks.Add(result.IsOnline && _checkedPlayers.ContainsKey(result.PlayerId));
-                checkEnabled.Add(result.IsOnline);
+                selections.Add(IsSelected(result));
             }
 
             ResultNames = names;
@@ -262,10 +258,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             ResultStatuses = statuses;
             ResultStatusColors = statusColors;
             ResultSelections = selections;
-            _isWritingChecks = true;
-            ResultChecks = checks;
-            _isWritingChecks = false;
-            ResultCheckEnabled = checkEnabled;
 
             var onlineCount = _results.Count(result => result.IsOnline);
             ResultSummary = _results.Count == 0
@@ -273,25 +265,65 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 : $"{_results.Count} character{(_results.Count == 1 ? string.Empty : "s")} ({onlineCount} online)." +
                   (_isTruncated ? " Narrow the search to see more." : string.Empty);
 
-            SelectResult(-1);
+            ShowSelection();
         }
 
+        private bool IsSelected(DMPlayerSearchResult result)
+        {
+            return _selected.Any(selected => selected.PlayerId == result.PlayerId);
+        }
+
+        // Selects or deselects one row. Other selections stay, so several characters can be picked at once.
         private void SelectResult(int index)
         {
-            if (_selectedIndex >= 0 && _selectedIndex < ResultSelections.Count)
-                ResultSelections[_selectedIndex] = false;
+            if (index < 0 || index >= _pageResults.Count)
+                return;
 
-            _selectedIndex = index;
+            var result = _pageResults[index];
+            var selectedIndex = _selected.FindIndex(selected => selected.PlayerId == result.PlayerId);
+            if (selectedIndex >= 0)
+                _selected.RemoveAt(selectedIndex);
+            else
+                _selected.Add(result);
+
+            ResultSelections[index] = selectedIndex < 0;
+            ShowSelection();
+        }
+
+        private void ShowSelection()
+        {
+            var count = _selected.Count;
+            var onlineCount = _selected.Count(selected => selected.IsOnline);
+            HasSelection = count > 0;
+            SelectionSummary = count == 0
+                ? "No characters selected."
+                : $"{count} character{(count == 1 ? string.Empty : "s")} selected.";
+            CanBringSelected = onlineCount > 0;
+            BringSelectedText = onlineCount == 0 ? "Bring Selected Here" : $"Bring Selected Here ({onlineCount})";
+
             var result = GetSelectedResult();
-            if (result == null)
+            CanJumpTo = result != null;
+            IsSelectedOnline = result is { IsOnline: true };
+            SingleActionReason = count switch
             {
-                SelectedDetails = "Select a character to see their details and actions.";
-                CanJumpTo = false;
-                IsSelectedOnline = false;
+                0 => "Select a character first.",
+                1 => "The character is offline.",
+                _ => "Select only one character to use this.",
+            };
+
+            if (count == 0)
+            {
+                SelectedDetails = "Select a character to see their details and actions. Select several to bring them here together.";
                 return;
             }
 
-            ResultSelections[_selectedIndex] = true;
+            if (result == null)
+            {
+                SelectedDetails = $"{count} characters selected:\n" + string.Join("\n", _selected.Select(selected =>
+                    selected.IsOnline ? selected.Name : $"{selected.Name} (offline)"));
+                return;
+            }
+
             var onlinePlayer = result.IsOnline ? DMPlayerDirectory.GetOnlinePlayer(result.PlayerId) : OBJECT_INVALID;
             var details = new List<string>
             {
@@ -319,56 +351,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             }
 
             SelectedDetails = string.Join("\n", details);
-            CanJumpTo = true;
-            IsSelectedOnline = result.IsOnline;
-        }
-
-        private void UpdateCheckedState()
-        {
-            var count = _checkedPlayers.Count;
-            HasChecked = count > 0;
-            CheckedSummary = count == 0
-                ? "No characters checked."
-                : $"{count} character{(count == 1 ? string.Empty : "s")} checked.";
-            BringCheckedText = count == 0 ? "Bring Checked Here" : $"Bring Checked Here ({count})";
-        }
-
-        // Reflects the page's checkboxes on the client into the checked set.
-        private void ReadPageChecks()
-        {
-            if (_isWritingChecks || ResultChecks.Count != _pageResults.Count)
-                return;
-
-            for (var index = 0; index < _pageResults.Count; index++)
-            {
-                var result = _pageResults[index];
-                if (result.IsOnline && ResultChecks[index])
-                    _checkedPlayers[result.PlayerId] = result.Name;
-                else
-                    _checkedPlayers.Remove(result.PlayerId);
-            }
-
-            UpdateCheckedState();
-        }
-
-        private void ShowPageChecks()
-        {
-            var checks = new GuiBindingList<bool>();
-            foreach (var result in _pageResults)
-            {
-                checks.Add(result.IsOnline && _checkedPlayers.ContainsKey(result.PlayerId));
-            }
-
-            _isWritingChecks = true;
-            ResultChecks = checks;
-            _isWritingChecks = false;
-            UpdateCheckedState();
-        }
-
-        protected override void OnClientPropertyUpdated(string propertyName)
-        {
-            if (propertyName == nameof(ResultChecks))
-                ReadPageChecks();
         }
 
         private static string GetStatusText(DMPlayerSearchResult result, uint onlinePlayer)
@@ -384,11 +366,10 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             return string.IsNullOrWhiteSpace(value) ? NotRecorded : value;
         }
 
+        // The character that single-character actions use: the selection when exactly one is selected.
         private DMPlayerSearchResult GetSelectedResult()
         {
-            return _selectedIndex >= 0 && _selectedIndex < _pageResults.Count
-                ? _pageResults[_selectedIndex]
-                : null;
+            return _selected.Count == 1 ? _selected[0] : null;
         }
 
         // Resolves the selected character's current player object, telling the DM if they logged off.
@@ -406,11 +387,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         public Action OnSelectResult() => () =>
         {
-            var index = NuiGetEventArrayIndex();
-            if (index < 0 || index >= _pageResults.Count)
-                return;
-
-            SelectResult(index);
+            SelectResult(NuiGetEventArrayIndex());
         };
 
         public Action OnClickSearch() => RunSearch;
@@ -470,22 +447,23 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 DMPresence.SendMessage(Player, error);
         };
 
-        public Action OnClickClearChecks() => () =>
+        public Action OnClickClearSelection() => () =>
         {
-            _checkedPlayers.Clear();
-            ShowPageChecks();
+            _selected.Clear();
+            ShowPage();
         };
 
-        public Action OnClickBringChecked() => () =>
+        // Brings every selected online character. Offline selections stay selected and are skipped.
+        public Action OnClickBringSelected() => () =>
         {
             var brought = 0;
-            foreach (var (playerId, name) in _checkedPlayers.ToList())
+            foreach (var result in _selected.Where(selected => selected.IsOnline).ToList())
             {
-                var target = DMPlayerDirectory.GetOnlinePlayer(playerId);
+                var target = DMPlayerDirectory.GetOnlinePlayer(result.PlayerId);
                 if (!GetIsObjectValid(target))
                 {
-                    DMPresence.SendMessage(Player, $"{name} is no longer online.");
-                    _checkedPlayers.Remove(playerId);
+                    DMPresence.SendMessage(Player, $"{result.Name} is no longer online.");
+                    _selected.Remove(result);
                     continue;
                 }
 
@@ -497,7 +475,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             }
 
             DMPresence.SendMessage(Player, $"Brought {brought} character{(brought == 1 ? string.Empty : "s")} to you.");
-            ShowPageChecks();
+            ShowPage();
         };
 
         public Action OnClickExamine() => () =>

@@ -605,16 +605,26 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 await InContext(ctx, dm.Creature, model.OnClickJumpHere());
                 await ctx.WaitUntilAsync(() => GetDistanceBetween(dm.Creature, target.Creature) < 3f, 5f, "the player to be brought to the DM");
 
-                // Checks gathered from separate searches bring the whole group at once.
-                ctx.Assert(!model.HasChecked, "nothing is checked when the window opens");
-                await CheckRow(ctx, dm.Creature, model, 0);
+                // Selections gathered from separate searches bring the whole group at once.
+                ctx.AssertEqual("Bring Selected Here (1)", model.BringSelectedText, "one online character is selected");
                 await InContext(ctx, dm.Creature, () => model.SearchText = "Morn Kesh");
                 await InContext(ctx, dm.Creature, model.OnClickSearch());
                 ctx.AssertEqual(1, model.ResultNames.Count, "second character search result count");
-                ctx.Assert(!model.ResultChecks[0] && model.ResultCheckEnabled[0], "an unchecked online character can be checked");
-                await CheckRow(ctx, dm.Creature, model, 0);
-                ctx.AssertEqual("Bring Checked Here (2)", model.BringCheckedText, "checks persist across searches");
-                Capture(dm.Creature, GuiWindowType.DMPlayerSearch, "players-checked");
+                ctx.Assert(!model.ResultSelections[0], "the second character starts unselected");
+                ctx.Assert(model.IsSelectedOnline, "the first selection survives a new search");
+                await SelectRow(ctx, dm.Creature, model, 0);
+                ctx.AssertEqual("Bring Selected Here (2)", model.BringSelectedText, "selections persist across searches");
+                ctx.Assert(model.ResultSelections[0] && model.SelectionSummary == "2 characters selected.", "both characters are selected");
+                ctx.Assert(!model.CanJumpTo && !model.IsSelectedOnline, "single-character actions wait for one selection");
+                ctx.AssertEqual("Select only one character to use this.", model.SingleActionReason, "the disabled actions say why");
+                ctx.Assert(model.SelectedDetails.StartsWith("2 characters selected:") && model.SelectedDetails.Contains("Morn Kesh"),
+                    "the details list the selected characters");
+                Capture(dm.Creature, GuiWindowType.DMPlayerSearch, "players-multi-selected");
+
+                await SelectRow(ctx, dm.Creature, model, 0);
+                ctx.Assert(!model.ResultSelections[0] && model.IsSelectedOnline, "selecting a selected row again deselects it");
+                await SelectRow(ctx, dm.Creature, model, 0);
+                ctx.AssertEqual("Bring Selected Here (2)", model.BringSelectedText, "the row is selected again");
 
                 AssignCommand(target.Creature, () =>
                 {
@@ -631,21 +641,22 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                     ClearAllActions();
                     JumpToLocation(ctx.GetArenaLocation(6f, 0f));
                 });
-                await ctx.WaitUntilAsync(() => GetDistanceBetween(dm.Creature, target.Creature) > 10f &&
-                                               GetDistanceBetween(dm.Creature, second.Creature) > 10f, 10f, "the DM to move away from both");
-                await InContext(ctx, dm.Creature, model.OnClickBringChecked());
+                await ctx.WaitUntilAsync(() => GetDistanceBetween(dm.Creature, target.Creature) > 10f, 10f, "the DM to move away from the first player");
+                await ctx.WaitUntilAsync(() => GetDistanceBetween(dm.Creature, second.Creature) > 10f, 10f, "the DM to move away from the second player");
+                await InContext(ctx, dm.Creature, model.OnClickBringSelected());
                 await ctx.WaitUntilAsync(() => GetDistanceBetween(dm.Creature, target.Creature) < 3f &&
-                                               GetDistanceBetween(dm.Creature, second.Creature) < 3f, 5f, "both checked players to be brought to the DM");
-                ctx.Assert(model.HasChecked, "checks stay after bringing the group, so it can be moved again");
+                                               GetDistanceBetween(dm.Creature, second.Creature) < 3f, 5f, "both selected players to be brought to the DM");
+                ctx.Assert(model.HasSelection, "selections stay after bringing the group, so it can be moved again");
 
-                await InContext(ctx, dm.Creature, model.OnClickClearChecks());
-                ctx.Assert(!model.HasChecked && !model.ResultChecks[0], "Clear Checks unchecks everyone");
+                await InContext(ctx, dm.Creature, model.OnClickClearSelection());
+                ctx.Assert(!model.HasSelection && !model.ResultSelections[0], "Clear Selection deselects everyone");
 
-                await CheckRow(ctx, dm.Creature, model, 0);
+                await SelectRow(ctx, dm.Creature, model, 0);
                 await InContext(ctx, dm.Creature, () => Gui.ClosePlayerWindow(dm.Creature, GuiWindowType.DMPlayerSearch));
                 await InContext(ctx, dm.Creature, () => Gui.TogglePlayerWindow(dm.Creature, GuiWindowType.DMPlayerSearch));
                 model = (DMPlayerSearchViewModel)windows.ViewModel(GuiWindowType.DMPlayerSearch);
-                ctx.Assert(!model.HasChecked && model.ResultChecks.All(isChecked => !isChecked), "reopening Player Search starts with nothing checked");
+                ctx.Assert(!model.HasSelection && model.ResultSelections.All(isSelected => !isSelected),
+                    "reopening Player Search starts with nothing selected");
 
                 await InContext(ctx, dm.Creature, () => model.SearchText = "lanky");
                 await InContext(ctx, dm.Creature, model.OnClickSearch());
@@ -711,9 +722,11 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 var offlineRow = model.ResultNames.IndexOf("Qorin Zyndari");
                 ctx.Assert(offlineRow >= 0 && model.ResultNames.Contains("Vexa Zyndari"), "the combined scope lists online and offline matches");
                 ctx.Assert(model.ResultNames.IndexOf("Vexa Zyndari") < offlineRow, "online characters are listed first");
+                await InContext(ctx, dm.Creature, model.OnClickClearSelection());
                 await SelectRow(ctx, dm.Creature, model, offlineRow);
                 ctx.Assert(!model.IsSelectedOnline && model.CanJumpTo, "offline characters only allow Jump To");
-                ctx.Assert(!model.ResultCheckEnabled[offlineRow], "offline characters cannot be checked");
+                ctx.Assert(!model.CanBringSelected, "an offline selection cannot be brought");
+                ctx.AssertEqual("The character is offline.", model.SingleActionReason, "online-only actions say why");
                 ctx.Assert(model.SelectedDetails.Contains("Account: qorinaccount") && model.SelectedDetails.Contains("CD Key: QZTEST01"),
                     "offline details show the recorded account and CD key");
                 ctx.Assert(model.SelectedDetails.Contains("Last Login: 2026-10-01 18:30 UTC"), "offline details show the last login");
@@ -744,18 +757,6 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
         {
             await ctx.ExecuteInCreatureContextAsync(creature, action);
             await ctx.WaitFrameAsync();
-        }
-
-        // A checkbox click reaches the server as a watch event on the whole list, so set the row and run the
-        // view model's watch handler.
-        private static Task CheckRow(EngineTestContext ctx, uint creature, DMPlayerSearchViewModel model, int row)
-        {
-            var method = typeof(DMPlayerSearchViewModel).GetMethod("OnClientPropertyUpdated", BindingFlags.Instance | BindingFlags.NonPublic)!;
-            return InContext(ctx, creature, () =>
-            {
-                model.ResultChecks[row] = true;
-                method.Invoke(model, new object[] { nameof(DMPlayerSearchViewModel.ResultChecks) });
-            });
         }
 
         // A list click reports its row through NuiGetEventArrayIndex, which only exists inside a

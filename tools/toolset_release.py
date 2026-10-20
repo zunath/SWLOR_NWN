@@ -173,19 +173,22 @@ def remote_assets(release):
 
 
 def same_asset(local, remote):
-    if remote.get('size') != local.stat().st_size:
-        return False
+    """Compare by size and SHA-256. An asset without a reported digest cannot be verified, so it never matches."""
     digest = remote.get('digest')
-    return not digest or digest.lower() == 'sha256:' + file_sha256(local)
+    return bool(digest) and remote.get('size') == local.stat().st_size and digest.lower() == 'sha256:' + file_sha256(local)
 
 
 def gh_release(tag):
+    """The release for a tag, or None. Drafts are invisible to `release view` by tag, so a hidden draft is refused."""
     code, out, err = run_gh(['release', 'view', tag, '--repo', REPO, '--json', 'assets,isDraft,isImmutable,isPrerelease'], check=False)
-    if code:
-        if 'not found' in (err + out).lower():
-            return None
+    if code == 0:
+        return json.loads(out)
+    if 'not found' not in (err + out).lower():
         raise GhError(['release', 'view', tag], err or out)
-    return json.loads(out)
+    listing = json.loads(run_gh(['release', 'list', '--repo', REPO, '--limit', '200', '--json', 'tagName,isDraft']) or '[]')
+    if any(item['tagName'] == tag and item['isDraft'] for item in listing):
+        raise RuntimeError(f'An unfinished draft release for {tag} exists. Delete that draft on GitHub (or: gh release delete {tag}) and rerun.')
+    return None
 
 
 class Publisher:
@@ -222,11 +225,15 @@ class Publisher:
             raise RuntimeError(f'{tag} already exists with different assets ({", ".join(sorted(mismatched))}). '
                                'Published versions are never replaced: publish a new version instead.')
         missing = [path for path in files if path.name not in remote]
-        if not missing:
+        if missing:
+            self.write(['release', 'upload', tag, *missing, '--repo', REPO])
+            self.log(f'{tag}: uploaded {len(missing)} missing assets to an interrupted release.')
+        if release.get('isDraft'):
+            # gh publishes a draft only after every upload succeeds, so a draft is an interrupted release: finish it.
+            self.write(['release', 'edit', tag, '--repo', REPO, '--draft=false', '--latest=false'])
+            self.log(f'{tag}: published the recovered draft (not marked latest).')
+        elif not missing:
             self.log(f'{tag}: already published with identical assets; skipped.')
-            return
-        self.write(['release', 'upload', tag, *missing, '--repo', REPO])
-        self.log(f'{tag}: uploaded {len(missing)} missing assets to an interrupted release.')
 
     def move_latest_tag(self, revision):
         code, out, err = run_gh(['api', f'repos/{REPO}/git/ref/tags/{LATEST_TAG}', '--jq', '.object.sha'], check=False)
@@ -253,7 +260,7 @@ class Publisher:
                         '--notes', notes, '--latest=false'])
         else:
             self.write(['release', 'edit', LATEST_TAG, '--repo', REPO, '--title', LATEST_TITLE, '--notes', notes,
-                        '--latest=false', '--prerelease=false'])
+                        '--latest=false', '--prerelease=false', '--draft=false'])
         self.write(['release', 'upload', LATEST_TAG, *downloads, '--repo', REPO, '--clobber'])
         keep = {path.name for path in downloads}
         for name in sorted(set(remote_assets(release or {})) - keep):
@@ -416,8 +423,39 @@ def release_local(args):
     output = output.resolve()
     if output == ROOT or ROOT in output.parents:
         raise RuntimeError('Choose an output directory outside the source checkout.')
+    release = output / 'release'
     if output.exists():
-        raise RuntimeError(f'{output} already exists. Choose another --output or delete it.')
+        files = reusable_build(output, args.version, revision)
+        print(f'Reusing the verified build of {args.version} at {revision[:12]} in {release}; nothing is rebuilt.')
+    else:
+        files = build_release(args, output, revision)
+    print(f'{len(files)} release files in {release} ({directory_size(release) / 1048576:.0f} MiB; '
+          f'output folder {directory_size(output) / 1048576:.0f} MiB).')
+    publish_release(args.version, release, revision, dry_run=not args.publish)
+    print(f'Total {(time.monotonic() - started) / 60:.1f} min.')
+    if not args.publish:
+        print(f'Dry run complete. Rerun the same command with --publish to release this build without rebuilding it. Delete {output} when done.')
+
+
+def build_info_path(output):
+    return Path(output) / 'build-info.json'
+
+
+def reusable_build(output, version, revision):
+    """The release files of an earlier, complete build of this version and commit (a dry run), or an error."""
+    try:
+        info = json.loads(build_info_path(output).read_text(encoding='utf-8'))
+        files = release_files(Path(output) / 'release')
+        recorded = info['Files']
+    except (OSError, ValueError, KeyError, RuntimeError):
+        recorded = None
+    if recorded is None or info.get('Version') != version or info.get('Revision') != revision             or {path.name: file_sha256(path) for path in files} != recorded:
+        raise RuntimeError(f'{output} already exists and is not an intact, complete build of {version} at {revision[:12]}. '
+                           'Choose another --output or delete it.')
+    return files
+
+
+def build_release(args, output, revision):
     work = output / '.work'
     work.mkdir(parents=True)
     timings = {}
@@ -436,13 +474,9 @@ def release_local(args):
     finally:
         if cleanup:
             cleanup()
-    release = output / 'release'
-    files = merge_platform_releases([output / 'win-x64/release', output / 'linux-x64-release'], release)
+    files = merge_platform_releases([output / 'win-x64/release', output / 'linux-x64-release'], output / 'release')
     shutil.rmtree(work, ignore_errors=True)
-    print(f'Built {len(files)} release files in {release} ({directory_size(release) / 1048576:.0f} MiB; '
-          f'output folder {directory_size(output) / 1048576:.0f} MiB).')
-    publish_release(args.version, release, revision, dry_run=not args.publish)
-    timings['total'] = time.monotonic() - started
+    build_info_path(output).write_text(json.dumps({'Version': args.version, 'Revision': revision,
+                                                   'Files': {path.name: file_sha256(path) for path in files}}, indent=2), encoding='utf-8')
     print('Timing: ' + ', '.join(f'{name} {seconds / 60:.1f} min' for name, seconds in timings.items()))
-    if not args.publish:
-        print(f'Dry run complete. Rerun with --publish to create the releases. Delete {output} when done.')
+    return files

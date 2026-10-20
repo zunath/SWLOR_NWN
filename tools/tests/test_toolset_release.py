@@ -211,6 +211,47 @@ class PublishTests(unittest.TestCase):
                         release.publish_release('1.0.0', self.directory, REVISION, log=lambda m: None)
                 self.assertEqual(github.writes, [])
 
+    def test_asset_without_a_reported_digest_is_never_treated_as_identical(self):
+        state = self.versioned_state()
+        for asset in state['assets']:
+            del asset['digest']
+        github = FakeGitHub(releases={'toolset-v1.0.0': state})
+        with patch.object(release, 'run_gh', github.run), patch.object(release, 'gh_release', github.view):
+            with self.assertRaisesRegex(RuntimeError, 'different assets'):
+                release.publish_release('1.0.0', self.directory, REVISION, log=lambda m: None)
+        self.assertEqual(github.writes, [])
+
+    def test_recovered_draft_is_published_before_the_fixed_release_advances(self):
+        state = self.versioned_state()
+        state['isDraft'] = True
+        state['assets'] = [a for a in state['assets'] if a['name'] != 'toolset-feed.json']
+        github, _ = self.publish(releases={'toolset-v1.0.0': state})
+        order = [w[:3] for w in github.writes]
+        upload = ['release', 'upload', 'toolset-v1.0.0']
+        edit = ['release', 'edit', 'toolset-v1.0.0']
+        self.assertEqual(self.commands(github, 'release', 'create', 'toolset-v1.0.0'), [])
+        publish_draft, = self.commands(github, 'release', 'edit', 'toolset-v1.0.0')
+        self.assertIn('--draft=false', publish_draft)
+        self.assertIn('--latest=false', publish_draft)
+        self.assertLess(order.index(upload), order.index(edit))
+        self.assertLess(order.index(edit), order.index(['release', 'create', 'toolset-latest']))
+
+    def test_complete_draft_is_published_without_uploads(self):
+        state = self.versioned_state()
+        state['isDraft'] = True
+        github, _ = self.publish(releases={'toolset-v1.0.0': state})
+        self.assertEqual(self.commands(github, 'release', 'upload', 'toolset-v1.0.0'), [])
+        self.assertTrue(self.commands(github, 'release', 'edit', 'toolset-v1.0.0'))
+
+    def test_draft_hidden_from_release_view_is_refused(self):
+        def run_gh(arguments, check=True):
+            if arguments[:2] == ['release', 'view']:
+                return 1, '', 'release not found'
+            return json.dumps([{'tagName': 'toolset-v1.0.0', 'isDraft': True}])
+        with patch.object(release, 'run_gh', run_gh):
+            with self.assertRaisesRegex(RuntimeError, 'unfinished draft'):
+                release.gh_release('toolset-v1.0.0')
+
     def test_interrupted_release_gets_only_the_missing_assets(self):
         state = self.versioned_state()
         state['assets'] = [a for a in state['assets'] if a['name'] != 'toolset-feed.json']
@@ -285,6 +326,39 @@ class LocalBuildTests(unittest.TestCase):
                 release.release_local(self.local_arguments())
         git.assert_not_called()
         windows.assert_not_called()
+
+    def finished_build(self, root, version='1.0.0'):
+        (root / 'release').mkdir(parents=True)
+        (root / 'release' / 'toolset-feed.json').write_bytes(b'{}')
+        info = {'Version': version, 'Revision': REVISION, 'Files': {'toolset-feed.json': release.file_sha256(root / 'release' / 'toolset-feed.json')}}
+        release.build_info_path(root).write_text(json.dumps(info), encoding='utf-8')
+
+    def test_dry_run_output_is_reused_for_the_publish_rerun_without_rebuilding(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            output = Path(temporary) / 'out'
+            self.finished_build(output)
+            self.assertEqual([p.name for p in release.reusable_build(output, '1.0.0', REVISION)], ['toolset-feed.json'])
+            args = self.local_arguments(publish=True, output=str(output))
+            with patch.object(release.os, 'name', 'nt'), patch.object(release, 'run_gh', return_value=(0, GOOD_STATUS, '')),                     patch.object(release, 'git', git_answers()), patch.object(release, 'build_release') as build,                     patch.object(release, 'publish_release') as publish:
+                release.release_local(args)
+            build.assert_not_called()
+            self.assertEqual(publish.call_args.kwargs, {'dry_run': False})
+            self.assertEqual(publish.call_args.args[:3], ('1.0.0', output / 'release', REVISION))
+
+    def test_existing_output_that_is_not_an_intact_matching_build_is_refused(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            output = Path(temporary) / 'out'
+            self.finished_build(output)
+            with self.assertRaisesRegex(RuntimeError, 'not an intact'):
+                release.reusable_build(output, '1.0.1', REVISION)
+            with self.assertRaisesRegex(RuntimeError, 'not an intact'):
+                release.reusable_build(output, '1.0.0', OTHER_REVISION)
+            (output / 'release' / 'toolset-feed.json').write_bytes(b'{"changed": true}')
+            with self.assertRaisesRegex(RuntimeError, 'not an intact'):
+                release.reusable_build(output, '1.0.0', REVISION)
+            release.build_info_path(output).unlink()
+            with self.assertRaisesRegex(RuntimeError, 'not an intact'):
+                release.reusable_build(output, '1.0.0', REVISION)
 
     def test_container_script_runs_the_workflow_linux_steps(self):
         script = release.linux_container_script(run_tests=False)

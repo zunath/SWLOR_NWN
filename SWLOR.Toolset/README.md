@@ -249,7 +249,7 @@ Needs Windows, Python 3.11+, the .NET SDK, Docker Desktop (Linux containers), an
    ReleaseToolset.cmd --version 1.0.0
    ```
 
-5. Publish with `--publish`. It creates `toolset-v1.0.0` (latest disabled) with all assets, then moves the `toolset-latest` tag to the released commit and replaces that release's download assets. Reruns are safe: an identical existing version is skipped, a different one is refused (publish a new version instead).
+5. Publish with the same command plus `--publish`. It reuses the dry run's checksum-verified build (nothing is rebuilt) and creates `toolset-v1.0.0` (latest disabled) with all assets, then moves the `toolset-latest` tag to the released commit and replaces that release's download assets. Reruns are safe: an identical existing version is skipped, a different one is refused (publish a new version instead).
 
    ```
    ReleaseToolset.cmd --version 1.0.0 --publish

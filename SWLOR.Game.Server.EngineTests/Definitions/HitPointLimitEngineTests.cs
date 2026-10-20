@@ -76,7 +76,8 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             var arena = await QuietArena.CreateAsync(ctx);
             var npc = await SpawnNPCAsync(ctx, arena, "nw_rat001", MaximumNPCHitPoints);
 
-            AbilityEffectScaling.ApplyTemporaryHPPercent(npc, npc, TemporaryHitPointEffectKey.GuardianWard, 15f, 60f);
+            // A percent shield large enough to pass the limit even at the lowest Willpower multiplier.
+            AbilityEffectScaling.ApplyTemporaryHP(npc, npc, TemporaryHitPointEffectKey.GuardianWard, HealAmount.Percent(20f), 60f);
             ctx.AssertEqual(Headroom, TemporaryHitPointEffects.GetRemaining(npc), "Guardian Ward pool at the limit");
             ctx.AssertEqual(Limit, GetCurrentHitPoints(npc), "reported HP at the limit");
 
@@ -411,8 +412,8 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
 
             var expected = Ability.ApplyCombatReadinessMagnitude(
                 npc,
-                AbilityEffectScaling.CalculateScaledPercentOfMaxHP(npc, npc, 15f));
-            AbilityEffectScaling.ApplyTemporaryHPPercent(npc, npc, TemporaryHitPointEffectKey.GuardianWard, 15f, 60f);
+                AbilityEffectScaling.CalculateScaledHeal(npc, npc, HealAmount.Percent(15f)));
+            AbilityEffectScaling.ApplyTemporaryHP(npc, npc, TemporaryHitPointEffectKey.GuardianWard, HealAmount.Percent(15f), 60f);
             ctx.AssertEqual(expected, TemporaryHitPointEffects.GetRemaining(npc), "Guardian Ward pool");
 
             // Both pools stay under the 50% total cap, so only the engine limit could shrink them.
@@ -421,7 +422,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             ctx.AssertEqual(10000 + expected + 3000, GetCurrentHitPoints(npc), "reported HP");
 
             await ctx.WaitFrameAsync();
-            AbilityEffectScaling.ApplyTemporaryHPPercent(npc, npc, TemporaryHitPointEffectKey.GuardianWard, 15f, 60f);
+            AbilityEffectScaling.ApplyTemporaryHP(npc, npc, TemporaryHitPointEffectKey.GuardianWard, HealAmount.Percent(15f), 60f);
             ctx.AssertEqual(expected, TemporaryHitPointEffects.GetRemaining(npc, TemporaryHitPointEffectKey.GuardianWard), "a replaced pool keeps its full amount at once");
         }
 

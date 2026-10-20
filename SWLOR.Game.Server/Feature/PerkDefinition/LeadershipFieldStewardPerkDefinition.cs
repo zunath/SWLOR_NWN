@@ -59,19 +59,19 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Rousing Shout")
 
                 .AddPerkLevel()
-                .Description("Bolsters one living ally, granting temporary HP equal to 10% of maximum HP for 30 seconds. SOC scaling can raise this to 13%. If the target is at or below 35% HP, they also take 10% less physical and Force damage, scaling up to 12%.")
+                .Description("Bolsters one living ally, granting 13 temporary HP plus 2.5% of maximum HP for 30 seconds. SOC scaling can raise this to 16 HP plus 3.25%. If the target is at or below 35% HP, they also take 10% less physical and Force damage, scaling up to 12%.")
                 .Price(2)
                 .RequirementSkill(SkillType.Leadership, 5)
                 .GrantsFeat(FeatType.RousingShout1)
 
                 .AddPerkLevel()
-                .Description("Bolsters one living ally, granting temporary HP equal to 15% of maximum HP for 30 seconds. SOC scaling can raise this to 19%. If the target is at or below 35% HP, they also take 15% less physical and Force damage, scaling up to 18%.")
+                .Description("Bolsters one living ally, granting 41 temporary HP plus 3.75% of maximum HP for 30 seconds. SOC scaling can raise this to 52 HP plus 4.75%. If the target is at or below 35% HP, they also take 15% less physical and Force damage, scaling up to 18%.")
                 .Price(3)
                 .RequirementSkill(SkillType.Leadership, 18)
                 .GrantsFeat(FeatType.RousingShout2)
 
                 .AddPerkLevel()
-                .Description("Bolsters one living ally, granting temporary HP equal to 20% of maximum HP for 30 seconds. SOC scaling can raise this to 25%. If the target is at or below 35% HP, they also take 20% less physical and Force damage, scaling up to 25%.")
+                .Description("Bolsters one living ally, granting 90 temporary HP plus 5% of maximum HP for 30 seconds. SOC scaling can raise this to 113 HP plus 6.25%. If the target is at or below 35% HP, they also take 20% less physical and Force damage, scaling up to 25%.")
                 .Price(4)
                 .RequirementSkill(SkillType.Leadership, 40)
                 .GrantsFeat(FeatType.RousingShout3);
@@ -104,13 +104,13 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.BolsterResolveTrait)
-                .Description("Field Steward recovery commands also grant party members within Leadership range (5m base) temporary HP equal to 8% of maximum HP for 30 seconds. SOC scaling can raise this to 10%.")
+                .Description("Field Steward recovery commands also grant party members within Leadership range (5m base) 18 temporary HP plus 2% of maximum HP for 30 seconds. SOC scaling can raise this to 23 HP plus 2.5%.")
                 .Price(3)
                 .RequirementSkill(SkillType.Leadership, 12)
                 .IncreasesStat(StatType.LeadershipFieldStewardBolsterResolveRank, 1)
 
                 .AddPerkLevel()
-                .Description("Field Steward recovery commands also grant party members within Leadership range (5m base) temporary HP equal to 12% of maximum HP and 12% physical and Force damage reduction for 30 seconds. SOC scaling can raise these to 15% temporary HP and 15% physical and Force damage reduction.")
+                .Description("Field Steward recovery commands also grant party members within Leadership range (5m base) 54 temporary HP plus 3% of maximum HP and 12% physical and Force damage reduction for 30 seconds. SOC scaling can raise these to 68 temporary HP plus 3.75% of maximum HP and 15% physical and Force damage reduction.")
                 .Price(4)
                 .RequirementSkill(SkillType.Leadership, 35)
                 .IncreasesStat(StatType.LeadershipFieldStewardBolsterResolveRank, 2);
@@ -142,13 +142,13 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Cleanse Order")
 
                 .AddPerkLevel()
-                .Description("Removes one standard elemental or trauma ailment from party members within Leadership range (5m base) and grants temporary HP equal to 6% of maximum HP for 30 seconds. SOC scaling can raise temporary HP to 8%.")
+                .Description("Removes one standard elemental or trauma ailment from party members within Leadership range (5m base) and grants 19 temporary HP plus 1.5% of maximum HP for 30 seconds. SOC scaling can raise temporary HP to 25 HP plus 2%.")
                 .Price(3)
                 .RequirementSkill(SkillType.Leadership, 25)
                 .GrantsFeat(FeatType.CleanseOrder1)
 
                 .AddPerkLevel()
-                .Description("Removes one major negative status effect from party members within Leadership range (5m base) and grants temporary HP equal to 12% of maximum HP for 30 seconds. SOC scaling can raise temporary HP to 15%.")
+                .Description("Removes one major negative status effect from party members within Leadership range (5m base) and grants 54 temporary HP plus 3% of maximum HP for 30 seconds. SOC scaling can raise temporary HP to 68 HP plus 3.75%.")
                 .Price(4)
                 .RequirementSkill(SkillType.Leadership, 42)
                 .GrantsFeat(FeatType.CleanseOrder2);
@@ -180,7 +180,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Hold the Line")
 
                 .AddPerkLevel()
-                .Description("For 45 seconds, party members within Leadership range (5m base), including you, gain temporary HP equal to 18% of maximum HP, take 18% less damage, and become immune to Mind and Mobility effects. SOC scaling can raise temporary HP and damage reduction to 22%.")
+                .Description("For 45 seconds, party members within Leadership range (5m base), including you, gain 81 temporary HP plus 4.5% of maximum HP, take 18% less damage, and become immune to Mind and Mobility effects. SOC scaling can raise temporary HP to 99 HP plus 5.5% and damage reduction to 22%.")
                 .Price(5)
                 .RequirementSkill(SkillType.Leadership, 50)
                 .GrantsFeat(FeatType.HoldTheLine1)

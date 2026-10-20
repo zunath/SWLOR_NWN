@@ -999,9 +999,9 @@ namespace SWLOR.Game.Server.Service
             var temporaryHPSource = StatusEffect.GetStatusEffectSourceWithStat(
                 defender,
                 StatType.FatalDamageTemporaryHPPercent);
-            var tempHP = GameMath.PercentOf(GetMaxHitPoints(defender), temporaryHPPercent);
+            var tempHP = HealAmount.FromRate(temporaryHPPercent).ForMaxHitPoints(GetMaxHitPoints(defender));
             if (scalingAbilityScore > 0)
-                tempHP = AbilityEffectScaling.ScaleDirectEffect(tempHP, scalingAbilityScore);
+                tempHP = AbilityEffectScaling.ScaleRestorativeEffect(tempHP, scalingAbilityScore);
 
             StatusEffect.RemoveStatusEffectsWithStat(defender, StatType.FatalDamageTemporaryHPPercent, false);
 

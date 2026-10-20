@@ -92,6 +92,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
             ReviveRules.RecordResuscitation(activator, target);
             var playResurrectionVisual = Ability.CaptureSuccessfulImpactVisualEffect(activator);
             ApplyEffectToObject(DurationType.Instant, EffectResurrection(), target);
+            PlayerTemporaryEffects.RestoreGhostAfterRevive(target);
             if (CombatRecorder.IsRecording)
                 CombatRecorder.RecordResurrection(target);
             FirstAidTreatmentAdjustments.ApplyTraumaMedicRiders(activator, target);
@@ -113,6 +114,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
             ReviveRules.RecordResuscitation(activator, target);
             var playResurrectionVisual = Ability.CaptureSuccessfulImpactVisualEffect(activator);
             ApplyEffectToObject(DurationType.Instant, EffectResurrection(), target);
+            PlayerTemporaryEffects.RestoreGhostAfterRevive(target);
             if (CombatRecorder.IsRecording)
                 CombatRecorder.RecordResurrection(target);
             FirstAidTreatmentAdjustments.ApplyTraumaMedicRiders(activator, target);

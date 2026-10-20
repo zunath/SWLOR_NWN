@@ -78,7 +78,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster
         {
             ApplyGoad(activator, target);
 
-            ApplyTemporaryHP(activator, new HealAmount(68, 3.75f), 12f);
+            ApplyTemporaryHP(activator, new HealAmount(68, 3.75f), 30f);
         }
 
 

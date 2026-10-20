@@ -184,6 +184,9 @@ public class BeastmasterCombatUpgradeTests
         AssertStaminaAbility(anger, "Anger I", RecastGroup.Anger, 12f, 3, requiresTarget: true);
         anger.AITargetSelector.Should().NotBeNull();
         anger.AIScore.Should().NotBeNull();
+        var angerSource = File.ReadAllText((FindRepositoryRoot() / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "Beastmaster" / "AngerAbilityDefinition.cs").FullName);
+        angerSource.Should().Contain("ApplyTemporaryHP(activator, new HealAmount(68, 3.75f), 30f);",
+            "Anger II's shield lasts the 30 seconds its description promises");
 
         var guardingRoar = new GuardingRoarAbilityDefinition().BuildAbilities()[FeatType.GuardingRoar1];
         AssertStaminaAbility(guardingRoar, "Guarding Roar I", RecastGroup.GuardingRoar, 24f, 6, requiresTarget: false);

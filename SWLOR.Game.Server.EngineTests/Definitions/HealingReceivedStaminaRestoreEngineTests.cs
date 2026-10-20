@@ -30,14 +30,14 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             Stat.ApplyHealingReceivedAdjustment(recipient, 50);
             ctx.AssertEqual(0, Stat.GetCurrentStamina(recipient), "regeneration, lifesteal and other non-instant heals never restore STM");
 
-            AbilityEffectScaling.ApplyActivatedScaledHeal(healer, recipient, 5);
+            AbilityEffectScaling.ApplyActivatedScaledHeal(healer, recipient, HealAmount.Percent(5));
             ctx.AssertEqual(RestoredStamina, Stat.GetCurrentStamina(recipient), "an instant ability heal restores STM");
 
-            AbilityEffectScaling.ApplyActivatedScaledHeal(healer, recipient, 5);
+            AbilityEffectScaling.ApplyActivatedScaledHeal(healer, recipient, HealAmount.Percent(5));
             ctx.AssertEqual(RestoredStamina, Stat.GetCurrentStamina(recipient), "a second instant heal inside the cooldown restores nothing");
 
             await ctx.DelaySecondsAsync(CooldownSeconds + 0.5f);
-            AbilityEffectScaling.ApplyActivatedScaledHeal(healer, recipient, 5);
+            AbilityEffectScaling.ApplyActivatedScaledHeal(healer, recipient, HealAmount.Percent(5));
             ctx.AssertEqual(RestoredStamina * 2, Stat.GetCurrentStamina(recipient), "the restore is available again after the cooldown");
         }
     }

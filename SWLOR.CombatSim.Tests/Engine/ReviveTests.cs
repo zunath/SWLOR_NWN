@@ -71,8 +71,7 @@ namespace SWLOR.CombatSim.Tests.Engine
         public void AReviveHeal_KeepsItsShareOfTheTargetsOwnHp_ButFollowsTheRuleSetsWillpowerCurve()
         {
             var rules = RuleSets.PreTuning();
-            rules.HealPercentOfMaxHpShare = 0f;
-            rules.HealReferenceMaxHp = 400;
+            rules.FlatHeals = true;
             rules.HealStatMultiplierAtCap = 1.5f;
             var (simulation, _, ally, _) = SpawnAndKillAlly(rules, isPvp: true);
 

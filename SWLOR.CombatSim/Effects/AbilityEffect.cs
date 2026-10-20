@@ -1,3 +1,5 @@
+using SWLOR.Game.Server.Feature.AbilityDefinition;
+
 namespace SWLOR.CombatSim.Effects
 {
     /// <summary>
@@ -15,6 +17,16 @@ namespace SWLOR.CombatSim.Effects
         public float MaximumPercent { get; init; }
 
         public int Flat { get; init; }
+
+        /// <summary>
+        /// The size the game uses now: a flat amount plus a percent of the target's max HP, per cast for heals and
+        /// shields and per tick for heals over time and party pulses. <see cref="Percent"/>, <see cref="MaximumPercent"/>
+        /// and <see cref="Flat"/> keep the sizes from before the tuning.
+        /// </summary>
+        public HealAmount Heal { get; init; }
+
+        /// <summary>The size SOC 26 reaches for a Social-scaled shield.</summary>
+        public HealAmount HealAtSocialCap { get; init; }
         public ScalingStat Scaling { get; init; } = ScalingStat.Willpower;
         public bool UsesForceAffinity { get; init; }
         public bool UsesCombatReadiness { get; init; }

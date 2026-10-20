@@ -12,9 +12,11 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
         public override float Frequency => 3f;
         public override bool PersistsOnLogout => false;
 
+        private static readonly HealAmount HealPerTick = new(5, 0.25f);
+
         protected override void Tick(uint creature)
         {
-            AbilityEffectScaling.ApplyScaledHeal(Source, creature, 1);
+            AbilityEffectScaling.ApplyScaledHeal(Source, creature, HealPerTick);
         }
     }
 }

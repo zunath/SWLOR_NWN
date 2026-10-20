@@ -84,7 +84,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
             var treated = new List<uint>();
             foreach (var friendly in SWLOR.Game.Server.Feature.AbilityDefinition.AbilityTargeting.GetFriendlyTargets(activator, target, false))
             {
-                ApplyTemporaryHP(activator, friendly, 10, duration);
+                ApplyTemporaryHP(activator, friendly, new HealAmount(24, 2.5f), duration);
                 if (StatusEffect.ApplyStatusEffect(activator, friendly, typeof(PainSuppressant1StatusEffect), duration))
                     Ability.PlaySuccessfulImpactVisualEffect(activator, friendly);
                 FirstAidTreatmentAdjustments.ApplyCombatPharmacologyStimRiders(activator, friendly);
@@ -101,7 +101,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
             var treated = new List<uint>();
             foreach (var friendly in SWLOR.Game.Server.Feature.AbilityDefinition.AbilityTargeting.GetFriendlyTargets(activator, target, false))
             {
-                ApplyTemporaryHP(activator, friendly, 15, duration);
+                ApplyTemporaryHP(activator, friendly, new HealAmount(68, 3.75f), duration);
                 if (StatusEffect.ApplyStatusEffect(activator, friendly, typeof(PainSuppressant2StatusEffect), duration))
                     Ability.PlaySuccessfulImpactVisualEffect(activator, friendly);
                 FirstAidTreatmentAdjustments.ApplyCombatPharmacologyStimRiders(activator, friendly);
@@ -113,9 +113,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
         }
 
 
-        private static void ApplyTemporaryHP(uint activator, uint target, int percent, float durationSeconds)
+        private static void ApplyTemporaryHP(uint activator, uint target, HealAmount shield, float durationSeconds)
         {
-            AbilityEffectScaling.ApplyTemporaryHPPercent(activator, target, "PAIN_SUPPRESSANT", percent, durationSeconds);
+            AbilityEffectScaling.ApplyTemporaryHP(activator, target, "PAIN_SUPPRESSANT", shield, durationSeconds);
         }
     }
 }

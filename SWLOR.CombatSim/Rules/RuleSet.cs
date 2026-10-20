@@ -24,14 +24,10 @@ namespace SWLOR.CombatSim.Rules
         public float ForceAffinityHealingCap { get; set; } = 1.5f;
 
         /// <summary>
-        /// Share of each heal and shield sized from the target's own max HP, from 0 to 1. The rest is sized from
-        /// <see cref="HealReferenceMaxHp"/>, a flat amount the same for every target. 1 is the game (all percent).
-        /// Revive heals always keep their percent but follow the Willpower multipliers below.
+        /// Heals and shields restore the game's flat amount plus a small percent of max HP, instead of the percent of max
+        /// HP they restored before the tuning. Revives restore a percent of max HP either way.
         /// </summary>
-        public float HealPercentOfMaxHpShare { get; set; } = 1f;
-
-        /// <summary>Max HP the flat part of a heal is sized for; needed when <see cref="HealPercentOfMaxHpShare"/> is below 1.</summary>
-        public int HealReferenceMaxHp { get; set; }
+        public bool FlatHeals { get; set; }
 
         /// <summary>
         /// Willpower-scaled heals and shields are multiplied by this at Willpower 10 and below, rising in a straight line
@@ -135,11 +131,6 @@ namespace SWLOR.CombatSim.Rules
             // Below 1 the cap would also cut heals from casters with no affinity at all.
             AtLeast(nameof(ForceAffinityHealingCap), ForceAffinityHealingCap, 1);
 
-            Between(nameof(HealPercentOfMaxHpShare), HealPercentOfMaxHpShare, 0, 1);
-            if (HealPercentOfMaxHpShare < 1f)
-                Between(nameof(HealReferenceMaxHp), HealReferenceMaxHp, 1, 1_000_000);
-            else
-                AtLeast(nameof(HealReferenceMaxHp), HealReferenceMaxHp, 0);
             Between(nameof(HealStatMultiplierAtBaseline), HealStatMultiplierAtBaseline, 0, MaximumHealMultiplier);
             Between(nameof(HealStatMultiplierAtCap), HealStatMultiplierAtCap, 0, MaximumHealMultiplier);
 

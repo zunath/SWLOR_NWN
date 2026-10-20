@@ -70,7 +70,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition.Beast
                 .GrantsFeat(FeatType.Anger1)
 
                 .AddPerkLevel()
-                .Description("Goads a single target into attacking the beast and grants the beast temporary HP equal to 15% of its maximum HP for 30 seconds. On a valid impact, threat catches up to the highest visible rival plus the VIT-scaled threat bonus. Repeated goads while already ahead do not accumulate threat. No forced target lock.")
+                .Description("Goads a single target into attacking the beast and grants the beast 68 temporary HP plus 3.75% of its maximum HP for 30 seconds. On a valid impact, threat catches up to the highest visible rival plus the VIT-scaled threat bonus. Repeated goads while already ahead do not accumulate threat. No forced target lock.")
                 .Price(4)
                 .RequirementBeastLevel(28)
                 .RequirementBeastRole(BeastRoleType.Tank)
@@ -194,7 +194,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition.Beast
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.LastGuardianTrait)
-                .Description("Once every 3 minutes, when the beast would take fatal damage, prevent that damage and grant temporary HP equal to 20% of its maximum HP for 30 seconds.")
+                .Description("Once every 3 minutes, when the beast would take fatal damage, prevent that damage and grant 90 temporary HP plus 5% of its maximum HP for 30 seconds.")
                 .Price(4)
                 .RequirementBeastLevel(50)
                 .RequirementBeastRole(BeastRoleType.Tank)

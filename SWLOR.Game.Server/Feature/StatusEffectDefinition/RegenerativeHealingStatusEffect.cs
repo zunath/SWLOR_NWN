@@ -11,8 +11,8 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
     public sealed class RegenerativeHealingStatusEffect : StatusEffectBase
     {
         private readonly string _name;
-        private readonly float _totalPercent;
-        private readonly int _tickCount;
+        private readonly HealAmount _healPerTick;
+        private readonly float _multiplier;
         private readonly bool _appliesMedicalHealingBonus;
         private readonly SkillType _supportSkill;
         private readonly ISet<uint> _supportCredited;
@@ -26,24 +26,25 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
         public RegenerativeHealingStatusEffect()
         {
             _name = "Regeneration";
-            _totalPercent = 0f;
-            _tickCount = 1;
+            _healPerTick = default;
+            _multiplier = 1f;
             _appliesMedicalHealingBonus = false;
             _supportSkill = SkillType.Invalid;
             _supportCredited = new HashSet<uint>();
         }
 
+        /// <param name="multiplier">Scales each tick, such as the caster's Force affinity when the regeneration was cast.</param>
         public RegenerativeHealingStatusEffect(
             string name,
-            float totalPercent,
-            int tickCount,
+            HealAmount healPerTick,
+            float multiplier = 1f,
             bool appliesMedicalHealingBonus = false,
             SkillType supportSkill = SkillType.Invalid,
             ISet<uint> supportCredited = null)
         {
             _name = name;
-            _totalPercent = totalPercent;
-            _tickCount = tickCount <= 0 ? 1 : tickCount;
+            _healPerTick = healPerTick;
+            _multiplier = multiplier;
             _appliesMedicalHealingBonus = appliesMedicalHealingBonus;
             _supportSkill = supportSkill;
             _supportCredited = supportCredited ?? new HashSet<uint>();
@@ -51,13 +52,13 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
 
         protected override void Tick(uint creature)
         {
-            if (_totalPercent <= 0f)
+            if (_healPerTick.Flat <= 0 && _healPerTick.PercentOfMaxHp <= 0f)
                 return;
 
             if (_appliesMedicalHealingBonus)
-                FirstAidTreatmentAdjustments.ApplyMedicalScaledHeal(Source, creature, _totalPercent / _tickCount);
+                FirstAidTreatmentAdjustments.ApplyMedicalScaledHeal(Source, creature, _healPerTick, multiplier: _multiplier);
             else
-                AbilityEffectScaling.ApplyScaledHeal(Source, creature, _totalPercent / _tickCount);
+                AbilityEffectScaling.ApplyScaledHeal(Source, creature, _healPerTick, multiplier: _multiplier);
 
             // Each tick credits enemies that engaged the patient after the cast, once per cast.
             if (_supportSkill != SkillType.Invalid)

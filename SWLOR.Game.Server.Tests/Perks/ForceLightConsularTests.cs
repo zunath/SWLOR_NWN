@@ -3,6 +3,7 @@ using System.Text.Json;
 using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Game.Server.Enumeration;
+using SWLOR.Game.Server.Feature.AbilityDefinition;
 using SWLOR.Game.Server.Feature.AbilityDefinition.Force;
 using SWLOR.Game.Server.Feature.GuiDefinition.ViewModel;
 using SWLOR.Game.Server.Feature.PerkDefinition;
@@ -321,18 +322,18 @@ public class ForceLightConsularTests
     }
 
     [Test]
-    public void Renewal_RestoresTheBiblePercentEveryThreeSecondsForThirtySeconds()
+    public void Renewal_RestoresTheBibleAmountEveryThreeSecondsForThirtySeconds()
     {
         var root = FindSourceRepositoryRoot();
         var source = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "Force" / "RenewalAbilityDefinition.cs").FullName);
 
-        source.Should().Contain("ApplyRenewal(activator, target, \"Renewal I\", 10f);");
-        source.Should().Contain("ApplyRenewal(activator, target, \"Renewal II\", 20f);");
-        source.Should().Contain("ApplyRenewal(activator, target, \"Renewal III\", 30f);");
-        source.Should().Contain("totalPercent * Ability.GetActiveForceAffinityRestorativeMagnitudeMultiplier(activator)");
-        source.Should().Contain("new RegenerativeHealingStatusEffect(name, affinityAdjustedTotalPercent, 10, supportSkill: SkillType.Force, supportCredited: credited)");
-        source.Should().MatchRegex(@"new RegenerativeHealingStatusEffect\(name, affinityAdjustedTotalPercent, 10, [^)]*\),\s*30f\)");
-        new RegenerativeHealingStatusEffect("Renewal", 30f, 10).Frequency.Should().Be(3f);
+        source.Should().Contain("ApplyRenewal(activator, target, \"Renewal I\", new HealAmount(1, 0.25f));");
+        source.Should().Contain("ApplyRenewal(activator, target, \"Renewal II\", new HealAmount(6, 0.5f));");
+        source.Should().Contain("ApplyRenewal(activator, target, \"Renewal III\", new HealAmount(14, 0.75f));");
+        source.Should().Contain("var affinityMultiplier = Ability.GetActiveForceAffinityRestorativeMagnitudeMultiplier(activator);");
+        source.Should().Contain("new RegenerativeHealingStatusEffect(name, healPerTick, affinityMultiplier, supportSkill: SkillType.Force, supportCredited: credited)");
+        source.Should().MatchRegex(@"new RegenerativeHealingStatusEffect\(name, healPerTick, affinityMultiplier, [^)]*\),\s*30f\)");
+        new RegenerativeHealingStatusEffect("Renewal", new HealAmount(14, 0.75f)).Frequency.Should().Be(3f);
     }
 
     [Test]

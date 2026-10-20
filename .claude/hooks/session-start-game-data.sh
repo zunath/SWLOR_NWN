@@ -36,7 +36,8 @@ if [ -f "$DEST/data/nwn_base.key" ] && [ "$(cat "$MARKER" 2>/dev/null)" = "$imag
   exit 0
 fi
 # Staging copies that an interrupted earlier run left behind.
-rm -rf "$DEST".??????
+STAGING_PREFIX=/opt/.swlor-game-data-staging
+rm -rf "$STAGING_PREFIX".*
 if ! docker info >/dev/null 2>&1; then
   log "Starting the Docker daemon (log: /tmp/dockerd.log)"
   setsid nohup dockerd >/tmp/dockerd.log 2>&1 </dev/null &
@@ -54,8 +55,11 @@ for delay in 0 30 60 120; do
   log "Pull of $image failed; retrying"
 done
 if [ "$pulled" != 1 ]; then
-  log "Could not pull $image; tests that need game data will skip or fail"
-  exit 1
+  if ! docker image inspect "$image" >/dev/null 2>&1; then
+    log "Could not pull $image; tests that need game data will skip or fail"
+    exit 1
+  fi
+  log "Could not pull $image; using the local copy"
 fi
 
 container="" staging=""
@@ -66,7 +70,7 @@ cleanup() {
 trap cleanup EXIT
 trap 'exit 143' TERM INT HUP # so a timeout still runs cleanup
 container=$(docker create "$image")
-staging=$(mktemp -d "$DEST.XXXXXX")
+staging=$(mktemp -d "$STAGING_PREFIX.XXXXXX")
 docker cp -q "$container:/nwn/data/." "$staging/"
 echo "$image" > "$staging/.swlor-server-image"
 rm -rf "$DEST" # An incomplete copy or data from another image.

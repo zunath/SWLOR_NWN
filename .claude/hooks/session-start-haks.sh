@@ -51,20 +51,30 @@ sha=$(git -C "$REPO" rev-parse HEAD:SWLOR_Haks)
 module_gitdir=$(git -C "$REPO" rev-parse --path-format=absolute --git-path modules/SWLOR_Haks)
 if [ -d "$module_gitdir" ]; then
   current=$(git -C "$HAKS" rev-parse HEAD 2>/dev/null || true)
-  if [ "$current" = "$sha" ]; then
+  sparse=$(git -C "$HAKS" config --bool core.sparseCheckout || echo false)
+  if [ "$current" = "$sha" ] && [ "$sparse" = false ] && [ -z "$HAKS_SPARSE" ]; then
     log "SWLOR_Haks is already at the pinned commit"
-  elif git -C "$HAKS" symbolic-ref -q HEAD >/dev/null ||
-       [ -n "$(git -C "$HAKS" status --porcelain --untracked-files=no)" ]; then
-    # Someone is working in it; never move their branch or local changes.
-    log "SWLOR_Haks is on a branch or has local changes; leaving it at ${current:-?}, not $sha"
+  elif git -C "$HAKS" symbolic-ref -q HEAD >/dev/null || [ -n "$(git -C "$HAKS" status --porcelain)" ]; then
+    # Someone is working in it; never move their branch, local changes, or untracked files.
+    log "SWLOR_Haks is on a branch or has local changes; leaving it as it is (pinned: $sha)"
   else
-    log "Moving SWLOR_Haks from $current to the pinned $sha"
     git -C "$HAKS" cat-file -e "$sha^{commit}" 2>/dev/null \
       || git -C "$HAKS" fetch -q --depth 1 --filter=blob:none origin "$sha"
     packs=$(git -C "$HAKS" rev-parse --path-format=absolute --git-path objects/pack)
     snapshot=$(mktemp)
     ls "$packs"/*.pack > "$snapshot"
-    git -C "$HAKS" -c advice.detachedHead=false checkout -q --detach "$sha"
+    # Match SWLOR_HAKS_SPARSE as it is now, then the pinned commit.
+    if [ -n "$HAKS_SPARSE" ]; then
+      # shellcheck disable=SC2086
+      git -C "$HAKS" sparse-checkout set --cone $HAKS_SPARSE
+    elif [ "$sparse" = true ]; then
+      log "SWLOR_HAKS_SPARSE is unset; checking out every folder"
+      git -C "$HAKS" sparse-checkout disable
+    fi
+    if [ "$current" != "$sha" ]; then
+      log "Moving SWLOR_Haks from $current to the pinned $sha"
+      git -C "$HAKS" -c advice.detachedHead=false checkout -q --detach "$sha"
+    fi
     drop_fetched_blobs "$packs" "$snapshot"
     rm -f "$snapshot"
   fi

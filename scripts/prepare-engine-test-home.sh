@@ -69,6 +69,18 @@ BUILDER_INPUTS=(SWLOR.CLI SWLOR.NWN.Formats tools/native-tools.json)
 
 is_current() { [ "$FORCE" -eq 0 ] && [ -f "$STAMPS/$1" ] && [ "$(cat "$STAMPS/$1")" = "$2" ]; }
 
+# Succeeds when every configured HAK and the TLK are in the home.
+haks_complete() {
+    python3 - "$REPO_ROOT" "$SERVER_HOME" <<'HAKS_COMPLETE'
+import json, os, sys
+repo, home = sys.argv[1:]
+config = json.load(open(os.path.join(repo, "Build", "hakbuilder.json")))
+paths = [os.path.join(home, "hak", hak["Name"] + ".hak") for hak in config["HakList"]]
+paths.append(os.path.join(home, "tlk", os.path.basename(config["TlkPath"])))
+sys.exit(0 if all(os.path.isfile(path) for path in paths) else 1)
+HAKS_COMPLETE
+}
+
 mkdir -p "$SERVER_HOME" "$STAMPS"
 SERVER_HOME="$(cd "$SERVER_HOME" && pwd)"
 
@@ -101,9 +113,11 @@ if missing:
              "Check out the full submodule: git -C SWLOR_Haks sparse-checkout disable")
 CHECK_HAKS
 haks_stamp="$(fingerprint "$HAKS" .)-$(fingerprint "$REPO_ROOT" Build/hakbuilder.json "${BUILDER_INPUTS[@]}")"
-if is_current haks "$haks_stamp" && ls "$SERVER_HOME"/hak/*.hak >/dev/null 2>&1; then
+if is_current haks "$haks_stamp" && haks_complete; then
     echo "HAK sources unchanged since the last build; skipping"
 else
+    # A build that fails part-way must not leave the old stamp vouching for its output.
+    rm -f "$STAMPS/haks"
     work="$SERVER_HOME/.hak-build"
     rm -rf "$work"
     mkdir -p "$work"
@@ -148,6 +162,7 @@ module_stamp="$(fingerprint "$REPO_ROOT" Module "${BUILDER_INPUTS[@]}")"
 if is_current module "$module_stamp" && [ -f "$SERVER_HOME/modules/$MODULE_NAME.mod" ]; then
     echo "Module sources unchanged since the last pack; skipping"
 else
+    rm -f "$STAMPS/module"
     echo "Packing the module (each resource converts through nwn_gff)"
     (cd "$REPO_ROOT/Module" && dotnet "$CLI_DLL" --pack "./$MODULE_NAME.mod" --no-prompt | grep -v '^Packed [0-9,]*/')
     mkdir -p "$SERVER_HOME/modules"

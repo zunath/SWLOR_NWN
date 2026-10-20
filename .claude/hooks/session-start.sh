@@ -100,8 +100,10 @@ git -C "$REPO" config core.fileMode false
 
 # --- Native NWN tools: the pinned neverwinter.nim release from tools/native-tools.json, downloaded
 # and checksum-verified by the same code Setup.sh uses ---
+# A failure leaves the done marker unwritten, so the next session start tries again.
+complete=1
 python3 -I -c 'import sys; sys.path.insert(0, sys.argv[1]); import toolset_common; toolset_common.prepare_native_tools()' \
-  "$REPO/tools" >&2 || log "Could not prepare the native NWN tools in $NATIVE_TOOLS"
+  "$REPO/tools" >&2 || { complete=0; log "Could not prepare the native NWN tools in $NATIVE_TOOLS"; }
 
 # --- PowerShell 7 ---
 if [ ! -x "$HOME/.dotnet/tools/pwsh" ]; then
@@ -129,5 +131,9 @@ mkdir -p "$HOME/.local/share/Neverwinter Nights"
   log "SWLOR_Haks is checking out in the background; see /tmp/swlor-haks-checkout.log"
 [ -e /tmp/swlor-game-data.done ] ||
   log "Game data is copying to /opt/nwn in the background; see /tmp/swlor-game-data.log"
-touch "$DONE"
-log "Done"
+if [ "$complete" = 1 ]; then
+  touch "$DONE"
+  log "Done"
+else
+  log "Done, with the failures above; the next session start retries them"
+fi

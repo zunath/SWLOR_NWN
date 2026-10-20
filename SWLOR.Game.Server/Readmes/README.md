@@ -8,7 +8,7 @@ One line per guide. Rule guides are required reading before working in their are
 - [ContentStandards.md](ContentStandards.md): balance standards, item generation, loot, phenotypes, ship-access locations.
 - [Migrations.md](Migrations.md): one migration per release, one pass per data set, server before player, saved-data item sweeps.
 - [PullRequests.md](PullRequests.md): branches, the Codex review loop, review threads, public text.
-- [AgentEnvironment.md](AgentEnvironment.md): worktrees and the `SWLOR_Haks` submodule, git network fixes, shared-machine and disk hygiene, builds, local deploy.
+- [AgentEnvironment.md](AgentEnvironment.md): worktrees and the `SWLOR_Haks` submodule, git network fixes, shared-machine and disk hygiene, builds, local deploy, cloud sessions.
 - [InEngineVisualVerification.md](InEngineVisualVerification.md): required NWN client evidence for every change, offline and on a live server.
 - [EngineTesting.md](EngineTesting.md): `[EngineTest]` in-engine tests, including persistence and migration coverage.
 - [AbilityTargeting.md](AbilityTargeting.md): active ability targeting, native feat/spell rows, quick-cast variants.

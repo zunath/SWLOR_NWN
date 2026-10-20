@@ -95,25 +95,25 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster
 
         private static void Innervate1ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
-            ApplyInnervate(activator, target, 6);
+            ApplyInnervate(activator, target, new HealAmount(10, 1.5f));
         }
 
         private static void Innervate2ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
-            ApplyInnervate(activator, target, 10);
+            ApplyInnervate(activator, target, new HealAmount(31, 2.5f));
         }
 
         private static void Innervate3ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
-            ApplyInnervate(activator, target, 14);
+            ApplyInnervate(activator, target, new HealAmount(63, 3.5f));
         }
 
-        private static void ApplyInnervate(uint activator, uint target, int percent)
+        private static void ApplyInnervate(uint activator, uint target, HealAmount heal)
         {
             var healed = new List<uint>();
             foreach (var friendly in SWLOR.Game.Server.Feature.AbilityDefinition.AbilityTargeting.GetFriendlyTargets(activator, target, false))
             {
-                HealPercent(activator, friendly, percent);
+                Heal(activator, friendly, heal);
                 healed.Add(friendly);
             }
 
@@ -122,9 +122,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster
                 CombatPoint.AddSupportCombatPoint(GetMaster(activator), healed, SkillType.BeastMastery);
         }
 
-        private static void HealPercent(uint activator, uint target, int percent)
+        private static void Heal(uint activator, uint target, HealAmount heal)
         {
-            var amount = GameMath.PercentOf(GetMaxHitPoints(target), percent);
+            var amount = heal.ForMaxHitPoints(GetMaxHitPoints(target));
             amount = Stat.ApplyOutgoingAbilityHealingAdjustment(activator, amount);
             amount = Ability.ApplyCombatReadinessToActivatedAbilityMagnitude(activator, amount);
             amount = Stat.ApplyHealingReceivedAdjustment(target, amount, isInstantAbilityHeal: true);

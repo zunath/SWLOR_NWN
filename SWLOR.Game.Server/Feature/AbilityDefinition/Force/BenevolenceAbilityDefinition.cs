@@ -103,26 +103,26 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
 
         private static void Benevolence1ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
-            ApplyBenevolence(activator, target, 6);
+            ApplyBenevolence(activator, target, new HealAmount(6, 1.5f));
         }
 
         private static void Benevolence2ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
-            ApplyBenevolence(activator, target, 10);
+            ApplyBenevolence(activator, target, new HealAmount(26, 2.5f));
         }
 
         private static void Benevolence3ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
-            ApplyBenevolence(activator, target, 14);
+            ApplyBenevolence(activator, target, new HealAmount(63, 3.5f));
         }
 
-        private static void ApplyBenevolence(uint activator, uint target, int percent)
+        private static void ApplyBenevolence(uint activator, uint target, HealAmount heal)
         {
             var friendly = AbilityTargeting.ResolveFriendlyTarget(activator, target);
             var targetWasBelowHalfHP = ForceControlHealingEffects.IsBelowHalfHP(friendly);
             var multiplier = friendly == activator ? 1f : 1.25f;
             var hitPointsBeforeHealing = GetCurrentHitPoints(friendly);
-            AbilityEffectScaling.ApplyActivatedScaledHeal(activator, friendly, percent, multiplier: multiplier);
+            AbilityEffectScaling.ApplyActivatedScaledHeal(activator, friendly, heal, multiplier: multiplier);
             if (GetCurrentHitPoints(friendly) > hitPointsBeforeHealing)
                 Ability.PlaySuccessfulImpactVisualEffect(activator, friendly);
             var healed = new List<uint>(ForceControlHealingEffects.ApplyRestorativeControlPower(activator, friendly, targetWasBelowHalfHP)) { friendly };

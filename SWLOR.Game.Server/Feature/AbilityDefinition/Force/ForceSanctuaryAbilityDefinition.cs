@@ -86,7 +86,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 location,
                 RadiusMeters,
                 DurationSeconds,
-                2f,
+                new HealAmount(9, 0.5f),
                 null,
                 VisualEffect.None,
                 onHealed: (friendly, targetWasBelowHalfHP) =>

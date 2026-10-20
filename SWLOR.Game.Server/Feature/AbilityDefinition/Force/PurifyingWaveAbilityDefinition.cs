@@ -75,7 +75,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 var statusCountBeforeCleanse = StatusEffect.GetCreatureStatusEffects(friendly).GetAllEffects().Count;
                 StatusEffect.RemoveFirstCleanseableStatusEffect(friendly, StatusEffectCleanseType.Purify, false);
                 var hitPointsBeforeHealing = GetCurrentHitPoints(friendly);
-                AbilityEffectScaling.ApplyActivatedScaledHeal(activator, friendly, 8);
+                AbilityEffectScaling.ApplyActivatedScaledHeal(activator, friendly, new HealAmount(36, 2f));
                 if (GetCurrentHitPoints(friendly) > hitPointsBeforeHealing ||
                     StatusEffect.GetCreatureStatusEffects(friendly).GetAllEffects().Count < statusCountBeforeCleanse)
                     Ability.PlaySuccessfulImpactVisualEffect(activator, friendly);

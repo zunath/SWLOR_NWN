@@ -111,7 +111,8 @@ namespace SWLOR.CombatSim.Tests.Engine
 
             RunKeepingTankWounded(simulation, tank, 300);
 
-            tank.Stats.HealingReceived.Should().BeGreaterThan(50 * 30_000, "many Infusion ticks landed");
+            // Each Infusion II tick on the 1,000,000 HP tank is about 7,600 HP (14 HP plus 0.75%, x1.02 at 20 Willpower).
+            tank.Stats.HealingReceived.Should().BeGreaterThan(50 * 7_500, "many Infusion ticks landed");
             tank.Stats.StmRefunded.Should().Be(0);
         }
 

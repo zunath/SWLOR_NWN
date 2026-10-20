@@ -514,7 +514,7 @@ public class ForceLightGuardianTests
 
         foreach (var level in ward.PerkLevels.Values)
         {
-            level.Description.Should().StartWith("Grants an ally or yourself temporary HP",
+            level.Description.Should().StartWith("Grants an ally or yourself ",
                 "a solo Light caster must be able to tell the ward works on them");
         }
 

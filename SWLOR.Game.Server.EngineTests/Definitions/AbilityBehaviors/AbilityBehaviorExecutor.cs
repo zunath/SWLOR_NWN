@@ -760,10 +760,10 @@ namespace SWLOR.Game.Server.EngineTests.Definitions.AbilityBehaviors
                 if (behaviorCase.ExpectedTargetHealingPercentAfterRevive.HasValue)
                 {
                     var healingPercent = behaviorCase.ExpectedTargetHealingPercentAfterRevive.Value;
-                    var expectedHealing = AbilityEffectScaling.CalculateScaledPercentOfMaxHP(
+                    var expectedHealing = AbilityEffectScaling.CalculateScaledHeal(
                         caster,
                         impactTarget,
-                        healingPercent);
+                        HealAmount.Percent(healingPercent));
                     var minimumHitPoints = 1 + expectedHealing;
                     await ctx.WaitUntilAsync(
                         () => GetCurrentHitPoints(impactTarget) >= minimumHitPoints,

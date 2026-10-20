@@ -39,13 +39,15 @@ def winding_number(point, triangles):
 
 
 def edges_cross_triangles(edges, triangles, chunk=256, inclusive=False):
-    """True when any segment passes through the interior of any triangle (Moller-Trumbore, strict).
-    Both dimensions are batched, so each working array holds at most chunk*chunk*3 values."""
+    """True when any segment passes through the interior of any triangle (Moller-Trumbore, strict; the
+    parallel test is relative to the primitive sizes, so it holds at any scale). Both dimensions are batched, so each working array holds at most chunk*chunk*3 values."""
     for tstart in range(0,len(triangles),chunk):
         tris=triangles[tstart:tstart+chunk];v0=tris[:,0];e1=tris[:,1]-v0;e2=tris[:,2]-v0;eps=1e-9
         for start in range(0,len(edges),chunk):
             a=edges[start:start+chunk,0][:,None];d=(edges[start:start+chunk,1]-edges[start:start+chunk,0])[:,None]
-            p=np.cross(d,e2[None]);det=np.einsum('ijk,jk->ij',p,e1);ok=np.abs(det)>eps;inv=np.where(ok,1/np.where(ok,det,1),0)
+            p=np.cross(d,e2[None]);det=np.einsum('ijk,jk->ij',p,e1)
+            scale=np.linalg.norm(d,axis=-1)*(np.linalg.norm(e1,axis=1)*np.linalg.norm(e2,axis=1))[None]
+            ok=np.abs(det)>eps*scale;inv=np.where(ok,1/np.where(ok,det,1),0)
             s=a-v0[None];u=np.einsum('ijk,ijk->ij',s,p)*inv;q=np.cross(s,e1[None]);v=np.einsum('ijk,ijk->ij',d,q)*inv
             t=np.einsum('jk,ijk->ij',e2,q)*inv
             lo,hi=(-eps,1+eps) if inclusive else (eps,1-eps)
@@ -84,32 +86,51 @@ def edges_touch_edges(first, second, tolerance=1e-7, chunk=256):
     return False
 
 
-def overlapping_pairs(boxes_a, boxes_b, tolerance):
-    """Index pairs whose axis-aligned boxes overlap (within tolerance), found through a uniform grid so
-    only nearby primitives reach the exact tests."""
+def overlapping_pairs(boxes_a, boxes_b, tolerance, max_cells=64, chunk=1024):
+    """Index pairs whose axis-aligned boxes overlap (within tolerance). Primitives spanning at most max_cells
+    grid cells go through a uniform grid; larger ones are compared against every box with a chunked
+    vectorised test, so one long primitive never rasterises a huge box at the median cell size."""
     lo=np.minimum(boxes_a[:,0].min(axis=0),boxes_b[:,0].min(axis=0));extent=np.concatenate([boxes_a[:,1]-boxes_a[:,0],boxes_b[:,1]-boxes_b[:,0]])
     cell=max(float(np.median(extent.max(axis=1))),tolerance*10,1e-9)
-    def cells(boxes):return (np.floor((boxes[:,0]-tolerance-lo)/cell).astype(np.int64),np.floor((boxes[:,1]+tolerance-lo)/cell).astype(np.int64))
-    grid={};alo,ahi=cells(boxes_a)
-    for index,(l,h) in enumerate(zip(alo,ahi)):
+    def cells(boxes):
+        low=np.floor((boxes[:,0]-tolerance-lo)/cell).astype(np.int64);high=np.floor((boxes[:,1]+tolerance-lo)/cell).astype(np.int64)
+        return low,high,np.prod((high-low+1).astype(np.float64),axis=1)>max_cells
+    def overlap(x,y):return np.all(x[:,None,0]<=y[None,:,1]+tolerance,axis=2)&np.all(y[None,:,0]<=x[:,None,1]+tolerance,axis=2)
+    alo,ahi,abig=cells(boxes_a);blo,bhi,bbig=cells(boxes_b)
+    grid={}
+    for index in np.flatnonzero(~abig):
+        l,h=alo[index],ahi[index]
         for x in range(l[0],h[0]+1):
             for y in range(l[1],h[1]+1):
                 for z in range(l[2],h[2]+1):grid.setdefault((x,y,z),[]).append(index)
-    pairs=set();blo,bhi=cells(boxes_b)
-    for index,(l,h) in enumerate(zip(blo,bhi)):
+    pairs=set()
+    for index in np.flatnonzero(~bbig):
+        l,h=blo[index],bhi[index]
         for x in range(l[0],h[0]+1):
             for y in range(l[1],h[1]+1):
                 for z in range(l[2],h[2]+1):
-                    for other in grid.get((x,y,z),()):pairs.add((other,index))
-    if not pairs:return np.zeros((0,),np.int64),np.zeros((0,),np.int64)
-    a,b=np.asarray(sorted(pairs)).T
+                    for other in grid.get((x,y,z),()):pairs.add((int(other),int(index)))
+    found=[np.asarray(sorted(pairs),np.int64).reshape(-1,2)]
+    # Oversized primitives on either side meet everything on the other side through the bounded fallback.
+    for big,others,flip in ((np.flatnonzero(abig),np.arange(len(boxes_b)),False),(np.flatnonzero(bbig),np.flatnonzero(~abig),True)):
+        for start in range(0,len(big),chunk):
+            rows=big[start:start+chunk]
+            for ostart in range(0,len(others),chunk):
+                cols=others[ostart:ostart+chunk]
+                hit=overlap(boxes_b[rows],boxes_a[cols]) if flip else overlap(boxes_a[rows],boxes_b[cols])
+                r,c=np.nonzero(hit)
+                found.append(np.stack([cols[c],rows[r]],axis=1) if flip else np.stack([rows[r],cols[c]],axis=1))
+    candidates=np.concatenate(found)
+    if not len(candidates):return np.zeros((0,),np.int64),np.zeros((0,),np.int64)
+    a,b=candidates.T
     keep=np.all(boxes_a[a,0]<=boxes_b[b,1]+tolerance,axis=1)&np.all(boxes_b[b,0]<=boxes_a[a,1]+tolerance,axis=1)
     return a[keep],b[keep]
 
 
 def pair_segment_crosses_triangle(seg, tri, eps=1e-9):
     v0=tri[:,0];e1=tri[:,1]-v0;e2=tri[:,2]-v0;a=seg[:,0];d=seg[:,1]-seg[:,0]
-    p=np.cross(d,e2);det=(p*e1).sum(-1);ok=np.abs(det)>eps;inv=np.where(ok,1/np.where(ok,det,1),0)
+    p=np.cross(d,e2);det=(p*e1).sum(-1)
+    ok=np.abs(det)>eps*np.linalg.norm(d,axis=1)*np.linalg.norm(e1,axis=1)*np.linalg.norm(e2,axis=1);inv=np.where(ok,1/np.where(ok,det,1),0)
     sv=a-v0;u=(sv*p).sum(-1)*inv;q=np.cross(sv,e1);v=(d*q).sum(-1)*inv;t=(e2*q).sum(-1)*inv
     return ok&(u>-eps)&(v>-eps)&(u+v<1+eps)&(t>-eps)&(t<1+eps)
 

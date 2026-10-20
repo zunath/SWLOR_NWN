@@ -138,6 +138,27 @@ class ShieldSurfaceTests(unittest.TestCase):
         with patch.object(surface,'edges_cross_triangles',side_effect=AssertionError('all-pairs path used')):
             self.assertFalse(surface.shells_intersect(soup(50000,1.0),soup(50000,.5)))
 
+    def test_crossings_are_found_at_any_primitive_scale(self):
+        first=np.asarray([[[-1,-1,0],[1,-1,0],[0,1,0]]],np.float64);second=np.asarray([[[0,0,-1],[0,0,1],[0,2,0]]],np.float64)
+        for scale in (1e-4,1e-2,1e3):
+            self.assertTrue(surface.shells_intersect(first*scale,second*scale),scale)
+            self.assertFalse(surface.shells_intersect(first*scale,(second+np.asarray([5,0,0]))*scale),scale)
+            self.assertTrue(surface.edges_cross_triangles(np.concatenate([second[:,[0,1]],second[:,[1,2]]])*scale,first*scale),scale)
+
+    def test_oversized_primitives_use_the_bounded_fallback(self):
+        rng=np.random.default_rng(11)
+        boxes=lambda t:np.stack([t.min(axis=1),t.max(axis=1)],axis=1)
+        fine=rng.uniform(-1,1,(2000,1,3))+rng.normal(scale=5e-5,size=(2000,3,3))
+        long_a=np.asarray([[[-1,-1,-1],[1,1,1],[1,1,1.0001]]]);long_b=np.asarray([[[-1,1,-1],[1,-1,1],[1,-1,1.0001]]])
+        a=np.concatenate([fine[:1000],long_a]);b=np.concatenate([fine[1000:],long_b])
+        i,j=surface.overlapping_pairs(boxes(a),boxes(b),1e-7)
+        ba,bb=boxes(a),boxes(b)
+        expected=np.all(ba[:,None,0]<=bb[None,:,1]+1e-7,axis=2)&np.all(bb[None,:,0]<=ba[:,None,1]+1e-7,axis=2)
+        self.assertEqual(sorted(zip(i.tolist(),j.tolist())),sorted(zip(*np.nonzero(expected))))
+        self.assertTrue(len(set(zip(i.tolist(),j.tolist())))==len(i))
+        # The two long diagonals cross at the origin; the fine triangles stay far smaller than a grid cell can hold them.
+        self.assertTrue(surface.shells_intersect(long_a,np.concatenate([fine[:5]*0+5,long_b])))
+
     def test_input_hash_uses_the_loaded_snapshot(self):
         vertices,faces=box()
         with tempfile.TemporaryDirectory() as temporary:

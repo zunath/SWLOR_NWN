@@ -73,20 +73,22 @@ Console.WriteLine($"Generated {5 * SlicingBoardAuthoring.BoardsPerTier} slicing 
 return 0;
 
 // Difficulty metrics for the catalog compiled into SWLOR.Game.Server. "Routes" counts distinct
-// cell paths whose assignment bound fits the trace shown, before and after the +8 maximum bonus;
-// the true number of affordable paths is never higher.
+// cell paths a player can power within base trace, and within base trace plus the largest bonus
+// the live rules allow for that tier (Slicing V and capped Lockpicking plus Perception).
 static void ReportCompiledCatalog()
 {
     var parallelism = new ParallelOptions { MaxDegreeOfParallelism = Math.Max(1, Environment.ProcessorCount / 2) };
-    const int maximumTraceBonus = 8;
+    const int maximumSlicingRank = 5;
     const int routeCap = 50;
     for (var tier = 1; tier <= 5; tier++)
     {
+        var maximumTraceBonus = Slicing.GetTraceBonus(
+            maximumSlicingRank, tier, Slicing.StatPointsPerTrace * Slicing.MaxStatTraceBonus, 0);
         var boards = Enumerable.Range(1, Slicing.GetBoardCount(tier)).Select(number => Slicing.GetBoard(tier, number)).ToArray();
         var optimal = new int[boards.Length];
         var swapFree = new bool[boards.Length];
         var routes = new int[boards.Length];
-        var bonusRoutes = new int[boards.Length];
+        var bonusRoutes = new int?[boards.Length];
         Parallel.For(0, boards.Length, parallelism, index =>
         {
             var board = boards[index];
@@ -95,23 +97,29 @@ static void ReportCompiledCatalog()
             routes[index] = SlicingBoardSolver.CountRoutes(board, board.BaseTrace, routeCap);
             try
             {
-                bonusRoutes[index] = SlicingBoardSolver.CountRoutes(board, board.BaseTrace + maximumTraceBonus, routeCap, nodeLimit: 300_000);
+                bonusRoutes[index] = SlicingBoardSolver.CountRoutes(board, board.BaseTrace + maximumTraceBonus, routeCap, nodeLimit: 2_000_000);
             }
             catch (SlicingBoardSolver.SearchLimitExceededException)
             {
-                // A budget this loose leaves too many paths to confirm quickly; report it at the cap.
-                bonusRoutes[index] = routeCap;
+                // Too many candidate paths to confirm within the search limit; reported separately.
+                bonusRoutes[index] = null;
             }
         });
 
         var count = (double)boards.Length;
+        var confirmedBonusRoutes = bonusRoutes.Where(value => value.HasValue).Select(value => value!.Value).ToList();
+        var bonusSummary = confirmedBonusRoutes.Count == 0
+            ? "not confirmed on any board"
+            : $"median {confirmedBonusRoutes.Order().ElementAt(confirmedBonusRoutes.Count / 2)} " +
+              $"avg {confirmedBonusRoutes.Average():0.0} over {confirmedBonusRoutes.Count} confirmed boards " +
+              $"(capped at {routeCap}; {boards.Length - confirmedBonusRoutes.Count} exceeded the search limit)";
         Console.WriteLine(
             $"Tier {tier}: {boards.Length} boards, base trace avg {boards.Average(board => board.BaseTrace):0.0}, " +
             $"recorded cost avg {boards.Average(board => board.SolutionActionCost):0.0}, optimal avg {optimal.Average():0.0}, " +
             $"cheaper than recorded {boards.Where((board, index) => optimal[index] < board.SolutionActionCost).Count() / count:P0}, " +
             $"solvable without swaps {swapFree.Count(value => value) / count:P0}, " +
             $"routes in base trace avg {routes.Average():0.0} (single-route boards {routes.Count(value => value == 1) / count:P0}), " +
-            $"routes with +{maximumTraceBonus} avg {bonusRoutes.Average():0.0} (capped at {routeCap}).");
+            $"routes with the maximum +{maximumTraceBonus} {bonusSummary}.");
     }
 }
 

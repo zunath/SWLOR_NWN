@@ -224,7 +224,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
             {
                 row.AddButton()
                     .BindText(model => model.FavoriteButtonText)
-                    .SetTooltip("Favorites are yours alone. Choose Favorites in the palette list to see them.")
+                    .SetTooltip("Only you see your favorites.")
                     .SetWidth(RailButtonWidth)
                     .SetHeight(ButtonHeight)
                     .BindIsEnabled(model => model.HasSelection)

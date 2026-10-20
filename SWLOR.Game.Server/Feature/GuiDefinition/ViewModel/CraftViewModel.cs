@@ -1189,10 +1189,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var effect = TagEffect(EffectCutsceneImmobilize(), PlayerActivityEffectTag.CraftingImmobilize);
             ApplyEffectToObject(DurationType.Permanent, effect, Player);
 
-            // Death and space mode strip the login ghost, and another player bumping a solid crafter away from the
-            // station closes the window and fails the craft. Restore the login ghost; it stays after the craft because
-            // players are meant to have it. It is not linked to the immobilize because the engine rejects a ghost on a
-            // ghosted player and would reject the immobilize with it.
+            // Separate from the immobilize: the engine rejects a ghost on a ghosted player, and a linked immobilize with it.
             PlayerTemporaryEffects.ApplyCutsceneGhostToPlayer(Player);
         }
 

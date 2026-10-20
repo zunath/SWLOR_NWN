@@ -22,10 +22,7 @@ namespace SWLOR.Game.Server.Feature
             ReapplySpeed(player);
         }
 
-        /// <summary>
-        /// Lets other creatures walk through the player instead of bumping them. The engine rejects a ghost on a
-        /// creature that already has one, so calling this on a ghosted player changes nothing.
-        /// </summary>
+        /// <summary>Lets other creatures walk through the player; the engine ignores it on an already ghosted player.</summary>
         public static void ApplyCutsceneGhostToPlayer(uint player)
         {
             var effect = SupernaturalEffect(EffectCutsceneGhost());

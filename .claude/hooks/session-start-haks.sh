@@ -144,12 +144,16 @@ fi
 # tools/CleanModels.py looks in ~/.local/share when LOCALAPPDATA is unset.
 setup="$HAKS/tools/SetupModelCompiler.ps1"
 if [ -f "$setup" ]; then
-  url=$(sed -n "s/^\$url = '\(.*\)'\$/\1/p" "$setup")
+  url=$(tr -d '\r' <"$setup" | sed -n "s/^\$url = '\(.*\)'\$/\1/p")
   mapfile -t hashes < <(grep -oE "\-ne '[0-9A-Fa-f]{64}'" "$setup" | grep -oE '[0-9A-Fa-f]{64}')
-  version=$(grep -oE '/v[0-9.]+/' <<<"$url" | tr -d '/v')
+  version=$(grep -oE '/v[0-9.]+/' <<<"$url" | tr -d '/v' || true)
   dest="$HOME/.local/share/SWLOR/tools/cleanmodels-qt/$version"
   compiler="$dest/cleanmodels-qt/cleanmodels.exe"
-  if [ -n "$url" ] && [ "${#hashes[@]}" -eq 2 ] && [ ! -x "$compiler" ]; then
+  if [ ! -x "$compiler" ]; then
+    if [ -z "$url" ] || [ -z "$version" ] || [ "${#hashes[@]}" -ne 2 ]; then
+      log "Could not read the CleanModels URL and checksums from $setup; SWLOR_Haks is not ready"
+      exit 1
+    fi
     log "Installing CleanModels from $url"
     mkdir -p "$dest"
     archive="$dest/$(basename "$url")"

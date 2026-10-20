@@ -43,12 +43,14 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.PairedVolley1)
+                .DroidAISlots(1)
                 .Description("Attack one enemy with each equipped attack weapon. Each impact deals weapon DMG + 4. Works with any weapon.")
                 .Price(2)
                 .RequirementSkill(SkillType.TwinPistol, 2)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.PairedVolley2)
+                .DroidAISlots(2)
                 .Description("Attack one enemy with each equipped attack weapon. Each impact deals weapon DMG + 8. Works with any weapon.")
                 .Price(2)
                 .RequirementSkill(SkillType.TwinPistol, 12)
@@ -56,6 +58,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.PairedVolley3)
+                .DroidAISlots(3)
                 .Description("Attack one enemy with each equipped attack weapon. Each impact deals weapon DMG + 12. Works with any weapon.")
                 .Price(3)
                 .RequirementSkill(SkillType.TwinPistol, 28)
@@ -63,6 +66,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.PairedVolley4)
+                .DroidAISlots(4)
                 .Description("Attack one enemy with each equipped attack weapon. Each impact deals weapon DMG + 16. Works with any weapon.")
                 .Price(5)
                 .RequirementSkill(SkillType.TwinPistol, 40)
@@ -121,12 +125,14 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.FocusedBurst1)
+                .DroidAISlots(1)
                 .Description("Attack one enemy three times over 1.5 seconds. Each weapon deals a total of weapon DMG + 8, divided between the three attacks. Moving or being interrupted cancels the remaining attacks. Auto-attacks pause during the channel.")
                 .Price(2)
                 .RequirementSkill(SkillType.TwinPistol, 10)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.FocusedBurst2)
+                .DroidAISlots(2)
                 .Description("Attack one enemy three times over 1.5 seconds. Each weapon deals a total of weapon DMG + 16, divided between the three attacks. Moving or being interrupted cancels the remaining attacks. Auto-attacks pause during the channel.")
                 .Price(4)
                 .RequirementSkill(SkillType.TwinPistol, 30)
@@ -134,6 +140,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.FocusedBurst3)
+                .DroidAISlots(3)
                 .Description("Attack one enemy three times over 1.5 seconds. Each weapon deals a total of weapon DMG + 24, divided between the three attacks. Moving or being interrupted cancels the remaining attacks. Auto-attacks pause during the channel.")
                 .Price(4)
                 .RequirementSkill(SkillType.TwinPistol, 38)
@@ -160,12 +167,14 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.ControlledBurst1)
+                .DroidAISlots(1)
                 .Description("Attack one enemy with each equipped attack weapon. Each impact deals 75% of weapon DMG + 7. If any impact lands, restore 2 STM once. Works with any weapon.")
                 .Price(3)
                 .RequirementSkill(SkillType.TwinPistol, 18)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.ControlledBurst2)
+                .DroidAISlots(2)
                 .Description("Attack one enemy with each equipped attack weapon. Each impact deals 75% of weapon DMG + 13. If any impact lands, restore 3 STM once. Works with any weapon.")
                 .Price(3)
                 .RequirementSkill(SkillType.TwinPistol, 32)
@@ -179,6 +188,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.AkimboStance)
+                .DroidAISlots(1)
                 .Description("With any weapon: +10% Haste. Landed weapon auto-attacks on the same enemy add +2% per stack, max five (+20% stance total), one stack per 2s. Target change or 6s without a weapon auto-attack hit clears stacks. All weapon auto-attacks deal 30% less damage.")
                 .Price(4)
                 .RequirementSkill(SkillType.TwinPistol, 20);
@@ -234,12 +244,14 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.BlasterSlide1)
+                .DroidAISlots(1)
                 .Description("Retreat 4m directly away from the selected enemy, then attack with each equipped attack weapon for weapon DMG + 4 per impact. Works with any weapon.")
                 .Price(2)
                 .RequirementSkill(SkillType.TwinPistol, 2)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.BlasterSlide2)
+                .DroidAISlots(2)
                 .Description("Retreat 4m directly away from the selected enemy, then attack with each equipped attack weapon for weapon DMG + 8 per impact. Works with any weapon.")
                 .Price(2)
                 .RequirementSkill(SkillType.TwinPistol, 12)
@@ -247,6 +259,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.BlasterSlide3)
+                .DroidAISlots(3)
                 .Description("Retreat 4m directly away from the selected enemy, then attack with each equipped attack weapon for weapon DMG + 12 per impact. Works with any weapon.")
                 .Price(3)
                 .RequirementSkill(SkillType.TwinPistol, 28)
@@ -254,6 +267,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.BlasterSlide4)
+                .DroidAISlots(4)
                 .Description("Retreat 4m directly away from the selected enemy, then attack with each equipped attack weapon for weapon DMG + 16 per impact. Works with any weapon.")
                 .Price(5)
                 .RequirementSkill(SkillType.TwinPistol, 40)
@@ -313,12 +327,14 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.GrappleShot1)
+                .DroidAISlots(1)
                 .Description("Close up to 6m toward an enemy, then attack with each equipped attack weapon for weapon DMG + 6 per impact. Works with any weapon.")
                 .Price(2)
                 .RequirementSkill(SkillType.TwinPistol, 10)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.GrappleShot2)
+                .DroidAISlots(2)
                 .Description("Close up to 6m toward an enemy, then attack with each equipped attack weapon for weapon DMG + 10 per impact. Works with any weapon.")
                 .Price(4)
                 .RequirementSkill(SkillType.TwinPistol, 30)
@@ -326,6 +342,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.GrappleShot3)
+                .DroidAISlots(3)
                 .Description("Close up to 6m toward an enemy, then attack with each equipped attack weapon for weapon DMG + 14 per impact. Works with any weapon.")
                 .Price(4)
                 .RequirementSkill(SkillType.TwinPistol, 38)
@@ -354,12 +371,14 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.PistolRush1)
+                .DroidAISlots(1)
                 .Description("Dash to a freely selected ground point 2-6m away. Attack up to three enemies in the 4m-wide travel line with each equipped attack weapon for 60% of weapon DMG + 6 per impact. Works with any weapon.")
                 .Price(3)
                 .RequirementSkill(SkillType.TwinPistol, 18)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.PistolRush2)
+                .DroidAISlots(2)
                 .Description("Dash to a freely selected ground point 2-6m away. Attack up to three enemies in the 4m-wide travel line with each equipped attack weapon for 60% of weapon DMG + 12 per impact. Works with any weapon.")
                 .Price(3)
                 .RequirementSkill(SkillType.TwinPistol, 32)
@@ -373,6 +392,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.CrossfireStance)
+                .DroidAISlots(1)
                 .Description("With any weapon: +10% Haste, +10% Movement Speed and 18-second Flow. All weapon auto-attacks deal 20% less damage. Activated ability damage is unchanged.")
                 .Price(4)
                 .RequirementSkill(SkillType.TwinPistol, 20);

@@ -87,7 +87,7 @@ public static class PowerGloveEquipment
 
     public static bool IsActivePair(uint creature)
     {
-        if (!GetIsObjectValid(creature) || Droid.IsDroid(creature)) return false;
+        if (!GetIsObjectValid(creature)) return false;
         var main = GetItemInSlot(InventorySlot.RightHand, creature);
         var companion = GetItemInSlot(InventorySlot.LeftHand, creature);
         return IsLinkedPair(creature, main, companion) &&
@@ -118,7 +118,7 @@ public static class PowerGloveEquipment
                 RemovePair(creature);
             return;
         }
-        if (Droid.IsDroid(creature) || !string.IsNullOrWhiteSpace(Item.GetCreatureItemUseError(creature, main)))
+        if (!string.IsNullOrWhiteSpace(Item.GetCreatureItemUseError(creature, main)))
         {
             RemovePair(creature, main);
             return;

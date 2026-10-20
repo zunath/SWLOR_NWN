@@ -48,7 +48,7 @@ public static class TwinPistolEquipment
     /// <summary>Creates the disposable visual/weapon profile for one owned pair item.</summary>
     public static void EnsurePair(uint creature)
     {
-        if (!GetIsObjectValid(creature) || IsChanging(creature) || Droid.IsDroid(creature)) return;
+        if (!GetIsObjectValid(creature) || IsChanging(creature)) return;
         var main = GetItemInSlot(InventorySlot.RightHand, creature);
         var off = GetItemInSlot(InventorySlot.LeftHand, creature);
         if (!IsPairItem(main)) return;
@@ -236,7 +236,7 @@ public static class TwinPistolEquipment
         var main = GetItemInSlot(InventorySlot.RightHand, creature);
         var off = GetItemInSlot(InventorySlot.LeftHand, creature);
         if (!GetIsObjectValid(main) || !GetIsObjectValid(off) ||
-            !IsLinkedPair(creature, main, off) || Droid.IsDroid(creature))
+            !IsLinkedPair(creature, main, off))
             return false;
 
         if (!string.IsNullOrEmpty(GetCompanionPropertyError(off))) return false;

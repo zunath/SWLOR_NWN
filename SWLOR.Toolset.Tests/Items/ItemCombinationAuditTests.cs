@@ -244,6 +244,7 @@ namespace SWLOR.Toolset.Tests.Items
                 [519] = ItemFamily.Essence, // ess5
                 [520] = ItemFamily.Essence, // ess6
                 [522] = ItemFamily.Essence, // ess8
+                [523] = ItemFamily.Essence, // ess9
                 [525] = ItemFamily.MeleeWeapon, // electroblade
                 [526] = ItemFamily.Miscellaneous, // miscmedium_stackable
                 [527] = ItemFamily.Essence, // ess1_stackable
@@ -255,7 +256,8 @@ namespace SWLOR.Toolset.Tests.Items
                 [537] = ItemFamily.MeleeWeapon, // twinelectroblade
                 [538] = ItemFamily.Miscellaneous, // miscthin_stackable
                 [539] = ItemFamily.Miscellaneous, // miscsmall2_stackable
-                [540] = ItemFamily.Miscellaneous // miscmedium2_stackable
+                [540] = ItemFamily.Miscellaneous, // miscmedium2_stackable
+                [541] = ItemFamily.MeleeWeapon // powerglove
             };
 
         private static readonly ItemFamily[] EquipmentFamilies =

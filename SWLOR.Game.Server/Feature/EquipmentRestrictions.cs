@@ -59,8 +59,6 @@ namespace SWLOR.Game.Server.Feature
                 GetIsObjectValid(mainHand) ? GetBaseItemType(mainHand) : null,
                 GetIsObjectValid(offHand) ? GetBaseItemType(offHand) : null,
                 existingError: canUseItem);
-            if (PowerGloveEquipment.IsPairItem(item) && Droid.IsDroid(creature))
-                canUseItem = "Constructed droids cannot equip Power Gloves.";
 
             if (isRestrictedActor)
             {

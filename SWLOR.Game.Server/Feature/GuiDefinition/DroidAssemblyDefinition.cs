@@ -13,7 +13,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                 .BindOnClosed(model => model.OnWindowClosed())
                 .SetIsResizable(true)
                 .SetIsCollapsible(true)
-                .SetInitialGeometry(0, 0, 520f, 640f)
+                .SetInitialGeometry(0, 0, 520f, 670f)
                 .SetTitle("Droid Assembly")
 
                 .AddColumn(col =>
@@ -234,6 +234,11 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                             col2.AddRow(row2 =>
                             {
                                 row2.AddLabel()
+                                    .BindText(model => model.Unarmed);
+                            });
+                            col2.AddRow(row2 =>
+                            {
+                                row2.AddLabel()
                                     .BindText(model => model.FireResistance);
                             });
                             col2.AddRow(row2 =>
@@ -292,6 +297,11 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                             col2.AddRow(row2 =>
                             {
                                 row2.AddLabel()
+                                    .BindText(model => model.TwinPistol);
+                            });
+                            col2.AddRow(row2 =>
+                            {
+                                row2.AddLabel()
                                     .BindText(model => model.PoisonResistance);
                             });
                             col2.AddRow(row2 =>
@@ -346,6 +356,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                             {
                                 row2.AddLabel()
                                     .BindText(model => model.Throwing);
+                            });
+                            col2.AddRow(row2 =>
+                            {
+                                // Keeps the resistance rows aligned with the two other columns.
+                                row2.AddLabel()
+                                    .SetText(string.Empty);
                             });
                             col2.AddRow(row2 =>
                             {

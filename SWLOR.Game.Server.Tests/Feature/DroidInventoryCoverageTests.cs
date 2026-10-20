@@ -21,6 +21,8 @@ public class DroidInventoryCoverageTests
     [TestCase(nameof(DroidInventoryEngineTests.HeadgearSummonedDroid))]
     [TestCase(nameof(DroidInventoryEngineTests.HeadgearSummonedDroidOccupiedHead))]
     [TestCase(nameof(DroidInventoryEngineTests.AppearanceSavedController))]
+    [TestCase(nameof(DroidInventoryEngineTests.WeaponSkillsPlayerController))]
+    [TestCase(nameof(DroidInventoryEngineTests.WeaponSkillsStoredController))]
     public void EquipmentPersistenceScenariosKeepBothDiscoveryLabels(string scenario)
     {
         var attribute = typeof(DroidInventoryEngineTests)

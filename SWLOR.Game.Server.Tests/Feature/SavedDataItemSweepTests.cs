@@ -12,6 +12,7 @@ using SWLOR.Game.Server.Service.DroidService;
 using SWLOR.Game.Server.Service.PlayerMarketService;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.NWN.API.NWScript.Enum.Item;
+using SWLOR.NWN.API.NWScript.Enum.Item.Property;
 using SWLOR.NWN.Formats.Gff;
 using SWLOR.NWN.Formats.TwoDA;
 
@@ -303,6 +304,87 @@ public class SavedDataItemSweepTests
         Locals(Read(migrated)).Should().Contain((CarapaceBracerStatRevisionCatalog.RevisionVariable, CarapaceBracerStatRevisionCatalog.CurrentRevision));
         Migrate(migrated, out _, true, out _).Should().BeFalse();
     }
+
+    [Test]
+    public void DroidWeaponSkills_AreAddedAtTheGroupMinimumTheWayTheEngineSavesThem()
+    {
+        // A controller assembled before the new skills: boosted Katar, and the ranged group at zero.
+        var original = Encode(Item("droid_ctrl", (BaseItem)24, 1,
+            DroidStat(DroidStatSubType.MGT, 20), DroidStat(DroidStatSubType.Katar, 30), DroidStat(DroidStatSubType.Staff, 25),
+            DroidStat(DroidStatSubType.Pistol, 0), DroidStat(DroidStatSubType.Rifle, 0), DroidStat(DroidStatSubType.Throwing, 0)));
+
+        Migrate(original, out var migrated, true, out var converted).Should().BeTrue();
+
+        converted.Should().BeEmpty();
+        var properties = Children(Read(migrated), "PropertiesList").ToList();
+        properties.Select(p => p.Type).Should().Equal(Enumerable.Range(0, 8).Select(index => (uint)index));
+        properties.Skip(6).Select(p => (Int(p, "PropertyName"), Int(p, "Subtype"), Int(p, "CostValue"))).Should().Equal(
+            ((int)ItemPropertyType.DroidStat, (int)DroidStatSubType.Unarmed, 25),
+            ((int)ItemPropertyType.DroidStat, (int)DroidStatSubType.TwinPistol, 0));
+        foreach (var added in properties.Skip(6))
+        {
+            added.Fields.Select(f => f.Label).Should().Equal("PropertyName", "Subtype", "CostTable", "CostValue",
+                "Param1", "Param1Value", "ChanceAppear", "UsesPerDay", "Useable", "CustomTag");
+            (Int(added, "CostTable"), Int(added, "Param1"), Int(added, "Param1Value"), Int(added, "ChanceAppear"),
+                Int(added, "UsesPerDay"), Int(added, "Useable")).Should().Be((45, 255, 255, 100, 255, 1));
+        }
+        Read(migrated).Fields.Should().NotContain(f => f.Label == "VarTable", "the rule needs no revision local");
+
+        Migrate(migrated, out var rerun, true, out _).Should().BeFalse("an item with the new skills is current");
+        rerun.Should().BeSameAs(migrated);
+    }
+
+    [Test]
+    public void DroidWeaponSkills_LeaveIncompleteGroupsAndCurrentItemsAlone()
+    {
+        var boost = Encode(Item("droid_part", (BaseItem)24, 1, DroidStat(DroidStatSubType.Katar, 5)));
+        Migrate(boost, out var unchangedBoost, true, out _).Should().BeFalse("a single Katar boost is not the martial group");
+        unchangedBoost.Should().BeSameAs(boost);
+
+        var current = Encode(Item("droid_cpu", (BaseItem)24, 1, DroidStat(DroidStatSubType.Katar, 25), DroidStat(DroidStatSubType.Staff, 25),
+            DroidStat(DroidStatSubType.Unarmed, 25), DroidStat(DroidStatSubType.Pistol, 25), DroidStat(DroidStatSubType.Rifle, 25),
+            DroidStat(DroidStatSubType.Throwing, 25), DroidStat(DroidStatSubType.TwinPistol, 25)));
+        Migrate(current, out var unchangedCurrent, true, out _).Should().BeFalse();
+        unchangedCurrent.Should().BeSameAs(current);
+    }
+
+    [Test]
+    public void DroidWeaponSkills_RunOnlyInReleaseMigrations()
+    {
+        // The release migrations update artwork; earlier passes that do not are left as they shipped.
+        var original = Encode(Item("droid_cpu", (BaseItem)24, 1, DroidStat(DroidStatSubType.Katar, 25), DroidStat(DroidStatSubType.Staff, 25)));
+        var arguments = new object?[] { original, null, true, null, false };
+        ((bool)Document.GetMethod("MigrateStoredItemData", BindingFlags.NonPublic | BindingFlags.Static)!.Invoke(null, arguments)!)
+            .Should().BeFalse();
+    }
+
+    [Test]
+    public void DroidWeaponSkills_ReachTheControllersSavedParts()
+    {
+        var cpu = Encode(Item("droid_cpu", (BaseItem)24, 1, DroidStat(DroidStatSubType.Katar, 25), DroidStat(DroidStatSubType.Staff, 25),
+            DroidStat(DroidStatSubType.Pistol, 25), DroidStat(DroidStatSubType.Rifle, 25), DroidStat(DroidStatSubType.Throwing, 25)));
+        var droid = JsonConvert.SerializeObject(new ConstructedDroid { SerializedCPU = cpu });
+        var original = Encode(Item("droid_ctrl", (BaseItem)24, 1,
+            DroidStat(DroidStatSubType.Katar, 25), DroidStat(DroidStatSubType.Staff, 25),
+            List("VarTable", Node(0, Text("Name", "CONSTRUCTED_DROID"), Scalar(4, "Type", 3), Text("Value", droid)))));
+
+        Migrate(original, out var migrated, true, out _).Should().BeTrue();
+
+        var root = Read(migrated);
+        Children(root, "PropertiesList").Should().ContainSingle(p => Int(p, "Subtype") == (int)DroidStatSubType.Unarmed && Int(p, "CostValue") == 25);
+        var saved = (string)Value(Children(root, "VarTable").Single(), "Value");
+        var part = Children(Read(JsonConvert.DeserializeObject<ConstructedDroid>(saved)!.SerializedCPU), "PropertiesList").ToList();
+        part.Where(p => Int(p, "PropertyName") == (int)ItemPropertyType.DroidStat)
+            .Select(p => (Int(p, "Subtype"), Int(p, "CostValue"))).Should().Contain(new[]
+            {
+                ((int)DroidStatSubType.Unarmed, 25), ((int)DroidStatSubType.TwinPistol, 25),
+            });
+        Migrate(migrated, out _, true, out _).Should().BeFalse();
+    }
+
+    // Blueprint-made droid parts save Param1Value 0; the engine-saved properties a migration adds save 255.
+    private static PropertyFixture DroidStat(DroidStatSubType subtype, int value) =>
+        Property(ItemPropertyType.DroidStat, (int)subtype, 45, value, param1Value: 0);
 
     private static bool Migrate(string original, out string migrated, bool repairHeadgear, out List<(string Icon, MarketCategoryType Category)> converted)
     {

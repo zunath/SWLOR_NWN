@@ -830,6 +830,10 @@ namespace SWLOR.Game.Server.Service
                     return ItemPropertyCustom(ItemPropertyType.DroidStat, (int)DroidStatSubType.Rifle, amount);
                 case EnhancementSubType.DroidThrowing: // Droid: Throwing
                     return ItemPropertyCustom(ItemPropertyType.DroidStat, (int)DroidStatSubType.Throwing, amount);
+                case EnhancementSubType.DroidUnarmed: // Droid: Unarmed
+                    return ItemPropertyCustom(ItemPropertyType.DroidStat, (int)DroidStatSubType.Unarmed, amount);
+                case EnhancementSubType.DroidTwinPistol: // Droid: Twin Pistol
+                    return ItemPropertyCustom(ItemPropertyType.DroidStat, (int)DroidStatSubType.TwinPistol, amount);
             }
 
             throw new Exception("Unsupported enhancement type.");

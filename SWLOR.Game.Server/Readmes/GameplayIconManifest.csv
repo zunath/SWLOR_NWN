@@ -1446,6 +1446,8 @@
 "Item","tusk_highe","Tusken Electronics","Utility","","iit_tusk_highe","SWLOR_Haks/sw_item_source/general/tusk_highe.png",""
 "Item","t_blast_parts","Tusken Raider Blaster Parts","Utility","","iit_t_blast_prt","SWLOR_Haks/sw_item_source/general/t_blast_parts.png",""
 "Item","de_tblade_b","Twin Blade Boost","Utility","","iit_de_tblade_b","SWLOR_Haks/sw_item_source/general/de_tblade_b.png",""
+"Item","de_twinpst_b","Twin Pistol Boost","Utility","","iit_de_twinpst_b","SWLOR_Haks/sw_item_source/general/de_twinpst_b.png",""
+"Item","de_unarmed_b","Unarmed Boost","Utility","","iit_de_unarmed_b","SWLOR_Haks/sw_item_source/general/de_unarmed_b.png",""
 "Item","vendusii_gem","Vendusii Gemstone","Utility","","iit_vendusii_gem","SWLOR_Haks/sw_item_source/general/vendusii_gem.png",""
 "Item","de_verve","Verve","Utility","","iit_de_verve","SWLOR_Haks/sw_item_source/general/de_verve.png",""
 "Item","de_vblade_b","Vibroblade Boost","Utility","","iit_de_vblade_b","SWLOR_Haks/sw_item_source/general/de_vblade_b.png",""

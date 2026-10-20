@@ -545,8 +545,6 @@ namespace SWLOR.Game.Server.Service
 
             if (itemType == BaseItem.CompanionPistol)
             {
-                if (isDroid)
-                    return "Combat droids cannot equip companion pistols.";
                 if (!TwinPistolEquipment.IsLinkedPair(creature, hands.MainHand, item))
                     return "The off-hand pistol is created automatically by equipping a Twin Pistols item.";
                 var propertyError = TwinPistolEquipment.GetCompanionPropertyError(item);
@@ -555,13 +553,12 @@ namespace SWLOR.Game.Server.Service
 
             if (TwinPistolEquipment.IsPairItem(item))
             {
-                if (isDroid) return "Combat droids cannot equip Twin Pistols.";
                 if (GetIsObjectValid(hands.OffHand) &&
                     !TwinPistolEquipment.IsLinkedPair(creature, item, hands.OffHand))
                     return "Twin Pistols require both hands. Unequip your off-hand item first.";
             }
 
-            var paired = !isDroid && GetIsObjectValid(hands.MainHand) && GetIsObjectValid(hands.OffHand) &&
+            var paired = GetIsObjectValid(hands.MainHand) && GetIsObjectValid(hands.OffHand) &&
                 TwinPistolEquipment.IsPair(GetBaseItemType(hands.MainHand), GetBaseItemType(hands.OffHand));
             var requirementSkill = paired && item == hands.MainHand ? SkillType.TwinPistol : SkillType.Invalid;
             var itemUseError = GetCreatureItemUseError(creature, item, requirementSkill);

@@ -46,6 +46,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.Jab1)
+                .DroidAISlots(1)
                 .Description("Deals weapon DMG + 8. On hit, grants Opening against this enemy for 4 seconds. Opening gives your weapon auto-attacks +3 Accuracy against this enemy with any weapon and sets up either follow-up attack.")
                 .IncreasesStat(StatType.TechniqueLine, 1)
                 .IncreasesStat(StatType.TechniqueWeavePower, 4)
@@ -54,6 +55,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.Jab2)
+                .DroidAISlots(2)
                 .Description("Deals weapon DMG + 18. On hit, grants Opening against this enemy for 4 seconds. Opening gives your weapon auto-attacks +3 Accuracy against this enemy with any weapon and sets up either follow-up attack.")
                 .IncreasesStat(StatType.TechniqueLine, 1)
                 .IncreasesStat(StatType.TechniqueWeavePower, 8)
@@ -62,6 +64,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.Jab3)
+                .DroidAISlots(3)
                 .Description("Deals weapon DMG + 28. On hit, grants Opening against this enemy for 4 seconds. Opening gives your weapon auto-attacks +3 Accuracy against this enemy with any weapon and sets up either follow-up attack.")
                 .IncreasesStat(StatType.TechniqueLine, 1)
                 .IncreasesStat(StatType.TechniqueWeavePower, 12)
@@ -70,6 +73,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.Jab4)
+                .DroidAISlots(4)
                 .Description("Deals weapon DMG + 38. On hit, grants Opening against this enemy for 4 seconds. Opening gives your weapon auto-attacks +3 Accuracy against this enemy with any weapon and sets up either follow-up attack.")
                 .IncreasesStat(StatType.TechniqueLine, 1)
                 .IncreasesStat(StatType.TechniqueWeavePower, 16)
@@ -102,6 +106,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.PalmStrike1)
+                .DroidAISlots(1)
                 .Description("Deals weapon DMG + 12. Spends Opening at activation. If the sequenced strike lands, grants Finish for 4 seconds; Finish gives your weapon auto-attacks +3 Accuracy against this enemy with any weapon.")
                 .Price(2)
                 .RequirementSkill(SkillType.Unarmed, 8)
@@ -109,6 +114,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.PalmStrike2)
+                .DroidAISlots(2)
                 .Description("Deals weapon DMG + 24. Spends Opening at activation. If the sequenced strike lands, grants Finish for 4 seconds; Finish gives your weapon auto-attacks +3 Accuracy against this enemy with any weapon.")
                 .Price(4)
                 .RequirementSkill(SkillType.Unarmed, 22)
@@ -116,6 +122,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.PalmStrike3)
+                .DroidAISlots(3)
                 .Description("Deals weapon DMG + 36. Spends Opening at activation. If the sequenced strike lands, grants Finish for 4 seconds; Finish gives your weapon auto-attacks +3 Accuracy against this enemy with any weapon.")
                 .Price(4)
                 .RequirementSkill(SkillType.Unarmed, 45)
@@ -180,6 +187,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.FinishingCombination1)
+                .DroidAISlots(1)
                 .Description("Two strikes at one enemy, each 50% of weapon DMG + 8. Spend Opening for +3 DMG per strike and redirect the second strike to the nearest other enemy within 5m of you, if available. Spend Finish for +6 DMG per strike, both against the selected enemy.")
                 .Price(3)
                 .RequirementSkill(SkillType.Unarmed, 18)
@@ -187,6 +195,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.FinishingCombination2)
+                .DroidAISlots(2)
                 .Description("Two strikes at one enemy, each 50% of weapon DMG + 14. Spend Opening for +4 DMG per strike and redirect the second strike to the nearest other enemy within 5m of you, if available. Spend Finish for +8 DMG per strike, both against the selected enemy.")
                 .Price(3)
                 .RequirementSkill(SkillType.Unarmed, 32)
@@ -201,6 +210,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.FlowStance1)
+                .DroidAISlots(1)
                 .Description("While active, a landed Finishing Combination spending Opening grants Slip Away: +20% Evasion and +15% movement speed for 8 seconds. A landed Finishing Combination or Perfect Form spending Finish instead grants Press Forward: +15% Haste for 8 seconds. These windows are mutually exclusive and share a 12-second trigger cooldown. Weapon swaps and unrelated hostile skills against the same enemy preserve the window. Stance, combat or enemy changes clear it. Reduces Defense by 10%.")
                 .Price(4)
                 .RequirementSkill(SkillType.Unarmed, 20);
@@ -260,24 +270,28 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.DirtyJab1)
+                .DroidAISlots(1)
                 .Description("Deals weapon DMG + 8. On hit, applies your Rattled for 6 seconds, reducing this enemy's weapon auto-attack Accuracy by 10.")
                 .Price(2)
                 .RequirementSkill(SkillType.Unarmed, 2)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.DirtyJab2)
+                .DroidAISlots(2)
                 .Description("Deals weapon DMG + 18. On hit, applies your Rattled for 6 seconds, reducing this enemy's weapon auto-attack Accuracy by 10.")
                 .Price(2)
                 .RequirementSkill(SkillType.Unarmed, 12)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.DirtyJab3)
+                .DroidAISlots(3)
                 .Description("Deals weapon DMG + 28. On hit, applies your Rattled for 6 seconds, reducing this enemy's weapon auto-attack Accuracy by 10.")
                 .Price(3)
                 .RequirementSkill(SkillType.Unarmed, 28)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.DirtyJab4)
+                .DroidAISlots(4)
                 .Description("Deals weapon DMG + 38. On hit, applies your Rattled for 6 seconds, reducing this enemy's weapon auto-attack Accuracy by 10.")
                 .Price(5)
                 .RequirementSkill(SkillType.Unarmed, 40);
@@ -308,6 +322,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.Uppercut1)
+                .DroidAISlots(1)
                 .Description("Deals weapon DMG + 12. No Rattled requirement. Can spend optional Retaliation against its enemy.")
                 .Price(2)
                 .RequirementSkill(SkillType.Unarmed, 8)
@@ -315,6 +330,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.Uppercut2)
+                .DroidAISlots(2)
                 .Description("Deals weapon DMG + 24. No Rattled requirement. Can spend optional Retaliation against its enemy.")
                 .Price(4)
                 .RequirementSkill(SkillType.Unarmed, 22)
@@ -322,6 +338,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.Uppercut3)
+                .DroidAISlots(3)
                 .Description("Deals weapon DMG + 36. No Rattled requirement. Can spend optional Retaliation against its enemy.")
                 .Price(4)
                 .RequirementSkill(SkillType.Unarmed, 45)
@@ -384,12 +401,14 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.LowKick1)
+                .DroidAISlots(1)
                 .Description("Deals weapon DMG + 16. On hit, this enemy's weapon auto-attacks deal 10% less physical damage for 6 seconds.")
                 .Price(3)
                 .RequirementSkill(SkillType.Unarmed, 18)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.LowKick2)
+                .DroidAISlots(2)
                 .Description("Deals weapon DMG + 30. On hit, this enemy's weapon auto-attacks deal 10% less physical damage for 8 seconds.")
                 .Price(3)
                 .RequirementSkill(SkillType.Unarmed, 32);
@@ -403,6 +422,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.BruiserStance1)
+                .DroidAISlots(1)
                 .Description("Increases Physical Defense by 10%, with any equipment. Direct hostile damage to real HP arms Retaliation against the attacker: +12 total DMG on your next Uppercut or Haymaker against that enemy within 8 seconds. One charge, with an 18-second grant cooldown. No Dirty Jab or Rattled requirement. The bonus is spent on activation, including a miss. Weapon swaps and unrelated hostile skills against the same enemy preserve it. Stance, combat or enemy changes clear it. Reduces Attack by 10%.")
                 .Price(4)
                 .RequirementSkill(SkillType.Unarmed, 20);

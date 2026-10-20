@@ -65,9 +65,8 @@ public static class TwinPistolEquipmentValidation
         var off = GetItemInSlot(InventorySlot.LeftHand, creature);
         var companion = GetIsObjectValid(off) && GetBaseItemType(off) == BaseItem.CompanionPistol;
         var companionError = companion
-            ? Droid.IsDroid(creature) ? "Combat droids cannot equip companion pistols."
-                : !TwinPistolEquipment.IsLinkedPair(creature, main, off)
-                    ? "The off-hand pistol is created automatically by equipping a Twin Pistols item."
+            ? !TwinPistolEquipment.IsLinkedPair(creature, main, off)
+                ? "The off-hand pistol is created automatically by equipping a Twin Pistols item."
                 : TwinPistolEquipment.GetCompanionPropertyError(off)
             : string.Empty;
         if (companion && string.IsNullOrEmpty(companionError))

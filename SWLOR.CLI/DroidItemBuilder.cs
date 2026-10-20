@@ -281,6 +281,7 @@ namespace SWLOR.CLI
             {
                 yield return (DroidStatSubType.Katar, martialArts);
                 yield return (DroidStatSubType.Staff, martialArts);
+                yield return (DroidStatSubType.Unarmed, martialArts);
             }
 
             if (ranged > 0)
@@ -288,6 +289,7 @@ namespace SWLOR.CLI
                 yield return (DroidStatSubType.Pistol, ranged);
                 yield return (DroidStatSubType.Rifle, ranged);
                 yield return (DroidStatSubType.Throwing, ranged);
+                yield return (DroidStatSubType.TwinPistol, ranged);
             }
         }
 

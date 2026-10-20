@@ -380,16 +380,15 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     : $"{count} in your favorites.";
             }
 
-            var source = (DMBlueprintSource)SelectedSource;
-            var palette = source == DMBlueprintSource.Standard
+            var palette = (DMBlueprintSource)SelectedSource == DMBlueprintSource.Standard
                 ? "the base game's palette"
                 : "the module's palette";
             if (_results.Count == 0)
                 return $"No matches in {palette}.";
 
-            var hasFavorites = _favorites.Any(favorite =>
-                favorite.Category == (DMBlueprintCategory)SelectedType && favorite.Source == source);
-            return hasFavorites
+            // Explain the marker only when this page shows one.
+            var showsFavorites = _pageResults.Any(blueprint => DMFavoriteList.Contains(_favorites, blueprint));
+            return showsFavorites
                 ? $"{count} in {palette}. * marks your favorites."
                 : $"{count} in {palette}.";
         }

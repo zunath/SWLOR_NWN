@@ -290,7 +290,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
         }
 
         /// <summary>
-        /// Gadget DMG: the weapon-DMG equivalent every Assault Gadget adds to its base damage, scaled by Devices rank.
+        /// Gadget DMG: the weapon-DMG equivalent Assault Gadgets add to their base damage, scaled by Devices rank.
         /// </summary>
         public static int GetAssaultGadgetWeaponDamageEquivalent(uint creature)
         {

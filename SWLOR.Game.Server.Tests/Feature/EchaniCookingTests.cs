@@ -115,10 +115,10 @@ public class EchaniCookingTests
     }
 
     [Test]
-    public void SharedHotpot_ProducesFourIndividuallyConsumablePortions()
+    public void SharedHotpot_ProducesOnePortionAtTheExistingPerPortionCost()
     {
         var recipe = new EchaniCookingRecipes().BuildRecipes()[RecipeType.EchaniSharedHotpot];
-        recipe.Quantity.Should().Be(4);
+        recipe.Quantity.Should().Be(1);
         recipe.Components["esh_wolf_meat"].Should().Be(3 * recipe.Quantity);
         recipe.Components["esh_greens"].Should().Be(2 * recipe.Quantity);
         recipe.Components["esh_rice"].Should().Be(recipe.Quantity);

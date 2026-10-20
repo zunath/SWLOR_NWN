@@ -75,13 +75,13 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Category(RecipeCategoryType.Food)
                 .Resref("esh_hotpot")
                 .Level(50)
-                .Quantity(4)
+                .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Food, 2)
-                .Component("esh_wolf_meat", 12)
-                .Component("esh_greens", 8)
-                .Component("esh_rice", 4)
-                .Component("ginger", 4)
-                .Component("distilled_water", 4);
+                .Component("esh_wolf_meat", 3)
+                .Component("esh_greens", 2)
+                .Component("esh_rice", 1)
+                .Component("ginger", 1)
+                .Component("distilled_water", 1);
 
             // Echani Crispy Claypot Rice
             _builder.Create(RecipeType.EchaniClaypotRice, SkillType.Agriculture)

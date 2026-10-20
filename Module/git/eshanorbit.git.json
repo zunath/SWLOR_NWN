@@ -4281,7 +4281,7 @@
         },
         "Value": {
           "type": "cexostring",
-          "value": "SPACE_DATHOMIR_ORBIT"
+          "value": "SPACE_ESHAN_ORBIT"
         }
       },
       {
@@ -4296,7 +4296,7 @@
         },
         "Value": {
           "type": "cexostring",
-          "value": "SPACE_RESOURCES_DATHOMIR_ORBIT"
+          "value": "SPACE_RESOURCES_ESHAN_ORBIT"
         }
       },
       {

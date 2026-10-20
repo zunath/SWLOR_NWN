@@ -3,19 +3,15 @@ using NWN.Native.API;
 using NWNX.NET;
 using NWNX.NET.Native;
 using SWLOR.Game.Server.Core;
-using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.CraftService;
 
 namespace SWLOR.Game.Server.Native
 {
-    /// <summary>Persists character checkpoints in BIC exports, which omit creature locals.</summary>
+    /// <summary>Persists the migration checkpoint in BIC exports, which omit creature locals.</summary>
     public static unsafe class PlayerFileCheckpoint
     {
         internal const string FieldName = "PlayerFileVer";
         private static readonly byte[] FieldLabel = System.Text.Encoding.ASCII.GetBytes(FieldName + "\0");
-        private static readonly byte[] FoodClaimFieldLabel = System.Text.Encoding.ASCII.GetBytes("FoodClaim\0");
-        private static readonly byte[] FoodBatchFieldLabel = System.Text.Encoding.ASCII.GetBytes("FoodBatch\0");
         private static FunctionHook* _saveHook;
         private static FunctionHook* _loadHook;
         private static FunctionHook* _readStatsHook;
@@ -49,37 +45,12 @@ namespace SWLOR.Game.Server.Native
                 if (saved == 0)
                     return 0;
                 using var name = new CExoString(Migration.PlayerFileVersionVariable);
-                var scriptVars = CNWSCreature.FromPointer(creature).m_ScriptVars;
-                var version = scriptVars.GetInt(name);
-                if (version > 0)
-                {
-                    fixed (byte* field = FieldLabel)
-                        saved = CResGFF.FromPointer(resource)
-                            .WriteFieldINT(CResStruct.FromPointer(structure), version, field);
-                    if (saved == 0)
-                        return 0;
-                }
-
-                using var foodClaimName = new CExoString(CraftedFoodClaim.CheckpointVariable);
-                using var foodClaim = scriptVars.GetString(foodClaimName);
-                if (!string.IsNullOrEmpty(foodClaim.ToString()))
-                {
-                    fixed (byte* field = FoodClaimFieldLabel)
-                        saved = CResGFF.FromPointer(resource)
-                            .WriteFieldCExoString(CResStruct.FromPointer(structure), foodClaim, field);
-                    if (saved == 0)
-                        return 0;
-                }
-
-                using var foodBatchName = new CExoString(CraftedFoodDelivery.RecoveryVariable);
-                using var foodBatch = scriptVars.GetString(foodBatchName);
-                if (!string.IsNullOrEmpty(foodBatch.ToString()))
-                {
-                    fixed (byte* field = FoodBatchFieldLabel)
-                        return CResGFF.FromPointer(resource)
-                            .WriteFieldCExoString(CResStruct.FromPointer(structure), foodBatch, field);
-                }
-                return saved;
+                var version = CNWSCreature.FromPointer(creature).m_ScriptVars.GetInt(name);
+                if (version <= 0)
+                    return saved;
+                fixed (byte* field = FieldLabel)
+                    return CResGFF.FromPointer(resource)
+                        .WriteFieldINT(CResStruct.FromPointer(structure), version, field);
             }
             catch (Exception exception)
             {
@@ -145,31 +116,6 @@ namespace SWLOR.Game.Server.Native
             {
                 using var name = new CExoString(Migration.PlayerFileVersionVariable);
                 creature.m_ScriptVars.SetInt(name, version);
-            }
-
-            using var foodClaimName = new CExoString(CraftedFoodClaim.CheckpointVariable);
-            using var empty = new CExoString(string.Empty);
-            found = 0;
-            fixed (byte* field = FoodClaimFieldLabel)
-            {
-                using var foodClaim = CResGFF.FromPointer(resource)
-                    .ReadFieldCExoString(CResStruct.FromPointer(structure), field, &found, empty);
-                if (found != 0 && !string.IsNullOrEmpty(foodClaim.ToString()))
-                    creature.m_ScriptVars.SetString(foodClaimName, foodClaim);
-                else
-                    creature.m_ScriptVars.DestroyString(foodClaimName);
-            }
-
-            using var foodBatchName = new CExoString(CraftedFoodDelivery.RecoveryVariable);
-            found = 0;
-            fixed (byte* field = FoodBatchFieldLabel)
-            {
-                using var foodBatch = CResGFF.FromPointer(resource)
-                    .ReadFieldCExoString(CResStruct.FromPointer(structure), field, &found, empty);
-                if (found != 0 && !string.IsNullOrEmpty(foodBatch.ToString()))
-                    creature.m_ScriptVars.SetString(foodBatchName, foodBatch);
-                else
-                    creature.m_ScriptVars.DestroyString(foodBatchName);
             }
         }
     }

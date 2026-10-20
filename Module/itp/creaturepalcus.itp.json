@@ -19367,9 +19367,9 @@
                   }
                 ]
               },
-              "STRREF": {
-                "type": "dword",
-                "value": 16783410
+              "NAME": {
+                "type": "cexostring",
+                "value": "Eshan"
               }
             }
           ]

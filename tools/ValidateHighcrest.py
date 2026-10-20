@@ -7,7 +7,7 @@ ROOT = Path(__file__).resolve().parents[1]
 AREA = "pw_ar_sc_eshancm"
 # MerchantEditorViewModel's mandatory policy, independent of blueprint/instance parity.
 STORE_POLICY = {
-    "BlackMarket": ("byte", 1),
+    "BlackMarket": ("byte", 0),
     "IdentifyPrice": ("int", 0),
     "MaxBuyPrice": ("int", -1),
     "StoreGold": ("int", -1),

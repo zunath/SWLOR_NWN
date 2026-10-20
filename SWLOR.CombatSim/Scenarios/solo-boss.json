@@ -1,0 +1,109 @@
+{
+  "name": "Solo boss",
+  "description": "A Light Force self-healer with 550 HP holds a boss and its adds alone, keeping up Renewal, Force Sanctuary and Rousing Shout and using Benevolence when low. Values are synthetic and in the range seen in a live solo boss fight in October 2026, where the player survived 27 minutes at the old 20% minimum hit chance. The boss now hits at least 35% of the time, less the third of landing swings this lightsaber user deflects (hitChance 0.24); the adds keep 20% (0.14). Both are unkillable, so the scenario measures survival only. Temporary HP that perks grant on their own triggers, such as Guardian's Resolve, is not modeled.",
+  "durationSeconds": 900,
+  "isPvp": false,
+  "teams": [
+    {
+      "name": "Player",
+      "targetPolicy": "Focus",
+      "focusTarget": "Boss",
+      "members": [
+        {
+          "name": "Light self-healer",
+          "maxHp": 550,
+          "hpRegenPer30Seconds": 8,
+          "willpower": 26,
+          "social": 20,
+          "might": 12,
+          "forceAffinity": 10,
+          "outgoingHealingPercent": 10,
+          "maxFp": 106,
+          "fpRegenPer30Seconds": 10,
+          "maxStm": 41,
+          "stmRegenPer30Seconds": 12,
+          "perks": [
+            "ForceConvergence"
+          ],
+          "abilities": [
+            {
+              "feat": "Renewal3",
+              "target": "Self",
+              "keepUp": true,
+              "belowHpPercent": 95
+            },
+            {
+              "feat": "ForceSanctuary1",
+              "target": "Self",
+              "keepUp": true,
+              "belowHpPercent": 101,
+              "maxTargets": 1
+            },
+            {
+              "feat": "RousingShout3",
+              "target": "Self",
+              "keepUp": true,
+              "belowHpPercent": 101
+            },
+            {
+              "feat": "Benevolence3",
+              "target": "Self",
+              "belowHpPercent": 60
+            },
+            {
+              "feat": "ForceJudgment3",
+              "target": "Enemy",
+              "damage": {
+                "min": 30,
+                "max": 78,
+                "hitChance": 0.6,
+                "type": "Force"
+              }
+            },
+            {
+              "feat": "ForceBurst1",
+              "target": "Enemy",
+              "damage": {
+                "min": 28,
+                "max": 75,
+                "hitChance": 0.6,
+                "type": "Force"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Boss",
+      "members": [
+        {
+          "name": "Boss",
+          "isNpc": true,
+          "maxHp": 1000000,
+          "autoAttack": {
+            "attacksPerSecond": 0.41,
+            "damage": {
+              "min": 56,
+              "max": 200,
+              "hitChance": 0.24
+            }
+          }
+        },
+        {
+          "name": "Adds",
+          "isNpc": true,
+          "maxHp": 1000000,
+          "autoAttack": {
+            "attacksPerSecond": 0.25,
+            "damage": {
+              "min": 26,
+              "max": 39,
+              "hitChance": 0.14
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

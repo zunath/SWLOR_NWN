@@ -21,9 +21,9 @@ public class CustomShaderMobileCompatibilityTests
         @"<<|>>|(?<!&)&(?!&)|(?<!\|)\|(?!\|)|(?<!\^)\^(?!\^)|%|~",
         RegexOptions.Compiled);
 
-    // "#define NAME body" or "#define NAME(args) body"; captures the replacement text.
-    private static readonly Regex MacroReplacement = new(
-        @"^#\s*define\s+\w+(\([^)]*\))?(?<body>.*)$",
+    // "#define NAME body" or "#define NAME(args) body"; captures the name and replacement text.
+    private static readonly Regex MacroDefinition = new(
+        @"^#\s*define\s+(?<name>\w+)(\([^)]*\))?(?<body>.*)$",
         RegexOptions.Compiled);
 
     [Test]
@@ -47,10 +47,11 @@ public class CustomShaderMobileCompatibilityTests
     public void PostProcessShader_UsesTheStockPassOnMobile()
     {
         var shader = File.ReadAllText(ResolveRepositoryPath("SWLOR_Haks", "sw_shader", "fsfbpostpr.shd"));
-        var mobileLines = MobileCompiledLines(shader).Select(line => line.Text.Trim()).ToList();
+        var scan = ScanForMobile(shader);
 
-        mobileLines.Should().Contain("gl_FragColor = FS_PostProcess();");
-        mobileLines.Should().NotContain(line => line.Contains("Telegraph"),
+        scan.DefiniteCode.Select(line => line.Text.Trim()).Should().Contain("gl_FragColor = FS_PostProcess();",
+            "every mobile build must run the stock post-processing pass");
+        scan.PossibleCode.Select(line => line.Text).Should().NotContain(line => line.Contains("Telegraph"),
             "telegraph unpacking needs integer bitwise operators that mobile clients lack");
     }
 
@@ -62,38 +63,86 @@ public class CustomShaderMobileCompatibilityTests
         const string elseGuarded = "#ifdef MOBILE\nint Unpack(int packedData) { return 0; }\n#else\n" + unguarded + "#endif\n";
         const string logicalOnly = "bool Both(bool a, bool b) { return a && b || a ^^ b; }\n#if (FLAGS & 2)\n#endif\n#define SHADER_TYPE 2\n";
         const string macro = "#define UNPACK(v) ((v >> 3) & 3)\nint Unpack(int v) { return UNPACK(v); }\n";
-        const string guardedMacro = "#ifndef MOBILE\n#define UNPACK(v) ((v >> 3) & 3)\n#endif\n";
+        const string nestedMacro = "#define LOW(v) (v & 3)\n#define UNPACK(v) LOW(v)\nint Unpack(int v) { return UNPACK(v); }\n";
+        const string guardedMacro = "#ifndef MOBILE\n#define UNPACK(v) ((v >> 3) & 3)\n#endif\nint Unpack(int v) { return 0; }\n";
+        const string preprocessorOnlyMacro = "#define HAS_FLAG (FLAGS & 2)\n#if HAS_FLAG\n#endif\n";
+        const string unusedMacro = "#define UNUSED(v) (v & 1)\n";
 
         FindMobileUnsupportedLines(unguarded).Should().ContainSingle();
         FindMobileUnsupportedLines(guarded).Should().BeEmpty();
         FindMobileUnsupportedLines(elseGuarded).Should().BeEmpty();
         FindMobileUnsupportedLines(logicalOnly).Should().BeEmpty();
         FindMobileUnsupportedLines(macro).Should().ContainSingle();
+        FindMobileUnsupportedLines(nestedMacro).Should().ContainSingle();
         FindMobileUnsupportedLines(guardedMacro).Should().BeEmpty();
+        FindMobileUnsupportedLines(preprocessorOnlyMacro).Should().BeEmpty();
+        FindMobileUnsupportedLines(unusedMacro).Should().BeEmpty();
+    }
+
+    [Test]
+    public void Checker_OnlyCountsDefinitelyCompiledLinesAsDefinite()
+    {
+        var scan = ScanForMobile("#ifdef MOBILE\nvoid A() {}\n#endif\n#if 0\nvoid B() {}\n#endif\nvoid C() {}\n");
+
+        scan.DefiniteCode.Select(line => line.Text.Trim()).Should().Equal("void A() {}", "void C() {}");
+        scan.PossibleCode.Select(line => line.Text.Trim()).Should().Equal("void A() {}", "void B() {}", "void C() {}");
     }
 
     private static IEnumerable<string> FindMobileUnsupportedLines(string shader)
     {
-        return MobileCompiledLines(shader)
+        var scan = ScanForMobile(shader);
+        var findings = scan.PossibleCode
             .Where(line => MobileUnsupportedOperator.IsMatch(line.Text))
-            .Select(line => $"{line.Number}: {line.Text.Trim()}");
+            .Select(line => $"{line.Number}: {line.Text.Trim()}")
+            .ToList();
+
+        // A macro body only reaches the GLSL compiler when runtime code expands it;
+        // macros used only by #if are evaluated by the preprocessor, which allows
+        // these operators. Follow macro-to-macro references to a fixed point.
+        var used = new HashSet<string>();
+        var pending = new Queue<string>(scan.PossibleCode.Select(line => line.Text));
+        while (pending.Count > 0)
+        {
+            var text = pending.Dequeue();
+            foreach (var definition in scan.Macros.Where(m => !used.Contains(m.Name) && Regex.IsMatch(text, $@"\b{m.Name}\b")))
+            {
+                used.Add(definition.Name);
+                pending.Enqueue(definition.Body);
+            }
+        }
+
+        findings.AddRange(scan.Macros
+            .Where(m => used.Contains(m.Name) && MobileUnsupportedOperator.IsMatch(m.Body))
+            .Select(m => $"{m.Number}: #define {m.Name}{m.Body}"));
+
+        return findings;
     }
 
+    private sealed record MobileScan(
+        List<(int Number, string Text)> PossibleCode,
+        List<(int Number, string Text)> DefiniteCode,
+        List<(int Number, string Name, string Body)> Macros);
+
     /// <summary>
-    /// Returns the non-preprocessor code lines (comments removed) that are compiled
-    /// when MOBILE is defined. Conditions that do not test MOBILE are treated as
-    /// possibly true, so their contents are checked.
+    /// Splits a shader (comments removed) into the code lines and macro definitions the
+    /// mobile client may compile. Conditions that do not test MOBILE are unknown: their
+    /// contents count as possibly compiled, but only lines under no condition or a
+    /// MOBILE-true one count as definitely compiled.
     /// </summary>
-    private static IEnumerable<(int Number, string Text)> MobileCompiledLines(string shader)
+    private static MobileScan ScanForMobile(string shader)
     {
         var lines = StripComments(shader).Replace("\r\n", "\n").Split('\n');
         // null: condition unrelated to MOBILE; true/false: branch compiled on mobile.
         var conditions = new Stack<bool?>();
+        var possible = new List<(int Number, string Text)>();
+        var definite = new List<(int Number, string Text)>();
+        var macros = new List<(int Number, string Name, string Body)>();
 
         for (var index = 0; index < lines.Length; index++)
         {
             var text = lines[index];
             var directive = text.Trim();
+            var possiblyActive = conditions.All(condition => condition != false);
 
             if (directive.StartsWith("#"))
             {
@@ -127,14 +176,10 @@ public class CustomShaderMobileCompatibilityTests
                         if (conditions.Count > 0) { conditions.Pop(); }
                         break;
                     case "define":
-                        // Macro bodies are expanded into the code that uses them, so an
-                        // active definition's replacement text is checked like code.
-                        var replacement = MacroReplacement.Match(directive);
-                        if (replacement.Success
-                            && conditions.All(condition => condition != false)
-                            && replacement.Groups["body"].Value.Trim().Length > 0)
+                        var definition = MacroDefinition.Match(directive);
+                        if (definition.Success && possiblyActive)
                         {
-                            yield return (index + 1, replacement.Groups["body"].Value);
+                            macros.Add((index + 1, definition.Groups["name"].Value, definition.Groups["body"].Value));
                         }
                         break;
                 }
@@ -142,11 +187,19 @@ public class CustomShaderMobileCompatibilityTests
                 continue;
             }
 
-            if (conditions.All(condition => condition != false) && directive.Length > 0)
+            if (directive.Length == 0 || !possiblyActive)
             {
-                yield return (index + 1, text);
+                continue;
+            }
+
+            possible.Add((index + 1, text));
+            if (conditions.All(condition => condition == true))
+            {
+                definite.Add((index + 1, text));
             }
         }
+
+        return new MobileScan(possible, definite, macros);
     }
 
     private static string StripComments(string shader)

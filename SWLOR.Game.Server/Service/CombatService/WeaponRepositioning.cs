@@ -151,13 +151,14 @@ public static unsafe class WeaponRepositioning
         _lockouts.Remove(actor);
     }
 
-    // A destroyed actor's movement poll stops once its operation is gone; nothing touches the destroyed object.
+    // A destroyed mover never arrives: report the failed arrival so the ability releases its deferred
+    // stamina context, without touching the destroyed object.
     [NWNEventHandler(ScriptName.OnObjectDestroyed)]
     public static void OnDestroyed()
     {
         var actor = OBJECT_SELF;
-        _moving.Remove(actor);
         _lockouts.Remove(actor);
+        if (_moving.Remove(actor, out var operation)) operation.OnArrival(false, 0f);
     }
 
     private static void Poll(WeaponRepositioningOperation operation)

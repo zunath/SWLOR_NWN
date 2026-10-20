@@ -2412,6 +2412,16 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>
+        /// Discards a destroyed attacker's open native attack cycle and its deferred effects without applying them,
+        /// so a reused object ID never starts inside a stale cycle.
+        /// </summary>
+        public static void ForgetDestroyedNativeAttackSwing(uint attacker)
+        {
+            _nativeAttackSwingDepth.Remove(attacker);
+            _deferredNativeAttackStatusEffects.Remove(attacker);
+        }
+
+        /// <summary>
         /// Ends (or cancels) a native attack cycle and applies limited attack-timing effects
         /// granted while its precomputed rolls resolved.
         /// </summary>

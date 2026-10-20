@@ -518,7 +518,7 @@
     "InternalName": "sw_over_barr",
     "Category": "Devices",
     "Type": "Combat",
-    "Description": "Unleashes three attacks at your primary target's location: a 42 fire DMG 5m burst plus Burn for 45 seconds, a 48 fire DMG single-target hit plus 3-second Knockdown, and a 24 sonic DMG 5m burst that interrupts activation and reduces Accuracy by 10% for 45 seconds.",
+    "Description": "Unleashes three attacks at your primary target's location: a 5m burst for 22 fire DMG plus Burn for 45 seconds, a single-target hit for gadget DMG + 32 fire DMG plus 3-second Knockdown, and a 5m burst for 18 sonic DMG that interrupts activation and reduces Accuracy by 10% for 45 seconds.",
     "Reference": "",
     "BibleAnimationRow": 131,
     "PerkId": "OverloadBarrage",
@@ -5907,5 +5907,479 @@
       "SWLOR.Game.Server/Feature/AbilityDefinition/Vibroknife/VolatileCompoundAbilityDefinition.cs"
     ],
     "CurrentPlayback": "DoubleStrike"
+  },
+  {
+    "Id": "PairedVolley",
+    "NativeImpactVisualEffect": "Vfx_Com_Blood_Spark_Small",
+    "EquipmentRequirement": "TwinPistol",
+    "Name": "Paired Volley",
+    "DisplayName": "Paired Volley",
+    "InternalName": "sw_pairvol",
+    "Category": "Twin Pistol",
+    "Type": "Combat",
+    "Description": "Raise the separately held pistols, aim forward and recover with both grips intact. Movement is performed by the ability before its shooting pose.",
+    "Reference": "",
+    "PerkId": "PairedVolley",
+    "Feats": [
+      "PairedVolley1",
+      "PairedVolley2",
+      "PairedVolley3",
+      "PairedVolley4"
+    ],
+    "DefinitionFiles": [
+      "SWLOR.Game.Server/Feature/AbilityDefinition/TwinPistol/PairedVolleyAbilityDefinition.cs"
+    ],
+    "CurrentPlayback": "Authored impact",
+    "SourceAnimation": "bowshot",
+    "Profile": "Authored paired blaster pose",
+    "Duration": 1.05
+  },
+  {
+    "Id": "FocusedBurst",
+    "NativeImpactVisualEffect": "Vfx_Com_Blood_Spark_Small",
+    "EquipmentRequirement": "TwinPistol",
+    "Name": "Focused Burst",
+    "DisplayName": "Focused Burst",
+    "InternalName": "sw_focusbrst",
+    "Category": "Twin Pistol",
+    "Type": "Combat",
+    "Description": "Raise the separately held pistols, aim forward and recover with both grips intact. Movement is performed by the ability before its shooting pose.",
+    "Reference": "",
+    "PerkId": "FocusedBurst",
+    "Feats": [
+      "FocusedBurst1",
+      "FocusedBurst2",
+      "FocusedBurst3"
+    ],
+    "DefinitionFiles": [
+      "SWLOR.Game.Server/Feature/AbilityDefinition/TwinPistol/FocusedBurstAbilityDefinition.cs"
+    ],
+    "CurrentPlayback": "Authored impact",
+    "SourceAnimation": "bowshot",
+    "Profile": "Authored paired blaster pose",
+    "Duration": 1.05
+  },
+  {
+    "Id": "ControlledBurst",
+    "NativeImpactVisualEffect": "Vfx_Com_Blood_Spark_Small",
+    "EquipmentRequirement": "TwinPistol",
+    "Name": "Controlled Burst",
+    "DisplayName": "Controlled Burst",
+    "InternalName": "sw_ctrlbrst",
+    "Category": "Twin Pistol",
+    "Type": "Combat",
+    "Description": "Raise the separately held pistols, aim forward and recover with both grips intact. Movement is performed by the ability before its shooting pose.",
+    "Reference": "",
+    "PerkId": "ControlledBurst",
+    "Feats": [
+      "ControlledBurst1",
+      "ControlledBurst2"
+    ],
+    "DefinitionFiles": [
+      "SWLOR.Game.Server/Feature/AbilityDefinition/TwinPistol/ControlledBurstAbilityDefinition.cs"
+    ],
+    "CurrentPlayback": "Authored impact",
+    "SourceAnimation": "bowshot",
+    "Profile": "Authored paired blaster pose",
+    "Duration": 1.05
+  },
+  {
+    "Id": "AkimboStance",
+    "NativeImpactVisualEffect": "Vfx_Imp_Haste",
+    "EquipmentRequirement": "TwinPistol",
+    "Name": "Akimbo Stance",
+    "DisplayName": "Akimbo Stance",
+    "InternalName": "sw_akimbo",
+    "Category": "Twin Pistol",
+    "Type": "Stance",
+    "Description": "Raise the separately held pistols, aim forward and recover with both grips intact. Movement is performed by the ability before its shooting pose.",
+    "Reference": "",
+    "PerkId": "AkimboStance",
+    "Feats": [
+      "AkimboStance"
+    ],
+    "DefinitionFiles": [
+      "SWLOR.Game.Server/Feature/AbilityDefinition/TwinPistol/AkimboStanceAbilityDefinition.cs"
+    ],
+    "CurrentPlayback": "Authored impact",
+    "SourceAnimation": "bowshot",
+    "Profile": "Authored paired blaster pose",
+    "Duration": 2
+  },
+  {
+    "Id": "TwinSuns",
+    "NativeImpactVisualEffect": "Vfx_Com_Blood_Spark_Small",
+    "EquipmentRequirement": "TwinPistol",
+    "Name": "Twin Suns",
+    "DisplayName": "Twin Suns",
+    "InternalName": "sw_twinsuns",
+    "Category": "Twin Pistol",
+    "Type": "Combat",
+    "Description": "Raise the separately held pistols, aim forward and recover with both grips intact. Movement is performed by the ability before its shooting pose.",
+    "Reference": "",
+    "PerkId": "TwinSuns",
+    "Feats": [
+      "TwinSuns"
+    ],
+    "DefinitionFiles": [
+      "SWLOR.Game.Server/Feature/AbilityDefinition/TwinPistol/TwinSunsAbilityDefinition.cs"
+    ],
+    "CurrentPlayback": "Authored impact",
+    "SourceAnimation": "bowshot",
+    "Profile": "Authored paired blaster pose",
+    "Duration": 2
+  },
+  {
+    "Id": "BlasterSlide",
+    "NativeImpactVisualEffect": "Vfx_Com_Blood_Spark_Small",
+    "EquipmentRequirement": "TwinPistol",
+    "Name": "Blaster Slide",
+    "DisplayName": "Blaster Slide",
+    "InternalName": "sw_blstslide",
+    "Category": "Twin Pistol",
+    "Type": "Combat",
+    "Description": "Raise the separately held pistols, aim forward and recover with both grips intact. Movement is performed by the ability before its shooting pose.",
+    "Reference": "",
+    "PerkId": "BlasterSlide",
+    "Feats": [
+      "BlasterSlide1",
+      "BlasterSlide2",
+      "BlasterSlide3",
+      "BlasterSlide4"
+    ],
+    "DefinitionFiles": [
+      "SWLOR.Game.Server/Feature/AbilityDefinition/TwinPistol/BlasterSlideAbilityDefinition.cs"
+    ],
+    "CurrentPlayback": "Authored impact",
+    "SourceAnimation": "bowshot",
+    "Profile": "Authored paired blaster pose",
+    "Duration": 1.05
+  },
+  {
+    "Id": "GrappleShot",
+    "NativeImpactVisualEffect": "Vfx_Com_Blood_Spark_Small",
+    "EquipmentRequirement": "TwinPistol",
+    "Name": "Grapple Shot",
+    "DisplayName": "Grapple Shot",
+    "InternalName": "sw_grapshot",
+    "Category": "Twin Pistol",
+    "Type": "Combat",
+    "Description": "Raise the separately held pistols, aim forward and recover with both grips intact. Movement is performed by the ability before its shooting pose.",
+    "Reference": "",
+    "PerkId": "GrappleShot",
+    "Feats": [
+      "GrappleShot1",
+      "GrappleShot2",
+      "GrappleShot3"
+    ],
+    "DefinitionFiles": [
+      "SWLOR.Game.Server/Feature/AbilityDefinition/TwinPistol/GrappleShotAbilityDefinition.cs"
+    ],
+    "CurrentPlayback": "Authored impact",
+    "SourceAnimation": "bowshot",
+    "Profile": "Authored paired blaster pose",
+    "Duration": 1.05
+  },
+  {
+    "Id": "PistolRush",
+    "NativeImpactVisualEffect": "Vfx_Com_Blood_Spark_Small",
+    "EquipmentRequirement": "TwinPistol",
+    "Name": "Pistol Rush",
+    "DisplayName": "Pistol Rush",
+    "InternalName": "sw_pistrush",
+    "Category": "Twin Pistol",
+    "Type": "Combat",
+    "Description": "Raise the separately held pistols, aim forward and recover with both grips intact. Movement is performed by the ability before its shooting pose.",
+    "Reference": "",
+    "PerkId": "PistolRush",
+    "Feats": [
+      "PistolRush1",
+      "PistolRush2"
+    ],
+    "DefinitionFiles": [
+      "SWLOR.Game.Server/Feature/AbilityDefinition/TwinPistol/PistolRushAbilityDefinition.cs"
+    ],
+    "CurrentPlayback": "Authored impact",
+    "SourceAnimation": "bowshot",
+    "Profile": "Authored paired blaster pose",
+    "Duration": 1.05
+  },
+  {
+    "Id": "CrossfireStance",
+    "NativeImpactVisualEffect": "Vfx_Imp_Haste",
+    "EquipmentRequirement": "TwinPistol",
+    "Name": "Crossfire Stance",
+    "DisplayName": "Crossfire Stance",
+    "InternalName": "sw_crossst",
+    "Category": "Twin Pistol",
+    "Type": "Stance",
+    "Description": "Raise the separately held pistols, aim forward and recover with both grips intact. Movement is performed by the ability before its shooting pose.",
+    "Reference": "",
+    "PerkId": "CrossfireStance",
+    "Feats": [
+      "CrossfireStance"
+    ],
+    "DefinitionFiles": [
+      "SWLOR.Game.Server/Feature/AbilityDefinition/TwinPistol/CrossfireStanceAbilityDefinition.cs"
+    ],
+    "CurrentPlayback": "Authored impact",
+    "SourceAnimation": "bowshot",
+    "Profile": "Authored paired blaster pose",
+    "Duration": 2
+  },
+  {
+    "Id": "FinalSalvo",
+    "NativeImpactVisualEffect": "Vfx_Com_Blood_Spark_Small",
+    "EquipmentRequirement": "TwinPistol",
+    "Name": "Final Salvo",
+    "DisplayName": "Final Salvo",
+    "InternalName": "sw_finsalvo",
+    "Category": "Twin Pistol",
+    "Type": "Combat",
+    "Description": "Raise the separately held pistols, aim forward and recover with both grips intact. Movement is performed by the ability before its shooting pose.",
+    "Reference": "",
+    "PerkId": "FinalSalvo",
+    "Feats": [
+      "FinalSalvo"
+    ],
+    "DefinitionFiles": [
+      "SWLOR.Game.Server/Feature/AbilityDefinition/TwinPistol/FinalSalvoAbilityDefinition.cs"
+    ],
+    "CurrentPlayback": "Authored impact",
+    "SourceAnimation": "bowshot",
+    "Profile": "Authored paired blaster pose",
+    "Duration": 2
+  },
+  {
+    "Id": "Jab",
+    "EquipmentRequirement": "Unarmed",
+    "Name": "Jab",
+    "DisplayName": "Jab",
+    "InternalName": "sw_jab",
+    "Category": "Unarmed",
+    "Type": "Combat",
+    "Description": "Deals weapon DMG + 38. On hit, grants Opening against this enemy for 4 seconds. Opening gives your weapon auto-attacks +3 Accuracy against this enemy with any weapon and sets up either follow-up attack.",
+    "Reference": "",
+    "PerkId": "Jab",
+    "Feats": [
+      "Jab1",
+      "Jab2",
+      "Jab3",
+      "Jab4"
+    ],
+    "DefinitionFiles": [
+      "SWLOR.Game.Server/Feature/AbilityDefinition/Unarmed/JabAbilityDefinition.cs"
+    ],
+    "CurrentPlayback": "DoubleStrike",
+    "SourceAnimation": "nwstab",
+    "Profile": "Equipped unarmed technique",
+    "Duration": 0.75
+  },
+  {
+    "Id": "PalmStrike",
+    "EquipmentRequirement": "Unarmed",
+    "Name": "Palm Strike",
+    "DisplayName": "Palm Strike",
+    "InternalName": "sw_palmstr",
+    "Category": "Unarmed",
+    "Type": "Combat",
+    "Description": "Deals weapon DMG + 36. Spends Opening at activation. If the sequenced strike lands, grants Finish for 4 seconds; Finish gives your weapon auto-attacks +3 Accuracy against this enemy with any weapon.",
+    "Reference": "",
+    "PerkId": "PalmStrike",
+    "Feats": [
+      "PalmStrike1",
+      "PalmStrike2",
+      "PalmStrike3"
+    ],
+    "DefinitionFiles": [
+      "SWLOR.Game.Server/Feature/AbilityDefinition/Unarmed/PalmStrikeAbilityDefinition.cs"
+    ],
+    "CurrentPlayback": "DoubleStrike",
+    "SourceAnimation": "nwstab",
+    "Profile": "Equipped unarmed technique",
+    "Duration": 0.85
+  },
+  {
+    "Id": "FinishingCombination",
+    "EquipmentRequirement": "Unarmed",
+    "Name": "Finishing Combination",
+    "DisplayName": "Finishing Combination",
+    "InternalName": "sw_fincombo",
+    "Category": "Unarmed",
+    "Type": "Combat",
+    "Description": "Two strikes at one enemy, each 50% of weapon DMG + 14. Spend Opening for +4 DMG per strike and redirect the second strike to the nearest other enemy within 5m of you, if available. Spend Finish for +8 DMG per strike, both against the selected enemy.",
+    "Reference": "",
+    "PerkId": "FinishingCombination",
+    "Feats": [
+      "FinishingCombination1",
+      "FinishingCombination2"
+    ],
+    "DefinitionFiles": [
+      "SWLOR.Game.Server/Feature/AbilityDefinition/Unarmed/FinishingCombinationAbilityDefinition.cs"
+    ],
+    "CurrentPlayback": "DoubleStrike",
+    "SourceAnimation": "nwslashr",
+    "Profile": "Equipped unarmed technique",
+    "Duration": 1.15
+  },
+  {
+    "Id": "FlowStance",
+    "EquipmentRequirement": "Unarmed",
+    "Name": "Flow Stance",
+    "DisplayName": "Flow Stance",
+    "InternalName": "sw_flowst",
+    "Category": "Unarmed",
+    "Type": "Stance",
+    "Description": "While active, a landed Finishing Combination spending Opening grants Slip Away: +20% Evasion and +15% movement speed for 8 seconds. A landed Finishing Combination or Perfect Form spending Finish instead grants Press Forward: +15% Haste for 8 seconds. These windows are mutually exclusive and share a 12-second trigger cooldown. Weapon swaps and unrelated hostile skills against the same enemy preserve the window. Stance, combat or enemy changes clear it. Reduces Defense by 10%.",
+    "Reference": "",
+    "PerkId": "FlowStance",
+    "Feats": [
+      "FlowStance1"
+    ],
+    "DefinitionFiles": [
+      "SWLOR.Game.Server/Feature/AbilityDefinition/Unarmed/FlowStanceAbilityDefinition.cs"
+    ],
+    "CurrentPlayback": "DoubleStrike",
+    "SourceAnimation": "nwreadyr",
+    "Profile": "Equipped unarmed technique",
+    "Duration": 1.8
+  },
+  {
+    "Id": "PerfectForm",
+    "EquipmentRequirement": "Unarmed",
+    "Name": "Perfect Form",
+    "DisplayName": "Perfect Form",
+    "InternalName": "sw_perfform",
+    "Category": "Unarmed",
+    "Type": "Combat",
+    "Description": "Deals weapon DMG + 30 to one enemy. Spending Finish adds +15 DMG. Practiced Form applies only with Finish.",
+    "Reference": "",
+    "PerkId": "PerfectForm",
+    "Feats": [
+      "PerfectForm1"
+    ],
+    "DefinitionFiles": [
+      "SWLOR.Game.Server/Feature/AbilityDefinition/Unarmed/PerfectFormAbilityDefinition.cs"
+    ],
+    "CurrentPlayback": "DoubleStrike",
+    "SourceAnimation": "nwcloseh",
+    "Profile": "Equipped unarmed technique",
+    "Duration": 1.8
+  },
+  {
+    "Id": "DirtyJab",
+    "EquipmentRequirement": "Unarmed",
+    "Name": "Dirty Jab",
+    "DisplayName": "Dirty Jab",
+    "InternalName": "sw_dirtyjab",
+    "Category": "Unarmed",
+    "Type": "Combat",
+    "Description": "Deals weapon DMG + 38. On hit, applies your Rattled for 6 seconds, reducing this enemy's weapon auto-attack Accuracy by 10.",
+    "Reference": "",
+    "PerkId": "DirtyJab",
+    "Feats": [
+      "DirtyJab1",
+      "DirtyJab2",
+      "DirtyJab3",
+      "DirtyJab4"
+    ],
+    "DefinitionFiles": [
+      "SWLOR.Game.Server/Feature/AbilityDefinition/Unarmed/DirtyJabAbilityDefinition.cs"
+    ],
+    "CurrentPlayback": "DoubleStrike",
+    "SourceAnimation": "nwclosel",
+    "Profile": "Equipped unarmed technique",
+    "Duration": 0.8
+  },
+  {
+    "Id": "Uppercut",
+    "EquipmentRequirement": "Unarmed",
+    "Name": "Uppercut",
+    "DisplayName": "Uppercut",
+    "InternalName": "sw_uppercut",
+    "Category": "Unarmed",
+    "Type": "Combat",
+    "Description": "Deals weapon DMG + 36. No Rattled requirement. Can spend optional Retaliation against its enemy.",
+    "Reference": "",
+    "PerkId": "Uppercut",
+    "Feats": [
+      "Uppercut1",
+      "Uppercut2",
+      "Uppercut3"
+    ],
+    "DefinitionFiles": [
+      "SWLOR.Game.Server/Feature/AbilityDefinition/Unarmed/UppercutAbilityDefinition.cs"
+    ],
+    "CurrentPlayback": "DoubleStrike",
+    "SourceAnimation": "nwcloseh",
+    "Profile": "Equipped unarmed technique",
+    "Duration": 1.25
+  },
+  {
+    "Id": "LowKick",
+    "EquipmentRequirement": "Unarmed",
+    "Name": "Low Kick",
+    "DisplayName": "Low Kick",
+    "InternalName": "sw_lowkick",
+    "Category": "Unarmed",
+    "Type": "Combat",
+    "Description": "Deals weapon DMG + 30. On hit, this enemy's weapon auto-attacks deal 10% less physical damage for 8 seconds.",
+    "Reference": "",
+    "PerkId": "LowKick",
+    "Feats": [
+      "LowKick1",
+      "LowKick2"
+    ],
+    "DefinitionFiles": [
+      "SWLOR.Game.Server/Feature/AbilityDefinition/Unarmed/LowKickAbilityDefinition.cs"
+    ],
+    "CurrentPlayback": "DoubleStrike",
+    "SourceAnimation": "nwkickr",
+    "Profile": "Equipped unarmed technique",
+    "Duration": 1.0
+  },
+  {
+    "Id": "BruiserStance",
+    "EquipmentRequirement": "Unarmed",
+    "Name": "Bruiser Stance",
+    "DisplayName": "Bruiser Stance",
+    "InternalName": "sw_bruisst",
+    "Category": "Unarmed",
+    "Type": "Stance",
+    "Description": "Increases Physical Defense by 10%, with any equipment. Direct hostile damage to real HP arms Retaliation against the attacker: +12 total DMG on your next Uppercut or Haymaker against that enemy within 8 seconds. One charge, with an 18-second grant cooldown. No Dirty Jab or Rattled requirement. The bonus is spent on activation, including a miss. Weapon swaps and unrelated hostile skills against the same enemy preserve it. Stance, combat or enemy changes clear it. Reduces Attack by 10%.",
+    "Reference": "",
+    "PerkId": "BruiserStance",
+    "Feats": [
+      "BruiserStance1"
+    ],
+    "DefinitionFiles": [
+      "SWLOR.Game.Server/Feature/AbilityDefinition/Unarmed/BruiserStanceAbilityDefinition.cs"
+    ],
+    "CurrentPlayback": "DoubleStrike",
+    "SourceAnimation": "nwreadyr",
+    "Profile": "Equipped unarmed technique",
+    "Duration": 1.8
+  },
+  {
+    "Id": "Haymaker",
+    "EquipmentRequirement": "Unarmed",
+    "Name": "Haymaker",
+    "DisplayName": "Haymaker",
+    "InternalName": "sw_haymaker",
+    "Category": "Unarmed",
+    "Type": "Combat",
+    "Description": "Deals weapon DMG + 50 to one enemy. No Rattled requirement. Heavy Blows applies, and the strike can spend optional Retaliation against its enemy.",
+    "Reference": "",
+    "PerkId": "Haymaker",
+    "Feats": [
+      "Haymaker1"
+    ],
+    "DefinitionFiles": [
+      "SWLOR.Game.Server/Feature/AbilityDefinition/Unarmed/HaymakerAbilityDefinition.cs"
+    ],
+    "CurrentPlayback": "DoubleStrike",
+    "SourceAnimation": "nwslasho",
+    "Profile": "Equipped unarmed technique",
+    "Duration": 1.9
   }
 ]

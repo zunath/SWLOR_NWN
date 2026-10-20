@@ -98,6 +98,8 @@ public class LootStatRevisionTests
         // Pistol blueprints use base item 61.
         [(int)BaseItem.Sling] = Curve(6, 7, 11, 11, 15, 15, 17, 22, 22, 23),
         [(int)BaseItem.Katar] = Curve(8, 8, 10, 10, 13, 13, 14, 15, 18, 19),
+        // Power Gloves keep each Katar tier's weapon budget.
+        [(int)BaseItem.PowerGlove] = Curve(8, 8, 10, 10, 13, 13, 14, 15, 18, 19),
     };
 
     [Test]

@@ -216,7 +216,7 @@ public class LightsaberPerkBehaviorTests
         // The native auto-attack path splits the physical hit before physical resistance.
         var native = File.ReadAllText(Path.Combine(root, "SWLOR.Game.Server", "Native", "GetDamageRoll.cs"));
         var nativeConversion = native.IndexOf(
-            "Combat.ApplyIncomingPhysicalToForceConversion(attacker.m_idSelf, target.m_idSelf, damageType, ref damage, targetStatusDamageAdjustment)",
+            "Combat.ApplyIncomingPhysicalToForceConversion(attacker.m_idSelf, target.m_idSelf, damageType, ref damage, targetStatusDamageAdjustment, convertedDamageScheduler)",
             StringComparison.Ordinal);
         var nativeLeadership = native.IndexOf(
             "Combat.ApplyTypedLeadershipDamageTakenModifier(target.m_idSelf, damage, damageType)",

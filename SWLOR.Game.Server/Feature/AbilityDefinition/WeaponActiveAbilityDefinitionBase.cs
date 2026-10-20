@@ -260,6 +260,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
             public Func<IStatusEffect> FriendlyTargetStatusEffectFactory { get; init; }
             public bool FriendlyTargetStatusPersistsUntilBroken { get; init; }
             public bool RequiresGuardedTarget { get; init; }
+            /// <summary>Shield rate, sized by <see cref="HealAmount.FromRate"/> from the chosen creature's max HP.</summary>
             public int FriendlyTargetTemporaryHPPercent { get; init; }
             public int FriendlyTargetTemporaryHPDurationSeconds { get; init; }
             public bool FriendlyTargetTemporaryHPUsesActivatorMaximum { get; init; }
@@ -1411,9 +1412,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                     var maximumHPSource = FriendlyTargetTemporaryHPUsesActivatorMaximum
                         ? activator
                         : target;
-                    var temporaryHP = Math.Max(
-                        1,
-                        GetMaxHitPoints(maximumHPSource) * FriendlyTargetTemporaryHPPercent / 100);
+                    var temporaryHP = HealAmount.FromRate(FriendlyTargetTemporaryHPPercent)
+                        .ForMaxHitPoints(GetMaxHitPoints(maximumHPSource));
                     TemporaryHitPointEffects.ApplyFlat(
                         target,
                         temporaryHPEffectKey,

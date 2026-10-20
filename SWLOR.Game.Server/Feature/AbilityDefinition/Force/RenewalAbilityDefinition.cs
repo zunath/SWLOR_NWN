@@ -105,29 +105,29 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
 
         private static void Renewal1ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
-            ApplyRenewal(activator, target, "Renewal I", 10f);
+            ApplyRenewal(activator, target, "Renewal I", new HealAmount(1, 0.25f));
         }
 
         private static void Renewal2ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
-            ApplyRenewal(activator, target, "Renewal II", 20f);
+            ApplyRenewal(activator, target, "Renewal II", new HealAmount(6, 0.5f));
         }
 
         private static void Renewal3ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
-            ApplyRenewal(activator, target, "Renewal III", 30f);
+            ApplyRenewal(activator, target, "Renewal III", new HealAmount(14, 0.75f));
         }
 
-        private static void ApplyRenewal(uint activator, uint target, string name, float totalPercent)
+        private static void ApplyRenewal(uint activator, uint target, string name, HealAmount healPerTick)
         {
             var friendly = AbilityTargeting.ResolveFriendlyTarget(activator, target);
             var targetWasBelowHalfHP = ForceControlHealingEffects.IsBelowHalfHP(friendly);
-            var affinityAdjustedTotalPercent = totalPercent * Ability.GetActiveForceAffinityRestorativeMagnitudeMultiplier(activator);
+            var affinityMultiplier = Ability.GetActiveForceAffinityRestorativeMagnitudeMultiplier(activator);
             var credited = new HashSet<uint>();
             if (StatusEffect.ApplyStatusEffect(
                 activator,
                 friendly,
-                new RegenerativeHealingStatusEffect(name, affinityAdjustedTotalPercent, 10, supportSkill: SkillType.Force, supportCredited: credited),
+                new RegenerativeHealingStatusEffect(name, healPerTick, affinityMultiplier, supportSkill: SkillType.Force, supportCredited: credited),
                 30f))
                 Ability.PlaySuccessfulImpactVisualEffect(activator, friendly);
             var healed = new List<uint>(ForceControlHealingEffects.ApplyRestorativeControlPower(activator, friendly, targetWasBelowHalfHP)) { friendly };

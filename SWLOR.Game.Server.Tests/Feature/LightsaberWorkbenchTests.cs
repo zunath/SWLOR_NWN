@@ -300,7 +300,7 @@ public class LightsaberWorkbenchTests
                 hilt.PreviewResref.Length.Should().BeLessThanOrEqualTo(16);
                 if (hilt.PreviewResref.StartsWith("ui_"))
                 {
-                    File.Exists(Path.Combine(uiRoot, $"{hilt.PreviewResref}.tga"))
+                    HakFileExists(uiRoot, $"{hilt.PreviewResref}.tga")
                         .Should().BeTrue($"preview texture {hilt.PreviewResref}.tga must exist in sw_ui");
                 }
             }
@@ -310,15 +310,20 @@ public class LightsaberWorkbenchTests
         var curvedColors = LightsaberWorkbench.GetBladeColors(BaseItem.Lightsaber, true);
         var staffColors = LightsaberWorkbench.GetBladeColors(BaseItem.Saberstaff, false);
 
-        straightColors.Should().HaveCount(14);
-        staffColors.Should().HaveCount(14, "every color has a saberstaff blade model");
-        curvedColors.Should().HaveCount(14, "every color has a curved blade model");
+        straightColors.Should().HaveCount(43);
+        staffColors.Should().HaveCount(40);
+        curvedColors.Should().HaveCount(14, "legacy curved emitters keep their original model slots");
+
+        straightColors.Select(c => c.StraightTopValue).Should().Contain(new[] { 191, 192, 193, 194 });
+        straightColors.Select(c => c.StraightTopValue).Should().NotContain(new[] { 71, 72, 73, 74 });
+        curvedColors.Select(c => c.CurvedTopValue).Should().Contain(new[] { 71, 72, 73, 74 });
 
         foreach (var color in straightColors.Concat(curvedColors).Concat(staffColors))
         {
             color.PreviewResref.Length.Should().BeLessThanOrEqualTo(16);
-            File.Exists(Path.Combine(uiRoot, $"{color.PreviewResref}.tga"))
-                .Should().BeTrue($"preview texture {color.PreviewResref}.tga must exist in sw_ui");
+            (HakFileExists(uiRoot, $"{color.PreviewResref}.tga") ||
+             HakFileExists(uiRoot, $"{color.PreviewResref}.dds"))
+                .Should().BeTrue($"preview texture {color.PreviewResref} (.tga or .dds) must exist in sw_ui");
         }
 
         // Every selectable top value must have a blade model and inventory icon in sw_weapon.
@@ -327,9 +332,10 @@ public class LightsaberWorkbenchTests
             .Concat(staffColors.Select(c => ("wdblsbr", c.SaberstaffTopValue)));
         foreach (var (prefix, value) in topChecks)
         {
-            File.Exists(Path.Combine(weaponRoot, $"{prefix}_t_{value:D3}.mdl"))
+            HakFileExists(weaponRoot, $"{prefix}_t_{value:D3}.mdl")
                 .Should().BeTrue($"blade model {prefix}_t_{value:D3}.mdl must exist in sw_weapon");
-            File.Exists(Path.Combine(weaponRoot, $"i{prefix}_t_{value:D3}.tga"))
+            (HakFileExists(weaponRoot, $"i{prefix}_t_{value:D3}.tga") ||
+             HakFileExists(weaponRoot, $"i{prefix}_t_{value:D3}.dds"))
                 .Should().BeTrue($"inventory icon i{prefix}_t_{value:D3}.tga must exist in sw_weapon");
         }
 
@@ -338,7 +344,7 @@ public class LightsaberWorkbenchTests
         {
             hilt.PreviewResref.Length.Should().BeLessThanOrEqualTo(16);
             hilt.PreviewResref.Should().StartWith("ui_ssh_");
-            File.Exists(Path.Combine(uiRoot, $"{hilt.PreviewResref}.tga"))
+            HakFileExists(uiRoot, $"{hilt.PreviewResref}.tga")
                 .Should().BeTrue($"preview texture {hilt.PreviewResref}.tga must exist in sw_ui");
         }
     }
@@ -366,11 +372,33 @@ public class LightsaberWorkbenchTests
 
         var colors = LightsaberWorkbench.GetBladeColors(BaseItem.Lightsaber, false)
             .ToDictionary(color => color.Name);
-        colors.Keys.Should().BeEquivalentTo(expected.Keys);
+        colors.Keys.Should().Contain(expected.Keys);
 
         foreach (var (name, lightColor) in expected)
         {
             colors[name].LightColor.Should().Be(lightColor);
+        }
+
+        // Check every catalog entry, including shoto, crossguard and saberstaff pike variants.
+        var allColors = LightsaberWorkbench.GetBladeColors(BaseItem.Lightsaber, false)
+            .Concat(LightsaberWorkbench.GetBladeColors(BaseItem.Lightsaber, true))
+            .Concat(LightsaberWorkbench.GetBladeColors(BaseItem.Saberstaff, false));
+        foreach (var color in allColors)
+        {
+            var name = Regex.Replace(color.Name, @"^(shoto|crossguard|pike) - ", "");
+            name = Regex.Replace(name, @" \(variant \d+\)$", "").ToLowerInvariant();
+            var lightColor = name switch
+            {
+                "orange" => LightColor.Orange,
+                "blue" => LightColor.Blue,
+                "green" or "green 1" or "green 2" => LightColor.Green,
+                "red" => LightColor.Red,
+                "yellow" => LightColor.Yellow,
+                "purple" or "purple 1" or "purple 2" => LightColor.Purple,
+                "white" or "teal" or "pink" or "brown" or "lavender" or "cyan" => LightColor.White,
+                _ => throw new InvalidOperationException($"Add an explicit light-color expectation for {color.Name}")
+            };
+            color.LightColor.Should().Be(lightColor, $"{color.Name} must use its supported light color or white fallback");
         }
 
         var root = FindRepositoryRoot();
@@ -381,17 +409,124 @@ public class LightsaberWorkbenchTests
             "GuiDefinition",
             "ViewModel",
             "LightsaberWorkbenchViewModel.cs"));
-        viewModel.Should().Contain("ApplyBladeLight(item, top.LightColor);");
-        viewModel.Should().Contain("ItemPropertyLight(LightBrightness.Dim, lightColor)");
+        viewModel.Should().Contain("var lightColor = (LightColor)resolvedLightColor;");
+        viewModel.Should().Contain("ApplyBladeLight(item, lightColor, lightBrightness);");
+        Regex.Replace(viewModel, @"\s+", " ").Should().Contain("SelectedLightBrightnessIndex == 0 ? LightBrightness.Dim : LightBrightness.Normal");
+        viewModel.Should().Contain("WatchOnClient(model => model.SelectedLightColor);");
+        viewModel.Should().Contain("WatchOnClient(model => model.SelectedLightBrightnessIndex);");
+        viewModel.Should().Contain("SelectedLightBrightnessIndex = 0;", "the workbench defaults to Dim (5m) light");
+        viewModel.Should().NotContain("SelectedLightBrightnessIndex = 1;");
+        viewModel.Should().Contain("ItemPropertyLight(lightBrightness, lightColor)");
         viewModel.Should().Contain("GetItemPropertyType(ip) == ItemPropertyType.Light");
     }
 
+    [Test]
+    public void LightColor_MatchBladeFollowsBladeAndExplicitChoicesStick()
+    {
+        var blue = LightsaberWorkbench.GetBladeColors(BaseItem.Lightsaber, false).Single(x => x.Name == "Blue");
+        var red = LightsaberWorkbench.GetBladeColors(BaseItem.Lightsaber, false).Single(x => x.Name == "Red");
+
+        // Default (Match Blade): the light follows whichever blade is selected.
+        LightsaberWorkbench.ResolveLightColor(blue, LightsaberWorkbench.MatchBladeLightColor).Should().Be((int)LightColor.Blue);
+        LightsaberWorkbench.ResolveLightColor(red, LightsaberWorkbench.MatchBladeLightColor).Should().Be((int)LightColor.Red);
+
+        // An explicit color that equals the current blade's color still sticks after a blade change.
+        var selection = (int)LightColor.Blue;
+        LightsaberWorkbench.ResolveLightColor(blue, selection).Should().Be((int)LightColor.Blue);
+        LightsaberWorkbench.ResolveLightColor(red, selection).Should().Be((int)LightColor.Blue);
+
+        // Picking Match Blade again resumes following the blade.
+        selection = LightsaberWorkbench.MatchBladeLightColor;
+        LightsaberWorkbench.ResolveLightColor(red, selection).Should().Be((int)LightColor.Red);
+
+        // Match Blade must not collide with a real light color.
+        Enum.IsDefined(typeof(LightColor), LightsaberWorkbench.MatchBladeLightColor).Should().BeFalse();
+
+        var root = FindRepositoryRoot();
+        var viewModel = File.ReadAllText(Path.Combine(
+            root.FullName,
+            "SWLOR.Game.Server",
+            "Feature",
+            "GuiDefinition",
+            "ViewModel",
+            "LightsaberWorkbenchViewModel.cs"));
+        var normalized = Regex.Replace(viewModel, @"\s+", " ");
+
+        // Match Blade is the default, resolved when constructing, and no inference from client echoes remains.
+        normalized.Should().Contain("SelectedLightColor = LightsaberWorkbench.MatchBladeLightColor;");
+        normalized.Should().Contain("LightsaberWorkbench.ResolveLightColor(SelectedTop, SelectedLightColor)");
+        viewModel.Should().NotContain("_lightColorChosen");
+        viewModel.Should().NotContain("_autoLightColor");
+        viewModel.Should().NotContain("OnClientPropertyUpdated");
+        viewModel.Should().NotContain("SelectedLightColor = (int)SelectedTop.LightColor;");
+
+        var definition = File.ReadAllText(Path.Combine(
+            root.FullName,
+            "SWLOR.Game.Server",
+            "Feature",
+            "GuiDefinition",
+            "LightsaberWorkbenchDefinition.cs"));
+        var matchBladeOption = definition.IndexOf("AddOption(\"Match Blade\"", StringComparison.Ordinal);
+        matchBladeOption.Should().BeGreaterThan(-1);
+        matchBladeOption.Should().BeLessThan(definition.IndexOf("AddOption(\"Blue\"", StringComparison.Ordinal),
+            "Match Blade must be the first Light Color entry");
+    }
+
+    [Test]
+    public void Window_InitialHeightFitsA720pClient()
+    {
+        var root = FindRepositoryRoot();
+        var definition = File.ReadAllText(Path.Combine(
+            root.FullName,
+            "SWLOR.Game.Server",
+            "Feature",
+            "GuiDefinition",
+            "LightsaberWorkbenchDefinition.cs"));
+
+        definition.Should().Contain("SetInitialGeometry(0, 0, 545f, 660f)");
+        definition.Should().Contain("SetIsResizable(true)");
+    }
+
+    [TestCase(BaseItem.Lightsaber, "", "ui_lsc_", new[] { 11, 12, 13, 14, 15, 21, 22, 23, 24, 51, 52, 53, 54, 55 })]
+    [TestCase(BaseItem.Lightsaber, "shoto - ", "ui_lst_", new[] { 131, 132, 133, 134, 135, 141, 142, 143, 144, 161, 171, 172, 173, 174, 175 })]
+    [TestCase(BaseItem.Lightsaber, "crossguard - ", "ui_lst_", new[] { 194, 192, 193, 75, 81, 82, 83, 84, 191, 111, 112, 113, 114, 115 })]
+    [TestCase(BaseItem.Saberstaff, "", "ui_lsc_", new[] { 11, 12, 13, 14, 25, 21, 22, 23, 24, 51, 52, 53, 54, 143 })]
+    [TestCase(BaseItem.Saberstaff, "shoto - ", "ui_sst_", new[] { 61, 62, 63, 64, 71, 72, 73, 74, 81, 82, 83, 84, 93 })]
+    [TestCase(BaseItem.Saberstaff, "pike - ", "ui_sst_", new[] { 101, 102, 103, 104, 111, 112, 113, 114, 121, 122, 123, 124, 133 })]
+    public void EmitterCategories_UseExpectedModelsAndPreviews(
+        BaseItem weaponType, string category, string previewPrefix, int[] expectedModels)
+    {
+        var colors = LightsaberWorkbench.GetBladeColors(weaponType, false)
+            .Where(color => category.Length == 0
+                ? !color.Name.Contains(" - ")
+                : color.Name.StartsWith(category, StringComparison.Ordinal))
+            .ToList();
+
+        colors.Select(color => LightsaberWorkbench.GetTopValue(color, weaponType, false))
+            .Should().BeEquivalentTo(expectedModels, "each weapon category must keep its intended model slots");
+        foreach (var color in colors)
+        {
+            color.PreviewResref.Should().StartWith(previewPrefix);
+            if (category.Length != 0)
+            {
+                var model = LightsaberWorkbench.GetTopValue(color, weaponType, false);
+                color.PreviewResref.Should().Be($"{previewPrefix}{model:D3}");
+            }
+        }
+
+        if (weaponType == BaseItem.Saberstaff && category.Length == 0)
+            colors.Single(color => color.SaberstaffTopValue == 143).Name.Should().Be("Cyan");
+    }
     private static Func<string, bool> GetIsCraftableSaberResref()
     {
         var type = Type.GetType("SWLOR.Game.Server.Feature.MigrationDefinition.LegacySaberMigration, SWLOR.Game.Server")!;
         var method = type.GetMethod("IsCraftableSaberResref", BindingFlags.Public | BindingFlags.Static)!;
         return resref => (bool)method.Invoke(null, new object[] { resref })!;
     }
+
+    /// <summary>Resource names are case-insensitive, and some HAK files use mixed case.</summary>
+    private static bool HakFileExists(string directory, string fileName) =>
+        Directory.EnumerateFiles(directory, fileName, new EnumerationOptions { MatchCasing = MatchCasing.CaseInsensitive }).Any();
 
     private static DirectoryInfo FindRepositoryRoot()
     {

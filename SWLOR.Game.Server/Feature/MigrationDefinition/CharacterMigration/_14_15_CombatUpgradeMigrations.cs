@@ -1,5 +1,4 @@
 using SWLOR.Game.Server.Entity;
-using SWLOR.Game.Server.Service.CurrencyService;
 using SWLOR.Game.Server.Service.MigrationService;
 
 namespace SWLOR.Game.Server.Feature.MigrationDefinition.CharacterMigration;
@@ -44,10 +43,5 @@ internal sealed class _15_RemoveObsoleteCombatInstructionDiscs : ICharacterMigra
         CharacterRecalculation.RestorePlayerFeats(character);
     }
 
-    public void MigratePlayerData(Player player)
-    {
-        if (!player.Currencies.ContainsKey(CurrencyType.RebuildToken))
-            player.Currencies[CurrencyType.RebuildToken] = 0;
-        player.Currencies[CurrencyType.RebuildToken]++;
-    }
+    public void MigratePlayerData(Player player) => RebuildTokenGrant.Grant(player);
 }

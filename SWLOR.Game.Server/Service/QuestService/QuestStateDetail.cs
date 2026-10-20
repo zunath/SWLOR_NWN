@@ -36,7 +36,10 @@ namespace SWLOR.Game.Server.Service.QuestService
                 .ToDictionary(objective => objective.Resref, objective => objective.Quantity);
             var kills = GetObjectives().OfType<KillTargetObjective>()
                 .ToDictionary(objective => objective.Group, objective => objective.Amount);
-            return Reconcile(quest.ItemProgresses, items) | Reconcile(quest.KillProgresses, kills);
+            var combat = GetObjectives().OfType<CombatObjective>()
+                .ToDictionary(objective => objective.Key, objective => objective.Amount);
+            return Reconcile(quest.ItemProgresses, items) | Reconcile(quest.KillProgresses, kills) |
+                   Reconcile(quest.CombatProgresses, combat);
         }
 
         private static bool Reconcile<T>(Dictionary<T, int> progress, Dictionary<T, int> required)

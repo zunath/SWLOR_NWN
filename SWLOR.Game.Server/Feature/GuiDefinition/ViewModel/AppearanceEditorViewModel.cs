@@ -161,12 +161,16 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             _weaponAppearances[BaseItem.Electroblade] = new ElectrobladeAppearanceDefinition();
             _weaponAppearances[BaseItem.GreatSword] = new GreatSwordAppearanceDefinition();
             _weaponAppearances[BaseItem.Katar] = new KatarAppearanceDefinition();
+            _weaponAppearances[BaseItem.PowerGlove] = new PowerGloveAppearanceDefinition();
             _weaponAppearances[BaseItem.LargeShield] = new LargeShieldAppearanceDefinition();
+            _weaponAppearances[BaseItem.Lightsaber] = new LightsaberAppearanceDefinition();
+            _weaponAppearances[BaseItem.Saberstaff] = new SaberstaffAppearanceDefinition();
             _weaponAppearances[BaseItem.Longsword] = new LongswordAppearanceDefinition();
             var pistolAppearance = new PistolAppearanceDefinition();
             _weaponAppearances[BaseItem.Pistol] = pistolAppearance;
             _weaponAppearances[BaseItem.Sling] = pistolAppearance;
             _weaponAppearances[BaseItem.LegacyPistol] = pistolAppearance;
+            _weaponAppearances[BaseItem.CompanionPistol] = new CompanionPistolAppearanceDefinition();
             _weaponAppearances[BaseItem.QuarterStaff] = new QuarterstaffAppearanceDefinition();
             _weaponAppearances[BaseItem.Rifle] = new RifleAppearanceDefinition();
             _weaponAppearances[BaseItem.Shuriken] = new ShurikenAppearanceDefinition();
@@ -802,14 +806,14 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             if (IsAppearanceSelected)
                 return true;
 
-            // The item must be valid, not cursed, not plot.
+            // The item must be valid. Restricted flags are checked below.
             var item = GetItem();
             if (!GetIsObjectValid(item))
                 return false;
 
             // NPC gear is often undroppable, so a DM may restyle their avatar's or a possessed creature's anyway.
             var isDMTarget = GetIsDM(_target) || GetIsDMPossessed(_target);
-            if (!isDMTarget && (GetItemCursedFlag(item) || GetPlotFlag(item)))
+            if (!isDMTarget && !AllowsItemFlags(GetBaseItemType(item), GetPlotFlag(item), GetItemCursedFlag(item), GetResRef(item)))
                 return false;
 
             // Armors must have parts that are publicly available.
@@ -888,14 +892,25 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     var middlePartId = middleId + middleColor * 100;
                     var bottomPartId = bottomId + bottomColor * 100;
 
-                    if (!appearance.TopParts.Contains(topPartId) ||
-                        !appearance.MiddleParts.Contains(middlePartId) ||
-                        !appearance.BottomParts.Contains(bottomPartId))
+                    if (!AllowsWeaponParts(appearance, topPartId, middlePartId, bottomPartId))
                         return false;
                 }
             }
 
             return true;
+        }
+
+        // Plot items are refused except the training sabers and saberstaffs, identified by blueprint resref.
+        // Other plot sabers share the default training look, so the look alone must not qualify an item.
+        private static bool AllowsItemFlags(BaseItem itemType, bool isPlot, bool isCursed, string resref)
+        {
+            return !isCursed && (!isPlot || TrainingSaberCatalog.IsTrainingSaber(itemType, resref));
+        }
+
+        private static bool AllowsWeaponParts(IWeaponAppearanceDefinition appearance, int top, int middle, int bottom)
+        {
+            return appearance.TopParts.Contains(top) && appearance.MiddleParts.Contains(middle) &&
+                   appearance.BottomParts.Contains(bottom);
         }
 
         private void ToggleItemEquippedFlags()
@@ -1739,7 +1754,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             PartCategorySelected[SelectedPartCategoryIndex] = true;
         }
 
-        private (GuiBindingList<string>, GuiBindingList<bool>) GetPartLists(int[] partIds)
+        private (GuiBindingList<string>, GuiBindingList<bool>) GetPartLists(int[] partIds, Func<int, string> getPartName = null)
         {
             var partNames = new GuiBindingList<string>();
             var partSelected = new GuiBindingList<bool>();
@@ -1750,7 +1765,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             {
                 var partIndex = partId;
 
-                partNames.Add($"Part #{partId}");
+                partNames.Add(getPartName?.Invoke(partId) ?? $"Part #{partId}");
                 partSelected.Add(false);
                 partIdToIndex[partIndex] = index;
                 index++;
@@ -1780,7 +1795,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             }
             else if (SelectedItemTypeIndex == 4) // 4 = Weapon (Off Hand)
             {
-                return GetItemInSlot(InventorySlot.LeftHand, _target);
+                return PowerGloveEquipment.ResolveAppearanceOwner(_target,
+                    GetItemInSlot(InventorySlot.LeftHand, _target));
             }
 
             return OBJECT_INVALID;
@@ -2069,7 +2085,19 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             if (selectedPartId <= -1)
                 return;
 
-            var (partNames, partSelected) = GetPartLists(partIds);
+            Func<int, string> getPartName = null;
+            if (SelectedItemTypeIndex is 3 or 4)
+            {
+                var part = SelectedPartCategoryIndex switch
+                {
+                    0 => AppearanceWeapon.Top,
+                    1 => AppearanceWeapon.Middle,
+                    2 => AppearanceWeapon.Bottom,
+                    _ => AppearanceWeapon.Invalid
+                };
+                getPartName = partId => _weaponAppearances[type].GetPartName(part, partId);
+            }
+            var (partNames, partSelected) = GetPartLists(partIds, getPartName);
 
             PartOptions = partNames;
             PartSelected = partSelected;
@@ -2241,7 +2269,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     slot = InventorySlot.RightHand;
                     break;
                 case 4: // 4 = Weapon (Off Hand)
-                    slot = InventorySlot.LeftHand;
+                    var offHand = GetItemInSlot(InventorySlot.LeftHand, _target);
+                    slot = PowerGloveEquipment.ResolveAppearanceOwner(_target, offHand) != offHand
+                        ? InventorySlot.RightHand : InventorySlot.LeftHand;
                     break;
             }
 

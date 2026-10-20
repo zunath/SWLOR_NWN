@@ -811,6 +811,7 @@ public class AnimationFileSafetyTests
     [TestCase(false)] [TestCase(true)]
     public void InstallationProtectsEarlierOutputsAndRollsBackAfterALaterCommitConflict(bool competingEdit)
     {
+        if (competingEdit) Support.WindowsFileSharing.Require();
         var first = Path.Combine(_folder, "first.mdl"); var second = Path.Combine(_folder, "second.mdl");
         File.WriteAllBytes(first, [1]); File.WriteAllBytes(second, [2]);
         var changes = new CommitConflictChanges([new(first, [1], [3]), new(second, [2], [4])], () =>
@@ -837,6 +838,7 @@ public class AnimationFileSafetyTests
     [Test]
     public void InstallationHoldsEveryCommittedOutputUntilSuccessThenReleasesIt()
     {
+        Support.WindowsFileSharing.Require();
         var first = Path.Combine(_folder, "first.mdl"); var second = Path.Combine(_folder, "second.mdl");
         var plan = new AnimationInstallPlan { AnimationName = "sw_test", ConstantName = "Test",
             Inputs = new Dictionary<string, byte[]>(), Changes = [new(first, null, [1]), new(second, null, [2])] };
@@ -887,10 +889,13 @@ public class AnimationFileSafetyTests
         var changes = new CommitConflictChanges([new(first, null, [3]), new(second, null, [4])], () =>
         {
             File.ReadAllBytes(first).Should().Equal(new byte[] { 3 }, "the first output has already been committed");
-            Action rewrite = () => File.WriteAllBytes(input, [2]);
-            rewrite.Should().Throw<IOException>("the dependency must remain stable between output commits");
-            Action replace = () => File.Move(input, input + ".moved");
-            replace.Should().Throw<IOException>("the input lease must also prevent replacement or deletion");
+            if (Support.WindowsFileSharing.IsEnforced)
+            {
+                Action rewrite = () => File.WriteAllBytes(input, [2]);
+                rewrite.Should().Throw<IOException>("the dependency must remain stable between output commits");
+                Action replace = () => File.Move(input, input + ".moved");
+                replace.Should().Throw<IOException>("the input lease must also prevent replacement or deletion");
+            }
             checkedLease = true;
             if (fail) throw new IOException("Simulated later commit failure");
         });

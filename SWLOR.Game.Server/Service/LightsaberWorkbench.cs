@@ -51,6 +51,9 @@ namespace SWLOR.Game.Server.Service
             new SaberHiltPart(42, "Hilt 4.2", "ui_lsh_042"),
             new SaberHiltPart(43, "Hilt 4.3", "ui_lsh_043"),
             new SaberHiltPart(51, "Hilt 5.1", "ui_lsh_051"),
+            new SaberHiltPart(52, "Hilt 5.2", "ui_lsh_052"),
+            new SaberHiltPart(53, "Hilt 5.3", "ui_lsh_053"),
+            new SaberHiltPart(54, "Hilt 5.4", "ui_lsh_054"),
             new SaberHiltPart(61, "Hilt 6.1", "ui_lsh_061"),
             new SaberHiltPart(81, "Hilt 8.1", "ui_lsh_081", true),
             new SaberHiltPart(111, "Hilt 11.1", "ui_lsh_111"),
@@ -108,7 +111,64 @@ namespace SWLOR.Game.Server.Service
             new SaberBladeColor("Green 2", 52, 62, 52, "ui_lsc_rotjgrn", LightColor.Green),
             new SaberBladeColor("Purple 2", 53, 63, 53, "ui_lsc_windu", LightColor.Purple),
             new SaberBladeColor("Lavender", 54, 64, 54, "ui_lsc_lavendr", LightColor.White),
-            new SaberBladeColor("Cyan", 55, 65, 55, "ui_lsc_cyan", LightColor.White),
+            new SaberBladeColor("Cyan", 55, 65, 143, "ui_lsc_cyan", LightColor.White),
+
+            // Current HAK emitters have straight hilts only; -1 hides unsupported configurations.
+            new SaberBladeColor("shoto - orange", -1, -1, 61, "ui_sst_061", LightColor.Orange),
+            new SaberBladeColor("shoto - blue", -1, -1, 62, "ui_sst_062", LightColor.Blue),
+            new SaberBladeColor("shoto - green", -1, -1, 63, "ui_sst_063", LightColor.Green),
+            new SaberBladeColor("shoto - red", -1, -1, 64, "ui_sst_064", LightColor.Red),
+            new SaberBladeColor("shoto - yellow", -1, -1, 71, "ui_sst_071", LightColor.Yellow),
+            new SaberBladeColor("shoto - purple", -1, -1, 72, "ui_sst_072", LightColor.Purple),
+            new SaberBladeColor("shoto - teal", -1, -1, 73, "ui_sst_073", LightColor.White),
+            new SaberBladeColor("shoto - pink", -1, -1, 74, "ui_sst_074", LightColor.White),
+            new SaberBladeColor("shoto - brown", -1, -1, 81, "ui_sst_081", LightColor.White),
+            new SaberBladeColor("shoto - green 2", -1, -1, 82, "ui_sst_082", LightColor.Green),
+            new SaberBladeColor("shoto - purple 2", -1, -1, 83, "ui_sst_083", LightColor.Purple),
+            new SaberBladeColor("shoto - lavender", -1, -1, 84, "ui_sst_084", LightColor.White),
+            new SaberBladeColor("shoto - cyan", -1, -1, 93, "ui_sst_093", LightColor.White),
+            new SaberBladeColor("pike - orange", -1, -1, 101, "ui_sst_101", LightColor.Orange),
+            new SaberBladeColor("pike - blue", -1, -1, 102, "ui_sst_102", LightColor.Blue),
+            new SaberBladeColor("pike - green", -1, -1, 103, "ui_sst_103", LightColor.Green),
+            new SaberBladeColor("pike - red", -1, -1, 104, "ui_sst_104", LightColor.Red),
+            new SaberBladeColor("pike - yellow", -1, -1, 111, "ui_sst_111", LightColor.Yellow),
+            new SaberBladeColor("pike - purple", -1, -1, 112, "ui_sst_112", LightColor.Purple),
+            new SaberBladeColor("pike - teal", -1, -1, 113, "ui_sst_113", LightColor.White),
+            new SaberBladeColor("pike - pink", -1, -1, 114, "ui_sst_114", LightColor.White),
+            new SaberBladeColor("pike - brown", -1, -1, 121, "ui_sst_121", LightColor.White),
+            new SaberBladeColor("pike - green 2", -1, -1, 122, "ui_sst_122", LightColor.Green),
+            new SaberBladeColor("pike - purple 2", -1, -1, 123, "ui_sst_123", LightColor.Purple),
+            new SaberBladeColor("pike - lavender", -1, -1, 124, "ui_sst_124", LightColor.White),
+            new SaberBladeColor("pike - cyan", -1, -1, 133, "ui_sst_133", LightColor.White),
+            new SaberBladeColor("crossguard - red", 194, -1, -1, "ui_lst_194", LightColor.Red),
+            new SaberBladeColor("crossguard - blue", 192, -1, -1, "ui_lst_192", LightColor.Blue),
+            new SaberBladeColor("crossguard - green", 193, -1, -1, "ui_lst_193", LightColor.Green),
+            new SaberBladeColor("crossguard - white", 75, -1, -1, "ui_lst_075", LightColor.White),
+            new SaberBladeColor("crossguard - yellow", 81, -1, -1, "ui_lst_081", LightColor.Yellow),
+            new SaberBladeColor("crossguard - purple", 82, -1, -1, "ui_lst_082", LightColor.Purple),
+            new SaberBladeColor("crossguard - teal", 83, -1, -1, "ui_lst_083", LightColor.White),
+            new SaberBladeColor("crossguard - pink", 84, -1, -1, "ui_lst_084", LightColor.White),
+            new SaberBladeColor("crossguard - orange", 191, -1, -1, "ui_lst_191", LightColor.Orange),
+            new SaberBladeColor("crossguard - brown", 111, -1, -1, "ui_lst_111", LightColor.White),
+            new SaberBladeColor("crossguard - green 2", 112, -1, -1, "ui_lst_112", LightColor.Green),
+            new SaberBladeColor("crossguard - purple 2", 113, -1, -1, "ui_lst_113", LightColor.Purple),
+            new SaberBladeColor("crossguard - lavender", 114, -1, -1, "ui_lst_114", LightColor.White),
+            new SaberBladeColor("crossguard - cyan", 115, -1, -1, "ui_lst_115", LightColor.White),
+            new SaberBladeColor("shoto - orange", 131, -1, -1, "ui_lst_131", LightColor.Orange),
+            new SaberBladeColor("shoto - blue", 132, -1, -1, "ui_lst_132", LightColor.Blue),
+            new SaberBladeColor("shoto - green", 133, -1, -1, "ui_lst_133", LightColor.Green),
+            new SaberBladeColor("shoto - red", 134, -1, -1, "ui_lst_134", LightColor.Red),
+            new SaberBladeColor("shoto - white", 135, -1, -1, "ui_lst_135", LightColor.White),
+            new SaberBladeColor("shoto - yellow", 141, -1, -1, "ui_lst_141", LightColor.Yellow),
+            new SaberBladeColor("shoto - purple", 142, -1, -1, "ui_lst_142", LightColor.Purple),
+            new SaberBladeColor("shoto - teal", 143, -1, -1, "ui_lst_143", LightColor.White),
+            new SaberBladeColor("shoto - pink", 144, -1, -1, "ui_lst_144", LightColor.White),
+            new SaberBladeColor("shoto - teal (variant 2)", 161, -1, -1, "ui_lst_161", LightColor.White),
+            new SaberBladeColor("shoto - brown", 171, -1, -1, "ui_lst_171", LightColor.White),
+            new SaberBladeColor("shoto - green 2", 172, -1, -1, "ui_lst_172", LightColor.Green),
+            new SaberBladeColor("shoto - purple 2", 173, -1, -1, "ui_lst_173", LightColor.Purple),
+            new SaberBladeColor("shoto - lavender", 174, -1, -1, "ui_lst_174", LightColor.White),
+            new SaberBladeColor("shoto - cyan", 175, -1, -1, "ui_lst_175", LightColor.White),
         };
 
         /// <summary>
@@ -129,6 +189,21 @@ namespace SWLOR.Game.Server.Service
             return _bladeColors
                 .Where(x => GetTopValue(x, weaponType, isCurvedHilt) > -1)
                 .ToList();
+        }
+
+        /// <summary>
+        /// Light Color selector value meaning the light follows the selected blade's catalog
+        /// light color. Any other value is an explicit LightColor choice.
+        /// </summary>
+        public const int MatchBladeLightColor = -1;
+
+        /// <summary>
+        /// Resolves the light color for the workbench selector. "Match Blade" uses the selected
+        /// blade's catalog light color; any other selection is kept as the player's explicit choice.
+        /// </summary>
+        public static int ResolveLightColor(SaberBladeColor blade, int selectedLightColor)
+        {
+            return selectedLightColor == MatchBladeLightColor ? (int)blade.LightColor : selectedLightColor;
         }
 
         /// <summary>

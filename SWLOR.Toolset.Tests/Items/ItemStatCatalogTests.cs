@@ -116,18 +116,18 @@ namespace SWLOR.Toolset.Tests.Items
         }
 
         [Test]
-        public void Droid_HasAllThirtyOneDroidStatSubtypeRowsPlusTheOneFlatDroidPersonalityProperty()
+        public void Droid_HasAllThirtyThreeDroidStatSubtypeRowsPlusTheOneFlatDroidPersonalityProperty()
         {
             var droid = ItemStatCatalog.ByGroup(ItemStatGroup.Droid);
 
-            droid.Where(stat => stat.PropertyId == 121).Should().HaveCount(31,
-                "iprp_droidstat.2da has 31 labeled rows: 2-11, 16-24, and 115-126");
+            droid.Where(stat => stat.PropertyId == 121).Should().HaveCount(33,
+                "iprp_droidstat.2da has 33 labeled rows: 2-11, 16-24, 115-126, and 128-129");
             droid.Should().NotContain(stat => stat.PropertyId == 122,
                 "DroidPartType is multi-subtype and lives only in ItemMultiEntryCatalog now");
             droid.Should().NotContain(stat => stat.PropertyId == 123,
                 "DroidInstruction is multi-subtype and lives only in ItemMultiEntryCatalog now");
             droid.Should().Contain(stat => stat.PropertyId == 124);
-            droid.Should().HaveCount(32);
+            droid.Should().HaveCount(34);
         }
 
         [Test]

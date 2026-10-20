@@ -16,6 +16,9 @@ public class PlayerMigrationTests
     // items or quickbar, so the migrations they reach read and write the file without the game engine.
     private const int RebuildTokens = 3;
 
+    // Migrations 15 (combat upgrade) and 24 (Unarmed and Twin Pistol release) each grant one rebuild token.
+    private const int UnarmedTwinPistolTokenVersion = 24;
+
     private static int Latest => CharacterMigrations.LatestVersion;
 
     private static Player Record(int version, int tokens = RebuildTokens)
@@ -34,7 +37,7 @@ public class PlayerMigrationTests
 
         upgraded.Should().NotBeNull("the file and the record are behind the latest migration");
         upgraded!.Record.Version.Should().Be(Latest);
-        upgraded.Record.Currencies[CurrencyType.RebuildToken].Should().Be(RebuildTokens, "the rebuild token is granted by migration 15 only");
+        upgraded.Record.Currencies[CurrencyType.RebuildToken].Should().Be(RebuildTokens + 1, "only migration 24's token is still ahead of the record");
         CharacterMigrations.ReadFileVersion(upgraded.File).Should().Be(Latest);
     }
 
@@ -59,20 +62,33 @@ public class PlayerMigrationTests
 
         upgraded.Should().NotBeNull();
         upgraded!.Record.Version.Should().Be(Latest);
-        upgraded.Record.Currencies[CurrencyType.RebuildToken].Should().Be(RebuildTokens + 1);
+        upgraded.Record.Currencies[CurrencyType.RebuildToken].Should().Be(RebuildTokens + 2, "migrations 15 and 24 each grant one");
         upgraded.File.Should().Equal(file, "a file that is not behind any migration is not changed");
         CharacterMigrations.Upgrade(upgraded.File, upgraded.Record).Should().BeNull("a retry finds nothing left to upgrade");
-        upgraded.Record.Currencies[CurrencyType.RebuildToken].Should().Be(RebuildTokens + 1);
+        upgraded.Record.Currencies[CurrencyType.RebuildToken].Should().Be(RebuildTokens + 2);
     }
 
     [TestCase(15)]
     [TestCase(16)]
-    public void CurrentPlayersDoNotReceiveAnotherStartingOrMigrationToken(int version)
+    [TestCase(UnarmedTwinPistolTokenVersion - 1)]
+    public void PlayersPastTheCombatUpgradeReceiveOnlyTheUnarmedTwinPistolToken(int version)
     {
         var upgraded = CharacterMigrations.Upgrade(SavedCharacterFile.Create(Latest), Record(version));
 
         upgraded.Should().NotBeNull("the record is behind the latest migration");
-        upgraded!.Record.Currencies[CurrencyType.RebuildToken].Should().Be(RebuildTokens);
+        upgraded!.Record.Currencies[CurrencyType.RebuildToken].Should().Be(RebuildTokens + 1);
+        CharacterMigrations.Upgrade(upgraded.File, upgraded.Record).Should().BeNull("a retry finds nothing left to upgrade");
+        upgraded.Record.Currencies[CurrencyType.RebuildToken].Should().Be(RebuildTokens + 1, "the token is granted once");
+    }
+
+    [Test]
+    public void PlayersAtTheUnarmedTwinPistolReleaseDoNotReceiveItsTokenAgain()
+    {
+        var record = Record(UnarmedTwinPistolTokenVersion);
+
+        var upgraded = CharacterMigrations.Upgrade(SavedCharacterFile.Create(Latest), record);
+
+        (upgraded?.Record ?? record).Currencies[CurrencyType.RebuildToken].Should().Be(RebuildTokens);
     }
 
     [Test]
@@ -84,7 +100,7 @@ public class PlayerMigrationTests
         var upgraded = CharacterMigrations.Upgrade(SavedCharacterFile.Create(Latest), record);
 
         upgraded!.Record.Version.Should().Be(Latest);
-        upgraded.Record.Currencies[CurrencyType.RebuildToken].Should().Be(1);
+        upgraded.Record.Currencies[CurrencyType.RebuildToken].Should().Be(2);
     }
 
     /// <summary>
@@ -113,13 +129,13 @@ public class PlayerMigrationTests
         var original = SavedCharacterFile.Create(17);
         var firstRecord = Record(14);
         var first = CharacterMigrations.Upgrade(original, firstRecord);
-        first!.Record.Currencies[CurrencyType.RebuildToken].Should().Be(RebuildTokens + 1);
+        first!.Record.Currencies[CurrencyType.RebuildToken].Should().Be(RebuildTokens + 2);
 
         var retried = CharacterMigrations.Upgrade(original, first.Record);
 
         retried.Should().NotBeNull("the unchanged file is still behind");
         retried!.File.Should().Equal(first.File, "the retry reaches the same file");
-        retried.Record.Currencies[CurrencyType.RebuildToken].Should().Be(RebuildTokens + 1, "the record reward is not repeated");
+        retried.Record.Currencies[CurrencyType.RebuildToken].Should().Be(RebuildTokens + 2, "the record reward is not repeated");
         retried.Record.Version.Should().Be(Latest);
     }
 

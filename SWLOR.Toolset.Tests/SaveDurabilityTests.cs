@@ -313,6 +313,7 @@ namespace SWLOR.Toolset.Tests
         [Test]
         public void AFailedCommitLeavesNoStagedFileBehind()
         {
+            Support.WindowsFileSharing.Require();
             var target = Path.Combine(_root, "utc", "guard.utc.json");
             File.WriteAllText(target, "{\"original\":true}");
 

@@ -281,6 +281,7 @@ namespace SWLOR.Game.Server.Service.QuestService
             playerQuest.CurrentState = 1;
             playerQuest.DateLastCompleted = null;
             playerQuest.ItemProgresses.Clear();
+            playerQuest.CombatProgresses.Clear();
             playerQuest.KillProgresses.Clear();
             dbPlayer.Quests[QuestId] = playerQuest;
             DB.Set(dbPlayer);
@@ -373,6 +374,7 @@ namespace SWLOR.Game.Server.Service.QuestService
                 // Progress player's quest status to the next state.
                 playerQuest.CurrentState++;
                 playerQuest.ItemProgresses.Clear();
+                playerQuest.CombatProgresses.Clear();
                 playerQuest.KillProgresses.Clear();
                 var nextState = GetState(playerQuest.CurrentState);
 
@@ -445,6 +447,7 @@ namespace SWLOR.Game.Server.Service.QuestService
 
             quest.CurrentState = GetStates().Count();
             quest.ItemProgresses.Clear();
+            quest.CombatProgresses.Clear();
             quest.KillProgresses.Clear();
             dbPlayer.Quests[QuestId] = quest;
             DB.Set(dbPlayer);
@@ -505,6 +508,7 @@ namespace SWLOR.Game.Server.Service.QuestService
             // Note - we must update the database before we give rewards.  Otherwise rewards that update the
             // database (e.g. key items) will be discarded when we commit this change.
             quest.ItemProgresses.Clear();
+            quest.CombatProgresses.Clear();
             quest.KillProgresses.Clear();
             quest.DateLastCompleted = DateTime.UtcNow;
             dbPlayer.Quests[QuestId] = quest;

@@ -87,9 +87,7 @@ public class FocusedBurstChannelTests
         // A droid dismissed mid-channel never reaches FinishChannel, so ForgetDestroyed must release
         // the deferred stamina-cost context that BeginChannel took.
         var source = File.ReadAllText(Path.Combine(FindRepositoryRoot().FullName,
-            "SWLOR.Game.Server", "Service", "TwinPistolAbility.cs")).Replace("
-", "
-");
+            "SWLOR.Game.Server", "Service", "TwinPistolAbility.cs")).Replace("\r\n", "\n");
         var start = source.IndexOf("public static void ForgetDestroyed(", StringComparison.Ordinal);
         var body = source.Substring(start, source.IndexOf("public static void InterruptChannel(", start, StringComparison.Ordinal) - start);
 

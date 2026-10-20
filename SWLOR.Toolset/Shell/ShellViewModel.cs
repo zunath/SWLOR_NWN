@@ -1,3 +1,6 @@
+using Avalonia.Platform.Storage;
+using SWLOR.Toolset.Domain.Distribution;
+using SWLOR.Toolset.Distribution;
 using System.ComponentModel;
 using System.Diagnostics;
 using Avalonia.Controls.ApplicationLifetimes;
@@ -80,8 +83,11 @@ namespace SWLOR.Toolset.Shell
         [ObservableProperty]
         private bool _isGeneratingArea;
 
+        [ObservableProperty]
+        private bool _isUpdating;
+
         private bool IsShellModuleMutationLocked =>
-            IsPacking || IsValidationRunning || IsBuildingScripts ||
+            IsUpdating || IsPacking || IsValidationRunning || IsBuildingScripts ||
             IsManagingErfArchives || IsManagingFactions || IsGeneratingArea;
         public bool IsModuleMutationLocked =>
             IsShellModuleMutationLocked || _mutationLock.IsResourceDeletionActive;
@@ -625,6 +631,85 @@ namespace SWLOR.Toolset.Shell
 
         // ----- scripts -----
 
+
+        [RelayCommand]
+        private async Task Workspaces()
+        {
+            if (IsInteractionBlocked || !await TryCloseAsync()) return;
+            var owner = (Avalonia.Application.Current?.ApplicationLifetime as IClassicDesktopStyleApplicationLifetime)?.MainWindow;
+            if (owner == null) return;
+            if (await WorkspaceSetupWindow.ShowAsync(owner, _settings))
+            {
+                StatusText = "Workspace selected. Restart the toolset to load its matching content.";
+                await SWLOR.Toolset.Shell.Views.EditorChoiceDialog.ShowAsync("Workspace selected", "Close and reopen the toolset to load this workspace and its asset version.", "OK", null);
+            }
+        }
+
+        [RelayCommand(CanExecute = nameof(CanMutateModule))]
+        private async Task ExportContribution()
+        {
+            var moduleRoot = _workspaceContext.Workspace?.ModuleRoot;
+            var root = WorkspaceManifest.FindRoot(moduleRoot);
+            if (root == null)
+            {
+                StatusText = "Export contribution needs a downloaded SWLOR workspace. Repository contributors can use Git.";
+                return;
+            }
+            IsPacking = true;
+            try
+            {
+                using (ModuleMutationLock.AllowModuleWrites())
+                {
+                    if (!await _editorService.Value.SaveAllAsync().ConfigureAwait(true))
+                    {
+                        StatusText = "Export cancelled: an open editor could not save.";
+                        return;
+                    }
+                }
+                var owner = (Avalonia.Application.Current?.ApplicationLifetime as IClassicDesktopStyleApplicationLifetime)?.MainWindow;
+                if (owner == null) return;
+                var selected = await owner.StorageProvider.SaveFilePickerAsync(new FilePickerSaveOptions
+                {
+                    Title = "Export contribution", SuggestedFileName = "SWLOR contribution.zip", DefaultExtension = "zip",
+                    FileTypeChoices = new[] { new FilePickerFileType("SWLOR contribution") { Patterns = new[] { "*.zip" } } }
+                });
+                var path = selected?.TryGetLocalPath();
+                if (path == null) return;
+                var count = await Task.Run(() => ContributionArchive.Export(root, path));
+                StatusText = $"Exported {count} saved change(s). Send this file to your SWLOR maintainer for review.";
+            }
+            catch (Exception exception) { StatusText = "Export failed: " + exception.Message; }
+            finally { IsPacking = false; }
+        }
+
+        [RelayCommand]
+        private async Task CheckForUpdates()
+        {
+            if (IsInteractionBlocked) return;
+            try
+            {
+                var manager = new Velopack.UpdateManager(ToolsetUpdateSource.Create(
+                    ToolsetFeed.ReadInstalledVersion(AppContext.BaseDirectory)));
+                if (!manager.IsInstalled) { StatusText = "Use the Windows installer or Linux AppImage to enable application updates."; return; }
+                StatusText = "Checking for application updates...";
+                var update = await manager.CheckForUpdatesAsync();
+                if (update == null) { StatusText = "The toolset is up to date."; return; }
+                var choice = await SWLOR.Toolset.Shell.Views.EditorChoiceDialog.ShowAsync("Toolset update available",
+                    "Download the application update and restart? Your workspace and assets will be kept.", "Update and restart", null);
+                if (choice != SWLOR.Toolset.Shell.Views.EditorDialogChoice.Primary) return;
+                if (!await TryCloseAsync()) return;
+                IsUpdating = true;
+                try
+                {
+                    StatusText = "Downloading the application update...";
+                    await manager.DownloadUpdatesAsync(update);
+                    manager.ApplyUpdatesAndRestart(update);
+                }
+                finally { IsUpdating = false; }
+            }
+            catch (Exception exception) { StatusText = "Update check failed: " + exception.Message; }
+        }
+
         private bool CanCompileActiveScript => _activeScript?.CanCompile == true;
 
         /// <summary>
@@ -883,6 +968,8 @@ namespace SWLOR.Toolset.Shell
 
         private bool CanMutateModule() => !IsInteractionBlocked;
 
+        partial void OnIsUpdatingChanged(bool value) => NotifyMutationStateChanged();
+
         partial void OnIsPackingChanged(bool value)
         {
             NotifyMutationStateChanged();
@@ -933,6 +1020,7 @@ namespace SWLOR.Toolset.Shell
         {
             OnPropertyChanged(nameof(IsActiveEditorBusy));
             OnPropertyChanged(nameof(IsInteractionBlocked));
+            ExportContributionCommand.NotifyCanExecuteChanged();
             SaveAllCommand.NotifyCanExecuteChanged();
             ErfArchivesCommand.NotifyCanExecuteChanged();
             FactionEditorCommand.NotifyCanExecuteChanged();

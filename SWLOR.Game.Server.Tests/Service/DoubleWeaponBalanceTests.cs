@@ -159,9 +159,11 @@ public class DoubleWeaponBalanceTests
             stats.DelayProperty.Should().Be(weapon.DelayProperty, weapon.Resref + " must retain its normalized attack-delay property");
         }
 
-        // NPC-only weapons (NO_ECONOMY) carry World NPC damage budgets, which NPCCombatBudgetTests guards.
+        // NPC-only weapons (NO_ECONOMY gear that creature blueprints equip) carry World NPC damage budgets,
+        // which NPCCombatBudgetTests guards.
+        var creatureEquipment = ReadCreatureEquipment(Path.Combine(root, "Module", "utc"));
         var actualPlayerWeapons = Directory.EnumerateFiles(utiDirectory, "*.uti.json")
-            .Where(path => !IsNpcOnly(path))
+            .Where(path => !IsNpcOnly(path, creatureEquipment))
             .Select(ReadBlueprint)
             .Where(x => IsDoubleWeapon(x.BaseItem) && (x.DelayProperty == 23 || x.DelayProperty == 24))
             .Select(x => x.Resref)
@@ -206,8 +208,31 @@ public class DoubleWeaponBalanceTests
             "every explicit Delay 290 double weapon must be consciously reviewed as a fixed legacy budget");
     }
 
-    private static bool IsNpcOnly(string path)
+    private static HashSet<string> ReadCreatureEquipment(string utcDirectory)
     {
+        var resrefs = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+        foreach (var path in Directory.EnumerateFiles(utcDirectory, "*.utc.json"))
+        {
+            using var document = JsonDocument.Parse(File.ReadAllText(path));
+            if (!document.RootElement.TryGetProperty("Equip_ItemList", out var equipment))
+                continue;
+
+            foreach (var item in equipment.GetProperty("value").EnumerateArray())
+            {
+                var resref = item.TryGetProperty("EquippedRes", out var equipped) ? equipped : item.GetProperty("TemplateResRef");
+                resrefs.Add(resref.GetProperty("value").GetString()!);
+            }
+        }
+
+        return resrefs;
+    }
+
+    private static bool IsNpcOnly(string path, HashSet<string> creatureEquipment)
+    {
+        var resref = Path.GetFileNameWithoutExtension(Path.GetFileNameWithoutExtension(path));
+        if (!creatureEquipment.Contains(resref))
+            return false;
+
         using var document = JsonDocument.Parse(File.ReadAllText(path));
         return document.RootElement.TryGetProperty("VarTable", out var variables) &&
                variables.GetProperty("value").EnumerateArray().Any(variable =>

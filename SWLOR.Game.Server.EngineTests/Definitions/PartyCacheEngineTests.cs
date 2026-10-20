@@ -6,6 +6,7 @@ using NWN.Native.API;
 using NWNX.NET;
 using NWNX.NET.Native;
 using SWLOR.Game.Server.EngineTests.Framework;
+using SWLOR.Game.Server.Service.PlayerListService;
 
 namespace SWLOR.Game.Server.EngineTests.Definitions
 {
@@ -119,6 +120,36 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             {
                 StopCapture();
                 await LeavePartiesAsync(ctx, members);
+            }
+        }
+
+        [EngineTest("A party member who is not the leader can invite from the Player List", Category = "PartyCache", TimeoutSeconds = 60f)]
+        public static async Task MemberInviteFromPlayerListJoinsTheParty(EngineTestContext ctx)
+        {
+            using var leader = await PlayerAbilityFixture.CreateAsync(ctx);
+            using var member = await PlayerAbilityFixture.CreateAsync(ctx, 2f);
+            using var outsider = await PlayerAbilityFixture.CreateAsync(ctx, 4f);
+            try
+            {
+                await JoinPartyAsync(ctx, leader.Creature, member.Creature);
+                ctx.AssertEqual(leader.Creature, GetFactionLeader(member.Creature), "the member does not lead the party");
+
+                var relation = PlayerList.GetRelation(member.Creature, outsider.Creature);
+                ctx.Assert(relation.ViewerIsInParty && !relation.ViewerIsPartyLeader, "the viewer is a member who is not the leader");
+                ctx.Assert(PlayerListRules.Evaluate(relation).Invite.IsEnabled, "the Player List lets the member invite");
+
+                await ctx.ExecuteInCreatureContextAsync(member.Creature, () => PlayerList.Invite(member.Creature, outsider.Creature));
+                await SendPartyMessageAsync(ctx, outsider.Creature, AcceptInvitationMinor, member.Creature);
+
+                ctx.Assert(GetFactionEqual(outsider.Creature, leader.Creature), "the engine puts the invited player in the member's party");
+                ctx.AssertEqual(leader.Creature, GetFactionLeader(outsider.Creature), "the original leader still leads");
+                ctx.Assert(Party.IsInParty(leader.Creature, outsider.Creature), "the invited player is cached in the same party");
+                ctx.AssertEqual(3, Party.GetAllPartyMembers(leader.Creature).Count, "the cached party has three members");
+                ctx.SetResultDetail("A non-leader's Player List invite reached the engine, and accepting it joined the existing party under the same leader.");
+            }
+            finally
+            {
+                await LeavePartiesAsync(ctx, leader.Creature, member.Creature, outsider.Creature);
             }
         }
 

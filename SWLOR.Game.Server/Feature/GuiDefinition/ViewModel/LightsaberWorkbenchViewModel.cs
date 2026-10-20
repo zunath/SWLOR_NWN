@@ -51,6 +51,18 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             set => Set(value);
         }
 
+        public int SelectedLightBrightnessIndex
+        {
+            get => Get<int>();
+            set => Set(value);
+        }
+
+        public int SelectedLightColor
+        {
+            get => Get<int>();
+            set => Set(value);
+        }
+
         public string TopName
         {
             get => Get<string>();
@@ -174,6 +186,11 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             StatusColor = GuiColor.Green;
 
             RefreshWeaponType();
+            SelectedLightColor = LightsaberWorkbench.MatchBladeLightColor;
+            // Dim (5m) by default; the larger Normal (15m) light is opt-in.
+            SelectedLightBrightnessIndex = 0;
+            WatchOnClient(model => model.SelectedLightColor);
+            WatchOnClient(model => model.SelectedLightBrightnessIndex);
         }
 
         private void RefreshWeaponType()
@@ -501,6 +518,27 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         private void ConstructSaber()
         {
+            // "Match Blade" resolves to the blade's catalog color now; the crafted item stores the concrete color.
+            var resolvedLightColor = LightsaberWorkbench.ResolveLightColor(SelectedTop, SelectedLightColor);
+            if (!Enum.IsDefined(typeof(LightColor), resolvedLightColor))
+            {
+                StatusText = "Select a valid light color.";
+                StatusColor = GuiColor.Red;
+                return;
+            }
+
+            if (SelectedLightBrightnessIndex != 0 &&
+                SelectedLightBrightnessIndex != 1)
+            {
+                StatusText = "Select Dim (5m) or Normal (15m) lighting.";
+                StatusColor = GuiColor.Red;
+                return;
+            }
+
+            var lightColor = (LightColor)resolvedLightColor;
+            var lightBrightness = SelectedLightBrightnessIndex == 0
+                ? LightBrightness.Dim
+                : LightBrightness.Normal;
             if (!ValidateSelectedInputs())
             {
                 StatusText = "A selected input is no longer available. Reselect your inputs and try again.";
@@ -529,10 +567,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 ? LightsaberWorkbench.SaberstaffResref
                 : LightsaberWorkbench.LightsaberResref;
 
-            // CopyItemAndModify is unreliable on items held in a creature's inventory
-            // (it returns OBJECT_INVALID), which is why the appearance never applied.
-            // Build the weapon inside a neutral storage placeable - the same approach the
-            // outfit and ship-stat systems use - then hand the finished weapon to the player.
+            // Assemble and verify the appearance before handing the weapon to the player.
             var storage = GetObjectByTag("TEMP_ITEM_STORAGE");
             if (!GetIsObjectValid(storage))
             {
@@ -564,10 +599,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             // "+10" when two accuracy kits were socketed - one kit never removed anything,
             // so it copied clean, which is why only the two-kit case was affected.
             //
-            // The appearance work above still has to happen inside the storage placeable,
-            // because CopyItemAndModify returns OBJECT_INVALID for items held in a
-            // creature's inventory. The ordering rule is only that nothing may copy the
-            // weapon after its item properties have been edited.
+            // Nothing may copy the weapon after its item properties have been edited.
             var finishedItem = CopyItem(item, Player, true);
             DestroyObject(item);
             item = finishedItem;
@@ -580,8 +612,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 StatusColor = GuiColor.Red;
                 return;
             }
-
-            ApplyBladeLight(item, top.LightColor);
 
             foreach (var property in _enhancementProperties.SelectMany(x => x))
             {
@@ -626,6 +656,11 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 ReturnEnhancement(slot);
             }
 
+            ApplyBladeLight(item, lightColor, lightBrightness);
+            var lightRange = lightBrightness == LightBrightness.Dim ? "Dim (5m)" : "Normal (15m)";
+            var description = GetDescription(item);
+            SetDescription(item, $"{description}\n\nLight Color: {lightColor}\nLight Range: {lightRange}");
+
             Currency.TakeCurrency(Player, CurrencyType.KyberToken, 1);
             SendMessageToPC(Player, $"You spend a Kyber Token constructing your {GetName(item)}. Total Kyber Tokens: {Currency.GetCurrency(Player, CurrencyType.KyberToken)}");
 
@@ -636,10 +671,10 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             Gui.TogglePlayerWindow(Player, GuiWindowType.LightsaberWorkbench);
         }
 
-        private static void ApplyBladeLight(uint item, LightColor lightColor)
+        private static void ApplyBladeLight(uint item, LightColor lightColor, LightBrightness lightBrightness)
         {
             // The output blueprints carry a neutral white fallback light. Replace it
-            // with the selected blade's supported engine color during construction.
+            // with the UI-selected color after all enhancement/token properties are applied.
             // Scan first because removing properties while iterating skips entries.
             var existingLights = new List<ItemProperty>();
             for (var ip = GetFirstItemProperty(item); GetIsItemPropertyValid(ip); ip = GetNextItemProperty(item))
@@ -653,39 +688,28 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 RemoveItemProperty(item, light);
             }
 
-            var bladeLight = ItemPropertyLight(LightBrightness.Dim, lightColor);
+            var bladeLight = ItemPropertyLight(lightBrightness, lightColor);
             AddItemProperty(DurationType.Permanent, bladeLight, item);
         }
 
         private static uint ModifyWeaponPart(uint item, AppearanceWeapon partSlot, int partValue)
         {
-            // The engine stores weapon part appearance as two channels: a model number
-            // and a color number. The catalog values encode both, matching the model
-            // file names (e.g. hilt 25.4 -> wswglsbr_b_254 -> model 25, color 4), so
-            // split the value and set each channel separately - the same way the
-            // appearance editor does. Passing the combined value as the model number
-            // is invalid and makes CopyItemAndModify return OBJECT_INVALID.
+            if (!GetIsObjectValid(item))
+                return OBJECT_INVALID;
+
             var modelId = partValue / 10;
             var colorId = partValue % 10;
-
-            if (GetItemAppearance(item, ItemAppearanceType.WeaponColor, (int)partSlot) != colorId)
+            // Set custom weapon parts directly, as the Appearance Editor does.
+            // CopyItemAndModify can reject custom models and leave the template's
+            // model behind even though changing its color succeeded.
+            ItemPlugin.SetItemAppearance(item, ItemAppearanceType.WeaponModel, (int)partSlot, modelId);
+            ItemPlugin.SetItemAppearance(item, ItemAppearanceType.WeaponColor, (int)partSlot, colorId);
+            if (GetItemAppearance(item, ItemAppearanceType.WeaponModel, (int)partSlot) != modelId ||
+                GetItemAppearance(item, ItemAppearanceType.WeaponColor, (int)partSlot) != colorId)
             {
-                var copy = CopyItemAndModify(item, ItemAppearanceType.WeaponColor, (int)partSlot, colorId, true);
-                if (GetIsObjectValid(copy))
-                {
-                    DestroyObject(item);
-                    item = copy;
-                }
-            }
-
-            if (GetItemAppearance(item, ItemAppearanceType.WeaponModel, (int)partSlot) != modelId)
-            {
-                var copy = CopyItemAndModify(item, ItemAppearanceType.WeaponModel, (int)partSlot, modelId, true);
-                if (GetIsObjectValid(copy))
-                {
-                    DestroyObject(item);
-                    item = copy;
-                }
+                Log.Write(LogGroup.Crafting, $"Workbench could not apply {partSlot} appearance {partValue}.");
+                DestroyObject(item);
+                return OBJECT_INVALID;
             }
 
             return item;

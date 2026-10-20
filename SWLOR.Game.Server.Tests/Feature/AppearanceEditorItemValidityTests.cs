@@ -4,7 +4,9 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using NUnit.Framework;
+using SWLOR.Game.Server.Feature.AppearanceDefinition.ItemAppearance;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.NWN.API.NWScript.Enum.Item;
 
 namespace SWLOR.Game.Server.Tests.Feature;
 
@@ -25,12 +27,15 @@ public class AppearanceEditorItemValidityTests
         directory.Should().NotBeNull();
         var source = File.ReadAllText(Path.Combine(directory!.FullName,
             "SWLOR.Game.Server", "Feature", "GuiDefinition", "ViewModel", "AppearanceEditorViewModel.cs"));
-        var method = CSharpSyntaxTree.ParseText(source).GetRoot().DescendantNodes()
-            .OfType<MethodDeclarationSyntax>().Single(node => node.Identifier.Text == "IsValidItem").ToFullString();
+        var methods = string.Join(Environment.NewLine, CSharpSyntaxTree.ParseText(source).GetRoot().DescendantNodes()
+            .OfType<MethodDeclarationSyntax>()
+            .Where(node => node.Identifier.Text is "IsValidItem" or "AllowsItemFlags" or "AllowsWeaponParts")
+            .Select(node => node.ToFullString().Replace("IWeaponAppearanceDefinition", "WeaponAppearanceBaseDefinition")));
         var harness = $$"""
             using System;
             using System.Collections.Generic;
             using System.Linq;
+            using SWLOR.Game.Server.Feature.AppearanceDefinition.ItemAppearance;
             using SWLOR.NWN.API.NWScript.Enum;
             using SWLOR.NWN.API.NWScript.Enum.Item;
             using static World;
@@ -38,14 +43,23 @@ public class AppearanceEditorItemValidityTests
             {
                 public const uint Item = 10, OBJECT_INVALID = 0x7F000000;
                 public static bool TargetDM, TargetPossessed, Cursed, Plot;
+                public static string ResRef = "";
+                public static BaseItem ItemType;
                 public static bool GetIsObjectValid(uint obj) => obj != OBJECT_INVALID;
                 public static bool GetIsDM(uint creature) => TargetDM;
                 public static bool GetIsDMPossessed(uint creature) => TargetPossessed;
                 public static bool GetItemCursedFlag(uint item) => Cursed;
                 public static bool GetPlotFlag(uint item) => Plot;
+                public static string GetResRef(uint item) => ResRef;
                 public static AppearanceType GetAppearanceType(uint creature) => AppearanceType.Human;
-                public static int GetItemAppearance(uint item, ItemAppearanceType type, int index) => 5;
-                public static BaseItem GetBaseItemType(uint item) => BaseItem.Helmet;
+                public static int GetItemAppearance(uint item, ItemAppearanceType type, int index) => type switch
+                {
+                    ItemAppearanceType.WeaponColor => 1,
+                    ItemAppearanceType.WeaponModel => index == (int)AppearanceWeapon.Top ? 2
+                        : index == (int)AppearanceWeapon.Middle ? 1 : ItemType == BaseItem.Lightsaber ? 15 : 7,
+                    _ => 5
+                };
+                public static BaseItem GetBaseItemType(uint item) => ItemType;
             }
             public sealed class ArmorParts
             {
@@ -53,29 +67,35 @@ public class AppearanceEditorItemValidityTests
                 public int[] Cloak { get; } = { 5 };
                 public int[] Neck, Torso, Belt, Pelvis, Shoulder, Bicep, Forearm, Hand, Thigh, Shin, Foot, Robe;
             }
-            public sealed class WeaponParts
-            {
-                public bool IsSimple;
-                public int[] SimpleParts, TopParts, MiddleParts, BottomParts;
-            }
             public class Harness
             {
                 private static readonly Dictionary<AppearanceType, ArmorParts> _armorAppearances = new() { [AppearanceType.Human] = new ArmorParts() };
-                private static readonly Dictionary<BaseItem, WeaponParts> _weaponAppearances = new();
+                private static readonly Dictionary<BaseItem, WeaponAppearanceBaseDefinition> _weaponAppearances = new()
+                {
+                    [BaseItem.Lightsaber] = new LightsaberAppearanceDefinition(),
+                    [BaseItem.Saberstaff] = new SaberstaffAppearanceDefinition()
+                };
                 private readonly uint _target = 2;
                 private bool IsAppearanceSelected => false;
-                private int SelectedItemTypeIndex => 1;
+                private int SelectedItemTypeIndex => ItemType switch
+                {
+                    BaseItem.Helmet => 1,
+                    BaseItem.Lightsaber or BaseItem.Saberstaff => 3,
+                    _ => 2
+                };
                 private uint GetItem() => Item;
-                {{method}}
-                public static bool Run(bool targetDM, bool targetPossessed, bool cursed, bool plot)
+                {{methods}}
+                public static bool Run(bool targetDM, bool targetPossessed, bool cursed, bool plot, BaseItem itemType, string resref)
                 {
                     TargetDM = targetDM; TargetPossessed = targetPossessed; Cursed = cursed; Plot = plot;
+                    ItemType = itemType; ResRef = resref;
                     return new Harness().IsValidItem();
                 }
             }
             """;
         var references = ((string)AppContext.GetData("TRUSTED_PLATFORM_ASSEMBLIES")!)
             .Split(Path.PathSeparator).Append(typeof(AppearanceType).Assembly.Location)
+            .Append(typeof(WeaponAppearanceBaseDefinition).Assembly.Location)
             .Distinct().Select(path => MetadataReference.CreateFromFile(path));
         var compilation = CSharpCompilation.Create("AppearanceEditorItemValidityHarness",
             [CSharpSyntaxTree.ParseText(harness)], references,
@@ -104,6 +124,43 @@ public class AppearanceEditorItemValidityTests
         IsValid(targetDM: false, targetPossessed: false, cursed, plot).Should().Be(expected);
     }
 
-    private bool IsValid(bool targetDM, bool targetPossessed, bool cursed, bool plot) =>
-        (bool)_isValid.Invoke(null, [targetDM, targetPossessed, cursed, plot])!;
+    [TestCase(BaseItem.Lightsaber, "saber_train_1")]
+    [TestCase(BaseItem.Lightsaber, "vet_trnsaber")]
+    [TestCase(BaseItem.Saberstaff, "trn_saberstaff_1")]
+    [TestCase(BaseItem.Saberstaff, "vet_trnsabstaff")]
+    public void TrainingSaberFlagsKeepPlayerRestrictionsAndDMExceptions(BaseItem itemType, string resref)
+    {
+        IsValid(false, false, false, true, itemType, resref).Should().BeTrue();
+        IsValid(false, false, true, true, itemType, resref).Should().BeFalse();
+        IsValid(true, false, true, true, itemType, resref).Should().BeTrue();
+        IsValid(false, true, true, true, itemType, resref).Should().BeTrue();
+    }
+
+    // These plot blueprints carry the default training look but are not training weapons.
+    [TestCase(BaseItem.Lightsaber, "darkhung_l1")]
+    [TestCase(BaseItem.Lightsaber, "eclipse_l2")]
+    [TestCase(BaseItem.Lightsaber, "sabstorm_l1")]
+    [TestCase(BaseItem.Saberstaff, "guardmst_w1")]
+    [TestCase(BaseItem.Saberstaff, "lightstand_w1")]
+    [TestCase(BaseItem.Lightsaber, "")]
+    // A training blueprint of the other saber type does not qualify either.
+    [TestCase(BaseItem.Lightsaber, "trn_saberstaff_1")]
+    [TestCase(BaseItem.Saberstaff, "saber_train_1")]
+    public void PlotSabersWithTrainingLookButNoTrainingResrefAreRefusedForPlayers(BaseItem itemType, string resref)
+    {
+        IsValid(false, false, false, true, itemType, resref).Should().BeFalse();
+        // DM targets keep their exception.
+        IsValid(true, false, false, true, itemType, resref).Should().BeTrue();
+        IsValid(false, true, false, true, itemType, resref).Should().BeTrue();
+    }
+
+    [TestCase(BaseItem.Lightsaber, "darkhung_l1")]
+    [TestCase(BaseItem.Saberstaff, "darkhung_w1")]
+    public void NonPlotSabersAreNotAffectedByTheTrainingGuard(BaseItem itemType, string resref)
+    {
+        IsValid(false, false, false, false, itemType, resref).Should().BeTrue();
+    }
+
+    private bool IsValid(bool targetDM, bool targetPossessed, bool cursed, bool plot, BaseItem itemType = BaseItem.Helmet, string resref = "") =>
+        (bool)_isValid.Invoke(null, [targetDM, targetPossessed, cursed, plot, itemType, resref])!;
 }

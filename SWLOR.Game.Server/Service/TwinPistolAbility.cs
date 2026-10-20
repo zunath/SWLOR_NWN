@@ -128,11 +128,13 @@ namespace SWLOR.Game.Server.Service
 
         /// <summary>
         /// A destroyed owner (a dismissed droid) never reaches its delayed completion, and its object ID may be
-        /// reused; drop its cached activation and channel without touching the destroyed object.
+        /// reused; drop its cached activation and channel, and release the channel's deferred stamina-cost
+        /// context, without touching the destroyed object.
         /// </summary>
         public static void ForgetDestroyed(uint actor)
         {
-            Channels.Remove(actor);
+            if (Channels.Remove(actor, out var channel))
+                Combat.CompleteDeferredAbilityStaminaCostContext(actor, channel.Ability);
             Activations.Remove(actor);
         }
 

@@ -102,7 +102,8 @@ namespace SWLOR.Toolset.Tests
             path.Split(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar)
                 .Contains(segment, StringComparer.OrdinalIgnoreCase);
 
-        private static string ProjectName(string path) => Path.GetFileNameWithoutExtension(path);
+        // MSBuild paths use backslashes, which only Windows treats as separators.
+        private static string ProjectName(string path) => Path.GetFileNameWithoutExtension(path.Replace('\\', '/'));
 
         [Test]
         public void OnlyApprovedApplicationLayersReferenceTheToolset()

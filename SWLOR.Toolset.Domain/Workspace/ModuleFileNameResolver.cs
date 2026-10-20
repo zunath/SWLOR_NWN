@@ -45,7 +45,9 @@ namespace SWLOR.Toolset.Domain.Workspace
                    string.Equals(value, value.Trim(), StringComparison.Ordinal) &&
                    string.Equals(Path.GetFileName(value), value, StringComparison.Ordinal) &&
                    string.Equals(Path.GetExtension(value), ".mod", StringComparison.OrdinalIgnoreCase) &&
-                   value.IndexOfAny(Path.GetInvalidFileNameChars()) < 0;
+                   value.IndexOfAny(Path.GetInvalidFileNameChars()) < 0 &&
+                   // Windows separators stay unsafe when the toolset runs elsewhere.
+                   value.IndexOfAny(['\\', '/']) < 0;
         }
     }
 }

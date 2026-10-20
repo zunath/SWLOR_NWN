@@ -19,17 +19,28 @@ namespace SWLOR.Game.Server.Service.SlicingService
             return (int)zeroBased + 1;
         }
 
-        public static int GetTraceBonus(int slicingRank, int lockpicking, int positivePerceptionModifier)
+        /// <summary>
+        /// Combined Lockpicking and positive Perception needed for each point of stat trace.
+        /// </summary>
+        public const int StatPointsPerTrace = 10;
+
+        /// <summary>
+        /// Most trace that Lockpicking and Perception can add to an attempt.
+        /// </summary>
+        public const int MaxStatTraceBonus = 2;
+
+        /// <summary>
+        /// Extra trace for a slicing attempt. Each Slicing rank above the target's tier grants +1,
+        /// so the rank a tier requires adds nothing there and boards keep their authored margin.
+        /// Every <see cref="StatPointsPerTrace"/> combined Lockpicking and positive Perception
+        /// grants +1, up to <see cref="MaxStatTraceBonus"/>.
+        /// </summary>
+        public static int GetTraceBonus(int slicingRank, int targetTier, int lockpicking, int positivePerceptionModifier)
         {
-            var perkBonus = slicingRank switch
-            {
-                >= 5 => 3,
-                4 => 2,
-                3 => 1,
-                _ => 0
-            };
-            var statBonus = Math.Min(5, Math.Max(0, lockpicking + Math.Max(0, positivePerceptionModifier)) / 5);
-            return perkBonus + statBonus;
+            var rankBonus = Math.Max(0, slicingRank - targetTier);
+            var statPoints = Math.Max(0, lockpicking + Math.Max(0, positivePerceptionModifier));
+            var statBonus = Math.Min(MaxStatTraceBonus, statPoints / StatPointsPerTrace);
+            return rankBonus + statBonus;
         }
 
         public static int GetDestructionChance(int failedAttempts)

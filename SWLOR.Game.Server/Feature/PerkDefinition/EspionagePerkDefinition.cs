@@ -116,25 +116,25 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .RequirementCharacterType(CharacterType.Standard)
 
                 .AddPerkLevel()
-                .Description("Can slice tier 2 lockboxes and terminals.")
+                .Description("Can slice tier 2 lockboxes and terminals. Each rank above a target's tier grants +1 trace.")
                 .Price(3)
                 .RequirementSkill(SkillType.Espionage, Skill.GetEspionageRequiredRank(PerkType.Slicing, 2))
                 .RequirementCharacterType(CharacterType.Standard)
 
                 .AddPerkLevel()
-                .Description("Can slice tier 3 lockboxes and terminals. Grants +1 trace during slicing.")
+                .Description("Can slice tier 3 lockboxes and terminals. Each rank above a target's tier grants +1 trace.")
                 .Price(3)
                 .RequirementSkill(SkillType.Espionage, Skill.GetEspionageRequiredRank(PerkType.Slicing, 3))
                 .RequirementCharacterType(CharacterType.Standard)
 
                 .AddPerkLevel()
-                .Description("Can slice tier 4 lockboxes and terminals. Grants +2 trace during slicing.")
+                .Description("Can slice tier 4 lockboxes and terminals. Each rank above a target's tier grants +1 trace.")
                 .Price(4)
                 .RequirementSkill(SkillType.Espionage, Skill.GetEspionageRequiredRank(PerkType.Slicing, 4))
                 .RequirementCharacterType(CharacterType.Standard)
 
                 .AddPerkLevel()
-                .Description("Can slice tier 5 lockboxes and terminals. Grants +3 trace during slicing.")
+                .Description("Can slice tier 5 lockboxes and terminals. Each rank above a target's tier grants +1 trace.")
                 .Price(4)
                 .RequirementCharacterType(CharacterType.Standard)
                 .RequirementSkill(SkillType.Espionage, Skill.GetEspionageRequiredRank(PerkType.Slicing, 5));

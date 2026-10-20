@@ -9,15 +9,15 @@ namespace SWLOR.Game.Server.Service.SlicingService
     /// </summary>
     public static class SlicingBoardAuthoring
     {
-        public const int BoardsPerTier = 100;
+        public const int BoardsPerTier = 500;
 
-        private const int MaxAttemptsPerBoard = 400;
+        private const int MaxAttemptsPerBoard = 2000;
 
         /// <param name="RouteCells">Inclusive range of authored route cells, counting START and GOAL.</param>
         /// <param name="MinEndpointDistance">Smallest Manhattan distance between START and GOAL.</param>
         /// <param name="RouteJunctionPercent">Chance a route tile is a junction whose spare arm leaks power into decoys.</param>
         /// <param name="MinSolutionCost">Smallest optimal trace cost a board may have.</param>
-        /// <param name="MaxRoutesInTrace">Most distinct paths a player may power within the base trace.</param>
+        /// <param name="MaxRoutesInTrace">Most distinct paths whose assignment bound fits base trace; the true number of paths a player can power is never higher.</param>
         private sealed record TierRule(
             int Width,
             int Height,
@@ -49,18 +49,22 @@ namespace SWLOR.Game.Server.Service.SlicingService
             (SlicingTileType.Corrupt, 1)
         };
 
-        public static SlicingBoard GenerateBoard(int tier, int boardNumber)
+        /// <param name="variant">Selects a different deterministic seed range, used to replace a board
+        /// whose layout repeats an earlier board in the same tier.</param>
+        public static SlicingBoard GenerateBoard(int tier, int boardNumber, int variant = 0)
         {
             if (!_tierRules.TryGetValue(tier, out var rule))
                 throw new ArgumentOutOfRangeException(nameof(tier), "Slicing tier must be between 1 and 5.");
             if (boardNumber < 1 || boardNumber > BoardsPerTier)
                 throw new ArgumentOutOfRangeException(nameof(boardNumber),
                     $"Slicing board number must be between 1 and {BoardsPerTier}.");
+            if (variant < 0 || (variant + 1) * MaxAttemptsPerBoard > 100_000)
+                throw new ArgumentOutOfRangeException(nameof(variant));
 
             for (var attempt = 0; attempt < MaxAttemptsPerBoard; attempt++)
             {
-                var random = new System.Random(tier * 1_000_003 + boardNumber * 10_007 + attempt);
-                var board = TryAuthor(tier, boardNumber, rule, random);
+                var seed = tier * 100_000_007 + boardNumber * 100_003 + variant * MaxAttemptsPerBoard + attempt;
+                var board = TryAuthor(tier, boardNumber, rule, new System.Random(seed));
                 if (board != null)
                     return board;
             }
@@ -131,19 +135,21 @@ namespace SWLOR.Game.Server.Service.SlicingService
             SlicingBoardSolver.Solution solution;
             try
             {
-                // The authored repair is always within the solver's model, so a solution exists.
-                solution = SlicingBoardSolver.Solve(board, authoredCost + 1);
+                // Rejecting boards with a repair under the minimum is the cheap, common case.
+                if (SlicingBoardSolver.Solve(board, rule.MinSolutionCost) != null)
+                    return null;
+
+                // The authored repair is a legal swap-and-rotate sequence, so a solution exists.
+                solution = SlicingBoardSolver.Solve(board, authoredCost + 1, knownMinimum: rule.MinSolutionCost);
                 if (solution == null)
                     throw new InvalidOperationException($"Solver missed the authored repair for {board.BoardId}.");
-                if (solution.Cost < rule.MinSolutionCost)
-                    return null;
 
                 // Every board past tier 1 must need a swap within the trace it starts with.
                 var baseTrace = solution.Cost + rule.ExtraTrace;
                 if (rule.SwapCount > 0 &&
                     SlicingBoardSolver.Solve(board, baseTrace + 1, allowSwaps: false) != null)
                     return null;
-                if (SlicingBoardSolver.CountRoutes(board, baseTrace, rule.MaxRoutesInTrace + 1) > rule.MaxRoutesInTrace)
+                if (SlicingBoardSolver.CountRoutes(board, baseTrace, rule.MaxRoutesInTrace) > rule.MaxRoutesInTrace)
                     return null;
             }
             catch (SlicingBoardSolver.SearchLimitExceededException)

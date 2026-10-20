@@ -270,7 +270,7 @@ def build_sheet() -> Sheet:
 
     sheet.merged("Tier Board and Progression")
     sheet.table(["Tier", "Grid", "Extra Trace", "Authored Swaps", "Slicing Rank", "Armor Bands", "Max Routes in Trace", "Notes"], [
-        [1, "3 x 3", 4, 0, 1, "0 / 5", 3, "Slicing I starts at Espionage rank 0 and trains to 22. Optional tier 1 supplies are sold at the Veles General Store. Base trace equals the board's cheapest repair, proven by the board solver, plus extra trace. Every board has its own START, GOAL, and route. Cheapest repair: 5+ trace."],
+        [1, "3 x 3", 4, 0, 1, "0 / 5", 3, "Slicing I starts at Espionage rank 0 and trains to 22. Optional tier 1 supplies are sold at the Veles General Store. Each tier has 500 boards, each with its own START, GOAL, and route. Base trace equals the board's cheapest repair, proven by the board solver, plus extra trace. Cheapest repair: 5+ trace."],
         [2, "4 x 3", 3, 1, 2, "10 / 15", 3, "From tier 2, rotation alone cannot finish within base trace; every board needs at least one swap. Cheapest repair: 7+ trace."],
         [3, "4 x 4", 3, 2, 3, "20 / 25", 4, "Cheapest repair: 9+ trace."],
         [4, "5 x 4", 2, 3, 4, "30 / 35", 4, "Rare exceptional named item uses the half-tier Armor band. Cheapest repair: 11+ trace."],

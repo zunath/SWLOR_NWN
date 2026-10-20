@@ -22,7 +22,7 @@ public class SlicingTests
         int minimumCost,
         int maximumRoutes)
     {
-        foreach (var board in Enumerable.Range(1, 100).Select(number => Slicing.GetBoard(tier, number)))
+        foreach (var board in Enumerable.Range(1, Slicing.GetBoardCount(tier)).Select(number => Slicing.GetBoard(tier, number)))
         {
             board.Width.Should().Be(width);
             board.Height.Should().Be(height);
@@ -42,39 +42,52 @@ public class SlicingTests
             .Should().BeLessThanOrEqualTo(maximumRoutes);
     }
 
-    [TestCaseSource(nameof(TiersAndBoardNumbers))]
-    public void CatalogBoard_HasKnownSolutionThatConnectsCore(int tier, int boardNumber)
+    // One case per tier: thousands of parameterized cases make the NUnit adapter take minutes
+    // even though each replay runs in well under a millisecond.
+    [TestCase(1)]
+    [TestCase(2)]
+    [TestCase(3)]
+    [TestCase(4)]
+    [TestCase(5)]
+    public void CatalogBoards_EveryRecordedSolutionConnectsCore(int tier)
     {
-        var first = Slicing.GetBoard(tier, boardNumber);
-
-        first.BoardNumber.Should().Be(boardNumber);
-        first.BoardId.Should().Be($"T{tier}-{boardNumber:000}");
-        first.Tiles
-            .Where(tile => tile.Type is SlicingTileType.Entry or SlicingTileType.Core)
-            .Should().OnlyContain(tile => tile.Orientation == tile.SolutionOrientation);
-        Slicing.CanSolveWithSingleAction(first).Should().BeFalse();
-
-        var spent = 0;
-        foreach (var swap in first.SolutionSwaps)
+        for (var boardNumber = 1; boardNumber <= Slicing.GetBoardCount(tier); boardNumber++)
         {
-            Slicing.SwapAdjacent(first, swap.FirstIndex, swap.SecondIndex).Should().BeTrue();
-            spent += 2;
-        }
+            var board = Slicing.GetBoard(tier, boardNumber);
+            var id = $"T{tier}-{boardNumber:000}";
 
-        foreach (var (tile, index) in first.Tiles.Select((tile, index) => (tile, index)).Where(x => x.tile.SolutionIndex >= 0))
-        {
-            tile.SolutionIndex.Should().Be(index, "every route tile sits in its own cell once the swaps are done");
-            var rotations = Slicing.GetClockwiseSolutionRotationCost(tile);
-            for (var turn = 0; turn < rotations; turn++)
-                tile.Orientation = (tile.Orientation + 1) % 4;
-            spent += rotations;
-        }
+            board.BoardNumber.Should().Be(boardNumber);
+            board.BoardId.Should().Be(id);
+            board.Tiles
+                .Where(tile => tile.Type is SlicingTileType.Entry or SlicingTileType.Core)
+                .Should().OnlyContain(tile => tile.Orientation == tile.SolutionOrientation, id);
+            Slicing.CanSolveWithSingleAction(board).Should().BeFalse(id);
 
-        spent.Should().Be(first.SolutionActionCost);
-        Slicing.IsSolved(first).Should().BeTrue();
+            var spent = 0;
+            foreach (var swap in board.SolutionSwaps)
+            {
+                Slicing.SwapAdjacent(board, swap.FirstIndex, swap.SecondIndex).Should().BeTrue(id);
+                spent += 2;
+            }
+
+            foreach (var (tile, index) in board.Tiles.Select((tile, index) => (tile, index)).Where(x => x.tile.SolutionIndex >= 0))
+            {
+                tile.SolutionIndex.Should().Be(index, "every route tile on {0} sits in its own cell once the swaps are done", id);
+                var rotations = Slicing.GetClockwiseSolutionRotationCost(tile);
+                for (var turn = 0; turn < rotations; turn++)
+                    tile.Orientation = (tile.Orientation + 1) % 4;
+                spent += rotations;
+            }
+
+            spent.Should().Be(board.SolutionActionCost, id);
+            board.BaseTrace.Should().BeGreaterThan(spent, "{0} must be solvable within its starting trace", id);
+            Slicing.IsSolved(board).Should().BeTrue("the recorded solution of {0} must power the core", id);
+        }
     }
 
-    [TestCaseSource(nameof(TiersAndBoardNumbers))]
+    // The generator proves every board with this solver. Exhaustive proofs on 2,500 boards are too
+    // slow for a Debug test run, so this regression check samples each tier.
+    [TestCaseSource(nameof(SampledTiersAndBoardNumbers))]
     public void CatalogBoard_TraceIsBuiltOnTheCheapestRepair(int tier, int boardNumber)
     {
         var board = Slicing.GetBoard(tier, boardNumber);
@@ -93,7 +106,7 @@ public class SlicingTests
     {
         for (var tier = 1; tier <= 5; tier++)
         {
-            var boards = Enumerable.Range(1, 100).Select(number => Slicing.GetBoard(tier, number)).ToList();
+            var boards = Enumerable.Range(1, Slicing.GetBoardCount(tier)).Select(number => Slicing.GetBoard(tier, number)).ToList();
             var endpoints = boards
                 .Select(board => (
                     Entry: board.Tiles.FindIndex(tile => tile.Type == SlicingTileType.Entry),
@@ -148,6 +161,43 @@ public class SlicingTests
     }
 
     [Test]
+    public void Solver_FindsTilesMovedThroughSeveralSwaps()
+    {
+        // The only route is START (5) -> 8 -> 7 -> 4 -> GOAL (3), and every cell needs a corner.
+        // Moving the corner at 4 two cells to 8 (swap 4/7, then 7/8) leaves every corner already
+        // facing the right way, which beats any single swap plus turns.
+        var board = new SlicingBoard
+        {
+            Width = 3,
+            Height = 3,
+            Tiles =
+            {
+                new SlicingTile { Type = SlicingTileType.Corner, Orientation = 0 },
+                new SlicingTile { Type = SlicingTileType.Straight, Orientation = 2 },
+                new SlicingTile { Type = SlicingTileType.Junction, Orientation = 1 },
+                new SlicingTile { Type = SlicingTileType.Core, Orientation = 1 },
+                new SlicingTile { Type = SlicingTileType.Corner, Orientation = 3 },
+                new SlicingTile { Type = SlicingTileType.Entry, Orientation = 2 },
+                new SlicingTile { Type = SlicingTileType.Cross, Orientation = 1 },
+                new SlicingTile { Type = SlicingTileType.Corner, Orientation = 2 },
+                new SlicingTile { Type = SlicingTileType.Corner, Orientation = 0 }
+            }
+        };
+
+        SlicingBoardSolver.Solve(board, 100, allowSwaps: false)!.Cost.Should().Be(8);
+        var best = SlicingBoardSolver.Solve(board, 100);
+        best!.Cost.Should().Be(4);
+        best.Swaps.Should().HaveCount(2);
+        best.Path.Should().Equal(5, 8, 7, 4, 3);
+        SlicingBoardSolver.CountRoutes(board, 4, 10).Should().Be(1);
+        SlicingBoardSolver.CountRoutes(board, 3, 10).Should().Be(0);
+
+        foreach (var swap in best.Swaps)
+            Slicing.SwapAdjacent(board, swap.FirstIndex, swap.SecondIndex).Should().BeTrue();
+        Slicing.IsSolved(board).Should().BeTrue("the two swaps alone complete the circuit");
+    }
+
+    [Test]
     public void Solver_CountsEachDistinctRouteWithinTheTrace()
     {
         // Crosses link any sides for free, so the top row and the dip through the bottom row
@@ -179,10 +229,10 @@ public class SlicingTests
     [TestCase(3)]
     [TestCase(4)]
     [TestCase(5)]
-    public void Catalog_ContainsOneHundredIndependentBoardsPerTier(int tier)
+    public void Catalog_ContainsFiveHundredIndependentBoardsPerTier(int tier)
     {
-        Slicing.GetBoardCount(tier).Should().Be(100);
-        var playerVisibleLayouts = Enumerable.Range(1, 100)
+        Slicing.GetBoardCount(tier).Should().Be(500);
+        var playerVisibleLayouts = Enumerable.Range(1, 500)
             .Select(boardNumber => Slicing.GetBoard(tier, boardNumber))
             .Select(board => string.Join(";", board.Tiles.Select(tile =>
                 $"{(int)tile.Type},{tile.Orientation}")))
@@ -199,9 +249,9 @@ public class SlicingTests
     }
 
     [TestCase(1, 1)]
-    [TestCase(100, 100)]
-    [TestCase(101, 1)]
-    [TestCase(982451653, 53)]
+    [TestCase(500, 500)]
+    [TestCase(501, 1)]
+    [TestCase(982451653, 153)]
     public void LegacySelection_MapsToAStableBoardNumber(int selection, int expected)
     {
         Slicing.MapSelectionToBoardNumber(1, selection).Should().Be(expected);
@@ -212,7 +262,7 @@ public class SlicingTests
     {
         var invalidTier = () => Slicing.GetBoard(0, 1);
         var belowRange = () => Slicing.GetBoard(1, 0);
-        var aboveRange = () => Slicing.GetBoard(1, 101);
+        var aboveRange = () => Slicing.GetBoard(1, 501);
 
         invalidTier.Should().Throw<ArgumentOutOfRangeException>();
         belowRange.Should().Throw<ArgumentOutOfRangeException>();
@@ -494,10 +544,10 @@ public class SlicingTests
             "the stale committed-attempt check must not be gated on the claimant being a different player");
     }
 
-    private static IEnumerable<TestCaseData> TiersAndBoardNumbers()
+    private static IEnumerable<TestCaseData> SampledTiersAndBoardNumbers()
     {
         for (var tier = 1; tier <= 5; tier++)
-        for (var boardNumber = 1; boardNumber <= 100; boardNumber++)
+        for (var boardNumber = 1; boardNumber <= 500; boardNumber += 50)
             yield return new TestCaseData(tier, boardNumber);
     }
 

@@ -425,6 +425,13 @@ class TrellisWeaponExportTests(unittest.TestCase):
         self.assertEqual(copy.read_bytes(),b'one');self.assertEqual(identity['sha256'],hashlib.sha256(b'one').hexdigest())
         self.assertNotEqual(exporter.tool_identity(tool)['sha256'],identity['sha256'])
 
+    def test_tool_snapshots_keep_the_source_mode(self):
+        tool=self.root/'cleanmodels';tool.write_bytes(b'#!/bin/sh\nexit 0\n')
+        if os.name=='posix':os.chmod(tool,0o755)
+        copy,_=exporter.snapshot_tool(tool,self.root/'snapshot')
+        self.assertEqual(os.stat(copy).st_mode&0o7777,os.stat(tool).st_mode&0o7777)
+        if os.name=='posix':self.assertTrue(os.access(copy,os.X_OK))
+
     @unittest.skipIf(np is None,'numpy required')
     def test_materials_clipped_from_every_part_emit_no_maps_or_normal_provenance(self):
         resources=self.root/'resources';resources.mkdir();names={0:'kept',1:'gone'};material_dims={};mapdims={}

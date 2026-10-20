@@ -1152,9 +1152,10 @@ def tool_identity(path):
 
 
 def snapshot_tool(path, folder):
-    """Copy an executable once into a private folder; every invocation runs that immutable copy."""
+    """Copy an executable once into a private folder; every invocation runs that immutable copy. The source's
+    mode bits are kept so an executable original stays executable on POSIX hosts."""
     source=Path(path).resolve();data=source.read_bytes();folder.mkdir(parents=True,exist_ok=False)
-    copy=folder/source.name;copy.write_bytes(data)
+    copy=folder/source.name;copy.write_bytes(data);shutil.copymode(source,copy)
     return copy,{'path':str(source),'sha256':hashlib.sha256(data).hexdigest()}
 
 

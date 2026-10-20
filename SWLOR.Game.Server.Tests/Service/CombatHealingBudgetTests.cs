@@ -1,6 +1,5 @@
 using FluentAssertions;
 using NUnit.Framework;
-using SWLOR.Game.Server.Feature.AbilityDefinition;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.CombatService;
@@ -66,20 +65,10 @@ public class CombatHealingBudgetTests
     {
         var now = DateTime.UtcNow;
         var budget = NewWindow();
-        var maximum = Combat.CalculateDefeatedEnemyHealingBudget(1000);
+        var maximum = Combat.CalculateMaxHPHealingBudget(1000,
+            Combat.MaximumDefeatedEnemyHealingMaxHPPercentPerWindow);
         var healed = Enumerable.Range(0, 5).Sum(_ => budget.Take(maximum, 297, now));
-        healed.Should().Be(84);
-    }
-
-    [TestCase(400, 12, 66)]
-    [TestCase(600, 12, 72)]
-    [TestCase(1000, 12, 84)]
-    [TestCase(400, 20, 66)]
-    public void DefeatedEnemyAllowance_CoversOneRate12KillHealAtAnyMaximumHP(int maximumHP, int rate, int expected)
-    {
-        var allowance = Combat.CalculateDefeatedEnemyHealingBudget(maximumHP);
-        allowance.Should().Be(HealAmount.FromRate(12).ForMaxHitPoints(maximumHP));
-        Math.Min(HealAmount.FromRate(rate).ForMaxHitPoints(maximumHP), allowance).Should().Be(expected);
+        healed.Should().Be(120);
     }
 
     [TestCase(70, 3, 2)]

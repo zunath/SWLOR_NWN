@@ -301,7 +301,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.GuardiansReapingTrait)
-                .Description("Defeating an enemy restores 54 HP plus 3% of max HP to you and grants +10% Physical Defense to all allies within 5m for 30 seconds.")
+                .Description("Defeating an enemy restores 12% max HP to you and grants +10% Physical Defense to all allies within 5m for 30 seconds.")
                 .IncreasesStat(StatType.DefeatedEnemyHPPercentRestore, 12)
                 .IncreasesStat(StatType.DefeatedEnemyNearbyAllyPhysicalDefensePercentAdjustment, 10)
                 .IncreasesStat(StatType.DefeatedEnemyNearbyAllyPhysicalDefenseDurationSeconds, 30)
@@ -317,7 +317,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.GuardiansResolveTrait)
-                .Description("When a Heavy Vibroblade Defense ability grants you Physical Defense or reduces incoming damage, you also gain 54 Temporary HP plus 3% of maximum HP for 30 seconds. You heal for 15% of damage absorbed by this Temporary HP. This can trigger once every 30 seconds.")
+                .Description("When a Heavy Vibroblade Defense ability grants you Physical Defense or reduces incoming damage, you also gain Temporary HP equal to 12% of maximum HP for 30 seconds. You heal for 15% of damage absorbed by this Temporary HP. This can trigger once every 30 seconds.")
                 .IncreasesStat(StatType.HeavyVibrobladeDefenseGuardiansResolveTriggerPrimaryPerkType, (int)PerkType.FortressStrike)
                 .IncreasesStat(StatType.HeavyVibrobladeDefenseGuardiansResolveTriggerSecondaryPerkType, (int)PerkType.BastionStance)
                 .IncreasesStat(StatType.HeavyVibrobladeDefenseGuardiansResolveTriggerTertiaryPerkType, (int)PerkType.Rampart)
@@ -337,7 +337,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.LastStandTrait)
-                .Description("When reduced below 25% HP, gain 90 Temporary HP plus 5% of maximum HP for 30 seconds. This can only trigger once per 10 minutes.")
+                .Description("When reduced below 25% HP, gain Temporary HP equal to 20% of maximum HP for 30 seconds. This can only trigger once per 10 minutes.")
                 .IncreasesStat(StatType.LowHPTemporaryHPThresholdPercent, 25)
                 .IncreasesStat(StatType.LowHPTemporaryHPPercent, 20)
                 .IncreasesStat(StatType.LowHPTemporaryHPDurationSeconds, 30)
@@ -426,7 +426,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.SoulBarrierTrait)
-                .Description("When HP drops below 50% of maximum, a temporary shield forms which absorbs 113 damage plus 6.25% of max HP for 30 seconds. This can only trigger once every 3 minutes.")
+                .Description("When HP drops below 50% of maximum, a temporary shield forms which absorbs damage equal to 25% of max HP for 30 seconds. This can only trigger once every 3 minutes.")
                 .IncreasesStat(StatType.LowHPNoSaveTemporaryHPThresholdPercent, 50)
                 .IncreasesStat(StatType.LowHPNoSaveTemporaryHPPercent, 25)
                 .IncreasesStat(StatType.LowHPNoSaveTemporaryHPDurationSeconds, 30)
@@ -471,7 +471,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.SoulReapingTrait)
-                .Description("Defeating an enemy restores 45 HP plus 2.5% of max HP and grants +15% Attack for 30 seconds.")
+                .Description("Defeating an enemy restores 10% max HP and grants +15% Attack for 30 seconds.")
                 .IncreasesStat(StatType.DefeatedEnemyHPPercentRestore, 10)
                 .IncreasesStat(StatType.DefeatedEnemyAttackPercentAdjustment, 15)
                 .IncreasesStat(StatType.DefeatedEnemyAttackDurationSeconds, 30)

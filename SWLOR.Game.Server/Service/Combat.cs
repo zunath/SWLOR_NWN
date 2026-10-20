@@ -47,10 +47,6 @@ namespace SWLOR.Game.Server.Service
         public const int MaximumPassiveDamageHealingMaxHPPercentPerHit = 6;
         public const int MaximumCooldownDamageHealingMaxHPPercentPerHit = 12;
         public const int MaximumPassiveDamageHealingMaxHPPercentPerWindow = 24;
-        /// <summary>
-        /// The defeated-enemy healing allowance per window, as a heal rate sized like the heals it caps
-        /// (<see cref="HealAmount.FromRate"/>): one rate-12 kill heal at any maximum HP.
-        /// </summary>
         public const int MaximumDefeatedEnemyHealingMaxHPPercentPerWindow = 12;
         public const int CombatHealingWindowSeconds = 6;
         public const int MaximumCriticalDamagePercentAdjustment = 200;
@@ -3041,8 +3037,8 @@ namespace SWLOR.Game.Server.Service
                 var healingApplied = isCooldownHealing ? state.CooldownHealingApplied : state.PassiveHealingApplied;
                 amount = Math.Min(amount, Math.Max(0, CalculateMaxHPHealingBudget(
                     maximumHP, maximumPercent) - healingApplied));
-                amount = TakeCombatHealingBudget(_passiveDamageHealingBudgets, creature,
-                    CalculateMaxHPHealingBudget(maximumHP, MaximumPassiveDamageHealingMaxHPPercentPerWindow), amount);
+                amount = TakeCombatHealingBudget(_passiveDamageHealingBudgets, creature, maximumHP,
+                    MaximumPassiveDamageHealingMaxHPPercentPerWindow, amount);
                 if (isCooldownHealing)
                     state.CooldownHealingApplied += amount;
                 else
@@ -3187,7 +3183,7 @@ namespace SWLOR.Game.Server.Service
                 !TryUseStatTrigger(defender, StatType.LowHPTemporaryHPPercent, cooldown))
                 return;
 
-            var temporaryHP = HealAmount.FromRate(temporaryHPPercent).ForMaxHitPoints(GetMaxHitPoints(defender));
+            var temporaryHP = GameMath.PercentOf(GetMaxHitPoints(defender), temporaryHPPercent);
             using var recorderAttribution = CombatRecorder.BeginStatTriggerAttribution(defender, StatType.LowHPTemporaryHPPercent);
             TemporaryHitPointEffects.ApplyFlat(defender, "LOW_HP_SHIELD", temporaryHP, duration);
         }
@@ -3217,7 +3213,7 @@ namespace SWLOR.Game.Server.Service
             if (!TryUseStatTrigger(defender, StatType.LowHPTemporaryHPPercent, cooldown))
                 return;
 
-            var temporaryHP = HealAmount.FromRate(temporaryHPPercent).ForMaxHitPoints(maxHP);
+            var temporaryHP = GameMath.PercentOf(maxHP, temporaryHPPercent);
             using var recorderAttribution = CombatRecorder.BeginStatTriggerAttribution(defender, StatType.LowHPTemporaryHPPercent);
             TemporaryHitPointEffects.ApplyFlat(defender, "LOW_HP_SHIELD", temporaryHP, duration);
         }
@@ -3236,7 +3232,7 @@ namespace SWLOR.Game.Server.Service
                 !TryUseStatTrigger(defender, StatType.LowHPNoSaveTemporaryHPPercent, cooldown))
                 return;
 
-            var temporaryHP = HealAmount.FromRate(temporaryHPPercent).ForMaxHitPoints(GetMaxHitPoints(defender));
+            var temporaryHP = GameMath.PercentOf(GetMaxHitPoints(defender), temporaryHPPercent);
             using var recorderAttribution = CombatRecorder.BeginStatTriggerAttribution(defender, StatType.LowHPNoSaveTemporaryHPPercent);
             TemporaryHitPointEffects.ApplyFlat(defender, "LOW_HP_SHIELD_NO_SAVE", temporaryHP, duration);
         }
@@ -4352,11 +4348,11 @@ namespace SWLOR.Game.Server.Service
                 return;
 
             var maximumHP = GetMaxHitPoints(creature);
-            var amount = HealAmount.FromRate(percent).ForMaxHitPoints(maximumHP);
+            var amount = GameMath.PercentOf(maximumHP, percent);
             amount = Stat.ApplyHealingReceivedAdjustment(creature, amount, applyReceivedEffects: false);
             amount = Stat.CalculateEffectiveHealingAmount(amount, ObjectPlugin.GetCurrentHitPoints(creature), maximumHP);
-            amount = TakeCombatHealingBudget(_defeatedEnemyHealingBudgets, creature,
-                CalculateDefeatedEnemyHealingBudget(maximumHP), amount);
+            amount = TakeCombatHealingBudget(_defeatedEnemyHealingBudgets, creature, maximumHP,
+                MaximumDefeatedEnemyHealingMaxHPPercentPerWindow, amount);
             if (amount <= 0)
                 return;
 
@@ -4364,16 +4360,8 @@ namespace SWLOR.Game.Server.Service
             ApplyEffectToObject(DurationType.Instant, EffectHeal(amount), creature);
         }
 
-        /// <summary>
-        /// Defeated-enemy heals are flat HP plus a percent of maximum HP, so their shared allowance is sized the same way.
-        /// </summary>
-        public static int CalculateDefeatedEnemyHealingBudget(int maximumHP)
-        {
-            return HealAmount.FromRate(MaximumDefeatedEnemyHealingMaxHPPercentPerWindow).ForMaxHitPoints(maximumHP);
-        }
-
         private static int TakeCombatHealingBudget(
-            Dictionary<uint, RollingHealingBudget> budgets, uint creature, int allowance, int requested)
+            Dictionary<uint, RollingHealingBudget> budgets, uint creature, int maximumHP, int percent, int requested)
         {
             if (requested <= 0)
                 return 0;
@@ -4384,7 +4372,7 @@ namespace SWLOR.Game.Server.Service
                 budgets[creature] = budget;
             }
 
-            return budget.Take(allowance, requested, DateTime.UtcNow);
+            return budget.Take(CalculateMaxHPHealingBudget(maximumHP, percent), requested, DateTime.UtcNow);
         }
 
         private static int ApplyOutgoingDamageModifier(uint attacker, int damage)
@@ -8005,7 +7993,7 @@ namespace SWLOR.Game.Server.Service
             var shieldAmount = TemporaryHitPointEffects.ApplyFlat(
                 activator,
                 TemporaryHitPointEffectKey.GuardiansResolve,
-                HealAmount.FromRate(shieldPercent).ForMaxHitPoints(GetMaxHitPoints(activator)),
+                GameMath.PercentOf(GetMaxHitPoints(activator), shieldPercent),
                 duration);
             if (shieldAmount <= 0)
                 return;

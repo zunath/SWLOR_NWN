@@ -230,12 +230,11 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             TemporaryStatModifier.Add(source, StatType.DefeatedEnemyAttackDurationSeconds, 30, 30f);
             for (var i = 0; i < 5; i++)
                 Combat.ApplyDefeatedEnemyEffects(source);
-            // The allowance is one rate-12 kill heal: 54 HP plus 3% of 1000.
-            ctx.AssertEqual(85, GetCurrentHitPoints(source), "five kills share an 84-HP allowance after bonuses");
+            ctx.AssertEqual(121, GetCurrentHitPoints(source), "five kills share a 120-HP allowance after bonuses");
             ctx.Assert(Stat.GetStatAdjustment(source, StatType.AttackPercentAdjustment) >= 15, "kill attack reward still applies");
             await ctx.DelaySecondsAsync(6.1f);
             Combat.ApplyDefeatedEnemyEffects(source);
-            ctx.AssertEqual(169, GetCurrentHitPoints(source), "expired receipts release their allowance");
+            ctx.AssertEqual(241, GetCurrentHitPoints(source), "expired receipts release their allowance");
         }
 
         [EngineTest("Force Drain uses its shared healing cap and does not apply Combat Readiness twice", Category = "CombatHealing", TimeoutSeconds = 20f)]
@@ -418,8 +417,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 "receiving healing still triggers the attack reward while shielded");
             Combat.ApplyDefeatedEnemyEffects(source);
             Combat.ApplyDefeatedEnemyEffects(source);
-            // Two rate-12 kills (84 HP each) share one 84-HP allowance.
-            ctx.AssertEqual(894, ObjectPlugin.GetCurrentHitPoints(source), "kill recovery heals base HP and retains its 84-HP budget");
+            ctx.AssertEqual(930, ObjectPlugin.GetCurrentHitPoints(source), "kill recovery heals base HP and retains its 120-HP budget");
             ctx.AssertEqual(500, TemporaryHitPointEffects.GetRemaining(source), "healing does not replace or consume temporary HP");
         }
 
@@ -440,8 +438,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             Combat.ApplyDefeatedEnemyEffects(source);
             ObjectPlugin.SetCurrentHitPoints(source, 500);
             Combat.ApplyDefeatedEnemyEffects(source);
-            // The second kill restores 54 HP plus 3% of 1000 (a rate of 12) = 84.
-            ctx.AssertEqual(584, ObjectPlugin.GetCurrentHitPoints(source), "a full-health kill did not spend the kill budget");
+            ctx.AssertEqual(620, ObjectPlugin.GetCurrentHitPoints(source), "a full-health kill did not spend the kill budget");
             foreach (var expected in new[] { 60, 60, 60, 59 })
             {
                 using (Combat.BeginDamageDerivedHealing(source, target))
@@ -450,7 +447,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             }
             using (Combat.BeginDamageDerivedHealing(source, target))
                 ctx.AssertEqual(0, Combat.ApplyDamageDerivedHealing(source, 684, 25), "the 240-HP rolling limit still applies");
-            ctx.AssertEqual(823, ObjectPlugin.GetCurrentHitPoints(source), "base HP receives 84 kill HP plus 239 remaining passive HP");
+            ctx.AssertEqual(859, ObjectPlugin.GetCurrentHitPoints(source), "base HP receives 120 kill HP plus 239 remaining passive HP");
             ctx.AssertEqual(500, TemporaryHitPointEffects.GetRemaining(source), "overhealing does not refill or consume the shield");
         }
 
@@ -476,17 +473,17 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                         damage = Ability.ApplyCombatImpact(source, target, GetLocation(target), SkillType.Force,
                             400, 0, null, false, damageType: CombatDamageType.Force, awardsCombatPoints: false,
                             resolvesHit: false, canCritical: false, useUnscaledDamage: true);
-                        ctx.Assert(damage >= 375 && damage < 450, "the hit is fatal without the reactive shield and survivable with it");
-                        ctx.AssertEqual(350, TemporaryHitPointEffects.GetRemaining(target), "damage calculation grants the shield before queueing the hit");
+                        ctx.Assert(damage >= 375 && damage < 600, "the hit is fatal without the reactive shield and survivable with it");
+                        ctx.AssertEqual(500, TemporaryHitPointEffects.GetRemaining(target), "damage calculation grants the shield before queueing the hit");
                         ctx.AssertEqual(1 + GameMath.PercentOf(damage, 8), ObjectPlugin.GetCurrentHitPoints(source),
                             "passive recovery uses the hit's full damage, including shield absorption");
                         ctx.AssertEqual(150, Combat.ApplyDamageDerivedHealing(source, damage, 40, true),
                             "the outer active-drain scope also observes the newly granted shield");
                     }
-                    ctx.AssertEqual(450 - damage, Ability.GetRemainingDamageTargetHP(source, target),
+                    ctx.AssertEqual(600 - damage, Ability.GetRemainingDamageTargetHP(source, target),
                         "the queued hit is subtracted from base HP plus the new shield exactly once");
                     Ability.ApplyHostileCombatImpact(source, target, SkillType.Force, 400, CombatDamageType.Force);
-                    var expected = 1 + 150 + GameMath.PercentOf(damage, 8) + GameMath.PercentOf(450 - damage, 8);
+                    var expected = 1 + 150 + GameMath.PercentOf(damage, 8) + GameMath.PercentOf(600 - damage, 8);
                     ctx.AssertEqual(expected, ObjectPlugin.GetCurrentHitPoints(source), "the second hit only draws from unclaimed shield and base HP");
                     Ability.ApplyHostileCombatImpact(source, target, SkillType.Force, 400, CombatDamageType.Force);
                     ctx.AssertEqual(expected, ObjectPlugin.GetCurrentHitPoints(source), "the third hit cannot heal from shield overkill");
@@ -509,7 +506,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             {
                 var damage = Combat.ApplyDamageTakenModifiers(target, 400, source, CombatDamageType.Force);
                 ctx.AssertEqual(400, damage, "the shield preserves the incoming damage amount");
-                ctx.AssertEqual(450, GetCurrentHitPoints(target), "reactive shield increases damageable HP from 100 to 450");
+                ctx.AssertEqual(600, GetCurrentHitPoints(target), "reactive shield increases damageable HP from 100 to 600");
                 Combat.ApplyCriticalHitEffects(source, target, damage, 1);
                 ctx.AssertEqual(101, ObjectPlugin.GetCurrentHitPoints(source), "the critical proc heals 25% of 400 instead of 25% of the old 100 HP");
                 ctx.AssertEqual(60, Combat.ApplyDamageDerivedHealing(source, damage, 25), "ordinary healing keeps its separate allowance");
@@ -520,7 +517,6 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
         {
             Prepare(ctx, target, 1000, 100);
             TemporaryStatModifier.Add(target, StatType.LowHPTemporaryHPThresholdPercent, 10, 30f);
-            // A rate of 50 on 1000 HP: 225 HP plus 12.5% = a 350 HP shield.
             TemporaryStatModifier.Add(target, StatType.LowHPTemporaryHPPercent, 50, 30f);
             TemporaryStatModifier.Add(target, StatType.LowHPTemporaryHPDurationSeconds, 30, 30f);
             TemporaryStatModifier.Add(target, StatType.LowHPTemporaryHPCooldownSeconds, 30, 30f);

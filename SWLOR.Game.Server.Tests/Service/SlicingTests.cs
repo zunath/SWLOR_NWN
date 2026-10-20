@@ -7,27 +7,39 @@ namespace SWLOR.Game.Server.Tests.Service;
 
 public class SlicingTests
 {
-    [TestCase(1, 3, 3, 0)]
-    [TestCase(2, 4, 3, 1)]
-    [TestCase(3, 4, 4, 2)]
-    [TestCase(4, 5, 4, 3)]
-    [TestCase(5, 5, 5, 4)]
-    public void CatalogBoard_UsesTierDimensionsAndBoundedSwaps(int tier, int width, int height, int swaps)
+    // Design Bible "Tier Board and Progression": grid, extra trace over the cheapest repair,
+    // smallest cheapest repair, and most distinct routes a player may power within base trace.
+    [TestCase(1, 3, 3, 4, 5, 3)]
+    [TestCase(2, 4, 3, 3, 7, 3)]
+    [TestCase(3, 4, 4, 3, 9, 4)]
+    [TestCase(4, 5, 4, 2, 11, 4)]
+    [TestCase(5, 5, 5, 2, 13, 5)]
+    public void CatalogBoards_MatchTheBibleTierRules(
+        int tier,
+        int width,
+        int height,
+        int extraTrace,
+        int minimumCost,
+        int maximumRoutes)
     {
-        var board = Slicing.GetBoard(tier, 53);
+        foreach (var board in Enumerable.Range(1, 100).Select(number => Slicing.GetBoard(tier, number)))
+        {
+            board.Width.Should().Be(width);
+            board.Height.Should().Be(height);
+            board.Tiles.Should().HaveCount(width * height);
+            board.BaseTrace.Should().Be(board.SolutionActionCost + extraTrace, board.BoardId);
+            board.SolutionActionCost.Should().BeGreaterThanOrEqualTo(minimumCost, board.BoardId);
+            Slicing.IsSolved(board).Should().BeFalse();
+            Slicing.CanSolveWithSingleAction(board).Should().BeFalse();
+            if (tier > 1)
+                board.SolutionSwaps.Should().NotBeEmpty("{0} needs a swap within base trace", board.BoardId);
+        }
 
-        board.BoardId.Should().Be($"T{tier}-053");
-        board.Width.Should().Be(width);
-        board.Height.Should().Be(height);
-        board.Tiles.Should().HaveCount(width * height);
-        board.SolutionSwaps.Should().HaveCount(swaps);
-        board.BaseTrace.Should().BeGreaterThan(board.SolutionActionCost);
-        board.SolutionActionCost.Should().BeGreaterThan(1);
-        Slicing.IsSolved(board).Should().BeFalse();
-        Slicing.CanSolveWithSingleAction(board).Should().BeFalse();
-        board.Tiles
-            .Where(tile => tile.Type is SlicingTileType.Entry or SlicingTileType.Core)
-            .Should().OnlyContain(tile => tile.Orientation == tile.SolutionOrientation);
+        // Exhaustive route counting is slow, so spot-check one board per tier here; the
+        // generator enforces the cap on every board.
+        var sample = Slicing.GetBoard(tier, 53);
+        SlicingBoardSolver.CountRoutes(sample, sample.BaseTrace, maximumRoutes + 1)
+            .Should().BeLessThanOrEqualTo(maximumRoutes);
     }
 
     [TestCaseSource(nameof(TiersAndBoardNumbers))]
@@ -49,8 +61,9 @@ public class SlicingTests
             spent += 2;
         }
 
-        foreach (var tile in first.Tiles.Where(x => x.SolutionIndex >= 0))
+        foreach (var (tile, index) in first.Tiles.Select((tile, index) => (tile, index)).Where(x => x.tile.SolutionIndex >= 0))
         {
+            tile.SolutionIndex.Should().Be(index, "every route tile sits in its own cell once the swaps are done");
             var rotations = Slicing.GetClockwiseSolutionRotationCost(tile);
             for (var turn = 0; turn < rotations; turn++)
                 tile.Orientation = (tile.Orientation + 1) % 4;
@@ -59,6 +72,106 @@ public class SlicingTests
 
         spent.Should().Be(first.SolutionActionCost);
         Slicing.IsSolved(first).Should().BeTrue();
+    }
+
+    [TestCaseSource(nameof(TiersAndBoardNumbers))]
+    public void CatalogBoard_TraceIsBuiltOnTheCheapestRepair(int tier, int boardNumber)
+    {
+        var board = Slicing.GetBoard(tier, boardNumber);
+
+        SlicingBoardSolver.Solve(board, board.SolutionActionCost).Should().BeNull(
+            "no repair may cost less than the recorded solution, or the trace margin grows silently");
+        if (tier > 1)
+        {
+            SlicingBoardSolver.Solve(board, board.BaseTrace + 1, allowSwaps: false).Should().BeNull(
+                "rotation alone must not reach the core within base trace");
+        }
+    }
+
+    [Test]
+    public void Catalog_EveryBoardHasItsOwnRoute()
+    {
+        for (var tier = 1; tier <= 5; tier++)
+        {
+            var boards = Enumerable.Range(1, 100).Select(number => Slicing.GetBoard(tier, number)).ToList();
+            var endpoints = boards
+                .Select(board => (
+                    Entry: board.Tiles.FindIndex(tile => tile.Type == SlicingTileType.Entry),
+                    Core: board.Tiles.FindIndex(tile => tile.Type == SlicingTileType.Core)))
+                .Distinct()
+                .Count();
+            var routes = boards
+                .Select(board => string.Join(",", board.Tiles
+                    .Where(tile => tile.SolutionIndex >= 0)
+                    .OrderBy(tile => tile.RouteOrder)
+                    .Select(tile => tile.SolutionIndex)))
+                .Distinct()
+                .Count();
+
+            endpoints.Should().BeGreaterThanOrEqualTo(20, $"tier {tier} START and GOAL positions must not be memorizable");
+            routes.Should().BeGreaterThanOrEqualTo(60, $"tier {tier} routes must not be memorizable");
+        }
+    }
+
+    [Test]
+    public void Solver_PrefersSwappingInAFittingNeighborOverThreeTurns()
+    {
+        // START faces east into a straight that needs one turn. Once that cell holds a corner,
+        // the only repair is swapping in the straight below it.
+        var board = new SlicingBoard
+        {
+            Width = 3,
+            Height = 2,
+            Tiles =
+            {
+                new SlicingTile { Type = SlicingTileType.Entry, Orientation = 1 },
+                new SlicingTile { Type = SlicingTileType.Straight, Orientation = 0 },
+                new SlicingTile { Type = SlicingTileType.Core, Orientation = 3 },
+                new SlicingTile { Type = SlicingTileType.Blocker },
+                new SlicingTile { Type = SlicingTileType.Straight, Orientation = 1 },
+                new SlicingTile { Type = SlicingTileType.Blocker }
+            }
+        };
+
+        var rotationOnly = SlicingBoardSolver.Solve(board, 100, allowSwaps: false);
+        var best = SlicingBoardSolver.Solve(board, 100);
+
+        rotationOnly!.Cost.Should().Be(1);
+        best!.Cost.Should().Be(1, "one turn is cheaper than a 2-trace swap");
+
+        board.Tiles[1] = new SlicingTile { Type = SlicingTileType.Corner, Orientation = 0 };
+        SlicingBoardSolver.Solve(board, 100, allowSwaps: false).Should().BeNull("a corner can never run straight through");
+        var swapped = SlicingBoardSolver.Solve(board, 100);
+        swapped!.Cost.Should().Be(2);
+        swapped.Swaps.Should().ContainSingle();
+        swapped.Path.Should().Equal(0, 1, 2);
+    }
+
+    [Test]
+    public void Solver_CountsEachDistinctRouteWithinTheTrace()
+    {
+        // Crosses link any sides for free, so the top row and the dip through the bottom row
+        // both reach the core.
+        var board = new SlicingBoard
+        {
+            Width = 4,
+            Height = 2,
+            Tiles =
+            {
+                new SlicingTile { Type = SlicingTileType.Entry, Orientation = 1 },
+                new SlicingTile { Type = SlicingTileType.Cross },
+                new SlicingTile { Type = SlicingTileType.Cross },
+                new SlicingTile { Type = SlicingTileType.Core, Orientation = 3 },
+                new SlicingTile { Type = SlicingTileType.Blocker },
+                new SlicingTile { Type = SlicingTileType.Cross },
+                new SlicingTile { Type = SlicingTileType.Cross },
+                new SlicingTile { Type = SlicingTileType.Blocker }
+            }
+        };
+
+        SlicingBoardSolver.CountRoutes(board, 0, 10, allowSwaps: false)
+            .Should().Be(2, "the top row and the dip through the bottom crosses both cost nothing");
+        SlicingBoardSolver.Solve(board, 100)!.Cost.Should().Be(0);
     }
 
     [TestCase(1)]
@@ -142,7 +255,7 @@ public class SlicingTests
     public void SwapAdjacent_MovesRevealMetadataWithTheTile()
     {
         var board = Slicing.GetBoard(2, 53);
-        var swap = board.SolutionSwaps.Single();
+        var swap = board.SolutionSwaps.First();
         board.Tiles[swap.FirstIndex].IsRouteRevealed = true;
         board.Tiles[swap.FirstIndex].IsOrientationRevealed = true;
 

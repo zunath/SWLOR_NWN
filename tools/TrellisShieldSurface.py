@@ -218,30 +218,41 @@ def faces_meet_beyond_shared(points,first,second,shared,tol=1e-9):
 
 
 def triangles_touch(t1,t2,tol=1e-9):
-    """Exact (tolerant) closed-triangle contact for paired arrays (n,3,3): non-coplanar pairs touch when an edge of one
-    meets the other; coplanar pairs touch unless a 2D separating axis exists."""
-    n1=np.cross(t1[:,1]-t1[:,0],t1[:,2]-t1[:,0]);n2=np.cross(t2[:,1]-t2[:,0],t2[:,2]-t2[:,0])
-    size=np.maximum(np.linalg.norm(n1,axis=1)*np.linalg.norm(n2,axis=1),1e-300)
-    coplanar=(np.linalg.norm(np.cross(n1,n2),axis=1)<=1e-6*size)&(np.abs(np.einsum('ij,ij->i',t2[:,0]-t1[:,0],n1))<=tol*np.sqrt(size))
-    def edge_hits(edges_of,tris):
-        hit=np.zeros(len(tris),bool)
-        for a,b in ((0,1),(1,2),(2,0)):
-            o=edges_of[:,a];d=edges_of[:,b]-o;v0=tris[:,0];e1=tris[:,1]-v0;e2=tris[:,2]-v0
-            q=np.cross(d,e2);det=np.einsum('ij,ij->i',q,e1);scale=np.linalg.norm(d,axis=1)*np.linalg.norm(e1,axis=1)*np.linalg.norm(e2,axis=1)
-            ok=np.abs(det)>1e-9*scale;inv=np.where(ok,1/np.where(ok,det,1),0);sv=o-v0
-            u=np.einsum('ij,ij->i',sv,q)*inv;r=np.cross(sv,e1);w=np.einsum('ij,ij->i',d,r)*inv;t=np.einsum('ij,ij->i',e2,r)*inv
-            hit|=ok&(u>=-tol)&(w>=-tol)&(u+w<=1+tol)&(t>=-tol)&(t<=1+tol)
-        return hit
-    touch=edge_hits(t1,t2)|edge_hits(t2,t1)
+    """Closed-triangle contact for paired arrays (n,3,3) by Moller's interval test. Each triangle's vertices are
+    classified against the other's plane with a distance tolerance scaled to the pair's size; a pair that neither
+    plane separates meets exactly when the two triangles' intervals on the planes' common line overlap. Coplanar
+    pairs use 2D separating axes. No determinant threshold drops shallow crossings."""
+    scale=np.maximum(np.linalg.norm(t1[:,[1,2,0]]-t1,axis=2).max(1),np.linalg.norm(t2[:,[1,2,0]]-t2,axis=2).max(1));eps=tol*scale
+    def unit_normal(t):
+        n=np.cross(t[:,1]-t[:,0],t[:,2]-t[:,0]);return n/np.maximum(np.linalg.norm(n,axis=1),1e-300)[:,None]
+    n1=unit_normal(t1);n2=unit_normal(t2)
+    d1=np.einsum('nkj,nj->nk',t1-t2[:,:1],n2);d2=np.einsum('nkj,nj->nk',t2-t1[:,:1],n1)  # signed plane distances
+    s1=np.where(np.abs(d1)<=eps[:,None],0,np.sign(d1));s2=np.where(np.abs(d2)<=eps[:,None],0,np.sign(d2))
+    separated=(np.abs(s1.sum(1))==3)|(np.abs(s2.sum(1))==3)
+    line=np.cross(n1,n2);length=np.linalg.norm(line,axis=1)
+    coplanar=~separated&((np.all(s1==0,1)&np.all(s2==0,1))|(length<=1e-12))
+    touch=np.zeros(len(t1),bool);general=~separated&~coplanar
+    if general.any():
+        direction=line[general]/length[general,None]
+        def interval(t,d,s):
+            # Points of the triangle on the other plane: on-plane vertices and sign-changing edge crossings.
+            p=np.einsum('nkj,nj->nk',t,direction);points=[np.where(s[:,k]==0,p[:,k],np.nan) for k in range(3)]
+            for a,b in ((0,1),(1,2),(2,0)):
+                change=s[:,a]*s[:,b]<0;f=np.where(change,d[:,a]/np.where(change,d[:,a]-d[:,b],1),np.nan)
+                points.append(p[:,a]+(p[:,b]-p[:,a])*f)
+            points=np.stack(points,1);missing=np.isnan(points)
+            return np.where(missing,np.inf,points).min(1),np.where(missing,-np.inf,points).max(1)
+        lo1,hi1=interval(t1[general],d1[general],s1[general]);lo2,hi2=interval(t2[general],d2[general],s2[general])
+        touch[general]=(lo1<=hi1)&(lo2<=hi2)&(np.maximum(lo1,lo2)<=np.minimum(hi1,hi2)+eps[general])
     if coplanar.any():
         axis=np.argmax(np.abs(n1[coplanar]),axis=1);keep=np.array([[1,2],[0,2],[0,1]])[axis]
-        a=np.take_along_axis(t1[coplanar],keep[:,None,:],2);b=np.take_along_axis(t2[coplanar],keep[:,None,:],2);separated=np.zeros(len(a),bool)
+        a=np.take_along_axis(t1[coplanar],keep[:,None,:],2);b=np.take_along_axis(t2[coplanar],keep[:,None,:],2);apart=np.zeros(len(a),bool)
         for tri in (a,b):
             for i in range(3):
                 edge=tri[:,(i+1)%3]-tri[:,i];normal=np.stack((-edge[:,1],edge[:,0]),1)
-                pa=np.einsum('nkj,nj->nk',a,normal);pb=np.einsum('nkj,nj->nk',b,normal);slack=tol*np.linalg.norm(normal,axis=1)*(1+np.abs(pa).max(1))
-                separated|=(pa.max(1)<pb.min(1)-slack)|(pb.max(1)<pa.min(1)-slack)
-        touch[coplanar]=~separated
+                pa=np.einsum('nkj,nj->nk',a,normal);pb=np.einsum('nkj,nj->nk',b,normal);slack=eps[coplanar]*np.linalg.norm(normal,axis=1)
+                apart|=(pa.max(1)<pb.min(1)-slack)|(pb.max(1)<pa.min(1)-slack)
+        touch[coplanar]=~apart
     return touch
 
 

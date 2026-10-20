@@ -8,6 +8,7 @@ import os
 import re
 from pathlib import Path
 import struct
+import sys
 import tempfile
 import unittest
 import unittest.mock
@@ -420,6 +421,13 @@ class TrellisWeaponExportTests(unittest.TestCase):
         self.assertEqual(helper.producer_sha256(),hashlib.sha256(path.read_bytes()).hexdigest())
         helper.SNAPSHOT_SHA256='f'*64;self.assertEqual(helper.producer_sha256(),'f'*64)
 
+    def test_compiler_wrapper_and_helper_identities_name_the_loaded_bytes(self):
+        wrapper,identity=exporter.load_compiler(ROOT)
+        self.assertIs(wrapper.CleanModels,sys.modules['CleanModels'])
+        self.assertEqual(identity['wrapper']['sha256'],hashlib.sha256((ROOT/'tools/CompileBlasterModels.py').read_bytes()).hexdigest())
+        self.assertEqual(identity['wrapper_helper']['sha256'],hashlib.sha256((ROOT/'SWLOR_Haks/tools/CleanModels.py').read_bytes()).hexdigest())
+        self.assertEqual(wrapper.SNAPSHOT_SHA256,identity['wrapper']['sha256']);self.assertEqual(wrapper.CleanModels.SNAPSHOT_SHA256,identity['wrapper_helper']['sha256'])
+
     def test_tools_run_from_an_immutable_snapshot(self):
         tool=self.root/'crunch.exe';tool.write_bytes(b'one')
         copy,identity=exporter.snapshot_tool(tool,self.root/'snapshot');tool.write_bytes(b'two')
@@ -548,6 +556,20 @@ class TrellisWeaponExportTests(unittest.TestCase):
         self.assertTrue(crosses((0,1,2),(0,1,13)))   # coplanar wedges at a shared corner overlap
         self.assertFalse(crosses((0,1,2),(0,12,1)))  # coplanar faces sharing an edge, on opposite sides
         self.assertTrue(crosses((0,1,2),(0,14,15)))  # sharing only the corner but touching along a common edge ray
+
+    @unittest.skipIf(np is None,'numpy required')
+    def test_shallow_crossings_of_large_triangles_still_touch(self):
+        exporter.np=np
+        big=np.array([[[-10,-10,0],[10,-10,0],[0,10,0]]],float)
+        for angle in (5e-10,1e-7,1e-3):
+            # A second large triangle tilted by `angle` about the x axis passes through the first one's plane.
+            c,s_=math.cos(angle),math.sin(angle)
+            tilted=np.array([[[-9,-9,-1e-9],[9,-9,-1e-9],[0,9,0]]],float)
+            tilted[...,1],tilted[...,2]=tilted[...,1]*c-tilted[...,2]*s_,tilted[...,1]*s_+tilted[...,2]*c
+            tilted[...,2]+=1e-12
+            self.assertTrue(exporter.triangles_touch(big,tilted)[0],angle)
+        apart=big+np.array([0,0,1e-3]);self.assertFalse(exporter.triangles_touch(big,apart)[0])
+        side=np.array([[[30,0,-1],[31,0,1],[30,1,0]]],float);self.assertFalse(exporter.triangles_touch(big,side)[0])
 
     @unittest.skipUnless(HAS_BLENDER,'Run Blender 4.0 for source surface proof')
     def test_dense_fans_are_checked_in_bounded_batches(self):

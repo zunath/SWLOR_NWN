@@ -91,6 +91,7 @@ public class DMToolWindowTests
         new DMCreatorDefinition().BuildWindow().KeepsOpenOnAreaChange.Should().BeTrue();
         new DMPlayerSearchDefinition().BuildWindow().KeepsOpenOnAreaChange.Should().BeTrue();
         new DMAdminToolsDefinition().BuildWindow().KeepsOpenOnAreaChange.Should().BeTrue();
+        new CreatureManagerDefinition().BuildWindow().KeepsOpenOnAreaChange.Should().BeTrue();
     }
 
     [Test]

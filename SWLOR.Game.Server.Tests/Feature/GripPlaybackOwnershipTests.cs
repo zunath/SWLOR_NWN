@@ -62,6 +62,10 @@ public class GripPlaybackOwnershipTests
     [TestCase("deferred-start")]
     [TestCase("queued-attack")]
     [TestCase("unowned-alias")]
+    [TestCase("native-dodge")]
+    [TestCase("combat-toggle")]
+    [TestCase("combat-deactivate")]
+    [TestCase("deferred-combat")]
     public void StaleGripWorkCannotReleaseAnotherOwner(string scenario) =>
         _run.Invoke(null, [scenario]).Should().Be(true);
 
@@ -101,7 +105,9 @@ public class GripPlaybackOwnershipTests
             static List<Action> delays = new();
             static Queue<Action> assigned = new();
             static uint right = 10, left;
-            public static bool AttackActive, Defer;
+            public static bool AttackActive, Defer, InCombat;
+            public static int GestureCount;
+            public static bool GetIsInCombat(uint c) => InCombat;
             public static bool GetIsPC(uint c) => true;
             public static bool GetIsDM(uint c) => false;
             public static bool GetIsDead(uint c) => false;
@@ -125,7 +131,7 @@ public class GripPlaybackOwnershipTests
             public static void ReplaceObjectAnimation(uint c, string from, string to) => Maps[from] = to;
             public static void AssignCommand(uint c, Action action) { if (Defer) assigned.Enqueue(action); else action(); }
             public static void DelayCommand(float seconds, Action action) => delays.Add(action);
-            public static void PlayAnimation(Animation animation, float speed = 1, float duration = 0) {}
+            public static void PlayAnimation(Animation animation, float speed = 1, float duration = 0) { GestureCount++; }
             public static void SendMessageToPC(uint c, string text) {}
             public static ActionType GetCurrentAction(uint c) => ActionType.Invalid;
             public static void ClearAllActions(uint oObject) {}
@@ -133,7 +139,8 @@ public class GripPlaybackOwnershipTests
             public static bool Run(string scenario)
             {
                 locals.Clear(); Maps.Clear(); delays.Clear(); assigned.Clear();
-                right = 10; left = 0; AttackActive = false; Defer = scenario == "deferred-start";
+                right = 10; left = 0; AttackActive = false; InCombat = scenario == "combat-toggle"; GestureCount = 0;
+                Defer = scenario is "deferred-start" or "deferred-combat";
                 SetLocalBool(1, "DOUBLEHAND_ENABLED", true);
                 if (scenario == "unowned-alias")
                 {
@@ -142,7 +149,32 @@ public class GripPlaybackOwnershipTests
                     Check(Maps["dodges"] == "other_owner"); return true;
                 }
                 Grip.Refresh(1, true);
+                if (scenario == "combat-toggle")
+                {
+                    Check(GetLocalInt(1, "DOUBLEHAND_MODE") == 2 && Maps["2hstab"] == "1hstab");
+                    Check(!Maps.ContainsKey("dodges") && GestureCount == 0); return true;
+                }
+                if (scenario == "combat-deactivate")
+                {
+                    var before = GestureCount;
+                    InCombat = true; Grip.Toggle(1);
+                    Check(GetLocalInt(1, "DOUBLEHAND_MODE") == 0 && GestureCount == before && Maps["2hstab"] == "");
+                    return true;
+                }
+                if (scenario == "deferred-combat")
+                {
+                    InCombat = true; Defer = false;
+                    while (assigned.TryDequeue(out var callback)) callback();
+                    Check(!Maps.ContainsKey("dodges") && GestureCount == 0); return true;
+                }
                 var oldTimers = delays.ToArray();
+                if (scenario == "native-dodge")
+                {
+                    Grip.ReleaseActivationParryForNativeDodge(1);
+                    Check(Maps["dodges"] == "" && GetLocalInt(1, "DOUBLEHAND_MODE") == 2);
+                    foreach (var timer in oldTimers.Reverse()) timer();
+                    Check(Maps["plpause1"] == "sw_nohold" && Maps["dodges"] == ""); return true;
+                }
                 if (scenario == "deferred-start")
                 {
                     Defer = false;

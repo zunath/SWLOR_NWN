@@ -27,6 +27,15 @@ public static class Grip
         SetLocalBool(creature, ParryOwnedVariable, false);
     }
 
+    // Native sidesteps and evasive feats must bypass only the /grip activation parry.
+    // Unlike InvalidateTransition, this leaves the delayed carry restoration intact.
+    internal static void ReleaseActivationParryForNativeDodge(uint creature)
+    {
+        if (!GetLocalBool(creature, ParryOwnedVariable)) return;
+        ReplaceObjectAnimation(creature, "dodges", "");
+        SetLocalBool(creature, ParryOwnedVariable, false);
+    }
+
     // Reapplies only the carry alias, which a finished named animation clears even while a queued swing owns the combat aliases.
     internal static void RestoreCarryAlias(uint creature)
     {
@@ -88,7 +97,7 @@ public static class Grip
         });
         SetLocalInt(creature, ModeVariable, desired);
         if (queued) return;
-        if (ShouldPlayTransition(desired, applied, playTransition,
+        if (!GetIsInCombat(creature) && ShouldPlayTransition(desired, applied, playTransition,
                 GetIsObjectValid(right) && GetMode(true, GetBaseItemType(right), false) != 0))
         {
             var token = GetLocalInt(creature, TransitionTokenVariable);
@@ -97,7 +106,8 @@ public static class Grip
                 if (!GetIsObjectValid(creature) || GetLocalInt(creature, TransitionTokenVariable) != token ||
                     GetLocalInt(creature, ModeVariable) != desired ||
                     GetItemInSlot(InventorySlot.RightHand, creature) != right ||
-                    GetItemInSlot(InventorySlot.LeftHand, creature) != left) return;
+                    GetItemInSlot(InventorySlot.LeftHand, creature) != left ||
+                    GetIsInCombat(creature)) return;
                 // Clear the existing shoulder overlay by its original name before suppressing
                 // future carry layers. A full-body pause clip is not a carry-layer replacement.
                 ReplaceObjectAnimation(creature, "plpause1", "");

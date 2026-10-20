@@ -72,6 +72,7 @@ public class CustomShaderMobileCompatibilityTests
         const string guardedMacro = "#ifndef MOBILE\n#define UNPACK(v) ((v >> 3) & 3)\n#endif\nint Unpack(int v) { return 0; }\n";
         const string continuedMacro = "#define UNPACK(v) \\\n    ((v >> 3) & 3)\n";
         const string guardedContinuedMacro = "#ifndef MOBILE\n" + continuedMacro + "#endif\nint Unpack(int v) { return 0; }\n";
+        const string splitOperator = "int Shift(int packed)\n{\n    return packed >\\\n> 3;\n}\n";
         const string elifAfterMobile = "#ifdef MOBILE\nint A() { return 0; }\n#elif defined(DESKTOP_FAST)\n" + unguarded + "#else\n" + unguarded + "#endif\n";
 
         FindMobileUnsupportedLines(unguarded).Should().ContainSingle();
@@ -84,6 +85,7 @@ public class CustomShaderMobileCompatibilityTests
         FindMobileUnsupportedLines(guardedMacro).Should().BeEmpty();
         FindMobileUnsupportedLines(continuedMacro).Should().ContainSingle();
         FindMobileUnsupportedLines(guardedContinuedMacro).Should().BeEmpty();
+        FindMobileUnsupportedLines(splitOperator).Should().ContainSingle();
         FindMobileUnsupportedLines(elifAfterMobile).Should().BeEmpty();
     }
 
@@ -121,15 +123,15 @@ public class CustomShaderMobileCompatibilityTests
     /// </summary>
     private static MobileScan ScanForMobile(string shader)
     {
-        // Splice backslash-continued lines (keeping line numbering) so a continued
-        // #define is read as one directive.
+        // Splice backslash-continued lines the way the GLSL preprocessor does (the
+        // backslash and newline vanish, so "a >\" + "> 3" becomes ">>"), keeping line
+        // numbering, so a continued #define is read as one directive.
         var lines = StripComments(shader).Replace("\r\n", "\n").Split('\n');
         for (var index = lines.Length - 2; index >= 0; index--)
         {
-            if (lines[index].TrimEnd().EndsWith("\\"))
+            if (lines[index].EndsWith("\\"))
             {
-                var trimmed = lines[index].TrimEnd();
-                lines[index] = trimmed.Substring(0, trimmed.Length - 1) + " " + lines[index + 1];
+                lines[index] = lines[index].Substring(0, lines[index].Length - 1) + lines[index + 1];
                 lines[index + 1] = string.Empty;
             }
         }

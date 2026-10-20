@@ -230,11 +230,12 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             TemporaryStatModifier.Add(source, StatType.DefeatedEnemyAttackDurationSeconds, 30, 30f);
             for (var i = 0; i < 5; i++)
                 Combat.ApplyDefeatedEnemyEffects(source);
-            ctx.AssertEqual(121, GetCurrentHitPoints(source), "five kills share a 120-HP allowance after bonuses");
+            // The allowance is one rate-12 kill heal: 54 HP plus 3% of 1000.
+            ctx.AssertEqual(85, GetCurrentHitPoints(source), "five kills share an 84-HP allowance after bonuses");
             ctx.Assert(Stat.GetStatAdjustment(source, StatType.AttackPercentAdjustment) >= 15, "kill attack reward still applies");
             await ctx.DelaySecondsAsync(6.1f);
             Combat.ApplyDefeatedEnemyEffects(source);
-            ctx.AssertEqual(241, GetCurrentHitPoints(source), "expired receipts release their allowance");
+            ctx.AssertEqual(169, GetCurrentHitPoints(source), "expired receipts release their allowance");
         }
 
         [EngineTest("Force Drain uses its shared healing cap and does not apply Combat Readiness twice", Category = "CombatHealing", TimeoutSeconds = 20f)]
@@ -417,7 +418,8 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 "receiving healing still triggers the attack reward while shielded");
             Combat.ApplyDefeatedEnemyEffects(source);
             Combat.ApplyDefeatedEnemyEffects(source);
-            ctx.AssertEqual(930, ObjectPlugin.GetCurrentHitPoints(source), "kill recovery heals base HP and retains its 120-HP budget");
+            // Two rate-12 kills (84 HP each) share one 84-HP allowance.
+            ctx.AssertEqual(894, ObjectPlugin.GetCurrentHitPoints(source), "kill recovery heals base HP and retains its 84-HP budget");
             ctx.AssertEqual(500, TemporaryHitPointEffects.GetRemaining(source), "healing does not replace or consume temporary HP");
         }
 

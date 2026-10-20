@@ -13,6 +13,14 @@ public sealed record AnimationClip
     public string StartName => Name + "_in";
     public string EndName => Name + "_out";
 
+    public float PlaybackSpeed(float duration)
+    {
+        var speed = Duration / duration;
+        if (!float.IsFinite(speed) || speed <= 0f)
+            throw new ArgumentOutOfRangeException(nameof(duration), "Animation duration produces an invalid playback speed.");
+        return speed;
+    }
+
     public AnimationClip(string name, float duration)
     {
         if (string.IsNullOrEmpty(name) || name.Length > MaxNameLength ||

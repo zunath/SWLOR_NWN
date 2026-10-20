@@ -36,6 +36,8 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
             SkillType.Pistol,
             SkillType.Rifle,
             SkillType.Throwing,
+            SkillType.Unarmed,
+            SkillType.TwinPistol,
             SkillType.Force,
             SkillType.Devices,
             SkillType.FirstAid
@@ -52,7 +54,8 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
             var skillLevel = 0;
             foreach (var skill in _skillsUsedForAverages)
             {
-                var rank = dbPlayer.Skills[skill].Rank;
+                // Records saved before a skill existed have no entry for it.
+                var rank = dbPlayer.Skills.TryGetValue(skill, out var playerSkill) ? playerSkill.Rank : 0;
                 if (rank > skillLevel)
                     skillLevel = rank;
             }

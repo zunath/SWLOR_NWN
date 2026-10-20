@@ -274,6 +274,8 @@ namespace SWLOR.Game.Server.EngineTests.Framework
         {
             if (!GetIsObjectValid(item))
                 return;
+            // Companion shots use the captured simulated resolver and must not acquire a native hit callback.
+            if (GetBaseItemType(item) == BaseItem.CompanionPistol) return;
 
             for (var ip = GetFirstItemProperty(item); GetIsItemPropertyValid(ip); ip = GetNextItemProperty(item))
             {

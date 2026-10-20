@@ -10,6 +10,8 @@ namespace SWLOR.CombatSim.Report
         private readonly string _name;
         private readonly int _teamIndex;
         private readonly List<double> _firstStarvedTimes = new();
+        private readonly Dictionary<string, double> _weaponDiagnostics = new();
+        private readonly Dictionary<string, double> _abilityCasts = new();
         private int _runs;
         private double _deaths, _damageDealt, _healingDone, _healingReceived, _overhealing, _damageTakenToHp;
         private double _hitPointsSpent, _absorbed, _fpPerMinute, _stmPerMinute, _fpRefunded, _stmRefunded, _starvedSeconds;
@@ -23,7 +25,7 @@ namespace SWLOR.CombatSim.Report
         /// <param name="minutesInFight">
         /// Time from the combatant's join to the run's end, for its resource rates; at zero it never acted, so it spent nothing.
         /// </param>
-        public void Add(CombatantStats stats, double minutesInFight)
+        public void Add(CombatantStats stats, double minutesInFight, WeaponCombatState weapon = null)
         {
             _runs++;
             _deaths += stats.Deaths;
@@ -44,6 +46,13 @@ namespace SWLOR.CombatSim.Report
             _starvedSeconds += stats.StarvedSeconds;
             if (stats.FirstStarvedAt.HasValue)
                 _firstStarvedTimes.Add(stats.FirstStarvedAt.Value);
+            if (weapon != null)
+            {
+                foreach (var (key, value) in weapon.Diagnostics)
+                    _weaponDiagnostics[key] = _weaponDiagnostics.GetValueOrDefault(key) + value;
+                foreach (var (key, value) in weapon.Casts)
+                    _abilityCasts[key] = _abilityCasts.GetValueOrDefault(key) + value;
+            }
         }
 
         public CombatantSummary ToSummary() => new()
@@ -64,7 +73,9 @@ namespace SWLOR.CombatSim.Report
             AverageStmRefunded = _stmRefunded / _runs,
             AverageStarvedSeconds = _starvedSeconds / _runs,
             MedianFirstStarvedAt = Percentile.Of(_firstStarvedTimes, 50),
-            ShareOfRunsStarved = _firstStarvedTimes.Count / (double)_runs
+            ShareOfRunsStarved = _firstStarvedTimes.Count / (double)_runs,
+            AverageWeaponDiagnostics = _weaponDiagnostics.ToDictionary(x => x.Key, x => x.Value / _runs),
+            AverageAbilityCasts = _abilityCasts.ToDictionary(x => x.Key, x => x.Value / _runs)
         };
     }
 }

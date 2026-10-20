@@ -26,6 +26,25 @@ export DEBIAN_FRONTEND=noninteractive DOTNET_CLI_TELEMETRY_OPTOUT=1 DOTNET_NOLOG
 
 log() { echo "[session-start] $*" >&2; }
 
+# Session environment first, so a failed install step below cannot leave it unset.
+if [ -n "${CLAUDE_ENV_FILE:-}" ]; then
+  {
+    echo 'export DOTNET_CLI_TELEMETRY_OPTOUT=1'
+    echo 'export DOTNET_NOLOGO=1'
+    echo 'export WINEDEBUG=-all'
+    echo 'export PYTHONDONTWRITEBYTECODE=1'
+    # Avalonia's build telemetry host is blocked by the network policy.
+    echo 'export AVALONIA_TELEMETRY_OPTOUT=1'
+    echo "export PATH=\"\$PATH:$HOME/.dotnet/tools\""
+    # Dedicated-server game data from session-start-game-data.sh, for the toolset and the script
+    # compiler. NWN_HOME stands in for the user directory the compiler insists on.
+    echo 'export NWN_INSTALL_PATH=/opt/nwn'
+    echo 'export NWN_ROOT=/opt/nwn'
+    echo "export NWN_HOME=\"$HOME/.local/share/Neverwinter Nights\""
+    echo 'export DISPLAY=:99'
+  } >> "$CLAUDE_ENV_FILE"
+fi
+
 # --- System packages: Wine for the bundled Windows tools, Xvfb and Mesa for OpenGL tests ---
 packages=()
 [ -x /usr/lib/wine/wine64 ] || packages+=(wine64)
@@ -38,7 +57,9 @@ if [ "${#packages[@]}" -gt 0 ]; then
 fi
 
 # --- Virtual display: the toolset's native viewport test renders through OpenGL (Mesa llvmpipe) ---
-if [ ! -e /tmp/.X11-unix/X99 ]; then
+# Start it unless the process named in its lock file is alive; a killed Xvfb leaves both files.
+if ! { [ -e /tmp/.X99-lock ] && kill -0 "$(tr -d ' ' </tmp/.X99-lock)" 2>/dev/null; }; then
+  rm -f /tmp/.X99-lock /tmp/.X11-unix/X99
   setsid nohup Xvfb :99 -screen 0 1920x1080x24 -nolisten tcp >/tmp/xvfb.log 2>&1 </dev/null &
 fi
 cat > /usr/local/bin/wine-exe <<'EOF'
@@ -80,24 +101,6 @@ log "Restoring NuGet packages"
 dotnet restore "$REPO/SWLOR.Game.Server.sln" -v q >/dev/null
 
 mkdir -p "$HOME/.local/share/Neverwinter Nights"
-
-if [ -n "${CLAUDE_ENV_FILE:-}" ]; then
-  {
-    echo 'export DOTNET_CLI_TELEMETRY_OPTOUT=1'
-    echo 'export DOTNET_NOLOGO=1'
-    echo 'export WINEDEBUG=-all'
-    echo 'export PYTHONDONTWRITEBYTECODE=1'
-    # Avalonia's build telemetry host is blocked by the network policy.
-    echo 'export AVALONIA_TELEMETRY_OPTOUT=1'
-    echo "export PATH=\"\$PATH:$HOME/.dotnet/tools\""
-    # Dedicated-server game data from session-start-game-data.sh, for the toolset and the script
-    # compiler. NWN_HOME stands in for the user directory the compiler insists on.
-    echo 'export NWN_INSTALL_PATH=/opt/nwn'
-    echo 'export NWN_ROOT=/opt/nwn'
-    echo "export NWN_HOME=\"$HOME/.local/share/Neverwinter Nights\""
-    echo 'export DISPLAY=:99'
-  } >> "$CLAUDE_ENV_FILE"
-fi
 
 [ -e /tmp/swlor-haks-checkout.done ] ||
   log "SWLOR_Haks is checking out in the background; see /tmp/swlor-haks-checkout.log"

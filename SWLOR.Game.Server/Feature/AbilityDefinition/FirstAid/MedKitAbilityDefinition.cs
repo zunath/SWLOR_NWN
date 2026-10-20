@@ -134,30 +134,30 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
 
         private static void MedKit1ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
-            ApplyMedKit(activator, target, 8);
+            ApplyMedKit(activator, target, new HealAmount(11, 2f));
         }
 
         private static void MedKit2ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
-            ApplyMedKit(activator, target, 14);
+            ApplyMedKit(activator, target, new HealAmount(42, 3.5f));
         }
 
         private static void MedKit3ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
-            ApplyMedKit(activator, target, 20);
+            ApplyMedKit(activator, target, new HealAmount(80, 5f));
         }
 
         private static void MedKit4ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
-            ApplyMedKit(activator, target, 24);
+            ApplyMedKit(activator, target, new HealAmount(108, 6f));
         }
 
-        private static void ApplyMedKit(uint activator, uint target, int percent)
+        private static void ApplyMedKit(uint activator, uint target, HealAmount heal)
         {
             var treated = new List<uint>();
             foreach (var friendly in AbilityTargeting.GetFriendlyTargets(activator, target, false))
             {
-                HealPercent(activator, friendly, SkillType.FirstAid, percent);
+                Heal(activator, friendly, SkillType.FirstAid, heal);
                 FirstAidTreatmentAdjustments.ApplyTraumaMedicRiders(activator, friendly);
                 FirstAidTreatmentAdjustments.ApplyMedicalVisualEffect(friendly);
                 treated.Add(friendly);
@@ -167,7 +167,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
         }
 
 
-        private static void HealPercent(uint activator, uint target, SkillType skill, int percent)
+        private static void Heal(uint activator, uint target, SkillType skill, HealAmount heal)
         {
             var ability = skill switch
             {
@@ -176,8 +176,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
                 SkillType.BeastMastery => AbilityType.Might,
                 _ => AbilityType.Willpower
             };
-            var baseAmount = GameMath.PercentOf(GetMaxHitPoints(target), percent);
-            var amount = SWLOR.Game.Server.Feature.AbilityDefinition.AbilityEffectScaling.ScaleDirectEffect(baseAmount, GetAbilityScore(activator, ability));
+            var baseAmount = heal.ForMaxHitPoints(GetMaxHitPoints(target));
+            var amount = AbilityEffectScaling.ScaleRestorativeEffect(baseAmount, GetAbilityScore(activator, ability));
             amount = Stat.ApplyOutgoingAbilityHealingAdjustment(activator, amount);
             amount = Ability.ApplyCombatReadinessToActivatedAbilityMagnitude(activator, amount);
             amount = Stat.ApplyHealingReceivedAdjustment(target, amount, isInstantAbilityHeal: true);

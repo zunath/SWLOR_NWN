@@ -96,7 +96,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
             Location location,
             float radius,
             float durationSeconds,
-            float percentPerTick,
+            HealAmount healPerTick,
             Type statusEffect = null,
             VisualEffect visualEffect = VisualEffect.None,
             float multiplier = 1f,
@@ -115,7 +115,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                         var targetWasBelowHalfHP = GetMaxHitPoints(friendly) > 0 &&
                                                    GetCurrentHitPoints(friendly) < GetMaxHitPoints(friendly) * 0.5f;
                         var hpBeforeHealing = GetCurrentHitPoints(friendly);
-                        AbilityEffectScaling.ApplyScaledHeal(activator, friendly, percentPerTick, multiplier: multiplier);
+                        AbilityEffectScaling.ApplyScaledHeal(activator, friendly, healPerTick, multiplier: multiplier);
                         if (GetCurrentHitPoints(friendly) > hpBeforeHealing)
                             playReceipt(friendly);
                         onHealed?.Invoke(friendly, targetWasBelowHalfHP);

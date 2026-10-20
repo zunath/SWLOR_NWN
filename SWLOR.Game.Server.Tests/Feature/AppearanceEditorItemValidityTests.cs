@@ -43,12 +43,14 @@ public class AppearanceEditorItemValidityTests
             {
                 public const uint Item = 10, OBJECT_INVALID = 0x7F000000;
                 public static bool TargetDM, TargetPossessed, Cursed, Plot;
+                public static string ResRef = "";
                 public static BaseItem ItemType;
                 public static bool GetIsObjectValid(uint obj) => obj != OBJECT_INVALID;
                 public static bool GetIsDM(uint creature) => TargetDM;
                 public static bool GetIsDMPossessed(uint creature) => TargetPossessed;
                 public static bool GetItemCursedFlag(uint item) => Cursed;
                 public static bool GetPlotFlag(uint item) => Plot;
+                public static string GetResRef(uint item) => ResRef;
                 public static AppearanceType GetAppearanceType(uint creature) => AppearanceType.Human;
                 public static int GetItemAppearance(uint item, ItemAppearanceType type, int index) => type switch
                 {
@@ -83,10 +85,10 @@ public class AppearanceEditorItemValidityTests
                 };
                 private uint GetItem() => Item;
                 {{methods}}
-                public static bool Run(bool targetDM, bool targetPossessed, bool cursed, bool plot, BaseItem itemType)
+                public static bool Run(bool targetDM, bool targetPossessed, bool cursed, bool plot, BaseItem itemType, string resref)
                 {
                     TargetDM = targetDM; TargetPossessed = targetPossessed; Cursed = cursed; Plot = plot;
-                    ItemType = itemType;
+                    ItemType = itemType; ResRef = resref;
                     return new Harness().IsValidItem();
                 }
             }
@@ -122,16 +124,43 @@ public class AppearanceEditorItemValidityTests
         IsValid(targetDM: false, targetPossessed: false, cursed, plot).Should().Be(expected);
     }
 
-    [TestCase(BaseItem.Lightsaber)]
-    [TestCase(BaseItem.Saberstaff)]
-    public void TrainingSaberFlagsKeepPlayerRestrictionsAndDMExceptions(BaseItem itemType)
+    [TestCase(BaseItem.Lightsaber, "saber_train_1")]
+    [TestCase(BaseItem.Lightsaber, "vet_trnsaber")]
+    [TestCase(BaseItem.Saberstaff, "trn_saberstaff_1")]
+    [TestCase(BaseItem.Saberstaff, "vet_trnsabstaff")]
+    public void TrainingSaberFlagsKeepPlayerRestrictionsAndDMExceptions(BaseItem itemType, string resref)
     {
-        IsValid(false, false, false, true, itemType).Should().BeTrue();
-        IsValid(false, false, true, true, itemType).Should().BeFalse();
-        IsValid(true, false, true, true, itemType).Should().BeTrue();
-        IsValid(false, true, true, true, itemType).Should().BeTrue();
+        IsValid(false, false, false, true, itemType, resref).Should().BeTrue();
+        IsValid(false, false, true, true, itemType, resref).Should().BeFalse();
+        IsValid(true, false, true, true, itemType, resref).Should().BeTrue();
+        IsValid(false, true, true, true, itemType, resref).Should().BeTrue();
     }
 
-    private bool IsValid(bool targetDM, bool targetPossessed, bool cursed, bool plot, BaseItem itemType = BaseItem.Helmet) =>
-        (bool)_isValid.Invoke(null, [targetDM, targetPossessed, cursed, plot, itemType])!;
+    // These plot blueprints carry the default training look but are not training weapons.
+    [TestCase(BaseItem.Lightsaber, "darkhung_l1")]
+    [TestCase(BaseItem.Lightsaber, "eclipse_l2")]
+    [TestCase(BaseItem.Lightsaber, "sabstorm_l1")]
+    [TestCase(BaseItem.Saberstaff, "guardmst_w1")]
+    [TestCase(BaseItem.Saberstaff, "lightstand_w1")]
+    [TestCase(BaseItem.Lightsaber, "")]
+    // A training blueprint of the other saber type does not qualify either.
+    [TestCase(BaseItem.Lightsaber, "trn_saberstaff_1")]
+    [TestCase(BaseItem.Saberstaff, "saber_train_1")]
+    public void PlotSabersWithTrainingLookButNoTrainingResrefAreRefusedForPlayers(BaseItem itemType, string resref)
+    {
+        IsValid(false, false, false, true, itemType, resref).Should().BeFalse();
+        // DM targets keep their exception.
+        IsValid(true, false, false, true, itemType, resref).Should().BeTrue();
+        IsValid(false, true, false, true, itemType, resref).Should().BeTrue();
+    }
+
+    [TestCase(BaseItem.Lightsaber, "darkhung_l1")]
+    [TestCase(BaseItem.Saberstaff, "darkhung_w1")]
+    public void NonPlotSabersAreNotAffectedByTheTrainingGuard(BaseItem itemType, string resref)
+    {
+        IsValid(false, false, false, false, itemType, resref).Should().BeTrue();
+    }
+
+    private bool IsValid(bool targetDM, bool targetPossessed, bool cursed, bool plot, BaseItem itemType = BaseItem.Helmet, string resref = "") =>
+        (bool)_isValid.Invoke(null, [targetDM, targetPossessed, cursed, plot, itemType, resref])!;
 }

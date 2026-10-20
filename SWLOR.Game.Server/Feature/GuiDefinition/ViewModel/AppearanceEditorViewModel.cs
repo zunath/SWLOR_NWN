@@ -811,7 +811,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             // NPC gear is often undroppable, so a DM may restyle their avatar's or a possessed creature's anyway.
             var isDMTarget = GetIsDM(_target) || GetIsDMPossessed(_target);
-            if (!isDMTarget && !AllowsItemFlags(GetBaseItemType(item), GetPlotFlag(item), GetItemCursedFlag(item)))
+            if (!isDMTarget && !AllowsItemFlags(GetBaseItemType(item), GetPlotFlag(item), GetItemCursedFlag(item), GetResRef(item)))
                 return false;
 
             // Armors must have parts that are publicly available.
@@ -898,9 +898,11 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             return true;
         }
 
-        private static bool AllowsItemFlags(BaseItem itemType, bool isPlot, bool isCursed)
+        // Plot items are refused except the training sabers and saberstaffs, identified by blueprint resref.
+        // Other plot sabers share the default training look, so the look alone must not qualify an item.
+        private static bool AllowsItemFlags(BaseItem itemType, bool isPlot, bool isCursed, string resref)
         {
-            return !isCursed && (!isPlot || itemType == BaseItem.Lightsaber || itemType == BaseItem.Saberstaff);
+            return !isCursed && (!isPlot || TrainingSaberCatalog.IsTrainingSaber(itemType, resref));
         }
 
         private static bool AllowsWeaponParts(IWeaponAppearanceDefinition appearance, int top, int middle, int bottom)

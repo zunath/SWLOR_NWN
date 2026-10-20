@@ -1,4 +1,5 @@
-﻿using System;
+using SWLOR.NWN.Formats.Common;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -277,6 +278,7 @@ namespace SWLOR.CLI
                     process.StartInfo.ArgumentList.Add(argument);
                 }
 
+                NativeToolPath.ConfigureLibraryPath(process.StartInfo);
                 process.Start();
 
                 var standardOutputTask = process.StandardOutput.ReadToEndAsync();
@@ -294,19 +296,9 @@ namespace SWLOR.CLI
             }
         }
 
-        private static string ResolveToolPath(string fileName)
-        {
-            var executableDirectoryPath = Path.Combine(AppContext.BaseDirectory, fileName);
-            if (File.Exists(executableDirectoryPath))
-            {
-                return executableDirectoryPath;
-            }
-
-            var workingDirectoryPath = Path.Combine(Environment.CurrentDirectory, fileName);
-            return File.Exists(workingDirectoryPath)
-                ? workingDirectoryPath
-                : fileName;
-        }
+        private static string ResolveToolPath(string fileName) =>
+            NativeToolPath.Find(fileName, AppContext.BaseDirectory, Environment.CurrentDirectory)
+            ?? NativeToolPath.ExecutableName(fileName);
 
         private static string QuoteArgument(string argument)
         {

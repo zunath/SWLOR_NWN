@@ -71,6 +71,8 @@ namespace SWLOR.Game.Server.EngineTests.Framework
                     Name = "Engine test player", RebuildComplete = true,
                     CharacterType = Enumeration.CharacterType.ForceSensitive,
                     MaxHP = 1000, HP = 1000, MaxFP = 10000, FP = 9999,
+                    // HP gear rebuilds the record from its sources, so the HP above the base comes from one.
+                    TemporaryFoodHP = 1000 - Stat.BaseHP,
                     MaxStamina = 10000, Stamina = 9999,
                     Attack = 150, Accuracy = 150, ForceAttack = 150, Evasion = 100,
                     TotalSPAcquired = Skill.TotalSkillPointCap - Skill.StartingSkillPoints,

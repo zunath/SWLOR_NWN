@@ -1,3 +1,5 @@
+using SWLOR.Toolset.Distribution;
+using SWLOR.Toolset.Domain.Distribution;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
@@ -95,6 +97,14 @@ namespace SWLOR.Toolset
 
             try
             {
+                if (string.IsNullOrWhiteSpace(settings.ModuleRoot) || !Directory.Exists(settings.ModuleRoot))
+                {
+                    if (!await WorkspaceSetupWindow.ShowAsync(window, settings))
+                    {
+                        window.Close();
+                        return;
+                    }
+                }
                 result = await Task.Run(() =>
                 {
                     ValidateStartupHakSetup(settings);
@@ -130,6 +140,7 @@ namespace SWLOR.Toolset
             catch (Exception ex)
             {
                 stopwatch.Stop();
+                window.ResetAfterStartupFailure();
                 if (result != null)
                 {
                     if (ReferenceEquals(_serviceProvider, result))
@@ -138,7 +149,12 @@ namespace SWLOR.Toolset
                 }
 
                 window.ShowStartupError(
-                    $"Toolset startup failed after {stopwatch.ElapsedMilliseconds}ms: {ex.GetBaseException().Message}");
+                    $"Toolset startup failed after {stopwatch.ElapsedMilliseconds}ms: {ex.GetBaseException().Message}",
+                    async () =>
+                    {
+                        if (await WorkspaceSetupWindow.ShowAsync(window, settings))
+                            await BootstrapAsync(window, settings);
+                    });
             }
         }
 
@@ -404,28 +420,39 @@ namespace SWLOR.Toolset
             IServiceCollection services, string? repoRoot, ToolsetSettings settings)
         {
             var gameServerSourceRoot = repoRoot == null ? null : Path.Combine(repoRoot, "SWLOR.Game.Server");
-            services.AddSingleton<IGameCodeIndex>(_ => new GameCodeIndex(gameServerSourceRoot));
-
-            if (repoRoot == null)
+            var workspaceRoot = WorkspaceManifest.FindRoot(settings.ModuleRoot);
+            if (workspaceRoot != null)
+            {
+                services.AddSingleton<IGameCodeIndex>(_ => GameCodeCatalog.LoadWorkspace(workspaceRoot));
+            }
+            else
+                services.AddSingleton<IGameCodeIndex>(_ => new GameCodeIndex(gameServerSourceRoot));
+            var assets = ToolsetAssetPaths.AssetRoot(settings.ModuleRoot);
+            if (repoRoot == null && assets == null)
+            {
+                RegisterStandaloneGameData(services, settings);
                 return;
-
-            var sw2DaDirectory = Path.Combine(repoRoot, "SWLOR_Haks", "sw_2da");
-            var swTlkJsonPath = Path.Combine(repoRoot, "SWLOR_Haks", "sw_tlk", "sw_tlk.tlk.json");
-            var swTlkBinaryPath = Path.Combine(repoRoot, "SWLOR_Haks", "sw_tlk", "sw_tlk.tlk");
-            var hakBuilderConfigPath = Path.Combine(repoRoot, "Build", "hakbuilder.json");
-            var swlorHaksRoot = Path.Combine(repoRoot, "SWLOR_Haks");
-
-            var moduleHakLayers = ResolveStartupHakLayers(settings.ModuleRoot, NwnIniProfile.Load());
-
-            var hasTwoDa = Directory.Exists(sw2DaDirectory);
+            }
+            var sw2DaDirectory = repoRoot == null ? null : Path.Combine(repoRoot, "SWLOR_Haks", "sw_2da");
+            var swTlkJsonPath = assets == null
+                ? Path.Combine(repoRoot!, "SWLOR_Haks", "sw_tlk", "sw_tlk.tlk.json")
+                : Path.Combine(assets, "tlk", "sw_tlk.tlk.json");
+            var swTlkBinaryPath = Path.ChangeExtension(swTlkJsonPath, null);
+            var hakBuilderConfigPath = repoRoot == null ? null : Path.Combine(repoRoot, "Build", "hakbuilder.json");
+            var swlorHaksRoot = repoRoot == null ? null : Path.Combine(repoRoot, "SWLOR_Haks");
+            var moduleHakLayers = ResolveStartupHakLayers(settings.ModuleRoot, ToolsetAssetPaths.Profile(settings.ModuleRoot));
+            if (assets != null && moduleHakLayers == null)
+                throw new InvalidDataException("The workspace's HAK archives are incomplete. Download its matching asset pack.");
+            var hasTwoDa = assets != null || Directory.Exists(sw2DaDirectory);
             var hasTlk = File.Exists(swTlkJsonPath);
 
             // Registered even when one path is missing so the Tools menu can explain why the
             // repository-only editor is disabled instead of silently disappearing.
-            services.AddSingleton(new Editors.Tlk.TlkEditorSource(
+            if (repoRoot != null && workspaceRoot == null)
+                services.AddSingleton(new Editors.Tlk.TlkEditorSource(
                 swTlkJsonPath,
                 swTlkBinaryPath,
-                sw2DaDirectory,
+                sw2DaDirectory!,
                 repoRoot));
 
             // Located once and reused: both the resource index and the base TLK below need it.
@@ -456,7 +483,7 @@ namespace SWLOR.Toolset
 
             ReportNwnInstall(services, nwnInstallPath, settings.NwnInstallOverride);
 
-            if (File.Exists(hakBuilderConfigPath) && Directory.Exists(swlorHaksRoot))
+            if (assets != null || (File.Exists(hakBuilderConfigPath) && Directory.Exists(swlorHaksRoot)))
             {
                 // KEY parsing and HAK indexing both belong to ResourceIndex's background initialization
                 // task. Prefer the module's packed, authoritative HAK stack: indexing its archive tables
@@ -465,12 +492,12 @@ namespace SWLOR.Toolset
                 Func<KeyBifCatalog?>? loadBaseLayer = nwnInstallPath == null
                     ? null
                     : () => KeyBifCatalog.Load(Path.Combine(nwnInstallPath, "data"));
-                services.AddSingleton(moduleHakLayers == null
-                    ? ResourceIndex.FromHakBuilderConfigDeferred(
-                        hakBuilderConfigPath,
-                        swlorHaksRoot,
-                        loadBaseLayer)
-                    : ResourceIndex.CreateDeferred(moduleHakLayers, loadBaseLayer));
+                services.AddSingleton(assets != null || moduleHakLayers != null
+                    ? ResourceIndex.CreateDeferred(moduleHakLayers!, loadBaseLayer)
+                    : ResourceIndex.FromHakBuilderConfigDeferred(
+                        hakBuilderConfigPath!,
+                        swlorHaksRoot!,
+                        loadBaseLayer));
                 services.AddSingleton(sp => new TwoDaService(sp.GetRequiredService<ResourceIndex>()));
 
                 // The area 3D view needs both, and both need the ResourceIndex above -
@@ -485,11 +512,16 @@ namespace SWLOR.Toolset
                     sp.GetRequiredService<ResourceIndex>(),
                     () => BuildSurfaceWalkability(sp.GetService<TwoDaService>())));
             }
-            else if (hasTwoDa)
+            else if (hasTwoDa && sw2DaDirectory != null)
             {
                 services.AddSingleton(new TwoDaService(sw2DaDirectory));
             }
 
+            RegisterGameDataLookups(services, hasTwoDa, hasTlk);
+        }
+
+        private static void RegisterGameDataLookups(IServiceCollection services, bool hasTwoDa, bool hasTlk)
+        {
             // AppearanceService/PortraitService are only registered when their 2DA/TLK
             // dependencies actually resolved above - PropertiesViewModel takes both as optional
             // constructor parameters, so a missing registration degrades to null (raw
@@ -521,6 +553,35 @@ namespace SWLOR.Toolset
                 services.AddSingleton(sp =>
                     new BaseItemIconService(sp.GetRequiredService<TwoDaService>()));
             }
+        }
+
+        private static void RegisterStandaloneGameData(IServiceCollection services, ToolsetSettings settings)
+        {
+            string? install = null;
+            try { install = NwnInstallLocator.Locate(settings.NwnInstallOverride); }
+            catch (Exception) { /* An optional game installation must not prevent editing. */ }
+            ReportNwnInstall(services, install, settings.NwnInstallOverride);
+            var layers = ResolveStartupHakLayers(settings.ModuleRoot, NwnIniProfile.Load())
+                ?? Array.Empty<ResourceIndex.HakLayer>();
+            services.AddSingleton(ResourceIndex.CreateDeferred(layers, install == null
+                ? null : () => KeyBifCatalog.Load(Path.Combine(install, "data"))));
+            services.AddSingleton(sp => new TwoDaService(sp.GetRequiredService<ResourceIndex>()));
+            services.AddSingleton(sp =>
+            {
+                SWLOR.NWN.Formats.Tlk.TlkFile? baseTlk = null;
+                var path = FindBaseTlk(install);
+                if (path != null)
+                {
+                    try { baseTlk = SWLOR.NWN.Formats.Tlk.TlkReader.Read(path); }
+                    catch (Exception exception) { sp.GetRequiredService<OutputLogService>().AppendLine("Base TLK unavailable: " + exception.Message); }
+                }
+                return new TlkService(TlkJsonFile.Parse("{\"language\":0,\"entries\":[]}"), baseTlk);
+            });
+            services.AddSingleton(sp => new Domain.GameData.Lookups.TilesetCatalog(sp.GetRequiredService<ResourceIndex>()));
+            services.AddSingleton(sp => new Domain.Render.TileModelCache(sp.GetRequiredService<ResourceIndex>()));
+            services.AddSingleton(sp => new Domain.Render.TileWalkmeshCache(sp.GetRequiredService<ResourceIndex>(),
+                () => BuildSurfaceWalkability(sp.GetService<TwoDaService>())));
+            RegisterGameDataLookups(services, hasTwoDa: true, hasTlk: true);
         }
 
         /// <summary>
@@ -616,6 +677,11 @@ namespace SWLOR.Toolset
 
         private static void ValidateStartupHakSetup(ToolsetSettings settings)
         {
+            if (WorkspaceManifest.FindRoot(settings.ModuleRoot) != null)
+            {
+                _ = ToolsetAssetPaths.AssetRoot(settings.ModuleRoot, verifyFiles: true);
+                return;
+            }
             var repoRoot = ResolveRepoRoot(settings);
             if (repoRoot != null)
                 HakSetupValidation.Validate(repoRoot,

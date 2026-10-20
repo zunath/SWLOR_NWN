@@ -66,6 +66,23 @@ public sealed class ModulePaletteRefresherTests
     }
 
     [Test]
+    public void Refresh_KeepsRetiredTierOneSaberKitsOutOfTheDmPalette()
+    {
+        // The tier 1 saber upgrade kits were retired with the combat upgrade. Their blueprints
+        // stay only so the saved-character migration can convert legacy copies, so their
+        // PaletteID must match no category or packing would put them back in the DM palette.
+        var moduleRoot = Path.Combine(FindRepositoryRoot().FullName, "Module");
+
+        var refresh = ModulePaletteRefresher.Refresh(moduleRoot, _outputRoot);
+        var itemPalette = refresh.Replacements[Path.GetFullPath(Path.Combine(moduleRoot, "itp", "itempalcus.itp.json"))];
+        var refreshed = File.ReadAllText(itemPalette, Encoding.Latin1);
+
+        refreshed.Should().NotContain("\"saber_upg1\"");
+        refreshed.Should().NotContain("\"saberstaff_upg1\"");
+        refreshed.Should().Contain("\"saber_upg2\"", "the current kit line stays in the palette");
+    }
+
+    [Test]
     public void Refresh_PreservesCategoryTreeAndSourceWhileReconcilingItemDescriptors()
     {
         var palettePath = WritePalette(

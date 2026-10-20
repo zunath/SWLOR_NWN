@@ -1,29 +1,31 @@
 using SWLOR.CombatSim.Rules;
+using SWLOR.Game.Server.Feature.AbilityDefinition;
 
 namespace SWLOR.CombatSim.Engine
 {
     /// <summary>
-    /// How a heal or shield's size is read from max HP and the healer's Willpower. <see cref="Game"/> is the game today:
-    /// every heal is a percent of the target's max HP, and Willpower adds up to 25%.
+    /// How heal and shield sizes are read: the game's flat amounts plus a small percent of max HP, or the percent-only
+    /// sizes from before the tuning; and the Willpower multipliers at 10 and 26.
     /// </summary>
-    /// <param name="PercentOfMaxHpShare">
-    /// Share of each heal sized from the target's own max HP; the rest is sized from <paramref name="ReferenceMaxHp"/>,
-    /// so it is the same flat amount for every target.
-    /// </param>
-    /// <param name="ReferenceMaxHp">Max HP the flat part is sized for: a target with this much HP heals the same under any share.</param>
+    /// <param name="FlatHeals">True for each effect's <see cref="Effects.AbilityEffect.Heal"/>; false for its percent.</param>
     /// <param name="StatMultiplierAtBaseline">Multiplier at Willpower 10 and below.</param>
     /// <param name="StatMultiplierAtCap">Multiplier at Willpower 26 and above, in a straight line from the baseline one.</param>
     public readonly record struct HealFormula(
-        float PercentOfMaxHpShare,
-        int ReferenceMaxHp,
+        bool FlatHeals,
         float StatMultiplierAtBaseline,
         float StatMultiplierAtCap)
     {
-        public static HealFormula Game { get; } = new(1f, 0, 1f, 1.25f);
+        /// <summary>Before the tuning: every heal a percent of max HP, and Willpower adding up to 25%.</summary>
+        public static HealFormula PercentHeals { get; } = new(false, 1f, 1.25f);
+
+        /// <summary>The game as built, read from AbilityEffectScaling.</summary>
+        public static HealFormula Game { get; } = new(
+            true,
+            AbilityEffectScaling.RestorativeMultiplierAtBaseline,
+            AbilityEffectScaling.RestorativeMultiplierAtCap);
 
         public static HealFormula From(RuleSet rules) => new(
-            rules.HealPercentOfMaxHpShare,
-            rules.HealReferenceMaxHp,
+            rules.FlatHeals,
             rules.HealStatMultiplierAtBaseline,
             rules.HealStatMultiplierAtCap);
     }

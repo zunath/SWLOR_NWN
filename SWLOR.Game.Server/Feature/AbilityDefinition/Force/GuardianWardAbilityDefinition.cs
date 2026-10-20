@@ -133,7 +133,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
         {
             foreach (var friendly in SWLOR.Game.Server.Feature.AbilityDefinition.AbilityTargeting.GetFriendlyTargets(activator, target, false))
             {
-                AbilityEffectScaling.ApplyTemporaryHPPercent(activator, friendly, TemporaryHitPointEffectKey.GuardianWard, 6, 30f);
+                AbilityEffectScaling.ApplyTemporaryHP(activator, friendly, TemporaryHitPointEffectKey.GuardianWard, new HealAmount(6, 1.5f), 30f);
                 Ability.PlaySuccessfulImpactVisualEffect(activator, friendly);
                 LightGuardianPowerSupport.ApplyTemporaryHPPowerRiders(activator, friendly, 30f);
             }
@@ -143,7 +143,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
         {
             foreach (var friendly in SWLOR.Game.Server.Feature.AbilityDefinition.AbilityTargeting.GetFriendlyTargets(activator, target, false))
             {
-                AbilityEffectScaling.ApplyTemporaryHPPercent(activator, friendly, TemporaryHitPointEffectKey.GuardianWard, 9, 30f);
+                AbilityEffectScaling.ApplyTemporaryHP(activator, friendly, TemporaryHitPointEffectKey.GuardianWard, new HealAmount(22, 2.25f), 30f);
                 Ability.PlaySuccessfulImpactVisualEffect(activator, friendly);
                 LightGuardianPowerSupport.ApplyTemporaryHPPowerRiders(activator, friendly, 30f);
             }
@@ -153,7 +153,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
         {
             foreach (var friendly in SWLOR.Game.Server.Feature.AbilityDefinition.AbilityTargeting.GetFriendlyTargets(activator, target, false))
             {
-                AbilityEffectScaling.ApplyTemporaryHPPercent(activator, friendly, TemporaryHitPointEffectKey.GuardianWard, 12, 30f);
+                AbilityEffectScaling.ApplyTemporaryHP(activator, friendly, TemporaryHitPointEffectKey.GuardianWard, new HealAmount(44, 3f), 30f);
                 Ability.PlaySuccessfulImpactVisualEffect(activator, friendly);
                 LightGuardianPowerSupport.ApplyTemporaryHPPowerRiders(activator, friendly, 30f);
             }
@@ -163,7 +163,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
         {
             foreach (var friendly in SWLOR.Game.Server.Feature.AbilityDefinition.AbilityTargeting.GetFriendlyTargets(activator, target, false))
             {
-                AbilityEffectScaling.ApplyTemporaryHPPercent(activator, friendly, TemporaryHitPointEffectKey.GuardianWard, 15, 30f);
+                AbilityEffectScaling.ApplyTemporaryHP(activator, friendly, TemporaryHitPointEffectKey.GuardianWard, new HealAmount(68, 3.75f), 30f);
                 Ability.PlaySuccessfulImpactVisualEffect(activator, friendly);
                 LightGuardianPowerSupport.ApplyTemporaryHPPowerRiders(activator, friendly, 30f);
             }

@@ -49,7 +49,8 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             ctx.Assert(activated, "Med Kit IV activates with exactly enough stamina and one supply");
             ctx.AssertEqual(before, GetCurrentHitPoints(target), "healing waits for the cast to complete");
             await ctx.WaitUntilAsync(() => GetCurrentHitPoints(target) > before, 5f, "the player's direct heal");
-            var expected = AbilityEffectScaling.ScaleDirectEffect(240, 26);
+            // Med Kit IV on the 1,000 HP target: 108 HP plus 6% = 168, then x1.25 at 26 Willpower.
+            var expected = AbilityEffectScaling.ScaleRestorativeEffect(168, 26);
             expected = Stat.ApplyOutgoingAbilityHealingAdjustment(player, expected);
             expected = Stat.ApplyHealingReceivedAdjustment(target, expected, false);
             var observed = GetCurrentHitPoints(target) - before;

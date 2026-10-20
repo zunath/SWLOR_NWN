@@ -39,6 +39,12 @@ namespace SWLOR.CombatSim.Tests.Rules
         [TestCase("{ \"pvpHealingRamp\": [ { \"atSeconds\": 120, \"percent\": 150 } ] }", "PvpHealingRamp[0].Percent")]
         [TestCase("{ \"pvpDamageBackstop\": [ { \"atSeconds\": -1, \"percent\": 20 } ] }", "PvpDamageBackstop[0].AtSeconds")]
         [TestCase("{ \"revives\": 7 }", "Revives")]
+        [TestCase("{ \"healPercentOfMaxHpShare\": 1.5 }", "HealPercentOfMaxHpShare")]
+        [TestCase("{ \"healPercentOfMaxHpShare\": -0.1, \"healReferenceMaxHp\": 900 }", "HealPercentOfMaxHpShare")]
+        [TestCase("{ \"healPercentOfMaxHpShare\": 0.25 }", "HealReferenceMaxHp")]
+        [TestCase("{ \"healReferenceMaxHp\": -1 }", "HealReferenceMaxHp")]
+        [TestCase("{ \"healStatMultiplierAtBaseline\": -0.5 }", "HealStatMultiplierAtBaseline")]
+        [TestCase("{ \"healStatMultiplierAtCap\": 2.5 }", "HealStatMultiplierAtCap")]
         public void Load_RejectsValuesOutsideTheirRange_NamingFileAndValue(string json, string valueName)
         {
             var path = WriteRules("out-of-range.json", json);
@@ -158,6 +164,31 @@ namespace SWLOR.CombatSim.Tests.Rules
             rules.PvpHealingMultiplier.Should().Be(1f);
             rules.PvpHealingRamp.Should().BeEmpty();
             rules.PvpDamageBackstop.Should().BeEmpty();
+        }
+
+        [TestCase(RuleSets.PreTuningName)]
+        [TestCase(RuleSets.CurrentName)]
+        public void Presets_SizeHealsAsTheGameDoes(string name)
+        {
+            var rules = RuleSets.Get(name);
+
+            rules.HealPercentOfMaxHpShare.Should().Be(1f, "every heal is a percent of the target's max HP");
+            rules.HealStatMultiplierAtBaseline.Should().Be(1f);
+            rules.HealStatMultiplierAtCap.Should().Be(1.25f, "Willpower adds up to 25%");
+        }
+
+        [Test]
+        public void Load_ReadsTheHealFormula()
+        {
+            var path = WriteRules("flat.json",
+                "{ \"healPercentOfMaxHpShare\": 0.25, \"healReferenceMaxHp\": 900, \"healStatMultiplierAtBaseline\": 0.625 }");
+
+            var rules = RuleSets.Load(path);
+
+            rules.HealPercentOfMaxHpShare.Should().Be(0.25f);
+            rules.HealReferenceMaxHp.Should().Be(900);
+            rules.HealStatMultiplierAtBaseline.Should().Be(0.625f);
+            rules.HealStatMultiplierAtCap.Should().Be(1.25f);
         }
 
         [Test]

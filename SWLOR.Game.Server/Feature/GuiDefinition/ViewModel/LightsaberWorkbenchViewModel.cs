@@ -26,7 +26,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         private int _bottomIndex;
 
         // The light color follows the selected blade until the player picks one explicitly.
-        // _autoLightColor is the last value the server assigned, so a client echo of it is not a choice.
+        // _autoLightColor is the last value the server assigned. The view model reads the current
+        // bind value on every client update (never the value from when the event fired), so even a
+        // delayed echo of an earlier server write reads back as _autoLightColor and is not a choice.
         private bool _lightColorChosen;
         private int _autoLightColor;
 

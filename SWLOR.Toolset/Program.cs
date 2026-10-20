@@ -1,4 +1,5 @@
 using Avalonia;
+using Velopack;
 using Serilog;
 
 namespace SWLOR.Toolset
@@ -19,6 +20,12 @@ namespace SWLOR.Toolset
         [STAThread]
         public static void Main(string[] args)
         {
+            VelopackApp.Build().Run();
+            if (Distribution.ToolsetCommands.TryRun(args, out var commandExitCode))
+            {
+                Environment.ExitCode = commandExitCode;
+                return;
+            }
             var logPath = Path.Combine(
                 Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
                 "SWLOR Toolset",

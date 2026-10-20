@@ -17,14 +17,25 @@ reuses the existing pack pipeline unchanged.
 
 ---
 
-## Requirements
+## Installed toolset
+
+Install steps are in the [root README](../README.md#install-the-toolset). Packages include the .NET runtime and command-line tools.
+
+- **Workspace:** on first run, choose **Create SWLOR workspace** or **Open existing workspace**. A workspace holds editable module resources, conversation graphs, the category catalog, and matching editor metadata. `swlor-workspace.json` records the original revision and file checksums.
+- **Assets:** HAKs and TLK download once per revision, separately from workspaces, and every workspace shares them. They live in `%LOCALAPPDATA%/SWLOR.Toolset/Assets/<revision>` on Windows and `~/.local/share/SWLOR.Toolset/Assets/<revision>` on Linux (`XDG_DATA_HOME` applies). NWN:EE supplies optional base-game assets.
+- **Switching workspaces:** use **File → Workspaces**, then reopen the application.
+- **Contributions:** **File → Export Contribution** writes a ZIP of added, changed, and deleted resources with original formatting. It never includes server code, credentials, or deployment configuration.
+- **Updates:** **Help → Check for Updates** covers the Windows installer and Linux AppImage. Prerelease installs also see newer prereleases; stable installs see stable releases only. Workspaces and asset packs are never touched. Newer content arrives as a new workspace and never replaces local edits. Portable archives update by downloading a newer archive.
+
+## Source build requirements
 
 | | |
 |---|---|
-| .NET SDK | **10.0** (both toolset projects target `net10.0`, x64) |
+| .NET SDK | Stable **10.0.100 or newer**; `global.json` rejects previews. Both toolset projects target `net10.0`, x64 |
 | Submodules | `SWLOR_Haks` must be initialised |
 | NWN:EE install | **Optional.** Needed only for base-game tilesets/models; SWLOR hak content works without one |
-| OS | Windows (the app is `WinExe`; the viewport uses OpenGL) |
+| OS | Windows x64 or Linux x64; Ubuntu 24.04 tested, X11 or Wayland with XWayland, OpenGL |
+| Linux libraries | `libpcre3`, `libsqlite3-0`, and the desktop libraries in the [root README](../README.md#set-up-the-source-checkout) |
 
 ```bash
 git submodule update --init --recursive
@@ -32,10 +43,12 @@ git submodule update --init --recursive
 
 ## Build and run
 
-Always run `dotnet` from the **repository root**:
+Run `Setup.cmd` then `StartToolset.cmd` on Windows, or `./Setup.sh` then `./StartToolset.sh` on Linux. [Root README](../README.md#set-up-the-source-checkout) explains each step.
+
+To build by hand, run `dotnet` from the **repository root** after setup has prepared the native tools:
 
 ```bash
-dotnet build SWLOR.Game.Server.sln -p:RunPostBuildEvent=Never
+dotnet build SWLOR.Toolset/SWLOR.Toolset.csproj -p:RunPostBuildEvent=Never
 ```
 
 ```bash
@@ -112,12 +125,16 @@ headless Avalonia view checks. These test references do not change the productio
 
 ## How it finds data
 
-1. **Module root** — from `%LOCALAPPDATA%\SWLOR.Toolset\settings.json`, or auto-detected from the
+1. **Module root** — from `%LOCALAPPDATA%/SWLOR.Toolset/settings.json` on Windows or `~/.local/share/SWLOR.Toolset/settings.json` on Linux, or auto-detected from the
    repo layout. A valid root contains `are/` and `utc/` subfolders. If neither works the status bar
    says so; set `moduleRoot` in that settings file and restart.
 2. **Haks** — `SWLOR_Haks/`, layered per `Build/hakbuilder.json` (the first matching layer wins).
 3. **Base game** — an NWN:EE install, auto-located or overridden in settings. Missing is fine; a
-   broken install degrades to hak-only rather than failing startup.
+   broken install degrades to hak-only rather than failing startup. Linux checks Steam (including
+   Flatpak and extra libraries), GOG, and Beamdog; use **Locate Neverwinter Nights** for other paths.
+   Linux reads `~/.local/share/Neverwinter Nights/nwn.ini`; `NWN_USER_DIRECTORY` overrides the profile folder.
+
+Sound preview is unavailable on Linux: it uses the Windows audio backend.
 
 Every game-data service is optional at the DI level. When 2DAs, the TLK, or the resource index do not
 resolve, the affected features degrade (dropdowns fall back to numeric boxes, the 3D view reports
@@ -205,3 +222,69 @@ First-party toolset and format-library source is licensed under the repository's
 Third-party package and replacement provenance details are recorded in
 [LICENSE-NOTICE.md](LICENSE-NOTICE.md) and
 [FORMAT-PROVENANCE.md](../SWLOR.NWN.Formats/FORMAT-PROVENANCE.md).
+
+## Releases and maintainer imports
+
+### Publish a release
+
+Toolset releases never use GitHub's **Latest** badge, which belongs to the dated game releases. Each version is published as `toolset-v<version>` (not latest). Stable versions also refresh one fixed, non-latest release, `toolset-latest`, which holds the download links in the [root README](../README.md#install-the-toolset) and the feed (`ToolsetFeed.DefaultUrl`) that source builds read. Feed entries and installed copies use the immutable `toolset-v<version>` assets: installed builds read `releases/download/toolset-v<version>/toolset-feed.json` and update through Velopack's GitHub source, which lists releases and ignores `toolset-latest`. Prerelease versions (`1.1.0-beta`) never touch `toolset-latest`.
+
+Maintainers only. Python 3.11 or newer is required. Windows PowerShell wrappers exist for the lower-level commands: `tools/PublishToolsetAssets.ps1`, `tools/PublishToolset.ps1`, `tools/ImportToolsetContribution.ps1`.
+
+#### From your machine (no GitHub Actions)
+
+Needs Windows, Python 3.11+, the .NET SDK, Docker Desktop (Linux containers), and `gh` logged in as `zunath` with the `repo` scope.
+
+1. Pack the assets for the pinned `SWLOR_Haks` revision once per revision. You need disk space for the source assets, packed HAKs, and download parts.
+
+   ```bash
+   python tools/ToolsetDistribution.py assets --output /path/outside/checkout/swlor-assets-new
+   ```
+
+2. Upload every file in the output's `release` directory to a GitHub release named `toolset-assets-<full-haks-commit>` and do not mark it latest (`gh release create toolset-assets-<commit> <files> --latest=false`). Files are split into 1 GiB parts with per-part and combined SHA-256 checksums.
+3. Merge the toolset change, then check out `master` with no local edits. `ReleaseToolset.cmd` refuses any other checkout, a stale `origin/master`, or a `gh` login that is not `zunath` with `repo` scope.
+4. Dry run (the default). It builds `win-x64` natively and `linux-x64` in a pinned Docker container (AppImage, tar.gz, and permissions need Linux), runs the same release tests and install checks as the workflow, and prints every file with its size and checksum plus the `gh` commands it would run. Nothing is created, tagged, or uploaded.
+
+   ```
+   ReleaseToolset.cmd --version 1.0.0
+   ```
+
+5. Publish with the same command plus `--publish`. It reuses the dry run's checksum-verified build (nothing is rebuilt; a build made with `--skip-tests` or `--allow-dev-checkout` is never reused for publishing) and creates `toolset-v1.0.0` (latest disabled) with all assets, then moves the `toolset-latest` tag to the released commit and replaces that release's download assets. Reruns are safe: an identical existing version is skipped, a different one is refused (publish a new version instead).
+
+   ```
+   ReleaseToolset.cmd --version 1.0.0 --publish
+   ```
+
+Output goes to `%USERPROFILE%\swlor-toolset-releases\<version>-<commit>` (or `--output`); delete it afterwards. Other options: `--skip-tests`, `--asset-descriptor <asset-pack.json>` instead of downloading it from the asset release. For Windows signing, set `SWLOR_SIGN_PFX` (path to the PFX) and `SWLOR_SIGN_PASSWORD` in the environment, then add `--sign-windows`. The password is never written to disk or logs, and the certificate is removed from your store afterwards unless it was already there. Unsigned downloads may show SmartScreen warnings.
+
+#### From GitHub Actions (when Actions is available)
+
+After step 2, run **Package SWLOR Toolset** with a semantic version. Without `publish`, it uploads Windows and Linux preview artifacts. Publishing requires master, the repository owner, and approval in the `toolset-release` environment, and then runs the same publish code as `ReleaseToolset.cmd`. The workflow builds self-contained Windows and Linux applications, tests both hosts, and builds Velopack installers and AppImage updates. Editor releases reuse the asset pack, so they never rebuild the large asset repository.
+
+Keep GitHub's immutable releases setting off for this repository: `toolset-latest` is replaced by design, and the publisher refuses an immutable one.
+
+Windows signing in Actions is off by default. To enable it, set `sign_windows` and add the `TOOLSET_SIGNING_PFX_BASE64` and `TOOLSET_SIGNING_PASSWORD` secrets to the `toolset-release` environment.
+
+### Build a local preview
+
+Download the release's `asset-pack.json`, then run:
+
+```bash
+python tools/ToolsetDistribution.py publish --version 1.0.0 --asset-descriptor /path/asset-pack.json --output /path/outside/checkout/swlor-toolset-new
+```
+
+Add `--skip-workspace` to build only the application. On Ubuntu 24.04, Linux packaging needs `squashfs-tools`, `file`, `desktop-file-utils`, `patchelf`, and `libfuse2t64`. AppImage users need FUSE 2 or can set `APPIMAGE_EXTRACT_AND_RUN=1`. The tar.gz needs neither.
+
+### Import a contribution
+
+1. Check out a clean feature branch (not master) whose `SWLOR_Haks` pin matches the contribution. The import refuses a dirty tree or a different asset revision.
+2. Check the contribution. `--toolset` is the path to the `SWLOR.Toolset` executable (`SWLOR.Toolset.exe` on Windows).
+
+   ```bash
+   python tools/ToolsetDistribution.py import-contribution --archive /path/contribution.zip --toolset /path/SWLOR.Toolset
+   ```
+
+3. Apply it by adding `--apply` to the same command.
+4. Review `git diff`, build the server if conversations changed, run validation, and open a pull request.
+
+The import writes nothing if a changed file no longer matches its original checksum. That means newer work exists, so merge it by hand. Writes keep exact bytes and roll back on failure. After an interrupted import, review `git diff` before retrying.

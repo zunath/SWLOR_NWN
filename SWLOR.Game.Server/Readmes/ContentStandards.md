@@ -12,6 +12,7 @@ Balance follows the existing standards. A new tier, a new direction, or any valu
 - Items: `Equipment - Weapons`, `Equipment - Armor`, `Equipment - Enhancements`, `Equipment - Droids`, and `Starships` hold the stat standards per tier; the recipe tabs and `Crafting Calc` hold crafting. Player caps are on `Character Stats` (attributes cap at 26 purchased, 27 with the racial bonus).
 - Match existing items of the same type and tier in stats, level, and how they are obtained (crafted, dropped, sold, rewarded). Changing whether something requires crafting is a change of direction.
 - Never reason from an assumed cap or range. Evaluate formulas across the real range and cite where each number came from.
+- Skills and perks also follow [SkillPerkStandards.md](SkillPerkStandards.md) for family-specific progression, cross-skill design, descriptions, and balance evidence.
 
 ## Item generation
 

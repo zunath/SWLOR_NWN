@@ -27,6 +27,13 @@ public class ToolsetFeedTests
         finally { Directory.Delete(directory, recursive: true); }
     }
 
+    [Test]
+    public void DefaultFeedIsTheFixedToolsetReleaseAndNeverGithubLatest()
+    {
+        ToolsetFeed.DefaultUrl.Should().Be("https://github.com/zunath/SWLOR_NWN/releases/download/toolset-latest/toolset-feed.json");
+        ToolsetFeed.DefaultUrl.Should().NotContain("/releases/latest");
+    }
+
     [TestCase("../other")]
     [TestCase("")]
     [TestCase("https://example.com")]

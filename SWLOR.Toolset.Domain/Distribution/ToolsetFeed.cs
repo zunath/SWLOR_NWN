@@ -5,7 +5,8 @@ namespace SWLOR.Toolset.Domain.Distribution;
 
 public sealed class ToolsetFeed
 {
-    public const string DefaultUrl = "https://github.com/zunath/SWLOR_NWN/releases/latest/download/toolset-feed.json";
+    // A fixed, non-latest release maintained by the toolset release procedure. Never use GitHub's "Latest": game releases own it.
+    public const string DefaultUrl = "https://github.com/zunath/SWLOR_NWN/releases/download/toolset-latest/toolset-feed.json";
     public const string ReleaseFileName = "toolset-release.json";
     public int SchemaVersion { get; set; } = 1;
     public string ContentRevision { get; set; } = string.Empty;

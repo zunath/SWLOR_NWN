@@ -11,7 +11,7 @@ SWLOR is a Neverwinter Nights: Enhanced Edition persistent world. This repositor
 
 You need nothing else installed: no Git, .NET SDK, Python, or Docker.
 
-1. Download a package from [Releases](https://github.com/zunath/SWLOR_NWN/releases/latest): the Windows installer or portable ZIP, or the Linux x64 AppImage or tar.gz. Do not use GitHub's "Source code" ZIP.
+1. Download a package from [the current toolset release](https://github.com/zunath/SWLOR_NWN/releases/tag/toolset-latest): the Windows installer or portable ZIP, or the Linux x64 AppImage or tar.gz. Do not use GitHub's "Source code" ZIP.
 2. Install and open SWLOR Toolset. On Linux, run `chmod +x *.AppImage` first.
 3. Select **Create SWLOR workspace** and choose a folder for your work.
 4. Optional: select **Locate Neverwinter Nights** for base-game models and tiles.

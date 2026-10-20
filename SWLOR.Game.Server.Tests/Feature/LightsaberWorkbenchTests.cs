@@ -418,6 +418,37 @@ public class LightsaberWorkbenchTests
         viewModel.Should().Contain("GetItemPropertyType(ip) == ItemPropertyType.Light");
     }
 
+    [Test]
+    public void LightColor_FollowsSelectedBladeUnlessPlayerChoseOne()
+    {
+        var blue = LightsaberWorkbench.GetBladeColors(BaseItem.Lightsaber, false).Single(x => x.Name == "Blue");
+        var red = LightsaberWorkbench.GetBladeColors(BaseItem.Lightsaber, false).Single(x => x.Name == "Red");
+
+        // No explicit choice: the light tracks the blade, whatever value was assigned before.
+        LightsaberWorkbench.ResolveLightColor(blue, (int)LightColor.Orange, false).Should().Be((int)LightColor.Blue);
+        LightsaberWorkbench.ResolveLightColor(red, (int)LightColor.Blue, false).Should().Be((int)LightColor.Red);
+
+        // Explicit choice: the player's color survives blade changes.
+        LightsaberWorkbench.ResolveLightColor(red, (int)LightColor.Green, true).Should().Be((int)LightColor.Green);
+
+        var root = FindRepositoryRoot();
+        var viewModel = File.ReadAllText(Path.Combine(
+            root.FullName,
+            "SWLOR.Game.Server",
+            "Feature",
+            "GuiDefinition",
+            "ViewModel",
+            "LightsaberWorkbenchViewModel.cs"));
+        var normalized = Regex.Replace(viewModel, @"\s+", " ");
+
+        // The light syncs whenever the displayed top changes, not once at Initialize.
+        normalized.Should().Contain("TopCountText = $\"{_topIndex + 1} / {tops.Count}\"; SyncLightColorToBlade();");
+        normalized.Should().Contain("LightsaberWorkbench.ResolveLightColor(SelectedTop, SelectedLightColor, _lightColorChosen)");
+        normalized.Should().Contain("_lightColorChosen = false;");
+        normalized.Should().Contain("propertyName == nameof(SelectedLightColor) && SelectedLightColor != _autoLightColor");
+        viewModel.Should().NotContain("SelectedLightColor = (int)SelectedTop.LightColor;");
+    }
+
     [TestCase(BaseItem.Lightsaber, "", "ui_lsc_", new[] { 11, 12, 13, 14, 15, 21, 22, 23, 24, 51, 52, 53, 54, 55 })]
     [TestCase(BaseItem.Lightsaber, "shoto - ", "ui_lst_", new[] { 131, 132, 133, 134, 135, 141, 142, 143, 144, 161, 171, 172, 173, 174, 175 })]
     [TestCase(BaseItem.Lightsaber, "crossguard - ", "ui_lst_", new[] { 194, 192, 193, 75, 81, 82, 83, 84, 191, 111, 112, 113, 114, 115 })]

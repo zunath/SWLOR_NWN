@@ -192,6 +192,15 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>
+        /// Resolves the light color for the workbench selector. The light follows the selected
+        /// blade's catalog light color until the player explicitly picks a light color.
+        /// </summary>
+        public static int ResolveLightColor(SaberBladeColor blade, int currentLightColor, bool explicitlyChosen)
+        {
+            return explicitlyChosen ? currentLightColor : (int)blade.LightColor;
+        }
+
+        /// <summary>
         /// Resolves the top model part value for a color on a specific weapon configuration.
         /// Returns -1 if the color is unavailable for that configuration.
         /// </summary>

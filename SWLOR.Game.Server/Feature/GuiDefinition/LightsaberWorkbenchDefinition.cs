@@ -12,7 +12,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
         public GuiConstructedWindow BuildWindow()
         {
             _builder.CreateWindow(GuiWindowType.LightsaberWorkbench)
-                .SetInitialGeometry(0, 0, 545f, 740f)
+                .SetInitialGeometry(0, 0, 545f, 840f)
                 .SetTitle("Lightsaber Workbench")
                 .SetIsResizable(true)
                 .SetIsCollapsible(true)

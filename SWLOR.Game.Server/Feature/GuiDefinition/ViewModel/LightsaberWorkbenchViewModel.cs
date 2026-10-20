@@ -25,6 +25,11 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         private int _topIndex;
         private int _bottomIndex;
 
+        // The light color follows the selected blade until the player picks one explicitly.
+        // _autoLightColor is the last value the server assigned, so a client echo of it is not a choice.
+        private bool _lightColorChosen;
+        private int _autoLightColor;
+
         // Selection never removes an item from the inventory. UUIDs prevent a destroyed item's
         // recycled object handle from silently selecting a different input.
         private readonly uint[] _enhancementItems = { OBJECT_INVALID, OBJECT_INVALID };
@@ -164,6 +169,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             _weaponType = BaseItem.Lightsaber;
             _topIndex = 0;
             _bottomIndex = 0;
+            _lightColorChosen = false;
 
             for (var slot = 0; slot < EnhancementSlotCount; slot++)
             {
@@ -186,7 +192,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             StatusColor = GuiColor.Green;
 
             RefreshWeaponType();
-            SelectedLightColor = (int)SelectedTop.LightColor;
             SelectedLightBrightnessIndex = 1;
             WatchOnClient(model => model.SelectedLightColor);
             WatchOnClient(model => model.SelectedLightBrightnessIndex);
@@ -222,6 +227,23 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             TopName = SelectedTop.Name;
             TopPreview = SelectedTop.PreviewResref;
             TopCountText = $"{_topIndex + 1} / {tops.Count}";
+
+            SyncLightColorToBlade();
+        }
+
+        private void SyncLightColorToBlade()
+        {
+            var lightColor = LightsaberWorkbench.ResolveLightColor(SelectedTop, SelectedLightColor, _lightColorChosen);
+            if (!_lightColorChosen)
+                _autoLightColor = lightColor;
+
+            SelectedLightColor = lightColor;
+        }
+
+        protected override void OnClientPropertyUpdated(string propertyName)
+        {
+            if (propertyName == nameof(SelectedLightColor) && SelectedLightColor != _autoLightColor)
+                _lightColorChosen = true;
         }
 
         private void SwitchWeaponType(BaseItem weaponType)

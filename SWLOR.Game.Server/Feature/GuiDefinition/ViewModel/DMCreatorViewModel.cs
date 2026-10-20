@@ -380,12 +380,18 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     : $"{count} in your favorites.";
             }
 
-            var palette = (DMBlueprintSource)SelectedSource == DMBlueprintSource.Standard
+            var source = (DMBlueprintSource)SelectedSource;
+            var palette = source == DMBlueprintSource.Standard
                 ? "the base game's palette"
                 : "the module's palette";
-            return _results.Count == 0
-                ? $"No matches in {palette}."
-                : $"{count} in {palette}. * marks your favorites.";
+            if (_results.Count == 0)
+                return $"No matches in {palette}.";
+
+            var hasFavorites = _favorites.Any(favorite =>
+                favorite.Category == (DMBlueprintCategory)SelectedType && favorite.Source == source);
+            return hasFavorites
+                ? $"{count} in {palette}. * marks your favorites."
+                : $"{count} in {palette}.";
         }
 
         private DMBlueprint GetSelectedBlueprint()
@@ -457,6 +463,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             }
 
             ResultNames[_selectedIndex] = GetRowName(blueprint);
+            ResultSummary = GetResultSummary();
             FavoriteButtonText = change == DMFavoriteChange.Added ? RemoveFavoriteText : AddFavoriteText;
         };
 

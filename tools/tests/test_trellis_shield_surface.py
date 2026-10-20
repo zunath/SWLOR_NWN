@@ -147,6 +147,18 @@ class ShieldSurfaceTests(unittest.TestCase):
             self.assertFalse(surface.shells_intersect(first*scale,(second+np.asarray([5,0,0]))*scale),scale)
             self.assertTrue(surface.edges_cross_triangles(np.concatenate([second[:,[0,1]],second[:,[1,2]]])*scale,first*scale),scale)
 
+    def test_self_intersecting_shells_are_rejected(self):
+        bottom=[(1,1,0),(-1,1,0),(-1,-1,0),(1,-1,0)];quads=[(0,3,2,1),(4,5,6,7)]+[(i,(i+1)%4,4+(i+1)%4,4+i) for i in range(4)]
+        faces=np.asarray([t for q in quads for t in ((q[0],q[1],q[2]),(q[0],q[2],q[3]))])
+        for twist,crossing in ((30,False),(160,True)):
+            r=np.radians(twist);top=[(x*np.cos(r)-y*np.sin(r),x*np.sin(r)+y*np.cos(r),2) for x,y,_ in bottom]
+            report=surface.audit_surface(np.asarray(bottom+top,np.float32),faces,components=True)
+            self.assertEqual(report['bad_edges'],0);self.assertEqual(report['self_intersecting_shells'],int(crossing))
+            if crossing:
+                with self.assertRaisesRegex(ValueError,'intersects itself'):surface.require_closed(report)
+            else:surface.require_closed(report)
+        vertices,faces=box();self.assertEqual(surface.audit_surface(vertices,faces,components=True)['self_intersecting_shells'],0)
+
     def test_candidate_pairs_stream_in_bounded_batches(self):
         rng=np.random.default_rng(13);boxes=lambda t:np.stack([t.min(axis=1),t.max(axis=1)],axis=1)
         fine=rng.uniform(-1,1,(1500,1,3))+rng.normal(scale=5e-5,size=(1500,3,3))

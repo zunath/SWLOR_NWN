@@ -13,6 +13,7 @@ import collections
 import hashlib
 import io
 import json
+import math
 import os
 from pathlib import Path
 import sys
@@ -179,11 +180,129 @@ def shells_intersect(first, second, tolerance=1e-7, batch=200000):
     return any(pair_segments_touch(ea[i],eb[j],tolerance).any() for i,j in overlapping_pair_batches(ba,bb,tolerance,batch=batch))
 
 
+# Same-shell crossing test, identical to tools/TrellisWeaponExport.py. This script runs inside Blender as a
+# private, self-contained snapshot of its own bytes (see trellis2_shield_nodes), so it cannot import siblings.
+def ray_in_wedge(direction,u,w,tol=1e-9):
+    """+1 when the ray from the wedge apex along direction (which lies in the wedge's plane) is inside the wedge spanned
+    by u and w, -1 when the opposite ray is, 0 when neither is (boundary rays count as inside)."""
+    uu,uw,ww=u@u,u@w,w@w;du,dw=direction@u,direction@w;det=uu*ww-uw*uw
+    a=(du*ww-dw*uw)/det*math.sqrt(uu);b=(dw*uu-du*uw)/det*math.sqrt(ww)  # coefficients scaled to lengths
+    if a>=-tol and b>=-tol and max(a,b)>tol:return 1
+    if a<=tol and b<=tol and min(a,b)<-tol:return -1
+    return 0
+
+
+def faces_meet_beyond_shared(points,first,second,shared,tol=1e-9):
+    """Exact test for two faces of one shell that share one vertex or one edge: do they meet anywhere else?"""
+    norm=np.linalg.norm
+    if len(shared)==2:
+        a,b=(points[i] for i in shared);c=points[next(i for i in first if i not in shared)];d=points[next(i for i in second if i not in shared)]
+        n1=np.cross(b-a,c-a);n2=np.cross(b-a,d-a)
+        # Planes through a common edge meet only on that edge unless they coincide and fold onto the same side.
+        return bool(norm(np.cross(n1,n2))<=tol*norm(n1)*norm(n2) and n1@n2>0)
+    v=next(iter(shared));o1=[points[i]-points[v] for i in first if i!=v];o2=[points[i]-points[v] for i in second if i!=v]
+    n1=np.cross(*o1);n2=np.cross(*o2);line=np.cross(n1,n2)
+    if norm(line)>tol*norm(n1)*norm(n2):
+        # Non-coplanar: each face meets the planes' common line in a segment starting at the shared vertex; the faces
+        # meet beyond it exactly when both segments leave in the same direction.
+        line=line/norm(line);side=ray_in_wedge(line,*o1);return side!=0 and side==ray_in_wedge(line,*o2)
+    e1=o1[0]/norm(o1[0]);e2=np.cross(n1/norm(n1),e1)
+    def arc(u,w):
+        x,y=(math.atan2(t@e2,t@e1) for t in (u,w));span=(y-x)%(2*math.pi)
+        return (x,span) if span<math.pi else (y,2*math.pi-span)
+    def inside(angle,start,span):return tol<(angle-start)%(2*math.pi)<span-tol
+    (s1,l1),(s2,l2)=arc(*o1),arc(*o2)
+    def same(x,y):return abs((x-y+math.pi)%(2*math.pi)-math.pi)<=tol
+    # Overlapping wedges, or any common boundary ray (faces then touch along a segment from the vertex).
+    return inside(s2,s1,l1) or inside(s1,s2,l2) or any(same(x,y) for x in (s1,s1+l1) for y in (s2,s2+l2))
+
+
+def triangles_touch(t1,t2,tol=1e-9):
+    """Exact (tolerant) closed-triangle contact for paired arrays (n,3,3): non-coplanar pairs touch when an edge of one
+    meets the other; coplanar pairs touch unless a 2D separating axis exists."""
+    n1=np.cross(t1[:,1]-t1[:,0],t1[:,2]-t1[:,0]);n2=np.cross(t2[:,1]-t2[:,0],t2[:,2]-t2[:,0])
+    size=np.maximum(np.linalg.norm(n1,axis=1)*np.linalg.norm(n2,axis=1),1e-300)
+    coplanar=(np.linalg.norm(np.cross(n1,n2),axis=1)<=1e-6*size)&(np.abs(np.einsum('ij,ij->i',t2[:,0]-t1[:,0],n1))<=tol*np.sqrt(size))
+    def edge_hits(edges_of,tris):
+        hit=np.zeros(len(tris),bool)
+        for a,b in ((0,1),(1,2),(2,0)):
+            o=edges_of[:,a];d=edges_of[:,b]-o;v0=tris[:,0];e1=tris[:,1]-v0;e2=tris[:,2]-v0
+            q=np.cross(d,e2);det=np.einsum('ij,ij->i',q,e1);scale=np.linalg.norm(d,axis=1)*np.linalg.norm(e1,axis=1)*np.linalg.norm(e2,axis=1)
+            ok=np.abs(det)>1e-9*scale;inv=np.where(ok,1/np.where(ok,det,1),0);sv=o-v0
+            u=np.einsum('ij,ij->i',sv,q)*inv;r=np.cross(sv,e1);w=np.einsum('ij,ij->i',d,r)*inv;t=np.einsum('ij,ij->i',e2,r)*inv
+            hit|=ok&(u>=-tol)&(w>=-tol)&(u+w<=1+tol)&(t>=-tol)&(t<=1+tol)
+        return hit
+    touch=edge_hits(t1,t2)|edge_hits(t2,t1)
+    if coplanar.any():
+        axis=np.argmax(np.abs(n1[coplanar]),axis=1);keep=np.array([[1,2],[0,2],[0,1]])[axis]
+        a=np.take_along_axis(t1[coplanar],keep[:,None,:],2);b=np.take_along_axis(t2[coplanar],keep[:,None,:],2);separated=np.zeros(len(a),bool)
+        for tri in (a,b):
+            for i in range(3):
+                edge=tri[:,(i+1)%3]-tri[:,i];normal=np.stack((-edge[:,1],edge[:,0]),1)
+                pa=np.einsum('nkj,nj->nk',a,normal);pb=np.einsum('nkj,nj->nk',b,normal);slack=tol*np.linalg.norm(normal,axis=1)*(1+np.abs(pa).max(1))
+                separated|=(pa.max(1)<pb.min(1)-slack)|(pb.max(1)<pa.min(1)-slack)
+        touch[coplanar]=~separated
+    return touch
+
+
+def shell_crosses_itself(vertices,faces,batch=200000):
+    """True when two faces of one shell meet anywhere beyond the vertex or edge they share. A bounding-box sweep finds
+    candidate pairs, an exact closed-triangle test keeps those in contact, and vertex- or edge-sharing pairs are then
+    classified exactly, so coplanar folds and crossings right beside a shared vertex are all caught. Candidates are
+    produced and tested in batches of at most `batch` pairs, so a dense fan around one apex stays in bounded memory."""
+    if not faces:return False
+    index=sorted({i for face in faces for i in face});origin=np.asarray(vertices[faces[0][0]],dtype=np.float64)
+    points={i:np.asarray(vertices[i],dtype=np.float64)-origin for i in index}  # shell-local precision
+    tris=np.asarray([[points[i] for i in face] for face in faces]);pad=1e-9*max(float(np.ptp(tris.reshape(-1,3),axis=0).max()),1e-30)
+    lo=tris.min(1)-pad;hi=tris.max(1)+pad;order=np.argsort(lo[:,0]);sorted_lo=lo[order,0];F=np.asarray(faces)
+    def candidates():
+        first=[];second=[];size=0
+        for k,i in enumerate(order):
+            j=order[k+1:np.searchsorted(sorted_lo,hi[i,0],side='right')]
+            j=j[np.all((lo[j,1:]<=hi[i,1:])&(lo[i,1:]<=hi[j,1:]),axis=1)]
+            while len(j):
+                take=j[:batch-size];j=j[len(take):];first.append(np.full(len(take),i));second.append(take);size+=len(take)
+                if size>=batch:yield np.concatenate(first),np.concatenate(second);first=[];second=[];size=0
+        if size:yield np.concatenate(first),np.concatenate(second)
+    return any(batch_crosses(points,faces,F,tris,first,second) for first,second in candidates())
+
+
+def batch_crosses(points,faces,F,tris,first,second):
+    """Exact crossing test for one batch of candidate face pairs."""
+    eq=F[first][:,:,None]==F[second][:,None,:];count=eq.sum((1,2))
+    if np.any(count==3):return True
+    # Faces sharing nothing cross exactly when their closed triangles touch; faces sharing a vertex or edge always
+    # touch there, so they go straight to the exact shared-boundary classification below.
+    apart=count==0
+    if apart.any() and triangles_touch(tris[first[apart]],tris[second[apart]]).any():return True
+    I=first[~apart];J=second[~apart];eq=eq[~apart];count=count[~apart]
+    rows=np.arange(len(I));ti=tris[I];tj=tris[J];norm=lambda x:np.linalg.norm(x,axis=-1);tol=1e-9
+    # Edge-sharing pairs meet off their edge only when coplanar and folded onto the same side.
+    e=count==2;ri=np.argmin(eq.any(2),1);rj=np.argmin(eq.any(1),1)
+    a=ti[rows,(ri+1)%3];b=ti[rows,(ri+2)%3];n1=np.cross(b-a,ti[rows,ri]-a);n2=np.cross(b-a,tj[rows,rj]-a)
+    if np.any(e&(norm(np.cross(n1,n2))<=tol*norm(n1)*norm(n2))&(np.einsum('ij,ij->i',n1,n2)>0)):return True
+    # Vertex-sharing pairs: the faces meet beyond the vertex when both contain the same ray along their common line.
+    v=count==1;ri=np.argmax(eq.any(2),1);rj=np.argmax(eq.any(1),1);apex=ti[rows,ri]
+    u1=ti[rows,(ri+1)%3]-apex;w1=ti[rows,(ri+2)%3]-apex;u2=tj[rows,(rj+1)%3]-apex;w2=tj[rows,(rj+2)%3]-apex
+    n1=np.cross(u1,w1);n2=np.cross(u2,w2);line=np.cross(n1,n2);flat=norm(line)<=tol*norm(n1)*norm(n2)
+    line=line/np.maximum(norm(line),1e-300)[:,None]
+    def side(u,w):
+        uu,uw,ww=(np.einsum('ij,ij->i',x,y) for x,y in ((u,u),(u,w),(w,w)));du=np.einsum('ij,ij->i',line,u);dw=np.einsum('ij,ij->i',line,w)
+        det=np.where(np.abs(uu*ww-uw*uw)>0,uu*ww-uw*uw,1);c1=(du*ww-dw*uw)/det*np.sqrt(uu);c2=(dw*uu-du*uw)/det*np.sqrt(ww)
+        return np.where((c1>=-tol)&(c2>=-tol)&(np.maximum(c1,c2)>tol),1,np.where((c1<=tol)&(c2<=tol)&(np.minimum(c1,c2)<-tol),-1,0))
+    s1=side(u1,w1);s2=side(u2,w2)
+    if np.any(v&~flat&(s1!=0)&(s1==s2)):return True
+    for k in np.flatnonzero(v&flat):  # coplanar fans are rare: classify their wedges one by one
+        i,j=I[k],J[k]
+        if faces_meet_beyond_shared(points,faces[i],faces[j],set(faces[i])&set(faces[j])):return True
+    return False
+
+
 def audit_surface(vertices, faces, components=False):
     """Exact-position closure; coincident split vertices cannot conceal bad edges."""
     vertices,faces=arrays(vertices,faces)
-    _,inverse=np.unique(vertices,axis=0,return_inverse=True)
-    welded=inverse[faces]
+    unique,inverse=np.unique(vertices,axis=0,return_inverse=True)
+    welded=inverse.reshape(-1)[faces]
     directed=np.stack((welded,np.roll(welded,-1,axis=1)),axis=-1).reshape(-1,2)
     _,edge_ids,counts=np.unique(np.sort(directed,axis=1),axis=0,return_inverse=True,return_counts=True)
     directions=np.where(directed[:,0]<directed[:,1],1,-1)
@@ -209,7 +328,8 @@ def audit_surface(vertices, faces, components=False):
         for ids in groups.values():
             points=triangles[ids];origin=points.mean(axis=(0,1));shifted=points-origin
             volume=float(np.einsum('ij,ij->i',shifted[:,0],np.cross(shifted[:,1],shifted[:,2])).sum()/6)
-            shells.append({'triangles':len(ids),'signed_volume':volume,'area':float(area2[ids].sum()/2)})
+            crosses=shell_crosses_itself(unique,[tuple(face) for face in welded[ids].tolist()])
+            shells.append({'triangles':len(ids),'signed_volume':volume,'area':float(area2[ids].sum()/2),'self_intersecting':crosses})
         # An inward-wound shell is valid only as a cavity: it must not cross any other shell
         # and must lie in solid material (the other shells wind exactly once around it).
         exposed=0;ids_list=list(groups.values())
@@ -227,12 +347,15 @@ def audit_surface(vertices, faces, components=False):
         report['shells']=shells
         report['zero_volume_shells']=sum(shell['signed_volume']==0 for shell in shells)
         report['exposed_inward_shells']=exposed
+        report['self_intersecting_shells']=sum(shell['self_intersecting'] for shell in shells)
     return report
 
 
 def require_closed(report):
     if report['bad_edges'] or report['zero_area_triangles'] or report.get('zero_volume_shells',0):
         raise ValueError('Expected a closed nondegenerate surface: '+json.dumps(report))
+    if report.get('self_intersecting_shells',0):
+        raise ValueError('A surface shell intersects itself: '+json.dumps(report))
     if report.get('exposed_inward_shells',0):
         raise ValueError('Inward-wound shell is not an enclosed cavity of an outward shell: '+json.dumps(report))
 

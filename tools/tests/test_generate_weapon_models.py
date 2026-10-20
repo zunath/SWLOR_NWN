@@ -288,6 +288,25 @@ class WeaponGenerationTests(unittest.TestCase):
         self.assertEqual(api.posts, 1)
         self.assertEqual(generator.read_json(self.output / 'submission.json')['deadline_unix'], state['deadline_unix'])
 
+    def test_unsubmitted_prepared_job_renews_an_expired_deadline(self):
+        api = FakeAPI(self.output)
+        generator.create_output_folder(self.output)
+        fingerprint = generator.digest(json.dumps({'asset': self.asset, 'image_sha256': generator.digest(self.image.read_bytes()),
+                                                   'workflow': self.template, 'url': api.url}, sort_keys=True).encode())
+        generator.write_json(self.output / 'submission.json', {'fingerprint': fingerprint, 'token': 'abc',
+                                                               'deadline_unix': time.time() - 5, 'status': 'prepared'})
+        self.assertEqual(self.run_asset(api)['status'], 'generated')
+        self.assertGreater(generator.read_json(self.output / 'submission.json')['deadline_unix'], time.time())
+        self.assertEqual(api.posts, 1)
+
+    def test_occupied_asset_folder_without_a_journal_is_refused(self):
+        self.output.mkdir()
+        keep = self.output / 'source.glb'; keep.write_bytes(b'manual')
+        api = FakeAPI(self.output)
+        with self.assertRaisesRegex(ValueError, 'no job journal'): self.run_asset(api)
+        self.assertEqual(keep.read_bytes(), b'manual')
+        self.assertEqual(api.posts, 0); self.assertEqual(api.uploads, [])
+
     def test_budget_512_removes_upsampling_and_1024_retains_it(self):
         low = generator.build_graph(self.template, self.asset)
         self.assertNotIn('23', low); self.assertNotIn('94', low)

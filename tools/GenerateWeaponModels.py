@@ -393,6 +393,8 @@ def run_asset(api, template, asset, image, folder, timeout, identity):
     image_hash = digest(image_data)
     create_output_folder(folder)
     path = folder / 'submission.json'
+    if not path.exists() and any(folder.iterdir()):
+        raise ValueError('Asset folder already has files but no job journal; use an absent or empty folder: ' + str(folder))
     fingerprint = digest(json.dumps({'asset': asset, 'image_sha256': image_hash,
                                      'workflow': template, 'url': api.url}, sort_keys=True).encode())
     if path.exists():
@@ -417,6 +419,11 @@ def run_asset(api, template, asset, image, folder, timeout, identity):
         state['prompt_id'] = recover_prompt(api, state['token'])
         write_json(path, state)
     if 'prompt_id' not in state:
+        if state['status'] == 'prepared' and time.time() >= state['deadline_unix']:
+            # Nothing was submitted yet, so a lapsed deadline only reflects a failed or blocked
+            # preflight/queue wait; renew it rather than wedging the asset folder.
+            state['deadline_unix'] = time.time() + timeout
+            write_json(path, state)
         api.deadline = state['deadline_unix']
         graph = build_graph(template, asset)
         info = node_schemas(api, [graph])

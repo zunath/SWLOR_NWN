@@ -368,6 +368,12 @@ class TrellisWeaponExportTests(unittest.TestCase):
         self.source.write_bytes(make_glb(self.document))
         with self.assertRaisesRegex(ValueError,'self-contained'): exporter.glb_document(self.source)
 
+    def test_glb_document_parses_a_snapshot_of_bytes_not_the_path(self):
+        raw = self.source.read_bytes()
+        from_path = exporter.glb_document(self.source)
+        self.source.write_bytes(b'changed after validation')
+        self.assertEqual(exporter.glb_document(raw), from_path)
+
     def test_material_rejects_silent_appearance_loss(self):
         for change in ({'alphaMode':'BLEND'}, {'doubleSided':True}, {'occlusionTexture':{'index':0}},
                        {'extensions':{'KHR_materials_unlit':{}}}, {'normalTexture':{'scale':float('nan')}},

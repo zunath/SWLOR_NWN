@@ -40,7 +40,7 @@ from pathlib import Path
 
 
 def glb_document(path):
-    data = Path(path).read_bytes()
+    data = bytes(path) if isinstance(path, (bytes, bytearray)) else Path(path).read_bytes()
     if len(data) < 20:
         raise ValueError('Truncated GLB')
     magic, version, length = struct.unpack_from('<III', data)
@@ -710,7 +710,11 @@ def alias_model_identifiers(text, primary, alias):
 def export_one(config,source,repo,out,mode,helpers,icon_size):
     bpy.ops.wm.read_factory_settings(use_empty=True)
     bpy.context.scene.world=bpy.data.worlds.new('Studio')
-    doc,binary=glb_document(source);out.mkdir();cache=out/'source_images';cache.mkdir()
+    # One snapshot of the source owns the hash check, parsed document and report hash,
+    # so bytes that change after manifest validation can never be exported as validated.
+    source_bytes=Path(source).read_bytes();source_sha=hashlib.sha256(source_bytes).hexdigest()
+    if config.get('sha256') and source_sha!=config['sha256']:raise ValueError('Source GLB changed after manifest validation: '+str(source))
+    doc,binary=glb_document(source_bytes);out.mkdir();cache=out/'source_images';cache.mkdir()
     # Label and tag materials only in the import copy; source bytes stay untouched.
     source_materials=json.loads(json.dumps(doc.get('materials',[])))
     policy=config.get('double_sided_policy','reject')
@@ -732,7 +736,7 @@ def export_one(config,source,repo,out,mode,helpers,icon_size):
         surface_conversion=closed_surface_report(objects,double_sided,len(doc['materials']))
         for mat in doc['materials']:mat['doubleSided']=False
     points,lo,hi=bounds(objects)
-    report={'name':config.get('name',source.stem),'source':str(source),'sha256':hashlib.sha256(source.read_bytes()).hexdigest(),'mode':mode,'coordinate_system':'Blender imported world XYZ; glTF importer axis conversion already included','source_bounds_min':list(lo),'source_bounds_max':list(hi),'dimensions':list(hi-lo),'materials':source_materials,'surface_conversion':surface_conversion,'components':component_reports(objects),'objects':[{'name':ob.name,'vertices':len(ob.data.vertices),'triangles':len(ob.data.loop_triangles),'materials':[m.name if m else None for m in ob.data.materials],'world_matrix':[list(row) for row in ob.matrix_world]} for ob in objects]}
+    report={'name':config.get('name',source.stem),'source':str(source),'sha256':source_sha,'mode':mode,'coordinate_system':'Blender imported world XYZ; glTF importer axis conversion already included','source_bounds_min':list(lo),'source_bounds_max':list(hi),'dimensions':list(hi-lo),'materials':source_materials,'surface_conversion':surface_conversion,'components':component_reports(objects),'objects':[{'name':ob.name,'vertices':len(ob.data.vertices),'triangles':len(ob.data.loop_triangles),'materials':[m.name if m else None for m in ob.data.materials],'world_matrix':[list(row) for row in ob.matrix_world]} for ob in objects]}
     # Report and raw scene available even if a later material rule rejects export.
     (out/'report.json').write_text(json.dumps(report,indent=2))
     if mode=='export':

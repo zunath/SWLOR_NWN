@@ -22,7 +22,8 @@ namespace SWLOR.Game.Server.Feature
             ReapplySpeed(player);
         }
 
-        private static void ApplyCutsceneGhostToPlayer(uint player)
+        /// <summary>Lets other creatures walk through the player; the engine ignores it on an already ghosted player.</summary>
+        public static void ApplyCutsceneGhostToPlayer(uint player)
         {
             var effect = SupernaturalEffect(EffectCutsceneGhost());
             ApplyEffectToObject(DurationType.Permanent, effect, player);

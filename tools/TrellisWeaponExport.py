@@ -1137,6 +1137,16 @@ def load_manifest(path):
     return json.loads(data.decode('utf-8-sig')),hashlib.sha256(data).hexdigest()
 
 
+def tool_identity(path):
+    path=Path(path).resolve();return {'path':str(path),'sha256':hashlib.sha256(path.read_bytes()).hexdigest()}
+
+
+def require_basis_producer(record,helper_path):
+    """Arrays are interpreted by the current helper, so they must come from these same helper bytes."""
+    require(record.get('producer_sha256')==hashlib.sha256(Path(helper_path).read_bytes()).hexdigest(),
+            'Normal basis was produced by a different TrellisWeaponNormals.py; re-export')
+
+
 def snapshot_export(export,manifest,staging):
     """Copy each export resource's bytes once, after hashing those same bytes."""
     found={str(p.relative_to(export)).replace('\\','/'):p for p in export.glob('*/resources/*')}
@@ -1155,7 +1165,7 @@ def package(args, repo, out):
     paths=snapshot_export(export,manifest,out/'verified_export')
     ascii_dir=out/'ascii_resources';runtime=out/'runtime_resources';logs=out/'compression_logs'
     for folder in (ascii_dir,runtime,logs):folder.mkdir()
-    seen=set();textures=[];roles=texture_roles(list(paths.values()))
+    seen=set();textures=[];roles=texture_roles(list(paths.values()));crunch_identity=None
     # Compile first: only the real native streams define the renderer's final TBN.
     for source in paths.values():
         if source.suffix in ('.mdl','.mtr'):
@@ -1179,6 +1189,8 @@ def package(args, repo, out):
         metadata_bytes=metadata.read_bytes()
         require(hashlib.sha256(metadata_bytes).hexdigest()==record['sha256'],'Source tangent provenance changed')
         require(manifest['sources'].get(record['asset'])==record['source_sha256'],'Source tangent GLB hash mismatch')
+        # Arrays are interpreted by the current helper, so they must have been produced by these same bytes.
+        require_basis_producer(record,Path(helper.__file__))
         with np.load(io.BytesIO(metadata_bytes),allow_pickle=False) as arrays:
             policy=record.get('normal_basis_policy','reproject')
             require(policy in ('reproject','authored_tangents'),'Unknown normal basis policy')
@@ -1219,6 +1231,7 @@ def package(args, repo, out):
             elif role=='scalar':options+=['-dropEmptyAlpha','-DXT5A','-setAtoY','-gamma','1.0'];fmt='ATI1'
             else:options+=['-dropEmptyAlpha','-DXT1','-gamma','2.2'];fmt='DXT1'
         target=runtime/(source.stem+'.dds')
+        if crunch_identity is None:crunch_identity=tool_identity(args.crunch)
         result=subprocess.run([str(args.crunch),'-file',str(source),'-out',str(target)]+options,capture_output=True,text=True,timeout=120)
         (logs/(source.stem+'.log')).write_text(result.stdout+result.stderr)
         require(result.returncode==0 and target.is_file(),'Crunch failed '+source.name)
@@ -1227,9 +1240,11 @@ def package(args, repo, out):
     for mtr in runtime.glob('*.mtr'):
         for name in re.findall(r'^texture\d+\s+(\S+)',mtr.read_text(),re.M):require((runtime/(name+'.dds')).is_file(),'Missing texture '+name)
     models=[validate_native(p,ascii_dir/p.name,runtime) for p in sorted(runtime.glob('*.mdl'))]
+    # Every DDS must come from the one Crunch binary recorded in the report.
+    if crunch_identity is not None:require(tool_identity(args.crunch)==crunch_identity,'Crunch executable changed during packaging')
     report={'export_manifest_sha256':hashlib.sha256(manifest_bytes).hexdigest(),
             'resources':{p.name:hashlib.sha256(p.read_bytes()).hexdigest() for p in runtime.iterdir()},
-            'textures':textures,'models':models,'normal_basis_reprojection':normal_reports,'compiler':compiler_identity,'production_copied':False,'native_visual_review_required':True}
+            'textures':textures,'models':models,'normal_basis_reprojection':normal_reports,'compiler':compiler_identity,'texture_compressor':crunch_identity,'production_copied':False,'native_visual_review_required':True}
     (out/'package_report.json').write_text(json.dumps(report,indent=2)+'\n')
     print('WEAPON_PACKAGE_COMPLETE '+str(runtime))
 

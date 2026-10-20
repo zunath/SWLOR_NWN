@@ -105,7 +105,7 @@ def source_basis(document,binary,config,material_names,path):
             for key,value in values.items():target[key].extend(value)
     arrays={name+'__'+key:np.asarray(value) for name,group in groups.items() for key,value in group.items()}
     np.savez_compressed(path,**arrays)
-    return {'path':path.name,'sha256':hashlib.sha256(path.read_bytes()).hexdigest(),'source_sha256':config['sha256'],'materials':sorted(groups),'uv':'native U=glTF U; native V=1-glTF V; source tangent handedness is preserved separately'}
+    return {'path':path.name,'sha256':hashlib.sha256(path.read_bytes()).hexdigest(),'source_sha256':config['sha256'],'producer_sha256':hashlib.sha256(Path(__file__).read_bytes()).hexdigest(),'materials':sorted(groups),'uv':'native U=glTF U; native V=1-glTF V; source tangent handedness is preserved separately'}
 
 
 def native_meshes(path):

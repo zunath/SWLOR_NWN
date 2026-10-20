@@ -405,6 +405,18 @@ class TrellisWeaponExportTests(unittest.TestCase):
         (export/'01_a/resources/extra.tga').write_bytes(b'x')
         with self.assertRaisesRegex(ValueError,'resource set'):exporter.snapshot_export(export,manifest,self.root/'third')
 
+    def test_normal_basis_must_come_from_the_current_helper(self):
+        helper=ROOT/'tools/TrellisWeaponNormals.py'
+        exporter.require_basis_producer({'producer_sha256':hashlib.sha256(helper.read_bytes()).hexdigest()},helper)
+        for record in ({},{'producer_sha256':'0'*64}):
+            with self.subTest(record=record),self.assertRaisesRegex(ValueError,'different TrellisWeaponNormals'):
+                exporter.require_basis_producer(record,helper)
+
+    def test_tool_identity_changes_with_the_executable_bytes(self):
+        tool=self.root/'crunch.exe';tool.write_bytes(b'one');first=exporter.tool_identity(tool)
+        self.assertEqual(first,exporter.tool_identity(tool));tool.write_bytes(b'two')
+        self.assertNotEqual(first,exporter.tool_identity(tool))
+
     @unittest.skipIf(np is None,'numpy required')
     def test_materials_clipped_from_every_part_emit_no_maps_or_normal_provenance(self):
         resources=self.root/'resources';resources.mkdir();names={0:'kept',1:'gone'};material_dims={};mapdims={}

@@ -516,8 +516,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             }
         }
 
-        // A row click reports its index through NuiGetEventArrayIndex, which exists only inside a real NUI event,
-        // so set the selection and refresh the actions the way OnSelectRow does.
+        // Row clicks need a real NUI event, so select the way OnSelectRow does.
         private static async Task SelectAsync(EngineTestContext ctx, PlayerListViewModel model, uint owner, uint target)
         {
             await ctx.ExecuteInCreatureContextAsync(owner, () =>

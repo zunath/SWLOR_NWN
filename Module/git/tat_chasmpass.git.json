@@ -2130,7 +2130,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Stuck — tat_chasmpass"
+            "0": "Stuck - tat_chasmpass"
           }
         },
         "MapNote": {

@@ -51,6 +51,27 @@ public class DungeonEncounterWalkmeshTests
     }
 
     [Test]
+    public void DathomirRuinBase_SpawnPointsStandOnNativeWalkableFloor()
+    {
+        var root = FindRoot();
+        using var git = JsonDocument.Parse(File.ReadAllText(Path.Combine(root, "Module", "git", "dath_ruin_base.git.json")));
+        var points = git.RootElement.GetProperty("WaypointList").GetProperty("value").EnumerateArray()
+            .Where(p => Text(p, "Tag") == "DATHOMIR_RUIN_BASE")
+            .ToArray();
+        points.Should().NotBeEmpty();
+        // Tiles without a .wok had no server walkmesh, so nothing spawned on them could attack or be attacked.
+        var triangles = ReadWalkableFloor(root, "dath_ruin_base", "sw_t_scifibase");
+        foreach (var point in points)
+        {
+            var position = new Vector3(Number(point, "XPosition"), Number(point, "YPosition"), Number(point, "ZPosition"));
+            // Three points are authored 0.12 m below the floor; the engine places them on it.
+            foreach (var offset in new[] { Vector3.Zero, new Vector3(.5f, 0, 0), new Vector3(-.5f, 0, 0), new Vector3(0, .5f, 0), new Vector3(0, -.5f, 0) })
+                triangles.Any(t => Covers(t, position + offset, .15f)).Should().BeTrue(
+                    $"the Ruin Base spawn point at {position} must have native walkable floor at {position + offset}");
+        }
+    }
+
+    [Test]
     public void FightClubArena_HasAContinuousCombatFloorThroughTheFormerPit()
     {
         var triangles = ReadWalkableFloor(FindRoot(), "pw_sc_smarena", "sw_t_office");
@@ -148,6 +169,108 @@ public class DungeonEncounterWalkmeshTests
         }
     }
 
+    [Test]
+    public void FightClubBackrooms_EverySpawnIsReachableOnFootFromTheEntrance()
+    {
+        var root = FindRoot();
+        using var git = JsonDocument.Parse(File.ReadAllText(Path.Combine(root, "Module", "git", "pw_sc_emfbackr.git.json")));
+        var area = git.RootElement;
+        var placeables = area.GetProperty("Placeable List").GetProperty("value").EnumerateArray().ToArray();
+        // Sections joined only by teleports left chasing enemies stuck behind walls next to the player.
+        placeables.Where(p => Text(p, "TemplateResRef") == "tele_obj").Select(p => Local(p, "DESTINATION"))
+            .Should().Equal(new[] { "SMUG_BACK_ENT" }, "the exit is the only teleport; every room connects on foot");
+
+        var waypoints = area.GetProperty("WaypointList").GetProperty("value").EnumerateArray().ToArray();
+        var reachable = ReachableOnFoot(root, "pw_sc_emfbackr", "sw_t_office", "SMUG_BACKROOMS");
+
+        var spawns = waypoints.Where(w => Text(w, "Tag") is "CAPSTONE_SMUGGLERS_MOON_FIGHT_CLUB_BACKROOMS" or "FIGHTCLUB_BACKROOMS_RARES"
+            || Text(w, "Tag").EndsWith("_WD_SPAWN")).ToArray();
+        spawns.Should().HaveCount(24);
+        foreach (var spawn in spawns)
+        {
+            reachable(Number(spawn, "XPosition"), Number(spawn, "YPosition")).Should().BeTrue(
+                $"{Text(spawn, "Tag")} at ({Number(spawn, "XPosition")}, {Number(spawn, "YPosition")}) must be reachable on foot from the entrance");
+        }
+    }
+
+    [Test]
+    public void SmugglersMoonStationAbandoned_EncounterSpawnsClearScenery()
+    {
+        var root = FindRoot();
+        using var git = JsonDocument.Parse(File.ReadAllText(Path.Combine(root, "Module", "git", "spacenarshaddung.git.json")));
+        var area = git.RootElement;
+        var spawns = area.GetProperty("WaypointList").GetProperty("value").EnumerateArray()
+            .Where(w => Text(w, "Tag").StartsWith("NAR_")).ToArray();
+        spawns.Should().HaveCount(26);
+        var floor = ReadWalkableFloor(root, "spacenarshaddung", "sw_t_alienruin");
+        var appearances = TwoDAReader.Read(Path.Combine(root, "SWLOR_Haks", "sw_2da", "placeables.2da"));
+        var meshes = Directory.EnumerateFiles(Path.Combine(root, "SWLOR_Haks"), "*.pwk", SearchOption.AllDirectories)
+            .ToDictionary(Path.GetFileNameWithoutExtension, StringComparer.OrdinalIgnoreCase);
+        var scenery = area.GetProperty("Placeable List").GetProperty("value").EnumerateArray()
+            .Select(p => (Model: appearances.GetValue((int)Number(p, "Appearance"), "ModelName"), Placeable: p))
+            .Where(p => meshes.ContainsKey(p.Model))
+            .SelectMany(p => ReadCollisionBounds(meshes[p.Model], Matrix4x4.CreateRotationZ(Number(p.Placeable, "Bearing"))
+                * Matrix4x4.CreateTranslation(Number(p.Placeable, "X"), Number(p.Placeable, "Y"), Number(p.Placeable, "Z"))))
+            .ToArray();
+
+        var blocked = new List<string>();
+        foreach (var spawn in spawns)
+        {
+            var position = new Vector3(Number(spawn, "XPosition"), Number(spawn, "YPosition"), Number(spawn, "ZPosition"));
+            // A pirate spawned 0.25 m from a cargo stack was pushed inside its hollow collision.
+            var body = Enumerable.Range(0, 16).Select(i => position + new Vector3(
+                .75f * MathF.Cos(i * MathF.PI / 8), .75f * MathF.Sin(i * MathF.PI / 8), 0)).Prepend(position);
+            if (body.Any(sample => !floor.Any(t => Covers(t, sample, .5f)) || scenery.Any(bounds => Inside(bounds, sample))))
+                blocked.Add($"{Text(spawn, "Tag")} at {position}");
+        }
+        blocked.Should().BeEmpty("every encounter spawn needs walkable floor clear of scenery for a creature body");
+    }
+
+    [Test]
+    public void MedicalSublevel_UsesTwentyFixedGeneralSpawnsOnReachableClearFloor()
+    {
+        var root = FindRoot();
+        using var git = JsonDocument.Parse(File.ReadAllText(Path.Combine(root, "Module", "git", "pw_sc_dantmedsub.git.json")));
+        var area = git.RootElement;
+        area.GetProperty("VarTable").GetProperty("value").EnumerateArray()
+            .Should().NotContain(v => Text(v, "Name") == "CREATURE_SPAWN_TABLE_ID",
+                "random area positions put enemies inside and against the wall placeables");
+        var waypoints = area.GetProperty("WaypointList").GetProperty("value").EnumerateArray().ToArray();
+        var generalSpawns = waypoints.Where(w => Text(w, "Tag") == "CAPSTONE_DANTOOINE_MEDICAL_SUBLEVEL").ToArray();
+        generalSpawns.Should().HaveCount(20, "the 16 by 16 area previously received twenty random general spawns");
+        generalSpawns.Select(w => (Number(w, "XPosition"), Number(w, "YPosition"))).Should().OnlyHaveUniqueItems();
+
+        var spawnPoints = waypoints.Where(w => Text(w, "Tag") == "CAPSTONE_DANTOOINE_MEDICAL_SUBLEVEL"
+            || Text(w, "Tag") == "DANTOOINE_MEDICAL_SUBLEVEL_RARES" || Text(w, "Tag").EndsWith("_WD_SPAWN")).ToArray();
+        spawnPoints.Should().HaveCount(24);
+        var floor = ReadWalkableFloor(root, "pw_sc_dantmedsub", "sw_t_garage");
+        var appearances = TwoDAReader.Read(Path.Combine(root, "SWLOR_Haks", "sw_2da", "placeables.2da"));
+        var meshes = Directory.EnumerateFiles(Path.Combine(root, "SWLOR_Haks"), "*.pwk", SearchOption.AllDirectories)
+            .ToDictionary(Path.GetFileNameWithoutExtension, StringComparer.OrdinalIgnoreCase);
+        var scenery = area.GetProperty("Placeable List").GetProperty("value").EnumerateArray()
+            .Select(p => (Model: appearances.GetValue((int)Number(p, "Appearance"), "ModelName"), Placeable: p))
+            .Where(p => meshes.ContainsKey(p.Model))
+            .SelectMany(p => ReadCollisionBounds(meshes[p.Model], Matrix4x4.CreateRotationZ(Number(p.Placeable, "Bearing"))
+                * Matrix4x4.CreateTranslation(Number(p.Placeable, "X"), Number(p.Placeable, "Y"), Number(p.Placeable, "Z"))))
+            .ToArray();
+        var reachable = ReachableOnFoot(root, "pw_sc_dantmedsub", "sw_t_garage", "to_medsublevel");
+
+        foreach (var spawn in spawnPoints)
+        {
+            var position = new Vector3(Number(spawn, "XPosition"), Number(spawn, "YPosition"), Number(spawn, "ZPosition"));
+            var body = Enumerable.Range(0, 16).Select(i => position + new Vector3(
+                .75f * MathF.Cos(i * MathF.PI / 8), .75f * MathF.Sin(i * MathF.PI / 8), 0)).Prepend(position);
+            foreach (var sample in body)
+            {
+                floor.Any(t => Covers(t, sample)).Should().BeTrue($"{Text(spawn, "Tag")} at {position} needs walkable floor at {sample}");
+                scenery.Any(bounds => Inside(bounds, sample)).Should().BeFalse(
+                    $"{Text(spawn, "Tag")} at {position} must clear scenery at {sample}");
+            }
+            reachable(position.X, position.Y).Should().BeTrue(
+                $"{Text(spawn, "Tag")} at {position} must be reachable on foot from the entrance");
+        }
+    }
+
     // Qion Test Site, Forge Caverns and Canyon Range use base-game tiles whose walkmeshes are not in the repository.
     [TestCase("pw_sc_jedihalls", "sw_t_office")]
     [TestCase("pw_sc_cryptdeep", "sw_t_alienruin")]
@@ -189,6 +312,88 @@ public class DungeonEncounterWalkmeshTests
         }
     }
 
+    // Flood fill on foot from an arrival waypoint over native floor minus placeable collision.
+    private static Func<float, float, bool> ReachableOnFoot(string root, string area, string hakFolder, string entranceTag)
+    {
+        using var git = JsonDocument.Parse(File.ReadAllText(Path.Combine(root, "Module", "git", area + ".git.json")));
+        var placeables = git.RootElement.GetProperty("Placeable List").GetProperty("value").EnumerateArray().ToArray();
+        var waypoints = git.RootElement.GetProperty("WaypointList").GetProperty("value").EnumerateArray().ToArray();
+        const float cell = .25f;
+        const int size = (int)(160 / cell);
+        var floor = new bool[size, size];
+        foreach (var t in ReadWalkableFloor(root, area, hakFolder))
+            Rasterize(t, cell, size, (i, j, z) => { if (MathF.Abs(z) < .5f) floor[i, j] = true; });
+
+        var blocked = new bool[size, size];
+        var appearances = TwoDAReader.Read(Path.Combine(root, "SWLOR_Haks", "sw_2da", "placeables.2da"));
+        var meshes = Directory.EnumerateFiles(Path.Combine(root, "SWLOR_Haks"), "*.pwk", SearchOption.AllDirectories)
+            .ToDictionary(Path.GetFileNameWithoutExtension, StringComparer.OrdinalIgnoreCase);
+        foreach (var placeable in placeables)
+        {
+            if (!meshes.TryGetValue(appearances.GetValue((int)Number(placeable, "Appearance"), "ModelName"), out var mesh)) continue;
+            var placement = Matrix4x4.CreateRotationZ(Number(placeable, "Bearing"))
+                * Matrix4x4.CreateTranslation(Number(placeable, "X"), Number(placeable, "Y"), Number(placeable, "Z"));
+            // Slice collision at body height; bounding boxes would seal doorway panels, which are one mesh each.
+            foreach (var t in ReadCollisionTriangles(mesh, placement))
+            foreach (var height in new[] { .5f, 1f, 1.5f })
+            {
+                var crossings = new List<Vector3>();
+                for (var e = 0; e < 3; e++)
+                {
+                    var a = t[e]; var b = t[(e + 1) % 3];
+                    if (a.Z - height < 0 != b.Z - height < 0) crossings.Add(Vector3.Lerp(a, b, (height - a.Z) / (b.Z - a.Z)));
+                }
+                if (crossings.Count != 2) continue;
+                var steps = (int)(Vector3.Distance(crossings[0], crossings[1]) / (cell / 4)) + 2;
+                for (var s = 0; s < steps; s++)
+                {
+                    var p = Vector3.Lerp(crossings[0], crossings[1], s / (float)(steps - 1));
+                    var (i, j) = ((int)(p.X / cell), (int)(p.Y / cell));
+                    if (i >= 0 && j >= 0 && i < size && j < size) blocked[i, j] = true;
+                }
+            }
+        }
+
+        // A creature body needs half a metre of clearance from walls and the floor edge.
+        const int radius = 2;
+        var free = new bool[size, size];
+        for (var i = 0; i < size; i++)
+        for (var j = 0; j < size; j++)
+        {
+            free[i, j] = true;
+            for (var di = -radius; di <= radius && free[i, j]; di++)
+            for (var dj = -radius; dj <= radius && free[i, j]; dj++)
+            {
+                // Measure to the nearest edge of the neighbouring cell, not its centre.
+                var dx = MathF.Max(0, MathF.Abs(di) - .5f);
+                var dy = MathF.Max(0, MathF.Abs(dj) - .5f);
+                if (dx * dx + dy * dy > radius * radius) continue;
+                var (x, y) = (i + di, j + dj);
+                free[i, j] = x >= 0 && y >= 0 && x < size && y < size && floor[x, y] && !blocked[x, y];
+            }
+        }
+
+        (int, int) CellOf(JsonElement w) => ((int)(Number(w, "XPosition") / cell), (int)(Number(w, "YPosition") / cell));
+        var reached = new bool[size, size];
+        var queue = new Queue<(int, int)>();
+        var entrance = CellOf(waypoints.Single(w => Text(w, "Tag") == entranceTag));
+        free[entrance.Item1, entrance.Item2].Should().BeTrue("the entrance arrival point needs clear floor");
+        reached[entrance.Item1, entrance.Item2] = true;
+        queue.Enqueue(entrance);
+        while (queue.Count > 0)
+        {
+            var (i, j) = queue.Dequeue();
+            foreach (var (x, y) in new[] { (i + 1, j), (i - 1, j), (i, j + 1), (i, j - 1) })
+                if (x >= 0 && y >= 0 && x < size && y < size && free[x, y] && !reached[x, y])
+                {
+                    reached[x, y] = true;
+                    queue.Enqueue((x, y));
+                }
+        }
+
+        return (x, y) => reached[(int)(x / cell), (int)(y / cell)];
+    }
+
     private static bool Inside((Vector3 Min, Vector3 Max, Matrix4x4 Inverse) bounds, Vector3 sample)
     {
         var local = Vector3.Transform(sample, bounds.Inverse);
@@ -214,6 +419,47 @@ public class DungeonEncounterWalkmeshTests
             yield return (vertices.Aggregate(Vector3.Min), vertices.Aggregate(Vector3.Max), inverse);
         }
     }
+
+    private static IEnumerable<Vector3[]> ReadCollisionTriangles(string file, Matrix4x4 placement)
+    {
+        foreach (Match node in Regex.Matches(File.ReadAllText(file), @"(?is)node\s+trimesh\s+\S+\s+(.*?)endnode"))
+        {
+            var lines = node.Groups[1].Value.Split('\n').Select(l => l.Split((char[])null, StringSplitOptions.RemoveEmptyEntries)).Where(l => l.Length > 0).ToArray();
+            var vi = Array.FindIndex(lines, l => l[0] == "verts");
+            var fi = Array.FindIndex(lines, l => l[0] == "faces");
+            if (vi < 0 || fi < 0 || int.Parse(lines[vi][1]) == 0) continue;
+            var position = lines.Single(l => l[0] == "position").Skip(1).Select(Parse).ToArray();
+            var orientation = lines.Single(l => l[0] == "orientation").Skip(1).Select(Parse).ToArray();
+            var axis = new Vector3(orientation[0], orientation[1], orientation[2]);
+            var rotation = Math.Abs(orientation[3]) < .00001f ? Quaternion.Identity : Quaternion.CreateFromAxisAngle(Vector3.Normalize(axis), orientation[3]);
+            var transform = Matrix4x4.CreateFromQuaternion(rotation) * Matrix4x4.CreateTranslation(position[0], position[1], position[2]) * placement;
+            var vertices = lines.Skip(vi + 1).Take(int.Parse(lines[vi][1]))
+                .Select(l => Vector3.Transform(new Vector3(Parse(l[0]), Parse(l[1]), Parse(l[2])), transform)).ToArray();
+            foreach (var face in lines.Skip(fi + 1).Take(int.Parse(lines[fi][1])))
+                yield return face.Take(3).Select(i => vertices[int.Parse(i)]).ToArray();
+        }
+    }
+
+    // Calls back with the height of the triangle at every grid cell centre it covers.
+    private static void Rasterize(Vector3[] triangle, float cell, int size, Action<int, int, float> covered)
+    {
+        var a = triangle[0]; var u = triangle[1] - a; var v = triangle[2] - a;
+        var determinant = u.X * v.Y - u.Y * v.X;
+        if (Math.Abs(determinant) < .00001f) return;
+        var min = Vector3.Min(Vector3.Min(triangle[0], triangle[1]), triangle[2]);
+        var max = Vector3.Max(Vector3.Max(triangle[0], triangle[1]), triangle[2]);
+        for (var i = Math.Max(0, (int)(min.X / cell)); i <= Math.Min(size - 1, (int)(max.X / cell)); i++)
+        for (var j = Math.Max(0, (int)(min.Y / cell)); j <= Math.Min(size - 1, (int)(max.Y / cell)); j++)
+        {
+            var dx = (i + .5f) * cell - a.X; var dy = (j + .5f) * cell - a.Y;
+            var s = (dx * v.Y - dy * v.X) / determinant;
+            var t = (u.X * dy - u.Y * dx) / determinant;
+            if (s >= -.00001f && t >= -.00001f && s + t <= 1.00001f) covered(i, j, a.Z + s * u.Z + t * v.Z);
+        }
+    }
+
+    private static string Local(JsonElement o, string name) => o.GetProperty("VarTable").GetProperty("value").EnumerateArray()
+        .Single(v => Text(v, "Name") == name).GetProperty("Value").GetProperty("value").GetString()!;
 
     private static List<Vector3[]> ReadWalkableFloor(string root, string area, string hakFolder)
     {

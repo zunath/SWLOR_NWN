@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using SWLOR.Game.Server.EngineTests.Framework;
@@ -323,18 +324,18 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             }
         }
 
-        // A headless player has no client to accept an invitation, so this raises the accept event that
-        // the client's acceptance raises. The players share their template's NPC faction, so the native
-        // party is left alone; abilities, auras and telegraphs read the Party service membership.
+        // A headless player has no client to accept an invitation, so this runs the Party service's join
+        // that follows a client's acceptance. The engine never joins these players' native party, which the
+        // acceptance handler checks, so the join is called directly; abilities, auras and telegraphs read
+        // the Party service membership.
         private static void FormPlayerParties(List<uint> players)
         {
+            var addToParty = typeof(Party).GetMethod("AddToParty", BindingFlags.NonPublic | BindingFlags.Static);
             foreach (var party in players.Chunk(PartySize))
             {
+                var leader = party[0];
                 foreach (var member in party.Skip(1))
-                {
-                    EventsPlugin.PushEventData("INVITED_BY", ObjectToString(party[0]));
-                    EventsPlugin.SignalEvent("NWNX_ON_PARTY_ACCEPT_INVITATION_BEFORE", member);
-                }
+                    AssignCommand(member, () => addToParty.Invoke(null, new object[] { leader, member }));
             }
         }
 

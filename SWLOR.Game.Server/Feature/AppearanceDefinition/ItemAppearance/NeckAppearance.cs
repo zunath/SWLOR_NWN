@@ -22,21 +22,8 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.ItemAppearance
             return $"p{gender}{race.ToLowerInvariant()}{phenotype}";
         }
 
-        public static string ResolveModel(string body, int style, Func<int, int> fallback, Func<string, bool> exists)
-        {
-            if (string.IsNullOrEmpty(body) || body.Length < 4 || style <= 0 ||
-                !int.TryParse(body.AsSpan(3), out var phenotype))
-                return string.Empty;
-            var visited = new HashSet<int>();
-            while (visited.Add(phenotype))
-            {
-                var model = $"{body.Substring(0, 3)}{phenotype}_neck{style:D3}";
-                if (exists(model))
-                    return model;
-                phenotype = fallback(phenotype);
-            }
-            return string.Empty;
-        }
+        public static string ResolveModel(string body, int style, Func<int, int> fallback, Func<string, bool> exists) =>
+            ArmorPartAppearance.ResolveModel(body, AppearanceArmor.Neck, style, fallback, exists);
 
         public static string GetModel(uint creature, int style) => ResolveModel(GetBodyModel(creature, true), style,
             phenotype => int.TryParse(Get2DAString("phenotype", "DefaultPhenoType", phenotype), out var value) ? value : 0,

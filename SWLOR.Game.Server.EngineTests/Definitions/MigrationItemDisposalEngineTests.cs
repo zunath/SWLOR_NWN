@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Reflection;
 using System.Threading.Tasks;
 using SWLOR.Game.Server.EngineTests.Framework;
+using SWLOR.Game.Server.Feature.MigrationDefinition.ServerMigration;
 using SWLOR.NWN.API.NWNX;
 
 namespace SWLOR.Game.Server.EngineTests.Definitions
@@ -15,7 +16,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
         {
             var owner = ctx.SpawnCreature("civilian");
             await ctx.WaitFrameAsync();
-            var type = typeof(SWLOR.Game.Server.Feature.MigrationDefinition.ServerMigration._22_CombatSystemReplacement)
+            var type = typeof(SWLOR.Game.Server.Service.Migration)
                 .Assembly.GetType("SWLOR.Game.Server.Feature.MigrationDefinition.MigrationItemDisposal");
             var remove = type.GetMethod("Remove", BindingFlags.Public | BindingFlags.Instance);
             var containers = new List<uint>();

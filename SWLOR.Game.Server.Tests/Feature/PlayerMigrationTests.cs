@@ -1,37 +1,126 @@
 #nullable enable
 using System.Reflection;
 using FluentAssertions;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using NUnit.Framework;
 using SWLOR.Game.Server.Entity;
-using SWLOR.Game.Server.Feature.MigrationDefinition.PlayerMigration;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.CurrencyService;
-using SWLOR.Game.Server.Service.MigrationService;
 
 namespace SWLOR.Game.Server.Tests.Feature;
 
 public class PlayerMigrationTests
 {
+    // The upgrade tests below run the server's character upgrade over a minimal saved character that holds no class,
+    // items or quickbar, so the migrations they reach read and write the file without the game engine.
+    private const int RebuildTokens = 3;
+
+    private static int Latest => CharacterMigrations.LatestVersion;
+
+    private static Player Record(int version, int tokens = RebuildTokens)
+    {
+        var player = new Player("upgrade-test") { Version = version };
+        player.Currencies[CurrencyType.RebuildToken] = tokens;
+        return player;
+    }
+
     [TestCase(15)]
     [TestCase(17)]
-    public void CompletedPlayerCheckpointsDoNotRepeatLiveChangesOrRecordChanges(int checkpoint)
+    public void MigrationsAlreadyAppliedToTheRecordDoNotRepeatTheirRecordChanges(int checkpoint)
     {
-        var saved = PlayerJson(checkpoint);
-        var migrations = typeof(_17_RemoveWeaponStatOverrides).Assembly.GetTypes()
-            .Where(type => !type.IsAbstract && !type.IsInterface && typeof(IPlayerMigration).IsAssignableFrom(type))
-            .Select(type => (IPlayerMigration)Activator.CreateInstance(type)!)
-            .Where(migration => migration.Version <= checkpoint);
-        foreach (var migration in migrations)
-        {
-            var guarded = new TestMigration(migration.Version,
-                () => Assert.Fail($"Completed live migration {migration.Version} was repeated"),
-                _ => Assert.Fail($"Completed record migration {migration.Version} was repeated"));
-            ApplyWithFile(guarded, () => saved.ToObject<Player>()!,
-                _ => Assert.Fail("Completed record checkpoint must not be written again"),
-                () => checkpoint, _ => Assert.Fail("Completed file checkpoint must not be written again"));
-        }
-        saved.Should().BeEquivalentTo(PlayerJson(checkpoint));
+        var record = Record(checkpoint);
+        var upgraded = CharacterMigrations.Upgrade(SavedCharacterFile.Create(checkpoint), record);
+
+        upgraded.Should().NotBeNull("the file and the record are behind the latest migration");
+        upgraded!.Record.Version.Should().Be(Latest);
+        upgraded.Record.Currencies[CurrencyType.RebuildToken].Should().Be(RebuildTokens, "the rebuild token is granted by migration 15 only");
+        CharacterMigrations.ReadFileVersion(upgraded.File).Should().Be(Latest);
+    }
+
+    [Test]
+    public void ACurrentCharacterIsNotUpgradedAgain()
+    {
+        var record = Record(Latest);
+        var json = JsonConvert.SerializeObject(record);
+
+        CharacterMigrations.Upgrade(SavedCharacterFile.Create(Latest), record).Should().BeNull();
+
+        JsonConvert.SerializeObject(record).Should().Be(json, "a current character's record is not touched");
+    }
+
+    [Test]
+    public void BonusTokenAndPlayerVersionAreAdvancedTogetherAndOnlyOnce()
+    {
+        var file = SavedCharacterFile.Create(Latest);
+        var record = Record(14);
+
+        var upgraded = CharacterMigrations.Upgrade(file, record);
+
+        upgraded.Should().NotBeNull();
+        upgraded!.Record.Version.Should().Be(Latest);
+        upgraded.Record.Currencies[CurrencyType.RebuildToken].Should().Be(RebuildTokens + 1);
+        upgraded.File.Should().Equal(file, "a file that is not behind any migration is not changed");
+        CharacterMigrations.Upgrade(upgraded.File, upgraded.Record).Should().BeNull("a retry finds nothing left to upgrade");
+        upgraded.Record.Currencies[CurrencyType.RebuildToken].Should().Be(RebuildTokens + 1);
+    }
+
+    [TestCase(15)]
+    [TestCase(16)]
+    public void CurrentPlayersDoNotReceiveAnotherStartingOrMigrationToken(int version)
+    {
+        var upgraded = CharacterMigrations.Upgrade(SavedCharacterFile.Create(Latest), Record(version));
+
+        upgraded.Should().NotBeNull("the record is behind the latest migration");
+        upgraded!.Record.Currencies[CurrencyType.RebuildToken].Should().Be(RebuildTokens);
+    }
+
+    [Test]
+    public void BonusTokenIsAddedWhenTheCurrencyDictionaryHasNoTokenEntry()
+    {
+        var record = new Player("upgrade-test") { Version = 14 };
+        record.Currencies.Clear();
+
+        var upgraded = CharacterMigrations.Upgrade(SavedCharacterFile.Create(Latest), record);
+
+        upgraded!.Record.Version.Should().Be(Latest);
+        upgraded.Record.Currencies[CurrencyType.RebuildToken].Should().Be(1);
+    }
+
+    /// <summary>
+    /// A restored older character file is upgraded even when its record is current, without a second reward.
+    /// </summary>
+    [Test]
+    public void RestoredOlderCharacterFileIsUpgradedEvenWhenTheRecordIsCurrent()
+    {
+        var record = Record(Latest);
+
+        var upgraded = CharacterMigrations.Upgrade(SavedCharacterFile.Create(Latest - 1), record);
+
+        upgraded.Should().NotBeNull();
+        CharacterMigrations.ReadFileVersion(upgraded!.File).Should().Be(Latest);
+        upgraded.Record.Version.Should().Be(Latest);
+        upgraded.Record.Currencies[CurrencyType.RebuildToken].Should().Be(RebuildTokens);
+    }
+
+    /// <summary>
+    /// The upgrade saves the record before the file. A crash between the two leaves a record ahead of its unchanged
+    /// file, and the retry changes the file only.
+    /// </summary>
+    [Test]
+    public void RetryAfterTheRecordWasSavedButTheFileWasNotUpgradesTheFileOnly()
+    {
+        var original = SavedCharacterFile.Create(17);
+        var firstRecord = Record(14);
+        var first = CharacterMigrations.Upgrade(original, firstRecord);
+        first!.Record.Currencies[CurrencyType.RebuildToken].Should().Be(RebuildTokens + 1);
+
+        var retried = CharacterMigrations.Upgrade(original, first.Record);
+
+        retried.Should().NotBeNull("the unchanged file is still behind");
+        retried!.File.Should().Equal(first.File, "the retry reaches the same file");
+        retried.Record.Currencies[CurrencyType.RebuildToken].Should().Be(RebuildTokens + 1, "the record reward is not repeated");
+        retried.Record.Version.Should().Be(Latest);
     }
 
     [TestCase(0, false, true)]
@@ -78,309 +167,6 @@ public class PlayerMigrationTests
             (Action)(() => throw new InvalidOperationException("Injected identity export failure")),
             (Action<Player>)(_ => Assert.Fail("No initialization intent may be saved after an export failure")) });
         run.Should().Throw<TargetInvocationException>().WithInnerException<InvalidOperationException>();
-    }
-
-    [Test]
-    public void BonusTokenAndPlayerVersionAreSavedTogetherAfterRefreshingLiveChanges()
-    {
-        var saved = PlayerJson(14);
-        var saves = 0;
-        var migration = TokenMigration(() => saved["UnallocatedSP"] = 37);
-
-        Apply(migration, () => saved.ToObject<Player>()!, player =>
-        {
-            player.Version.Should().Be(15);
-            player.Currencies[CurrencyType.RebuildToken].Should().Be(4);
-            player.UnallocatedSP.Should().Be(37);
-            saved = JObject.FromObject(player);
-            saves++;
-        });
-
-        Apply(migration, () => saved.ToObject<Player>()!, _ => saves++);
-        saves.Should().Be(1);
-    }
-
-    [TestCase(15)]
-    [TestCase(16)]
-    public void CurrentPlayersDoNotReceiveAnotherStartingOrMigrationToken(int version)
-    {
-        var saved = PlayerJson(version);
-        var executed = false;
-        Apply(TokenMigration(() => executed = true), () => saved.ToObject<Player>()!, _ => Assert.Fail("Unexpected save"));
-        executed.Should().BeFalse();
-    }
-
-    [Test]
-    public void FailedLiveMigrationDoesNotGrantTokenOrAdvancePlayerVersion()
-    {
-        var saved = PlayerJson(14);
-        Action run = () => Apply(TokenMigration(() => throw new InvalidOperationException("item failure")),
-            () => saved.ToObject<Player>()!, _ => Assert.Fail("Unexpected save"));
-        run.Should().Throw<TargetInvocationException>().WithInnerException<InvalidOperationException>();
-        saved["Version"]!.Value<int>().Should().Be(14);
-        saved["Currencies"]!["RebuildToken"]!.Value<int>().Should().Be(3);
-    }
-
-    [TestCase(false)]
-    [TestCase(true)]
-    public void RetryingFailedSaveGrantsTokenOnceEvenIfTheWriteSucceededBeforeTheError(bool persistedBeforeError)
-    {
-        var saved = PlayerJson(14);
-        var migration = TokenMigration(() => { });
-        Action fail = () => Apply(migration, () => saved.ToObject<Player>()!, player =>
-        {
-            if (persistedBeforeError)
-                saved = JObject.FromObject(player);
-            throw new InvalidOperationException("lost save acknowledgement");
-        });
-        fail.Should().Throw<TargetInvocationException>().WithInnerException<InvalidOperationException>();
-
-        Apply(migration, () => saved.ToObject<Player>()!, player => saved = JObject.FromObject(player));
-        saved["Version"]!.Value<int>().Should().Be(15);
-        saved["Currencies"]!["RebuildToken"]!.Value<int>().Should().Be(4);
-    }
-
-    [Test]
-    public void AFailedLaterMigrationKeepsTheEarlierPlayerCheckpoint()
-    {
-        var saved = PlayerJson(13);
-        var firstRuns = 0;
-        var first = new TestMigration(14, () => firstRuns++);
-        void Save(Player player) => saved = JObject.FromObject(player);
-        Player Load() => saved.ToObject<Player>()!;
-
-        Apply(first, Load, Save);
-        Action fail = () => Apply(TokenMigration(() => throw new InvalidOperationException("item failure")), Load, Save);
-        fail.Should().Throw<TargetInvocationException>();
-
-        Apply(first, Load, Save);
-        firstRuns.Should().Be(1);
-        saved["Version"]!.Value<int>().Should().Be(14);
-        saved["Currencies"]!["RebuildToken"]!.Value<int>().Should().Be(3);
-    }
-
-    [TestCase(1)]
-    [TestCase(2)]
-    public void FailedPlayerLoadDoesNotSaveOrGrantTokenAndCanBeRetried(int failingLoad)
-    {
-        var saved = PlayerJson(14);
-        var loads = 0;
-        var liveRuns = 0;
-        var migration = TokenMigration(() => liveRuns++);
-        Action fail = () => Apply(migration, () =>
-        {
-            if (++loads == failingLoad)
-                throw new InvalidOperationException("Player record unavailable");
-            return saved.ToObject<Player>()!;
-        }, _ => Assert.Fail("A failed load must prevent saving"));
-
-        fail.Should().Throw<TargetInvocationException>().WithInnerException<InvalidOperationException>();
-        liveRuns.Should().Be(failingLoad - 1);
-        saved.Should().BeEquivalentTo(PlayerJson(14));
-
-        Apply(migration, () => saved.ToObject<Player>()!, player => saved = JObject.FromObject(player));
-        saved["Version"]!.Value<int>().Should().Be(15);
-        saved["Currencies"]!["RebuildToken"]!.Value<int>().Should().Be(4);
-    }
-
-    /// <summary>
-    /// Verifies a failed data hook cannot leak staged state or duplicate a rebuild token on retry.
-    /// </summary>
-    [Test]
-    public void FailedDataHookDiscardsUnsavedChangesAndRetryGrantsOnlyOneToken()
-    {
-        var saved = PlayerJson(14);
-        var failHook = true;
-        var migration = new TestMigration(15, () => { }, player =>
-        {
-            new _15_RemoveObsoleteCombatInstructionDiscs().MigratePlayerData(player);
-            if (failHook)
-                throw new InvalidOperationException("Data update failed");
-        });
-        Action fail = () => Apply(migration, () => saved.ToObject<Player>()!,
-            _ => Assert.Fail("A failed data hook must prevent saving"));
-        fail.Should().Throw<TargetInvocationException>().WithInnerException<InvalidOperationException>();
-        saved.Should().BeEquivalentTo(PlayerJson(14));
-
-        failHook = false;
-        Apply(migration, () => saved.ToObject<Player>()!, player => saved = JObject.FromObject(player));
-        saved["Version"]!.Value<int>().Should().Be(15);
-        saved["Currencies"]!["RebuildToken"]!.Value<int>().Should().Be(4);
-    }
-
-    /// <summary>
-    /// Verifies failure leaves the shared cached player at its last durable checkpoint.
-    /// </summary>
-    [TestCase(false)]
-    [TestCase(true)]
-    public void FailedMigrationDoesNotAdvanceTheSharedCachedPlayer(bool failInDataHook)
-    {
-        var persisted = PlayerJson(14);
-        var cached = persisted.ToObject<Player>()!;
-        var fail = true;
-        var migration = new TestMigration(15, () => { }, player =>
-        {
-            new _15_RemoveObsoleteCombatInstructionDiscs().MigratePlayerData(player);
-            if (fail && failInDataHook)
-                throw new InvalidOperationException("Data hook failed");
-        });
-        void Save(Player player)
-        {
-            if (fail)
-                throw new InvalidOperationException("Save failed before persistence");
-            persisted = JObject.FromObject(player);
-            cached = player;
-        }
-
-        Action first = () => Apply(migration, () => cached, Save);
-        first.Should().Throw<TargetInvocationException>().WithInnerException<InvalidOperationException>();
-        cached.Version.Should().Be(14, "DB.Get returns the shared cached instance");
-        cached.Currencies[CurrencyType.RebuildToken].Should().Be(3, "an unsaved token must not leak into the cache");
-        persisted.Should().BeEquivalentTo(PlayerJson(14));
-
-        fail = false;
-        Apply(migration, () => cached, Save);
-        cached.Version.Should().Be(15);
-        cached.Currencies[CurrencyType.RebuildToken].Should().Be(4);
-        persisted["Version"]!.Value<int>().Should().Be(15);
-        persisted["Currencies"]!["RebuildToken"]!.Value<int>().Should().Be(4);
-    }
-
-    [Test]
-    public void BonusTokenIsAddedWhenTheCurrencyDictionaryHasNoTokenEntry()
-    {
-        var saved = PlayerJson(14);
-        saved["Currencies"] = new JObject();
-        Apply(TokenMigration(() => { }), () => saved.ToObject<Player>()!, player => saved = JObject.FromObject(player));
-        saved["Version"]!.Value<int>().Should().Be(15);
-        saved["Currencies"]!["RebuildToken"]!.Value<int>().Should().Be(1);
-    }
-
-    [Test]
-    public void LiveOnlyMigrationSavesRefreshedDataAndAdvancesTheExistingVersion()
-    {
-        var saved = PlayerJson(12);
-        var migration = new TestMigration(13, () => saved["UnallocatedSP"] = 42);
-        Apply(migration, () => saved.ToObject<Player>()!, player => saved = JObject.FromObject(player));
-        saved["Version"]!.Value<int>().Should().Be(13);
-        saved["UnallocatedSP"]!.Value<int>().Should().Be(42);
-        saved["Currencies"]!["RebuildToken"]!.Value<int>().Should().Be(3);
-    }
-
-    private static JObject PlayerJson(int version) => new()
-    {
-        ["Version"] = version,
-        ["Currencies"] = new JObject { ["RebuildToken"] = 3 }
-    };
-
-    private static IPlayerMigration TokenMigration(Action migrate)
-    {
-        IPlayerMigration migration = new _15_RemoveObsoleteCombatInstructionDiscs();
-        return new TestMigration(migration.Version, migrate, migration.MigratePlayerData);
-    }
-
-    private static void Apply(IPlayerMigration migration, Func<Player> load, Action<Player> save)
-    {
-        var fileVersion = 0;
-        Player Load()
-        {
-            var player = load();
-            fileVersion = player.Version;
-            return player;
-        }
-        ApplyWithFile(migration, Load, save, () => fileVersion, _ => { });
-    }
-
-    private static bool ApplyWithFile(IPlayerMigration migration, Func<Player> load, Action<Player> save,
-        Func<int> loadFileVersion, Action<int> saveFileVersion) =>
-        (bool)typeof(Migration).GetMethod("ApplyPlayerMigration", BindingFlags.NonPublic | BindingFlags.Static)!
-            .Invoke(null, new object[] { migration, 0u, load, save, loadFileVersion, saveFileVersion })!;
-
-    [TestCase(21)]
-    [TestCase(22)]
-    public void DeferredEquipmentRepairAllowsLoginWithoutCompletingEitherCheckpoint(int databaseVersion)
-    {
-        var saved = PlayerJson(databaseVersion);
-        var fileVersion = 21;
-        var blocked = true;
-        var runs = 0;
-        var recordRuns = 0;
-        var migration = new TestMigration(22, () =>
-        {
-            runs++;
-            if (blocked) throw new PlayerMigrationDeferredException("Free inventory space before retrying.");
-        }, _ => recordRuns++);
-        bool Run() => ApplyWithFile(migration, () => saved.ToObject<Player>()!,
-            player => saved = JObject.FromObject(player), () => fileVersion, version => fileVersion = version);
-
-        Run().Should().BeFalse("the login runner must stop pending migrations without booting the player");
-        Run().Should().BeFalse();
-        fileVersion.Should().Be(21);
-        saved.Should().BeEquivalentTo(PlayerJson(databaseVersion));
-        recordRuns.Should().Be(0);
-
-        blocked = false;
-        Run().Should().BeTrue();
-        Run().Should().BeTrue();
-        fileVersion.Should().Be(22);
-        saved["Version"]!.Value<int>().Should().Be(22);
-        runs.Should().Be(3, "the completed repair must not run again");
-        recordRuns.Should().Be(databaseVersion == 21 ? 1 : 0);
-    }
-
-    /// <summary>
-    /// Replays file changes after an old BIC is restored without granting a second database reward.
-    /// </summary>
-    [Test]
-    public void RestoredOlderCharacterFileIsMigratedEvenWhenDatabaseIsCurrent()
-    {
-        var saved = PlayerJson(15);
-        var fileVersion = 14;
-        var liveRuns = 0;
-        ApplyWithFile(TokenMigration(() => liveRuns++), () => saved.ToObject<Player>()!,
-            _ => Assert.Fail("The completed database reward must not run again"),
-            () => fileVersion, version => fileVersion = version);
-        liveRuns.Should().Be(1);
-        fileVersion.Should().Be(15);
-        saved.Should().BeEquivalentTo(PlayerJson(15));
-    }
-
-    /// <summary>
-    /// A saved file is authoritative for native changes when the database checkpoint write must be retried.
-    /// </summary>
-    [Test]
-    public void DatabaseSaveRetryDoesNotRepeatASuccessfullySavedLiveMigration()
-    {
-        var saved = PlayerJson(14);
-        var fileVersion = 14;
-        var liveRuns = 0;
-        var migration = TokenMigration(() => liveRuns++);
-        Action first = () => ApplyWithFile(migration, () => saved.ToObject<Player>()!,
-            _ => throw new InvalidOperationException("Database unavailable"),
-            () => fileVersion, version => fileVersion = version);
-        first.Should().Throw<TargetInvocationException>();
-        fileVersion.Should().Be(15);
-        saved["Version"]!.Value<int>().Should().Be(14);
-
-        ApplyWithFile(migration, () => saved.ToObject<Player>()!, player => saved = JObject.FromObject(player),
-            () => fileVersion, version => fileVersion = version);
-        liveRuns.Should().Be(1);
-        saved["Version"]!.Value<int>().Should().Be(15);
-        saved["Currencies"]!["RebuildToken"]!.Value<int>().Should().Be(4);
-    }
-
-    /// <summary>
-    /// A character save failure must prevent recording migration completion or its reward in the database.
-    /// </summary>
-    [Test]
-    public void FailedCharacterSaveDoesNotAdvanceTheDatabaseOrGrantTokens()
-    {
-        var saved = PlayerJson(14);
-        Action run = () => ApplyWithFile(TokenMigration(() => { }), () => saved.ToObject<Player>()!,
-            _ => Assert.Fail("Character saving must succeed first"),
-            () => 14, _ => throw new InvalidOperationException("Character file write failed"));
-        run.Should().Throw<TargetInvocationException>();
-        saved.Should().BeEquivalentTo(PlayerJson(14));
     }
 
     [TestCase(false)]
@@ -438,12 +224,5 @@ public class PlayerMigrationTests
                 (Func<int>)(() => 0), (Action<int>)(_ => Assert.Fail("File save must not be reached")) });
         run.Should().Throw<TargetInvocationException>();
         initialized.Should().BeFalse();
-    }
-
-    private sealed class TestMigration(int version, Action migrate, Action<Player>? updateRecord = null) : IPlayerMigration
-    {
-        public int Version => version;
-        public void Migrate(uint player) => migrate();
-        public void MigratePlayerData(Player player) => updateRecord?.Invoke(player);
     }
 }

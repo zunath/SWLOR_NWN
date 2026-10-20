@@ -6641,7 +6641,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Stuck — hutlar_orbit"
+            "0": "Stuck - hutlar_orbit"
           }
         },
         "MapNote": {

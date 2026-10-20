@@ -12,7 +12,8 @@ with a review that holds its findings. The latest answer after the request wins.
 comment is edited in place and is ignored here, as are answers for older commits.
 
 Exit codes: 0 clean, 1 findings, 2 no review of the head (usage limit, the head moved during the
-wait, or another reply), 3 no answer before the timeout.
+wait, or another reply), 3 no answer before the timeout, 4 the script itself failed (for example a
+GitHub CLI or network error), so the head is unreviewed.
 
 .EXAMPLE
 powershell -NoProfile -File tools/RequestCodexReview.ps1 -PullRequest 2745
@@ -37,6 +38,12 @@ Set-StrictMode -Version Latest
 $ErrorActionPreference = "Stop"
 
 $codexLogin = "chatgpt-codex-connector[bot]"
+
+# Exit code 1 means findings, so any other failure gets its own code.
+trap {
+    "RequestCodexReview failed: $_"
+    exit 4
+}
 
 try {
     # Decode gh output as UTF-8 so finding titles print intact.
@@ -91,7 +98,7 @@ function Get-CodexAnswer {
         })
     foreach ($review in $reviews) {
         $kind = if ($review.body -match $cleanVerdict) { "clean" } else { "findings" }
-        $answers += [pscustomobject]@{ Kind = $kind; Time = (ConvertTo-UtcTime $review.submitted_at); Item = $review }
+        $answers += [pscustomobject]@{ Kind = $kind; Time = (ConvertTo-UtcTime $review.submitted_at); Id = [long]0; Item = $review }
     }
 
     $comments = @(Get-GitHubList "repos/$Repository/issues/$PullRequest/comments" | Where-Object {
@@ -99,18 +106,22 @@ function Get-CodexAnswer {
             $_.body -notmatch "codex-pull-request-review-summary"
         })
     foreach ($comment in $comments | Where-Object { $_.body -match "codex-review-receipt" -and $_.body -match $shortHead }) {
-        $kind = if ($comment.body -match $cleanVerdict) { "clean" } elseif ($comment.body -match $findingBadge) { "findings" } else { "other" }
-        $answers += [pscustomobject]@{ Kind = $kind; Time = (ConvertTo-UtcTime $comment.created_at); Item = $comment }
+        # A receipt without a verdict is not an answer; it takes the grace path below.
+        $kind = if ($comment.body -match $cleanVerdict) { "clean" } elseif ($comment.body -match $findingBadge) { "findings" } else { $null }
+        if ($kind) {
+            $answers += [pscustomobject]@{ Kind = $kind; Time = (ConvertTo-UtcTime $comment.created_at); Id = [long]$comment.id; Item = $comment }
+        }
     }
 
     # A finding can also arrive as a plain comment that carries a priority badge. It counts for the
     # head only when it names the head commit; a delayed comment from an older review does not.
     foreach ($comment in $comments | Where-Object { $_.body -notmatch "codex-review-receipt" -and $_.body -match $findingBadge -and $_.body -match $shortHead }) {
-        $answers += [pscustomobject]@{ Kind = "findings"; Time = (ConvertTo-UtcTime $comment.created_at); Item = $comment }
+        $answers += [pscustomobject]@{ Kind = "findings"; Time = (ConvertTo-UtcTime $comment.created_at); Id = [long]$comment.id; Item = $comment }
     }
 
     if ($answers.Count -gt 0) {
-        $latest = $answers | Sort-Object Time | Select-Object -Last 1
+        # Comment ids break ties between answers posted in the same second.
+        $latest = $answers | Sort-Object Time, Id | Select-Object -Last 1
         return @{ Kind = $latest.Kind; Item = $latest.Item; ForHead = $true }
     }
 
@@ -119,7 +130,10 @@ function Get-CodexAnswer {
         return @{ Kind = "limit"; Item = $limit; ForHead = $false }
     }
 
-    $other = $comments | Where-Object { $_.body -notmatch "codex-review-receipt" } | Select-Object -Last 1
+    $other = $comments | Where-Object {
+        $_.body -notmatch "codex-review-receipt" -or
+        ($_.body -match $shortHead -and $_.body -notmatch $cleanVerdict -and $_.body -notmatch $findingBadge)
+    } | Select-Object -Last 1
     if ($other) {
         return @{ Kind = "other"; Item = $other; ForHead = $false }
     }
@@ -161,9 +175,11 @@ function Write-Findings {
         "- $priority $($thread.path):$line $title"
     }
 
-    if ($threads.Count -eq 0) {
-        "The findings are in the review body:"
-        ($Review.body -replace "(?s)<details>.*?</details>", "" -replace "(?s)<!--.*?-->", "").Trim()
+    # Findings can sit in the review body too, whether or not there are inline threads.
+    $reviewBody = ($Review.body -replace "(?s)<details>.*?</details>", "" -replace "(?s)<!--.*?-->", "").Trim()
+    if ($reviewBody) {
+        "Review body:"
+        $reviewBody
     }
 }
 
@@ -191,6 +207,12 @@ if ($WaitOnly) {
     } | Select-Object -Last 1
     if (-not $request) {
         throw "$target has no @codex review request to wait on."
+    }
+
+    # A request that names another head belongs to a superseded commit.
+    if ($request.body -match "head ([0-9a-f]{7,40})" -and -not $head.StartsWith($Matches[1])) {
+        "The latest request on $target was for $($Matches[1]), not the current head $shortHead; request a review of the new head."
+        exit 2
     }
 
     $since = ConvertTo-UtcTime $request.created_at

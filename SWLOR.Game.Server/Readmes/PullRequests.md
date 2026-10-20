@@ -26,6 +26,7 @@ Every pull request gets a Codex review, repeated until a review of the current h
    - `1`: findings, listed by file and line. Fix or answer every one (see Review threads), push the fixes, resolve the threads, and go back to step 1, even if you only answered.
    - `2`: no review of this head. A usage limit ends the loop: report the unreviewed commit to the user. If the head moved during the wait, go back to step 1. Read any other reply and act on it.
    - `3`: no answer within 30 minutes. If it says Codex is still reviewing, rerun it once with `-WaitOnly`. If there is still no answer, run step 1 once more; if that also gets no answer, report the unreviewed commit to the user.
+   - `4`: the script itself failed (an error line says why, such as a missing or old `gh` or a network error). Fix the cause and rerun; if it keeps failing, report the unreviewed commit to the user.
 3. Repeat until the latest review of the current head of the parent and every companion is clean.
 
 - Each companion pull request runs its own loop with `-Repository zunath/SWLOR_Haks`. Name the other pull request on both with `-Note "companion zunath/SWLOR_NWN#<pr>"`. The loops can run at the same time.

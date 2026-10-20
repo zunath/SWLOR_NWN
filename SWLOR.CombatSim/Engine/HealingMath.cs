@@ -79,8 +79,9 @@ namespace SWLOR.CombatSim.Engine
             if (f.PercentOfMaxHpShare >= 1f)
                 return PercentOfMaxHp(targetMaxHp, percent);
 
-            var sizedFrom = f.PercentOfMaxHpShare * (double)targetMaxHp + (1.0 - f.PercentOfMaxHpShare) * f.ReferenceMaxHp;
-            return Math.Max(1, (int)Math.Ceiling(sizedFrom * percent / 100.0));
+            // Same float arithmetic as PercentOfMaxHp, so a target at the reference max HP heals exactly as in the game.
+            var sizedFrom = f.ReferenceMaxHp + f.PercentOfMaxHpShare * (targetMaxHp - f.ReferenceMaxHp);
+            return Math.Max(1, (int)Math.Ceiling(sizedFrom * (percent / 100f)));
         }
 
         /// <summary>

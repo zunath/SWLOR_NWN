@@ -44,7 +44,7 @@ namespace SWLOR.CombatSim.Tests.Rules
         [TestCase("{ \"healPercentOfMaxHpShare\": 0.25 }", "HealReferenceMaxHp")]
         [TestCase("{ \"healReferenceMaxHp\": -1 }", "HealReferenceMaxHp")]
         [TestCase("{ \"healStatMultiplierAtBaseline\": -0.5 }", "HealStatMultiplierAtBaseline")]
-        [TestCase("{ \"healStatMultiplierAtCap\": 11 }", "HealStatMultiplierAtCap")]
+        [TestCase("{ \"healStatMultiplierAtCap\": 2.5 }", "HealStatMultiplierAtCap")]
         public void Load_RejectsValuesOutsideTheirRange_NamingFileAndValue(string json, string valueName)
         {
             var path = WriteRules("out-of-range.json", json);

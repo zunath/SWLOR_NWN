@@ -90,6 +90,21 @@ namespace SWLOR.CombatSim.Tests.Engine
         }
 
         [Test]
+        public void HealBase_AtTheReferenceMaxHp_HealsExactlyAsTheGameForAnyShare()
+        {
+            // Float rounding matters here: 3.75% of 400 is 15.0000006 in the game's float math, so the game heals 16.
+            HealingMath.PercentOfMaxHp(400, 3.75f).Should().Be(16);
+            foreach (var share in new[] { 0f, 0.25f, 0.3f, 0.7f, 0.99f })
+            foreach (var maxHp in new[] { 1, 375, 400, 925, 1525, 10_000_000 })
+            foreach (var percent in new[] { 0.6f, 1f, 2.5f, 3.75f, 6f, 14f, 17.5f, 36f })
+            {
+                var formula = HealFormula.Game with { PercentOfMaxHpShare = share, ReferenceMaxHp = maxHp };
+                HealingMath.HealBase(maxHp, percent, formula).Should().Be(HealingMath.PercentOfMaxHp(maxHp, percent),
+                    $"{percent}% of {maxHp} with share {share}");
+            }
+        }
+
+        [Test]
         public void HealBase_AllFlat_HealsEveryTargetTheSame()
         {
             var formula = HealFormula.Game with { PercentOfMaxHpShare = 0f, ReferenceMaxHp = 900 };

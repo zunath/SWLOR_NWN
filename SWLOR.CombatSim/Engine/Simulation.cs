@@ -1055,8 +1055,8 @@ namespace SWLOR.CombatSim.Engine
                 caster.OutgoingHealingPercent,
                 // The game heals 0.1s after the revive, once the ability's impact has ended, so Combat Readiness never applies.
                 0f,
-                // A revive restores a share of the target's own HP under every rule set.
-                HealFormula.Game);
+                // A revive restores a share of the target's own HP under every rule set; Willpower still scales it.
+                _healFormula with { PercentOfMaxHpShare = 1f });
             _pendingHeals.Add(new PendingHeal { Source = caster, Target = target, Amount = heal, Kind = HealKind.Revive, At = _now + ReviveHealDelaySeconds });
         }
 

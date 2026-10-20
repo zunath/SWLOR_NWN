@@ -12,8 +12,11 @@ namespace SWLOR.CombatSim.Rules
     {
         public const float MaximumCostMultiplier = 100f;
 
-        /// <summary>Keeps heal multipliers small enough for every heal to stay a sensible whole number.</summary>
-        public const float MaximumHealMultiplier = 10f;
+        /// <summary>
+        /// The game's top Willpower multiplier is 1.25. Up to 2 keeps the largest heal (Emergency Triage on a low
+        /// 10,000,000 HP target with every percent bonus at its limit) a whole number that fits.
+        /// </summary>
+        public const float MaximumHealMultiplier = 2f;
 
         public string Name { get; set; }
 
@@ -23,7 +26,7 @@ namespace SWLOR.CombatSim.Rules
         /// <summary>
         /// Share of each heal and shield sized from the target's own max HP, from 0 to 1. The rest is sized from
         /// <see cref="HealReferenceMaxHp"/>, a flat amount the same for every target. 1 is the game (all percent).
-        /// Revive heals always keep their percent.
+        /// Revive heals always keep their percent but follow the Willpower multipliers below.
         /// </summary>
         public float HealPercentOfMaxHpShare { get; set; } = 1f;
 

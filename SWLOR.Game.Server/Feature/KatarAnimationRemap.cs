@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.LogService;
@@ -112,9 +113,6 @@ namespace SWLOR.Game.Server.Feature
         private static void SyncKatarRemapState(uint creature, bool forceRefresh = false)
         {
             Grip.Refresh(creature, forceRefresh);
-            // A queued swing owns the 1h aliases; its release forces another sync.
-            if (QueuedAttackAnimation.IsActive(creature))
-                return;
             var rightHand = GetItemInSlot(InventorySlot.RightHand, creature);
             var leftHand = GetItemInSlot(InventorySlot.LeftHand, creature);
             BaseItem? rightHandBaseItem = GetIsObjectValid(rightHand) ? GetBaseItemType(rightHand) : null;
@@ -208,8 +206,12 @@ namespace SWLOR.Game.Server.Feature
         // Applies every configured animation replacement for this creature.
         private static void ApplyKatarRemap(uint creature)
         {
+            // A queued swing owns the swing keys; its release forces another sync.
+            var queued = QueuedAttackAnimation.IsActive(creature);
             foreach (var (oldAnimation, newAnimation) in _remapPairs)
             {
+                if (queued && QueuedAttackAnimationPlayback.SwingKeys.Contains(oldAnimation))
+                    continue;
                 ReplaceObjectAnimation(creature, oldAnimation, newAnimation);
             }
 
@@ -219,8 +221,11 @@ namespace SWLOR.Game.Server.Feature
         // Restores all replaced animation keys
         private static void RestoreKatarRemap(uint creature)
         {
+            var queued = QueuedAttackAnimation.IsActive(creature);
             foreach (var (oldAnimation, _) in _remapPairs)
             {
+                if (queued && QueuedAttackAnimationPlayback.SwingKeys.Contains(oldAnimation))
+                    continue;
                 ReplaceObjectAnimation(creature, oldAnimation);
             }
 

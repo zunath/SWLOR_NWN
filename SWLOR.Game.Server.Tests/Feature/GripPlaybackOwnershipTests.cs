@@ -88,6 +88,11 @@ public class GripPlaybackOwnershipTests
         {
             public static class DB { public static T Get<T>(string id) where T:new() => new(); public static void Set(object value) {} }
             public static class QueuedAttackAnimation { public static bool IsActive(uint c) => World.AttackActive; }
+            public static class QueuedAttackAnimationPlayback
+            {
+                public static System.Collections.Generic.IReadOnlyList<string> SwingKeys { get; } = new[] { "1h", "2h", "2w", "pl" }
+                    .SelectMany(p => new[] { "slashl", "slashr", "slasho", "stab", "closeh", "closel", "reach" }.Select(s => p + s)).ToArray();
+            }
         }
         public static class World
         {

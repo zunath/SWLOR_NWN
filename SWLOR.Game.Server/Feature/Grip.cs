@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Service;
@@ -69,16 +70,24 @@ public static class Grip
         var desired = GetMode(GetLocalBool(creature, EnabledVariable),
             GetIsObjectValid(right) ? GetBaseItemType(right) : null, GetIsObjectValid(left) && left != right);
         var applied = GetLocalInt(creature, ModeVariable);
-        if (desired != applied || right != GetLocalObject(creature, RightHandVariable) ||
-            left != GetLocalObject(creature, LeftHandVariable) || playTransition)
+        var handsChanged = right != GetLocalObject(creature, RightHandVariable) ||
+                           left != GetLocalObject(creature, LeftHandVariable);
+        if (desired != applied || handsChanged || playTransition)
             InvalidateTransition(creature);
         SetLocalObject(creature, RightHandVariable, right);
         SetLocalObject(creature, LeftHandVariable, left);
         // Equipment changes also invalidate timers while a queued swing owns the combat mappings.
-        if (QueuedAttackAnimation.IsActive(creature)) return;
-        ApplyTransition(desired, applied, forceRefresh,
-            (source, destination) => ReplaceObjectAnimation(creature, source, destination));
+        // A canceled same-mode transition timer was the only thing that restored the carry alias, so reapply it.
+        var reapply = forceRefresh || (handsChanged && desired == 2 && applied == 2);
+        // A queued swing owns the swing keys; everything else changes now and the queue's release forces the rest.
+        var queued = QueuedAttackAnimation.IsActive(creature);
+        ApplyTransition(desired, applied, reapply, (source, destination) =>
+        {
+            if (!queued || !QueuedAttackAnimationPlayback.SwingKeys.Contains(source))
+                ReplaceObjectAnimation(creature, source, destination);
+        });
         SetLocalInt(creature, ModeVariable, desired);
+        if (queued) return;
         if (ShouldPlayTransition(desired, applied, playTransition,
                 GetIsObjectValid(right) && GetMode(true, GetBaseItemType(right), false) != 0))
         {

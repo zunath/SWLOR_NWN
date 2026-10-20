@@ -81,8 +81,9 @@ namespace SWLOR.Game.Server.Feature
         [NWNEventHandler(ScriptName.OnSpaceExit)]
         public static void RestoreGhostOnSpaceExit()
         {
+            // A pilot killed with their ship leaves space mode dead; their revive restores the ghost.
             var player = OBJECT_SELF;
-            if (ShouldHaveGhost(player))
+            if (ShouldHaveGhost(player) && !GetIsDead(player))
                 ApplyCutsceneGhostToPlayer(player);
         }
 

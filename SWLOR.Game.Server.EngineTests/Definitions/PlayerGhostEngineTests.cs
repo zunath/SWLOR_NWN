@@ -44,6 +44,10 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 ReviveRulesEngineTests.DestroyCorpsePlaceable(player);
                 ctx.Assert(!GetGhostFlag(player) && CountGhosts(player) == 0, "Death strips the login ghost");
 
+                // A pilot killed with their ship leaves space mode dead.
+                await ctx.ExecuteInCreatureContextAsync(player, () => ExecuteScript(ScriptName.OnSpaceExit, player));
+                ctx.AssertEqual(0, CountGhosts(player), "Ghost effects on a dead player leaving space mode");
+
                 var activated = false;
                 await ctx.ExecuteInCreatureContextAsync(caster, () =>
                     activated = UsePerkFeat.TryUseAbility(caster, player, FeatType.Resuscitation1, GetLocation(player)));

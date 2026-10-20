@@ -2,6 +2,8 @@
 
 This document provides detailed information about how ability definitions work in SWLOR.Game.Server and how they use the AbilityBuilder pattern.
 
+For design and balance requirements, read [SkillPerkStandards.md](SkillPerkStandards.md). The examples here illustrate API shape; use the current Bible and definitions for actual values and eligibility.
+
 ## Overview
 
 Ability definitions are located in the `Feature/AbilityDefinition/` directory and are organized by category (Force, Blade, HeavyWeapon, etc.). Each ability definition implements the `IAbilityListDefinition` interface and uses the `AbilityBuilder` to create complex ability configurations.
@@ -249,7 +251,7 @@ Located in `Feature/AbilityDefinition/Blade/`, `HeavyWeapon/`, `Ranged/`
 
 **Common Patterns:**
 - Use weapon damage
-- Require specific weapon types
+- Support cross-skill use under [SkillPerkStandards.md](SkillPerkStandards.md); source-skill ownership alone does not require that weapon
 - Often have physical damage type
 - Use combat skills for bonuses
 

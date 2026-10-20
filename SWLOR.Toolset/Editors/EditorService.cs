@@ -842,7 +842,7 @@ namespace SWLOR.Toolset.Editors
         {
             if (_compileService == null || !_compileService.IsAvailable)
             {
-                _log.AppendLine("Cannot compile: nwn_script_comp.exe is missing from tools/SWLOR.CLI.");
+                _log.AppendLine("Cannot compile: The native NWScript compiler is missing. Run repository setup or reinstall the toolset.");
                 return;
             }
 

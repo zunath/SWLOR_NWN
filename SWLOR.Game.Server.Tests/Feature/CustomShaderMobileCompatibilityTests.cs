@@ -21,6 +21,11 @@ public class CustomShaderMobileCompatibilityTests
         @"<<|>>|(?<!&)&(?!&)|(?<!\|)\|(?!\|)|(?<!\^)\^(?!\^)|%|~",
         RegexOptions.Compiled);
 
+    // "#define NAME body" or "#define NAME(args) body"; captures the replacement text.
+    private static readonly Regex MacroReplacement = new(
+        @"^#\s*define\s+\w+(\([^)]*\))?(?<body>.*)$",
+        RegexOptions.Compiled);
+
     [Test]
     public void CustomShaders_UseNoBitwiseOperatorsInCodeTheMobileClientCompiles()
     {
@@ -55,12 +60,16 @@ public class CustomShaderMobileCompatibilityTests
         const string unguarded = "int Unpack(int packedData)\n{\n    return (packedData >> 3) & 0x3;\n}\n";
         const string guarded = "#ifndef MOBILE\n" + unguarded + "#endif\n";
         const string elseGuarded = "#ifdef MOBILE\nint Unpack(int packedData) { return 0; }\n#else\n" + unguarded + "#endif\n";
-        const string logicalOnly = "bool Both(bool a, bool b) { return a && b || a ^^ b; }\n#if (FLAGS & 2)\n#endif\n";
+        const string logicalOnly = "bool Both(bool a, bool b) { return a && b || a ^^ b; }\n#if (FLAGS & 2)\n#endif\n#define SHADER_TYPE 2\n";
+        const string macro = "#define UNPACK(v) ((v >> 3) & 3)\nint Unpack(int v) { return UNPACK(v); }\n";
+        const string guardedMacro = "#ifndef MOBILE\n#define UNPACK(v) ((v >> 3) & 3)\n#endif\n";
 
         FindMobileUnsupportedLines(unguarded).Should().ContainSingle();
         FindMobileUnsupportedLines(guarded).Should().BeEmpty();
         FindMobileUnsupportedLines(elseGuarded).Should().BeEmpty();
         FindMobileUnsupportedLines(logicalOnly).Should().BeEmpty();
+        FindMobileUnsupportedLines(macro).Should().ContainSingle();
+        FindMobileUnsupportedLines(guardedMacro).Should().BeEmpty();
     }
 
     private static IEnumerable<string> FindMobileUnsupportedLines(string shader)
@@ -116,6 +125,17 @@ public class CustomShaderMobileCompatibilityTests
                         break;
                     case "endif":
                         if (conditions.Count > 0) { conditions.Pop(); }
+                        break;
+                    case "define":
+                        // Macro bodies are expanded into the code that uses them, so an
+                        // active definition's replacement text is checked like code.
+                        var replacement = MacroReplacement.Match(directive);
+                        if (replacement.Success
+                            && conditions.All(condition => condition != false)
+                            && replacement.Groups["body"].Value.Trim().Length > 0)
+                        {
+                            yield return (index + 1, replacement.Groups["body"].Value);
+                        }
                         break;
                 }
 

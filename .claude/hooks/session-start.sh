@@ -59,12 +59,19 @@ start_xvfb() {
 }
 
 # SessionStart also fires after /clear and compaction. Once a full run has prepared this
-# container, only the environment above and the display need refreshing.
+# container with the current setup inputs, only the environment above and the display need
+# refreshing. The marker holds a fingerprint of those inputs, so changing one reruns setup.
 DONE=/tmp/swlor-session-start.done
-if [ -e "$DONE" ]; then
+inputs=$(cat "$REPO/.claude/hooks/session-start.sh" "$REPO/tools/native-tools.json" \
+  "$REPO/tools/toolset_common.py" "$REPO/tools/nwn_visual_check/requirements.txt" 2>/dev/null |
+  sha256sum | cut -d' ' -f1)
+if [ "$(cat "$DONE" 2>/dev/null)" = "$inputs" ]; then
   start_xvfb
   exit 0
 fi
+# A required step that fails clears this, leaving the marker unwritten so the next session start
+# tries again.
+complete=1
 
 # --- System packages: libpcre3 for the native NWN tools, Wine for the Windows-only tools, Xvfb
 # and Mesa for OpenGL tests ---
@@ -96,12 +103,11 @@ fi
 git -C "$REPO" config core.fileMode false
 (cd "$REPO" && git ls-files -z '*.exe' | xargs -0 -r chmod +x)
 # The first run also creates the Wine prefix. Pipe the output: Wine tools fail writing to /dev/null.
-"$REPO/tools/SWLOR.CLI/nwn_erf.exe" --version 2>&1 | grep -q 'Version:' || log "nwn_erf.exe did not run under Wine"
+"$REPO/tools/SWLOR.CLI/nwn_erf.exe" --version 2>&1 | grep -q 'Version:' ||
+  { complete=0; log "nwn_erf.exe did not run under Wine"; }
 
 # --- Native NWN tools: the pinned neverwinter.nim release from tools/native-tools.json, downloaded
 # and checksum-verified by the same code Setup.sh uses ---
-# A failure leaves the done marker unwritten, so the next session start tries again.
-complete=1
 python3 -I -c 'import sys; sys.path.insert(0, sys.argv[1]); import toolset_common; toolset_common.prepare_native_tools()' \
   "$REPO/tools" >&2 || { complete=0; log "Could not prepare the native NWN tools in $NATIVE_TOOLS"; }
 
@@ -132,7 +138,7 @@ mkdir -p "$HOME/.local/share/Neverwinter Nights"
 [ -e /tmp/swlor-game-data.done ] ||
   log "Game data is copying to /opt/nwn in the background; see /tmp/swlor-game-data.log"
 if [ "$complete" = 1 ]; then
-  touch "$DONE"
+  echo "$inputs" > "$DONE"
   log "Done"
 else
   log "Done, with the failures above; the next session start retries them"

@@ -120,6 +120,9 @@ else
     rm -f "$STAMPS/haks"
     work="$SERVER_HOME/.hak-build"
     rm -rf "$work"
+    # The staged tree copies or stubs every HAK resource; never leave it behind.
+    trap 'rm -rf "$work"' EXIT
+    trap 'exit 130' INT TERM HUP
     mkdir -p "$work"
     python3 - "$REPO_ROOT" "$work" "$SERVER_HOME" <<'STAGE_HAKS'
 import json, os, shutil, sys
@@ -153,6 +156,7 @@ print(f"Staged {len(haks)} HAKs: {kept} files kept, {stubbed} replaced with zero
 STAGE_HAKS
     (cd "$work" && dotnet "$CLI_DLL" --hak)
     rm -rf "$work"
+    trap - EXIT INT TERM HUP
     echo "$haks_stamp" > "$STAMPS/haks"
 fi
 du -sh "$SERVER_HOME/hak" "$SERVER_HOME/tlk"

@@ -49,6 +49,21 @@ drop_fetched_blobs() {
 
 sha=$(git -C "$REPO" rev-parse HEAD:SWLOR_Haks)
 module_gitdir=$(git -C "$REPO" rev-parse --path-format=absolute --git-path modules/SWLOR_Haks)
+if [ -d "$module_gitdir" ] && [ ! -e "$HAKS/.git" ]; then
+  # The repository survived but its worktree did not (git submodule deinit, for example). Without
+  # a .git link, git -C "$HAKS" would act on the parent repository, so restore the link first.
+  if [ -n "$(ls -A "$HAKS" 2>/dev/null)" ]; then
+    log "SWLOR_Haks holds files but no repository link; leaving it alone"
+    exit 1
+  fi
+  log "Restoring the SWLOR_Haks worktree from $module_gitdir"
+  packs="$module_gitdir/objects/pack"
+  snapshot=$(mktemp)
+  ls "$packs"/*.pack > "$snapshot"
+  git -C "$REPO" submodule --quiet update --init SWLOR_Haks
+  drop_fetched_blobs "$packs" "$snapshot"
+  rm -f "$snapshot"
+fi
 if [ -d "$module_gitdir" ]; then
   current=$(git -C "$HAKS" rev-parse HEAD 2>/dev/null || true)
   sparse=$(git -C "$HAKS" config --bool core.sparseCheckout || echo false)
@@ -108,9 +123,12 @@ else
   log "Checkout complete"
 fi
 
-# Git stores the .exe tools without the executable bit. Set it, and stop git reporting it.
+# Git stores the .exe tools without the executable bit. Set it, and stop git reporting it. A sparse
+# checkout lists tools outside its folders too, so only the ones on disk are changed.
 git -C "$HAKS" config core.fileMode false
-(cd "$HAKS" && git ls-files -z '*.exe' | xargs -0 -r chmod +x)
+(cd "$HAKS" && git ls-files -z '*.exe' | while IFS= read -r -d '' tool; do
+  [ ! -f "$tool" ] || chmod +x "$tool"
+done)
 
 if [ -f "$HAKS/requirements.txt" ]; then
   PIP_BREAK_SYSTEM_PACKAGES=1 python3 -m pip install -q --disable-pip-version-check \

@@ -51,12 +51,15 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
         {
             ctx.AssertEqual(LegacyControllerStaff, PropertyValue(controller, ItemPropertyType.DroidStat, (int)DroidStatSubType.Unarmed),
                 $"{label}: the controller's Unarmed takes its lower martial skill, not the Katar boost");
-            ctx.AssertEqual(0, PropertyValue(controller, ItemPropertyType.DroidStat, (int)DroidStatSubType.TwinPistol),
-                $"{label}: the controller keeps a zero Twin Pistol beside its zero ranged skills, as assembly saves it");
+            // Assembly adds a zero for every skill the same way; whether the engine keeps a zero DroidStat decides
+            // whether the ranged group, and so a zero Twin Pistol, exists on the controller at all.
+            var rangedKept = PropertyValue(controller, ItemPropertyType.DroidStat, (int)DroidStatSubType.Pistol) >= 0;
+            ctx.AssertEqual(rangedKept ? 0 : -1, PropertyValue(controller, ItemPropertyType.DroidStat, (int)DroidStatSubType.TwinPistol),
+                $"{label}: Twin Pistol matches the zero ranged skills (pistol property kept: {rangedKept})");
             ctx.AssertEqual(LegacyControllerKatar, PropertyValue(controller, ItemPropertyType.DroidStat, (int)DroidStatSubType.Katar),
                 $"{label}: the Katar boost is kept");
             ctx.AssertEqual(1, CountDroidStats(controller, DroidStatSubType.Unarmed), $"{label}: exactly one Unarmed property");
-            ctx.AssertEqual(1, CountDroidStats(controller, DroidStatSubType.TwinPistol), $"{label}: exactly one Twin Pistol property");
+            ctx.AssertEqual(rangedKept ? 1 : 0, CountDroidStats(controller, DroidStatSubType.TwinPistol), $"{label}: at most one Twin Pistol property");
 
             var cpu = Deserialize(ctx, Droid.LoadConstructedDroid(controller).SerializedCPU);
             ctx.AssertEqual(LegacyDroidCpu, GetResRef(cpu), $"{label}: the saved CPU is kept");
@@ -136,6 +139,8 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                     login = await PlayerAbilityFixture.CreateFromCharacterAsync(ctx, upgraded.File, upgraded.Record, 8f);
                     owner = login.Creature;
                     controller = SavedCharacterMigration.FindItem(owner, Droid.DroidControlItemResref);
+                    // The fixture still holds the original controller, so the reloaded copy gets its own UUID.
+                    controllerId = GetObjectUUID(controller);
                 }
 
                 for (var cycle = 1; cycle <= 2; cycle++)

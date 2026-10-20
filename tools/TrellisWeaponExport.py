@@ -1157,6 +1157,15 @@ def load_compiler(repo):
     return wrapper,{'wrapper':{'path':str(wrapper_path),'sha256':wrapper.SNAPSHOT_SHA256},'wrapper_helper':{'path':str(helper_path),'sha256':helper.SNAPSHOT_SHA256}}
 
 
+def compile_with_snapshot(compiler, compiler_path, ascii_dir, out):
+    """Compile with a private copy of the executable, and confirm afterwards that the copy is still those bytes, so
+    the reported identity is the binary that ran."""
+    copy,snapshot=snapshot_tool(compiler_path,out/'compiler_snapshot')
+    compiler.compile_models(copy,ascii_dir,out/'compiled',[])
+    require(tool_identity(copy)['sha256']==snapshot['sha256'],'Compiler snapshot changed during compilation')
+    return snapshot
+
+
 def require(condition, message):
     if not condition:raise ValueError(message)
 
@@ -1335,10 +1344,7 @@ def package(args, repo, out):
             shutil.copy2(source,ascii_dir/source.name)
             if source.suffix=='.mtr':shutil.copy2(source,runtime/source.name)
     compiler,wrapper_identity=load_compiler(repo)
-    compiler_path=compiler.CleanModels.find_compiler(args.compiler)
-    # Compile with a private immutable copy so the reported identity is the binary that ran.
-    compiler_copy,compiler_snapshot=snapshot_tool(compiler_path,out/'compiler_snapshot')
-    compiler.compile_models(compiler_copy,ascii_dir,out/'compiled',[])
+    compiler_snapshot=compile_with_snapshot(compiler,compiler.CleanModels.find_compiler(args.compiler),ascii_dir,out)
     compiler_identity={'name':'CleanModels','version':compiler.CleanModels.VERSION,'path':compiler_snapshot['path'],'sha256':compiler_snapshot['sha256'],**wrapper_identity}
     for source in (out/'compiled').glob('*.mdl'):shutil.copy2(source,runtime/source.name)
     helper=load_module_snapshot('trellis_weapon_normals',Path(__file__).with_name('TrellisWeaponNormals.py'))

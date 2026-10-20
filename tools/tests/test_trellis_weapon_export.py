@@ -10,6 +10,7 @@ from pathlib import Path
 import struct
 import sys
 import tempfile
+from types import SimpleNamespace
 import unittest
 import unittest.mock
 
@@ -427,6 +428,15 @@ class TrellisWeaponExportTests(unittest.TestCase):
         self.assertEqual(identity['wrapper']['sha256'],hashlib.sha256((ROOT/'tools/CompileBlasterModels.py').read_bytes()).hexdigest())
         self.assertEqual(identity['wrapper_helper']['sha256'],hashlib.sha256((ROOT/'SWLOR_Haks/tools/CleanModels.py').read_bytes()).hexdigest())
         self.assertEqual(wrapper.SNAPSHOT_SHA256,identity['wrapper']['sha256']);self.assertEqual(wrapper.CleanModels.SNAPSHOT_SHA256,identity['wrapper_helper']['sha256'])
+
+    def test_compiler_snapshot_is_verified_after_compilation(self):
+        tool=self.root/'cleanmodels.exe';tool.write_bytes(b'compiler-one');seen=[]
+        def compile_models(copy,ascii_dir,output,names):seen.append(Path(copy).read_bytes())
+        snapshot=exporter.compile_with_snapshot(SimpleNamespace(compile_models=compile_models),tool,self.root,self.root/'first')
+        self.assertEqual(seen,[b'compiler-one']);self.assertEqual(snapshot['sha256'],hashlib.sha256(b'compiler-one').hexdigest())
+        def swapped(copy,ascii_dir,output,names):Path(copy).write_bytes(b'compiler-two')
+        with self.assertRaisesRegex(ValueError,'changed during compilation'):
+            exporter.compile_with_snapshot(SimpleNamespace(compile_models=swapped),tool,self.root,self.root/'second')
 
     def test_tools_run_from_an_immutable_snapshot(self):
         tool=self.root/'crunch.exe';tool.write_bytes(b'one')

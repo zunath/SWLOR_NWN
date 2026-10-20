@@ -42,7 +42,8 @@ if [ -f "$DEST/data/nwn_base.key" ] && [ "$(cat "$MARKER" 2>/dev/null)" = "$imag
 fi
 if ! docker info >/dev/null 2>&1; then
   log "Starting the Docker daemon (log: /tmp/dockerd.log)"
-  setsid nohup dockerd >/tmp/dockerd.log 2>&1 </dev/null &
+  # 9>&-: the daemon outlives this hook and must not keep holding its lock.
+  setsid nohup dockerd >/tmp/dockerd.log 2>&1 </dev/null 9>&- &
   for _ in $(seq 1 30); do docker info >/dev/null 2>&1 && break; sleep 1; done
 fi
 

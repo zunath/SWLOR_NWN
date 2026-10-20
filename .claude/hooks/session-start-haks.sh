@@ -57,6 +57,9 @@ if [ -d "$module_gitdir" ] && [ ! -e "$HAKS/.git" ]; then
     exit 1
   fi
   log "Restoring the SWLOR_Haks worktree from $module_gitdir"
+  # Fetch the pinned commit first, so its commit and tree packs are in the snapshot and kept.
+  git --git-dir="$module_gitdir" cat-file -e "$sha^{commit}" 2>/dev/null \
+    || git --git-dir="$module_gitdir" fetch -q --depth 1 --filter=blob:none origin "$sha"
   packs="$module_gitdir/objects/pack"
   snapshot=$(mktemp)
   ls "$packs"/*.pack > "$snapshot"

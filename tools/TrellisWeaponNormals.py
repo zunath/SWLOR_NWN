@@ -67,6 +67,12 @@ def node_matrix(node):
     result=np.eye(4);result[:3,:3]=r@np.diag(node.get('scale',[1,1,1]));result[:3,3]=node.get('translation',[0,0,0]);return result
 
 
+def producer_sha256():
+    """Hash of the helper bytes actually executing: the loader's snapshot when present."""
+    snapshot=globals().get('SNAPSHOT_SHA256')
+    return snapshot if snapshot else hashlib.sha256(Path(__file__).read_bytes()).hexdigest()
+
+
 def source_basis(document,binary,config,material_names,path):
     """Bind source glTF TBN and UVs to the explicit proper, uniform native fit."""
     fit=np.eye(4);fit[:3,:3]=np.asarray(config['orientation'])*config['scale'];fit[:3,3]=np.asarray(config['target_grip'])-fit[:3,:3]@np.asarray(config['source_grip'])
@@ -105,7 +111,7 @@ def source_basis(document,binary,config,material_names,path):
             for key,value in values.items():target[key].extend(value)
     arrays={name+'__'+key:np.asarray(value) for name,group in groups.items() for key,value in group.items()}
     np.savez_compressed(path,**arrays)
-    return {'path':path.name,'sha256':hashlib.sha256(path.read_bytes()).hexdigest(),'source_sha256':config['sha256'],'producer_sha256':hashlib.sha256(Path(__file__).read_bytes()).hexdigest(),'materials':sorted(groups),'uv':'native U=glTF U; native V=1-glTF V; source tangent handedness is preserved separately'}
+    return {'path':path.name,'sha256':hashlib.sha256(path.read_bytes()).hexdigest(),'source_sha256':config['sha256'],'producer_sha256':producer_sha256(),'materials':sorted(groups),'uv':'native U=glTF U; native V=1-glTF V; source tangent handedness is preserved separately'}
 
 
 def native_meshes(path):

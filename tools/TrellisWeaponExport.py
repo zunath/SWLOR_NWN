@@ -806,7 +806,7 @@ def export_one(config,source,repo,out,mode,helpers,icon_size):
             target=merged.setdefault(name,([],[],[],[]));offset=len(target[0])
             target[0].extend(mesh[0]);target[1].extend(mesh[1]);target[2].extend(tuple(i+offset for i in f) for f in mesh[2]);target[3].extend(mesh[3])
         mesh_names=list(merged);mesh_data=list(merged.values())
-        normal_helper=load_module('trellis_weapon_normals',Path(__file__).with_name('TrellisWeaponNormals.py'))
+        normal_helper=load_module_snapshot('trellis_weapon_normals',Path(__file__).with_name('TrellisWeaponNormals.py'))
         report['source_normal_basis']=normal_helper.source_basis(doc,binary,config,names,out/'source_basis.npz')
         model=config['model']
         old_objects=objects
@@ -1190,11 +1190,10 @@ def package(args, repo, out):
             if source.suffix=='.mtr':shutil.copy2(source,runtime/source.name)
     compiler=load_module('weapon_compiler',repo/'tools/CompileBlasterModels.py')
     compiler_path=compiler.CleanModels.find_compiler(args.compiler)
-    # Bind the report to the executable that ran: hash it before and after compilation.
-    compiler_sha=hashlib.sha256(compiler_path.read_bytes()).hexdigest()
-    compiler.compile_models(compiler_path,ascii_dir,out/'compiled',[])
-    require(hashlib.sha256(compiler_path.read_bytes()).hexdigest()==compiler_sha,'CleanModels executable changed during compilation')
-    compiler_identity={'name':'CleanModels','version':compiler.CleanModels.VERSION,'path':str(compiler_path),'sha256':compiler_sha}
+    # Compile with a private immutable copy so the reported identity is the binary that ran.
+    compiler_copy,compiler_snapshot=snapshot_tool(compiler_path,out/'compiler_snapshot')
+    compiler.compile_models(compiler_copy,ascii_dir,out/'compiled',[])
+    compiler_identity={'name':'CleanModels','version':compiler.CleanModels.VERSION,'path':compiler_snapshot['path'],'sha256':compiler_snapshot['sha256']}
     for source in (out/'compiled').glob('*.mdl'):shutil.copy2(source,runtime/source.name)
     helper=load_module_snapshot('trellis_weapon_normals',Path(__file__).with_name('TrellisWeaponNormals.py'))
     import numpy as np

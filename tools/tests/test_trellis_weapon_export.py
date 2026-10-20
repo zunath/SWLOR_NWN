@@ -414,6 +414,11 @@ class TrellisWeaponExportTests(unittest.TestCase):
             with self.subTest(record=record),self.assertRaisesRegex(ValueError,'different TrellisWeaponNormals'):
                 exporter.require_basis_producer(record,helper.SNAPSHOT_SHA256)
 
+    def test_basis_producer_hash_names_the_loaded_snapshot(self):
+        path=ROOT/'tools/TrellisWeaponNormals.py';helper=exporter.load_module_snapshot('normals_snapshot_test',path)
+        self.assertEqual(helper.producer_sha256(),hashlib.sha256(path.read_bytes()).hexdigest())
+        helper.SNAPSHOT_SHA256='f'*64;self.assertEqual(helper.producer_sha256(),'f'*64)
+
     def test_tools_run_from_an_immutable_snapshot(self):
         tool=self.root/'crunch.exe';tool.write_bytes(b'one')
         copy,identity=exporter.snapshot_tool(tool,self.root/'snapshot');tool.write_bytes(b'two')

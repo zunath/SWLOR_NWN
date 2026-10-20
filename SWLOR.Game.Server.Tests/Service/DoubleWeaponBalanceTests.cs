@@ -35,6 +35,7 @@ public class DoubleWeaponBalanceTests
         new("chi_twinblade", BaseItem.TwoBladedSword, 24, 23),
         new("chi_twinelec", BaseItem.TwinElectroBlade, 24, 24),
         new("circle_twin", BaseItem.TwoBladedSword, 23, 23),
+        new("cnt_twinblade", BaseItem.TwoBladedSword, 15, 23),
         new("crosswind_edge", BaseItem.TwoBladedSword, 23, 23),
         new("del_twinblade", BaseItem.TwoBladedSword, 13, 23),
         new("duel_splitter", BaseItem.TwoBladedSword, 23, 23),
@@ -104,13 +105,13 @@ public class DoubleWeaponBalanceTests
         new("car_twinblade", BaseItem.TwoBladedSword, 32, 29),
         new("cer_twinblade", BaseItem.TwoBladedSword, 37, 29),
         new("crm_twinblade", BaseItem.TwoBladedSword, 54, 29),
-        new("darkadept_wp", BaseItem.Saberstaff, 138, 29),
+        new("darkadept_wp", BaseItem.Saberstaff, 184, 29),
         new("dmnpckoyeestaff", BaseItem.Saberstaff, 68, 29),
         new("mandowarhero_wp", BaseItem.TwoBladedSword, 34, 29),
         new("psychopris4_wp", BaseItem.TwoBladedSword, 24, 29),
         new("sithassassin_wp", BaseItem.Saberstaff, 34, 29),
         new("sithinq2_wp", BaseItem.Saberstaff, 72, 29),
-        new("sithinq_wp", BaseItem.Saberstaff, 109, 29),
+        new("sithinq_wp", BaseItem.Saberstaff, 136, 29),
         new("sithinqapp_wp", BaseItem.Saberstaff, 59, 29),
         new("sithinqinit_wp", BaseItem.Saberstaff, 50, 29),
         new("str_twinblade", BaseItem.TwoBladedSword, 48, 29),
@@ -158,7 +159,9 @@ public class DoubleWeaponBalanceTests
             stats.DelayProperty.Should().Be(weapon.DelayProperty, weapon.Resref + " must retain its normalized attack-delay property");
         }
 
+        // NPC-only weapons (NO_ECONOMY) carry World NPC damage budgets, which NPCCombatBudgetTests guards.
         var actualPlayerWeapons = Directory.EnumerateFiles(utiDirectory, "*.uti.json")
+            .Where(path => !IsNpcOnly(path))
             .Select(ReadBlueprint)
             .Where(x => IsDoubleWeapon(x.BaseItem) && (x.DelayProperty == 23 || x.DelayProperty == 24))
             .Select(x => x.Resref)
@@ -201,6 +204,15 @@ public class DoubleWeaponBalanceTests
             .ToHashSet(StringComparer.OrdinalIgnoreCase);
         actualFixedBudgetWeapons.Should().BeEquivalentTo(expected.Keys,
             "every explicit Delay 290 double weapon must be consciously reviewed as a fixed legacy budget");
+    }
+
+    private static bool IsNpcOnly(string path)
+    {
+        using var document = JsonDocument.Parse(File.ReadAllText(path));
+        return document.RootElement.TryGetProperty("VarTable", out var variables) &&
+               variables.GetProperty("value").EnumerateArray().Any(variable =>
+                   variable.GetProperty("Name").GetProperty("value").GetString() == Item.NoEconomyVariable &&
+                   variable.GetProperty("Value").GetProperty("value").GetInt32() == 1);
     }
 
     private static (string Resref, BaseItem BaseItem, int? Damage, int? DelayProperty) ReadBlueprint(string path)

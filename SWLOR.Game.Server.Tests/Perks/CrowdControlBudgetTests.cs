@@ -31,10 +31,11 @@ public class CrowdControlBudgetTests
                 var args = call.ArgumentList.Arguments;
                 IEnumerable<ArgumentSyntax> payload;
                 string budget;
-                if (method == "ConfigureWeaponAbility" && args.Count >= 22 && args[9].Expression.ToString() == "true")
+                // The profile is the 21st argument; an optional area visual effect may follow it.
+                if (method == "ConfigureWeaponAbility" && args.Count >= 21 && args[9].Expression.ToString() == "true")
                 {
-                    payload = new[] { args[4], args[5], args[21] };
-                    budget = args[21].DescendantNodes().OfType<AssignmentExpressionSyntax>()
+                    payload = new[] { args[4], args[5], args[20] };
+                    budget = args[20].DescendantNodes().OfType<AssignmentExpressionSyntax>()
                         .FirstOrDefault(a => a.Left.ToString() == "MaximumAreaTargets")?.Right.ToString();
                 }
                 else if (method == "InnateAbility.BuildArea")

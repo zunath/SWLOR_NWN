@@ -30,12 +30,13 @@ Declare targeting metadata on the ability definition through the builder, never 
 
 The client builds the radial's Special Abilities > Standard list and the quickbar's class ability menu only from known feats that have a row in `SWLOR_Haks/sw_2da/CLS_FEAT_FIGHT.2da`. A player ability feat without one still works from an existing hotkey but never appears in either menu, so players cannot find or bind it.
 
-- Give every rank of a player ability exactly one `CLS_FEAT_FIGHT` row: `FeatLabel` equal to its `feat.2da` `LABEL`, `List=1`, `GrantedOnLevel=99` and `OnMenu=1`. The canonical feat must also link to a `spells.2da` row whose `Label` matches and whose `FeatID` points back to it.
-- A rank that presents a manual hostile target cursor (hostile, not a queued weapon ability, and `RequiresTarget` or `RequiresLocationTarget`) must use a row below 1024; the client's hotbar scan stops there. Reuse a free row below 1024 before appending.
+- Give every rank of a player ability exactly one `CLS_FEAT_FIGHT` row: `FeatLabel` equal to its `feat.2da` `LABEL`, `List=1`, `GrantedOnLevel=99` and `OnMenu=1`.
+- A castable ability's feat must also link to a `spells.2da` row whose `Label` matches and whose `FeatID` points back to it. Passive Mimicry traits are the exception: they keep `SPELLID=****` (`MimicryTests` validates them).
+- A rank that presents a manual hostile target cursor (hostile, not a queued weapon ability, and `RequiresTarget` or `RequiresLocationTarget`) must use a row below 1024; the client's hotbar scan stops there. Ghost Protocol must also stay below 1024, because automatic quickbar placement can leave it without a primary-bar slot. Reuse a free row below 1024 before appending, and never move these rows above it.
 - Hide a retired generated feat's row (`List` and `OnMenu` not `1`) instead of leaving it visible.
 - The `AutoCast<Feat>` alias rows for optional targeting are generated separately; see [Generate and validate the native variants](#generate-and-validate-the-native-variants).
 
-`PlayerAbilityRadialMenuTests` enforces these rows and `QuickCastTests` enforces the alias rows. In the client, check Special Abilities > Standard with both Settings > Targeting options off and with each one on.
+`PlayerAbilityRadialMenuTests` enforces these rows only for player ability feats with IDs of 2000 and above; older active abilities below 2000 (such as `Provoke1`, `Provoke2` and `Tame`) follow the same rules but are not covered, so check their rows by hand when you change them. `QuickCastTests` enforces the alias rows. In the client, with both Settings > Targeting options off and then with each one on, check that the ability appears under the radial's Special Abilities > Standard and that it can be bound from the quickbar class menu (right-click an empty slot, Special Abilities > Standard) and fired from that slot.
 
 ## Optional self-cast and current-enemy targeting
 

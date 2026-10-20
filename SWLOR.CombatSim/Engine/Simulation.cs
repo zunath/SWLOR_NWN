@@ -71,6 +71,7 @@ namespace SWLOR.CombatSim.Engine
 
         private readonly ScenarioSpec _scenario;
         private readonly RuleSet _rules;
+        private readonly HealFormula _healFormula;
         private readonly AbilityCatalog _catalog;
         private readonly Random _random;
         private readonly List<Combatant> _combatants = new();
@@ -86,6 +87,7 @@ namespace SWLOR.CombatSim.Engine
         {
             _scenario = scenario;
             _rules = rules;
+            _healFormula = HealFormula.From(rules);
             _catalog = catalog;
             _random = new Random(seed);
         }
@@ -526,7 +528,8 @@ namespace SWLOR.CombatSim.Engine
                         target.Spec.MaxHp,
                         source.Spec.Willpower,
                         instance.AffinityMultiplier,
-                        source.OutgoingHealingPercent);
+                        source.OutgoingHealingPercent,
+                        _healFormula);
                     ApplyHealing(source, target, amount, HealKind.OverTime);
 
                     instance.TicksLeft--;
@@ -576,7 +579,8 @@ namespace SWLOR.CombatSim.Engine
                     caster.Spec.ForceAffinity,
                     _rules.ForceAffinityHealingCap,
                     caster.OutgoingHealingPercent,
-                    caster.Spec.CombatReadinessPercent);
+                    caster.Spec.CombatReadinessPercent,
+                    _healFormula);
                 ApplyHealing(caster, ally, amount, kind);
             }
         }
@@ -812,7 +816,8 @@ namespace SWLOR.CombatSim.Engine
                         caster.Spec.ForceAffinity,
                         _rules.ForceAffinityHealingCap,
                         caster.OutgoingHealingPercent,
-                        caster.Spec.CombatReadinessPercent);
+                        caster.Spec.CombatReadinessPercent,
+                        _healFormula);
                     ApplyHealing(caster, target, heal, HealKind.InstantAbility);
                     break;
 
@@ -1049,7 +1054,9 @@ namespace SWLOR.CombatSim.Engine
                 _rules.ForceAffinityHealingCap,
                 caster.OutgoingHealingPercent,
                 // The game heals 0.1s after the revive, once the ability's impact has ended, so Combat Readiness never applies.
-                0f);
+                0f,
+                // A revive restores a share of the target's own HP under every rule set.
+                HealFormula.Game);
             _pendingHeals.Add(new PendingHeal { Source = caster, Target = target, Amount = heal, Kind = HealKind.Revive, At = _now + ReviveHealDelaySeconds });
         }
 
@@ -1423,7 +1430,8 @@ namespace SWLOR.CombatSim.Engine
                 source.Spec.Social,
                 source.Spec.ForceAffinity,
                 _rules.ForceAffinityHealingCap,
-                source.Spec.CombatReadinessPercent);
+                source.Spec.CombatReadinessPercent,
+                _healFormula);
 
             if (IsInPvpCombat(target))
                 amount *= _rules.PvpTemporaryHpMultiplier;

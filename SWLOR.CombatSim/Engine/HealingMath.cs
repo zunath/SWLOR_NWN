@@ -10,7 +10,6 @@ namespace SWLOR.CombatSim.Engine
     {
         private const int ScalingBaselineStat = 10;
         private const int ScalingCapStat = 26;
-        private const float MaximumStatBonus = 0.25f;
 
         public static float StatProgress(int stat)
         {
@@ -18,12 +17,18 @@ namespace SWLOR.CombatSim.Engine
             return (clamped - ScalingBaselineStat) / (float)(ScalingCapStat - ScalingBaselineStat);
         }
 
-        public static int ScaleByStat(int baseAmount, int stat)
+        /// <summary>
+        /// Scales by the healer's Willpower: in the game, +0 at 10 up to +25% at 26. A formula whose baseline multiplier
+        /// is below 1 cuts heals from low Willpower instead.
+        /// </summary>
+        public static int ScaleByStat(int baseAmount, int stat, HealFormula? formula = null)
         {
             if (baseAmount <= 0)
                 return baseAmount;
 
-            return baseAmount + (int)Math.Ceiling(baseAmount * MaximumStatBonus * StatProgress(stat));
+            var f = formula ?? HealFormula.Game;
+            var multiplier = f.StatMultiplierAtBaseline + (f.StatMultiplierAtCap - f.StatMultiplierAtBaseline) * StatProgress(stat);
+            return baseAmount + (int)Math.Ceiling(baseAmount * (multiplier - 1f));
         }
 
         public static float SocialScaledPercent(float minimum, float maximum, int social)
@@ -65,6 +70,20 @@ namespace SWLOR.CombatSim.Engine
             Math.Max(1, (int)Math.Ceiling(maxHp * (percent / 100f)));
 
         /// <summary>
+        /// A heal's percent read as HP. The game reads all of it from the target's max HP; a formula with a flat share
+        /// reads that share from its reference max HP instead, the same for every target.
+        /// </summary>
+        public static int HealBase(int targetMaxHp, float percent, HealFormula? formula = null)
+        {
+            var f = formula ?? HealFormula.Game;
+            if (f.PercentOfMaxHpShare >= 1f)
+                return PercentOfMaxHp(targetMaxHp, percent);
+
+            var sizedFrom = f.PercentOfMaxHpShare * (double)targetMaxHp + (1.0 - f.PercentOfMaxHpShare) * f.ReferenceMaxHp;
+            return Math.Max(1, (int)Math.Ceiling(sizedFrom * percent / 100.0));
+        }
+
+        /// <summary>
         /// Size of one direct heal before the recipient's healing-received bonus and PvP rules.
         /// </summary>
         public static int DirectHeal(
@@ -76,7 +95,8 @@ namespace SWLOR.CombatSim.Engine
             int casterAffinity,
             float affinityCap,
             float outgoingHealingPercent,
-            float combatReadinessPercent)
+            float combatReadinessPercent,
+            HealFormula? formula = null)
         {
             var percent = effect.Percent;
             if (!targetIsCaster)
@@ -84,8 +104,8 @@ namespace SWLOR.CombatSim.Engine
             if (effect.LowHpThresholdPercent > 0 && targetHpPercent <= effect.LowHpThresholdPercent)
                 percent *= effect.LowHpMultiplier;
 
-            var amount = PercentOfMaxHp(targetMaxHp, percent);
-            return Finish(effect, amount, casterStat, casterAffinity, affinityCap, outgoingHealingPercent, combatReadinessPercent);
+            var amount = HealBase(targetMaxHp, percent, formula);
+            return Finish(effect, amount, casterStat, casterAffinity, affinityCap, outgoingHealingPercent, combatReadinessPercent, formula);
         }
 
         /// <summary>
@@ -97,10 +117,11 @@ namespace SWLOR.CombatSim.Engine
             int targetMaxHp,
             int casterStat,
             float affinityMultiplierAtCast,
-            float outgoingHealingPercent)
+            float outgoingHealingPercent,
+            HealFormula? formula = null)
         {
-            var amount = PercentOfMaxHp(targetMaxHp, effect.Percent * affinityMultiplierAtCast / Math.Max(1, effect.Ticks));
-            amount = ScaleByStat(amount, casterStat);
+            var amount = HealBase(targetMaxHp, effect.Percent * affinityMultiplierAtCast / Math.Max(1, effect.Ticks), formula);
+            amount = ScaleByStat(amount, casterStat, formula);
             return AddOutgoingPercent(amount, outgoingHealingPercent);
         }
 
@@ -111,10 +132,11 @@ namespace SWLOR.CombatSim.Engine
             int casterAffinity,
             float affinityCap,
             float outgoingHealingPercent,
-            float combatReadinessPercent)
+            float combatReadinessPercent,
+            HealFormula? formula = null)
         {
-            var amount = PercentOfMaxHp(targetMaxHp, effect.Percent);
-            return Finish(effect, amount, casterStat, casterAffinity, affinityCap, outgoingHealingPercent, combatReadinessPercent);
+            var amount = HealBase(targetMaxHp, effect.Percent, formula);
+            return Finish(effect, amount, casterStat, casterAffinity, affinityCap, outgoingHealingPercent, combatReadinessPercent, formula);
         }
 
         public static int TemporaryHp(
@@ -124,15 +146,16 @@ namespace SWLOR.CombatSim.Engine
             int casterSocial,
             int casterAffinity,
             float affinityCap,
-            float combatReadinessPercent)
+            float combatReadinessPercent,
+            HealFormula? formula = null)
         {
             var percent = effect.Scaling == ScalingStat.Social
                 ? SocialScaledPercent(effect.Percent, effect.MaximumPercent, casterSocial)
                 : effect.Percent;
 
-            var amount = effect.Flat + PercentOfMaxHp(targetMaxHp, percent);
+            var amount = effect.Flat + HealBase(targetMaxHp, percent, formula);
             if (effect.Scaling == ScalingStat.Willpower)
-                amount = ScaleByStat(amount, casterWillpower);
+                amount = ScaleByStat(amount, casterWillpower, formula);
             if (effect.UsesForceAffinity)
                 amount = (int)Math.Round(amount * AffinityMultiplier(casterAffinity, affinityCap), MidpointRounding.AwayFromZero);
             if (effect.UsesCombatReadiness)
@@ -148,10 +171,11 @@ namespace SWLOR.CombatSim.Engine
             int casterAffinity,
             float affinityCap,
             float outgoingHealingPercent,
-            float combatReadinessPercent)
+            float combatReadinessPercent,
+            HealFormula? formula)
         {
             if (effect.Scaling == ScalingStat.Willpower)
-                amount = ScaleByStat(amount, casterStat);
+                amount = ScaleByStat(amount, casterStat, formula);
             if (effect.UsesForceAffinity)
                 amount = (int)Math.Round(amount * AffinityMultiplier(casterAffinity, affinityCap), MidpointRounding.AwayFromZero);
             amount = AddOutgoingPercent(amount, outgoingHealingPercent);

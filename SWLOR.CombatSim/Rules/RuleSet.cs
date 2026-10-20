@@ -12,10 +12,30 @@ namespace SWLOR.CombatSim.Rules
     {
         public const float MaximumCostMultiplier = 100f;
 
+        /// <summary>Keeps heal multipliers small enough for every heal to stay a sensible whole number.</summary>
+        public const float MaximumHealMultiplier = 10f;
+
         public string Name { get; set; }
 
         /// <summary>Highest multiplier Light affinity may apply to heals and shields (x1.5 before the tuning, x1.25 now).</summary>
         public float ForceAffinityHealingCap { get; set; } = 1.5f;
+
+        /// <summary>
+        /// Share of each heal and shield sized from the target's own max HP, from 0 to 1. The rest is sized from
+        /// <see cref="HealReferenceMaxHp"/>, a flat amount the same for every target. 1 is the game (all percent).
+        /// Revive heals always keep their percent.
+        /// </summary>
+        public float HealPercentOfMaxHpShare { get; set; } = 1f;
+
+        /// <summary>Max HP the flat part of a heal is sized for; needed when <see cref="HealPercentOfMaxHpShare"/> is below 1.</summary>
+        public int HealReferenceMaxHp { get; set; }
+
+        /// <summary>
+        /// Willpower-scaled heals and shields are multiplied by this at Willpower 10 and below, rising in a straight line
+        /// to <see cref="HealStatMultiplierAtCap"/> at 26. The game uses 1 and 1.25.
+        /// </summary>
+        public float HealStatMultiplierAtBaseline { get; set; } = 1f;
+        public float HealStatMultiplierAtCap { get; set; } = 1.25f;
 
         /// <summary>Recast seconds by recast group name, replacing the game data's value.</summary>
         public Dictionary<string, float> RecastOverrides { get; set; } = new();
@@ -111,6 +131,14 @@ namespace SWLOR.CombatSim.Rules
 
             // Below 1 the cap would also cut heals from casters with no affinity at all.
             AtLeast(nameof(ForceAffinityHealingCap), ForceAffinityHealingCap, 1);
+
+            Between(nameof(HealPercentOfMaxHpShare), HealPercentOfMaxHpShare, 0, 1);
+            if (HealPercentOfMaxHpShare < 1f)
+                Between(nameof(HealReferenceMaxHp), HealReferenceMaxHp, 1, 1_000_000);
+            else
+                AtLeast(nameof(HealReferenceMaxHp), HealReferenceMaxHp, 0);
+            Between(nameof(HealStatMultiplierAtBaseline), HealStatMultiplierAtBaseline, 0, MaximumHealMultiplier);
+            Between(nameof(HealStatMultiplierAtCap), HealStatMultiplierAtCap, 0, MaximumHealMultiplier);
 
             if (RecastOverrides == null)
                 problems.Add($"{nameof(RecastOverrides)} must be an object; use {{}} for none");

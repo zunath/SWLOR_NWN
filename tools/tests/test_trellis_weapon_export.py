@@ -535,20 +535,36 @@ class TrellisWeaponExportTests(unittest.TestCase):
         np.testing.assert_allclose(actual[0,0],expected,atol=1e-3)
 
     @unittest.skipUnless(HAS_BLENDER,'Run Blender 4.0 for source surface proof')
+    def test_faces_sharing_a_vertex_still_count_when_they_cross_elsewhere(self):
+        Vector=exporter.Vector
+        v=[Vector(p) for p in [(0,0,0),(1,0,0),(0,1,0),(.4,.4,1),(.4,.4,-1),(-1,0,0),(0,-1,0)]]
+        self.assertTrue(exporter.shell_crosses_itself(v,[(0,1,2),(0,3,4)]))  # shared corner, second face pierces the first
+        self.assertFalse(exporter.shell_crosses_itself(v,[(0,1,2),(0,5,6)]))  # shared corner only
+        self.assertFalse(exporter.shell_crosses_itself(v,[(0,1,2),(1,0,6)]))  # shared edge only
+
+    @unittest.skipUnless(HAS_BLENDER,'Run Blender 4.0 for source surface proof')
+    def test_shell_volume_survives_a_large_translation(self):
+        bpy=exporter.bpy
+        bpy.ops.mesh.primitive_cube_add(size=.02,location=(3e4,-3e4,2e4));ob=bpy.context.object
+        try:self.assertEqual(exporter.closed_surface_report([ob])['inward_shells_validated_as_internal'],0)
+        finally:bpy.data.objects.remove(ob,do_unlink=True)
+
+    @unittest.skipUnless(HAS_BLENDER,'Run Blender 4.0 for source surface proof')
     def test_closed_surface_policy_rejects_a_self_intersecting_shell(self):
         bpy=exporter.bpy;objects=[]
         bottom=[(1,1,0),(-1,1,0),(-1,-1,0),(1,-1,0)]
         quads=[(0,3,2,1),(4,5,6,7)]+[(i,(i+1)%4,4+(i+1)%4,4+i) for i in range(4)]
         try:
-            # A square prism twisted 90 degrees is a clean closed shell; twisted 160 degrees its opposite sides cross,
-            # while every edge still pairs up with opposite directions and the signed volume stays positive.
-            for twist in (90,160):
+            # A square prism twisted 30 degrees is a clean closed shell. At 90 degrees faces that share a corner also
+            # cross elsewhere, and at 160 opposite sides cross, while every edge still pairs up with opposite
+            # directions and the signed volume stays positive.
+            for twist in (30,90,160):
                 r=math.radians(twist);top=[(x*math.cos(r)-y*math.sin(r),x*math.sin(r)+y*math.cos(r),2) for x,y,_ in bottom]
                 tris=[t for q in quads for t in ((q[0],q[1],q[2]),(q[0],q[2],q[3]))]  # explicit split: the diagonals that cross
                 mesh=bpy.data.meshes.new('shell');mesh.from_pydata(bottom+top,[],tris);mesh.update()
                 ob=bpy.data.objects.new('shell',mesh);bpy.context.scene.collection.objects.link(ob);objects.append(ob)
                 bpy.context.view_layer.update()
-                if twist==160:
+                if twist>30:
                     with self.assertRaisesRegex(ValueError,'intersects itself'):exporter.closed_surface_report([ob])
                 else:self.assertEqual(exporter.closed_surface_report([ob])['inward_shells_validated_as_internal'],0)
         finally:
@@ -830,6 +846,13 @@ class NativeWeaponNormalTests(unittest.TestCase):
     def setUpClass(cls):
         spec=importlib.util.spec_from_file_location('weapon_normals',ROOT/'tools/TrellisWeaponNormals.py')
         cls.helper=importlib.util.module_from_spec(spec);spec.loader.exec_module(cls.helper)
+
+    @unittest.skipIf(np is None,'numpy required')
+    def test_uniform_scale_is_judged_relative_to_the_transform_size(self):
+        self.assertAlmostEqual(self.helper.uniform_scale(np.eye(3)*1e-4),1e-4)
+        turn=np.array([[0.,-1,0],[1,0,0],[0,0,1]]);self.assertAlmostEqual(self.helper.uniform_scale(turn*3e-3),3e-3)
+        for linear in (np.diag([1e-4,2e-4,1e-4]),np.diag([1.,1,1.001]),np.diag([1e-4,1e-4,-1e-4]),np.zeros((3,3))):
+            with self.subTest(linear=linear.tolist()),self.assertRaisesRegex(ValueError,'proper uniform'):self.helper.uniform_scale(linear)
 
     def test_geometry_references_must_be_nonnegative_indices(self):
         document={'accessors':[{'bufferView':0}],'bufferViews':[{}],'scenes':[{}],'nodes':[{}],'meshes':[{}]}

@@ -73,6 +73,15 @@ def producer_sha256():
     return snapshot if snapshot else hashlib.sha256(Path(__file__).read_bytes()).hexdigest()
 
 
+def uniform_scale(linear):
+    """Scale of a proper uniform linear map. Uniformity is judged relative to that scale, so a tiny nonuniform
+    transform cannot pass on an absolute tolerance meant for unit-sized ones."""
+    gram=linear.T@linear;scale=math.sqrt(float(np.trace(gram)/3))
+    if not scale>0 or not np.allclose(gram/(scale*scale),np.eye(3),atol=1e-7) or np.linalg.det(linear)<=0:
+        raise ValueError('Baked normal basis requires proper uniform source-node transforms; apply nonuniform authoring transforms explicitly')
+    return scale
+
+
 def source_basis(document,binary,config,material_names,path):
     """Bind source glTF TBN and UVs to the explicit proper, uniform native fit."""
     fit=np.eye(4);fit[:3,:3]=np.asarray(config['orientation'])*config['scale'];fit[:3,3]=np.asarray(config['target_grip'])-fit[:3,:3]@np.asarray(config['source_grip'])
@@ -84,9 +93,7 @@ def source_basis(document,binary,config,material_names,path):
         node=gltf_index(document,'nodes',index);world=parent@node_matrix(node)
         pending.extend((i,world,ancestors|{index}) for i in node.get('children',[]))
         if 'mesh' not in node:continue
-        matrix=fit@conversion@world;linear=matrix[:3,:3];gram=linear.T@linear;scale=math.sqrt(float(np.trace(gram)/3))
-        if not np.allclose(gram,np.eye(3)*scale*scale,atol=1e-7) or np.linalg.det(linear)<=0:
-            raise ValueError('Baked normal basis requires proper uniform source-node transforms; apply nonuniform authoring transforms explicitly')
+        matrix=fit@conversion@world;linear=matrix[:3,:3];scale=uniform_scale(linear)
         rotation=linear/scale
         for primitive in gltf_index(document,'meshes',node['mesh'])['primitives']:
             attributes=primitive['attributes'];material=primitive['material'];name=material_names[material]

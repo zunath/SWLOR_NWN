@@ -509,6 +509,20 @@ def imported_material_index(material,material_count):
     return index
 
 
+def shell_crosses_itself(vertices,faces,shrink=1e-4):
+    """True when two faces of one shell intersect beyond touching. Each triangle is shrunk slightly toward its own
+    centroid first: faces that only meet at a shared vertex or edge then separate, while faces that cross (including
+    two that share a vertex and also cross elsewhere) still overlap."""
+    from mathutils.bvhtree import BVHTree
+    points=[];triangles=[];origin=vertices[faces[0][0]].copy() if faces else Vector((0,0,0))
+    for face in faces:
+        # Shell-local coordinates keep the tiny shrink representable far from the world origin.
+        corners=[vertices[i]-origin for i in face];centre=sum(corners,Vector((0,0,0)))/3
+        triangles.append(tuple(range(len(points),len(points)+3)));points.extend(c+(centre-c)*shrink for c in corners)
+    tree=BVHTree.FromPolygons(points,triangles,all_triangles=True)
+    return any(i!=j for i,j in tree.overlap(tree))
+
+
 def closed_surface_report(objects,double_sided_materials=None,material_count=None):
     """Prove culling safe on complete components containing affected source faces."""
     vertices=[];faces=[];lookup={};affected=[];face_areas=[];opposed_faces=[];degenerate=[]
@@ -544,9 +558,11 @@ def closed_surface_report(objects,double_sided_materials=None,material_count=Non
     if selected & degenerate_roots:raise ValueError('Closed-surface conversion rejects degenerate faces')
     if (not faces and double_sided_materials is None) or selected & invalid:
         raise ValueError('Double-sided source is not an exactly closed, consistently wound surface')
-    all_volumes={};all_groups={}
+    all_volumes={};all_groups={};origins={}
     for index,face in enumerate(faces):
-        a,b,c=(vertices[i] for i in face);root=find(index)
+        root=find(index);origin=origins.setdefault(root,vertices[face[0]])
+        # Signed volume about a point on the shell itself: a far-translated small shell keeps its precision.
+        a,b,c=(vertices[i]-origin for i in face)
         all_volumes[root]=all_volumes.get(root,0)+a.dot(b.cross(c))/6
         all_groups.setdefault(root,[]).append(face)
     volumes={root:all_volumes[root] for root in selected}
@@ -560,11 +576,9 @@ def closed_surface_report(objects,double_sided_materials=None,material_count=Non
     groups={root:all_groups[root] for root in selected|set(enclosing)}
     trees={root:BVHTree.FromPolygons(vertices,group,all_triangles=True) for root,group in groups.items()}
     # A shell that crosses itself keeps back faces in view, so culling it is unsafe even when every edge
-    # pairs up and its volume is nonzero. Faces sharing a vertex always touch; any other overlap is a crossing.
+    # pairs up and its volume is nonzero.
     for root in selected:
-        group=groups[root]
-        if any(i!=j and not set(group[i])&set(group[j]) for i,j in trees[root].overlap(trees[root])):
-            raise ValueError('Double-sided source shell intersects itself')
+        if shell_crosses_itself(vertices,groups[root]):raise ValueError('Double-sided source shell intersects itself')
     inward=[root for root,volume in volumes.items() if volume<0]
     # Validate each cavity against every other closed component together: it must not touch
     # any of them, and the aggregate signed winding of all of them around it must be exactly one

@@ -9,9 +9,14 @@ from pathlib import Path
 import shutil
 import subprocess
 import time
+import types
 import uuid
 
 SURFACE_SCRIPT=Path(__file__).resolve().parents[1]/'TrellisShieldSurface.py'
+# One snapshot of the surface helper for the life of this process: the cache key, the copy Blender runs and the
+# normal quantizer all use these bytes, so one workflow can never mix helper versions.
+SURFACE_BYTES=SURFACE_SCRIPT.read_bytes()
+SURFACE_SHA256=hashlib.sha256(SURFACE_BYTES).hexdigest()
 VERSIONS={}
 
 
@@ -230,7 +235,7 @@ def surface_cache_key(vertices,faces,voxel_size,runtime,script_bytes=None):
         field(name+'.shape',json.dumps(array.shape).encode())
         field(name+'.data',array.tobytes(order='C'))
     field('voxel_size',str(voxel_size).encode())
-    field('surface_script',SURFACE_SCRIPT.read_bytes() if script_bytes is None else script_bytes)
+    field('surface_script',SURFACE_BYTES if script_bytes is None else script_bytes)
     field('bridge',BRIDGE_BYTES)
     field('runtime',json.dumps(runtime,sort_keys=True).encode())
     return digest.hexdigest()
@@ -249,8 +254,9 @@ class SWLORClosedVoxelMesh:
 
     @classmethod
     def IS_CHANGED(cls,mesh,voxel_size,target_face_count):
-        executable,cache,runtime=settings()
-        return hashlib.sha256(SURFACE_SCRIPT.read_bytes()+BRIDGE_BYTES+json.dumps((runtime,str(cache)),sort_keys=True).encode()).hexdigest()
+        # Never let ComfyUI reuse a node result under an identity computed before execution: NaN never equals itself,
+        # so execute() always runs, and its disk cache is keyed by the Blender build it pins and the helper it runs.
+        return float('nan')
 
     def execute(self,mesh,voxel_size,target_face_count):
         import numpy as np
@@ -261,7 +267,7 @@ class SWLORClosedVoxelMesh:
         if len(mesh.vertices)!=1 or len(mesh.faces)!=1:raise ValueError('Expected exactly one shield mesh')
         vertices=mesh.vertices[0].detach().cpu().numpy().astype(np.float32)
         faces=mesh.faces[0].detach().cpu().numpy().astype(np.int32)
-        script_bytes=SURFACE_SCRIPT.read_bytes();script_sha=hashlib.sha256(script_bytes).hexdigest()
+        script_bytes=SURFACE_BYTES;script_sha=SURFACE_SHA256
         # The executable stays pinned from hashing through the last run, so the cache key names what ran.
         with pinned_blender(executable) as blender:
             runtime=blender[2]
@@ -286,6 +292,13 @@ class SWLORClosedVoxelMesh:
         return {'ui':{'text':[json.dumps(provenance,sort_keys=True)]},'result':meshes}
 
 
+def surface_module():
+    """The surface helper compiled from SURFACE_BYTES, the snapshot every node in this process uses."""
+    module=types.ModuleType('swlor_shield_surface');module.__file__=str(SURFACE_SCRIPT)
+    exec(compile(SURFACE_BYTES,str(SURFACE_SCRIPT),'exec'),module.__dict__)
+    return module
+
+
 class SWLORNormalUNorm8:
     @classmethod
     def INPUT_TYPES(cls):return {'required':{'images':('IMAGE',)}}
@@ -295,9 +308,7 @@ class SWLORNormalUNorm8:
 
     def execute(self,images):
         import torch
-        spec=importlib.util.spec_from_file_location('swlor_shield_surface',SURFACE_SCRIPT)
-        surface=importlib.util.module_from_spec(spec);spec.loader.exec_module(surface)
-        quantized=surface.normal_unorm8(images.detach().cpu().numpy())
+        quantized=surface_module().normal_unorm8(images.detach().cpu().numpy())
         # GLB writing truncates float*255; stay inside the chosen byte interval.
         result=(torch.from_numpy(quantized).to(device=images.device,dtype=images.dtype)+.25)/255
         return (result.clamp(0,1),)

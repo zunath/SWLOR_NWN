@@ -559,6 +559,12 @@ def closed_surface_report(objects,double_sided_materials=None,material_count=Non
     enclosing={root:volume for root,volume in all_volumes.items() if volume>0 and root not in invalid|degenerate_roots}
     groups={root:all_groups[root] for root in selected|set(enclosing)}
     trees={root:BVHTree.FromPolygons(vertices,group,all_triangles=True) for root,group in groups.items()}
+    # A shell that crosses itself keeps back faces in view, so culling it is unsafe even when every edge
+    # pairs up and its volume is nonzero. Faces sharing a vertex always touch; any other overlap is a crossing.
+    for root in selected:
+        group=groups[root]
+        if any(i!=j and not set(group[i])&set(group[j]) for i,j in trees[root].overlap(trees[root])):
+            raise ValueError('Double-sided source shell intersects itself')
     inward=[root for root,volume in volumes.items() if volume<0]
     # Validate each cavity against every other closed component together: it must not touch
     # any of them, and the aggregate signed winding of all of them around it must be exactly one

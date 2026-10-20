@@ -3,6 +3,7 @@ import copy
 import hashlib
 import importlib.util
 import json
+import math
 import os
 import re
 from pathlib import Path
@@ -532,6 +533,26 @@ class TrellisWeaponExportTests(unittest.TestCase):
         pixels=np.array([[[1.,.5,.5+1e-4],[.5,.5,1.]]]);actual=exporter.prepare_normal_map(pixels,2,1)
         expected=np.array([1.,0.,1.]);expected/=np.linalg.norm(expected)
         np.testing.assert_allclose(actual[0,0],expected,atol=1e-3)
+
+    @unittest.skipUnless(HAS_BLENDER,'Run Blender 4.0 for source surface proof')
+    def test_closed_surface_policy_rejects_a_self_intersecting_shell(self):
+        bpy=exporter.bpy;objects=[]
+        bottom=[(1,1,0),(-1,1,0),(-1,-1,0),(1,-1,0)]
+        quads=[(0,3,2,1),(4,5,6,7)]+[(i,(i+1)%4,4+(i+1)%4,4+i) for i in range(4)]
+        try:
+            # A square prism twisted 90 degrees is a clean closed shell; twisted 160 degrees its opposite sides cross,
+            # while every edge still pairs up with opposite directions and the signed volume stays positive.
+            for twist in (90,160):
+                r=math.radians(twist);top=[(x*math.cos(r)-y*math.sin(r),x*math.sin(r)+y*math.cos(r),2) for x,y,_ in bottom]
+                tris=[t for q in quads for t in ((q[0],q[1],q[2]),(q[0],q[2],q[3]))]  # explicit split: the diagonals that cross
+                mesh=bpy.data.meshes.new('shell');mesh.from_pydata(bottom+top,[],tris);mesh.update()
+                ob=bpy.data.objects.new('shell',mesh);bpy.context.scene.collection.objects.link(ob);objects.append(ob)
+                bpy.context.view_layer.update()
+                if twist==160:
+                    with self.assertRaisesRegex(ValueError,'intersects itself'):exporter.closed_surface_report([ob])
+                else:self.assertEqual(exporter.closed_surface_report([ob])['inward_shells_validated_as_internal'],0)
+        finally:
+            for ob in objects:bpy.data.objects.remove(ob,do_unlink=True)
 
     @unittest.skipUnless(HAS_BLENDER,'Run Blender 4.0 for source surface proof')
     def test_closed_surface_policy_allows_enclosed_cavity_but_not_exposed_inversion(self):

@@ -524,11 +524,21 @@ class ShieldSurfaceTests(unittest.TestCase):
             self.assertNotEqual(first['sha256'],second['sha256']);self.assertNotEqual(second['path'],third['path'])
             v,f=box();keys={bridge.surface_cache_key(v,f,.003,runtime) for runtime in (first,second,third)}
             self.assertEqual(len(keys),3)
-            identifiers=[]
-            for runtime in (first,second,third):
-                with patch.object(bridge,'settings',return_value=(runtime['path'],Path(temporary),runtime)):
-                    identifiers.append(bridge.SWLORClosedVoxelMesh.IS_CHANGED(None,.003,3500))
-            self.assertEqual(len(set(identifiers)),3)
+            # ComfyUI must never reuse a node result under a pre-execution identity: IS_CHANGED is always "changed".
+            changed=bridge.SWLORClosedVoxelMesh.IS_CHANGED(None,.003,3500);self.assertTrue(changed!=changed)
+
+    def test_every_node_uses_the_surface_helper_snapshot_taken_at_load(self):
+        spec=importlib.util.spec_from_file_location('shield_helper_snapshot_bridge',TOOLS/'trellis2_shield_nodes/__init__.py')
+        bridge=importlib.util.module_from_spec(spec);spec.loader.exec_module(bridge)
+        self.assertEqual(bridge.SURFACE_BYTES,bridge.SURFACE_SCRIPT.read_bytes())
+        self.assertEqual(bridge.SURFACE_SHA256,hashlib.sha256(bridge.SURFACE_BYTES).hexdigest())
+        vertices,faces=box();key=bridge.surface_cache_key(vertices,faces,.003,{})
+        with patch.object(Path,'read_bytes',side_effect=AssertionError('surface helper re-read from disk')):
+            self.assertEqual(bridge.surface_cache_key(vertices,faces,.003,{}),key)
+            module=bridge.surface_module()
+        image=np.broadcast_to(np.array([.6,.5,.9]),(1,2,2,3)).copy();np.testing.assert_array_equal(module.normal_unorm8(image),surface.normal_unorm8(image))
+        bridge.SURFACE_BYTES=bridge.SURFACE_BYTES.replace(b'def normal_unorm8(',b'def unused_quantizer(',1)
+        self.assertFalse(hasattr(bridge.surface_module(),'normal_unorm8'))
 
     def test_cache_validation_terminates_when_no_filesystem_ancestor_exists(self):
         spec=importlib.util.spec_from_file_location('shield_unavailable_cache_bridge',TOOLS/'trellis2_shield_nodes/__init__.py')

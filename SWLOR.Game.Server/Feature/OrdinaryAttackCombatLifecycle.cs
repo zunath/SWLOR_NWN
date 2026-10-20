@@ -35,4 +35,7 @@ public static class OrdinaryAttackCombatLifecycle
     public static void OnCreatureDeath() => OrdinaryAttackTraits.ClearOnDeath(OBJECT_SELF);
     [NWNEventHandler(ScriptName.OnModuleExit)]
     public static void OnExit() => OrdinaryAttackTraits.ClearActor(GetExitingObject());
+    // Dismissed droids and despawned NPCs are destroyed without an exit event.
+    [NWNEventHandler(ScriptName.OnObjectDestroyed)]
+    public static void OnDestroyed() => OrdinaryAttackTraits.ForgetDestroyed(OBJECT_SELF);
 }

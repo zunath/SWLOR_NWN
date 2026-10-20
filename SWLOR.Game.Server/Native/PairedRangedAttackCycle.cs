@@ -73,6 +73,9 @@ namespace SWLOR.Game.Server.Native
             if (PendingHands.Remove(actor)) StatusEffect.EndNativeAttackSwing(actor);
         }
 
+        /// <summary>Drops a destroyed actor's pending companion shot without touching the destroyed object.</summary>
+        public static void ForgetDestroyed(uint actor) => PendingHands.Remove(actor);
+
         private static void Finish(uint actor, Pending pending)
         {
             if (!PendingHands.TryGetValue(actor, out var current) || !ReferenceEquals(current, pending)) return;

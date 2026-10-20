@@ -1585,6 +1585,18 @@ namespace SWLOR.Game.Server.Feature
         /// Whenever a player enters the server, any temporary variables related to ability execution
         /// will be removed from their PC.
         /// </summary>
+        /// <summary>
+        /// A creature destroyed before its queued weapon ability lands never reaches ClearQueuedAbility, and its
+        /// object ID may be reused; drop its queued trait snapshot and reservation without touching the object.
+        /// </summary>
+        [NWNEventHandler(ScriptName.OnObjectDestroyed)]
+        public static void ForgetDestroyedQueuedWeaponAbility()
+        {
+            var creature = OBJECT_SELF;
+            _queuedWeaponTraits.Remove(creature);
+            _queuedWeaponAttacks.Remove(creature);
+        }
+
         [NWNEventHandler(ScriptName.OnModuleEnter)]
         public static void ClearTemporaryQueuedVariables()
         {

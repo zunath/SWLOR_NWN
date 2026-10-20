@@ -65,6 +65,9 @@ namespace SWLOR.Game.Server.Feature
             RangedWeaponAttackContext.Clear(actor);
             PairedRangedTraits.ForgetDestroyed(actor);
             TwinPistolAbility.ForgetDestroyed(actor);
+            PairedRangedAttackCycle.ForgetDestroyed(actor);
+            // The presentation anchors are separate objects; destroy them with their owner.
+            PairedRangedPresentation.Release(actor);
         }
 
         [NWNEventHandler(ScriptName.OnModuleExit)]

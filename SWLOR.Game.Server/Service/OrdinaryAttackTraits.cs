@@ -55,6 +55,9 @@ public static class OrdinaryAttackTraits
         States.Remove(actor);
     }
 
+    /// <summary>A destroyed actor's object ID may be reused; drop its state without touching the object.</summary>
+    public static void ForgetDestroyed(uint actor) => States.Remove(actor);
+
     private static OrdinaryAttackHasteConfiguration GetConfiguration(uint actor) => new(
         Stat.GetStatAdjustment(actor, StatType.OrdinaryAttackHasteRampPerStack),
         Stat.GetStatAdjustment(actor, StatType.OrdinaryAttackHasteRampMaximumStacks),

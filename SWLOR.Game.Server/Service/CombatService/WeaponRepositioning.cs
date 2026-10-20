@@ -151,6 +151,15 @@ public static unsafe class WeaponRepositioning
         _lockouts.Remove(actor);
     }
 
+    // A destroyed actor's movement poll stops once its operation is gone; nothing touches the destroyed object.
+    [NWNEventHandler(ScriptName.OnObjectDestroyed)]
+    public static void OnDestroyed()
+    {
+        var actor = OBJECT_SELF;
+        _moving.Remove(actor);
+        _lockouts.Remove(actor);
+    }
+
     private static void Poll(WeaponRepositioningOperation operation)
     {
         if (!_moving.TryGetValue(operation.Actor, out var current) || current.Id != operation.Id) return;

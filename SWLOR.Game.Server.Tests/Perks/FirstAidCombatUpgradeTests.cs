@@ -239,10 +239,11 @@ public class FirstAidCombatUpgradeTests
             "a revived ally has no enmity, so both ranks must credit the enemies fighting its nearby party");
 
         var emergencySealantStatus = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "StatusEffectDefinition" / "EmergencySealant1StatusEffect.cs").FullName);
-        emergencySealantStatus.Should().Contain("AbilityEffectScaling.ApplyScaledHeal(Source, creature, 1);");
+        emergencySealantStatus.Should().Contain("private static readonly HealAmount HealPerTick = new(5, 0.25f);");
+        emergencySealantStatus.Should().Contain("AbilityEffectScaling.ApplyScaledHeal(Source, creature, HealPerTick);");
 
         var cocktail = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "FirstAid" / "EmergencyCocktailAbilityDefinition.cs").FullName);
-        cocktail.Should().Contain("AbilityEffectScaling.ApplyTemporaryHPPercent(activator, friendly, \"EMERGENCY_COCKTAIL\", 12, duration)");
+        cocktail.Should().Contain("AbilityEffectScaling.ApplyTemporaryHP(activator, friendly, \"EMERGENCY_COCKTAIL\", new HealAmount(54, 3f), duration)");
         cocktail.Should().Contain("CapstoneAbility.ActiveDurationSeconds");
         cocktail.Should().Contain("new[] { typeof(PoisonStatusEffect), typeof(ToxinStatusEffect) }");
     }

@@ -21,7 +21,7 @@ namespace SWLOR.Toolset.Tests
             ResourceType expectedType,
             string expectedResRef)
         {
-            ModuleFileWatcher.TryResolveResource(path, out var type, out var resRef).Should().BeTrue();
+            ModuleFileWatcher.TryResolveResource(Native(path), out var type, out var resRef).Should().BeTrue();
 
             type.Should().Be(expectedType);
             resRef.Should().Be(expectedResRef);
@@ -35,10 +35,10 @@ namespace SWLOR.Toolset.Tests
             string path,
             string expectedResRef)
         {
-            ModuleFileWatcher.TryResolvePalette(path, out var paletteResRef).Should().BeTrue();
+            ModuleFileWatcher.TryResolvePalette(Native(path), out var paletteResRef).Should().BeTrue();
 
             paletteResRef.Should().Be(expectedResRef);
-            ModuleFileWatcher.TryResolveResource(path, out _, out _).Should().BeFalse();
+            ModuleFileWatcher.TryResolveResource(Native(path), out _, out _).Should().BeFalse();
         }
 
         [TestCase(@"C:\module\config.json")]
@@ -46,7 +46,7 @@ namespace SWLOR.Toolset.Tests
         [TestCase(@"C:\module\readme.txt")]
         public void NonResourcePathsAreIgnored(string path)
         {
-            ModuleFileWatcher.TryResolveResource(path, out _, out _).Should().BeFalse();
+            ModuleFileWatcher.TryResolveResource(Native(path), out _, out _).Should().BeFalse();
         }
 
         [TestCase(@"C:\module\git\area.git.json")]
@@ -56,14 +56,14 @@ namespace SWLOR.Toolset.Tests
         [TestCase(@"C:\module\utw\waypoint.utw.json")]
         public void TransitionTagResourcesInvalidateTheTagIndex(string path)
         {
-            ModuleFileWatcher.AffectsTagIndex(path).Should().BeTrue();
+            ModuleFileWatcher.AffectsTagIndex(Native(path)).Should().BeTrue();
         }
 
         [TestCase(@"C:\module\utc\creature.utc.json")]
         [TestCase(@"C:\module\dlg\conversation.dlg.json")]
         public void UnrelatedResourcesDoNotInvalidateTheTagIndex(string path)
         {
-            ModuleFileWatcher.AffectsTagIndex(path).Should().BeFalse();
+            ModuleFileWatcher.AffectsTagIndex(Native(path)).Should().BeFalse();
         }
 
         [TestCase(@"C:\module\git\area.git.json", true)]
@@ -73,7 +73,7 @@ namespace SWLOR.Toolset.Tests
         [TestCase(@"C:\module\utw\waypoint.utw.json", false)]
         public void OnlyPairedGitResourcesInvalidateThePlacementIndex(string path, bool expected)
         {
-            ModuleFileWatcher.AffectsPlacementIndex(path).Should().Be(expected);
+            ModuleFileWatcher.AffectsPlacementIndex(Native(path)).Should().Be(expected);
         }
 
         [TestCase(@"C:\module\git\area.git.json")]
@@ -82,14 +82,14 @@ namespace SWLOR.Toolset.Tests
         [TestCase(@"C:\module\are\area.are.json")]
         public void ScriptBearingResourcesInvalidateUsageIndex(string path)
         {
-            ModuleFileWatcher.AffectsScriptUsages(path).Should().BeTrue();
+            ModuleFileWatcher.AffectsScriptUsages(Native(path)).Should().BeTrue();
         }
 
         [TestCase(@"C:\module\nss\script.nss")]
         [TestCase(@"C:\module\config.json")]
         public void ResourcesWithoutScriptSlotsDoNotInvalidateUsageIndex(string path)
         {
-            ModuleFileWatcher.AffectsScriptUsages(path).Should().BeFalse();
+            ModuleFileWatcher.AffectsScriptUsages(Native(path)).Should().BeFalse();
         }
 
         [TestCase("temp0")]
@@ -301,5 +301,12 @@ namespace SWLOR.Toolset.Tests
                     Directory.Delete(root, recursive: true);
             }
         }
+
+        /// <summary>
+        /// The cases are written as Windows paths; the watcher receives native paths, so use the
+        /// host's separator (a no-op on Windows).
+        /// </summary>
+        private static string Native(string windowsPath) =>
+            windowsPath.Replace('\\', Path.DirectorySeparatorChar);
     }
 }

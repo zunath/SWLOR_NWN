@@ -126,6 +126,7 @@ namespace SWLOR.Toolset.Tests
         [Test]
         public void FailedSingleFileCommitRemovesItsTemporary()
         {
+            Support.WindowsFileSharing.Require();
             var path = FileWith("locked.nss", "original");
             using var hold = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.None);
 

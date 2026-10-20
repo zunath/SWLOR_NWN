@@ -1,5 +1,6 @@
 using SWLOR.Game.Server.Core.Beamdog;
 using SWLOR.Game.Server.Feature.GuiDefinition.ViewModel;
+using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.NWN.API.NWScript.Enum.Item.Property;
 
@@ -12,7 +13,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
         public GuiConstructedWindow BuildWindow()
         {
             _builder.CreateWindow(GuiWindowType.LightsaberWorkbench)
-                .SetInitialGeometry(0, 0, 545f, 840f)
+                .SetInitialGeometry(0, 0, 545f, 660f)
                 .SetTitle("Lightsaber Workbench")
                 .SetIsResizable(true)
                 .SetIsCollapsible(true)
@@ -117,6 +118,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                     {
                         row.AddSpacer();
                         row.AddComboBox()
+                            .AddOption("Match Blade", LightsaberWorkbench.MatchBladeLightColor)
                             .AddOption("Blue", (int)LightColor.Blue)
                             .AddOption("Yellow", (int)LightColor.Yellow)
                             .AddOption("Purple", (int)LightColor.Purple)

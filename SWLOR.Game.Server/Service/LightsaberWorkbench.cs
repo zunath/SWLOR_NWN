@@ -192,12 +192,18 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>
-        /// Resolves the light color for the workbench selector. The light follows the selected
-        /// blade's catalog light color until the player explicitly picks a light color.
+        /// Light Color selector value meaning the light follows the selected blade's catalog
+        /// light color. Any other value is an explicit LightColor choice.
         /// </summary>
-        public static int ResolveLightColor(SaberBladeColor blade, int currentLightColor, bool explicitlyChosen)
+        public const int MatchBladeLightColor = -1;
+
+        /// <summary>
+        /// Resolves the light color for the workbench selector. "Match Blade" uses the selected
+        /// blade's catalog light color; any other selection is kept as the player's explicit choice.
+        /// </summary>
+        public static int ResolveLightColor(SaberBladeColor blade, int selectedLightColor)
         {
-            return explicitlyChosen ? currentLightColor : (int)blade.LightColor;
+            return selectedLightColor == MatchBladeLightColor ? (int)blade.LightColor : selectedLightColor;
         }
 
         /// <summary>

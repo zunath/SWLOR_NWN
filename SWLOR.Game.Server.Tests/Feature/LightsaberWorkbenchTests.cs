@@ -409,7 +409,7 @@ public class LightsaberWorkbenchTests
             "GuiDefinition",
             "ViewModel",
             "LightsaberWorkbenchViewModel.cs"));
-        viewModel.Should().Contain("var lightColor = (LightColor)SelectedLightColor;");
+        viewModel.Should().Contain("var lightColor = (LightColor)resolvedLightColor;");
         viewModel.Should().Contain("ApplyBladeLight(item, lightColor, lightBrightness);");
         Regex.Replace(viewModel, @"\s+", " ").Should().Contain("SelectedLightBrightnessIndex == 0 ? LightBrightness.Dim : LightBrightness.Normal");
         viewModel.Should().Contain("WatchOnClient(model => model.SelectedLightColor);");
@@ -419,17 +419,26 @@ public class LightsaberWorkbenchTests
     }
 
     [Test]
-    public void LightColor_FollowsSelectedBladeUnlessPlayerChoseOne()
+    public void LightColor_MatchBladeFollowsBladeAndExplicitChoicesStick()
     {
         var blue = LightsaberWorkbench.GetBladeColors(BaseItem.Lightsaber, false).Single(x => x.Name == "Blue");
         var red = LightsaberWorkbench.GetBladeColors(BaseItem.Lightsaber, false).Single(x => x.Name == "Red");
 
-        // No explicit choice: the light tracks the blade, whatever value was assigned before.
-        LightsaberWorkbench.ResolveLightColor(blue, (int)LightColor.Orange, false).Should().Be((int)LightColor.Blue);
-        LightsaberWorkbench.ResolveLightColor(red, (int)LightColor.Blue, false).Should().Be((int)LightColor.Red);
+        // Default (Match Blade): the light follows whichever blade is selected.
+        LightsaberWorkbench.ResolveLightColor(blue, LightsaberWorkbench.MatchBladeLightColor).Should().Be((int)LightColor.Blue);
+        LightsaberWorkbench.ResolveLightColor(red, LightsaberWorkbench.MatchBladeLightColor).Should().Be((int)LightColor.Red);
 
-        // Explicit choice: the player's color survives blade changes.
-        LightsaberWorkbench.ResolveLightColor(red, (int)LightColor.Green, true).Should().Be((int)LightColor.Green);
+        // An explicit color that equals the current blade's color still sticks after a blade change.
+        var selection = (int)LightColor.Blue;
+        LightsaberWorkbench.ResolveLightColor(blue, selection).Should().Be((int)LightColor.Blue);
+        LightsaberWorkbench.ResolveLightColor(red, selection).Should().Be((int)LightColor.Blue);
+
+        // Picking Match Blade again resumes following the blade.
+        selection = LightsaberWorkbench.MatchBladeLightColor;
+        LightsaberWorkbench.ResolveLightColor(red, selection).Should().Be((int)LightColor.Red);
+
+        // Match Blade must not collide with a real light color.
+        Enum.IsDefined(typeof(LightColor), LightsaberWorkbench.MatchBladeLightColor).Should().BeFalse();
 
         var root = FindRepositoryRoot();
         var viewModel = File.ReadAllText(Path.Combine(
@@ -441,12 +450,39 @@ public class LightsaberWorkbenchTests
             "LightsaberWorkbenchViewModel.cs"));
         var normalized = Regex.Replace(viewModel, @"\s+", " ");
 
-        // The light syncs whenever the displayed top changes, not once at Initialize.
-        normalized.Should().Contain("TopCountText = $\"{_topIndex + 1} / {tops.Count}\"; SyncLightColorToBlade();");
-        normalized.Should().Contain("LightsaberWorkbench.ResolveLightColor(SelectedTop, SelectedLightColor, _lightColorChosen)");
-        normalized.Should().Contain("_lightColorChosen = false;");
-        normalized.Should().Contain("propertyName == nameof(SelectedLightColor) && SelectedLightColor != _autoLightColor");
+        // Match Blade is the default, resolved when constructing, and no inference from client echoes remains.
+        normalized.Should().Contain("SelectedLightColor = LightsaberWorkbench.MatchBladeLightColor;");
+        normalized.Should().Contain("LightsaberWorkbench.ResolveLightColor(SelectedTop, SelectedLightColor)");
+        viewModel.Should().NotContain("_lightColorChosen");
+        viewModel.Should().NotContain("_autoLightColor");
+        viewModel.Should().NotContain("OnClientPropertyUpdated");
         viewModel.Should().NotContain("SelectedLightColor = (int)SelectedTop.LightColor;");
+
+        var definition = File.ReadAllText(Path.Combine(
+            root.FullName,
+            "SWLOR.Game.Server",
+            "Feature",
+            "GuiDefinition",
+            "LightsaberWorkbenchDefinition.cs"));
+        var matchBladeOption = definition.IndexOf("AddOption(\"Match Blade\"", StringComparison.Ordinal);
+        matchBladeOption.Should().BeGreaterThan(-1);
+        matchBladeOption.Should().BeLessThan(definition.IndexOf("AddOption(\"Blue\"", StringComparison.Ordinal),
+            "Match Blade must be the first Light Color entry");
+    }
+
+    [Test]
+    public void Window_InitialHeightFitsA720pClient()
+    {
+        var root = FindRepositoryRoot();
+        var definition = File.ReadAllText(Path.Combine(
+            root.FullName,
+            "SWLOR.Game.Server",
+            "Feature",
+            "GuiDefinition",
+            "LightsaberWorkbenchDefinition.cs"));
+
+        definition.Should().Contain("SetInitialGeometry(0, 0, 545f, 660f)");
+        definition.Should().Contain("SetIsResizable(true)");
     }
 
     [TestCase(BaseItem.Lightsaber, "", "ui_lsc_", new[] { 11, 12, 13, 14, 15, 21, 22, 23, 24, 51, 52, 53, 54, 55 })]

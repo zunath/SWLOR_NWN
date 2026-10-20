@@ -25,13 +25,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         private int _topIndex;
         private int _bottomIndex;
 
-        // The light color follows the selected blade until the player picks one explicitly.
-        // _autoLightColor is the last value the server assigned. The view model reads the current
-        // bind value on every client update (never the value from when the event fired), so even a
-        // delayed echo of an earlier server write reads back as _autoLightColor and is not a choice.
-        private bool _lightColorChosen;
-        private int _autoLightColor;
-
         // Selection never removes an item from the inventory. UUIDs prevent a destroyed item's
         // recycled object handle from silently selecting a different input.
         private readonly uint[] _enhancementItems = { OBJECT_INVALID, OBJECT_INVALID };
@@ -171,7 +164,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             _weaponType = BaseItem.Lightsaber;
             _topIndex = 0;
             _bottomIndex = 0;
-            _lightColorChosen = false;
 
             for (var slot = 0; slot < EnhancementSlotCount; slot++)
             {
@@ -194,6 +186,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             StatusColor = GuiColor.Green;
 
             RefreshWeaponType();
+            SelectedLightColor = LightsaberWorkbench.MatchBladeLightColor;
             SelectedLightBrightnessIndex = 1;
             WatchOnClient(model => model.SelectedLightColor);
             WatchOnClient(model => model.SelectedLightBrightnessIndex);
@@ -229,23 +222,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             TopName = SelectedTop.Name;
             TopPreview = SelectedTop.PreviewResref;
             TopCountText = $"{_topIndex + 1} / {tops.Count}";
-
-            SyncLightColorToBlade();
-        }
-
-        private void SyncLightColorToBlade()
-        {
-            var lightColor = LightsaberWorkbench.ResolveLightColor(SelectedTop, SelectedLightColor, _lightColorChosen);
-            if (!_lightColorChosen)
-                _autoLightColor = lightColor;
-
-            SelectedLightColor = lightColor;
-        }
-
-        protected override void OnClientPropertyUpdated(string propertyName)
-        {
-            if (propertyName == nameof(SelectedLightColor) && SelectedLightColor != _autoLightColor)
-                _lightColorChosen = true;
         }
 
         private void SwitchWeaponType(BaseItem weaponType)
@@ -541,7 +517,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         private void ConstructSaber()
         {
-            if (!Enum.IsDefined(typeof(LightColor), SelectedLightColor))
+            // "Match Blade" resolves to the blade's catalog color now; the crafted item stores the concrete color.
+            var resolvedLightColor = LightsaberWorkbench.ResolveLightColor(SelectedTop, SelectedLightColor);
+            if (!Enum.IsDefined(typeof(LightColor), resolvedLightColor))
             {
                 StatusText = "Select a valid light color.";
                 StatusColor = GuiColor.Red;
@@ -556,7 +534,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 return;
             }
 
-            var lightColor = (LightColor)SelectedLightColor;
+            var lightColor = (LightColor)resolvedLightColor;
             var lightBrightness = SelectedLightBrightnessIndex == 0
                 ? LightBrightness.Dim
                 : LightBrightness.Normal;

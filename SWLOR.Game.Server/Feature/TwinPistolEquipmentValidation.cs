@@ -104,7 +104,8 @@ public static class TwinPistolEquipmentValidation
     private static void ReturnEquippedItem(uint creature, uint item, InventorySlot slot)
     {
         if (GetItemInSlot(slot, creature) != item) return;
-        if (GetIsPC(creature))
+        // Droids save their controller snapshot on every unacquire, so a dropped weapon would be lost for good.
+        if (GetIsPC(creature) || Droid.IsDroid(creature))
         {
             try
             {
@@ -117,7 +118,7 @@ public static class TwinPistolEquipmentValidation
             {
                 FailedReturns[creature] = new FailedReturn(item, slot);
                 ClearAllActions();
-                SendMessageToPC(creature, ColorToken.Red(GetUnusableEquipmentError(creature)));
+                SendMessageToPC(Droid.IsDroid(creature) ? GetMaster(creature) : creature, ColorToken.Red(GetUnusableEquipmentError(creature)));
             }
         }
         else ActionUnequipItem(item);

@@ -1,3 +1,4 @@
+using System.IO;
 using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.CombatSim.Data;
@@ -47,6 +48,22 @@ public class WeaponControlTests
     public void Duration_UsesProductionResistanceAndPvpTickBudget(int seconds, int outgoing, int resistance, bool pvp, double expected)
     {
         WeaponControlState.Duration(new DazedStatusEffect(), seconds, outgoing, resistance, pvp).Should().Be(expected);
+    }
+
+    [Test]
+    public void WeaponCalibratedFight_RejectsAnOpponentWithoutWeaponCombatRatings()
+    {
+        // Weapon rolls read the target's WeaponCombat ratings, so a mixed fight must fail at setup, not mid-roll.
+        var attacker = Fighter("Attacker");
+        attacker.Abilities.Add(new() { Feat = "Jab4" });
+        var uncalibrated = new CombatantSpec
+        {
+            Name = "Uncalibrated", MaxHp = 10000, MaxStm = 100,
+            AutoAttack = new() { AttacksPerSecond = 1, Damage = new() { Min = 1, Max = 1 } }
+        };
+        var spawn = () => TestScenarios.Spawn(TestScenarios.TwoTeams(true, new[] { attacker }, new[] { uncalibrated }),
+            RuleSets.Current(), _catalog);
+        spawn.Should().Throw<InvalidDataException>().WithMessage("*needs WeaponCombat ratings*");
     }
 
     [Test]

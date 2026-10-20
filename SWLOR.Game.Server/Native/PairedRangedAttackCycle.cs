@@ -184,8 +184,9 @@ namespace SWLOR.Game.Server.Native
                     var attribution = CombatRecorder.CaptureAttackAttribution(actor);
                     AssignCommand(GetModule(), () => DelayCommand(travel, () =>
                     {
+                        // Area-exit cleanup cannot cancel a shot already in flight, so both sides must still be where it launched.
                         if (!GetIsObjectValid(actor) || !GetIsObjectValid(targetId) || GetIsDead(targetId) ||
-                            GetArea(targetId) != launchArea) return;
+                            GetArea(actor) != launchArea || GetArea(targetId) != launchArea) return;
                         using var recorderScope = CombatRecorder.BeginAttribution(attribution);
                         var resolvedDamage = resolveDamageTaken?.Invoke() ?? damage;
                         shot.Damage = resolvedDamage;

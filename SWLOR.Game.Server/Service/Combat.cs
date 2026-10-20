@@ -2648,12 +2648,15 @@ namespace SWLOR.Game.Server.Service
             var flags = (uint)damageType.GetNativeDamageType();
             var combatDamage = isAbilityDamage ? 0 : 1;
             var ranged = IsRangedDamageSkill(skillType) ? 1 : 0;
-            damage = target.DoDamageImmunity(source, damage, flags, 1, combatDamage);
+            // The fourth argument is the engine's bSimulation flag: these probes read mitigation without
+            // consuming a finite damage-reduction or resistance budget (the real roll passes 0).
+            const int simulation = 1;
+            damage = target.DoDamageImmunity(source, damage, flags, simulation, combatDamage);
             if (damage > 0)
-                damage = target.DoDamageResistance(source, damage, flags, 1, combatDamage,
+                damage = target.DoDamageResistance(source, damage, flags, simulation, combatDamage,
                     damageType.IsPhysicalDamageType() ? 1 : 0, ranged);
             if (damage > 0 && damageType.IsPhysicalDamageType())
-                damage = target.DoDamageReduction(source, damage, 0, 1, combatDamage, ranged);
+                damage = target.DoDamageReduction(source, damage, 0, simulation, combatDamage, ranged);
             return damage > 0;
         }
 

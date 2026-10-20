@@ -15,6 +15,7 @@ using SWLOR.Game.Server.Service.StatService;
 using SWLOR.Game.Server.Service.StatusEffectService;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.NWN.API.NWScript.Enum.Item;
 using System.Collections.Generic;
 using System.Linq;
 using Skill = SWLOR.Game.Server.Service.Skill;
@@ -793,7 +794,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             (string, string) GetCombatInfo(uint item)
             {
                 var itemType = GetBaseItemType(item);
-                var skill = Skill.GetSkillTypeByBaseItem(itemType);
+                var skill = Skill.GetWeaponSkill(_target, item);
                 int skillRank;
 
                 if (GetIsPC(_target))
@@ -808,7 +809,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     skillRank = npcStats.Level;
                 }
 
-                var damageAbility = Combat.GetWeaponDamageAbilityType(_target, itemType);
+                var damageAbility = GetEquipmentDamageAbility(_target, item);
                 var damageStat = GetAbilityScore(_target, damageAbility);
                 var itemDamage = Item.GetDMG(item);
                 var effectiveDamage = WeaponDamage.GetEffectiveDMG(_target, item, itemDamage);
@@ -817,7 +818,18 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 var attack = Stat.GetAttack(_target, damageAbility, skill);
                 var defense = Stat.CalculateDefense(damageStat, skillRank, 0);
                 var (min, max) = Combat.CalculateDamageRange(attack, dmg, damageStat, defense, damageStat, 0);
+                var ordinaryDamageBonus = PairedRangedTraits.GetOrdinaryDamagePercentAdjustment(_target, GetAttackTarget(_target));
+                var ordinaryDamageAdjustment = Stat.GetStatAdjustment(_target, StatType.OrdinaryAttackDamagePercentAdjustment);
+                min += (int)Math.Ceiling(min * (ordinaryDamageBonus / 100f));
+                max += (int)Math.Ceiling(max * (ordinaryDamageBonus / 100f));
+                min = Combat.ApplyOrdinaryAttackDamageMultiplier(_target, min);
+                max = Combat.ApplyOrdinaryAttackDamageMultiplier(_target, max);
                 var tooltip = $"Est. Damage: {min} - {max}";
+                if (skill == SkillType.TwinPistol || ordinaryDamageBonus != 0 || ordinaryDamageAdjustment != 0)
+                    tooltip += $"\nAttack skill: {Skill.GetSkillDetails(skill).Name}\nDamage attribute: {damageAbility}" +
+                               $"\nOrdinary-attack bonuses: {FormatPercent(ordinaryDamageBonus)}\nStance damage adjustment: {FormatPercent(ordinaryDamageAdjustment)}" +
+                               "\nUses current ordinary-attack effects and the current attack target for Converging Fire." +
+                               "\nEstimate assumes matching defensive stats; activated abilities use their own power.";
                 if (effectiveDamage != itemDamage)
                 {
                     tooltip += $"\nWeapon DMG: {itemDamage}\nSingle Weapon: +{WeaponDamage.GetNaturalSingleWeaponPercent(_target)}%" +
@@ -830,7 +842,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             var mainHand = GetItemInSlot(InventorySlot.RightHand, _target);
             var offHand = GetItemInSlot(InventorySlot.LeftHand, _target);
-            var forceAccuracyWeapon = SelectForceAccuracyWeapon(mainHand, offHand, GetIsObjectValid(mainHand));
+            var forceAccuracyWeapon = SelectForceAccuracyWeapon(mainHand,
+                GetIsObjectValid(offHand) && GetBaseItemType(offHand) == BaseItem.CompanionPistol ? OBJECT_INVALID : offHand,
+                GetIsObjectValid(mainHand));
             var mainHandType = GetBaseItemType(mainHand);
             var attackDelayInfo = GetAttackDelayInfo();
             AttackDelay = attackDelayInfo.Value;
@@ -848,8 +862,11 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 MainHandTooltip = "Est. Damage: N/A";
             }
 
-            var offhandAttackWeapon = EquipmentPredicates.GetOffhandAttackWeapon(_target);
-            if (GetIsObjectValid(offhandAttackWeapon))
+            var offhandAttackWeapon = TwinPistolEquipment.IsActivePair(_target)
+                ? TwinPistolEquipment.GetCompanionWeapon(_target)
+                : EquipmentPredicates.GetOffhandAttackWeapon(_target);
+            var hasOffhandAttack = GetIsObjectValid(offhandAttackWeapon) && Item.IsAttackWeaponType(GetBaseItemType(offhandAttackWeapon));
+            if (hasOffhandAttack)
             {
                 var dmgInfo = GetCombatInfo(offhandAttackWeapon);
                 OffHandDMG = dmgInfo.Item1;
@@ -857,8 +874,11 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             }
             else
             {
-                OffHandDMG = "-";
-                OffHandTooltip = "Est. Damage: N/A";
+                var inactiveCompanion = GetIsObjectValid(offHand) && GetBaseItemType(offHand) == BaseItem.CompanionPistol;
+                OffHandDMG = inactiveCompanion ? "Inactive" : "-";
+                OffHandTooltip = inactiveCompanion
+                    ? "Requires an eligible main-hand pistol and the Twin Pistol ranks required by both weapons."
+                    : "Est. Damage: N/A";
             }
 
             AbilityType damageStat;
@@ -875,21 +895,25 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             }
             else
             {
-                damageStat = Combat.GetWeaponDamageAbilityType(_target, mainHandType);
+                damageStat = GetEquipmentDamageAbility(_target, mainHand);
                 accuracyStatOverride = AbilityType.Invalid;
 
             }
 
-            var mainHandSkill = Skill.GetSkillTypeByBaseItem(mainHandType);
+            var mainHandSkill = Skill.GetWeaponSkill(_target, mainHand);
             Attack = Stat.GetAttack(_target, damageStat, mainHandSkill);
             ForceAttack = Stat.GetAttack(_target, AbilityType.Willpower, SkillType.Force);
             PhysicalDefense = Stat.GetDefense(_target, CombatDamageType.Physical, AbilityType.Vitality);
             ForceDefense = Stat.GetDefense(_target, CombatDamageType.Force, AbilityType.Willpower);
 
             WeaponAccuracy = Stat.GetAccuracy(_target, mainHand, accuracyStatOverride, SkillType.Invalid);
-            OffHandAccuracy = GetIsObjectValid(offhandAttackWeapon) && Item.IsAttackWeaponType(GetBaseItemType(offhandAttackWeapon))
-                ? Stat.GetAccuracy(_target, offhandAttackWeapon, AbilityType.Invalid, SkillType.Invalid).ToString()
-                : "-";
+            if (GetIsObjectValid(mainHand) && Item.IsAttackWeaponType(GetBaseItemType(mainHand)))
+                WeaponAccuracy += PairedRangedTraits.GetOrdinaryAccuracy(_target);
+            var offhandAccuracy = hasOffhandAttack
+                ? Stat.GetAccuracy(_target, offhandAttackWeapon, AbilityType.Invalid, SkillType.Invalid) : 0;
+            if (hasOffhandAttack)
+                offhandAccuracy += PairedRangedTraits.GetOrdinaryAccuracy(_target);
+            OffHandAccuracy = hasOffhandAttack ? offhandAccuracy.ToString() : "-";
             ForceAccuracy = Stat.GetAccuracy(
                 _target,
                 forceAccuracyWeapon,
@@ -906,6 +930,15 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         private static uint SelectForceAccuracyWeapon(uint mainHand, uint offHand, bool isMainHandValid)
         {
             return isMainHandValid ? mainHand : offHand;
+        }
+
+        private static AbilityType GetEquipmentDamageAbility(uint creature, uint item)
+        {
+            var ability = Combat.GetWeaponDamageAbilityType(creature, GetBaseItemType(item));
+            for (var property = GetFirstItemProperty(item); GetIsItemPropertyValid(property); property = GetNextItemProperty(item))
+                if (GetItemPropertyType(property) == ItemPropertyType.DamageStat)
+                    ability = (AbilityType)GetItemPropertySubType(property);
+            return ability;
         }
 
         private (string Value, string Tooltip) GetAttackDelayInfo()
@@ -973,7 +1006,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             AddStat("Critical Rate", FormatPercent(GetCriticalRate(combatProfile.Skill)), "Increases the chance to score a critical hit. Actual chance varies by target Vitality.");
             AddStat("Next Ability Crit", FormatPercent(Combat.GetPersistentNextSkillAbilityCriticalRateBonus(_target, combatProfile.Skill)), "Conditional Critical Rate reserved for the next matching ability. It does not affect ordinary auto-attacks and is consumed only when the ability critically hits.");
             AddStat("Assault Gadget Crit", FormatPercent(GetAssaultGadgetCriticalRate()), "Current Assault Gadget ability critical chance before target-specific bonuses. Includes the 5% baseline, Gadget Harness, Tactical Uplink, and other Devices ability bonuses; capped at 50%.");
-            AddStat("Gadget DMG", DeviceAbilityEffects.GetAssaultGadgetWeaponDamageEquivalent(_target).ToString(), "DMG added to every Assault Gadget ability, the way weapon DMG is added to weapon abilities. Rises with Devices rank: 6 below rank 10, then 10, 15, 19, 24, and 28 at ranks 10, 20, 30, 40, and 50. Droids use their level in place of Devices rank.");
+            AddStat("Gadget DMG", DeviceAbilityEffects.GetAssaultGadgetWeaponDamageEquivalent(_target).ToString(), "DMG added to every Assault Gadget ability, the way weapon DMG is added to weapon abilities; Overload Barrage adds it only to its single-target strike. Rises with Devices rank: 6 below rank 10, then 10, 15, 19, 24, and 28 at ranks 10, 20, 30, 40, and 50. Droids use their level in place of Devices rank.");
             AddStat("Critical Damage", FormatPercent(Stat.GetStatAdjustment(_target, StatType.CriticalDamagePercentAdjustment)), "Increases the amount of damage a critical hit deals.");
             AddStat("Damage Dealt", FormatPercent(Stat.GetStatAdjustment(_target, StatType.DamageDealtPercentAdjustment)), "Adjusts all outgoing damage.");
             AddStat("Weapon/Force Damage", FormatPercent(Stat.GetStatAdjustment(_target, StatType.WeaponAndForceDamageDealtPercentAdjustment)), "Adjusts outgoing weapon and Force damage. Stacks with Damage Dealt.");
@@ -1027,7 +1060,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         {
             var mainHand = GetItemInSlot(InventorySlot.RightHand, _target);
             var mainHandType = GetBaseItemType(mainHand);
-            var skill = Skill.GetSkillTypeByBaseItem(mainHandType);
+            var skill = Skill.GetWeaponSkill(_target, mainHand);
 
             if (BeastMastery.IsPlayerBeast(_target))
             {
@@ -1038,7 +1071,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 return (beastDetails.DamageStat, beastDetails.AccuracyStat, skill, creatureArmor);
             }
 
-            return (Combat.GetWeaponDamageAbilityType(_target, mainHandType), AbilityType.Invalid, skill, mainHand);
+            return (GetEquipmentDamageAbility(_target, mainHand), AbilityType.Invalid, skill, mainHand);
         }
 
         private bool IsPlayerCharacterTarget()

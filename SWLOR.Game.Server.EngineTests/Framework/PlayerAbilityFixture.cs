@@ -10,6 +10,7 @@ using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using Skill = SWLOR.Game.Server.Service.Skill;
+using InventorySlot = SWLOR.NWN.API.NWScript.Enum.InventorySlot;
 
 namespace SWLOR.Game.Server.EngineTests.Framework
 {
@@ -70,6 +71,8 @@ namespace SWLOR.Game.Server.EngineTests.Framework
                     Name = "Engine test player", RebuildComplete = true,
                     CharacterType = Enumeration.CharacterType.ForceSensitive,
                     MaxHP = 1000, HP = 1000, MaxFP = 10000, FP = 9999,
+                    // HP gear rebuilds the record from its sources, so the HP above the base comes from one.
+                    TemporaryFoodHP = 1000 - Stat.BaseHP,
                     MaxStamina = 10000, Stamina = 9999,
                     Attack = 150, Accuracy = 150, ForceAttack = 150, Evasion = 100,
                     TotalSPAcquired = Skill.TotalSkillPointCap - Skill.StartingSkillPoints,
@@ -163,7 +166,7 @@ namespace SWLOR.Game.Server.EngineTests.Framework
             }
         }
 
-        private static unsafe uint LoadPlayerCreature(EngineTestContext context, uint template)
+        private static unsafe uint LoadPlayerCreature(EngineTestContext context, uint template, bool serverSave = false)
         {
             var server = NWNXLib.g_pAppManager.m_pServerExoApp;
             var native = server.GetGameObject(template).AsNWSCreature();
@@ -172,10 +175,30 @@ namespace SWLOR.Game.Server.EngineTests.Framework
             using var fileType = new CExoString("BIC ");
             using var format = new CExoString("V2.0");
             context.Assert(file.CreateGFFFile(root, fileType, format) != 0, "create the native player export");
-            context.Assert(native.SaveCreature(file, root, 0, 0, 1, 0) != 0, "export the player fixture template");
+            // SaveServerCharacter calls SaveCreature with exportingChar=false/saveOIDs=true.
+            // Local character exports strip item locals and cannot represent a server save.
+            context.Assert((serverSave
+                    ? native.SaveCreature(file, root, 0, 0, 0, 1)
+                    : native.SaveCreature(file, root, 0, 0, 1, 0)) != 0,
+                serverSave ? "save the player through native server character serialization" : "export the player fixture template");
+            if (serverSave)
+            {
+                foreach (var listName in new[] { "ItemList", "Equip_ItemList" })
+                {
+                    using var list = new CResList();
+                    fixed (byte* label = Encoding.ASCII.GetBytes(listName + "\0"))
+                        context.Log($"Native character export {listName}: " +
+                            (file.GetList(list, root, label) != 0 ? file.GetListCount(list) : 0));
+                }
+            }
             fixed (byte* label = Encoding.ASCII.GetBytes("IsPC\0"))
                 file.WriteFieldBYTE(root, 1, label);
-            return LoadPlayerCreature(context, file, root);
+            var creature = LoadPlayerCreature(context, file, root);
+            if (serverSave)
+                context.Log($"Native reload right={GetItemInSlot(InventorySlot.RightHand, creature):X} " +
+                    $"left={GetItemInSlot(InventorySlot.LeftHand, creature):X} " +
+                    $"inventory={GetFirstItemInInventory(creature):X}");
+            return creature;
         }
 
         /// <summary>Loads a saved character file the way a connecting player's character loads.</summary>
@@ -235,6 +258,42 @@ namespace SWLOR.Game.Server.EngineTests.Framework
             var record = DB.Get<Player>(Id);
             update(record);
             DB.Set(record);
+        }
+
+        /// <summary>
+        /// Saves current carried/equipped items with native server character save flags and reloads
+        /// with PC inventory semantics. This does not simulate server-vault client login.
+        /// </summary>
+        internal async Task<PlayerAbilityFixture> SaveAndReloadAsync(EngineTestContext context, Action<uint> beforeUnload = null)
+        {
+            if (_disposed) throw new ObjectDisposedException(nameof(PlayerAbilityFixture));
+            var record = DB.Get<Player>(Id);
+            var restored = OBJECT_INVALID;
+            await context.ExecuteInCreatureContextAsync(Creature, () =>
+                restored = LoadPlayerCreature(context, Creature, true));
+            context.Track(restored);
+            var fixture = new PlayerAbilityFixture(restored);
+            try
+            {
+                if (beforeUnload != null)
+                    await context.ExecuteInCreatureContextAsync(Creature, () => beforeUnload(Creature));
+                Dispose();
+                await context.ExecuteInCreatureContextAsync(Creature, () =>
+                    EnterArena(context, restored, Creature));
+                context.Assert(IsListedInArena(context, restored), "reloaded fixture is in the native arena object list");
+                fixture.InstallIdentity(null);
+                record.Id = fixture.Id;
+                DB.Set(record);
+                context.SuppressNPCNaturalRegen(restored);
+                DestroyObject(Creature);
+                await context.WaitFrameAsync();
+                return fixture;
+            }
+            catch
+            {
+                fixture.Dispose();
+                throw;
+            }
         }
 
         /// <summary>

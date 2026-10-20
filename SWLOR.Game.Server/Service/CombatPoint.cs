@@ -3,6 +3,7 @@ using System.Globalization;
 using System.Linq;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Entity;
+using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum.Associate;
@@ -22,6 +23,7 @@ namespace SWLOR.Game.Server.Service
         /// Tracks the combat point lists associated with a player back to a creature.
         /// </summary>
         private static readonly Dictionary<uint, HashSet<uint>> _playerToCreatureTracker = new();
+        private static readonly WeaponAttackPointLedger _weaponAttackPoints = new();
 
         /// <summary>
         /// Adds a combat point to a given NPC creature for a given player and skill type.
@@ -33,22 +35,44 @@ namespace SWLOR.Game.Server.Service
             if (!GetIsPC(player) || GetIsDM(player) || !GetIsObjectValid(player)) return;
 
             var item = GetSpellCastItem();
-            var baseItemType = GetBaseItemType(item);
             var target = GetSpellTargetObject();
             if (GetIsPC(target) || GetIsDM(target)) return;
+            if (_weaponAttackPoints.Consume(player, target, item, DateTime.UtcNow)) return;
 
-            var skill = Skill.GetSkillTypeByBaseItem(baseItemType);
-            if (skill == SkillType.Invalid) return;
+            RecordWeaponAttackPoint(player, target, item, Skill.GetWeaponSkill(player, item));
+        }
 
-            AddCombatPoint(player, target, skill);
+        /// <summary>Records one landed logical weapon shot using its captured skill, through normal XP accounting.</summary>
+        public static void RecordWeaponAttackPoint(uint actor, uint target, uint weapon, SkillType capturedSkill)
+        {
+            if (!GetIsObjectValid(actor) || !GetIsPC(actor) || GetIsDM(actor) ||
+                !GetIsObjectValid(target) || GetIsPC(target) || GetIsDM(target) ||
+                capturedSkill == SkillType.Invalid) return;
+
+            AddCombatPoint(actor, target, capturedSkill);
 
             // If player has a beast active, add a combat point for Beast Mastery.
-            var associate = GetAssociate(AssociateType.Henchman, player);
+            var associate = GetAssociate(AssociateType.Henchman, actor);
             if (BeastMastery.IsPlayerBeast(associate))
             {
-                AddCombatPoint(player, target, SkillType.BeastMastery);
+                AddCombatPoint(actor, target, SkillType.BeastMastery);
             }
         }
+
+        /// <summary>Credits a landed native roll once and suppresses its later weapon/ammunition callback.</summary>
+        public static void CaptureNativeWeaponAttackPoint(uint actor, uint target, uint weapon,
+            SkillType capturedSkill, long rollId = 0, uint ammunition = OBJECT_INVALID, bool awardPoint = true)
+        {
+            if (!GetIsObjectValid(actor) || !GetIsPC(actor) || GetIsDM(actor) ||
+                !GetIsObjectValid(target) || GetIsPC(target) || GetIsDM(target) ||
+                capturedSkill == SkillType.Invalid) return;
+            if (!_weaponAttackPoints.Capture(actor, target, weapon, ammunition, rollId, DateTime.UtcNow)) return;
+            // A queued ability owns the replaced roll's contribution under its captured ability skill.
+            if (awardPoint) RecordWeaponAttackPoint(actor, target, weapon, capturedSkill);
+        }
+
+        [NWNEventHandler(ScriptName.OnModuleExit)]
+        public static void ClearPendingWeaponAttackPoints() => _weaponAttackPoints.Clear(GetExitingObject());
 
         /// <summary>
         /// When a creature dies, skill XP is given to all players who contributed during battle.

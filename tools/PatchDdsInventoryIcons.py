@@ -1,4 +1,4 @@
-"""Create a separate NWN:EE Windows client with DDS-aware composite icon discovery.
+"""Create a separate NWN:EE Windows client with DDS-aware item icon discovery.
 
 Never edits the source executable. Only the explicitly verified client build is
 accepted. This is a client patch, not a HAK or server-side fix. See
@@ -13,8 +13,14 @@ import struct
 SOURCE_SHA256 = "3b7cb1252e0edb2ce22d7971f333aade027039ae30a45b4bc64732c3e6bec73a"
 BUILD = "8193.37-17 / 26c6e573 / Windows x64"
 ICON_EXISTS_CALL_RVA = 0x84069C
+SIMPLE_ICON_EXISTS_CALL_RVA = 0x840E86
 RESOURCE_EXISTS_RVA = 0x18F590
 ORIGINAL_CALL = bytes.fromhex("e8efee94ff")
+ORIGINAL_SIMPLE_CALL = bytes.fromhex("e805e794ff")
+ICON_EXISTS_CALL_SITES = (
+    ("Composite", ICON_EXISTS_CALL_RVA, ORIGINAL_CALL),
+    ("Simple", SIMPLE_ICON_EXISTS_CALL_RVA, ORIGINAL_SIMPLE_CALL),
+)
 SECTION_NAME = b".ddsicn"
 
 
@@ -108,9 +114,12 @@ def patch_image(source):
                 return raw + rva - start
         raise ValueError(f"RVA {rva:#x} is outside section file data")
 
-    call_offset = file_offset(ICON_EXISTS_CALL_RVA, 5)
-    if image[call_offset:call_offset + 5] != ORIGINAL_CALL:
-        raise ValueError("Composite icon call site does not match the verified build")
+    call_offsets = []
+    for label, call_rva, original_call in ICON_EXISTS_CALL_SITES:
+        call_offset = file_offset(call_rva, 5)
+        if image[call_offset:call_offset + 5] != original_call:
+            raise ValueError(f"{label} icon call site does not match the verified build")
+        call_offsets.append((call_rva, call_offset))
     if max(raw + size for _, _, raw, size in sections) != len(image):
         raise ValueError("Unexpected executable overlay")
 
@@ -148,7 +157,8 @@ def patch_image(source):
     struct.pack_into("<I", image, optional + 4, old_code_size + raw_size)
     struct.pack_into("<I", image, optional + 56, align(new_rva + len(payload), section_alignment))
     struct.pack_into("<II", image, directories + 3 * 8, new_exception_rva, exception_size + 12)
-    image[call_offset:call_offset + 5] = b"\xE8" + struct.pack("<i", new_rva - ICON_EXISTS_CALL_RVA - 5)
+    for call_rva, call_offset in call_offsets:
+        image[call_offset:call_offset + 5] = b"\xE8" + struct.pack("<i", new_rva - call_rva - 5)
     struct.pack_into("<I", image, optional + 64, checksum(image, optional + 64))
     return bytes(image)
 
@@ -168,7 +178,7 @@ def main():
         if not args.check_only:
             with args.output.open("xb") as stream:
                 stream.write(result)
-        print(f"Verified {BUILD}; DDS-aware composite inventory lookup {'validated' if args.check_only else 'written to ' + str(args.output)}.")
+        print(f"Verified {BUILD}; DDS-aware composite/simple inventory lookup {'validated' if args.check_only else 'written to ' + str(args.output)}.")
         print(f"Output SHA-256: {hashlib.sha256(result).hexdigest()}")
         print("The source executable is unchanged. Clients must run the separate patched executable for this fix to apply.")
     except (OSError, ValueError) as error:

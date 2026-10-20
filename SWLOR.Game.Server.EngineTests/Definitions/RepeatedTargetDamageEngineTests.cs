@@ -13,7 +13,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
         [EngineTest("Sustained Fire III and Rundown I add independent auto-attack bonuses", Category = "RepeatedTargetDamage", TimeoutSeconds = 30f)]
         public static async Task AutoAttackBonusesStack(EngineTestContext ctx)
         {
-            foreach (var skill in new[] { SkillType.Rifle, SkillType.Vibroblade, SkillType.Pistol, SkillType.Lightsaber })
+            foreach (var skill in new[] { SkillType.Rifle, SkillType.Vibroblade, SkillType.Pistol, SkillType.Lightsaber, SkillType.TwinPistol })
             {
                 var attacker = ctx.SpawnCreature("nw_bandit001");
                 var target = ctx.SpawnCreature("nw_rat001", 2f);
@@ -34,35 +34,38 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
         [EngineTest("Ability hits preserve Rundown while independently advancing Sustained Fire", Category = "RepeatedTargetDamage", TimeoutSeconds = 30f)]
         public static async Task AbilityHitsPreserveAutoAttackStacks(EngineTestContext ctx)
         {
-            var attacker = ctx.SpawnCreature("nw_bandit001");
-            var target = ctx.SpawnCreature("nw_rat001", 2f);
-            await ctx.WaitFrameAsync();
-            Prepare(ctx, attacker, target);
-
-            for (var hit = 1; hit <= 6; hit++)
+            foreach (var weaponSkill in new[] { SkillType.Rifle, SkillType.TwinPistol })
             {
-                var autoAttackStacks = Math.Min(hit, 5);
-                var weaponHitStacks = Math.Min(hit * 2 - 1, 5);
-                var autoAttackDamage = Combat.ApplyDamageDealtModifiers(attacker, target, 100, SkillType.Rifle,
-                    CombatDamageType.Physical, isAbilityDamage: false, canApplyRandomFlatBonuses: false);
-                ctx.AssertEqual(100 + autoAttackStacks + weaponHitStacks * 3, autoAttackDamage,
-                    $"auto-attack {hit} retains Rundown between abilities");
-                AssertStacks(ctx, attacker, autoAttackStacks, weaponHitStacks);
+                var attacker = ctx.SpawnCreature("nw_bandit001");
+                var target = ctx.SpawnCreature("nw_rat001", 2f);
+                await ctx.WaitFrameAsync();
+                Prepare(ctx, attacker, target);
 
-                weaponHitStacks = Math.Min(hit * 2, 5);
-                var abilityDamage = Combat.ApplyDamageDealtModifiers(attacker, target, 100, SkillType.Rifle,
-                    CombatDamageType.Physical, isAbilityDamage: true, canApplyRandomFlatBonuses: false);
-                ctx.AssertEqual(100 + weaponHitStacks * 3, abilityDamage,
-                    $"weapon ability {hit} benefits only from Sustained Fire");
-                AssertStacks(ctx, attacker, autoAttackStacks, weaponHitStacks);
-            }
+                for (var hit = 1; hit <= 6; hit++)
+                {
+                    var autoAttackStacks = Math.Min(hit, 5);
+                    var weaponHitStacks = Math.Min(hit * 2 - 1, 5);
+                    var autoAttackDamage = Combat.ApplyDamageDealtModifiers(attacker, target, 100, weaponSkill,
+                        CombatDamageType.Physical, isAbilityDamage: false, canApplyRandomFlatBonuses: false);
+                    ctx.AssertEqual(100 + autoAttackStacks + weaponHitStacks * 3, autoAttackDamage,
+                        $"{weaponSkill} auto-attack {hit} retains Rundown between abilities");
+                    AssertStacks(ctx, attacker, autoAttackStacks, weaponHitStacks);
 
-            foreach (var skill in new[] { SkillType.Force, SkillType.Devices })
-            {
-                var damage = Combat.ApplyDamageDealtModifiers(attacker, target, 100, skill,
-                    CombatDamageType.Force, isAbilityDamage: true, canApplyRandomFlatBonuses: false);
-                ctx.AssertEqual(100, damage, $"{skill} does not receive weapon-hit bonuses");
-                AssertStacks(ctx, attacker, 5, 5);
+                    weaponHitStacks = Math.Min(hit * 2, 5);
+                    var abilityDamage = Combat.ApplyDamageDealtModifiers(attacker, target, 100, weaponSkill,
+                        CombatDamageType.Physical, isAbilityDamage: true, canApplyRandomFlatBonuses: false);
+                    ctx.AssertEqual(100 + weaponHitStacks * 3, abilityDamage,
+                        $"{weaponSkill} weapon ability {hit} benefits only from Sustained Fire");
+                    AssertStacks(ctx, attacker, autoAttackStacks, weaponHitStacks);
+                }
+
+                foreach (var skill in new[] { SkillType.Force, SkillType.Devices })
+                {
+                    var damage = Combat.ApplyDamageDealtModifiers(attacker, target, 100, skill,
+                        CombatDamageType.Force, isAbilityDamage: true, canApplyRandomFlatBonuses: false);
+                    ctx.AssertEqual(100, damage, $"{skill} does not receive weapon-hit bonuses");
+                    AssertStacks(ctx, attacker, 5, 5);
+                }
             }
         }
 

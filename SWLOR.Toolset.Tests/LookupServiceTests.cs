@@ -242,7 +242,7 @@ namespace SWLOR.Toolset.Tests
         [Test]
         public void TilesetCatalog_WithBaseGameLayer_DiscoversBaseGameTilesets()
         {
-            var installPath = NwnInstallLocator.Locate();
+            var installPath = NwnInstallLocator.Locate(Environment.GetEnvironmentVariable("NWN_INSTALL_PATH"));
             if (installPath == null || !File.Exists(Path.Combine(installPath, "data", "nwn_base.key")))
             {
                 Assert.Ignore("No local NWN:EE base-game KEY/BIF layer was found.");

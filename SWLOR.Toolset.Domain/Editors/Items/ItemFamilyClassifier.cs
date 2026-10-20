@@ -16,7 +16,7 @@ namespace SWLOR.Toolset.Domain.Editors.Items
             "katana", "scimitar", "rapier", "bastardsword", "kukri", "sickle", "club", "lightmace",
             "morningstar", "warhammer", "lighthammer", "lightflail", "heavyflail", "halberd",
             "shortspear", "quarterstaff", "twobladedsword", "doubleaxe", "dwarvenwaraxe", "whip",
-            "scythe", "trident", "katar", "electroblade", "twinelectroblade"
+            "scythe", "trident", "katar", "electroblade", "twinelectroblade", "powerglove"
         };
 
         private static readonly HashSet<string> RangedLabels = new(StringComparer.OrdinalIgnoreCase)

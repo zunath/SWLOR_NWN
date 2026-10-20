@@ -57,7 +57,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
                 Stat.RestoreStamina(friendly, GameMath.PercentOf(Stat.GetMaxStamina(friendly), 25));
                 if (StatusEffect.ApplyStatusEffect(activator, friendly, typeof(EmergencyCocktailStatusEffect), duration))
                     Ability.PlaySuccessfulImpactVisualEffect(activator, friendly);
-                AbilityEffectScaling.ApplyTemporaryHPPercent(activator, friendly, "EMERGENCY_COCKTAIL", 12, duration);
+                AbilityEffectScaling.ApplyTemporaryHP(activator, friendly, "EMERGENCY_COCKTAIL", new HealAmount(54, 3f), duration);
                 StatusEffect.RemoveFirstStatusEffect(friendly, new[] { typeof(PoisonStatusEffect), typeof(ToxinStatusEffect) }, false);
                 FirstAidTreatmentAdjustments.ApplyCombatPharmacologyStimRiders(activator, friendly);
                 ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Restoration), friendly);

@@ -54,7 +54,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
             var shielded = new List<uint>();
             foreach (var friendly in AbilityTargeting.GetFriendlyTargets(activator, target, true))
             {
-                ApplyShieldTemporaryHP(activator, friendly, 70, 8, 30f);
+                ApplyShieldTemporaryHP(activator, friendly, new HealAmount(106, 2f), 30f);
                 shielded.Add(friendly);
             }
 
@@ -65,11 +65,10 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
         private static void ApplyShieldTemporaryHP(
             uint activator,
             uint target,
-            int flatAmount,
-            int percent,
+            HealAmount shield,
             float durationSeconds)
         {
-            var amount = Math.Max(1, flatAmount + GameMath.PercentOf(GetMaxHitPoints(target), percent));
+            var amount = shield.ForMaxHitPoints(GetMaxHitPoints(target));
             amount = Ability.ApplyCombatReadinessMagnitude(activator, amount);
             var duration = durationSeconds;
 

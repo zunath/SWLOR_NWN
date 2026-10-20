@@ -378,7 +378,7 @@ namespace SWLOR.Toolset.Tests
                     "The SWLOR_Haks submodule is not initialized and SWLOR_TEST_HAKS_ROOT was not supplied.");
             }
 
-            var installRoot = NwnInstallLocator.Locate();
+            var installRoot = NwnInstallLocator.Locate(Environment.GetEnvironmentVariable("NWN_INSTALL_PATH"));
             if (installRoot == null)
                 Assert.Ignore("No local NWN:EE installation was found for appearance models.");
 

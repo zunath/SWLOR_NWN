@@ -4,7 +4,7 @@ using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.NWNX.Enum;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Feature;
-using SWLOR.Game.Server.Native;
+using SWLOR.Game.Server.Feature.AbilityDefinition;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWNX;
@@ -150,11 +150,11 @@ public static class QuickCast
         var target = player;
         if (type == QuickCastTargetType.CurrentEnemy)
         {
-            target = GetAttackTarget(player);
+            // Includes the attack resumed after a previous ability, before the engine restores the
+            // native attack target at the start of its next round.
+            target = ActionInterruption.GetQueuedAttackTarget(player);
             if (!GetIsObjectValid(target) || target == player || GetIsDead(target) || GetCurrentHitPoints(target) <= 0 ||
-                GetArea(target) != GetArea(player) || !GetIsReactionTypeHostile(target, player) ||
-                !WeaponAttackAnimation.HasQueuedAttack(
-                    NWNXLib.g_pAppManager.m_pServerExoApp.GetGameObject(player).AsNWSObject(), target))
+                GetArea(target) != GetArea(player) || !GetIsReactionTypeHostile(target, player))
             {
                 error = "Attack a living enemy first to use current-enemy targeting.";
                 return false;

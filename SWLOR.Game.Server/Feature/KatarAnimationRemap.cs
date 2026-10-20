@@ -3,12 +3,13 @@ using System.Linq;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.LogService;
+using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Item;
 
 namespace SWLOR.Game.Server.Feature
 {
-    // Remaps selected one-handed combat animations to "no weapon" animations while a player is using katars.
+    // One owner remaps selected one-handed combat animations for katars and Power Gloves.
     public static class KatarAnimationRemap
     {
         private const string KatarAnimationRemapActiveVariable = "KATAR_ANIM_REMAP_ACTIVE";
@@ -121,6 +122,7 @@ namespace SWLOR.Game.Server.Feature
             // Keep remap on for dual-katar explicitly, otherwise only when main hand is katar and
             // offhand is not sword/dagger-family (those combos should keep regular 1h piercing behavior).
             var shouldUseKatarRemap =
+                EquipmentPredicates.HasUnarmedGrip(rightHandBaseItem, leftHandBaseItem) ||
                 HasDualWieldKatars(creature, rightHandBaseItem, leftHandBaseItem) ||
                 (HasMainHandKatar(rightHandBaseItem) && !HasOffHandDaggerOrSword(leftHandBaseItem));
             var isRemapActive = GetLocalBool(creature, KatarAnimationRemapActiveVariable);

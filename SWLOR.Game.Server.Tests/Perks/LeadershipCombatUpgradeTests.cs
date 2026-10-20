@@ -144,8 +144,8 @@ public class LeadershipCombatUpgradeTests
         (commandPresence.Split(".TriggerRefund(AbilityTargeting.RefreshClientTargeting)").Length - 1).Should().Be(2);
 
         var cleanseOrder = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "Leadership" / "CleanseOrderAbilityDefinition.cs").FullName);
-        cleanseOrder.Should().Contain("AbilityEffectScaling.ScaleValueBySourceSocial(activator, 12, 15)");
-        cleanseOrder.Should().Contain("GameMath.PercentOf(GetMaxHitPoints(target), percent)");
+        cleanseOrder.Should().Contain("AbilityEffectScaling.ScaleHealBySourceSocial(activator, new HealAmount(54, 3f), new HealAmount(68, 3.75f))");
+        cleanseOrder.Should().Contain("shield.ForMaxHitPoints(GetMaxHitPoints(target))");
         cleanseOrder.Should().Contain("TemporaryHitPointEffects.ApplyFlatOwned(");
         var cleanseOrder1Impact = cleanseOrder[cleanseOrder.IndexOf(
             "private static void CleanseOrder1ImpactAction",
@@ -493,7 +493,9 @@ public class LeadershipCombatUpgradeTests
             spellIcon.Should().NotBe("****");
             featIcon.Should().Be(spellIcon);
 
-            featRows.Values.Where(x => x.Icon == featIcon && !labels.Contains(x.Label)).Should().BeEmpty();
+            // A feat's automatic-targeting alias row copies its canonical row, icon included.
+            featRows.Values.Where(x => x.Icon == featIcon && !labels.Contains(x.Label) && x.Label != "AutoCast" + label)
+                .Should().BeEmpty();
             spellRows.Values.Where(x => x.Icon == spellIcon && !labels.Contains(x.Label)).Should().BeEmpty();
             File.Exists((root / "SWLOR_Haks" / "sw_ability" / $"{featIcon}.tga").FullName).Should().BeTrue();
         }
@@ -526,18 +528,18 @@ public class LeadershipCombatUpgradeTests
             (FeatType.CoordinatedFocus3, "Aura: Party members within Leadership range (5m base) gain +6% critical hit chance and +8% critical damage. SOC scaling can raise these to +7% and +10%."),
             (FeatType.DecisiveCommand1, "For 45 seconds, party members within Leadership range (5m base), including you, gain +12% damage, +6% physical and Force ability hit chance, +6% critical hit chance, and restore 1 STM every 3 seconds. SOC scaling can raise the bonuses to +15%, +8%, and +8%."),
             (FeatType.WatchfulPresence1, "Aura: Party members within Leadership range (5m base) take 4% less physical and Force damage. SOC scaling can raise this to 5%."),
-            (FeatType.RousingShout1, "Bolsters one living ally, granting temporary HP equal to 10% of maximum HP for 30 seconds. SOC scaling can raise this to 13%. If the target is at or below 35% HP, they also take 10% less physical and Force damage, scaling up to 12%."),
+            (FeatType.RousingShout1, "Bolsters one living ally, granting 13 temporary HP plus 2.5% of maximum HP for 30 seconds. SOC scaling can raise this to 16 HP plus 3.25%. If the target is at or below 35% HP, they also take 10% less physical and Force damage, scaling up to 12%."),
             (FeatType.SteadyFormation1, "Aura: Party members within Leadership range (5m base) gain +3% evasion chance, +30 Mind Resistance, and +30 Mobility Resistance. SOC scaling can raise these to +4% evasion chance, +40 Mind Resistance, and +40 Mobility Resistance."),
             (FeatType.FieldRecovery1, "Aura: Party members within Leadership range (5m base) restore 1 STM every 4 seconds. SOC scaling can raise this to 2 STM per tick."),
-            (FeatType.RousingShout2, "Bolsters one living ally, granting temporary HP equal to 15% of maximum HP for 30 seconds. SOC scaling can raise this to 19%. If the target is at or below 35% HP, they also take 15% less physical and Force damage, scaling up to 18%."),
+            (FeatType.RousingShout2, "Bolsters one living ally, granting 41 temporary HP plus 3.75% of maximum HP for 30 seconds. SOC scaling can raise this to 52 HP plus 4.75%. If the target is at or below 35% HP, they also take 15% less physical and Force damage, scaling up to 18%."),
             (FeatType.WatchfulPresence2, "Aura: Party members within Leadership range (5m base) take 6% less physical and Force damage. SOC scaling can raise this to 7%."),
-            (FeatType.CleanseOrder1, "Removes one standard elemental or trauma ailment from party members within Leadership range (5m base) and grants temporary HP equal to 6% of maximum HP for 30 seconds. SOC scaling can raise temporary HP to 8%."),
+            (FeatType.CleanseOrder1, "Removes one standard elemental or trauma ailment from party members within Leadership range (5m base) and grants 19 temporary HP plus 1.5% of maximum HP for 30 seconds. SOC scaling can raise temporary HP to 25 HP plus 2%."),
             (FeatType.SteadyFormation2, "Aura: Party members within Leadership range (5m base) gain +5% evasion chance, +50 Mind Resistance, and +50 Mobility Resistance. SOC scaling can raise these to +6% evasion chance, +65 Mind Resistance, and +65 Mobility Resistance."),
             (FeatType.FieldRecovery2, "Aura: Party members within Leadership range (5m base) restore 2 STM every 4 seconds. SOC scaling can raise this to 3 STM per tick."),
-            (FeatType.RousingShout3, "Bolsters one living ally, granting temporary HP equal to 20% of maximum HP for 30 seconds. SOC scaling can raise this to 25%. If the target is at or below 35% HP, they also take 20% less physical and Force damage, scaling up to 25%."),
-            (FeatType.CleanseOrder2, "Removes one major negative status effect from party members within Leadership range (5m base) and grants temporary HP equal to 12% of maximum HP for 30 seconds. SOC scaling can raise temporary HP to 15%."),
+            (FeatType.RousingShout3, "Bolsters one living ally, granting 90 temporary HP plus 5% of maximum HP for 30 seconds. SOC scaling can raise this to 113 HP plus 6.25%. If the target is at or below 35% HP, they also take 20% less physical and Force damage, scaling up to 25%."),
+            (FeatType.CleanseOrder2, "Removes one major negative status effect from party members within Leadership range (5m base) and grants 54 temporary HP plus 3% of maximum HP for 30 seconds. SOC scaling can raise temporary HP to 68 HP plus 3.75%."),
             (FeatType.WatchfulPresence3, "Aura: Party members within Leadership range (5m base) take 8% less physical and Force damage. SOC scaling can raise this to 10%."),
-            (FeatType.HoldTheLine1, "For 45 seconds, party members within Leadership range (5m base), including you, gain temporary HP equal to 18% of maximum HP, take 18% less damage, and become immune to Mind and Mobility effects. SOC scaling can raise temporary HP and damage reduction to 22%.")
+            (FeatType.HoldTheLine1, "For 45 seconds, party members within Leadership range (5m base), including you, gain 81 temporary HP plus 4.5% of maximum HP, take 18% less damage, and become immune to Mind and Mobility effects. SOC scaling can raise temporary HP to 99 HP plus 5.5% and damage reduction to 22%.")
         };
 
         foreach (var (featType, expectedDescription) in descriptions)

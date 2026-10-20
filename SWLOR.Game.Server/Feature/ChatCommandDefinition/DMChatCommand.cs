@@ -267,6 +267,7 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                     if (GetIsDead(target))
                     {
                         ApplyEffectToObject(DurationType.Instant, EffectResurrection(), target);
+                        PlayerTemporaryEffects.RestoreGhostAfterRevive(target);
                         if (CombatRecorder.IsRecording)
                             CombatRecorder.RecordResurrection(target);
                         Ability.ReapplyPlayerAuraAOE(target);

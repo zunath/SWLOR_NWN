@@ -200,6 +200,45 @@ public class QuickCastTests
         }
     }
 
+    [Test]
+    public void EveryNativeAlias_IsListedOnTheClassAbilityMenusLikeItsCanonicalFeat()
+    {
+        // The client builds the radial and quickbar class ability menus from the class feat table.
+        // While a preference is on, the player knows only the alias, so a missing row hides the ability.
+        var path = Path.Combine(FindRepositoryRoot().FullName, "SWLOR_Haks", "sw_2da", "CLS_FEAT_FIGHT.2da");
+        var lines = File.ReadAllLines(path);
+        lines[2].Split((char[])null, StringSplitOptions.RemoveEmptyEntries).Should()
+            .Equal("FeatLabel", "FeatIndex", "List", "GrantedOnLevel", "OnMenu");
+        var rowsByFeat = lines.Skip(3)
+            .Select(line => line.Split((char[])null, StringSplitOptions.RemoveEmptyEntries))
+            .Where(tokens => tokens.Length == 6 && int.TryParse(tokens[2], out _))
+            .ToLookup(tokens => int.Parse(tokens[2]));
+
+        var listedAliases = 0;
+        foreach (var (alias, original) in QuickCastFeatMap.Originals)
+        {
+            var originalRows = rowsByFeat[(int)original].ToArray();
+            originalRows.Should().HaveCountLessThan(2, $"{original} must have at most one class feat row");
+            if (originalRows.Length == 0)
+            {
+                // Feats players never learn, such as beast abilities, stay off the menus in both forms.
+                rowsByFeat[(int)alias].Should().BeEmpty($"{alias} must mirror {original}, which has no class feat row");
+                continue;
+            }
+
+            listedAliases++;
+            var originalRow = originalRows[0];
+            var aliasRow = rowsByFeat[(int)alias].Should()
+                .ContainSingle($"{alias} must be on the class ability menus while it replaces {original}").Which;
+            aliasRow[1].Should().Be(alias.ToString());
+            aliasRow.Skip(3).Should().Equal(originalRow.Skip(3),
+                $"{alias} must keep {original}'s List, GrantedOnLevel and OnMenu cells");
+        }
+        listedAliases.Should().BeGreaterThan(0);
+        rowsByFeat[(int)FeatType.AutoCastMedKit1].Should().ContainSingle(row => row[5] == "1",
+            "First Aid abilities must stay on the radial while self-casting is enabled");
+    }
+
     private static Dictionary<FeatType, AbilityDetail> GetAllAbilities()
     {
         var definitions = typeof(IAbilityListDefinition).Assembly.GetTypes()

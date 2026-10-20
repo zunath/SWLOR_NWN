@@ -58,7 +58,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Leadership
             {
                 ApplyTemporaryHP(
                     friendly,
-                    AbilityEffectScaling.ScaleValueBySourceSocial(activator, 18, 22),
+                    AbilityEffectScaling.ScaleHealBySourceSocial(activator, new HealAmount(81, 4.5f), new HealAmount(99, 5.5f)),
                     CapstoneAbility.ActiveDurationSeconds);
                 if (StatusEffect.ApplyStatusEffect(activator, friendly, typeof(HoldTheLine1StatusEffect), CapstoneAbility.ActiveDurationSeconds))
                     Ability.PlaySuccessfulImpactVisualEffect(activator, friendly);
@@ -69,12 +69,12 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Leadership
             if (affected.Count > 0) CombatPoint.AddSupportCombatPoint(activator, affected, SkillType.Leadership, 3);
         }
 
-        private static void ApplyTemporaryHP(uint target, int percent, float durationSeconds)
+        private static void ApplyTemporaryHP(uint target, HealAmount shield, float durationSeconds)
         {
             TemporaryHitPointEffects.ApplyFlat(
                 target,
                 "HOLD_THE_LINE",
-                GameMath.PercentOf(GetMaxHitPoints(target), percent),
+                shield.ForMaxHitPoints(GetMaxHitPoints(target)),
                 durationSeconds);
         }
     }

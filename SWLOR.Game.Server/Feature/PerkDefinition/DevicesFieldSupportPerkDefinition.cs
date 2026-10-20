@@ -34,14 +34,14 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Deflector Shield")
 
                 .AddPerkLevel()
-                .Description("Grants one ally 35 temporary HP plus 6% of the target's maximum HP for 45 seconds.")
+                .Description("Grants one ally 41 temporary HP plus 1.5% of the target's maximum HP for 45 seconds.")
                 .Price(3)
                 .RequirementCharacterType(CharacterType.Standard)
                 .DroidAISlots(1)
                 .GrantsFeat(FeatType.DeflectorShield1)
 
                 .AddPerkLevel()
-                .Description("Grants one ally 65 temporary HP plus 9% of the target's maximum HP for 45 seconds.")
+                .Description("Grants one ally 85 temporary HP plus 2.25% of the target's maximum HP for 45 seconds.")
                 .Price(3)
                 .RequirementSkill(SkillType.Devices, 15)
                 .RequirementCharacterType(CharacterType.Standard)
@@ -49,7 +49,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.DeflectorShield2)
 
                 .AddPerkLevel()
-                .Description("Grants one ally 100 temporary HP plus 12% of the target's maximum HP for 45 seconds.")
+                .Description("Grants one ally 154 temporary HP plus 3% of the target's maximum HP for 45 seconds.")
                 .Price(4)
                 .RequirementSkill(SkillType.Devices, 30)
                 .RequirementCharacterType(CharacterType.Standard)
@@ -181,7 +181,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Group Deflector")
 
                 .AddPerkLevel()
-                .Description("Allies within 5m gain 70 temporary HP plus 8% of each target's maximum HP for 30 seconds.")
+                .Description("Allies within 5m gain 106 temporary HP plus 2% of each target's maximum HP for 30 seconds.")
                 .Price(5)
                 .RequirementSkill(SkillType.Devices, 42)
                 .RequirementCharacterType(CharacterType.Standard)
@@ -195,7 +195,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Emergency Bunker")
 
                 .AddPerkLevel()
-                .Description("Deploys an 8m-radius shield bunker at the target location for 45 seconds. Allies inside gain 60 temporary HP plus 8% of each target's maximum HP and take 15% less physical and Force damage.")
+                .Description("Deploys an 8m-radius shield bunker at the target location for 45 seconds. Allies inside gain 96 temporary HP plus 2% of each target's maximum HP and take 15% less physical and Force damage.")
                 .Price(5)
                 .RequirementSkill(SkillType.Devices, 50)
                 .RequirementCharacterType(CharacterType.Standard)

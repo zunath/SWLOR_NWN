@@ -50,6 +50,35 @@ public class AbilityImpactDamageBonusTests
         Damage(laterPulse).Should().Be(0, "later pulses must not duplicate the consumed bonus");
     }
 
+    [Test]
+    public void PartitionedSnapshot_RetainsArmedBonusesForEveryPortion_AfterTheOriginHasConsumedThem()
+    {
+        var type = typeof(Ability).GetNestedType("TrackedAbilityImpact", BindingFlags.NonPublic)!;
+        object Create(int damage = 0, int criticalRate = 0, int defenseIgnore = 0, int enmity = 0,
+            int statusDamage = 0, int criticalDamage = 0) => type.GetConstructors().Single().Invoke(new object[]
+        {
+            new AbilityDetail(), damage, criticalRate, defenseIgnore, enmity, statusDamage, false,
+            criticalDamage, Array.Empty<TelegraphGeometry>(), null
+        });
+        var source = Create(82, 11, 13, 17, 7, 19);
+        var copy = (Delegate)type.GetMethod("CapturePartitionedDamageBonuses")!.Invoke(source, null)!;
+        type.GetMethod("AddDamageBonuses")!.Invoke(source, new object[] { -7, 0, 0, 0, 0, 0 });
+        type.GetMethod("CompleteRepeatedDamageBonusImpact")!.Invoke(source, new object[] { true });
+        foreach (var _ in Enumerable.Range(0, 3))
+        {
+            var portion = Create();
+            copy.DynamicInvoke(portion);
+            int Value(string property) => (int)type.GetProperty(property)!.GetValue(portion)!;
+            Value("NextAbilityDamageBonus").Should().Be(75);
+            Value("NextAbilityCriticalRatePercentAdjustment").Should().Be(11);
+            Value("NextAbilityDefenseIgnorePercentAdjustment").Should().Be(13);
+            Value("NextAttackEnmityBonus").Should().Be(17);
+            Value("NextAbilityCriticalDamagePercentAdjustment").Should().Be(19);
+            Value("StatusAppliedNextAttackDamageBonus").Should().Be(0,
+                "a live next-attack status is not a reusable scheduled ability bonus");
+        }
+    }
+
     private static readonly Func<int, AbilityDetail, Func<int>, (int BaseDamage, bool DealsDamage)> Apply = typeof(Ability)
         .GetMethod("ResolveCombatImpactBaseDamage", BindingFlags.NonPublic | BindingFlags.Static)!
         .CreateDelegate<Func<int, AbilityDetail, Func<int>, (int, bool)>>();

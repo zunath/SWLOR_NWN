@@ -92,6 +92,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
             ReviveRules.RecordResuscitation(activator, target);
             var playResurrectionVisual = Ability.CaptureSuccessfulImpactVisualEffect(activator);
             ApplyEffectToObject(DurationType.Instant, EffectResurrection(), target);
+            PlayerTemporaryEffects.RestoreGhostAfterRevive(target);
             if (CombatRecorder.IsRecording)
                 CombatRecorder.RecordResurrection(target);
             FirstAidTreatmentAdjustments.ApplyTraumaMedicRiders(activator, target);
@@ -113,6 +114,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
             ReviveRules.RecordResuscitation(activator, target);
             var playResurrectionVisual = Ability.CaptureSuccessfulImpactVisualEffect(activator);
             ApplyEffectToObject(DurationType.Instant, EffectResurrection(), target);
+            PlayerTemporaryEffects.RestoreGhostAfterRevive(target);
             if (CombatRecorder.IsRecording)
                 CombatRecorder.RecordResurrection(target);
             FirstAidTreatmentAdjustments.ApplyTraumaMedicRiders(activator, target);
@@ -121,7 +123,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
             DelayCommand(0.1f, () =>
             {
                 using var recorderScope = CombatRecorder.BeginAbilityFeatAttribution(activator, FeatType.Resuscitation2);
-                AbilityEffectScaling.ApplyActivatedScaledHeal(activator, target, 20);
+                // A revive restores a share of the target's own HP, so it stays a percent.
+                AbilityEffectScaling.ApplyActivatedScaledHeal(activator, target, HealAmount.Percent(20));
                 Ability.ReapplyAuraEffectsForCreature(target);
                 if (GetIsObjectValid(target) && !GetIsDead(target) && GetCurrentHitPoints(target) > 0)
                     playResurrectionVisual(target);

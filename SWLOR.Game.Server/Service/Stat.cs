@@ -632,6 +632,54 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>
+        /// Sets a player's stored maximum HP to the sum of its sources: the base, the HP bonuses on equipped items,
+        /// and active food. Equipment and food add and remove their HP as changes, so one missed, failed or repeated
+        /// change leaves the record off for good. A record below the native floor of one HP per level then hides
+        /// gear HP until enough is worn to climb past that floor.
+        /// </summary>
+        /// <param name="player">The player to reconcile</param>
+        /// <returns>True if the record was corrected</returns>
+        public static bool RefreshPlayerMaxHP(uint player)
+        {
+            if (!GetIsObjectValid(player) || !GetIsPC(player) ||
+                GetIsDM(player) || GetIsDMPossessed(player))
+                return false;
+
+            var playerId = GetObjectUUID(player);
+            var dbPlayer = DB.Get<Player>(playerId);
+            if (dbPlayer == null)
+                return false;
+
+            // TemporaryFoodHP is the food HP the record holds. ReapplyFoodHP removes it once the food is gone.
+            var maxHP = BaseHP + GetEquippedHPBonus(player) + Math.Max(0, dbPlayer.TemporaryFoodHP);
+            if (dbPlayer.MaxHP == maxHP)
+                return false;
+
+            AdjustPlayerMaxHP(dbPlayer, player, maxHP - dbPlayer.MaxHP);
+            DB.Set(dbPlayer);
+            return true;
+        }
+
+        public static int GetEquippedHPBonus(uint creature)
+        {
+            var amount = 0;
+            for (var index = 0; index < NumberOfInventorySlots; index++)
+            {
+                var item = GetItemInSlot((InventorySlot)index, creature);
+                if (!GetIsObjectValid(item))
+                    continue;
+
+                for (var ip = GetFirstItemProperty(item); GetIsItemPropertyValid(ip); ip = GetNextItemProperty(item))
+                {
+                    if (GetItemPropertyType(ip) == ItemPropertyType.HPBonus)
+                        amount += GetItemPropertyCostTableValue(ip);
+                }
+            }
+
+            return amount;
+        }
+
+        /// <summary>
         /// Modifies a player's maximum FP by a certain amount.
         /// This method will not persist the changes so be sure you call DB.Set after calling this.
         /// </summary>
@@ -909,7 +957,7 @@ namespace SWLOR.Game.Server.Service
             for (var index = 0; index < NumberOfInventorySlots; index++)
             {
                 var item = GetItemInSlot((InventorySlot)index, creature);
-                if (!GetIsObjectValid(item))
+                if (!GetIsObjectValid(item) || GetBaseItemType(item) == BaseItem.CompanionPistol)
                     continue;
 
                 for (var ip = GetFirstItemProperty(item); GetIsItemPropertyValid(ip); ip = GetNextItemProperty(item))
@@ -1197,7 +1245,8 @@ namespace SWLOR.Game.Server.Service
             return ApplyPostAttackStatusModifiers(creature, attack, skillType);
         }
 
-        public static int GetAttackNative(CNWSCreature creature, BaseItem itemType, AbilityType statOverride = AbilityType.Invalid, bool useForceAttack = false)
+        public static int GetAttackNative(CNWSCreature creature, BaseItem itemType, AbilityType statOverride = AbilityType.Invalid,
+            bool useForceAttack = false, SkillType skillOverride = SkillType.Invalid)
         {
             var attackBonus = 0;
             var skillLevel = 0;
@@ -1205,7 +1254,12 @@ namespace SWLOR.Game.Server.Service
                 ? statOverride
                 : Combat.GetWeaponDamageAbilityType(creature.m_idSelf, itemType);
             var stat = GetStatValueNative(creature, statType);
-            var skillType = Skill.GetSkillTypeByBaseItem(itemType);
+            var skillType = skillOverride != SkillType.Invalid ? skillOverride :
+                TwinPistolEquipment.IsActivePair(creature.m_idSelf)
+                    ? TwinPistolEquipment.ResolveSkill(itemType,
+                        GetBaseItemType(GetItemInSlot(InventorySlot.RightHand, creature.m_idSelf)),
+                        GetBaseItemType(GetItemInSlot(InventorySlot.LeftHand, creature.m_idSelf)))
+                    : Skill.GetSkillTypeByBaseItem(itemType);
 
             // Force-typed attacks (e.g. Imbuement Stance retyping a weapon swing to Force) use the
             // wearer's Force Attack in place of physical Attack so the attack side matches the Force
@@ -1489,7 +1543,7 @@ namespace SWLOR.Game.Server.Service
                 Combat.GetWeaponAccuracyAbilityType(creature, baseItemType) :
                 statOverride;
             var stat = statType == AbilityType.Invalid ? 0 : GetAbilityScore(creature, statType);
-            var skillType = skillOverride == SkillType.Invalid ? Skill.GetSkillTypeByBaseItem(baseItemType) : skillOverride;
+            var skillType = skillOverride == SkillType.Invalid ? Skill.GetWeaponSkill(creature, weapon) : skillOverride;
             var skillLevel = 0;
 
 
@@ -1578,7 +1632,8 @@ namespace SWLOR.Game.Server.Service
                 : statOverride == AbilityType.Invalid
                     ? Combat.GetWeaponAccuracyAbilityType(creature.m_idSelf, baseItemType)
                     : statOverride;
-            var skillType = skillOverride != SkillType.Invalid ? skillOverride : Skill.GetSkillTypeByBaseItem(baseItemType);
+            var skillType = skillOverride != SkillType.Invalid ? skillOverride :
+                weapon == null ? SkillType.Invalid : Skill.GetWeaponSkill(creature.m_idSelf, weapon.m_idSelf);
             var stat = GetStatValueNative(creature, statType);
             var skillLevel = 0;
 
@@ -1752,6 +1807,29 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         /// <param name="creature">The creature to retrieve from.</param>
         /// <returns>The stealth rating of a creature.</returns>
+        /// <summary>
+        /// Retrieves a creature's lockpicking: equipment plus perk, status, and temporary adjustments.
+        /// </summary>
+        /// <param name="creature">The creature to retrieve from.</param>
+        /// <returns>The lockpicking rating of a creature.</returns>
+        public static int GetLockpicking(uint creature)
+        {
+            int equipmentBonus;
+            if (GetIsPC(creature) && !GetIsDM(creature) && !GetIsDMPossessed(creature))
+            {
+                var playerId = GetObjectUUID(creature);
+                var dbPlayer = DB.Get<Player>(playerId);
+
+                equipmentBonus = dbPlayer.Lockpicking;
+            }
+            else
+            {
+                equipmentBonus = GetNPCSkinStat(creature, ItemPropertyType.Lockpicking);
+            }
+
+            return equipmentBonus + GetStatAdjustment(creature, StatType.Lockpicking);
+        }
+
         public static int GetStealth(uint creature)
         {
             var agility = GetAbilityScore(creature, AbilityType.Agility);
@@ -2123,7 +2201,7 @@ namespace SWLOR.Game.Server.Service
         {
             var item = creature.m_pInventory.GetItemInSlot((uint)slot);
             return item != null &&
-                   Skill.GetSkillTypeByBaseItem((BaseItem)item.m_nBaseItem) != SkillType.Invalid;
+                   Skill.GetWeaponSkill(creature.m_idSelf, item.m_idSelf) != SkillType.Invalid;
         }
 
         private static bool HasWeaponEquippedForWeaponDeflection(uint creature)
@@ -2136,7 +2214,7 @@ namespace SWLOR.Game.Server.Service
         {
             var item = GetItemInSlot(slot, creature);
             return GetIsObjectValid(item) &&
-                   Skill.GetSkillTypeByBaseItem(GetBaseItemType(item)) != SkillType.Invalid;
+                   Skill.GetWeaponSkill(creature, item) != SkillType.Invalid;
         }
 
         private static SkillType GetMainHandSkillTypeNative(CNWSCreature creature)
@@ -2145,7 +2223,7 @@ namespace SWLOR.Game.Server.Service
             if (rightHandItem == null)
                 return SkillType.Invalid;
 
-            return Skill.GetSkillTypeByBaseItem((BaseItem)rightHandItem.m_nBaseItem);
+            return Skill.GetWeaponSkill(creature.m_idSelf, rightHandItem.m_idSelf);
         }
 
         private static SkillType GetSkillTypeFromStat(int value)

@@ -12,9 +12,7 @@ public class FinalLineTests
         .GetType("SWLOR.Game.Server.Feature.AbilityDefinition.NPC.InnateAbility")!
         .GetMethod("CalculateMissingHpBonus", BindingFlags.NonPublic | BindingFlags.Static)!
         .CreateDelegate<Func<int, int, int, int>>();
-    private static readonly Func<int, int, int> Apply = typeof(Combat)
-        .GetMethod("ApplyPercentDamageAdjustment", BindingFlags.NonPublic | BindingFlags.Static)!
-        .CreateDelegate<Func<int, int, int>>();
+    private static readonly Func<int, int, int> Apply = Combat.ApplyPercentDamageAdjustment;
 
     [TestCase(100, 0)]
     [TestCase(99, 0)]

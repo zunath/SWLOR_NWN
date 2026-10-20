@@ -49,7 +49,7 @@ public class ChoreographyProjectParityTests
             var baked = ChoreographyAuthor.Bake(model, recipe, sources);
             var projectPath = entry.GetProperty("Project").GetString()!;
             var saved = File.ReadAllText(Path.Combine(animations, projectPath)).TrimStart('\uFEFF').Replace("\r\n", "\n");
-            if ((baked.Serialize() + "\n").Replace("\r\n", "\n") != saved) mismatches.Add(id + " (" + projectPath + ")");
+            if (!Support.GoldenBake.Matches((baked.Serialize() + "\n").Replace("\r\n", "\n"), saved)) mismatches.Add(id + " (" + projectPath + ")");
             checkedProjects++;
         }
         checkedProjects.Should().BeGreaterThan(0, "the manifest must include the active authored animation corpus");

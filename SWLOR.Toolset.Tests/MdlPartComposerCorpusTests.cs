@@ -38,7 +38,7 @@ namespace SWLOR.Toolset.Tests
         [Test]
         public void FemaleHumanSkeleton_ComposesEverySupportedRealPartCategory()
         {
-            var installRoot = NwnInstallLocator.Locate();
+            var installRoot = NwnInstallLocator.Locate(Environment.GetEnvironmentVariable("NWN_INSTALL_PATH"));
             installRoot.Should().NotBeNull("the explicit licensed-corpus suite requires NWN:EE");
             var baseLayer = KeyBifCatalog.Load(Path.Combine(installRoot!, "data"));
             var index = ResourceIndex.FromHakBuilderConfig(
@@ -111,7 +111,7 @@ namespace SWLOR.Toolset.Tests
         [Test]
         public void MaleHuman_Item016ThighMeshesFollowTheirSkeletonBonesExactlyOnce()
         {
-            var installRoot = NwnInstallLocator.Locate();
+            var installRoot = NwnInstallLocator.Locate(Environment.GetEnvironmentVariable("NWN_INSTALL_PATH"));
             installRoot.Should().NotBeNull("the explicit licensed-corpus suite requires NWN:EE");
             var baseLayer = KeyBifCatalog.Load(Path.Combine(installRoot!, "data"));
             var index = ResourceIndex.FromHakBuilderConfig(

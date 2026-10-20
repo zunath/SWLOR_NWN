@@ -9,7 +9,7 @@ param(
     [string]$StatusEffectPath = "SWLOR.Game.Server\Feature\StatusEffectDefinition",
     [string]$TlkJsonPath = "SWLOR_Haks\sw_tlk\sw_tlk.tlk.json",
     [int]$GeneratedFeatStart = 2000,
-    [int]$GeneratedFeatEnd = 2899,
+    [int]$GeneratedFeatEnd = 3267,
     [int]$CustomFeatStart = 1116,
     [int]$CustomSpellStart = 1000,
     [int]$StatusEffectIconStart = 141,
@@ -509,6 +509,8 @@ function Get-CustomFeatSpellRows([object[]]$abilityRows, [hashtable]$existing) {
 
 function Split-IconWords([string]$text) {
     $clean = $text -replace "'", "" -replace "[^A-Za-z0-9]+", " "
+    # Keep the PvP acronym together instead of treating its final P as a stop word.
+    $clean = $clean -creplace "\bPvP\b", "Pvp"
     $matches = [regex]::Matches($clean, "[A-Z]+(?=[A-Z][a-z]|\d|$)|[A-Z]?[a-z]+|\d+")
     return @(
         $matches |
@@ -644,6 +646,7 @@ function Get-StatusSemanticCategory([string]$className, [string]$name, [string]$
 
 function Get-AbilityRows([string]$path, [int]$startRow, [int]$endRow) {
     $rows = @()
+    $rowByIcon = @{}
     foreach ($line in Get-Content -Path $path) {
         if ([string]::IsNullOrWhiteSpace($line)) { continue }
         $parts = $line -split "\s+"
@@ -652,15 +655,31 @@ function Get-AbilityRows([string]$path, [int]$startRow, [int]$endRow) {
         $row = 0
         if (![int]::TryParse($parts[0], [ref]$row)) { continue }
         if ($row -lt $startRow -or $row -gt $endRow -or $parts[1] -eq "****") { continue }
-
+        if ($parts[1].EndsWith("Trait", [System.StringComparison]::Ordinal)) { continue }
+        if (!$parts[4].StartsWith("ife_", [System.StringComparison]::OrdinalIgnoreCase)) { continue }
         $rank = Get-RankFromText $parts[1]
-        $rows += [pscustomobject]@{
+        $icon = $parts[4]
+        if ($rowByIcon.ContainsKey($icon)) {
+            $previous = $rows[$rowByIcon[$icon]]
+            # A relocated first rank still names its icon family; presentation aliases do not replace it.
+            if ($parts[1].StartsWith("AutoCast", [StringComparison]::Ordinal) -or
+                (!$previous.Key.StartsWith("AutoCast", [StringComparison]::Ordinal) -and
+                 ($null -eq $rank -or $null -eq $previous.Rank -or $rank -ge $previous.Rank))) { continue }
+        }
+        $entry = [pscustomobject]@{
             Type = "Ability"
             Key = $parts[1]
             DisplayName = $parts[1]
             Rank = $rank
             IconResRef = $parts[4]
             SourcePath = $Feat2daPath
+        }
+        if ($rowByIcon.ContainsKey($icon)) {
+            $rows[$rowByIcon[$icon]] = $entry
+        }
+        else {
+            $rowByIcon[$icon] = $rows.Count
+            $rows += $entry
         }
     }
 
@@ -709,6 +728,30 @@ function Get-StatusEffectClasses([string]$path) {
         $rank = Get-RankFromText ($className -replace "StatusEffect$", "")
         if ($null -eq $rank) {
             $rank = Get-RankFromText $name
+        }
+
+        # A parameterized stack effect owns one icon per displayed stack count. Discover
+        # the declared family from its actual switch rather than collapsing it to rank one.
+        if ($content -match '(?s)public\s+override\s+EffectIconType\s+Icon\s*=>\s*[^;]*switch\s*\{([^;]+)\};') {
+            $iconBody = $Matches[1]
+            $iconMembers = @([regex]::Matches($iconBody, 'EffectIconType\.([A-Za-z0-9_]+)') |
+                ForEach-Object { $_.Groups[1].Value } | Sort-Object -Unique)
+            if ($iconMembers.Count -gt 1) {
+                foreach ($member in $iconMembers) {
+                    if ($member -notmatch ('^' + [regex]::Escape($className) + '([1-9][0-9]*)$')) {
+                        throw "Dynamic icon family '$className' must declare its numbered icon members explicitly."
+                    }
+                    $rows += [pscustomobject]@{
+                        Type = "StatusEffect"
+                        Key = $member
+                        DisplayName = "$name $($Matches[1])"
+                        Rank = [int]$Matches[1]
+                        SourcePath = $file.FullName
+                        Content = $content
+                    }
+                }
+                continue
+            }
         }
 
         $rows += [pscustomobject]@{
@@ -1646,6 +1689,13 @@ function Update-StatusEffectCode([object[]]$statusRows) {
         $path = Resolve-RepoPath $entry.SourcePath
         $content = Get-Content -Path $path -Raw
         $content = Ensure-EffectIconUsing $content
+        if ($content -match '(?s)public\s+override\s+EffectIconType\s+Icon\s*=>\s*[^;]*switch\s*\{([^;]+)\};' -and
+            @($statusRows | Where-Object { $_.SourcePath -eq $entry.SourcePath }).Count -gt 1) {
+            if ($content -notmatch ('EffectIconType\.' + [regex]::Escape($entry.Key) + '\b')) {
+                throw "Dynamic status icon '$($entry.Key)' is not declared in $path."
+            }
+            continue
+        }
         $iconLine = "        public override EffectIconType Icon => EffectIconType.$($entry.Key);"
 
         $dynamicIconRegex = [regex]::new("(?ms)^\s*public\s+override\s+EffectIconType\s+Icon\s*=>\s*[^;\r\n]*switch\s*\{.*?^\s*};\r?\n?")
@@ -2029,7 +2079,9 @@ function Test-GameplayIconStandards([object[]]$rows, [hashtable]$statusEffectStr
                 if ($statusSourceText -match "EffectIconType\s+Icon\s*=>\s*EffectIconType\.Invalid\b") {
                     $errors.Add("StatusEffect '$($entry.Key)' declares EffectIconType.Invalid, so no icon is linked at runtime and the player sees nothing while it is active. Declare '$expectedIcon', or model it as a static stat contribution instead of a status effect.") | Out-Null
                 }
-                elseif ($statusSourceText -notmatch "EffectIconType\s+Icon\s*=>\s*$([regex]::Escape($expectedIcon))\s*;") {
+                elseif ($statusSourceText -notmatch "EffectIconType\s+Icon\s*=>\s*$([regex]::Escape($expectedIcon))\s*;" -and
+                    !($statusSourceText -match '(?s)EffectIconType\s+Icon\s*=>\s*[^;]*switch\s*\{([^;]+)\};' -and
+                      $Matches[1] -match ([regex]::Escape($expectedIcon) + '\b'))) {
                     $errors.Add("StatusEffect '$($entry.Key)' should declare 'Icon => $expectedIcon;'.") | Out-Null
                 }
             }

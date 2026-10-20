@@ -2,6 +2,7 @@
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.Bioware;
 using SWLOR.Game.Server.Entity;
+using SWLOR.Game.Server.Feature.GuiDefinition.RefreshEvent;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.SkillService;
@@ -123,6 +124,7 @@ namespace SWLOR.Game.Server.Feature
         /// <param name="isAdding">If true, the item's stats are added, if false they're removed</param>
         public static void ApplyItemStats(uint creature, uint item, bool isAdding)
         {
+            if (GetBaseItemType(item) == BaseItem.CompanionPistol) return;
             for (var ip = GetFirstItemProperty(item); GetIsItemPropertyValid(ip); ip = GetNextItemProperty(item))
             {
                 var type = GetItemPropertyType(ip);
@@ -142,6 +144,7 @@ namespace SWLOR.Game.Server.Feature
         /// <param name="isAdding">If true, the amount is added, if false it's removed</param>
         public static void ApplyStatAmount(uint creature, uint item, ItemPropertyType type, int subtype, int amount, bool isAdding)
         {
+            if (GetBaseItemType(item) == BaseItem.CompanionPistol) return;
             if (amount <= 0 || !_statChangeActions.TryGetValue(type, out var action))
                 return;
             action(creature, item, ItemPropertyCustom(type, subtype, amount), isAdding);
@@ -154,6 +157,25 @@ namespace SWLOR.Game.Server.Feature
             // The native slots now describe the completed change. Reconciliation
             // also handles failed attempts and repeated events without delta drift.
             Stat.RefreshCombatReadinessEquipment(OBJECT_SELF);
+        }
+
+        [NWNEventHandler(ScriptName.OnItemEquipValidateAfter)]
+        [NWNEventHandler(ScriptName.OnItemUnequipAfter)]
+        public static void RefreshMaxHPAfterEquipmentChange()
+        {
+            // HP bonuses are added and removed before the change completes, so a failed change
+            // leaves the record off. Rebuild it from the slots.
+            var item = StringToObject(EventsPlugin.GetEventData("ITEM"));
+            for (var ip = GetFirstItemProperty(item); GetIsItemPropertyValid(ip); ip = GetNextItemProperty(item))
+            {
+                if (GetItemPropertyType(ip) != ItemPropertyType.HPBonus)
+                    continue;
+
+                // The status window refreshed before the change, from the uncorrected maximum.
+                if (Stat.RefreshPlayerMaxHP(OBJECT_SELF))
+                    Gui.PublishRefreshEvent(OBJECT_SELF, new PlayerStatusRefreshEvent(PlayerStatusRefreshEvent.StatType.HP));
+                return;
+            }
         }
 
         /// <summary>

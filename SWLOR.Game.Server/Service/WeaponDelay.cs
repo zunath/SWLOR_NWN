@@ -16,6 +16,7 @@ namespace SWLOR.Game.Server.Service
         {
             {Item.VibrobladeBaseItemTypes, ItemPropertyAttackDelay.Delay230},
             {Item.KatarBaseItemTypes, ItemPropertyAttackDelay.Delay220},
+            {Item.PowerGloveBaseItemTypes, ItemPropertyAttackDelay.Delay220},
             {Item.TwinBladeBaseItemTypes, ItemPropertyAttackDelay.Delay230},
             {Item.VibroknifeBaseItemTypes, ItemPropertyAttackDelay.Delay220},
             {Item.StaffBaseItemTypes, ItemPropertyAttackDelay.Delay270},

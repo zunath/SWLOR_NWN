@@ -24,7 +24,8 @@ public class DungeonSaberMigrationTests
             using var retired = ReadItem(old);
             using var gear = ReadItem(replacement);
             var baseItem = (BaseItem)gear.RootElement.GetProperty("BaseItem").GetProperty("value").GetInt32();
-            baseItem.Should().BeOneOf(BaseItem.Gloves, BaseItem.Belt, BaseItem.Bracer);
+            // The rank-3 compensation is a cowl (Helmet) since the wearable base-type audit; rank 4 is a sash, w3 a vambrace.
+            baseItem.Should().BeOneOf(BaseItem.Helmet, BaseItem.Belt, BaseItem.Bracer);
             retired.RootElement.GetProperty("VarTable").GetProperty("value").EnumerateArray()
                 .Should().Contain(v => v.GetProperty("Name").GetProperty("value").GetString() == "NO_ECONOMY" &&
                     v.GetProperty("Value").GetProperty("value").GetInt32() == 1);

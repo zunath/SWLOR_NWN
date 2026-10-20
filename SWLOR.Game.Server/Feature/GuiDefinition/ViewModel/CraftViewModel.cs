@@ -1188,6 +1188,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         {
             var effect = TagEffect(EffectCutsceneImmobilize(), PlayerActivityEffectTag.CraftingImmobilize);
             ApplyEffectToObject(DurationType.Permanent, effect, Player);
+
+            // Separate from the immobilize: the engine rejects a ghost on a ghosted player, and a linked immobilize with it.
+            PlayerTemporaryEffects.ApplyCutsceneGhostToPlayer(Player);
         }
 
         private void RemoveImmobility()

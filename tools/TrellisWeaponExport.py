@@ -1004,6 +1004,16 @@ def load_module(name, path):
     return module
 
 
+def load_module_snapshot(name, path):
+    """Execute one in-memory snapshot of a helper and record the hash of exactly those bytes."""
+    path=Path(path);source=path.read_bytes()
+    module=importlib.util.module_from_spec(importlib.util.spec_from_loader(name,loader=None,origin=str(path)))
+    module.__file__=str(path);sys.modules[name]=module
+    exec(compile(source,str(path),'exec'),module.__dict__)
+    module.SNAPSHOT_SHA256=hashlib.sha256(source).hexdigest()
+    return module
+
+
 def require(condition, message):
     if not condition:raise ValueError(message)
 
@@ -1141,9 +1151,16 @@ def tool_identity(path):
     path=Path(path).resolve();return {'path':str(path),'sha256':hashlib.sha256(path.read_bytes()).hexdigest()}
 
 
-def require_basis_producer(record,helper_path):
-    """Arrays are interpreted by the current helper, so they must come from these same helper bytes."""
-    require(record.get('producer_sha256')==hashlib.sha256(Path(helper_path).read_bytes()).hexdigest(),
+def snapshot_tool(path, folder):
+    """Copy an executable once into a private folder; every invocation runs that immutable copy."""
+    source=Path(path).resolve();data=source.read_bytes();folder.mkdir(parents=True,exist_ok=False)
+    copy=folder/source.name;copy.write_bytes(data)
+    return copy,{'path':str(source),'sha256':hashlib.sha256(data).hexdigest()}
+
+
+def require_basis_producer(record,helper_sha256):
+    """Arrays are interpreted by the loaded helper snapshot, so they must come from those same helper bytes."""
+    require(record.get('producer_sha256')==helper_sha256,
             'Normal basis was produced by a different TrellisWeaponNormals.py; re-export')
 
 
@@ -1179,7 +1196,7 @@ def package(args, repo, out):
     require(hashlib.sha256(compiler_path.read_bytes()).hexdigest()==compiler_sha,'CleanModels executable changed during compilation')
     compiler_identity={'name':'CleanModels','version':compiler.CleanModels.VERSION,'path':str(compiler_path),'sha256':compiler_sha}
     for source in (out/'compiled').glob('*.mdl'):shutil.copy2(source,runtime/source.name)
-    helper=load_module('trellis_weapon_normals',Path(__file__).with_name('TrellisWeaponNormals.py'))
+    helper=load_module_snapshot('trellis_weapon_normals',Path(__file__).with_name('TrellisWeaponNormals.py'))
     import numpy as np
     if not manifest.get('normal_bases'):raise ValueError('Re-export with source tangent provenance before packaging')
     corrected=out/'normal_reprojected';corrected.mkdir();normal_paths={};normal_reports=[]
@@ -1190,7 +1207,7 @@ def package(args, repo, out):
         require(hashlib.sha256(metadata_bytes).hexdigest()==record['sha256'],'Source tangent provenance changed')
         require(manifest['sources'].get(record['asset'])==record['source_sha256'],'Source tangent GLB hash mismatch')
         # Arrays are interpreted by the current helper, so they must have been produced by these same bytes.
-        require_basis_producer(record,Path(helper.__file__))
+        require_basis_producer(record,helper.SNAPSHOT_SHA256)
         with np.load(io.BytesIO(metadata_bytes),allow_pickle=False) as arrays:
             policy=record.get('normal_basis_policy','reproject')
             require(policy in ('reproject','authored_tangents'),'Unknown normal basis policy')
@@ -1231,8 +1248,8 @@ def package(args, repo, out):
             elif role=='scalar':options+=['-dropEmptyAlpha','-DXT5A','-setAtoY','-gamma','1.0'];fmt='ATI1'
             else:options+=['-dropEmptyAlpha','-DXT1','-gamma','2.2'];fmt='DXT1'
         target=runtime/(source.stem+'.dds')
-        if crunch_identity is None:crunch_identity=tool_identity(args.crunch)
-        result=subprocess.run([str(args.crunch),'-file',str(source),'-out',str(target)]+options,capture_output=True,text=True,timeout=120)
+        if crunch_identity is None:crunch,crunch_identity=snapshot_tool(args.crunch,out/'crunch_snapshot')
+        result=subprocess.run([str(crunch),'-file',str(source),'-out',str(target)]+options,capture_output=True,text=True,timeout=120)
         (logs/(source.stem+'.log')).write_text(result.stdout+result.stderr)
         require(result.returncode==0 and target.is_file(),'Crunch failed '+source.name)
         dds_header(target.read_bytes(),(width,height),mips,fmt)
@@ -1241,7 +1258,7 @@ def package(args, repo, out):
         for name in re.findall(r'^texture\d+\s+(\S+)',mtr.read_text(),re.M):require((runtime/(name+'.dds')).is_file(),'Missing texture '+name)
     models=[validate_native(p,ascii_dir/p.name,runtime) for p in sorted(runtime.glob('*.mdl'))]
     # Every DDS must come from the one Crunch binary recorded in the report.
-    if crunch_identity is not None:require(tool_identity(args.crunch)==crunch_identity,'Crunch executable changed during packaging')
+    if crunch_identity is not None:require(tool_identity(crunch)['sha256']==crunch_identity['sha256'],'Crunch snapshot changed during packaging')
     report={'export_manifest_sha256':hashlib.sha256(manifest_bytes).hexdigest(),
             'resources':{p.name:hashlib.sha256(p.read_bytes()).hexdigest() for p in runtime.iterdir()},
             'textures':textures,'models':models,'normal_basis_reprojection':normal_reports,'compiler':compiler_identity,'texture_compressor':crunch_identity,'production_copied':False,'native_visual_review_required':True}

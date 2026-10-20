@@ -27,7 +27,7 @@ def git_answers(branch='master', dirty='', head=REVISION, origin=REVISION):
             return branch
         if args[0] == 'status':
             return dirty
-        if args[0] == 'fetch':
+        if 'fetch' in args:
             return ''
         if args == ('rev-parse', 'HEAD'):
             return head
@@ -49,6 +49,15 @@ class CheckoutGuardTests(unittest.TestCase):
             with self.subTest(name), patch.object(release, 'git', answers):
                 with self.assertRaisesRegex(RuntimeError, message):
                     release.check_checkout()
+
+    def test_unreachable_origin_is_refused(self):
+        def git(*args):
+            if 'fetch' in args:
+                raise release.subprocess.CalledProcessError(128, 'git')
+            return ''
+        with patch.object(release, 'git', git):
+            with self.assertRaisesRegex(RuntimeError, 'Could not fetch'):
+                release.check_checkout()
 
     def test_dev_checkout_override_only_warns(self):
         with patch.object(release, 'git', git_answers(branch='feature')), patch('builtins.print') as output:

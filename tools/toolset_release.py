@@ -106,7 +106,12 @@ def check_checkout(allow_dev_checkout=False):
     """The checkout must be master, clean, and equal to origin/master. Returns the commit that will be released."""
     branch = git('rev-parse', '--abbrev-ref', 'HEAD')
     dirty = git('status', '--porcelain')
-    git('fetch', '--quiet', 'origin', '+refs/heads/master:refs/remotes/origin/master')
+    # Git for Windows needs the Windows certificate store for github.com on some machines.
+    prefix = ('-c', 'http.sslBackend=schannel') if os.name == 'nt' else ()
+    try:
+        git(*prefix, 'fetch', '--quiet', 'origin', '+refs/heads/master:refs/remotes/origin/master')
+    except subprocess.CalledProcessError as error:
+        raise RuntimeError('Could not fetch origin/master to compare against. Check your network and git credentials.') from error
     head = git('rev-parse', 'HEAD')
     origin = git('rev-parse', 'refs/remotes/origin/master')
     problems = []

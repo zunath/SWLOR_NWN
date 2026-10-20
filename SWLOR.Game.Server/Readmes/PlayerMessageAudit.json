@@ -3620,17 +3620,17 @@
   },
   {
     "File": "SWLOR.Game.Server/Feature/TwinPistolEquipmentValidation.cs",
-    "Line": 102,
+    "Line": 105,
     "Member": "Revalidate",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(observer, ColorToken.Red(!string.IsNullOrEmpty(mainError) ? mainError : companionError))"
   },
   {
     "File": "SWLOR.Game.Server/Feature/TwinPistolEquipmentValidation.cs",
-    "Line": 121,
+    "Line": 125,
     "Member": "ReturnEquippedItem",
     "Delivery": "Retained",
-    "Call": "SendMessageToPC(creature, ColorToken.Red(GetUnusableEquipmentError(creature)))"
+    "Call": "SendMessageToPC(Droid.IsDroid(creature) ? GetMaster(creature) : creature, ColorToken.Red(GetUnusableEquipmentError(creature)))"
   },
   {
     "File": "SWLOR.Game.Server/Feature/UsePerkFeat.cs",
@@ -4894,24 +4894,24 @@
   },
   {
     "File": "SWLOR.Game.Server/Service/PowerGloveEquipment.cs",
-    "Line": 175,
+    "Line": 178,
     "Member": "EnsurePair",
     "Delivery": "Retained",
-    "Call": "SendMessageToPC(creature, ColorToken.Red(\"The Power Glove could not equip both hands. Free inventory or bag space and try again.\"))"
+    "Call": "SendMessageToPC(MessageRecipient(creature), ColorToken.Red(\"The Power Glove could not equip both hands. Free inventory or bag space and try again.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/PowerGloveEquipment.cs",
-    "Line": 209,
+    "Line": 212,
     "Member": "RemovePair",
     "Delivery": "Retained",
-    "Call": "SendMessageToPC(creature, ColorToken.Red(\"Free inventory or bag space before removing the Power Glove.\"))"
+    "Call": "SendMessageToPC(MessageRecipient(creature), ColorToken.Red(\"Free inventory or bag space before removing the Power Glove.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/PowerGloveEquipment.cs",
-    "Line": 232,
+    "Line": 235,
     "Member": "RestorePair",
     "Delivery": "Retained",
-    "Call": "SendMessageToPC(creature, ColorToken.Red(\"Free inventory or bag space before equipping the Power Glove.\"))"
+    "Call": "SendMessageToPC(MessageRecipient(creature), ColorToken.Red(\"Free inventory or bag space before equipping the Power Glove.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/Property.cs",
@@ -5874,17 +5874,17 @@
   },
   {
     "File": "SWLOR.Game.Server/Service/TwinPistolEquipment.cs",
-    "Line": 105,
+    "Line": 108,
     "Member": "EnsurePair",
     "Delivery": "Retained",
-    "Call": "SendMessageToPC(creature, ColorToken.Red(ex.Message))"
+    "Call": "SendMessageToPC(MessageRecipient(creature), ColorToken.Red(ex.Message))"
   },
   {
     "File": "SWLOR.Game.Server/Service/TwinPistolEquipment.cs",
-    "Line": 147,
+    "Line": 146,
     "Member": "RemovePair",
     "Delivery": "Retained",
-    "Call": "SendMessageToPC(creature, ColorToken.Red(\"Free inventory space or make room in a carried bag before unequipping Twin Pistols.\"))"
+    "Call": "SendMessageToPC(MessageRecipient(creature), ColorToken.Red(\"Free inventory space or make room in a carried bag before unequipping Twin Pistols.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/Weather.cs",

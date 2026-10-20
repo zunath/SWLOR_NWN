@@ -758,6 +758,12 @@ namespace SWLOR.Game.Server.EngineTests.Definitions.AbilityBehaviors
                     ctx.Fail($"immediate {behaviorCase.Feat} retry threw {error.GetType().Name}: {error.Message}");
             }
 
+            // A committed channel (Focused Burst) keeps the caster busy until it completes; the recast
+            // rejection is checked once the channel has released the caster.
+            if (ability.HasFixedActivationDelay)
+                await ctx.WaitUntilAsync(() => !Activity.IsBusy(caster), EffectWaitSeconds,
+                    $"the {behaviorCase.Feat} channel to release the caster");
+
             await RetryAsync();
             if (behaviorCase.SearchForSafeMovementLane && denial.Contains("Wait two seconds between movement abilities.", StringComparison.Ordinal))
             {

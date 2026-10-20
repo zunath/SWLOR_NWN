@@ -257,7 +257,10 @@ namespace SWLOR.Toolset.Tests.Items
                 [538] = ItemFamily.Miscellaneous, // miscthin_stackable
                 [539] = ItemFamily.Miscellaneous, // miscsmall2_stackable
                 [540] = ItemFamily.Miscellaneous, // miscmedium2_stackable
-                [541] = ItemFamily.MeleeWeapon // powerglove
+                [541] = ItemFamily.MeleeWeapon, // powerglove
+                // Generated off hands are internal items the editor never offers for authoring.
+                [542] = ItemFamily.Miscellaneous, // companionpistol
+                [543] = ItemFamily.Miscellaneous // companionpowerglove
             };
 
         private static readonly ItemFamily[] EquipmentFamilies =

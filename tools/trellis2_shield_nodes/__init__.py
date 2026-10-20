@@ -76,6 +76,15 @@ def key_lock(directory):
         handle.close()
 
 
+def require_same_script(script_sha,outputs):
+    """The cache key names the hashed surface script; discard output made by a replaced script."""
+    try:same=hashlib.sha256(SURFACE_SCRIPT.read_bytes()).hexdigest()==script_sha
+    except OSError:same=False
+    if not same:
+        discard_outputs(outputs)
+        raise ValueError('Shield surface script changed or could not be verified during reconstruction')
+
+
 def discard_outputs(outputs):
     for stale in outputs:
         if stale.exists():stale.unlink()
@@ -167,7 +176,7 @@ def cached_entry(path):
     return None
 
 
-def surface_cache_key(vertices,faces,voxel_size,runtime):
+def surface_cache_key(vertices,faces,voxel_size,runtime,script_bytes=None):
     digest=hashlib.sha256()
     def field(name,payload):
         for part in (name.encode(),payload):
@@ -177,7 +186,7 @@ def surface_cache_key(vertices,faces,voxel_size,runtime):
         field(name+'.shape',json.dumps(array.shape).encode())
         field(name+'.data',array.tobytes(order='C'))
     field('voxel_size',str(voxel_size).encode())
-    field('surface_script',SURFACE_SCRIPT.read_bytes())
+    field('surface_script',SURFACE_SCRIPT.read_bytes() if script_bytes is None else script_bytes)
     field('bridge',Path(__file__).read_bytes())
     field('runtime',json.dumps(runtime,sort_keys=True).encode())
     return digest.hexdigest()
@@ -208,7 +217,8 @@ class SWLORClosedVoxelMesh:
         if len(mesh.vertices)!=1 or len(mesh.faces)!=1:raise ValueError('Expected exactly one shield mesh')
         vertices=mesh.vertices[0].detach().cpu().numpy().astype(np.float32)
         faces=mesh.faces[0].detach().cpu().numpy().astype(np.int32)
-        directory=cache/surface_cache_key(vertices,faces,voxel_size,runtime);create_durable_directories(directory)
+        script_bytes=SURFACE_SCRIPT.read_bytes();script_sha=hashlib.sha256(script_bytes).hexdigest()
+        directory=cache/surface_cache_key(vertices,faces,voxel_size,runtime,script_bytes);create_durable_directories(directory)
         source=directory/'input.npz';high=directory/'closed_high.npz';low=directory/('closed_low_'+str(target_face_count)+'.npz')
         def run(mode,input_path,output_path,flags):
             command=[executable,'-b','--factory-startup','--python-exit-code','1','--python',str(SURFACE_SCRIPT),'--',mode,str(input_path),str(output_path),*flags]
@@ -219,6 +229,7 @@ class SWLORClosedVoxelMesh:
             except BaseException:
                 discard_outputs(outputs);raise  # Unverified runs never leave a reusable cache pair.
             require_same_blender(executable,runtime,outputs)
+            require_same_script(script_sha,outputs)
         # One run per cache key at a time: a failed run then only ever discards files it produced,
         # and a concurrent run finds the winner's published entry instead of racing it.
         with key_lock(directory):

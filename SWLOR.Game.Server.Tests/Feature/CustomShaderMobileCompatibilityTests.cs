@@ -33,7 +33,7 @@ public class CustomShaderMobileCompatibilityTests
 
     // "#if defined(MOBILE)", "#if !defined MOBILE" and similar single-term tests.
     private static readonly Regex MobileIfExpression = new(
-        @"^#\s*if\s+(?<not>!\s*)?defined\s*(\(\s*MOBILE\s*\)|MOBILE)\s*$",
+        @"^#\s*(el)?if\s+(?<not>!\s*)?defined\s*(\(\s*MOBILE\s*\)|MOBILE)\s*$",
         RegexOptions.Compiled);
 
     [Test]
@@ -102,10 +102,12 @@ public class CustomShaderMobileCompatibilityTests
     [Test]
     public void Checker_OnlyCountsDefinitelyCompiledLinesAsDefinite()
     {
-        var scan = ScanForMobile("#ifdef MOBILE\nvoid A() {}\n#endif\n#if 0\nvoid B() {}\n#endif\nvoid C() {}\n#if defined(MOBILE)\nvoid D() {}\n#endif\n");
+        var scan = ScanForMobile("#ifdef MOBILE\nvoid A() {}\n#endif\n#if 0\nvoid B() {}\n#endif\nvoid C() {}\n#if defined(MOBILE)\nvoid D() {}\n#endif\n"
+            + "#ifndef MOBILE\nvoid E() {}\n#elif defined(MOBILE)\nvoid F() {}\n#endif\n#if QUALITY\nvoid G() {}\n#elif defined(MOBILE)\nvoid H() {}\n#endif\n");
 
-        scan.DefiniteCode.Select(line => line.Text.Trim()).Should().Equal("void A() {}", "void C() {}", "void D() {}");
-        scan.PossibleCode.Select(line => line.Text.Trim()).Should().Equal("void A() {}", "void B() {}", "void C() {}", "void D() {}");
+        scan.DefiniteCode.Select(line => line.Text.Trim()).Should().Equal("void A() {}", "void C() {}", "void D() {}", "void F() {}");
+        scan.PossibleCode.Select(line => line.Text.Trim()).Should().Equal(
+            "void A() {}", "void B() {}", "void C() {}", "void D() {}", "void F() {}", "void G() {}", "void H() {}");
     }
 
     private static IEnumerable<string> FindMobileUnsupportedLines(string shader)
@@ -192,8 +194,26 @@ public class CustomShaderMobileCompatibilityTests
                         if (conditions.Count > 0)
                         {
                             var chain = conditions.Pop();
-                            // A branch that already matched skips every later #elif.
-                            conditions.Push(chain.Matched == true ? (false, true) : (null, null));
+                            var elifTest = MobileIfExpression.Match(directive);
+                            bool? elifValue = elifTest.Success ? elifTest.Groups["not"].Value.Length == 0 : null;
+                            if (chain.Matched == true)
+                            {
+                                // A branch that already matched skips every later #elif.
+                                conditions.Push((false, true));
+                            }
+                            else if (elifValue.HasValue && chain.Matched == false)
+                            {
+                                conditions.Push((elifValue, elifValue));
+                            }
+                            else if (elifValue == false)
+                            {
+                                conditions.Push((false, chain.Matched));
+                            }
+                            else
+                            {
+                                // An earlier unknown branch may have matched, or the test is unknown.
+                                conditions.Push((null, elifValue == true ? true : null));
+                            }
                         }
                         break;
                     case "else":

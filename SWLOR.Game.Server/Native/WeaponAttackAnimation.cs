@@ -188,6 +188,21 @@ public static unsafe class WeaponAttackAnimation
         return action.m_nActionId == AttackAction && (uint)action.m_pParameter[0] == target;
     }
 
+    /// <summary>
+    /// The target of the first attack action anywhere in the queue, or OBJECT_INVALID. An attack
+    /// resumed after an ability can wait there behind the ability's animation.
+    /// </summary>
+    public static uint GetQueuedAttackTarget(CNWSObject obj)
+    {
+        for (var node = obj.m_lQueuedActions.GetHeadPos(); node != null; node = node.pNext)
+        {
+            var action = obj.m_lQueuedActions.GetAtPos(node);
+            if (action.m_nActionId == AttackAction)
+                return (uint)action.m_pParameter[0];
+        }
+        return OBJECT_INVALID;
+    }
+
     private static int ObserverStage(Playback playback, uint playerId)
     {
         var now = Environment.TickCount64;

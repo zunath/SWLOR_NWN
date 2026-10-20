@@ -197,9 +197,9 @@ public class ViscaraSpawnDefinitionTests
         int ModelPart3)[] BloodFrenzyBlasterAppearances =
     {
         ("pulse_calrifle", 7, 11, 31, 11),
-        ("cad_rifle", 7, 31, 164, 23),
-        ("redvein_pistol", 61, 231, 101, 61),
-        ("servo_pistol", 61, 11, 221, 71),
+        ("cad_rifle", 7, 11, 161, 11),
+        ("redvein_pistol", 61, 11, 101, 11),
+        ("servo_pistol", 61, 11, 241, 11),
     };
 
     private static readonly (

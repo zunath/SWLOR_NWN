@@ -68,6 +68,21 @@ namespace SWLOR.CombatSim.Tests.Engine
         }
 
         [Test]
+        public void AReviveHeal_KeepsItsShareOfTheTargetsOwnHp_ButFollowsTheRuleSetsWillpowerCurve()
+        {
+            var rules = RuleSets.PreTuning();
+            rules.HealPercentOfMaxHpShare = 0f;
+            rules.HealReferenceMaxHp = 400;
+            rules.HealStatMultiplierAtCap = 1.5f;
+            var (simulation, _, ally, _) = SpawnAndKillAlly(rules, isPvp: true);
+
+            SimulationClock.RunUntil(simulation, () => !ally.IsDead, 15, "ally revived");
+            SimulationClock.RunUntil(simulation, simulation.Now + 0.2);
+
+            ally.Hp.Should().Be(301, "1 HP from the revive plus 20% of the ally's own 1,000 HP, x1.5 at 26 Willpower");
+        }
+
+        [Test]
         public void Current_RevivesAreBlockedInPvpWhileAnEnemyIsAlive()
         {
             var (simulation, medic, ally, _) = SpawnAndKillAlly(RuleSets.Current(), isPvp: true);

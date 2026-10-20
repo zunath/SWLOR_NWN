@@ -442,6 +442,104 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
         }
 
         /// <summary>
+        /// DMs get the player list layout with its DM row, whose Jump Here and Examine act on the selected
+        /// player and are refused for other DMs. Players keep the layout without it.
+        /// </summary>
+        [EngineTest("Player list gives DMs Jump Here, Examine, and Boot", Category = "PlayerList", TimeoutSeconds = 60f)]
+        public static async Task DMRowActsOnTheSelectedPlayer(EngineTestContext ctx)
+        {
+            using var player = await PlayerAbilityFixture.CreateAsync(ctx, 8f);
+            using var dm = await PlayerAbilityFixture.CreateAsync(ctx);
+            using var otherDM = await PlayerAbilityFixture.CreateAsync(ctx, 4f);
+
+            var windows = (Dictionary<string, Dictionary<GuiWindowType, GuiPlayerWindow>>)typeof(Gui)
+                .GetField("_playerWindows", BindingFlags.Static | BindingFlags.NonPublic).GetValue(null);
+            ctx.Assert(!windows.ContainsKey(dm.Id) && !windows.ContainsKey(player.Id), "the fixtures have no existing GUI registration");
+            var dmWindow = Gui.GetWindowTemplate(GuiWindowType.PlayerList).CreatePlayerWindowAction();
+            var examineWindow = Gui.GetWindowTemplate(GuiWindowType.DMPlayerExamine).CreatePlayerWindowAction();
+            var playerWindow = Gui.GetWindowTemplate(GuiWindowType.PlayerList).CreatePlayerWindowAction();
+            windows.Add(dm.Id, new Dictionary<GuiWindowType, GuiPlayerWindow>
+            {
+                [GuiWindowType.PlayerList] = dmWindow,
+                [GuiWindowType.DMPlayerExamine] = examineWindow,
+            });
+            windows.Add(player.Id, new Dictionary<GuiWindowType, GuiPlayerWindow> { [GuiWindowType.PlayerList] = playerWindow });
+            var model = (PlayerListViewModel)dmWindow.ViewModel;
+            var playerModel = (PlayerListViewModel)playerWindow.ViewModel;
+            model.Geometry = new GuiRectangle(0f, 0f, 610f, 620f);
+            playerModel.Geometry = new GuiRectangle(0f, 0f, 610f, 620f);
+            examineWindow.ViewModel.Geometry = new GuiRectangle(0f, 0f, 800f, 600f);
+
+            var restoreDM = InstallNativeDM(ctx, dm.Creature);
+            var restoreOtherDM = InstallNativeDM(ctx, otherDM.Creature);
+            try
+            {
+                await ctx.ExecuteInCreatureContextAsync(dm.Creature, () => DMPresence.ToggleWindow(dm.Creature, GuiWindowType.PlayerList));
+                await ctx.ExecuteInCreatureContextAsync(player.Creature, () => Gui.TogglePlayerWindow(player.Creature, GuiWindowType.PlayerList));
+                await ctx.WaitFrameAsync();
+                ctx.Assert(dmWindow.WindowToken > 0 && playerWindow.WindowToken > 0, "both windows open");
+                ctx.AssertEqual(PlayerListViewModel.DMContentPartial, GetContentPartial(model), "the DM gets the layout with the DM row");
+                ctx.AssertEqual(PlayerListViewModel.MainContentPartial, GetContentPartial(playerModel), "a player keeps the layout without it");
+                ctx.Assert(!playerModel.CanJumpHere && !playerModel.CanExamine && !playerModel.CanBoot, "a player has no DM actions");
+
+                await SelectAsync(ctx, model, dm.Creature, otherDM.Creature);
+                ctx.Assert(model.CanJumpTo, "a DM can still jump to another DM");
+                ctx.Assert(!model.CanJumpHere && !model.CanExamine && !model.CanBoot, "DM actions are refused for another DM");
+                ctx.AssertEqual("DMs cannot be booted.", model.BootReason, "the refusal names the reason");
+
+                await SelectAsync(ctx, model, dm.Creature, player.Creature);
+                ctx.Assert(model.CanJumpHere && model.CanExamine && model.CanBoot, "DM actions apply to a selected player");
+
+                ctx.Assert(GetDistanceBetween(dm.Creature, player.Creature) > 6f, "the player starts away from the DM");
+                await ctx.ExecuteInCreatureContextAsync(dm.Creature, model.OnClickJumpHere());
+                await ctx.WaitUntilAsync(() => GetDistanceBetween(dm.Creature, player.Creature) < 3f, 5f,
+                    "Jump Here to bring the player to the DM");
+
+                await ctx.ExecuteInCreatureContextAsync(dm.Creature, model.OnClickExamine());
+                await ctx.WaitFrameAsync();
+                ctx.Assert(examineWindow.WindowToken > 0, "Examine opens the DM examine window");
+                ctx.AssertEqual(GetName(player.Creature), ((DMPlayerExamineViewModel)examineWindow.ViewModel).TrueName,
+                    "the examine window shows the selected player");
+            }
+            finally
+            {
+                if (examineWindow.WindowToken > 0)
+                    NuiDestroy(dm.Creature, examineWindow.WindowToken);
+                if (dmWindow.WindowToken > 0)
+                    NuiDestroy(dm.Creature, dmWindow.WindowToken);
+                if (playerWindow.WindowToken > 0)
+                    NuiDestroy(player.Creature, playerWindow.WindowToken);
+                restoreOtherDM();
+                restoreDM();
+                windows.Remove(dm.Id);
+                windows.Remove(player.Id);
+            }
+        }
+
+        // A row click reports its index through NuiGetEventArrayIndex, which exists only inside a real NUI event,
+        // so set the selection and refresh the actions the way OnSelectRow does.
+        private static async Task SelectAsync(EngineTestContext ctx, PlayerListViewModel model, uint owner, uint target)
+        {
+            await ctx.ExecuteInCreatureContextAsync(owner, () =>
+            {
+                typeof(PlayerListViewModel).GetField("_selectedPlayer", BindingFlags.Instance | BindingFlags.NonPublic)
+                    .SetValue(model, target);
+                typeof(PlayerListViewModel).GetMethod("ShowActions", BindingFlags.Instance | BindingFlags.NonPublic)
+                    .Invoke(model, null);
+            });
+        }
+
+        private static string GetContentPartial(PlayerListViewModel model)
+        {
+            var groupLayouts = (Dictionary<string, string>)model.GetType().BaseType
+                .GetField("_groupLayouts", BindingFlags.Instance | BindingFlags.NonPublic).GetValue(model);
+            var layout = groupLayouts[PlayerListViewModel.MainContentElement];
+            var template = Gui.GetWindowTemplate(GuiWindowType.PlayerList);
+            return new[] { PlayerListViewModel.MainContentPartial, PlayerListViewModel.DMContentPartial }
+                .Single(partial => template.PartialViewLayouts[partial] == layout);
+        }
+
+        /// <summary>
         /// A possessing DM's window is bound to the possessed creature while the roster lists their avatar.
         /// The avatar row must still be their own: marked as self, with no tell or jump to themselves.
         /// </summary>

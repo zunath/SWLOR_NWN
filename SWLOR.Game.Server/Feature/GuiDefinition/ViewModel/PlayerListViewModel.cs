@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Core;
+using SWLOR.Game.Server.Feature.GuiDefinition.Payload;
 using SWLOR.Game.Server.Feature.GuiDefinition.RefreshEvent;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.DMToolService;
@@ -15,6 +16,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
     {
         public const string MainContentElement = "playerlist_content";
         public const string MainContentPartial = "PLAYERLIST_MAIN";
+        // DMs get a layout with their own action row instead of a hidden row that would leave players a gap.
+        public const string DMContentPartial = "PLAYERLIST_DM";
 
         // Characters that fit the 140 px name column and the descriptor column; tooltips show full values.
         private const int NameColumnLength = 17;
@@ -86,6 +89,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         public bool IsDMViewer { get => Get<bool>(); set => Set(value); }
         public bool CanJumpTo { get => Get<bool>(); set => Set(value); }
         public string JumpToReason { get => Get<string>(); set => Set(value); }
+        public bool CanJumpHere { get => Get<bool>(); set => Set(value); }
+        public string JumpHereReason { get => Get<string>(); set => Set(value); }
+        public bool CanExamine { get => Get<bool>(); set => Set(value); }
+        public string ExamineReason { get => Get<string>(); set => Set(value); }
+        public bool CanBoot { get => Get<bool>(); set => Set(value); }
+        public string BootReason { get => Get<string>(); set => Set(value); }
 
         protected override void Initialize(GuiPayloadBase initialPayload)
         {
@@ -130,10 +139,16 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             IsDMViewer = DMPresence.IsControlledByDM(Player);
             CanJumpTo = false;
             JumpToReason = string.Empty;
+            CanJumpHere = false;
+            JumpHereReason = string.Empty;
+            CanExamine = false;
+            ExamineReason = string.Empty;
+            CanBoot = false;
+            BootReason = string.Empty;
 
             WatchOnClient(model => model.SearchText);
 
-            ChangePartialView(MainContentElement, MainContentPartial);
+            ChangePartialView(MainContentElement, IsDMViewer ? DMContentPartial : MainContentPartial);
 
             _isInitialized = true;
             LoadEntries(PlayerList.BuildSubjects());
@@ -250,6 +265,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             LeavePartyReason = actions.LeaveParty.DisabledReason;
             CanJumpTo = actions.JumpTo.IsEnabled;
             JumpToReason = actions.JumpTo.DisabledReason;
+            CanJumpHere = actions.JumpHere.IsEnabled;
+            JumpHereReason = actions.JumpHere.DisabledReason;
+            CanExamine = actions.Examine.IsEnabled;
+            ExamineReason = actions.Examine.DisabledReason;
+            CanBoot = actions.Boot.IsEnabled;
+            BootReason = actions.Boot.DisabledReason;
         }
 
         // With nothing selected, only the viewer's own party state matters (for Leave Party).
@@ -347,6 +368,48 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 return;
 
             PlayerList.JumpTo(Player, selected.Player);
+        };
+
+        public Action OnClickJumpHere() => () =>
+        {
+            var selected = GetSelectedEntry();
+            if (selected == null || !CheckAction(actions => actions.JumpHere))
+                return;
+
+            var error = DMPresence.Summon(Player, selected.Player);
+            if (!string.IsNullOrEmpty(error))
+                DMPresence.SendMessage(Player, ColorToken.Red(error));
+        };
+
+        public Action OnClickExamine() => () =>
+        {
+            var selected = GetSelectedEntry();
+            if (selected == null || !CheckAction(actions => actions.Examine))
+                return;
+
+            DMPresence.CloseWindow(Player, GuiWindowType.DMPlayerExamine);
+            DMPresence.ToggleWindow(Player, GuiWindowType.DMPlayerExamine, new DMPlayerExaminePayload(selected.Player));
+        };
+
+        public Action OnClickBoot() => () =>
+        {
+            var selected = GetSelectedEntry();
+            if (selected == null || !CheckAction(actions => actions.Boot))
+                return;
+
+            var target = selected.Player;
+            ShowModal($"Disconnect {GetReference(selected)} ({GetPCPlayerName(target)}) from the server?", () =>
+            {
+                // The list can change while the confirmation is open, so check the same player again.
+                var state = PlayerListRules.Evaluate(PlayerList.GetRelation(Player, target)).Boot;
+                if (!state.IsEnabled)
+                {
+                    DMPresence.SendMessage(Player, ColorToken.Red(state.DisabledReason));
+                    return;
+                }
+
+                DMPresence.Boot(Player, target);
+            });
         };
 
         public Action OnClickInvite() => () =>

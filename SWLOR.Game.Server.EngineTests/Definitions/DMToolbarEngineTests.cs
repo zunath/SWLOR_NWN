@@ -13,6 +13,7 @@ using SWLOR.Game.Server.Feature.GuiDefinition.ViewModel;
 using SWLOR.Game.Server.Service.DMToolService;
 using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.GuiService.Component;
+using SWLOR.Game.Server.Service.PlayerListService;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using InventorySlot = SWLOR.NWN.API.NWScript.Enum.InventorySlot;
@@ -583,6 +584,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 var model = (DMPlayerSearchViewModel)windows.ViewModel(GuiWindowType.DMPlayerSearch);
                 ctx.Assert(model.ResultNames.Contains("Vexa Zyndari"), "online characters are listed when the window opens");
 
+                await InContext(ctx, dm.Creature, () => PlayerList.SetFlag(target.Creature, PlayerListFlagType.GeneralRP, true));
                 await InContext(ctx, dm.Creature, () => model.SearchText = "lanky");
                 await InContext(ctx, dm.Creature, model.OnClickSearch());
                 ctx.AssertEqual(1, model.ResultNames.Count, "descriptor search result count");
@@ -590,6 +592,9 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 ctx.AssertEqual("Online", model.ResultStatuses[0], "online status");
                 await SelectRow(ctx, dm.Creature, model, 0);
                 ctx.Assert(model.SelectedDetails.Contains($"Player ID: {target.Id}"), "details include the player ID");
+                ctx.Assert(model.SelectedDetails.Contains("Status: Online\n"), "details show an active player as Online");
+                ctx.Assert(model.SelectedDetails.Contains("Party: None"), "details show a solo player's party");
+                ctx.Assert(model.SelectedDetails.Contains("Flags: General RP"), "details list the player's flags");
                 ctx.Assert(model.IsSelectedOnline, "online actions enabled");
                 Capture(dm.Creature, GuiWindowType.DMPlayerSearch, "players-online-selected");
 
@@ -712,6 +717,8 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 ctx.Assert(model.SelectedDetails.Contains("Account: qorinaccount") && model.SelectedDetails.Contains("CD Key: QZTEST01"),
                     "offline details show the recorded account and CD key");
                 ctx.Assert(model.SelectedDetails.Contains("Last Login: 2026-10-01 18:30 UTC"), "offline details show the last login");
+                ctx.Assert(!model.SelectedDetails.Contains("Party:") && !model.SelectedDetails.Contains("Flags:"),
+                    "offline details leave out the live party and flags");
                 ctx.Assert(DMPlayerDirectory.TryGetLastLocation(offlineId, out var lastLocation) &&
                            GetAreaFromLocation(lastLocation) == Area.GetAreaByResref(savedAreaResref),
                     "offline Jump To resolves the saved area");

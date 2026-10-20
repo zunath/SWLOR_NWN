@@ -7,6 +7,7 @@ using SWLOR.Game.Server.Service.DMToolService;
 using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.GuiService.Component;
 using SWLOR.Game.Server.Service.LogService;
+using SWLOR.Game.Server.Service.PlayerListService;
 using SWLOR.NWN.API.NWNX;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
@@ -291,6 +292,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             }
 
             ResultSelections[_selectedIndex] = true;
+            var onlinePlayer = result.IsOnline ? DMPlayerDirectory.GetOnlinePlayer(result.PlayerId) : OBJECT_INVALID;
             var details = new List<string>
             {
                 $"Name: {result.Name}",
@@ -305,10 +307,17 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 $"Account: {ValueOrNotRecorded(result.AccountName)}",
                 $"CD Key: {ValueOrNotRecorded(result.CDKey)}",
                 $"Player ID: {result.PlayerId}",
-                $"Status: {(result.IsOnline ? "Online" : "Offline")}",
+                $"Status: {GetStatusText(result, onlinePlayer)}",
                 $"{(result.IsOnline ? "Area" : "Last Area")}: {ValueOrNotRecorded(result.LocationName)}",
                 $"Last Login: {(result.LastLoginDate.HasValue ? result.LastLoginDate.Value.ToString("yyyy-MM-dd HH:mm") + " UTC" : NotRecorded)}"
             });
+            if (GetIsObjectValid(onlinePlayer))
+            {
+                var (leader, playerCount) = PlayerList.GetParty(onlinePlayer);
+                details.Add($"Party: {PlayerListRules.DescribeParty(leader == onlinePlayer, GetName(leader), playerCount)}");
+                details.Add($"Flags: {PlayerListRules.DescribeFlags(PlayerList.GetFlags(onlinePlayer))}");
+            }
+
             SelectedDetails = string.Join("\n", details);
             CanJumpTo = true;
             IsSelectedOnline = result.IsOnline;
@@ -360,6 +369,14 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         {
             if (propertyName == nameof(ResultChecks))
                 ReadPageChecks();
+        }
+
+        private static string GetStatusText(DMPlayerSearchResult result, uint onlinePlayer)
+        {
+            if (!result.IsOnline)
+                return "Offline";
+
+            return GetIsObjectValid(onlinePlayer) && PlayerName.IsAfk(onlinePlayer) ? "Online (AFK)" : "Online";
         }
 
         private static string ValueOrNotRecorded(string value)
@@ -531,8 +548,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 if (!GetIsObjectValid(target))
                     return;
 
-                Log.Write(LogGroup.DM, $"{DMPresence.DescribeDM(Player)} booted {result.Name} ({result.AccountName}) [{result.CDKey}] ({result.PlayerId}).");
-                BootPC(target, "You have been disconnected by a DM.");
+                DMPresence.Boot(Player, target);
                 DelayCommand(0.5f, () =>
                 {
                     if (Gui.IsWindowOpen(Player, GuiWindowType.DMPlayerSearch))

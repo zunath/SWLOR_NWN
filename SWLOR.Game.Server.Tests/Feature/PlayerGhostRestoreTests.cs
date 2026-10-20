@@ -18,7 +18,7 @@ public class PlayerGhostRestoreTests
         revivingFiles.Should().NotBeEmpty();
         foreach (var (path, source) in revivingFiles)
         {
-            Regex.Matches(source, @"RestoreGhostAfterRevive\(").Count.Should().Be(
+            Regex.Matches(source, @"EffectResurrection\(\)[^\r\n]*\r?\n\s*(?:[\w.]+\.)?RestoreGhostAfterRevive\(").Count.Should().Be(
                 Regex.Matches(source, @"EffectResurrection\(\)").Count,
                 $"death strips the login ghost, so every revive in {Path.GetFileName(path)} must restore it");
         }

@@ -86,10 +86,11 @@ def edges_touch_edges(first, second, tolerance=1e-7, chunk=256):
     return False
 
 
-def overlapping_pairs(boxes_a, boxes_b, tolerance, max_cells=64, chunk=1024):
-    """Index pairs whose axis-aligned boxes overlap (within tolerance). Primitives spanning at most max_cells
-    grid cells go through a uniform grid; larger ones are compared against every box with a chunked
-    vectorised test, so one long primitive never rasterises a huge box at the median cell size."""
+def overlapping_pair_batches(boxes_a, boxes_b, tolerance, max_cells=64, chunk=1024, batch=200000):
+    """Yield index-pair batches whose axis-aligned boxes overlap within tolerance; a batch holds fewer than
+    batch + chunk*chunk pairs.
+    Primitives spanning at most max_cells grid cells go through a uniform grid; larger ones are compared against
+    every box with a chunked vectorised test. Both paths stream, so no full cross-product is ever retained."""
     lo=np.minimum(boxes_a[:,0].min(axis=0),boxes_b[:,0].min(axis=0));extent=np.concatenate([boxes_a[:,1]-boxes_a[:,0],boxes_b[:,1]-boxes_b[:,0]])
     cell=max(float(np.median(extent.max(axis=1))),tolerance*10,1e-9)
     def cells(boxes):
@@ -103,14 +104,22 @@ def overlapping_pairs(boxes_a, boxes_b, tolerance, max_cells=64, chunk=1024):
         for x in range(l[0],h[0]+1):
             for y in range(l[1],h[1]+1):
                 for z in range(l[2],h[2]+1):grid.setdefault((x,y,z),[]).append(index)
-    pairs=set()
+    pending=[];size=0
+    def emit(a,b):
+        nonlocal pending,size
+        keep=np.all(boxes_a[a,0]<=boxes_b[b,1]+tolerance,axis=1)&np.all(boxes_b[b,0]<=boxes_a[a,1]+tolerance,axis=1)
+        if keep.any():pending.append((a[keep],b[keep]));size+=int(keep.sum())
+        if size<batch:return None
+        out=(np.concatenate([x for x,_ in pending]),np.concatenate([y for _,y in pending]));pending=[];size=0
+        return out
     for index in np.flatnonzero(~bbig):
-        l,h=blo[index],bhi[index]
+        l,h=blo[index],bhi[index];others=set()
         for x in range(l[0],h[0]+1):
             for y in range(l[1],h[1]+1):
-                for z in range(l[2],h[2]+1):
-                    for other in grid.get((x,y,z),()):pairs.add((int(other),int(index)))
-    found=[np.asarray(sorted(pairs),np.int64).reshape(-1,2)]
+                for z in range(l[2],h[2]+1):others.update(grid.get((x,y,z),()))
+        if others:
+            out=emit(np.fromiter(sorted(others),np.int64),np.full(len(others),index,np.int64))
+            if out is not None:yield out
     # Oversized primitives on either side meet everything on the other side through the bounded fallback.
     for big,others,flip in ((np.flatnonzero(abig),np.arange(len(boxes_b)),False),(np.flatnonzero(bbig),np.flatnonzero(~abig),True)):
         for start in range(0,len(big),chunk):
@@ -119,12 +128,17 @@ def overlapping_pairs(boxes_a, boxes_b, tolerance, max_cells=64, chunk=1024):
                 cols=others[ostart:ostart+chunk]
                 hit=overlap(boxes_b[rows],boxes_a[cols]) if flip else overlap(boxes_a[rows],boxes_b[cols])
                 r,c=np.nonzero(hit)
-                found.append(np.stack([cols[c],rows[r]],axis=1) if flip else np.stack([rows[r],cols[c]],axis=1))
-    candidates=np.concatenate(found)
-    if not len(candidates):return np.zeros((0,),np.int64),np.zeros((0,),np.int64)
-    a,b=candidates.T
-    keep=np.all(boxes_a[a,0]<=boxes_b[b,1]+tolerance,axis=1)&np.all(boxes_b[b,0]<=boxes_a[a,1]+tolerance,axis=1)
-    return a[keep],b[keep]
+                if len(r):
+                    out=emit(cols[c],rows[r]) if flip else emit(rows[r],cols[c])
+                    if out is not None:yield out
+    if size:yield np.concatenate([x for x,_ in pending]),np.concatenate([y for _,y in pending])
+
+
+def overlapping_pairs(boxes_a, boxes_b, tolerance, max_cells=64, chunk=1024):
+    """All overlapping index pairs at once (small inputs and tests); shells_intersect streams the batches instead."""
+    found=list(overlapping_pair_batches(boxes_a,boxes_b,tolerance,max_cells,chunk))
+    if not found:return np.zeros((0,),np.int64),np.zeros((0,),np.int64)
+    return np.concatenate([a for a,_ in found]),np.concatenate([b for _,b in found])
 
 
 def pair_segment_crosses_triangle(seg, tri, eps=1e-9):
@@ -151,18 +165,18 @@ def pair_segments_touch(first, second, tolerance):
     return (gap*gap).sum(-1)<=tolerance*tolerance
 
 
-def shells_intersect(first, second, tolerance=1e-7):
+def shells_intersect(first, second, tolerance=1e-7, batch=200000):
     """Closed triangle sets intersect or touch when an edge of one crosses (or grazes) a triangle of
     the other, a vertex of one lies on the other, or their edges meet (coplanar contacts included).
     A uniform-grid broad phase keeps the exact tests to spatially overlapping pairs."""
     def edges(tris):return np.concatenate([tris[:,[0,1]],tris[:,[1,2]],tris[:,[2,0]]])
     def boxes(items):return np.stack([items.min(axis=1),items.max(axis=1)],axis=1)
     ea,eb=edges(first),edges(second);ta,tb=boxes(first),boxes(second);ba,bb=boxes(ea),boxes(eb)
+    # Candidate pairs arrive in bounded batches and each batch is tested before the next is built.
     for segs,segboxes,tris,triboxes in ((ea,ba,second,tb),(eb,bb,first,ta)):
-        i,j=overlapping_pairs(segboxes,triboxes,tolerance)
-        if len(i) and (pair_segment_crosses_triangle(segs[i],tris[j]).any() or pair_point_on_triangle(segs[i,0],tris[j],tolerance).any()):return True
-    i,j=overlapping_pairs(ba,bb,tolerance)
-    return bool(len(i) and pair_segments_touch(ea[i],eb[j],tolerance).any())
+        for i,j in overlapping_pair_batches(segboxes,triboxes,tolerance,batch=batch):
+            if pair_segment_crosses_triangle(segs[i],tris[j]).any() or pair_point_on_triangle(segs[i,0],tris[j],tolerance).any():return True
+    return any(pair_segments_touch(ea[i],eb[j],tolerance).any() for i,j in overlapping_pair_batches(ba,bb,tolerance,batch=batch))
 
 
 def audit_surface(vertices, faces, components=False):

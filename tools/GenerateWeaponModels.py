@@ -399,8 +399,15 @@ def run_asset(api, template, asset, image, folder, timeout, identity):
     image_hash = digest(image_data)
     create_output_folder(folder)
     path = folder / 'submission.json'
-    if not path.exists() and any(folder.iterdir()):
-        raise ValueError('Asset folder already has files but no job journal; use an absent or empty folder: ' + str(folder))
+    if not path.exists():
+        stale = folder / 'submission.json.tmp'
+        entries = list(folder.iterdir())
+        if entries == [stale] and stale.is_file() and not stale.is_symlink():
+            # An interrupted first journal write: the prompt is only posted after the journal is published, so
+            # nothing was submitted and the half-written journal can go (callers hold the endpoint lock).
+            stale.unlink()
+        elif entries:
+            raise ValueError('Asset folder already has files but no job journal; use an absent or empty folder: ' + str(folder))
     fingerprint = digest(json.dumps({'asset': asset, 'image_sha256': image_hash,
                                      'workflow': template, 'url': api.url}, sort_keys=True).encode())
     if path.exists():

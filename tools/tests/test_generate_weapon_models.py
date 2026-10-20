@@ -307,6 +307,19 @@ class WeaponGenerationTests(unittest.TestCase):
         self.assertEqual(keep.read_bytes(), b'manual')
         self.assertEqual(api.posts, 0); self.assertEqual(api.uploads, [])
 
+    def test_interrupted_first_journal_write_is_recovered(self):
+        self.output.mkdir()
+        (self.output / 'submission.json.tmp').write_text('{"fingerprint": "trunc')
+        api = FakeAPI(self.output)
+        self.assertEqual(self.run_asset(api)['status'], 'generated')
+        self.assertFalse((self.output / 'submission.json.tmp').exists()); self.assertEqual(api.posts, 1)
+        # Anything beyond the runner's own temporary journal still marks the folder as someone else's.
+        other = self.output.parent / 'other'; other.mkdir()
+        (other / 'submission.json.tmp').write_text('{}'); keep = other / 'source.glb'; keep.write_bytes(b'manual')
+        with self.assertRaisesRegex(ValueError, 'no job journal'):
+            generator.run_asset(FakeAPI(other), self.template, self.asset, self.image, other, 60, 'test')
+        self.assertEqual(keep.read_bytes(), b'manual')
+
     def test_budget_512_removes_upsampling_and_1024_retains_it(self):
         low = generator.build_graph(self.template, self.asset)
         self.assertNotIn('23', low); self.assertNotIn('94', low)

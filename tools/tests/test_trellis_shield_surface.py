@@ -147,6 +147,18 @@ class ShieldSurfaceTests(unittest.TestCase):
             self.assertFalse(surface.shells_intersect(first*scale,(second+np.asarray([5,0,0]))*scale),scale)
             self.assertTrue(surface.edges_cross_triangles(np.concatenate([second[:,[0,1]],second[:,[1,2]]])*scale,first*scale),scale)
 
+    def test_candidate_pairs_stream_in_bounded_batches(self):
+        rng=np.random.default_rng(13);boxes=lambda t:np.stack([t.min(axis=1),t.max(axis=1)],axis=1)
+        fine=rng.uniform(-1,1,(1500,1,3))+rng.normal(scale=5e-5,size=(1500,3,3))
+        longs=rng.uniform(-1,1,(60,3,3))
+        a=np.concatenate([fine[:750],longs[:30]]);b=np.concatenate([fine[750:],longs[30:]])
+        whole=sorted(zip(*(x.tolist() for x in surface.overlapping_pairs(boxes(a),boxes(b),1e-7))))
+        batches=list(surface.overlapping_pair_batches(boxes(a),boxes(b),1e-7,chunk=8,batch=5))
+        self.assertGreater(len(batches),3);self.assertTrue(all(len(i)<5+8*8 for i,_ in batches))  # a batch overshoots by less than one fallback block
+        streamed=sorted(zip(np.concatenate([i for i,_ in batches]).tolist(),np.concatenate([j for _,j in batches]).tolist()))
+        self.assertEqual(streamed,whole)
+        self.assertEqual(surface.shells_intersect(a,b,batch=5),surface.shells_intersect(a,b))
+
     def test_oversized_primitives_use_the_bounded_fallback(self):
         rng=np.random.default_rng(11)
         boxes=lambda t:np.stack([t.min(axis=1),t.max(axis=1)],axis=1)

@@ -23,6 +23,7 @@ public class StanceStatusEffectTests
     {
         StatusEffect.CacheData();
         ResetStatusEffects();
+        ClearMimicryTraitCaches();
     }
 
     [TearDown]
@@ -381,6 +382,19 @@ public class StanceStatusEffectTests
         }
 
         throw new DirectoryNotFoundException("Could not locate the SWLOR_NWN repository root.");
+    }
+
+    // Mimicry.CacheData(), run by earlier fixtures such as AbilityDescriptionTests, fills static trait caches that make
+    // Stat lookups call NWScript's GetIsPC, which throws without the engine.
+    private static void ClearMimicryTraitCaches()
+    {
+        foreach (var fieldName in new[] { "_traitStatsByStat", "_traitResistancesByResistance" })
+        {
+            var cache = typeof(Mimicry)
+                .GetField(fieldName, BindingFlags.NonPublic | BindingFlags.Static)!
+                .GetValue(null)!;
+            cache.GetType().GetMethod("Clear")!.Invoke(cache, null);
+        }
     }
 
     private static Dictionary<uint, CreatureStatusEffect> CreatureEffects()

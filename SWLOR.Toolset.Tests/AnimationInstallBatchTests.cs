@@ -30,7 +30,11 @@ public class AnimationInstallBatchTests
         var dependency = Path.Combine(_folder, "native.mdl"); File.WriteAllBytes(dependency, [1, 2]);
         var output = Path.Combine(_folder, "result.json");
         var plan = WithFingerprint(dependency, new AnimationFileChange(output, null, [3]));
-        plan.Apply(_ => ((Action)(() => File.WriteAllBytes(dependency, [9]))).Should().Throw<IOException>());
+        plan.Apply(_ =>
+        {
+            if (Support.WindowsFileSharing.IsEnforced)
+                ((Action)(() => File.WriteAllBytes(dependency, [9]))).Should().Throw<IOException>();
+        });
         File.WriteAllBytes(dependency, [9, 9]);
         ((Action)(() => plan.Apply())).Should().Throw<IOException>();
     }

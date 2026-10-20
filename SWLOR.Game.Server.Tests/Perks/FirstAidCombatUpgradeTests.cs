@@ -170,17 +170,18 @@ public class FirstAidCombatUpgradeTests
             "DelayCommand(0.1f, () =>\n" +
             "            {\n" +
             "                using var recorderScope = CombatRecorder.BeginAbilityFeatAttribution(activator, FeatType.Resuscitation2);\n" +
-            "                AbilityEffectScaling.ApplyActivatedScaledHeal(activator, target, 20);",
+            "                // A revive restores a share of the target's own HP, so it stays a percent.\n" +
+            "                AbilityEffectScaling.ApplyActivatedScaledHeal(activator, target, HealAmount.Percent(20));",
             "the rank-II heal must run after EffectResurrection settles or the engine silently discards it");
 
         var pain = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "FirstAid" / "PainSuppressantAbilityDefinition.cs").FullName);
-        pain.Should().Contain("AbilityEffectScaling.ApplyTemporaryHPPercent(activator, target, \"PAIN_SUPPRESSANT\", percent, durationSeconds)");
+        pain.Should().Contain("AbilityEffectScaling.ApplyTemporaryHP(activator, target, \"PAIN_SUPPRESSANT\", shield, durationSeconds)");
         pain.Should().NotContain("HealPercent(activator, friendly");
 
         var koltoMist = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "FirstAid" / "KoltoMistAbilityDefinition.cs").FullName);
         koltoMist.Should().Contain("private const float HealRadiusMeters = 8f;");
-        koltoMist.Should().Contain("private const float Rank1HealPercentPerTick = 1f;");
-        koltoMist.Should().Contain("private const float Rank2HealPercentPerTick = 2f;");
+        koltoMist.Should().Contain("private static readonly HealAmount Rank1HealPerTick = new(2, 0.25f);");
+        koltoMist.Should().Contain("private static readonly HealAmount Rank2HealPerTick = new(9, 0.5f);");
         koltoMist.Should().Contain("VisualEffect.Vfx_Fnf_Gas_Explosion_Mind");
         koltoMist.Should().Contain("EffectAreaOfEffect(AreaOfEffect.KoltoMistCloud)");
         koltoMist.Should().NotContain("AreaOfEffect.FogMind",
@@ -190,7 +191,7 @@ public class FirstAidCombatUpgradeTests
         koltoMist.Should().Contain("GetIsObjectValid(activator)");
         koltoMist.Should().Contain("GetCurrentHitPoints(activator) <= 0");
         koltoMist.Should().Contain("GetIsObjectValid(GetAreaFromLocation(location))");
-        koltoMist.Should().Contain("var treated = ApplyKoltoMistPulse(activator, location, percentPerTick, playPulseVisual);");
+        koltoMist.Should().Contain("var treated = ApplyKoltoMistPulse(activator, location, healPerTick, playPulseVisual);");
         koltoMist.Should().Contain("FirstAidTreatmentAdjustments.GrantCombatPoint(activator, treated, credited);");
         koltoMist.Should().Contain("visualEffect: VisualEffect.Vfx_Imp_Head_Heal");
         koltoMist.Should().Contain("StatusEffect.ApplyStatusEffect(");
@@ -427,32 +428,32 @@ public class FirstAidCombatUpgradeTests
         const int CustomTlkOffset = 16777216;
         var descriptions = new[]
         {
-            (FeatType.MedKit1, "Restores 8% of the target's maximum HP plus WIL scaling to a single target. Consumes medical supplies."),
+            (FeatType.MedKit1, "Restores 11 HP plus 2% of the target's maximum HP plus WIL scaling to a single target. Consumes medical supplies."),
             (FeatType.TreatmentKit1, "Removes Bleed and Poison from a single target. Consumes medical supplies."),
-            (FeatType.KoltoMist1, "Deploys a 30-second healing mist cloud at a target location up to 15m away. Allies within 8m heal for 1% of maximum HP plus WIL scaling every 3 seconds. Consumes medical supplies."),
+            (FeatType.KoltoMist1, "Deploys a 30-second healing mist cloud at a target location up to 15m away. Allies within 8m heal for 2 HP plus 0.25% of maximum HP plus WIL scaling every 3 seconds. Consumes medical supplies."),
             (FeatType.Resuscitation1, "Revives an unconscious target with 1 HP. Consumes medical supplies. Taking damage interrupts the cast. Fails while a hostile player is within 20m, or, after a player kill, until your party near the target has gone 15 seconds without taking damage. A player can be revived mid-fight at most once every 5 minutes."),
             (FeatType.TreatmentKit2, "Removes Bleed, Poison, Toxin, Burn, Shock, and Disease from a single target. Consumes medical supplies."),
-            (FeatType.MedKit2, "Restores 14% of the target's maximum HP plus WIL scaling to a single target. Consumes medical supplies."),
-            (FeatType.Infusion1, "Grants a single target regeneration, healing 2% of maximum HP plus WIL scaling every 3 seconds for 30 seconds. Consumes medical supplies."),
-            (FeatType.KoltoMist2, "Deploys a 30-second healing mist cloud at a target location up to 15m away. Allies within 8m heal for 2% of maximum HP plus WIL scaling every 3 seconds. Consumes medical supplies."),
+            (FeatType.MedKit2, "Restores 42 HP plus 3.5% of the target's maximum HP plus WIL scaling to a single target. Consumes medical supplies."),
+            (FeatType.Infusion1, "Grants a single target regeneration, healing 7 HP plus 0.5% of maximum HP plus WIL scaling every 3 seconds for 30 seconds. Consumes medical supplies."),
+            (FeatType.KoltoMist2, "Deploys a 30-second healing mist cloud at a target location up to 15m away. Allies within 8m heal for 9 HP plus 0.5% of maximum HP plus WIL scaling every 3 seconds. Consumes medical supplies."),
             (FeatType.Resuscitation2, "Revives an unconscious target with 20% HP plus WIL scaling. Consumes medical supplies. Taking damage interrupts the cast. Fails while a hostile player is within 20m, or, after a player kill, until your party near the target has gone 15 seconds without taking damage. A player can be revived mid-fight at most once every 5 minutes."),
-            (FeatType.MedKit3, "Restores 20% of the target's maximum HP plus WIL scaling to a single target. Consumes medical supplies."),
+            (FeatType.MedKit3, "Restores 80 HP plus 5% of the target's maximum HP plus WIL scaling to a single target. Consumes medical supplies."),
             (FeatType.TreatmentKit3, "Removes Bleed, Poison, Toxin, Burn, Shock, and Disease from a single target and grants 50% Fire Resistance, 50% Poison Resistance, 50% Electrical Resistance, 50% Ice Resistance, and 50% Trauma Resistance for 30 seconds."),
-            (FeatType.EmergencyTriage1, "Restores 18% of the target's maximum HP plus WIL scaling instantly. Can target allies up to 15m away. Healing is doubled if the target is below 35% HP. Consumes extra medical supplies."),
-            (FeatType.Infusion2, "Grants a single target regeneration, healing 3% of maximum HP plus WIL scaling every 3 seconds for 30 seconds. Consumes medical supplies."),
-            (FeatType.MedKit4, "Restores 24% of the target's maximum HP plus WIL scaling to a single target. Consumes medical supplies."),
+            (FeatType.EmergencyTriage1, "Restores 81 HP plus 4.5% of the target's maximum HP plus WIL scaling instantly. Can target allies up to 15m away. Healing is doubled if the target is below 35% HP. Consumes extra medical supplies."),
+            (FeatType.Infusion2, "Grants a single target regeneration, healing 14 HP plus 0.75% of maximum HP plus WIL scaling every 3 seconds for 30 seconds. Consumes medical supplies."),
+            (FeatType.MedKit4, "Restores 108 HP plus 6% of the target's maximum HP plus WIL scaling to a single target. Consumes medical supplies."),
             (FeatType.AdrenalStim1, "Restores 10% of maximum STM and restores 1 STM every 3 seconds for 30 seconds. Consumes a stim pack."),
             (FeatType.Shielding1, "Reduces physical and force damage taken by 5% for 3 minutes. Consumes a stim pack."),
             (FeatType.AdrenalStim2, "Restores 18% of maximum STM and restores 1 STM every 3 seconds for 30 seconds. Consumes a stim pack."),
-            (FeatType.PainSuppressant1, "Grants temporary HP equal to 10% of the target's maximum HP plus WIL scaling and 10% damage reduction for 30 seconds. Consumes a stim pack."),
+            (FeatType.PainSuppressant1, "Grants 24 temporary HP plus 2.5% of the target's maximum HP plus WIL scaling and 10% damage reduction for 30 seconds. Consumes a stim pack."),
             (FeatType.Antitoxin1, "Grants 50% Poison Resistance for 2 minutes and removes one Poison or Toxin effect. Poison Resistance also weakens Disease and Toxin effects. Consumes a stim pack."),
             (FeatType.Shielding2, "Reduces physical and force damage taken by 8% for 3 minutes. Consumes a stim pack."),
             (FeatType.FocusStim1, "Increases physical and Force ability Accuracy by 5% for 2 minutes. Consumes a stim pack."),
             (FeatType.AdrenalStim3, "Restores 25% of maximum STM and restores 1 STM every 3 seconds for 30 seconds. Consumes a stim pack."),
-            (FeatType.PainSuppressant2, "Grants temporary HP equal to 15% of the target's maximum HP plus WIL scaling and 15% damage reduction for 30 seconds. Consumes a stim pack."),
+            (FeatType.PainSuppressant2, "Grants 68 temporary HP plus 3.75% of the target's maximum HP plus WIL scaling and 15% damage reduction for 30 seconds. Consumes a stim pack."),
             (FeatType.Shielding3, "Reduces physical and force damage taken by 11% for 3 minutes. Consumes a stim pack."),
             (FeatType.FocusStim2, "Increases physical and Force ability Accuracy by 8% for 2 minutes. Consumes a stim pack."),
-            (FeatType.EmergencyCocktail1, "Restores 25% of maximum STM, removes one Poison or Toxin effect, then for 45 seconds restores 1 STM every 3 seconds, grants temporary HP equal to 12% of maximum HP plus WIL scaling, reduces damage taken by 12%, and grants 50% Poison Resistance.")
+            (FeatType.EmergencyCocktail1, "Restores 25% of maximum STM, removes one Poison or Toxin effect, then for 45 seconds restores 1 STM every 3 seconds, grants 54 temporary HP plus 3% of maximum HP plus WIL scaling, reduces damage taken by 12%, and grants 50% Poison Resistance.")
         };
 
         foreach (var (featType, expectedDescription) in descriptions)

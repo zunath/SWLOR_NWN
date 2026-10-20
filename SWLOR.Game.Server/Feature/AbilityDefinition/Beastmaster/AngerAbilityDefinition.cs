@@ -78,7 +78,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster
         {
             ApplyGoad(activator, target);
 
-            ApplyTemporaryHP(activator, 15, 12f);
+            ApplyTemporaryHP(activator, new HealAmount(68, 3.75f), 12f);
         }
 
 
@@ -93,12 +93,12 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster
             ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Fnf_Howl_Odd), target);
         }
 
-        private static void ApplyTemporaryHP(uint target, int percent, float durationSeconds)
+        private static void ApplyTemporaryHP(uint target, HealAmount shield, float durationSeconds)
         {
             TemporaryHitPointEffects.ApplyFlat(
                 target,
                 "ANGER",
-                GameMath.PercentOf(GetMaxHitPoints(target), percent),
+                shield.ForMaxHitPoints(GetMaxHitPoints(target)),
                 durationSeconds);
         }
 

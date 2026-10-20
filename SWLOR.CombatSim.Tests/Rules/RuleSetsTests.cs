@@ -1,6 +1,8 @@
 using FluentAssertions;
 using NUnit.Framework;
+using SWLOR.CombatSim.Engine;
 using SWLOR.CombatSim.Rules;
+using SWLOR.Game.Server.Feature.AbilityDefinition;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.PvpCombatService;
 
@@ -39,10 +41,6 @@ namespace SWLOR.CombatSim.Tests.Rules
         [TestCase("{ \"pvpHealingRamp\": [ { \"atSeconds\": 120, \"percent\": 150 } ] }", "PvpHealingRamp[0].Percent")]
         [TestCase("{ \"pvpDamageBackstop\": [ { \"atSeconds\": -1, \"percent\": 20 } ] }", "PvpDamageBackstop[0].AtSeconds")]
         [TestCase("{ \"revives\": 7 }", "Revives")]
-        [TestCase("{ \"healPercentOfMaxHpShare\": 1.5 }", "HealPercentOfMaxHpShare")]
-        [TestCase("{ \"healPercentOfMaxHpShare\": -0.1, \"healReferenceMaxHp\": 900 }", "HealPercentOfMaxHpShare")]
-        [TestCase("{ \"healPercentOfMaxHpShare\": 0.25 }", "HealReferenceMaxHp")]
-        [TestCase("{ \"healReferenceMaxHp\": -1 }", "HealReferenceMaxHp")]
         [TestCase("{ \"healStatMultiplierAtBaseline\": -0.5 }", "HealStatMultiplierAtBaseline")]
         [TestCase("{ \"healStatMultiplierAtCap\": 2.5 }", "HealStatMultiplierAtCap")]
         public void Load_RejectsValuesOutsideTheirRange_NamingFileAndValue(string json, string valueName)
@@ -166,27 +164,35 @@ namespace SWLOR.CombatSim.Tests.Rules
             rules.PvpDamageBackstop.Should().BeEmpty();
         }
 
-        [TestCase(RuleSets.PreTuningName)]
-        [TestCase(RuleSets.CurrentName)]
-        public void Presets_SizeHealsAsTheGameDoes(string name)
+        [Test]
+        public void PreTuning_SizesHealsAsAPercentWithTheOldWillpowerBonus()
         {
-            var rules = RuleSets.Get(name);
+            var rules = RuleSets.PreTuning();
 
-            rules.HealPercentOfMaxHpShare.Should().Be(1f, "every heal is a percent of the target's max HP");
+            rules.FlatHeals.Should().BeFalse("every heal was a percent of the target's max HP");
             rules.HealStatMultiplierAtBaseline.Should().Be(1f);
-            rules.HealStatMultiplierAtCap.Should().Be(1.25f, "Willpower adds up to 25%");
+            rules.HealStatMultiplierAtCap.Should().Be(1.25f, "Willpower added up to 25%");
+        }
+
+        [Test]
+        public void Current_SizesHealsAsTheGameDoes()
+        {
+            var rules = RuleSets.Current();
+
+            rules.FlatHeals.Should().BeTrue();
+            rules.HealStatMultiplierAtBaseline.Should().Be(AbilityEffectScaling.RestorativeMultiplierAtBaseline);
+            rules.HealStatMultiplierAtCap.Should().Be(AbilityEffectScaling.RestorativeMultiplierAtCap);
+            HealFormula.From(rules).Should().Be(HealFormula.Game);
         }
 
         [Test]
         public void Load_ReadsTheHealFormula()
         {
-            var path = WriteRules("flat.json",
-                "{ \"healPercentOfMaxHpShare\": 0.25, \"healReferenceMaxHp\": 900, \"healStatMultiplierAtBaseline\": 0.625 }");
+            var path = WriteRules("flat.json", "{ \"flatHeals\": true, \"healStatMultiplierAtBaseline\": 0.625 }");
 
             var rules = RuleSets.Load(path);
 
-            rules.HealPercentOfMaxHpShare.Should().Be(0.25f);
-            rules.HealReferenceMaxHp.Should().Be(900);
+            rules.FlatHeals.Should().BeTrue();
             rules.HealStatMultiplierAtBaseline.Should().Be(0.625f);
             rules.HealStatMultiplierAtCap.Should().Be(1.25f);
         }

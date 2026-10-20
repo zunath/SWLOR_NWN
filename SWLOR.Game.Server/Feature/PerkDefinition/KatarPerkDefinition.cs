@@ -199,7 +199,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.TwinIntercept1)
                 .DroidAISlots(1)
-                .Description("Automatically targets your current Guarded ally if they are within 5 meters. Grants that target temporary HP equal to 15% of your maximum HP for 30 seconds and grants you +20 Guard for 30 seconds.")
+                .Description("Automatically targets your current Guarded ally if they are within 5 meters. Grants that target 68 temporary HP plus 3.75% of your maximum HP for 30 seconds and grants you +20 Guard for 30 seconds.")
                 .Price(4)
                 .RequirementSkill(SkillType.Katar, 30);
         }

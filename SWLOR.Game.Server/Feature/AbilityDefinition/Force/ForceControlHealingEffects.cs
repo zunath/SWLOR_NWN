@@ -78,9 +78,12 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
             }
 
             StatusEffect.RemoveFirstCleanseableStatusEffect(target, StatusEffectCleanseType.Purify, false);
-            AbilityEffectScaling.ApplyActivatedScaledHeal(activator, target, 6);
+            AbilityEffectScaling.ApplyActivatedScaledHeal(activator, target, ForceMendHeal);
             ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Remove_Condition), target);
         }
+
+        private static readonly HealAmount ForceMendHeal = new(27, 1.5f);
+        private static readonly HealAmount HarmonicRestorationHeal = new(27, 1.5f);
 
         private static List<uint> ApplyHarmonicRestoration(uint activator, uint target, bool targetWasBelowHalfHP)
         {
@@ -97,7 +100,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                          .Where(ally => ally != target)
                          .Take(2))
             {
-                AbilityEffectScaling.ApplyActivatedScaledHeal(activator, ally, 6);
+                AbilityEffectScaling.ApplyActivatedScaledHeal(activator, ally, HarmonicRestorationHeal);
                 StatusEffect.ApplyStatusEffect(activator, ally, typeof(HarmonicRestorationStatusEffect), 30f);
                 ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Healing_M), ally);
                 healed.Add(ally);

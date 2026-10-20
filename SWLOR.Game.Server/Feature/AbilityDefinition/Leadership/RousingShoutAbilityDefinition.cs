@@ -98,24 +98,24 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Leadership
 
         private static void RousingShout1ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
-            ApplyRousingShout(activator, target, 10, 13, typeof(RousingShout1StatusEffect), 30f);
+            ApplyRousingShout(activator, target, new HealAmount(13, 2.5f), new HealAmount(16, 3.25f), typeof(RousingShout1StatusEffect), 30f);
         }
 
         private static void RousingShout2ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
-            ApplyRousingShout(activator, target, 15, 19, typeof(RousingShout2StatusEffect), 30f);
+            ApplyRousingShout(activator, target, new HealAmount(41, 3.75f), new HealAmount(52, 4.75f), typeof(RousingShout2StatusEffect), 30f);
         }
 
         private static void RousingShout3ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
-            ApplyRousingShout(activator, target, 20, 25, typeof(RousingShout3StatusEffect), 30f);
+            ApplyRousingShout(activator, target, new HealAmount(90, 5f), new HealAmount(113, 6.25f), typeof(RousingShout3StatusEffect), 30f);
         }
 
         private static void ApplyRousingShout(
             uint activator,
             uint target,
-            int temporaryHPPercent,
-            int temporaryHPCap,
+            HealAmount shield,
+            HealAmount shieldAtSocialCap,
             Type lowHPStatusEffect,
             float durationSeconds)
         {
@@ -128,7 +128,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Leadership
             durationSeconds = LeadershipAbilityEffects.ApplyFieldStewardCommandDurationBonus(activator, durationSeconds);
             ApplyTemporaryHP(
                 target,
-                AbilityEffectScaling.ScaleValueBySourceSocial(activator, temporaryHPPercent, temporaryHPCap),
+                AbilityEffectScaling.ScaleHealBySourceSocial(activator, shield, shieldAtSocialCap),
                 durationSeconds);
             Ability.PlaySuccessfulImpactVisualEffect(activator, target);
 
@@ -178,12 +178,12 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Leadership
             return GetCurrentHitPoints(target) <= GetMaxHitPoints(target) * 0.35f;
         }
 
-        private static void ApplyTemporaryHP(uint target, int percent, float durationSeconds)
+        private static void ApplyTemporaryHP(uint target, HealAmount shield, float durationSeconds)
         {
             TemporaryHitPointEffects.ApplyFlat(
                 target,
                 "ROUSING_SHOUT",
-                GameMath.PercentOf(GetMaxHitPoints(target), percent),
+                shield.ForMaxHitPoints(GetMaxHitPoints(target)),
                 durationSeconds);
         }
 

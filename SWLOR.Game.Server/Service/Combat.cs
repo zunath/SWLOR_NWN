@@ -999,9 +999,9 @@ namespace SWLOR.Game.Server.Service
             var temporaryHPSource = StatusEffect.GetStatusEffectSourceWithStat(
                 defender,
                 StatType.FatalDamageTemporaryHPPercent);
-            var tempHP = GameMath.PercentOf(GetMaxHitPoints(defender), temporaryHPPercent);
+            var tempHP = HealAmount.FromRate(temporaryHPPercent).ForMaxHitPoints(GetMaxHitPoints(defender));
             if (scalingAbilityScore > 0)
-                tempHP = AbilityEffectScaling.ScaleDirectEffect(tempHP, scalingAbilityScore);
+                tempHP = AbilityEffectScaling.ScaleRestorativeEffect(tempHP, scalingAbilityScore);
 
             StatusEffect.RemoveStatusEffectsWithStat(defender, StatType.FatalDamageTemporaryHPPercent, false);
 
@@ -3183,7 +3183,7 @@ namespace SWLOR.Game.Server.Service
                 !TryUseStatTrigger(defender, StatType.LowHPTemporaryHPPercent, cooldown))
                 return;
 
-            var temporaryHP = GameMath.PercentOf(GetMaxHitPoints(defender), temporaryHPPercent);
+            var temporaryHP = HealAmount.FromRate(temporaryHPPercent).ForMaxHitPoints(GetMaxHitPoints(defender));
             using var recorderAttribution = CombatRecorder.BeginStatTriggerAttribution(defender, StatType.LowHPTemporaryHPPercent);
             TemporaryHitPointEffects.ApplyFlat(defender, "LOW_HP_SHIELD", temporaryHP, duration);
         }
@@ -3213,7 +3213,7 @@ namespace SWLOR.Game.Server.Service
             if (!TryUseStatTrigger(defender, StatType.LowHPTemporaryHPPercent, cooldown))
                 return;
 
-            var temporaryHP = GameMath.PercentOf(maxHP, temporaryHPPercent);
+            var temporaryHP = HealAmount.FromRate(temporaryHPPercent).ForMaxHitPoints(maxHP);
             using var recorderAttribution = CombatRecorder.BeginStatTriggerAttribution(defender, StatType.LowHPTemporaryHPPercent);
             TemporaryHitPointEffects.ApplyFlat(defender, "LOW_HP_SHIELD", temporaryHP, duration);
         }
@@ -3232,7 +3232,7 @@ namespace SWLOR.Game.Server.Service
                 !TryUseStatTrigger(defender, StatType.LowHPNoSaveTemporaryHPPercent, cooldown))
                 return;
 
-            var temporaryHP = GameMath.PercentOf(GetMaxHitPoints(defender), temporaryHPPercent);
+            var temporaryHP = HealAmount.FromRate(temporaryHPPercent).ForMaxHitPoints(GetMaxHitPoints(defender));
             using var recorderAttribution = CombatRecorder.BeginStatTriggerAttribution(defender, StatType.LowHPNoSaveTemporaryHPPercent);
             TemporaryHitPointEffects.ApplyFlat(defender, "LOW_HP_SHIELD_NO_SAVE", temporaryHP, duration);
         }
@@ -4348,7 +4348,7 @@ namespace SWLOR.Game.Server.Service
                 return;
 
             var maximumHP = GetMaxHitPoints(creature);
-            var amount = GameMath.PercentOf(maximumHP, percent);
+            var amount = HealAmount.FromRate(percent).ForMaxHitPoints(maximumHP);
             amount = Stat.ApplyHealingReceivedAdjustment(creature, amount, applyReceivedEffects: false);
             amount = Stat.CalculateEffectiveHealingAmount(amount, ObjectPlugin.GetCurrentHitPoints(creature), maximumHP);
             amount = TakeCombatHealingBudget(_defeatedEnemyHealingBudgets, creature, maximumHP,
@@ -7993,7 +7993,7 @@ namespace SWLOR.Game.Server.Service
             var shieldAmount = TemporaryHitPointEffects.ApplyFlat(
                 activator,
                 TemporaryHitPointEffectKey.GuardiansResolve,
-                GameMath.PercentOf(GetMaxHitPoints(activator), shieldPercent),
+                HealAmount.FromRate(shieldPercent).ForMaxHitPoints(GetMaxHitPoints(activator)),
                 duration);
             if (shieldAmount <= 0)
                 return;

@@ -88,7 +88,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Leadership
                     activator,
                     friendly,
                     new CleanseOrder1StatusEffect(),
-                    AbilityEffectScaling.ScaleValueBySourceSocial(activator, 6, 8),
+                    AbilityEffectScaling.ScaleHealBySourceSocial(activator, new HealAmount(19, 1.5f), new HealAmount(25, 2f)),
                     duration);
                 LeadershipAbilityEffects.ApplyTriageProtocol(activator, friendly, duration);
                 ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Remove_Condition), friendly);
@@ -113,7 +113,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Leadership
                     activator,
                     friendly,
                     new CleanseOrder2StatusEffect(),
-                    AbilityEffectScaling.ScaleValueBySourceSocial(activator, 12, 15),
+                    AbilityEffectScaling.ScaleHealBySourceSocial(activator, new HealAmount(54, 3f), new HealAmount(68, 3.75f)),
                     duration);
                 LeadershipAbilityEffects.ApplyTriageProtocol(activator, friendly, duration);
                 ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Remove_Condition), friendly);
@@ -129,7 +129,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Leadership
             uint source,
             uint target,
             IStatusEffect commandMarker,
-            int percent,
+            HealAmount shield,
             float durationSeconds)
         {
             if (!StatusEffect.ApplyStatusEffect(source, target, commandMarker, durationSeconds))
@@ -139,7 +139,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Leadership
             TemporaryHitPointEffects.ApplyFlatOwned(
                 target,
                 CleanseOrder1StatusEffect.TemporaryHitPointEffectKey,
-                GameMath.PercentOf(GetMaxHitPoints(target), percent),
+                shield.ForMaxHitPoints(GetMaxHitPoints(target)),
                 durationSeconds,
                 commandMarker.Id);
         }

@@ -62,8 +62,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
             var duration = (int)CapstoneAbility.ActiveDurationSeconds;
             var blastRadius = DeviceAbilityEffects.ApplyBlastRadiusBonus(activator, 5f);
 
-            // Only the single-target strike adds gadget DMG. Adding it to all three attacks made one cast worth
-            // about two and a half capstones.
+            // Only the single-target strike adds gadget DMG; the area bursts use their base damage.
 
             Ability.ApplyTelegraphedCombatImpact(
                 activator,

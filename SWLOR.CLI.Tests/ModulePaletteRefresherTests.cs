@@ -68,9 +68,7 @@ public sealed class ModulePaletteRefresherTests
     [Test]
     public void Refresh_KeepsRetiredTierOneSaberKitsOutOfTheDmPalette()
     {
-        // The tier 1 saber upgrade kits were retired with the combat upgrade. Their blueprints
-        // stay only so the saved-character migration can convert legacy copies, so their
-        // PaletteID must match no category or packing would put them back in the DM palette.
+        // Retired kits are kept only for migration, so packing must not list them for DMs.
         var moduleRoot = Path.Combine(FindRepositoryRoot().FullName, "Module");
 
         var refresh = ModulePaletteRefresher.Refresh(moduleRoot, _outputRoot);

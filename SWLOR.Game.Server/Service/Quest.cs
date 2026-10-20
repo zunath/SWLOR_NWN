@@ -566,15 +566,22 @@ namespace SWLOR.Game.Server.Service
             {
                 var consumedAmount = Math.Min(stackSize, requiredAmount);
                 var isFullStackConsumed = stackSize <= requiredAmount;
-                var consumedItem = isFullStackConsumed ? item : CopyItem(item, container, true);
+                // A detached snapshot cannot merge into and resize the source stack.
+                var consumedItem = isFullStackConsumed ? item : ObjectPlugin.Deserialize(ObjectPlugin.Serialize(item));
+                try
+                {
+                    if (!GetIsObjectValid(consumedItem))
+                        throw new InvalidOperationException("Could not snapshot the consumed quest items.");
+                    if (!isFullStackConsumed)
+                        SetItemStackSize(consumedItem, consumedAmount);
 
-                if (!isFullStackConsumed)
-                    SetItemStackSize(consumedItem, consumedAmount);
-
-                questDetail.CollectedItemHandler.Invoke(player, consumedItem);
-
-                if (!isFullStackConsumed)
-                    DestroyObject(consumedItem);
+                    questDetail.CollectedItemHandler.Invoke(player, consumedItem);
+                }
+                finally
+                {
+                    if (!isFullStackConsumed)
+                        DestroyObject(consumedItem);
+                }
             }
 
             // Decrement the required items and update the DB.

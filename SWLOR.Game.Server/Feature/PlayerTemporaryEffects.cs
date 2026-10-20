@@ -66,5 +66,30 @@ namespace SWLOR.Game.Server.Feature
         {
             Stat.ApplyCreatureMovementRate(player);
         }
+
+        /// <summary>Death strips every effect; restores the login ghost once the revive settles.</summary>
+        public static void RestoreGhostAfterRevive(uint creature)
+        {
+            DelayCommand(0.1f, () =>
+            {
+                if (ShouldHaveGhost(creature) && !GetIsDead(creature))
+                    ApplyCutsceneGhostToPlayer(creature);
+            });
+        }
+
+        /// <summary>Entering space mode strips every effect, so the login ghost returns on leaving it.</summary>
+        [NWNEventHandler(ScriptName.OnSpaceExit)]
+        public static void RestoreGhostOnSpaceExit()
+        {
+            // A pilot killed with their ship leaves space mode dead; their revive restores the ghost.
+            var player = OBJECT_SELF;
+            if (ShouldHaveGhost(player) && !GetIsDead(player))
+                ApplyCutsceneGhostToPlayer(player);
+        }
+
+        private static bool ShouldHaveGhost(uint creature)
+        {
+            return GetIsObjectValid(creature) && GetIsPC(creature) && !GetIsDM(creature) && !GetIsDMPossessed(creature);
+        }
     }
 }

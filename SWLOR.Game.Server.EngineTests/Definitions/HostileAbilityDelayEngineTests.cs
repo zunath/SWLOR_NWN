@@ -1,9 +1,13 @@
 using System;
+using System.IO;
+using System.Linq;
+using System.Text.Json;
 using System.Threading.Tasks;
 using SWLOR.Game.Server.EngineTests.Framework;
 using SWLOR.Game.Server.Feature;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
+using SWLOR.Game.Server.Service.CombatRecorderService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.NWN.API.NWNX;
@@ -184,10 +188,20 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
         {
             var ribBreaker = Ability.GetAbilityDetail(FeatType.RibBreaker1);
             var slam = Ability.GetAbilityDetail(FeatType.Slam1);
+            CombatRecordWriter writer = null;
             Ability.ClearLastCompletedAbilityImpactSummary(player);
             Combat.SetAbilityHitResolutionOverride(true);
             try
             {
+                await ctx.ExecuteInCreatureContextAsync(player, () =>
+                {
+                    ctx.Assert(!CombatRecorder.IsRecording, "The timing fixture owns its recording");
+                    ctx.Assert(CombatRecorder.Start(GetArea(player), "Hostile ability timing", out var message), message);
+                    writer = CombatRecorder.LastWriter;
+                });
+                var recastDelays = new[] { ribBreaker, slam }.Select(ability =>
+                    (Ability: ability, Delay: Combat.ApplyAbilityRecastDelayModifiers(player, ability,
+                        ability.RecastDelay?.Invoke(player) ?? 0f))).ToArray();
                 var startedAt = DateTime.UtcNow;
                 DateTime? ribBreakerAt = null;
                 DateTime? slamAt = null;
@@ -252,6 +266,15 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 double? Since(DateTime? at) => (at - startedAt)?.TotalSeconds;
                 ctx.Log($"Rib Breaker went off at {Since(ribBreakerAt):0.000}s and hit for {ribBreakerDamage} at {Since(ribBreakerImpactAt):0.000}s; " +
                         $"Slam went off at {Since(slamAt):0.000}s and hit for {slamDamage} at {Since(slamImpactAt):0.000}s");
+                var recasts = DB.Get<SWLOR.Game.Server.Entity.Player>(GetObjectUUID(player)).RecastTimes;
+                foreach (var (ability, delay) in recastDelays)
+                {
+                    if (recasts.TryGetValue(ability.RecastGroup, out var endsAt))
+                    {
+                        ctx.Log($"Persisted {ability.Name} recast: started={(endsAt.AddSeconds(-delay) - startedAt).TotalSeconds:0.000}s, " +
+                                $"endsAt={endsAt:O}, effectiveDelay={delay:0.000}s.");
+                    }
+                }
                 ctx.Assert(ribBreakerAt != null && ribBreakerImpactAt != null, "Rib Breaker went off and completed its impact");
                 ctx.Assert(slamAt != null && slamImpactAt != null, "Slam went off and completed its impact");
                 ctx.Assert(ribBreakerDamage > 0 && slamDamage > 0,
@@ -266,6 +289,20 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             finally
             {
                 Combat.SetAbilityHitResolutionOverride(null);
+                if (writer != null)
+                {
+                    if (CombatRecorder.IsRecording && ReferenceEquals(CombatRecorder.LastWriter, writer))
+                        CombatRecorder.Stop("Hostile ability timing complete", out _);
+                    await ctx.WaitUntilAsync(() => writer.Completion.IsCompleted, 10f, "the authoritative timing recording to finish");
+                    ctx.Assert(writer.Error == null, $"Timing recording failed: {writer.Error}");
+                    foreach (var line in File.ReadLines(writer.EventsPath))
+                    {
+                        using var document = JsonDocument.Parse(line);
+                        var type = document.RootElement.GetProperty("type").GetString();
+                        if (type is "ability_cast" or "ability_impact")
+                            ctx.Log($"Authoritative timing: {line}");
+                    }
+                }
             }
         }
 

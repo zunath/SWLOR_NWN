@@ -22,5 +22,7 @@ namespace SWLOR.CombatSim.Report
         public double AverageStarvedSeconds { get; set; }
         public double? MedianFirstStarvedAt { get; set; }
         public double ShareOfRunsStarved { get; set; }
+        public Dictionary<string, double> AverageWeaponDiagnostics { get; set; } = new();
+        public Dictionary<string, double> AverageAbilityCasts { get; set; } = new();
     }
 }

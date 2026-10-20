@@ -117,6 +117,20 @@ public static partial class MigrationEngineTests
             });
         }
 
+        // Droid parts and controllers saved before the Unarmed and Twin Pistol skills: a CPU, and a controller with
+        // a boosted Katar and zero ranged skills that saves that CPU.
+        var legacyCpu = await CreateItemAsync(ctx, owner, LegacyDroidCpu, owner);
+        var legacyController = await CreateItemAsync(ctx, owner, Droid.DroidControlItemResref, owner);
+        await ctx.ExecuteInCreatureContextAsync(owner, () =>
+        {
+            StampLegacyDroidCpu(legacyCpu);
+            StampLegacyDroidController(legacyController, ObjectPlugin.Serialize(legacyCpu));
+            fixtures.Add(("legacy droid CPU without Unarmed and Twin Pistol", ObjectPlugin.Serialize(legacyCpu), true));
+            fixtures.Add(("legacy droid controller without Unarmed and Twin Pistol", ObjectPlugin.Serialize(legacyController), true));
+            DestroyObject(legacyCpu);
+            DestroyObject(legacyController);
+        });
+
         var gloves = await CreateItemAsync(ctx, owner, RevisedGloves, owner);
         var buffedGloves = await CreateItemAsync(ctx, owner, RevisedGloves, owner);
         var artwork = await CreateItemAsync(ctx, owner, "aen_hp1", owner);

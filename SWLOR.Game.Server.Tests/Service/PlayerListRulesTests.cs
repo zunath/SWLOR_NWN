@@ -148,13 +148,19 @@ public class PlayerListRulesTests
         });
         member.Remove.DisabledReason.Should().Be("Only your party leader can remove members.");
         member.MakeLeader.DisabledReason.Should().Be("Only your party leader can choose a new leader.");
+    }
 
+    [Test]
+    public void MemberWhoIsNotLeader_CanInvitePlayersOutsideAnyParty()
+    {
         var outsider = PlayerListRules.Evaluate(new PlayerListRelation
         {
             HasTarget = true,
             ViewerIsInParty = true,
         });
-        outsider.Invite.DisabledReason.Should().Be("Only your party leader can invite players.");
+
+        outsider.Invite.IsEnabled.Should().BeTrue();
+        outsider.Invite.DisabledReason.Should().BeNullOrEmpty();
     }
 
     [Test]

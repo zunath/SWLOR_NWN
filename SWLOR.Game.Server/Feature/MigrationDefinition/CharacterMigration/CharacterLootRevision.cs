@@ -11,8 +11,8 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition.CharacterMigration;
 
 /// <summary>
 /// Saved-data <see cref="LootStatRevisionMigration.MigrateObject(uint)"/> for a player character: repairs legacy
-/// headgear and wearable types, optionally updates artwork, and revises loot stats on equipped and carried items
-/// and the droids saved on controller items. An equipped item's revised stats change the record by their
+/// headgear and wearable types, optionally updates artwork and adds droid weapon skills, and revises loot stats on
+/// equipped and carried items and the droids saved on controller items. An equipped item's revised stats change the record by their
 /// difference, as on a logged-in wearer.
 /// </summary>
 internal static class CharacterLootRevision
@@ -59,6 +59,9 @@ internal static class CharacterLootRevision
         if (revised && wearer)
             character.RefreshCombatReadinessEquipment();
         changed |= revised;
+        // Droid stats never count on a wearer.
+        if (updateArtwork)
+            changed |= StoredObjectData.AddDroidWeaponSkills(item.Node);
         changed |= StoredObjectData.MigrateSavedDroid(item.Node, true, updateArtwork);
 
         foreach (var content in item.Contents.ToArray())

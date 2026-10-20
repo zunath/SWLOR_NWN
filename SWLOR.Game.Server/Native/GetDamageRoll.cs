@@ -16,6 +16,7 @@ using BaseItem = SWLOR.NWN.API.NWScript.Enum.Item.BaseItem;
 using EquipmentSlot = NWN.Native.API.EquipmentSlot;
 using ObjectType = NWN.Native.API.ObjectType;
 using RacialType = SWLOR.NWN.API.NWScript.Enum.RacialType;
+using InventorySlot = SWLOR.NWN.API.NWScript.Enum.InventorySlot;
 
 namespace SWLOR.Game.Server.Native
 {
@@ -60,6 +61,15 @@ namespace SWLOR.Game.Server.Native
             int bDeathAttack,
             int bForceMax)
         {
+            return ResolveWeaponDamage(thisPtr, pTarget, bOffHand, bCritical, bSneakAttack, bDeathAttack, bForceMax);
+        }
+
+        internal static int ResolveWeaponDamage(void* thisPtr, void* pTarget, int bOffHand,
+            int bCritical, int bSneakAttack = 0, int bDeathAttack = 0, int bForceMax = 0,
+            Action<Action> convertedDamageScheduler = null,
+            Action<Action<int>> weaponImpactScheduler = null,
+            Action<Func<int>> damageTakenResolverCapture = null)
+        {
             return ServerManager.Executor.ExecuteInScriptContext(() =>
             {
                 var attackerStats = CNWSCreatureStats.FromPointer(thisPtr);
@@ -86,6 +96,7 @@ namespace SWLOR.Game.Server.Native
                 // GetDamageRoll receives a boolean; GetCurrentAttackWeapon expects a weapon
                 // attack type (2 = off-hand, 0 = infer the current attack, including natural weapons).
                 var weapon = pCombatRound.GetCurrentAttackWeapon(bOffHand != 0 ? 2 : 0);
+                weapon = RangedWeaponAttackContext.GetWeapon(attacker.m_idSelf, weapon);
 
                 var attackType = attacker.GetRangeWeaponEquipped() == 1 ? (uint)AttackType.Ranged : (uint)AttackType.Melee;
 
@@ -95,6 +106,15 @@ namespace SWLOR.Game.Server.Native
                     weapon = GetFallbackAttackWeapon(attacker);
                 }
 
+                // A restricted melee item never falls back to natural damage or triggers procs.
+                // Ranged attacks already in flight are unaffected by equipment changes here.
+                if (pAttackData.m_bRangedAttack == 0 && !WeaponAttackEligibility.IsAllowed(
+                        attacker.m_idSelf, weapon?.m_idSelf ?? OBJECT_INVALID, WeaponAttackPhase.Resolve))
+                {
+                    ProfilerPlugin.PopPerfScope();
+                    return 0;
+                }
+
                 LogAttackInfo(attacker, defender, attackType, weapon);
 
                 // Extract weapon damage properties and get ability stats
@@ -102,14 +122,22 @@ namespace SWLOR.Game.Server.Native
                 // damage profile tied to that roll's current weapon so an elemental weapon cannot
                 // re-type or absorb the other hand's DMG.
                 var damageProfile = ExtractWeaponDamageProfile(weapon);
+                var explicitProfile = RangedWeaponAttackContext.GetProfile(attacker.m_idSelf);
+                if (explicitProfile != null)
+                {
+                    damageProfile = new WeaponDamageProfile(explicitProfile.DamageType, explicitProfile.Damage);
+                    // The companion's carrier is deliberately inert. Its captured shot type,
+                    // rather than the real launcher's native physical flags, owns mitigation.
+                    damageFlags = (uint)explicitProfile.DamageType.GetNativeDamageType();
+                }
                 var weaponSkillType = weapon == null
                     ? SkillType.Invalid
-                    : SWLOR.Game.Server.Service.Skill.GetSkillTypeByBaseItem((BaseItem)weapon.m_nBaseItem);
+                    : SWLOR.Game.Server.Service.Skill.GetWeaponSkill(attacker.m_idSelf, weapon.m_idSelf);
 
                 // Imbuement Stance converts the wearer's hostile weapon auto-attacks to Force damage for an FP cost.
                 damageProfile = ApplyForceConversionStance(attacker, defender, damageProfile);
 
-                var attackerStatType = GetWeaponDamageAbilityType(attacker.m_idSelf, weapon);
+                var attackerStatType = explicitProfile?.DamageAbility ?? GetWeaponDamageAbilityType(attacker.m_idSelf, weapon);
                 var weaponDeltaCap = GetWeaponDeltaCap(weapon);
 
                 var attackerStat = Stat.GetStatValueNative(attacker, attackerStatType);
@@ -133,42 +161,82 @@ namespace SWLOR.Game.Server.Native
                 // Force-typed swings (e.g. Imbuement Stance) use Force Attack so the attack side lines up
                 // with the Force Defense the damage is mitigated against.
                 var useForceAttack = damageProfile.DamageType == CombatDamageType.Force;
-                var attackerAttack = weapon == null ? 0 : Stat.GetAttackNative(attacker, (BaseItem)weapon.m_nBaseItem, attackerStatType, useForceAttack);
+                var attackerAttack = weapon == null ? 0 : Stat.GetAttackNative(attacker, (BaseItem)weapon.m_nBaseItem,
+                    attackerStatType, useForceAttack, weaponSkillType);
                 var totalDamage = 0;
 
                 // The engine calls this hook for swings it later discards. On-hit riders such as
                 // Guard must only fire when the attack roll actually landed against a target that
                 // can take damage.
                 var isLandedAttack = IsLandedAttackOnDamageableTarget(pAttackData, defender);
+                var shot = RangedWeaponAttackContext.GetRoll(attacker.m_idSelf, defender.m_idSelf, pCombatRound.m_nCurrentAttack);
+                if (shot is { Completed: false } && weaponSkillType == SkillType.TwinPistol && isLandedAttack &&
+                    !RangedWeaponAttackContext.IsSimulated(attacker.m_idSelf))
+                    CombatPoint.CaptureNativeWeaponAttackPoint(attacker.m_idSelf, defender.m_idSelf,
+                        weapon.m_idSelf, weaponSkillType, shot.Id,
+                        GetItemInSlot(InventorySlot.Bullets, attacker.m_idSelf), awardPoint: shot.Ordinary);
 
                 var physicalDamage = ProcessDamage(pTarget, attacker, damageProfile, pAttackData,
                     attackerAttack, attackerStat, critical, weaponDeltaCap, attackType, damageFlags, bOffHand, defender, weaponSkillType,
                     isLandedAttack,
                     out totalDamage,
-                    out var effectiveCritical);
+                    out var effectiveCritical, convertedDamageScheduler, weaponImpactScheduler, damageTakenResolverCapture);
+
+                if (shot != null)
+                {
+                    shot.Damage = totalDamage;
+                    shot.DamageType = damageProfile.DamageType;
+                    if (shot.Ordinary && !shot.Completed && isLandedAttack)
+                    {
+                        var attackerId = attacker.m_idSelf;
+                        var defenderId = defender.m_idSelf;
+                        var rollId = shot.Id;
+                        var nativeTwinPistol = weaponSkillType == SkillType.TwinPistol &&
+                                               !RangedWeaponAttackContext.IsSimulated(attackerId);
+                        void RecordOrdinaryHit(int _)
+                        {
+                            PairedRangedTraits.RecordOrdinaryHit(attackerId, defenderId, rollId);
+                            OrdinaryAttackTraits.RecordHit(attackerId, defenderId, rollId);
+                            if (nativeTwinPistol)
+                                TwinPistolMastery.RecordOrdinaryHit(attackerId, defenderId, false);
+                        }
+                        if (weaponImpactScheduler == null) RecordOrdinaryHit(totalDamage);
+                        else weaponImpactScheduler(RecordOrdinaryHit);
+                    }
+                    shot.Completed = true;
+                }
 
                 if (isLandedAttack)
                 {
-                    using var damageDerivedHealing = Combat.BeginDamageDerivedHealing(attacker.m_idSelf, defender.m_idSelf);
+                    var attackerId = attacker.m_idSelf;
+                    var defenderId = defender.m_idSelf;
+                    var weaponId = weapon?.m_idSelf ?? OBJECT_INVALID;
+                    var creatureTarget = defender.m_nObjectType == (int)ObjectType.Creature;
+                    var damageableTarget = defender.m_bPlotObject == 0;
+                    var rolledType = damageProfile.DamageType;
+                    var nativeDamageApplication = weaponImpactScheduler == null;
 
-                    if (defender.m_nObjectType == (int)ObjectType.Creature)
+                    void ApplyWeaponHitEffects(int rolledDamage)
                     {
-                        if (totalDamage > 0)
+                        if (!GetIsObjectValid(attackerId) || !GetIsObjectValid(defenderId)) return;
+                        using var damageDerivedHealing = Combat.BeginDamageDerivedHealing(attackerId, defenderId);
+                        if (creatureTarget)
                         {
-                            Combat.SendTemporaryHitPointDamageFeedback(attacker.m_idSelf, defender.m_idSelf, totalDamage);
+                            if (rolledDamage > 0)
+                                Combat.SendTemporaryHitPointDamageFeedback(attackerId, defenderId, rolledDamage);
+                            Combat.ApplyCriticalHitEffects(attackerId, defenderId, rolledDamage, effectiveCritical, true, weaponSkillType);
                         }
-
-                        Combat.ApplyCriticalHitEffects(attacker.m_idSelf, defender.m_idSelf, totalDamage, effectiveCritical, true, weaponSkillType);
+                        if (rolledDamage > 0 && damageableTarget)
+                        {
+                            // Native weapon damage needs a pending registration; managed projectile
+                            // effects restore the captured attribution around their actual application.
+                            if (nativeDamageApplication && CombatRecorder.IsRecording)
+                                CombatRecorder.ExpectWeaponDamage(attackerId, defenderId, rolledDamage, weaponSkillType);
+                            PublishDamageDealtEvent(attackerId, defenderId, weaponId, rolledDamage, weaponSkillType, rolledType);
+                        }
                     }
-
-                    if (totalDamage > 0 && defender.m_bPlotObject == 0)
-                    {
-                        if (CombatRecorder.IsRecording)
-                            CombatRecorder.ExpectWeaponDamage(attacker.m_idSelf, defender.m_idSelf, totalDamage, weaponSkillType);
-
-                        var weaponId = weapon?.m_idSelf ?? OBJECT_INVALID;
-                        PublishDamageDealtEvent(attacker.m_idSelf, defender.m_idSelf, weaponId, totalDamage, weaponSkillType, damageProfile.DamageType);
-                    }
+                    if (weaponImpactScheduler == null) ApplyWeaponHitEffects(totalDamage);
+                    else weaponImpactScheduler(ApplyWeaponHitEffects);
                 }
 
                 ProfilerPlugin.PopPerfScope();
@@ -222,14 +290,14 @@ namespace SWLOR.Game.Server.Native
             WeaponDamageProfile damageProfile, void* pAttackData, int attackerAttack,
             int attackerStat, int critical, int weaponDeltaCap, uint attackType, uint damageFlags,
             int bOffHand, CNWSObject targetObject, SkillType skillType, bool isLandedAttack,
-            out int totalDamage, out int effectiveCritical)
+            out int totalDamage, out int effectiveCritical, Action<Action> convertedDamageScheduler,
+            Action<Action<int>> weaponImpactScheduler, Action<Func<int>> damageTakenResolverCapture)
         {
             var physicalDamage = 0;
             effectiveCritical = critical;
             totalDamage = 0;
 
-            if (targetObject.m_nObjectType == (int)ObjectType.Creature &&
-                UsePerkFeat.HasQueuedWeaponAbility(attacker.m_idSelf, skillType, attacker.m_pcCombatRound.m_nCurrentAttack))
+            if (UsePerkFeat.HasQueuedWeaponAbility(attacker.m_idSelf, skillType, attacker.m_pcCombatRound.m_nCurrentAttack))
             {
                 Combat.ConsumeSuppressedAutoAttackDamageBonuses(attacker.m_idSelf, skillType);
                 return physicalDamage;
@@ -237,7 +305,16 @@ namespace SWLOR.Game.Server.Native
 
             var damage = CalculateTargetSpecificDamage(pTarget, attacker, damageProfile,
                 attackerAttack, attackerStat, critical, weaponDeltaCap, attackType, damageFlags, bOffHand, skillType,
-                isLandedAttack, out effectiveCritical);
+                isLandedAttack, out effectiveCritical, convertedDamageScheduler, damageTakenResolverCapture);
+
+            if (targetObject.m_nObjectType != (int)ObjectType.Creature)
+            {
+                var pairedShot = RangedWeaponAttackContext.GetRoll(attacker.m_idSelf, targetObject.m_idSelf,
+                    attacker.m_pcCombatRound.m_nCurrentAttack);
+                damage = ApplyNonCreatureOrdinaryAttackDamage(damage,
+                    pairedShot is { Ordinary: true } ? pairedShot.Bonuses.DamagePercentAdjustment : 0,
+                    Stat.GetStatAdjustment(attacker.m_idSelf, StatType.OrdinaryAttackDamagePercentAdjustment));
+            }
 
             // Plot target takes no damage
             if (targetObject.m_bPlotObject == 1)
@@ -249,16 +326,17 @@ namespace SWLOR.Game.Server.Native
 
             if (isLandedAttack && damage > 0 && targetObject.m_nObjectType == (int)ObjectType.Creature)
             {
-                StatusEffect.NotifyPreDamageStatusEffects(
-                    attacker.m_idSelf,
-                    targetObject.m_idSelf,
-                    damage,
-                    damageProfile.DamageType);
-                Combat.ApplyDamageReflectionEffects(
-                    attacker.m_idSelf,
-                    targetObject.m_idSelf,
-                    damage,
-                    damageProfile.DamageType);
+                var attackerId = attacker.m_idSelf;
+                var defenderId = targetObject.m_idSelf;
+                var rolledType = damageProfile.DamageType;
+                void ApplyPreDamageEffects(int resolvedDamage)
+                {
+                    if (resolvedDamage <= 0 || !GetIsObjectValid(attackerId) || !GetIsObjectValid(defenderId)) return;
+                    StatusEffect.NotifyPreDamageStatusEffects(attackerId, defenderId, resolvedDamage, rolledType);
+                    Combat.ApplyDamageReflectionEffects(attackerId, defenderId, resolvedDamage, rolledType);
+                }
+                if (weaponImpactScheduler == null) ApplyPreDamageEffects(damage);
+                else weaponImpactScheduler(ApplyPreDamageEffects);
             }
 
             if (damageProfile.DamageType.IsPhysicalDamageType())
@@ -273,6 +351,20 @@ namespace SWLOR.Game.Server.Native
             totalDamage = damage;
 
             return physicalDamage;
+        }
+
+        /// <summary>Matches creature-hit bonus rounding and caps before the global ordinary-attack multiplier.</summary>
+        public static int ApplyNonCreatureOrdinaryAttackDamage(int damage, int capturedDamagePercentAdjustment,
+            int ordinaryDamagePercentAdjustment)
+        {
+            var adjustedDamage = damage;
+            if (damage > 0 && capturedDamagePercentAdjustment != 0)
+            {
+                var adjustment = Math.Max(capturedDamagePercentAdjustment, -Combat.MaximumNormalDamageReductionPercent);
+                adjustedDamage = Math.Max(1, damage + (int)Math.Ceiling(damage * (adjustment / 100f)));
+            }
+            adjustedDamage = Combat.CapOutgoingDamageBonus(damage, adjustedDamage, 0);
+            return Combat.ApplyOrdinaryAttackDamageMultiplier(adjustedDamage, ordinaryDamagePercentAdjustment);
         }
 
         private static void AddDamageToAttackData(void* pAttackData, CombatDamageType damageType, int damage)
@@ -457,7 +549,8 @@ namespace SWLOR.Game.Server.Native
         private static int CalculateTargetSpecificDamage(void* pTarget, CNWSCreature attacker,
             WeaponDamageProfile damageProfile, int attackerAttack,
             int attackerStat, int critical, int weaponDeltaCap, uint attackType, uint damageFlags, int bOffHand, SkillType skillType,
-            bool isLandedAttack, out int effectiveCritical)
+            bool isLandedAttack, out int effectiveCritical, Action<Action> convertedDamageScheduler,
+            Action<Func<int>> damageTakenResolverCapture)
         {
             effectiveCritical = critical;
             var targetObject = CNWSObject.FromPointer(pTarget);
@@ -467,7 +560,7 @@ namespace SWLOR.Game.Server.Native
                 case (int)ObjectType.Creature:
                     return CalculateCreatureDamage(pTarget, attacker, damageProfile, attackerAttack,
                         attackerStat, critical, weaponDeltaCap, attackType, damageFlags, bOffHand, skillType,
-                        isLandedAttack, out effectiveCritical);
+                        isLandedAttack, out effectiveCritical, convertedDamageScheduler, damageTakenResolverCapture);
 
                 case (int)ObjectType.Placeable:
                     var plc = CNWSPlaceable.FromPointer(pTarget);
@@ -487,14 +580,15 @@ namespace SWLOR.Game.Server.Native
         private static int CalculateCreatureDamage(void* pTarget, CNWSCreature attacker, WeaponDamageProfile damageProfile,
             int attackerAttack, int attackerStat, int critical, int weaponDeltaCap,
             uint attackType, uint damageFlags, int bOffHand, SkillType skillType,
-            bool isLandedAttack, out int effectiveCritical)
+            bool isLandedAttack, out int effectiveCritical, Action<Action> convertedDamageScheduler,
+            Action<Func<int>> damageTakenResolverCapture)
         {
             effectiveCritical = critical;
             var target = CNWSCreature.FromPointer(pTarget);
             var damageType = damageProfile.DamageType;
             var defenderAbility = damageType.GetDefenseAbilityType();
             var defenderStat = Stat.GetStatValueNative(target, defenderAbility);
-            var damagePower = attacker.CalculateDamagePower(target, bOffHand);
+            var damagePower = ResolveDamagePower(attacker, target, bOffHand);
             var defense = Stat.GetDefenseNative(target, damageType, defenderAbility);
             defense = Combat.ApplyStatusSourceDefenseModifiers(attacker.m_idSelf, target.m_idSelf, defense);
             defense = Combat.ApplyIncomingPhysicalToForceDefenseConversion(
@@ -519,6 +613,8 @@ namespace SWLOR.Game.Server.Native
                 ? Combat.ConsumeAutoAttackCycleDamageBonus(attacker.m_idSelf, skillType)
                 : 0;
             var attackDamage = damageProfile.Damage +
+                               MeleeTechnique.TakeOrdinaryPower(attacker.m_idSelf, target.m_idSelf, skillType,
+                                   attacker.m_pcCombatRound.m_nCurrentAttack, isLandedAttack) +
                                Combat.GetRangedAttackDamageFlatAdjustment(attacker.m_idSelf, skillType) +
                                cycleDamageBonus +
                                guardedHitBonuses.DMGBonus +
@@ -560,6 +656,8 @@ namespace SWLOR.Game.Server.Native
                 damage = Combat.ApplyAutoAttackDamageModifiers(attacker.m_idSelf, target.m_idSelf, damage, skillType);
             }
             var canApplyRandomFlatBonusesThisDamage = damage > 0;
+            var pairedShot = RangedWeaponAttackContext.GetRoll(attacker.m_idSelf, target.m_idSelf,
+                attacker.m_pcCombatRound.m_nCurrentAttack);
 
             damage = Combat.ApplyDamageDealtModifiers(
                 attacker.m_idSelf,
@@ -571,13 +669,18 @@ namespace SWLOR.Game.Server.Native
                 canApplyRandomFlatBonusesThisDamage,
                 isLandedAttack,
                 null,
-                out var targetStatusDamageAdjustment);
+                out var targetStatusDamageAdjustment,
+                abilityDamagePercentAdjustment: pairedShot is { Ordinary: true }
+                    ? pairedShot.Bonuses.DamagePercentAdjustment : 0,
+                isOrdinaryWeaponAttack: pairedShot is { Ordinary: true });
+
+            damage = MeleeTechnique.ApplyOrdinaryDamageModifiers(attacker.m_idSelf, damage, damageType);
 
             // Saber Ward / Aegis Eternal: re-type a share of the physical hit into a real Force
             // instance (mitigated by Force resistance, shown as Force) before physical resistance.
             if (isLandedAttack)
             {
-                Combat.ApplyIncomingPhysicalToForceConversion(attacker.m_idSelf, target.m_idSelf, damageType, ref damage, targetStatusDamageAdjustment);
+                Combat.ApplyIncomingPhysicalToForceConversion(attacker.m_idSelf, target.m_idSelf, damageType, ref damage, targetStatusDamageAdjustment, convertedDamageScheduler);
             }
 
             // Conversion must split first so each portion receives only its own typed Leadership channel.
@@ -593,7 +696,45 @@ namespace SWLOR.Game.Server.Native
                 damage *= ElectricalDroidMultiplier;
             }
 
-            // Apply NWN damage mechanics for physical damage only
+            if (damageTakenResolverCapture != null)
+            {
+                damageTakenResolverCapture(CaptureDamageTakenResolution(attacker.m_idSelf, target.m_idSelf,
+                    damage, damageType, damageFlags, damagePower, attackType, isLandedAttack,
+                    targetStatusDamageAdjustment, guardedHitBonuses.EnmityBonus));
+                return damage;
+            }
+
+            return ApplyCreatureDamageTaken(attacker, target, damage, damageType, damageFlags, damagePower,
+                attackType, isLandedAttack, targetStatusDamageAdjustment, guardedHitBonuses.EnmityBonus);
+        }
+
+        // Only managed IDs and launch values enter the delayed closure. Native wrappers are
+        // reacquired at impact, after the caller has validated the projectile's target and area.
+        private static Func<int> CaptureDamageTakenResolution(uint attackerId, uint defenderId,
+            int damage, CombatDamageType damageType, uint damageFlags, byte damagePower, uint attackType,
+            bool isLandedAttack, int targetStatusDamageAdjustment, int guardedHitEnmityBonus)
+        {
+            var resolved = false;
+            var result = 0;
+            return () =>
+            {
+                if (resolved) return result;
+                resolved = true;
+                var attacker = NWNXLib.g_pAppManager.m_pServerExoApp.GetGameObject(attackerId)?.AsNWSCreature();
+                var defender = NWNXLib.g_pAppManager.m_pServerExoApp.GetGameObject(defenderId)?.AsNWSCreature();
+                if (attacker == null || defender == null) return result;
+                result = ApplyCreatureDamageTaken(attacker, defender, damage, damageType, damageFlags, damagePower,
+                    attackType, isLandedAttack, targetStatusDamageAdjustment, guardedHitEnmityBonus);
+                return result;
+            };
+        }
+
+        private static int ApplyCreatureDamageTaken(CNWSCreature attacker, CNWSCreature target,
+            int damage, CombatDamageType damageType, uint damageFlags, byte damagePower, uint attackType,
+            bool isLandedAttack, int targetStatusDamageAdjustment, int guardedHitEnmityBonus)
+        {
+            // Native physical effects can have finite absorption budgets. Resolve those,
+            // Guard reactions and the shared damage-taken pipeline at the same impact boundary.
             if (damageType.IsPhysicalDamageType())
             {
                 var bRangedAttack = attackType == (uint)AttackType.Ranged ? 1 : 0;
@@ -626,9 +767,27 @@ namespace SWLOR.Game.Server.Native
                 Combat.ApplyNextAttackGuardedHitEnmityBonus(
                     attacker.m_idSelf,
                     target.m_idSelf,
-                    guardedHitBonuses.EnmityBonus);
+                    guardedHitEnmityBonus);
             }
             return damage;
+        }
+
+        private static byte ResolveDamagePower(CNWSCreature attacker, CNWSObject target, int offHand)
+        {
+            if (!RangedWeaponAttackContext.IsSimulated(attacker.m_idSelf))
+                return attacker.CalculateDamagePower(target, offHand);
+
+            var attack = attacker.m_pcCombatRound.GetAttack(attacker.m_pcCombatRound.m_nCurrentAttack);
+            var attackTypeBeforePower = attack.m_nWeaponAttackType;
+            try
+            {
+                // GetWeaponPower prefers the attack-data hand over its boolean argument.
+                // Select the companion's native effect scope only for penetration; the
+                // borrowed roll remains a ranged launcher everywhere else.
+                attack.m_nWeaponAttackType = 2;
+                return attacker.CalculateDamagePower(target, 1);
+            }
+            finally { attack.m_nWeaponAttackType = attackTypeBeforePower; }
         }
 
         private readonly struct WeaponDamageProfile

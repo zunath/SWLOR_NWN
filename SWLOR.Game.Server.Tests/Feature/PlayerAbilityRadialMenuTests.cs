@@ -11,6 +11,55 @@ public class PlayerAbilityRadialMenuTests
     private const int GeneratedFeatEnd = 2899;
 
     [Test]
+    public void UnarmedAbilities_RemainInsideAllGeneratedFeatToolBounds()
+    {
+        var root = FindRepositoryRoot();
+        var unarmedFeats = typeof(IAbilityListDefinition).Assembly.GetTypes()
+            .Where(type => type.IsClass && !type.IsAbstract &&
+                           typeof(IAbilityListDefinition).IsAssignableFrom(type) &&
+                           type.Namespace == "SWLOR.Game.Server.Feature.AbilityDefinition.Unarmed")
+            .SelectMany(type => ((IAbilityListDefinition)Activator.CreateInstance(type)!).BuildAbilities().Keys)
+            .Select(feat => (int)feat).ToArray();
+        unarmedFeats.Should().NotBeEmpty();
+
+        foreach (var script in new[] { "LinkCombatUpgradeFeatSpells.ps1", "GenerateCooldownIcons.ps1", "UpdateGameplayIconStandards.ps1" })
+        {
+            var source = File.ReadAllText((root / "tools" / script).FullName);
+            var end = System.Text.RegularExpressions.Regex.Match(source, @"\[int\]\$GeneratedFeatEnd\s*=\s*(\d+)");
+            end.Success.Should().BeTrue($"{script} must declare its generated feat bound");
+            int.Parse(end.Groups[1].Value).Should().BeGreaterThanOrEqualTo(unarmedFeats.Max(),
+                $"{script} must still include Unarmed abilities after native ID conflict resolution");
+        }
+    }
+
+    // Jab I and II moved outside Twin Pistols' feats and master's Unnerving Roar (3161).
+    [TestCase(FeatType.Jab1, FeatType.AutoCastJab1)]
+    [TestCase(FeatType.Jab2, FeatType.AutoCastJab2)]
+    public void UnarmedJab_UsesCoordinatedNativeAllocationAndKeepsItsAutomaticAlias(FeatType canonical, FeatType automatic)
+    {
+        var root = FindRepositoryRoot();
+        var featRows = Read2da(root / "SWLOR_Haks" / "sw_2da" / "feat.2da");
+        var spellRows = Read2da(root / "SWLOR_Haks" / "sw_2da" / "spells.2da");
+        var classRows = Read2da(root / "SWLOR_Haks" / "sw_2da" / "CLS_FEAT_FIGHT.2da");
+        var canonicalId = (int)canonical;
+        var automaticId = (int)automatic;
+
+        canonicalId.Should().NotBeInRange(3216, 3265, "Twin Pistols owns this feat allocation");
+        automaticId.Should().NotBeInRange(3216, 3265, "Twin Pistols owns this feat allocation");
+        canonicalId.Should().NotBe(3161, "master owns this feat for Unnerving Roar");
+        featRows[canonicalId]["LABEL"].Should().Be(canonical.ToString());
+        featRows[automaticId]["LABEL"].Should().Be(automatic.ToString());
+        featRows[automaticId]["SPELLID"].Should().Be(featRows[canonicalId]["SPELLID"]);
+        featRows[automaticId]["ICON"].Should().Be(featRows[canonicalId]["ICON"]);
+        spellRows[int.Parse(featRows[canonicalId]["SPELLID"])]["FeatID"].Should().Be(canonicalId.ToString());
+
+        var menu = classRows.Single(row => row.Value.GetValueOrDefault("FeatIndex") == canonicalId.ToString());
+        menu.Key.Should().BeLessThan(1024);
+        menu.Value["List"].Should().Be("1");
+        menu.Value["OnMenu"].Should().Be("1");
+    }
+
+    [Test]
     public void CustomPlayerAbilityFeats_AreLinkedAndAvailableOnFighterMenu()
     {
         var root = FindRepositoryRoot();

@@ -52,6 +52,7 @@ public class CombatReadinessEquipmentTests
                 private const int MaximumCombatReadinessPercent = {{Stat.MaximumCombatReadinessPercent}};
                 private static readonly uint[] Slots = new uint[NumberOfInventorySlots];
                 private static readonly Dictionary<uint, List<(ItemPropertyType Type, int Amount)>> Properties = new();
+                private static readonly Dictionary<uint, BaseItem> BaseItems = new();
                 private static int Adjustment;
                 private static bool IsPlayer;
                 private static bool IsDm;
@@ -79,6 +80,7 @@ public class CombatReadinessEquipmentTests
                 private static int GetStatAdjustment(uint creature, StatType type) => Adjustment;
                 private static Player GetNPCStats(uint creature) => Npc;
                 private static uint GetItemInSlot(InventorySlot slot, uint creature) { SlotQueries++; return Slots[(int)slot]; }
+                private static BaseItem GetBaseItemType(uint item) => BaseItems.GetValueOrDefault(item, BaseItem.Armor);
                 private static ItemProperty GetFirstItemProperty(uint item) { PropertyQueries++; return new(item, 0); }
                 private static ItemProperty GetNextItemProperty(uint item)
                 {
@@ -104,6 +106,7 @@ public class CombatReadinessEquipmentTests
                 {
                     Array.Clear(Slots);
                     Properties.Clear();
+                    BaseItems.Clear();
                     Iteration.Clear();
                     IsPlayer = player;
                     IsDm = IsPossessed = false;
@@ -123,6 +126,7 @@ public class CombatReadinessEquipmentTests
                     foreach (var amount in bonuses) Properties[item].Add((ItemPropertyType.CombatReadiness, amount));
                 }
                 public static int SavedTotal() => DB.Saved.CombatReadiness;
+                public static void SetBaseItem(int slot, int type) => BaseItems[Slots[slot]] = (BaseItem)type;
                 public static void SetSavedTotal(int total) => DB.Saved.CombatReadiness = total;
                 public static void ClearRecord() => DB.Saved = null;
                 public static void SetStaff(bool dm, bool possessed) { IsDm = dm; IsPossessed = possessed; }
@@ -221,6 +225,19 @@ public class CombatReadinessEquipmentTests
         Read().Should().Be(5);
         Equip(InventorySlot.Chest);
         Read().Should().Be(0, "stale persisted bonuses must not survive unequipping");
+    }
+
+    [Test]
+    public void CompanionProfileProperties_DoNotContributeCreatureCombatReadiness()
+    {
+        Equip(InventorySlot.LeftHand, 10);
+        Read().Should().Be(10);
+        Call("SetBaseItem", (int)InventorySlot.LeftHand, (int)SWLOR.NWN.API.NWScript.Enum.Item.BaseItem.CompanionPistol);
+        Call("RefreshCombatReadinessAfterEquipmentChange");
+        Call("SavedTotal").Should().Be(0);
+        Read().Should().Be(0);
+        Equip(InventorySlot.Chest, 4);
+        Read().Should().Be(4, "a companion profile must not suppress legitimate worn equipment bonuses");
     }
 
     [Test]

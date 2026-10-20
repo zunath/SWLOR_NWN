@@ -14,6 +14,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                 .SetTitle("Creature Manager")
                 .SetIsResizable(true)
                 .SetIsCollapsible(true)
+                .SetKeepsOpenOnAreaChange(true)
 
                 .AddColumn(col =>
                 {

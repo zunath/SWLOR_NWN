@@ -285,6 +285,8 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
                 PistolCapstoneQuestDefinition.DeadMansHandBreachQuestId,
                 PistolCapstoneQuestDefinition.DeadMansHandCircleQuestId,
                 PistolCapstoneQuestDefinition.DeadMansHandMasteryQuestId,
+                TwinPistolCapstoneQuestDefinition.TwinSunsMasteryQuestId,
+                TwinPistolCapstoneQuestDefinition.FinalSalvoMasteryQuestId,
                 StaffCapstoneQuestDefinition.UnmovingCenterFoundationQuestId,
                 StaffCapstoneQuestDefinition.UnmovingCenterMeasureQuestId,
                 StaffCapstoneQuestDefinition.UnmovingCenterBreachQuestId,

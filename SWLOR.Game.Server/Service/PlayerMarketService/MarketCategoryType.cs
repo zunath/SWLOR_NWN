@@ -76,6 +76,9 @@ namespace SWLOR.Game.Server.Service.PlayerMarketService
         [MarketCategory("Music", true)]
         Music = 39,
 
+        [MarketCategory("Power Glove", true)]
+        PowerGlove = 40,
+
         [MarketCategory("Miscellaneous", true)]
         Miscellaneous = 99
     }

@@ -184,10 +184,11 @@ public class AnimationPlanningTests
             entry => entry.GetProperty("Name").GetString()!);
         foreach (var entry in names)
             installed[entry.Key].GetProperty("AnimationName").GetString().Should().Be(entry.Value);
-        installed.Keys.Except(names.Keys).Should().BeEquivalentTo("Fishing6", "Fishing7", "Fishing8");
+        installed.Keys.Except(names.Keys).Should().BeEquivalentTo("Fishing6", "Fishing7", "Fishing8", "TwinPistolCycle");
         foreach (var id in installed.Keys.Except(names.Keys))
         {
-            installed[id].GetProperty("AnimationName").GetString().Should().Be("sw_" + id.ToLowerInvariant());
+            var expectedName = id == "TwinPistolCycle" ? "sw_twinpisto" : "sw_" + id.ToLowerInvariant();
+            installed[id].GetProperty("AnimationName").GetString().Should().Be(expectedName);
             File.Exists(Path.Combine(Root, installed[id].GetProperty("ProjectPath").GetString()!)).Should().BeTrue();
         }
     }

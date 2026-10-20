@@ -95,6 +95,7 @@ public class CustomShaderMobileCompatibilityTests
         FindMobileUnsupportedLines("#if (!defined(MOBILE))\n" + unguarded + "#endif\n").Should().BeEmpty();
         FindMobileUnsupportedLines("#if !(defined MOBILE)\n" + unguarded + "#endif\n").Should().BeEmpty();
         FindMobileUnsupportedLines("#if !defined(MOBILE) || QUALITY\n" + unguarded + "#endif\n").Should().ContainSingle();
+        FindMobileUnsupportedLines("#if definedMOBILE\nint A() { return 0; }\n#else\n" + unguarded + "#endif\n").Should().ContainSingle();
         FindMobileUnsupportedLines("#if defined MOBILE\nint A() { return 0; }\n#else\n" + unguarded + "#endif\n").Should().BeEmpty();
         FindMobileUnsupportedLines("// /*\nint B(int v) { return v & 1; }\n// */\n").Should().ContainSingle();
         FindMobileUnsupportedLines("#ifndef MOBILE\n#endif\n#define/**/UNPACK(v) ((v >> 3) & 3)\n").Should().ContainSingle();
@@ -260,7 +261,9 @@ public class CustomShaderMobileCompatibilityTests
             return null;
         }
 
-        var expression = Regex.Replace(match.Groups["condition"].Value, @"\s+", string.Empty);
+        // Drop whitespace only around parentheses and '!', so "defined MOBILE" keeps
+        // its token boundary and the identifier "definedMOBILE" stays distinct.
+        var expression = Regex.Replace(Regex.Replace(match.Groups["condition"].Value, @"\s+", " ").Trim(), @"\s*([()!])\s*", "$1");
         var negated = false;
         while (true)
         {
@@ -279,7 +282,7 @@ public class CustomShaderMobileCompatibilityTests
             }
         }
 
-        if (expression is "defined(MOBILE)" or "definedMOBILE")
+        if (expression is "defined(MOBILE)" or "defined MOBILE")
         {
             return !negated;
         }

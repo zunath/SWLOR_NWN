@@ -470,6 +470,11 @@ public class DungeonEncounterWalkmeshTests
             .ToDictionary(m => int.Parse(m.Groups[1].Value), m => Regex.Match(m.Groups[2].Value, @"(?m)^Model=(\S+)").Groups[1].Value);
         var transition = float.Parse(Regex.Match(set, @"(?m)^Transition=(\S+)").Groups[1].Value, CultureInfo.InvariantCulture);
         var surfaces = TwoDAReader.Read(Path.Combine(root, "SWLOR_Haks", "sw_2da", "surfacemat.2da"));
+        // .set files name tiles in upper case; resource names are case-insensitive.
+        var walkmeshFiles = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+        foreach (var path in Directory.EnumerateFiles(
+                     folder, "*.wok", new EnumerationOptions { MatchCasing = MatchCasing.CaseInsensitive }))
+            walkmeshFiles.TryAdd(Path.GetFileNameWithoutExtension(path), path);
         var cache = new Dictionary<string, List<Vector3[]>>();
         var triangles = new List<Vector3[]>();
         var width = (int)Number(are.RootElement, "Width");
@@ -480,10 +485,9 @@ public class DungeonEncounterWalkmeshTests
             var model = modelNames[(int)Number(tile, "Tile_ID")];
             if (!cache.TryGetValue(model, out var local))
             {
-                var file = Path.Combine(folder, model + ".wok");
                 // Solid boundary models can come from the base game rather than the HAK.
                 // Missing geometry never counts as walkable; an affected placement fails.
-                local = File.Exists(file) ? ReadWok(file, surfaces) : new List<Vector3[]>();
+                local = walkmeshFiles.TryGetValue(model, out var file) ? ReadWok(file, surfaces) : new List<Vector3[]>();
                 cache.Add(model, local);
             }
             var transform = Matrix4x4.CreateRotationZ(Number(tile, "Tile_Orientation") * MathF.PI / 2)

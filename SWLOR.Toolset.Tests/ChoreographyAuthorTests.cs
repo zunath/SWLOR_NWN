@@ -276,7 +276,8 @@ public class ChoreographyAuthorTests
             var sourceModels = recipe.Beats.Where(b => b.SourceModel != null).Select(b => b.SourceModel!).Distinct()
                 .ToDictionary(name => name, name => new MdlReader().Parse(File.ReadAllBytes(Path.Combine(Root, "SWLOR_Haks/sw_cr_creature", name + ".mdl"))));
             var project = ChoreographyAuthor.Bake(model, recipe, sourceModels);
-            (project.Serialize() + "\n").Replace("\r\n", "\n").Should().Be(
+            Support.GoldenBake.ShouldMatch(
+                (project.Serialize() + "\n").Replace("\r\n", "\n"),
                 File.ReadAllText(Path.Combine(Root, "design/animations", category, recipe.Id + ".swlanim")).Replace("\r\n", "\n"),
                 "held-phase compatibility and explicitly revised projects must remain reproducible: " + recipe.Id);
         }

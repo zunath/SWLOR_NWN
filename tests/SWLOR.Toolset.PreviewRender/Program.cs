@@ -18,6 +18,11 @@ internal static class Program
                 .LogToTrace(),
             _ => AppBuilder.Configure<NativeViewportApplication>()
         };
-        return appBuilder.UsePlatformDetect().StartWithClassicDesktopLifetime(args);
+        // The viewport needs OpenGL. Avalonia refuses software GL (Mesa llvmpipe) on X11 by default
+        // and falls back to a renderer that cannot host it, so allow it for GPU-less Linux hosts.
+        // Windows ignores X11 options.
+        return appBuilder.UsePlatformDetect()
+            .With(new X11PlatformOptions { GlxRendererBlacklist = [] })
+            .StartWithClassicDesktopLifetime(args);
     }
 }

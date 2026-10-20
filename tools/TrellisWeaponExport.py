@@ -509,18 +509,103 @@ def imported_material_index(material,material_count):
     return index
 
 
-def shell_crosses_itself(vertices,faces,shrink=1e-4):
-    """True when two faces of one shell intersect beyond touching. Each triangle is shrunk slightly toward its own
-    centroid first: faces that only meet at a shared vertex or edge then separate, while faces that cross (including
-    two that share a vertex and also cross elsewhere) still overlap."""
-    from mathutils.bvhtree import BVHTree
-    points=[];triangles=[];origin=vertices[faces[0][0]].copy() if faces else Vector((0,0,0))
-    for face in faces:
-        # Shell-local coordinates keep the tiny shrink representable far from the world origin.
-        corners=[vertices[i]-origin for i in face];centre=sum(corners,Vector((0,0,0)))/3
-        triangles.append(tuple(range(len(points),len(points)+3)));points.extend(c+(centre-c)*shrink for c in corners)
-    tree=BVHTree.FromPolygons(points,triangles,all_triangles=True)
-    return any(i!=j for i,j in tree.overlap(tree))
+def ray_in_wedge(direction,u,w,tol=1e-9):
+    """+1 when the ray from the wedge apex along direction (which lies in the wedge's plane) is inside the wedge spanned
+    by u and w, -1 when the opposite ray is, 0 when neither is (boundary rays count as inside)."""
+    uu,uw,ww=u@u,u@w,w@w;du,dw=direction@u,direction@w;det=uu*ww-uw*uw
+    a=(du*ww-dw*uw)/det*math.sqrt(uu);b=(dw*uu-du*uw)/det*math.sqrt(ww)  # coefficients scaled to lengths
+    if a>=-tol and b>=-tol and max(a,b)>tol:return 1
+    if a<=tol and b<=tol and min(a,b)<-tol:return -1
+    return 0
+
+
+def faces_meet_beyond_shared(points,first,second,shared,tol=1e-9):
+    """Exact test for two faces of one shell that share one vertex or one edge: do they meet anywhere else?"""
+    norm=np.linalg.norm
+    if len(shared)==2:
+        a,b=(points[i] for i in shared);c=points[next(i for i in first if i not in shared)];d=points[next(i for i in second if i not in shared)]
+        n1=np.cross(b-a,c-a);n2=np.cross(b-a,d-a)
+        # Planes through a common edge meet only on that edge unless they coincide and fold onto the same side.
+        return bool(norm(np.cross(n1,n2))<=tol*norm(n1)*norm(n2) and n1@n2>0)
+    v=next(iter(shared));o1=[points[i]-points[v] for i in first if i!=v];o2=[points[i]-points[v] for i in second if i!=v]
+    n1=np.cross(*o1);n2=np.cross(*o2);line=np.cross(n1,n2)
+    if norm(line)>tol*norm(n1)*norm(n2):
+        # Non-coplanar: each face meets the planes' common line in a segment starting at the shared vertex; the faces
+        # meet beyond it exactly when both segments leave in the same direction.
+        line=line/norm(line);side=ray_in_wedge(line,*o1);return side!=0 and side==ray_in_wedge(line,*o2)
+    e1=o1[0]/norm(o1[0]);e2=np.cross(n1/norm(n1),e1)
+    def arc(u,w):
+        x,y=(math.atan2(t@e2,t@e1) for t in (u,w));span=(y-x)%(2*math.pi)
+        return (x,span) if span<math.pi else (y,2*math.pi-span)
+    def inside(angle,start,span):return tol<(angle-start)%(2*math.pi)<span-tol
+    (s1,l1),(s2,l2)=arc(*o1),arc(*o2)
+    return inside(s2,s1,l1) or inside(s1,s2,l2) or abs((s1-s2+math.pi)%(2*math.pi)-math.pi)<=tol
+
+
+def triangles_touch(t1,t2,tol=1e-9):
+    """Exact (tolerant) closed-triangle contact for paired arrays (n,3,3): non-coplanar pairs touch when an edge of one
+    meets the other; coplanar pairs touch unless a 2D separating axis exists."""
+    n1=np.cross(t1[:,1]-t1[:,0],t1[:,2]-t1[:,0]);n2=np.cross(t2[:,1]-t2[:,0],t2[:,2]-t2[:,0])
+    size=np.maximum(np.linalg.norm(n1,axis=1)*np.linalg.norm(n2,axis=1),1e-300)
+    coplanar=(np.linalg.norm(np.cross(n1,n2),axis=1)<=1e-6*size)&(np.abs(np.einsum('ij,ij->i',t2[:,0]-t1[:,0],n1))<=tol*np.sqrt(size))
+    def edge_hits(edges_of,tris):
+        hit=np.zeros(len(tris),bool)
+        for a,b in ((0,1),(1,2),(2,0)):
+            o=edges_of[:,a];d=edges_of[:,b]-o;v0=tris[:,0];e1=tris[:,1]-v0;e2=tris[:,2]-v0
+            q=np.cross(d,e2);det=np.einsum('ij,ij->i',q,e1);scale=np.linalg.norm(d,axis=1)*np.linalg.norm(e1,axis=1)*np.linalg.norm(e2,axis=1)
+            ok=np.abs(det)>1e-9*scale;inv=np.where(ok,1/np.where(ok,det,1),0);sv=o-v0
+            u=np.einsum('ij,ij->i',sv,q)*inv;r=np.cross(sv,e1);w=np.einsum('ij,ij->i',d,r)*inv;t=np.einsum('ij,ij->i',e2,r)*inv
+            hit|=ok&(u>=-tol)&(w>=-tol)&(u+w<=1+tol)&(t>=-tol)&(t<=1+tol)
+        return hit
+    touch=edge_hits(t1,t2)|edge_hits(t2,t1)
+    if coplanar.any():
+        axis=np.argmax(np.abs(n1[coplanar]),axis=1);keep=np.array([[1,2],[0,2],[0,1]])[axis]
+        a=np.take_along_axis(t1[coplanar],keep[:,None,:],2);b=np.take_along_axis(t2[coplanar],keep[:,None,:],2);separated=np.zeros(len(a),bool)
+        for tri in (a,b):
+            for i in range(3):
+                edge=tri[:,(i+1)%3]-tri[:,i];normal=np.stack((-edge[:,1],edge[:,0]),1)
+                pa=np.einsum('nkj,nj->nk',a,normal);pb=np.einsum('nkj,nj->nk',b,normal);slack=tol*np.linalg.norm(normal,axis=1)*(1+np.abs(pa).max(1))
+                separated|=(pa.max(1)<pb.min(1)-slack)|(pb.max(1)<pa.min(1)-slack)
+        touch[coplanar]=~separated
+    return touch
+
+
+def shell_crosses_itself(vertices,faces):
+    """True when two faces of one shell meet anywhere beyond the vertex or edge they share. A bounding-box sweep finds
+    candidate pairs, an exact closed-triangle test keeps those in contact, and vertex- or edge-sharing pairs are then
+    classified exactly, so coplanar folds and crossings right beside a shared vertex are all caught."""
+    if not faces:return False
+    index=sorted({i for face in faces for i in face});origin=np.asarray(vertices[faces[0][0]],dtype=np.float64)
+    points={i:np.asarray(vertices[i],dtype=np.float64)-origin for i in index}  # shell-local precision
+    tris=np.asarray([[points[i] for i in face] for face in faces]);pad=1e-9*max(float(np.ptp(tris.reshape(-1,3),axis=0).max()),1e-30)
+    lo=tris.min(1)-pad;hi=tris.max(1)+pad;order=np.argsort(lo[:,0]);sorted_lo=lo[order,0];first=[];second=[]
+    for k,i in enumerate(order):
+        j=order[k+1:np.searchsorted(sorted_lo,hi[i,0],side='right')]
+        j=j[np.all((lo[j,1:]<=hi[i,1:])&(lo[i,1:]<=hi[j,1:]),axis=1)];first+= [i]*len(j);second+=j.tolist()
+    if not first:return False
+    first=np.asarray(first);second=np.asarray(second);touching=triangles_touch(tris[first],tris[second])
+    I=first[touching];J=second[touching];F=np.asarray(faces);eq=F[I][:,:,None]==F[J][:,None,:];count=eq.sum((1,2))
+    if np.any((count==0)|(count==3)):return True
+    rows=np.arange(len(I));ti=tris[I];tj=tris[J];norm=lambda x:np.linalg.norm(x,axis=-1);tol=1e-9
+    # Edge-sharing pairs meet off their edge only when coplanar and folded onto the same side.
+    e=count==2;ri=np.argmin(eq.any(2),1);rj=np.argmin(eq.any(1),1)
+    a=ti[rows,(ri+1)%3];b=ti[rows,(ri+2)%3];n1=np.cross(b-a,ti[rows,ri]-a);n2=np.cross(b-a,tj[rows,rj]-a)
+    if np.any(e&(norm(np.cross(n1,n2))<=tol*norm(n1)*norm(n2))&(np.einsum('ij,ij->i',n1,n2)>0)):return True
+    # Vertex-sharing pairs: the faces meet beyond the vertex when both contain the same ray along their common line.
+    v=count==1;ri=np.argmax(eq.any(2),1);rj=np.argmax(eq.any(1),1);apex=ti[rows,ri]
+    u1=ti[rows,(ri+1)%3]-apex;w1=ti[rows,(ri+2)%3]-apex;u2=tj[rows,(rj+1)%3]-apex;w2=tj[rows,(rj+2)%3]-apex
+    n1=np.cross(u1,w1);n2=np.cross(u2,w2);line=np.cross(n1,n2);flat=norm(line)<=tol*norm(n1)*norm(n2)
+    line=line/np.maximum(norm(line),1e-300)[:,None]
+    def side(u,w):
+        uu,uw,ww=(np.einsum('ij,ij->i',x,y) for x,y in ((u,u),(u,w),(w,w)));du=np.einsum('ij,ij->i',line,u);dw=np.einsum('ij,ij->i',line,w)
+        det=np.where(np.abs(uu*ww-uw*uw)>0,uu*ww-uw*uw,1);c1=(du*ww-dw*uw)/det*np.sqrt(uu);c2=(dw*uu-du*uw)/det*np.sqrt(ww)
+        return np.where((c1>=-tol)&(c2>=-tol)&(np.maximum(c1,c2)>tol),1,np.where((c1<=tol)&(c2<=tol)&(np.minimum(c1,c2)<-tol),-1,0))
+    s1=side(u1,w1);s2=side(u2,w2)
+    if np.any(v&~flat&(s1!=0)&(s1==s2)):return True
+    for k in np.flatnonzero(v&flat):  # coplanar fans are rare: classify their wedges one by one
+        i,j=I[k],J[k]
+        if faces_meet_beyond_shared(points,faces[i],faces[j],set(faces[i])&set(faces[j])):return True
+    return False
 
 
 def closed_surface_report(objects,double_sided_materials=None,material_count=None):

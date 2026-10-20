@@ -536,11 +536,17 @@ class TrellisWeaponExportTests(unittest.TestCase):
 
     @unittest.skipUnless(HAS_BLENDER,'Run Blender 4.0 for source surface proof')
     def test_faces_sharing_a_vertex_still_count_when_they_cross_elsewhere(self):
-        Vector=exporter.Vector
-        v=[Vector(p) for p in [(0,0,0),(1,0,0),(0,1,0),(.4,.4,1),(.4,.4,-1),(-1,0,0),(0,-1,0)]]
-        self.assertTrue(exporter.shell_crosses_itself(v,[(0,1,2),(0,3,4)]))  # shared corner, second face pierces the first
-        self.assertFalse(exporter.shell_crosses_itself(v,[(0,1,2),(0,5,6)]))  # shared corner only
-        self.assertFalse(exporter.shell_crosses_itself(v,[(0,1,2),(1,0,6)]))  # shared edge only
+        Vector=exporter.Vector;e=1e-6
+        v=[Vector(p) for p in [(0,0,0),(1,0,0),(0,1,0),(.4,.4,1),(.4,.4,-1),(-1,0,0),(0,-1,0),(e,e,1),(e,e,-1),(-e,-e,1),(-e,-e,-1),(.5,.5,0),(.5,-.5,0),(1,1,0)]]
+        crosses=lambda *faces:exporter.shell_crosses_itself(v,list(faces))
+        self.assertTrue(crosses((0,1,2),(0,3,4)))    # shared corner, second face pierces the first
+        self.assertTrue(crosses((0,1,2),(0,7,8)))    # a narrow face piercing right beside the shared corner
+        self.assertFalse(crosses((0,1,2),(0,9,10)))  # the same sliver leaving the corner the other way
+        self.assertFalse(crosses((0,1,2),(0,5,6)))   # shared corner only
+        self.assertFalse(crosses((0,1,2),(1,0,6)))   # shared edge only
+        self.assertTrue(crosses((0,1,2),(1,0,11)))   # coplanar faces folded onto the same side of their edge
+        self.assertTrue(crosses((0,1,2),(0,1,13)))   # coplanar wedges at a shared corner overlap
+        self.assertFalse(crosses((0,1,2),(0,12,1)))  # coplanar wedges that only touch along an edge ray
 
     @unittest.skipUnless(HAS_BLENDER,'Run Blender 4.0 for source surface proof')
     def test_shell_volume_survives_a_large_translation(self):

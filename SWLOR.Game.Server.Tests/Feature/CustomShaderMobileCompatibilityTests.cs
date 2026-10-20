@@ -12,6 +12,11 @@ namespace SWLOR.Game.Server.Tests.Feature;
 /// bitwise or modulo operators. One failing override (fsfbpostpr, the full-screen
 /// post-processing pass) blanked the whole 3D view on mobile. Desktop-only code
 /// must sit behind <c>#ifndef MOBILE</c> (or the <c>#else</c> of <c>#ifdef MOBILE</c>).
+/// The scan is deliberately conservative: every code line and every <c>#define</c>
+/// body the mobile build might see is checked, whether or not (and in whichever
+/// file) a macro is later expanded. A macro meant only for <c>#if</c> arithmetic
+/// must therefore also sit behind <c>#ifndef MOBILE</c>, or the arithmetic belongs
+/// on the <c>#if</c> line itself.
 /// </summary>
 public class CustomShaderMobileCompatibilityTests
 {
@@ -63,24 +68,23 @@ public class CustomShaderMobileCompatibilityTests
         const string elseGuarded = "#ifdef MOBILE\nint Unpack(int packedData) { return 0; }\n#else\n" + unguarded + "#endif\n";
         const string logicalOnly = "bool Both(bool a, bool b) { return a && b || a ^^ b; }\n#if (FLAGS & 2)\n#endif\n#define SHADER_TYPE 2\n";
         const string macro = "#define UNPACK(v) ((v >> 3) & 3)\nint Unpack(int v) { return UNPACK(v); }\n";
-        const string nestedMacro = "#define LOW(v) (v & 3)\n#define UNPACK(v) LOW(v)\nint Unpack(int v) { return UNPACK(v); }\n";
+        const string includedMacroOnly = "#define UNPACK(v) ((v >> 3) & 3)\n";
         const string guardedMacro = "#ifndef MOBILE\n#define UNPACK(v) ((v >> 3) & 3)\n#endif\nint Unpack(int v) { return 0; }\n";
-        const string preprocessorOnlyMacro = "#define HAS_FLAG (FLAGS & 2)\n#if HAS_FLAG\n#endif\n";
-        const string unusedMacro = "#define UNUSED(v) (v & 1)\n";
+        const string continuedMacro = "#define UNPACK(v) \\\n    ((v >> 3) & 3)\n";
+        const string guardedContinuedMacro = "#ifndef MOBILE\n" + continuedMacro + "#endif\nint Unpack(int v) { return 0; }\n";
         const string elifAfterMobile = "#ifdef MOBILE\nint A() { return 0; }\n#elif defined(DESKTOP_FAST)\n" + unguarded + "#else\n" + unguarded + "#endif\n";
-        const string redefinedMacro = "#define LOW(v) (v & 3)\n#if QUALITY\n#define UNPACK(v) (v)\n#else\n#define UNPACK(v) LOW(v)\n#endif\nint Unpack(int v) { return UNPACK(v); }\n";
 
         FindMobileUnsupportedLines(unguarded).Should().ContainSingle();
         FindMobileUnsupportedLines(guarded).Should().BeEmpty();
         FindMobileUnsupportedLines(elseGuarded).Should().BeEmpty();
         FindMobileUnsupportedLines(logicalOnly).Should().BeEmpty();
         FindMobileUnsupportedLines(macro).Should().ContainSingle();
-        FindMobileUnsupportedLines(nestedMacro).Should().ContainSingle();
+        // A definition is flagged on its own: another shader may include and expand it.
+        FindMobileUnsupportedLines(includedMacroOnly).Should().ContainSingle();
         FindMobileUnsupportedLines(guardedMacro).Should().BeEmpty();
-        FindMobileUnsupportedLines(preprocessorOnlyMacro).Should().BeEmpty();
-        FindMobileUnsupportedLines(unusedMacro).Should().BeEmpty();
+        FindMobileUnsupportedLines(continuedMacro).Should().ContainSingle();
+        FindMobileUnsupportedLines(guardedContinuedMacro).Should().BeEmpty();
         FindMobileUnsupportedLines(elifAfterMobile).Should().BeEmpty();
-        FindMobileUnsupportedLines(redefinedMacro).Should().ContainSingle();
     }
 
     [Test]
@@ -95,35 +99,13 @@ public class CustomShaderMobileCompatibilityTests
     private static IEnumerable<string> FindMobileUnsupportedLines(string shader)
     {
         var scan = ScanForMobile(shader);
-        var findings = scan.PossibleCode
+        return scan.PossibleCode
             .Where(line => MobileUnsupportedOperator.IsMatch(line.Text))
             .Select(line => $"{line.Number}: {line.Text.Trim()}")
+            .Concat(scan.Macros
+                .Where(m => MobileUnsupportedOperator.IsMatch(m.Body))
+                .Select(m => $"{m.Number}: #define {m.Name}{m.Body}"))
             .ToList();
-
-        // A macro body only reaches the GLSL compiler when runtime code expands it;
-        // macros used only by #if are evaluated by the preprocessor, which allows
-        // these operators. Follow macro-to-macro references to a fixed point.
-        // Every possibly active definition of a used name is followed, since any of
-        // them may be the one the mobile build sees.
-        var used = new HashSet<string>();
-        var visited = new HashSet<int>();
-        var pending = new Queue<string>(scan.PossibleCode.Select(line => line.Text));
-        while (pending.Count > 0)
-        {
-            var text = pending.Dequeue();
-            foreach (var definition in scan.Macros.Where(m => !visited.Contains(m.Number) && Regex.IsMatch(text, $@"\b{m.Name}\b")).ToList())
-            {
-                visited.Add(definition.Number);
-                used.Add(definition.Name);
-                pending.Enqueue(definition.Body);
-            }
-        }
-
-        findings.AddRange(scan.Macros
-            .Where(m => used.Contains(m.Name) && MobileUnsupportedOperator.IsMatch(m.Body))
-            .Select(m => $"{m.Number}: #define {m.Name}{m.Body}"));
-
-        return findings;
     }
 
     private sealed record MobileScan(
@@ -139,7 +121,18 @@ public class CustomShaderMobileCompatibilityTests
     /// </summary>
     private static MobileScan ScanForMobile(string shader)
     {
+        // Splice backslash-continued lines (keeping line numbering) so a continued
+        // #define is read as one directive.
         var lines = StripComments(shader).Replace("\r\n", "\n").Split('\n');
+        for (var index = lines.Length - 2; index >= 0; index--)
+        {
+            if (lines[index].TrimEnd().EndsWith("\\"))
+            {
+                var trimmed = lines[index].TrimEnd();
+                lines[index] = trimmed.Substring(0, trimmed.Length - 1) + " " + lines[index + 1];
+                lines[index + 1] = string.Empty;
+            }
+        }
         // Per conditional chain: Current is whether the branch now open is compiled on
         // mobile, and Matched whether an earlier branch of the chain already was
         // (null: depends on a condition unrelated to MOBILE).

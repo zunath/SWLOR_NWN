@@ -112,6 +112,9 @@ namespace SWLOR.Game.Server.Feature
         private static void SyncKatarRemapState(uint creature, bool forceRefresh = false)
         {
             Grip.Refresh(creature, forceRefresh);
+            // A queued swing owns the 1h aliases; its release forces another sync.
+            if (QueuedAttackAnimation.IsActive(creature))
+                return;
             var rightHand = GetItemInSlot(InventorySlot.RightHand, creature);
             var leftHand = GetItemInSlot(InventorySlot.LeftHand, creature);
             BaseItem? rightHandBaseItem = GetIsObjectValid(rightHand) ? GetBaseItemType(rightHand) : null;

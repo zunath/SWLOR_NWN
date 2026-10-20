@@ -26,6 +26,13 @@ public static class Grip
         SetLocalBool(creature, ParryOwnedVariable, false);
     }
 
+    // Reapplies only the carry alias, which a finished named animation clears even while a queued swing owns the combat aliases.
+    internal static void RestoreCarryAlias(uint creature)
+    {
+        if (GetLocalInt(creature, ModeVariable) == 2)
+            ReplaceObjectAnimation(creature, "plpause1", NamedAnimationPlayback.NoHoldName);
+    }
+
     public static void Initialize(uint player)
     {
         if (!GetIsPC(player) || GetIsDM(player)) return;

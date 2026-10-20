@@ -14,8 +14,11 @@ public static class NamedAnimation
     private static readonly NamedAnimationPlayback Playback = new(new NativeRuntime(), ReleaseIdlePose,
         creature =>
         {
-            if (GetIsObjectValid(creature) && !GetIsDead(creature) && !QueuedAttackAnimation.IsActive(creature))
-                KatarAnimationRemap.RestoreCurrentEquipmentAnimations(creature);
+            if (!GetIsObjectValid(creature) || GetIsDead(creature)) return;
+            // A queued swing owns the combat aliases; the queue restores them when it releases.
+            // The carry alias is not a swing key, so Grip can reapply it now.
+            if (QueuedAttackAnimation.IsActive(creature)) Grip.RestoreCarryAlias(creature);
+            else KatarAnimationRemap.RestoreCurrentEquipmentAnimations(creature);
         });
 
     /// <summary>

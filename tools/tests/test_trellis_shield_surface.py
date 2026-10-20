@@ -80,6 +80,17 @@ class ShieldSurfaceTests(unittest.TestCase):
             with self.subTest(shells=len(meshes)),self.assertRaisesRegex(ValueError,'not an enclosed cavity'):
                 surface.require_closed(surface.audit_surface(*combine(*meshes),components=True))
 
+    def test_crossing_shells_are_detected_even_when_all_vertices_lie_outside(self):
+        # A triangle threading through another one: no vertex of either lies inside the other.
+        first=np.asarray([[[-1,-1,0],[1,-1,0],[0,1,0]]],np.float64)
+        second=np.asarray([[[0,0,-1],[0,0,1],[0,2,0]]],np.float64)
+        self.assertTrue(surface.shells_intersect(first,second))
+        self.assertFalse(surface.shells_intersect(first,second+np.asarray([5,0,0])))
+        outer=box(size=(1,1,1));tri=lambda v,f:v[f]
+        crossing=box(size=(.2,.2,1.4))
+        self.assertTrue(surface.shells_intersect(tri(*crossing),tri(*outer)))
+        self.assertFalse(surface.shells_intersect(tri(*box(size=(.5,.5,.5))),tri(*outer)))
+
     def test_input_hash_uses_the_loaded_snapshot(self):
         vertices,faces=box()
         with tempfile.TemporaryDirectory() as temporary:

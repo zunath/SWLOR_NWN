@@ -38,6 +38,24 @@ def winding_number(point, triangles):
     return float(np.arctan2(det,den).sum()/(2*np.pi))
 
 
+def edges_cross_triangles(edges, triangles, chunk=4096):
+    """True when any segment passes through the interior of any triangle (Moller-Trumbore, strict)."""
+    v0=triangles[:,0];e1=triangles[:,1]-v0;e2=triangles[:,2]-v0;eps=1e-9
+    for start in range(0,len(edges),chunk):
+        a=edges[start:start+chunk,0][:,None];d=(edges[start:start+chunk,1]-edges[start:start+chunk,0])[:,None]
+        p=np.cross(d,e2[None]);det=np.einsum('ijk,jk->ij',p,e1);ok=np.abs(det)>eps;inv=np.where(ok,1/np.where(ok,det,1),0)
+        s=a-v0[None];u=np.einsum('ijk,ijk->ij',s,p)*inv;q=np.cross(s,e1[None]);v=np.einsum('ijk,ijk->ij',d,q)*inv
+        t=np.einsum('jk,ijk->ij',e2,q)*inv
+        if np.any(ok&(u>eps)&(v>eps)&(u+v<1-eps)&(t>eps)&(t<1-eps)):return True
+    return False
+
+
+def shells_intersect(first, second):
+    """Two closed triangle sets intersect iff an edge of one crosses a triangle of the other."""
+    def edges(tris):return np.concatenate([tris[:,[0,1]],tris[:,[1,2]],tris[:,[2,0]]])
+    return edges_cross_triangles(edges(first),second) or edges_cross_triangles(edges(second),first)
+
+
 def audit_surface(vertices, faces, components=False):
     """Exact-position closure; coincident split vertices cannot conceal bad edges."""
     vertices,faces=arrays(vertices,faces)
@@ -77,8 +95,11 @@ def audit_surface(vertices, faces, components=False):
         for index,(ids,shell) in enumerate(zip(ids_list,shells)):
             if shell['signed_volume']>=0:continue
             others=[face for other,group in enumerate(ids_list) if other!=index for face in group]
+            # Whole-shell containment: the shell must not cross any other shell (no edge of either
+            # passes through a triangle of the other), and then one interior sample decides inside.
             samples=np.concatenate([vertices[np.unique(faces[ids])],triangles[ids].mean(axis=1)])
-            enclosed=bool(others) and all(abs(winding_number(point,triangles[others])-1)<1e-3 for point in samples)
+            enclosed=(bool(others) and not shells_intersect(triangles[ids],triangles[others])
+                      and all(abs(winding_number(point,triangles[others])-1)<1e-3 for point in samples))
             shell['enclosed_cavity']=enclosed;exposed+=not enclosed
         report['shells']=shells
         report['zero_volume_shells']=sum(shell['signed_volume']==0 for shell in shells)

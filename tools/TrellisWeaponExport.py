@@ -200,8 +200,14 @@ def finite3(value, label):
     return Vector(vector3(value,label))
 
 
+def list_index(value, items, label):
+    """glTF references must be exact nonnegative indices; Python negative indexing would pick another entry."""
+    if type(value) is not int or not 0<=value<len(items):raise ValueError('Invalid glTF '+label+' index')
+    return value
+
+
 def image_bytes(doc, binary, index, source):
-    entry = doc['images'][index]
+    entry = doc['images'][list_index(index,doc.get('images',[]),'image')]
     if 'bufferView' in entry:
         index_=entry['bufferView'];views=doc.get('bufferViews',[])
         if type(index_) is not int or not 0<=index_<len(views):raise ValueError('Invalid image bufferView index')
@@ -227,9 +233,9 @@ def read_image(doc, binary, texture_info, source, cache):
     validate_texture_samplers(doc)
     if texture_info.get('texCoord',0) != 0 or texture_info.get('extensions'):
         raise ValueError('Nondefault texture UV sets/transforms need explicit support')
-    texture = doc['textures'][texture_info['index']]
+    texture = doc.get('textures',[])[list_index(texture_info.get('index'),doc.get('textures',[]),'texture')]
     if texture.get('extensions'): raise ValueError('Extended texture format unsupported')
-    index = texture['source']; data, suffix = image_bytes(doc,binary,index,source)
+    index = list_index(texture.get('source'),doc.get('images',[]),'image'); data, suffix = image_bytes(doc,binary,index,source)
     path = cache / (str(index)+suffix); path.write_bytes(data)
     img = bpy.data.images.load(str(path),check_existing=False)
     img.colorspace_settings.name = 'Non-Color'

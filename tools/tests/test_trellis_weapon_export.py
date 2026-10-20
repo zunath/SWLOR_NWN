@@ -714,6 +714,17 @@ class TrellisWeaponExportTests(unittest.TestCase):
 
 
 @unittest.skipIf(np is None, 'NumPy required for native normal basis math')
+class GltfIndexTests(unittest.TestCase):
+    def test_references_must_be_existing_nonnegative_indices(self):
+        items=['a','b']
+        self.assertEqual(exporter.list_index(1,items,'image'),1)
+        for value in (-1,2,True,1.0,None,'0'):
+            with self.subTest(value=value),self.assertRaisesRegex(ValueError,'Invalid glTF image index'):
+                exporter.list_index(value,items,'image')
+        with self.assertRaisesRegex(ValueError,'Invalid glTF image index'):
+            exporter.image_bytes({'images':[{'bufferView':0}],'bufferViews':[{'byteOffset':0,'byteLength':1}]},b'x',-1,Path('source.glb'))
+
+
 class ImportedLightTests(unittest.TestCase):
     @unittest.skipUnless(HAS_BLENDER,'Run Blender 4.0 for imported light removal')
     def test_imported_lights_and_cameras_are_removed_before_rendering(self):

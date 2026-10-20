@@ -141,38 +141,37 @@ fi
 
 # The pinned model compiler, installed the way tools/SetupModelCompiler.ps1 does (same download
 # and checksums, read from that script) but with the executable bit Wine's binfmt handler needs.
+# The script is read from the commit, so a sparse checkout without tools/ still gets the compiler.
 # tools/CleanModels.py looks in ~/.local/share when LOCALAPPDATA is unset.
-setup="$HAKS/tools/SetupModelCompiler.ps1"
-if [ -f "$setup" ]; then
-  url=$(tr -d '\r' <"$setup" | sed -n "s/^\$url = '\(.*\)'\$/\1/p")
-  mapfile -t hashes < <(grep -oE "\-ne '[0-9A-Fa-f]{64}'" "$setup" | grep -oE '[0-9A-Fa-f]{64}')
-  version=$(grep -oE '/v[0-9.]+/' <<<"$url" | tr -d '/v' || true)
-  dest="$HOME/.local/share/SWLOR/tools/cleanmodels-qt/$version"
-  compiler="$dest/cleanmodels-qt/cleanmodels.exe"
+setup=$(git -C "$HAKS" show HEAD:tools/SetupModelCompiler.ps1 2>/dev/null | tr -d '\r' || true)
+url=$(sed -n "s/^\$url = '\(.*\)'\$/\1/p" <<<"$setup")
+mapfile -t hashes < <(grep -oE "\-ne '[0-9A-Fa-f]{64}'" <<<"$setup" | grep -oE '[0-9A-Fa-f]{64}')
+version=$(grep -oE '/v[0-9.]+/' <<<"$url" | tr -d '/v' || true)
+dest="$HOME/.local/share/SWLOR/tools/cleanmodels-qt/$version"
+compiler="$dest/cleanmodels-qt/cleanmodels.exe"
+if [ -z "$url" ] || [ -z "$version" ] || [ "${#hashes[@]}" -ne 2 ]; then
+  log "Could not read the CleanModels URL and checksums from tools/SetupModelCompiler.ps1; SWLOR_Haks is not ready"
+  exit 1
+fi
+if [ ! -x "$compiler" ]; then
+  log "Installing CleanModels from $url"
+  mkdir -p "$dest"
+  archive="$dest/$(basename "$url")"
+  for delay in 0 15 60; do
+    sleep "$delay"
+    if curl -fsSL --max-time 300 -o "$archive" "$url" &&
+       echo "${hashes[0]}  $archive" | sha256sum -c --quiet - &&
+       (cd "$dest" && unzip -oq "$archive") &&
+       echo "${hashes[1]}  $compiler" | sha256sum -c --quiet -; then
+      chmod +x "$compiler"
+      break
+    fi
+    log "CleanModels download or checksum failed"
+  done
   if [ ! -x "$compiler" ]; then
-    if [ -z "$url" ] || [ -z "$version" ] || [ "${#hashes[@]}" -ne 2 ]; then
-      log "Could not read the CleanModels URL and checksums from $setup; SWLOR_Haks is not ready"
-      exit 1
-    fi
-    log "Installing CleanModels from $url"
-    mkdir -p "$dest"
-    archive="$dest/$(basename "$url")"
-    for delay in 0 15 60; do
-      sleep "$delay"
-      if curl -fsSL --max-time 300 -o "$archive" "$url" &&
-         echo "${hashes[0]}  $archive" | sha256sum -c --quiet - &&
-         (cd "$dest" && unzip -oq "$archive") &&
-         echo "${hashes[1]}  $compiler" | sha256sum -c --quiet -; then
-        chmod +x "$compiler"
-        break
-      fi
-      log "CleanModels download or checksum failed"
-    done
-    if [ ! -x "$compiler" ]; then
-      # No ready marker: the model compiler tests need it, and the next session start retries.
-      log "CleanModels is not installed; SWLOR_Haks is checked out, but not ready"
-      exit 1
-    fi
+    # No ready marker: the model compiler tests need it, and the next session start retries.
+    log "CleanModels is not installed; SWLOR_Haks is checked out, but not ready"
+    exit 1
   fi
 fi
 

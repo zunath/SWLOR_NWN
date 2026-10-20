@@ -50,14 +50,19 @@ public class ArmorPartCoverageTests
         Assert.That(tinted, Does.Contain("pmh0_chest001"));
 
         var speciesParts = SpeciesBodyParts();
-        var general = ArmorAppearanceCatalog.Definitions[AppearanceType.Human];
         var gaps = new List<string>();
+        // Droids wear their own catalog on the droid body; every other species shares the general one.
+        foreach (var (catalog, races) in new[]
+                 {
+                     (ArmorAppearanceCatalog.Definitions[AppearanceType.Human], Bodies),
+                     (ArmorAppearanceCatalog.Definitions[AppearanceType.Droid], new[] { 'z' }),
+                 })
         foreach (var (part, model) in Slots)
-        foreach (var style in ArmorAppearanceCatalog.GetStyles(general, part).Where(style => style > 0).Distinct())
+        foreach (var style in ArmorAppearanceCatalog.GetStyles(catalog, part).Where(style => style > 0).Distinct())
         {
-            if (BodySlots.Contains(part) && speciesParts.Contains(style))
+            if (races == Bodies && BodySlots.Contains(part) && speciesParts.Contains(style))
                 continue;
-            var bodies = Bodies.SelectMany(race => new[] { $"pm{race}0", $"pf{race}0" }).ToList();
+            var bodies = races.SelectMany(race => new[] { $"pm{race}0", $"pf{race}0" }).ToList();
             var missing = bodies.Where(body => !tinted.Contains($"{body}_{model}{style:D3}")).ToList();
             // A style no body renders is hidden everywhere; partial coverage is the defect.
             if (missing.Count > 0 && missing.Count < bodies.Count)

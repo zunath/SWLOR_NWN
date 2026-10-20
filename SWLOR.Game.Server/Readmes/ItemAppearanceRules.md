@@ -24,6 +24,9 @@ or migration that assigns item models.
   donor the native palette lookup already selects (manifest `RacialPartVariants.json`);
   run it with `--apply`, then the tint, part-skin, neck, robe RGB and robe cloak generators,
   and keep `--check` green. Racial body parts (201-214, 251) stay species-only.
+- A body's own part model that borrows another model's texture must share that model's UV
+  layout; a mesh laid out for a different texture renders white, black or scrambled patches.
+  Replace such a variant by listing it in `RacialPartVariants.json`, which refits the donor.
 - Every catalog part needs a `tintmap.2da` row so palette and exact RGB colors reach it.
   Stock parts are imported with their stock PLT and converted like hak parts; a part that
   only has fixed artwork gets an authored palette from

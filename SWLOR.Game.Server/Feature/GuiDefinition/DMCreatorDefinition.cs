@@ -19,7 +19,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
         private const float RailButtonWidth = 250f;
         private const float IconCellWidth = 40f;
         private const float InfoCellWidth = 170f;
-        private const float CategoryComboWidth = 280f;
+        private const float CategoryComboWidth = 265f;
 
         public GuiConstructedWindow BuildWindow()
         {
@@ -71,7 +71,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                                     .AddOption("Standard", (int)DMBlueprintSource.Standard)
                                     .AddOption("Favorites", DMCreatorViewModel.FavoritesSource)
                                     .BindSelectedIndex(model => model.SelectedSource)
-                                    .SetWidth(110f)
+                                    .SetWidth(125f)
                                     .SetHeight(ButtonHeight);
 
                                 // A combo without a width shrinks the whole panel, so the category combo is fixed too.

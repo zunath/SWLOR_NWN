@@ -371,14 +371,12 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.PistolRush1)
-                .DroidAISlots(1)
                 .Description("Dash to a freely selected ground point 2-6m away. Attack up to three enemies in the 4m-wide travel line with each equipped attack weapon for 60% of weapon DMG + 6 per impact. Works with any weapon.")
                 .Price(3)
                 .RequirementSkill(SkillType.TwinPistol, 18)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.PistolRush2)
-                .DroidAISlots(2)
                 .Description("Dash to a freely selected ground point 2-6m away. Attack up to three enemies in the 4m-wide travel line with each equipped attack weapon for 60% of weapon DMG + 12 per impact. Works with any weapon.")
                 .Price(3)
                 .RequirementSkill(SkillType.TwinPistol, 32)

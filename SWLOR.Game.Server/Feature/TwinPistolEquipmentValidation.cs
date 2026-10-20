@@ -34,6 +34,10 @@ public static class TwinPistolEquipmentValidation
     [NWNEventHandler(ScriptName.OnCreatureDeathAfter)]
     public static void OnDeath() => FailedReturns.Remove(OBJECT_SELF);
 
+    // Dismissed droids are destroyed without dying or exiting; forget them before their IDs are reused.
+    [NWNEventHandler(ScriptName.OnObjectDestroyed)]
+    public static void OnDestroyed() => FailedReturns.Remove(OBJECT_SELF);
+
     [NWNEventHandler(ScriptName.OnModuleExit)]
     public static void OnExit() => FailedReturns.Remove(GetExitingObject());
 

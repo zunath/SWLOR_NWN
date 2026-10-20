@@ -22,6 +22,9 @@ public static class TwinPistolEquipment
 
     public static bool IsChanging(uint creature) => Changing.Contains(creature);
 
+    // A droid has no client; its controlling player gets the explanation.
+    private static uint MessageRecipient(uint creature) => Droid.IsDroid(creature) ? GetMaster(creature) : creature;
+
     public static bool IsPairItem(uint item) => GetIsObjectValid(item) &&
         IsPairItem(GetBaseItemType(item), GetLocalInt(item, PairVariable) == 1);
 
@@ -102,7 +105,7 @@ public static class TwinPistolEquipment
             DestroySpare(spare);
             Pairs.Remove(creature);
             DeleteLocalObject(main, CompanionVariable);
-            SendMessageToPC(creature, ColorToken.Red(ex.Message));
+            SendMessageToPC(MessageRecipient(creature), ColorToken.Red(ex.Message));
         }
         finally { Changing.Remove(creature); }
 
@@ -140,7 +143,7 @@ public static class TwinPistolEquipment
         }
         catch (InvalidOperationException)
         {
-            SendMessageToPC(creature, ColorToken.Red("Free inventory space or make room in a carried bag before unequipping Twin Pistols."));
+            SendMessageToPC(MessageRecipient(creature), ColorToken.Red("Free inventory space or make room in a carried bag before unequipping Twin Pistols."));
             return false;
         }
         finally { Changing.Remove(creature); }

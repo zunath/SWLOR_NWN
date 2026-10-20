@@ -3460,8 +3460,6 @@ namespace SWLOR.Game.Server.Service.CraftService
         InstructionGrappleShot1 = 6351,
         InstructionGrappleShot2 = 6352,
         InstructionGrappleShot3 = 6353,
-        InstructionPistolRush1 = 6354,
-        InstructionPistolRush2 = 6355,
         InstructionCrossfireStance = 6356,
         PortableMusicPlayer = 6227,
         SongDiscTavern1 = 6228,

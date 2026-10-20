@@ -31,6 +31,9 @@ public static class PowerGloveEquipment
 
     public static bool IsChanging(uint creature) => Changing.Contains(creature);
 
+    // A droid has no client; its controlling player gets the explanation.
+    private static uint MessageRecipient(uint creature) => Droid.IsDroid(creature) ? GetMaster(creature) : creature;
+
     public static bool IsPairItem(uint item) => GetIsObjectValid(item) &&
         GetObjectType(item) == ObjectType.Item && GetBaseItemType(item) == BaseItem.PowerGlove;
 
@@ -172,7 +175,7 @@ public static class PowerGloveEquipment
             DestroyCompanion(companion);
             Pairs.Remove(creature);
             DeleteLocalObject(main, CompanionVariable);
-            SendMessageToPC(creature, ColorToken.Red("The Power Glove could not equip both hands. Free inventory or bag space and try again."));
+            SendMessageToPC(MessageRecipient(creature), ColorToken.Red("The Power Glove could not equip both hands. Free inventory or bag space and try again."));
         }
         finally { Changing.Remove(creature); }
 
@@ -206,7 +209,7 @@ public static class PowerGloveEquipment
         }
         catch (InvalidOperationException)
         {
-            SendMessageToPC(creature, ColorToken.Red("Free inventory or bag space before removing the Power Glove."));
+            SendMessageToPC(MessageRecipient(creature), ColorToken.Red("Free inventory or bag space before removing the Power Glove."));
             return false;
         }
         finally { Changing.Remove(creature); }
@@ -229,7 +232,7 @@ public static class PowerGloveEquipment
                 try { UnequipOwnedItem(creature, left, InventorySlot.LeftHand); }
                 catch (InvalidOperationException)
                 {
-                    SendMessageToPC(creature, ColorToken.Red("Free inventory or bag space before equipping the Power Glove."));
+                    SendMessageToPC(MessageRecipient(creature), ColorToken.Red("Free inventory or bag space before equipping the Power Glove."));
                 }
                 finally { Changing.Remove(creature); }
             }

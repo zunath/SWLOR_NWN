@@ -156,11 +156,40 @@ def write_tga(path,original,pixels):
     offset=18+data[0];data[offset:offset+p.size]=p.tobytes();path.write_bytes(data)
 
 
+class BoxIndex:
+    """Uniform grid over axis-aligned boxes answering which boxes contain a point, in ascending index order.
+    Boxes spanning more than max_cells cells stay in a short list checked directly, so one large face among
+    many small ones never fills the grid."""
+    def __init__(self,lo,hi,max_cells=64):
+        self.lo,self.hi=lo,hi;self.grid={};self.big=np.zeros(0,np.int64)
+        if not len(lo):self.origin=np.zeros(3);self.cell=1.;return
+        self.origin=lo.min(axis=0);self.cell=max(float(np.median((hi-lo).max(axis=1))),1e-12)
+        low=np.floor((lo-self.origin)/self.cell).astype(np.int64);high=np.floor((hi-self.origin)/self.cell).astype(np.int64)
+        big=np.prod((high-low+1).astype(np.float64),axis=1)>max_cells;self.big=np.flatnonzero(big)
+        for index in np.flatnonzero(~big):
+            l,h=low[index],high[index]
+            for x in range(l[0],h[0]+1):
+                for y in range(l[1],h[1]+1):
+                    for z in range(l[2],h[2]+1):self.grid.setdefault((x,y,z),[]).append(index)
+
+    def query(self,point):
+        key=tuple(np.floor((point-self.origin)/self.cell).astype(np.int64).tolist())
+        ids=np.concatenate([np.asarray(self.grid.get(key,()),np.int64),self.big])
+        return np.sort(ids[np.all((self.lo[ids]<=point)&(point<=self.hi[ids]),axis=1)])
+
+
 def match_faces(source,target):
-    """Match whole source faces or exact uncapped subdivisions using barycentrics."""
+    """Match whole source faces or exact uncapped subdivisions using barycentrics. Both searches query a
+    spatial index, so only source faces near each target face are tested."""
     sp=source['positions'];su=source['uv'];centers=sp.mean(axis=1);result=[]
+    a=sp[:,0];e=sp[:,1]-a;f=sp[:,2]-a;normal=np.cross(e,f);length=np.linalg.norm(normal,axis=1)
+    center_index=BoxIndex(centers-3e-6,centers+3e-6)
+    # A subdivision's centre lies in its owner's box, widened for the barycentric and position slack below.
+    low=sp.min(axis=1);high=sp.max(axis=1);slack=3e-6+1e-4*(high-low).max(axis=1,keepdims=True)
+    face_index=BoxIndex(low-slack,high+slack)
     for ti,tp in enumerate(target['positions']):
-        center=tp.mean(axis=0);tu=target['uv'][ti];candidates=np.where(np.linalg.norm(centers-center,axis=1)<3e-6)[0];found=None;matches=[]
+        center=tp.mean(axis=0);tu=target['uv'][ti];candidates=center_index.query(center)
+        candidates=candidates[np.linalg.norm(centers[candidates]-center,axis=1)<3e-6];found=None;matches=[]
         for si in candidates:
             for shift in range(3):
                 ids=np.roll(np.arange(3),shift)
@@ -169,8 +198,8 @@ def match_faces(source,target):
         if matches:found=matches[0]
         if found is None:
             # A clipping plane can subdivide a source face without changing its UV field.
-            a=sp[:,0];e=sp[:,1]-a;f=sp[:,2]-a;normal=np.cross(e,f);length=np.linalg.norm(normal,axis=1);plane=np.abs(np.sum((center-a)*normal,axis=1))/np.maximum(length,1e-20)
-            for si in np.where((plane<3e-6)&(length>1e-15))[0]:
+            near=face_index.query(center);plane=np.abs(np.sum((center-a[near])*normal[near],axis=1))/np.maximum(length[near],1e-20)
+            for si in near[(plane<3e-6)&(length[near]>1e-15)]:
                 matrix=np.stack((e[si],f[si]),axis=1);weights=np.linalg.lstsq(matrix,(tp-a[si]).T,rcond=None)[0].T;bary=np.column_stack((1-weights.sum(axis=1),weights))
                 if bary.min()>=-2e-5 and np.max(abs(bary@sp[si]-tp))<3e-6 and np.max(abs(bary@su[si]-tu))<2e-6:matches.append((int(si),bary))
             if matches:found=matches[0]

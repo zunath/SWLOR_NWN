@@ -198,6 +198,17 @@ class ShieldSurfaceTests(unittest.TestCase):
             with self.subTest(value=value),self.assertRaises(ValueError):surface.normal_unorm8(image)
         with self.assertRaises(ValueError):surface.normal_unorm8(np.zeros((2,2,4)))
 
+    def test_bridge_cache_key_uses_the_loaded_bridge_bytes(self):
+        spec=importlib.util.spec_from_file_location('shield_identity_bridge',TOOLS/'trellis2_shield_nodes/__init__.py')
+        bridge=importlib.util.module_from_spec(spec);spec.loader.exec_module(bridge)
+        vertices,faces=box();runtime={'sha256':'0'*64,'version':'4.0'}
+        self.assertEqual(bridge.BRIDGE_BYTES,(TOOLS/'trellis2_shield_nodes/__init__.py').read_bytes())
+        before=bridge.surface_cache_key(vertices,faces,.003,runtime,b'script')
+        with patch.object(Path,'read_bytes',side_effect=AssertionError('bridge re-read from disk')):
+            self.assertEqual(bridge.surface_cache_key(vertices,faces,.003,runtime,b'script'),before)
+        bridge.BRIDGE_BYTES+=b'#'
+        self.assertNotEqual(bridge.surface_cache_key(vertices,faces,.003,runtime,b'script'),before)
+
     def test_bridge_rejects_textured_source_and_detects_changed_surface_cache(self):
         spec=importlib.util.spec_from_file_location('shield_bridge',TOOLS/'trellis2_shield_nodes/__init__.py')
         bridge=importlib.util.module_from_spec(spec);spec.loader.exec_module(bridge)
@@ -395,10 +406,8 @@ class ShieldSurfaceTests(unittest.TestCase):
         for v,f in variants:
             self.assertNotEqual(key,bridge.surface_cache_key(v,f,.003,{'build':'same'}))
         self.assertEqual(key,bridge.surface_cache_key(np.asfortranarray(vertices),faces.copy(),.003,{'build':'same'}))
-        with tempfile.TemporaryDirectory() as temporary:
-            changed=Path(temporary)/'__init__.py';changed.write_bytes(Path(bridge.__file__).read_bytes()+b'# changed bridge')
-            with patch.object(bridge,'__file__',str(changed)):
-                self.assertNotEqual(key,bridge.surface_cache_key(vertices,faces,.003,{'build':'same'}))
+        with patch.object(bridge,'BRIDGE_BYTES',bridge.BRIDGE_BYTES+b'# changed bridge'):
+            self.assertNotEqual(key,bridge.surface_cache_key(vertices,faces,.003,{'build':'same'}))
 
     def test_output_report_and_temporary_paths_must_all_be_fresh_before_loading(self):
         vertices,faces=box()

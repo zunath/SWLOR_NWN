@@ -432,6 +432,19 @@ class TrellisWeaponExportTests(unittest.TestCase):
         self.assertEqual(os.stat(copy).st_mode&0o7777,os.stat(tool).st_mode&0o7777)
         if os.name=='posix':self.assertTrue(os.access(copy,os.X_OK))
 
+    @unittest.skipUnless(os.name=='posix','POSIX execute bits')
+    def test_tool_snapshot_mode_comes_from_the_handle_that_read_the_bytes(self):
+        tool=self.root/'crunch';tool.write_bytes(b'one');os.chmod(tool,0o755);real_open=open
+        def swapping_open(path,*args,**kwargs):
+            handle=real_open(path,*args,**kwargs)
+            if Path(path)==tool.resolve():
+                # Replace the configured path after it was opened: the snapshot must keep the opened file.
+                replacement=self.root/'replacement';replacement.write_bytes(b'two');os.chmod(replacement,0o644);os.replace(replacement,tool)
+            return handle
+        with unittest.mock.patch('builtins.open',swapping_open):copy,identity=exporter.snapshot_tool(tool,self.root/'snapshot')
+        self.assertEqual(copy.read_bytes(),b'one');self.assertTrue(os.access(copy,os.X_OK))
+        self.assertEqual(identity['sha256'],hashlib.sha256(b'one').hexdigest())
+
     @unittest.skipIf(np is None,'numpy required')
     def test_materials_clipped_from_every_part_emit_no_maps_or_normal_provenance(self):
         resources=self.root/'resources';resources.mkdir();names={0:'kept',1:'gone'};material_dims={};mapdims={}
@@ -841,6 +854,19 @@ class NativeWeaponNormalTests(unittest.TestCase):
         self.assertEqual(result[0][0],0);np.testing.assert_allclose(result[0][1],weights)
         target['uv']+=.2
         with self.assertRaisesRegex(ValueError,'ownership'):self.helper.match_faces(source,target)
+
+    def test_face_matching_uses_the_spatial_index_and_finds_large_owners(self):
+        rng=np.random.default_rng(5);count=20000
+        small=rng.uniform(0,1,(count,1,3))+rng.normal(scale=1e-3,size=(count,3,3))
+        large=np.array([[[-2.,-2.,5.],[4.,-2.,5.],[-2.,4.,5.]]]);p=np.concatenate([small,large]);uv=p[...,:2]
+        weights=np.array([[1.,0.,0.],[.5,.5,0.],[.5,0.,.5]])
+        target={'positions':np.concatenate([p[:count:50],[weights@large[0]]]),'uv':np.concatenate([uv[:count:50],[weights@uv[-1]]])}
+        with unittest.mock.patch.object(np.linalg,'norm',wraps=np.linalg.norm) as norm:
+            result=self.helper.match_faces({'positions':p,'uv':uv},target)
+        self.assertEqual([si for si,_ in result[:-1]],list(range(0,count,50)))
+        self.assertEqual(result[-1][0],count);np.testing.assert_allclose(result[-1][1],weights,atol=1e-12)
+        # Per-face centre checks only see nearby candidates, never the whole source mesh.
+        self.assertLess(max(call.args[0].shape[0] for call in norm.call_args_list[2:] if call.args[0].ndim==2),100)
 
     def test_tga_top_origin_is_normalized_without_changing_native_uv_pixels(self):
         with tempfile.TemporaryDirectory() as temporary:

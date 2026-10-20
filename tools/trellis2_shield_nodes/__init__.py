@@ -18,6 +18,8 @@ import time
 import uuid
 
 SURFACE_SCRIPT=Path(__file__).resolve().parents[1]/'TrellisShieldSurface.py'
+# The cache identity is the bridge implementation this process loaded, not whatever is on disk later.
+BRIDGE_BYTES=Path(__file__).read_bytes()
 
 
 @lru_cache(maxsize=8)
@@ -188,7 +190,7 @@ def surface_cache_key(vertices,faces,voxel_size,runtime,script_bytes=None):
         field(name+'.data',array.tobytes(order='C'))
     field('voxel_size',str(voxel_size).encode())
     field('surface_script',SURFACE_SCRIPT.read_bytes() if script_bytes is None else script_bytes)
-    field('bridge',Path(__file__).read_bytes())
+    field('bridge',BRIDGE_BYTES)
     field('runtime',json.dumps(runtime,sort_keys=True).encode())
     return digest.hexdigest()
 
@@ -207,7 +209,7 @@ class SWLORClosedVoxelMesh:
     @classmethod
     def IS_CHANGED(cls,mesh,voxel_size,target_face_count):
         executable,cache,runtime=settings()
-        return hashlib.sha256(SURFACE_SCRIPT.read_bytes()+Path(__file__).read_bytes()+json.dumps((runtime,str(cache)),sort_keys=True).encode()).hexdigest()
+        return hashlib.sha256(SURFACE_SCRIPT.read_bytes()+BRIDGE_BYTES+json.dumps((runtime,str(cache)),sort_keys=True).encode()).hexdigest()
 
     def execute(self,mesh,voxel_size,target_face_count):
         import numpy as np

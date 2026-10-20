@@ -33,7 +33,7 @@ MDL + MTR + compressed DDS only. Native hand/attack/icon verification is separat
 """
 from __future__ import annotations
 
-import argparse, base64, hashlib, importlib.util, io, json, math, re, shlex, shutil, struct, subprocess, sys
+import argparse, base64, hashlib, importlib.util, io, json, math, os, re, shlex, shutil, stat, struct, subprocess, sys
 sys.dont_write_bytecode=True
 from pathlib import Path
 
@@ -1152,10 +1152,12 @@ def tool_identity(path):
 
 
 def snapshot_tool(path, folder):
-    """Copy an executable once into a private folder; every invocation runs that immutable copy. The source's
-    mode bits are kept so an executable original stays executable on POSIX hosts."""
-    source=Path(path).resolve();data=source.read_bytes();folder.mkdir(parents=True,exist_ok=False)
-    copy=folder/source.name;copy.write_bytes(data);shutil.copymode(source,copy)
+    """Copy an executable once into a private folder; every invocation runs that immutable copy. Bytes and
+    mode come from one open handle, so an executable original stays executable on POSIX hosts even if the
+    configured path is replaced while the snapshot is taken."""
+    source=Path(path).resolve()
+    with open(source,'rb') as handle:mode=os.fstat(handle.fileno()).st_mode;data=handle.read()
+    folder.mkdir(parents=True,exist_ok=False);copy=folder/source.name;copy.write_bytes(data);os.chmod(copy,stat.S_IMODE(mode))
     return copy,{'path':str(source),'sha256':hashlib.sha256(data).hexdigest()}
 
 

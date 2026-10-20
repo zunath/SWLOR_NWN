@@ -14,6 +14,7 @@ import os
 from pathlib import Path
 import shutil
 import subprocess
+import time
 import uuid
 
 SURFACE_SCRIPT=Path(__file__).resolve().parents[1]/'TrellisShieldSurface.py'
@@ -63,7 +64,7 @@ def key_lock(directory):
             import msvcrt
             while True:
                 try:handle.seek(0);msvcrt.locking(handle.fileno(),msvcrt.LK_LOCK,1);break
-                except OSError:continue
+                except OSError:time.sleep(1)  # LK_LOCK already retries for ~10 s; back off between rounds.
         else:
             import fcntl
             fcntl.flock(handle.fileno(),fcntl.LOCK_EX)
@@ -244,7 +245,7 @@ class SWLORClosedVoxelMesh:
                 run('decimate',high,low,['--target-faces',str(target_face_count)])
                 low_arrays=cached_arrays(low)
         meshes=tuple(Types.MESH(vertices=torch.from_numpy(v).unsqueeze(0),faces=torch.from_numpy(f).unsqueeze(0)) for v,f in (high_arrays,low_arrays))
-        provenance={'high_surface':str(high),'low_surface':str(low),'surface_script_sha256':hashlib.sha256(SURFACE_SCRIPT.read_bytes()).hexdigest(),'blender':runtime}
+        provenance={'high_surface':str(high),'low_surface':str(low),'surface_script_sha256':script_sha,'blender':runtime}
         return {'ui':{'text':[json.dumps(provenance,sort_keys=True)]},'result':meshes}
 
 

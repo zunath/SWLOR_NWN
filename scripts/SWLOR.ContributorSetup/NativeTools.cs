@@ -45,13 +45,13 @@ internal class NativeTools
             yield break;
         }
         if (new[] { "libpcre.so.3", "libsqlite3.so.0" }.Any(name => !_libraryAvailable(name)))
-            yield return "Install libpcre3 and libsqlite3-0 with your Linux package manager.";
+            yield return "Install libpcre3 and libsqlite3-0 (Ubuntu: sudo apt-get install libpcre3 libsqlite3-0).";
         if (profile == "Toolset")
         {
             var missing = DesktopLibraries.Keys.Where(name => !_libraryAvailable(name)).ToArray();
             if (missing.Length != 0)
-                yield return "Install desktop dependencies: " + string.Join(" ", DesktopLibraries.Values) +
-                    " libgl1-mesa-dri. Missing libraries: " + string.Join(", ", missing) + ". Use X11 or Wayland with XWayland.";
+                yield return "Install the desktop libraries: " + string.Join(" ", DesktopLibraries.Values) +
+                    " libgl1-mesa-dri (Ubuntu: sudo apt-get install <packages>). Missing libraries: " + string.Join(", ", missing) + ".";
         }
     }
 
@@ -95,7 +95,7 @@ internal class NativeTools
         if (_windows) return Path.Combine(_root, "tools", "SWLOR.CLI");
         if (IsPrepared()) return CacheDirectory;
         if (Directory.Exists(CacheDirectory))
-            throw new InvalidOperationException($"The native tool cache is incomplete. Close the toolset, remove {CacheDirectory}, and rerun setup.");
+            throw new InvalidOperationException($"The native tool cache is incomplete. Close the toolset, delete {CacheDirectory}, and rerun setup.");
 
         var ldconfig = _runner.Exists("ldconfig") ? "ldconfig" :
             new[] { "/sbin/ldconfig", "/usr/sbin/ldconfig" }.FirstOrDefault(File.Exists)

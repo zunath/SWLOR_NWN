@@ -1,64 +1,65 @@
 # Star Wars: Legends of the Old Republic
 
-SWLOR is a Neverwinter Nights: Enhanced Edition persistent world. This repository contains its C# server, module content, and desktop toolset.
+SWLOR is a Neverwinter Nights: Enhanced Edition persistent world. This repository holds its C# server, module content, and desktop toolset.
 
 [Website](https://starwarsnwn.com/) · [Discord](https://discord.gg/MyQAM6m)
 
-## Toolset users and content contributors
+- **Edit content** (areas, blueprints, scripts): [install the toolset](#install-the-toolset).
+- **Change server code or run a local server**: [set up the source checkout](#set-up-the-source-checkout).
 
-Download **SWLOR Toolset** from [Releases](https://github.com/zunath/SWLOR_NWN/releases/latest): the Windows installer or portable ZIP, or the Linux x64 AppImage or portable tar.gz. Choose an application asset rather than GitHub's source-code ZIP. On Linux, make the AppImage executable with `chmod +x *.AppImage`, then open it. Ubuntu 24.04 is the tested Linux baseline; use X11 or Wayland with XWayland.
+## Install the toolset
 
-1. Install and open SWLOR Toolset.
-2. Select **Create SWLOR workspace** and choose a folder for your work.
-3. Optionally select **Locate Neverwinter Nights** for base-game models and tiles.
-4. Edit, save, and run **Tools → Run Validation**.
-5. Use **File → Export Contribution** and send the ZIP to your SWLOR maintainer for review.
+You need nothing else installed: no Git, .NET SDK, Python, or Docker.
 
-Git, Python, Visual Studio, Docker, and the .NET SDK are not required for the installed toolset. The first workspace downloads SWLOR assets separately; later workspaces reuse them. Application updates preserve your editable files. **Help → Check for Updates** updates an installed Windows copy or Linux AppImage. Portable archives are updated by downloading a newer archive.
+1. Download a package from [Releases](https://github.com/zunath/SWLOR_NWN/releases/latest): the Windows installer or portable ZIP, or the Linux x64 AppImage or tar.gz. Do not use GitHub's "Source code" ZIP.
+2. Install and open SWLOR Toolset. On Linux, run `chmod +x *.AppImage` first.
+3. Select **Create SWLOR workspace** and choose a folder for your work.
+4. Optional: select **Locate Neverwinter Nights** for base-game models and tiles.
+5. Edit, save, then run **Tools → Run Validation**.
+6. Use **File → Export Contribution** and send the ZIP to a maintainer.
 
-Conversations need a matching server build before they can be tested in game. Exporting a contribution lets the maintainer build and test the reviewed changes together.
+The first workspace downloads SWLOR assets; later workspaces reuse them. Updating the toolset keeps your files. **Help → Check for Updates** updates the installer and AppImage builds; for portable archives, download the newer archive. Linux builds are tested on Ubuntu 24.04 and need X11 or Wayland with XWayland.
 
-The standalone downloads become available after the first toolset release is published. Until then, use the source setup below. See the [toolset guide](SWLOR.Toolset/README.md) for details.
+Conversation changes need a matching server build before you can test them in game. The maintainer builds and tests your contribution.
 
-## Source developers
+No toolset release is published yet. Until one is, use the source checkout. More detail: [toolset guide](SWLOR.Toolset/README.md).
 
-Install [Git](https://git-scm.com/downloads) and a stable [.NET 10 SDK](https://dotnet.microsoft.com/download/dotnet/10.0). Use an IDE that supports that SDK if you want code editing or debugging. Docker Engine with Compose on Linux, or Docker Desktop on Windows, is needed only to run a local server; NWN:EE supplies base-game assets and the game client.
+## Set up the source checkout
 
-Fork this repository, then clone your fork:
+Windows:
 
-```powershell
-git clone --recursive https://github.com/<your_username>/SWLOR_NWN.git
-```
+1. Install [Git](https://git-scm.com/downloads) and a stable [.NET 10 SDK](https://dotnet.microsoft.com/download/dotnet/10.0) (10.0.100 or newer; release candidates do not work).
+2. Fork this repository and clone your fork: `git clone https://github.com/<your_username>/SWLOR_NWN.git`
+3. Run **Setup.cmd** in the checkout.
 
-Double-click **Setup.cmd** inside the checkout. It initializes the pinned asset submodule and builds the toolset. No IDE setup or startup-project selection is needed.
+Linux (Ubuntu 24.04):
 
-- **CheckSetup.cmd** checks the source prerequisites without changing submodules, native tools, or containers. The small .NET checker builds on its first run.
-- **StartToolset.cmd** builds and opens the editor from source.
-- **Setup.cmd -Profile Server** checks Docker and builds the local server launcher.
-- **StartServer.cmd** packs the module, prepares this checkout's local server files, and runs the server. The first run can take a while. Press Ctrl+C to stop it.
+1. Install Git and the .NET SDK as above, then the libraries:
+   `sudo apt-get install libpcre3 libsqlite3-0 libfontconfig1 libx11-6 libxrandr2 libxfixes3 libxi6 libxcursor1 libice6 libsm6 libglib2.0-0t64 libgl1 libgl1-mesa-dri`
+2. Fork and clone as above.
+3. Run `./Setup.sh` in the checkout.
 
-On Linux, install these source-tool dependencies on Ubuntu 24.04:
+Setup initializes the pinned `SWLOR_Haks` submodule, prepares the native NWN tools, and builds the toolset. On Linux it downloads checksum-verified tools into `~/.local/share/SWLOR.Toolset/NativeTools`. It needs no Python and no IDE.
 
-```bash
-sudo apt-get install libpcre3 libsqlite3-0 libfontconfig1 libx11-6 libxrandr2 libxfixes3 libxi6 libxcursor1 libice6 libsm6 libglib2.0-0t64 libgl1 libgl1-mesa-dri
-./Setup.sh
-./StartToolset.sh
-```
+| Windows | Linux | What it does |
+|---|---|---|
+| `Setup.cmd` | `./Setup.sh` | Prepares the checkout and builds the toolset |
+| `CheckSetup.cmd` | `./CheckSetup.sh` | Lists missing prerequisites; changes nothing |
+| `StartToolset.cmd` | `./StartToolset.sh` | Builds and opens the toolset |
+| `StartServer.cmd` | `./StartServer.sh` | Packs the module, deploys it, and runs a local server (slow the first time; Ctrl+C stops it) |
 
-`./CheckSetup.sh`, `./Setup.sh --profile Server`, and `./StartServer.sh` provide the same checks and server workflow. Setup downloads checksum-verified Linux NWN utilities into the user's cache; it does not require PowerShell. Both platforms use the same .NET setup command; Python is not required. For direct invocation from the repository root, use `dotnet run --project scripts/SWLOR.ContributorSetup -p:RunPostBuildEvent=Never -- --mode Check --profile Server`.
-
-Builds always disable automatic deployment. The server shortcut explicitly invokes the existing pack/deploy pipeline. Existing local configuration is preserved.
+To run a local server, also install Docker Desktop (Linux containers) on Windows, or Docker Engine with the Compose plugin on Linux. Check it with `CheckSetup.cmd -Profile Server` or `./CheckSetup.sh --profile Server`. To join the server, you need NWN:EE.
 
 ## Troubleshooting
 
-**Missing assets or TLK:** run Setup.cmd or ./Setup.sh. It initializes the exact SWLOR_Haks revision pinned by the parent repository.
+**"Install a stable .NET 10 SDK" or "compatible SDK not found":** `global.json` accepts only stable .NET 10 SDKs. Install one, reopen your terminal, and run `dotnet --version` in the checkout. It must print `10.x.x` without a `-rc` or `-preview` suffix.
 
-**SDK not found:** install a stable .NET 10 SDK and reopen your terminal or IDE. global.json selects the latest installed .NET 10 feature band.
+**Missing assets or TLK:** run `Setup.cmd` or `./Setup.sh`.
 
-**Docker unavailable:** start Docker Engine with Compose on Linux, or Docker Desktop with Linux containers on Windows. Run ./CheckSetup.sh --profile Server or CheckSetup.cmd -Profile Server.
+**"The native tool cache is incomplete":** close the toolset, delete the folder named in the message, and rerun setup.
 
-**Missing HAK/TLK when joining a local server:** point your NWN profile's HAK and TLK aliases at this checkout's debugserver/hak and debugserver/tlk directories, or copy those built files into your profile.
+**Docker unavailable:** start Docker, then rerun the server check above.
 
-**Contributor import conflict:** the target file has changed since the contributor's snapshot. A maintainer must review and merge it; imports never silently overwrite that newer work.
+**Missing HAK or TLK when joining a local server:** point your NWN profile's HAK and TLK paths at this checkout's `debugserver/hak` and `debugserver/tlk`, or copy those files into your profile.
 
-Ask for help on [Discord](https://discord.gg/MyQAM6m), including the setup error or the toolset's Output messages. Avoid deleting unrelated Docker containers, images, or game profiles.
+Still stuck? Ask on [Discord](https://discord.gg/MyQAM6m) and include the setup error or the toolset's Output messages. Do not delete unrelated Docker containers, images, or game profiles.

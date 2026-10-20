@@ -10,7 +10,7 @@ internal sealed class SetupApplication(string root, CommandRunner runner, Native
         foreach (var name in new[] { "git", "dotnet" })
         {
             if (!runner.Exists(name))
-                failures.Add(name == "git" ? "Install Git." : "Install a stable .NET 10 SDK from https://dotnet.microsoft.com/download/dotnet/10.0.");
+                failures.Add(name == "git" ? "Install Git from https://git-scm.com/downloads." : "Install a stable .NET 10 SDK from https://dotnet.microsoft.com/download/dotnet/10.0.");
             else Console.WriteLine("OK: " + name);
         }
         if (runner.Exists("dotnet"))
@@ -20,12 +20,12 @@ internal sealed class SetupApplication(string root, CommandRunner runner, Native
                 var version = await runner.CheckedAsync("dotnet", new[] { "--version" }, root,
                     capture: true, timeout: TimeSpan.FromSeconds(30), cancellation: cancellation);
                 if (!Regex.IsMatch(version, @"^10\.\d+\.\d+$"))
-                    failures.Add("Install a stable .NET 10 SDK. global.json excludes previews.");
+                    failures.Add("Found .NET SDK " + version + ". Install a stable .NET 10 SDK (10.0.100 or newer, not a release candidate).");
                 else Console.WriteLine("OK: .NET SDK " + version);
             }
             catch (Exception error) when (error is InvalidOperationException or TimeoutException)
             {
-                failures.Add("Install a stable .NET 10 SDK. global.json selects the newest installed .NET 10 feature band.");
+                failures.Add("No usable .NET SDK. Install a stable .NET 10 SDK (10.0.100 or newer, not a release candidate).");
             }
         }
         failures.AddRange(native.CheckPrerequisites(options.Profile));
@@ -39,19 +39,19 @@ internal sealed class SetupApplication(string root, CommandRunner runner, Native
                 {
                     if (await runner.CheckedAsync("docker", new[] { "info", "--format", "{{.OSType}}" }, root,
                         capture: true, timeout: TimeSpan.FromSeconds(30), cancellation: cancellation) != "linux")
-                        failures.Add("Configure Docker to run Linux containers.");
+                        failures.Add("Switch Docker to Linux containers.");
                     await runner.CheckedAsync("docker", new[] { "compose", "version" }, root,
                         capture: true, timeout: TimeSpan.FromSeconds(30), cancellation: cancellation);
                     Console.WriteLine("OK: Docker and Compose");
                 }
                 catch (Exception error) when (error is InvalidOperationException or TimeoutException)
                 {
-                    failures.Add("Start Docker and verify your account can access the daemon and Docker Compose.");
+                    failures.Add("Start Docker, and make sure your account can reach it and that Docker Compose is installed.");
                 }
             }
         }
         if (options.Mode == "Toolset" && OperatingSystem.IsLinux() && string.IsNullOrEmpty(Environment.GetEnvironmentVariable("DISPLAY")))
-            failures.Add("StartToolset.sh needs X11 or Wayland with XWayland (DISPLAY).");
+            failures.Add("No display found. Run StartToolset.sh from a desktop session (X11, or Wayland with XWayland).");
         if (options.Mode == "Check")
         {
             if (!File.Exists(Path.Combine(root, "SWLOR_Haks", "sw_tlk", "sw_tlk.tlk.json")))
@@ -65,7 +65,7 @@ internal sealed class SetupApplication(string root, CommandRunner runner, Native
         }
         if (options.Mode == "Check")
         {
-            Console.WriteLine("Setup checks passed. No submodules, native tools, or containers were changed.");
+            Console.WriteLine("All checks passed. Nothing was changed.");
             return 0;
         }
 
@@ -76,7 +76,7 @@ internal sealed class SetupApplication(string root, CommandRunner runner, Native
         await runner.CheckedAsync("dotnet", new[] { "build", project, "-p:RunPostBuildEvent=Never" }, root, environment, cancellation: cancellation);
         if (options.Mode == "Setup")
         {
-            Console.WriteLine("Setup complete. Use StartToolset.cmd / ./StartToolset.sh or StartServer.cmd / ./StartServer.sh.");
+            Console.WriteLine("Setup complete. Next: " + (OperatingSystem.IsWindows() ? "Start" + options.Profile + ".cmd" : "./Start" + options.Profile + ".sh"));
             return 0;
         }
         if (options.Mode == "Server")

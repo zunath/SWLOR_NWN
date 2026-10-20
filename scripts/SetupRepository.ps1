@@ -18,7 +18,7 @@ try {
         $sdkExitCode = 1
     }
     if ($sdkExitCode -ne 0 -or "$sdk" -notmatch '^10\.\d+\.\d+$') {
-        Write-Host 'Install a stable .NET 10 SDK. global.json selects the newest installed .NET 10 feature band; previews are not used.'
+        Write-Host 'No stable .NET 10 SDK found. Install one (10.0.100 or newer; release candidates do not work) from https://dotnet.microsoft.com/download/dotnet/10.0, then reopen this window.'
         exit 1
     }
     & dotnet run --project (Join-Path $PSScriptRoot 'SWLOR.ContributorSetup/SWLOR.ContributorSetup.csproj') -p:RunPostBuildEvent=Never -- --mode $Mode --profile $Profile

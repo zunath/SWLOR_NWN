@@ -17,8 +17,12 @@ internal static class Program
             var options = SetupOptions.Parse(args);
             if (options.Help)
             {
-                Console.WriteLine("Usage: --mode Check|Setup|Toolset|Server --profile Toolset|Server");
-                Console.WriteLine("Check diagnoses prerequisites; Setup prepares and builds; Toolset/Server build and launch.");
+                Console.WriteLine("Usage: --mode Check|Setup|Toolset|Server [--profile Toolset|Server]");
+                Console.WriteLine("  Check    List missing prerequisites. Changes nothing.");
+                Console.WriteLine("  Setup    Fetch assets, prepare native tools, and build.");
+                Console.WriteLine("  Toolset  Build and open the toolset.");
+                Console.WriteLine("  Server   Pack the module and run a local server.");
+                Console.WriteLine("  --profile selects what Check and Setup cover. Default: Toolset.");
                 return 0;
             }
             if ((!OperatingSystem.IsWindows() && !OperatingSystem.IsLinux()) ||

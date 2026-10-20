@@ -7,7 +7,7 @@ if ! command -v dotnet >/dev/null 2>&1; then
     exit 1
 fi
 if ! sdk="$(dotnet --version 2>/dev/null)" || [[ ! "$sdk" =~ ^10\.[0-9]+\.[0-9]+$ ]]; then
-    echo "Install a stable .NET 10 SDK. global.json selects the newest installed .NET 10 feature band; previews are not used." >&2
+    echo "No stable .NET 10 SDK found. Install one (10.0.100 or newer; release candidates do not work) from https://dotnet.microsoft.com/download/dotnet/10.0, then reopen your terminal." >&2
     exit 1
 fi
 exec dotnet run --project "$repo_root/scripts/SWLOR.ContributorSetup/SWLOR.ContributorSetup.csproj" -p:RunPostBuildEvent=Never -- "$@"

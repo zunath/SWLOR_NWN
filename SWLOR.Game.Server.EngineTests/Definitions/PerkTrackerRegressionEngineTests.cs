@@ -129,9 +129,9 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 Ability.EndAbilityImpact(caster);
             }
             await ctx.WaitFrameAsync();
-            // 1000 * 15% = 150; +20% outgoing = 180; +10% readiness = 198; -50% received = 99.
-            ctx.AssertEqual(198, GetCurrentHitPoints(caster) - casterHP, "caster healing includes outgoing and readiness");
-            ctx.AssertEqual(99, GetCurrentHitPoints(ally) - allyHP, "party healing respects the recipient's healing penalty");
+            // 68 HP + 3.75% of 1000 = 106; +20% outgoing = 128; +10% readiness = 141; -50% received = 70.
+            ctx.AssertEqual(141, GetCurrentHitPoints(caster) - casterHP, "caster healing includes outgoing and readiness");
+            ctx.AssertEqual(70, GetCurrentHitPoints(ally) - allyHP, "party healing respects the recipient's healing penalty");
             ctx.AssertEqual(outsiderHP, GetCurrentHitPoints(outsider), "nonparty neighbor receives no healing");
         }
 

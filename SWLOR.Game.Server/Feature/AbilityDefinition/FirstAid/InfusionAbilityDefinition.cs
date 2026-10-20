@@ -80,22 +80,22 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
 
         private static void Infusion1ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
-            ApplyInfusion(activator, target, "Infusion I", 20f);
+            ApplyInfusion(activator, target, "Infusion I", new HealAmount(7, 0.5f));
         }
 
         private static void Infusion2ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
-            ApplyInfusion(activator, target, "Infusion II", 30f);
+            ApplyInfusion(activator, target, "Infusion II", new HealAmount(14, 0.75f));
         }
 
-        private static void ApplyInfusion(uint activator, uint target, string name, float totalPercent)
+        private static void ApplyInfusion(uint activator, uint target, string name, HealAmount healPerTick)
         {
             var friendly = AbilityTargeting.ResolveFriendlyTarget(activator, target);
             var credited = new HashSet<uint>();
             if (StatusEffect.ApplyStatusEffect(
                 activator,
                 friendly,
-                new RegenerativeHealingStatusEffect(name, totalPercent, 10, true, SkillType.FirstAid, credited),
+                new RegenerativeHealingStatusEffect(name, healPerTick, appliesMedicalHealingBonus: true, supportSkill: SkillType.FirstAid, supportCredited: credited),
                 30f))
                 Ability.PlaySuccessfulImpactVisualEffect(activator, friendly);
             FirstAidTreatmentAdjustments.ApplyTraumaMedicRiders(activator, friendly);

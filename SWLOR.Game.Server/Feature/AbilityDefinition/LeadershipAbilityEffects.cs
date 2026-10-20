@@ -86,16 +86,16 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                 return bolstered;
 
             var radius = GetLeadershipCommandRadius(activator);
-            var temporaryHPPercent = rank >= 2
-                ? AbilityEffectScaling.ScaleValueBySourceSocial(activator, 12, 15)
-                : AbilityEffectScaling.ScaleValueBySourceSocial(activator, 8, 10);
+            var shield = rank >= 2
+                ? AbilityEffectScaling.ScaleHealBySourceSocial(activator, new HealAmount(54, 3f), new HealAmount(68, 3.75f))
+                : AbilityEffectScaling.ScaleHealBySourceSocial(activator, new HealAmount(18, 2f), new HealAmount(23, 2.5f));
 
             foreach (var friendly in AbilityTargeting.GetFriendlyTargets(activator, activator, true, radius))
             {
                 TemporaryHitPointEffects.ApplyFlat(
                     friendly,
                     "BOLSTER_RESOLVE",
-                    GameMath.PercentOf(GetMaxHitPoints(friendly), temporaryHPPercent),
+                    shield.ForMaxHitPoints(GetMaxHitPoints(friendly)),
                     durationSeconds);
 
                 if (rank >= 2)

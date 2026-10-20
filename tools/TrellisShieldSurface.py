@@ -67,12 +67,30 @@ def points_touch_triangles(points, triangles, tolerance=1e-7, chunk=256):
     return False
 
 
+def edges_touch_edges(first, second, tolerance=1e-7, chunk=256):
+    """True when any segment of one set comes within tolerance of any segment of the other
+    (covers coplanar X-shaped edge crossings that triangle-ray tests miss)."""
+    for start in range(0,len(second),chunk):
+        q0=second[start:start+chunk,0][None];d2=(second[start:start+chunk,1]-second[start:start+chunk,0])[None]
+        for begin in range(0,len(first),chunk):
+            p0=first[begin:begin+chunk,0][:,None];d1=(first[begin:begin+chunk,1]-first[begin:begin+chunk,0])[:,None]
+            r=p0-q0;dot=lambda x,y:(x*y).sum(-1)
+            a=dot(d1,d1)+0*r[...,0];e=dot(d2,d2)+0*r[...,0];f=dot(d2,r);c=dot(d1,r);b=dot(d1,d2);den=a*e-b*b
+            s=np.clip(np.where(den>1e-30,(b*f-c*e)/np.where(den>1e-30,den,1),0),0,1)
+            t=np.clip((b*s+f)/np.maximum(e,1e-30),0,1)
+            s=np.clip((b*t-c)/np.maximum(a,1e-30),0,1)
+            gap=p0+d1*s[...,None]-(q0+d2*t[...,None])
+            if np.any(dot(gap,gap)<=tolerance*tolerance):return True
+    return False
+
+
 def shells_intersect(first, second, tolerance=1e-7):
     """Closed triangle sets intersect or touch when an edge of one crosses (or grazes) a triangle of
     the other, or a vertex of one lies on the other; coplanar and boundary contacts count too."""
     def edges(tris):return np.concatenate([tris[:,[0,1]],tris[:,[1,2]],tris[:,[2,0]]])
     return (edges_cross_triangles(edges(first),second,inclusive=True) or edges_cross_triangles(edges(second),first,inclusive=True)
-            or points_touch_triangles(first.reshape(-1,3),second,tolerance) or points_touch_triangles(second.reshape(-1,3),first,tolerance))
+            or points_touch_triangles(first.reshape(-1,3),second,tolerance) or points_touch_triangles(second.reshape(-1,3),first,tolerance)
+            or edges_touch_edges(edges(first),edges(second),tolerance))
 
 
 def audit_surface(vertices, faces, components=False):

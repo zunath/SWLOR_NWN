@@ -88,6 +88,23 @@ class ShieldSurfaceTests(unittest.TestCase):
                 surface.require_closed(surface.audit_surface(*combine(outer,inward(cavity)),components=True))
         surface.require_closed(surface.audit_surface(*combine(outer,inward(box((.2,0,0),size=(.5,.5,.5)))),components=True))
 
+    def test_coplanar_x_shaped_edge_crossings_count_as_contact(self):
+        first=np.asarray([[[-1,-.05,0],[1,-.05,0],[1,.05,0]]],np.float64)
+        second=np.asarray([[[-.05,-1,0],[.05,-1,0],[.05,1,0]]],np.float64)
+        self.assertFalse(surface.points_touch_triangles(first.reshape(-1,3),second) or surface.points_touch_triangles(second.reshape(-1,3),first))
+        self.assertTrue(surface.shells_intersect(first,second))
+        self.assertFalse(surface.shells_intersect(first,second+np.asarray([0,0,.5])))
+
+    def test_bridge_creates_cache_directories_durably_and_serializes_keys(self):
+        spec=importlib.util.spec_from_file_location('shield_lock_bridge',TOOLS/'trellis2_shield_nodes/__init__.py')
+        bridge=importlib.util.module_from_spec(spec);spec.loader.exec_module(bridge)
+        with tempfile.TemporaryDirectory() as temporary:
+            target=Path(temporary)/'a'/'b';synced=[]
+            with patch.object(bridge,'sync_directory',side_effect=synced.append):bridge.create_durable_directories(target)
+            self.assertTrue(target.is_dir());self.assertEqual(synced,[Path(temporary),Path(temporary)/'a'])
+            with bridge.key_lock(target):self.assertTrue((target/'.lock').exists())
+            with bridge.key_lock(target):pass
+
     def test_crossing_shells_are_detected_even_when_all_vertices_lie_outside(self):
         # A triangle threading through another one: no vertex of either lies inside the other.
         first=np.asarray([[[-1,-1,0],[1,-1,0],[0,1,0]]],np.float64)

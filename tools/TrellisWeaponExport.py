@@ -563,13 +563,16 @@ def closed_surface_report(objects,double_sided_materials=None,material_count=Non
     # Validate each cavity against every other closed component together: it must not touch
     # any of them, and the aggregate signed winding of all of them around it must be exactly one
     # (solid material). Nested cavities, cavities in cavities and crossing cavities all fail.
-    closed=[root for root in groups if root not in invalid|degenerate_roots]
+    # Every valid closed component counts, including unselected inward shells (existing voids).
+    closed=[root for root in all_groups if root not in invalid|degenerate_roots]
+    for root in closed:
+        if root not in trees:trees[root]=BVHTree.FromPolygons(vertices,all_groups[root],all_triangles=True)
     for root in inward:
         others=[other for other in closed if other!=root]
         if not others or any(trees[root].overlap(trees[other]) for other in others):
             raise ValueError('Inward shell is not proven enclosed by a nonintersecting outward shell')
         point=np.asarray(vertices[groups[root][0][0]],dtype=np.float64)
-        triangles=np.asarray([[vertices[i] for i in face] for other in others for face in groups[other]],dtype=np.float64)-point
+        triangles=np.asarray([[vertices[i] for i in face] for other in others for face in all_groups[other]],dtype=np.float64)-point
         a,b,c=triangles[:,0],triangles[:,1],triangles[:,2]
         la,lb,lc=(np.linalg.norm(v,axis=1) for v in (a,b,c))
         numerator=np.einsum('ij,ij->i',a,np.cross(b,c))

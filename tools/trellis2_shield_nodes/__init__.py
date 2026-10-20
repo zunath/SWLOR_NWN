@@ -5,6 +5,7 @@ SWLOR_BLENDER to Blender4.0's executable (or provide blender on PATH), and
 SWLOR_SHIELD_CACHE to an absolute task-owned staging directory. Do not modify a
 shared ComfyUI installation or enable this package in an unrelated service.
 """
+import contextlib
 import hashlib
 from functools import lru_cache
 import importlib.util
@@ -35,6 +36,44 @@ def blender_identity(executable):
         for block in iter(lambda:stream.read(4*1024*1024),b''):digest.update(block)
     fingerprint=digest.hexdigest()
     return {'path':str(path),'sha256':fingerprint,'version':blender_version(str(path),fingerprint)}
+
+
+def sync_directory(directory):
+    """Flush a directory entry on POSIX; Windows exposes no directory fsync."""
+    if os.name=='nt':return
+    descriptor=os.open(directory,os.O_RDONLY|getattr(os,'O_DIRECTORY',0))
+    try:os.fsync(descriptor)
+    finally:os.close(descriptor)
+
+
+def create_durable_directories(directory):
+    """Create missing ancestors and persist each new entry in its parent, top-down."""
+    missing=[];path=Path(directory)
+    while not os.path.lexists(path) and path.parent!=path:missing.append(path);path=path.parent
+    Path(directory).mkdir(parents=True,exist_ok=True)
+    for path in reversed(missing):sync_directory(path.parent)
+
+
+@contextlib.contextmanager
+def key_lock(directory):
+    """Exclusive, blocking per-cache-key lock held by an open lock file."""
+    handle=(Path(directory)/'.lock').open('a+b')
+    try:
+        if os.name=='nt':
+            import msvcrt
+            while True:
+                try:handle.seek(0);msvcrt.locking(handle.fileno(),msvcrt.LK_LOCK,1);break
+                except OSError:continue
+        else:
+            import fcntl
+            fcntl.flock(handle.fileno(),fcntl.LOCK_EX)
+        yield
+    finally:
+        if os.name=='nt':
+            import msvcrt
+            try:handle.seek(0);msvcrt.locking(handle.fileno(),msvcrt.LK_UNLCK,1)
+            except OSError:pass
+        handle.close()
 
 
 def discard_outputs(outputs):
@@ -169,7 +208,7 @@ class SWLORClosedVoxelMesh:
         if len(mesh.vertices)!=1 or len(mesh.faces)!=1:raise ValueError('Expected exactly one shield mesh')
         vertices=mesh.vertices[0].detach().cpu().numpy().astype(np.float32)
         faces=mesh.faces[0].detach().cpu().numpy().astype(np.int32)
-        directory=cache/surface_cache_key(vertices,faces,voxel_size,runtime);directory.mkdir(parents=True,exist_ok=True)
+        directory=cache/surface_cache_key(vertices,faces,voxel_size,runtime);create_durable_directories(directory)
         source=directory/'input.npz';high=directory/'closed_high.npz';low=directory/('closed_low_'+str(target_face_count)+'.npz')
         def run(mode,input_path,output_path,flags):
             command=[executable,'-b','--factory-startup','--python-exit-code','1','--python',str(SURFACE_SCRIPT),'--',mode,str(input_path),str(output_path),*flags]
@@ -180,16 +219,19 @@ class SWLORClosedVoxelMesh:
             except BaseException:
                 discard_outputs(outputs);raise  # Unverified runs never leave a reusable cache pair.
             require_same_blender(executable,runtime,outputs)
-        high_arrays=cached_entry(high)
-        if high_arrays is None:
-            np.savez(source,vertices=vertices,faces=faces)
-            run('voxel',source,high,['--voxel-size',str(voxel_size)])
-            source.unlink()
-            high_arrays=cached_arrays(high)
-        low_arrays=cached_entry(low)
-        if low_arrays is None:
-            run('decimate',high,low,['--target-faces',str(target_face_count)])
-            low_arrays=cached_arrays(low)
+        # One run per cache key at a time: a failed run then only ever discards files it produced,
+        # and a concurrent run finds the winner's published entry instead of racing it.
+        with key_lock(directory):
+            high_arrays=cached_entry(high)
+            if high_arrays is None:
+                np.savez(source,vertices=vertices,faces=faces)
+                run('voxel',source,high,['--voxel-size',str(voxel_size)])
+                source.unlink()
+                high_arrays=cached_arrays(high)
+            low_arrays=cached_entry(low)
+            if low_arrays is None:
+                run('decimate',high,low,['--target-faces',str(target_face_count)])
+                low_arrays=cached_arrays(low)
         meshes=tuple(Types.MESH(vertices=torch.from_numpy(v).unsqueeze(0),faces=torch.from_numpy(f).unsqueeze(0)) for v,f in (high_arrays,low_arrays))
         provenance={'high_surface':str(high),'low_surface':str(low),'surface_script_sha256':hashlib.sha256(SURFACE_SCRIPT.read_bytes()).hexdigest(),'blender':runtime}
         return {'ui':{'text':[json.dumps(provenance,sort_keys=True)]},'result':meshes}

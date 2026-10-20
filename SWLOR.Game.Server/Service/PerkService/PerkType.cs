@@ -780,6 +780,6 @@ namespace SWLOR.Game.Server.Service.PerkService
         TwinPistolSecondWind = 842,
         FinalSalvo = 843,
 
-        // IDs 650 and 824+ are free.
+        // IDs 650 and 844+ are free.
     }
 }

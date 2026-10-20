@@ -251,7 +251,7 @@ public sealed partial class Simulation
             amount = Combat.ApplyOrdinaryAttackDamageMultiplier(amount, actor.GetStat(StatType.OrdinaryAttackDamagePercentAdjustment));
         }
         amount = WeaponImpactDamagePartition.Partition(amount, volleyIndex, volleyCount);
-        var dealt = amount > 0 ? ApplyDamage(actor, target, amount) : 0;
+        var dealt = amount > 0 ? ApplyDamage(actor, target, amount, directHostile: true) : 0;
         if (recordMovement) RecordLandedWeaponHit(actor);
         return (true, dealt);
     }
@@ -280,6 +280,6 @@ public sealed partial class Simulation
             ? Combat.StandardCriticalRating : 0;
         var (minimum, maximum) = Combat.CalculateDamageRange(weapon.Attack, power, weapon.DamageAbility,
             target.Spec.Defense, target.Spec.Vitality, critical, 0);
-        return (true, ApplyDamage(actor, target, SampleWeaponDamage(_random, minimum, maximum) * multiplier));
+        return (true, ApplyDamage(actor, target, SampleWeaponDamage(_random, minimum, maximum) * multiplier, directHostile: true));
     }
 }

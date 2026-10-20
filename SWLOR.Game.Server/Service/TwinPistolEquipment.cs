@@ -129,13 +129,9 @@ public static class TwinPistolEquipment
             // Reserve space for the real item before changing either hand. Failure retains the pair.
             if (GetIsObjectValid(pair.Main) && GetItemInSlot(InventorySlot.RightHand, creature) == pair.Main)
             {
-                if (GetIsPC(creature))
-                {
-                    if (!PlayerEquipmentStorage.TryUnequip(creature, pair.Main, InventorySlot.RightHand, allowRecoveryBag: false))
-                        throw new InvalidOperationException("No owned storage can hold the Twin Pistols item.");
-                }
-                else if (!CreaturePlugin.RunUnequip(creature, pair.Main))
-                    throw new InvalidOperationException("The Twin Pistols item could not be unequipped.");
+                // Every owner, NPCs included, keeps the real item equipped when storage is full.
+                if (!PlayerEquipmentStorage.TryUnequip(creature, pair.Main, InventorySlot.RightHand, allowRecoveryBag: false))
+                    throw new InvalidOperationException("No owned storage can hold the Twin Pistols item.");
             }
             DestroySpare(pair.Spare);
             if (GetIsObjectValid(pair.Main)) DeleteLocalObject(pair.Main, CompanionVariable);
@@ -173,6 +169,17 @@ public static class TwinPistolEquipment
             Pairs.Remove(creature);
         }
         finally { Changing.Remove(creature); }
+    }
+
+    /// <summary>Destroyed NPC owners never run module-exit cleanup; drop their cached pair.</summary>
+    public static void ReleaseDestroyedOwner(uint creature)
+    {
+        Changing.Remove(creature);
+        if (!Pairs.Remove(creature, out var pair)) return;
+        if (IsPairItem(pair.Main) && GetLocalObject(pair.Main, CompanionVariable) == pair.Spare)
+            DeleteLocalObject(pair.Main, CompanionVariable);
+        if (IsGeneratedCompanion(pair.Spare) && GetLocalObject(pair.Spare, OwnerVariable) == creature)
+            DestroySpare(pair.Spare);
     }
 
     public static void DestroySpare(uint spare)

@@ -42,6 +42,9 @@ public static class TwinPistolPairLifecycle
     [NWNEventHandler(ScriptName.OnModuleExit)]
     public static void OnExit() => TwinPistolEquipment.ReleaseCompanions(GetExitingObject());
 
+    [NWNEventHandler(ScriptName.OnObjectDestroyed)]
+    public static void OnDestroyed() => TwinPistolEquipment.ReleaseDestroyedOwner(OBJECT_SELF);
+
     [NWNEventHandler(ScriptName.OnModuleUnacquire)]
     public static void OnLostItem()
     {

@@ -56,6 +56,21 @@ public class WeaponPvpTests
     }
 
     [Test]
+    public void TwinPistolLoadoutHits_ArmTheDefendersPaybackLikeOtherDirectDamage()
+    {
+        var scenario = TwinPistolScenarios.Create(false, false, 60, pvp: true, catalog: _catalog);
+        var shooter = scenario.Teams[0].Members[0];
+        shooter.Abilities = new();
+        shooter.WeaponCombat = new() { Attack = 100, Accuracy = 200, Defense = 100, Evasion = 100, EnableCriticals = false };
+        scenario.Teams[1].Members[0] = Fighter("Target", "None", "Payback");
+        var simulation = TestScenarios.Spawn(scenario, RuleSets.Current(), _catalog);
+        var target = simulation.Get("Target");
+        SimulationClock.RunUntil(simulation, () => target.Hp < target.Spec.MaxHp, 30, "a Twin Pistol hit on real HP");
+        target.Weapon.Resources.GetDiscount(WeaponCombatState.At(simulation.Now)).Should().Be(2,
+            "native loadout hits are direct hostile damage, so they arm Payback");
+    }
+
+    [Test]
     public void FormulaWeaponDamage_UsesCurrentVictimPvpRamp()
     {
         double Hit(bool pvp)

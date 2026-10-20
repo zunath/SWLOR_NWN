@@ -621,6 +621,11 @@ def clip_mesh_y(mesh, plane, side, normalize_normals=True):
     return normalize_clipped_normals(result) if normalize_normals else result
 
 
+def remove_imported_lights():
+    """Source GLB lights and cameras must not reach review renders or shipped icons."""
+    for ob in [ob for ob in bpy.context.scene.objects if ob.type in ('LIGHT','CAMERA')]:bpy.data.objects.remove(ob,do_unlink=True)
+
+
 def mesh_preview(mesh,name,material):
     vertices,uvs,faces,normals=mesh;m=bpy.data.meshes.new(name)
     m.from_pydata(vertices,[],faces);m.update();layer=m.uv_layers.new()
@@ -740,6 +745,7 @@ def export_one(config,source,repo,out,mode,helpers,icon_size):
     tag_import_materials(imported)
     import_path=cache/'import.glb';write_glb(import_path,imported,binary)
     bpy.ops.import_scene.gltf(filepath=str(import_path))
+    remove_imported_lights()
     objects=[ob for ob in bpy.context.scene.objects if ob.type=='MESH']
     if not objects or any(ob.type=='ARMATURE' for ob in bpy.context.scene.objects):raise ValueError('Expected static rigid weapon meshes')
     for ob in objects:

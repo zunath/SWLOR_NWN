@@ -75,7 +75,8 @@ class ShieldSurfaceTests(unittest.TestCase):
         self.assertEqual(sorted(shell['signed_volume']<0 for shell in report['shells']),[False,True])
         island=box(size=(.2,.2,.2));nested=inward(box(size=(.1,.1,.1)))
         surface.require_closed(surface.audit_surface(*combine(outer,cavity,island,nested),components=True))
-        for meshes in ((inward(outer),),(box(),inward(box((2,0,0)))),(outer,cavity,inward(box(size=(.2,.2,.2))))):
+        protruding=inward(box((.4,0,0),size=(.5,.5,.5)))
+        for meshes in ((inward(outer),),(box(),inward(box((2,0,0)))),(outer,cavity,inward(box(size=(.2,.2,.2)))),(outer,protruding)):
             with self.subTest(shells=len(meshes)),self.assertRaisesRegex(ValueError,'not an enclosed cavity'):
                 surface.require_closed(surface.audit_surface(*combine(*meshes),components=True))
 
@@ -261,6 +262,10 @@ class ShieldSurfaceTests(unittest.TestCase):
         for v,f in variants:
             self.assertNotEqual(key,bridge.surface_cache_key(v,f,.003,{'build':'same'}))
         self.assertEqual(key,bridge.surface_cache_key(np.asfortranarray(vertices),faces.copy(),.003,{'build':'same'}))
+        with tempfile.TemporaryDirectory() as temporary:
+            changed=Path(temporary)/'__init__.py';changed.write_bytes(Path(bridge.__file__).read_bytes()+b'# changed bridge')
+            with patch.object(bridge,'__file__',str(changed)):
+                self.assertNotEqual(key,bridge.surface_cache_key(vertices,faces,.003,{'build':'same'}))
 
     def test_output_report_and_temporary_paths_must_all_be_fresh_before_loading(self):
         vertices,faces=box()

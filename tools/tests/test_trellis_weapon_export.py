@@ -714,6 +714,18 @@ class TrellisWeaponExportTests(unittest.TestCase):
 
 
 @unittest.skipIf(np is None, 'NumPy required for native normal basis math')
+class ImportedLightTests(unittest.TestCase):
+    @unittest.skipUnless(HAS_BLENDER,'Run Blender 4.0 for imported light removal')
+    def test_imported_lights_and_cameras_are_removed_before_rendering(self):
+        bpy=exporter.bpy;bpy.ops.wm.read_factory_settings(use_empty=True)
+        scene=bpy.context.scene
+        for kind,data in (('LIGHT',bpy.data.lights.new('source_light','POINT')),('CAMERA',bpy.data.cameras.new('source_camera'))):
+            scene.collection.objects.link(bpy.data.objects.new('source_'+kind.lower(),data))
+        mesh=bpy.data.objects.new('weapon',bpy.data.meshes.new('weapon'));scene.collection.objects.link(mesh)
+        exporter.remove_imported_lights()
+        self.assertEqual([ob.type for ob in scene.objects],['MESH'])
+
+
 class ImageViewBoundsTests(unittest.TestCase):
     def test_image_views_must_be_valid_nonnegative_ranges(self):
         binary = b'\x89PNG456789'

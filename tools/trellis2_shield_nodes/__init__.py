@@ -123,6 +123,7 @@ def surface_cache_key(vertices,faces,voxel_size,runtime):
         field(name+'.data',array.tobytes(order='C'))
     field('voxel_size',str(voxel_size).encode())
     field('surface_script',SURFACE_SCRIPT.read_bytes())
+    field('bridge',Path(__file__).read_bytes())
     field('runtime',json.dumps(runtime,sort_keys=True).encode())
     return digest.hexdigest()
 

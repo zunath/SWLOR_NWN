@@ -131,7 +131,7 @@ function Get-CodexAnswer {
     }
 
     $other = $comments | Where-Object {
-        $_.body -notmatch "codex-review-receipt" -or
+        ($_.body -notmatch "codex-review-receipt" -and $_.body -notmatch $findingBadge) -or
         ($_.body -match $shortHead -and $_.body -notmatch $cleanVerdict -and $_.body -notmatch $findingBadge)
     } | Select-Object -Last 1
     if ($other) {

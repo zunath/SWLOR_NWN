@@ -44,7 +44,7 @@ Setup initializes the pinned `SWLOR_Haks` submodule, prepares the native NWN too
 | Windows | Linux | What it does |
 |---|---|---|
 | `Setup.cmd` | `./Setup.sh` | Prepares the checkout and builds the toolset |
-| `CheckSetup.cmd` | `./CheckSetup.sh` | Lists missing prerequisites; changes nothing |
+| `CheckSetup.cmd` | `./CheckSetup.sh` | Lists missing prerequisites without changing submodules, native tools, or containers (builds the small checker on first run) |
 | `StartToolset.cmd` | `./StartToolset.sh` | Builds and opens the toolset |
 | `StartServer.cmd` | `./StartServer.sh` | Packs the module, deploys it, and runs a local server (slow the first time; Ctrl+C stops it) |
 

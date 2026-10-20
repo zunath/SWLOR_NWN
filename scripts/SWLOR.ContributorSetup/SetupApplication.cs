@@ -65,7 +65,7 @@ internal sealed class SetupApplication(string root, CommandRunner runner, Native
         }
         if (options.Mode == "Check")
         {
-            Console.WriteLine("All checks passed. Nothing was changed.");
+            Console.WriteLine("All checks passed. No submodules, native tools, or containers were changed.");
             return 0;
         }
 

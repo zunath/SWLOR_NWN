@@ -18,7 +18,7 @@ internal static class Program
             if (options.Help)
             {
                 Console.WriteLine("Usage: --mode Check|Setup|Toolset|Server [--profile Toolset|Server]");
-                Console.WriteLine("  Check    List missing prerequisites. Changes nothing.");
+                Console.WriteLine("  Check    List missing prerequisites. Leaves submodules, tools, and containers alone.");
                 Console.WriteLine("  Setup    Fetch assets, prepare native tools, and build.");
                 Console.WriteLine("  Toolset  Build and open the toolset.");
                 Console.WriteLine("  Server   Pack the module and run a local server.");

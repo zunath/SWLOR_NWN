@@ -537,7 +537,7 @@ class TrellisWeaponExportTests(unittest.TestCase):
     @unittest.skipUnless(HAS_BLENDER,'Run Blender 4.0 for source surface proof')
     def test_faces_sharing_a_vertex_still_count_when_they_cross_elsewhere(self):
         Vector=exporter.Vector;e=1e-6
-        v=[Vector(p) for p in [(0,0,0),(1,0,0),(0,1,0),(.4,.4,1),(.4,.4,-1),(-1,0,0),(0,-1,0),(e,e,1),(e,e,-1),(-e,-e,1),(-e,-e,-1),(.5,.5,0),(.5,-.5,0),(1,1,0)]]
+        v=[Vector(p) for p in [(0,0,0),(1,0,0),(0,1,0),(.4,.4,1),(.4,.4,-1),(-1,0,0),(0,-1,0),(e,e,1),(e,e,-1),(-e,-e,1),(-e,-e,-1),(.5,.5,0),(.5,-.5,0),(1,1,0),(2,0,0),(1,-1,0)]]
         crosses=lambda *faces:exporter.shell_crosses_itself(v,list(faces))
         self.assertTrue(crosses((0,1,2),(0,3,4)))    # shared corner, second face pierces the first
         self.assertTrue(crosses((0,1,2),(0,7,8)))    # a narrow face piercing right beside the shared corner
@@ -546,7 +546,23 @@ class TrellisWeaponExportTests(unittest.TestCase):
         self.assertFalse(crosses((0,1,2),(1,0,6)))   # shared edge only
         self.assertTrue(crosses((0,1,2),(1,0,11)))   # coplanar faces folded onto the same side of their edge
         self.assertTrue(crosses((0,1,2),(0,1,13)))   # coplanar wedges at a shared corner overlap
-        self.assertFalse(crosses((0,1,2),(0,12,1)))  # coplanar wedges that only touch along an edge ray
+        self.assertFalse(crosses((0,1,2),(0,12,1)))  # coplanar faces sharing an edge, on opposite sides
+        self.assertTrue(crosses((0,1,2),(0,14,15)))  # sharing only the corner but touching along a common edge ray
+
+    @unittest.skipUnless(HAS_BLENDER,'Run Blender 4.0 for source surface proof')
+    def test_dense_fans_are_checked_in_bounded_batches(self):
+        # A bipyramid: every face of each half shares one apex, so every pair of them is a candidate.
+        segments=400;ring=[(math.cos(2*math.pi*k/segments),math.sin(2*math.pi*k/segments),0) for k in range(segments)]
+        points=[exporter.Vector(p) for p in ring+[(0,0,1),(0,0,-1)]];top,bottom=segments,segments+1
+        faces=[(k,(k+1)%segments,top) for k in range(segments)]+[((k+1)%segments,k,bottom) for k in range(segments)]
+        seen=[];real=exporter.batch_crosses
+        def spy(*args):
+            seen.append(len(args[4]));return real(*args)
+        with unittest.mock.patch.object(exporter,'batch_crosses',side_effect=spy):
+            self.assertFalse(exporter.shell_crosses_itself(points,faces,batch=1000))
+        self.assertGreater(len(seen),40);self.assertLessEqual(max(seen),1000)
+        faces[0]=(0,1,bottom)  # move a top face onto the bottom half, coinciding with an existing face
+        self.assertTrue(exporter.shell_crosses_itself(points,faces,batch=1000))
 
     @unittest.skipUnless(HAS_BLENDER,'Run Blender 4.0 for source surface proof')
     def test_shell_volume_survives_a_large_translation(self):

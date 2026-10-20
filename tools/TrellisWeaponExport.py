@@ -539,7 +539,9 @@ def faces_meet_beyond_shared(points,first,second,shared,tol=1e-9):
         return (x,span) if span<math.pi else (y,2*math.pi-span)
     def inside(angle,start,span):return tol<(angle-start)%(2*math.pi)<span-tol
     (s1,l1),(s2,l2)=arc(*o1),arc(*o2)
-    return inside(s2,s1,l1) or inside(s1,s2,l2) or abs((s1-s2+math.pi)%(2*math.pi)-math.pi)<=tol
+    def same(x,y):return abs((x-y+math.pi)%(2*math.pi)-math.pi)<=tol
+    # Overlapping wedges, or any common boundary ray (faces then touch along a segment from the vertex).
+    return inside(s2,s1,l1) or inside(s1,s2,l2) or any(same(x,y) for x in (s1,s1+l1) for y in (s2,s2+l2))
 
 
 def triangles_touch(t1,t2,tol=1e-9):
@@ -570,22 +572,37 @@ def triangles_touch(t1,t2,tol=1e-9):
     return touch
 
 
-def shell_crosses_itself(vertices,faces):
+def shell_crosses_itself(vertices,faces,batch=200000):
     """True when two faces of one shell meet anywhere beyond the vertex or edge they share. A bounding-box sweep finds
     candidate pairs, an exact closed-triangle test keeps those in contact, and vertex- or edge-sharing pairs are then
-    classified exactly, so coplanar folds and crossings right beside a shared vertex are all caught."""
+    classified exactly, so coplanar folds and crossings right beside a shared vertex are all caught. Candidates are
+    produced and tested in batches of at most `batch` pairs, so a dense fan around one apex stays in bounded memory."""
     if not faces:return False
     index=sorted({i for face in faces for i in face});origin=np.asarray(vertices[faces[0][0]],dtype=np.float64)
     points={i:np.asarray(vertices[i],dtype=np.float64)-origin for i in index}  # shell-local precision
     tris=np.asarray([[points[i] for i in face] for face in faces]);pad=1e-9*max(float(np.ptp(tris.reshape(-1,3),axis=0).max()),1e-30)
-    lo=tris.min(1)-pad;hi=tris.max(1)+pad;order=np.argsort(lo[:,0]);sorted_lo=lo[order,0];first=[];second=[]
-    for k,i in enumerate(order):
-        j=order[k+1:np.searchsorted(sorted_lo,hi[i,0],side='right')]
-        j=j[np.all((lo[j,1:]<=hi[i,1:])&(lo[i,1:]<=hi[j,1:]),axis=1)];first+= [i]*len(j);second+=j.tolist()
-    if not first:return False
-    first=np.asarray(first);second=np.asarray(second);touching=triangles_touch(tris[first],tris[second])
-    I=first[touching];J=second[touching];F=np.asarray(faces);eq=F[I][:,:,None]==F[J][:,None,:];count=eq.sum((1,2))
-    if np.any((count==0)|(count==3)):return True
+    lo=tris.min(1)-pad;hi=tris.max(1)+pad;order=np.argsort(lo[:,0]);sorted_lo=lo[order,0];F=np.asarray(faces)
+    def candidates():
+        first=[];second=[];size=0
+        for k,i in enumerate(order):
+            j=order[k+1:np.searchsorted(sorted_lo,hi[i,0],side='right')]
+            j=j[np.all((lo[j,1:]<=hi[i,1:])&(lo[i,1:]<=hi[j,1:]),axis=1)]
+            while len(j):
+                take=j[:batch-size];j=j[len(take):];first.append(np.full(len(take),i));second.append(take);size+=len(take)
+                if size>=batch:yield np.concatenate(first),np.concatenate(second);first=[];second=[];size=0
+        if size:yield np.concatenate(first),np.concatenate(second)
+    return any(batch_crosses(points,faces,F,tris,first,second) for first,second in candidates())
+
+
+def batch_crosses(points,faces,F,tris,first,second):
+    """Exact crossing test for one batch of candidate face pairs."""
+    eq=F[first][:,:,None]==F[second][:,None,:];count=eq.sum((1,2))
+    if np.any(count==3):return True
+    # Faces sharing nothing cross exactly when their closed triangles touch; faces sharing a vertex or edge always
+    # touch there, so they go straight to the exact shared-boundary classification below.
+    apart=count==0
+    if apart.any() and triangles_touch(tris[first[apart]],tris[second[apart]]).any():return True
+    I=first[~apart];J=second[~apart];eq=eq[~apart];count=count[~apart]
     rows=np.arange(len(I));ti=tris[I];tj=tris[J];norm=lambda x:np.linalg.norm(x,axis=-1);tol=1e-9
     # Edge-sharing pairs meet off their edge only when coplanar and folded onto the same side.
     e=count==2;ri=np.argmin(eq.any(2),1);rj=np.argmin(eq.any(1),1)

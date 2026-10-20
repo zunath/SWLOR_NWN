@@ -9,6 +9,9 @@
 # check out, then delete the blobs the checkout fetched (about 5 GB). The clone is partial,
 # so git downloads any blob it needs again later (diff, checkout of another commit).
 #
+# Async hooks ignore their "timeout" setting, so .claude/settings.json runs this under coreutils
+# timeout; a stopped run resumes on the next session start.
+#
 # Set SWLOR_HAKS_SPARSE to a list of hak folders to check out only those (faster, but tests
 # that read other folders fail).
 set -euo pipefail
@@ -31,12 +34,41 @@ fi
 rm -f "$DONE"
 exec >>"$LOG" 2>&1
 log() { echo "[$(date -u +%H:%M:%S)] $*"; }
+trap 'log "Stopped before finishing; the next session start resumes"; exit 143' TERM INT HUP
 
+# Deletes the promisor packs in <pack dir> that <snapshot> does not list: the blobs a checkout
+# fetched. Packs from the clone and from commit fetches are in the snapshot and stay.
+drop_fetched_blobs() {
+  local pack
+  for pack in "$1"/*.pack; do
+    if ! grep -qxF "$pack" "$2" && [ -f "${pack%.pack}.promisor" ]; then
+      rm -f "${pack%.pack}".{pack,idx,rev,promisor}
+    fi
+  done
+}
+
+sha=$(git -C "$REPO" rev-parse HEAD:SWLOR_Haks)
 module_gitdir=$(git -C "$REPO" rev-parse --path-format=absolute --git-path modules/SWLOR_Haks)
 if [ -d "$module_gitdir" ]; then
-  log "SWLOR_Haks is already initialized"
+  current=$(git -C "$HAKS" rev-parse HEAD 2>/dev/null || true)
+  if [ "$current" = "$sha" ]; then
+    log "SWLOR_Haks is already at the pinned commit"
+  elif git -C "$HAKS" symbolic-ref -q HEAD >/dev/null ||
+       [ -n "$(git -C "$HAKS" status --porcelain --untracked-files=no)" ]; then
+    # Someone is working in it; never move their branch or local changes.
+    log "SWLOR_Haks is on a branch or has local changes; leaving it at ${current:-?}, not $sha"
+  else
+    log "Moving SWLOR_Haks from $current to the pinned $sha"
+    git -C "$HAKS" cat-file -e "$sha^{commit}" 2>/dev/null \
+      || git -C "$HAKS" fetch -q --depth 1 --filter=blob:none origin "$sha"
+    packs=$(git -C "$HAKS" rev-parse --path-format=absolute --git-path objects/pack)
+    snapshot=$(mktemp)
+    ls "$packs"/*.pack > "$snapshot"
+    git -C "$HAKS" -c advice.detachedHead=false checkout -q --detach "$sha"
+    drop_fetched_blobs "$packs" "$snapshot"
+    rm -f "$snapshot"
+  fi
 else
-  sha=$(git -C "$REPO" rev-parse HEAD:SWLOR_Haks)
   if [ ! -d "$HAKS/.git" ]; then
     if [ -n "$(ls -A "$HAKS" 2>/dev/null)" ]; then
       log "SWLOR_Haks holds files but no repository; leaving it alone"
@@ -58,11 +90,7 @@ else
   git -C "$HAKS" -c advice.detachedHead=false checkout -q -f --detach "$sha"
   clone_packs="$HAKS/.git/swlor-clone-packs"
   if [ -f "$clone_packs" ]; then
-    for pack in "$HAKS"/.git/objects/pack/*.pack; do
-      if ! grep -qxF "$pack" "$clone_packs" && [ -f "${pack%.pack}.promisor" ]; then
-        rm -f "${pack%.pack}".{pack,idx,rev,promisor}
-      fi
-    done
+    drop_fetched_blobs "$HAKS/.git/objects/pack" "$clone_packs"
     rm -f "$clone_packs"
   fi
   git -C "$REPO" submodule --quiet init SWLOR_Haks

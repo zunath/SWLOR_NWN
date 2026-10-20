@@ -10,15 +10,15 @@
           },
           {
             "type": "command",
-            "command": "bash \"$CLAUDE_PROJECT_DIR/.claude/hooks/session-start-haks.sh\"",
+            "command": "timeout 3000 bash \"$CLAUDE_PROJECT_DIR/.claude/hooks/session-start-haks.sh\"",
             "async": true,
-            "timeout": 3600
+            "timeout": 3000
           },
           {
             "type": "command",
-            "command": "bash \"$CLAUDE_PROJECT_DIR/.claude/hooks/session-start-game-data.sh\"",
+            "command": "timeout 1500 bash \"$CLAUDE_PROJECT_DIR/.claude/hooks/session-start-game-data.sh\"",
             "async": true,
-            "timeout": 1800
+            "timeout": 1500
           }
         ]
       }

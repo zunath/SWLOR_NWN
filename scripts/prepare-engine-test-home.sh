@@ -17,9 +17,8 @@
 # The home defaults to <repo>/enginetests-home, which run-engine-tests.sh uses automatically.
 # Steps whose inputs have not changed since the last run are skipped; --force redoes them.
 #
-# Requires: dotnet SDK, docker compose, python3, the full SWLOR_Haks checkout, and runnable
-# nwn_erf.exe/nwn_gff.exe (on Linux, Wine registered through binfmt_misc - see
-# .claude/hooks/session-start.sh).
+# Requires: dotnet SDK, docker compose, python3, the full SWLOR_Haks checkout, and the native
+# NWN tools that Setup.sh (or .claude/hooks/session-start.sh in cloud sessions) prepares.
 #
 # Usage:
 #   scripts/prepare-engine-test-home.sh [--server-home <dir>] [--force] [--skip-images]
@@ -32,7 +31,7 @@ SERVER_HOME="${SWLOR_ENGINE_TEST_SERVER_HOME:-$REPO_ROOT/enginetests-home}"
 FORCE=0
 SKIP_IMAGES=0
 # Bump when the staging rules change so existing homes rebuild.
-STAMP_VERSION=1
+STAMP_VERSION=2
 
 while [ $# -gt 0 ]; do
     case "$1" in
@@ -47,23 +46,26 @@ DOCKER_DIR="$REPO_ROOT/SWLOR.Game.Server/Docker"
 COMPOSE_FILE="$DOCKER_DIR/docker-compose.enginetests.yml"
 HAKS="$REPO_ROOT/SWLOR_Haks"
 CLI_DLL="$REPO_ROOT/SWLOR.CLI/bin/Release/net10.0/SWLOR.CLI.dll"
-MODULE_NAME="$(sed -n 's/^NWN_MODULE="\(.*\)".*/\1/p' "$DOCKER_DIR/swlor.env")"
 STAMPS="$SERVER_HOME/.prepare-stamps"
 
 section() { echo ""; echo "=== $1 ==="; }
 
-# Prints a fingerprint of a git checkout's content below <path>: HEAD's tree plus any local
+# Prints a fingerprint of a git checkout's content at <path>...: HEAD's objects plus any local
 # edits and untracked files, so a rebuild happens whenever the inputs differ.
 fingerprint() {
-    local repo="$1" path="$2"
+    local repo="$1"
+    shift
     {
         echo "$STAMP_VERSION"
-        git -C "$repo" rev-parse "HEAD:$path"
-        git -C "$repo" diff HEAD --binary -- "$path"
-        git -C "$repo" ls-files --others --exclude-standard -z -- "$path" \
+        git -C "$repo" ls-tree HEAD -- "$@"
+        git -C "$repo" diff HEAD --binary -- "$@"
+        git -C "$repo" ls-files --others --exclude-standard -z -- "$@" \
             | (cd "$repo" && xargs -0 -r sha256sum)
     } | sha256sum | cut -d' ' -f1
 }
+
+# The code and configuration that turn sources into HAKs and the module.
+BUILDER_INPUTS=(SWLOR.CLI SWLOR.NWN.Formats tools/native-tools.json)
 
 is_current() { [ "$FORCE" -eq 0 ] && [ -f "$STAMPS/$1" ] && [ "$(cat "$STAMPS/$1")" = "$2" ]; }
 
@@ -79,6 +81,9 @@ for file in swlor.env settings.tml; do
         echo "Copied $file"
     fi
 done
+# The server loads the module that the retained swlor.env names.
+MODULE_NAME="$(sed -n -E 's/^NWN_MODULE="?([^"]*)"?[[:space:]]*$/\1/p' "$SERVER_HOME/swlor.env" | tr -d '\r')"
+[ -n "$MODULE_NAME" ] || { echo "No NWN_MODULE in $SERVER_HOME/swlor.env." >&2; exit 1; }
 
 section "Building SWLOR.CLI (Release)"
 dotnet build "$REPO_ROOT/SWLOR.CLI/SWLOR.CLI.csproj" -c Release -p:RunPostBuildEvent=Never -v q -clp:ErrorsOnly
@@ -95,7 +100,7 @@ if missing:
     sys.exit(f"SWLOR_Haks is missing HAK folders ({', '.join(missing[:5])}...). "
              "Check out the full submodule: git -C SWLOR_Haks sparse-checkout disable")
 CHECK_HAKS
-haks_stamp="$(fingerprint "$HAKS" .)"
+haks_stamp="$(fingerprint "$HAKS" .)-$(fingerprint "$REPO_ROOT" Build/hakbuilder.json "${BUILDER_INPUTS[@]}")"
 if is_current haks "$haks_stamp" && ls "$SERVER_HOME"/hak/*.hak >/dev/null 2>&1; then
     echo "HAK sources unchanged since the last build; skipping"
 else
@@ -139,12 +144,12 @@ fi
 du -sh "$SERVER_HOME/hak" "$SERVER_HOME/tlk"
 
 section "Module ($MODULE_NAME.mod)"
-module_stamp="$(fingerprint "$REPO_ROOT" Module)"
+module_stamp="$(fingerprint "$REPO_ROOT" Module "${BUILDER_INPUTS[@]}")"
 if is_current module "$module_stamp" && [ -f "$SERVER_HOME/modules/$MODULE_NAME.mod" ]; then
     echo "Module sources unchanged since the last pack; skipping"
 else
-    echo "Packing the module (each resource converts through nwn_gff; this takes a while under Wine)"
-    (cd "$REPO_ROOT/Module" && dotnet "$CLI_DLL" --pack "./$MODULE_NAME.mod" | grep -v '^Packed [0-9,]*/')
+    echo "Packing the module (each resource converts through nwn_gff)"
+    (cd "$REPO_ROOT/Module" && dotnet "$CLI_DLL" --pack "./$MODULE_NAME.mod" --no-prompt | grep -v '^Packed [0-9,]*/')
     mkdir -p "$SERVER_HOME/modules"
     mv -f "$REPO_ROOT/Module/$MODULE_NAME.mod" "$SERVER_HOME/modules/$MODULE_NAME.mod"
     echo "$module_stamp" > "$STAMPS/module"
@@ -171,7 +176,14 @@ if [ "$SKIP_IMAGES" -eq 0 ]; then
         fi
         echo "Pull failed; retrying" >&2
     done
-    [ "${pulled:-0}" = 1 ] || { echo "Could not pull the engine test images." >&2; exit 1; }
+    if [ "${pulled:-0}" != 1 ]; then
+        # Keep going with images an earlier run pulled.
+        for image in $(docker compose -f "$COMPOSE_FILE" config --images redis swlor-server); do
+            docker image inspect "$image" >/dev/null 2>&1 \
+                || { echo "Could not pull the engine test images." >&2; exit 1; }
+        done
+        echo "Could not pull the engine test images; using the local copies." >&2
+    fi
 fi
 
 section "Ready"

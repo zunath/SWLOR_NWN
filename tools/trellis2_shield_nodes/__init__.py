@@ -37,6 +37,14 @@ def blender_identity(executable):
     return {'path':str(path),'sha256':fingerprint,'version':blender_version(str(path),fingerprint)}
 
 
+def require_same_blender(executable,runtime,outputs):
+    """The cache key names the hashed build; discard output made by a replaced executable."""
+    if blender_identity(executable)['sha256']!=runtime['sha256']:
+        for stale in outputs:
+            if stale.exists():stale.unlink()
+        raise ValueError('Blender executable changed during shield reconstruction')
+
+
 def probe_cache_access(cache,missing):
     """Exercise cache access and best-effort cleanup, reporting removal failures."""
     created=[];probe_file=None
@@ -159,6 +167,7 @@ class SWLORClosedVoxelMesh:
             command=[executable,'-b','--factory-startup','--python-exit-code','1','--python',str(SURFACE_SCRIPT),'--',mode,str(input_path),str(output_path),*flags]
             with output_path.with_suffix('.log').open('w',encoding='utf-8') as log:
                 subprocess.run(command,stdout=log,stderr=subprocess.STDOUT,timeout=600,check=True,creationflags=getattr(subprocess,'CREATE_NO_WINDOW',0))
+            require_same_blender(executable,runtime,(output_path,output_path.with_suffix('.json')))
         high_arrays=cached_entry(high)
         if high_arrays is None:
             np.savez(source,vertices=vertices,faces=faces)

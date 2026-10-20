@@ -37,10 +37,17 @@ def reproject_normals(encoded,source_normal,source_tangent,source_sign,target_no
     return mapped
 
 
+def gltf_index(document,key,value):
+    """glTF references must be exact nonnegative indices into their list; negative values would wrap."""
+    items=document.get(key,[])
+    if type(value) is not int or not 0<=value<len(items):raise ValueError('Invalid glTF '+key+' index')
+    return items[value]
+
+
 def accessor(document,binary,index):
-    item=document['accessors'][index]
+    item=gltf_index(document,'accessors',index)
     if item.get('sparse') or item.get('normalized'):raise ValueError('Sparse/normalized basis accessor unsupported')
-    view=document['bufferViews'][item['bufferView']]
+    view=gltf_index(document,'bufferViews',item.get('bufferView'))
     columns={'SCALAR':1,'VEC2':2,'VEC3':3,'VEC4':4}[item['type']]
     dtype=np.dtype({5126:'<f4',5125:'<u4',5123:'<u2',5121:'u1'}[item['componentType']])
     offset=view.get('byteOffset',0)+item.get('byteOffset',0);stride=view.get('byteStride',columns*dtype.itemsize)
@@ -60,18 +67,18 @@ def source_basis(document,binary,config,material_names,path):
     """Bind source glTF TBN and UVs to the explicit proper, uniform native fit."""
     fit=np.eye(4);fit[:3,:3]=np.asarray(config['orientation'])*config['scale'];fit[:3,3]=np.asarray(config['target_grip'])-fit[:3,:3]@np.asarray(config['source_grip'])
     conversion=np.array([[1,0,0,0],[0,0,-1,0],[0,1,0,0],[0,0,0,1]],float)
-    nodes=document.get('nodes',[]);scene=document.get('scenes',[{}])[document.get('scene',0)];pending=[(i,np.eye(4),frozenset()) for i in scene.get('nodes',[])];groups={}
+    nodes=document.get('nodes',[]);scene=gltf_index(document,'scenes',document.get('scene',0)) if document.get('scenes') else {};pending=[(i,np.eye(4),frozenset()) for i in scene.get('nodes',[])];groups={}
     while pending:
         index,parent,ancestors=pending.pop()
         if index in ancestors:raise ValueError('Cyclic glTF node hierarchy')
-        node=nodes[index];world=parent@node_matrix(node)
+        node=gltf_index(document,'nodes',index);world=parent@node_matrix(node)
         pending.extend((i,world,ancestors|{index}) for i in node.get('children',[]))
         if 'mesh' not in node:continue
         matrix=fit@conversion@world;linear=matrix[:3,:3];gram=linear.T@linear;scale=math.sqrt(float(np.trace(gram)/3))
         if not np.allclose(gram,np.eye(3)*scale*scale,atol=1e-7) or np.linalg.det(linear)<=0:
             raise ValueError('Baked normal basis requires proper uniform source-node transforms; apply nonuniform authoring transforms explicitly')
         rotation=linear/scale
-        for primitive in document['meshes'][node['mesh']]['primitives']:
+        for primitive in gltf_index(document,'meshes',node['mesh'])['primitives']:
             attributes=primitive['attributes'];material=primitive['material'];name=material_names[material]
             p=accessor(document,binary,attributes['POSITION']).astype(float);n=accessor(document,binary,attributes['NORMAL']).astype(float);uv=accessor(document,binary,attributes['TEXCOORD_0']).astype(float)
             faces=accessor(document,binary,primitive['indices']).reshape(-1,3) if 'indices' in primitive else np.arange(len(p)).reshape(-1,3)

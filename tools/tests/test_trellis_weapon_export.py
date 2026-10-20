@@ -756,6 +756,16 @@ class NativeWeaponNormalTests(unittest.TestCase):
         spec=importlib.util.spec_from_file_location('weapon_normals',ROOT/'tools/TrellisWeaponNormals.py')
         cls.helper=importlib.util.module_from_spec(spec);spec.loader.exec_module(cls.helper)
 
+    def test_geometry_references_must_be_nonnegative_indices(self):
+        document={'accessors':[{'bufferView':0}],'bufferViews':[{}],'scenes':[{}],'nodes':[{}],'meshes':[{}]}
+        for key in ('accessors','bufferViews','scenes','nodes','meshes'):
+            self.assertIs(self.helper.gltf_index(document,key,0),document[key][0])
+            for value in (-1,1,True,None):
+                with self.subTest(key=key,value=value),self.assertRaisesRegex(ValueError,'Invalid glTF '+key):
+                    self.helper.gltf_index(document,key,value)
+        with self.assertRaisesRegex(ValueError,'Invalid glTF bufferViews'):
+            self.helper.accessor({'accessors':[{'bufferView':-1,'type':'SCALAR','componentType':5126,'count':1}],'bufferViews':[{}]},b'\0'*4,0)
+
     def test_uv_v_conversion_reverses_green_but_preserves_world_normal(self):
         n=np.array([[0.,0.,1.]]);t=np.array([[1.,0.,0.]])
         source=np.array([[.5,.8,.9]])

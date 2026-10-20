@@ -38,15 +38,17 @@ def winding_number(point, triangles):
     return float(np.arctan2(det,den).sum()/(2*np.pi))
 
 
-def edges_cross_triangles(edges, triangles, chunk=4096):
-    """True when any segment passes through the interior of any triangle (Moller-Trumbore, strict)."""
-    v0=triangles[:,0];e1=triangles[:,1]-v0;e2=triangles[:,2]-v0;eps=1e-9
-    for start in range(0,len(edges),chunk):
-        a=edges[start:start+chunk,0][:,None];d=(edges[start:start+chunk,1]-edges[start:start+chunk,0])[:,None]
-        p=np.cross(d,e2[None]);det=np.einsum('ijk,jk->ij',p,e1);ok=np.abs(det)>eps;inv=np.where(ok,1/np.where(ok,det,1),0)
-        s=a-v0[None];u=np.einsum('ijk,ijk->ij',s,p)*inv;q=np.cross(s,e1[None]);v=np.einsum('ijk,ijk->ij',d,q)*inv
-        t=np.einsum('jk,ijk->ij',e2,q)*inv
-        if np.any(ok&(u>eps)&(v>eps)&(u+v<1-eps)&(t>eps)&(t<1-eps)):return True
+def edges_cross_triangles(edges, triangles, chunk=256):
+    """True when any segment passes through the interior of any triangle (Moller-Trumbore, strict).
+    Both dimensions are batched, so each working array holds at most chunk*chunk*3 values."""
+    for tstart in range(0,len(triangles),chunk):
+        tris=triangles[tstart:tstart+chunk];v0=tris[:,0];e1=tris[:,1]-v0;e2=tris[:,2]-v0;eps=1e-9
+        for start in range(0,len(edges),chunk):
+            a=edges[start:start+chunk,0][:,None];d=(edges[start:start+chunk,1]-edges[start:start+chunk,0])[:,None]
+            p=np.cross(d,e2[None]);det=np.einsum('ijk,jk->ij',p,e1);ok=np.abs(det)>eps;inv=np.where(ok,1/np.where(ok,det,1),0)
+            s=a-v0[None];u=np.einsum('ijk,ijk->ij',s,p)*inv;q=np.cross(s,e1[None]);v=np.einsum('ijk,ijk->ij',d,q)*inv
+            t=np.einsum('jk,ijk->ij',e2,q)*inv
+            if np.any(ok&(u>eps)&(v>eps)&(u+v<1-eps)&(t>eps)&(t<1-eps)):return True
     return False
 
 

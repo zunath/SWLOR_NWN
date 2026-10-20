@@ -145,6 +145,27 @@ class ShieldSurfaceTests(unittest.TestCase):
             path.write_bytes(path.read_bytes()+b'changed')
             with self.assertRaisesRegex(ValueError,'Cached shield surface changed'):bridge.cached_arrays(path)
 
+    def test_outputs_from_a_replaced_blender_build_are_discarded(self):
+        spec=importlib.util.spec_from_file_location('shield_identity_bridge',TOOLS/'trellis2_shield_nodes/__init__.py')
+        bridge=importlib.util.module_from_spec(spec);spec.loader.exec_module(bridge)
+        with tempfile.TemporaryDirectory() as temporary:
+            output=Path(temporary)/'closed_high.npz';report=output.with_suffix('.json');output.write_bytes(b'x');report.write_text('{}')
+            with patch.object(bridge,'blender_identity',return_value={'sha256':'same'}):
+                bridge.require_same_blender('blender',{'sha256':'same'},(output,report))
+            self.assertTrue(output.exists())
+            with patch.object(bridge,'blender_identity',return_value={'sha256':'new'}),self.assertRaisesRegex(ValueError,'changed during shield reconstruction'):
+                bridge.require_same_blender('blender',{'sha256':'old'},(output,report))
+            self.assertFalse(output.exists() or report.exists())
+
+    def test_intersection_batches_cover_every_edge_and_triangle_pair(self):
+        far=np.asarray([[[10,10,10],[11,10,10],[10,11,10]]],np.float64)
+        first=np.asarray([[[-1,-1,0],[1,-1,0],[0,1,0]]],np.float64)
+        crossing=np.asarray([[[0,0,-1],[0,0,1],[0,2,0]]],np.float64)
+        edges=np.concatenate([np.repeat(far[:,[0,1]],5,axis=0),crossing[:,[0,1]]])
+        triangles=np.concatenate([np.repeat(far,7,axis=0),first])
+        self.assertTrue(surface.edges_cross_triangles(edges,triangles,chunk=2))
+        self.assertFalse(surface.edges_cross_triangles(edges[:5],triangles,chunk=2))
+
     def test_schema_discovery_rejects_missing_blender_invalid_cache_and_wrong_build(self):
         spec=importlib.util.spec_from_file_location('shield_preflight_bridge',TOOLS/'trellis2_shield_nodes/__init__.py')
         bridge=importlib.util.module_from_spec(spec);spec.loader.exec_module(bridge)

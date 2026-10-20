@@ -162,7 +162,8 @@ fi
 du -sh "$SERVER_HOME/hak" "$SERVER_HOME/tlk"
 
 section "Module ($MODULE_NAME.mod)"
-module_stamp="$(fingerprint "$REPO_ROOT" Module "${BUILDER_INPUTS[@]}")"
+# Keyed by name too: switching swlor.env back to an older module name must not reuse its stale pack.
+module_stamp="$(fingerprint "$REPO_ROOT" Module "${BUILDER_INPUTS[@]}")-$MODULE_NAME"
 if is_current module "$module_stamp" && [ -f "$SERVER_HOME/modules/$MODULE_NAME.mod" ]; then
     echo "Module sources unchanged since the last pack; skipping"
 else

@@ -131,8 +131,9 @@ git -C "$HAKS" config core.fileMode false
 done)
 
 if [ -f "$HAKS/requirements.txt" ]; then
-  PIP_BREAK_SYSTEM_PACKAGES=1 python3 -m pip install -q --disable-pip-version-check \
-    --root-user-action=ignore -r "$HAKS/requirements.txt"
+  # The lock keeps this and session-start.sh from changing the shared site-packages at once.
+  PIP_BREAK_SYSTEM_PACKAGES=1 flock /tmp/swlor-pip.lock python3 -m pip install -q \
+    --disable-pip-version-check --root-user-action=ignore -r "$HAKS/requirements.txt"
 fi
 
 # The pinned model compiler, installed the way tools/SetupModelCompiler.ps1 does (same download
@@ -149,13 +150,21 @@ if [ -f "$setup" ]; then
     log "Installing CleanModels from $url"
     mkdir -p "$dest"
     archive="$dest/$(basename "$url")"
-    if curl -fsSL -o "$archive" "$url" &&
-       echo "${hashes[0]}  $archive" | sha256sum -c --quiet - &&
-       (cd "$dest" && unzip -oq "$archive") &&
-       echo "${hashes[1]}  $compiler" | sha256sum -c --quiet -; then
-      chmod +x "$compiler"
-    else
-      log "CleanModels install failed; model compiler tests will fail"
+    for delay in 0 15 60; do
+      sleep "$delay"
+      if curl -fsSL --max-time 300 -o "$archive" "$url" &&
+         echo "${hashes[0]}  $archive" | sha256sum -c --quiet - &&
+         (cd "$dest" && unzip -oq "$archive") &&
+         echo "${hashes[1]}  $compiler" | sha256sum -c --quiet -; then
+        chmod +x "$compiler"
+        break
+      fi
+      log "CleanModels download or checksum failed"
+    done
+    if [ ! -x "$compiler" ]; then
+      # No ready marker: the model compiler tests need it, and the next session start retries.
+      log "CleanModels is not installed; SWLOR_Haks is checked out, but not ready"
+      exit 1
     fi
   fi
 fi

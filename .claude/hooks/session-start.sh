@@ -124,8 +124,10 @@ done
 # --upgrade: the image's apt Pillow is built for another Python version and fails to import.
 # mathutils is Blender's math module, published standalone, for the model tool tests.
 # SWLOR_Haks/requirements.txt is installed by session-start-haks.sh after the checkout.
-PIP_BREAK_SYSTEM_PACKAGES=1 python3 -m pip install -q --upgrade --disable-pip-version-check \
-  --root-user-action=ignore -r "$REPO/tools/nwn_visual_check/requirements.txt" pefile unicorn mathutils
+# The lock keeps this and session-start-haks.sh from changing the shared site-packages at once.
+PIP_BREAK_SYSTEM_PACKAGES=1 flock /tmp/swlor-pip.lock python3 -m pip install -q --upgrade \
+  --disable-pip-version-check --root-user-action=ignore \
+  -r "$REPO/tools/nwn_visual_check/requirements.txt" pefile unicorn mathutils
 
 # --- NuGet packages ---
 log "Restoring NuGet packages"

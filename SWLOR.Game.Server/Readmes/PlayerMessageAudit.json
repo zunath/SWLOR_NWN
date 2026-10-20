@@ -1688,10 +1688,24 @@
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/DMCreatorViewModel.cs",
-    "Line": 320,
+    "Line": 412,
     "Member": "ReportCreated",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(DMPresence.GetControlledCreature(Player), GetIsObjectValid(created)\n                ? $\"Created {blueprint.Name} ({blueprint.Resref}).\"\n                : $\"Could not create {blueprint.Name} ({blueprint.Resref}).\")"
+  },
+  {
+    "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/DMCreatorViewModel.cs",
+    "Line": 446,
+    "Member": "OnClickToggleFavorite",
+    "Delivery": "Retained",
+    "Call": "DMPresence.SendMessage(Player, \"Your favorites could not be saved.\")"
+  },
+  {
+    "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/DMCreatorViewModel.cs",
+    "Line": 452,
+    "Member": "OnClickToggleFavorite",
+    "Delivery": "Retained",
+    "Call": "DMPresence.SendMessage(Player, $\"You already have {DMFavoriteList.MaxFavorites} favorites. Remove one to add another.\")"
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/DMPlayerSearchViewModel.cs",

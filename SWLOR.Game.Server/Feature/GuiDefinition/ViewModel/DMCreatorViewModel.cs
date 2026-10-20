@@ -15,14 +15,26 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         public const string MainContentElement = "dmcreator_content";
         public const string MainContentPartial = "DMCREATOR_MAIN";
 
+        /// <summary>
+        /// The Source combo's value for the DM's own favorites, after the Custom and Standard palettes.
+        /// </summary>
+        public const int FavoritesSource = 2;
+
         private const int ResultsPerPage = 20;
         private const string AllCategories = "All categories";
+        private const string FavoriteMarker = "* ";
+        private const string AddFavoriteText = "Add to Favorites";
+        private const string RemoveFavoriteText = "Remove from Favorites";
 
         private DMPalette _palette = new(new List<string>(), new List<DMBlueprint>());
         private List<DMBlueprint> _results = new();
         private readonly List<DMBlueprint> _pageResults = new();
+        private List<DMFavoriteBlueprint> _favorites = new();
+        private HashSet<DMBlueprint> _unavailable = new();
         private int _selectedIndex = -1;
         private bool _suppressSearch;
+
+        private bool IsFavoritesView => SelectedSource == FavoritesSource;
 
         public int SelectedType
         {
@@ -152,6 +164,18 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             set => Set(value);
         }
 
+        public bool CanCreate
+        {
+            get => Get<bool>();
+            set => Set(value);
+        }
+
+        public string FavoriteButtonText
+        {
+            get => Get<string>();
+            set => Set(value);
+        }
+
         protected override void Initialize(GuiPayloadBase initialPayload)
         {
             Geometry = DMToolbarViewModel.PlaceBelowToolbar(Player, Geometry);
@@ -174,6 +198,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             DetailBody = string.Empty;
             HasSelection = false;
             CanCreateInInventory = false;
+            CanCreate = false;
+            FavoriteButtonText = AddFavoriteText;
+            _favorites = DMCreatorFavorite.Get(Player);
             _suppressSearch = false;
 
             WatchOnClient(model => model.SelectedType);
@@ -186,14 +213,19 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             LoadPalette();
         }
 
-        // Reads the chosen palette and rebuilds the category list.
-        private void LoadPalette()
+        private void LoadPalette() => LoadPalette(string.Empty, 0);
+
+        // Reads the chosen palette and rebuilds the category list, keeping the category and page when they still exist.
+        private void LoadPalette(string categoryPath, int pageIndex)
         {
             if (Player == 0 || WindowToken <= 0)
                 return;
 
             var category = (DMBlueprintCategory)SelectedType;
-            _palette = DMBlueprintCatalog.GetPalette(category, (DMBlueprintSource)SelectedSource);
+            _unavailable = new HashSet<DMBlueprint>();
+            _palette = IsFavoritesView
+                ? DMFavoriteList.BuildPalette(_favorites, category, source => DMBlueprintCatalog.GetPalette(category, source), _unavailable)
+                : DMBlueprintCatalog.GetPalette(category, (DMBlueprintSource)SelectedSource);
             InfoHeader = category switch
             {
                 DMBlueprintCategory.Creatures => "Level · Faction",
@@ -203,16 +235,19 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             };
 
             var options = new GuiBindingList<GuiComboEntry> { new(AllCategories, 0) };
+            var selectedCategory = 0;
             for (var index = 0; index < _palette.CategoryPaths.Count; index++)
             {
                 options.Add(new GuiComboEntry(_palette.CategoryPaths[index], index + 1));
+                if (_palette.CategoryPaths[index] == categoryPath)
+                    selectedCategory = index + 1;
             }
 
             _suppressSearch = true;
             CategoryOptions = options;
-            SelectedCategoryIndex = 0;
+            SelectedCategoryIndex = selectedCategory;
             _suppressSearch = false;
-            RunSearch();
+            RunSearch(pageIndex);
         }
 
         private string GetSelectedCategoryPath()
@@ -223,7 +258,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 : string.Empty;
         }
 
-        private void RunSearch()
+        private void RunSearch() => RunSearch(0);
+
+        private void RunSearch(int pageIndex)
         {
             if (Player == 0 || WindowToken <= 0)
                 return;
@@ -236,7 +273,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 .ToList();
 
             _suppressSearch = true;
-            SelectedPageIndex = 0;
+            SelectedPageIndex = pageIndex;
             _suppressSearch = false;
             ShowPage();
         }
@@ -260,9 +297,11 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var selections = new GuiBindingList<bool>();
             foreach (var blueprint in _pageResults)
             {
-                var (icon, summary) = DMObjectDetails.GetBlueprintRow(blueprint);
+                var (icon, summary) = _unavailable.Contains(blueprint)
+                    ? (DMObjectDetails.NoSelectionIcon, DMFavoriteList.UnavailableCategory)
+                    : DMObjectDetails.GetBlueprintRow(blueprint);
                 icons.Add(icon);
-                names.Add(blueprint.Name);
+                names.Add(GetRowName(blueprint));
                 info.Add(summary);
                 selections.Add(false);
             }
@@ -272,12 +311,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             ResultInfo = info;
             ResultSelections = selections;
             // A tooltip keeps a NUI dropdown from opening, so the summary explains Custom and Standard instead.
-            var palette = (DMBlueprintSource)SelectedSource == DMBlueprintSource.Standard
-                ? "the base game's palette"
-                : "the module's palette";
-            ResultSummary = _results.Count == 0
-                ? $"No matches in {palette}."
-                : $"{_results.Count} blueprint{(_results.Count == 1 ? string.Empty : "s")} in {palette}.";
+            ResultSummary = GetResultSummary();
 
             SelectResult(-1);
         }
@@ -296,16 +330,67 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 DetailBody = "Select a blueprint to see its details and create it.";
                 HasSelection = false;
                 CanCreateInInventory = false;
+                CanCreate = false;
+                FavoriteButtonText = AddFavoriteText;
                 return;
             }
 
             ResultSelections[_selectedIndex] = true;
+            HasSelection = true;
+            FavoriteButtonText = DMFavoriteList.Contains(_favorites, blueprint) ? RemoveFavoriteText : AddFavoriteText;
+            if (_unavailable.Contains(blueprint))
+            {
+                DetailIcon = DMObjectDetails.NoSelectionIcon;
+                DetailTitle = blueprint.Name;
+                DetailBody = $"The {blueprint.Source} palette no longer lists '{blueprint.Resref}', so it cannot be created. " +
+                             "It may have been renamed or removed. Remove it from your favorites if you no longer need it.";
+                CanCreateInInventory = false;
+                CanCreate = false;
+                return;
+            }
+
             var details = DMObjectDetails.DescribeBlueprint(blueprint);
             DetailIcon = details.IconResref;
             DetailTitle = details.Title;
             DetailBody = details.Body;
-            HasSelection = true;
+            CanCreate = true;
             CanCreateInInventory = blueprint.Category == DMBlueprintCategory.Items;
+        }
+
+        private string GetRowName(DMBlueprint blueprint)
+        {
+            if (_unavailable.Contains(blueprint))
+                return $"{blueprint.Name} (unavailable)";
+
+            return DMFavoriteList.Contains(_favorites, blueprint)
+                ? FavoriteMarker + blueprint.Name
+                : blueprint.Name;
+        }
+
+        private string GetResultSummary()
+        {
+            var count = $"{_results.Count} blueprint{(_results.Count == 1 ? string.Empty : "s")}";
+            if (IsFavoritesView)
+            {
+                if (_palette.Blueprints.Count == 0)
+                    return "No favorites of this type. Select a blueprint and choose Add to Favorites.";
+
+                return _results.Count == 0
+                    ? "No matches in your favorites."
+                    : $"{count} in your favorites.";
+            }
+
+            var palette = (DMBlueprintSource)SelectedSource == DMBlueprintSource.Standard
+                ? "the base game's palette"
+                : "the module's palette";
+            if (_results.Count == 0)
+                return $"No matches in {palette}.";
+
+            // Explain the marker only when this page shows one.
+            var showsFavorites = _pageResults.Any(blueprint => DMFavoriteList.Contains(_favorites, blueprint));
+            return showsFavorites
+                ? $"{count} in {palette}. * marks your favorites."
+                : $"{count} in {palette}.";
         }
 
         private DMBlueprint GetSelectedBlueprint()
@@ -313,6 +398,13 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             return _selectedIndex >= 0 && _selectedIndex < _pageResults.Count
                 ? _pageResults[_selectedIndex]
                 : null;
+        }
+
+        // Unavailable favorites stay listed so they can be removed, but there is nothing to create.
+        private DMBlueprint GetCreatableBlueprint()
+        {
+            var blueprint = GetSelectedBlueprint();
+            return blueprint == null || _unavailable.Contains(blueprint) ? null : blueprint;
         }
 
         private void ReportCreated(DMBlueprint blueprint, uint created)
@@ -340,7 +432,39 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             SelectResult(index);
         };
 
-        public Action OnClickSearch() => RunSearch;
+        public Action OnClickSearch() => () => RunSearch();
+
+        public Action OnClickToggleFavorite() => () =>
+        {
+            var blueprint = GetSelectedBlueprint();
+            if (blueprint == null)
+                return;
+
+            var change = DMCreatorFavorite.Toggle(Player, blueprint, out var favorites);
+            if (change == DMFavoriteChange.NotSaved)
+            {
+                DMPresence.SendMessage(Player, "Your favorites could not be saved.");
+                return;
+            }
+
+            if (change == DMFavoriteChange.Full)
+            {
+                DMPresence.SendMessage(Player, $"You already have {DMFavoriteList.MaxFavorites} favorites. Remove one to add another.");
+                return;
+            }
+
+            _favorites = favorites;
+            if (IsFavoritesView)
+            {
+                // The removed favorite leaves the list; the search, category, and page stay where the DM was.
+                LoadPalette(GetSelectedCategoryPath(), SelectedPageIndex);
+                return;
+            }
+
+            ResultNames[_selectedIndex] = GetRowName(blueprint);
+            ResultSummary = GetResultSummary();
+            FavoriteButtonText = change == DMFavoriteChange.Added ? RemoveFavoriteText : AddFavoriteText;
+        };
 
         public Action OnClickClearSearch() => () =>
         {
@@ -360,7 +484,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         public Action OnClickCreateAtTarget() => () =>
         {
-            var blueprint = GetSelectedBlueprint();
+            var blueprint = GetCreatableBlueprint();
             if (blueprint == null)
                 return;
 
@@ -391,7 +515,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         public Action OnClickCreateHere() => () =>
         {
-            var blueprint = GetSelectedBlueprint();
+            var blueprint = GetCreatableBlueprint();
             if (blueprint == null)
                 return;
 
@@ -402,7 +526,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         public Action OnClickCreateInInventory() => () =>
         {
-            var blueprint = GetSelectedBlueprint();
+            var blueprint = GetCreatableBlueprint();
             if (blueprint == null || blueprint.Category != DMBlueprintCategory.Items)
                 return;
 

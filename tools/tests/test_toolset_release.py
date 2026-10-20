@@ -293,6 +293,17 @@ class LocalBuildTests(unittest.TestCase):
         self.assertNotIn('unittest', script)
         self.assertIn('unittest', release.linux_container_script(run_tests=True))
 
+    def test_host_root_certificates_become_separate_container_trust_files(self):
+        pem = release.ssl.PEM_cert_to_DER_cert
+        der = pem(release.ssl.DER_cert_to_PEM_cert(b'0'))
+        certificates = [(der, 'x509_asn', True), (der, 'x509_asn', {'1.3.6.1.5.5.7.3.1'}), (der, 'x509_asn', {'1.3.6.1.5.5.7.3.4'}), (der, 'pkcs_7_asn', True)]
+        with tempfile.TemporaryDirectory() as temporary:
+            self.assertEqual(release.export_host_trust(Path(temporary) / 'ca', certificates), 2)
+            files = sorted((Path(temporary) / 'ca').iterdir())
+            self.assertEqual([f.name for f in files], ['host-root-0001.crt', 'host-root-0002.crt'])
+            self.assertIn('BEGIN CERTIFICATE', files[0].read_text())
+        self.assertIn('update-ca-certificates', release.linux_container_script(False))
+
     def test_container_base_image_is_pinned_by_digest(self):
         self.assertRegex(release.DOCKERFILE.read_text(), r'(?m)^FROM mcr\.microsoft\.com/dotnet/sdk:\S+@sha256:[0-9a-f]{64}$')
 

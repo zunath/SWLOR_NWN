@@ -10,6 +10,7 @@ from pathlib import Path
 import re
 import shlex
 import shutil
+import ssl
 import subprocess
 import sys
 import time
@@ -325,8 +326,26 @@ def test_commands():
             ['python', '-B', '-m', 'unittest', *PYTHON_TEST_MODULES]]
 
 
+def export_host_trust(directory, certificates=None):
+    """Write the Windows root CAs as PEM files so the container trusts what this machine trusts (for example the
+    TLS-scanning root of an antivirus, without which NuGet and github.com downloads fail inside the container)."""
+    if certificates is None:
+        certificates = ssl.enum_certificates('ROOT') if hasattr(ssl, 'enum_certificates') else []
+    server_auth = '1.3.6.1.5.5.7.3.1'
+    directory = Path(directory)
+    directory.mkdir(parents=True, exist_ok=True)
+    count = 0
+    for der, encoding, trust in certificates:
+        if encoding == 'x509_asn' and (trust is True or server_auth in trust):
+            count += 1
+            (directory / f'host-root-{count:04d}.crt').write_text(ssl.DER_cert_to_PEM_cert(der), encoding='ascii')
+    return count
+
+
 def linux_container_script(run_tests):
-    lines = ['set -euo pipefail', 'mkdir -p /work/src && tar -xf /in/source.tar -C /work/src && cd /work/src',
+    lines = ['set -euo pipefail',
+             'if ls /in/host-ca/*.crt >/dev/null 2>&1; then cp /in/host-ca/*.crt /usr/local/share/ca-certificates/ && update-ca-certificates >/dev/null; fi',
+             'mkdir -p /work/src && tar -xf /in/source.tar -C /work/src && cd /work/src',
              'python3 -B tools/ToolsetDistribution.py prepare-tools']
     if run_tests:
         lines.append('export SWLOR_REQUIRE_NATIVE_TOOLS=1')
@@ -355,6 +374,7 @@ def build_linux(version, output, work, run_tests):
     source = work / 'in'
     source.mkdir(parents=True)
     run(['git', 'archive', '--format=tar', '--output', source / 'source.tar', 'HEAD'])
+    export_host_trust(source / 'host-ca')
     output.mkdir(parents=True)
     run(['docker', 'run', '--rm', '--env', 'TOOLSET_VERSION=' + version,
          '--volume', f'{source}:/in:ro', '--volume', f'{output}:/out', '--volume', 'swlor-toolset-nuget:/root/.nuget/packages',

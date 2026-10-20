@@ -162,6 +162,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             _weaponAppearances[BaseItem.GreatSword] = new GreatSwordAppearanceDefinition();
             _weaponAppearances[BaseItem.Katar] = new KatarAppearanceDefinition();
             _weaponAppearances[BaseItem.LargeShield] = new LargeShieldAppearanceDefinition();
+            _weaponAppearances[BaseItem.Lightsaber] = new LightsaberAppearanceDefinition();
+            _weaponAppearances[BaseItem.Saberstaff] = new SaberstaffAppearanceDefinition();
             _weaponAppearances[BaseItem.Longsword] = new LongswordAppearanceDefinition();
             var pistolAppearance = new PistolAppearanceDefinition();
             _weaponAppearances[BaseItem.Pistol] = pistolAppearance;
@@ -802,14 +804,14 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             if (IsAppearanceSelected)
                 return true;
 
-            // The item must be valid, not cursed, not plot.
+            // The item must be valid. Restricted flags are checked below.
             var item = GetItem();
             if (!GetIsObjectValid(item))
                 return false;
 
             // NPC gear is often undroppable, so a DM may restyle their avatar's or a possessed creature's anyway.
             var isDMTarget = GetIsDM(_target) || GetIsDMPossessed(_target);
-            if (!isDMTarget && (GetItemCursedFlag(item) || GetPlotFlag(item)))
+            if (!isDMTarget && !AllowsItemFlags(GetBaseItemType(item), GetPlotFlag(item), GetItemCursedFlag(item), GetResRef(item)))
                 return false;
 
             // Armors must have parts that are publicly available.
@@ -888,14 +890,25 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     var middlePartId = middleId + middleColor * 100;
                     var bottomPartId = bottomId + bottomColor * 100;
 
-                    if (!appearance.TopParts.Contains(topPartId) ||
-                        !appearance.MiddleParts.Contains(middlePartId) ||
-                        !appearance.BottomParts.Contains(bottomPartId))
+                    if (!AllowsWeaponParts(appearance, topPartId, middlePartId, bottomPartId))
                         return false;
                 }
             }
 
             return true;
+        }
+
+        // Plot items are refused except the training sabers and saberstaffs, identified by blueprint resref.
+        // Other plot sabers share the default training look, so the look alone must not qualify an item.
+        private static bool AllowsItemFlags(BaseItem itemType, bool isPlot, bool isCursed, string resref)
+        {
+            return !isCursed && (!isPlot || TrainingSaberCatalog.IsTrainingSaber(itemType, resref));
+        }
+
+        private static bool AllowsWeaponParts(IWeaponAppearanceDefinition appearance, int top, int middle, int bottom)
+        {
+            return appearance.TopParts.Contains(top) && appearance.MiddleParts.Contains(middle) &&
+                   appearance.BottomParts.Contains(bottom);
         }
 
         private void ToggleItemEquippedFlags()

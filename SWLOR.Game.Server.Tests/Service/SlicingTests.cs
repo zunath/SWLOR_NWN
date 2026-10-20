@@ -270,12 +270,28 @@ public class SlicingTests
     }
 
     [Test]
-    public void TraceBonus_UsesPerkAndCombinedPositiveSkillScaling()
+    public void TraceBonus_UsesRanksAboveTheTierAndCappedCombinedSkill()
     {
-        Slicing.GetTraceBonus(2, 100, 100).Should().Be(5, "the stat contribution caps at five");
-        Slicing.GetTraceBonus(3, 4, 1).Should().Be(2);
-        Slicing.GetTraceBonus(4, 8, -4).Should().Be(3, "negative Perception never reduces trace");
-        Slicing.GetTraceBonus(5, 25, 0).Should().Be(8);
+        Slicing.GetTraceBonus(5, 5, 100, 100).Should().Be(2, "the stat contribution caps at two");
+        Slicing.GetTraceBonus(3, 3, 6, 3).Should().Be(0, "nine combined points fall short of the first trace");
+        Slicing.GetTraceBonus(3, 3, 6, 4).Should().Be(1);
+        Slicing.GetTraceBonus(4, 2, 14, -4).Should().Be(3, "negative Perception never reduces trace");
+        Slicing.GetTraceBonus(5, 1, 20, 0).Should().Be(6);
+    }
+
+    [Test]
+    public void TraceBonus_CountsEquipmentLockpicking()
+    {
+        var session = File.ReadAllText(Path.Combine(
+            FindRepositoryRoot(), "SWLOR.Game.Server", "Service", "SlicingService", "SlicingSession.cs"));
+        var stat = File.ReadAllText(Path.Combine(FindRepositoryRoot(), "SWLOR.Game.Server", "Service", "Stat.cs"));
+        var getLockpicking = Between(stat, "public static int GetLockpicking", "public static int GetStealth");
+
+        session.Should().Contain("Stat.GetLockpicking(player)",
+            "gear writes Lockpicking to the player record, which GetStatAdjustment never reads");
+        session.Should().Contain("Slicing.GetTraceBonus(slicingRank, tier, lockpicking, perception)");
+        getLockpicking.Should().Contain("dbPlayer.Lockpicking");
+        getLockpicking.Should().Contain("GetStatAdjustment(creature, StatType.Lockpicking)");
     }
 
     [TestCase(1, 0)]

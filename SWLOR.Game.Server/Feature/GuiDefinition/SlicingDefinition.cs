@@ -27,7 +27,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
             "TRACE AND FAILURE\n" +
             "Trace is your action budget. Reach the Core before it runs out. Every board has its own layout and leaves only a few actions " +
             "beyond its cheapest repair, so plan the whole route before you act. Some pieces you need sit one cell away and must be swapped in. " +
-            "Slicing rank, Lockpicking, and positive Perception can grant extra Trace. " +
+            "Each Slicing rank above the target's tier grants +1 Trace. Lockpicking gear and positive Perception grant +1 Trace " +
+            "per 10 combined, up to +2. " +
             "A rotation or swap commits the attempt. An immediate tool effect also commits it; a primed tool commits when its effect is consumed. " +
             "Before commitment, closing or aborting is safe. After commitment, running out of Trace, closing, or aborting counts as a failure and raises " +
             "the risk that the target is destroyed.\n\n" +

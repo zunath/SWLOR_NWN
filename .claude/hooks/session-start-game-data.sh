@@ -27,6 +27,11 @@ rm -f "$DONE"
 exec >>"$LOG" 2>&1
 log() { echo "[$(date -u +%H:%M:%S)] $*"; }
 
+# Staging and replaced copies that an interrupted earlier run left behind. Cleaned before the
+# cached-success exit below, which would otherwise keep them forever.
+STAGING_PREFIX=/opt/.swlor-game-data-staging
+rm -rf "$STAGING_PREFIX".*
+
 image=$(head -n 1 "$REPO/scripts/deployment/server-image.txt" | tr -d '\r')
 # The image that filled DEST, so a newly pinned image replaces stale data.
 MARKER="$DEST/.swlor-server-image"
@@ -35,9 +40,6 @@ if [ -f "$DEST/data/nwn_base.key" ] && [ "$(cat "$MARKER" 2>/dev/null)" = "$imag
   touch "$DONE"
   exit 0
 fi
-# Staging copies that an interrupted earlier run left behind.
-STAGING_PREFIX=/opt/.swlor-game-data-staging
-rm -rf "$STAGING_PREFIX".*
 if ! docker info >/dev/null 2>&1; then
   log "Starting the Docker daemon (log: /tmp/dockerd.log)"
   setsid nohup dockerd >/tmp/dockerd.log 2>&1 </dev/null &

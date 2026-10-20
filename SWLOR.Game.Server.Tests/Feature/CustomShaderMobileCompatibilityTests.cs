@@ -31,6 +31,11 @@ public class CustomShaderMobileCompatibilityTests
         @"^#\s*define\s+(?<name>\w+)(\([^)]*\))?(?<body>.*)$",
         RegexOptions.Compiled);
 
+    // "#if defined(MOBILE)", "#if !defined MOBILE" and similar single-term tests.
+    private static readonly Regex MobileIfExpression = new(
+        @"^#\s*if\s+(?<not>!\s*)?defined\s*(\(\s*MOBILE\s*\)|MOBILE)\s*$",
+        RegexOptions.Compiled);
+
     [Test]
     public void CustomShaders_UseNoBitwiseOperatorsInCodeTheMobileClientCompiles()
     {
@@ -86,6 +91,9 @@ public class CustomShaderMobileCompatibilityTests
         FindMobileUnsupportedLines(continuedMacro).Should().ContainSingle();
         FindMobileUnsupportedLines(guardedContinuedMacro).Should().BeEmpty();
         FindMobileUnsupportedLines(splitOperator).Should().ContainSingle();
+        FindMobileUnsupportedLines("#if !defined(MOBILE)\n" + unguarded + "#endif\n").Should().BeEmpty();
+        FindMobileUnsupportedLines("#if defined MOBILE\nint A() { return 0; }\n#else\n" + unguarded + "#endif\n").Should().BeEmpty();
+        FindMobileUnsupportedLines("// /*\nint B(int v) { return v & 1; }\n// */\n").Should().ContainSingle();
         FindMobileUnsupportedLines("#ifndef MOBILE\n#endif\n#define/**/UNPACK(v) ((v >> 3) & 3)\n").Should().ContainSingle();
         FindMobileUnsupportedLines("#define SAFE 1 // explanation \\\n continues with & here\nint A() { return SAFE; }\n").Should().BeEmpty();
         FindMobileUnsupportedLines(elifAfterMobile).Should().BeEmpty();
@@ -94,10 +102,10 @@ public class CustomShaderMobileCompatibilityTests
     [Test]
     public void Checker_OnlyCountsDefinitelyCompiledLinesAsDefinite()
     {
-        var scan = ScanForMobile("#ifdef MOBILE\nvoid A() {}\n#endif\n#if 0\nvoid B() {}\n#endif\nvoid C() {}\n");
+        var scan = ScanForMobile("#ifdef MOBILE\nvoid A() {}\n#endif\n#if 0\nvoid B() {}\n#endif\nvoid C() {}\n#if defined(MOBILE)\nvoid D() {}\n#endif\n");
 
-        scan.DefiniteCode.Select(line => line.Text.Trim()).Should().Equal("void A() {}", "void C() {}");
-        scan.PossibleCode.Select(line => line.Text.Trim()).Should().Equal("void A() {}", "void B() {}", "void C() {}");
+        scan.DefiniteCode.Select(line => line.Text.Trim()).Should().Equal("void A() {}", "void C() {}", "void D() {}");
+        scan.PossibleCode.Select(line => line.Text.Trim()).Should().Equal("void A() {}", "void B() {}", "void C() {}", "void D() {}");
     }
 
     private static IEnumerable<string> FindMobileUnsupportedLines(string shader)
@@ -169,7 +177,16 @@ public class CustomShaderMobileCompatibilityTests
                         conditions.Push(argument == "MOBILE" ? (false, false) : (null, null));
                         break;
                     case "if":
-                        conditions.Push((null, null));
+                        var mobileTest = MobileIfExpression.Match(directive);
+                        if (mobileTest.Success)
+                        {
+                            var compiledOnMobile = mobileTest.Groups["not"].Value.Length == 0;
+                            conditions.Push((compiledOnMobile, compiledOnMobile));
+                        }
+                        else
+                        {
+                            conditions.Push((null, null));
+                        }
                         break;
                     case "elif":
                         if (conditions.Count > 0)
@@ -218,10 +235,35 @@ public class CustomShaderMobileCompatibilityTests
 
     private static string StripComments(string shader)
     {
-        // A block comment counts as whitespace ("#define/**/X" is "#define X"); keep
-        // its newlines so line numbers stay true.
-        var withoutBlocks = Regex.Replace(shader, @"/\*.*?\*/", match => " " + new string('\n', match.Value.Count(c => c == '\n')), RegexOptions.Singleline);
-        return Regex.Replace(withoutBlocks, @"//[^\r\n]*", string.Empty);
+        // One lexical pass, so "/*" inside a line comment (or "//" inside a block
+        // comment) stays inert. A block comment counts as whitespace ("#define/**/X"
+        // is "#define X") and keeps its newlines so line numbers stay true.
+        var result = new System.Text.StringBuilder(shader.Length);
+        var index = 0;
+        while (index < shader.Length)
+        {
+            if (shader[index] == '/' && index + 1 < shader.Length && shader[index + 1] == '/')
+            {
+                while (index < shader.Length && shader[index] != '\n')
+                {
+                    index++;
+                }
+            }
+            else if (shader[index] == '/' && index + 1 < shader.Length && shader[index + 1] == '*')
+            {
+                var end = shader.IndexOf("*/", index + 2, System.StringComparison.Ordinal);
+                var stop = end < 0 ? shader.Length : end + 2;
+                result.Append(' ').Append('\n', shader.Substring(index, stop - index).Count(c => c == '\n'));
+                index = stop;
+            }
+            else
+            {
+                result.Append(shader[index]);
+                index++;
+            }
+        }
+
+        return result.ToString();
     }
 
     private static string ResolveRepositoryPath(params string[] segments)

@@ -103,7 +103,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The patrol tally confirms eight dire wolves down. Give me your field report and I’ll close the Silverwood posting.",
+          "Text": "The patrol tally confirms eight dire wolves down. Give me your field report and I'll close the Silverwood posting.",
           "Style": 0,
           "Color": null
         }
@@ -267,7 +267,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Six frost-wolf losses are showing in the outer patrol reports. Confirm the engagement and we’ll settle the hazard pay.",
+          "Text": "Six frost-wolf losses are showing in the outer patrol reports. Confirm the engagement and we'll settle the hazard pay.",
           "Style": 0,
           "Color": null
         }
@@ -431,7 +431,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The lesser packs are already scattering. Tell me the alpha is dead and I’ll strike the hunt from the board.",
+          "Text": "The lesser packs are already scattering. Tell me the alpha is dead and I'll strike the hunt from the board.",
           "Style": 0,
           "Color": null
         }
@@ -923,7 +923,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The latest vanguard probe broke formation early. I’m ready for your casualty report.",
+          "Text": "The latest vanguard probe broke formation early. I'm ready for your casualty report.",
           "Style": 0,
           "Color": null
         }
@@ -2416,7 +2416,7 @@
     "reply-remind-01": {
       "Id": "reply-remind-01",
       "Text": {
-        "Text": "Thin the Silverwood Packs — review the assignment.",
+        "Text": "Thin the Silverwood Packs - review the assignment.",
         "Style": 4,
         "Color": null
       },
@@ -2439,7 +2439,7 @@
     "reply-ready-01": {
       "Id": "reply-ready-01",
       "Text": {
-        "Text": "Thin the Silverwood Packs — report success.",
+        "Text": "Thin the Silverwood Packs - report success.",
         "Style": 4,
         "Color": null
       },
@@ -2462,7 +2462,7 @@
     "reply-done-01": {
       "Id": "reply-done-01",
       "Text": {
-        "Text": "Thin the Silverwood Packs — ask about the result.",
+        "Text": "Thin the Silverwood Packs - ask about the result.",
         "Style": 4,
         "Color": null
       },
@@ -2706,7 +2706,7 @@
     "reply-remind-02": {
       "Id": "reply-remind-02",
       "Text": {
-        "Text": "Break the Frost Pack — review the assignment.",
+        "Text": "Break the Frost Pack - review the assignment.",
         "Style": 4,
         "Color": null
       },
@@ -2729,7 +2729,7 @@
     "reply-ready-02": {
       "Id": "reply-ready-02",
       "Text": {
-        "Text": "Break the Frost Pack — report success.",
+        "Text": "Break the Frost Pack - report success.",
         "Style": 4,
         "Color": null
       },
@@ -2752,7 +2752,7 @@
     "reply-done-02": {
       "Id": "reply-done-02",
       "Text": {
-        "Text": "Break the Frost Pack — ask about the result.",
+        "Text": "Break the Frost Pack - ask about the result.",
         "Style": 4,
         "Color": null
       },
@@ -2996,7 +2996,7 @@
     "reply-remind-03": {
       "Id": "reply-remind-03",
       "Text": {
-        "Text": "The Alpha's Challenge — review the assignment.",
+        "Text": "The Alpha's Challenge - review the assignment.",
         "Style": 4,
         "Color": null
       },
@@ -3019,7 +3019,7 @@
     "reply-ready-03": {
       "Id": "reply-ready-03",
       "Text": {
-        "Text": "The Alpha's Challenge — report success.",
+        "Text": "The Alpha's Challenge - report success.",
         "Style": 4,
         "Color": null
       },
@@ -3042,7 +3042,7 @@
     "reply-done-03": {
       "Id": "reply-done-03",
       "Text": {
-        "Text": "The Alpha's Challenge — ask about the result.",
+        "Text": "The Alpha's Challenge - ask about the result.",
         "Style": 4,
         "Color": null
       },
@@ -3286,7 +3286,7 @@
     "reply-remind-04": {
       "Id": "reply-remind-04",
       "Text": {
-        "Text": "Eyes in the Snow — review the assignment.",
+        "Text": "Eyes in the Snow - review the assignment.",
         "Style": 4,
         "Color": null
       },
@@ -3309,7 +3309,7 @@
     "reply-ready-04": {
       "Id": "reply-ready-04",
       "Text": {
-        "Text": "Eyes in the Snow — report success.",
+        "Text": "Eyes in the Snow - report success.",
         "Style": 4,
         "Color": null
       },
@@ -3332,7 +3332,7 @@
     "reply-done-04": {
       "Id": "reply-done-04",
       "Text": {
-        "Text": "Eyes in the Snow — ask about the result.",
+        "Text": "Eyes in the Snow - ask about the result.",
         "Style": 4,
         "Color": null
       },
@@ -3576,7 +3576,7 @@
     "reply-remind-05": {
       "Id": "reply-remind-05",
       "Text": {
-        "Text": "Close the Hunter's Trail — review the assignment.",
+        "Text": "Close the Hunter's Trail - review the assignment.",
         "Style": 4,
         "Color": null
       },
@@ -3599,7 +3599,7 @@
     "reply-ready-05": {
       "Id": "reply-ready-05",
       "Text": {
-        "Text": "Close the Hunter's Trail — report success.",
+        "Text": "Close the Hunter's Trail - report success.",
         "Style": 4,
         "Color": null
       },
@@ -3622,7 +3622,7 @@
     "reply-done-05": {
       "Id": "reply-done-05",
       "Text": {
-        "Text": "Close the Hunter's Trail — ask about the result.",
+        "Text": "Close the Hunter's Trail - ask about the result.",
         "Style": 4,
         "Color": null
       },
@@ -3866,7 +3866,7 @@
     "reply-remind-06": {
       "Id": "reply-remind-06",
       "Text": {
-        "Text": "Break the Vanguard — review the assignment.",
+        "Text": "Break the Vanguard - review the assignment.",
         "Style": 4,
         "Color": null
       },
@@ -3889,7 +3889,7 @@
     "reply-ready-06": {
       "Id": "reply-ready-06",
       "Text": {
-        "Text": "Break the Vanguard — report success.",
+        "Text": "Break the Vanguard - report success.",
         "Style": 4,
         "Color": null
       },
@@ -3912,7 +3912,7 @@
     "reply-done-06": {
       "Id": "reply-done-06",
       "Text": {
-        "Text": "Break the Vanguard — ask about the result.",
+        "Text": "Break the Vanguard - ask about the result.",
         "Style": 4,
         "Color": null
       },
@@ -4156,7 +4156,7 @@
     "reply-remind-07": {
       "Id": "reply-remind-07",
       "Text": {
-        "Text": "Silence the Heavy Guns — review the assignment.",
+        "Text": "Silence the Heavy Guns - review the assignment.",
         "Style": 4,
         "Color": null
       },
@@ -4179,7 +4179,7 @@
     "reply-ready-07": {
       "Id": "reply-ready-07",
       "Text": {
-        "Text": "Silence the Heavy Guns — report success.",
+        "Text": "Silence the Heavy Guns - report success.",
         "Style": 4,
         "Color": null
       },
@@ -4202,7 +4202,7 @@
     "reply-done-07": {
       "Id": "reply-done-07",
       "Text": {
-        "Text": "Silence the Heavy Guns — ask about the result.",
+        "Text": "Silence the Heavy Guns - ask about the result.",
         "Style": 4,
         "Color": null
       },
@@ -4446,7 +4446,7 @@
     "reply-remind-08": {
       "Id": "reply-remind-08",
       "Text": {
-        "Text": "Cut the Lifeline — review the assignment.",
+        "Text": "Cut the Lifeline - review the assignment.",
         "Style": 4,
         "Color": null
       },
@@ -4469,7 +4469,7 @@
     "reply-ready-08": {
       "Id": "reply-ready-08",
       "Text": {
-        "Text": "Cut the Lifeline — report success.",
+        "Text": "Cut the Lifeline - report success.",
         "Style": 4,
         "Color": null
       },
@@ -4492,7 +4492,7 @@
     "reply-done-08": {
       "Id": "reply-done-08",
       "Text": {
-        "Text": "Cut the Lifeline — ask about the result.",
+        "Text": "Cut the Lifeline - ask about the result.",
         "Style": 4,
         "Color": null
       },
@@ -4736,7 +4736,7 @@
     "reply-remind-09": {
       "Id": "reply-remind-09",
       "Text": {
-        "Text": "Shatter Field Command — review the assignment.",
+        "Text": "Shatter Field Command - review the assignment.",
         "Style": 4,
         "Color": null
       },
@@ -4759,7 +4759,7 @@
     "reply-ready-09": {
       "Id": "reply-ready-09",
       "Text": {
-        "Text": "Shatter Field Command — report success.",
+        "Text": "Shatter Field Command - report success.",
         "Style": 4,
         "Color": null
       },
@@ -4782,7 +4782,7 @@
     "reply-done-09": {
       "Id": "reply-done-09",
       "Text": {
-        "Text": "Shatter Field Command — ask about the result.",
+        "Text": "Shatter Field Command - ask about the result.",
         "Style": 4,
         "Color": null
       },
@@ -5026,7 +5026,7 @@
     "reply-remind-10": {
       "Id": "reply-remind-10",
       "Text": {
-        "Text": "Thyrsian Incursion — review the assignment.",
+        "Text": "Thyrsian Incursion - review the assignment.",
         "Style": 4,
         "Color": null
       },
@@ -5049,7 +5049,7 @@
     "reply-ready-10": {
       "Id": "reply-ready-10",
       "Text": {
-        "Text": "Thyrsian Incursion — report success.",
+        "Text": "Thyrsian Incursion - report success.",
         "Style": 4,
         "Color": null
       },
@@ -5072,7 +5072,7 @@
     "reply-done-10": {
       "Id": "reply-done-10",
       "Text": {
-        "Text": "Thyrsian Incursion — ask about the result.",
+        "Text": "Thyrsian Incursion - ask about the result.",
         "Style": 4,
         "Color": null
       },
@@ -5334,7 +5334,7 @@
     "reply-remind-11": {
       "Id": "reply-remind-11",
       "Text": {
-        "Text": "Hunt the Icebound — review the assignment.",
+        "Text": "Hunt the Icebound - review the assignment.",
         "Style": 4,
         "Color": null
       },
@@ -5357,7 +5357,7 @@
     "reply-ready-11": {
       "Id": "reply-ready-11",
       "Text": {
-        "Text": "Hunt the Icebound — report success.",
+        "Text": "Hunt the Icebound - report success.",
         "Style": 4,
         "Color": null
       },
@@ -5380,7 +5380,7 @@
     "reply-done-11": {
       "Id": "reply-done-11",
       "Text": {
-        "Text": "Hunt the Icebound — ask about the result.",
+        "Text": "Hunt the Icebound - ask about the result.",
         "Style": 4,
         "Color": null
       },

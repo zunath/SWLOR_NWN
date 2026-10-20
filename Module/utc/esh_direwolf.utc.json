@@ -34,7 +34,7 @@
   },
   "Comment": {
     "type": "cexostring",
-    "value": "Capstone quest creature for Apex Bite in Dathomir Tarn Jungle Preserve."
+    "value": "Dire wolf spawn in Eshan's Silverwood Expanse for Thin the Silverwood Packs."
   },
   "Con": {
     "type": "byte",
@@ -63,7 +63,7 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "A massive dire wolf adapted to Eshan’s bitter climate. Dense pale fur, powerful jaws, and coordinated pack instincts make it a dangerous predator."
+      "0": "A massive dire wolf adapted to Eshan's bitter climate. Dense pale fur, powerful jaws, and coordinated pack instincts make it a dangerous predator."
     }
   },
   "Dex": {
